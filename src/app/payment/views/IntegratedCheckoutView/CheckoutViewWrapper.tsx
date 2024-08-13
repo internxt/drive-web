@@ -269,7 +269,7 @@ const CheckoutViewWrapper = () => {
       // need to check all rest of needed values to add it to analytics in trackPaymentConversion function
       if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
       if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
-      if (plan && plan?.selectedPlan) {
+      if (plan?.selectedPlan) {
         const amountToPay = getProductAmount(plan?.selectedPlan.decimalAmount, couponCodeData).toFixed(2);
         localStorageService.set('amountPaid', amountToPay);
       }
