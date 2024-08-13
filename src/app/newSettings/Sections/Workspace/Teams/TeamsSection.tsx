@@ -16,12 +16,12 @@ import errorService from 'app/core/services/error.service';
 import Section from 'app/newSettings/components/Section';
 import TeamsList from './components/TeamsList';
 import TeamDetails from './components/TeamDetails';
-import DeleteTeamDialog from './components/DeleteTeamDialog';
 import RemoveTeamMemberDialog from './components/RemoveTeamMemberDialog';
 import ChangeManagerDialog from './components/ChangeManagerDialog';
 import AddMemberDialogContainer from './containers/AddMemberDialogContainer';
 import CreateTeamDialogContainer from './containers/CreateTeamDialogContainer';
 import RenameTeamDialogContainer from './containers/RenameTeamDialogContainer';
+import DeleteTeamDialogContainer from './containers/DeleteTeamDialogContainer';
 
 const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
@@ -34,7 +34,6 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   const [isDeleteTeamDialogOpen, setIsDeleteTeamDialogOpen] = useState<boolean>(false);
   const [isRemoveTeamMemberDialogOpen, setIsRemoveTeamMemberDialogOpen] = useState<boolean>(false);
   const [isChangeManagerDialogOpen, setIsChangeManagerDialogOpen] = useState<boolean>(false);
-  const [isDeleteTeamLoading, setIsDeleteTeamLoading] = useState<boolean>(false);
   const [isGetTeamsLoading, setIsGetTeamsLoading] = useState<boolean>(false);
   const [isGetTeamMembersLoading, setIsGetTeamMembersLoading] = useState<boolean>(false);
   const [isGetWorkspacesMembersLoading, setIsGetWorkspacesMembersLoading] = useState<boolean>(false);
@@ -114,24 +113,6 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   const handleMemberLeave = () => {
     setHoveredMember(null);
     isMemberOptionsOpen && setIsMemberOptionsOpen(false);
-  };
-
-  const deleteTeam = async () => {
-    setIsDeleteTeamLoading(true);
-    try {
-      if (selectedWorkspace && selectedTeam) {
-        await workspacesService.deleteTeam(selectedWorkspace.workspaceUser.workspaceId, selectedTeam.team.id);
-      }
-      setSelectedTeam(null);
-      setIsDeleteTeamDialogOpen(false);
-      setTimeout(() => {
-        getTeams();
-      }, 500);
-    } catch (err) {
-      const castedError = errorService.castError(err);
-      errorService.reportError(castedError);
-    }
-    setIsDeleteTeamLoading(false);
   };
 
   const removeTeamMember = async () => {
@@ -259,12 +240,14 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
         setIsRenameTeamDialogOpen={setIsRenameTeamDialogOpen}
         getTeams={getTeams}
       />
-      <DeleteTeamDialog
+      <DeleteTeamDialogContainer
         isOpen={isDeleteTeamDialogOpen}
         onClose={() => setIsDeleteTeamDialogOpen(false)}
-        isDeleteTeamLoading={isDeleteTeamLoading}
-        deleteTeam={deleteTeam}
+        selectedWorkspace={selectedWorkspace}
         selectedTeam={selectedTeam}
+        setSelectedTeam={setSelectedTeam}
+        setIsDeleteTeamDialogOpen={setIsDeleteTeamDialogOpen}
+        getTeams={getTeams}
       />
       <RemoveTeamMemberDialog
         isOpen={isRemoveTeamMemberDialogOpen}
