@@ -27,6 +27,7 @@ const CheckoutSuccessView = (): JSX.Element => {
       await analyticsService.trackPaymentConversion();
       localStorageService.removeItem('subscriptionId');
       localStorageService.removeItem('paymentIntentId');
+      localStorageService.removeItem('amountPaid');
     } catch (err) {
       console.log('Analytics error: ', err);
     }
