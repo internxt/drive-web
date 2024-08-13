@@ -264,7 +264,7 @@ const CheckoutViewWrapper = () => {
       );
 
       // TEMPORARY FIX
-      // Added subscriptionId and paymentIntendId to send subscription id to IMPACT API
+      // Store subscriptionId and paymentIntendId to send to IMPACT API
       if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
       if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
 
