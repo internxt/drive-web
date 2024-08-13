@@ -1,60 +1,55 @@
 import { useEffect, useState } from 'react';
 import { t } from 'i18next';
-import { WorkspaceTeamResponse, WorkspaceTeam, TeamMembers, WorkspaceUser } from '@internxt/sdk/dist/workspaces/types';
+import {
+  WorkspaceTeamResponse,
+  WorkspaceTeam,
+  TeamMembers,
+  WorkspaceUser,
+  TeamMember,
+} from '@internxt/sdk/dist/workspaces/types';
 
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import workspacesService from 'app/core/services/workspace.service';
 import errorService from 'app/core/services/error.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { searchMembers, searchMembersEmail } from '../../../../newSettings/utils/membersUtils';
 
 import Section from 'app/newSettings/components/Section';
 import TeamsList from './components/TeamsList';
-import CreateTeamDialog from './components/CreateTeamDialog';
-import TeamDetails from './components/TeamDetails';
-import AddMemberDialog from './components/AddMemberDialog';
-import RenameTeamDialog from './components/RenameTeamDialog';
+import AddMemberDialogContainer from './containers/AddMemberDialogContainer';
+import CreateTeamDialogContainer from './containers/CreateTeamDialogContainer';
+import RenameTeamDialogContainer from './containers/RenameTeamDialogContainer';
+import DeleteTeamDialogContainer from './containers/DeleteTeamDialogContainer';
+import RemoveTeamMemberDialogContainer from './containers/RemoveTeamMemberDialogContainer';
+import ChangeManagerDialogContainer from './containers/ChangeManagerDialogContainer';
+import TeamDetailsContainer from './containers/TeamDetailsContainer';
 
 const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const isCurrentUserWorkspaceOwner = useAppSelector(workspacesSelectors.isWorkspaceOwner);
+  const user = useAppSelector((state) => state.user.user);
 
   const [teams, setTeams] = useState<WorkspaceTeamResponse>([]);
   const [isCreateTeamDialogOpen, setIsCreateTeamDialogOpen] = useState<boolean>(false);
   const [isRenameTeamDialogOpen, setIsRenameTeamDialogOpen] = useState<boolean>(false);
-  const [newTeamName, setNewTeamName] = useState<string>('');
-  const [renameTeamName, setRenameTeamName] = useState<string>('');
-  const [isCreateTeamLoading, setIsCreateTeamLoading] = useState<boolean>(false);
-  const [isRenameTeamLoading, setIsRenameTeamLoading] = useState<boolean>(false);
+  const [isDeleteTeamDialogOpen, setIsDeleteTeamDialogOpen] = useState<boolean>(false);
+  const [isRemoveTeamMemberDialogOpen, setIsRemoveTeamMemberDialogOpen] = useState<boolean>(false);
+  const [isChangeManagerDialogOpen, setIsChangeManagerDialogOpen] = useState<boolean>(false);
   const [isGetTeamsLoading, setIsGetTeamsLoading] = useState<boolean>(false);
   const [isGetTeamMembersLoading, setIsGetTeamMembersLoading] = useState<boolean>(false);
   const [isGetWorkspacesMembersLoading, setIsGetWorkspacesMembersLoading] = useState<boolean>(false);
-  const [isAddMembersLoading, setIsAddMembersLoading] = useState<boolean>(false);
   const [selectedTeam, setSelectedTeam] = useState<WorkspaceTeam | null>(null);
   const [selectedTeamMembers, setSelectedTeamMembers] = useState<TeamMembers>([]);
-  const [hoveredMember, setHoveredMember] = useState<string | null>(null);
-  const [isMemberOptionsOpen, setIsMemberOptionsOpen] = useState<boolean>(false);
-  const [isTeamOptionsOpen, setIsTeamOptionsOpen] = useState<boolean>(false);
   const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState<boolean>(false);
   const [workspaceMembers, setWorkspaceMembers] = useState<WorkspaceUser[] | null>(null);
   const [displayedMembers, setDisplayedMembers] = useState(workspaceMembers);
-  const [membersToInvite, setMembersToInvite] = useState<WorkspaceUser[]>([]);
-  const [searchedMemberString, setSearchedMemberString] = useState<string>('');
+  const [teamMemberToRemove, setTeamMemberToRemove] = useState<TeamMember | null>(null);
+  const [newTeamManager, setNewTeamManager] = useState<TeamMember | null>(null);
+  const [currentTeamManager, setCurrentTeamManager] = useState<TeamMember | null>(null);
+  const [isCurrentUserManager, setIsCurrentUserManager] = useState<boolean>(false);
 
   useEffect(() => {
     getTeams();
   }, []);
-
-  useEffect(() => {
-    const membersByName = searchMembers(workspaceMembers, searchedMemberString);
-    const membersByEmail = searchMembersEmail(workspaceMembers, searchedMemberString);
-
-    const newDisplayedMembers = [...membersByName, ...membersByEmail];
-    const uniqueDisplayedMembers = Array.from(new Set(newDisplayedMembers));
-
-    setDisplayedMembers(uniqueDisplayedMembers);
-  }, [searchedMemberString]);
 
   const getTeams = async () => {
     if (selectedWorkspace) {
@@ -62,7 +57,7 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
       try {
         const teams = await workspacesService.getWorkspaceTeams(selectedWorkspace.workspaceUser.workspaceId);
         setTeams(teams);
-        if (selectedTeam) {
+        if ((selectedTeam && isRenameTeamDialogOpen) || (selectedTeam && isChangeManagerDialogOpen)) {
           const team = teams.find((team) => team.team.id === selectedTeam?.team.id);
           team && setSelectedTeam(team);
         }
@@ -74,51 +69,17 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
     }
   };
 
-  const getTeamMembers = async (teamId) => {
+  const getTeamMembers = async (team: WorkspaceTeam) => {
     setIsGetTeamMembersLoading(true);
     try {
-      const teamMembers = await workspacesService.getTeamMembers(teamId);
+      const teamMembers = await workspacesService.getTeamMembers(team.team.id);
+      user && user.uuid === team.team.managerId ? setIsCurrentUserManager(true) : setIsCurrentUserManager(false);
       setSelectedTeamMembers(teamMembers);
     } catch (err) {
       const castedError = errorService.castError(err);
       errorService.reportError(castedError);
     }
     setIsGetTeamMembersLoading(false);
-  };
-
-  const createTeam = async () => {
-    setIsCreateTeamLoading(true);
-    if (selectedWorkspace) {
-      try {
-        const nameExists = teams.some((team) => team.team.name === newTeamName);
-
-        if (nameExists) {
-          notificationsService.show({
-            text: t('preferences.workspace.teams.createTeamDialog.nameExists'),
-            type: ToastType.Error,
-          });
-          return;
-        }
-
-        await workspacesService.createTeam({
-          workspaceId: selectedWorkspace.workspaceUser.workspaceId,
-          name: newTeamName,
-          managerId: selectedWorkspace.workspaceUser.memberId,
-        });
-        setTimeout(() => {
-          getTeams();
-        }, 500);
-      } catch (err) {
-        const castedError = errorService.castError(err);
-        errorService.reportError(castedError);
-      } finally {
-        setIsCreateTeamLoading(false);
-      }
-
-      setIsCreateTeamLoading(false);
-      setIsCreateTeamDialogOpen(false);
-      setNewTeamName('');
-    }
   };
 
   const getWorkspacesMembers = async () => {
@@ -140,103 +101,40 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
     }
   };
 
-  const handleMemberHover = (memberUuid) => {
-    setHoveredMember(memberUuid);
-  };
-
-  const handleMemberLeave = () => {
-    setHoveredMember(null);
-    isMemberOptionsOpen && setIsMemberOptionsOpen(false);
-  };
-
-  const selectMemberToInvite = (member: WorkspaceUser) => {
-    const isMemberSelected = membersToInvite.some((m) => m.member.uuid === member.member.uuid);
-
-    if (!isMemberSelected) {
-      setMembersToInvite([...membersToInvite, member]);
-    } else {
-      setMembersToInvite(membersToInvite.filter((m) => m.member.uuid !== member.member.uuid));
-    }
-  };
-
-  const getIsSelectedMember = (member: WorkspaceUser) => {
-    return membersToInvite.some((m) => m.member.uuid === member.member.uuid);
-  };
-
-  const addMembersToTeam = () => {
-    setIsAddMembersLoading(true);
-    try {
-      if (selectedTeam) {
-        membersToInvite.map(async (member) => {
-          await workspacesService.addTeamUser(selectedTeam.team.id, member.member.uuid);
-        });
-      }
-      setIsAddMemberDialogOpen(false);
-      setMembersToInvite([]);
-      setSearchedMemberString('');
-      setTimeout(() => {
-        getWorkspacesMembers();
-        getTeamMembers(selectedTeam?.team.id);
-        getTeams();
-      }, 500);
-    } catch (err) {
-      const castedError = errorService.castError(err);
-      errorService.reportError(castedError);
-    }
-    setIsAddMembersLoading(false);
-  };
-
-  const renameTeam = async () => {
-    setIsRenameTeamLoading(true);
-    if (selectedWorkspace) {
-      try {
-        const nameExists = teams.some((team) => team.team.name === renameTeamName);
-
-        if (nameExists) {
-          notificationsService.show({
-            text: t('preferences.workspace.teams.createTeamDialog.nameExists'),
-            type: ToastType.Error,
-          });
-          return;
-        }
-        selectedTeam && (await workspacesService.editTeam(selectedTeam?.team.id, renameTeamName));
-        setTimeout(() => {
-          getTeams();
-        }, 500);
-      } catch (err) {
-        const castedError = errorService.castError(err);
-        errorService.reportError(castedError);
-      } finally {
-        setIsRenameTeamLoading(false);
-      }
-      setIsRenameTeamLoading(false);
-      setIsRenameTeamDialogOpen(false);
-      setRenameTeamName('');
-    }
+  const handleChangeManagerClicked = (member: TeamMember) => {
+    setNewTeamManager(member);
+    selectedTeamMembers.map((member) => member.uuid === selectedTeam?.team.managerId && setCurrentTeamManager(member));
+    setIsChangeManagerDialogOpen(true);
   };
 
   return (
     <Section
       title={selectedTeam ? selectedTeam.team.name : t('preferences.workspace.teams.title')}
-      onBackButtonClicked={selectedTeam ? () => setSelectedTeam(null) : undefined}
+      onBackButtonClicked={
+        selectedTeam
+          ? () => {
+              setSelectedTeam(null);
+              setIsCurrentUserManager(false);
+            }
+          : undefined
+      }
       onClosePreferences={onClosePreferences}
     >
       {selectedTeam ? (
-        <TeamDetails
+        <TeamDetailsContainer
           team={selectedTeam}
           selectedTeamMembers={selectedTeamMembers}
-          hoveredMember={hoveredMember}
-          handleMemberHover={handleMemberHover}
-          handleMemberLeave={handleMemberLeave}
-          setIsMemberOptionsOpen={setIsMemberOptionsOpen}
-          isMemberOptionsOpen={isMemberOptionsOpen}
-          isTeamOptionsOpen={isTeamOptionsOpen}
-          setIsTeamOptionsOpen={setIsTeamOptionsOpen}
           setIsAddMemberDialogOpen={setIsAddMemberDialogOpen}
           getWorkspacesMembers={getWorkspacesMembers}
           isGetTeamMembersLoading={isGetTeamMembersLoading}
           isCurrentUserWorkspaceOwner={isCurrentUserWorkspaceOwner}
           setIsRenameTeamDialogOpen={setIsRenameTeamDialogOpen}
+          setIsDeleteTeamDialogOpen={setIsDeleteTeamDialogOpen}
+          setIsRemoveTeamMemberDialogOpen={setIsRemoveTeamMemberDialogOpen}
+          setTeamMemberToRemove={setTeamMemberToRemove}
+          handleChangeManagerClicked={handleChangeManagerClicked}
+          selectedWorkspace={selectedWorkspace}
+          isCurrentUserManager={isCurrentUserManager}
         />
       ) : (
         <TeamsList
@@ -248,34 +146,67 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
           isGetTeamsLoading={isGetTeamsLoading}
         />
       )}
-      <CreateTeamDialog
+      <CreateTeamDialogContainer
         isOpen={isCreateTeamDialogOpen}
         onClose={() => setIsCreateTeamDialogOpen(false)}
-        newTeamName={newTeamName}
-        setNewTeamName={setNewTeamName}
-        isCreateTeamLoading={isCreateTeamLoading}
-        createTeam={createTeam}
+        selectedWorkspace={selectedWorkspace}
+        teams={teams}
+        getTeams={getTeams}
+        setIsCreateTeamDialogOpen={setIsCreateTeamDialogOpen}
       />
-      <AddMemberDialog
+      <AddMemberDialogContainer
         isOpen={isAddMemberDialogOpen}
         onClose={() => setIsAddMemberDialogOpen(false)}
+        workspaceMembers={workspaceMembers}
         displayedMembers={displayedMembers}
-        selectMemberToInvite={selectMemberToInvite}
-        getIsSelectedMember={getIsSelectedMember}
+        setDisplayedMembers={setDisplayedMembers}
         isGetWorkspacesMembersLoading={isGetWorkspacesMembersLoading}
-        isAddMembersLoading={isAddMembersLoading}
-        searchedMemberString={searchedMemberString}
-        setSearchedMemberString={setSearchedMemberString}
-        membersToInvite={membersToInvite}
-        addMembersToTeam={addMembersToTeam}
+        selectedTeam={selectedTeam}
+        setIsAddMemberDialogOpen={setIsAddMemberDialogOpen}
+        getWorkspacesMembers={getWorkspacesMembers}
+        getTeamMembers={getTeamMembers}
+        getTeams={getTeams}
       />
-      <RenameTeamDialog
+      <RenameTeamDialogContainer
         isOpen={isRenameTeamDialogOpen}
         onClose={() => setIsRenameTeamDialogOpen(false)}
-        renameTeamName={renameTeamName}
-        setRenameTeamName={setRenameTeamName}
-        isRenameTeamLoading={isRenameTeamLoading}
-        renameTeam={renameTeam}
+        selectedWorkspace={selectedWorkspace}
+        teams={teams}
+        selectedTeam={selectedTeam}
+        setIsRenameTeamDialogOpen={setIsRenameTeamDialogOpen}
+        getTeams={getTeams}
+      />
+      <DeleteTeamDialogContainer
+        isOpen={isDeleteTeamDialogOpen}
+        onClose={() => setIsDeleteTeamDialogOpen(false)}
+        selectedWorkspace={selectedWorkspace}
+        selectedTeam={selectedTeam}
+        setSelectedTeam={setSelectedTeam}
+        setIsDeleteTeamDialogOpen={setIsDeleteTeamDialogOpen}
+        getTeams={getTeams}
+      />
+      <RemoveTeamMemberDialogContainer
+        isOpen={isRemoveTeamMemberDialogOpen}
+        onClose={() => setIsRemoveTeamMemberDialogOpen(false)}
+        teamMemberToRemove={teamMemberToRemove}
+        selectedTeam={selectedTeam}
+        getWorkspacesMembers={getWorkspacesMembers}
+        getTeams={getTeams}
+        getTeamMembers={getTeamMembers}
+        setIsRemoveTeamMemberDialogOpen={setIsRemoveTeamMemberDialogOpen}
+        setTeamMemberToRemove={setTeamMemberToRemove}
+      />
+      <ChangeManagerDialogContainer
+        isOpen={isChangeManagerDialogOpen}
+        onClose={() => setIsChangeManagerDialogOpen(false)}
+        newTeamManager={newTeamManager}
+        currentTeamManager={currentTeamManager}
+        selectedWorkspace={selectedWorkspace}
+        selectedTeam={selectedTeam}
+        getTeams={getTeams}
+        getWorkspacesMembers={getWorkspacesMembers}
+        getTeamMembers={getTeamMembers}
+        setIsChangeManagerDialogOpen={setIsChangeManagerDialogOpen}
       />
     </Section>
   );

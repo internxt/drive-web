@@ -11,7 +11,7 @@ interface TeamsListProps {
   teams: WorkspaceTeamResponse;
   isCurrentUserWorkspaceOwner: boolean;
   setSelectedTeam: (team: WorkspaceTeam) => void;
-  getTeamMembers: (teamId: string) => void;
+  getTeamMembers: (team: WorkspaceTeam) => void;
   isGetTeamsLoading: boolean;
 }
 
@@ -59,7 +59,7 @@ const TeamsList: React.FC<TeamsListProps> = ({
               <button
                 onClick={() => {
                   setSelectedTeam(team);
-                  getTeamMembers(team.team.id);
+                  getTeamMembers(team);
                 }}
                 tabIndex={0}
                 aria-label="Select team"
