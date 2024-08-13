@@ -19,6 +19,7 @@ import { sessionSelectors } from '../session/session.selectors';
 import { storageActions } from '../storage';
 import { teamActions } from '../team';
 import { uiActions } from '../ui';
+import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
 
 import errorService from '../../../core/services/error.service';
 import { isTokenExpired } from '../../utils';
@@ -128,6 +129,7 @@ export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
     dispatch(storageActions.resetState());
     dispatch(uiActions.resetState());
     dispatch(referralsActions.resetState());
+    dispatch(workspacesActions.resetState());
 
     tasksService.clearTasks();
   },
