@@ -232,6 +232,9 @@ export const workspacesSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    resetState: (state: WorkspacesState) => {
+      Object.assign(state, initialState);
+    },
     setWorkspaces: (state: WorkspacesState, action: PayloadAction<WorkspaceData[]>) => {
       state.workspaces = action.payload;
     },
