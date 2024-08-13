@@ -1,6 +1,5 @@
 import { Elements } from '@stripe/react-stripe-js';
 import { BaseSyntheticEvent, useEffect, useReducer, useRef, useState } from 'react';
-import * as uuid from 'uuid';
 
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -265,14 +264,9 @@ const CheckoutViewWrapper = () => {
       );
 
       // TEMPORARY FIX
-      // Added subscriptionId to send subscription id to IMPACT API
+      // Added subscriptionId and paymentIntendId to send subscription id to IMPACT API
       if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
-      // Added custom paymentIntentId to send some value that identifies the payment in IMPACT API in LIFETIME plans
-      // IMPACT endpoint is called in trackPaymentConversion of analytics service
-      const isLifetimePlan = plan?.selectedPlan.interval === 'lifetime';
-
-      if (isLifetimePlan) localStorageService.set('paymentIntentId', customerId + '-' + uuid.v4());
-      else if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
+      if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
 
       const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
 
