@@ -545,7 +545,7 @@
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
-              "title": "Two Factor Authentication",
+              "title": "Two-Factor Authentication",
               "stepsLabel": "{{current}} of {{total}}",
               "button": "Enable",
               "2FALabelCode": "Two-Factor Authentication code",
@@ -557,7 +557,7 @@
                 },
                 "qr": {
                   "title": "Scan QR with the 2FA app",
-                  "description": "If you are unable to scan he QR, insert this code into the app."
+                  "description": "If you are unable to scan the QR, insert this code into the app."
                 },
                 "backup-key": {
                   "title": "Save backup key",
@@ -1713,7 +1713,8 @@
     },
     "pending": "Pending Invitations",
     "messages": {
-      "sharedSuccess": "Item shared successfully with the team"
+      "sharedSuccess": "Item shared successfully with the team",
+      "switchingWorkspace": "Switching workspace"
     },
     "pendingInvitations": {
       "empty": "No invitations left",

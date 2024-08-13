@@ -1690,7 +1690,8 @@
     },
     "pending": "Invitaciones pendientes",
     "messages": {
-      "sharedSuccess": "Elemento compartido exitosamente con el equipo"
+      "sharedSuccess": "Elemento compartido exitosamente con el equipo",
+      "switchingWorkspace": "Cambiando espacio de trabajo"
     },
     "pendingInvitations": {
       "empty": "No quedan invitaciones",

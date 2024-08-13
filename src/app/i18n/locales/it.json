@@ -1700,7 +1700,8 @@
     },
     "pending": "Inviti in sospeso",
     "messages": {
-      "sharedSuccess": "Elemento condiviso con successo con il team"
+      "sharedSuccess": "Elemento condiviso con successo con il team",
+      "switchingWorkspace": "Cambio di spazio di lavoro"
     },
     "pendingInvitations": {
       "empty": "Nessun invito rimasto",

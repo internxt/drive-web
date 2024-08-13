@@ -31,6 +31,7 @@ export interface WorkspacesState {
   selectedWorkspace: WorkspaceData | null;
   isOwner: boolean;
   isLoadingWorkspaces: boolean;
+  isLoadingCredentials: boolean;
 }
 
 const initialState: WorkspacesState = {
@@ -40,6 +41,7 @@ const initialState: WorkspacesState = {
   selectedWorkspace: null,
   isOwner: false,
   isLoadingWorkspaces: false,
+  isLoadingCredentials: false,
 };
 
 const decryptWorkspacesMnemonic = async (workspaces: WorkspaceData[]): Promise<WorkspaceData[]> => {
@@ -86,6 +88,7 @@ const checkAndSetLocalWorkspace = createAsyncThunk<void, undefined, { state: Roo
 const fetchCredentials = createAsyncThunk<void, undefined, { state: RootState }>(
   'workspaces/fetchCredentials',
   async (_, { getState, dispatch }) => {
+    dispatch(workspacesActions.setIsLoadingCredentials(true));
     const state = getState();
     const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
 
@@ -97,6 +100,7 @@ const fetchCredentials = createAsyncThunk<void, undefined, { state: RootState }>
       dispatch(workspacesActions.setCredentials(credentials));
       localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(credentials));
     }
+    dispatch(workspacesActions.setIsLoadingCredentials(false));
   },
 );
 
@@ -232,6 +236,9 @@ export const workspacesSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    resetState: (state: WorkspacesState) => {
+      Object.assign(state, initialState);
+    },
     setWorkspaces: (state: WorkspacesState, action: PayloadAction<WorkspaceData[]>) => {
       state.workspaces = action.payload;
     },
@@ -260,6 +267,9 @@ export const workspacesSlice = createSlice({
         }
         return item;
       });
+    },
+    setIsLoadingCredentials: (state: WorkspacesState, action: PayloadAction<boolean>) => {
+      state.isLoadingCredentials = action.payload;
     },
   },
   // TODO: TO CHANGE MESSAGES
@@ -301,6 +311,7 @@ export const workspacesSlice = createSlice({
       .addCase(fetchCredentials.rejected, (state, action) => {
         const errorMsg = action.payload ? action.payload : '';
 
+        state.isLoadingCredentials = false;
         state.isLoadingWorkspaces = false;
         notificationsService.show({
           text: 'Fetching workspace credentials error ' + errorMsg,

@@ -10,16 +10,18 @@ function displayAmount(value: number, decimalPoints = 2) {
   return (value / 100).toFixed(decimalPoints);
 }
 
-const getCurrentChangePlanType = ({
+const determineSubscriptionChangeType = ({
   priceSelected,
   currentUserSubscription,
   planLimit,
   isFreePriceSelected,
+  currentPlanRenewalInterval,
 }: {
   priceSelected: DisplayPrice;
   currentUserSubscription: UserSubscription | null;
   planLimit: number | null;
   isFreePriceSelected: boolean;
+  currentPlanRenewalInterval: DisplayPrice['interval'] | null;
 }): ChangePlanType => {
   const isIntervalSelected =
     priceSelected?.interval === 'month' || priceSelected?.interval === 'year' || priceSelected?.interval === 'lifetime';
@@ -39,7 +41,7 @@ const getCurrentChangePlanType = ({
       return 'downgrade';
     }
     if (currentStorage === selectedPlanStorage) {
-      return 'manageBilling';
+      return getPlanChangeType(currentPlanRenewalInterval, priceSelected?.interval);
     }
 
     return 'free';
@@ -48,6 +50,28 @@ const getCurrentChangePlanType = ({
   return 'free';
 };
 
+/**
+ * Returns the type of plan change based on the current and selected intervals.
+ *
+ * @param {string} currentPlanRenewalInterval - The current plan renewal interval.
+ * @param {string} selectedInterval - The selected interval.
+ * @return {string} The type of plan change ('manage billing', 'downgrade', or 'upgrade').
+ */
+function getPlanChangeType(currentPlanRenewalInterval, selectedInterval) {
+  const intervals = ['month', 'year', 'lifetime'];
+
+  const currentIndex = intervals.indexOf(currentPlanRenewalInterval);
+  const selectedIndex = intervals.indexOf(selectedInterval);
+
+  if (currentIndex === selectedIndex) {
+    return 'manageBilling';
+  } else if (selectedIndex < currentIndex) {
+    return 'downgrade';
+  } else {
+    return 'upgrade';
+  }
+}
+
 const getPlanName = (storagePlan: StoragePlan | null, limit?: number) => {
   if (storagePlan?.simpleName) return storagePlan?.simpleName;
   if (limit) return bytesToString(limit, false);
@@ -55,6 +79,17 @@ const getPlanName = (storagePlan: StoragePlan | null, limit?: number) => {
 };
 const getCurrentUsage = (usage: UsageResponse | null) => {
   return usage?.total ?? -1;
+};
+
+const getRenewalPeriod = (interval?: RenewalPeriod): DisplayPrice['interval'] | null => {
+  if (!interval) return null;
+
+  const mapping: { [key: string]: DisplayPrice['interval'] } = {
+    monthly: 'month',
+    annually: 'year',
+    lifetime: 'lifetime',
+  };
+  return mapping[interval.toLowerCase()] ?? null;
 };
 
 const getPlanInfo = (storagePlan: StoragePlan | null) => {
@@ -81,4 +116,4 @@ const getPlanInfo = (storagePlan: StoragePlan | null) => {
   }
 };
 
-export { displayAmount, getCurrentChangePlanType, getCurrentUsage, getPlanInfo, getPlanName };
+export { determineSubscriptionChangeType, displayAmount, getCurrentUsage, getPlanInfo, getPlanName, getRenewalPeriod };

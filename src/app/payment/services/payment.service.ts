@@ -1,14 +1,14 @@
 import {
   CreateCheckoutSessionPayload,
+  CustomerBillingInfo,
   DisplayPrice,
   FreeTrialAvailable,
   Invoice,
+  InvoicePayload,
   PaymentMethod,
   RedeemCodePayload,
-  UserType,
-  InvoicePayload,
   UserSubscription,
-  CustomerBillingInfo,
+  UserType,
 } from '@internxt/sdk/dist/drive/payments/types';
 import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js/pure';
@@ -113,13 +113,18 @@ const paymentService = {
     });
   },
 
-  async updateSubscriptionPrice(
-    priceId: string,
-    coupon?: string,
-  ): Promise<{ userSubscription: UserSubscription; request3DSecure: boolean; clientSecret: string }> {
+  async updateSubscriptionPrice({
+    priceId,
+    coupon,
+    userType,
+  }: {
+    priceId: string;
+    coupon?: string;
+    userType: UserType.Individual | UserType.Business;
+  }): Promise<{ userSubscription: UserSubscription; request3DSecure: boolean; clientSecret: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
-    return paymentsClient.updateSubscriptionPrice(priceId, coupon);
+    return paymentsClient.updateSubscriptionPrice({ priceId, couponCode: coupon, userType });
   },
 
   async cancelSubscription(userType?: UserType): Promise<void> {

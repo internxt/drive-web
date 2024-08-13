@@ -17,6 +17,7 @@ import {
   ListWorkspaceSharedItemsResponse,
   OrderByOptions,
   PendingInvitesResponse,
+  TeamMembers,
   Workspace,
   WorkspaceCredentialsDetails,
   WorkspaceMembers,
@@ -24,7 +25,6 @@ import {
   WorkspaceSetupInfo,
   WorkspaceTeamResponse,
   WorkspacesResponse,
-  TeamMembers,
 } from '@internxt/sdk/dist/workspaces';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';

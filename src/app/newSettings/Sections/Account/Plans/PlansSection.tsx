@@ -1,6 +1,5 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import Section from 'app/newSettings/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -22,7 +21,14 @@ import ChangePlanDialog from './components/ChangePlanDialog';
 import PlanCard from './components/PlanCard';
 import PlanSelectionCard from './components/PlanSelectionCard';
 import IntervalSwitch from './components/TabButton';
-import { displayAmount, getCurrentChangePlanType, getCurrentUsage, getPlanInfo, getPlanName } from './utils/planUtils';
+import {
+  determineSubscriptionChangeType,
+  displayAmount,
+  getCurrentUsage,
+  getPlanInfo,
+  getPlanName,
+  getRenewalPeriod,
+} from './utils/planUtils';
 
 interface PlansSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -43,8 +49,6 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
-  const workspaces = useSelector<RootState, WorkspaceData[]>((state) => state.workspaces.workspaces);
-  const isUserOwningWorkspace = workspaces.some((workspace) => workspace.workspace.ownerId === user?.uuid);
 
   const { individualSubscription, businessSubscription } = plan;
   let stripe;
@@ -57,6 +61,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const [businessPrices, setBusinessPrices] = useState<DisplayPrice[]>([]);
 
   const [selectedSubscription, setSelectedSubscription] = useState<UserType>(UserType.Individual);
+
   const isIndividualSubscriptionSelected = selectedSubscription == UserType.Individual;
   const isBussinessSubscriptionSelected = selectedSubscription == UserType.Business;
 
@@ -67,11 +72,17 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [priceSelected, setPriceSelected] = useState<DisplayPrice>(FREE_PLAN_DATA);
-  const currentChangePlanType = getCurrentChangePlanType({
+
+  const currentRenewalInterval = isIndividualSubscriptionSelected
+    ? plan.individualPlan?.renewalPeriod
+    : plan.businessPlan?.renewalPeriod;
+
+  const currentChangePlanType = determineSubscriptionChangeType({
     priceSelected,
     currentUserSubscription: isIndividualSubscriptionSelected ? individualSubscription : businessSubscription,
-    planLimit: isIndividualSubscriptionSelected ? plan.planLimit : plan.businessPlanLimit,
+    planLimit: isIndividualSubscriptionSelected ? plan.planLimit : plan.businessPlan?.storageLimit ?? 0,
     isFreePriceSelected: priceSelected?.id === 'free',
+    currentPlanRenewalInterval: getRenewalPeriod(currentRenewalInterval),
   });
 
   const pricesFilteredAndSorted = (userType: UserType) =>
@@ -133,9 +144,9 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   }, []);
 
   const showCancelSubscriptionErrorNotificacion = useCallback(
-    () =>
+    (errorMessage?: string) =>
       notificationsService.show({
-        text: translate('notificationMessages.errorCancelSubscription'),
+        text: errorMessage ?? translate('notificationMessages.errorCancelSubscription'),
         type: ToastType.Error,
       }),
     [translate],
@@ -154,7 +165,11 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const handleSubscriptionPayment = async (priceId: string) => {
     try {
       stripe = await getStripe(stripe);
-      const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
+      const updatedSubscription = await paymentService.updateSubscriptionPrice({
+        priceId,
+        userType: selectedSubscription,
+      });
+
       if (updatedSubscription.request3DSecure) {
         stripe
           .confirmCardPayment(updatedSubscription.clientSecret)
@@ -172,7 +187,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           .catch((err) => {
             const error = errorService.castError(err);
             errorService.reportError(error);
-            showCancelSubscriptionErrorNotificacion();
+            showCancelSubscriptionErrorNotificacion(error.message);
           });
       } else {
         handlePaymentSuccess();
@@ -180,7 +195,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
-      showCancelSubscriptionErrorNotificacion();
+      showCancelSubscriptionErrorNotificacion(error.message);
     }
   };
 
@@ -335,6 +350,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           onPlanClick={onChangePlanClicked}
           priceIdSelected={priceSelected.id}
           subscriptionSelected={selectedSubscription}
+          isLoading={isLoadingCheckout}
         />
       )}
       <div className="flex flex-col">
@@ -444,7 +460,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
             }
             changePlanType={currentChangePlanType}
             isLoading={isLoadingCheckout}
-            disableActionButton={isUserOwningWorkspace && isBussinessSubscriptionSelected}
+            disableActionButton={false}
             isBusiness={isBussinessSubscriptionSelected}
           />
         )}
