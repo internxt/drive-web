@@ -15,13 +15,13 @@ import errorService from 'app/core/services/error.service';
 
 import Section from 'app/newSettings/components/Section';
 import TeamsList from './components/TeamsList';
-import TeamDetails from './components/TeamDetails';
 import AddMemberDialogContainer from './containers/AddMemberDialogContainer';
 import CreateTeamDialogContainer from './containers/CreateTeamDialogContainer';
 import RenameTeamDialogContainer from './containers/RenameTeamDialogContainer';
 import DeleteTeamDialogContainer from './containers/DeleteTeamDialogContainer';
 import RemoveTeamMemberDialogContainer from './containers/RemoveTeamMemberDialogContainer';
 import ChangeManagerDialogContainer from './containers/ChangeManagerDialogContainer';
+import TeamDetailsContainer from './containers/TeamDetailsContainer';
 
 const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
@@ -39,9 +39,6 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   const [isGetWorkspacesMembersLoading, setIsGetWorkspacesMembersLoading] = useState<boolean>(false);
   const [selectedTeam, setSelectedTeam] = useState<WorkspaceTeam | null>(null);
   const [selectedTeamMembers, setSelectedTeamMembers] = useState<TeamMembers>([]);
-  const [hoveredMember, setHoveredMember] = useState<string | null>(null);
-  const [isMemberOptionsOpen, setIsMemberOptionsOpen] = useState<boolean>(false);
-  const [isTeamOptionsOpen, setIsTeamOptionsOpen] = useState<boolean>(false);
   const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState<boolean>(false);
   const [workspaceMembers, setWorkspaceMembers] = useState<WorkspaceUser[] | null>(null);
   const [displayedMembers, setDisplayedMembers] = useState(workspaceMembers);
@@ -104,15 +101,6 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
     }
   };
 
-  const handleMemberHover = (memberUuid) => {
-    setHoveredMember(memberUuid);
-  };
-
-  const handleMemberLeave = () => {
-    setHoveredMember(null);
-    isMemberOptionsOpen && setIsMemberOptionsOpen(false);
-  };
-
   const handleChangeManagerClicked = (member: TeamMember) => {
     setNewTeamManager(member);
     selectedTeamMembers.map((member) => member.uuid === selectedTeam?.team.managerId && setCurrentTeamManager(member));
@@ -133,16 +121,9 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
       onClosePreferences={onClosePreferences}
     >
       {selectedTeam ? (
-        <TeamDetails
+        <TeamDetailsContainer
           team={selectedTeam}
           selectedTeamMembers={selectedTeamMembers}
-          hoveredMember={hoveredMember}
-          handleMemberHover={handleMemberHover}
-          handleMemberLeave={handleMemberLeave}
-          setIsMemberOptionsOpen={setIsMemberOptionsOpen}
-          isMemberOptionsOpen={isMemberOptionsOpen}
-          isTeamOptionsOpen={isTeamOptionsOpen}
-          setIsTeamOptionsOpen={setIsTeamOptionsOpen}
           setIsAddMemberDialogOpen={setIsAddMemberDialogOpen}
           getWorkspacesMembers={getWorkspacesMembers}
           isGetTeamMembersLoading={isGetTeamMembersLoading}
