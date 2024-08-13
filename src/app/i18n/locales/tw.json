@@ -1651,8 +1651,10 @@
       "personal": "個人工作區",
       "business": "商務工作區"
     },
+    "pending": "待處理的邀請",
     "messages": {
-      "sharedSuccess": "項目成功與團隊共享"
+      "sharedSuccess": "項目成功與團隊共享",
+      "switchingWorkspace": "切換工作區"
     },
     "pendingInvitations": {
       "empty": "沒有剩餘的邀請",
