@@ -75,7 +75,7 @@ const paymentService = {
     token: string,
     currency?: string,
     promoCode?: string,
-  ): Promise<{ clientSecret: string }> {
+  ): Promise<{ clientSecret: string; id: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.createPaymentIntent(customerId, amount, planId, token, currency, promoCode);
   },
