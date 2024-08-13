@@ -342,6 +342,7 @@ export async function trackPaymentConversion() {
 
     const { username, uuid } = getUser();
     let metadata, amount_total, currency, customer, subscription, paymentIntent;
+    // TODO: REVIEW IN ORDER TO MAKE WORK CORRECTLY WITH THE NEW INTEGRATED CHECKOUT
     try {
       const {
         metadata: metadataRetrived,
@@ -368,7 +369,9 @@ export async function trackPaymentConversion() {
 
     subscription = subscription ?? localStorageService.get('subscriptionId');
     paymentIntent = paymentIntent ?? localStorageService.get('paymentIntentId');
-    const amount = amount_total * 0.01;
+    // TO MANTAIN OLD BEHAVIOR
+    const amount = amount_total ? amount_total * 0.01 : parseFloat(localStorageService.get('amountPaid') ?? '0');
+    amount_total = amount_total ?? parseFloat(localStorageService.get('amountPaid') ?? '0');
 
     try {
       window.rudderanalytics.identify(uuid, {
@@ -391,7 +394,7 @@ export async function trackPaymentConversion() {
         quantity: 1,
         type: metadata.type,
         plan_name: metadata.name,
-        impact_value: amount_total === 0 ? 5 : amount,
+        impact_value: amount_total === 0 ? 0.01 : amount,
         subscription_id: subscription,
         payment_intent: paymentIntent,
       });
@@ -419,7 +422,7 @@ export async function trackPaymentConversion() {
           anonymousId: anonymousID,
           timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
           properties: {
-            impact_value: amount_total === 0 ? 5 : amount,
+            impact_value: amount_total === 0 ? 0.01 : amount,
             subscription_id: subscription,
             payment_intent: paymentIntent,
           },

@@ -30,6 +30,7 @@ import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { planActions } from '../../../store/slices/plan';
 import { useThemeContext } from '../../../theme/ThemeProvider';
+import { getProductAmount } from '../../components/checkout/ProductCardComponent';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
 import { AuthMethodTypes, CurrentPlanSelected, PlanData } from '../../types';
@@ -263,10 +264,15 @@ const CheckoutViewWrapper = () => {
         couponCodeData?.codeId,
       );
 
-      // TEMPORARY FIX
-      // Store subscriptionId and paymentIntendId to send to IMPACT API
+      // TEMPORARY HOT FIX
+      // Store subscriptionId, paymentIntendId, and amountPaid to send to IMPACT API
+      // need to check all rest of needed values to add it to analytics in trackPaymentConversion function
       if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
       if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
+      if (plan?.selectedPlan) {
+        const amountToPay = getProductAmount(plan?.selectedPlan.decimalAmount, couponCodeData)?.toFixed(2);
+        localStorageService.set('amountPaid', amountToPay);
+      }
 
       const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
 

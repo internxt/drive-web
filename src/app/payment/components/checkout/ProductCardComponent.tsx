@@ -1,16 +1,16 @@
 import { Menu, Switch, Transition } from '@headlessui/react';
+import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { Check, SealPercent, X } from '@phosphor-icons/react';
 import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Button from 'app/shared/components/Button/Button';
-import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guarantee-dark.svg';
-import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
-import { CouponCodeData, Currency, CurrentPlanSelected } from '../../types';
-import { useState } from 'react';
-import { useThemeContext } from 'app/theme/ThemeProvider';
 import { UpsellManagerProps } from 'app/payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
 import TextInput from 'app/share/components/ShareItemDialog/components/TextInput';
+import Button from 'app/shared/components/Button/Button';
+import { useThemeContext } from 'app/theme/ThemeProvider';
+import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guarantee-dark.svg';
+import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
+import { useState } from 'react';
+import { CouponCodeData, Currency, CurrentPlanSelected } from '../../types';
 
 interface ProductFeaturesComponentProps {
   selectedPlan: CurrentPlanSelected;
@@ -23,7 +23,7 @@ interface ProductFeaturesComponentProps {
 
 const Separator = () => <div className="border border-gray-10" />;
 
-const getProductAmount = (amount: DisplayPrice['amount'], couponCodeData?: CouponCodeData): number => {
+export const getProductAmount = (amount: DisplayPrice['amount'], couponCodeData?: CouponCodeData): number => {
   if (couponCodeData?.amountOff) {
     return amount - couponCodeData.amountOff / 100;
   }
