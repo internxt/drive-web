@@ -270,7 +270,7 @@ const CheckoutViewWrapper = () => {
       if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
       if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
       if (plan?.selectedPlan) {
-        const amountToPay = getProductAmount(plan?.selectedPlan.decimalAmount, couponCodeData).toFixed(2);
+        const amountToPay = getProductAmount(plan?.selectedPlan.decimalAmount, couponCodeData)?.toFixed(2);
         localStorageService.set('amountPaid', amountToPay);
       }
 
