@@ -39,7 +39,7 @@ const ChangeManagerDialog: React.FC<ChangeManagerDialogProps> = ({
       <div className="mb-2 flex w-full items-center justify-between rounded-xl border border-gray-10 bg-surface px-3 py-2.5 text-base font-medium">
         <div className="flex items-center">
           <Avatar
-            src={currentTeamManager?.avatar || null}
+            src={currentTeamManager?.avatar ?? null}
             fullName={`${currentTeamManager?.name} ${currentTeamManager?.lastname}`}
             diameter={36}
           />
@@ -64,7 +64,7 @@ const ChangeManagerDialog: React.FC<ChangeManagerDialogProps> = ({
       <div className="flex w-full items-center justify-between rounded-xl border border-gray-10 bg-surface px-3 py-2.5 text-base font-medium">
         <div className="flex items-center">
           <Avatar
-            src={newTeamManager?.avatar || null}
+            src={newTeamManager?.avatar ?? null}
             fullName={`${newTeamManager?.name} ${newTeamManager?.lastname}`}
             diameter={36}
           />
