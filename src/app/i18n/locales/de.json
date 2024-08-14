@@ -949,8 +949,6 @@
     "workingOnIt": "Wir arbeiten daran, dir eine besseres Erfahrung zu bieten.",
     "noFilePreview": "Keine Dateivorschau vorhanden",
     "browserNotSupported": "Browser wird nicht unterstützt ({{userAgent}})",
-    "inviteAFriend": "Fehler beim Senden der Einladung an einen Freund: {{message}}",
-    "inviteAFriendEmpty": "Fehler beim Senden der Einladung Sie müssen eine E-Mail angeben",
     "subscribeToNewsletter": "Fehler beim Abonnieren des Newsletters: {{message}}",
     "lastPasswordError": "Das von dir zuletzt eingegebene Passwort scheint ungültig zu sein. Versuche es noch einmal. Wenn das Problem weiterhin besteht, wende dich bitte an unseren Support.",
     "incorrectPassword": "Das von dir eingegebene aktuelle Passwort stimmt nicht überein. Achte bitte darauf, dass es richtig ist.",
@@ -1189,7 +1187,6 @@
     "twoFactorAuthDisabled": "Deine Zwei-Faktor-Authentifizierung wurde deaktiviert!",
     "joinedToTheTeam": "Du bist dem Team erfolgreich beigetreten",
     "done": "Erledigt",
-    "inviteAFriend": "Einladung an {{email}} gesendet",
     "subscribeToNewsletter": "{{email}} Newsletter erfolgreich abonniert"
   },
   "shareItemDialog": {
@@ -1348,20 +1345,6 @@
     },
     "plans": {
       "advice": "Du wirst zu deinem AppSumo-Konto weitergeleitet"
-    }
-  },
-  "inviteAFriend": {
-    "title": "Lade einen Freund ein",
-    "descriptionWidget": "Erhalte bis zu {{N}}GB zusätzlichen kostenlosen Speicherplatz, indem du deine Freunde einlädst (1 GB pro Nutzer, der sich über deine Einladung registriert hat)",
-    "description": "Erhalte 1 GB pro eingeladenem Freund kostenlos. Du kannst bis zu {{N}}GB erhalten.",
-    "label": "E-Mail deines Freundes",
-    "placeholder": "Gib die E-Mail Adresse deines Freundes ein",
-    "actions": {
-      "sendInvitation": "Sende Einladung",
-      "seeInvitations": "Sieh alle Einladungen"
-    },
-    "errors": {
-      "dailyEmailLimit": "Du hast das Limit von 10 Einladungen/Tag erreicht"
     }
   },
   "newsletter": {

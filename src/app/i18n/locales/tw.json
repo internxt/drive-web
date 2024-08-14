@@ -960,8 +960,6 @@
     "workingOnIt": "我們正在努力為您帶來更好的體驗。",
     "noFilePreview": "無法預覽文件",
     "browserNotSupported": "瀏覽器不受支持（{{userAgent}}）",
-    "inviteAFriend": "發送邀請給朋友時出錯：{{message}}",
-    "inviteAFriendEmpty": "發送邀請時出錯：您必須指定電子郵件",
     "subscribeToNewsletter": "訂閱通訊時出錯：{{message}}",
     "lastPasswordError": "您輸入的最後一個密碼似乎無效。請重試，如果問題仍然存在，請聯繫我們的支持。",
     "incorrectPassword": "您輸入的當前密碼不正確。請確保它是正確的。",
@@ -1204,7 +1202,6 @@
     "twoFactorAuthDisabled": "您的雙因素身份驗證已停用",
     "joinedToTheTeam": "您已成功加入團隊",
     "done": "完成",
-    "inviteAFriend": "已發送邀請至{{email}}",
     "subscribeToNewsletter": "{{email}} 成功訂閱電子報"
   },
   "shareItemDialog": {
@@ -1368,20 +1365,6 @@
     },
     "plans": {
       "advice": "您將被重定向到您的 AppSumo 帳戶"
-    }
-  },
-  "inviteAFriend": {
-    "title": "邀請好友",
-    "descriptionWidget": "通過邀請您的朋友（每位透過您的邀請註冊的用戶可獲得 1GB 額外免費存儲空間，最多可達 {{N}}GB）獲得最高 {{N}}GB 的額外免費存儲空間",
-    "description": "每邀請一位朋友，您可以獲得 1GB 的免費存儲空間。您最多可以獲得 {{N}}GB。",
-    "label": "朋友的電子郵件地址",
-    "placeholder": "輸入朋友的電子郵件",
-    "actions": {
-      "sendInvitation": "發送邀請",
-      "seeInvitations": "查看所有邀請"
-    },
-    "errors": {
-      "dailyEmailLimit": "您已達到每日 10 次邀請的限制"
     }
   },
   "newsletter": {

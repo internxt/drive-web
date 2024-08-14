@@ -931,8 +931,6 @@
     "workingOnIt": "Nous nous efforçons de vous offrir une meilleure expérience.",
     "noFilePreview": "Pas d'aperçu de fichier disponible",
     "browserNotSupported": "Navigateur non pris en charge ({{userAgent}})",
-    "inviteAFriend": "Erreur lors de l'envoi de l'invitation à un ami : {{message}}",
-    "inviteAFriendEmpty": "Erreur lors de l'envoi de l'invitation : Vous devez spécifier un email",
     "subscribeToNewsletter": "Erreur d'inscription à la lettre d'information : {{message}}",
     "lastPasswordError": "Le mot de passe que vous avez saisi en dernier semble ne pas être valide. Essayez à nouveau, et si le problème persiste, contactez notre support.",
     "incorrectPassword": "Le mot de passe actuel que vous avez introduit ne correspond pas. Veuillez vous assurer qu'il est correct.",
@@ -1174,7 +1172,6 @@
     "twoFactorAuthDisabled": "Votre authentification à deux facteurs a été désactivée",
     "joinedToTheTeam": "Vous avez rejoint l'équipe avec succès",
     "done": "Terminé",
-    "inviteAFriend": "Invitation envoyée à {{email}}",
     "subscribeToNewsletter": "{{email}} s'est abonné avec succès à la newsletter"
   },
   "shareItemDialog": {
@@ -1334,20 +1331,6 @@
     },
     "plans": {
       "advice": "You will be redirected to your AppSumo account"
-    }
-  },
-  "inviteAFriend": {
-    "title": "Inviter un ami",
-    "descriptionWidget": "Obtenez {{N}} Go extra free storage by inviting your friends (1 Go par utilisateur enregistré via votre invitation)",
-    "description": "Obtenez 1 Go pour chaque ami que vous invitez à Internxt. Recevez jusqu'à {{N}} Go au total.",
-    "label": "Inviter à",
-    "placeholder": "Entrez l'email de votre ami",
-    "actions": {
-      "sendInvitation": "Envoyer l'invitation",
-      "seeInvitations": "Voir toutes les invitations"
-    },
-    "errors": {
-      "dailyEmailLimit": "Vous avez atteint la limite de 10 invitations per jour"
     }
   },
   "newsletter": {
