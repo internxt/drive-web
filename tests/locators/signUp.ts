@@ -1,3 +1,16 @@
 export const signUpLocators = {
   createAccountTitle: '[class="text-3xl font-medium"]',
+  emailInput: 'input[id="email"]',
+  passwordInput: 'input[name="password"]',
+  passwordWarnings: '[class="pt-1"] p',
+  disclaimer: '[class="flex space-x-2.5 rounded-lg bg-primary/10 p-3 pr-4 dark:bg-primary/20"] p',
+  learnMoreLinkText: '[class="font-semibold text-primary underline"]',
+  createAccountButton: '[type="submit"]',
+  createAccountButtonText: '[class$="justify-center space-x-2"]',
+  byCreatingYourAccountText: '[class="mt-2 w-full text-xs text-gray-50"]',
+  dontHaveAccountText: '[class="flex w-full items-center justify-center space-x-1.5 font-medium"] span',
+  logIn: '[class$="hover:text-primary focus:text-primary-dark"]',
+  termsAndConditions: '[class$="no-underline hover:text-gray-100"]:has-text("Terms and conditions")',
+  needHelp: '[class$="no-underline hover:text-gray-100"]:nth-child(2)',
+  userAlreadyRegisteredText: '[class="font-base w-56 text-sm text-red"]',
 };

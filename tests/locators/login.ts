@@ -9,7 +9,7 @@ export const loginLocators = {
   forgotPassword: '[class^="w-full cursor-pointer appearance-none text-center"]',
   dontHaveAccountText: '[class="flex w-full items-center justify-center space-x-1.5 font-medium"] span',
   createAccount: '[class="flex w-full items-center justify-center space-x-1.5 font-medium"] a',
-  terminsAndConditions: '[class$="no-underline hover:text-gray-100"]:nth-child(1)',
+  termsAndConditions: '[class$="no-underline hover:text-gray-100"]:has-text("Terms and conditions")',
   needHelp: '[class$="no-underline hover:text-gray-100"]:nth-child(2)',
   wrongCredentials: '[class="flex flex-row items-start pt-1"] span',
 };
