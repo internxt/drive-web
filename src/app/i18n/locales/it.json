@@ -1312,7 +1312,7 @@
     },
     "uploadItems": {
       "title": "Caricamento massimo dei file",
-      "advice": "Il massimo è di 1000 file per upload.",
+      "advice": "Il massimo è di 3000 file per upload.",
       "close": "Chiudi"
     },
     "movingToTrash": "Spostare gli oggetti nella spazzatura",

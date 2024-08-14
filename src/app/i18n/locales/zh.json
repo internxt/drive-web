@@ -1324,7 +1324,7 @@
     },
     "uploadItems": {
       "title": "最大文件上传",
-      "advice": "每次上传最多 1000 个文件。",
+      "advice": "每次上传最多 3000 个文件。",
       "close": "关闭"
     },
     "movingToTrash": "正在将项目移动到回收站",

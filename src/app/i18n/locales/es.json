@@ -1301,8 +1301,8 @@
       "progress": "Vaciando papelera..."
     },
     "uploadItems": {
-      "title": "Maximum file upload",
-      "advice": "The maximum is 1000 files per upload.",
+      "title": "Subida máxima de archivos alcanzada",
+      "advice": "El máximo es de 3000 archivos por subida.",
       "close": "Cerrar"
     },
     "movingToTrash": "Moviendo elementos a la papelera",
