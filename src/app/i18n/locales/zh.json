@@ -997,8 +997,6 @@
     "workingOnIt": "我们正在努力为您带来更好的体验。",
     "noFilePreview": "没有可用的文件预览",
     "browserNotSupported": "浏览器不支持 ({{userAgent}})",
-    "inviteAFriend": "向朋友发送邀请时出错: {{message}}",
-    "inviteAFriendEmpty": "发送邀请时出错 您必须指定电子邮件地址",
     "subscribeToNewsletter": "订阅时事通讯时出错: {{message}}",
     "lastPasswordError": "您上次输入的密码似乎无效。再试一次，如果问题仍然存在，请联系我们的支持人员。",
     "incorrectPassword": "您输入的当前密码不匹配。请确保其正确。",
@@ -1241,7 +1239,6 @@
     "twoFactorAuthDisabled": "您的双因素身份验证已被禁用",
     "joinedToTheTeam": "您已成功加入团队",
     "done": "完成",
-    "inviteAFriend": "已发送邀请至{{email}}",
     "subscribeToNewsletter": "{{email}} 成功订阅电子报"
   },
   "shareItemDialog": {
@@ -1408,20 +1405,7 @@
       "advice": "您将被重定向到您的 AppSumo 帐户"
     }
   },
-  "inviteAFriend": {
-    "title": "邀请一个朋友",
-    "descriptionWidget": "通过邀请您的朋友获得高达 {{N}}GB 的额外免费存储空间（通过您的邀请注册的每个用户 1GB）",
-    "description": "传播这条消息，你每邀请一个朋友加入Internxt，你就能获得1GB。总共可获得{{N}}",
-    "label": "邀请至",
-    "placeholder": "输入好友的邮箱",
-    "actions": {
-      "sendInvitation": "发送邀请",
-      "seeInvitations": "查看所有邀请"
-    },
-    "errors": {
-      "dailyEmailLimit": "您已达到每天 10 次邀请的限制"
-    }
-  },
+
   "newsletter": {
     "dialog": {
       "title": "订阅我们的新闻",

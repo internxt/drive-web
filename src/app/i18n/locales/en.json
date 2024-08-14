@@ -998,8 +998,6 @@
     "workingOnIt": "We are working to bring you a better experience.",
     "noFilePreview": "No file preview available",
     "browserNotSupported": "Browser not supported ({{userAgent}})",
-    "inviteAFriend": "Error sending the invitation to a friend: {{message}}",
-    "inviteAFriendEmpty": "Error sending the invitation: You have to specify an email",
     "subscribeToNewsletter": "Error subscribing to newsletter: {{message}}",
     "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support.",
     "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
@@ -1242,7 +1240,6 @@
     "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
     "joinedToTheTeam": "You have successfully joined to the team",
     "done": "Done",
-    "inviteAFriend": "Invitation sent to {{email}}",
     "subscribeToNewsletter": "{{email}} successfully subscribed to newsletter"
   },
   "shareItemDialog": {
@@ -1407,20 +1404,6 @@
     },
     "plans": {
       "advice": "You will be redirected to your AppSumo account"
-    }
-  },
-  "inviteAFriend": {
-    "title": "Invite a friend",
-    "descriptionWidget": "Get up to {{N}}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
-    "description": "Get 1GB per friend invited for free. You can get up to {{N}}GB in total.",
-    "label": "Friend email address",
-    "placeholder": "Enter friend email",
-    "actions": {
-      "sendInvitation": "Send invitation",
-      "seeInvitations": "See all invitations"
-    },
-    "errors": {
-      "dailyEmailLimit": "You reached the limit of 10 invitations/day"
     }
   },
   "newsletter": {
