@@ -8,7 +8,8 @@ export const staticData = {
 
   //URLS
   passwordRecoveryLink: 'https://drive.internxt.com/recovery-link/',
-  SignUp: 'https://drive.internxt.com/new',
+  signUp: 'https://drive.internxt.com/new',
+  drive: 'https://drive.internxt.com/',
 
   //SIGNUP DISCLAIMER
   disclaimer:
@@ -20,14 +21,18 @@ export const staticData = {
   passwordWeak: 'Password is weak',
   passwordStrong: 'Password is strong',
 
+  //PAGE TITLES
+  termsOfServiceTitle: 'Terms of Service',
+  needHelpTitle: 'How can we help you?',
   howToCreateBackUpKeyPageTitle: 'How do I create a backup key?',
+  logInPageTitle: 'Log in',
+
+  userAlreadyRegistered: 'already registered',
   accountRecovery: 'Account recovery',
   wrongLoginWarning: 'Wrong login credentials',
   dontHaveAccountText: "Don't have an account?",
   createAccountText: 'Create account',
-  termsOfServiceTitle: 'Terms of Service',
   termsAndConditions: 'Terms and conditions',
-  needHelpTitle: 'How can we help you?',
   needHelpLinkText: 'Need help?',
   driveTitle: 'Drive',
 };

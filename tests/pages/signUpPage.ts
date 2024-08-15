@@ -1,10 +1,11 @@
 import { Page, expect, Locator } from '@playwright/test';
 import { basePage } from './basePage';
-import { signUpLocators } from '../locators/signUp';
+import { signUpLocators } from '../locators/signUpLocators';
 import { Context } from 'vm';
 import { howToCreateBackUpLocators } from '../locators/howToCreateBackUpKeyLocators';
-import { termsAndConditionsLocators } from '../locators/terms&conditions';
+import { termsAndConditionsLocators } from '../locators/terms&conditionsLocators';
 import { needHelpLocators } from '../locators/needHelpLocators';
+import { loginLocators } from '../locators/loginLocators';
 
 export class signUpPage extends basePage {
   private createAccountTitle: Locator;
@@ -21,6 +22,8 @@ export class signUpPage extends basePage {
   private termsAndConditions: Locator;
   private needHelp: Locator;
   private userAlreadyRegistered: Locator;
+  //SIGN IN PAGE
+  private loginTitle: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -39,6 +42,8 @@ export class signUpPage extends basePage {
     this.termsAndConditions = this.page.locator(signUpLocators.termsAndConditions);
     this.needHelp = this.page.locator(signUpLocators.needHelp);
     this.userAlreadyRegistered = this.page.locator(signUpLocators.userAlreadyRegisteredText);
+    //LOGIN PAGE
+    this.loginTitle = this.page.locator(loginLocators.loginTitle);
   }
 
   async typeInEmail(email: string) {
@@ -98,5 +103,14 @@ export class signUpPage extends basePage {
     const newPage = await pagePromise;
     const needHelpPageTitle = await newPage.locator(needHelpLocators.needHelpTitle).textContent();
     return { needHelpText, needHelpPageTitle };
+  }
+
+  async clickOnLogIn() {
+    await this.logIn.waitFor({ state: 'visible' });
+    const logInText = await this.logIn.textContent();
+    await this.clickOn(signUpLocators.logIn);
+    await this.loginTitle.waitFor({ state: 'visible' });
+    const logInTitle = await this.loginTitle.textContent();
+    return { logInText, logInTitle };
   }
 }

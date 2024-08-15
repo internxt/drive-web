@@ -4,10 +4,11 @@ import { staticData } from '../helper/staticData';
 
 test.describe('Internxt SignUp', async () => {
   test.beforeEach('Visiting Internxt Sign Up Page', async ({ page }) => {
-    await page.goto(staticData.SignUp);
+    await page.goto(staticData.signUp);
   });
 
   test.skip('TC1: Validate that the user can create a new account', async ({ page }) => {});
+  test.use({ storageState: { cookies: [], origins: [] } });
 
   test('TC2: Validate that the user can’t sign up if the email address is already used', async ({ page }) => {
     const signupPage = new signUpPage(page);
@@ -15,9 +16,10 @@ test.describe('Internxt SignUp', async () => {
     await signupPage.typeInEmail(staticData.email);
     await signupPage.typeInPassword(staticData.password);
     const userAlreadyRegisteredText = await signupPage.clickOnCreateAccount();
-    expect(userAlreadyRegisteredText).toContain('already registered');
+    expect(userAlreadyRegisteredText).toContain(staticData.userAlreadyRegistered);
   });
 
+  test.use({ storageState: { cookies: [], origins: [] } });
   test('TC3: Validate that the user can’t sign up if the password is too short', async ({ page }) => {
     const signupPage = new signUpPage(page);
 
@@ -26,6 +28,7 @@ test.describe('Internxt SignUp', async () => {
     expect(passwordWarning).toEqual(staticData.passwordNotLongEnough);
   });
 
+  test.use({ storageState: { cookies: [], origins: [] } });
   test('TC4: Validate that the user can’t sign up if the password is not complex enough', async ({ page }) => {
     const signupPage = new signUpPage(page);
 
@@ -34,6 +37,7 @@ test.describe('Internxt SignUp', async () => {
     expect(passwordWarning).toEqual(staticData.passwordNotComplex);
   });
 
+  test.use({ storageState: { cookies: [], origins: [] } });
   test('TC5: Validate that the user is redirected to “how to create a backup key” page after clicking on “Learn more”', async ({
     page,
     context,
@@ -45,6 +49,7 @@ test.describe('Internxt SignUp', async () => {
     expect(howToCreateBackUpKeyPageTitle).toEqual(staticData.howToCreateBackUpKeyPageTitle);
   });
 
+  test.use({ storageState: { cookies: [], origins: [] } });
   test('TC6: Validate that the user is redirected to “terms of service” after clicking on “you accept the terms and conditions”', async ({
     page,
     context,
@@ -56,10 +61,18 @@ test.describe('Internxt SignUp', async () => {
     expect(termsOfServiceTitle).toEqual(staticData.termsOfServiceTitle);
   });
 
+  test.use({ storageState: { cookies: [], origins: [] } });
   test('TC7: Validate that the user is redirected to the “Log in” page after clicking on “Log in”', async ({
     page,
-  }) => {});
+  }) => {
+    const SignupPage = new signUpPage(page);
 
+    const { logInText, logInTitle } = await SignupPage.clickOnLogIn();
+    expect(logInText).toEqual(staticData.logInPageTitle);
+    expect(logInTitle).toEqual(staticData.logInPageTitle);
+  });
+
+  test.use({ storageState: { cookies: [], origins: [] } });
   test('TC8: Validate that the user can go to the “need help” page after clicking on “need help”', async ({
     page,
     context,

@@ -1,0 +1,221 @@
+{
+  "cookies": [
+    {
+      "name": "INGRESSCOOKIE",
+      "value": "1723752711.658.32.806488|a2ae347d347ad94b4053aa5870843d1f",
+      "domain": "notifications.internxt.com",
+      "path": "/socket.io",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_ga",
+      "value": "GA1.1.1342232781.1723752703",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1758312703.287905,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_group_id",
+      "value": "RudderEncrypt%3AU2FsdGVkX19hisjpU69DHwJWVA%2FvpOGqx92T%2FUIsfFA%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1755288704,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_group_trait",
+      "value": "RudderEncrypt%3AU2FsdGVkX19xF%2BvLa2zGz1LMISbkApF3yIQ39vvgt%2F0%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1755288704,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_anonymous_id",
+      "value": "RudderEncrypt%3AU2FsdGVkX1%2BpD40rruUjcRCex29EypyjA8Bo5vkapcaIqs26rUu7aZaPuuscyO6VNArZKRbDBqVsL%2Fl87oGiGg%3D%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1755288704,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_page_init_referrer",
+      "value": "RudderEncrypt%3AU2FsdGVkX1%2BXjfr5NM7cHf8SBc5tNUaJEBQ2oMOHPR8%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1755288704,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_page_init_referring_domain",
+      "value": "RudderEncrypt%3AU2FsdGVkX1%2FQ%2B0vNz83PFIDB5muAYY9cQ8zUO%2FD9YpQ%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1755288704,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "i18next",
+      "value": "en-US",
+      "domain": "drive.internxt.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "m",
+      "value": "6340d59a-ed6a-4a6f-a32e-0682dc1f0e6c3b18a7",
+      "domain": "m.stripe.com",
+      "path": "/",
+      "expires": 1758312706.819772,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__stripe_mid",
+      "value": "305d7182-e14a-4486-933e-0b10b72512dade4ce6",
+      "domain": ".drive.internxt.com",
+      "path": "/",
+      "expires": 1755288706,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "__stripe_sid",
+      "value": "67245b7a-4791-48dc-acad-ac833dc523b5b6dab1",
+      "domain": ".drive.internxt.com",
+      "path": "/",
+      "expires": 1723754506,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "rl_user_id",
+      "value": "RudderEncrypt%3AU2FsdGVkX186FaStyJ3BtMl%2B121K1ljRyKSGfSKB0drBkCD1sP3i8ksIp4cfqqiDR919lIzj0vsnxw8TP2kesA%3D%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1755288709,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_trait",
+      "value": "RudderEncrypt%3AU2FsdGVkX1%2FKdXxPUCotqav0n07oKW2qKgxM1LiR22m4kySjSifHYBNoHJJulnKuThct1xk%2B1kSEHg53A55TVvuJRIbF%2FK%2B6fReTgz0HlalK7kRUb4jD%2Fzj8j4vFzDTj",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1755288709,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_CHHGLQTHSB",
+      "value": "GS1.1.1723752703.1.1.1723752709.54.0.0",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1758312709.926951,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_session",
+      "value": "RudderEncrypt%3AU2FsdGVkX19RjiC9Lcw9JDihOKJyeW3oxH9ZuOY%2FndHB7tZGNeBy%2Fc4L4ol3sAL%2Fh%2FoDzGkt5EU%2FcTFCgKmCTA1qZAKk6IJnP3C7F8VIICMx4WnCa3CEtmNUXACRyE4NeFwh1S3Y5Wpgiw8WjT2y%2Fg%3D%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1755288709,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://drive.internxt.com",
+      "localStorage": [
+        {
+          "name": "rudder.5392148a-a21b-4cd7-b353-521c4f0d960a.reclaimStart",
+          "value": "null"
+        },
+        {
+          "name": "rudder.5392148a-a21b-4cd7-b353-521c4f0d960a.ack",
+          "value": "1723752709556"
+        },
+        {
+          "name": "xMnemonic",
+          "value": "protect melt start custom invite squeeze loud power anchor foam cotton cruise sorry borrow ramp lava original used play crack leopard truck bid risk"
+        },
+        {
+          "name": "xUser",
+          "value": "{\"email\":\"testingb2b@inxt.com\",\"userId\":\"$2a$08$nfoCUBKarGz3ZmT.QR5fe.aQLSWBcKZJR9ecxHOwvHAcH8mjfqzha\",\"mnemonic\":\"protect melt start custom invite squeeze loud power anchor foam cotton cruise sorry borrow ramp lava original used play crack leopard truck bid risk\",\"root_folder_id\":80579498,\"rootFolderId\":\"a2ff5697-7d7b-4f7a-9704-4f66ae1f1558\",\"name\":\"Sebastian\",\"lastname\":\"Avila\",\"uuid\":\"2cc0d88c-8184-4b5d-9679-ab41c9a85c4b\",\"credit\":0,\"createdAt\":\"2024-07-19T13:26:35.000Z\",\"privateKey\":\"LS0tLS1CRUdJTiBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQoKeFZnRVpwcHBoUllKS3dZQkJBSGFSdzhCQVFkQWx0Z2VGOW9SeVFNZTN6ODJOZHFSdnM1WmVOeW1WTHkxCno5c2VHOSt0ckwwQUFQMFNka1RmdXA1eVR3WldyY3FRQXFvYVRRTFpWS0ZmZTYyVW51ODhFYXZONHhCWAp6UTg4YVc1NGRFQnBibmgwTG1OdmJUN0NqQVFRRmdvQVBnV0NacHBwaFFRTENRY0lDWkI2b1hHWmVzYmsKVWdNVkNBb0VGZ0FDQVFJWkFRS2JBd0llQVJZaEJJSHY5RGl4N3c5MkEyeXgySHFoY1psNnh1UlNBQUNjCkN3RC9keFJ0QjEyU0ZreVVrSVp5M1dHWGJ6MExmYitkVDhsZW1CcGJtZy9SMkFZQS8zSFZjRlI5ZTlzNQpFUGwwMFl4UTVjMUdlOEczbWtEb2pGRENLa0FxaGk4THgxMEVacHBwaFJJS0t3WUJCQUdYVlFFRkFRRUgKUUlkam9SblhKejBtNDdzM3hVVlE4bzZXVFlpYWV1R2ZrRFppQ2RPUWR0Vk5Bd0VJQndBQS8xZFZwYjhPClI0MUptVmhJYXY3amNOVlVtNUVrUHNOQlpxVlFrM3QzNmtONEVHN0NlQVFZRmdnQUtnV0NacHBwaFFtUQplcUZ4bVhyRzVGSUNtd3dXSVFTQjcvUTRzZThQZGdOc3NkaDZvWEdaZXNia1VnQUFFb01BLzNBNG5nR3kKQUxsODN6cGtITk5zVlpYMHY1RHluTUxDbnJScmtUUHkxSFo5QVFER2VXR2tsRDRoUHEvbnBlQmpaMFhrCklBdDJvci9wWmRiVjIxSWlJREZKRHc9PQo9MnBwLwotLS0tLUVORCBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQo=\",\"publicKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgp4ak1FWnBwcGhSWUpLd1lCQkFIYVJ3OEJBUWRBbHRnZUY5b1J5UU1lM3o4Mk5kcVJ2czVaZU55bVZMeTEKejlzZUc5K3RyTDNORHp4cGJuaDBRR2x1ZUhRdVkyOXRQc0tNQkJBV0NnQStCWUptbW1tRkJBc0pCd2dKCmtIcWhjWmw2eHVSU0F4VUlDZ1FXQUFJQkFoa0JBcHNEQWg0QkZpRUVnZS8wT0xIdkQzWURiTEhZZXFGeAptWHJHNUZJQUFKd0xBUDkzRkcwSFhaSVdUSlNRaG5MZFlaZHZQUXQ5djUxUHlWNllHbHVhRDlIWUJnRC8KY2RWd1ZIMTcyemtRK1hUUmpGRGx6VVo3d2JlYVFPaU1VTUlxUUNxR0x3dk9PQVJtbW1tRkVnb3JCZ0VFCkFaZFZBUVVCQVFkQWgyT2hHZGNuUFNianV6ZkZSVkR5anBaTmlKcDY0WitRTm1JSjA1QjIxVTBEQVFnSAp3bmdFR0JZSUFDb0ZnbWFhYVlVSmtIcWhjWmw2eHVSU0Fwc01GaUVFZ2UvME9MSHZEM1lEYkxIWWVxRngKbVhyRzVGSUFBQktEQVA5d09KNEJzZ0M1Zk44NlpCelRiRldWOUwrUThwekN3cDYwYTVFejh0UjJmUUVBCnhubGhwSlErSVQ2djU2WGdZMmRGNUNBTGRxSy82V1hXMWR0U0lpQXhTUTg9Cj1yQUdlCi0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\",\"revocateKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCkNvbW1lbnQ6IFRoaXMgaXMgYSByZXZvY2F0aW9uIGNlcnRpZmljYXRlCgp3bmdFSUJZS0FDb0ZnbWFhYVlVSmtIcWhjWmw2eHVSU0FwMEFGaUVFZ2UvME9MSHZEM1lEYkxIWWVxRngKbVhyRzVGSUFBTnlVQVA5UVJjN2xhSFFJLzZEQmFocWpuWm1hWEwxcnVmYVZrRFM0RmFNbHVNRy9qZ0QvCmV1YWZFbVd2WWIzcnJ2WkJFMitpSjd4VWtaeFpMRHZNYlV3TWtmblhSUUk9Cj1oM1RpCi0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\",\"bucket\":\"9fcfc5aae784451ed0ce1aa2\",\"registerCompleted\":true,\"teams\":false,\"username\":\"testingb2b@inxt.com\",\"bridgeUser\":\"testingb2b@inxt.com\",\"sharedWorkspace\":false,\"appSumoDetails\":null,\"hasReferralsProgram\":false,\"backupsBucket\":null,\"avatar\":null,\"emailVerified\":false,\"lastPasswordChangedAt\":null,\"revocationKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCkNvbW1lbnQ6IFRoaXMgaXMgYSByZXZvY2F0aW9uIGNlcnRpZmljYXRlCgp3bmdFSUJZS0FDb0ZnbWFhYVlVSmtIcWhjWmw2eHVSU0FwMEFGaUVFZ2UvME9MSHZEM1lEYkxIWWVxRngKbVhyRzVGSUFBTnlVQVA5UVJjN2xhSFFJLzZEQmFocWpuWm1hWEwxcnVmYVZrRFM0RmFNbHVNRy9qZ0QvCmV1YWZFbVd2WWIzcnJ2WkJFMitpSjd4VWtaeFpMRHZNYlV3TWtmblhSUUk9Cj1oM1RpCi0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\"}"
+        },
+        {
+          "name": "workspace",
+          "value": "personal"
+        },
+        {
+          "name": "theme",
+          "value": "system"
+        },
+        {
+          "name": "rudder.5392148a-a21b-4cd7-b353-521c4f0d960a.queue",
+          "value": "[{\"item\":{\"url\":\"https://cdp.internxt.com/v1/page\",\"headers\":{\"Content-Type\":\"application/json\",\"Authorization\":\"Basic MkVMMTV4eXpEWUJaMVY4QzRvdjZ2WDZNU09WOg==\",\"AnonymousId\":\"OTEzZjMzMDMtNTc0Mi00OGIyLThiMDAtMzlhMGQyNzUxMTcy\"},\"message\":{\"channel\":\"web\",\"context\":{\"app\":{\"name\":\"RudderLabs JavaScript SDK\",\"namespace\":\"com.rudderlabs.javascript\",\"version\":\"2.33.1\"},\"traits\":{},\"library\":{\"name\":\"RudderLabs JavaScript SDK\",\"version\":\"2.33.1\"},\"userAgent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/125.0.6422.26 Safari/537.36\",\"device\":null,\"network\":null,\"os\":{\"name\":\"\",\"version\":\"\"},\"locale\":\"en-US\",\"screen\":{\"density\":1,\"width\":1280,\"height\":720,\"innerWidth\":1280,\"innerHeight\":720},\"sessionId\":1723752704397,\"campaign\":{},\"page\":{\"path\":\"/login\",\"referrer\":\"$direct\",\"referring_domain\":\"\",\"search\":\"\",\"title\":\"Internxt Drive – Private & Secure Cloud Storage\",\"url\":\"https://drive.internxt.com/login\",\"tab_url\":\"https://drive.internxt.com/login\",\"initial_referrer\":\"$direct\",\"initial_referring_domain\":\"\"}},\"type\":\"page\",\"messageId\":\"60cf0969-74f6-4dfe-acc6-9d6cfc978988\",\"originalTimestamp\":\"2024-08-15T20:11:45.171Z\",\"anonymousId\":\"913f3303-5742-48b2-8b00-39a0d2751172\",\"userId\":\"\",\"event\":null,\"properties\":{\"name\":\"Login\",\"path\":\"/login\",\"referrer\":\"$direct\",\"referring_domain\":\"\",\"search\":\"\",\"title\":\"Internxt Drive – Private & Secure Cloud Storage\",\"url\":\"https://drive.internxt.com/login\",\"tab_url\":\"https://drive.internxt.com/login\",\"initial_referrer\":\"$direct\",\"initial_referring_domain\":\"\"},\"user_properties\":null,\"name\":\"Login\",\"integrations\":{\"All\":true},\"sentAt\":\"2024-08-15T20:11:45.176Z\"}},\"attemptNumber\":1,\"time\":1723752710205,\"id\":\"8aa21bac-d773-4352-9c4f-0d960a490f20\"},{\"item\":{\"url\":\"https://cdp.internxt.com/v1/page\",\"headers\":{\"Content-Type\":\"application/json\",\"Authorization\":\"Basic MkVMMTV4eXpEWUJaMVY4QzRvdjZ2WDZNU09WOg==\",\"AnonymousId\":\"OTEzZjMzMDMtNTc0Mi00OGIyLThiMDAtMzlhMGQyNzUxMTcy\"},\"message\":{\"channel\":\"web\",\"context\":{\"app\":{\"name\":\"RudderLabs JavaScript SDK\",\"namespace\":\"com.rudderlabs.javascript\",\"version\":\"2.33.1\"},\"traits\":{},\"library\":{\"name\":\"RudderLabs JavaScript SDK\",\"version\":\"2.33.1\"},\"userAgent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/125.0.6422.26 Safari/537.36\",\"device\":null,\"network\":null,\"os\":{\"name\":\"\",\"version\":\"\"},\"locale\":\"en-US\",\"screen\":{\"density\":1,\"width\":1280,\"height\":720,\"innerWidth\":1280,\"innerHeight\":720},\"sessionId\":1723752704397,\"campaign\":{},\"page\":{\"path\":\"/login\",\"referrer\":\"$direct\",\"referring_domain\":\"\",\"search\":\"\",\"title\":\"Internxt Drive – Private & Secure Cloud Storage\",\"url\":\"https://drive.internxt.com/login\",\"tab_url\":\"https://drive.internxt.com/login\",\"initial_referrer\":\"$direct\",\"initial_referring_domain\":\"\"}},\"type\":\"page\",\"messageId\":\"cfa9fb41-de33-49e4-8536-18113afdc752\",\"originalTimestamp\":\"2024-08-15T20:11:46.317Z\",\"anonymousId\":\"913f3303-5742-48b2-8b00-39a0d2751172\",\"userId\":\"\",\"event\":null,\"properties\":{\"name\":\"Login\",\"path\":\"/login\",\"referrer\":\"$direct\",\"referring_domain\":\"\",\"search\":\"\",\"title\":\"Internxt Drive – Private & Secure Cloud Storage\",\"url\":\"https://drive.internxt.com/login\",\"tab_url\":\"https://drive.internxt.com/login\",\"initial_referrer\":\"$direct\",\"initial_referring_domain\":\"\"},\"user_properties\":null,\"name\":\"Login\",\"integrations\":{\"All\":true},\"sentAt\":\"2024-08-15T20:11:46.320Z\"}},\"attemptNumber\":1,\"time\":1723752710602,\"id\":\"1bacd773-5352-4c4f-8d96-0a490f201b88\"}]"
+        },
+        {
+          "name": "xNewToken",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InV1aWQiOiIyY2MwZDg4Yy04MTg0LTRiNWQtOTY3OS1hYjQxYzlhODVjNGIiLCJlbWFpbCI6InRlc3RpbmdiMmJAaW54dC5jb20iLCJuYW1lIjoiU2ViYXN0aWFuIiwibGFzdG5hbWUiOiJBdmlsYSIsInVzZXJuYW1lIjoidGVzdGluZ2IyYkBpbnh0LmNvbSIsInNoYXJlZFdvcmtzcGFjZSI6dHJ1ZSwibmV0d29ya0NyZWRlbnRpYWxzIjp7InVzZXIiOiJ0ZXN0aW5nYjJiQGlueHQuY29tIiwicGFzcyI6IiQyYSQwOCRuZm9DVUJLYXJHejNabVQuUVI1ZmUuYVFMU1dCY0taSlI5ZWN4SE93dkhBY0g4bWpmcXpoYSJ9fSwiaWF0IjoxNzIzNzUyNzExLCJleHAiOjE3MjQ5NjIzMTF9.4oKtu2BM81ild9wm0nTm8dnPro_kA7dBf_dYcFyIyGE"
+        },
+        {
+          "name": "workspace_credentials",
+          "value": "null"
+        },
+        {
+          "name": "xToken",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RpbmdiMmJAaW54dC5jb20iLCJpYXQiOjE3MjM3NTI3MTEsImV4cCI6MTcyNDk2MjMxMX0.iICUoQ7HFkoR1xpYEVHF5nS0MGMFsEXhYI1bcbAc0oU"
+        },
+        {
+          "name": "i18nextLng",
+          "value": "en-US"
+        },
+        {
+          "name": "b2bWorkspace",
+          "value": "null"
+        },
+        {
+          "name": "rudder.5392148a-a21b-4cd7-b353-521c4f0d960a.inProgress",
+          "value": "{\"7353521c-4f0d-460a-890f-201b883dc2c3\":{\"item\":{\"url\":\"https://cdp.internxt.com/v1/identify\",\"headers\":{\"Content-Type\":\"application/json\",\"Authorization\":\"Basic MkVMMTV4eXpEWUJaMVY4QzRvdjZ2WDZNU09WOg==\",\"AnonymousId\":\"OTEzZjMzMDMtNTc0Mi00OGIyLThiMDAtMzlhMGQyNzUxMTcy\"},\"message\":{\"channel\":\"web\",\"context\":{\"app\":{\"name\":\"RudderLabs JavaScript SDK\",\"namespace\":\"com.rudderlabs.javascript\",\"version\":\"2.33.1\"},\"traits\":{\"email\":\"testingb2b@inxt.com\",\"uuid\":\"2cc0d88c-8184-4b5d-9679-ab41c9a85c4b\"},\"library\":{\"name\":\"RudderLabs JavaScript SDK\",\"version\":\"2.33.1\"},\"userAgent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/125.0.6422.26 Safari/537.36\",\"device\":null,\"network\":null,\"os\":{\"name\":\"\",\"version\":\"\"},\"locale\":\"en-US\",\"screen\":{\"density\":1,\"width\":1280,\"height\":720,\"innerWidth\":1280,\"innerHeight\":720},\"sessionId\":1723752704397,\"campaign\":{},\"page\":{\"path\":\"/login\",\"referrer\":\"$direct\",\"referring_domain\":\"\",\"search\":\"\",\"title\":\"Internxt Drive – Private & Secure Cloud Storage\",\"url\":\"https://drive.internxt.com/login\",\"tab_url\":\"https://drive.internxt.com/login\",\"initial_referrer\":\"$direct\",\"initial_referring_domain\":\"\"}},\"type\":\"identify\",\"messageId\":\"d27409e3-ca4e-4b44-88ad-864abf3a7ece\",\"originalTimestamp\":\"2024-08-15T20:11:49.915Z\",\"anonymousId\":\"913f3303-5742-48b2-8b00-39a0d2751172\",\"userId\":\"2cc0d88c-8184-4b5d-9679-ab41c9a85c4b\",\"event\":null,\"properties\":null,\"user_properties\":null,\"integrations\":{\"All\":true},\"sentAt\":\"2024-08-15T20:11:49.917Z\"}},\"attemptNumber\":0,\"time\":1723752709917},\"521c4f0d-960a-490f-a01b-883dc2c35e90\":{\"item\":{\"url\":\"https://cdp.internxt.com/v1/track\",\"headers\":{\"Content-Type\":\"application/json\",\"Authorization\":\"Basic MkVMMTV4eXpEWUJaMVY4QzRvdjZ2WDZNU09WOg==\",\"AnonymousId\":\"OTEzZjMzMDMtNTc0Mi00OGIyLThiMDAtMzlhMGQyNzUxMTcy\"},\"message\":{\"channel\":\"web\",\"context\":{\"app\":{\"name\":\"RudderLabs JavaScript SDK\",\"namespace\":\"com.rudderlabs.javascript\",\"version\":\"2.33.1\"},\"traits\":{\"email\":\"testingb2b@inxt.com\",\"uuid\":\"2cc0d88c-8184-4b5d-9679-ab41c9a85c4b\"},\"library\":{\"name\":\"RudderLabs JavaScript SDK\",\"version\":\"2.33.1\"},\"userAgent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/125.0.6422.26 Safari/537.36\",\"device\":null,\"network\":null,\"os\":{\"name\":\"\",\"version\":\"\"},\"locale\":\"en-US\",\"screen\":{\"density\":1,\"width\":1280,\"height\":720,\"innerWidth\":1280,\"innerHeight\":720},\"sessionId\":1723752704397,\"campaign\":{},\"page\":{\"path\":\"/login\",\"referrer\":\"$direct\",\"referring_domain\":\"\",\"search\":\"\",\"title\":\"Internxt Drive – Private & Secure Cloud Storage\",\"url\":\"https://drive.internxt.com/login\",\"tab_url\":\"https://drive.internxt.com/login\",\"initial_referrer\":\"$direct\",\"initial_referring_domain\":\"\"}},\"type\":\"track\",\"messageId\":\"c96a5807-ad33-4ebf-aaee-89618d37324f\",\"originalTimestamp\":\"2024-08-15T20:11:49.918Z\",\"anonymousId\":\"913f3303-5742-48b2-8b00-39a0d2751172\",\"userId\":\"2cc0d88c-8184-4b5d-9679-ab41c9a85c4b\",\"event\":\"User Signin\",\"properties\":{\"email\":\"testingb2b@inxt.com\"},\"user_properties\":null,\"integrations\":{\"All\":true},\"sentAt\":\"2024-08-15T20:11:49.920Z\"}},\"attemptNumber\":0,\"time\":1723752709921},\"4f0d960a-490f-401b-883d-c2c35e90c497\":{\"item\":{\"url\":\"https://cdp.internxt.com/v1/page\",\"headers\":{\"Content-Type\":\"application/json\",\"Authorization\":\"Basic MkVMMTV4eXpEWUJaMVY4QzRvdjZ2WDZNU09WOg==\",\"AnonymousId\":\"OTEzZjMzMDMtNTc0Mi00OGIyLThiMDAtMzlhMGQyNzUxMTcy\"},\"message\":{\"channel\":\"web\",\"context\":{\"app\":{\"name\":\"RudderLabs JavaScript SDK\",\"namespace\":\"com.rudderlabs.javascript\",\"version\":\"2.33.1\"},\"traits\":{},\"library\":{\"name\":\"RudderLabs JavaScript SDK\",\"version\":\"2.33.1\"},\"userAgent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/125.0.6422.26 Safari/537.36\",\"device\":null,\"network\":null,\"os\":{\"name\":\"\",\"version\":\"\"},\"locale\":\"en-US\",\"screen\":{\"density\":1,\"width\":1280,\"height\":720,\"innerWidth\":1280,\"innerHeight\":720},\"sessionId\":1723752704397,\"sessionStart\":true,\"campaign\":{},\"page\":{\"path\":\"/\",\"referrer\":\"$direct\",\"referring_domain\":\"\",\"search\":\"\",\"title\":\"Internxt Drive – Private & Secure Cloud Storage\",\"url\":\"https://drive.internxt.com/\",\"tab_url\":\"https://drive.internxt.com/\",\"initial_referrer\":\"$direct\",\"initial_referring_domain\":\"\"}},\"type\":\"page\",\"messageId\":\"0e22cc95-8b48-465a-92ef-e544f6d37379\",\"originalTimestamp\":\"2024-08-15T20:11:44.520Z\",\"anonymousId\":\"913f3303-5742-48b2-8b00-39a0d2751172\",\"userId\":\"\",\"event\":null,\"properties\":{\"path\":\"/\",\"referrer\":\"$direct\",\"referring_domain\":\"\",\"search\":\"\",\"title\":\"Internxt Drive – Private & Secure Cloud Storage\",\"url\":\"https://drive.internxt.com/\",\"tab_url\":\"https://drive.internxt.com/\",\"initial_referrer\":\"$direct\",\"initial_referring_domain\":\"\"},\"user_properties\":null,\"integrations\":{\"All\":true},\"sentAt\":\"2024-08-15T20:11:44.524Z\"}},\"attemptNumber\":1,\"time\":1723752709943},\"0d960a49-0f20-4b88-bdc2-c35e90c49728\":{\"item\":{\"url\":\"https://cdp.internxt.com/v1/page\",\"headers\":{\"Content-Type\":\"application/json\",\"Authorization\":\"Basic MkVMMTV4eXpEWUJaMVY4QzRvdjZ2WDZNU09WOg==\",\"AnonymousId\":\"OTEzZjMzMDMtNTc0Mi00OGIyLThiMDAtMzlhMGQyNzUxMTcy\"},\"message\":{\"channel\":\"web\",\"context\":{\"app\":{\"name\":\"RudderLabs JavaScript SDK\",\"namespace\":\"com.rudderlabs.javascript\",\"version\":\"2.33.1\"},\"traits\":{\"email\":\"testingb2b@inxt.com\",\"uuid\":\"2cc0d88c-8184-4b5d-9679-ab41c9a85c4b\"},\"library\":{\"name\":\"RudderLabs JavaScript SDK\",\"version\":\"2.33.1\"},\"userAgent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/125.0.6422.26 Safari/537.36\",\"device\":null,\"network\":null,\"os\":{\"name\":\"\",\"version\":\"\"},\"locale\":\"en-US\",\"screen\":{\"density\":1,\"width\":1280,\"height\":720,\"innerWidth\":1280,\"innerHeight\":720},\"sessionId\":1723752704397,\"campaign\":{},\"page\":{\"path\":\"/login\",\"referrer\":\"$direct\",\"referring_domain\":\"\",\"search\":\"\",\"title\":\"Internxt Drive – Private & Secure Cloud Storage\",\"url\":\"https://drive.internxt.com/login\",\"tab_url\":\"https://drive.internxt.com/\",\"initial_referrer\":\"$direct\",\"initial_referring_domain\":\"\"}},\"type\":\"page\",\"messageId\":\"61007546-a1cc-417a-a391-b63f68cc485d\",\"originalTimestamp\":\"2024-08-15T20:11:49.940Z\",\"anonymousId\":\"913f3303-5742-48b2-8b00-39a0d2751172\",\"userId\":\"2cc0d88c-8184-4b5d-9679-ab41c9a85c4b\",\"event\":null,\"properties\":{\"name\":\"App\",\"path\":\"/login\",\"referrer\":\"$direct\",\"referring_domain\":\"\",\"search\":\"\",\"title\":\"Internxt Drive – Private & Secure Cloud Storage\",\"url\":\"https://drive.internxt.com/login\",\"tab_url\":\"https://drive.internxt.com/\",\"initial_referrer\":\"$direct\",\"initial_referring_domain\":\"\"},\"user_properties\":null,\"name\":\"App\",\"integrations\":{\"All\":true},\"sentAt\":\"2024-08-15T20:11:49.943Z\"}},\"attemptNumber\":0,\"time\":1723752709943}}"
+        },
+        {
+          "name": "NRBA_SESSION",
+          "value": "{\"value\":\"984c2d5c385e9dee\",\"inactiveAt\":1723754506115,\"expiresAt\":1723767105753,\"updatedAt\":1723752706115,\"sessionReplayMode\":0,\"sessionReplaySentFirstChunk\":false,\"sessionTraceMode\":0,\"traceHarvestStarted\":false,\"custom\":{}}"
+        },
+        {
+          "name": "rudder.5392148a-a21b-4cd7-b353-521c4f0d960a.reclaimEnd",
+          "value": "null"
+        }
+      ]
+    }
+  ]
+}

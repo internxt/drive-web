@@ -1,19 +1,12 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { basePage } from './basePage';
-import { loginLocators } from '../locators/login';
-import { driveLocators } from '../locators/drive';
-import { signUpLocators } from '../locators/signUp';
-import { accountRecoveryLocators } from '../locators/accountRecovery';
-import { termsAndConditionsLocators } from '../locators/terms&conditions';
+import { loginLocators } from '../locators/loginLocators';
+import { driveLocators } from '../locators/driveLocators';
+import { signUpLocators } from '../locators/signUpLocators';
+import { accountRecoveryLocators } from '../locators/accountRecoveryLocators';
+import { termsAndConditionsLocators } from '../locators/terms&conditionsLocators';
 import { needHelpLocators } from '../locators/needHelpLocators';
 import { Context } from 'vm';
-export let wrongLoginText: string | any;
-export let accountRecoveryText: string | any;
-export let termsAndConditionsText: any;
-export let termsOfServiceTitle: any;
-export let needHelpText: any;
-export let needHelpPageTitle: any;
-export let driveTitle: any;
 
 export class loginPage extends basePage {
   private loginTitle: Locator;
@@ -74,18 +67,21 @@ export class loginPage extends basePage {
       expect(loginButtonText).toEqual('Log in');
       await this.clickOn(loginLocators.loginButton);
       await this.driveTitle.waitFor();
-      driveTitle = await this.driveTitle.textContent();
+      const driveTitle = await this.driveTitle.textContent();
+      return driveTitle;
     } else {
       await this.clickOn(loginLocators.loginButton);
       await this.wrongCredentials.waitFor();
-      wrongLoginText = await this.wrongCredentials.textContent();
+      const wrongLoginText = await this.wrongCredentials.textContent();
+      return wrongLoginText;
     }
   }
   async clickOnForgotYourPassword() {
     await this.loginTitle.waitFor({ state: 'visible' });
     this.clickOn(loginLocators.forgotPassword);
     await this.accountRecoveryTitle.waitFor({ state: 'visible' });
-    accountRecoveryText = await this.accountRecoveryTitle.textContent();
+    const accountRecoveryText = await this.accountRecoveryTitle.textContent();
+    return accountRecoveryText;
   }
 
   async clickOnCreateAccount() {
@@ -102,20 +98,22 @@ export class loginPage extends basePage {
   async clickOnTermsAndConditions(context: Context) {
     const pagePromise = context.waitForEvent('page');
     await this.termsAndConditions.waitFor({ state: 'visible' });
-    termsAndConditionsText = await this.termsAndConditions.textContent();
+    const termsAndConditionsText = await this.termsAndConditions.textContent();
     await this.clickOn(loginLocators.termsAndConditions);
 
     const newPage = await pagePromise;
-    termsOfServiceTitle = await newPage.locator(termsAndConditionsLocators.termsOfService).textContent();
+    const termsOfServiceTitle = await newPage.locator(termsAndConditionsLocators.termsOfService).textContent();
+    return { termsAndConditionsText, termsOfServiceTitle };
   }
 
   async clickOnNeedHelp(context: Context) {
     const pagePromise = context.waitForEvent('page');
     await this.needHelp.waitFor({ state: 'visible' });
-    needHelpText = await this.needHelp.textContent();
+    const needHelpText = await this.needHelp.textContent();
     await this.clickOn(loginLocators.needHelp);
 
     const newPage = await pagePromise;
-    needHelpPageTitle = await newPage.locator(needHelpLocators.needHelpTitle).textContent();
+    const needHelpPageTitle = await newPage.locator(needHelpLocators.needHelpTitle).textContent();
+    return { needHelpText, needHelpPageTitle };
   }
 }
