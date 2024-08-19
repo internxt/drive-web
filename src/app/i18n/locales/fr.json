@@ -883,7 +883,7 @@
     "incorrectPassword": "Le mot de passe actuel que vous avez introduit ne correspond pas. Veuillez vous assurer qu'il est correct.",
     "emptyPassword": "Le mot de passe précédent ne doit pas être vide",
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
-    "maxSizeUploadLimitError": "Fichier trop volumineux (plus de 20GB)",
+    "maxSizeUploadLimitError": "Fichier trop volumineux (plus de 40GB)",
     "connectionLostError": "Lost Internet connection",
     "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille"
   },

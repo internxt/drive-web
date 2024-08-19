@@ -913,7 +913,7 @@
     "emptyPassword": "以前的密碼不能為空",
     "errorMovingToTrash": "將項目移動到垃圾桶時出錯。",
     "errorDeletingFromTrash": "從垃圾桶中刪除項目時出錯。",
-    "maxSizeUploadLimitError": "文件過大（大於20GB）",
+    "maxSizeUploadLimitError": "文件過大（大於40GB）",
     "connectionLostError": "網絡連接已丟失",
     "errorLoadingTrashItems": "加載垃圾桶項目時出錯"
   },
