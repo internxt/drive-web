@@ -7,7 +7,7 @@ import { createUploadWebWorker } from '../../../../WebWorker';
 import localStorageService from '../../../core/services/local-storage.service';
 import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
 
-export const MAX_ALLOWED_UPLOAD_SIZE = 20 * 1024 * 1024 * 1024;
+export const MAX_ALLOWED_UPLOAD_SIZE = 40 * 1024 * 1024 * 1024;
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
 export interface IUploadParams {

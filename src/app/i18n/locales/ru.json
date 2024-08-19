@@ -923,7 +923,7 @@
     "emptyPassword": "Предыдущий пароль не должен быть пустым",
     "errorMovingToTrash": "При перемещении элементов в корзину произошла ошибка.",
     "errorDeletingFromTrash": "При удалении элементов из корзины произошла ошибка.",
-    "maxSizeUploadLimitError": "Слишком большой файл (более 20 ГБ)",
+    "maxSizeUploadLimitError": "Слишком большой файл (более 40 ГБ)",
     "connectionLostError": "Потеряно подключение к Интернету",
     "errorLoadingTrashItems": "Ошибка при загрузке элементов корзины"
   },
