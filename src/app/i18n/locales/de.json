@@ -1421,6 +1421,12 @@
           "reactivate": "Reaktivieren",
           "reactivating": "Reaktivieren"
         },
+        "removalModal": {
+          "title": "Mitglied entfernen",
+          "description": "{{name}} verliert den Zugriff auf den Arbeitsbereich. Alle ihre Dateien und Ordner bleiben unverändert.",
+          "remove": "Entfernen",
+          "removing" : "Entfernen läuft"
+        },
         "changePasswordModal": {
           "title": "Passwortänderung anfordern",
           "description": "Der Benutzer erhält eine Empfehlung, sein persönliches Kontopasswort zu aktualisieren. Verwenden Sie diese Funktion, wenn Sie glauben, dass sein Passwort möglicherweise kompromittiert wurde.",
@@ -1478,6 +1484,7 @@
         "actions": {
           "deactivate": "Mitglied deaktivieren",
           "reactivate": "Mitglied reaktivieren",
+          "remove": "Mitglied entfernen",
           "passwordChange": "Passwortänderung anfordern"
         }
       },

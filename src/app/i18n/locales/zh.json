@@ -1479,6 +1479,12 @@
           "reactivate": "重新激活",
           "reactivating": "重新激活中"
         },
+        "removalModal": {
+          "title": "删除成员",
+          "description": "{{name}} 将失去对工作区的访问权限。所有他们的文件和文件夹将保持不变。",
+          "remove": "删除",
+          "removing" : "去除"
+        },
         "changePasswordModal": {
           "title": "请求更改密码",
           "description": "用户将收到一个建议更新其个人帐户密码的通知。如果您认为他们的密码可能已被泄露，请使用此功能。",
@@ -1536,6 +1542,7 @@
         "actions": {
           "deactivate": "停用会员",
           "reactivate": "重新激活成员",
+          "remove" : "移除成員",
           "passwordChange": "请求更改密码"
         }
       },

@@ -15,20 +15,24 @@ import ReactivateMemberModal from '../components/ReactivateModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import TeamsTab from '../components/TeamsTab';
 import UserCard from '../components/UserCard';
+import RemoveMemberModal from '../components/RemoveModal';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;
   getWorkspacesMembers: (string) => void;
   isOwner: boolean;
+  deselectMember: () => void;
 }
 
-const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner }: MemberDetailsContainer) => {
+const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselectMember }: MemberDetailsContainer) => {
   const { translate } = useTranslationContext();
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState<boolean>(false);
   const [isDeactivatingMember, setIsDeactivatingMember] = useState<boolean>(false);
   const [isReactivateModalOpen, setIsReactivateModalOpen] = useState<boolean>(false);
   const [isReactivatingMember, setIsReactivatingMember] = useState<boolean>(false);
+  const [isRemovingMember, setIsRemovingMember] = useState<boolean>(false);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState<boolean>(false);
   const [isRequestChangePasswordModalOpen, setIsRequestChangePasswordModalOpen] = useState<boolean>(false);
   const [isSendingPasswordRequest, setIsSendingPasswordRequest] = useState<boolean>(false);
   const [memberRole, setMemberRole] = useState<MemberRole>('current');
@@ -63,6 +67,20 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner }: Membe
     } finally {
       setIsReactivatingMember(false);
       setIsReactivateModalOpen(false);
+    }
+  };
+
+  const removeMember = async () => {
+    try {
+      setIsRemovingMember(true);
+      await workspacesService.removeMember(member.workspaceId, member.memberId);
+      getWorkspacesMembers(member.workspaceId);
+    } catch (error) {
+      errorService.reportError(error);
+    } finally {
+      setIsRemovingMember(false);
+      setIsRemoveModalOpen(false);
+      deselectMember();
     }
   };
 
@@ -167,6 +185,12 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner }: Membe
                       <span className="truncate">{translate('preferences.workspace.members.actions.reactivate')}</span>
                     </button>
                   )}
+                  <button
+                    onClick={() => setIsRemoveModalOpen(true)}
+                    className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"
+                  >
+                    <span className="truncate">{translate('preferences.workspace.members.actions.remove')}</span>
+                  </button>
                 </div>
               </button>
             )}
@@ -215,6 +239,13 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner }: Membe
         }}
         isLoading={isSendingPasswordRequest}
         modalWitdhClassname="w-120"
+      />
+      <RemoveMemberModal
+        name={member.member.name + ' ' + member.member.lastname}
+        isOpen={isRemoveModalOpen}
+        onClose={() => setIsRemoveModalOpen(false)}
+        onRemove={removeMember}
+        isLoading={isRemovingMember}
       />
     </div>
   );

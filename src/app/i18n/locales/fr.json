@@ -1407,6 +1407,12 @@
           "reactivate": "Réactiver",
           "reactivating": "Réactivation"
         },
+        "removalModal": {
+          "title": "Supprimer le membre",
+          "description": "{{name}} perdra l'accès à l'espace de travail. Tous leurs fichiers et dossiers resteront inchangés.",
+          "remove": "Supprimer",
+          "removing" : "Suppression"
+        },
         "changePasswordModal": {
           "title": "Demander un changement de mot de passe",
           "description": "L'utilisateur recevra une recommandation pour mettre à jour le mot de passe de son compte personnel. Utilisez cette fonction si vous pensez que son mot de passe pourrait avoir été compromis.",
@@ -1464,6 +1470,7 @@
         "actions": {
           "deactivate": "Désactiver le membre",
           "reactivate": "Réactiver le membre",
+          "remove": "Supprimer le membre",
           "passwordChange": "Demande de changement de mot de passe"
         }
       },
