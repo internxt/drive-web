@@ -360,6 +360,13 @@ export function reactivateMember(workspaceId: string, memberId: string): Promise
   });
 }
 
+export function removeMember(workspaceId: string, memberId: string): Promise<void> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.removeMember(workspaceId, memberId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function getUsage(workspaceId: string): Promise<GetMemberUsageResponse> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.getMemberUsage(workspaceId).catch((error) => {
@@ -412,6 +419,7 @@ const workspacesService = {
   getWorkspaceFiles,
   deactivateMember,
   reactivateMember,
+  removeMember,
   getUsage,
   getWorkspace,
 };

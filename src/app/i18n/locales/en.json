@@ -1520,6 +1520,12 @@
           "reactivate": "Reactivate",
           "reactivating": "Reactivating"
         },
+        "removalModal": {
+          "title": "Remove member",
+          "description": "{{name}} will lose access to the Workspace. All their files and folders will stay the same.",
+          "remove": "Remove",
+          "removing" : "Removing"
+        },
         "changePasswordModal": {
           "title": "Request password change",
           "description": "User will receive a recommendation to update their personal account password. Use this function in case you believe their password may have been breached.",
@@ -1577,6 +1583,7 @@
         "actions": {
           "deactivate": "Deactivate member",
           "reactivate": "Reactivate member",
+          "remove": "Remove member",
           "passwordChange": "Request password change"
         }
       },

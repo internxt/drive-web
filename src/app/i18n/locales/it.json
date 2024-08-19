@@ -1507,6 +1507,12 @@
           "reactivate": "Riattiva",
           "reactivating": "Riattivazione"
         },
+        "removalModal": {
+          "title": "Rimuovi membro",
+          "description": "{{name}} perderà l'accesso allo spazio di lavoro. Tutti i loro file e cartelle rimarranno gli stessi.",
+          "remove": "Rimuovi",
+          "removing" : "Rimuovendo"
+        },
         "changePasswordModal": {
           "title": "Richiedi cambio password",
           "description": "L'utente riceverà una raccomandazione per aggiornare la password del proprio account personale. Utilizza questa funzione se ritieni che la sua password possa essere stata compromessa.",
@@ -1564,6 +1570,7 @@
         "actions": {
           "deactivate": "Disattiva membro",
           "reactivate": "Riattiva membro",
+          "remove": "Rimuovi membro",
           "passwordChange": "Richiedi la modifica della password"
         }
       },
