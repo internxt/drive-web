@@ -4,19 +4,19 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "80% de réduction",
-    "title": "Profitez des offres d'été d'Internxt",
+    "label": "Jusqu'à 75% de réduction",
+    "title": "Il est temps de passer à la confidentialité !",
     "subtitle": "Gagnez notre sac à dos premium avec nos plans à vie.",
-    "cta": "Choisissez plan",
+    "cta": "Choisir un plan",
     "guarantee": "Garantie de remboursement de 30 jours",
-    "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
+    "lastCta": "*Offre réservée aux comptes gratuits ou aux nouveaux clients",
     "features": [
       "Économisez sur tous les plans Internxt",
-      "Stockage en nuage sûr et sécurisé",
+      "Stockage cloud sûr et sécurisé",
+      "Technologie sans connaissance",
       "Open source et transparent",
       "Transferts cryptés de bout en bout",
-      "Aucun accès non autorisé",
-      "L'offre se termine le 19 août"
+      "Aucun accès non autorisé"
     ]
   },
   "valentinesBanner": {
