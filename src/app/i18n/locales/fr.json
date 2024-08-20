@@ -1252,7 +1252,7 @@
     },
     "uploadItems": {
       "title": "Chargement maximum de fichiers",
-      "advice": "Le maximum est de 1000 fichiers par téléchargement",
+      "advice": "Le maximum est de 3000 fichiers par téléchargement",
       "close": "Fermer"
     },
     "movingToTrash": "Déplacement d'éléments vers la corbeille",

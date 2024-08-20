@@ -1267,7 +1267,7 @@
     },
     "uploadItems": {
       "title": "Maximaler Datei-Upload",
-      "advice": "Das Maximum ist 1000 Dateien pro Upload.",
+      "advice": "Das Maximum ist 3000 Dateien pro Upload.",
       "close": "Schließen"
     },
     "movingToTrash": "Verschiebe Elemente in den Papierkorb",
