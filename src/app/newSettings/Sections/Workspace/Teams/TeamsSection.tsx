@@ -49,7 +49,7 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
 
   useEffect(() => {
     getTeams();
-  }, []);
+  }, [selectedWorkspace]);
 
   const getTeams = async () => {
     if (selectedWorkspace) {
