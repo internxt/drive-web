@@ -11,14 +11,14 @@ import { PlanState } from '../../../../../store/slices/plan';
 
 const ChangePlanDialog = ({
   prices,
-  isDialgOpen,
+  isDialogOpen,
   setIsDialogOpen,
   onPlanClick,
   priceIdSelected,
   subscriptionSelected,
 }: {
   prices: DisplayPrice[];
-  isDialgOpen: boolean;
+  isDialogOpen: boolean;
   setIsDialogOpen: (value: boolean) => void;
   onPlanClick: (value: string, currency: string) => void;
   priceIdSelected: string;
@@ -68,7 +68,7 @@ const ChangePlanDialog = ({
   };
 
   return (
-    <Modal isOpen={isDialgOpen} onClose={onClose}>
+    <Modal isOpen={isDialogOpen} onClose={onClose}>
       <h3 className="mb-5 text-2xl font-medium">{translate('views.account.tabs.plans.dialog.title')}</h3>
       <p className="font-regular mb-9 text-lg">
         {translate('views.account.tabs.plans.dialog.subtitle1')}

@@ -1,7 +1,7 @@
 import { Elements } from '@stripe/react-stripe-js';
-import { BaseSyntheticEvent, useEffect, useReducer, useRef, useState } from 'react';
+import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import {
   Stripe,
@@ -28,13 +28,15 @@ import paymentService from '../../../payment/services/payment.service';
 import LoadingPulse from '../../../shared/components/LoadingPulse/LoadingPulse';
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { planActions } from '../../../store/slices/plan';
+import { planThunks } from '../../../store/slices/plan';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import { getProductAmount } from '../../components/checkout/ProductCardComponent';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
 import { AuthMethodTypes, CurrentPlanSelected, PlanData } from '../../types';
 import CheckoutView from './CheckoutView';
+import ChangePlanDialog from 'app/newSettings/Sections/Account/Plans/components/ChangePlanDialog';
+import { fetchPlanPrices, getStripe } from 'app/newSettings/Sections/Account/Plans/api/plansApi';
 
 export const THEME_STYLES = {
   dark: {
@@ -125,6 +127,8 @@ const CheckoutViewWrapper = () => {
   } = useCheckout(dispatchReducer);
   const [isUpsellSwitchActivated, setIsUpsellSwitchActivated] = useState<boolean>(false);
   const [isCheckoutReadyToRender, setIsCheckoutReadyToRender] = useState<boolean>(false);
+  const [isUpdateSubscriptionDialogOpen, setIsUpdateSubscriptionDialogOpen] = useState<boolean>(false);
+  const [individualPrices, setIndividualPrices] = useState<DisplayPrice[]>();
 
   const {
     authMethod,
@@ -175,6 +179,8 @@ const CheckoutViewWrapper = () => {
       return;
     }
 
+    fetchDataAndSetPrices();
+
     handleFetchSelectedPlan(planId, currencyValue)
       .then((plan) => {
         if (checkoutTheme && plan) {
@@ -222,6 +228,73 @@ const CheckoutViewWrapper = () => {
     }
   }, [state.error]);
 
+  const fetchDataAndSetPrices = useCallback(async () => {
+    try {
+      const individualPrices = await fetchPlanPrices(UserType.Individual);
+      setIndividualPrices(individualPrices);
+    } catch (error) {
+      const errorCasted = errorService.castError(error);
+      errorService.reportError(errorCasted);
+    }
+  }, []);
+
+  const onChangePlanClicked = async (priceId: string, currency: string) => {
+    await handleSubscriptionPayment(priceId);
+    setIsUpdateSubscriptionDialogOpen(false);
+    navigationService.push(AppView.Drive);
+  };
+
+  const showSuccessSubscriptionNotification = useCallback(
+    () => notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success }),
+    [translate],
+  );
+
+  const showCancelSubscriptionErrorNotification = useCallback(
+    () =>
+      notificationsService.show({
+        text: translate('notificationMessages.errorCancelSubscription'),
+        type: ToastType.Error,
+      }),
+    [translate],
+  );
+
+  const handlePaymentSuccess = () => {
+    showSuccessSubscriptionNotification();
+    dispatch(planThunks.initializeThunk()).unwrap();
+  };
+
+  const handleSubscriptionPayment = async (priceId: string) => {
+    try {
+      stripe = await getStripe(stripe);
+      const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
+      if (updatedSubscription.request3DSecure) {
+        stripe
+          .confirmCardPayment(updatedSubscription.clientSecret)
+          .then(async (result) => {
+            if (result.error) {
+              notificationsService.show({
+                type: ToastType.Error,
+                text: result.error.message as string,
+              });
+            } else {
+              handlePaymentSuccess();
+            }
+          })
+          .catch((err) => {
+            const error = errorService.castError(err);
+            errorService.reportError(error);
+            showCancelSubscriptionErrorNotification();
+          });
+      } else {
+        handlePaymentSuccess();
+      }
+    } catch (err) {
+      const error = errorService.castError(err);
+      errorService.reportError(error);
+      showCancelSubscriptionErrorNotification();
+    }
+  };
+
   const onCheckoutButtonClicked = async (
     formData: IFormValues,
     event: BaseSyntheticEvent<object, any, any> | undefined,
@@ -253,9 +326,9 @@ const CheckoutViewWrapper = () => {
         return;
       }
 
-      const { customerId, token } = await paymentService.getCustomerId(userData.name, userData.email);
-
       await elements.submit();
+
+      const { customerId, token } = await paymentService.getCustomerId(userData.name, userData.email);
 
       const { clientSecret, type, subscriptionId, paymentIntentId } = await checkoutService.getClientSecret(
         currentSelectedPlan as CurrentPlanSelected,
@@ -288,12 +361,24 @@ const CheckoutViewWrapper = () => {
         setError('stripe', error.message as string);
       }
     } catch (err) {
+      if ((err as any).status) {
+        if ((err as any).status === 409) {
+          setIsUpdateSubscriptionDialogOpen(true);
+          return;
+        } else if ((err as any).status === 422) {
+          notificationsService.show({
+            text: translate('notificationMessages.couponIsNotValidForUserError'),
+            type: ToastType.Error,
+          });
+          return;
+        }
+      }
+
       notificationsService.show({
         text: translate('notificationMessages.errorCreatingSubscription'),
         type: ToastType.Error,
       });
-      const error = err as Error;
-      errorService.reportError(error);
+      errorService.reportError(err);
     } finally {
       setIsUserPaying(false);
     }
@@ -396,26 +481,6 @@ const CheckoutViewWrapper = () => {
     setPromoCodeData(promoCode);
   };
 
-  // Do not delete, to be used in the next iteration
-  const updateUserSubscription = async (planId: string, coupon?: string) => {
-    try {
-      const couponCode = coupon === 'null' ? undefined : coupon;
-      const { userSubscription } = await paymentService.updateSubscriptionPrice(planId, couponCode);
-      if (userSubscription && userSubscription.type === 'subscription') {
-        if (userSubscription.userType == UserType.Individual)
-          dispatch(planActions.setSubscriptionIndividual(userSubscription));
-        if (userSubscription.userType == UserType.Business)
-          dispatch(planActions.setSubscriptionBusiness(userSubscription));
-      }
-    } catch (err) {
-      notificationsService.show({
-        text: translate('notificationMessages.errorCancelSubscription'),
-        type: ToastType.Error,
-      });
-    }
-    navigationService.push(AppView.Drive);
-  };
-
   const onLogOut = async () => {
     await databaseService.clear();
     localStorageService.clear();
@@ -480,6 +545,16 @@ const CheckoutViewWrapper = () => {
             authMethod={authMethod}
             checkoutViewManager={checkoutViewManager}
           />
+          {individualPrices && currentSelectedPlan && isUpdateSubscriptionDialogOpen ? (
+            <ChangePlanDialog
+              prices={individualPrices}
+              isDialogOpen={isUpdateSubscriptionDialogOpen}
+              setIsDialogOpen={setIsUpdateSubscriptionDialogOpen}
+              onPlanClick={onChangePlanClicked}
+              priceIdSelected={currentSelectedPlan!.id}
+              subscriptionSelected={UserType.Individual}
+            />
+          ) : undefined}
         </Elements>
       ) : (
         <LoadingPulse />

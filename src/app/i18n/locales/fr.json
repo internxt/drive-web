@@ -147,7 +147,7 @@
   "checkout": {
     "title": "Vous y êtes presque ! Finalisez votre achat en toute sécurité :",
     "pay": "Payer",
-    "paying": "Paiement en cours...",
+    "processing": "Traitement en cours...",
     "checkout": "Commander",
     "authComponent": {
       "signUp": {
@@ -1202,7 +1202,8 @@
     "verificationEmail": "Courriel de vérification envoyé",
     "successCancelSubscription": "Votre abonnement a été annulé",
     "errorCancelSubscription": "Quelque chose s'est mal passé lors de l'annulation de votre abonnement",
-    "errorPurchaseBusinessPlan": "Vous avez déjà un plan d'affaires."
+    "errorPurchaseBusinessPlan": "Vous avez déjà un plan d'affaires.",
+    "couponIsNotValidForUserError": "Le coupon ne peut être utilisé que par de nouveaux clients."
   },
   "actions": {
     "undo": "Annuler",

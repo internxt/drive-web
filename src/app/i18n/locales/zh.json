@@ -164,7 +164,7 @@
   "checkout": {
     "title": "您快完成了！请安全结账：",
     "pay": "支付",
-    "paying": "正在支付...",
+    "processing": "处理中...",
     "checkout": "结账",
     "authComponent": {
       "signUp": {
@@ -1273,7 +1273,8 @@
     "errorApplyCoupon": "应用折扣时出错",
     "alreadyAppliedCoupon": "优惠券已使用",
     "errorCreatingSubscription": "创建您的订阅时出现问题",
-    "errorPurchaseBusinessPlan": "您已经有一个商业计划"
+    "errorPurchaseBusinessPlan": "您已经有一个商业计划",
+    "couponIsNotValidForUserError": "优惠券只能由新客户兑换。"
   },
   "actions": {
     "undo": "撤销",

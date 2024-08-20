@@ -164,7 +164,7 @@
   "checkout": {
     "title": "You're almost there! Checkout securely:",
     "pay": "Pay",
-    "paying": "Paying...",
+    "processing": "Processing...",
     "checkout": "Checkout",
     "authComponent": {
       "signUp": {
@@ -1274,7 +1274,8 @@
     "successApplyCoupon": "3 months free of charge applied",
     "errorApplyCoupon": "An error occurred while applying the discount",
     "alreadyAppliedCoupon": "The coupon has been already applied",
-    "errorPurchaseBusinessPlan": "You already have a business plan."
+    "errorPurchaseBusinessPlan": "You already have a business plan.",
+    "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers"
   },
   "actions": {
     "undo": "Undo",
