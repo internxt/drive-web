@@ -67,6 +67,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const [cancellingSubscription, setCancellingSubscription] = useState(false);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isUpdatingSubscription, setIsUpdatingSubscription] = useState<boolean>(false);
   const [priceSelected, setPriceSelected] = useState<DisplayPrice>(FREE_PLAN_DATA);
   const currentChangePlanType = getCurrentChangePlanType({
     priceSelected,
@@ -209,6 +210,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
   const onChangePlanClicked = async (priceId: string, currency: string) => {
     setIsLoadingCheckout(true);
+    setIsUpdatingSubscription(true);
     const isCurrentPlanTypeSubscription = isIndividualSubscriptionSelected
       ? individualSubscription?.type === 'subscription'
       : businessSubscription?.type === 'subscription';
@@ -242,6 +244,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       }
     }
     setIsLoadingCheckout(false);
+    setIsUpdatingSubscription(false);
   };
 
   async function cancelSubscription(feedback: string) {
@@ -309,6 +312,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           isDialogOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}
           onPlanClick={onChangePlanClicked}
+          isUpdatingSubscription={isUpdatingSubscription}
           priceIdSelected={priceSelected.id}
           subscriptionSelected={selectedSubscription}
         />

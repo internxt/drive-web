@@ -14,11 +14,13 @@ const ChangePlanDialog = ({
   isDialogOpen,
   setIsDialogOpen,
   onPlanClick,
+  isUpdatingSubscription,
   priceIdSelected,
   subscriptionSelected,
 }: {
   prices: DisplayPrice[];
   isDialogOpen: boolean;
+  isUpdatingSubscription?: boolean;
   setIsDialogOpen: (value: boolean) => void;
   onPlanClick: (value: string, currency: string) => void;
   priceIdSelected: string;
@@ -140,7 +142,11 @@ const ChangePlanDialog = ({
         <Button className="mr-2" variant="secondary" onClick={onClose}>
           {translate('views.account.tabs.plans.dialog.button.back')}
         </Button>
-        <Button variant="primary" onClick={() => onPlanClick(priceIdSelected, selectedPlan?.currency)}>
+        <Button
+          variant="primary"
+          disabled={isUpdatingSubscription}
+          onClick={() => onPlanClick(priceIdSelected, selectedPlan?.currency)}
+        >
           {translate('views.account.tabs.plans.dialog.button.continue')}
         </Button>
       </div>

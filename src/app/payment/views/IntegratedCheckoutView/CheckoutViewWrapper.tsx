@@ -128,6 +128,7 @@ const CheckoutViewWrapper = () => {
   const [isUpsellSwitchActivated, setIsUpsellSwitchActivated] = useState<boolean>(false);
   const [isCheckoutReadyToRender, setIsCheckoutReadyToRender] = useState<boolean>(false);
   const [isUpdateSubscriptionDialogOpen, setIsUpdateSubscriptionDialogOpen] = useState<boolean>(false);
+  const [isUpdatingSubscription, setIsUpdatingSubscription] = useState<boolean>(false);
   const [individualPrices, setIndividualPrices] = useState<DisplayPrice[]>();
 
   const {
@@ -239,8 +240,10 @@ const CheckoutViewWrapper = () => {
   }, []);
 
   const onChangePlanClicked = async (priceId: string, currency: string) => {
+    setIsUpdatingSubscription(true);
     await handleSubscriptionPayment(priceId);
     setIsUpdateSubscriptionDialogOpen(false);
+    setIsUpdatingSubscription(false);
     navigationService.push(AppView.Drive);
   };
 
@@ -552,6 +555,7 @@ const CheckoutViewWrapper = () => {
               setIsDialogOpen={setIsUpdateSubscriptionDialogOpen}
               onPlanClick={onChangePlanClicked}
               priceIdSelected={currentSelectedPlan!.id}
+              isUpdatingSubscription={isUpdatingSubscription}
               subscriptionSelected={UserType.Individual}
             />
           ) : undefined}
