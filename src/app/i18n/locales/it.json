@@ -164,7 +164,7 @@
   "checkout": {
     "title": "Ci sei quasi! Completa il pagamento in modo sicuro:",
     "pay": "Paga",
-    "paying": "Pagando...",
+    "processing": "Elaborazione in corso...",
     "checkout": "Pagamento",
     "authComponent": {
       "signUp": {
@@ -1262,7 +1262,8 @@
     "successCancelSubscription": "L'abbonamento è stato annullato",
     "errorCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento",
     "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
-    "errorPurchaseBusinessPlan": "Hai già un piano aziendale."
+    "errorPurchaseBusinessPlan": "Hai già un piano aziendale.",
+    "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti."
   },
   "actions": {
     "undo": "Annulla",

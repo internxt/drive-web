@@ -141,7 +141,7 @@
   "checkout": {
     "title": "Sie sind fast da! Sicher zur Kasse gehen:",
     "pay": "Bezahlen",
-    "paying": "Bezahlen...",
+    "processing": "Verarbeitung läuft...",
     "checkout": "Zur Kasse",
     "authComponent": {
       "signUp": {
@@ -1217,7 +1217,8 @@
     "successCancelSubscription": "Dein Abonnement wurde gekündigt",
     "errorCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten",
     "errorCreatingSubscription": "Beim Erstellen Ihres Abonnements ist ein Fehler aufgetreten",
-    "errorPurchaseBusinessPlan": "Sie haben bereits einen Geschäftstarif."
+    "errorPurchaseBusinessPlan": "Sie haben bereits einen Geschäftstarif.",
+    "couponIsNotValidForUserError": "Der Gutschein kann nur von neuen Kunden eingelöst werden."
   },
   "actions": {
     "undo": "Rückgängig machen",

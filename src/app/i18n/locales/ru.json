@@ -147,7 +147,7 @@
   "checkout": {
     "title": "Вы почти у цели! Безопасное оформление заказа:",
     "pay": "Оплатить",
-    "paying": "Оплата...",
+    "processing": "Обработка...",
     "checkout": "Оформить заказ",
     "authComponent": {
       "signUp": {
@@ -1242,7 +1242,8 @@
     "successCancelSubscription": "Подписка отменена",
     "errorCancelSubscription": "Произошла ошибка при отмене подписки.",
     "errorCreatingSubscription": "Что-то пошло не так при создании вашей подписки",
-    "errorPurchaseBusinessPlan": "У вас уже есть бизнес-тариф."
+    "errorPurchaseBusinessPlan": "У вас уже есть бизнес-тариф.",
+    "couponIsNotValidForUserError": "Купон может быть использован только новыми клиентами."
   },
   "actions": {
     "undo": "Отменить",

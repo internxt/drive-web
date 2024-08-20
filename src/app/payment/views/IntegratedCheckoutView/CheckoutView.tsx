@@ -56,12 +56,14 @@ const CheckoutView = ({
     register,
     formState: { errors, isValid },
     handleSubmit,
+    reset,
   } = useForm<IFormValues>({
     mode: 'onChange',
   });
 
   function onAuthMethodToggled(authMethod: AuthMethodTypes) {
     checkoutViewManager.handleAuthMethodChange(authMethod);
+    reset();
   }
 
   return (
@@ -111,7 +113,7 @@ const CheckoutView = ({
                     </div>
                   )}
                   <Button type="submit" id="submit" className="hidden lg:flex" disabled={isPaying && isValid}>
-                    {isPaying && isValid ? translate('checkout.paying') : translate('checkout.pay')}
+                    {isPaying && isValid ? translate('checkout.processing') : translate('checkout.pay')}
                   </Button>
                 </div>
               </div>
@@ -125,7 +127,7 @@ const CheckoutView = ({
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
                 />
                 <Button type="submit" id="submit" className="flex lg:hidden" disabled={isPaying && isValid}>
-                  {isPaying && isValid ? translate('checkout.paying') : translate('checkout.pay')}
+                  {isPaying && isValid ? translate('checkout.processing') : translate('checkout.pay')}
                 </Button>
               </div>
             </div>
