@@ -1286,7 +1286,7 @@
     },
     "uploadItems": {
       "title": "最大檔案上傳數量",
-      "advice": "最多可一次上傳 1000 個檔案。",
+      "advice": "最多可一次上傳 3000 個檔案。",
       "close": "關閉"
     },
     "movingToTrash": "正在將項目移到垃圾桶",
@@ -1441,6 +1441,12 @@
           "reactivate": "重新啟用",
           "reactivating": "正在重新啟用"
         },
+        "removalModal": {
+          "title": "删除成员",
+          "description": "{{name}} 将失去对工作区的访问权限。所有他们的文件和文件夹将保持不变。",
+          "remove": "删除",
+          "removing": "去除"
+        },
         "changePasswordModal": {
           "title": "要求更改密碼",
           "description": "用戶將收到更新個人帳戶密碼的建議。如果您認為其密碼可能已被洩露，請使用此功能。",
@@ -1498,6 +1504,7 @@
         "actions": {
           "deactivate": "停用成員",
           "reactivate": "重新啟用成員",
+          "remove": "移除成員",
           "passwordChange": "要求更改密碼"
         }
       },
