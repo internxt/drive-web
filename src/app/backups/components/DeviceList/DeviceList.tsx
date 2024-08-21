@@ -1,7 +1,7 @@
 import desktopService from '../../../core/services/desktop.service';
 import { Device } from '../../types';
 import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+
 import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
 import { DownloadSimple } from '@phosphor-icons/react';
 import Empty from '../../../shared/components/Empty/Empty';
@@ -15,6 +15,7 @@ import UilWindows from '@iconscout/react-unicons/icons/uil-windows';
 import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
 import dateService from '../../../core/services/date.service';
 import sizeService from '../../../drive/services/size.service';
+import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 
 interface Props {
   items: (Device | DriveFolderData)[];

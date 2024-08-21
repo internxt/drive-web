@@ -9,31 +9,20 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": {
-      "upTo": "FINO A ",
-      "discount": "80% DI SCONTO"
-    },
-    "title": "Approfitta delle offerte estive di Internxt",
-    "subtitle": {
-      "line1": "Il piano gratuito di Internxt sarà ridotto a 1GB il 1 luglio.",
-      "line2": {
-        "normal1": "Evita questo downgrade usando il codice ",
-        "blue": "FREEVIP",
-        "normal2": " per ottenere il 90% di sconto su qualsiasi piano premium."
-      }
-    },
-    "cta": "Scegli il piano",
+    "label": "Fino al 75% di sconto",
+    "title": "È ora di passare alla privacy!",
+    "subtitle": "Vinci il nostro zaino premium con i nostri piani a vita.",
+    "cta": "Scegli piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
-    "lastCta": "*L'offerta è per account gratuiti o nuovi clienti",
+    "lastCta": "*L'offerta è valida per conti gratuiti o nuovi clienti",
     "features": [
       "Risparmia su tutti i piani Internxt",
       "Archiviazione cloud sicura e protetta",
+      "Tecnologia zero-knowledge",
       "Open source e trasparente",
-      "Trasferimenti crittografati end-to-end",
-      "Nessun accesso non autorizzato",
-      "L'offerta termina il 19 agosto"
-    ],
-    "copied": "Copiato negli appunti"
+      "Trasferimenti cifrati end-to-end",
+      "Nessun accesso non autorizzato"
+    ]
   },
   "banner": {
     "label": "Proteggi i tuoi file per sempre",
@@ -170,6 +159,72 @@
       "openDesktopApp": "Apri l'applicazione desktop",
       "anotherAccount": "Utilizzare un altro account?",
       "login": "Accedi"
+    }
+  },
+  "checkout": {
+    "title": "Ci sei quasi! Completa il pagamento in modo sicuro:",
+    "pay": "Paga",
+    "processing": "Elaborazione in corso...",
+    "checkout": "Pagamento",
+    "authComponent": {
+      "signUp": {
+        "emailAddress": "Il tuo indirizzo email",
+        "password": "Crea una password"
+      },
+      "signIn": {
+        "emailAddress": "Il tuo indirizzo email",
+        "password": "La tua password"
+      },
+      "title": {
+        "signUp": "Crea un account",
+        "signIn": "Accedi",
+        "userIsSignedIn": "Utente connesso come"
+      },
+      "emailMustNotBeEmpty": "L'email non deve essere vuota",
+      "privacyGuarantee": "Garanzia di privacy: Non condividiamo le tue informazioni e ti contatteremo solo se necessario per fornire il nostro servizio."
+    },
+    "paymentTitle": "Seleziona un metodo di pagamento",
+    "productCard": {
+      "title": "Riepilogo dell'ordine",
+      "selectedPlan": "Piano selezionato",
+      "renewalPeriod": {
+        "month": "mensile",
+        "year": "annuale",
+        "lifetime": "a vita"
+      },
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 piano {{interval}}",
+        "year": "{{spaceToUpgrade}} - 1 piano {{interval}}",
+        "lifetime": "{{spaceToUpgrade}} - piano {{interval}}"
+      },
+      "billed": {
+        "month": "Fatturato mensilmente",
+        "year": "Fatturato annualmente",
+        "lifetime": "Pagamento unico"
+      },
+      "saving": "Stai risparmiando {{percent}}%",
+      "planDetails": {
+        "title": "Dettagli del piano:",
+        "features": [
+          "{{spaceToUpgrade}} di spazio di archiviazione crittografato",
+          "Condivisione di file e cartelle crittografati",
+          "Condivisione di file protetta da password",
+          "Accedi ai tuoi file da qualsiasi dispositivo",
+          "Accesso a tutti i nostri servizi",
+          "Carica file fino a 20GB",
+          "Autenticazione a due fattori (2FA)",
+          "Assistenza clienti premium",
+          "Garanzia di rimborso di 30 giorni"
+        ]
+      },
+      "total": "Totale: ",
+      "addCoupon": {
+        "buttonTitle": "Aggiungi coupon",
+        "inputText": "Codice coupon",
+        "applyCodeButtonTitle": "Applica"
+      },
+      "amountSaved": "Risparmia ",
+      "withAnnualBilling": "con fatturazione annuale"
     }
   },
   "general": {
@@ -935,8 +990,6 @@
     "workingOnIt": "Stiamo lavorando per offrirvi un'esperienza migliore.",
     "noFilePreview": "Non è disponibile un'anteprima del file",
     "browserNotSupported": "Browser non supportato ({{userAgent}})",
-    "inviteAFriend": "Errore nell'invio dell'invito a un amico: {{message}}",
-    "inviteAFriendEmpty": "Errore nell'invio dell'invito: È necessario specificare un'e-mail",
     "subscribeToNewsletter": "Errore nell'iscrizione alla newsletter: {{message}}",
     "lastPasswordError": "La password inserita come ultima sembra non essere valida. Riprovate e se il problema persiste, contattate il nostro supporto.",
     "incorrectPassword": "La password attuale introdotta non corrisponde. Assicurarsi che sia corretta.",
@@ -1179,7 +1232,6 @@
     "twoFactorAuthDisabled": "L'autenticazione a due fattori è stata disattivata",
     "joinedToTheTeam": "Ti sei unito al team con successo",
     "done": "Fatto",
-    "inviteAFriend": "Invitation envoyée à {{email}}",
     "subscribeToNewsletter": "{{email}} si è iscritto con successo alla newsletter"
   },
   "shareItemDialog": {
@@ -1208,7 +1260,10 @@
     "emailNotEmpty": "L'e-mail non deve essere vuota",
     "verificationEmail": "L'e-mail di verifica è stata inviata",
     "successCancelSubscription": "L'abbonamento è stato annullato",
-    "errorCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento"
+    "errorCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento",
+    "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
+    "errorPurchaseBusinessPlan": "Hai già un piano aziendale.",
+    "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti."
   },
   "actions": {
     "undo": "Annulla",
@@ -1337,20 +1392,6 @@
     },
     "plans": {
       "advice": "You will be redirected to your AppSumo account"
-    }
-  },
-  "inviteAFriend": {
-    "title": "Invita un amico",
-    "descriptionWidget": "Ottenete fino a {{N}}GB di spazio di archiviazione extra gratuito invitando i vostri amici (1GB per ogni utente registrato tramite il vostro invito)",
-    "description": "Spargi la voce, ricevi 1GB per ogni amico che inviti in Internxt. Ottieni fino a un massimo di {{N}} GB",
-    "label": "Indirizzo e-mail dell'amico",
-    "placeholder": "Inserisci l'email dell'amico",
-    "actions": {
-      "sendInvitation": "Invia invito",
-      "seeInvitations": "Visualizza tutti gli inviti"
-    },
-    "errors": {
-      "dailyEmailLimit": "Avete raggiunto il limite di 10 inviti/giorno"
     }
   },
   "newsletter": {

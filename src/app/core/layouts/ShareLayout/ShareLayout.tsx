@@ -21,11 +21,12 @@ interface ShareLayoutProps {
 
 export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
   const { translate } = useTranslationContext();
+
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useAppSelector((state) => state.user.user);
   const fullName = `${user?.name} ${user?.lastname}`;
   const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     getDatabaseProfileAvatar().then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null));

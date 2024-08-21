@@ -14,6 +14,7 @@ export default function Button({
   autofocus,
   buttonDataCy,
   buttonChildrenDataCy,
+  id,
 }: {
   variant?: 'primary' | 'accent' | 'secondary' | 'tertiary';
   type?: 'button' | 'submit';
@@ -27,6 +28,7 @@ export default function Button({
   autofocus?: boolean;
   buttonDataCy?: string;
   buttonChildrenDataCy?: string;
+  id?: string;
 }): JSX.Element {
   let styles = '';
 
@@ -50,6 +52,7 @@ export default function Button({
   }
   return (
     <button
+      id={id}
       data-cy={buttonDataCy}
       onClick={onClick}
       disabled={disabled || loading}

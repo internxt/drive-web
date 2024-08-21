@@ -1,3 +1,10 @@
+import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
+
+export enum Currency {
+  'eur' = '€',
+  'usd' = '$',
+}
+
 export interface ProductMetadata {
   is_drive: boolean;
   is_teams: boolean;
@@ -61,3 +68,40 @@ export enum RenewalPeriod {
   Monthly = 'monthly',
   Annually = 'annually',
 }
+
+export type CurrentPlanSelected = DisplayPrice & { decimalAmount: number };
+
+// Checkout View Data
+export type PlanData = {
+  selectedPlan: DisplayPrice & { decimalAmount: number };
+  upsellPlan: DisplayPrice & { decimalAmount: number };
+};
+
+export type AuthMethodTypes = 'signUp' | 'signIn' | 'userIsSignedIn';
+
+export interface ClientSecretData {
+  clientSecretType: 'payment' | 'setup';
+  client_secret: string;
+}
+
+export interface PasswordStateProps {
+  tag: 'error' | 'warning' | 'success';
+  label: string;
+}
+
+export interface CouponCodeData {
+  codeId: string;
+  codeName: string;
+  amountOff?: number;
+  percentOff?: number;
+}
+
+export interface ErrorStates {
+  authError: string;
+  stripeError: string;
+  couponError: string;
+}
+
+export type ErrorType = 'auth' | 'stripe' | 'coupon';
+
+export type PartialErrorState = Partial<Record<ErrorType, string>>;

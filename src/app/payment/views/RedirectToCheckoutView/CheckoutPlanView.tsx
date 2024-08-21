@@ -29,6 +29,9 @@ interface CheckoutOptions {
 export default function CheckoutPlanView(): JSX.Element {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
+  const params = new URLSearchParams(window.location.search);
+  const planType = String(params.get('planType'));
+
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   const plan = useSelector((state: RootState) => state.plan) as PlanState;
@@ -36,9 +39,9 @@ export default function CheckoutPlanView(): JSX.Element {
   if (user === undefined) {
     navigationService.push(AppView.Login);
   }
-  const { businessSubscription } = plan;
+  const { individualSubscription, businessSubscription } = plan;
 
-  const subscription = businessSubscription;
+  const subscription = planType === 'business' ? businessSubscription : individualSubscription;
 
   useEffect(() => {
     if (subscription) {
@@ -48,11 +51,20 @@ export default function CheckoutPlanView(): JSX.Element {
       const mode = String(params.get('mode') as string | undefined);
       const freeTrials = Number(params.get('freeTrials'));
       const currency = String(params.get('currency'));
-      checkout(planId, currency, coupon, mode, freeTrials);
+      const planType = String(params.get('planType'));
+
+      checkout(planId, currency, coupon, mode, freeTrials, planType);
     }
   }, [subscription]);
 
-  async function checkout(planId: string, currency: string, coupon?: string, mode?: string, freeTrials?: number) {
+  async function checkout(
+    planId: string,
+    currency: string,
+    coupon?: string,
+    mode?: string,
+    freeTrials?: number,
+    planType?: string,
+  ) {
     let response;
 
     const checkoutOptions: CheckoutOptions = {
@@ -114,6 +126,13 @@ export default function CheckoutPlanView(): JSX.Element {
         }
       } else {
         try {
+          if (planType === 'business') {
+            notificationsService.show({
+              text: translate('notificationMessages.errorPurchaseBusinessPlan'),
+              type: ToastType.Info,
+            });
+            navigationService.push(AppView.Login);
+          }
           const couponCode = coupon === 'null' ? undefined : coupon;
           const { userSubscription } = await paymentService.updateSubscriptionPrice({
             priceId: planId,

@@ -21,8 +21,6 @@ import TrashView from '../../drive/views/TrashView/TrashView';
 import GuestAcceptInvitationView from '../../guests/views/GuestAcceptInviteView/GuestAcceptInviteView';
 import CheckoutCancelView from '../../payment/views/CheckoutCancelView/CheckoutCancelView';
 import CheckoutSuccessView from '../../payment/views/CheckoutSuccessView/CheckoutSuccessView';
-import CheckoutPlanView from '../../payment/views/CheckoutView/CheckoutPlanView';
-import CheckoutView from '../../payment/views/CheckoutView/CheckoutView';
 import ShareFileView from '../../share/views/ShareView/ShareFileView';
 import DeactivationTeamsView from '../../teams/views/DeactivationTeamsView/DeactivationTeamsView';
 import JoinTeamView from '../../teams/views/JoinTeamView/JoinTeamView';
@@ -35,6 +33,8 @@ import SharedViewWrapper from '../../share/views/SharedLinksView/SharedViewWrapp
 import ChangeEmailView from '../views/ChangeEmailView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
 import VerifyEmailView from '../views/VerifyEmailView';
+import CheckoutViewWrapper from '../../payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
+import CheckoutPlanView from '../../payment/views/RedirectToCheckoutView/CheckoutPlanView';
 
 const views: Array<{
   id: string;
@@ -64,7 +64,7 @@ const views: Array<{
   { id: AppView.TeamSuccess, component: TeamSuccessView },
   { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
   { id: AppView.CheckoutCancel, component: CheckoutCancelView },
-  { id: AppView.Checkout, component: CheckoutView },
+  { id: AppView.Checkout, component: CheckoutViewWrapper },
   { id: AppView.CheckoutPlan, component: CheckoutPlanView },
   { id: AppView.RecoveryLink, component: RecoveryLinkView },
   { id: AppView.ShareFileToken, component: ShareFileView },

@@ -1,13 +1,13 @@
 import { Menu, Transition } from '@headlessui/react';
 import { CaretDown, Trash, DownloadSimple } from '@phosphor-icons/react';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { DriveItemData } from 'app/drive/types';
-import { downloadItemsThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
+import { downloadItemsThunk } from '../../../../store/slices/storage/storage.thunks/downloadItemsThunk';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { uiActions } from '../../../../store/slices/ui';
-import useDriveItemStoreProps from 'app/drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
-import { getAppConfig } from 'app/core/services/config.service';
+import useDriveItemStoreProps from '../../../../drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
+import { getAppConfig } from '../../../../core/services/config.service';
 import { BreadcrumbsMenuProps } from '../types';
+import { DriveItemData } from '../../../../drive/types';
 
 const BreadcrumbsMenuBackups = (props: BreadcrumbsMenuProps): JSX.Element => {
   const { translate } = useTranslationContext();

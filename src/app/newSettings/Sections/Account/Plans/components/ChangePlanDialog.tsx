@@ -11,20 +11,22 @@ import { PlanState } from '../../../../../store/slices/plan';
 
 const ChangePlanDialog = ({
   prices,
-  isDialgOpen,
+  isDialogOpen,
   setIsDialogOpen,
   onPlanClick,
+  isUpdatingSubscription,
   priceIdSelected,
   subscriptionSelected,
   isLoading,
 }: {
   prices: DisplayPrice[];
-  isDialgOpen: boolean;
+  isDialogOpen: boolean;
+  isUpdatingSubscription?: boolean;
   setIsDialogOpen: (value: boolean) => void;
   onPlanClick: (value: string, currency: string) => void;
   priceIdSelected: string;
   subscriptionSelected: UserType;
-  isLoading: boolean;
+  isLoading?: boolean;
 }): JSX.Element => {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const { translate } = useTranslationContext();
@@ -70,7 +72,7 @@ const ChangePlanDialog = ({
   };
 
   return (
-    <Modal isOpen={isDialgOpen} onClose={onClose}>
+    <Modal isOpen={isDialogOpen} onClose={onClose}>
       <h3 className="mb-5 text-2xl font-medium">{translate('views.account.tabs.plans.dialog.title')}</h3>
       <p className="font-regular mb-9 text-lg">
         {translate('views.account.tabs.plans.dialog.subtitle1')}
@@ -146,6 +148,7 @@ const ChangePlanDialog = ({
           variant="primary"
           onClick={() => onPlanClick(priceIdSelected, selectedPlan?.currency)}
           loading={isLoading}
+          disabled={isUpdatingSubscription}
         >
           {translate('views.account.tabs.plans.dialog.button.continue')}
         </Button>

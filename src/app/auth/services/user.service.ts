@@ -20,11 +20,6 @@ export const sendDeactivationEmail = (email: string): Promise<void> => {
   return authClient.sendDeactivationEmail(email);
 };
 
-const inviteAFriend = (email: string): Promise<void> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
-  return usersClient.sendInvitation(email);
-};
-
 const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
   const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
   return usersClient.preRegister(email);
@@ -92,7 +87,6 @@ const userService = {
   initializeUser,
   refreshUser,
   sendDeactivationEmail,
-  inviteAFriend,
   updateUserProfile,
   getFriendInvites,
   updateUserAvatar,

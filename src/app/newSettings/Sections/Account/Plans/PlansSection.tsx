@@ -29,6 +29,7 @@ import {
   getPlanName,
   getRenewalPeriod,
 } from './utils/planUtils';
+import { AppView } from 'app/core/types';
 
 interface PlansSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -71,6 +72,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const [cancellingSubscription, setCancellingSubscription] = useState(false);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isUpdatingSubscription, setIsUpdatingSubscription] = useState<boolean>(false);
   const [priceSelected, setPriceSelected] = useState<DisplayPrice>(FREE_PLAN_DATA);
 
   const currentRenewalInterval = isIndividualSubscriptionSelected
@@ -143,7 +145,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     }
   }, []);
 
-  const showCancelSubscriptionErrorNotificacion = useCallback(
+  const showCancelSubscriptionErrorNotification = useCallback(
     (errorMessage?: string) =>
       notificationsService.show({
         text: errorMessage ?? translate('notificationMessages.errorCancelSubscription'),
@@ -187,7 +189,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           .catch((err) => {
             const error = errorService.castError(err);
             errorService.reportError(error);
-            showCancelSubscriptionErrorNotificacion(error.message);
+            showCancelSubscriptionErrorNotification(error.message);
           });
       } else {
         handlePaymentSuccess();
@@ -195,7 +197,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
-      showCancelSubscriptionErrorNotificacion(error.message);
+      showCancelSubscriptionErrorNotification(error.message);
     }
   };
 
@@ -217,63 +219,39 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
-      showCancelSubscriptionErrorNotificacion();
-    }
-  };
-
-  const handleLifetimeCheckout = async ({
-    priceId,
-    currency,
-    userEmail,
-  }: {
-    userEmail: string;
-    priceId: string;
-    currency: string;
-  }) => {
-    try {
-      const response = await createCheckoutSession({
-        userEmail,
-        priceId,
-        currency,
-        mode: 'payment',
-      });
-      localStorage.setItem('sessionId', response.sessionId);
-      await paymentService.redirectToCheckout(response).then(async (result) => {
-        await paymentService.cancelSubscription(selectedSubscription);
-        if (result.error) {
-          notificationsService.show({
-            type: ToastType.Error,
-            text: result.error.message as string,
-          });
-          return;
-        }
-
-        notificationsService.show({
-          type: ToastType.Success,
-          text: 'Payment successful',
-        });
-      });
-    } catch (err) {
-      const error = errorService.castError(err);
-      errorService.reportError(error);
-      showCancelSubscriptionErrorNotificacion();
+      showCancelSubscriptionErrorNotification();
     }
   };
 
   const onChangePlanClicked = async (priceId: string, currency: string) => {
     setIsLoadingCheckout(true);
+    setIsUpdatingSubscription(true);
     const isCurrentPlanTypeSubscription = isIndividualSubscriptionSelected
       ? individualSubscription?.type === 'subscription'
       : businessSubscription?.type === 'subscription';
 
     if (!isCurrentPlanTypeSubscription) {
       const mode = selectedInterval === 'lifetime' ? 'payment' : 'subscription';
-      await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
+      if (isIndividualSubscriptionSelected) {
+        onClosePreferences();
+        navigationService.push(AppView.Checkout, {
+          planId: priceId,
+          currency: currency,
+        });
+      } else {
+        await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
+      }
+
       setIsDialogOpen(false);
     } else {
       const isLifetimeIntervalSelected = selectedInterval === 'lifetime';
       if (isLifetimeIntervalSelected) {
-        await handleLifetimeCheckout({ priceId, currency, userEmail: user.email });
+        onClosePreferences();
+        navigationService.push(AppView.Checkout, {
+          planId: priceId,
+          currency: currency,
+        });
+        setIsDialogOpen(false);
       } else {
         await handleSubscriptionPayment(priceId);
         dispatch(planThunks.initializeThunk()).unwrap();
@@ -281,6 +259,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       }
     }
     setIsLoadingCheckout(false);
+    setIsUpdatingSubscription(false);
   };
 
   async function cancelSubscription(feedback: string) {
@@ -345,9 +324,10 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       {shouldDisplayChangePlanDialog() && priceSelected && (
         <ChangePlanDialog
           prices={isIndividualSubscriptionSelected ? individualPrices : businessPrices}
-          isDialgOpen={isDialogOpen}
+          isDialogOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}
           onPlanClick={onChangePlanClicked}
+          isUpdatingSubscription={isUpdatingSubscription}
           priceIdSelected={priceSelected.id}
           subscriptionSelected={selectedSubscription}
           isLoading={isLoadingCheckout}

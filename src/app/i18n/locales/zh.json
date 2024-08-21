@@ -4,31 +4,20 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": {
-      "upTo": "高达 ",
-      "discount": "80% 折扣"
-    },
-    "title": "享受 Internxt 的夏季优惠",
-    "subtitle": {
-      "line1": "Internxt 的免费计划将于 7 月 1 日减少到 1GB。",
-      "line2": {
-        "normal1": "使用代码 ",
-        "blue": "FREEVIP",
-        "normal2": " 绕过此降级，享受任何高级计划 90% 的折扣。"
-      }
-    },
+    "label": "高达 75% 的折扣",
+    "title": "转向隐私的时候到了！",
+    "subtitle": "通过我们的终身计划赢得我们的高级背包。",
     "cta": "选择计划",
     "guarantee": "30天退款保证",
     "lastCta": "*优惠适用于免费账户或新客户",
     "features": [
-      "所有 Internxt 计划均可享受优惠",
+      "节省所有Internxt计划的费用",
       "安全可靠的云存储",
-      "开源和透明",
+      "零知识技术",
+      "开源且透明",
       "端到端加密传输",
-      "无未授权访问",
-      "优惠截止至8月19日"
-    ],
-    "copied": "已复制到剪贴板"
+      "无未经授权的访问"
+    ]
   },
   "valentinesBanner": {
     "title": "爱无极限！",
@@ -170,6 +159,72 @@
       "openDesktopApp": "打开桌面应用程序",
       "anotherAccount": "使用另一个帐户？",
       "login": "登录"
+    }
+  },
+  "checkout": {
+    "title": "您快完成了！请安全结账：",
+    "pay": "支付",
+    "processing": "处理中...",
+    "checkout": "结账",
+    "authComponent": {
+      "signUp": {
+        "emailAddress": "您的电子邮件地址",
+        "password": "创建密码"
+      },
+      "signIn": {
+        "emailAddress": "您的电子邮件地址",
+        "password": "您的密码"
+      },
+      "title": {
+        "signUp": "创建账户",
+        "signIn": "登录",
+        "userIsSignedIn": "用户已登录为"
+      },
+      "emailMustNotBeEmpty": "电子邮件不能为空",
+      "privacyGuarantee": "隐私保证：我们不会分享您的信息，并且只会在提供服务时与您联系。"
+    },
+    "paymentTitle": "选择支付方式",
+    "productCard": {
+      "title": "订单摘要",
+      "selectedPlan": "选择的计划",
+      "renewalPeriod": {
+        "month": "每月",
+        "year": "每年",
+        "lifetime": "终身"
+      },
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 {{interval}} 计划",
+        "year": "{{spaceToUpgrade}} - 1 {{interval}} 计划",
+        "lifetime": "{{spaceToUpgrade}} - {{interval}} 计划"
+      },
+      "billed": {
+        "month": "按月计费",
+        "year": "按年计费",
+        "lifetime": "一次性支付"
+      },
+      "saving": "您节省了 {{percent}}%",
+      "planDetails": {
+        "title": "计划详情：",
+        "features": [
+          "{{spaceToUpgrade}} 加密存储",
+          "加密文件和文件夹共享",
+          "密码保护的文件共享",
+          "从任何设备访问您的文件",
+          "访问我们所有的服务",
+          "上传文件最大至 20GB",
+          "双因素认证（2FA）",
+          "高级客户支持",
+          "30 天退款保证"
+        ]
+      },
+      "total": "总计：",
+      "addCoupon": {
+        "buttonTitle": "添加优惠券",
+        "inputText": "优惠券代码",
+        "applyCodeButtonTitle": "应用"
+      },
+      "amountSaved": "节省 ",
+      "withAnnualBilling": "按年计费"
     }
   },
   "general": {
@@ -942,8 +997,6 @@
     "workingOnIt": "我们正在努力为您带来更好的体验。",
     "noFilePreview": "没有可用的文件预览",
     "browserNotSupported": "浏览器不支持 ({{userAgent}})",
-    "inviteAFriend": "向朋友发送邀请时出错: {{message}}",
-    "inviteAFriendEmpty": "发送邀请时出错 您必须指定电子邮件地址",
     "subscribeToNewsletter": "订阅时事通讯时出错: {{message}}",
     "lastPasswordError": "您上次输入的密码似乎无效。再试一次，如果问题仍然存在，请联系我们的支持人员。",
     "incorrectPassword": "您输入的当前密码不匹配。请确保其正确。",
@@ -1186,7 +1239,6 @@
     "twoFactorAuthDisabled": "您的双因素身份验证已被禁用",
     "joinedToTheTeam": "您已成功加入团队",
     "done": "完成",
-    "inviteAFriend": "已发送邀请至{{email}}",
     "subscribeToNewsletter": "{{email}} 成功订阅电子报"
   },
   "shareItemDialog": {
@@ -1219,7 +1271,10 @@
     "errorCancelSubscription": "取消订阅时出了点问题",
     "successApplyCoupon": "3个月免费申请",
     "errorApplyCoupon": "应用折扣时出错",
-    "alreadyAppliedCoupon": "优惠券已使用"
+    "alreadyAppliedCoupon": "优惠券已使用",
+    "errorCreatingSubscription": "创建您的订阅时出现问题",
+    "errorPurchaseBusinessPlan": "您已经有一个商业计划",
+    "couponIsNotValidForUserError": "优惠券只能由新客户兑换。"
   },
   "actions": {
     "undo": "撤销",
@@ -1351,20 +1406,7 @@
       "advice": "您将被重定向到您的 AppSumo 帐户"
     }
   },
-  "inviteAFriend": {
-    "title": "邀请一个朋友",
-    "descriptionWidget": "通过邀请您的朋友获得高达 {{N}}GB 的额外免费存储空间（通过您的邀请注册的每个用户 1GB）",
-    "description": "传播这条消息，你每邀请一个朋友加入Internxt，你就能获得1GB。总共可获得{{N}}",
-    "label": "邀请至",
-    "placeholder": "输入好友的邮箱",
-    "actions": {
-      "sendInvitation": "发送邀请",
-      "seeInvitations": "查看所有邀请"
-    },
-    "errors": {
-      "dailyEmailLimit": "您已达到每天 10 次邀请的限制"
-    }
-  },
+
   "newsletter": {
     "dialog": {
       "title": "订阅我们的新闻",

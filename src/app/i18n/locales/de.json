@@ -4,31 +4,20 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": {
-      "upTo": "BIS ZU ",
-      "discount": "80% RABATT"
-    },
-    "title": "Genießen Sie die Sommerangebote von Internxt",
-    "subtitle": {
-      "line1": "Der kostenlose Plan von Internxt wird am 1. Juli auf 1 GB reduziert.",
-      "line2": {
-        "normal1": "Umgehen Sie dieses Downgrade mit dem Code ",
-        "blue": "FREEVIP",
-        "normal2": " um 90% Rabatt auf jeden Premium-Plan zu erhalten."
-      }
-    },
+    "label": "Bis zu 75% Rabatt",
+    "title": "Zeit, zur Privatsphäre zu wechseln!",
+    "subtitle": "Gewinnen Sie unseren Premium-Rucksack mit unseren lebenslangen Plänen.",
     "cta": "Plan wählen",
-    "guarantee": "30-tägige Geld-zurück-Garantie",
+    "guarantee": "30-Tage Geld-zurück-Garantie",
     "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
     "features": [
-      "Sparen Sie bei allen Internxt-Plänen",
-      "Sichere und geschützte Cloud-Speicherung",
+      "Sparen bei allen Internxt-Plänen",
+      "Sicherer und geschützter Cloud-Speicher",
+      "Zero-Knowledge-Technologie",
       "Open Source und transparent",
-      "Ende-zu-Ende-verschlüsselte Übertragungen",
-      "Kein unbefugter Zugriff",
-      "Das Angebot endet am 19. August"
-    ],
-    "copied": "In die Zwischenablage kopiert"
+      "Ende-zu-Ende verschlüsselte Übertragungen",
+      "Kein unbefugter Zugang"
+    ]
   },
   "valentinesBanner": {
     "title": "Liebe ohne grenzen!",
@@ -147,6 +136,72 @@
       "button": "Bestätigung zum Neustart des Kontos senden",
       "successDescription": "Ihr Konto und Passwort wurden zurückgesetzt",
       "error": "Beim Neustart des Kontos ist etwas schief gelaufen"
+    }
+  },
+  "checkout": {
+    "title": "Sie sind fast da! Sicher zur Kasse gehen:",
+    "pay": "Bezahlen",
+    "processing": "Verarbeitung läuft...",
+    "checkout": "Zur Kasse",
+    "authComponent": {
+      "signUp": {
+        "emailAddress": "Ihre E-Mail-Adresse",
+        "password": "Passwort erstellen"
+      },
+      "signIn": {
+        "emailAddress": "Ihre E-Mail-Adresse",
+        "password": "Ihr Passwort"
+      },
+      "title": {
+        "signUp": "Ein Konto erstellen",
+        "signIn": "Anmelden",
+        "userIsSignedIn": "Benutzer angemeldet als"
+      },
+      "emailMustNotBeEmpty": "Die E-Mail darf nicht leer sein",
+      "privacyGuarantee": "Datenschutzgarantie: Wir teilen Ihre Informationen nicht und werden Sie nur kontaktieren, wenn es notwendig ist, um unseren Service zu bieten."
+    },
+    "paymentTitle": "Wählen Sie eine Zahlungsmethode",
+    "productCard": {
+      "title": "Bestellübersicht",
+      "selectedPlan": "Ausgewählter Plan",
+      "renewalPeriod": {
+        "month": "monatlich",
+        "year": "jährlich",
+        "lifetime": "lebenslang"
+      },
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 {{interval}}-Plan",
+        "year": "{{spaceToUpgrade}} - 1 {{interval}}-Plan",
+        "lifetime": "{{spaceToUpgrade}} - {{interval}}-Plan"
+      },
+      "billed": {
+        "month": "Monatliche Abrechnung",
+        "year": "Jährliche Abrechnung",
+        "lifetime": "Einmalige Zahlung"
+      },
+      "saving": "Sie sparen {{percent}}%",
+      "planDetails": {
+        "title": "Plandetails:",
+        "features": [
+          "{{spaceToUpgrade}} verschlüsselter Speicher",
+          "Verschlüsseltes Teilen von Dateien und Ordnern",
+          "Passwortgeschütztes Teilen von Dateien",
+          "Zugriff auf Ihre Dateien von jedem Gerät",
+          "Zugang zu allen unseren Diensten",
+          "Hochladen von Dateien bis zu 20GB",
+          "Zwei-Faktor-Authentifizierung (2FA)",
+          "Premium-Kundensupport",
+          "30-Tage-Geld-zurück-Garantie"
+        ]
+      },
+      "total": "Gesamt: ",
+      "addCoupon": {
+        "buttonTitle": "Gutschein hinzufügen",
+        "inputText": "Gutscheincode",
+        "applyCodeButtonTitle": "Anwenden"
+      },
+      "amountSaved": "Sparen ",
+      "withAnnualBilling": "mit jährlicher Abrechnung"
     }
   },
   "general": {
@@ -894,8 +949,6 @@
     "workingOnIt": "Wir arbeiten daran, dir eine besseres Erfahrung zu bieten.",
     "noFilePreview": "Keine Dateivorschau vorhanden",
     "browserNotSupported": "Browser wird nicht unterstützt ({{userAgent}})",
-    "inviteAFriend": "Fehler beim Senden der Einladung an einen Freund: {{message}}",
-    "inviteAFriendEmpty": "Fehler beim Senden der Einladung Sie müssen eine E-Mail angeben",
     "subscribeToNewsletter": "Fehler beim Abonnieren des Newsletters: {{message}}",
     "lastPasswordError": "Das von dir zuletzt eingegebene Passwort scheint ungültig zu sein. Versuche es noch einmal. Wenn das Problem weiterhin besteht, wende dich bitte an unseren Support.",
     "incorrectPassword": "Das von dir eingegebene aktuelle Passwort stimmt nicht überein. Achte bitte darauf, dass es richtig ist.",
@@ -1135,7 +1188,6 @@
     "twoFactorAuthDisabled": "Deine Zwei-Faktor-Authentifizierung wurde deaktiviert!",
     "joinedToTheTeam": "Du bist dem Team erfolgreich beigetreten",
     "done": "Erledigt",
-    "inviteAFriend": "Einladung an {{email}} gesendet",
     "subscribeToNewsletter": "{{email}} Newsletter erfolgreich abonniert"
   },
   "shareItemDialog": {
@@ -1164,7 +1216,10 @@
     "emailNotEmpty": "E-Mail darf nicht leer sein",
     "verificationEmail": "Bestätigungs-E-Mail wurde gesendet",
     "successCancelSubscription": "Dein Abonnement wurde gekündigt",
-    "errorCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten"
+    "errorCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten",
+    "errorCreatingSubscription": "Beim Erstellen Ihres Abonnements ist ein Fehler aufgetreten",
+    "errorPurchaseBusinessPlan": "Sie haben bereits einen Geschäftstarif.",
+    "couponIsNotValidForUserError": "Der Gutschein kann nur von neuen Kunden eingelöst werden."
   },
   "actions": {
     "undo": "Rückgängig machen",
@@ -1292,20 +1347,6 @@
     },
     "plans": {
       "advice": "Du wirst zu deinem AppSumo-Konto weitergeleitet"
-    }
-  },
-  "inviteAFriend": {
-    "title": "Lade einen Freund ein",
-    "descriptionWidget": "Erhalte bis zu {{N}}GB zusätzlichen kostenlosen Speicherplatz, indem du deine Freunde einlädst (1 GB pro Nutzer, der sich über deine Einladung registriert hat)",
-    "description": "Erhalte 1 GB pro eingeladenem Freund kostenlos. Du kannst bis zu {{N}}GB erhalten.",
-    "label": "E-Mail deines Freundes",
-    "placeholder": "Gib die E-Mail Adresse deines Freundes ein",
-    "actions": {
-      "sendInvitation": "Sende Einladung",
-      "seeInvitations": "Sieh alle Einladungen"
-    },
-    "errors": {
-      "dailyEmailLimit": "Du hast das Limit von 10 Einladungen/Tag erreicht"
     }
   },
   "newsletter": {
