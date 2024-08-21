@@ -56,6 +56,7 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
       setIsGetTeamsLoading(true);
       try {
         const teams = await workspacesService.getWorkspaceTeams(selectedWorkspace.workspaceUser.workspaceId);
+        teams.sort((a, b) => a.team.name.localeCompare(b.team.name));
         setTeams(teams);
         if ((selectedTeam && isRenameTeamDialogOpen) || (selectedTeam && isChangeManagerDialogOpen)) {
           const team = teams.find((team) => team.team.id === selectedTeam?.team.id);
