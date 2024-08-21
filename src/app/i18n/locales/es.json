@@ -928,7 +928,7 @@
     "emptyPassword": "La contraseña no puede estar vacía.",
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
-    "maxSizeUploadLimitError": "Archivo muy grande (mayor de 40GB)",
+    "maxSizeUploadLimitError": "File too large (greater than 40GB)",
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera"
   },
@@ -1301,8 +1301,8 @@
       "progress": "Vaciando papelera..."
     },
     "uploadItems": {
-      "title": "Maximum file upload",
-      "advice": "The maximum is 1000 files per upload.",
+      "title": "Subida máxima de archivos alcanzada",
+      "advice": "El máximo es de 3000 archivos por subida.",
       "close": "Cerrar"
     },
     "movingToTrash": "Moviendo elementos a la papelera",
@@ -1461,7 +1461,7 @@
           "title": "Eliminar miembro",
           "description": "{{name}} perderá acceso al espacio de trabajo. Todos sus archivos y carpetas permanecerán iguales.",
           "remove": "Eliminar",
-          "removing" : "Eliminando"
+          "removing": "Eliminando"
         },
         "changePasswordModal": {
           "title": "Solicitar cambio de contraseña",

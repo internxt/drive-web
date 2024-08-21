@@ -1325,7 +1325,7 @@
     },
     "uploadItems": {
       "title": "Maximum file upload",
-      "advice": "The maximum is 1000 files per upload.",
+      "advice": "The maximum is 3000 files per upload.",
       "close": "Close"
     },
     "movingToTrash": "Moving items to trash",
@@ -1484,7 +1484,7 @@
           "title": "Remove member",
           "description": "{{name}} will lose access to the Workspace. All their files and folders will stay the same.",
           "remove": "Remove",
-          "removing" : "Removing"
+          "removing": "Removing"
         },
         "changePasswordModal": {
           "title": "Request password change",

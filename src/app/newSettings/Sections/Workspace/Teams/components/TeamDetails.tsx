@@ -56,7 +56,7 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
     <section className="space-y-3">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-xl font-medium text-gray-100">{team.team.name}</h3>
+          <h3 className="break-all pr-2 text-xl font-medium text-gray-100">{team.team.name}</h3>
           <h4 className="font-regular mt-0.5 text-base text-gray-60">
             <span>{selectedTeamMembers.length} </span>
             <span>

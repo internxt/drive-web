@@ -1324,7 +1324,7 @@
     },
     "uploadItems": {
       "title": "最大文件上传",
-      "advice": "每次上传最多 1000 个文件。",
+      "advice": "每次上传最多 3000 个文件。",
       "close": "关闭"
     },
     "movingToTrash": "正在将项目移动到回收站",
@@ -1483,7 +1483,7 @@
           "title": "删除成员",
           "description": "{{name}} 将失去对工作区的访问权限。所有他们的文件和文件夹将保持不变。",
           "remove": "删除",
-          "removing" : "去除"
+          "removing": "去除"
         },
         "changePasswordModal": {
           "title": "请求更改密码",
@@ -1542,7 +1542,7 @@
         "actions": {
           "deactivate": "停用会员",
           "reactivate": "重新激活成员",
-          "remove" : "移除成員",
+          "remove": "移除成員",
           "passwordChange": "请求更改密码"
         }
       },
