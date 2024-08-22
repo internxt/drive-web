@@ -55,7 +55,7 @@ const BreadcrumbsBackupsView = ({
         };
         items.push({
           uuid: item.uuid,
-          label: item.name,
+          label: item.plainName || item.name,
           icon: null,
           isBackup: true,
           ...(i === backupsAsFoldersPath.length - 1 ? { active: false } : clickableOptions),
