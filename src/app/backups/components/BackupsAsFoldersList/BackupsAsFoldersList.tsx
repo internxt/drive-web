@@ -18,6 +18,7 @@ import List from '../../../shared/components/List';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
 import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { uiActions } from '../../../store/slices/ui';
+import { backupsActions } from 'app/store/slices/backups';
 
 export default function BackupsAsFoldersList({
   className = '',
@@ -159,6 +160,7 @@ export default function BackupsAsFoldersList({
                 isSelected: false,
               }));
               onItemSelected([...unselectedDevices, { device: item, isSelected: true }]);
+              dispatch(backupsActions.setCurrentFolder(item));
             }}
             onDoubleClick={onClick}
             skinSkeleton={Skeleton}
