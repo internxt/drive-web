@@ -61,6 +61,11 @@ export const ProductFeaturesComponent = ({
   const planAmount = getProductAmount(selectedPlan.decimalAmount, couponCodeData).toFixed(2);
   const upsellPlanAmount = upsellManager.amount && getProductAmount(upsellManager.amount, couponCodeData).toFixed(2);
 
+  const discountPercentage =
+    couponCodeData?.amountOff && couponCodeData?.amountOff < selectedPlan.amount
+      ? ((couponCodeData?.amountOff / selectedPlan.amount) * 100).toFixed(2)
+      : undefined;
+
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
       <div className="flex w-full flex-row items-center justify-between space-x-4">
@@ -91,7 +96,7 @@ export const ProductFeaturesComponent = ({
                 <SealPercent weight="fill" size={24} />
                 <p className="">
                   {translate('checkout.productCard.saving', {
-                    percent: couponCodeData?.percentOff,
+                    percent: couponCodeData?.percentOff ?? discountPercentage,
                   })}
                 </p>
               </div>
