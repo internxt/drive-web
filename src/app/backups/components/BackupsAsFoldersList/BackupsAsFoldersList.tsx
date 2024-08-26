@@ -18,6 +18,7 @@ import List from '../../../shared/components/List';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
 import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { uiActions } from '../../../store/slices/ui';
+import { backupsActions } from 'app/store/slices/backups';
 
 export default function BackupsAsFoldersList({
   className = '',
@@ -45,8 +46,9 @@ export default function BackupsAsFoldersList({
     const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
     const [responsePromise] = storageClient.getFolderContentByUuid(folderId);
     const response = await responsePromise;
-    const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
-    const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
+    const files = response.files.map((file) => ({ ...file, isFolder: false, name: file.plainName }));
+    const folders = response.children.map((folder) => ({ ...folder, isFolder: true, name: folder.plainName }));
+    const items = _.concat(folders as DriveItemData[], files as DriveItemData[]);
     setCurrentItems(items);
     setIsloading(false);
   }
@@ -128,9 +130,7 @@ export default function BackupsAsFoldersList({
             isLoading={isLoading}
             itemComposition={[
               (item) => {
-                const displayName = item.type
-                  ? `${item.plainName ?? item.name}.${item.type}`
-                  : item.plainName ?? item.name;
+                const displayName = item.type === 'folder' ? item.name : `${item.plainName}.${item.type}`;
                 const Icon = iconService.getItemIcon(item.isFolder, item.type);
 
                 return (
@@ -160,6 +160,7 @@ export default function BackupsAsFoldersList({
                 isSelected: false,
               }));
               onItemSelected([...unselectedDevices, { device: item, isSelected: true }]);
+              dispatch(backupsActions.setCurrentFolder(item));
             }}
             onDoubleClick={onClick}
             skinSkeleton={Skeleton}
