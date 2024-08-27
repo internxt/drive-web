@@ -62,8 +62,11 @@ const CheckoutView = ({
   });
 
   function onAuthMethodToggled(authMethod: AuthMethodTypes) {
+    reset({
+      email: '',
+      password: '',
+    });
     checkoutViewManager.handleAuthMethodChange(authMethod);
-    reset();
   }
 
   return (
