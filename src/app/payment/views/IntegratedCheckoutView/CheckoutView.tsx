@@ -12,6 +12,7 @@ import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
 import { State } from 'app/payment/store/types';
 import { LegacyRef } from 'react';
+import { OptionalB2BDropdownComponent } from 'app/payment/components/checkout/OptionalB2BDropdownComponent';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -92,20 +93,25 @@ const CheckoutView = ({
                   onLogOut={checkoutViewManager.onLogOut}
                 />
                 <div className="flex flex-col space-y-8 pb-20">
-                  <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.paymentTitle')}</p>
-                  <div className="flex flex-col rounded-2xl border border-gray-10 bg-surface p-5">
-                    <AddressElement
-                      onChange={(e) => {
-                        checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
-                      }}
-                      options={{
-                        mode: 'billing',
-                        autocomplete: {
-                          mode: 'automatic',
-                        },
-                      }}
-                    />
+                  <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.addressBillingTitle')}</p>
+                  <div className="flex w-full flex-col items-center gap-10">
+                    <div className="flex w-full flex-col rounded-2xl border border-gray-10 bg-surface p-5">
+                      <AddressElement
+                        onChange={(e) => {
+                          checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
+                        }}
+                        options={{
+                          mode: 'billing',
+                          autocomplete: {
+                            mode: 'automatic',
+                          },
+                        }}
+                      />
+                    </div>
+                    {/* !TODO: Show or hide this component depending on the plan type (Individual or Business) */}
+                    <OptionalB2BDropdownComponent errors={errors} register={register} translate={translate} />
                   </div>
+                  <p className="text-2xl font-semibold text-gray-100">3. {translate('checkout.paymentTitle')}</p>
                   <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
                   {error?.stripe && (
                     <div id="stripeError" className="text-red-dark">

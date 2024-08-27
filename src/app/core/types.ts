@@ -23,6 +23,8 @@ export interface IFormValues {
   teamMembers: number;
   token: string;
   userRole: string;
+  companyName: string;
+  companyVatId: string;
 }
 
 export interface AppConfig {

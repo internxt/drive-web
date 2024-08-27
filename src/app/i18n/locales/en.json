@@ -183,6 +183,14 @@
       "emailMustNotBeEmpty": "Email must not be empty",
       "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
     },
+    "addressBillingTitle": "Address Billing",
+    "addressBilling": {
+      "optional": {
+        "cta": "Optional",
+        "companyName": "Company name",
+        "companyVatId": "Company Vat ID"
+      }
+    },
     "paymentTitle": "Select a payment method",
     "productCard": {
       "renewalPeriod": {

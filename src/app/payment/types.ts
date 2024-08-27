@@ -71,10 +71,12 @@ export enum RenewalPeriod {
 
 export type CurrentPlanSelected = DisplayPrice & { decimalAmount: number };
 
+type RequestedPlanData = DisplayPrice & { decimalAmount: number; minimumSeats?: number; maximumSeats?: number };
+
 // Checkout View Data
 export type PlanData = {
-  selectedPlan: DisplayPrice & { decimalAmount: number };
-  upsellPlan: DisplayPrice & { decimalAmount: number };
+  selectedPlan: RequestedPlanData;
+  upsellPlan: RequestedPlanData;
 };
 
 export type AuthMethodTypes = 'signUp' | 'signIn' | 'userIsSignedIn';

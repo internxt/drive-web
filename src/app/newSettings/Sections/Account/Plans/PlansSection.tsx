@@ -217,15 +217,11 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
     if (!isCurrentPlanTypeSubscription) {
       const mode = selectedInterval === 'lifetime' ? 'payment' : 'subscription';
-      if (isIndividualSubscriptionSelected) {
-        onClosePreferences();
-        navigationService.push(AppView.Checkout, {
-          planId: priceId,
-          currency: currency,
-        });
-      } else {
-        await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
-      }
+      onClosePreferences();
+      navigationService.push(AppView.Checkout, {
+        planId: priceId,
+        currency: currency,
+      });
 
       setIsDialogOpen(false);
     } else {
