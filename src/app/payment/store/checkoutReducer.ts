@@ -11,6 +11,7 @@ export const initialStateForCheckout: State = {
   elementsOptions: undefined,
   error: undefined,
   authMethod: 'signUp',
+  users: 1,
 };
 
 export const checkoutReducer = (state: State, action: Action): State => {
@@ -35,6 +36,8 @@ export const checkoutReducer = (state: State, action: Action): State => {
       return { ...state, authMethod: action.payload };
     case 'SET_ERROR':
       return { ...state, error: action.payload };
+    case 'SET_USERS':
+      return { ...state, users: action.payload };
     default:
       return state;
   }

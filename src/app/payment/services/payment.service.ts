@@ -62,10 +62,11 @@ const paymentService = {
     priceId: string,
     token: string,
     currency: string,
+    quantity = 1,
     promoCode?: string,
   ): Promise<CreatedSubscriptionData> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.createSubscription(customerId, priceId, token, currency, promoCode);
+    return paymentsClient.createSubscription(customerId, priceId, token, quantity, currency, promoCode);
   },
 
   async createPaymentIntent(

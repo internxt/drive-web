@@ -13,6 +13,7 @@ import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './Checko
 import { State } from 'app/payment/store/types';
 import { LegacyRef } from 'react';
 import { OptionalB2BDropdownComponent } from 'app/payment/components/checkout/OptionalB2BDropdownComponent';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -35,6 +36,7 @@ interface CheckoutViewProps {
   userAuthComponentRef: LegacyRef<HTMLDivElement>;
   checkoutViewVariables: State;
   checkoutViewManager: CheckoutViewManager;
+  setUsers: (users: number) => void;
 }
 
 const CheckoutView = ({
@@ -45,13 +47,14 @@ const CheckoutView = ({
   userAuthComponentRef,
   checkoutViewVariables,
   checkoutViewManager,
+  setUsers,
 }: CheckoutViewProps) => {
   const { translate } = useTranslationContext();
   // Those custom hooks should be here. They cannot be moved to the Parent, because it must be wrapped by <Elements> component.
   const stripeSDK = useStripe();
   const elements = useElements();
 
-  const { isPaying, error, couponCodeData, currentSelectedPlan } = checkoutViewVariables;
+  const { isPaying, error, couponCodeData, users, currentSelectedPlan } = checkoutViewVariables;
 
   const {
     register,
@@ -109,7 +112,9 @@ const CheckoutView = ({
                       />
                     </div>
                     {/* !TODO: Show or hide this component depending on the plan type (Individual or Business) */}
-                    <OptionalB2BDropdownComponent errors={errors} register={register} translate={translate} />
+                    {currentSelectedPlan.type === UserType.Business ? (
+                      <OptionalB2BDropdownComponent errors={errors} register={register} translate={translate} />
+                    ) : undefined}
                   </div>
                   <p className="text-2xl font-semibold text-gray-100">3. {translate('checkout.paymentTitle')}</p>
                   <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
@@ -128,8 +133,10 @@ const CheckoutView = ({
                   selectedPlan={currentSelectedPlan}
                   couponCodeData={couponCodeData}
                   couponError={error?.coupon}
-                  onCouponInputChange={checkoutViewManager.onCouponInputChange}
+                  users={users}
                   upsellManager={upsellManager}
+                  setUsers={setUsers}
+                  onCouponInputChange={checkoutViewManager.onCouponInputChange}
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
                 />
                 <Button type="submit" id="submit" className="flex lg:hidden" disabled={isPaying && isValid}>

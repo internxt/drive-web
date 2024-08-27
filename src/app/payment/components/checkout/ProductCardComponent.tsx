@@ -1,65 +1,86 @@
+import { useState } from 'react';
 import { Menu, Switch, Transition } from '@headlessui/react';
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { Check, SealPercent, X } from '@phosphor-icons/react';
-import { bytesToString } from 'app/drive/services/size.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { UpsellManagerProps } from 'app/payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
-import TextInput from 'app/share/components/ShareItemDialog/components/TextInput';
-import Button from 'app/shared/components/Button/Button';
-import { useThemeContext } from 'app/theme/ThemeProvider';
+
+import { bytesToString } from '../../../drive/services/size.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { UpsellManagerProps } from '../../../payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
+import TextInput from '../../../share/components/ShareItemDialog/components/TextInput';
+import Button from '../../../shared/components/Button/Button';
+import { useThemeContext } from '../../../theme/ThemeProvider';
 import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guarantee-dark.svg';
 import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
-import { useState } from 'react';
 import { CouponCodeData, Currency, CurrentPlanSelected } from '../../types';
 
 interface ProductFeaturesComponentProps {
   selectedPlan: CurrentPlanSelected;
-  couponCodeData?: CouponCodeData;
-  couponError?: string;
+  users: number;
   upsellManager: UpsellManagerProps;
+  setUsers: (users: number) => void;
   onRemoveAppliedCouponCode: () => void;
   onCouponInputChange: (promoCode: string) => void;
+  couponCodeData?: CouponCodeData;
+  couponError?: string;
 }
 
 const Separator = () => <div className="border border-gray-10" />;
+const SeparatorVertical = () => <div className="h-max border-[0.5px] border-gray-10 py-1" />;
 
-export const getProductAmount = (amount: DisplayPrice['amount'], couponCodeData?: CouponCodeData): number => {
+export const getProductAmount = (
+  amount: DisplayPrice['amount'],
+  users: number,
+  couponCodeData?: CouponCodeData,
+): number => {
   if (couponCodeData?.amountOff) {
-    return amount - couponCodeData.amountOff / 100;
+    return (amount - couponCodeData.amountOff / 100) * users;
   }
 
   if (couponCodeData?.percentOff) {
     const discount = 100 - couponCodeData.percentOff;
 
-    return (amount * discount) / 100;
+    return ((amount * discount) / 100) * users;
   }
 
-  return amount;
+  return amount * users;
 };
 
 export const ProductFeaturesComponent = ({
   selectedPlan,
   couponCodeData,
   couponError,
+  users,
   upsellManager,
+  setUsers,
   onRemoveAppliedCouponCode,
   onCouponInputChange,
 }: ProductFeaturesComponentProps) => {
   const { translate, translateList } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
-
   const [couponName, setCouponName] = useState<string>('');
-  const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
-
+  const [totalUsers, setTotalUsers] = useState<number>(3);
   const bytes = bytesToString(selectedPlan.bytes);
-  const features = translateList('checkout.productCard.planDetails.features', {
+
+  const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
+  const isBusiness = selectedPlan.type === UserType.Business;
+  const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
+  const totalLabel = isBusiness
+    ? translate('checkout.productCard.totalForBusiness', {
+        N: users,
+      })
+    : translate('checkout.productCard.total');
+  const maxUploadGBfile = bytes === '1TB' ? '5GB' : '20GB';
+  const features = translateList(`checkout.productCard.planDetails.features.${selectedPlan.type}`, {
     spaceToUpgrade: bytes,
+    minimumSeats: selectedPlan.minimumSeats,
+    maximumSeats: selectedPlan.maximumSeats,
+    maxUploadGBfile,
   });
-
   const normalPriceAmount = selectedPlan.decimalAmount;
-
-  const planAmount = getProductAmount(selectedPlan.decimalAmount, couponCodeData).toFixed(2);
-  const upsellPlanAmount = upsellManager.amount && getProductAmount(upsellManager.amount, couponCodeData).toFixed(2);
+  const planAmount = getProductAmount(selectedPlan.decimalAmount, 1, couponCodeData).toFixed(2);
+  const totalAmount = getProductAmount(selectedPlan.decimalAmount, users, couponCodeData).toFixed(2);
+  const upsellPlanAmount =
+    upsellManager.amount && getProductAmount(upsellManager.amount, users, couponCodeData).toFixed(2);
 
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
@@ -79,12 +100,75 @@ export const ProductFeaturesComponent = ({
             })}
           </p>
           <div className="flex flex-row items-center justify-between text-gray-100">
-            <p className="font-medium">{translate(`checkout.productCard.billed.${selectedPlan.interval}`)}</p>
+            <p className="font-medium">
+              {translate(`checkout.productCard.billed.${selectedPlan.interval}`)}
+              {perUserLabel}
+            </p>
             <p className="font-semibold">
               {Currency[selectedPlan.currency]}
               {planAmount}
             </p>
           </div>
+          {selectedPlan.type === UserType.Business ? (
+            <div
+              onKeyDown={(e) => {
+                e.stopPropagation();
+              }}
+              className="flex w-max flex-row items-center rounded-lg border"
+            >
+              <button
+                disabled={users === selectedPlan.minimumSeats}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setUsers(users - 1);
+                  setTotalUsers(totalUsers - 1);
+                }}
+                className="flex h-full flex-col items-center justify-center rounded-l-lg px-4 hover:bg-gray-10"
+              >
+                -
+              </button>
+              <SeparatorVertical />
+              <input
+                type="number"
+                className="flex w-10 items-center justify-center !rounded-none border-0 text-center !outline-none !ring-0"
+                value={totalUsers}
+                min={3}
+                max={10}
+                onChange={(e) => {
+                  e.preventDefault();
+                  setTotalUsers(Number(e.target.value));
+                }}
+                onKeyDown={(e) => {
+                  e.stopPropagation();
+                }}
+                onBlur={(e) => {
+                  e.preventDefault();
+                  const users = Number(totalUsers);
+                  if (users < 3) {
+                    setUsers(3);
+                    setTotalUsers(3);
+                  } else if (users > 10) {
+                    setUsers(10);
+                    setTotalUsers(10);
+                  } else {
+                    setUsers(users);
+                  }
+                }}
+              />
+              <SeparatorVertical />
+              <button
+                disabled={users === selectedPlan.maximumSeats}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setUsers(users + 1);
+                  setTotalUsers(totalUsers + 1);
+                }}
+                className="flex h-full flex-col items-center justify-center rounded-r-lg px-4 hover:bg-gray-10"
+              >
+                +
+              </button>
+            </div>
+          ) : undefined}
           {couponCodeData && (
             <div className="flex flex-row items-center justify-between font-semibold">
               <div className="flex flex-row items-center space-x-2 text-green-dark">
@@ -115,10 +199,10 @@ export const ProductFeaturesComponent = ({
           </div>
           <Separator />
           <div className="flex flex-row items-center justify-between text-2xl font-semibold text-gray-100">
-            <p>{translate('checkout.productCard.total')}</p>
+            <p>{totalLabel}</p>
             <p>
               {Currency[selectedPlan.currency]}
-              {planAmount}
+              {totalAmount}
             </p>
           </div>
           <Separator />

@@ -36,6 +36,10 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     dispatchReducer({ type: 'SET_PLAN', payload: plan });
   };
 
+  const setUsers = (users: number) => {
+    dispatchReducer({ type: 'SET_USERS', payload: users });
+  };
+
   const setSelectedPlan = (selectedPlan: PlanData['selectedPlan']) => {
     dispatchReducer({ type: 'SET_CURRENT_PLAN_SELECTED', payload: selectedPlan });
   };
@@ -72,5 +76,6 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     setPromoCodeData,
     setSelectedPlan,
     setStripeElementsOptions,
+    setUsers,
   };
 };

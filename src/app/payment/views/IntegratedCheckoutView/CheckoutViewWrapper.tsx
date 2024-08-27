@@ -124,6 +124,7 @@ const CheckoutViewWrapper = () => {
     setSelectedPlan,
     setStripeElementsOptions,
     setUserNameFromElementAddress,
+    setUsers,
   } = useCheckout(dispatchReducer);
   const [isUpsellSwitchActivated, setIsUpsellSwitchActivated] = useState<boolean>(false);
   const [isCheckoutReadyToRender, setIsCheckoutReadyToRender] = useState<boolean>(false);
@@ -140,6 +141,7 @@ const CheckoutViewWrapper = () => {
     couponCodeData,
     elementsOptions,
     promoCodeName,
+    users,
   } = state;
 
   const userInfo: UserInfoProps = {
@@ -338,6 +340,7 @@ const CheckoutViewWrapper = () => {
         token,
         customerId,
         couponCodeData?.codeId,
+        users,
       );
 
       // TEMPORARY HOT FIX
@@ -346,7 +349,7 @@ const CheckoutViewWrapper = () => {
       if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
       if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
       if (plan?.selectedPlan) {
-        const amountToPay = getProductAmount(plan?.selectedPlan.decimalAmount, couponCodeData)?.toFixed(2);
+        const amountToPay = getProductAmount(plan?.selectedPlan.decimalAmount, users, couponCodeData)?.toFixed(2);
         localStorageService.set('amountPaid', amountToPay);
       }
 
@@ -367,21 +370,19 @@ const CheckoutViewWrapper = () => {
       if ((err as any).status) {
         if ((err as any).status === 409) {
           setIsUpdateSubscriptionDialogOpen(true);
-          return;
         } else if ((err as any).status === 422) {
           notificationsService.show({
             text: translate('notificationMessages.couponIsNotValidForUserError'),
             type: ToastType.Error,
           });
-          return;
         }
+      } else {
+        notificationsService.show({
+          text: translate('notificationMessages.errorCreatingSubscription'),
+          type: ToastType.Error,
+        });
+        errorService.reportError(err);
       }
-
-      notificationsService.show({
-        text: translate('notificationMessages.errorCreatingSubscription'),
-        type: ToastType.Error,
-      });
-      errorService.reportError(err);
     } finally {
       setIsUserPaying(false);
     }
@@ -461,6 +462,9 @@ const CheckoutViewWrapper = () => {
       const plan = await checkoutService.fetchPlanById(planId, currency);
       setPlan(plan);
       setSelectedPlan(plan.selectedPlan);
+      if (plan.selectedPlan.minimumSeats) {
+        setUsers(plan.selectedPlan.minimumSeats);
+      }
 
       return plan;
     } catch (error) {
@@ -547,6 +551,7 @@ const CheckoutViewWrapper = () => {
             upsellManager={upsellManager}
             authMethod={authMethod}
             checkoutViewManager={checkoutViewManager}
+            setUsers={setUsers}
           />
           {individualPrices && currentSelectedPlan && isUpdateSubscriptionDialogOpen ? (
             <ChangePlanDialog
