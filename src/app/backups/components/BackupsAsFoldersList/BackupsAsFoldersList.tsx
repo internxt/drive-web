@@ -78,6 +78,7 @@ export default function BackupsAsFoldersList({
       if (!isLoading) {
         setIsloading(true);
         onFolderPush(item as DriveFolderData);
+        dispatch(backupsActions.setCurrentFolder(item));
       }
     } else {
       dispatch(uiActions.setIsFileViewerOpen(true));
@@ -160,7 +161,6 @@ export default function BackupsAsFoldersList({
                 isSelected: false,
               }));
               onItemSelected([...unselectedDevices, { device: item, isSelected: true }]);
-              dispatch(backupsActions.setCurrentFolder(item));
             }}
             onDoubleClick={onClick}
             skinSkeleton={Skeleton}
