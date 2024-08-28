@@ -17,7 +17,7 @@ interface ProductFeaturesComponentProps {
   selectedPlan: CurrentPlanSelected;
   users: number;
   upsellManager: UpsellManagerProps;
-  setUsers: (users: number) => void;
+  onUsersChange: (users: number) => void;
   onRemoveAppliedCouponCode: () => void;
   onCouponInputChange: (promoCode: string) => void;
   couponCodeData?: CouponCodeData;
@@ -51,7 +51,7 @@ export const ProductFeaturesComponent = ({
   couponError,
   users,
   upsellManager,
-  setUsers,
+  onUsersChange,
   onRemoveAppliedCouponCode,
   onCouponInputChange,
 }: ProductFeaturesComponentProps) => {
@@ -125,7 +125,7 @@ export const ProductFeaturesComponent = ({
                 disabled={users === selectedPlan.minimumSeats}
                 onClick={(e) => {
                   e.preventDefault();
-                  setUsers(users - 1);
+                  onUsersChange(users - 1);
                   setTotalUsers(totalUsers - 1);
                 }}
                 className="flex h-full flex-col items-center justify-center rounded-l-lg px-4 hover:bg-gray-10"
@@ -150,13 +150,13 @@ export const ProductFeaturesComponent = ({
                   e.preventDefault();
                   const users = Number(totalUsers);
                   if (users < 3) {
-                    setUsers(3);
+                    onUsersChange(3);
                     setTotalUsers(3);
                   } else if (users > 10) {
-                    setUsers(10);
+                    onUsersChange(10);
                     setTotalUsers(10);
                   } else {
-                    setUsers(users);
+                    onUsersChange(users);
                   }
                 }}
               />
@@ -165,7 +165,7 @@ export const ProductFeaturesComponent = ({
                 disabled={users === selectedPlan.maximumSeats}
                 onClick={(e) => {
                   e.preventDefault();
-                  setUsers(users + 1);
+                  onUsersChange(users + 1);
                   setTotalUsers(totalUsers + 1);
                 }}
                 className="flex h-full flex-col items-center justify-center rounded-r-lg px-4 hover:bg-gray-10"

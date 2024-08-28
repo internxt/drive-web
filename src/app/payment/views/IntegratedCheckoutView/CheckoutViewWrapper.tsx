@@ -131,7 +131,7 @@ const CheckoutViewWrapper = () => {
   const [isUpdateSubscriptionDialogOpen, setIsUpdateSubscriptionDialogOpen] = useState<boolean>(false);
   const [isUpdatingSubscription, setIsUpdatingSubscription] = useState<boolean>(false);
   const [individualPrices, setIndividualPrices] = useState<DisplayPrice[]>();
-
+  const [country, setCountry] = useState<string>('');
   const {
     authMethod,
     currentSelectedPlan,
@@ -310,7 +310,7 @@ const CheckoutViewWrapper = () => {
 
     setIsUserPaying(true);
 
-    const { email, password } = formData;
+    const { email, password, companyName, companyVatId } = formData;
 
     const userData = getUserInfo(user, email, userNameFromAddressElement, fullName);
 
@@ -333,7 +333,13 @@ const CheckoutViewWrapper = () => {
 
       await elements.submit();
 
-      const { customerId, token } = await paymentService.getCustomerId(userData.name, userData.email);
+      // !TODO: Get the user country from Address component
+      const { customerId, token } = await paymentService.getCustomerId(
+        companyName ?? userData.name,
+        userData.email,
+        'ES',
+        companyVatId,
+      );
 
       const { clientSecret, type, subscriptionId, paymentIntentId } = await checkoutService.getClientSecret(
         currentSelectedPlan as CurrentPlanSelected,
@@ -551,7 +557,7 @@ const CheckoutViewWrapper = () => {
             upsellManager={upsellManager}
             authMethod={authMethod}
             checkoutViewManager={checkoutViewManager}
-            setUsers={setUsers}
+            onUsersChange={setUsers}
           />
           {individualPrices && currentSelectedPlan && isUpdateSubscriptionDialogOpen ? (
             <ChangePlanDialog
