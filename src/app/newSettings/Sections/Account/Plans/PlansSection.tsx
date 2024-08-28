@@ -223,6 +223,8 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           planId: priceId,
           currency: currency,
         });
+      } else {
+        await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
       }
 
       setIsDialogOpen(false);
