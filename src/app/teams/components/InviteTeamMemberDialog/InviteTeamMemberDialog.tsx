@@ -10,7 +10,7 @@ import { RootState } from 'app/store';
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
 import AuthButton from 'app/shared/components/AuthButton';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
-import { getMembers, removeMember, sendEmailTeamsMember } from '../../services/teams.service';
+import { getMembers, removeMember } from '../../services/teams.service';
 import { uiActions } from 'app/store/slices/ui';
 import { t } from 'i18next';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -47,7 +47,6 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
     event?.preventDefault();
     try {
       if (team && team.isAdmin) {
-        await sendEmailTeamsMember(formData.email);
         notificationsService.show({
           text: t('success.teamInvitationSent', { email: formData.email }),
           type: ToastType.Success,
