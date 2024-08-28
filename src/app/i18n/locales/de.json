@@ -160,6 +160,14 @@
       "emailMustNotBeEmpty": "Die E-Mail darf nicht leer sein",
       "privacyGuarantee": "Datenschutzgarantie: Wir teilen Ihre Informationen nicht und werden Sie nur kontaktieren, wenn es notwendig ist, um unseren Service zu bieten."
     },
+    "addressBillingTitle": "Rechnungsadresse",
+    "addressBilling": {
+      "optional": {
+        "cta": "Optional",
+        "companyName": "Firmenname",
+        "companyVatId": "USt-ID der Firma"
+      }
+    },
     "paymentTitle": "Wählen Sie eine Zahlungsmethode",
     "productCard": {
       "title": "Bestellübersicht",
@@ -179,22 +187,36 @@
         "year": "Jährliche Abrechnung",
         "lifetime": "Einmalige Zahlung"
       },
+      "perUser": "/pro Benutzer",
       "saving": "Sie sparen {{percent}}%",
       "planDetails": {
         "title": "Plandetails:",
-        "features": [
-          "{{spaceToUpgrade}} verschlüsselter Speicher",
-          "Verschlüsseltes Teilen von Dateien und Ordnern",
-          "Passwortgeschütztes Teilen von Dateien",
-          "Zugriff auf Ihre Dateien von jedem Gerät",
-          "Zugang zu allen unseren Diensten",
-          "Hochladen von Dateien bis zu 20GB",
-          "Zwei-Faktor-Authentifizierung (2FA)",
-          "Premium-Kundensupport",
-          "30-Tage-Geld-zurück-Garantie"
-        ]
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} verschlüsselter Speicher",
+            "Verschlüsseltes Teilen von Dateien und Ordnern",
+            "Passwortgeschütztes Teilen von Dateien",
+            "Zugriff auf Ihre Dateien von jedem Gerät",
+            "Zugang zu allen unseren Diensten",
+            "Hochladen von Dateien bis zu 20GB",
+            "Zwei-Faktor-Authentifizierung (2FA)",
+            "Premium-Kundensupport",
+            "30-Tage-Geld-zurück-Garantie"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} Speicher/Benutzer",
+            "Verschlüsseltes Teilen von Dateien und Ordnern",
+            "Benutzer und Teams erstellen und verwalten",
+            "Ab {{minimumSeats}} Benutzer bis zu {{maximumSeats}}",
+            "GDPR-konform",
+            "Dateien bis zu {{maxUploadGBfile}} hochladen",
+            "Kontofakturierung und -zahlungen verwalten",
+            "Premium-Kundensupport"
+          ]
+        }
       },
       "total": "Gesamt: ",
+      "totalForBusiness": "Gesamtbetrag für {{N}} Benutzer: ",
       "addCoupon": {
         "buttonTitle": "Gutschein hinzufügen",
         "inputText": "Gutscheincode",

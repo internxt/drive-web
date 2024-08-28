@@ -166,6 +166,14 @@
       "emailMustNotBeEmpty": "L'email ne doit pas être vide",
       "privacyGuarantee": "Garantie de confidentialité : Nous ne partageons pas vos informations et ne vous contacterons que si nécessaire pour fournir notre service."
     },
+    "addressBillingTitle": "Facturation d'Adresse",
+    "addressBilling": {
+      "optional": {
+        "cta": "Optionnel",
+        "companyName": "Nom de l'entreprise",
+        "companyVatId": "Numéro de TVA de l'entreprise"
+      }
+    },
     "paymentTitle": "Sélectionnez un mode de paiement",
     "productCard": {
       "title": "Récapitulatif de la commande",
@@ -185,22 +193,36 @@
         "year": "Facturé annuellement",
         "lifetime": "Paiement unique"
       },
+      "perUser": "/par utilisateur",
       "saving": "Vous économisez {{percent}}%",
       "planDetails": {
         "title": "Détails du plan :",
-        "features": [
-          "{{spaceToUpgrade}} de stockage chiffré",
-          "Partage de fichiers et dossiers chiffrés",
-          "Partage de fichiers protégé par mot de passe",
-          "Accédez à vos fichiers depuis n'importe quel appareil",
-          "Accédez à tous nos services",
-          "Téléchargez des fichiers jusqu'à 20 Go",
-          "Authentification à deux facteurs (2FA)",
-          "Support client premium",
-          "Garantie de remboursement de 30 jours"
-        ]
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} de stockage chiffré",
+            "Partage de fichiers et dossiers chiffrés",
+            "Partage de fichiers protégé par mot de passe",
+            "Accédez à vos fichiers depuis n'importe quel appareil",
+            "Accédez à tous nos services",
+            "Téléchargez des fichiers jusqu'à 20 Go",
+            "Authentification à deux facteurs (2FA)",
+            "Support client premium",
+            "Garantie de remboursement de 30 jours"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} stockage/utilisateur",
+            "Partage de fichiers et de dossiers chiffrés",
+            "Créer et gérer des utilisateurs et des équipes",
+            "À partir de {{minimumSeats}} utilisateurs et jusqu'à {{maximumSeats}}",
+            "Conforme au GDPR",
+            "Télécharger des fichiers jusqu'à {{maxUploadGBfile}}",
+            "Gérer la facturation et les paiements du compte",
+            "Support client premium"
+          ]
+        }
       },
       "total": "Total : ",
+      "totalForBusiness": "Total pour {{N}} utilisateurs : ",
       "addCoupon": {
         "buttonTitle": "Ajouter un coupon",
         "inputText": "Code de coupon",
