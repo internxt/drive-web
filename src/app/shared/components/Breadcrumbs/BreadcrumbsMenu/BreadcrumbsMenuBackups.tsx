@@ -14,16 +14,22 @@ const BreadcrumbsMenuBackups = (props: BreadcrumbsMenuProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { breadcrumbDirtyName } = useDriveItemStoreProps();
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
+  const currentFolder = useAppSelector((state) => state.backups.currentFolder);
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id;
   const isSharedView = pathId === 'shared';
+  const isFolder = props.items.length > 2;
 
   const onDeleteBackupButtonClicked = () => {
     dispatch(uiActions.setIsDeleteBackupDialog(true));
   };
 
-  const onDownloadBackupButtonClicked = () => {
-    dispatch(downloadItemsThunk([currentDevice as DriveItemData]));
+  const onDownloadBackupButtonClicked = async () => {
+    if (isFolder) {
+      dispatch(downloadItemsThunk([currentFolder as DriveItemData]));
+    } else {
+      dispatch(downloadItemsThunk([currentDevice as DriveItemData]));
+    }
   };
 
   return (

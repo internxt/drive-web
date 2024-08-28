@@ -1612,10 +1612,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@^1.5.12":
-  version "1.5.12"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.5.12/b565fa78fa927d38c1e0cb8c4f973260b595fcbb#b565fa78fa927d38c1e0cb8c4f973260b595fcbb"
-  integrity sha512-ZE6vp8WtOkJkNSCv/SqIOa8Cng/of5ybkwO2A8igWqUrH23j1bp4fH11DQLoXR/ApO7dALsc/KNSGml8pfNBag==
+"@internxt/sdk@^1.5.13":
+  version "1.5.13"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.5.13/6f10ce1ddb39e17233c81ad4d56780407af0c10b#6f10ce1ddb39e17233c81ad4d56780407af0c10b"
+  integrity sha512-BNtwO8IJE48z1KQFMBUSk0q5jeJ5u437lVGRvCIWO60AVhTcV3eLHftiVbTEVITbuxuu/7eKMNzWoAsZRPBzCg==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"

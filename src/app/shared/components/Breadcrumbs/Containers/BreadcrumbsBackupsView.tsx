@@ -51,7 +51,10 @@ const BreadcrumbsBackupsView = ({
       backupsAsFoldersPath.forEach((item, i) => {
         const clickableOptions = {
           active: true,
-          onClick: () => goToFolder(item.id),
+          onClick: () => {
+            dispatch(backupsActions.setCurrentFolder(item));
+            goToFolder(item.id);
+          },
         };
         items.push({
           uuid: item.uuid,

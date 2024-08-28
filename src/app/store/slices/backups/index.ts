@@ -15,6 +15,7 @@ interface BackupsState {
   currentDevice: Device | DriveFolderData | null;
   devices: (Device | DriveFolderData)[];
   backups: DeviceBackup[];
+  currentFolder: Device | DriveFolderData | null;
 }
 
 const initialState: BackupsState = {
@@ -23,6 +24,7 @@ const initialState: BackupsState = {
   currentDevice: null,
   devices: [],
   backups: [],
+  currentFolder: null,
 };
 
 export const fetchDevicesThunk = createAsyncThunk<Array<Device | DriveFolderData>, void, { state: RootState }>(
@@ -153,6 +155,9 @@ export const backupsSlice = createSlice({
     setCurrentDevice: (state, action: PayloadAction<Device | null | DriveFolderData>) => {
       state.currentDevice = action.payload;
       state.backups = [];
+    },
+    setCurrentFolder: (state, action: PayloadAction<Device | null | DriveFolderData>) => {
+      state.currentFolder = action.payload;
     },
   },
   extraReducers: (builder) => {

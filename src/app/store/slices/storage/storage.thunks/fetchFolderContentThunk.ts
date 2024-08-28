@@ -29,7 +29,6 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
     const driveItemsSort = storageState.driveItemsSort;
     const driveItemsOrder = storageState.driveItemsOrder;
 
-    if (foldersOffset === 0 && filesOffset === 0) dispatch(storageActions.resetOrder());
     try {
       let itemsPromise;
 
