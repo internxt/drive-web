@@ -12,7 +12,6 @@ import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.se
 import { saveAvatarToDatabase } from '../../../newSettings/Sections/Account/Account/components/AvatarWrapper';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import tasksService from '../../../tasks/services/tasks.service';
-import { storeTeamsInfo } from '../../../teams/services/teams.service';
 import { referralsActions } from '../referrals';
 import { sessionActions } from '../session';
 import { sessionSelectors } from '../session/session.selectors';
@@ -68,7 +67,6 @@ export const initializeUserThunk = createAsyncThunk<
 
     if (user.teams) {
       try {
-        await storeTeamsInfo();
         dispatch(teamActions.initialize());
       } catch (err: unknown) {
         localStorageService.removeItem('xTeam');
