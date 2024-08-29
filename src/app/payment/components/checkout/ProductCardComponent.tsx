@@ -25,7 +25,6 @@ interface ProductFeaturesComponentProps {
 }
 
 const Separator = () => <div className="border border-gray-10" />;
-const SeparatorVertical = () => <div className="h-max border-[0.5px] border-gray-10 py-1" />;
 
 export const getProductAmount = (
   amount: DisplayPrice['amount'],
@@ -58,7 +57,6 @@ export const ProductFeaturesComponent = ({
   const { translate, translateList } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const [couponName, setCouponName] = useState<string>('');
-  const [totalUsers, setTotalUsers] = useState<number>(3);
   const bytes = bytesToString(selectedPlan.bytes);
 
   const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
@@ -117,66 +115,6 @@ export const ProductFeaturesComponent = ({
               {planAmount}
             </p>
           </div>
-          {selectedPlan.type === UserType.Business && (
-            <div
-              onKeyDown={(e) => {
-                e.stopPropagation();
-              }}
-              className="flex w-max flex-row items-center rounded-lg border"
-            >
-              <button
-                disabled={users === selectedPlan.minimumSeats}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onUsersChange(users - 1);
-                  setTotalUsers(totalUsers - 1);
-                }}
-                className="flex h-full flex-col items-center justify-center rounded-l-lg px-4 hover:bg-gray-10"
-              >
-                -
-              </button>
-              <SeparatorVertical />
-              <input
-                type="number"
-                className="flex w-10 items-center justify-center !rounded-none border-0 text-center !outline-none !ring-0"
-                value={totalUsers}
-                min={3}
-                max={10}
-                onChange={(e) => {
-                  e.preventDefault();
-                  setTotalUsers(Number(e.target.value));
-                }}
-                onKeyDown={(e) => {
-                  e.stopPropagation();
-                }}
-                onBlur={(e) => {
-                  e.preventDefault();
-                  const users = Number(totalUsers);
-                  if (users < 3) {
-                    onUsersChange(3);
-                    setTotalUsers(3);
-                  } else if (users > 10) {
-                    onUsersChange(10);
-                    setTotalUsers(10);
-                  } else {
-                    onUsersChange(users);
-                  }
-                }}
-              />
-              <SeparatorVertical />
-              <button
-                disabled={users === selectedPlan.maximumSeats}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onUsersChange(users + 1);
-                  setTotalUsers(totalUsers + 1);
-                }}
-                className="flex h-full flex-col items-center justify-center rounded-r-lg px-4 hover:bg-gray-10"
-              >
-                +
-              </button>
-            </div>
-          )}
           {couponCodeData && (
             <div className="flex flex-row items-center justify-between font-semibold">
               <div className="flex flex-row items-center space-x-2 text-green-dark">
