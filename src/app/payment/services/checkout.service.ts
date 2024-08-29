@@ -1,5 +1,5 @@
 import paymentService from '../../payment/services/payment.service';
-import { ClientSecretData, CouponCodeData, CurrentPlanSelected, PlanData } from '../types';
+import { ClientSecretData, CouponCodeData, PlanData, RequestedPlanData } from '../types';
 
 const fetchPlanById = async (priceId: string, currency?: string): Promise<PlanData> => {
   const response = await fetch(
@@ -86,7 +86,7 @@ const getClientSecretForSubscriptionIntent = async (
 };
 
 const getClientSecret = async (
-  selectedPlan: CurrentPlanSelected,
+  selectedPlan: RequestedPlanData,
   token: string,
   customerId: string,
   promoCodeId?: CouponCodeData['codeId'],

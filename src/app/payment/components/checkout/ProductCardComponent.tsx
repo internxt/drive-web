@@ -11,10 +11,10 @@ import Button from '../../../shared/components/Button/Button';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guarantee-dark.svg';
 import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
-import { CouponCodeData, Currency, CurrentPlanSelected } from '../../types';
+import { CouponCodeData, Currency, RequestedPlanData } from '../../types';
 
 interface ProductFeaturesComponentProps {
-  selectedPlan: CurrentPlanSelected;
+  selectedPlan: RequestedPlanData;
   users: number;
   upsellManager: UpsellManagerProps;
   onUsersChange: (users: number) => void;
@@ -70,12 +70,15 @@ export const ProductFeaturesComponent = ({
       })
     : translate('checkout.productCard.total');
   const maxUploadGBfile = bytes === '1TB' ? '5GB' : '20GB';
-  const features = translateList(`checkout.productCard.planDetails.features.${selectedPlan.type}`, {
-    spaceToUpgrade: bytes,
-    minimumSeats: selectedPlan.minimumSeats,
-    maximumSeats: selectedPlan.maximumSeats,
-    maxUploadGBfile,
-  });
+  const features = translateList(
+    `checkout.productCard.planDetails.features.${selectedPlan.type ?? UserType.Individual}`,
+    {
+      spaceToUpgrade: bytes,
+      minimumSeats: selectedPlan.minimumSeats,
+      maximumSeats: selectedPlan.maximumSeats,
+      maxUploadGBfile,
+    },
+  );
   const normalPriceAmount = selectedPlan.decimalAmount;
   const planAmount = getProductAmount(selectedPlan.decimalAmount, 1, couponCodeData).toFixed(2);
   const totalAmount = getProductAmount(selectedPlan.decimalAmount, users, couponCodeData).toFixed(2);
@@ -114,7 +117,7 @@ export const ProductFeaturesComponent = ({
               {planAmount}
             </p>
           </div>
-          {selectedPlan.type === UserType.Business ? (
+          {selectedPlan.type === UserType.Business && (
             <div
               onKeyDown={(e) => {
                 e.stopPropagation();
@@ -173,7 +176,7 @@ export const ProductFeaturesComponent = ({
                 +
               </button>
             </div>
-          ) : undefined}
+          )}
           {couponCodeData && (
             <div className="flex flex-row items-center justify-between font-semibold">
               <div className="flex flex-row items-center space-x-2 text-green-dark">
@@ -211,7 +214,7 @@ export const ProductFeaturesComponent = ({
             </p>
           </div>
           <Separator />
-          {showUpsellSwitch && upsellManager.amountSaved ? (
+          {showUpsellSwitch && upsellManager.amountSaved && (
             <>
               <div className="flex w-full flex-row items-center justify-between">
                 <div className="flex flex-row items-center gap-4">
@@ -248,7 +251,7 @@ export const ProductFeaturesComponent = ({
               </div>
               <Separator />
             </>
-          ) : undefined}
+          )}
           {couponCodeData?.codeName ? (
             <div className="flex w-full flex-row justify-between">
               <p className={'font-medium text-gray-50'}>{translate('checkout.productCard.addCoupon.inputText')}</p>
@@ -309,7 +312,7 @@ export const ProductFeaturesComponent = ({
                         {translate('checkout.productCard.addCoupon.applyCodeButtonTitle')}
                       </Button>
                     </div>
-                    {couponError ? <p className="text-red-dark">{couponError}</p> : undefined}
+                    {couponError && <p className="text-red-dark">{couponError}</p>}
                   </div>
                 </Menu.Items>
               </Transition>

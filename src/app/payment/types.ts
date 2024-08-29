@@ -69,9 +69,7 @@ export enum RenewalPeriod {
   Annually = 'annually',
 }
 
-export type CurrentPlanSelected = RequestedPlanData;
-
-type RequestedPlanData = DisplayPrice & {
+export type RequestedPlanData = DisplayPrice & {
   decimalAmount: number;
   type: UserType;
   minimumSeats?: number;

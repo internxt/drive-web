@@ -105,6 +105,7 @@ const CheckoutView = ({
                       <AddressElement
                         onChange={(e) => {
                           checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
+                          checkoutViewManager.onCountryChange(e.value.address.country);
                         }}
                         options={{
                           mode: 'billing',
@@ -114,7 +115,6 @@ const CheckoutView = ({
                         }}
                       />
                     </div>
-                    {/* !TODO: Show or hide this component depending on the plan type (Individual or Business) */}
                     {currentSelectedPlan.type === UserType.Business ? (
                       <OptionalB2BDropdownComponent errors={errors} register={register} translate={translate} />
                     ) : undefined}

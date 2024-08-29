@@ -60,7 +60,6 @@ const paymentService = {
   ): Promise<{ customerId: string; token: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.getCustomerId(name, email);
-    // return paymentsClient.createCustomer(name, email);
   },
 
   async createSubscription(

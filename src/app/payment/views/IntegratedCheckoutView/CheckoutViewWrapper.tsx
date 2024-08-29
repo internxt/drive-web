@@ -33,7 +33,7 @@ import { useThemeContext } from '../../../theme/ThemeProvider';
 import { getProductAmount } from '../../components/checkout/ProductCardComponent';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
-import { AuthMethodTypes, CurrentPlanSelected, PlanData } from '../../types';
+import { AuthMethodTypes, PlanData, RequestedPlanData } from '../../types';
 import CheckoutView from './CheckoutView';
 import ChangePlanDialog from 'app/newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import { fetchPlanPrices, getStripe } from 'app/newSettings/Sections/Account/Plans/api/plansApi';
@@ -74,6 +74,7 @@ export interface UserInfoProps {
 export interface CheckoutViewManager {
   onCouponInputChange: (coupon: string) => void;
   onLogOut: () => Promise<void>;
+  onCountryChange: (country: string) => void;
   onCheckoutButtonClicked: (
     formData: IFormValues,
     event: BaseSyntheticEvent<object, any, any> | undefined,
@@ -333,16 +334,15 @@ const CheckoutViewWrapper = () => {
 
       await elements.submit();
 
-      // !TODO: Get the user country from Address component
       const { customerId, token } = await paymentService.getCustomerId(
         companyName ?? userData.name,
         userData.email,
-        'ES',
+        country,
         companyVatId,
       );
 
       const { clientSecret, type, subscriptionId, paymentIntentId } = await checkoutService.getClientSecret(
-        currentSelectedPlan as CurrentPlanSelected,
+        currentSelectedPlan as RequestedPlanData,
         token,
         customerId,
         couponCodeData?.codeId,
@@ -536,11 +536,16 @@ const CheckoutViewWrapper = () => {
     }
   };
 
+  const onCountryChange = (country: string) => {
+    setCountry(country);
+  };
+
   const checkoutViewManager: CheckoutViewManager = {
     onCouponInputChange: setCouponCodeName,
     onLogOut,
     onCheckoutButtonClicked,
     onRemoveAppliedCouponCode,
+    onCountryChange,
     handleAuthMethodChange: setAuthMethod,
     onUserNameFromAddressElementChange: setUserNameFromElementAddress,
   };
@@ -565,7 +570,7 @@ const CheckoutViewWrapper = () => {
               isDialogOpen={isUpdateSubscriptionDialogOpen}
               setIsDialogOpen={setIsUpdateSubscriptionDialogOpen}
               onPlanClick={onChangePlanClicked}
-              priceIdSelected={currentSelectedPlan!.id}
+              priceIdSelected={currentSelectedPlan.id}
               isUpdatingSubscription={isUpdatingSubscription}
               subscriptionSelected={UserType.Individual}
             />
