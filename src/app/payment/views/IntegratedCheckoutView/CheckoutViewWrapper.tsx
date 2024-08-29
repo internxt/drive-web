@@ -312,8 +312,9 @@ const CheckoutViewWrapper = () => {
     setIsUserPaying(true);
 
     const { email, password, companyName, companyVatId } = formData;
-
     const userData = getUserInfo(user, email, userNameFromAddressElement, fullName);
+    const isStripeNotLoaded = !stripeSDK || !elements;
+    const customerName = companyName ?? userData.name;
 
     try {
       await authCheckoutService.authenticateUser(email, password, authMethod, dispatch, doRegister);
@@ -327,7 +328,7 @@ const CheckoutViewWrapper = () => {
     }
 
     try {
-      if (!stripeSDK || !elements) {
+      if (isStripeNotLoaded) {
         console.error('Stripe.js has not loaded yet. Please try again later.');
         return;
       }
@@ -335,7 +336,7 @@ const CheckoutViewWrapper = () => {
       await elements.submit();
 
       const { customerId, token } = await paymentService.getCustomerId(
-        companyName ?? userData.name,
+        customerName,
         userData.email,
         country,
         companyVatId,
@@ -373,21 +374,21 @@ const CheckoutViewWrapper = () => {
         setError('stripe', error.message as string);
       }
     } catch (err) {
-      if ((err as any).status) {
-        if ((err as any).status === 409) {
-          setIsUpdateSubscriptionDialogOpen(true);
-        } else if ((err as any).status === 422) {
-          notificationsService.show({
-            text: translate('notificationMessages.couponIsNotValidForUserError'),
-            type: ToastType.Error,
-          });
-        }
-      } else {
+      if (!(err as any).status) {
         notificationsService.show({
           text: translate('notificationMessages.errorCreatingSubscription'),
           type: ToastType.Error,
         });
         errorService.reportError(err);
+      }
+
+      if ((err as any).status === 409) {
+        setIsUpdateSubscriptionDialogOpen(true);
+      } else if ((err as any).status === 422) {
+        notificationsService.show({
+          text: translate('notificationMessages.couponIsNotValidForUserError'),
+          type: ToastType.Error,
+        });
       }
     } finally {
       setIsUserPaying(false);
