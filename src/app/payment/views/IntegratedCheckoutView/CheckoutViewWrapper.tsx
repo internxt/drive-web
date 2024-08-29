@@ -33,7 +33,7 @@ import { useThemeContext } from '../../../theme/ThemeProvider';
 import { getProductAmount } from '../../components/checkout/ProductCardComponent';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
-import { AuthMethodTypes, PlanData, RequestedPlanData } from '../../types';
+import { AuthMethodTypes, CouponCodeData, PlanData, RequestedPlanData } from '../../types';
 import CheckoutView from './CheckoutView';
 import ChangePlanDialog from 'app/newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import { fetchPlanPrices, getStripe } from 'app/newSettings/Sections/Account/Plans/api/plansApi';
@@ -98,6 +98,21 @@ export const stripePromise = (async () => {
   const stripeKey = IS_PRODUCTION ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK;
   return await loadStripe(stripeKey);
 })();
+
+function savePaymentDataInLocalStorage(
+  subscriptionId: string | undefined,
+  paymentIntentId: string | undefined,
+  selectedPlan: RequestedPlanData | undefined,
+  users: number,
+  couponCodeData: CouponCodeData | undefined,
+) {
+  if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
+  if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
+  if (selectedPlan) {
+    const amountToPay = getProductAmount(selectedPlan.decimalAmount, users, couponCodeData)?.toFixed(2);
+    localStorageService.set('amountPaid', amountToPay);
+  }
+}
 
 const CheckoutViewWrapper = () => {
   const dispatch = useAppDispatch();
@@ -353,12 +368,7 @@ const CheckoutViewWrapper = () => {
       // TEMPORARY HOT FIX
       // Store subscriptionId, paymentIntendId, and amountPaid to send to IMPACT API
       // need to check all rest of needed values to add it to analytics in trackPaymentConversion function
-      if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
-      if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
-      if (plan?.selectedPlan) {
-        const amountToPay = getProductAmount(plan?.selectedPlan.decimalAmount, users, couponCodeData)?.toFixed(2);
-        localStorageService.set('amountPaid', amountToPay);
-      }
+      savePaymentDataInLocalStorage(subscriptionId, paymentIntentId, plan?.selectedPlan, users, couponCodeData);
 
       const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
 
