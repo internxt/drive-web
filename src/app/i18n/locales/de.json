@@ -1396,12 +1396,12 @@
   },
   "itemNotFound": {
     "folder": {
-      "title": "Map niet gevonden",
-      "description": "Controleer of de URL correct is en of de map niet verplaatst of verwijderd is."
+      "title": "Ordner nicht gefunden",
+      "description": "Stellen Sie sicher, dass die URL korrekt ist und der Ordner nicht verschoben oder gelöscht wurde."
     },
     "file": {
-      "title": "Bestand niet gevonden",
-      "description": "Controleer of de URL correct is en of het bestand niet verplaatst of verwijderd is."
+      "title": "Datei nicht gefunden",
+      "description": "Stellen Sie sicher, dass die URL korrekt ist und die Datei nicht verschoben oder gelöscht wurde."
     }
   },
   "preferences": {
