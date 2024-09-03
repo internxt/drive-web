@@ -1,27 +1,28 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import storageThunks from '.';
-import { StorageState } from '../storage.model';
-import { RootState } from '../../..';
-import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
-import { t } from 'i18next';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
-import tasksService from 'app/tasks/services/tasks.service';
-import errorService from 'app/core/services/error.service';
-import folderService, { createFilesIterator, createFoldersIterator } from '../../../../drive/services/folder.service';
-import { downloadFile } from 'app/network/download';
-import localStorageService from 'app/core/services/local-storage.service';
-import { FlatFolderZip } from 'app/core/services/zip.service';
+import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
+import { Iterator } from 'app/core/collections';
 import date from 'app/core/services/date.service';
-import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
-import { checkIfCachedSourceIsOlder } from './downloadFileThunk';
-import { updateDatabaseFileSourceData } from 'app/drive/services/database.service';
+import errorService from 'app/core/services/error.service';
+import localStorageService from 'app/core/services/local-storage.service';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { FlatFolderZip } from 'app/core/services/zip.service';
+import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
+import { updateDatabaseFileSourceData } from 'app/drive/services/database.service';
+import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
+import { downloadFile } from 'app/network/download';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import tasksService from 'app/tasks/services/tasks.service';
+import { DownloadFileTask, DownloadFilesTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
+import { t } from 'i18next';
+import storageThunks from '.';
+import { RootState } from '../../..';
 import { TrackingPlan } from '../../../../analytics/TrackingPlan';
 import analyticsService from '../../../../analytics/services/analytics.service';
-import { Iterator } from 'app/core/collections';
-import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
+import folderService, { createFilesIterator, createFoldersIterator } from '../../../../drive/services/folder.service';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
+import { StorageState } from '../storage.model';
+import { checkIfCachedSourceIsOlder } from './downloadFileThunk';
 
 type DownloadItemsThunkPayload = (DriveItemData & {
   taskId?: string;
@@ -33,7 +34,11 @@ type DownloadItemsThunkPayload = (DriveItemData & {
 
 export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPayload, { state: RootState }>(
   'storage/downloadItems',
-  async (items: DownloadItemsThunkPayload, { dispatch, requestId, rejectWithValue }) => {
+  async (items: DownloadItemsThunkPayload, { dispatch, requestId, rejectWithValue, getState }) => {
+    const state = getState();
+    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
+
     if (items.length > 1) {
       await dispatch(
         downloadItemsAsZipThunk({ items, fileIterator: createFilesIterator, folderIterator: createFoldersIterator }),
@@ -85,7 +90,6 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
     // * 2. Executes tasks
     for (const [index, item] of items.entries()) {
       const taskId = tasksIds[index];
-
       if (item.isFolder) {
         await dispatch(
           storageThunks.downloadFolderThunk({
@@ -98,10 +102,20 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
       } else {
         const isSharedFile = !!item.sharingOptions;
         if (isSharedFile && item.sharingOptions) {
+          const isWorkspace = !!selectedWorkspace;
+          const sharingOptions = isWorkspace
+            ? {
+                credentials: {
+                  user: workspaceCredentials?.credentials?.networkUser,
+                  pass: workspaceCredentials?.credentials.networkPass,
+                },
+                mnemonic: selectedWorkspace?.workspaceUser.key,
+              }
+            : undefined;
           await dispatch(
             storageThunks.downloadFileThunk({
               file: item as DriveFileData,
-              options: { taskId, sharingOptions: item.sharingOptions },
+              options: { taskId, sharingOptions: sharingOptions ?? item.sharingOptions },
             }),
           );
         } else {
@@ -135,8 +149,8 @@ type DownloadItemsAsZipThunkType = {
   sharedFolderName?: string;
 };
 
-type FolderIterator = (directoryId: number) => Iterator<DriveFolderData>;
-type FileIterator = (directoryId: number) => Iterator<DriveFileData>;
+type FolderIterator = (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFolderData>;
+type FileIterator = (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFileData>;
 
 type SharedFolderIterator = (directoryId: string, resourcesToken) => Iterator<SharedFolders>;
 type SharedFileIterator = (directoryId: string, resourcesToken) => Iterator<SharedFiles>;
@@ -145,8 +159,11 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
   'storage/downloadItemsAsZip',
   async (
     { items, credentials, mnemonic, existingTaskId, folderIterator, fileIterator, areSharedItems, sharedFolderName },
-    { rejectWithValue },
+    { rejectWithValue, getState },
   ) => {
+    const state = getState();
+    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
     const errors: unknown[] = [];
     const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
     const downloadProgress: number[] = [];
@@ -155,8 +172,14 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
     const folderName = sharedFolderName ?? `Internxt (${formattedDate})`;
     const folder = new FlatFolderZip(folderName, {});
 
+    const workspaceCredentialsForOptions = workspaceCredentials?.credentials.networkUser
+      ? {
+          user: workspaceCredentials?.credentials.networkUser,
+          pass: workspaceCredentials?.credentials.networkPass,
+        }
+      : undefined;
     const moreOptions = {
-      credentials,
+      credentials: workspaceCredentialsForOptions ?? credentials,
       mnemonic,
     };
 
@@ -164,8 +187,8 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
     if (!user) throw new Error('User not found');
 
     const taskId =
-      existingTaskId ||
-      tasksService.create<DownloadFileTask>({
+      existingTaskId ??
+      tasksService.create<DownloadFilesTask>({
         action: TaskType.DownloadFile,
         showNotification: true,
         stop: async () => {
@@ -238,20 +261,26 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
                 downloadProgress[index] = progress;
                 updateProgressCallback(calculateProgress());
               },
-              driveItem.uuid as string,
+              driveItem.uuid,
               { destination: folder, closeWhenFinished: false, ...moreOptions },
             );
           } else {
             await folderService.downloadFolderAsZip(
               driveItem.id,
               driveItem.name,
+              driveItem.uuid,
               folderIterator as FolderIterator,
               fileIterator as FileIterator,
               (progress) => {
                 downloadProgress[index] = progress;
                 updateProgressCallback(calculateProgress());
               },
-              { destination: folder, closeWhenFinished: false, ...moreOptions },
+              {
+                destination: folder,
+                closeWhenFinished: false,
+                ...moreOptions,
+                workspaceId: selectedWorkspace?.workspace.id,
+              },
             );
           }
           downloadProgress[index] = 1;
@@ -261,7 +290,7 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file: driveItem });
 
           if (cachedFile?.source && !isCachedFileOlder) {
-            const blob = cachedFile.source as Blob;
+            const blob = cachedFile.source;
             downloadProgress[index] = 1;
             fileStream = blob.stream();
           } else {
@@ -282,10 +311,10 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
               fileId: driveItem.fileId,
               bucketId: driveItem.bucket,
               creds: {
-                user: credentials?.user || user.bridgeUser,
-                pass: credentials?.pass || user.userId,
+                user: workspaceCredentials?.credentials.networkUser ?? credentials?.user ?? user.bridgeUser,
+                pass: workspaceCredentials?.credentials.networkPass ?? credentials?.pass ?? user.userId,
               },
-              mnemonic: mnemonic || user.mnemonic,
+              mnemonic: selectedWorkspace?.workspaceUser.key ?? mnemonic ?? user.mnemonic,
               options: {
                 abortController,
                 notifyProgress: (totalBytes, downloadedBytes) => {

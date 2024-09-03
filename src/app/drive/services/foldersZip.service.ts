@@ -12,7 +12,7 @@ async function addAllFoldersToZip(
   const allFolders: DriveFolderData[] = [];
 
   const addFolderToZip = (folder: DriveFolderData) => {
-    zip.addFolder(path + '/' + folder.name);
+    zip.addFolder(path + '/' + (folder.plainName ?? folder.name));
   };
 
   let pack;

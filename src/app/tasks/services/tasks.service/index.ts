@@ -1,25 +1,24 @@
 import { items as itemsLib } from '@internxt/lib';
-import { FunctionComponent, SVGProps } from 'react';
-import { uniqueId } from 'lodash';
 import EventEmitter from 'events';
+import { uniqueId } from 'lodash';
+import { FunctionComponent, SVGProps } from 'react';
 
+import iconService from 'app/drive/services/icon.service';
 import {
+  BaseTask,
+  DownloadFilesData,
+  DownloadFolderData,
+  TaskData,
   TaskEvent,
+  TaskFilter,
+  TaskNotification,
   TaskProgress,
   TaskStatus,
   TaskType,
-  TaskNotification,
-  TaskData,
-  TaskFilter,
   UpdateTaskPayload,
-  BaseTask,
-  DownloadPhotosTask,
-  DownloadFilesData,
-  DownloadFolderData,
   UploadFileData,
   UploadFolderData,
 } from '../../types';
-import iconService from 'app/drive/services/icon.service';
 
 class TaskManagerService {
   private tasks: TaskData[];
@@ -199,11 +198,6 @@ class TaskManagerService {
         title = itemsLib.getItemDisplayName({ name: task.folder.name });
         break;
       }
-      case TaskType.DownloadPhotos: {
-        const { numberOfPhotos } = task as DownloadPhotosTask;
-        title = `${numberOfPhotos} ${numberOfPhotos > 1 ? 'Photos' : 'Photo'}`;
-        break;
-      }
       case TaskType.RenameFile: {
         title = itemsLib.getItemDisplayName(task.file);
         break;
@@ -258,10 +252,6 @@ class TaskManagerService {
       }
       case TaskType.MoveFolder: {
         icon = iconService.getItemIcon(true, '');
-        break;
-      }
-      case TaskType.DownloadPhotos: {
-        icon = iconService.getItemIcon(false, 'jpeg');
         break;
       }
       case TaskType.RenameFile: {

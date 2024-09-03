@@ -1,14 +1,14 @@
-import { SdkFactory } from '../../app/core/factory/sdk';
-import { storageActions } from '../../app/store/slices/storage';
-import { store } from '../../app/store';
-import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
-import { DriveItemData } from '../../app/drive/types';
-import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import { Trash } from '@internxt/sdk/dist/drive';
-import recoverItemsFromTrash from './recover-items-from-trash';
-import { deleteDatabaseItems } from '../../app/drive/services/database.service';
+import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
+import { SdkFactory } from '../../app/core/factory/sdk';
 import errorService from '../../app/core/services/error.service';
+import { deleteDatabaseItems } from '../../app/drive/services/database.service';
+import { DriveItemData } from '../../app/drive/types';
+import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
+import { store } from '../../app/store';
+import { storageActions } from '../../app/store/slices/storage';
 
 const MAX_ITEMS_TO_DELETE = 10;
 const MAX_CONCURRENT_REQUESTS = 3;
@@ -19,7 +19,7 @@ async function sendItemsToTrashConcurrent({
   maxConcurrentRequests,
   trashClient,
 }: {
-  items: { id: number | string; type: string }[];
+  items: { uuid: string; type: string }[];
   maxItemsToDelete: number;
   maxConcurrentRequests: number;
   trashClient: Trash;
@@ -43,16 +43,16 @@ async function sendItemsToTrashConcurrent({
 }
 
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () => void): Promise<void> => {
-  const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
+  const items: Array<{ uuid: string; type: string }> = itemsToTrash.map((item) => {
     return {
-      id: item.isFolder ? item.id : item.fileId,
+      uuid: item.uuid,
       type: item.isFolder ? 'folder' : 'file',
     };
   });
   let movingItemsToastId;
 
   try {
-    const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
+    const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
 
     movingItemsToastId = notificationsService.show({
       type: ToastType.Loading,
@@ -92,13 +92,19 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
         onClick: async () => {
           notificationsService.dismiss(id);
           if (itemsToTrash.length > 0) {
-            const destinationId = itemsToTrash[0].isFolder ? itemsToTrash[0].parentId : itemsToTrash[0].folderId;
+            const destinationId = itemsToTrash[0].isFolder ? itemsToTrash[0].parentUuid : itemsToTrash[0].folderUuid;
+
             store.dispatch(
               storageActions.pushItems({ updateRecents: true, items: itemsToTrash, folderIds: [destinationId] }),
             );
 
             store.dispatch(storageActions.clearSelectedItems());
-            await recoverItemsFromTrash(itemsToTrash, destinationId, t);
+            await store.dispatch(
+              storageThunks.moveItemsThunk({
+                items: itemsToTrash,
+                destinationFolderId: destinationId,
+              }),
+            );
           }
         },
       },

@@ -1,17 +1,17 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 
-import DriveExplorerGridItem from '../DriveExplorerItem/DriveExplorerGridItem/DriveExplorerGridItem';
+import { useAppDispatch } from 'app/store/hooks';
+import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { DriveItemData } from '../../../types';
 import DriveGridItemSkeleton from '../../DriveGridItemSkeleton/DriveGridItemSkeleton';
-import './DriveExplorerGrid.scss';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
-import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import { useAppDispatch } from 'app/store/hooks';
+import DriveExplorerGridItem from '../DriveExplorerItem/DriveExplorerGridItem/DriveExplorerGridItem';
+import './DriveExplorerGrid.scss';
 
 interface DriveExplorerGridProps {
-  folderId: number;
+  folderId: string;
   isLoading: boolean;
   items: DriveItemData[];
   onEndOfScroll(): void;

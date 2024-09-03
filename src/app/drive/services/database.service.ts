@@ -2,12 +2,9 @@ import databaseService, {
   AvatarBlobData,
   DatabaseCollection,
   DriveItemBlobData,
-  PhotosData,
 } from '../../database/services/database.service';
 import { LRUFilesCacheManager } from '../../database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from '../../database/services/database.service/LRUFilesPreviewCacheManager';
-import { LRUPhotosCacheManager } from '../../database/services/database.service/LRUPhotosCacheManager';
-import { LRUPhotosPreviewsCacheManager } from '../../database/services/database.service/LRUPhotosPreviewCacheManager';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 
 const updateDatabaseProfileAvatar = async ({
@@ -18,20 +15,39 @@ const updateDatabaseProfileAvatar = async ({
   uuid: string;
   sourceURL: string;
   avatarBlob: Blob;
-}): Promise<void> => {
+}): Promise<void> =>
   databaseService.put(DatabaseCollection.Account_settings, 'profile_avatar', {
     srcURL: sourceURL,
     avatarBlob,
     uuid,
   });
-};
 
 const getDatabaseProfileAvatar = async (): Promise<AvatarBlobData | undefined> =>
   databaseService.get(DatabaseCollection.Account_settings, 'profile_avatar');
 
-const deleteDatabaseProfileAvatar = async (): Promise<void> => {
+const deleteDatabaseProfileAvatar = async (): Promise<void> =>
   databaseService.delete(DatabaseCollection.Account_settings, 'profile_avatar');
-};
+
+const updateDatabaseWorkspaceAvatar = async ({
+  uuid,
+  sourceURL,
+  avatarBlob,
+}: {
+  uuid: string;
+  sourceURL: string;
+  avatarBlob: Blob;
+}): Promise<void> =>
+  databaseService.put(DatabaseCollection.WorkspacesAvatarBlobs, uuid, {
+    srcURL: sourceURL,
+    avatarBlob,
+    uuid,
+  });
+
+const getDatabaseWorkspaceAvatar = async (uuid: string): Promise<AvatarBlobData | undefined> =>
+  databaseService.get(DatabaseCollection.WorkspacesAvatarBlobs, uuid);
+
+const deleteDatabaseWorkspaceAvatar = async (uuid: string): Promise<void> =>
+  databaseService.delete(DatabaseCollection.WorkspacesAvatarBlobs, uuid);
 
 const updateDatabaseFilePreviewData = async ({
   fileId,
@@ -45,7 +61,8 @@ const updateDatabaseFilePreviewData = async ({
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
+  // CHECK IF THAT THE PREVIEW KEY IS THE ID HAS ANY UNEXPECTED EFFECT INSTEAD OF BE THE FILE UUID
+  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId?.toString());
 
   lruFilesPreviewCacheManager?.set(
     fileId.toString(),
@@ -66,59 +83,9 @@ const getDatabaseFilePreviewData = async ({ fileId }: { fileId: number }): Promi
   return lruFilesPreviewCacheManager?.get(fileId.toString());
 };
 
-const updateDatabasePhotosPreviewData = async ({
-  photoId,
-  preview,
-}: {
-  photoId: string;
-  preview: Blob;
-}): Promise<void> => {
-  const lruPhotosPreviewCacheManager = await LRUPhotosPreviewsCacheManager.getInstance();
-  const photoData = await databaseService.get(DatabaseCollection.Photos, photoId);
-
-  lruPhotosPreviewCacheManager?.set(
-    photoId,
-    {
-      ...photoData,
-      preview: preview,
-    },
-    preview.size,
-  );
-};
-
-const getDatabasePhotosPreviewData = async ({ photoId }: { photoId: string }): Promise<PhotosData | undefined> => {
-  const lruPhotosPreviewCacheManager = await LRUPhotosPreviewsCacheManager.getInstance();
-  return lruPhotosPreviewCacheManager.get(photoId);
-};
-
-const updateDatabasePhotosSourceData = async ({
-  photoId,
-  source,
-}: {
-  photoId: string;
-  source: Blob;
-}): Promise<void> => {
-  const lruPhotosCacheManager = await LRUPhotosCacheManager.getInstance();
-  const photoData = await databaseService.get(DatabaseCollection.Photos, photoId);
-
-  lruPhotosCacheManager?.set(
-    photoId,
-    {
-      ...photoData,
-      source: source,
-    },
-    source.size,
-  );
-};
-
-const getDatabasePhotosSourceData = async ({ photoId }: { photoId: string }): Promise<PhotosData | undefined> => {
-  const lruPhotosCacheManager = await LRUPhotosCacheManager.getInstance();
-  return lruPhotosCacheManager?.get(photoId);
-};
-
 const getDatabaseFileSourceData = async ({ fileId }: { fileId: number }): Promise<DriveItemBlobData | undefined> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  return lruFilesCacheManager?.get(fileId.toString());
+  return lruFilesCacheManager?.get(fileId?.toString());
 };
 
 const updateDatabaseFileSourceData = async ({
@@ -133,7 +100,9 @@ const updateDatabaseFileSourceData = async ({
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
+  // CHECK IF THAT THE PREVIEW KEY IS THE ID HAS ANY UNEXPECTED EFFECT INSTEAD OF BE THE FILE UUID
+
+  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId?.toString());
 
   lruFilesCacheManager?.set(
     fileId.toString(),
@@ -146,10 +115,6 @@ const updateDatabaseFileSourceData = async ({
     },
     sourceBlob.size,
   );
-};
-
-const deleteDatabasePhotos = async (photosId: string[]): Promise<void> => {
-  photosId.forEach(async (photoId) => await databaseService.delete(DatabaseCollection.Photos, photoId));
 };
 
 const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
@@ -166,7 +131,7 @@ const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
 
   if (foldersInFolder.length) {
     await foldersInFolder.forEach(async (folder) => {
-      const folderItems = await databaseService.get(DatabaseCollection.Levels, folder?.id as number);
+      const folderItems = await databaseService.get(DatabaseCollection.Levels, folder?.uuid);
 
       if (folderItems) {
         deleteDatabaseItems(folderItems as DriveItemData[]);
@@ -186,16 +151,14 @@ const canFileBeCached = (file: DriveFileData): boolean => {
 export {
   canFileBeCached,
   deleteDatabaseItems,
-  deleteDatabasePhotos,
   deleteDatabaseProfileAvatar,
+  deleteDatabaseWorkspaceAvatar,
   getDatabaseFilePreviewData,
   getDatabaseFileSourceData,
-  getDatabasePhotosPreviewData,
-  getDatabasePhotosSourceData,
   getDatabaseProfileAvatar,
+  getDatabaseWorkspaceAvatar,
   updateDatabaseFilePreviewData,
   updateDatabaseFileSourceData,
-  updateDatabasePhotosPreviewData,
-  updateDatabasePhotosSourceData,
   updateDatabaseProfileAvatar,
+  updateDatabaseWorkspaceAvatar,
 };

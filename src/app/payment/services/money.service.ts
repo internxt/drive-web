@@ -16,10 +16,10 @@ enum CurrencySymbol {
   VND = '₫', // Vietnamese Dong
 }
 
-const moneyService = {
+const currencyService = {
   getCurrencySymbol(currency: string): string {
     return currency ? CurrencySymbol[currency.toUpperCase()] : CurrencySymbol.EUR;
   },
 };
 
-export default moneyService;
+export default currencyService;

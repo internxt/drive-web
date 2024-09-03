@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import { ProductData } from '../../types';
 import { paymentThunks } from 'app/store/slices/payment';
-import moneyService from '../../services/money.service';
+import currencyService from '../../services/money.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface ProductItemProps {
@@ -33,13 +33,13 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
   const isBuyButtonDisabled = props.isBuyButtonDisabled || isPlanActive;
   const monthlyAmountMultiplied = props.product.price.monthlyAmount * priceMultiplier;
   const monthlyAmountFormatted =
-    moneyService.getCurrencySymbol(props.product.price.currency) +
+    currencyService.getCurrencySymbol(props.product.price.currency) +
     (numberService.hasDecimals(monthlyAmountMultiplied)
       ? monthlyAmountMultiplied.toFixed(2)
       : monthlyAmountMultiplied.toFixed());
   const totalAmount = props.product.price.amount * priceMultiplier;
   const totalAmountFormatted =
-    moneyService.getCurrencySymbol(props.product.price.currency) +
+    currencyService.getCurrencySymbol(props.product.price.currency) +
     (numberService.hasDecimals(totalAmount) ? totalAmount.toFixed(2) : totalAmount.toFixed());
   const onBuyButtonClicked = async () => {
     if (props.product.metadata.is_drive) {

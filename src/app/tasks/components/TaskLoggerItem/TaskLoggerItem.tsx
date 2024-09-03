@@ -1,17 +1,21 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useOpenItem } from '../../hooks/useOpen';
 import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
 
 import { t } from 'i18next';
+import errorService from '../../../core/services/error.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { useReduxActions } from '../../../store/slices/storage/hooks/useReduxActions';
 import tasksService from '../../services/tasks.service';
-import { TaskNotification, TaskStatus, TaskType, UploadFileData, UploadFolderData } from '../../types';
+import { TaskData, TaskNotification, TaskStatus, TaskType, UploadFileData, UploadFolderData } from '../../types';
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 const THREE_HUNDRED_MB_IN_BYTES = 3 * 100 * 1024 * 1024;
 interface TaskLoggerItemProps {
   notification: TaskNotification;
+  task?: TaskData;
 }
 
 const taskStatusTextColors = {
@@ -64,9 +68,10 @@ const resetTaskProgress = (notification: TaskNotification) => {
   });
 };
 
-const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
+const TaskLoggerItem = ({ notification, task }: TaskLoggerItemProps): JSX.Element => {
   const [isHovered, setIsHovered] = useState(false);
   const [isRetryActionDisabled, setIsRetryActionDisabled] = useState(false);
+  const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
 
   const { openItem } = useOpenItem({
     notification,
@@ -82,10 +87,12 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
         type: ToastType.Error,
       });
     },
+    selectedWorkspace,
   });
   const { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem, uploadSharedItem } = useReduxActions();
   const { retryDownload } = useRetryDownload({
     notification,
+    task,
     downloadItemsAsZip,
     downloadItems,
     showErrorNotification() {
@@ -131,6 +138,14 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
 
   const handleRetryClick = () => {
     if (!isRetryActionDisabled) {
+      errorService.addBreadcrumb({
+        level: 'info',
+        category: 'button',
+        message: 'Retry button clicked',
+        data: {
+          task,
+        },
+      });
       retryFunction();
       setIsRetryActionDisabled(true);
       setTimeout(() => {

@@ -1,14 +1,13 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { StorageState } from '../storage.model';
-import { storageActions } from '..';
-import { RootState } from '../../..';
-import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from 'app/drive/types';
 import fileService from 'app/drive/services/file.service';
 import folderService from 'app/drive/services/folder.service';
-import { t } from 'i18next';
+import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import storageSelectors from '../storage.selectors';
+import { t } from 'i18next';
+import { storageActions } from '..';
+import { RootState } from '../../..';
+import { StorageState } from '../storage.model';
 
 export const updateItemMetadataThunk = createAsyncThunk<
   void,
@@ -25,18 +24,19 @@ export const updateItemMetadataThunk = createAsyncThunk<
     { dispatch, getState },
   ) => {
     const { item, metadata, resourceToken } = payload;
-    const namePath = getState().storage.namePath;
+    const state = getState();
+    const namePath = state.storage.namePath;
     const namePathDestinationArray = namePath.map((level) => level.name);
     namePathDestinationArray[0] = '';
 
     item.isFolder
-      ? await folderService.updateMetaData(item.id, metadata)
-      : await fileService.updateMetaData(item.fileId, metadata, storageSelectors.bucket(getState()), resourceToken);
+      ? await folderService.updateMetaData(item.uuid, metadata)
+      : await fileService.updateMetaData(item.uuid, metadata, resourceToken);
 
     dispatch(
       storageActions.patchItem({
-        id: item.id,
-        folderId: item.isFolder ? item.parentId : item.folderId,
+        uuid: item.uuid,
+        folderId: item.isFolder ? item.parentUuid : item.folderUuid,
         isFolder: item.isFolder,
         patch: {
           name: payload.metadata.itemName,
@@ -53,6 +53,7 @@ export const updateItemMetadataThunkExtraReducers = (builder: ActionReducerMapBu
     .addCase(updateItemMetadataThunk.pending, () => undefined)
     .addCase(updateItemMetadataThunk.fulfilled, () => undefined)
     .addCase(updateItemMetadataThunk.rejected, (state, action) => {
+      console.log({ action });
       const errorMessage = (action.error?.message || '').includes('this name exists')
         ? t('error.fileAlreadyExists')
         : t('error.changingName');

@@ -1,15 +1,16 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { Desktop, SignOut, UserPlus, Gear } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
 import Popover from '../../../shared/components/Popover';
-import { useAppDispatch } from '../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
 import { userThunks } from '../../../store/slices/user';
 import desktopService from '../../services/desktop.service';
-import AvatarWrapper from '../../views/Preferences/tabs/Account/AvatarWrapper';
+import AvatarWrapper from '../../../newSettings/Sections/Account/Account/components/AvatarWrapper';
+import navigationService from '../../../core/services/navigation.service';
+import { RootState } from 'app/store';
 
 export default function AccountPopover({
   className = '',
@@ -18,9 +19,19 @@ export default function AccountPopover({
 }: {
   className?: string;
   user: UserSettings;
-  plan: { planLimit: number; planUsage: number; showUpgrade: boolean };
+  plan: {
+    planLimit: number;
+    planUsage: number;
+    showUpgrade: boolean;
+    businessPlanLimit: number;
+    businessPlanUsage: number;
+  };
 }): JSX.Element {
   const dispatch = useAppDispatch();
+  const { selectedWorkspace } = useAppSelector((state: RootState) => state.workspaces);
+  const memberId = selectedWorkspace?.workspaceUser?.memberId;
+  const usage = !memberId ? plan.planUsage : plan.businessPlanUsage;
+  const limit = !memberId ? plan.planLimit : plan.businessPlanLimit;
 
   const { translate } = useTranslationContext();
   const fullName = `${user.name} ${user.lastname}`;
@@ -29,7 +40,7 @@ export default function AccountPopover({
     <AvatarWrapper diameter={36} style={{ minWidth: 36 }} fullName={fullName} avatarSrcURL={user.avatar} />
   );
 
-  const percentageUsed = Math.round((plan.planUsage / plan.planLimit) * 100);
+  const percentageUsed = Math.round((usage / limit) * 100) || 0;
 
   const separator = <div className="border-translate mx-3 my-0.5 border-gray-10" />;
 
@@ -77,9 +88,19 @@ export default function AccountPopover({
           {translate('views.account.popover.spaceUsed', { space: percentageUsed })}
         </p>
         {plan.showUpgrade && (
-          <Link to="/preferences?tab=billing" className="text-sm font-medium text-primary no-underline">
+          <button
+            className="w-full cursor-pointer text-sm font-medium text-primary no-underline"
+            onClick={() => {
+              navigationService.openPreferencesDialog({
+                section: 'account',
+                subsection: 'billing',
+                workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+              });
+              dispatch(uiActions.setIsPreferencesDialogOpen(true));
+            }}
+          >
             {translate('actions.upgrade')}
-          </Link>
+          </button>
         )}
       </div>
       {separator}
@@ -87,13 +108,20 @@ export default function AccountPopover({
         <Desktop size={20} />
         <p className="ml-3">{translate('views.account.popover.downloadApp')}</p>
       </Item>
-      <Link
-        to="/preferences"
-        className="flex cursor-pointer items-center px-3 py-2 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 dark:hover:bg-gray-10"
+      <button
+        className="flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 dark:hover:bg-gray-10"
+        onClick={() => {
+          navigationService.openPreferencesDialog({
+            section: 'general',
+            subsection: 'general',
+            workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+          });
+          dispatch(uiActions.setIsPreferencesDialogOpen(true));
+        }}
       >
         <Gear size={20} />
         <p className="ml-3">{translate('views.account.popover.settings')}</p>
-      </Link>
+      </button>
       {user && user.sharedWorkspace && (
         <Item onClick={onGuestInviteClick}>
           <UserPlus size={20} />

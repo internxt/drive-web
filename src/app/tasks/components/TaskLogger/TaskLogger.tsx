@@ -1,14 +1,14 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
-import TaskLoggerItem from '../TaskLoggerItem/TaskLoggerItem';
-import { TaskStatus } from '../../types';
 import { useTaskManagerGetNotifications } from '../../hooks';
 import tasksService from '../../services/tasks.service';
+import { TaskStatus } from '../../types';
+import TaskLoggerItem from '../TaskLoggerItem/TaskLoggerItem';
 
-import { uiActions } from '../../../store/slices/ui';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { CaretDown, CircleNotch, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { uiActions } from '../../../store/slices/ui';
 
 const TaskLogger = (): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -20,7 +20,9 @@ const TaskLogger = (): JSX.Element => {
   const finishedNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled],
   });
-  const items: JSX.Element[] = allNotifications.map((n) => <TaskLoggerItem notification={n} key={n.taskId} />);
+  const items: JSX.Element[] = allNotifications.map((n) => (
+    <TaskLoggerItem notification={n} task={tasksService.findTask(n.taskId)} key={n.taskId} />
+  ));
   const onCloseButtonClicked = () => {
     if (hasFinished) {
       dispatch(uiActions.setIsFileLoggerOpen(false));

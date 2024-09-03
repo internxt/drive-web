@@ -1,21 +1,23 @@
 import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { DriveItemData, DriveItemDetails } from '../../../../drive/types';
+import { storageActions } from '../../../../store/slices/storage';
+import { uiActions } from '../../../../store/slices/ui';
 import EmptySharedView from '../../../components/EmptySharedView/EmptySharedView';
 import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../types';
 import { OrderField, SharedItemList } from '../components/SharedItemList';
-import { useDispatch } from 'react-redux';
-import { storageActions } from '../../../../store/slices/storage';
-import { uiActions } from '../../../../store/slices/ui';
 
-import shareService, { decryptMnemonic } from '../../../services/share.service';
 import errorService from '../../../../core/services/error.service';
-import useSharedContextMenu from '../hooks/useSharedContextMenu';
-import { sharedThunks } from '../../../../store/slices/sharedLinks';
-import { useShareViewContext } from '../context/SharedViewContextProvider';
-import { setOrderBy, setPage, setSelectedItems } from '../context/SharedViewContext.actions';
-import { isItemsOwnedByCurrentUser, sortSharedItems } from '../sharedViewUtils';
 import localStorageService from '../../../../core/services/local-storage.service';
+import workspacesService from '../../../../core/services/workspace.service';
 import { OrderDirection } from '../../../../core/types';
+import { sharedThunks } from '../../../../store/slices/sharedLinks';
+import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
+import shareService, { decryptMnemonic } from '../../../services/share.service';
+import { setOrderBy, setPage, setSelectedItems } from '../context/SharedViewContext.actions';
+import { useShareViewContext } from '../context/SharedViewContextProvider';
+import useSharedContextMenu from '../hooks/useSharedContextMenu';
+import { isItemsOwnedByCurrentUser, sortSharedItems } from '../sharedViewUtils';
 
 type ShareItemListContainerProps = {
   disableKeyboardShortcuts: boolean;
@@ -41,7 +43,12 @@ const SharedItemListContainer = ({
   onOpenItemPreview,
 }: ShareItemListContainerProps) => {
   const dispatch = useDispatch();
+  const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceId = selectedWorkspace?.workspace.id;
+  const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;
+  const workspaceCredentials = useSelector(workspacesSelectors.getWorkspaceCredentials);
   const { state, actionDispatch } = useShareViewContext();
+
   const {
     page,
     hasMoreFiles,
@@ -88,6 +95,7 @@ const SharedItemListContainer = ({
   const downloadItem = async (shareItem: AdvancedSharedItem): Promise<void> => {
     try {
       if (shareItem.isRootLink) {
+        const encryptionKey = selectedWorkspace?.workspaceUser?.key ?? (await decryptMnemonic(shareItem.encryptionKey));
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
@@ -95,17 +103,37 @@ const SharedItemListContainer = ({
           },
           dispatch,
           selectedItems,
-          encryptionKey: shareItem.encryptionKey,
+          decryptedEncryptionKey: encryptionKey as string,
+          token: undefined,
+          workspaceId,
+          teamId: defaultTeamId,
         });
       } else {
         const pageItemsNumber = 5;
-        const { token } = await shareService.getSharedFolderContent(
-          currentFolderId,
-          'files',
-          currentFolderLevelResourcesToken,
-          0,
-          pageItemsNumber,
-        );
+        let sharedToken;
+        if (workspaceCredentials && workspaceId && defaultTeamId) {
+          const [responsePromise] = workspacesService.getAllWorkspaceTeamSharedFolderFolders(
+            workspaceId,
+            defaultTeamId,
+            currentFolderId,
+            page,
+            5,
+            currentFolderLevelResourcesToken,
+          );
+          const { token } = await responsePromise;
+          sharedToken = token;
+        } else {
+          // called to get the necessary token to download the items
+          const { token } = await shareService.getSharedFolderContent(
+            currentFolderId,
+            'files',
+            currentFolderLevelResourcesToken,
+            0,
+            pageItemsNumber,
+          );
+          sharedToken = token;
+        }
+        const encryptionKey = selectedWorkspace?.workspaceUser?.key ?? (await decryptMnemonic(sharedItemEncryptionKey));
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
@@ -113,8 +141,10 @@ const SharedItemListContainer = ({
           },
           dispatch,
           selectedItems,
-          encryptionKey: sharedItemEncryptionKey,
-          token,
+          decryptedEncryptionKey: encryptionKey as string,
+          token: sharedToken,
+          workspaceId,
+          teamId: defaultTeamId,
         });
       }
     } catch (err) {
@@ -143,9 +173,9 @@ const SharedItemListContainer = ({
     };
 
     try {
-      const mnemonic = await decryptMnemonic(
-        shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey,
-      );
+      const mnemonic =
+        selectedWorkspace?.workspaceUser.key ??
+        (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey));
       onOpenItemPreview({ ...previewItem, mnemonic });
     } catch (err) {
       const error = errorService.castError(err);

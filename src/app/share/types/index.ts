@@ -20,7 +20,7 @@ export type SharedNetworkCredentials = {
 export type PreviewFileItem = DriveFileData & {
   credentials?: NetworkCredentials;
   mnemonic?: string;
-  folderUuid?: string;
+  folderUuid: string;
 };
 
 export type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;

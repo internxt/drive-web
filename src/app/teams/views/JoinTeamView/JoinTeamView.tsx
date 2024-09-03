@@ -2,15 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { match } from 'react-router';
 
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 
-import errorService from '../../../core/services/error.service';
-import navigationService from '../../../core/services/navigation.service';
-import httpService from '../../../core/services/http.service';
-import { AppView } from '../../../core/types';
 import { t } from 'i18next';
+import errorService from '../../../core/services/error.service';
+import httpService from '../../../core/services/http.service';
+import navigationService from '../../../core/services/navigation.service';
+import { AppView } from '../../../core/types';
 
 export interface JoinTeamViewProps {
   dispatch: AppDispatch;
@@ -42,7 +42,7 @@ class JoinTeamView extends React.Component<JoinTeamViewProps, JoinTeamViewState>
   joinToTheTeam = (token): void => {
     const { dispatch } = this.props;
 
-    fetch(`${process.env.REACT_APP_API_URL}/api/teams/join/${token}`, {
+    fetch(`${process.env.REACT_APP_API_URL}/teams/join/${token}`, {
       method: 'post',
       headers: httpService.getHeaders(false, false),
       body: JSON.stringify({

@@ -15,8 +15,8 @@ import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.
 
 interface CreateFolderDialogProps {
   onFolderCreated?: () => void;
-  currentFolderId: number;
-  neededFolderId: number;
+  currentFolderId: string;
+  neededFolderId: string;
 }
 
 const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }: CreateFolderDialogProps) => {

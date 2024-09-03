@@ -4,18 +4,19 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 75%",
-    "title": "Protect your data from the dark side",
+    "label": "Save 78%",
+    "title": "Back to work deals for all lifetime plans!",
+    "subtitle": "Win our premium backpack with our lifetime plans.",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
-      "Save on Internxt plans",
+      "Choose your perfect lifetime plan",
       "Safe and secure cloud storage",
-      "Open source and transparent",
+      "Open source and audited",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends May 20"
+      "Offer ends September 12th"
     ]
   },
   "valentinesBanner": {
@@ -58,7 +59,8 @@
     "it": "Italiano (Italian)",
     "zh": "简体中文 (Chinese)",
     "ru": "Русский (Russian)",
-    "de": "Deutsch (German)"
+    "de": "Deutsch (German)",
+    "zh-tw": "臺灣 (Taiwan)"
   },
   "theme": {
     "title": "Appearance",
@@ -159,6 +161,72 @@
       "login": "Log in"
     }
   },
+  "checkout": {
+    "title": "You're almost there! Checkout securely:",
+    "pay": "Pay",
+    "processing": "Processing...",
+    "checkout": "Checkout",
+    "authComponent": {
+      "signUp": {
+        "emailAddress": "Your email address",
+        "password": "Create password"
+      },
+      "signIn": {
+        "emailAddress": "Your email address",
+        "password": "Your password"
+      },
+      "title": {
+        "signUp": "Create an account",
+        "signIn": "Log in",
+        "userIsSignedIn": "User signed in as"
+      },
+      "emailMustNotBeEmpty": "Email must not be empty",
+      "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
+    },
+    "paymentTitle": "Select a payment method",
+    "productCard": {
+      "renewalPeriod": {
+        "month": "month",
+        "year": "year",
+        "lifetime": "lifetime"
+      },
+      "title": "Order summary",
+      "selectedPlan": "Selected plan",
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 {{interval}} plan",
+        "year": "{{spaceToUpgrade}} - 1 {{interval}} plan",
+        "lifetime": "{{spaceToUpgrade}} - {{interval}} plan"
+      },
+      "billed": {
+        "month": "Billed monthly",
+        "year": "Billed annually",
+        "lifetime": "One-time payment"
+      },
+      "saving": "You're saving {{percent}}%",
+      "planDetails": {
+        "title": "Plan details:",
+        "features": [
+          "{{spaceToUpgrade}} encrypted storage",
+          "Encrypted file and folder sharing",
+          "Password-protected file sharing",
+          "Access your files from any device",
+          "Get access to all our services",
+          "Upload files up to 20GB",
+          "Two-factor authentication (2FA)",
+          "Premium customer support",
+          "30-day money-back guarantee"
+        ]
+      },
+      "total": "Total: ",
+      "addCoupon": {
+        "buttonTitle": "Add coupon",
+        "inputText": "Coupon code",
+        "applyCodeButtonTitle": "Apply"
+      },
+      "amountSaved": "Save ",
+      "withAnnualBilling": "with annual billing"
+    }
+  },
   "general": {
     "new": "new",
     "of": "of",
@@ -248,7 +316,6 @@
   },
   "sideNav": {
     "drive": "Drive",
-    "photos": "Photos",
     "backups": "Backups",
     "shared": "Shared",
     "recents": "Recents",
@@ -268,18 +335,12 @@
         "dragNDrop": "Drag and drop here or click on upload button"
       }
     },
-    "photos": {
-      "empty": {
-        "title": "Your photo gallery is empty",
-        "description": "Use the Internxt mobile app to sync all your photos from your device"
-      }
-    },
     "account": {
       "title": "Account",
       "avatar": {
         "title": "Upload avatar",
-        "removePhoto": "Delete photo",
-        "updatePhoto": "Upload new photo",
+        "removePhoto": "Remove",
+        "updatePhoto": "Upload photo",
         "dragNDrop": "Select or drop a picture",
         "success": "Avatar has been successfully updated",
         "error": "Something happened while uploading your avatar",
@@ -299,7 +360,6 @@
           "usage": "Used {{totalUsed}} of {{totalSpace}}",
           "view": {
             "backups": "Backups",
-            "photos": "Photos",
             "trash": "Trash",
             "free": {
               "planName": "Free plan",
@@ -359,9 +419,9 @@
           },
           "deleteAccount": {
             "head": "Delete account",
-            "description": "By deleting your account, Internxt will permanently delete your files and data forever. Once initiated, this action cannot be undone.",
+            "description": "All your personal data and everything you uploaded to Internxt will be erased forever. Once you delete your account, there is no going back. Please be certain.",
             "isSubscribed": "Please, cancel your subscription first",
-            "confirmationEmail": "Confirmation email has been sent"
+            "confirmationEmail": "Confirmation email sent"
           }
         },
         "billing": {
@@ -410,7 +470,9 @@
           },
           "invoices": {
             "head": "Invoices",
-            "billingDate": "Billing date",
+            "billingDate": "Date",
+            "storage": "Storage",
+            "ammount": "Ammount",
             "plan": "Plan",
             "empty": {
               "title": "You are in free plan",
@@ -489,7 +551,7 @@
             },
             "button": {
               "back": "Keep current plan",
-              "continue": "Change plan"
+              "continue": "Continue"
             }
           }
         },
@@ -526,21 +588,21 @@
           },
           "changePassword": {
             "title": "Change password",
-            "description": "Be sure to remember your new password. If you lose it, you will be unable to access all of your files. We highly recommend using a password manager.",
+            "description": "We don’t store passwords, if you lose your password, you’ll lose access to your Internxt Account.",
             "button": "Change password"
           },
           "2FA": {
-            "title": "Two-factor authentication (2FA)",
+            "title": "Two-factor authentication",
             "titleDisable": "Disable Two-Factor Authentication",
-            "description": "Two-factor authentication provides an extra layer of security by requiring an additional verification when logging in. In addition to your Internxt password, you will also need a unique generated code sent to the email you used to register your account.",
-            "button": "Enable 2FA",
-            "disable": "Disable 2FA",
+            "description": "Add an extra layer of security by requiring an extra verification code when you log in.",
+            "button": "Enable",
+            "disable": "Disable",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
               "title": "Two Factor Authentication",
               "stepsLabel": "{{current}} of {{total}}",
-              "button": "Enable 2FA",
+              "button": "Enable",
               "2FALabelCode": "Two-Factor Authentication code",
               "or": "OR",
               "steps": {
@@ -573,7 +635,7 @@
           },
           "backupKey": {
             "title": "Backup key",
-            "description": "If you forget your password, you may use a unique backup key to recover your account. Never share this code with anyone.",
+            "description": "The backup key enables account recovery in the event you forget your password. Never share it.",
             "button": "Export backup key",
             "success": "Backup key downloaded successfully",
             "error": "We could not generate your backup key"
@@ -610,6 +672,10 @@
         "title": "Something went wrong",
         "subtitle": "Check if the link is correct or request email verification again in Settings > Account",
         "cta": "Go to Account"
+      },
+      "message": {
+        "emailNotVerifiedPartOne": "Your email is not verified yet, please check your inbox or ",
+        "emailNotVerifiedPartTwo": "resend verification"
       }
     },
     "emailChange": {
@@ -639,6 +705,36 @@
     "redirectToApp": {
       "message": "Thank you",
       "goToApp": "Go back to app"
+    },
+    "preferences": {
+      "workspace": {
+        "overview": {
+          "edit": "Edit profile",
+          "address": "Address",
+          "phone": "Phone",
+          "owner": "Owner",
+          "workspaceOverview": "Workspace overview",
+          "members": "Members",
+          "teams": "Teams",
+          "billed": "Billed on {{renewDate}}",
+          "spaceUsed": "Space used ({{percentageUsed}}%)",
+          "totalSpace": "Total space",
+          "editOverviewDetails": {
+            "title": "Profile Details",
+            "cancelButton": "Cancel",
+            "saveButton": "Save Changes"
+          },
+          "errors": {
+            "minNameLength": "The company name must have at least 3 characters"
+          }
+        },
+        "billing": {
+          "editBilling": "Edit Billing",
+          "billingDetails": "Billing details",
+          "updatedBillingDetails": "Details updated successfully",
+          "errorUpdatingBillingDetails": "There was an error updating your details. Please try again in a few minutes"
+        }
+      }
     }
   },
   "contextMenu": {
@@ -818,32 +914,6 @@
       "sharedWith": "Shared with you ",
       "todayAt": "today at "
     },
-    "deletePhotosModal": {
-      "multiToolBar": "items selected",
-      "singleToolBar": "item selected",
-      "multiTitle": "Delete {{item}} selected items?",
-      "singleTitle": "Delete {{item}} selected item?",
-      "subtitle": "You can't undo this action",
-      "buttons": {
-        "cancel": "Cancel",
-        "delete": "Delete"
-      }
-    },
-    "sharePhotosModal": {
-      "singleTitle": "Share {{item}} photo",
-      "multiTitle": "Share {{item}} photos",
-      "options": "Link options",
-      "limit": "Limit number of time users can open this link",
-      "openCount": "Open count limit",
-      "times": "times",
-      "change": "Change",
-      "buttons": {
-        "cancel": "Cancel",
-        "create": "Create link",
-        "creating": "Creating link...",
-        "copyLink": "Copy link"
-      }
-    },
     "friendsInvitedModal": {
       "title": "Friends invited",
       "email": "Email",
@@ -856,8 +926,8 @@
       "resendError": "Error while resending email: {{reason}}"
     },
     "deleteAccountModal": {
-      "title": "Are you sure?",
-      "subtitle": "All your files will be gone forever and you will lose access to your Internxt account.",
+      "title": "Delete account",
+      "subtitle": "By deleting your account, Internxt will permanently delete your files and data forever. Once initiated, this action cannot be undone.",
       "cancel": "Cancel",
       "confirm": "Confirm"
     },
@@ -928,15 +998,12 @@
     "workingOnIt": "We are working to bring you a better experience.",
     "noFilePreview": "No file preview available",
     "browserNotSupported": "Browser not supported ({{userAgent}})",
-    "inviteAFriend": "Error sending the invitation to a friend: {{message}}",
-    "inviteAFriendEmpty": "Error sending the invitation: You have to specify an email",
     "subscribeToNewsletter": "Error subscribing to newsletter: {{message}}",
     "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support.",
     "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
     "emptyPassword": "Previous password must not be empty",
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
-    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
     "maxSizeUploadLimitError": "File too large (greater than 20GB)",
     "connectionLostError": "Internet connection lost",
     "errorLoadingTrashItems": "Error loading trash items"
@@ -1083,15 +1150,6 @@
       },
       "errors": {}
     },
-    "download-photos": {
-      "status": {
-        "pending": "Downloading {{progress}}%",
-        "success": "Downloaded",
-        "error": "Error during download",
-        "cancelled": "Download cancelled"
-      },
-      "errors": {}
-    },
     "download-backup": {
       "status": {
         "pending": "Pending to download",
@@ -1182,7 +1240,6 @@
     "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
     "joinedToTheTeam": "You have successfully joined to the team",
     "done": "Done",
-    "inviteAFriend": "An invitation has been sent to {{email}}",
     "subscribeToNewsletter": "{{email}} successfully subscribed to newsletter"
   },
   "shareItemDialog": {
@@ -1213,9 +1270,12 @@
     "verificationEmail": "Verification email has been sent",
     "successCancelSubscription": "Your subscription has been cancelled",
     "errorCancelSubscription": "Something went wrong while cancelling your subscription",
+    "errorCreatingSubscription": "Something went wrong while creating your subscription",
     "successApplyCoupon": "3 months free of charge applied",
     "errorApplyCoupon": "An error occurred while applying the discount",
-    "alreadyAppliedCoupon": "The coupon has been already applied"
+    "alreadyAppliedCoupon": "The coupon has been already applied",
+    "errorPurchaseBusinessPlan": "You already have a business plan.",
+    "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers"
   },
   "actions": {
     "undo": "Undo",
@@ -1290,6 +1350,7 @@
       "openPreview": "Open preview",
       "details": "Details",
       "shareLink": "Share",
+      "shareTeam": "Share with team",
       "manageLinkAccess": "Manage access",
       "getLink": "Get link",
       "rename": "Rename",
@@ -1346,20 +1407,6 @@
       "advice": "You will be redirected to your AppSumo account"
     }
   },
-  "inviteAFriend": {
-    "title": "Invite a friend",
-    "descriptionWidget": "Get up to {{N}}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
-    "description": "Get 1GB per friend invited for free. You can get up to {{N}}GB in total.",
-    "label": "Friend email address",
-    "placeholder": "Enter friend email",
-    "actions": {
-      "sendInvitation": "Send invitation",
-      "seeInvitations": "See all invitations"
-    },
-    "errors": {
-      "dailyEmailLimit": "You reached the limit of 10 invitations/day"
-    }
-  },
   "newsletter": {
     "dialog": {
       "title": "Subscribe to our newsletter",
@@ -1414,6 +1461,254 @@
     "file": {
       "title": "File not found",
       "description": "Make sure that the URL is correct and the file hasn’t been moved or deleted."
+    }
+  },
+  "preferences": {
+    "title": "Preferences",
+    "general": {
+      "title": "General"
+    },
+    "workspace": {
+      "title": "Workspace",
+      "overview": {
+        "title": "Overview"
+      },
+      "members": {
+        "title": "Members",
+        "members": "Members",
+        "guests": "Guests",
+        "search": "Search members",
+        "invite": "Invite",
+        "inviteDialog": {
+          "title": "Invite to workspace",
+          "inputDescription": "Press enter, space or comma to separate emails",
+          "remove": "Remove",
+          "inviteUsersDescription": "Users without an Internxt account will receive an email to sign up before joining the workspace.",
+          "enterUserEmail": "Enter user email to invite",
+          "addMessage": "Add message",
+          "invite": "Invite"
+        },
+        "invitationFlow": {
+          "acceptedSuccessfully": "Workspace invitation successfully accepted",
+          "declinedSuccessfully": "Workspace invitation successfully declined",
+          "invitationSent": "Invitation sent successfully",
+          "error": {
+            "errorInviting": "Error sending invitation to {{email}}",
+            "acceptedError": "Error accepting invitation to workspace",
+            "declinedError": "Error declining invitation to workspace"
+          }
+        },
+        "list": {
+          "user": "User",
+          "usage": "Usage",
+          "storage": "Storage"
+        },
+        "role": {
+          "owner": "Owner",
+          "manager": "Manager",
+          "member": "Member",
+          "deactivated": "Deactivated"
+        },
+        "deactivationModal": {
+          "title": "Deactivate member",
+          "description": "{{name}} will lose access to the Workspace. All their files and folders will stay the same.",
+          "deactivate": "Deactivate",
+          "deactivating": "Deactivating"
+        },
+        "reactivationModal": {
+          "title": "Reactivate member",
+          "description": "{{name}} will recovery access to the Workspace.",
+          "reactivate": "Reactivate",
+          "reactivating": "Reactivating"
+        },
+        "changePasswordModal": {
+          "title": "Request password change",
+          "description": "User will receive a recommendation to update their personal account password. Use this function in case you believe their password may have been breached.",
+          "inputPlaceholder": "Enter your message text (optional)",
+          "actionButton": "Send request"
+        },
+        "tabs": {
+          "activity": {
+            "name": "Activity",
+            "empty": "No activity",
+            "disabilitedOwner": {
+              "title": "Get started with Activity",
+              "subtitle": "Clear use insights for file and account management with activity log recording",
+              "action": "Enable Activity"
+            },
+            "disabilitedMember": {
+              "title": "Activity is disabled",
+              "subtitle": "Contact the workspace owner to enable Activity Logs for file and account management"
+            },
+            "roles": {
+              "title": "Roles",
+              "member": "Member",
+              "manager": "Manager",
+              "owner": "Owner"
+            },
+            "filter": {
+              "button": "Filter",
+              "title": "Filters",
+              "clear": "Clear",
+              "dateRange": {
+                "title": "Date range",
+                "7days": "Last 7 days",
+                "30days": "Last 30 days",
+                "90days": "Last 90 days"
+              }
+            }
+          },
+          "teams": {
+            "title": "Teams",
+            "role": "Role",
+            "emptyTeamsOwner": {
+              "title": "Get started with teams",
+              "subtitle": "Manage workspace members faster by grouping them into teams",
+              "action": "Create a team"
+            },
+            "emptyTeamsMember": {
+              "title": "No teams created yet",
+              "subtitle": "Workspace owner can manage members faster by grouping them into teams"
+            },
+            "emptyTeams": {
+              "title": "Not a member of any team"
+            }
+          }
+        },
+        "actions": {
+          "deactivate": "Deactivate member",
+          "reactivate": "Reactivate member",
+          "passwordChange": "Request password change"
+        }
+      },
+      "teams": {
+        "title": "Teams"
+      },
+      "billing": {
+        "title": "Billing",
+        "nextBillingDate": "Next billing date",
+        "planLimit": "Billed for {{planLimit}} plan",
+        "subscription": "Subscription",
+        "lifetimeSubscription": {
+          "planType": "Lifetime",
+          "text": "No upcoming billings"
+        },
+        "freeSubscription": {
+          "planType": "Free",
+          "action": "Upgrade",
+          "actionDescription": "Increase your storage space and get more features"
+        },
+        "paymentMethod": {
+          "title": "Payment Method",
+          "editButton": "Edit payment method",
+          "freePlanTitle": "You are on a free {{planLimit}} plan",
+          "addButton": "Add payment method",
+          "empty": "No payment method associated"
+        },
+        "cancelSubscription": {
+          "title": "Cancel subscription",
+          "text": "Your Plan will be downgraded to the free tier.",
+          "button": "Cancel subscription"
+        },
+        "empty": {
+          "text": "No previous invoices"
+        }
+      }
+    },
+    "account": {
+      "title": "Account",
+      "inviteFriend": "Invite a friend",
+      "seeInvitations": "See Invitations",
+      "sendInvitationDescription": "Spread the word and get 1 GB per friend invited for free. You can get up to {{N}}GB in total.",
+      "sendInvitation": "Send invitation",
+      "enterFriendEmail": "Enter friend email",
+      "extraStorage": "Extra storage",
+      "invitedFriends": "Invited friends",
+      "friendsInvited": "Friends invited",
+      "acceptedRequests": "Accepted requests",
+      "user": "User",
+      "status": "Status",
+      "accepted": "Accepted",
+      "pending": "Pending",
+      "noInvitations": "No invitations sent yet",
+      "upgrade": "Upgrade",
+      "levelUpStorage": "Level up your storage space and get many other benefits",
+      "upgradeNow": "Upgrade now",
+      "emptyTrash": "Empty trash",
+      "emptryTrashDescription": "Items in trash will be deleted permanently after 15 days",
+      "plans": {
+        "title": "Plans",
+        "current": "Current",
+        "upgrade": "Upgrade",
+        "downgrade": "Downgrade",
+        "free": "Get up to 10 GB for free",
+        "manageBilling": "Manage billing",
+        "freeForever": "Free forever",
+        "year": "Year",
+        "month": "Month",
+        "lifetime": "Lifetime",
+        "planFeaturesList": {
+          "title": "Plan details",
+          "storage": " of storage",
+          "featureOne": "Encrypted file and folder sharing.",
+          "featureTwo": "Password-protected file sharing.",
+          "featureThree": "Access your files from any device.",
+          "featureFour": "Upload files up to 20GB.",
+          "featureFive": "Two-factor authentication (2FA).",
+          "featureSix": "Premium customer support.",
+          "featureSeven": "30-day money-back guarantee."
+        },
+        "businessPlanFeaturesList": {
+          "title": "Plan details",
+          "storage": " of storage",
+          "featureOne": "Encrypted file and folder sharing.",
+          "featureTwo": "Create and manage users & teams.",
+          "featureThree": "Starting at 3 users and up to 100.",
+          "featureFour": "GDPR compliant.",
+          "featureFive": "Upload files of up to 20GB.",
+          "featureSix": "Manage account billing & payments.",
+          "featureSeven": "Premium customer support."
+        },
+        "user": "user"
+      },
+      "billing": {
+        "title": "Billing"
+      },
+      "security": {
+        "title": "Security"
+      }
+    },
+    "navBarSections": {
+      "general": "General",
+      "workspace": "Workspace",
+      "overview": "Overview",
+      "members": "Members",
+      "teams": "Teams",
+      "billing": "Billing",
+      "account": "Account",
+      "plans": "Plans",
+      "security": "Security"
+    }
+  },
+  "workspaces": {
+    "workspaces": "Workspaces",
+    "workspace": "Workspace",
+    "createWorkspace": "Create workspace",
+    "workspaceTypes": {
+      "personal": "Personal Workspace",
+      "business": "Business Workspace"
+    },
+    "pending": "Pending Invitations",
+    "messages": {
+      "sharedSuccess": "Item shared successfully with the team"
+    },
+    "pendingInvitations": {
+      "empty": "No invitations left",
+      "title": "Pending invitations",
+      "accept": "Accept",
+      "deny": "Decline",
+      "invitedOn": "Invitation sent ",
+      "todayAt": "today at "
     }
   }
 }

@@ -1,5 +1,3 @@
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { SdkFactory } from '../../core/factory/sdk';
 import {
   CheckChangeEmailExpirationResponse,
   FriendInvite,
@@ -9,6 +7,8 @@ import {
   UserPublicKeyResponse,
   VerifyEmailChangeResponse,
 } from '@internxt/sdk/dist/drive/users/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { SdkFactory } from '../../core/factory/sdk';
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
   const usersClient = SdkFactory.getInstance().createUsersClient();
@@ -18,11 +18,6 @@ export async function initializeUser(email: string, mnemonic: string): Promise<I
 export const sendDeactivationEmail = (email: string): Promise<void> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   return authClient.sendDeactivationEmail(email);
-};
-
-const inviteAFriend = (email: string): Promise<void> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
-  return usersClient.sendInvitation(email);
 };
 
 const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
@@ -36,6 +31,11 @@ const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
 const refreshUser = async (): Promise<{ user: UserSettings; token: string }> => {
   const usersClient = SdkFactory.getInstance().createUsersClient();
   return usersClient.refreshUser();
+};
+
+const refreshUserData = async (userUUID: string): Promise<{ user: UserSettings }> => {
+  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  return usersClient.getUserData({ userUuid: userUUID });
 };
 
 const updateUserProfile = (payload: Required<UpdateProfilePayload>): Promise<void> => {
@@ -87,7 +87,6 @@ const userService = {
   initializeUser,
   refreshUser,
   sendDeactivationEmail,
-  inviteAFriend,
   updateUserProfile,
   getFriendInvites,
   updateUserAvatar,
@@ -98,6 +97,7 @@ const userService = {
   verifyEmailChange,
   checkChangeEmailLinkExpiration,
   preCreateUser,
+  refreshUserData,
 };
 
 export default userService;

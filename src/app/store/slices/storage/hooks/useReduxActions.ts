@@ -1,10 +1,10 @@
 import { useDispatch } from 'react-redux';
-import { downloadItemsAsZipThunk, downloadItemsThunk } from '../storage.thunks/downloadItemsThunk';
 import { createFilesIterator, createFoldersIterator } from '../../../../drive/services/folder.service';
-import { uploadFolderThunk } from '../storage.thunks/uploadFolderThunk';
-import { uploadItemsThunk, uploadSharedItemsThunk } from '../storage.thunks/uploadItemsThunk';
 import { DriveItemData } from '../../../../drive/types';
 import { SharedItemAuthenticationData, UploadFolderData } from '../../../../tasks/types';
+import { downloadItemsAsZipThunk, downloadItemsThunk } from '../storage.thunks/downloadItemsThunk';
+import { uploadFolderThunk } from '../storage.thunks/uploadFolderThunk';
+import { uploadItemsThunk, uploadSharedItemsThunk } from '../storage.thunks/uploadItemsThunk';
 
 export const useReduxActions = () => {
   const dispatch = useDispatch();
@@ -34,7 +34,7 @@ export const useReduxActions = () => {
     );
   };
 
-  const uploadItem = (data: { uploadFile: File; parentFolderId: number; taskId: string; fileType: string }) => {
+  const uploadItem = (data: { uploadFile: File; parentFolderId: string; taskId: string; fileType: string }) => {
     dispatch(
       uploadItemsThunk({
         files: [data.uploadFile],
@@ -47,7 +47,7 @@ export const useReduxActions = () => {
 
   const uploadSharedItem = (data: {
     uploadFile: File;
-    parentFolderId: number;
+    parentFolderId: string;
     taskId: string;
     fileType: string;
     sharedItemAuthenticationData: SharedItemAuthenticationData;

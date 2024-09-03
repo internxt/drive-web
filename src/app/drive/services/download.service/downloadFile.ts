@@ -1,13 +1,13 @@
 import streamSaver from 'streamsaver';
 
-import analyticsService from 'app/analytics/services/analytics.service';
 import { TrackingPlan } from 'app/analytics/TrackingPlan';
-import { DriveFileData } from '../../types';
-import downloadFileFromBlob from './downloadFileFromBlob';
-import fetchFileStream from './fetchFileStream';
+import analyticsService from 'app/analytics/services/analytics.service';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
+import { DriveFileData } from '../../types';
+import downloadFileFromBlob from './downloadFileFromBlob';
+import fetchFileStream from './fetchFileStream';
 import fetchFileStreamWithCreds from './fetchFileStreamWithCreds';
 
 interface BlobWritable {
@@ -80,7 +80,7 @@ async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<v
 
 export default async function downloadFile(
   itemData: DriveFileData,
-  isTeam: boolean,
+  isWorkspace: boolean,
   updateProgressCallback: (progress: number) => void,
   abortController?: AbortController,
   sharingOptions?: { credentials: { user: string; pass: string }; mnemonic: string },
@@ -122,7 +122,10 @@ export default async function downloadFile(
   analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
 
   const fileStreamPromise = !sharingOptions
-    ? fetchFileStream({ ...itemData, bucketId: itemData.bucket }, { isTeam, updateProgressCallback, abortController })
+    ? fetchFileStream(
+        { ...itemData, bucketId: itemData.bucket },
+        { isWorkspace, updateProgressCallback, abortController },
+      )
     : fetchFileStreamWithCreds(
         { ...itemData, bucketId: itemData.bucket },
         {

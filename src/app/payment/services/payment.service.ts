@@ -1,20 +1,24 @@
-import { generateMnemonic } from 'bip39';
-import { encryptPGP } from '../../crypto/services/utilspgp';
-import httpService from '../../core/services/http.service';
-import envService from '../../core/services/env.service';
-import { LifetimeTier, StripeSessionMode } from '../types';
-import { loadStripe } from '@stripe/stripe-js/pure';
-import { RedirectToCheckoutServerOptions, Stripe, Source, StripeError } from '@stripe/stripe-js';
-import { SdkFactory } from '../../core/factory/sdk';
 import {
   CreateCheckoutSessionPayload,
+  CreatedSubscriptionData,
+  CustomerBillingInfo,
   DisplayPrice,
-  Invoice,
-  PaymentMethod,
-  UserSubscription,
   FreeTrialAvailable,
+  Invoice,
+  InvoicePayload,
+  PaymentMethod,
   RedeemCodePayload,
+  UserSubscription,
+  UserType,
 } from '@internxt/sdk/dist/drive/payments/types';
+import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js/pure';
+import { generateMnemonic } from 'bip39';
+import { SdkFactory } from '../../core/factory/sdk';
+import envService from '../../core/services/env.service';
+import httpService from '../../core/services/http.service';
+import { encryptPGP } from '../../crypto/services/utilspgp';
+import { LifetimeTier, StripeSessionMode } from '../types';
 
 export interface CreatePaymentSessionPayload {
   test?: boolean;
@@ -48,24 +52,52 @@ const paymentService = {
     return stripe;
   },
 
+  async getCustomerId(name: string, email: string): Promise<{ customerId: string; token: string }> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.getCustomerId(name, email);
+  },
+
+  async createSubscription(
+    customerId: string,
+    priceId: string,
+    token: string,
+    currency: string,
+    promoCode?: string,
+  ): Promise<CreatedSubscriptionData> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.createSubscription(customerId, priceId, token, currency, promoCode);
+  },
+
+  async createPaymentIntent(
+    customerId: string,
+    amount: number,
+    planId: string,
+    token: string,
+    currency?: string,
+    promoCode?: string,
+  ): Promise<{ clientSecret: string; id: string }> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.createPaymentIntent(customerId, amount, planId, token, currency, promoCode);
+  },
+
   async createSession(payload: CreatePaymentSessionPayload): Promise<{ id: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.createSession(payload);
   },
 
-  async createSetupIntent(): Promise<{ clientSecret: string }> {
+  async createSetupIntent(userType?: UserType): Promise<{ clientSecret: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getSetupIntent();
+    return paymentsClient.getSetupIntent(userType);
   },
 
-  async getDefaultPaymentMethod(): Promise<PaymentMethod | Source> {
+  async getDefaultPaymentMethod(userType?: UserType): Promise<PaymentMethod | Source> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getDefaultPaymentMethod();
+    return paymentsClient.getDefaultPaymentMethod(userType);
   },
 
-  async getInvoices(): Promise<Invoice[]> {
+  async getInvoices(payload: InvoicePayload): Promise<Invoice[]> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getInvoices({});
+    return paymentsClient.getInvoices(payload);
   },
 
   async redirectToCheckout(options: RedirectToCheckoutServerOptions): Promise<{ error: StripeError }> {
@@ -74,21 +106,20 @@ const paymentService = {
     return stripe.redirectToCheckout(options);
   },
 
-  async getUserSubscription(): Promise<UserSubscription> {
+  async getUserSubscription(userType?: UserType): Promise<UserSubscription> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getUserSubscription();
+    return paymentsClient.getUserSubscription(userType);
   },
 
-  async getPrices(currency?: string): Promise<DisplayPrice[]> {
+  async getPrices(currency?: string, userType?: UserType): Promise<DisplayPrice[]> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getPrices(currency);
+    return paymentsClient.getPrices(currency, userType);
   },
 
   async isCouponUsedByUser(couponCode: string): Promise<{
     couponUsed: boolean;
   }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-
     return paymentsClient.isCouponUsedByUser({ couponCode: couponCode });
   },
 
@@ -116,13 +147,14 @@ const paymentService = {
   ): Promise<{ userSubscription: UserSubscription; request3DSecure: boolean; clientSecret: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
-    return paymentsClient.updateSubscriptionPrice(priceId, coupon);
+    // TEMPORARY UNTIL MERGE STAGING B2B SUBSCRIPTION UPDATE
+    return paymentsClient.updateSubscriptionPrice({ priceId, couponCode: coupon, userType: UserType.Individual });
   },
 
-  async cancelSubscription(): Promise<void> {
+  async cancelSubscription(userType?: UserType): Promise<void> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
-    return paymentsClient.cancelSubscription();
+    return paymentsClient.cancelSubscription(userType);
   },
 
   async createCheckoutSession(
@@ -131,6 +163,11 @@ const paymentService = {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
     return paymentsClient.createCheckoutSession(payload);
+  },
+
+  async updateCustomerBillingInfo(payload: CustomerBillingInfo): Promise<void> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.updateCustomerBillingInfo(payload);
   },
 
   // TODO: refactor as individual
@@ -146,7 +183,7 @@ const paymentService = {
       test: !envService.isProduction(),
     };
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/stripe/teams/session`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/stripe/teams/session`, {
       method: 'POST',
       headers: httpService.getHeaders(true, false),
       body: JSON.stringify(payload),

@@ -1,29 +1,35 @@
 import { Menu, Transition } from '@headlessui/react';
 import { CaretDown, Trash, DownloadSimple } from '@phosphor-icons/react';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { DriveItemData } from 'app/drive/types';
-import { downloadItemsThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
+import { downloadItemsThunk } from '../../../../store/slices/storage/storage.thunks/downloadItemsThunk';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { uiActions } from '../../../../store/slices/ui';
-import useDriveItemStoreProps from 'app/drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
-import { getAppConfig } from 'app/core/services/config.service';
+import useDriveItemStoreProps from '../../../../drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
+import { getAppConfig } from '../../../../core/services/config.service';
 import { BreadcrumbsMenuProps } from '../types';
+import { DriveItemData } from '../../../../drive/types';
 
 const BreadcrumbsMenuBackups = (props: BreadcrumbsMenuProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const { breadcrumbDirtyName } = useDriveItemStoreProps();
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
+  const currentFolder = useAppSelector((state) => state.backups.currentFolder);
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id;
   const isSharedView = pathId === 'shared';
+  const isFolder = props.items.length > 2;
 
   const onDeleteBackupButtonClicked = () => {
     dispatch(uiActions.setIsDeleteBackupDialog(true));
   };
 
-  const onDownloadBackupButtonClicked = () => {
-    dispatch(downloadItemsThunk([currentDevice as DriveItemData]));
+  const onDownloadBackupButtonClicked = async () => {
+    if (isFolder) {
+      dispatch(downloadItemsThunk([currentFolder as DriveItemData]));
+    } else {
+      dispatch(downloadItemsThunk([currentDevice as DriveItemData]));
+    }
   };
 
   return (

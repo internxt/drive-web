@@ -22,7 +22,6 @@ export enum TaskType {
   UploadFolder = 'upload-folder',
   MoveFile = 'move-file',
   MoveFolder = 'move-folder',
-  DownloadPhotos = 'download-photos',
   RenameFile = 'rename-file',
   RenameFolder = 'rename-folder',
 }
@@ -57,11 +56,17 @@ export interface CreateFolderTask extends BaseTask {
   action: TaskType.CreateFolder;
   cancellable: false;
   folderName: string;
-  parentFolderId: number;
+  parentFolderId: string;
   item?: IRoot;
 }
 
 export interface DownloadFileTask extends BaseTask {
+  action: TaskType.DownloadFile;
+  cancellable: true;
+  file: DriveFileData;
+}
+
+export interface DownloadFilesTask extends BaseTask {
   action: TaskType.DownloadFile;
   cancellable: true;
   file: { name: string; type: string; items?: DriveItemData[] };
@@ -70,7 +75,7 @@ export interface DownloadFileTask extends BaseTask {
 export interface DownloadFolderTask extends BaseTask {
   action: TaskType.DownloadFolder;
   cancellable: boolean;
-  folder: { id: number; name: string };
+  folder: DriveFolderData;
   compressionFormat: string;
 }
 
@@ -86,7 +91,7 @@ export interface UploadFileTask extends BaseTask {
   fileName: string;
   fileType: string;
   isFileNameValidated: boolean;
-  item: { uploadFile: File; parentFolderId: number };
+  item: { uploadFile: File; parentFolderId: string };
   sharedItemAuthenticationData?: SharedItemAuthenticationData;
 }
 
@@ -95,57 +100,51 @@ export interface UploadFolderTask extends BaseTask {
   cancellable: true;
   folderName: string;
   item: IRoot;
-  parentFolderId: number;
+  parentFolderId: string;
 }
 
 export interface MoveFileTask extends BaseTask {
   action: TaskType.MoveFile;
   cancellable: false;
   file: DriveFileData;
-  destinationFolderId: number;
+  destinationFolderId: string;
 }
 
 export interface MoveFolderTask extends BaseTask {
   action: TaskType.MoveFolder;
   cancellable: false;
   folder: DriveFolderData;
-  destinationFolderId: number;
-}
-
-export interface DownloadPhotosTask extends BaseTask {
-  action: TaskType.DownloadPhotos;
-  cancellable: true;
-  numberOfPhotos: number;
+  destinationFolderId: string;
 }
 
 export interface RenameFileTask extends BaseTask {
   action: TaskType.RenameFile;
   cancellable: true;
   file: DriveFileData;
-  destinationFolderId?: number;
+  destinationFolderId?: string;
 }
 
 export interface RenameFolderTask extends BaseTask {
   action: TaskType.RenameFolder;
   cancellable: true;
   folder: DriveFolderData;
-  destinationFolderId?: number;
+  destinationFolderId?: string;
 }
 
 export type TaskData = (
   | CreateFolderTask
   | DownloadFileTask
+  | DownloadFilesTask
   | DownloadFolderTask
   | DownloadBackupTask
   | UploadFileTask
   | UploadFolderTask
   | MoveFileTask
   | MoveFolderTask
-  | DownloadPhotosTask
   | RenameFileTask
   | RenameFolderTask
 ) & { file?: DriveFileData | DownloadFilesData } & {
-  folder?: DownloadFolderData;
+  folder?: DriveFolderData;
 } & { item?: UploadFileData } & { fileType?: string } & {
   item?: IRoot;
   parentFolderId?: number;
@@ -154,9 +153,9 @@ export type TaskData = (
 };
 
 export type DownloadFilesData = { name: string; type: string; items?: DriveItemData[] };
-export type DownloadFolderData = { id: number; name: string };
-export type UploadFileData = { uploadFile: File; parentFolderId: number };
-export type UploadFolderData = { folder: IRoot; parentFolderId: number };
+export type DownloadFolderData = { id: number; name: string; type: string; isFolder: boolean };
+export type UploadFileData = { uploadFile: File; parentFolderId: string };
+export type UploadFolderData = { folder: IRoot; parentFolderId: string };
 export type UploadSharedItemData = UploadFileData & SharedItemAuthenticationData;
 export type SharedItemAuthenticationData = {
   currentFolderId: string;
