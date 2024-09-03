@@ -1,8 +1,6 @@
-import { Elements } from '@stripe/react-stripe-js';
 import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
-
-import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { Elements } from '@stripe/react-stripe-js';
+import { useSelector } from 'react-redux';
 import {
   Stripe,
   StripeElements,
@@ -10,8 +8,10 @@ import {
   StripeElementsOptionsMode,
   loadStripe,
 } from '@stripe/stripe-js';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
+
 import { useCheckout } from 'hooks/checkout/useCheckout';
-import { useSelector } from 'react-redux';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
 import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
@@ -35,8 +35,8 @@ import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
 import { AuthMethodTypes, CouponCodeData, PlanData, RequestedPlanData } from '../../types';
 import CheckoutView from './CheckoutView';
-import ChangePlanDialog from 'app/newSettings/Sections/Account/Plans/components/ChangePlanDialog';
-import { fetchPlanPrices, getStripe } from 'app/newSettings/Sections/Account/Plans/api/plansApi';
+import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
+import { fetchPlanPrices, getStripe } from '../../../newSettings/Sections/Account/Plans/api/plansApi';
 
 export const THEME_STYLES = {
   dark: {
@@ -140,13 +140,14 @@ const CheckoutViewWrapper = () => {
     setSelectedPlan,
     setStripeElementsOptions,
     setUserNameFromElementAddress,
-    setUsers,
+    setSeatsForBusinessSubscription,
   } = useCheckout(dispatchReducer);
   const [isUpsellSwitchActivated, setIsUpsellSwitchActivated] = useState<boolean>(false);
   const [isCheckoutReadyToRender, setIsCheckoutReadyToRender] = useState<boolean>(false);
   const [isUpdateSubscriptionDialogOpen, setIsUpdateSubscriptionDialogOpen] = useState<boolean>(false);
   const [isUpdatingSubscription, setIsUpdatingSubscription] = useState<boolean>(false);
   const [individualPrices, setIndividualPrices] = useState<DisplayPrice[]>();
+  const [businessPrices, setBusinessPrices] = useState<DisplayPrice[]>();
   const [country, setCountry] = useState<string>('');
   const {
     authMethod,
@@ -157,8 +158,10 @@ const CheckoutViewWrapper = () => {
     couponCodeData,
     elementsOptions,
     promoCodeName,
-    users,
+    seatsForBusinessSubscription,
   } = state;
+  const prices = currentSelectedPlan?.type === UserType.Individual ? individualPrices : businessPrices;
+  const canChangePlanDialogBeOpened = prices && currentSelectedPlan && isUpdateSubscriptionDialogOpen;
 
   const userInfo: UserInfoProps = {
     name: fullName,
@@ -215,7 +218,14 @@ const CheckoutViewWrapper = () => {
           loadStripeElements(textColor, backgroundColor, borderColor, borderInputColor, labelTextColor, plan);
         }
       })
-      .catch(() => {});
+      .catch((error) => {
+        errorService.reportError(error);
+        if (user) {
+          navigationService.push(AppView.Drive);
+        } else {
+          navigationService.push(AppView.Signup);
+        }
+      });
 
     setIsCheckoutReadyToRender(true);
   }, [checkoutTheme]);
@@ -250,7 +260,10 @@ const CheckoutViewWrapper = () => {
   const fetchDataAndSetPrices = useCallback(async () => {
     try {
       const individualPrices = await fetchPlanPrices(UserType.Individual);
+      const businessPrices = await fetchPlanPrices(UserType.Business);
+
       setIndividualPrices(individualPrices);
+      setBusinessPrices(businessPrices);
     } catch (error) {
       const errorCasted = errorService.castError(error);
       errorService.reportError(errorCasted);
@@ -362,13 +375,19 @@ const CheckoutViewWrapper = () => {
         token,
         customerId,
         couponCodeData?.codeId,
-        users,
+        seatsForBusinessSubscription,
       );
 
       // TEMPORARY HOT FIX
       // Store subscriptionId, paymentIntendId, and amountPaid to send to IMPACT API
       // need to check all rest of needed values to add it to analytics in trackPaymentConversion function
-      savePaymentDataInLocalStorage(subscriptionId, paymentIntentId, plan?.selectedPlan, users, couponCodeData);
+      savePaymentDataInLocalStorage(
+        subscriptionId,
+        paymentIntentId,
+        plan?.selectedPlan,
+        seatsForBusinessSubscription,
+        couponCodeData,
+      );
 
       const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
 
@@ -475,23 +494,14 @@ const CheckoutViewWrapper = () => {
   };
 
   const handleFetchSelectedPlan = async (planId: string, currency?: string) => {
-    try {
-      const plan = await checkoutService.fetchPlanById(planId, currency);
-      setPlan(plan);
-      setSelectedPlan(plan.selectedPlan);
-      if (plan.selectedPlan.minimumSeats) {
-        setUsers(plan.selectedPlan.minimumSeats);
-      }
-
-      return plan;
-    } catch (error) {
-      errorService.reportError(error);
-      if (user) {
-        navigationService.push(AppView.Drive);
-      } else {
-        navigationService.push(AppView.Signup);
-      }
+    const plan = await checkoutService.fetchPlanById(planId, currency);
+    setPlan(plan);
+    setSelectedPlan(plan.selectedPlan);
+    if (plan.selectedPlan.minimumSeats) {
+      setSeatsForBusinessSubscription(plan.selectedPlan.minimumSeats);
     }
+
+    return plan;
   };
 
   const handleFetchPromotionCode = async (priceId: string, promotionCode: string) => {
@@ -573,11 +583,11 @@ const CheckoutViewWrapper = () => {
             upsellManager={upsellManager}
             authMethod={authMethod}
             checkoutViewManager={checkoutViewManager}
-            onUsersChange={setUsers}
+            onUsersChange={setSeatsForBusinessSubscription}
           />
-          {individualPrices && currentSelectedPlan && isUpdateSubscriptionDialogOpen ? (
+          {canChangePlanDialogBeOpened ? (
             <ChangePlanDialog
-              prices={individualPrices}
+              prices={prices}
               isDialogOpen={isUpdateSubscriptionDialogOpen}
               setIsDialogOpen={setIsUpdateSubscriptionDialogOpen}
               onPlanClick={onChangePlanClicked}

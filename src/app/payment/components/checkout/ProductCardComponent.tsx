@@ -12,10 +12,11 @@ import { useThemeContext } from '../../../theme/ThemeProvider';
 import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guarantee-dark.svg';
 import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
 import { CouponCodeData, Currency, RequestedPlanData } from '../../types';
+import { SelectUsersComponent } from './SelectUsersComponent';
 
 interface ProductFeaturesComponentProps {
   selectedPlan: RequestedPlanData;
-  users: number;
+  seatsForBusinessSubscription: number;
   upsellManager: UpsellManagerProps;
   onUsersChange: (users: number) => void;
   onRemoveAppliedCouponCode: () => void;
@@ -44,11 +45,44 @@ export const getProductAmount = (
   return amount * users;
 };
 
+const getTextContent = (
+  users: number,
+  isBusiness: boolean,
+  bytes: string,
+  selectedPlan: RequestedPlanData,
+  translate: (key: string, props?: Record<string, unknown>) => string,
+  translateList: (key: string, props?: Record<string, unknown>) => string[],
+) => {
+  const maxUploadGBfile = bytes === '1TB' ? '5GB' : '20GB';
+
+  const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
+  const totalLabel = isBusiness
+    ? translate('checkout.productCard.totalForBusiness', {
+        N: users,
+      })
+    : translate('checkout.productCard.total');
+  const features = translateList(
+    `checkout.productCard.planDetails.features.${selectedPlan.type ?? UserType.Individual}`,
+    {
+      spaceToUpgrade: bytes,
+      minimumSeats: selectedPlan.minimumSeats,
+      maximumSeats: selectedPlan.maximumSeats,
+      maxUploadGBfile,
+    },
+  );
+
+  return {
+    perUserLabel,
+    totalLabel,
+    features,
+  };
+};
+
 export const ProductFeaturesComponent = ({
   selectedPlan,
   couponCodeData,
   couponError,
-  users,
+  seatsForBusinessSubscription,
   upsellManager,
   onUsersChange,
   onRemoveAppliedCouponCode,
@@ -61,27 +95,25 @@ export const ProductFeaturesComponent = ({
 
   const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
   const isBusiness = selectedPlan.type === UserType.Business;
-  const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
-  const totalLabel = isBusiness
-    ? translate('checkout.productCard.totalForBusiness', {
-        N: users,
-      })
-    : translate('checkout.productCard.total');
-  const maxUploadGBfile = bytes === '1TB' ? '5GB' : '20GB';
-  const features = translateList(
-    `checkout.productCard.planDetails.features.${selectedPlan.type ?? UserType.Individual}`,
-    {
-      spaceToUpgrade: bytes,
-      minimumSeats: selectedPlan.minimumSeats,
-      maximumSeats: selectedPlan.maximumSeats,
-      maxUploadGBfile,
-    },
+  const textContent = getTextContent(
+    seatsForBusinessSubscription,
+    isBusiness,
+    bytes,
+    selectedPlan,
+    translate,
+    translateList,
   );
+
   const normalPriceAmount = selectedPlan.decimalAmount;
   const planAmount = getProductAmount(selectedPlan.decimalAmount, 1, couponCodeData).toFixed(2);
-  const totalAmount = getProductAmount(selectedPlan.decimalAmount, users, couponCodeData).toFixed(2);
+  const totalAmount = getProductAmount(
+    selectedPlan.decimalAmount,
+    seatsForBusinessSubscription,
+    couponCodeData,
+  ).toFixed(2);
   const upsellPlanAmount =
-    upsellManager.amount && getProductAmount(upsellManager.amount, users, couponCodeData).toFixed(2);
+    upsellManager.amount &&
+    getProductAmount(upsellManager.amount, seatsForBusinessSubscription, couponCodeData).toFixed(2);
 
   const discountPercentage =
     couponCodeData?.amountOff && couponCodeData?.amountOff < selectedPlan.amount
@@ -105,10 +137,17 @@ export const ProductFeaturesComponent = ({
               interval: translate(`checkout.productCard.renewalPeriod.${selectedPlan.interval}`),
             })}
           </p>
+          {isBusiness ? (
+            <SelectUsersComponent
+              disableMinusButton={seatsForBusinessSubscription <= 3}
+              disablePlusButton={seatsForBusinessSubscription >= 10}
+              onUsersChange={onUsersChange}
+            />
+          ) : undefined}
           <div className="flex flex-row items-center justify-between text-gray-100">
             <p className="font-medium">
               {translate(`checkout.productCard.billed.${selectedPlan.interval}`)}
-              {perUserLabel}
+              {textContent.perUserLabel}
             </p>
             <p className="font-semibold">
               {Currency[selectedPlan.currency]}
@@ -135,7 +174,7 @@ export const ProductFeaturesComponent = ({
           <div className="flex flex-col space-y-5">
             <p className="font-medium text-gray-100">{translate('checkout.productCard.planDetails.title')}</p>
             <div className="flex flex-col space-y-4">
-              {features.map((feature) => (
+              {textContent.features.map((feature) => (
                 <div key={feature} className="flex flex-row items-center space-x-2">
                   <Check className="text-green-dark" size={16} weight="bold" />
                   <p className="text-gray-100">{feature}</p>
@@ -145,7 +184,7 @@ export const ProductFeaturesComponent = ({
           </div>
           <Separator />
           <div className="flex flex-row items-center justify-between text-2xl font-semibold text-gray-100">
-            <p>{totalLabel}</p>
+            <p>{textContent.totalLabel}</p>
             <p>
               {Currency[selectedPlan.currency]}
               {totalAmount}
