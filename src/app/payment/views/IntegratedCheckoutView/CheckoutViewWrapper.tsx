@@ -361,7 +361,11 @@ const CheckoutViewWrapper = () => {
         return;
       }
 
-      await elements.submit();
+      const { error: elementsError } = await elements.submit();
+
+      if (elementsError) {
+        throw new Error(elementsError.message);
+      }
 
       const { customerId, token } = await paymentService.getCustomerId(
         customerName,
@@ -561,6 +565,19 @@ const CheckoutViewWrapper = () => {
     setCountry(country);
   };
 
+  const onSeatsChange = (seats: number) => {
+    const minSeats = currentSelectedPlan?.minimumSeats;
+    const maxSeats = currentSelectedPlan?.maximumSeats;
+
+    if (maxSeats && seats > maxSeats) {
+      setSeatsForBusinessSubscription(maxSeats);
+    } else if (minSeats && seats < minSeats) {
+      setSeatsForBusinessSubscription(minSeats);
+    } else {
+      setSeatsForBusinessSubscription(seats);
+    }
+  };
+
   const checkoutViewManager: CheckoutViewManager = {
     onCouponInputChange: setCouponCodeName,
     onLogOut,
@@ -583,7 +600,7 @@ const CheckoutViewWrapper = () => {
             upsellManager={upsellManager}
             authMethod={authMethod}
             checkoutViewManager={checkoutViewManager}
-            onUsersChange={setSeatsForBusinessSubscription}
+            onUsersChange={onSeatsChange}
           />
           {canChangePlanDialogBeOpened ? (
             <ChangePlanDialog

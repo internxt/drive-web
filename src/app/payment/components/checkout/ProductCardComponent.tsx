@@ -139,8 +139,13 @@ export const ProductFeaturesComponent = ({
           </p>
           {isBusiness ? (
             <SelectUsersComponent
-              disableMinusButton={seatsForBusinessSubscription <= 3}
-              disablePlusButton={seatsForBusinessSubscription >= 10}
+              disableMinusButton={
+                !!selectedPlan.minimumSeats && seatsForBusinessSubscription <= selectedPlan?.minimumSeats
+              }
+              disablePlusButton={
+                !!selectedPlan.maximumSeats && seatsForBusinessSubscription >= selectedPlan?.maximumSeats
+              }
+              seats={seatsForBusinessSubscription}
               onUsersChange={onUsersChange}
             />
           ) : undefined}
