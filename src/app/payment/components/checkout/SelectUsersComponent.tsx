@@ -57,7 +57,7 @@ export const SelectUsersComponent = ({
             onUsersChange(10);
             setTotalUsers(10);
           } else {
-            onUsersChange(users);
+            onUsersChange(totalUsers);
           }
         }}
       />
@@ -66,6 +66,7 @@ export const SelectUsersComponent = ({
         disabled={disablePlusButton}
         onClick={(e) => {
           e.preventDefault();
+          setTotalUsers(totalUsers + 1);
           onUsersChange(totalUsers + 1);
         }}
         className="flex h-full flex-col items-center justify-center rounded-r-lg px-4 hover:bg-gray-10"

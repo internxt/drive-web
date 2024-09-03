@@ -59,7 +59,7 @@ const paymentService = {
     companyVatId?: string,
   ): Promise<{ customerId: string; token: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getCustomerId(name, email);
+    return paymentsClient.createCustomer(name, email, country, companyVatId);
   },
 
   async createSubscription(
@@ -71,7 +71,7 @@ const paymentService = {
     promoCode?: string,
   ): Promise<CreatedSubscriptionData> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.createSubscription(customerId, priceId, token, currency, promoCode);
+    return paymentsClient.createSubscription(customerId, priceId, token, quantity, currency, promoCode);
   },
 
   async createPaymentIntent(

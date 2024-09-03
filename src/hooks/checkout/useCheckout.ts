@@ -36,8 +36,8 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     dispatchReducer({ type: 'SET_PLAN', payload: plan });
   };
 
-  const setUsers = (users: number) => {
-    dispatchReducer({ type: 'SET_USERS', payload: users });
+  const setSeatsForBusinessSubscription = (seats: number) => {
+    dispatchReducer({ type: 'SET_SEATS_FOR_BUSINESS_SUBSCRIPTION', payload: seats });
   };
 
   const setSelectedPlan = (selectedPlan: PlanData['selectedPlan']) => {
@@ -76,6 +76,6 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     setPromoCodeData,
     setSelectedPlan,
     setStripeElementsOptions,
-    setUsers,
+    setSeatsForBusinessSubscription,
   };
 };

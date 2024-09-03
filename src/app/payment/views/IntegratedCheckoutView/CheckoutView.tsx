@@ -54,7 +54,7 @@ const CheckoutView = ({
   const stripeSDK = useStripe();
   const elements = useElements();
 
-  const { isPaying, error, couponCodeData, users, currentSelectedPlan } = checkoutViewVariables;
+  const { isPaying, error, couponCodeData, seatsForBusinessSubscription, currentSelectedPlan } = checkoutViewVariables;
 
   const {
     register,
@@ -136,7 +136,7 @@ const CheckoutView = ({
                   selectedPlan={currentSelectedPlan}
                   couponCodeData={couponCodeData}
                   couponError={error?.coupon}
-                  users={users}
+                  seatsForBusinessSubscription={seatsForBusinessSubscription}
                   upsellManager={upsellManager}
                   onUsersChange={onUsersChange}
                   onCouponInputChange={checkoutViewManager.onCouponInputChange}

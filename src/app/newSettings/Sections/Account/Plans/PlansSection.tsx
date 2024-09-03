@@ -211,37 +211,22 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const onChangePlanClicked = async (priceId: string, currency: string) => {
     setIsLoadingCheckout(true);
     setIsUpdatingSubscription(true);
+    const isLifetimeIntervalSelected = selectedInterval === 'lifetime';
     const isCurrentPlanTypeSubscription = isIndividualSubscriptionSelected
       ? individualSubscription?.type === 'subscription'
       : businessSubscription?.type === 'subscription';
 
-    if (!isCurrentPlanTypeSubscription) {
-      const mode = selectedInterval === 'lifetime' ? 'payment' : 'subscription';
-      if (isIndividualSubscriptionSelected) {
-        onClosePreferences();
-        navigationService.push(AppView.Checkout, {
-          planId: priceId,
-          currency: currency,
-        });
-      } else {
-        await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
-      }
-
+    if (!isCurrentPlanTypeSubscription || isLifetimeIntervalSelected) {
+      onClosePreferences();
+      navigationService.push(AppView.Checkout, {
+        planId: priceId,
+        currency: currency,
+      });
       setIsDialogOpen(false);
     } else {
-      const isLifetimeIntervalSelected = selectedInterval === 'lifetime';
-      if (isLifetimeIntervalSelected) {
-        onClosePreferences();
-        navigationService.push(AppView.Checkout, {
-          planId: priceId,
-          currency: currency,
-        });
-        setIsDialogOpen(false);
-      } else {
-        await handleSubscriptionPayment(priceId);
-        dispatch(planThunks.initializeThunk()).unwrap();
-        setIsDialogOpen(false);
-      }
+      await handleSubscriptionPayment(priceId);
+      dispatch(planThunks.initializeThunk()).unwrap();
+      setIsDialogOpen(false);
     }
     setIsLoadingCheckout(false);
     setIsUpdatingSubscription(false);
