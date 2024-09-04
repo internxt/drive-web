@@ -25,6 +25,10 @@ interface ProductFeaturesComponentProps {
   couponError?: string;
 }
 
+const STANDARD_BUSINESS_PLAN_SPACE = '1TB';
+const FILE_SIZE_LIMIT_STANDARD_BUSINESS_PLAN = '5TB';
+const FILE_SIZE_LIMIT_PRO_BUSINESS_PLAN = '20TB';
+
 const Separator = () => <div className="border border-gray-10" />;
 
 export const getProductAmount = (
@@ -53,7 +57,8 @@ const getTextContent = (
   translate: (key: string, props?: Record<string, unknown>) => string,
   translateList: (key: string, props?: Record<string, unknown>) => string[],
 ) => {
-  const maxUploadGBfile = bytes === '1TB' ? '5GB' : '20GB';
+  const maxUploadGBfileSize =
+    bytes === STANDARD_BUSINESS_PLAN_SPACE ? FILE_SIZE_LIMIT_STANDARD_BUSINESS_PLAN : FILE_SIZE_LIMIT_PRO_BUSINESS_PLAN;
 
   const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
   const totalLabel = isBusiness
@@ -67,7 +72,7 @@ const getTextContent = (
       spaceToUpgrade: bytes,
       minimumSeats: selectedPlan.minimumSeats,
       maximumSeats: selectedPlan.maximumSeats,
-      maxUploadGBfile,
+      maxUploadGBfile: maxUploadGBfileSize,
     },
   );
 
