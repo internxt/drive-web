@@ -83,8 +83,8 @@ const getClientSecretForSubscriptionIntent = async (
     priceId,
     token,
     currency,
-    seatsForBusinessSubscription,
     promoCodeId,
+    seatsForBusinessSubscription,
   );
 
   return {

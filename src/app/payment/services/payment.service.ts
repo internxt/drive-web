@@ -67,7 +67,6 @@ const paymentService = {
     priceId: string,
     token: string,
     currency: string,
-    quantity = 1,
     promoCode?: string,
     seats = 1,
   ): Promise<CreatedSubscriptionData> {
