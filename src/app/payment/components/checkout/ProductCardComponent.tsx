@@ -19,7 +19,7 @@ interface ProductFeaturesComponentProps {
   selectedPlan: RequestedPlanData;
   seatsForBusinessSubscription: number;
   upsellManager: UpsellManagerProps;
-  onUsersChange: (users: number) => void;
+  onSeatsChange: (users: number) => void;
   onRemoveAppliedCouponCode: () => void;
   onCouponInputChange: (promoCode: string) => void;
   couponCodeData?: CouponCodeData;
@@ -72,7 +72,7 @@ export const ProductFeaturesComponent = ({
   couponError,
   seatsForBusinessSubscription,
   upsellManager,
-  onUsersChange,
+  onSeatsChange,
   onRemoveAppliedCouponCode,
   onCouponInputChange,
 }: ProductFeaturesComponentProps) => {
@@ -126,16 +126,25 @@ export const ProductFeaturesComponent = ({
             })}
           </p>
           {isBusiness ? (
-            <SelectSeatsComponent
-              disableMinusButton={
-                !!selectedPlan.minimumSeats && seatsForBusinessSubscription <= selectedPlan?.minimumSeats
-              }
-              disablePlusButton={
-                !!selectedPlan.maximumSeats && seatsForBusinessSubscription >= selectedPlan?.maximumSeats
-              }
-              seats={seatsForBusinessSubscription}
-              onUsersChange={onUsersChange}
-            />
+            <>
+              <p>
+                {translate('checkout.productCard.numberOfUsers', {
+                  seats: seatsForBusinessSubscription,
+                })}
+              </p>
+              <SelectSeatsComponent
+                maxSeats={selectedPlan.maximumSeats}
+                minSeats={selectedPlan.minimumSeats}
+                disableMinusButton={
+                  !!selectedPlan.minimumSeats && seatsForBusinessSubscription <= selectedPlan?.minimumSeats
+                }
+                disablePlusButton={
+                  !!selectedPlan.maximumSeats && seatsForBusinessSubscription >= selectedPlan?.maximumSeats
+                }
+                seats={seatsForBusinessSubscription}
+                onSeatsChange={onSeatsChange}
+              />
+            </>
           ) : undefined}
           <div className="flex flex-row items-center justify-between text-gray-100">
             <p className="font-medium">
@@ -279,7 +288,7 @@ export const ProductFeaturesComponent = ({
                           onCouponInputChange(couponName.toUpperCase());
                         }}
                       >
-                        {translate('checkout.productCard.addCoupon.applyCodeButtonTitle')}
+                        {translate('checkout.productCard.apply')}
                       </Button>
                     </div>
                     {couponError && <p className="text-red-dark">{couponError}</p>}

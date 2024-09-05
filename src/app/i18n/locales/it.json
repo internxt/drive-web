@@ -195,6 +195,7 @@
     "productCard": {
       "title": "Riepilogo dell'ordine",
       "selectedPlan": "Piano selezionato",
+      "numberOfUsers": "Numero di utenti: {{seats}}",
       "renewalPeriod": {
         "month": "mensile",
         "year": "annuale",
@@ -242,9 +243,9 @@
       "totalForBusiness": "Totale per {{N}} utenti: ",
       "addCoupon": {
         "buttonTitle": "Aggiungi coupon",
-        "inputText": "Codice coupon",
-        "applyCodeButtonTitle": "Applica"
+        "inputText": "Codice coupon"
       },
+      "apply": "Applica",
       "amountSaved": "Risparmia ",
       "withAnnualBilling": "con fatturazione annuale"
     }

@@ -200,6 +200,7 @@
       },
       "title": "Order summary",
       "selectedPlan": "Selected plan",
+      "numberOfUsers": "Number of users: {{seats}}",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}} plan",
         "year": "{{spaceToUpgrade}} - 1 {{interval}} plan",
@@ -242,10 +243,10 @@
       "totalForBusiness": "Total for {{N}} users: ",
       "addCoupon": {
         "buttonTitle": "Add coupon",
-        "inputText": "Coupon code",
-        "applyCodeButtonTitle": "Apply"
+        "inputText": "Coupon code"
       },
       "amountSaved": "Save ",
+      "apply": "Apply",
       "withAnnualBilling": "with annual billing"
     }
   },

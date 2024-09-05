@@ -178,6 +178,7 @@
     "productCard": {
       "title": "Récapitulatif de la commande",
       "selectedPlan": "Plan sélectionné",
+      "numberOfUsers": "Nombre d'utilisateurs : {{seats}}",
       "renewalPeriod": {
         "month": "mensuel",
         "year": "annuel",
@@ -225,9 +226,9 @@
       "totalForBusiness": "Total pour {{N}} utilisateurs : ",
       "addCoupon": {
         "buttonTitle": "Ajouter un coupon",
-        "inputText": "Code de coupon",
-        "applyCodeButtonTitle": "Appliquer"
+        "inputText": "Code de coupon"
       },
+      "apply": "Appliquer",
       "amountSaved": "Économisez ",
       "withAnnualBilling": "avec facturation annuelle"
     }

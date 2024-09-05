@@ -178,6 +178,7 @@
     "productCard": {
       "title": "Сводка заказа",
       "selectedPlan": "Выбранный план",
+      "numberOfUsers": "Количество пользователей: {{seats}}",
       "renewalPeriod": {
         "month": "ежемесячный",
         "year": "ежегодный",
@@ -225,9 +226,9 @@
       "totalForBusiness": "Итого для {{N}} пользователей: ",
       "addCoupon": {
         "buttonTitle": "Добавить купон",
-        "inputText": "Код купона",
-        "applyCodeButtonTitle": "Применить"
+        "inputText": "Код купона"
       },
+      "apply": "Применить",
       "amountSaved": "Экономия ",
       "withAnnualBilling": "при ежегодной оплате"
     }

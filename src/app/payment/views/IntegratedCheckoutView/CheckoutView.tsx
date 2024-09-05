@@ -136,7 +136,7 @@ const CheckoutView = ({
                   couponError={error?.coupon}
                   seatsForBusinessSubscription={seatsForBusinessSubscription}
                   upsellManager={upsellManager}
-                  onUsersChange={checkoutViewManager.onSeatsChange}
+                  onSeatsChange={checkoutViewManager.onSeatsChange}
                   onCouponInputChange={checkoutViewManager.onCouponInputChange}
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
                 />

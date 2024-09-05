@@ -195,6 +195,7 @@
     "productCard": {
       "title": "訂單摘要",
       "selectedPlan": "選擇的計劃",
+      "numberOfUsers": "用戶數：{{seats}}",
       "renewalPeriod": {
         "month": "每月",
         "year": "每年",
@@ -242,9 +243,9 @@
       "totalForBusiness": "總計 {{N}} 用戶：",
       "addCoupon": {
         "buttonTitle": "添加優惠券",
-        "inputText": "優惠券代碼",
-        "applyCodeButtonTitle": "應用"
+        "inputText": "優惠券代碼"
       },
+      "apply": "應用",
       "amountSaved": "節省 ",
       "withAnnualBilling": "按年計費"
     }

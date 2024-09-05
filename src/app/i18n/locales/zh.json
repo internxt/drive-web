@@ -195,6 +195,7 @@
     "productCard": {
       "title": "订单摘要",
       "selectedPlan": "选择的计划",
+      "numberOfUsers": "用户数量：{{seats}}",
       "renewalPeriod": {
         "month": "每月",
         "year": "每年",
@@ -242,9 +243,9 @@
       "totalForBusiness": "总计 {{N}} 用户：",
       "addCoupon": {
         "buttonTitle": "添加优惠券",
-        "inputText": "优惠券代码",
-        "applyCodeButtonTitle": "应用"
+        "inputText": "优惠券代码"
       },
+      "apply": "应用",
       "amountSaved": "节省 ",
       "withAnnualBilling": "按年计费"
     }

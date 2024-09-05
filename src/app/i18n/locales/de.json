@@ -172,6 +172,7 @@
     "productCard": {
       "title": "Bestellübersicht",
       "selectedPlan": "Ausgewählter Plan",
+      "numberOfUsers": "Anzahl der Benutzer: {{seats}}",
       "renewalPeriod": {
         "month": "monatlich",
         "year": "jährlich",
@@ -219,9 +220,9 @@
       "totalForBusiness": "Gesamtbetrag für {{N}} Benutzer: ",
       "addCoupon": {
         "buttonTitle": "Gutschein hinzufügen",
-        "inputText": "Gutscheincode",
-        "applyCodeButtonTitle": "Anwenden"
+        "inputText": "Gutscheincode"
       },
+      "apply": "Anwenden",
       "amountSaved": "Sparen ",
       "withAnnualBilling": "mit jährlicher Abrechnung"
     }
