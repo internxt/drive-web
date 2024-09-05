@@ -183,6 +183,14 @@
       "emailMustNotBeEmpty": "L'email non deve essere vuota",
       "privacyGuarantee": "Garanzia di privacy: Non condividiamo le tue informazioni e ti contatteremo solo se necessario per fornire il nostro servizio."
     },
+    "addressBillingTitle": "Indirizzo di Fatturazione",
+    "addressBilling": {
+      "optional": {
+        "cta": "Opzionale",
+        "companyName": "Nome dell'azienda",
+        "companyVatId": "Partita IVA dell'azienda"
+      }
+    },
     "paymentTitle": "Seleziona un metodo di pagamento",
     "productCard": {
       "title": "Riepilogo dell'ordine",
@@ -202,22 +210,36 @@
         "year": "Fatturato annualmente",
         "lifetime": "Pagamento unico"
       },
+      "perUser": "/per utente",
       "saving": "Stai risparmiando {{percent}}%",
       "planDetails": {
         "title": "Dettagli del piano:",
-        "features": [
-          "{{spaceToUpgrade}} di spazio di archiviazione crittografato",
-          "Condivisione di file e cartelle crittografati",
-          "Condivisione di file protetta da password",
-          "Accedi ai tuoi file da qualsiasi dispositivo",
-          "Accesso a tutti i nostri servizi",
-          "Carica file fino a 20GB",
-          "Autenticazione a due fattori (2FA)",
-          "Assistenza clienti premium",
-          "Garanzia di rimborso di 30 giorni"
-        ]
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} di spazio di archiviazione crittografato",
+            "Condivisione di file e cartelle crittografati",
+            "Condivisione di file protetta da password",
+            "Accedi ai tuoi file da qualsiasi dispositivo",
+            "Accesso a tutti i nostri servizi",
+            "Carica file fino a 20GB",
+            "Autenticazione a due fattori (2FA)",
+            "Assistenza clienti premium",
+            "Garanzia di rimborso di 30 giorni"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} spazio di archiviazione/utente",
+            "Condivisione di file e cartelle crittografata",
+            "Creare e gestire utenti e team",
+            "A partire da {{minimumSeats}} utenti e fino a {{maximumSeats}}",
+            "Conforme al GDPR",
+            "Caricare file fino a {{maxUploadGBfile}}",
+            "Gestire la fatturazione e i pagamenti dell'account",
+            "Supporto clienti premium"
+          ]
+        }
       },
       "total": "Totale: ",
+      "totalForBusiness": "Totale per {{N}} utenti: ",
       "addCoupon": {
         "buttonTitle": "Aggiungi coupon",
         "inputText": "Codice coupon",

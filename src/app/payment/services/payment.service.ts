@@ -52,7 +52,12 @@ const paymentService = {
     return stripe;
   },
 
-  async getCustomerId(name: string, email: string): Promise<{ customerId: string; token: string }> {
+  async getCustomerId(
+    name: string,
+    email: string,
+    country?: string,
+    companyVatId?: string,
+  ): Promise<{ customerId: string; token: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.createCustomer(name, email);
   },

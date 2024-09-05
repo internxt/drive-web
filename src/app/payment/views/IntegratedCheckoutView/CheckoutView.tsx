@@ -12,6 +12,8 @@ import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
 import { State } from 'app/payment/store/types';
 import { LegacyRef } from 'react';
+import { OptionalB2BDropdownComponent } from 'app/payment/components/checkout/OptionalB2BDropdownComponent';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -50,7 +52,7 @@ const CheckoutView = ({
   const stripeSDK = useStripe();
   const elements = useElements();
 
-  const { isPaying, error, couponCodeData, currentSelectedPlan } = checkoutViewVariables;
+  const { isPaying, error, couponCodeData, seatsForBusinessSubscription, currentSelectedPlan } = checkoutViewVariables;
 
   const {
     register,
@@ -95,20 +97,27 @@ const CheckoutView = ({
                   onLogOut={checkoutViewManager.onLogOut}
                 />
                 <div className="flex flex-col space-y-8 pb-20">
-                  <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.paymentTitle')}</p>
-                  <div className="flex flex-col rounded-2xl border border-gray-10 bg-surface p-5">
-                    <AddressElement
-                      onChange={(e) => {
-                        checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
-                      }}
-                      options={{
-                        mode: 'billing',
-                        autocomplete: {
-                          mode: 'automatic',
-                        },
-                      }}
-                    />
+                  <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.addressBillingTitle')}</p>
+                  <div className="flex w-full flex-col items-center gap-10">
+                    <div className="flex w-full flex-col rounded-2xl border border-gray-10 bg-surface p-5">
+                      <AddressElement
+                        onChange={(e) => {
+                          checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
+                          checkoutViewManager.onCountryChange(e.value.address.country);
+                        }}
+                        options={{
+                          mode: 'billing',
+                          autocomplete: {
+                            mode: 'automatic',
+                          },
+                        }}
+                      />
+                    </div>
+                    {currentSelectedPlan.type === UserType.Business ? (
+                      <OptionalB2BDropdownComponent errors={errors} register={register} translate={translate} />
+                    ) : undefined}
                   </div>
+                  <p className="text-2xl font-semibold text-gray-100">3. {translate('checkout.paymentTitle')}</p>
                   <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
                   {error?.stripe && (
                     <div id="stripeError" className="text-red-dark">
@@ -125,8 +134,10 @@ const CheckoutView = ({
                   selectedPlan={currentSelectedPlan}
                   couponCodeData={couponCodeData}
                   couponError={error?.coupon}
-                  onCouponInputChange={checkoutViewManager.onCouponInputChange}
+                  seatsForBusinessSubscription={seatsForBusinessSubscription}
                   upsellManager={upsellManager}
+                  onUsersChange={checkoutViewManager.onSeatsChange}
+                  onCouponInputChange={checkoutViewManager.onCouponInputChange}
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
                 />
                 <Button type="submit" id="submit" className="flex lg:hidden" disabled={isPaying && isValid}>

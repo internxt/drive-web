@@ -1,12 +1,13 @@
-import { AuthMethodTypes, CouponCodeData, CurrentPlanSelected, PartialErrorState, PlanData } from '../types';
+import { AuthMethodTypes, CouponCodeData, PartialErrorState, PlanData, RequestedPlanData } from '../types';
 import { StripeElementsOptions } from '@stripe/stripe-js';
 
 export interface State {
   plan: PlanData | null;
-  currentSelectedPlan: CurrentPlanSelected | null;
+  currentSelectedPlan: RequestedPlanData | null;
   avatarBlob: Blob | null;
   isPaying: boolean;
   userNameFromAddressElement: string;
+  seatsForBusinessSubscription: number;
   authMethod: AuthMethodTypes;
   promoCodeName?: string;
   couponCodeData?: CouponCodeData;
@@ -16,9 +17,10 @@ export interface State {
 
 export type Action =
   | { type: 'SET_PLAN'; payload: PlanData }
-  | { type: 'SET_CURRENT_PLAN_SELECTED'; payload: CurrentPlanSelected }
+  | { type: 'SET_CURRENT_PLAN_SELECTED'; payload: RequestedPlanData }
   | { type: 'SET_AVATAR_BLOB'; payload: Blob | null }
   | { type: 'SET_IS_PAYING'; payload: boolean }
+  | { type: 'SET_SEATS_FOR_BUSINESS_SUBSCRIPTION'; payload: number }
   | { type: 'SET_USER_NAME_FROM_ADDRESS_ELEMENT'; payload: string }
   | { type: 'SET_PROMO_CODE_NAME'; payload: string | undefined }
   | { type: 'SET_COUPON_CODE_DATA'; payload: CouponCodeData | undefined }

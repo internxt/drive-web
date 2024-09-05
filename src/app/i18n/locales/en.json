@@ -183,6 +183,14 @@
       "emailMustNotBeEmpty": "Email must not be empty",
       "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
     },
+    "addressBillingTitle": "Address Billing",
+    "addressBilling": {
+      "optional": {
+        "cta": "Optional",
+        "companyName": "Company name",
+        "companyVatId": "Company Vat ID"
+      }
+    },
     "paymentTitle": "Select a payment method",
     "productCard": {
       "renewalPeriod": {
@@ -202,22 +210,36 @@
         "year": "Billed annually",
         "lifetime": "One-time payment"
       },
+      "perUser": "/per user",
       "saving": "You're saving {{percent}}%",
       "planDetails": {
         "title": "Plan details:",
-        "features": [
-          "{{spaceToUpgrade}} encrypted storage",
-          "Encrypted file and folder sharing",
-          "Password-protected file sharing",
-          "Access your files from any device",
-          "Get access to all our services",
-          "Upload files up to 20GB",
-          "Two-factor authentication (2FA)",
-          "Premium customer support",
-          "30-day money-back guarantee"
-        ]
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} encrypted storage",
+            "Encrypted file and folder sharing",
+            "Password-protected file sharing",
+            "Access your files from any device",
+            "Get access to all our services",
+            "Upload files up to 20GB",
+            "Two-factor authentication (2FA)",
+            "Premium customer support",
+            "30-day money-back guarantee"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} storage/user",
+            "Encrypted file and folder sharing",
+            "Create and manage users & teams",
+            "Starting at {{minimumSeats}} users and up to {{maximumSeats}}",
+            "GDPR compliant",
+            "Upload files of up to {{maxUploadGBfile}}",
+            "Manage account billing & payments",
+            "Premium customer support"
+          ]
+        }
       },
       "total": "Total: ",
+      "totalForBusiness": "Total for {{N}} users: ",
       "addCoupon": {
         "buttonTitle": "Add coupon",
         "inputText": "Coupon code",
