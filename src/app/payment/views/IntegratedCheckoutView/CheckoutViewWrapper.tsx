@@ -336,6 +336,11 @@ const CheckoutViewWrapper = () => {
       if (elementsError) {
         throw new Error(elementsError.message);
       }
+      const { error: elementsError } = await elements.submit();
+
+      if (elementsError) {
+        throw new Error(elementsError.message);
+      }
 
       const { customerId, token } = await paymentService.getCustomerId(
         customerName,
@@ -344,13 +349,14 @@ const CheckoutViewWrapper = () => {
         companyVatId,
       );
 
-      const { clientSecret, type, subscriptionId, paymentIntentId } = await checkoutService.getClientSecret(
-        currentSelectedPlan as RequestedPlanData,
-        token,
-        customerId,
-        couponCodeData?.codeId,
-        seatsForBusinessSubscription,
-      );
+      const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
+        await checkoutService.getClientSecret(
+          currentSelectedPlan as RequestedPlanData,
+          token,
+          customerId,
+          couponCodeData?.codeId,
+          seatsForBusinessSubscription,
+        );
 
       // TEMPORARY HOT FIX
       // Store subscriptionId, paymentIntendId, and amountPaid to send to IMPACT API
@@ -363,9 +369,14 @@ const CheckoutViewWrapper = () => {
         couponCodeData,
       );
 
+      if (invoiceStatus && invoiceStatus === 'paid') {
+        navigationService.push(AppView.CheckoutSuccess);
+        return;
+      }
+
       const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
 
-      const { error } = await confirmIntent({
+      const { error: confirmIntentError } = await confirmIntent({
         elements,
         clientSecret,
         confirmParams: {
@@ -373,8 +384,8 @@ const CheckoutViewWrapper = () => {
         },
       });
 
-      if (error) {
-        setError('stripe', error.message as string);
+      if (confirmIntentError) {
+        throw new Error(confirmIntentError.message);
       }
     } catch (err) {
       if (!(err as any).status) {

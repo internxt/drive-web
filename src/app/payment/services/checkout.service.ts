@@ -50,20 +50,18 @@ const getClientSecretForPaymentIntent = async (
   token: string,
   currency: string,
   promoCode?: string,
-): Promise<ClientSecretData & { paymentIntentId: string }> => {
-  const { clientSecret: client_secret, id } = await paymentService.createPaymentIntent(
-    customerId,
-    amount,
-    planId,
-    token,
-    currency,
-    promoCode,
-  );
+): Promise<ClientSecretData & { paymentIntentId: string; invoiceStatus?: string }> => {
+  const {
+    clientSecret: client_secret,
+    id,
+    invoiceStatus,
+  } = await paymentService.createPaymentIntent(customerId, amount, planId, token, currency, promoCode);
 
   return {
     clientSecretType: 'payment',
     client_secret,
     paymentIntentId: id,
+    invoiceStatus: invoiceStatus,
   };
 };
 
@@ -105,19 +103,21 @@ const getClientSecret = async (
   seatsForBusinessSubscription = 1,
 ) => {
   if (selectedPlan?.interval === 'lifetime') {
-    const { clientSecretType, client_secret, paymentIntentId } = await checkoutService.getClientSecretForPaymentIntent(
-      customerId,
-      selectedPlan.amount,
-      selectedPlan.id,
-      token,
-      selectedPlan.currency,
-      promoCodeId,
-    );
+    const { clientSecretType, client_secret, paymentIntentId, invoiceStatus } =
+      await checkoutService.getClientSecretForPaymentIntent(
+        customerId,
+        selectedPlan.amount,
+        selectedPlan.id,
+        token,
+        selectedPlan.currency,
+        promoCodeId,
+      );
 
     return {
       type: clientSecretType,
       clientSecret: client_secret,
       paymentIntentId,
+      invoiceStatus,
     };
   } else {
     const response = await checkoutService.getClientSecretForSubscriptionIntent(

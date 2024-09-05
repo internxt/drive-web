@@ -4,19 +4,19 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Bis zu 75% Rabatt",
-    "title": "Zeit, zur Privatsphäre zu wechseln!",
-    "subtitle": "Gewinnen Sie unseren Premium-Rucksack mit unseren lebenslangen Plänen.",
+    "label": "Sparen Sie 78%",
+    "title": "Zurück-zur-Arbeit-Angebote für alle Lebenszeitpläne!",
+    "subtitle": "Gewinnen Sie unseren Premium-Rucksack mit unseren Lebenszeitplänen.",
     "cta": "Plan wählen",
     "guarantee": "30-Tage Geld-zurück-Garantie",
     "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
     "features": [
-      "Sparen bei allen Internxt-Plänen",
-      "Sicherer und geschützter Cloud-Speicher",
-      "Zero-Knowledge-Technologie",
-      "Open Source und transparent",
+      "Wählen Sie Ihren perfekten Lebenszeitplan",
+      "Sichere und geschützte Cloud-Speicherung",
+      "Open Source und geprüft",
       "Ende-zu-Ende verschlüsselte Übertragungen",
-      "Kein unbefugter Zugang"
+      "Kein unbefugter Zugriff",
+      "Angebot endet am 12. September"
     ]
   },
   "valentinesBanner": {
@@ -1418,12 +1418,12 @@
   },
   "itemNotFound": {
     "folder": {
-      "title": "Map niet gevonden",
-      "description": "Controleer of de URL correct is en of de map niet verplaatst of verwijderd is."
+      "title": "Ordner nicht gefunden",
+      "description": "Stellen Sie sicher, dass die URL korrekt ist und der Ordner nicht verschoben oder gelöscht wurde."
     },
     "file": {
-      "title": "Bestand niet gevonden",
-      "description": "Controleer of de URL correct is en of het bestand niet verplaatst of verwijderd is."
+      "title": "Datei nicht gefunden",
+      "description": "Stellen Sie sicher, dass die URL korrekt ist und die Datei nicht verschoben oder gelöscht wurde."
     }
   },
   "preferences": {
