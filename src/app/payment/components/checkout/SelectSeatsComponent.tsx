@@ -15,6 +15,7 @@ export const SelectSeatsComponent = ({
 }: SelectUsersComponentProps): JSX.Element => {
   return (
     <div
+      role="menuitem"
       tabIndex={0}
       onKeyDown={(e) => {
         e.stopPropagation();
