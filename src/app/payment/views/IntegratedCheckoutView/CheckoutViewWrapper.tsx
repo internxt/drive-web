@@ -95,7 +95,7 @@ function savePaymentDataInLocalStorage(
   if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
   if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
   if (selectedPlan) {
-    const amountToPay = getProductAmount(selectedPlan.decimalAmount, users, couponCodeData)?.toFixed(2);
+    const amountToPay = getProductAmount(selectedPlan.decimalAmount, users, couponCodeData);
     localStorageService.set('amountPaid', amountToPay);
   }
 }
