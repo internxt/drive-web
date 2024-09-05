@@ -265,23 +265,24 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
               { destination: folder, closeWhenFinished: false, ...moreOptions },
             );
           } else {
-            await folderService.downloadFolderAsZip(
-              driveItem.id,
-              driveItem.name,
-              driveItem.uuid,
-              folderIterator as FolderIterator,
-              fileIterator as FileIterator,
-              (progress) => {
+            await folderService.downloadFolderAsZip({
+              folderId: driveItem.id,
+              folderName: driveItem.name,
+              folderUUID: driveItem.uuid,
+              foldersIterator: folderIterator as FolderIterator,
+              filesIterator: fileIterator as FileIterator,
+              updateProgress: (progress) => {
                 downloadProgress[index] = progress;
                 updateProgressCallback(calculateProgress());
               },
-              {
+              options: {
                 destination: folder,
                 closeWhenFinished: false,
                 ...moreOptions,
                 workspaceId: selectedWorkspace?.workspace.id,
               },
-            );
+              abortController,
+            });
           }
           downloadProgress[index] = 1;
         } else {
