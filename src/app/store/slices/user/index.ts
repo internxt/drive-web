@@ -16,7 +16,6 @@ import { referralsActions } from '../referrals';
 import { sessionActions } from '../session';
 import { sessionSelectors } from '../session/session.selectors';
 import { storageActions } from '../storage';
-import { teamActions } from '../team';
 import { uiActions } from '../ui';
 import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
 
@@ -65,13 +64,6 @@ export const initializeUserThunk = createAsyncThunk<
       );
     }
 
-    if (user.teams) {
-      try {
-        dispatch(teamActions.initialize());
-      } catch (err: unknown) {
-        localStorageService.removeItem('xTeam');
-      }
-    }
     dispatch(refreshUserThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
@@ -123,7 +115,6 @@ export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
 
     dispatch(sessionActions.resetState());
     dispatch(userActions.resetState());
-    dispatch(teamActions.resetState());
     dispatch(storageActions.resetState());
     dispatch(uiActions.resetState());
     dispatch(referralsActions.resetState());
