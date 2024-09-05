@@ -42,7 +42,7 @@ export const OptionalB2BDropdownComponent = ({ errors, translate, register }: Op
           leaveTo="scale-100 opacity-0"
         >
           <Menu.Items onKeyDown={(e) => e.stopPropagation()} className="flex w-full flex-col gap-5">
-            <div onKeyDown={(e) => e.stopPropagation()} className="flex w-full flex-col gap-1">
+            <div role="menuitem" onKeyDown={(e) => e.stopPropagation()} className="flex w-full flex-col gap-1">
               <p className="text-sm text-gray-80">{translate('checkout.addressBilling.optional.companyName')}</p>
               <TextInput
                 placeholder={translate('checkout.addressBilling.optional.companyName')}
@@ -54,7 +54,7 @@ export const OptionalB2BDropdownComponent = ({ errors, translate, register }: Op
                 required={true}
               />
             </div>
-            <div onKeyDown={(e) => e.stopPropagation()} className="flex w-full flex-col gap-1">
+            <div role="menuitem" onKeyDown={(e) => e.stopPropagation()} className="flex w-full flex-col gap-1">
               <p className="text-sm text-gray-80">{translate('checkout.addressBilling.optional.companyVatId')}</p>
               <TextInput
                 placeholder={translate('checkout.addressBilling.optional.companyVatId')}

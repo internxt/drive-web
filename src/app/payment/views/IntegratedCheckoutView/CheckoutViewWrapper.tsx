@@ -196,7 +196,7 @@ const CheckoutViewWrapper = () => {
           if (promotionCode) {
             handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
           }
-
+          throw new Error('Error por el catch');
           checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, plan);
           stripe = await getStripe(stripe);
           const prices = await fetchPlanPrices(plan.selectedPlan.type);
@@ -205,12 +205,13 @@ const CheckoutViewWrapper = () => {
         }
       })
       .catch((error) => {
-        errorService.reportError(error);
-        if (user) {
-          navigationService.push(AppView.Drive);
-        } else {
-          navigationService.push(AppView.Signup);
-        }
+        console.log('ERROR IN USE EFFECT', error);
+        // errorService.reportError(error);
+        // if (user) {
+        //   navigationService.push(AppView.Drive);
+        // } else {
+        //   navigationService.push(AppView.Signup);
+        // }
       });
   }, [checkoutTheme]);
 
