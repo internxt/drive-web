@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Menu, Switch, Transition } from '@headlessui/react';
-import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { Check, SealPercent, X } from '@phosphor-icons/react';
 
 import { bytesToString } from '../../../drive/services/size.service';
@@ -13,6 +13,7 @@ import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guara
 import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
 import { CouponCodeData, Currency, RequestedPlanData } from '../../types';
 import { SelectSeatsComponent } from './SelectSeatsComponent';
+import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
 interface ProductFeaturesComponentProps {
   selectedPlan: RequestedPlanData;
@@ -30,24 +31,6 @@ const FILE_SIZE_LIMIT_STANDARD_BUSINESS_PLAN = '5TB';
 const FILE_SIZE_LIMIT_PRO_BUSINESS_PLAN = '20TB';
 
 const Separator = () => <div className="border border-gray-10" />;
-
-export const getProductAmount = (
-  amount: DisplayPrice['amount'],
-  users: number,
-  couponCodeData?: CouponCodeData,
-): number => {
-  if (couponCodeData?.amountOff) {
-    return (amount - couponCodeData.amountOff / 100) * users;
-  }
-
-  if (couponCodeData?.percentOff) {
-    const discount = 100 - couponCodeData.percentOff;
-
-    return ((amount * discount) / 100) * users;
-  }
-
-  return amount * users;
-};
 
 const getTextContent = (
   users: number,

@@ -1,9 +1,9 @@
-import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { useSelector } from 'react-redux';
 import { Stripe, StripeElements, StripeElementsOptionsMode } from '@stripe/stripe-js';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
@@ -24,13 +24,13 @@ import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { planThunks } from '../../../store/slices/plan';
 import { useThemeContext } from '../../../theme/ThemeProvider';
-import { getProductAmount } from '../../components/checkout/ProductCardComponent';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
 import { AuthMethodTypes, CouponCodeData, RequestedPlanData } from '../../types';
 import CheckoutView from './CheckoutView';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import { fetchPlanPrices, getStripe } from '../../../newSettings/Sections/Account/Plans/api/plansApi';
+import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
 export const THEME_STYLES = {
   dark: {
@@ -48,8 +48,6 @@ export const THEME_STYLES = {
     labelTextColor: 'rgb(58 58 59)',
   },
 };
-
-const BORDER_SHADOW = 'rgb(0 102 255)';
 
 export type UpsellManagerProps = {
   isUpsellSwitchActivated: boolean;
@@ -82,9 +80,7 @@ export interface CheckoutViewManager {
 }
 
 const ONE_YEAR_IN_MONTHS = 12;
-
 const IS_PRODUCTION = envService.isProduction();
-
 const RETURN_URL_DOMAIN = IS_PRODUCTION ? process.env.REACT_APP_HOSTNAME : 'http://localhost:3000';
 
 let stripe;
@@ -131,14 +127,14 @@ const CheckoutViewWrapper = () => {
     setStripeElementsOptions,
     setUserNameFromElementAddress,
     setSeatsForBusinessSubscription,
+    setCountry,
+    setPrices,
+    setIsCheckoutReadyToRender,
+    setIsUpdateSubscriptionDialogOpen,
+    setIsUpdatingSubscription,
+    setIsUpsellSwitchActivated,
   } = useCheckout(dispatchReducer);
 
-  const [isUpsellSwitchActivated, setIsUpsellSwitchActivated] = useState<boolean>(false);
-  const [isCheckoutReadyToRender, setIsCheckoutReadyToRender] = useState<boolean>(false);
-  const [isUpdateSubscriptionDialogOpen, setIsUpdateSubscriptionDialogOpen] = useState<boolean>(false);
-  const [isUpdatingSubscription, setIsUpdatingSubscription] = useState<boolean>(false);
-  const [prices, setPrices] = useState<DisplayPrice[]>();
-  const [country, setCountry] = useState<string>('');
   const {
     authMethod,
     currentSelectedPlan,
@@ -149,6 +145,12 @@ const CheckoutViewWrapper = () => {
     elementsOptions,
     promoCodeName,
     seatsForBusinessSubscription,
+    country,
+    isCheckoutReadyToRender,
+    isUpdateSubscriptionDialogOpen,
+    isUpdatingSubscription,
+    isUpsellSwitchActivated,
+    prices,
   } = state;
   const canChangePlanDialogBeOpened = prices && currentSelectedPlan && isUpdateSubscriptionDialogOpen;
 
@@ -363,6 +365,9 @@ const CheckoutViewWrapper = () => {
         couponCodeData,
       );
 
+      // DO NOT REMOVE THIS
+      // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
+      // no client secret will be provided.
       if (invoiceStatus && invoiceStatus === 'paid') {
         navigationService.push(AppView.CheckoutSuccess);
         return;
