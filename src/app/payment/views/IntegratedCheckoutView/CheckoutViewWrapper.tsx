@@ -1,7 +1,7 @@
 import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { useSelector } from 'react-redux';
-import { Stripe, StripeElements, StripeElementsOptions, StripeElementsOptionsMode } from '@stripe/stripe-js';
+import { Stripe, StripeElements, StripeElementsOptionsMode } from '@stripe/stripe-js';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 
@@ -78,6 +78,7 @@ export interface CheckoutViewManager {
   onRemoveAppliedCouponCode: () => void;
   handleAuthMethodChange: (method: AuthMethodTypes) => void;
   onUserNameFromAddressElementChange: (userName: string) => void;
+  onSeatsChange: (seat: number) => void;
 }
 
 const ONE_YEAR_IN_MONTHS = 12;
@@ -190,23 +191,16 @@ const CheckoutViewWrapper = () => {
     }
 
     handleFetchSelectedPlan(planId, currencyValue)
-      .then((plan) => {
+      .then(async (plan) => {
         if (checkoutTheme && plan) {
           if (promotionCode) {
-            handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch((err) => {
-              const showPromoCodeErrorNotification = true;
-              handlePromoCodeError(err, showPromoCodeErrorNotification);
-            });
+            handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
           }
 
-          checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], onLoadElements, plan);
-          getStripe(stripe).then((stripePromise) => (stripe = stripePromise));
-          fetchPrices(plan.selectedPlan.type)
-            .then(setPrices)
-            .catch((error) => {
-              const errorCasted = errorService.castError(error);
-              errorService.reportError(errorCasted);
-            });
+          checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, plan);
+          stripe = await getStripe(stripe);
+          const prices = await fetchPlanPrices(plan.selectedPlan.type);
+          setPrices(prices);
           setIsCheckoutReadyToRender(true);
         }
       })
@@ -247,10 +241,6 @@ const CheckoutViewWrapper = () => {
     }
   }, [state.error]);
 
-  const onLoadElements = (stripeElementsOptions: StripeElementsOptions) => {
-    setStripeElementsOptions(stripeElementsOptions);
-  };
-
   const onChangePlanClicked = async (priceId: string, currency: string) => {
     setIsUpdatingSubscription(true);
     await handleSubscriptionPayment(priceId);
@@ -280,7 +270,6 @@ const CheckoutViewWrapper = () => {
 
   const handleSubscriptionPayment = async (priceId: string) => {
     try {
-      stripe = await getStripe(stripe);
       const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
       if (updatedSubscription.request3DSecure) {
         stripe
@@ -310,12 +299,6 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const fetchPrices = useCallback(async (userType: UserType) => {
-    const individualPrices = await fetchPlanPrices(userType);
-
-    return individualPrices;
-  }, []);
-
   const onCheckoutButtonClicked = async (
     formData: IFormValues,
     event: BaseSyntheticEvent<object, any, any> | undefined,
@@ -327,7 +310,7 @@ const CheckoutViewWrapper = () => {
     setIsUserPaying(true);
 
     const { email, password, companyName, companyVatId } = formData;
-    const userData = getUserInfo(email, userNameFromAddressElement, fullName, user);
+    const userData = getUserInfo({ email, userNameFromAddressElement, fullName, user });
     const isStripeNotLoaded = !stripeSDK || !elements;
     const customerName = companyName ?? userData.name;
 
@@ -444,7 +427,17 @@ const CheckoutViewWrapper = () => {
     setAuthMethod('signUp');
   };
 
-  const getUserInfo = (email: string, userNameFromAddressElement: string, fullName: string, user?: UserSettings) => {
+  const getUserInfo = ({
+    email,
+    userNameFromAddressElement,
+    fullName,
+    user,
+  }: {
+    email: string;
+    userNameFromAddressElement: string;
+    fullName: string;
+    user?: UserSettings;
+  }) => {
     let userData;
 
     if (user) {
@@ -504,6 +497,7 @@ const CheckoutViewWrapper = () => {
     onCountryChange,
     handleAuthMethodChange: setAuthMethod,
     onUserNameFromAddressElementChange: setUserNameFromElementAddress,
+    onSeatsChange,
   };
 
   return (
@@ -518,7 +512,6 @@ const CheckoutViewWrapper = () => {
             upsellManager={upsellManager}
             authMethod={authMethod}
             checkoutViewManager={checkoutViewManager}
-            onUsersChange={onSeatsChange}
           />
           {canChangePlanDialogBeOpened ? (
             <ChangePlanDialog

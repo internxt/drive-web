@@ -36,7 +36,6 @@ interface CheckoutViewProps {
   userAuthComponentRef: LegacyRef<HTMLDivElement>;
   checkoutViewVariables: State;
   checkoutViewManager: CheckoutViewManager;
-  onUsersChange: (users: number) => void;
 }
 
 const CheckoutView = ({
@@ -47,7 +46,6 @@ const CheckoutView = ({
   userAuthComponentRef,
   checkoutViewVariables,
   checkoutViewManager,
-  onUsersChange,
 }: CheckoutViewProps) => {
   const { translate } = useTranslationContext();
   // Those custom hooks should be here. They cannot be moved to the Parent, because it must be wrapped by <Elements> component.
@@ -138,7 +136,7 @@ const CheckoutView = ({
                   couponError={error?.coupon}
                   seatsForBusinessSubscription={seatsForBusinessSubscription}
                   upsellManager={upsellManager}
-                  onUsersChange={onUsersChange}
+                  onUsersChange={checkoutViewManager.onSeatsChange}
                   onCouponInputChange={checkoutViewManager.onCouponInputChange}
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
                 />
