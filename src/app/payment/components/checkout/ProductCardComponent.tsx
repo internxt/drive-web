@@ -12,7 +12,7 @@ import { useThemeContext } from '../../../theme/ThemeProvider';
 import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guarantee-dark.svg';
 import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
 import { CouponCodeData, Currency, RequestedPlanData } from '../../types';
-import { SelectUsersComponent } from './SelectUsersComponent';
+import { SelectSeatsComponent } from './SelectSeatsComponent';
 
 interface ProductFeaturesComponentProps {
   selectedPlan: RequestedPlanData;
@@ -24,6 +24,10 @@ interface ProductFeaturesComponentProps {
   couponCodeData?: CouponCodeData;
   couponError?: string;
 }
+
+const STANDARD_BUSINESS_PLAN_SPACE = '1TB';
+const FILE_SIZE_LIMIT_STANDARD_BUSINESS_PLAN = '5TB';
+const FILE_SIZE_LIMIT_PRO_BUSINESS_PLAN = '20TB';
 
 const Separator = () => <div className="border border-gray-10" />;
 
@@ -53,7 +57,8 @@ const getTextContent = (
   translate: (key: string, props?: Record<string, unknown>) => string,
   translateList: (key: string, props?: Record<string, unknown>) => string[],
 ) => {
-  const maxUploadGBfile = bytes === '1TB' ? '5GB' : '20GB';
+  const maxUploadGBfileSize =
+    bytes === STANDARD_BUSINESS_PLAN_SPACE ? FILE_SIZE_LIMIT_STANDARD_BUSINESS_PLAN : FILE_SIZE_LIMIT_PRO_BUSINESS_PLAN;
 
   const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
   const totalLabel = isBusiness
@@ -67,7 +72,7 @@ const getTextContent = (
       spaceToUpgrade: bytes,
       minimumSeats: selectedPlan.minimumSeats,
       maximumSeats: selectedPlan.maximumSeats,
-      maxUploadGBfile,
+      maxUploadGBfile: maxUploadGBfileSize,
     },
   );
 
@@ -138,9 +143,14 @@ export const ProductFeaturesComponent = ({
             })}
           </p>
           {isBusiness ? (
-            <SelectUsersComponent
-              disableMinusButton={seatsForBusinessSubscription <= 3}
-              disablePlusButton={seatsForBusinessSubscription >= 10}
+            <SelectSeatsComponent
+              disableMinusButton={
+                !!selectedPlan.minimumSeats && seatsForBusinessSubscription <= selectedPlan?.minimumSeats
+              }
+              disablePlusButton={
+                !!selectedPlan.maximumSeats && seatsForBusinessSubscription >= selectedPlan?.maximumSeats
+              }
+              seats={seatsForBusinessSubscription}
               onUsersChange={onUsersChange}
             />
           ) : undefined}

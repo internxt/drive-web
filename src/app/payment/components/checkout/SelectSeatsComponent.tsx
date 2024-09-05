@@ -1,22 +1,22 @@
-import { useState } from 'react';
-
 interface SelectUsersComponentProps {
   disableMinusButton: boolean;
   disablePlusButton: boolean;
-  onUsersChange: (users: number) => void;
+  seats: number;
+  onUsersChange: (seats: number) => void;
 }
 
 const SeparatorVertical = () => <div className="h-max border-[0.5px] border-gray-10 py-1" />;
 
-export const SelectUsersComponent = ({
+export const SelectSeatsComponent = ({
   disableMinusButton,
   disablePlusButton,
+  seats,
   onUsersChange,
-}: SelectUsersComponentProps) => {
-  const [totalUsers, setTotalUsers] = useState<number>(3);
-
+}: SelectUsersComponentProps): JSX.Element => {
   return (
     <div
+      role="menuitem"
+      tabIndex={0}
       onKeyDown={(e) => {
         e.stopPropagation();
       }}
@@ -26,8 +26,7 @@ export const SelectUsersComponent = ({
         disabled={disableMinusButton}
         onClick={(e) => {
           e.preventDefault();
-          onUsersChange(totalUsers - 1);
-          setTotalUsers(totalUsers - 1);
+          onUsersChange(seats - 1);
         }}
         className="flex h-full flex-col items-center justify-center rounded-l-lg px-4 hover:bg-gray-10"
       >
@@ -35,30 +34,20 @@ export const SelectUsersComponent = ({
       </button>
       <SeparatorVertical />
       <input
-        type="number"
+        type="text"
         className="flex w-10 items-center justify-center !rounded-none border-0 text-center !outline-none !ring-0"
-        value={totalUsers}
-        min={3}
-        max={10}
+        value={seats}
         onChange={(e) => {
           e.preventDefault();
-          setTotalUsers(Number(e.target.value));
+          onUsersChange(Number(e.target.value));
         }}
         onKeyDown={(e) => {
           e.stopPropagation();
         }}
         onBlur={(e) => {
           e.preventDefault();
-          const users = Number(totalUsers);
-          if (users < 3) {
-            onUsersChange(3);
-            setTotalUsers(3);
-          } else if (users > 10) {
-            onUsersChange(10);
-            setTotalUsers(10);
-          } else {
-            onUsersChange(totalUsers);
-          }
+
+          onUsersChange(seats);
         }}
       />
       <SeparatorVertical />
@@ -66,8 +55,7 @@ export const SelectUsersComponent = ({
         disabled={disablePlusButton}
         onClick={(e) => {
           e.preventDefault();
-          setTotalUsers(totalUsers + 1);
-          onUsersChange(totalUsers + 1);
+          onUsersChange(seats + 1);
         }}
         className="flex h-full flex-col items-center justify-center rounded-r-lg px-4 hover:bg-gray-10"
       >

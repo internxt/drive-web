@@ -67,11 +67,11 @@ const paymentService = {
     priceId: string,
     token: string,
     currency: string,
-    quantity = 1,
     promoCode?: string,
+    seats = 1,
   ): Promise<CreatedSubscriptionData> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.createSubscription(customerId, priceId, token, quantity, currency, promoCode);
+    return paymentsClient.createSubscription(customerId, priceId, token, seats, currency, promoCode);
   },
 
   async createPaymentIntent(
@@ -81,7 +81,7 @@ const paymentService = {
     token: string,
     currency?: string,
     promoCode?: string,
-  ): Promise<{ clientSecret: string; id: string }> {
+  ): Promise<{ clientSecret: string; id: string; invoiceStatus?: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.createPaymentIntent(customerId, amount, planId, token, currency, promoCode);
   },
