@@ -93,15 +93,10 @@ export const ProductFeaturesComponent = ({
   );
 
   const normalPriceAmount = selectedPlan.decimalAmount;
-  const planAmount = getProductAmount(selectedPlan.decimalAmount, 1, couponCodeData).toFixed(2);
-  const totalAmount = getProductAmount(
-    selectedPlan.decimalAmount,
-    seatsForBusinessSubscription,
-    couponCodeData,
-  ).toFixed(2);
+  const planAmount = getProductAmount(selectedPlan.decimalAmount, 1, couponCodeData);
+  const totalAmount = getProductAmount(selectedPlan.decimalAmount, seatsForBusinessSubscription, couponCodeData);
   const upsellPlanAmount =
-    upsellManager.amount &&
-    getProductAmount(upsellManager.amount, seatsForBusinessSubscription, couponCodeData).toFixed(2);
+    upsellManager.amount && getProductAmount(upsellManager.amount, seatsForBusinessSubscription, couponCodeData);
 
   const discountPercentage =
     couponCodeData?.amountOff && couponCodeData?.amountOff < selectedPlan.amount
@@ -127,7 +122,7 @@ export const ProductFeaturesComponent = ({
           </p>
           {isBusiness ? (
             <>
-              <p>
+              <p className="text-lg font-medium">
                 {translate('checkout.productCard.numberOfUsers', {
                   seats: seatsForBusinessSubscription,
                 })}

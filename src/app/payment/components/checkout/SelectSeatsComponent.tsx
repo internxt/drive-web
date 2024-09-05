@@ -1,5 +1,5 @@
-import Button from 'app/shared/components/Button/Button';
 import { useState } from 'react';
+import Button from '../../../shared/components/Button/Button';
 
 interface SelectUsersComponentProps {
   disableMinusButton: boolean;
@@ -23,7 +23,7 @@ export const SelectSeatsComponent = ({
   const [totalUsers, setTotalUsers] = useState<number>(seats);
   const [showButton, setShowButton] = useState<boolean>(false);
 
-  const onInputChanges = (seats) => {
+  const onInputChanges = () => {
     onSeatsChange(totalUsers);
     setShowButton(false);
   };
@@ -64,6 +64,7 @@ export const SelectSeatsComponent = ({
             setShowButton(true);
             if (e.key === 'Enter') {
               e.preventDefault();
+              onInputChanges();
               return;
             }
           }}

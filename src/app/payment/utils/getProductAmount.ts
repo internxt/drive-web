@@ -5,16 +5,19 @@ export const getProductAmount = (
   amount: DisplayPrice['amount'],
   users: number,
   couponCodeData?: CouponCodeData,
-): number => {
+): string => {
+  let finalAmount;
+
   if (couponCodeData?.amountOff) {
-    return (amount - couponCodeData.amountOff / 100) * users;
-  }
-
-  if (couponCodeData?.percentOff) {
+    finalAmount = (amount - couponCodeData.amountOff / 100) * users;
+  } else if (couponCodeData?.percentOff) {
     const discount = 100 - couponCodeData.percentOff;
-
-    return ((amount * discount) / 100) * users;
+    finalAmount = ((amount * discount) / 100) * users;
+  } else {
+    finalAmount = amount * users;
   }
 
-  return amount * users;
+  // Formatear la cantidad para que elimine .00 si no es necesario
+  const formattedAmount = Number(finalAmount.toFixed(2));
+  return Number.isInteger(formattedAmount) ? formattedAmount.toString() : finalAmount.toFixed(2);
 };
