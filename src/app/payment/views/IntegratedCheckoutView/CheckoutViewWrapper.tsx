@@ -336,11 +336,6 @@ const CheckoutViewWrapper = () => {
       if (elementsError) {
         throw new Error(elementsError.message);
       }
-      const { error: elementsError } = await elements.submit();
-
-      if (elementsError) {
-        throw new Error(elementsError.message);
-      }
 
       const { customerId, token } = await paymentService.getCustomerId(
         customerName,
