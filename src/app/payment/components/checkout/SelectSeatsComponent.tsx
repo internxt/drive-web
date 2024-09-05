@@ -7,7 +7,7 @@ interface SelectUsersComponentProps {
 
 const SeparatorVertical = () => <div className="h-max border-[0.5px] border-gray-10 py-1" />;
 
-export const SelectUsersComponent = ({
+export const SelectSeatsComponent = ({
   disableMinusButton,
   disablePlusButton,
   seats,
@@ -15,6 +15,7 @@ export const SelectUsersComponent = ({
 }: SelectUsersComponentProps): JSX.Element => {
   return (
     <div
+      tabIndex={0}
       onKeyDown={(e) => {
         e.stopPropagation();
       }}

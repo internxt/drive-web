@@ -12,7 +12,7 @@ import { useThemeContext } from '../../../theme/ThemeProvider';
 import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guarantee-dark.svg';
 import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
 import { CouponCodeData, Currency, RequestedPlanData } from '../../types';
-import { SelectUsersComponent } from './SelectUsersComponent';
+import { SelectSeatsComponent } from './SelectSeatsComponent';
 
 interface ProductFeaturesComponentProps {
   selectedPlan: RequestedPlanData;
@@ -143,7 +143,7 @@ export const ProductFeaturesComponent = ({
             })}
           </p>
           {isBusiness ? (
-            <SelectUsersComponent
+            <SelectSeatsComponent
               disableMinusButton={
                 !!selectedPlan.minimumSeats && seatsForBusinessSubscription <= selectedPlan?.minimumSeats
               }
