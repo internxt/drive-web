@@ -1,4 +1,4 @@
-import { CheckCircle, ShieldCheck, X } from '@phosphor-icons/react';
+import { CheckCircle, LockKey, X } from '@phosphor-icons/react';
 
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
@@ -62,7 +62,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
               <div className="flex flex-col space-y-8">
                 {features.map((card) => (
                   <div className="flex flex-row space-x-4" key={card}>
-                    <ShieldCheck size={32} className="text-primary" weight="fill" />
+                    <LockKey size={32} className="text-primary" weight="fill" />
                     <p className="text-lg font-semibold ">{card}</p>
                   </div>
                 ))}
