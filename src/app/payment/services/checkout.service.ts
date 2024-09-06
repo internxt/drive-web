@@ -43,19 +43,26 @@ const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: stri
   };
 };
 
-const getClientSecretForPaymentIntent = async (
-  customerId: string,
-  amount: number,
-  planId: string,
-  token: string,
-  currency: string,
-  promoCode?: string,
-): Promise<ClientSecretData & { paymentIntentId: string; invoiceStatus?: string }> => {
+const getClientSecretForPaymentIntent = async ({
+  customerId,
+  amount,
+  priceId,
+  token,
+  currency,
+  promoCode,
+}: {
+  customerId: string;
+  amount: number;
+  priceId: string;
+  token: string;
+  currency: string;
+  promoCode?: string;
+}): Promise<ClientSecretData & { paymentIntentId: string; invoiceStatus?: string }> => {
   const {
     clientSecret: client_secret,
     id,
     invoiceStatus,
-  } = await paymentService.createPaymentIntent(customerId, amount, planId, token, currency, promoCode);
+  } = await paymentService.createPaymentIntent(customerId, amount, priceId, token, currency, promoCode);
 
   return {
     clientSecretType: 'payment',
@@ -65,14 +72,21 @@ const getClientSecretForPaymentIntent = async (
   };
 };
 
-const getClientSecretForSubscriptionIntent = async (
-  customerId: string,
-  priceId: string,
-  token: string,
-  currency: string,
+const getClientSecretForSubscriptionIntent = async ({
+  customerId,
+  priceId,
+  token,
+  currency,
+  promoCodeId,
   seatsForBusinessSubscription = 1,
-  promoCodeId?: string,
-): Promise<ClientSecretData & { subscriptionId?: string; paymentIntentId?: string }> => {
+}: {
+  customerId: string;
+  priceId: string;
+  token: string;
+  currency: string;
+  seatsForBusinessSubscription?: number;
+  promoCodeId?: string;
+}): Promise<ClientSecretData & { subscriptionId?: string; paymentIntentId?: string }> => {
   const {
     type: paymentType,
     clientSecret: client_secret,
@@ -95,23 +109,29 @@ const getClientSecretForSubscriptionIntent = async (
   };
 };
 
-const getClientSecret = async (
-  selectedPlan: RequestedPlanData,
-  token: string,
-  customerId: string,
-  promoCodeId?: CouponCodeData['codeId'],
+const getClientSecret = async ({
+  selectedPlan,
+  token,
+  customerId,
+  promoCodeId,
   seatsForBusinessSubscription = 1,
-) => {
+}: {
+  selectedPlan: RequestedPlanData;
+  token: string;
+  customerId: string;
+  promoCodeId?: CouponCodeData['codeId'];
+  seatsForBusinessSubscription?: number;
+}) => {
   if (selectedPlan?.interval === 'lifetime') {
     const { clientSecretType, client_secret, paymentIntentId, invoiceStatus } =
-      await checkoutService.getClientSecretForPaymentIntent(
+      await checkoutService.getClientSecretForPaymentIntent({
         customerId,
-        selectedPlan.amount,
-        selectedPlan.id,
+        amount: selectedPlan.amount,
+        priceId: selectedPlan.id,
         token,
-        selectedPlan.currency,
-        promoCodeId,
-      );
+        currency: selectedPlan.currency,
+        promoCode: promoCodeId,
+      });
 
     return {
       type: clientSecretType,
@@ -120,14 +140,14 @@ const getClientSecret = async (
       invoiceStatus,
     };
   } else {
-    const response = await checkoutService.getClientSecretForSubscriptionIntent(
+    const response = await checkoutService.getClientSecretForSubscriptionIntent({
       customerId,
-      selectedPlan?.id,
+      priceId: selectedPlan?.id,
       token,
-      selectedPlan.currency,
+      currency: selectedPlan.currency,
       seatsForBusinessSubscription,
       promoCodeId,
-    );
+    });
 
     const { clientSecretType, client_secret, subscriptionId, paymentIntentId } = response;
     return {

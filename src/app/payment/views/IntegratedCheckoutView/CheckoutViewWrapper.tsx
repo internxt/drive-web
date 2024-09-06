@@ -346,13 +346,13 @@ const CheckoutViewWrapper = () => {
       );
 
       const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
-        await checkoutService.getClientSecret(
-          currentSelectedPlan as RequestedPlanData,
+        await checkoutService.getClientSecret({
+          selectedPlan: currentSelectedPlan as RequestedPlanData,
           token,
           customerId,
-          couponCodeData?.codeId,
+          promoCodeId: couponCodeData?.codeId,
           seatsForBusinessSubscription,
-        );
+        });
 
       // TEMPORARY HOT FIX
       // Store subscriptionId, paymentIntendId, and amountPaid to send to IMPACT API
