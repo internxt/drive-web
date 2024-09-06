@@ -110,29 +110,10 @@
       "auth": true
     },
     {
-      "id": "teams-join",
-      "layout": "empty",
-      "path": "/teams/join/:token",
-      "exact": false
-    },
-    {
       "id": "deactivation",
       "layout": "empty",
       "path": "/deactivations/:token",
       "exact": false
-    },
-    {
-      "id": "teams-deactivation",
-      "layout": "empty",
-      "path": "/deactivationsTeams/:token",
-      "exact": false
-    },
-    {
-      "id": "team-success",
-      "layout": "empty",
-      "path": "/team/success/:sessionId",
-      "exact": true,
-      "auth": true
     },
     {
       "id": "checkout-success",

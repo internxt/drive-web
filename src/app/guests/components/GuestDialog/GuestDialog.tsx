@@ -7,7 +7,6 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import AuthButton from 'app/shared/components/AuthButton';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
-import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { AxiosError } from 'axios';
@@ -92,6 +91,4 @@ const GuestInviteDialog = () => {
   );
 };
 
-export default connect((state: RootState) => ({
-  team: state.team.team,
-}))(GuestInviteDialog);
+export default connect(() => ({}))(GuestInviteDialog);
