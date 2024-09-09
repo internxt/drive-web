@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { signUpPage } from '../pages/signUpPage';
 import { staticData } from '../helper/staticData';
+import { faker } from '@faker-js/faker';
 
 test.describe('Internxt SignUp', async () => {
   test.use({ storageState: { cookies: [], origins: [] } });
@@ -8,14 +9,25 @@ test.describe('Internxt SignUp', async () => {
     await page.goto(staticData.signUpURL);
   });
 
-  test.skip('TC1: Validate that the user can create a new account', async ({ page }) => {});
+  test('TC1: Validate that the user can create a new account', async ({ page }) => {
+    const signupPage = new signUpPage(page);
+    const newEmail = faker.internet.email();
+    const newPassword = faker.internet.password();
+
+    await signupPage.typeInEmail(newEmail);
+    await signupPage.typeInPassword(newPassword);
+    await signupPage.clickOnCreateAccountButton();
+    const welcomeText = await signupPage.userWelcome();
+    expect(welcomeText).toEqual(staticData.driveTitle);
+  });
 
   test('TC2: Validate that the user can’t sign up if the email address is already used', async ({ page }) => {
     const signupPage = new signUpPage(page);
 
     await signupPage.typeInEmail(staticData.email);
     await signupPage.typeInPassword(staticData.password);
-    const userAlreadyRegisteredText = await signupPage.clickOnCreateAccount();
+    await signupPage.clickOnCreateAccountButton();
+    const userAlreadyRegisteredText = await signupPage.UserAlreadyExistAssertion();
     expect(userAlreadyRegisteredText).toContain(staticData.userAlreadyRegistered);
   });
 
@@ -53,7 +65,7 @@ test.describe('Internxt SignUp', async () => {
     const SignupPage = new signUpPage(page);
 
     const { termsAndConditionsText, termsOfServiceTitle } = await SignupPage.clickOnTermsAndConditions(context);
-    expect(termsAndConditionsText).toEqual(staticData.termsAndConditions);
+    expect(termsAndConditionsText).toEqual(staticData.youAcceptTermsLinkText);
     expect(termsOfServiceTitle).toEqual(staticData.termsOfServiceTitle);
   });
 

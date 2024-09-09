@@ -33,6 +33,7 @@ export const staticData = {
   dontHaveAccountText: "Don't have an account?",
   createAccountText: 'Create account',
   termsAndConditionsLinkText: 'Terms and conditions',
+  youAcceptTermsLinkText: 'you accept the terms & conditions',
   needHelpLinkText: 'Need help?',
   driveTitle: 'Drive',
 };

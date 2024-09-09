@@ -1,5 +1,6 @@
 import { test as setup } from '@playwright/test';
 import { loginPage } from '../pages/loginPage';
+import { faker } from '@faker-js/faker';
 import { staticData } from '../helper/staticData';
 
 const authFile = './tests/specs/playwright/.auth/user.json';

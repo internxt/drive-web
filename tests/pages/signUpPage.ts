@@ -1,8 +1,5 @@
 import { Page, expect, Locator } from '@playwright/test';
 import { Context } from 'vm';
-import { howToCreateBackUpLocators } from '../locators/howToCreateBackUpKeyLocators';
-import { termsAndConditionsLocators } from '../locators/terms&conditionsLocators';
-import { needHelpLocators } from '../locators/needHelpLocators';
 
 export class signUpPage {
   page: Page;
@@ -22,6 +19,8 @@ export class signUpPage {
   private userAlreadyRegistered: Locator;
   //SIGN IN PAGE
   private loginTitle: Locator;
+  //DRIVE
+  private driveTitle: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -41,6 +40,8 @@ export class signUpPage {
     this.userAlreadyRegistered = this.page.locator('[class="font-base w-56 text-sm text-red"]');
     //LOGIN PAGE
     this.loginTitle = this.page.getByRole('heading', { level: 1 });
+    //DRIVE PAGE
+    this.driveTitle = this.page.locator('[title="Drive"]');
   }
 
   async typeInEmail(email: string) {
@@ -60,13 +61,21 @@ export class signUpPage {
     const passwordWarning = this.passwordWarning.textContent();
     return passwordWarning;
   }
-  async clickOnCreateAccount() {
+  async clickOnCreateAccountButton() {
     const createAccountbuttonText = await this.createAccountButtonText.textContent();
     expect(createAccountbuttonText).toEqual('Create account');
+    expect(this.createAccountButton).toBeEnabled();
     await this.createAccountButton.click();
+  }
+  async UserAlreadyExistAssertion() {
     await this.userAlreadyRegistered.waitFor({ state: 'visible' });
     const userAlreadyRegisteredText = await this.userAlreadyRegistered.textContent();
     return userAlreadyRegisteredText;
+  }
+  async userWelcome() {
+    await this.driveTitle.waitFor({ state: 'visible' });
+    const welcomeText = this.driveTitle.textContent();
+    return welcomeText;
   }
   async clickOnLearnMore(context) {
     const pagePromise = context.waitForEvent('page');
@@ -74,9 +83,7 @@ export class signUpPage {
     const disclaimer = await this.disclaimer.textContent();
     await this.learnMoreLinkText.click();
     const newPage = await pagePromise;
-    const howToCreateBackUpKeyPageTitle = await newPage
-      .locator(howToCreateBackUpLocators.howToCreateBackUpTitle)
-      .textContent();
+    const howToCreateBackUpKeyPageTitle = await newPage.locator('[class$="text-body-primary-color"]').textContent();
     return { disclaimer, howToCreateBackUpKeyPageTitle };
   }
   async clickOnTermsAndConditions(context: Context) {
@@ -86,7 +93,7 @@ export class signUpPage {
     await this.termsAndConditions.click();
 
     const newPage = await pagePromise;
-    const termsOfServiceTitle = await newPage.locator(termsAndConditionsLocators.termsOfService).textContent();
+    const termsOfServiceTitle = await newPage.locator('h1').textContent();
 
     return { termsAndConditionsText, termsOfServiceTitle };
   }
@@ -98,7 +105,7 @@ export class signUpPage {
     await this.needHelp.click();
 
     const newPage = await pagePromise;
-    const needHelpPageTitle = await newPage.locator(needHelpLocators.needHelpTitle).textContent();
+    const needHelpPageTitle = await newPage.locator('h1').textContent();
     return { needHelpText, needHelpPageTitle };
   }
 
