@@ -3,7 +3,6 @@ import { Elements } from '@stripe/react-stripe-js';
 import { useSelector } from 'react-redux';
 import { Stripe, StripeElements, StripeElementsOptionsMode } from '@stripe/stripe-js';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
@@ -31,6 +30,7 @@ import CheckoutView from './CheckoutView';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import { fetchPlanPrices, getStripe } from '../../../newSettings/Sections/Account/Plans/api/plansApi';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 export const THEME_STYLES = {
   dark: {
@@ -396,6 +396,14 @@ const CheckoutViewWrapper = () => {
       }
 
       if ((err as any).status === 409) {
+        if (currentSelectedPlan?.type === UserType.Business) {
+          notificationsService.show({
+            text: translate('notificationMessages.errorPurchaseBusinessPlan'),
+            type: ToastType.Error,
+          });
+          return;
+        }
+
         setIsUpdateSubscriptionDialogOpen(true);
       } else if ((err as any).status === 422) {
         notificationsService.show({
