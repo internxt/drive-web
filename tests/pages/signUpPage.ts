@@ -1,13 +1,11 @@
 import { Page, expect, Locator } from '@playwright/test';
-import { basePage } from './basePage';
-import { signUpLocators } from '../locators/signUpLocators';
 import { Context } from 'vm';
 import { howToCreateBackUpLocators } from '../locators/howToCreateBackUpKeyLocators';
 import { termsAndConditionsLocators } from '../locators/terms&conditionsLocators';
 import { needHelpLocators } from '../locators/needHelpLocators';
-import { loginLocators } from '../locators/loginLocators';
 
-export class signUpPage extends basePage {
+export class signUpPage {
+  page: Page;
   private createAccountTitle: Locator;
   private emailInput: Locator;
   private passwordInput: Locator;
@@ -17,7 +15,7 @@ export class signUpPage extends basePage {
   private createAccountButton: Locator;
   private createAccountButtonText: Locator;
   private byCreatingYourAccountText: Locator;
-  private dontHaveAccountText: Locator;
+  private alreadyHaveAccountText: Locator;
   private logIn: Locator;
   private termsAndConditions: Locator;
   private needHelp: Locator;
@@ -26,24 +24,23 @@ export class signUpPage extends basePage {
   private loginTitle: Locator;
 
   constructor(page: Page) {
-    super(page);
-
-    (this.createAccountTitle = this.page.locator(signUpLocators.createAccountTitle)),
-      (this.emailInput = this.page.locator(signUpLocators.emailInput));
-    this.passwordInput = this.page.locator(signUpLocators.passwordInput);
-    this.passwordWarning = this.page.locator(signUpLocators.passwordWarnings);
-    this.disclaimer = this.page.locator(signUpLocators.disclaimer);
-    this.learnMoreLinkText = this.page.locator(signUpLocators.learnMoreLinkText);
-    this.createAccountButton = this.page.locator(signUpLocators.createAccountButton);
-    this.createAccountButtonText = this.page.locator(signUpLocators.createAccountButtonText);
-    this.byCreatingYourAccountText = this.page.locator(signUpLocators.byCreatingYourAccountText);
-    this.dontHaveAccountText = this.page.locator(signUpLocators.dontHaveAccountText);
-    this.logIn = this.page.locator(signUpLocators.logIn);
-    this.termsAndConditions = this.page.locator(signUpLocators.termsAndConditions);
-    this.needHelp = this.page.locator(signUpLocators.needHelp);
-    this.userAlreadyRegistered = this.page.locator(signUpLocators.userAlreadyRegisteredText);
+    this.page = page;
+    (this.createAccountTitle = this.page.getByRole('heading', { level: 1 })),
+      (this.emailInput = this.page.getByPlaceholder('Email', { exact: true }));
+    this.passwordInput = this.page.getByPlaceholder('Password', { exact: true });
+    this.passwordWarning = this.page.locator('[class="pt-1"] p');
+    this.disclaimer = this.page.locator('[class$="pr-4 dark:bg-primary/20"] p');
+    this.learnMoreLinkText = this.page.getByRole('link', { name: 'Learn more' });
+    this.createAccountButton = this.page.getByRole('button', { name: 'Create account' });
+    this.createAccountButtonText = this.page.locator('[class$="justify-center space-x-2"]');
+    this.byCreatingYourAccountText = this.page.locator('[class="mt-2 w-full text-xs text-gray-50"]');
+    this.alreadyHaveAccountText = this.page.locator('[class$="space-x-1.5 font-medium"] span');
+    this.logIn = this.page.getByRole('link', { name: 'Log in' });
+    this.termsAndConditions = this.page.getByRole('link', { name: 'you accept the terms & conditions' });
+    this.needHelp = this.page.getByRole('link', { name: 'Need help?' });
+    this.userAlreadyRegistered = this.page.locator('[class="font-base w-56 text-sm text-red"]');
     //LOGIN PAGE
-    this.loginTitle = this.page.locator(loginLocators.loginTitle);
+    this.loginTitle = this.page.getByRole('heading', { level: 1 });
   }
 
   async typeInEmail(email: string) {
@@ -52,13 +49,13 @@ export class signUpPage extends basePage {
     expect(createAccountTitle).toEqual('Create account');
     const emailPlaceholder = await this.emailInput.getAttribute('placeholder');
     expect(emailPlaceholder).toEqual('Email');
-    await this.typeIn(signUpLocators.emailInput, email);
+    await this.emailInput.fill(email);
   }
 
   async typeInPassword(password: string) {
     const passwordPlaceholder = await this.passwordInput.getAttribute('placeholder');
     expect(passwordPlaceholder).toEqual('Password');
-    await this.typeIn(signUpLocators.passwordInput, password);
+    await this.passwordInput.fill(password);
     await this.passwordWarning.waitFor({ state: 'visible' });
     const passwordWarning = this.passwordWarning.textContent();
     return passwordWarning;
@@ -66,7 +63,7 @@ export class signUpPage extends basePage {
   async clickOnCreateAccount() {
     const createAccountbuttonText = await this.createAccountButtonText.textContent();
     expect(createAccountbuttonText).toEqual('Create account');
-    await this.clickOn(signUpLocators.createAccountButton);
+    await this.createAccountButton.click();
     await this.userAlreadyRegistered.waitFor({ state: 'visible' });
     const userAlreadyRegisteredText = await this.userAlreadyRegistered.textContent();
     return userAlreadyRegisteredText;
@@ -75,7 +72,7 @@ export class signUpPage extends basePage {
     const pagePromise = context.waitForEvent('page');
     await this.disclaimer.waitFor({ state: 'visible' });
     const disclaimer = await this.disclaimer.textContent();
-    await this.clickOn(signUpLocators.learnMoreLinkText);
+    await this.learnMoreLinkText.click();
     const newPage = await pagePromise;
     const howToCreateBackUpKeyPageTitle = await newPage
       .locator(howToCreateBackUpLocators.howToCreateBackUpTitle)
@@ -86,7 +83,7 @@ export class signUpPage extends basePage {
     const pagePromise = context.waitForEvent('page');
     await this.termsAndConditions.waitFor({ state: 'visible' });
     const termsAndConditionsText = await this.termsAndConditions.textContent();
-    await this.clickOn(signUpLocators.termsAndConditions);
+    await this.termsAndConditions.click();
 
     const newPage = await pagePromise;
     const termsOfServiceTitle = await newPage.locator(termsAndConditionsLocators.termsOfService).textContent();
@@ -98,7 +95,7 @@ export class signUpPage extends basePage {
     const pagePromise = context.waitForEvent('page');
     await this.needHelp.waitFor({ state: 'visible' });
     const needHelpText = await this.needHelp.textContent();
-    await this.clickOn(signUpLocators.needHelp);
+    await this.needHelp.click();
 
     const newPage = await pagePromise;
     const needHelpPageTitle = await newPage.locator(needHelpLocators.needHelpTitle).textContent();
@@ -108,7 +105,7 @@ export class signUpPage extends basePage {
   async clickOnLogIn() {
     await this.logIn.waitFor({ state: 'visible' });
     const logInText = await this.logIn.textContent();
-    await this.clickOn(signUpLocators.logIn);
+    await this.logIn.click();
     await this.loginTitle.waitFor({ state: 'visible' });
     const logInTitle = await this.loginTitle.textContent();
     return { logInText, logInTitle };

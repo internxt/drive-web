@@ -17,6 +17,9 @@ export class basePage {
   async clickOn(selector: string) {
     await this.page.locator(selector).click();
   }
+  async rightClickOn(selector: string) {
+    await this.page.locator(selector).click({ button: 'right' });
+  }
 
   async assertText(actualText: string, expectedText: string) {
     expect(actualText).toEqual(expectedText);

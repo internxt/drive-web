@@ -1,14 +1,8 @@
 import { Page, Locator, expect } from '@playwright/test';
-import { basePage } from './basePage';
-import { loginLocators } from '../locators/loginLocators';
-import { driveLocators } from '../locators/driveLocators';
-import { signUpLocators } from '../locators/signUpLocators';
-import { accountRecoveryLocators } from '../locators/accountRecoveryLocators';
-import { termsAndConditionsLocators } from '../locators/terms&conditionsLocators';
-import { needHelpLocators } from '../locators/needHelpLocators';
 import { Context } from 'vm';
 
-export class loginPage extends basePage {
+export class loginPage {
+  page: Page;
   private loginTitle: Locator;
   private emailInput: Locator;
   private passwordInput: Locator;
@@ -30,23 +24,24 @@ export class loginPage extends basePage {
   private termsOfService: Locator;
 
   constructor(page: Page) {
-    super(page);
-    this.loginTitle = this.page.locator(loginLocators.loginTitle);
-    this.emailInput = this.page.locator(loginLocators.emailInput);
-    this.passwordInput = this.page.locator(loginLocators.passwordInput);
-    this.loginButtonText = this.page.locator(loginLocators.loginButtonText);
-    this.forgotPassword = this.page.locator(loginLocators.forgotPassword);
-    this.dontHaveAccountText = this.page.locator(loginLocators.dontHaveAccountText);
-    this.createAccount = this.page.locator(loginLocators.createAccount);
-    this.termsAndConditions = this.page.locator(loginLocators.termsAndConditions);
-    this.needHelp = this.page.locator(loginLocators.needHelp);
-    this.wrongCredentials = this.page.locator(loginLocators.wrongCredentials);
+    this.page = page;
+    this.loginTitle = this.page.getByRole('heading', { level: 1 });
+    this.emailInput = this.page.getByPlaceholder('Email', { exact: true });
+    this.passwordInput = this.page.getByPlaceholder('Password', { exact: true });
+    this.loginButton = this.page.getByRole('button', { name: 'Log in' });
+    this.loginButtonText = this.page.locator('[data-cy="loginButton"] div');
+    this.forgotPassword = this.page.getByText('Forgot your password?');
+    this.dontHaveAccountText = this.page.getByText("Don't have an account?");
+    this.createAccount = this.page.getByText('Create account');
+    this.termsAndConditions = this.page.getByRole('link', { name: 'Terms and conditions' });
+    this.needHelp = this.page.getByRole('link', { name: 'Need help?' });
+    this.wrongCredentials = this.page.getByText('Wrong login credentials');
     //drive
-    this.driveTitle = this.page.locator(driveLocators.driveTitle);
+    this.driveTitle = this.page.locator('[title="Drive"]');
     //account recovery
-    this.accountRecoveryTitle = this.page.locator(accountRecoveryLocators.accountRecoveryTitle);
+    this.accountRecoveryTitle = this.page.getByRole('heading', { level: 1 });
     //Sign Up
-    this.createAccounTitle = this.page.locator(signUpLocators.createAccountTitle);
+    this.createAccounTitle = this.page.getByRole('heading', { level: 1 });
     // terms of service
   }
 
@@ -54,23 +49,23 @@ export class loginPage extends basePage {
     await this.loginTitle.waitFor({ state: 'visible' });
     const emailPlaceholder = await this.emailInput.getAttribute('placeholder');
     expect(emailPlaceholder).toEqual('Email');
-    await this.typeIn(loginLocators.emailInput, user);
+    await this.emailInput.fill(user);
   }
   async typePassword(password: string | any) {
     const passPlaceholder = await this.passwordInput.getAttribute('placeholder');
     expect(passPlaceholder).toEqual('Password');
-    await this.typeIn(loginLocators.passwordInput, password);
+    await this.passwordInput.fill(password);
   }
   async clickLogIn(password: string | any) {
     if (password === 'test123.') {
       const loginButtonText = await this.loginButtonText.textContent();
       expect(loginButtonText).toEqual('Log in');
-      await this.clickOn(loginLocators.loginButton);
+      await this.loginButton.click();
       await this.driveTitle.waitFor();
       const driveTitle = await this.driveTitle.textContent();
       return driveTitle;
     } else {
-      await this.clickOn(loginLocators.loginButton);
+      await this.loginButton.click();
       await this.wrongCredentials.waitFor();
       const wrongLoginText = await this.wrongCredentials.textContent();
       return wrongLoginText;
@@ -78,7 +73,7 @@ export class loginPage extends basePage {
   }
   async clickOnForgotYourPassword() {
     await this.loginTitle.waitFor({ state: 'visible' });
-    this.clickOn(loginLocators.forgotPassword);
+    await this.forgotPassword.click();
     await this.accountRecoveryTitle.waitFor({ state: 'visible' });
     const accountRecoveryText = await this.accountRecoveryTitle.textContent();
     return accountRecoveryText;
@@ -88,8 +83,8 @@ export class loginPage extends basePage {
     await this.loginTitle.waitFor({ state: 'visible' });
     const dontHaveAccountText = await this.dontHaveAccountText.textContent();
     const createAccountText = await this.createAccount.textContent();
-    await this.clickOn(loginLocators.createAccount);
-    await this.createAccounTitle.waitFor({ state: 'visible' });
+    await this.createAccount.click();
+    await this.createAccounTitle.waitFor({ state: 'visible', timeout: 3000 });
     const createAccountTitle = await this.createAccounTitle.textContent();
 
     return { dontHaveAccountText, createAccountText, createAccountTitle };
@@ -99,10 +94,10 @@ export class loginPage extends basePage {
     const pagePromise = context.waitForEvent('page');
     await this.termsAndConditions.waitFor({ state: 'visible' });
     const termsAndConditionsText = await this.termsAndConditions.textContent();
-    await this.clickOn(loginLocators.termsAndConditions);
+    await this.termsAndConditions.click();
 
     const newPage = await pagePromise;
-    const termsOfServiceTitle = await newPage.locator(termsAndConditionsLocators.termsOfService).textContent();
+    const termsOfServiceTitle = await newPage.locator('h1').textContent();
     return { termsAndConditionsText, termsOfServiceTitle };
   }
 
@@ -110,10 +105,10 @@ export class loginPage extends basePage {
     const pagePromise = context.waitForEvent('page');
     await this.needHelp.waitFor({ state: 'visible' });
     const needHelpText = await this.needHelp.textContent();
-    await this.clickOn(loginLocators.needHelp);
+    await this.needHelp.click();
 
     const newPage = await pagePromise;
-    const needHelpPageTitle = await newPage.locator(needHelpLocators.needHelpTitle).textContent();
+    const needHelpPageTitle = await newPage.locator('h1').textContent();
     return { needHelpText, needHelpPageTitle };
   }
 }

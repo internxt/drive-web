@@ -1,5 +1,4 @@
-import { Page, expect, Locator } from '@playwright/test';
-import { accountRecoveryLocators } from '../locators/accountRecovery';
+import { Page, Locator } from '@playwright/test';
 import { basePage } from './basePage';
 
 export class recoveryPasswordPage extends basePage {
@@ -8,6 +7,6 @@ export class recoveryPasswordPage extends basePage {
   constructor(page: Page) {
     super(page);
 
-    this.accountRecoveryTitle = this.page.locator(accountRecoveryLocators.accountRecoveryTitle);
+    this.accountRecoveryTitle = this.page.getByRole('heading', { name: 'Account recovery' });
   }
 }

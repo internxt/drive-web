@@ -7,9 +7,9 @@ export const staticData = {
   notComplexPassword: 'password',
 
   //URLS
-  passwordRecoveryLink: 'https://drive.internxt.com/recovery-link/',
-  signUp: 'https://drive.internxt.com/new',
-  drive: 'https://drive.internxt.com/',
+  passwordRecoveryLinkURL: 'https://drive.internxt.com/recovery-link/',
+  signUpURL: 'https://drive.internxt.com/new',
+  driveURL: 'https://drive.internxt.com/',
 
   //SIGNUP DISCLAIMER
   disclaimer:
@@ -32,7 +32,7 @@ export const staticData = {
   wrongLoginWarning: 'Wrong login credentials',
   dontHaveAccountText: "Don't have an account?",
   createAccountText: 'Create account',
-  termsAndConditions: 'Terms and conditions',
+  termsAndConditionsLinkText: 'Terms and conditions',
   needHelpLinkText: 'Need help?',
   driveTitle: 'Drive',
 };
