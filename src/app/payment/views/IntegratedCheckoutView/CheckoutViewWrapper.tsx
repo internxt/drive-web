@@ -338,7 +338,12 @@ const CheckoutViewWrapper = () => {
         throw new Error(elementsError.message);
       }
 
-      const { customerId, token } = await paymentService.getCustomerId(customerName, email, country, companyVatId);
+      const { customerId, token } = await paymentService.getCustomerId(
+        customerName,
+        email ?? user?.email,
+        country,
+        companyVatId,
+      );
 
       const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
         await checkoutService.getClientSecret({

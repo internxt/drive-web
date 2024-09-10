@@ -155,7 +155,7 @@ export const ProductFeaturesComponent = ({
             <div className="flex flex-row items-center justify-between font-semibold">
               <div className="flex flex-row items-center space-x-2 text-green-dark">
                 <SealPercent weight="fill" size={24} />
-                <p className="">
+                <p>
                   {translate('checkout.productCard.saving', {
                     percent: couponCodeData?.percentOff ?? discountPercentage,
                   })}
