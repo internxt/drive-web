@@ -118,11 +118,6 @@ export async function uploadFile(
     let response;
 
     if (isWorkspacesUpload) {
-      // TEMPORARY: For backward compatibility with id
-      // REMOVE THIS WHEN BACKEND IMPLEMENT ENCRYPTION FOR NAME IN CREATE FILE ENTRY ENPDOINT
-      // const folderMeta = await newStorageService.getFolderMeta(file.parentFolderId, workspacesToken, resourcesToken);
-      // const name = encryptFilename(file.name, folderMeta.id);
-
       const dateISO = '2023-05-30T12:34:56.789Z';
       const date = new Date(dateISO);
       const workspaceFileEntry = {
@@ -140,15 +135,6 @@ export async function uploadFile(
 
       response = await workspacesService.createFileEntry(workspaceFileEntry, workspaceId, resourcesToken);
     } else {
-      // TEMPORARY: For backward compatibility with id
-      // REMOVE THIS WHEN BACKEND IMPLEMENT ENCRYPTION FOR NAME IN CREATE FILE ENTRY ENPDOINT
-      // const folderMeta = await newStorageService.getFolderMeta(
-      //   file.parentFolderId,
-      //   undefined,
-      //   options.ownerUserAuthenticationData?.token,
-      // );
-      // const name = encryptFilename(file.name, folderMeta.id);
-
       const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
       const fileEntry: StorageTypes.FileEntryByUuid = {
         id: fileId,
