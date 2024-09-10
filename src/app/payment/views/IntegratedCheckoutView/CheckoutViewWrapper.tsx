@@ -82,6 +82,7 @@ export interface CheckoutViewManager {
 const ONE_YEAR_IN_MONTHS = 12;
 const IS_PRODUCTION = envService.isProduction();
 const RETURN_URL_DOMAIN = IS_PRODUCTION ? process.env.REACT_APP_HOSTNAME : 'http://localhost:3000';
+const STATUS_CODE_ERROR = [409, 422];
 
 let stripe;
 
@@ -311,9 +312,8 @@ const CheckoutViewWrapper = () => {
     setIsUserPaying(true);
 
     const { email, password, companyName, companyVatId } = formData;
-    const userData = getUserInfo({ email, userNameFromAddressElement, fullName, user });
     const isStripeNotLoaded = !stripeSDK || !elements;
-    const customerName = companyName ?? userData.name;
+    const customerName = companyName ?? userNameFromAddressElement;
 
     try {
       await authCheckoutService.authenticateUser(email, password, authMethod, dispatch, doRegister);
@@ -338,12 +338,7 @@ const CheckoutViewWrapper = () => {
         throw new Error(elementsError.message);
       }
 
-      const { customerId, token } = await paymentService.getCustomerId(
-        customerName,
-        userData.email,
-        country,
-        companyVatId,
-      );
+      const { customerId, token } = await paymentService.getCustomerId(customerName, email, country, companyVatId);
 
       const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
         await checkoutService.getClientSecret({
@@ -387,7 +382,9 @@ const CheckoutViewWrapper = () => {
         throw new Error(confirmIntentError.message);
       }
     } catch (err) {
-      if (!(err as any).status) {
+      const statusCode = (err as any).status;
+
+      if (!statusCode || !STATUS_CODE_ERROR.includes(statusCode)) {
         notificationsService.show({
           text: translate('notificationMessages.errorCreatingSubscription'),
           type: ToastType.Error,
@@ -395,7 +392,7 @@ const CheckoutViewWrapper = () => {
         errorService.reportError(err);
       }
 
-      if ((err as any).status === 409) {
+      if (statusCode === 409) {
         if (currentSelectedPlan?.type === UserType.Business) {
           notificationsService.show({
             text: translate('notificationMessages.errorPurchaseBusinessPlan'),
@@ -405,7 +402,7 @@ const CheckoutViewWrapper = () => {
         }
 
         setIsUpdateSubscriptionDialogOpen(true);
-      } else if ((err as any).status === 422) {
+      } else if (statusCode === 422) {
         notificationsService.show({
           text: translate('notificationMessages.couponIsNotValidForUserError'),
           type: ToastType.Error,
@@ -443,34 +440,6 @@ const CheckoutViewWrapper = () => {
     localStorageService.clear();
     RealtimeService.getInstance().stop();
     setAuthMethod('signUp');
-  };
-
-  const getUserInfo = ({
-    email,
-    userNameFromAddressElement,
-    fullName,
-    user,
-  }: {
-    email: string;
-    userNameFromAddressElement: string;
-    fullName: string;
-    user?: UserSettings;
-  }) => {
-    let userData;
-
-    if (user) {
-      userData = {
-        name: fullName,
-        email: user.email,
-      };
-    } else {
-      userData = {
-        name: userNameFromAddressElement,
-        email: email,
-      };
-    }
-
-    return userData;
   };
 
   const handlePromoCodeError = (err: unknown, showNotification?: boolean) => {

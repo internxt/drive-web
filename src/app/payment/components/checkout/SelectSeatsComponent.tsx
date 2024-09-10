@@ -65,7 +65,6 @@ export const SelectSeatsComponent = ({
             if (e.key === 'Enter') {
               e.preventDefault();
               onInputChanges();
-              return;
             }
           }}
         />
