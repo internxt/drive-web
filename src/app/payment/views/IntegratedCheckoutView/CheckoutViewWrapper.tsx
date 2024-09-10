@@ -82,7 +82,10 @@ export interface CheckoutViewManager {
 const ONE_YEAR_IN_MONTHS = 12;
 const IS_PRODUCTION = envService.isProduction();
 const RETURN_URL_DOMAIN = IS_PRODUCTION ? process.env.REACT_APP_HOSTNAME : 'http://localhost:3000';
-const STATUS_CODE_ERROR = [409, 422];
+const STATUS_CODE_ERROR = {
+  USER_EXISTS: 409,
+  COUPON_NOT_VALID: 422,
+};
 
 let stripe;
 
@@ -389,15 +392,7 @@ const CheckoutViewWrapper = () => {
     } catch (err) {
       const statusCode = (err as any).status;
 
-      if (!statusCode || !STATUS_CODE_ERROR.includes(statusCode)) {
-        notificationsService.show({
-          text: translate('notificationMessages.errorCreatingSubscription'),
-          type: ToastType.Error,
-        });
-        errorService.reportError(err);
-      }
-
-      if (statusCode === 409) {
+      if (statusCode === STATUS_CODE_ERROR.USER_EXISTS) {
         if (currentSelectedPlan?.type === UserType.Business) {
           notificationsService.show({
             text: translate('notificationMessages.errorPurchaseBusinessPlan'),
@@ -405,14 +400,20 @@ const CheckoutViewWrapper = () => {
           });
           return;
         }
-
         setIsUpdateSubscriptionDialogOpen(true);
-      } else if (statusCode === 422) {
+      } else if (statusCode === STATUS_CODE_ERROR.COUPON_NOT_VALID) {
         notificationsService.show({
           text: translate('notificationMessages.couponIsNotValidForUserError'),
           type: ToastType.Error,
         });
+      } else {
+        notificationsService.show({
+          text: translate('notificationMessages.errorCreatingSubscription'),
+          type: ToastType.Error,
+        });
       }
+
+      errorService.reportError(err);
     } finally {
       setIsUserPaying(false);
     }

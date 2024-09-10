@@ -23,11 +23,11 @@ export const SelectSeatsComponent = ({
 }: SelectUsersComponentProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [totalUsers, setTotalUsers] = useState<number>(seats);
-  const [showButton, setShowButton] = useState<boolean>(false);
+  const [showApplyButton, setShowApplyButton] = useState<boolean>(false);
 
-  const onInputChanges = () => {
+  const onSeatInputChange = () => {
     onSeatsChange(totalUsers);
-    setShowButton(false);
+    setShowApplyButton(false);
   };
 
   return (
@@ -63,10 +63,10 @@ export const SelectSeatsComponent = ({
           }}
           onKeyDown={(e) => {
             e.stopPropagation();
-            setShowButton(true);
+            setShowApplyButton(true);
             if (e.key === 'Enter') {
               e.preventDefault();
-              onInputChanges();
+              onSeatInputChange();
             }
           }}
         />
@@ -83,13 +83,13 @@ export const SelectSeatsComponent = ({
           +
         </button>
       </div>
-      {showButton ? (
+      {showApplyButton ? (
         <Button
           className="w-max"
           disabled={maxSeats && minSeats ? maxSeats < totalUsers || totalUsers < minSeats : undefined}
           type="button"
           variant="primary"
-          onClick={onInputChanges}
+          onClick={onSeatInputChange}
         >
           <p>{translate('checkout.productCard.apply')}</p>
         </Button>

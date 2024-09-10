@@ -59,7 +59,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
   const [selectedSubscription, setSelectedSubscription] = useState<UserType>(UserType.Individual);
   const isIndividualSubscriptionSelected = selectedSubscription == UserType.Individual;
-  const isBussinessSubscriptionSelected = selectedSubscription == UserType.Business;
+  const isBusinessSubscriptionSelected = selectedSubscription == UserType.Business;
 
   const defaultInterval = plan.individualPlan?.renewalPeriod === 'monthly' ? 'month' : 'year';
   const [selectedInterval, setSelectedInterval] = useState<DisplayPrice['interval']>(defaultInterval);
@@ -372,7 +372,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
                   : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === plan.id
               }
               displayBillingSlash={plan.interval !== 'lifetime'}
-              isBusiness={isBussinessSubscriptionSelected}
+              isBusiness={isBusinessSubscriptionSelected}
             />
           ))}
         </div>
@@ -409,8 +409,8 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
             }
             changePlanType={currentChangePlanType}
             isLoading={isLoadingCheckout}
-            disableActionButton={isUserOwningWorkspace && isBussinessSubscriptionSelected}
-            isBusiness={isBussinessSubscriptionSelected}
+            disableActionButton={isUserOwningWorkspace && isBusinessSubscriptionSelected}
+            isBusiness={isBusinessSubscriptionSelected}
           />
         )}
       </div>

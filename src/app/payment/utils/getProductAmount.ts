@@ -17,7 +17,6 @@ export const getProductAmount = (
     finalAmount = amount * users;
   }
 
-  // Formatear la cantidad para que elimine .00 si no es necesario
   const formattedAmount = Number(finalAmount.toFixed(2));
   return Number.isInteger(formattedAmount) ? formattedAmount.toString() : finalAmount.toFixed(2);
 };
