@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Button from '../../../shared/components/Button/Button';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface SelectUsersComponentProps {
   disableMinusButton: boolean;
@@ -20,6 +21,7 @@ export const SelectSeatsComponent = ({
   seats,
   onSeatsChange,
 }: SelectUsersComponentProps): JSX.Element => {
+  const { translate } = useTranslationContext();
   const [totalUsers, setTotalUsers] = useState<number>(seats);
   const [showButton, setShowButton] = useState<boolean>(false);
 
@@ -89,7 +91,7 @@ export const SelectSeatsComponent = ({
           variant="primary"
           onClick={onInputChanges}
         >
-          <p>Apply</p>
+          <p>{translate('checkout.productCard.apply')}</p>
         </Button>
       ) : undefined}
     </div>
