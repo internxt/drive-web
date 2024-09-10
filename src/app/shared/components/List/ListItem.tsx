@@ -37,6 +37,7 @@ interface ItemProps<T> {
 }
 
 const MENU_BUTTON_HEIGHT = 40;
+const TOP_FIXED_HEIGHT = 270;
 
 // This is used to get the size of the menu item list and adjust its position depending on where you are trying to open it.
 // As the size of the list is not fixed we need to create an item equal to the list to be rendered
@@ -141,7 +142,7 @@ export default function ListItem<T extends { id: string }>({
     }
 
     if (event.clientY + childHeight > innerHeight) {
-      y = y - childHeight;
+      y = y - childHeight + TOP_FIXED_HEIGHT;
     }
     setPosX(x);
     setPosY(y);
