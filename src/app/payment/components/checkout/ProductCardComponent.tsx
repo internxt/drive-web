@@ -260,18 +260,7 @@ export const ProductFeaturesComponent = ({
                 leaveFrom="scale-98 opacity-100"
                 leaveTo="scale-100 opacity-0"
               >
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && couponName) {
-                      e.preventDefault();
-                      onCouponInputChange(couponName.toUpperCase().trim());
-                      setCouponName('');
-                    }
-                  }}
-                  className="w-full items-center outline-none"
-                >
+                <div className="w-full items-center outline-none">
                   <div className="flex w-full flex-col items-start space-y-1">
                     <p className="text-sm text-gray-80">{translate('checkout.productCard.addCoupon.inputText')}</p>
                     <div className="flex w-full flex-row space-x-3">
@@ -285,6 +274,14 @@ export const ProductFeaturesComponent = ({
                         min={0}
                         style={{
                           textTransform: 'uppercase',
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onCouponInputChange(couponName.toUpperCase().trim());
+                            setCouponName('');
+                          }
                         }}
                         data-cy={'coupon-code-input'}
                         className={'inxt-input input-primary dark:bg-transparent'}
