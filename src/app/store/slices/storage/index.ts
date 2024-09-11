@@ -369,7 +369,8 @@ export const storageSlice = createSlice({
       const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
 
       folderIds.forEach((folderId) => {
-        let items = [...state.levels[folderId]];
+        const folderItems = state.levels[folderId] ?? [];
+        let items = [...folderItems];
 
         items = items.filter(
           (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && i.isFolder === item.isFolder),

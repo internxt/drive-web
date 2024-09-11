@@ -1,6 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { TeamsSettings } from '../../teams/types';
 import { Workspace } from '../types';
 
 export const STORAGE_KEYS = {
@@ -21,12 +20,6 @@ function getUser(): UserSettings | null {
   const stringUser: string | null = localStorage.getItem('xUser');
 
   return stringUser ? JSON.parse(stringUser) : null;
-}
-
-function getTeams(): TeamsSettings | null {
-  const stringTeam: string | null = localStorage.getItem('xTeam');
-
-  return stringTeam ? JSON.parse(stringTeam) : null;
 }
 
 function getWorkspace(): string {
@@ -72,7 +65,6 @@ function clear(): void {
   localStorage.removeItem('xMnemonic');
   localStorage.removeItem('xToken');
   localStorage.removeItem('xNewToken');
-  localStorage.removeItem('xTeam');
   localStorage.removeItem('xTokenTeam');
   localStorage.removeItem('workspace');
   localStorage.removeItem('language');
@@ -88,7 +80,6 @@ const localStorageService = {
   set,
   get,
   getUser,
-  getTeams,
   getWorkspace,
   hasCompletedTutorial,
   removeItem,
@@ -104,7 +95,6 @@ export interface LocalStorageService {
   set: (key: string, value: string) => void;
   get: (key: string) => string | null;
   getUser: () => UserSettings | null;
-  getTeams: () => TeamsSettings | null;
   getWorkspace: () => string;
   removeItem: (key: string) => void;
   exists: (key: string) => boolean;

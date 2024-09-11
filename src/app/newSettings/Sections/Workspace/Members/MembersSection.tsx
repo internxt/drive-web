@@ -92,6 +92,7 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
           member={selectedMember}
           getWorkspacesMembers={getWorkspacesMembers}
           isOwner={isCurrentUserWorkspaceOwner}
+          deselectMember={() => setSelectedMember(null)}
         />
       ) : (
         <>

@@ -978,6 +978,7 @@
     "emptyPassword": "Das vorherige Passwort darf nicht leer sein",
     "errorMovingToTrash": "Beim Verschieben der Elemente in den Papierkorb ist ein Fehler aufgetreten.",
     "errorDeletingFromTrash": "Beim Löschen der Elemente aus dem Papierkorb ist ein Fehler aufgetreten.",
+    "maxSizeUploadLimitError": "Datei zu groß (größer als 40 GB)",
     "braveNotSupportMultiplePhotosDowload": "Brave unterstützt nicht das Herunterladen mehrerer Fotos."
   },
   "backups": {
@@ -1344,7 +1345,7 @@
     },
     "uploadItems": {
       "title": "Maximaler Datei-Upload",
-      "advice": "Das Maximum ist 1000 Dateien pro Upload.",
+      "advice": "Das Maximum ist 3000 Dateien pro Upload.",
       "close": "Schließen"
     },
     "movingToTrash": "Verschiebe Elemente in den Papierkorb",
@@ -1485,6 +1486,12 @@
           "reactivate": "Reaktivieren",
           "reactivating": "Reaktivieren"
         },
+        "removalModal": {
+          "title": "Mitglied entfernen",
+          "description": "{{name}} verliert den Zugriff auf den Arbeitsbereich. Alle ihre Dateien und Ordner bleiben unverändert.",
+          "remove": "Entfernen",
+          "removing" : "Entfernen läuft"
+        },
         "changePasswordModal": {
           "title": "Passwortänderung anfordern",
           "description": "Der Benutzer erhält eine Empfehlung, sein persönliches Kontopasswort zu aktualisieren. Verwenden Sie diese Funktion, wenn Sie glauben, dass sein Passwort möglicherweise kompromittiert wurde.",
@@ -1542,11 +1549,66 @@
         "actions": {
           "deactivate": "Mitglied deaktivieren",
           "reactivate": "Mitglied reaktivieren",
+          "remove": "Mitglied entfernen",
           "passwordChange": "Passwortänderung anfordern"
         }
       },
       "teams": {
-        "title": "Teams"
+        "title": "Teams",
+        "createTeam": "Team erstellen",
+        "team": "Team",
+        "members": "Mitglieder",
+        "createTeamDialog": {
+          "title": "Neues Team",
+          "label": "Name",
+          "placeholder": "Mannschaftsname eingeben",
+          "cancel": "Abbrechen",
+          "create": "Erstellen",
+          "nameExists": "Team mit diesem Namen existiert bereits"
+        },
+        "teamDetails": {
+          "member": "Mitglied",
+          "members": "Mitglieder",
+          "remove": "Entfernen",
+          "makeManager": "Manager erstellen",
+          "addMember": "Mitglied hinzufügen",
+          "rename": "Umbenennen",
+          "delete": "Löschen"
+        },
+        "addMemberDialog": {
+          "title": "Mitglieder hinzufügen",
+          "placeholder": "Mitglied suchen",
+          "cancel": "Abbrechen",
+          "addMember": "Mitglied hinzufügen",
+          "addOneMember": "{{membersToInvite}} Mitglied hinzufügen",
+          "addMembers": "{{membersToInvite}} Mitglieder hinzufügen"
+        },
+        "renameTeamDialog": {
+          "title": "Team umbenennen",
+          "label": "Name",
+          "placeholder": "Neuen Teamnamen eingeben",
+          "cancel": "Abbrechen",
+          "rename": "Umbenennen",
+          "nameExists": "Ein Team mit diesem Namen existiert bereits"
+        },
+        "deleteTeamDialog": {
+          "title": "Team löschen",
+          "description": "wird gelöscht und Mitglieder dieses Teams könnten den Zugriff auf Dateien und Ordner verlieren, die mit dem Team geteilt wurden.",
+          "cancel": "Abbrechen",
+          "delete": "Team löschen"
+        },
+        "removeTeamMemberDialog": {
+          "title": "Mitglied entfernen",
+          "description": "wird den Zugriff auf Dateien und Ordner verlieren, die mit diesem Team geteilt wurden.",
+          "cancel": "Abbrechen",
+          "delete": "Entfernen"
+        },
+        "changeManagerDialog": {
+          "title": "Manager ändern",
+          "description": "wird zum Manager dieses Teams. Der vorherige Manager wird zum Mitglied des Teams herabgestuft.",
+          "cancel": "Abbrechen",
+          "change": "Ändern"
+        }
       },
       "billing": {
         "title": "Billing",
@@ -1664,7 +1726,8 @@
     },
     "pending": "Ausstehende Einladungen",
     "messages": {
-      "sharedSuccess": "Element erfolgreich mit dem Team geteilt"
+      "sharedSuccess": "Element erfolgreich mit dem Team geteilt",
+      "switchingWorkspace": "Arbeitsbereich wechseln"
     },
     "pendingInvitations": {
       "empty": "Keine Einladungen übrig",

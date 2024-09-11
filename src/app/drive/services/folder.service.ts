@@ -440,16 +440,26 @@ async function downloadSharedFolderAsZip(
   }
 }
 
-async function downloadFolderAsZip(
-  folderId: DriveFolderData['id'],
-  folderName: DriveFolderData['name'],
-  folderUUID: DriveFolderData['uuid'],
-  foldersIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFolderData>,
-  filesIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFileData>,
-  updateProgress: (progress: number) => void,
-  options?: DownloadFolderAsZipOptions,
-): Promise<void> {
-  const rootFolder: FolderRef = { folderId: folderId, name: folderName, folderUuid: folderUUID };
+async function downloadFolderAsZip({
+  folderId,
+  folderName,
+  folderUUID,
+  foldersIterator,
+  filesIterator,
+  updateProgress,
+  options,
+  abortController,
+}: {
+  folderId: DriveFolderData['id'];
+  folderName: DriveFolderData['name'];
+  folderUUID: DriveFolderData['uuid'];
+  foldersIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFolderData>;
+  filesIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFileData>;
+  updateProgress: (progress: number) => void;
+  options?: DownloadFolderAsZipOptions;
+  abortController?: AbortController;
+}): Promise<void> {
+  const rootFolder: FolderRef = { folderId, name: folderName, folderUuid: folderUUID };
   const pendingFolders: FolderRef[] = [rootFolder];
   let totalSize = 0;
   const zip = options?.destination || new FlatFolderZip(folderName, {});
@@ -510,6 +520,10 @@ async function downloadFolderAsZip(
             fileId: file.fileId,
             creds: creds,
             mnemonic: mnemonic,
+            options: {
+              notifyProgress: () => {},
+              abortController,
+            },
           });
           analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 

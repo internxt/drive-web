@@ -19,6 +19,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import errorService from '../../../core/services/error.service';
+import { UPLOAD_ITEMS_LIMIT } from '../../../drive/components/DriveExplorer/DriveExplorer';
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
 import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
@@ -365,10 +366,10 @@ function SharedView({
 
     if (!items) return;
 
-    if (items.length >= 1000 || !currentParentFolderId) {
+    if (items.length >= UPLOAD_ITEMS_LIMIT || !currentParentFolderId) {
       dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
       notificationsService.show({
-        text: 'The maximum is 1000 files per upload.',
+        text: translate('drive.uploadItems.advice'),
         type: ToastType.Warning,
       });
       return; // Exit the function if the condition fails
