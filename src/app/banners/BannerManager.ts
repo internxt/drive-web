@@ -1,8 +1,9 @@
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import envService from '../core/services/env.service';
 import localStorageService from '../core/services/local-storage.service';
 import { useAppSelector } from '../store/hooks';
 import { PlanState } from '../store/slices/plan';
 import { userSelectors } from '../store/slices/user';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';
 const BANNER_NAME_FOR_FREE_USERS = 'show_free_users_banner';
@@ -46,7 +47,7 @@ export class BannerManager {
   }
 
   handleBannerDisplay(setShowBanner: (show: boolean) => void): void {
-    if (this.shouldShowBanner()) {
+    if (this.shouldShowBanner() && envService.isProduction()) {
       setTimeout(() => {
         setShowBanner(true);
       }, 5000);
