@@ -62,20 +62,31 @@ async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<v
   const reader = readable.getReader();
   const writer = writable.getWriter();
 
-  let done = false;
+  try {
+    let done = false;
 
-  while (!done) {
-    const status = await reader.read();
+    while (!done) {
+      const status = await reader.read();
 
-    if (!status.done) {
-      await writer.write(status.value);
+      if (!status.done) {
+        if (writer.desiredSize !== null && writer.desiredSize <= 0) {
+          await writer.ready;
+        }
+        await writer.write(status.value);
+      }
+
+      done = status.done;
     }
 
-    done = status.done;
+    await reader.closed;
+    await writer.close();
+  } catch (error) {
+    await reader.cancel();
+    await writer.abort();
+  } finally {
+    reader.releaseLock();
+    writer.releaseLock();
   }
-
-  await reader.closed;
-  await writer.close();
 }
 
 export default async function downloadFile(
@@ -87,7 +98,6 @@ export default async function downloadFile(
 ): Promise<void> {
   const fileId = itemData.fileId;
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
-  const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
   const isCypress = window['Cypress'] !== undefined;
 
   const writeToFsIsSupported = 'showSaveFilePicker' in window;
@@ -97,8 +107,6 @@ export default async function downloadFile(
 
   if (isCypress) {
     support = DownloadSupport.PatchedStreamApi;
-  } else if (isBrave) {
-    support = DownloadSupport.Blob;
   } else if (writeToFsIsSupported) {
     support = DownloadSupport.StreamApi;
   } else if (writableIsSupported) {
@@ -147,7 +155,7 @@ export default async function downloadFile(
     };
     window.addEventListener('offline', connectionLostListener);
 
-    await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController);
+    await downloadToFs(completeFilename, fileStreamPromise, support, abortController);
   } catch (err) {
     const errMessage = err instanceof Error ? err.message : (err as string);
 
@@ -203,13 +211,8 @@ async function downloadToFs(
   filename: string,
   source: Promise<ReadableStream>,
   supports: DownloadSupport,
-  isFirefoxBrowser?: boolean,
   abortController?: AbortController,
 ): Promise<void> {
-  if (isFirefoxBrowser) {
-    return downloadFileAsBlob(filename, await source);
-  }
-
   switch (supports) {
     case DownloadSupport.StreamApi:
       // eslint-disable-next-line no-case-declarations
