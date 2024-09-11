@@ -425,7 +425,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
             }
             changePlanType={currentChangePlanType}
             isLoading={isLoadingCheckout}
-            disableActionButton={isUserOwningWorkspace && isBusinessSubscriptionSelected}
+            disableActionButton={isBusinessSubscriptionSelected}
             isBusiness={isBusinessSubscriptionSelected}
           />
         )}
