@@ -84,6 +84,8 @@ const RETURN_URL_DOMAIN = IS_PRODUCTION ? process.env.REACT_APP_HOSTNAME : 'http
 const STATUS_CODE_ERROR = {
   USER_EXISTS: 409,
   COUPON_NOT_VALID: 422,
+  PROMO_CODE_BY_NAME_NOT_FOUND: 404,
+  PROMO_CODE_IS_NOT_VALID: 400,
 };
 
 let stripe;
@@ -448,9 +450,16 @@ const CheckoutViewWrapper = () => {
 
   const handlePromoCodeError = (err: unknown, showNotification?: boolean) => {
     const error = err as Error;
-    const errorMessage = error.message.includes('Promotion code with an id')
-      ? error.message
-      : 'Something went wrong, try again later';
+    const statusCode = (err as any).status;
+    let errorMessage = 'Something went wrong, try again later';
+    if (statusCode) {
+      if (
+        statusCode === STATUS_CODE_ERROR.PROMO_CODE_BY_NAME_NOT_FOUND ||
+        statusCode === STATUS_CODE_ERROR.PROMO_CODE_IS_NOT_VALID
+      ) {
+        errorMessage = error.message;
+      }
+    }
     setError('coupon', errorMessage);
     errorService.reportError(error);
     setPromoCodeData(undefined);
