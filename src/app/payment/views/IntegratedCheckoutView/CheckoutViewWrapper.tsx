@@ -269,7 +269,10 @@ const CheckoutViewWrapper = () => {
   const handleSubscriptionPayment = async (priceId: string) => {
     try {
       stripe = await getStripe(stripe);
-      const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
+      const updatedSubscription = await paymentService.updateSubscriptionPrice({
+        priceId,
+        userType: UserType.Individual,
+      });
       if (updatedSubscription.request3DSecure) {
         stripe
           .confirmCardPayment(updatedSubscription.clientSecret)

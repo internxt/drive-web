@@ -186,6 +186,9 @@ export default function Input({
       ) : (
         input
       )}
+      {maxLength && (
+        <p className="font-regular mt-1 text-right text-sm text-gray-50">{`${value?.length ?? 0}/${maxLength}`}</p>
+      )}
       {message && (
         <div className={`mt-0.5 flex items-center ${messageColor}`}>
           {MessageIcon && <MessageIcon size={16} weight="fill" />}

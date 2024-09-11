@@ -1,6 +1,5 @@
 import { RootState } from '../..';
 import { DriveItemData } from '../../../drive/types';
-import { sessionSelectors } from '../session/session.selectors';
 
 const rootFolderId = (state: RootState): string => {
   const { user } = state.user;
@@ -22,10 +21,7 @@ const storageSelectors = {
     return state.storage.namePath.reduce((t, path) => `${t}${path.name}/`, '/');
   },
   bucket(state: RootState): string {
-    const { team } = state.team;
-    const isTeam: boolean = sessionSelectors.isTeam(state);
-    // TODO: NEED TO CHANGE THIS BY WORKSPACE BUCKET
-    return (isTeam ? team?.bucket : state.user.user?.bucket) ?? '';
+    return state.user.user?.bucket ?? '';
   },
   isCurrentFolderEmpty(state: RootState): boolean {
     const currentFolderId = this.currentFolderId(state);

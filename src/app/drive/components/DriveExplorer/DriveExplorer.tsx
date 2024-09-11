@@ -20,6 +20,8 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 
 import { Role } from '@internxt/sdk/dist/drive/share/types';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { t } from 'i18next';
 import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
 import errorService from '../../../core/services/error.service';
@@ -69,10 +71,9 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 const TRASH_PAGINATION_OFFSET = 50;
-const UPLOAD_ITEMS_LIMIT = 1000;
+export const UPLOAD_ITEMS_LIMIT = 3000;
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -372,7 +373,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const onUploadFileInputChanged = (e) => {
     const files = e.target.files;
 
-    if (files.length < UPLOAD_ITEMS_LIMIT) {
+    if (files.length <= UPLOAD_ITEMS_LIMIT) {
       const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(Array.from(files), items, dispatch) as File[];
       dispatch(
         storageThunks.uploadItemsThunk({
@@ -387,7 +388,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     } else {
       dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
       notificationsService.show({
-        text: 'The maximum is 1000 files per upload.',
+        text: translate('drive.uploadItems.advice'),
         type: ToastType.Warning,
       });
     }
@@ -951,24 +952,10 @@ declare module 'react' {
   }
 }
 
-const countTotalItemsInIRoot = (rootList: IRoot[]) => {
-  let totalFilesToUpload = 0;
-
-  rootList.forEach((n) => {
-    totalFilesToUpload += n.childrenFiles.length;
-    if (n.childrenFolders.length >= 1) {
-      countTotalItemsInIRoot(n.childrenFolders);
-    }
-  });
-
-  return totalFilesToUpload;
-};
-
 const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
   const { dispatch, currentFolderId, onDragAndDropEnd, items } = props;
-  const countTotalItemsToUpload: number = files.length + countTotalItemsInIRoot(rootList);
 
-  if (countTotalItemsToUpload < UPLOAD_ITEMS_LIMIT) {
+  if (files.length <= UPLOAD_ITEMS_LIMIT) {
     if (files.length) {
       errorService.addBreadcrumb({
         level: 'info',
@@ -1022,7 +1009,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
   } else {
     dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
     notificationsService.show({
-      text: 'The maximum is 1000 files per upload.',
+      text: t('drive.uploadItems.advice'),
       type: ToastType.Warning,
     });
   }

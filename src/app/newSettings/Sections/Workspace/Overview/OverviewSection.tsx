@@ -316,22 +316,20 @@ const WorkspaceOverviewDetails = ({
               <h1 className="text-base font-normal leading-5">{t('views.preferences.workspace.overview.teams')}</h1>
             </Card>
           </button>
-          {isOwner && (
+          {isOwner && subscriptionData && (
             <button className="grow text-left" onClick={onBillingCardClick}>
               <Card className="grow">
-                {subscriptionData && (
-                  <>
-                    <p className="text-3xl font-medium leading-9 text-gray-100">
-                      {integerPart}
-                      <span className="text-xl font-medium">{decimalPart && `.${decimalPart}`}</span>
-                    </p>
-                    <h1 className="text-base font-normal leading-5">
-                      {t('views.preferences.workspace.overview.billed', {
-                        renewDate: subscriptionData?.renewDate,
-                      })}
-                    </h1>
-                  </>
-                )}
+                <>
+                  <p className="text-3xl font-medium leading-9 text-gray-100">
+                    {integerPart}
+                    <span className="text-xl font-medium">{decimalPart && `.${decimalPart}`}</span>
+                  </p>
+                  <h1 className="text-base font-normal leading-5">
+                    {t('views.preferences.workspace.overview.billed', {
+                      renewDate: subscriptionData?.renewDate,
+                    })}
+                  </h1>
+                </>
               </Card>
             </button>
           )}

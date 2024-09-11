@@ -17,6 +17,7 @@ const ChangePlanDialog = ({
   isUpdatingSubscription,
   priceIdSelected,
   subscriptionSelected,
+  isLoading,
 }: {
   prices: DisplayPrice[];
   isDialogOpen: boolean;
@@ -25,6 +26,7 @@ const ChangePlanDialog = ({
   onPlanClick: (value: string, currency: string) => void;
   priceIdSelected: string;
   subscriptionSelected: UserType;
+  isLoading?: boolean;
 }): JSX.Element => {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const { translate } = useTranslationContext();
@@ -144,8 +146,9 @@ const ChangePlanDialog = ({
         </Button>
         <Button
           variant="primary"
-          disabled={isUpdatingSubscription}
           onClick={() => onPlanClick(priceIdSelected, selectedPlan?.currency)}
+          loading={isLoading}
+          disabled={isUpdatingSubscription}
         >
           {translate('views.account.tabs.plans.dialog.button.continue')}
         </Button>
