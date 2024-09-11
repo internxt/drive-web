@@ -261,6 +261,8 @@ export const ProductFeaturesComponent = ({
                 leaveTo="scale-100 opacity-0"
               >
                 <div
+                  role="button"
+                  tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && couponName) {
                       e.preventDefault();
