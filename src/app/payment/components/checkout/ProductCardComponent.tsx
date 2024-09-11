@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, Switch, Transition } from '@headlessui/react';
+import { Switch, Transition } from '@headlessui/react';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { Check, SealPercent, X } from '@phosphor-icons/react';
 
@@ -76,6 +76,7 @@ export const ProductFeaturesComponent = ({
   const { translate, translateList } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const [couponName, setCouponName] = useState<string>('');
+  const [openCouponCodeDropdown, setOpenCouponCodeDropdown] = useState<boolean>(false);
   const bytes = bytesToString(selectedPlan.bytes);
 
   const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
@@ -239,15 +240,18 @@ export const ProductFeaturesComponent = ({
               </div>
             </div>
           ) : (
-            <Menu>
-              <Menu.Button
-                className={
-                  'flex h-full w-full rounded-lg text-base transition-all duration-75 ease-in-out hover:underline'
-                }
+            <div className="flex flex-col gap-5">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setOpenCouponCodeDropdown(!openCouponCodeDropdown);
+                }}
+                className={'flex rounded-lg text-base transition-all duration-75 ease-in-out hover:underline'}
               >
                 {translate('checkout.productCard.addCoupon.buttonTitle')}
-              </Menu.Button>
+              </button>
               <Transition
+                show={openCouponCodeDropdown}
                 className={'left-0'}
                 enter="transition duration-50 ease-out"
                 enterFrom="scale-98 opacity-0"
@@ -256,7 +260,16 @@ export const ProductFeaturesComponent = ({
                 leaveFrom="scale-98 opacity-100"
                 leaveTo="scale-100 opacity-0"
               >
-                <Menu.Items className="w-full items-center outline-none">
+                <div
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && couponName) {
+                      e.preventDefault();
+                      onCouponInputChange(couponName.toUpperCase().trim());
+                      setCouponName('');
+                    }
+                  }}
+                  className="w-full items-center outline-none"
+                >
                   <div className="flex w-full flex-col items-start space-y-1">
                     <p className="text-sm text-gray-80">{translate('checkout.productCard.addCoupon.inputText')}</p>
                     <div className="flex w-full flex-row space-x-3">
@@ -277,7 +290,7 @@ export const ProductFeaturesComponent = ({
                       <Button
                         disabled={!couponName?.length}
                         onClick={() => {
-                          onCouponInputChange(couponName.toUpperCase());
+                          if (couponName) onCouponInputChange(couponName.toUpperCase().trim());
                         }}
                       >
                         {translate('checkout.productCard.apply')}
@@ -285,9 +298,9 @@ export const ProductFeaturesComponent = ({
                     </div>
                     {couponError && <p className="text-red-dark">{couponError}</p>}
                   </div>
-                </Menu.Items>
+                </div>
               </Transition>
-            </Menu>
+            </div>
           )}
         </div>
       </div>
