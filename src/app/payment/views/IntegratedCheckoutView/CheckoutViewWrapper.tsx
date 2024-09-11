@@ -30,7 +30,6 @@ import CheckoutView from './CheckoutView';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import { fetchPlanPrices, getStripe } from '../../../newSettings/Sections/Account/Plans/api/plansApi';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 export const THEME_STYLES = {
   dark: {
@@ -274,11 +273,13 @@ const CheckoutViewWrapper = () => {
   };
 
   const handleSubscriptionPayment = async (priceId: string) => {
+    if (!currentSelectedPlan) return;
+
     try {
       stripe = await getStripe(stripe);
       const updatedSubscription = await paymentService.updateSubscriptionPrice({
         priceId,
-        userType: UserType.Individual,
+        userType: currentSelectedPlan.type,
       });
       if (updatedSubscription.request3DSecure) {
         stripe
@@ -397,13 +398,6 @@ const CheckoutViewWrapper = () => {
       const statusCode = (err as any).status;
 
       if (statusCode === STATUS_CODE_ERROR.USER_EXISTS) {
-        if (currentSelectedPlan?.type === UserType.Business) {
-          notificationsService.show({
-            text: translate('notificationMessages.errorPurchaseBusinessPlan'),
-            type: ToastType.Error,
-          });
-          return;
-        }
         setIsUpdateSubscriptionDialogOpen(true);
       } else if (statusCode === STATUS_CODE_ERROR.COUPON_NOT_VALID) {
         notificationsService.show({
@@ -518,7 +512,7 @@ const CheckoutViewWrapper = () => {
               onPlanClick={onChangePlanClicked}
               priceIdSelected={currentSelectedPlan.id}
               isUpdatingSubscription={isUpdatingSubscription}
-              subscriptionSelected={UserType.Individual}
+              subscriptionSelected={currentSelectedPlan.type}
             />
           ) : undefined}
         </Elements>

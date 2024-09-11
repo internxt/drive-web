@@ -222,7 +222,7 @@
             "Password-protected file sharing",
             "Access your files from any device",
             "Get access to all our services",
-            "Upload files up to 20GB",
+            "Upload files up to 40GB",
             "Two-factor authentication (2FA)",
             "Premium customer support",
             "30-day money-back guarantee"
@@ -1737,7 +1737,7 @@
           "featureOne": "Encrypted file and folder sharing.",
           "featureTwo": "Password-protected file sharing.",
           "featureThree": "Access your files from any device.",
-          "featureFour": "Upload files up to 20GB.",
+          "featureFour": "Upload files up to 40GB.",
           "featureFive": "Two-factor authentication (2FA).",
           "featureSix": "Premium customer support.",
           "featureSeven": "30-day money-back guarantee."
@@ -1749,7 +1749,7 @@
           "featureTwo": "Create and manage users & teams.",
           "featureThree": "Starting at 3 users and up to 100.",
           "featureFour": "GDPR compliant.",
-          "featureFive": "Upload files of up to 20GB.",
+          "featureFive": "Upload files of up to 40GB.",
           "featureSix": "Manage account billing & payments.",
           "featureSeven": "Premium customer support."
         },

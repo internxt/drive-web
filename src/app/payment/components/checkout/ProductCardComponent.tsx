@@ -26,9 +26,7 @@ interface ProductFeaturesComponentProps {
   couponError?: string;
 }
 
-const STANDARD_BUSINESS_PLAN_SPACE = '1TB';
-const FILE_SIZE_LIMIT_STANDARD_BUSINESS_PLAN = '5TB';
-const FILE_SIZE_LIMIT_PRO_BUSINESS_PLAN = '20TB';
+const FILE_SIZE_LIMIT_BUSINESS_PLAN = '40GB';
 
 const Separator = () => <div className="border border-gray-10" />;
 
@@ -40,8 +38,7 @@ const getTextContent = (
   translate: (key: string, props?: Record<string, unknown>) => string,
   translateList: (key: string, props?: Record<string, unknown>) => string[],
 ) => {
-  const maxUploadGBfileSize =
-    bytes === STANDARD_BUSINESS_PLAN_SPACE ? FILE_SIZE_LIMIT_STANDARD_BUSINESS_PLAN : FILE_SIZE_LIMIT_PRO_BUSINESS_PLAN;
+  const maxUploadGBfileSize = FILE_SIZE_LIMIT_BUSINESS_PLAN;
 
   const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
   const totalLabel = isBusiness

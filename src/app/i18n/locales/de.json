@@ -199,7 +199,7 @@
             "Passwortgeschütztes Teilen von Dateien",
             "Zugriff auf Ihre Dateien von jedem Gerät",
             "Zugang zu allen unseren Diensten",
-            "Hochladen von Dateien bis zu 20GB",
+            "Hochladen von Dateien bis zu 40GB",
             "Zwei-Faktor-Authentifizierung (2FA)",
             "Premium-Kundensupport",
             "30-Tage-Geld-zurück-Garantie"
@@ -1490,7 +1490,7 @@
           "title": "Mitglied entfernen",
           "description": "{{name}} verliert den Zugriff auf den Arbeitsbereich. Alle ihre Dateien und Ordner bleiben unverändert.",
           "remove": "Entfernen",
-          "removing" : "Entfernen läuft"
+          "removing": "Entfernen läuft"
         },
         "changePasswordModal": {
           "title": "Passwortänderung anfordern",

@@ -205,7 +205,7 @@
             "Partage de fichiers protégé par mot de passe",
             "Accédez à vos fichiers depuis n'importe quel appareil",
             "Accédez à tous nos services",
-            "Téléchargez des fichiers jusqu'à 20 Go",
+            "Téléchargez des fichiers jusqu'à 40 Go",
             "Authentification à deux facteurs (2FA)",
             "Support client premium",
             "Garantie de remboursement de 30 jours"
@@ -1475,7 +1475,7 @@
           "title": "Supprimer le membre",
           "description": "{{name}} perdra l'accès à l'espace de travail. Tous leurs fichiers et dossiers resteront inchangés.",
           "remove": "Supprimer",
-          "removing" : "Suppression"
+          "removing": "Suppression"
         },
         "changePasswordModal": {
           "title": "Demander un changement de mot de passe",
