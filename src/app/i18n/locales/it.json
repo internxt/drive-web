@@ -9,19 +9,19 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia il 78%",
-    "title": "Offerte di ritorno al lavoro per tutti i piani a vita!",
+    "label": "Fino al 75% di sconto",
+    "title": "È il momento di passare alla privacy!",
     "subtitle": "Vinci il nostro zaino premium con i nostri piani a vita.",
-    "cta": "Scegli un piano",
+    "cta": "Scegli il piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
-    "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
+    "lastCta": "*Offerta valida per conti gratuiti o nuovi clienti",
     "features": [
-      "Scegli il tuo piano a vita perfetto",
+      "Risparmia su tutti i piani di Internxt",
       "Archiviazione cloud sicura e protetta",
+      "Tecnologia a conoscenza zero",
       "Open source e verificato",
       "Trasferimenti criptati end-to-end",
-      "Nessun accesso non autorizzato",
-      "L'offerta termina il 12 settembre"
+      "Nessun accesso non autorizzato"
     ]
   },
   "banner": {
