@@ -22,7 +22,7 @@ const CheckoutSuccessView = (): JSX.Element => {
     setTimeout(async () => {
       await dispatch(userThunks.initializeUserThunk());
       await dispatch(planThunks.initializeThunk());
-      dispatch(workspaceThunks.fetchWorkspaces());
+      await dispatch(workspaceThunks.fetchWorkspaces());
     }, 3000);
 
     try {
