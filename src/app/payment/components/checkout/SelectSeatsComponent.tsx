@@ -3,10 +3,8 @@ import Button from '../../../shared/components/Button/Button';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface SelectUsersComponentProps {
-  disableMinusButton: boolean;
-  disablePlusButton: boolean;
-  maxSeats?: number;
-  minSeats?: number;
+  maxSeats: number;
+  minSeats: number;
   seats: number;
   onSeatsChange: (seats: number) => void;
 }
@@ -14,8 +12,6 @@ interface SelectUsersComponentProps {
 const SeparatorVertical = () => <div className="h-max border-[0.5px] border-gray-10 py-1" />;
 
 export const SelectSeatsComponent = ({
-  disableMinusButton,
-  disablePlusButton,
   maxSeats,
   minSeats,
   seats,
@@ -23,11 +19,18 @@ export const SelectSeatsComponent = ({
 }: SelectUsersComponentProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [totalUsers, setTotalUsers] = useState<number>(seats);
-  const [showApplyButton, setShowApplyButton] = useState<boolean>(false);
+  const [disableApplyButton, setDisableApplyButton] = useState<boolean>(true);
+  const disableMinus = totalUsers <= minSeats;
+  const disableMax = totalUsers >= maxSeats;
 
-  const onSeatInputChange = () => {
+  const onApplySelectedSeats = () => {
     onSeatsChange(totalUsers);
-    setShowApplyButton(false);
+    setDisableApplyButton(true);
+  };
+
+  const onTotalSeatsChange = (totalUsers: number) => {
+    setDisableApplyButton(false);
+    setTotalUsers(totalUsers);
   };
 
   return (
@@ -41,11 +44,10 @@ export const SelectSeatsComponent = ({
         className="flex w-max flex-row items-center rounded-lg border"
       >
         <button
-          disabled={disableMinusButton}
+          disabled={disableMinus}
           onClick={(e) => {
             e.preventDefault();
-            onSeatsChange(seats - 1);
-            setTotalUsers(seats - 1);
+            onTotalSeatsChange(totalUsers - 1);
           }}
           className="flex h-full flex-col items-center justify-center rounded-l-lg px-4 hover:bg-gray-10"
         >
@@ -59,41 +61,41 @@ export const SelectSeatsComponent = ({
           value={totalUsers}
           onChange={(e) => {
             e.preventDefault();
+            setDisableApplyButton(false);
             setTotalUsers(Number(e.target.value));
           }}
           onKeyDown={(e) => {
             e.stopPropagation();
-            setShowApplyButton(true);
+            setDisableApplyButton(false);
             if (e.key === 'Enter') {
               e.preventDefault();
-              onSeatInputChange();
+              onApplySelectedSeats();
             }
           }}
         />
         <SeparatorVertical />
         <button
-          disabled={disablePlusButton}
+          disabled={disableMax}
           onClick={(e) => {
             e.preventDefault();
-            onSeatsChange(seats + 1);
-            setTotalUsers(seats + 1);
+            onTotalSeatsChange(totalUsers + 1);
           }}
           className="flex h-full flex-col items-center justify-center rounded-r-lg px-4 hover:bg-gray-10"
         >
           +
         </button>
       </div>
-      {showApplyButton ? (
-        <Button
-          className="w-max"
-          disabled={maxSeats && minSeats ? maxSeats < totalUsers || totalUsers < minSeats : undefined}
-          type="button"
-          variant="primary"
-          onClick={onSeatInputChange}
-        >
-          <p>{translate('checkout.productCard.apply')}</p>
-        </Button>
-      ) : undefined}
+      <Button
+        className="w-max"
+        disabled={
+          disableApplyButton || (maxSeats && minSeats ? maxSeats < totalUsers || totalUsers < minSeats : undefined)
+        }
+        type="button"
+        variant="primary"
+        onClick={onApplySelectedSeats}
+      >
+        <p>{translate('checkout.productCard.apply')}</p>
+      </Button>
     </div>
   );
 };

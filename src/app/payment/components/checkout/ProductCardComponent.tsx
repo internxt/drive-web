@@ -118,7 +118,7 @@ export const ProductFeaturesComponent = ({
               interval: translate(`checkout.productCard.renewalPeriod.${selectedPlan.interval}`),
             })}
           </p>
-          {isBusiness ? (
+          {isBusiness && selectedPlan.maximumSeats && selectedPlan.minimumSeats ? (
             <>
               <p className="text-lg font-medium">
                 {translate('checkout.productCard.numberOfUsers', {
@@ -128,12 +128,6 @@ export const ProductFeaturesComponent = ({
               <SelectSeatsComponent
                 maxSeats={selectedPlan.maximumSeats}
                 minSeats={selectedPlan.minimumSeats}
-                disableMinusButton={
-                  !!selectedPlan.minimumSeats && seatsForBusinessSubscription <= selectedPlan?.minimumSeats
-                }
-                disablePlusButton={
-                  !!selectedPlan.maximumSeats && seatsForBusinessSubscription >= selectedPlan?.maximumSeats
-                }
                 seats={seatsForBusinessSubscription}
                 onSeatsChange={onSeatsChange}
               />
