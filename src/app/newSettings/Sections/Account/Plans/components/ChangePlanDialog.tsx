@@ -32,8 +32,15 @@ const ChangePlanDialog = ({
   const { translate } = useTranslationContext();
   const isIndividualSubscription = subscriptionSelected == UserType.Individual;
 
-  const { planLimit, planUsage, businessPlanLimit, businessPlanUsage, individualSubscription, businessSubscription } =
-    plan;
+  const {
+    planLimit,
+    planUsage,
+    businessPlanLimit,
+    businessPlan,
+    businessPlanUsage,
+    individualSubscription,
+    businessSubscription,
+  } = plan;
 
   const subscription = isIndividualSubscription ? individualSubscription : businessSubscription;
   const selectedPlan: DisplayPrice = prices.find((price) => price.id === priceIdSelected) as DisplayPrice;
@@ -42,7 +49,9 @@ const ChangePlanDialog = ({
   const selectedPlanSizeString = bytesToString(selectedPlanSize);
   const selectedPlanAmount = selectedPlan?.amount;
   const selectedPlanInterval = selectedPlan?.interval;
-  const currentPlanSizeString = bytesToString(isIndividualSubscription ? planLimit : businessPlanLimit);
+  const currentPlanSizeString = bytesToString(
+    isIndividualSubscription ? planLimit : businessPlan?.storageLimit ?? businessPlanLimit,
+  );
   const currentPlanUsage = isIndividualSubscription ? planUsage : businessPlanUsage;
   let amountMonthly: number | null = null;
   let currentAmountMonthly: number | null = null;
