@@ -9,7 +9,7 @@ export const staticData = {
   //URLS
   passwordRecoveryLinkURL: 'https://drive.internxt.com/recovery-link/',
   signUpURL: 'https://drive.internxt.com/new',
-  driveURL: 'https://drive.internxt.com/',
+  driveURL: 'https://staging.drive.internxt.com/',
 
   //SIGNUP DISCLAIMER
   disclaimer:

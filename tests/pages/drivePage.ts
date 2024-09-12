@@ -21,10 +21,10 @@ export class DrivePage extends basePage {
   constructor(page: Page) {
     super(page);
     this.driveTitle = this.page.locator('[title="Drive"]');
-    this.createFolderHeaderButton = this.page.locator('[data-cy="topBarCreateFolderButton"]');
+    this.createFolderHeaderButton = this.page.locator('div[data-tooltip-id="createfolder-tooltip"]');
     //FOLDER CREATION MODAL
-    this.folderCreationModal = this.page.locator('[class*="w-full text-gray-100 max-w-sm "]');
-    this.newFolderModalTitle = this.page.locator('[class="text-2xl font-medium text-gray-100"]');
+    this.folderCreationModal = this.page.locator('form[class="flex flex-col space-y-5"]');
+    this.newFolderModalTitle = this.page.locator('[class="text-2xl font-medium text-gray-100"]:has-text("New folder")');
     this.inputTitle = this.page.locator('[class*="w-full text-gray-100 max-w-sm "] span');
     this.nameInput = this.page.getByPlaceholder('Untitled folder', { exact: true });
     this.cancelFolderCreationButton = this.page.getByRole('button', { name: 'Cancel' });
@@ -76,10 +76,12 @@ export class DrivePage extends basePage {
   }
 
   async clickOnCancelFolderCreation() {
-    await this.cancelFolderCreationButton.waitFor({ state: 'visible' });
-    const buttonText = await this.cancelFolderCreationButtonText.textContent();
+    const cancelButton = this.folderCreationModal.locator('button', { hasText: 'Cancel' });
+    await cancelButton.waitFor({ state: 'visible' });
+    const buttonText = await cancelButton.textContent();
     expect(buttonText).toEqual('Cancel');
-    await this.cancelFolderCreationButton.click();
+    await cancelButton.click();
+    await this.folderCreationModal.waitFor({ state: 'hidden', timeout: 2000 });
     return this.folderCreationModal;
   }
   async rightClickOnBody() {

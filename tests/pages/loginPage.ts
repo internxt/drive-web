@@ -1,5 +1,6 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { Context } from 'vm';
+import { userCredentials } from '../global';
 
 export class loginPage {
   page: Page;
@@ -46,7 +47,7 @@ export class loginPage {
   }
 
   async typeEmail(user: string | any) {
-    await this.loginTitle.waitFor({ state: 'visible' });
+    await this.emailInput.waitFor({ state: 'visible' });
     const emailPlaceholder = await this.emailInput.getAttribute('placeholder');
     expect(emailPlaceholder).toEqual('Email');
     await this.emailInput.fill(user);
@@ -57,7 +58,7 @@ export class loginPage {
     await this.passwordInput.fill(password);
   }
   async clickLogIn(password: string | any) {
-    if (password === 'test123.') {
+    if (password === userCredentials.password) {
       const loginButtonText = await this.loginButtonText.textContent();
       expect(loginButtonText).toEqual('Log in');
       await this.loginButton.click();

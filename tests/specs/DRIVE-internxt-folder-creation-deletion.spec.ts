@@ -19,7 +19,7 @@ test.describe('Internxt folder creation and deletion', async () => {
     const drivePage = new DrivePage(page);
     await drivePage.clickOnCreateFolderHeaderButton();
     const folderCreationModal = await drivePage.clickOnCancelFolderCreation();
-    expect(folderCreationModal).toBeHidden();
+    await expect(folderCreationModal).toBeHidden();
   });
   test('TC3: Validate that the user can create a new folder with the right-click option → “new folder”', async ({
     page,
@@ -39,7 +39,7 @@ test.describe('Internxt folder creation and deletion', async () => {
     await drivePage.rightClickOnBody();
     await drivePage.clickOnNewFolderContextMenu();
     const folderCreationModal = await drivePage.clickOnCancelFolderCreation();
-    expect(folderCreationModal).toBeHidden();
+    await expect(folderCreationModal).toBeHidden();
   });
   test('TC5: Validate that the user can create a new folder by pressing “↑F” after the right-click', async ({
     page,
