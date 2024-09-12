@@ -3,7 +3,6 @@ import streamSaver from 'streamsaver';
 import { TrackingPlan } from 'app/analytics/TrackingPlan';
 import analyticsService from 'app/analytics/services/analytics.service';
 import { loadWritableStreamPonyfill } from 'app/network/download';
-import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
 import { DriveFileData } from '../../types';
 import downloadFileFromBlob from './downloadFileFromBlob';
