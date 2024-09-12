@@ -11,7 +11,6 @@ import sessionReducer from './slices/session';
 import sharedReducer from './slices/sharedLinks';
 import storageReducer from './slices/storage';
 import taskManagerReducer from './slices/taskManager';
-import teamReducer from './slices/team';
 import uiReducer from './slices/ui';
 import userReducer from './slices/user';
 import workspacesReducer from './slices/workspaces/workspacesStore';
@@ -19,7 +18,6 @@ import workspacesReducer from './slices/workspaces/workspacesStore';
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    team: teamReducer,
     storage: storageReducer,
     session: sessionReducer,
     ui: uiReducer,

@@ -181,14 +181,6 @@ export class SdkFactory {
     };
   }
 
-  private getMnemonic(workspace: string): string {
-    const mnemonicByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get('xMnemonic') || '',
-      [Workspace.Business]: SdkFactory.sdk.localStorage.getTeams()?.bridge_mnemonic || '',
-    };
-    return mnemonicByWorkspace[workspace];
-  }
-
   private getToken(workspace: string): Token {
     const tokenByWorkspace: { [key in Workspace]: string } = {
       [Workspace.Individuals]: SdkFactory.sdk.localStorage.get('xToken') || '',

@@ -372,7 +372,6 @@ export default connect((state: RootState) => {
 
   return {
     user: state.user.user,
-    team: state.team.team,
     workspace: state.session.workspace,
     isTeam,
     storageFilters: state.storage.filters,

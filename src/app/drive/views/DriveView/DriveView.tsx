@@ -31,7 +31,7 @@ export interface DriveViewProps {
 const DriveView = (props: DriveViewProps) => {
   const { dispatch, namePath, items, isLoading } = props;
   const [title, setTitle] = useState('Internxt Drive');
-  const { isFileView, isFolderView, itemUuid, workspaceUuid } = useDriveNavigation();
+  const { isFileView, isFolderView, itemUuid, workspaceUuid, isOverviewSubsection } = useDriveNavigation();
   const credentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const fileViewer = useAppSelector((state: RootState) => state.ui.fileViewerItem);
   const workspaces = useSelector((state: RootState) => state.workspaces.workspaces);
@@ -53,6 +53,10 @@ const DriveView = (props: DriveViewProps) => {
 
   useEffect(() => {
     dispatch(uiActions.setIsFileViewerOpen(false));
+    if (!isFileView && !isFolderView && workspaceUuid && !isSelectedWorkspace && !isOverviewSubsection) {
+      setWorkspaceWithUrl(workspaceUuid);
+    }
+
     if (!workspaceUuid && isSelectedWorkspace) {
       setPersonalWithUrl();
     }

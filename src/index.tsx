@@ -7,7 +7,6 @@ import reportWebVitals from './reportWebVitals';
 import plugins from './app/core/plugins';
 import { store } from './app/store';
 import { userActions } from './app/store/slices/user';
-import { teamActions } from './app/store/slices/team';
 import { planThunks } from './app/store/slices/plan';
 import storageThunks from './app/store/slices/storage/storage.thunks';
 import { taskManagerThunks } from './app/store/slices/taskManager';
@@ -31,7 +30,6 @@ SdkFactory.initialize(store.dispatch, localStorageService);
 
 // Initializes store
 store.dispatch(userActions.initialize());
-store.dispatch(teamActions.initialize());
 store.dispatch(sessionActions.initialize());
 store.dispatch(storageThunks.initializeThunk());
 store.dispatch(planThunks.initializeThunk());
