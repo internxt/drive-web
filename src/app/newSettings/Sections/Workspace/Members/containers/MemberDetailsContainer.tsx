@@ -146,6 +146,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
           avatarsrc={null}
           styleOptions={{
             avatarDiameter: 80,
+            containerClassName: '!gap-4',
             nameStyle: 'text-2xl font-medium text-gray-100',
             emailStyle: 'text-base font-normal text-gray-60',
             rolePosition: 'column',
