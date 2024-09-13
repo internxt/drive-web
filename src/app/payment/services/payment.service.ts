@@ -59,7 +59,7 @@ const paymentService = {
     companyVatId?: string,
   ): Promise<{ customerId: string; token: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.createCustomer(name, email);
+    return paymentsClient.createCustomer(name, email, country, companyVatId);
   },
 
   async createSubscription(
@@ -147,14 +147,18 @@ const paymentService = {
     });
   },
 
-  async updateSubscriptionPrice(
-    priceId: string,
-    coupon?: string,
-  ): Promise<{ userSubscription: UserSubscription; request3DSecure: boolean; clientSecret: string }> {
+  async updateSubscriptionPrice({
+    priceId,
+    coupon,
+    userType,
+  }: {
+    priceId: string;
+    coupon?: string;
+    userType: UserType.Individual | UserType.Business;
+  }): Promise<{ userSubscription: UserSubscription; request3DSecure: boolean; clientSecret: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
-    // TEMPORARY UNTIL MERGE STAGING B2B SUBSCRIPTION UPDATE
-    return paymentsClient.updateSubscriptionPrice({ priceId, couponCode: coupon, userType: UserType.Individual });
+    return paymentsClient.updateSubscriptionPrice({ priceId, couponCode: coupon, userType });
   },
 
   async cancelSubscription(userType?: UserType): Promise<void> {

@@ -200,6 +200,7 @@
       },
       "title": "Order summary",
       "selectedPlan": "Selected plan",
+      "numberOfUsers": "Number of users: {{seats}}",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}} plan",
         "year": "{{spaceToUpgrade}} - 1 {{interval}} plan",
@@ -221,7 +222,7 @@
             "Password-protected file sharing",
             "Access your files from any device",
             "Get access to all our services",
-            "Upload files up to 20GB",
+            "Upload files up to 40GB",
             "Two-factor authentication (2FA)",
             "Premium customer support",
             "30-day money-back guarantee"
@@ -242,10 +243,10 @@
       "totalForBusiness": "Total for {{N}} users: ",
       "addCoupon": {
         "buttonTitle": "Add coupon",
-        "inputText": "Coupon code",
-        "applyCodeButtonTitle": "Apply"
+        "inputText": "Coupon code"
       },
       "amountSaved": "Save ",
+      "apply": "Apply",
       "withAnnualBilling": "with annual billing"
     }
   },
@@ -622,7 +623,7 @@
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
-              "title": "Two Factor Authentication",
+              "title": "Two-Factor Authentication",
               "stepsLabel": "{{current}} of {{total}}",
               "button": "Enable",
               "2FALabelCode": "Two-Factor Authentication code",
@@ -634,7 +635,7 @@
                 },
                 "qr": {
                   "title": "Scan QR with the 2FA app",
-                  "description": "If you are unable to scan he QR, insert this code into the app."
+                  "description": "If you are unable to scan the QR, insert this code into the app."
                 },
                 "backup-key": {
                   "title": "Save backup key",
@@ -1026,7 +1027,7 @@
     "emptyPassword": "Previous password must not be empty",
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
-    "maxSizeUploadLimitError": "File too large (greater than 20GB)",
+    "maxSizeUploadLimitError": "File too large (greater than 40GB)",
     "connectionLostError": "Internet connection lost",
     "errorLoadingTrashItems": "Error loading trash items"
   },
@@ -1402,7 +1403,7 @@
     },
     "uploadItems": {
       "title": "Maximum file upload",
-      "advice": "The maximum is 1000 files per upload.",
+      "advice": "The maximum is 3000 files per upload.",
       "close": "Close"
     },
     "movingToTrash": "Moving items to trash",
@@ -1543,6 +1544,12 @@
           "reactivate": "Reactivate",
           "reactivating": "Reactivating"
         },
+        "removalModal": {
+          "title": "Remove member",
+          "description": "{{name}} will lose access to the Workspace. All their files and folders will stay the same.",
+          "remove": "Remove",
+          "removing": "Removing"
+        },
         "changePasswordModal": {
           "title": "Request password change",
           "description": "User will receive a recommendation to update their personal account password. Use this function in case you believe their password may have been breached.",
@@ -1600,11 +1607,66 @@
         "actions": {
           "deactivate": "Deactivate member",
           "reactivate": "Reactivate member",
+          "remove": "Remove member",
           "passwordChange": "Request password change"
         }
       },
       "teams": {
-        "title": "Teams"
+        "title": "Teams",
+        "createTeam": "Create team",
+        "team": "Team",
+        "members": "Members",
+        "createTeamDialog": {
+          "title": "New team",
+          "label": "Name",
+          "placeholder": "Enter team name",
+          "cancel": "Cancel",
+          "create": "Create",
+          "nameExists": "Team with this name already exists"
+        },
+        "teamDetails": {
+          "member": "Member",
+          "members": "Members",
+          "remove": "Remove",
+          "makeManager": "Make manager",
+          "addMember": "Add member",
+          "rename": "Rename",
+          "delete": "Delete"
+        },
+        "addMemberDialog": {
+          "title": "Add members",
+          "placeholder": "Search member",
+          "cancel": "Cancel",
+          "addMember": "Add member",
+          "addOneMember": "Add {{membersToInvite}} member",
+          "addMembers": "Add {{membersToInvite}} members"
+        },
+        "renameTeamDialog": {
+          "title": "Rename team",
+          "label": "Name",
+          "placeholder": "Enter new team name",
+          "cancel": "Cancel",
+          "rename": "Rename",
+          "nameExists": "Team with this name already exists"
+        },
+        "deleteTeamDialog": {
+          "title": "Delete team",
+          "description": "will be deleted and members of this team may lose access to files and folders shared with the team.",
+          "cancel": "Cancel",
+          "delete": "Delete Team"
+        },
+        "removeTeamMemberDialog": {
+          "title": "Remove member",
+          "description": "will lose access to files and folders shared with this team.",
+          "cancel": "Cancel",
+          "delete": "Remove"
+        },
+        "changeManagerDialog": {
+          "title": "Change manager",
+          "description": "will become the Manager of this team. Previous manager will be downgraded to Member of the team.",
+          "cancel": "Cancel",
+          "change": "Change"
+        }
       },
       "billing": {
         "title": "Billing",
@@ -1675,7 +1737,7 @@
           "featureOne": "Encrypted file and folder sharing.",
           "featureTwo": "Password-protected file sharing.",
           "featureThree": "Access your files from any device.",
-          "featureFour": "Upload files up to 20GB.",
+          "featureFour": "Upload files up to 40GB.",
           "featureFive": "Two-factor authentication (2FA).",
           "featureSix": "Premium customer support.",
           "featureSeven": "30-day money-back guarantee."
@@ -1687,7 +1749,7 @@
           "featureTwo": "Create and manage users & teams.",
           "featureThree": "Starting at 3 users and up to 100.",
           "featureFour": "GDPR compliant.",
-          "featureFive": "Upload files of up to 20GB.",
+          "featureFive": "Upload files of up to 40GB.",
           "featureSix": "Manage account billing & payments.",
           "featureSeven": "Premium customer support."
         },
@@ -1722,7 +1784,8 @@
     },
     "pending": "Pending Invitations",
     "messages": {
-      "sharedSuccess": "Item shared successfully with the team"
+      "sharedSuccess": "Item shared successfully with the team",
+      "switchingWorkspace": "Switching workspace"
     },
     "pendingInvitations": {
       "empty": "No invitations left",

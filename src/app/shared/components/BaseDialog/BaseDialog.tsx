@@ -43,7 +43,7 @@ const BaseDialog = ({
       <div
         className={`${panelClasses || ''} absolute left-1/2 top-1/2 flex w-104 -translate-x-1/2
         -translate-y-1/2 flex-col overflow-hidden  ${dialogRounded ? 'rounded-2xl' : 'rounded-lg pt-8'} text-gray-100 ${
-          bgColor || 'bg-white'
+          bgColor || 'bg-surface'
         }`}
       >
         <div className={`${subTitle ? 'justify-between bg-gray-1 p-5' : ''} flex flex-row items-start`}>
@@ -57,7 +57,7 @@ const BaseDialog = ({
           ) : null}
           {hideCloseButton ? null : (
             <div
-              className={`relative ml-auto cursor-pointer
+              className={`relative ml-auto cursor-pointer bg-surface
            transition duration-200 ease-in-out ${closeClass || 'text-primary hover:text-primary-dark'} `}
             >
               <X onClick={onClose} size={28} weight={weightIcon} />

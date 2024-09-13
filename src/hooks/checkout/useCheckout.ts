@@ -2,6 +2,7 @@ import { Dispatch } from 'react';
 import { Action } from 'app/payment/store/types';
 import { AuthMethodTypes, CouponCodeData, ErrorType, PlanData } from 'app/payment/types';
 import { StripeElementsOptions } from '@stripe/stripe-js';
+import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 
 export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
   const setUserNameFromElementAddress = (userName: string) =>
@@ -32,6 +33,10 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     });
   };
 
+  const setPrices = (prices: DisplayPrice[]) => {
+    dispatchReducer({ type: 'SET_PRICES', payload: prices });
+  };
+
   const setPlan = (plan: PlanData) => {
     dispatchReducer({ type: 'SET_PLAN', payload: plan });
   };
@@ -48,10 +53,45 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     dispatchReducer({ type: 'SET_COUPON_CODE_DATA', payload: promoCodeData });
   };
 
+  const setCountry = (country: string) => {
+    dispatchReducer({
+      type: 'SET_COUNTRY',
+      payload: country,
+    });
+  };
+
   const setIsUserPaying = (isPaying: boolean) => {
     dispatchReducer({
       type: 'SET_IS_PAYING',
       payload: isPaying,
+    });
+  };
+
+  const setIsCheckoutReadyToRender = (isCheckoutReadyToRender: boolean) => {
+    dispatchReducer({
+      type: 'SET_IS_CHECKOUT_READY_TO_RENDER',
+      payload: isCheckoutReadyToRender,
+    });
+  };
+
+  const setIsUpsellSwitchActivated = (isUpsellSwitchActivated: boolean) => {
+    dispatchReducer({
+      type: 'SET_IS_UPSELL_SWITCH_ACTIVATED',
+      payload: isUpsellSwitchActivated,
+    });
+  };
+
+  const setIsUpdateSubscriptionDialogOpen = (isUpdateSubDialogOpen: boolean) => {
+    dispatchReducer({
+      type: 'SET_IS_UPDATE_SUBSCRIPTION_DIALOG_OPEN',
+      payload: isUpdateSubDialogOpen,
+    });
+  };
+
+  const setIsUpdatingSubscription = (isUpdatingSub: boolean) => {
+    dispatchReducer({
+      type: 'SET_IS_UPDATING_SUBSCRIPTION',
+      payload: isUpdatingSub,
     });
   };
 
@@ -77,5 +117,11 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     setSelectedPlan,
     setStripeElementsOptions,
     setSeatsForBusinessSubscription,
+    setPrices,
+    setCountry,
+    setIsCheckoutReadyToRender,
+    setIsUpsellSwitchActivated,
+    setIsUpdateSubscriptionDialogOpen,
+    setIsUpdatingSubscription,
   };
 };

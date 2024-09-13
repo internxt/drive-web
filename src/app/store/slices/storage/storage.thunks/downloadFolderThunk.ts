@@ -88,8 +88,15 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       if (isFirefox) {
         await downloadFolderUsingBlobs({ folder, updateProgressCallback, isWorkspace: !!selectedWorkspace });
       } else {
-        const existSelectedWorkspace = !!selectedWorkspace;
-        const credentials = existSelectedWorkspace
+        tasksService.updateTask({
+          taskId: options.taskId,
+          merge: {
+            status: TaskStatus.InProcess,
+            progress: Infinity,
+          },
+        });
+        const isWorkspaceSelected = !!selectedWorkspace;
+        const credentials = isWorkspaceSelected
           ? {
               credentials: {
                 user: workspaceCredentials?.credentials.networkUser,
@@ -99,19 +106,21 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
               mnemonic: selectedWorkspace.workspaceUser.key,
             }
           : undefined;
-        await folderService.downloadFolderAsZip(
-          folder.id,
-          folder.name,
-          folder.uuid,
-          payload.folderIterator,
-          payload.fileIterator,
-          (progress) => {
+
+        await folderService.downloadFolderAsZip({
+          folderId: folder.id,
+          folderName: folder.name,
+          folderUUID: folder.uuid,
+          foldersIterator: payload.folderIterator,
+          filesIterator: payload.fileIterator,
+          updateProgress: (progress) => {
             updateProgressCallback(progress);
           },
-          {
+          options: {
             ...credentials,
           },
-        );
+          abortController,
+        });
       }
 
       tasksService.updateTask({

@@ -6,6 +6,12 @@ export const initialStateForCheckout: State = {
   promoCodeName: '',
   avatarBlob: null,
   isPaying: false,
+  isCheckoutReadyToRender: false,
+  isUpdateSubscriptionDialogOpen: false,
+  isUpdatingSubscription: false,
+  isUpsellSwitchActivated: false,
+  country: '',
+  prices: [],
   userNameFromAddressElement: 'Internxt User',
   couponCodeData: undefined,
   elementsOptions: undefined,
@@ -24,6 +30,18 @@ export const checkoutReducer = (state: State, action: Action): State => {
       return { ...state, avatarBlob: action.payload };
     case 'SET_IS_PAYING':
       return { ...state, isPaying: action.payload };
+    case 'SET_IS_CHECKOUT_READY_TO_RENDER':
+      return { ...state, isCheckoutReadyToRender: action.payload };
+    case 'SET_IS_UPDATE_SUBSCRIPTION_DIALOG_OPEN':
+      return { ...state, isUpdateSubscriptionDialogOpen: action.payload };
+    case 'SET_IS_UPDATING_SUBSCRIPTION':
+      return { ...state, isUpdatingSubscription: action.payload };
+    case 'SET_IS_UPSELL_SWITCH_ACTIVATED':
+      return { ...state, isUpsellSwitchActivated: action.payload };
+    case 'SET_COUNTRY':
+      return { ...state, country: action.payload };
+    case 'SET_PRICES':
+      return { ...state, prices: action.payload };
     case 'SET_USER_NAME_FROM_ADDRESS_ELEMENT':
       return { ...state, userNameFromAddressElement: action.payload };
     case 'SET_PROMO_CODE_NAME':

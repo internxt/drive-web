@@ -231,12 +231,8 @@ export const planSelectors = {
       return state.plan.businessPlanLimit || businessPlanLimit;
     }
 
-    const isTeam = sessionSelectors.isTeam(state);
-    const team = state.team.team;
     const individualPlanLimit = state.plan.individualPlan ? state.plan.individualPlan.storageLimit : 0;
-    const limit = isTeam
-      ? state.plan.planLimit / (team?.total_members || 1)
-      : state.plan.planLimit || individualPlanLimit || FreeStoragePlan.storageLimit;
+    const limit = state.plan.planLimit || individualPlanLimit || FreeStoragePlan.storageLimit;
 
     return limit;
   },

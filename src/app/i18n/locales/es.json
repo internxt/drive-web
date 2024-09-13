@@ -174,6 +174,7 @@
     "productCard": {
       "title": "Resumen del pedido",
       "selectedPlan": "Plan seleccionado",
+      "numberOfUsers": "Número de usuarios: {{seats}}",
       "renewalPeriod": {
         "month": "mensual",
         "year": "anual",
@@ -200,7 +201,7 @@
             "Compartir archivos con protección por contraseña",
             "Acceda a sus archivos desde cualquier dispositivo",
             "Acceso a todos nuestros servicios",
-            "Cargar archivos de hasta 20GB",
+            "Cargar archivos de hasta 40GB",
             "Autenticación de dos factores (2FA)",
             "Soporte al cliente premium",
             "Garantía de devolución de dinero de 30 días"
@@ -221,9 +222,9 @@
       "totalForBusiness": "Total para {{N}} usuarios: ",
       "addCoupon": {
         "buttonTitle": "Añadir cupón",
-        "inputText": "Código de cupón",
-        "applyCodeButtonTitle": "Aplicar"
+        "inputText": "Código de cupón"
       },
+      "apply": "Aplicar",
       "amountSaved": "Ahorre ",
       "withAnnualBilling": "con facturación anual"
     }
@@ -1004,7 +1005,7 @@
     "emptyPassword": "La contraseña no puede estar vacía.",
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
-    "maxSizeUploadLimitError": "File too large (greater than 20GB)",
+    "maxSizeUploadLimitError": "File too large (greater than 40GB)",
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera"
   },
@@ -1379,8 +1380,8 @@
       "progress": "Vaciando papelera..."
     },
     "uploadItems": {
-      "title": "Maximum file upload",
-      "advice": "The maximum is 1000 files per upload.",
+      "title": "Subida máxima de archivos alcanzada",
+      "advice": "El máximo es de 3000 archivos por subida.",
       "close": "Cerrar"
     },
     "movingToTrash": "Moviendo elementos a la papelera",
@@ -1521,6 +1522,12 @@
           "reactivate": "Reactivar",
           "reactivating": "Reactivando"
         },
+        "removalModal": {
+          "title": "Eliminar miembro",
+          "description": "{{name}} perderá acceso al espacio de trabajo. Todos sus archivos y carpetas permanecerán iguales.",
+          "remove": "Eliminar",
+          "removing": "Eliminando"
+        },
         "changePasswordModal": {
           "title": "Solicitar cambio de contraseña",
           "description": "El usuario recibirá una recomendación para actualizar la contraseña de su cuenta personal. Utilice esta función si cree que su contraseña podría haber sido comprometida.",
@@ -1578,11 +1585,66 @@
         "actions": {
           "deactivate": "Desactivar miembro",
           "reactivate": "Reactivar miembro",
+          "remove": "Eliminar miembro",
           "passwordChange": "Solicitar cambio de contraseña"
         }
       },
       "teams": {
-        "title": "Equipos"
+        "title": "Equipos",
+        "createTeam": "Crear equipo",
+        "team": "Equipo",
+        "members": "Miembros",
+        "createTeamDialog": {
+          "title": "Nuevo equipo",
+          "label": "Nombre",
+          "placeholder": "Introduce el nombre del equipo",
+          "cancel": "Cancelar",
+          "create": "Crear",
+          "nameExists": "Ya existe un equipo con ese nombre"
+        },
+        "teamDetails": {
+          "member": "Miembro",
+          "members": "Miembros",
+          "remove": "Eliminar",
+          "makeManager": "Hacer manager",
+          "addMember": "Añadir Miembro",
+          "rename": "Renombrar",
+          "delete": "Eliminar"
+        },
+        "addMemberDialog": {
+          "title": "Agregar miembros",
+          "placeholder": "Buscar miembro",
+          "cancel": "Cancelar",
+          "addMember": "Agregar miembro",
+          "addOneMember": "Agregar {{membersToInvite}} miembro",
+          "addMembers": "Agregar {{membersToInvite}} miembros"
+        },
+        "renameTeamDialog": {
+          "title": "Renombrar equipo",
+          "label": "Nombre",
+          "placeholder": "Ingrese el nuevo nombre del equipo",
+          "cancel": "Cancelar",
+          "rename": "Renombrar",
+          "nameExists": "Ya existe un equipo con este nombre"
+        },
+        "deleteTeamDialog": {
+          "title": "Eliminar equipo",
+          "description": "se eliminará y los miembros de este equipo pueden perder el acceso a archivos y carpetas compartidos con el equipo.",
+          "cancel": "Cancelar",
+          "delete": "Eliminar equipo"
+        },
+        "removeTeamMemberDialog": {
+          "title": "Eliminar miembro",
+          "description": "perderá acceso a archivos y carpetas compartidos con este equipo.",
+          "cancel": "Cancelar",
+          "delete": "Eliminar"
+        },
+        "changeManagerDialog": {
+          "title": "Cambiar de administrador",
+          "description": "se convertirá en el administrador de este equipo. El administrador anterior será degradado a miembro del equipo.",
+          "cancel": "Cancelar",
+          "change": "Cambiar"
+        }
       },
       "billing": {
         "title": "Facturación",
@@ -1700,7 +1762,8 @@
     },
     "pending": "Invitaciones pendientes",
     "messages": {
-      "sharedSuccess": "Elemento compartido exitosamente con el equipo"
+      "sharedSuccess": "Elemento compartido exitosamente con el equipo",
+      "switchingWorkspace": "Cambiando espacio de trabajo"
     },
     "pendingInvitations": {
       "empty": "No quedan invitaciones",
