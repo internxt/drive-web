@@ -162,7 +162,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
             </button>
             {isOptionsOpen && (
               <button onClick={() => setIsOptionsOpen(false)} className="absolute flex h-full w-full">
-                <div className="absolute right-0 top-16 flex flex-col items-center justify-center rounded-md border border-gray-10 bg-gray-5 shadow-sm">
+                <div className="absolute right-0 top-16 flex flex-col items-center justify-center rounded-md border border-gray-10 bg-surface shadow-sm dark:bg-gray-5">
                   {/* NOT INCLUDED IN INITIAL SCOPE OF MVP */}
                   {/* <button
                   onClick={() => setIsRequestChangePasswordModalOpen(true)}
@@ -173,7 +173,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
                   {memberRole !== 'deactivated' && (
                     <button
                       onClick={() => setIsDeactivateModalOpen(true)}
-                      className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"
+                      className="flex h-10 w-full items-center rounded-t-md px-3 hover:bg-gray-5 dark:hover:bg-gray-20"
                     >
                       <span className="truncate">{translate('preferences.workspace.members.actions.deactivate')}</span>
                     </button>
@@ -181,14 +181,14 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
                   {memberRole === 'deactivated' && (
                     <button
                       onClick={() => setIsReactivateModalOpen(true)}
-                      className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"
+                      className="flex h-10 w-full items-center rounded-b-md px-3 hover:bg-gray-5 dark:hover:bg-gray-20"
                     >
                       <span className="truncate">{translate('preferences.workspace.members.actions.reactivate')}</span>
                     </button>
                   )}
                   <button
                     onClick={() => setIsRemoveModalOpen(true)}
-                    className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"
+                    className="flex h-10 w-full items-center rounded-b-md px-3 hover:bg-gray-5 dark:hover:bg-gray-20"
                   >
                     <span className="truncate">{translate('preferences.workspace.members.actions.remove')}</span>
                   </button>
