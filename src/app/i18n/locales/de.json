@@ -1305,8 +1305,8 @@
       "deleteLink": "Lösche Link",
       "restore": "Wiederherstellen",
       "deletePermanently": "Lösche dauerhaft",
-      "move": "Verschiebe",
-      "delete": "Lösche"
+      "move": "Verschieben",
+      "delete": "Löschen"
     },
     "deleteItems": {
       "title": "Dauerhaft löschen?",
