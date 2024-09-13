@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import {
   CaretDown,
@@ -10,17 +11,18 @@ import {
   Info,
 } from '@phosphor-icons/react';
 import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
-import { DriveItemData, DriveItemDetails } from 'app/drive/types';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { DriveItemData, DriveItemDetails, FolderPath } from '../../../../drive/types';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { uiActions } from '../../../../store/slices/ui';
-import useDriveItemStoreProps from 'app/drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
-import { getAppConfig } from 'app/core/services/config.service';
+import useDriveItemStoreProps from '../../../../drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
+import { getAppConfig } from '../../../../core/services/config.service';
 import { BreadcrumbsMenuProps } from '../types';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
+import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { storageActions } from '../../../../store/slices/storage';
-import shareService from 'app/share/services/share.service';
+import shareService from '../../../../share/services/share.service';
+import { getAncestorsAndSetNamePath } from '../../../../store/slices/storage/storage.thunks/goToFolderThunk';
 
 const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   const { onItemClicked } = props;
@@ -33,12 +35,22 @@ const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id;
   const isSharedView = pathId === 'shared';
+  const [itemName, setItemName] = useState(props.item.label);
 
-  const findCurrentFolder = (currentBreadcrumb) => {
+  useEffect(() => {
+    if (breadcrumbDirtyName) {
+      getAncestorsAndSetNamePath(currentBreadcrumb.uuid, dispatch);
+      setItemName(breadcrumbDirtyName);
+    } else {
+      setItemName(props.item.label);
+    }
+  }, [breadcrumbDirtyName]);
+
+  const findCurrentFolder = (currentBreadcrumb: FolderPath) => {
     const foldersList: DriveItemData[] = [];
 
-    for (const itemsInAllitems in allItems) {
-      const selectedFolder = allItems[itemsInAllitems].find((item) => item?.id === currentBreadcrumb?.id);
+    for (const itemsInAllItems in allItems) {
+      const selectedFolder = allItems[itemsInAllItems].find((item) => item?.uuid === currentBreadcrumb?.uuid);
       if (selectedFolder) foldersList.push(selectedFolder);
     }
     return foldersList;
@@ -96,8 +108,8 @@ const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
         focus-visible:bg-gray-5"
       >
         <div className="flex max-w-fit flex-1 flex-row items-center truncate">
-          <span title={breadcrumbDirtyName || props.item.label} className="max-w-sm flex-1 truncate">
-            {breadcrumbDirtyName || props.item.label}
+          <span title={itemName} className="max-w-sm flex-1 truncate">
+            {itemName}
           </span>
           <CaretDown weight="fill" className={`ml-1 h-3 w-3 ${isSharedView && 'hidden'}`} />
         </div>

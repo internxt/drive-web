@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { useAppDispatch } from 'app/store/hooks';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import Button from 'app/shared/components/Button/Button';
@@ -17,16 +17,11 @@ type EditItemNameDialogProps = {
 };
 
 const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourceToken, onClose, onSuccess }) => {
-  const [newItemName, setNewItemName] = useState('');
+  const dispatch = useAppDispatch();
+  const { translate } = useTranslationContext();
+  const [newItemName, setNewItemName] = useState(translate('modals.newFolderModal.placeholder'));
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  const { translate } = useTranslationContext();
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    setNewItemName(item?.plainName ?? '');
-  }, [item]);
 
   const handleOnClose = (newName = ''): void => {
     setIsLoading(false);
@@ -72,7 +67,6 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
         <p className="text-2xl font-medium text-gray-100" data-cy="editItemNameDialogTitle">
           {translate('modals.renameItemDialog.title')}
         </p>
-
         <Input
           disabled={isLoading}
           className={`${error !== '' ? 'error' : ''}`}
@@ -80,7 +74,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
           inputDataCy="editItemNameDialogInput"
           label={translate('modals.renameItemDialog.label')}
           value={newItemName}
-          placeholder={newItemName}
+          placeholder={translate('modals.newFolderModal.placeholder')}
           onChange={(name) => {
             setNewItemName(name);
             setError('');
@@ -89,7 +83,6 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
           message={error}
           autofocus
         />
-
         <div className="flex flex-row items-center justify-end space-x-2">
           <Button
             disabled={isLoading}
