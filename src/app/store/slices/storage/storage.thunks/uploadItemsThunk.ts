@@ -24,6 +24,7 @@ import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
+import { removeHiddenItems } from 'app/utils/driveItemsUtils';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -186,16 +187,18 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       };
     }
 
+    const filteredFilesWithoutHiddenItems = removeHiddenItems(files);
+
     const continueWithUpload = isUploadAllowed({
       state: getState(),
-      files,
+      files: filteredFilesWithoutHiddenItems,
       dispatch,
       isWorkspaceSelected: !!workspaceId,
     });
     if (!continueWithUpload) return;
 
     const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
-      files,
+      files: filteredFilesWithoutHiddenItems,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       fileType,

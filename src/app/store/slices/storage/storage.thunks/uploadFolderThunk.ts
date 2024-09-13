@@ -14,6 +14,7 @@ import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
+import { removeHiddenItems } from 'app/utils/driveItemsUtils';
 
 export interface IRoot {
   name: string;
@@ -323,6 +324,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
       while (levels.length > 0) {
         if (uploadFolderAbortController.signal.aborted) break;
         const level: IRoot = levels.shift() as IRoot;
+
         const createdFolder = await dispatch(
           storageThunks.createFolderThunk({
             parentFolderId: level.folderId as string,
@@ -348,9 +350,10 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
         if (level.childrenFiles) {
           if (uploadFolderAbortController.signal.aborted) break;
 
+          const files = removeHiddenItems(level.childrenFiles);
           await dispatch(
             uploadItemsParallelThunk({
-              files: level.childrenFiles,
+              files: files,
               parentFolderId: createdFolder.uuid,
               options: {
                 relatedTaskId: taskId,
@@ -364,7 +367,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
           )
             .unwrap()
             .then(() => {
-              alreadyUploaded += level.childrenFiles.length;
+              alreadyUploaded += files.length;
               alreadyUploaded += 1;
             });
 
@@ -373,7 +376,9 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
 
         const childrenFolders = [] as IRoot[];
         for (const child of level.childrenFolders) {
-          childrenFolders.push({ ...child, folderId: createdFolder.uuid });
+          if (!child.name.startsWith('.')) {
+            childrenFolders.push({ ...child, folderId: createdFolder.uuid });
+          }
         }
 
         levels.push(...childrenFolders);
