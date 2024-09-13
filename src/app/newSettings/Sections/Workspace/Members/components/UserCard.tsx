@@ -21,14 +21,19 @@ const UserCard = ({ name, lastname, role, email, avatarsrc, styleOptions }: User
   const { translate } = useTranslationContext();
   const rolePosition = styleOptions?.rolePosition ?? 'row';
   return (
-    <div className="flex flex-row space-x-2">
+    <div className="flex w-full max-w-[256px] flex-row space-x-2">
       <Avatar src={avatarsrc} fullName={`${name} ${lastname}`} diameter={styleOptions?.avatarDiameter ?? 36} />
       <div className="flex flex-col">
         {rolePosition === 'column' && (
           <RoleBadge role={role} roleText={translate(`preferences.workspace.members.role.${role}`)} size={'small'} />
         )}
         <div className="flex flex-row justify-between space-x-2">
-          <span className={styleOptions?.nameStyle ?? 'break-all text-base font-medium leading-5 text-gray-100'}>
+          <span
+            className={
+              styleOptions?.nameStyle ??
+              'max-w-[120px] truncate break-all text-base font-medium leading-5 text-gray-100'
+            }
+          >
             {name} {lastname}
           </span>
           {rolePosition === 'row' && (
