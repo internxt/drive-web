@@ -1,5 +1,6 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { AppView } from 'app/core/types';
 import Section from 'app/newSettings/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -29,7 +30,6 @@ import {
   getPlanName,
   getRenewalPeriod,
 } from './utils/planUtils';
-import { AppView } from 'app/core/types';
 
 interface PlansSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -161,7 +161,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
   const handlePaymentSuccess = () => {
     showSuccessSubscriptionNotification();
-    dispatch(planThunks.initializeThunk()).unwrap();
+    setTimeout(() => dispatch(planThunks.initializeThunk()).unwrap(), 2000);
   };
 
   const handleSubscriptionPayment = async (priceId: string) => {
