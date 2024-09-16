@@ -426,12 +426,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onCloseEditItemDialog = (newItem) => {
-    const newItemName = newItem.plainName ?? newItem.name;
     if (newItem && editNameItem) {
       if (isFileViewerOpen) {
-        dispatch(uiActions.setCurrentEditingNameDirty(newItemName));
+        dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
       } else if (itemToRename && editNameItem.isFolder) {
-        dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(newItemName));
+        dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(newItem.plainName ?? newItem.name));
       }
     }
     dispatch(storageActions.setItemToRename(null));

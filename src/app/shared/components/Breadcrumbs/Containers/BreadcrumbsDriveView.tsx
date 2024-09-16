@@ -27,6 +27,7 @@ const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
   useEffect(() => {
     if (breadcrumbDirtyName) {
       getAncestorsAndSetNamePath(currentBreadcrumb.uuid, dispatch);
+      dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(''));
     }
   }, [breadcrumbDirtyName]);
 

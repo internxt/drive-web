@@ -104,7 +104,6 @@ const DriveView = (props: DriveViewProps) => {
   const goFolder = async (folderUuid: string, workspacesToken?: string) => {
     try {
       const folderMeta = await newStorageService.getFolderMeta(folderUuid, workspacesToken);
-      dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(''));
 
       dispatch(
         storageThunks.goToFolderThunk({
