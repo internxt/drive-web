@@ -86,6 +86,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
     let rootFolderItem: DriveFolderData | undefined;
     let rootFolderData: DriveFolderData | undefined;
 
+    if (root.name.startsWith('.')) return;
+
     const renamedRoot = await handleFoldersRename(root, currentFolderId, workspaceCredentials?.tokenHeader);
     const levels = [renamedRoot];
 
@@ -158,9 +160,10 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         }
 
         if (level.childrenFiles) {
+          const filteredChildrenFilesWithoutHiddenItems = removeHiddenItems(level.childrenFiles);
           await dispatch(
             uploadItemsParallelThunk({
-              files: level.childrenFiles,
+              files: filteredChildrenFilesWithoutHiddenItems,
               parentFolderId: createdFolder.uuid,
               options: {
                 relatedTaskId: taskId,
@@ -174,7 +177,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
           )
             .unwrap()
             .then(() => {
-              alreadyUploaded += level.childrenFiles.length;
+              alreadyUploaded += filteredChildrenFilesWithoutHiddenItems.length;
               alreadyUploaded += 1;
 
               tasksService.updateTask({
@@ -187,7 +190,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         }
 
         const childrenFolders = [] as IRoot[];
-        for (const child of level.childrenFolders) {
+        const filteredFolders = removeHiddenItems(level.childrenFolders);
+        for (const child of filteredFolders) {
           childrenFolders.push({ ...child, folderId: createdFolder.uuid });
         }
 
@@ -295,13 +299,20 @@ const generateTaskIdForFolders = (foldersPayload: UploadFolderThunkPayload[]) =>
   });
 };
 
+const checkFoldersBeforeUploadingThem = (payload: UploadFolderThunkPayload[]) => {
+  return payload.filter(({ root }) => !root.name.startsWith('.'));
+};
+
 export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
   void,
   UploadFolderThunkPayload[],
   { state: RootState }
 >('storage/createFolderStructure', async (payload, { dispatch, getState }) => {
   const state = getState();
-  const payloadWithTaskId = generateTaskIdForFolders(payload);
+
+  const filteredRootByName = checkFoldersBeforeUploadingThem(payload);
+
+  const payloadWithTaskId = generateTaskIdForFolders(filteredRootByName);
 
   const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
   const memberId = selectedWorkspace?.workspaceUser?.memberId;

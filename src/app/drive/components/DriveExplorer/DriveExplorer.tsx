@@ -71,7 +71,6 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
-import { removeHiddenItems } from 'app/utils/driveItemsUtils';
 
 const TRASH_PAGINATION_OFFSET = 50;
 export const UPLOAD_ITEMS_LIMIT = 3000;
@@ -376,10 +375,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
     if (files.length <= UPLOAD_ITEMS_LIMIT) {
       const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(Array.from(files), items, dispatch) as File[];
-      const filteredItemsWithoutHiddenFiles = removeHiddenItems(unrepeatedUploadedFiles);
+
       dispatch(
         storageThunks.uploadItemsThunk({
-          files: Array.from(filteredItemsWithoutHiddenFiles),
+          files: Array.from(unrepeatedUploadedFiles),
           parentFolderId: currentFolderId,
         }),
       ).then(() => {
@@ -969,12 +968,11 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
         },
       });
       const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch) as File[];
-      const filteredItems = removeHiddenItems(unrepeatedUploadedFiles);
 
       // files where dragged directly
       await dispatch(
         storageThunks.uploadItemsThunk({
-          files: filteredItems,
+          files: unrepeatedUploadedFiles,
           parentFolderId: currentFolderId,
           options: {
             onSuccess: onDragAndDropEnd,
@@ -996,10 +994,9 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
         },
       });
       const unrepeatedUploadedFolders = handleRepeatedUploadingFolders(rootList, items, dispatch) as IRoot[];
-      const filteredFolders = removeHiddenItems(unrepeatedUploadedFolders);
 
-      if (filteredFolders.length > 0) {
-        const folderDataToUpload = filteredFolders.map((root) => ({
+      if (unrepeatedUploadedFolders.length > 0) {
+        const folderDataToUpload = unrepeatedUploadedFolders.map((root) => ({
           root,
           currentFolderId,
           options: {

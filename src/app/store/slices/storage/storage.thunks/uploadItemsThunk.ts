@@ -311,11 +311,18 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     const teamId = selectedWorkspace?.workspace.defaultTeamId;
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
-    const continueWithUpload = isUploadAllowed({ state: state, files, dispatch, isWorkspaceSelected: !!workspaceId });
+    const filteredFilesWithoutHiddenItems = removeHiddenItems(files);
+
+    const continueWithUpload = isUploadAllowed({
+      state: state,
+      files: filteredFilesWithoutHiddenItems,
+      dispatch,
+      isWorkspaceSelected: !!workspaceId,
+    });
     if (!continueWithUpload) return;
 
     let zeroLengthFilesNumber = 0;
-    for (const file of files) {
+    for (const file of filteredFilesWithoutHiddenItems) {
       if (file.size === 0) {
         zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
         continue;
@@ -396,8 +403,8 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       relatedTaskId: options?.relatedTaskId,
       parentFolderId,
       onFinishUploadFile: (driveItemData: DriveFileData, taskId: string) => {
-        const uploadRespository = DatabaseUploadRepository.getInstance();
-        uploadRespository.removeUploadState(taskId);
+        const uploadRepository = DatabaseUploadRepository.getInstance();
+        uploadRepository.removeUploadState(taskId);
         dispatch(
           storageActions.pushItems({
             updateRecents: true,
