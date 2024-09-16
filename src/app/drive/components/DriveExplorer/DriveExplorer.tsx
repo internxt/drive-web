@@ -71,7 +71,6 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
-import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 
 const TRASH_PAGINATION_OFFSET = 50;
 export const UPLOAD_ITEMS_LIMIT = 3000;
@@ -436,7 +435,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       }
     }
     dispatch(storageActions.setItemToRename(null));
-    getAncestorsAndSetNamePath(newItem.uuid, dispatch);
     setEditNameItem(null);
   };
 

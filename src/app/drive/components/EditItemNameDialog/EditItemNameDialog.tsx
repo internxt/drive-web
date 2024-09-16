@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useAppDispatch } from 'app/store/hooks';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import Button from 'app/shared/components/Button/Button';
@@ -19,9 +19,13 @@ type EditItemNameDialogProps = {
 const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourceToken, onClose, onSuccess }) => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
-  const [newItemName, setNewItemName] = useState(translate('modals.newFolderModal.placeholder'));
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [newItemName, setNewItemName] = useState('');
+
+  useEffect(() => {
+    setNewItemName(item?.plainName ?? '');
+  }, [item]);
 
   const handleOnClose = (newName = ''): void => {
     setIsLoading(false);
