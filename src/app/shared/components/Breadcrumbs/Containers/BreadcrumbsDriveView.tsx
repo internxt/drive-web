@@ -9,6 +9,9 @@ import { uiActions } from 'app/store/slices/ui';
 import { t } from 'i18next';
 import BreadcrumbsMenuDrive from '../BreadcrumbsMenu/BreadcrumbsMenuDrive';
 import { BreadcrumbItemData } from '../types';
+import useDriveItemStoreProps from 'app/drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
+import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
+import { useEffect } from 'react';
 
 interface BreadcrumbsDriveViewProps {
   namePath: FolderPath[];
@@ -18,6 +21,14 @@ const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
   const { namePath } = props;
   const dispatch = useAppDispatch();
   const { selectedWorkspace } = useAppSelector((state: RootState) => state.workspaces);
+  const currentBreadcrumb = namePath[namePath.length - 1];
+  const { breadcrumbDirtyName } = useDriveItemStoreProps();
+
+  useEffect(() => {
+    if (breadcrumbDirtyName) {
+      getAncestorsAndSetNamePath(currentBreadcrumb.uuid, dispatch);
+    }
+  }, [breadcrumbDirtyName]);
 
   const breadcrumbDriveViewItems = (): BreadcrumbItemData[] => {
     const items: BreadcrumbItemData[] = [];
