@@ -1240,7 +1240,8 @@
     "errorCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten",
     "errorCreatingSubscription": "Beim Erstellen Ihres Abonnements ist ein Fehler aufgetreten",
     "errorPurchaseBusinessPlan": "Sie haben bereits einen Geschäftstarif.",
-    "couponIsNotValidForUserError": "Der Gutschein kann nur von neuen Kunden eingelöst werden."
+    "couponIsNotValidForUserError": "Der Gutschein kann nur von neuen Kunden eingelöst werden.",
+    "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten"
   },
   "actions": {
     "undo": "Rückgängig machen",

@@ -1296,7 +1296,8 @@
     "errorApplyCoupon": "An error occurred while applying the discount",
     "alreadyAppliedCoupon": "The coupon has been already applied",
     "errorPurchaseBusinessPlan": "You already have a business plan.",
-    "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers"
+    "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers",
+    "errorApplyingCoupon": "Something went wrong while applying the coupon"
   },
   "actions": {
     "undo": "Undo",

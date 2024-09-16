@@ -1284,7 +1284,8 @@
     "errorCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento",
     "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
     "errorPurchaseBusinessPlan": "Hai già un piano aziendale.",
-    "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti."
+    "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti.",
+    "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon"
   },
   "actions": {
     "undo": "Annulla",

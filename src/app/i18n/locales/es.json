@@ -1260,7 +1260,8 @@
     "errorApplyCoupon": "Se ha producido un error al aplicar el descuento",
     "alreadyAppliedCoupon": "El cupón ya se ha aplicado",
     "errorPurchaseBusinessPlan": "Ya tienes un plan para empresas",
-    "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes."
+    "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes.",
+    "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",

@@ -451,7 +451,7 @@ const CheckoutViewWrapper = () => {
   const handlePromoCodeError = (err: unknown, showNotification?: boolean) => {
     const error = err as Error;
     const statusCode = (err as any).status;
-    let errorMessage = 'Something went wrong, try again later';
+    let errorMessage = 'Something went wrong while applying the coupon';
     if (statusCode) {
       if (
         statusCode === STATUS_CODE_ERROR.PROMO_CODE_BY_NAME_NOT_FOUND ||

@@ -1264,7 +1264,8 @@
     "errorCancelSubscription": "Произошла ошибка при отмене подписки.",
     "errorCreatingSubscription": "Что-то пошло не так при создании вашей подписки",
     "errorPurchaseBusinessPlan": "У вас уже есть бизнес-тариф.",
-    "couponIsNotValidForUserError": "Купон может быть использован только новыми клиентами."
+    "couponIsNotValidForUserError": "Купон может быть использован только новыми клиентами.",
+    "errorApplyingCoupon": "Произошла ошибка при применении купона"
   },
   "actions": {
     "undo": "Отменить",
