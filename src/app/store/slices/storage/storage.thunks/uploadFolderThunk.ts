@@ -14,7 +14,7 @@ import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
-import { removeHiddenItems } from 'app/utils/driveItemsUtils';
+import { filterAndRemoveHiddenItemsBeforeUpload } from 'app/utils/driveItemsUtils';
 
 export interface IRoot {
   name: string;
@@ -75,9 +75,11 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
   async ({ root, currentFolderId, options }, { dispatch, requestId, getState }) => {
     const state = getState();
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
-
+    const isRootFolderNotAllowed = root.name.startsWith('.');
     const workspaceSelected = workspacesSelectors.getSelectedWorkspace(state);
     const memberId = workspaceSelected?.workspaceUser?.memberId;
+
+    if (isRootFolderNotAllowed) return;
 
     options = { withNotification: true, ...options };
     const uploadFolderAbortController = new AbortController();
@@ -85,8 +87,6 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
     let alreadyUploaded = 0;
     let rootFolderItem: DriveFolderData | undefined;
     let rootFolderData: DriveFolderData | undefined;
-
-    if (root.name.startsWith('.')) return;
 
     const renamedRoot = await handleFoldersRename(root, currentFolderId, workspaceCredentials?.tokenHeader);
     const levels = [renamedRoot];
@@ -160,7 +160,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         }
 
         if (level.childrenFiles) {
-          const filteredChildrenFilesWithoutHiddenItems = removeHiddenItems(level.childrenFiles);
+          const filteredChildrenFilesWithoutHiddenItems = filterAndRemoveHiddenItemsBeforeUpload(level.childrenFiles);
           await dispatch(
             uploadItemsParallelThunk({
               files: filteredChildrenFilesWithoutHiddenItems,
@@ -190,8 +190,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         }
 
         const childrenFolders = [] as IRoot[];
-        const filteredFolders = removeHiddenItems(level.childrenFolders);
-        for (const child of filteredFolders) {
+        const filteredFoldersWithoutHiddenItems = filterAndRemoveHiddenItemsBeforeUpload(level.childrenFolders);
+        for (const child of filteredFoldersWithoutHiddenItems) {
           childrenFolders.push({ ...child, folderId: createdFolder.uuid });
         }
 
@@ -311,7 +311,6 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
   const state = getState();
 
   const filteredRootByName = checkFoldersBeforeUploadingThem(payload);
-
   const payloadWithTaskId = generateTaskIdForFolders(filteredRootByName);
 
   const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
@@ -361,10 +360,10 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
         if (level.childrenFiles) {
           if (uploadFolderAbortController.signal.aborted) break;
 
-          const files = removeHiddenItems(level.childrenFiles);
+          const filesWithoutHiddenItems = filterAndRemoveHiddenItemsBeforeUpload(level.childrenFiles);
           await dispatch(
             uploadItemsParallelThunk({
-              files: files,
+              files: filesWithoutHiddenItems,
               parentFolderId: createdFolder.uuid,
               options: {
                 relatedTaskId: taskId,
@@ -378,7 +377,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
           )
             .unwrap()
             .then(() => {
-              alreadyUploaded += files.length;
+              alreadyUploaded += filesWithoutHiddenItems.length;
               alreadyUploaded += 1;
             });
 

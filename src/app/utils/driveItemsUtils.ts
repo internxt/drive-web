@@ -33,9 +33,9 @@ const removeDuplicates = <T extends ItemData>(list: T[]) => {
  * @returns {T[]} - Filtered list without hidden items
  */
 
-const removeHiddenItemsBeforeUpload = <T extends HiddenItemsData>(items: T[]) => {
+const filterAndRemoveHiddenItemsBeforeUpload = <T extends HiddenItemsData>(items: T[]) => {
   const itemsFiltered = items.filter((file) => !file.name.startsWith('.'));
   return itemsFiltered;
 };
 
-export { removeDuplicates, removeHiddenItemsBeforeUpload as removeHiddenItems };
+export { removeDuplicates, filterAndRemoveHiddenItemsBeforeUpload };

@@ -24,7 +24,7 @@ import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
-import { removeHiddenItems } from 'app/utils/driveItemsUtils';
+import { filterAndRemoveHiddenItemsBeforeUpload } from 'app/utils/driveItemsUtils';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -187,7 +187,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       };
     }
 
-    const filteredFilesWithoutHiddenItems = removeHiddenItems(files);
+    const filteredFilesWithoutHiddenItems = filterAndRemoveHiddenItemsBeforeUpload(files);
 
     const continueWithUpload = isUploadAllowed({
       state: getState(),
@@ -215,8 +215,8 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       taskId,
       relatedTaskId: options?.relatedTaskId,
       onFinishUploadFile: (driveItemData: DriveFileData, taskId: string) => {
-        const uploadRespository = DatabaseUploadRepository.getInstance();
-        uploadRespository.removeUploadState(taskId);
+        const uploadRepository = DatabaseUploadRepository.getInstance();
+        uploadRepository.removeUploadState(taskId);
 
         dispatch(
           storageActions.pushItems({
@@ -311,7 +311,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     const teamId = selectedWorkspace?.workspace.defaultTeamId;
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
-    const filteredFilesWithoutHiddenItems = removeHiddenItems(files);
+    const filteredFilesWithoutHiddenItems = filterAndRemoveHiddenItemsBeforeUpload(files);
 
     const continueWithUpload = isUploadAllowed({
       state: state,

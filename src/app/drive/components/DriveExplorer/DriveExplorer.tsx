@@ -375,7 +375,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
     if (files.length <= UPLOAD_ITEMS_LIMIT) {
       const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(Array.from(files), items, dispatch) as File[];
-
       dispatch(
         storageThunks.uploadItemsThunk({
           files: Array.from(unrepeatedUploadedFiles),
@@ -968,7 +967,6 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
         },
       });
       const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch) as File[];
-
       // files where dragged directly
       await dispatch(
         storageThunks.uploadItemsThunk({
@@ -1003,7 +1001,6 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
             onSuccess: onDragAndDropEnd,
           },
         }));
-
         dispatch(storageThunks.uploadMultipleFolderThunkNoCheck(folderDataToUpload)).then(() => {
           dispatch(fetchSortedFolderContentThunk(currentFolderId));
         });
