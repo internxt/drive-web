@@ -74,7 +74,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
           inputDataCy="editItemNameDialogInput"
           label={translate('modals.renameItemDialog.label')}
           value={newItemName}
-          placeholder={translate('modals.newFolderModal.placeholder')}
+          placeholder={newItemName}
           onChange={(name) => {
             setNewItemName(name);
             setError('');
