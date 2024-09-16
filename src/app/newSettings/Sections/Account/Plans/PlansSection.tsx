@@ -182,8 +182,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
                 text: result.error.message as string,
               });
             } else {
-              showSuccessSubscriptionNotification();
-              dispatch(planThunks.initializeThunk()).unwrap();
+              handlePaymentSuccess();
             }
           })
           .catch((err) => {
@@ -240,7 +239,6 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       setIsDialogOpen(false);
     } else {
       await handleSubscriptionPayment(priceId);
-      dispatch(planThunks.initializeThunk()).unwrap();
       setIsDialogOpen(false);
     }
     setIsLoadingCheckout(false);
