@@ -205,7 +205,6 @@
             "Partage de fichiers protégé par mot de passe",
             "Accédez à vos fichiers depuis n'importe quel appareil",
             "Accédez à tous nos services",
-            "Téléchargez des fichiers jusqu'à 40 Go",
             "Authentification à deux facteurs (2FA)",
             "Support client premium",
             "Garantie de remboursement de 30 jours"
@@ -216,7 +215,6 @@
             "Créer et gérer des utilisateurs et des équipes",
             "À partir de {{minimumSeats}} utilisateurs et jusqu'à {{maximumSeats}}",
             "Conforme au GDPR",
-            "Télécharger des fichiers jusqu'à {{maxUploadGBfile}}",
             "Gérer la facturation et les paiements du compte",
             "Support client premium"
           ]

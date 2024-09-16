@@ -199,7 +199,6 @@
             "Passwortgeschütztes Teilen von Dateien",
             "Zugriff auf Ihre Dateien von jedem Gerät",
             "Zugang zu allen unseren Diensten",
-            "Hochladen von Dateien bis zu 40GB",
             "Zwei-Faktor-Authentifizierung (2FA)",
             "Premium-Kundensupport",
             "30-Tage-Geld-zurück-Garantie"
@@ -210,7 +209,6 @@
             "Benutzer und Teams erstellen und verwalten",
             "Ab {{minimumSeats}} Benutzer bis zu {{maximumSeats}}",
             "GDPR-konform",
-            "Dateien bis zu {{maxUploadGBfile}} hochladen",
             "Kontofakturierung und -zahlungen verwalten",
             "Premium-Kundensupport"
           ]

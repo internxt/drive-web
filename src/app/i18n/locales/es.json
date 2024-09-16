@@ -201,7 +201,6 @@
             "Compartir archivos con protección por contraseña",
             "Acceda a sus archivos desde cualquier dispositivo",
             "Acceso a todos nuestros servicios",
-            "Cargar archivos de hasta 40GB",
             "Autenticación de dos factores (2FA)",
             "Soporte al cliente premium",
             "Garantía de devolución de dinero de 30 días"
@@ -212,7 +211,6 @@
             "Crear y gestionar usuarios y equipos",
             "Desde {{minimumSeats}} usuarios y hasta {{maximumSeats}}",
             "Cumple con el GDPR",
-            "Subir archivos de hasta {{maxUploadGBfile}}",
             "Gestionar facturación y pagos de la cuenta",
             "Soporte al cliente premium"
           ]
