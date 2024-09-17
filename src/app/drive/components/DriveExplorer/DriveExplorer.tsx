@@ -71,6 +71,7 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
+import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 
 const TRASH_PAGINATION_OFFSET = 50;
 export const UPLOAD_ITEMS_LIMIT = 3000;
@@ -430,7 +431,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       if (isFileViewerOpen) {
         dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
       } else if (itemToRename && editNameItem.isFolder) {
-        dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(newItem.plainName ?? newItem.name));
+        getAncestorsAndSetNamePath(newItem.uuid, dispatch);
       }
     }
     dispatch(storageActions.setItemToRename(null));
