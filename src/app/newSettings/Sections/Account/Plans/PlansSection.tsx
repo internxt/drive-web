@@ -1,5 +1,6 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { AppView } from 'app/core/types';
 import Section from 'app/newSettings/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -29,7 +30,6 @@ import {
   getPlanName,
   getRenewalPeriod,
 } from './utils/planUtils';
-import { AppView } from 'app/core/types';
 
 interface PlansSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -64,7 +64,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const [selectedSubscription, setSelectedSubscription] = useState<UserType>(UserType.Individual);
 
   const isIndividualSubscriptionSelected = selectedSubscription == UserType.Individual;
-  const isBussinessSubscriptionSelected = selectedSubscription == UserType.Business;
+  const isBusinessSubscriptionSelected = selectedSubscription == UserType.Business;
 
   const defaultInterval = plan.individualPlan?.renewalPeriod === 'monthly' ? 'month' : 'year';
   const [selectedInterval, setSelectedInterval] = useState<DisplayPrice['interval']>(defaultInterval);
@@ -161,7 +161,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
   const handlePaymentSuccess = () => {
     showSuccessSubscriptionNotification();
-    dispatch(planThunks.initializeThunk()).unwrap();
+    setTimeout(() => dispatch(planThunks.initializeThunk()).unwrap(), 2000);
   };
 
   const handleSubscriptionPayment = async (priceId: string) => {
@@ -182,8 +182,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
                 text: result.error.message as string,
               });
             } else {
-              showSuccessSubscriptionNotification();
-              dispatch(planThunks.initializeThunk()).unwrap();
+              handlePaymentSuccess();
             }
           })
           .catch((err) => {
@@ -226,37 +225,21 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const onChangePlanClicked = async (priceId: string, currency: string) => {
     setIsLoadingCheckout(true);
     setIsUpdatingSubscription(true);
+    const isLifetimeIntervalSelected = selectedInterval === 'lifetime';
     const isCurrentPlanTypeSubscription = isIndividualSubscriptionSelected
       ? individualSubscription?.type === 'subscription'
       : businessSubscription?.type === 'subscription';
 
-    if (!isCurrentPlanTypeSubscription) {
-      const mode = selectedInterval === 'lifetime' ? 'payment' : 'subscription';
-      if (isIndividualSubscriptionSelected) {
-        onClosePreferences();
-        navigationService.push(AppView.Checkout, {
-          planId: priceId,
-          currency: currency,
-        });
-      } else {
-        await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
-      }
-
+    if (!isCurrentPlanTypeSubscription || isLifetimeIntervalSelected) {
+      onClosePreferences();
+      navigationService.push(AppView.Checkout, {
+        planId: priceId,
+        currency: currency,
+      });
       setIsDialogOpen(false);
     } else {
-      const isLifetimeIntervalSelected = selectedInterval === 'lifetime';
-      if (isLifetimeIntervalSelected) {
-        onClosePreferences();
-        navigationService.push(AppView.Checkout, {
-          planId: priceId,
-          currency: currency,
-        });
-        setIsDialogOpen(false);
-      } else {
-        await handleSubscriptionPayment(priceId);
-        dispatch(planThunks.initializeThunk()).unwrap();
-        setIsDialogOpen(false);
-      }
+      await handleSubscriptionPayment(priceId);
+      setIsDialogOpen(false);
     }
     setIsLoadingCheckout(false);
     setIsUpdatingSubscription(false);
@@ -403,7 +386,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
                   : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === plan.id
               }
               displayBillingSlash={plan.interval !== 'lifetime'}
-              isBusiness={isBussinessSubscriptionSelected}
+              isBusiness={isBusinessSubscriptionSelected}
             />
           ))}
         </div>
@@ -441,7 +424,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
             changePlanType={currentChangePlanType}
             isLoading={isLoadingCheckout}
             disableActionButton={false}
-            isBusiness={isBussinessSubscriptionSelected}
+            isBusiness={isBusinessSubscriptionSelected}
           />
         )}
       </div>

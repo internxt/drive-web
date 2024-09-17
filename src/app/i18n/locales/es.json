@@ -162,10 +162,19 @@
       "emailMustNotBeEmpty": "El correo electrónico no debe estar vacío",
       "privacyGuarantee": "Garantía de privacidad: No compartimos su información y solo contactaremos contigo cuando sea necesario para brindar nuestro servicio."
     },
+    "addressBillingTitle": "Facturación de Dirección",
+    "addressBilling": {
+      "optional": {
+        "cta": "Opcional",
+        "companyName": "Nombre de la empresa",
+        "companyVatId": "ID de IVA de la empresa"
+      }
+    },
     "paymentTitle": "Seleccione un método de pago",
     "productCard": {
       "title": "Resumen del pedido",
       "selectedPlan": "Plan seleccionado",
+      "numberOfUsers": "Número de usuarios: {{seats}}",
       "renewalPeriod": {
         "month": "mensual",
         "year": "anual",
@@ -181,27 +190,39 @@
         "year": "Facturado anualmente",
         "lifetime": "Pago único"
       },
+      "perUser": "/por usuario",
       "saving": "Estás ahorrando un {{percent}}%",
       "planDetails": {
         "title": "Detalles del plan:",
-        "features": [
-          "{{spaceToUpgrade}} de almacenamiento encriptado",
-          "Compartir archivos y carpetas encriptados",
-          "Compartir archivos con protección por contraseña",
-          "Acceda a sus archivos desde cualquier dispositivo",
-          "Acceso a todos nuestros servicios",
-          "Cargar archivos de hasta 20GB",
-          "Autenticación de dos factores (2FA)",
-          "Soporte al cliente premium",
-          "Garantía de devolución de dinero de 30 días"
-        ]
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} de almacenamiento encriptado",
+            "Compartir archivos y carpetas encriptados",
+            "Compartir archivos con protección por contraseña",
+            "Acceda a sus archivos desde cualquier dispositivo",
+            "Acceso a todos nuestros servicios",
+            "Autenticación de dos factores (2FA)",
+            "Soporte al cliente premium",
+            "Garantía de devolución de dinero de 30 días"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} almacenamiento/usuario",
+            "Compartir archivos y carpetas cifrados",
+            "Crear y gestionar usuarios y equipos",
+            "Desde {{minimumSeats}} usuarios y hasta {{maximumSeats}}",
+            "Cumple con el GDPR",
+            "Gestionar facturación y pagos de la cuenta",
+            "Soporte al cliente premium"
+          ]
+        }
       },
       "total": "Total: ",
+      "totalForBusiness": "Total para {{N}} usuarios: ",
       "addCoupon": {
         "buttonTitle": "Añadir cupón",
-        "inputText": "Código de cupón",
-        "applyCodeButtonTitle": "Aplicar"
+        "inputText": "Código de cupón"
       },
+      "apply": "Aplicar",
       "amountSaved": "Ahorre ",
       "withAnnualBilling": "con facturación anual"
     }
@@ -1239,7 +1260,8 @@
     "errorApplyCoupon": "Se ha producido un error al aplicar el descuento",
     "alreadyAppliedCoupon": "El cupón ya se ha aplicado",
     "errorPurchaseBusinessPlan": "Ya tienes un plan para empresas",
-    "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes."
+    "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes.",
+    "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",

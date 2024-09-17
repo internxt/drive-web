@@ -183,10 +183,19 @@
       "emailMustNotBeEmpty": "電子郵件不能為空",
       "privacyGuarantee": "隱私保證：我們不會分享您的信息，並且只會在提供服務時與您聯繫。"
     },
+    "addressBillingTitle": "帳單地址",
+    "addressBilling": {
+      "optional": {
+        "cta": "可選",
+        "companyName": "公司名稱",
+        "companyVatId": "公司增值稅編號"
+      }
+    },
     "paymentTitle": "選擇支付方式",
     "productCard": {
       "title": "訂單摘要",
       "selectedPlan": "選擇的計劃",
+      "numberOfUsers": "用戶數：{{seats}}",
       "renewalPeriod": {
         "month": "每月",
         "year": "每年",
@@ -202,27 +211,39 @@
         "year": "按年計費",
         "lifetime": "一次性支付"
       },
+      "perUser": "/每用戶",
       "saving": "您節省了 {{percent}}%",
       "planDetails": {
         "title": "計劃詳情：",
-        "features": [
-          "{{spaceToUpgrade}} 加密存儲",
-          "加密文件和文件夾共享",
-          "密碼保護的文件共享",
-          "從任何設備訪問您的文件",
-          "訪問我們所有的服務",
-          "上傳文件最大至 20GB",
-          "雙因素認證（2FA）",
-          "高級客戶支持",
-          "30 天退款保證"
-        ]
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} 加密存儲",
+            "加密文件和文件夾共享",
+            "密碼保護的文件共享",
+            "從任何設備訪問您的文件",
+            "訪問我們所有的服務",
+            "雙因素認證（2FA）",
+            "高級客戶支持",
+            "30 天退款保證"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} 儲存/用戶",
+            "加密檔案和資料夾共享",
+            "創建和管理用戶及團隊",
+            "從 {{minimumSeats}} 用戶到 {{maximumSeats}}",
+            "符合GDPR",
+            "管理帳戶計費與支付",
+            "高級客戶支持"
+          ]
+        }
       },
       "total": "總計：",
+      "totalForBusiness": "總計 {{N}} 用戶：",
       "addCoupon": {
         "buttonTitle": "添加優惠券",
-        "inputText": "優惠券代碼",
-        "applyCodeButtonTitle": "應用"
+        "inputText": "優惠券代碼"
       },
+      "apply": "應用",
       "amountSaved": "節省 ",
       "withAnnualBilling": "按年計費"
     }
@@ -1237,7 +1258,8 @@
     "alreadyAppliedCoupon": "優惠碼已經應用",
     "errorCreatingSubscription": "建立您的訂閱時出現問題",
     "errorPurchaseBusinessPlan": "您已經有一個商業計劃",
-    "couponIsNotValidForUserError": "優惠券只能由新客戶兌換。"
+    "couponIsNotValidForUserError": "優惠券只能由新客戶兌換。",
+    "errorApplyingCoupon": "應用優惠券時出錯"
   },
   "actions": {
     "undo": "撤銷",
