@@ -29,7 +29,6 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
 };
 
 interface CheckoutViewProps {
-  authMethod: AuthMethodTypes;
   userInfo: UserInfoProps;
   isUserAuthenticated: boolean;
   upsellManager: UpsellManagerProps;
@@ -39,7 +38,6 @@ interface CheckoutViewProps {
 }
 
 const CheckoutView = ({
-  authMethod,
   userInfo,
   isUserAuthenticated,
   upsellManager,
@@ -52,7 +50,8 @@ const CheckoutView = ({
   const stripeSDK = useStripe();
   const elements = useElements();
 
-  const { isPaying, error, couponCodeData, seatsForBusinessSubscription, currentSelectedPlan } = checkoutViewVariables;
+  const { isPaying, error, authMethod, couponCodeData, seatsForBusinessSubscription, currentSelectedPlan } =
+    checkoutViewVariables;
 
   const {
     register,
@@ -124,7 +123,7 @@ const CheckoutView = ({
                       {error.stripe}
                     </div>
                   )}
-                  <Button type="submit" id="submit" className="hidden lg:flex" disabled={isPaying && isValid}>
+                  <Button type="submit" id="submit" className="hidden lg:flex" disabled={isPaying}>
                     {isPaying && isValid ? translate('checkout.processing') : translate('checkout.pay')}
                   </Button>
                 </div>
@@ -140,7 +139,7 @@ const CheckoutView = ({
                   onCouponInputChange={checkoutViewManager.onCouponInputChange}
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
                 />
-                <Button type="submit" id="submit" className="flex lg:hidden" disabled={isPaying && isValid}>
+                <Button type="submit" id="submit" className="flex lg:hidden" disabled={isPaying}>
                   {isPaying && isValid ? translate('checkout.processing') : translate('checkout.pay')}
                 </Button>
               </div>

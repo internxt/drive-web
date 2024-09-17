@@ -28,7 +28,7 @@ import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutRe
 import { AuthMethodTypes, CouponCodeData, RequestedPlanData } from '../../types';
 import CheckoutView from './CheckoutView';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
-import { fetchPlanPrices, getStripe } from '../../../newSettings/Sections/Account/Plans/api/plansApi';
+import { getStripe } from '../../../newSettings/Sections/Account/Plans/api/plansApi';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
 export const THEME_STYLES = {
@@ -205,7 +205,7 @@ const CheckoutViewWrapper = () => {
           }
           checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, plan);
           stripe = await getStripe(stripe);
-          const prices = await fetchPlanPrices(plan.selectedPlan.type);
+          const prices = await checkoutService.fetchPrices(plan.selectedPlan.type, currencyValue);
           setPrices(prices);
           setIsCheckoutReadyToRender(true);
         }
@@ -510,7 +510,6 @@ const CheckoutViewWrapper = () => {
             userInfo={userInfo}
             isUserAuthenticated={isUserAuthenticated}
             upsellManager={upsellManager}
-            authMethod={authMethod}
             checkoutViewManager={checkoutViewManager}
           />
           {canChangePlanDialogBeOpened ? (
