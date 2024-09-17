@@ -39,7 +39,6 @@ import { useTranslationContext } from '../../../i18n/provider/TranslationProvide
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { AdvancedSharedItem } from '../../../share/types';
 import Button from '../../../shared/components/Button/Button';
-import SkinSkeletonItem from '../../../shared/components/List/SkinSketelonItem';
 import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -522,52 +521,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       </div>
     </div>
   );
-
-  const skinSkeleton = [
-    <div className="flex flex-row items-center space-x-4">
-      <div className="h-8 w-8 rounded-md bg-gray-5" />
-    </div>,
-    <div className="h-4 w-64 rounded bg-gray-5" />,
-    <div className="ml-3 h-4 w-24 rounded bg-gray-5" />,
-    <div className="ml-4 h-4 w-20 rounded bg-gray-5" />,
-  ];
-
-  const loader = new Array(25).fill(0).map((col, i) => (
-    <SkinSkeletonItem
-      key={`skinSkeletonRow${i}`}
-      skinSkeleton={skinSkeleton}
-      columns={[
-        {
-          label: translate('drive.list.columns.type'),
-          width: 'flex w-1/12 cursor-pointer items-center px-6',
-          name: 'type',
-          orderable: true,
-          defaultDirection: 'ASC',
-        },
-        {
-          label: translate('drive.list.columns.name'),
-          width: 'flex grow cursor-pointer items-center pl-6',
-          name: 'name',
-          orderable: true,
-          defaultDirection: 'ASC',
-        },
-        {
-          label: translate('drive.list.columns.modified'),
-          width: 'hidden w-3/12 lg:flex pl-4',
-          name: 'updatedAt',
-          orderable: true,
-          defaultDirection: 'ASC',
-        },
-        {
-          label: translate('drive.list.columns.size'),
-          width: 'flex w-1/12 cursor-pointer items-center',
-          name: 'size',
-          orderable: true,
-          defaultDirection: 'ASC',
-        },
-      ].map((column) => column.width)}
-    />
-  ));
 
   const handleOnShareItem = useCallback(() => {
     resetPaginationState();

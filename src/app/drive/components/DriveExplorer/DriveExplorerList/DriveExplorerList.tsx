@@ -170,6 +170,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           ? OrderDirection.Asc
           : OrderDirection.Desc
         : OrderDirection.Asc;
+
     dispatch(storageActions.setOrder({ by: value.field, direction }));
 
     if (value.field === 'name') {
@@ -178,6 +179,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
     if (value.field === 'updatedAt') {
       resetDriveOrder({ dispatch, orderType: 'updatedAt', direction, currentFolderId });
+    }
+
+    if (value.field === 'size') {
+      resetDriveOrder({ dispatch, orderType: 'size', direction, currentFolderId });
     }
   };
 
@@ -493,9 +498,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
             },
             {
               label: translate('drive.list.columns.size'),
+              orderable: isRecents || isTrash ? false : true,
+              defaultDirection: 'ASC',
               width: 'w-size',
               name: 'size',
-              orderable: false,
             },
           ]}
           checkboxDataCy="driveListHeaderCheckbox"

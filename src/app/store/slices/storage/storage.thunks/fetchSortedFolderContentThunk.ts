@@ -27,6 +27,8 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
     const filesOffset = 0;
     const driveItemsSort = storageState.driveItemsSort;
     const driveItemsOrder = storageState.driveItemsOrder;
+    const driveItemsSortForFolders = driveItemsSort === 'size' ? 'name' : driveItemsSort;
+    const driveItemsOrderForFolders = driveItemsSort === 'size' ? 'ASC' : driveItemsOrder;
 
     try {
       dispatch(storageActions.setIsLoadingFolder({ folderId, value: true }));
@@ -44,16 +46,16 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
             folderId,
             foldersOffset,
             DEFAULT_LIMIT,
-            driveItemsSort,
-            driveItemsOrder,
+            driveItemsSortForFolders,
+            driveItemsOrderForFolders,
           );
         } else {
           [folderPromise] = await storageClient.getFolderFoldersByUuid(
             folderId,
             foldersOffset,
             DEFAULT_LIMIT,
-            driveItemsSort,
-            driveItemsOrder,
+            driveItemsSortForFolders,
+            driveItemsOrderForFolders,
           );
         }
       }
