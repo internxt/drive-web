@@ -62,6 +62,8 @@ const CheckoutView = ({
     mode: 'onChange',
   });
 
+  const isButtonDisabled = authMethod === 'userIsSignedIn' ? isPaying : isPaying && isValid;
+
   function onAuthMethodToggled(authMethod: AuthMethodTypes) {
     reset({
       email: '',
@@ -123,8 +125,8 @@ const CheckoutView = ({
                       {error.stripe}
                     </div>
                   )}
-                  <Button type="submit" id="submit" className="hidden lg:flex" disabled={isPaying}>
-                    {isPaying && isValid ? translate('checkout.processing') : translate('checkout.pay')}
+                  <Button type="submit" id="submit" className="hidden lg:flex" disabled={isButtonDisabled}>
+                    {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
                   </Button>
                 </div>
               </div>
@@ -139,8 +141,8 @@ const CheckoutView = ({
                   onCouponInputChange={checkoutViewManager.onCouponInputChange}
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
                 />
-                <Button type="submit" id="submit" className="flex lg:hidden" disabled={isPaying}>
-                  {isPaying && isValid ? translate('checkout.processing') : translate('checkout.pay')}
+                <Button type="submit" id="submit" className="flex lg:hidden" disabled={isButtonDisabled}>
+                  {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
                 </Button>
               </div>
             </div>
