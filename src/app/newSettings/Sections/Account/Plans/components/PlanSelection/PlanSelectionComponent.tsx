@@ -1,19 +1,21 @@
 import { DisplayPrice, UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import PlanSelectionCard from './PlanSelectionCard';
-import { FreeStoragePlan } from 'app/drive/types';
 import { bytesToString } from 'app/drive/services/size.service';
 import { displayAmount } from '../../utils/planUtils';
-import { PlanSelectionCardSkeleton } from './PlanSelectionCardSkeleton';
+import { PlanSelectionCardSkeleton } from './skeletons/PlanSelectionCardSkeleton';
 import currencyService from 'app/payment/services/currency.service';
+
+export interface UserSubscriptionProps {
+  individual: UserSubscription | null;
+  business: UserSubscription | null;
+}
 
 interface PlanSelectionComponentProps {
   pricesToRender: DisplayPrice[];
-  showFreePriceCard: boolean;
   priceSelected: DisplayPrice;
-  userSubscription: {
-    individual: UserSubscription | null;
-    business: UserSubscription | null;
-  };
+  freePlanData: DisplayPrice;
+  showFreePriceCard: boolean;
+  userSubscription: UserSubscriptionProps;
   subscriptionSelected: {
     individual: boolean;
     business: boolean;
@@ -25,19 +27,13 @@ interface PlanSelectionComponentProps {
 export const PlanSelectionComponent = ({
   pricesToRender,
   userSubscription,
+  freePlanData,
   priceSelected,
   subscriptionSelected,
   showFreePriceCard,
   translate,
   onPriceSelected,
 }: PlanSelectionComponentProps) => {
-  const FREE_PLAN_DATA = {
-    amount: 0,
-    bytes: FreeStoragePlan.storageLimit,
-    id: 'free',
-    currency: translate('preferences.account.plans.freeForever'),
-    interval: 'month',
-  } as DisplayPrice;
   const TOTAL_SKELETON_ITEMS = {
     INDIVIDUAL: 5,
     BUSINESS: 2,
@@ -53,14 +49,14 @@ export const PlanSelectionComponent = ({
         <>
           {showFreePriceCard && (
             <PlanSelectionCard
-              key={FREE_PLAN_DATA.id}
-              onClick={() => onPriceSelected(FREE_PLAN_DATA)}
-              isSelected={priceSelected?.id === FREE_PLAN_DATA.id}
-              capacity={bytesToString(FREE_PLAN_DATA.bytes)}
-              currency={FREE_PLAN_DATA.currency}
+              key={freePlanData.id}
+              onClick={() => onPriceSelected(freePlanData)}
+              isSelected={priceSelected?.id === freePlanData.id}
+              capacity={bytesToString(freePlanData.bytes)}
+              currency={freePlanData.currency}
               amount={''}
               billing={''}
-              isCurrentPlan={FREE_PLAN_DATA.id === userSubscription.individual?.type}
+              isCurrentPlan={freePlanData.id === userSubscription.individual?.type}
             />
           )}
           {pricesToRender.map((plan) => (

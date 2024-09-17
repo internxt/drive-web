@@ -7,11 +7,9 @@ import { useSelector } from 'react-redux';
 import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
-import { bytesToString } from '../../../../drive/services/size.service';
 import { FreeStoragePlan } from '../../../../drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import currencyService from '../../../../payment/services/currency.service';
 import paymentService from '../../../../payment/services/payment.service';
 import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
@@ -19,18 +17,16 @@ import { PlanState, planThunks } from '../../../../store/slices/plan';
 import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
 import { fetchPlanPrices, getStripe } from './api/plansApi';
 import ChangePlanDialog from './components/ChangePlanDialog';
-import PlanCard from './components/PlanCard';
 import IntervalSwitch from './components/TabButton';
 import {
   determineSubscriptionChangeType,
-  displayAmount,
   getCurrentUsage,
   getPlanInfo,
   getPlanName,
   getRenewalPeriod,
 } from './utils/planUtils';
 import { PlanSelectionComponent } from './components/PlanSelection/PlanSelectionComponent';
-import { InfoPlanCardSkeleton } from './components/PlanSelection/InfoPlanCardSkeleton';
+import { InfoCardComponent } from './components/PlanSelection/InfoCardComponent';
 
 interface PlansSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -336,63 +332,39 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
         <PlanSelectionComponent
           onPriceSelected={setPriceSelected}
           priceSelected={priceSelected}
+          freePlanData={FREE_PLAN_DATA}
           pricesToRender={pricesFilteredAndSorted(selectedSubscriptionType)}
           showFreePriceCard={isIndividualSubscriptionSelected}
           subscriptionSelected={{
             individual: isIndividualSubscriptionSelected,
             business: isBusinessSubscriptionSelected,
           }}
-          translate={translate}
           userSubscription={{
             individual: individualSubscription,
             business: businessSubscription,
           }}
+          translate={translate}
         />
 
-        {pricesFilteredAndSorted(selectedSubscriptionType).length > 0 ? (
-          <>
-            {priceSelected?.id === FREE_PLAN_DATA.id ? (
-              <PlanCard
-                onClick={() => setIsCancelSubscriptionModalOpen(true)}
-                isCurrentPlan={FREE_PLAN_DATA.id === individualSubscription?.type}
-                capacity={bytesToString(priceSelected?.bytes ?? 0)}
-                currency={translate('preferences.account.plans.freeForever')}
-                price={''}
-                billing={''}
-                changePlanType={currentChangePlanType}
-                isLoading={isLoadingCheckout}
-                disableActionButton={false}
-              />
-            ) : (
-              <PlanCard
-                onClick={() => handleOnPlanSelected(priceSelected)}
-                isCurrentPlan={
-                  isIndividualSubscriptionSelected
-                    ? individualSubscription?.type === 'subscription' &&
-                      individualSubscription?.priceId === priceSelected.id
-                    : businessSubscription?.type === 'subscription' &&
-                      businessSubscription?.priceId === priceSelected.id
-                }
-                capacity={bytesToString(priceSelected?.bytes ?? 0)}
-                currency={
-                  priceSelected?.currency
-                    ? currencyService.getCurrencySymbol(priceSelected?.currency)
-                    : translate('preferences.account.plans.freeForever')
-                }
-                price={priceSelected ? displayAmount(priceSelected.amount) : '0'}
-                billing={
-                  priceSelected ? translate(`preferences.account.plans.${priceSelected.interval}`).toLowerCase() : ''
-                }
-                changePlanType={currentChangePlanType}
-                isLoading={isLoadingCheckout}
-                disableActionButton={false}
-                isBusiness={isBusinessSubscriptionSelected}
-              />
-            )}
-          </>
-        ) : (
-          <InfoPlanCardSkeleton />
-        )}
+        <InfoCardComponent
+          currentChangePlanType={currentChangePlanType}
+          freePlanData={FREE_PLAN_DATA}
+          isCurrentFreePlan={FREE_PLAN_DATA.id === individualSubscription?.type}
+          isLoadingCheckout={isLoadingCheckout}
+          onCancelSubscription={setIsCancelSubscriptionModalOpen}
+          priceSelected={priceSelected}
+          pricesToRender={pricesFilteredAndSorted(selectedSubscriptionType)}
+          subscriptionSelected={{
+            individual: isIndividualSubscriptionSelected,
+            business: isBusinessSubscriptionSelected,
+          }}
+          userSubscription={{
+            individual: individualSubscription,
+            business: businessSubscription,
+          }}
+          translate={translate}
+          handleOnPlanSelected={handleOnPlanSelected}
+        />
       </div>
 
       <CancelSubscriptionModal
