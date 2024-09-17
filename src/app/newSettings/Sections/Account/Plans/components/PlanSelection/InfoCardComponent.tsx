@@ -1,7 +1,6 @@
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import PlanCard, { ChangePlanType } from '../PlanCard';
 import { bytesToString } from 'app/drive/services/size.service';
-import { UserSubscriptionProps } from './PlanSelectionComponent';
 import currencyService from 'app/payment/services/currency.service';
 import { displayAmount } from '../../utils/planUtils';
 import { InfoPlanCardSkeleton } from './skeletons/InfoPlanCardSkeleton';
@@ -10,13 +9,10 @@ interface InfoCardComponentProps {
   pricesToRender: DisplayPrice[];
   priceSelected: DisplayPrice;
   freePlanData: DisplayPrice;
-  subscriptionSelected: {
-    individual: boolean;
-    business: boolean;
-  };
-  userSubscription: UserSubscriptionProps;
+  isBusinessPlan: boolean;
   currentChangePlanType: ChangePlanType;
   isCurrentFreePlan: boolean;
+  isCurrentPlan: boolean;
   onCancelSubscription: (cancelSubscription: boolean) => void;
   handleOnPlanSelected: (priceSelected: DisplayPrice) => void;
   isLoadingCheckout: boolean;
@@ -28,19 +24,21 @@ export const InfoCardComponent = ({
   priceSelected,
   isCurrentFreePlan,
   freePlanData,
-  subscriptionSelected,
-  userSubscription,
+  isCurrentPlan,
   currentChangePlanType,
   isLoadingCheckout,
+  isBusinessPlan,
   onCancelSubscription,
   handleOnPlanSelected,
   translate,
 }: InfoCardComponentProps) => {
+  const isPriceData = priceSelected?.id === freePlanData.id;
+
   return (
     <>
       {pricesToRender.length > 0 ? (
         <>
-          {priceSelected?.id === freePlanData.id ? (
+          {isPriceData ? (
             <PlanCard
               onClick={() => onCancelSubscription(true)}
               isCurrentPlan={isCurrentFreePlan}
@@ -55,13 +53,7 @@ export const InfoCardComponent = ({
           ) : (
             <PlanCard
               onClick={() => handleOnPlanSelected(priceSelected)}
-              isCurrentPlan={
-                subscriptionSelected.individual
-                  ? userSubscription.individual?.type === 'subscription' &&
-                    userSubscription.individual?.priceId === priceSelected.id
-                  : userSubscription.business?.type === 'subscription' &&
-                    userSubscription.business?.priceId === priceSelected.id
-              }
+              isCurrentPlan={isCurrentPlan}
               capacity={bytesToString(priceSelected?.bytes ?? 0)}
               currency={
                 priceSelected?.currency
@@ -75,7 +67,7 @@ export const InfoCardComponent = ({
               changePlanType={currentChangePlanType}
               isLoading={isLoadingCheckout}
               disableActionButton={false}
-              isBusiness={subscriptionSelected.business}
+              isBusiness={isBusinessPlan}
             />
           )}
         </>

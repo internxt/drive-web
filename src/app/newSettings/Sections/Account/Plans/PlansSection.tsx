@@ -335,14 +335,16 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           freePlanData={FREE_PLAN_DATA}
           pricesToRender={pricesFilteredAndSorted(selectedSubscriptionType)}
           showFreePriceCard={isIndividualSubscriptionSelected}
+          isFreePlan={FREE_PLAN_DATA.id === individualSubscription?.type}
           subscriptionSelected={{
             individual: isIndividualSubscriptionSelected,
             business: isBusinessSubscriptionSelected,
           }}
-          userSubscription={{
-            individual: individualSubscription,
-            business: businessSubscription,
-          }}
+          isCurrentPlan={
+            isIndividualSubscriptionSelected
+              ? individualSubscription?.type === 'subscription' && individualSubscription?.priceId === priceSelected.id
+              : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === priceSelected.id
+          }
           translate={translate}
         />
 
@@ -354,14 +356,12 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           onCancelSubscription={setIsCancelSubscriptionModalOpen}
           priceSelected={priceSelected}
           pricesToRender={pricesFilteredAndSorted(selectedSubscriptionType)}
-          subscriptionSelected={{
-            individual: isIndividualSubscriptionSelected,
-            business: isBusinessSubscriptionSelected,
-          }}
-          userSubscription={{
-            individual: individualSubscription,
-            business: businessSubscription,
-          }}
+          isCurrentPlan={
+            isIndividualSubscriptionSelected
+              ? individualSubscription?.type === 'subscription' && individualSubscription?.priceId === priceSelected.id
+              : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === priceSelected.id
+          }
+          isBusinessPlan={isBusinessSubscriptionSelected}
           translate={translate}
           handleOnPlanSelected={handleOnPlanSelected}
         />

@@ -15,7 +15,8 @@ interface PlanSelectionComponentProps {
   priceSelected: DisplayPrice;
   freePlanData: DisplayPrice;
   showFreePriceCard: boolean;
-  userSubscription: UserSubscriptionProps;
+  isCurrentPlan: boolean;
+  isFreePlan: boolean;
   subscriptionSelected: {
     individual: boolean;
     business: boolean;
@@ -26,11 +27,12 @@ interface PlanSelectionComponentProps {
 
 export const PlanSelectionComponent = ({
   pricesToRender,
-  userSubscription,
+  isCurrentPlan,
   freePlanData,
   priceSelected,
   subscriptionSelected,
   showFreePriceCard,
+  isFreePlan,
   translate,
   onPriceSelected,
 }: PlanSelectionComponentProps) => {
@@ -56,7 +58,7 @@ export const PlanSelectionComponent = ({
               currency={freePlanData.currency}
               amount={''}
               billing={''}
-              isCurrentPlan={freePlanData.id === userSubscription.individual?.type}
+              isCurrentPlan={isFreePlan}
             />
           )}
           {pricesToRender.map((plan) => (
@@ -72,12 +74,7 @@ export const PlanSelectionComponent = ({
                   ? translate('views.account.tabs.plans.card.oneTimePayment')
                   : translate(`preferences.account.plans.${plan.interval}`)?.toLowerCase()
               }
-              isCurrentPlan={
-                subscriptionSelected.individual
-                  ? userSubscription.individual?.type === 'subscription' &&
-                    userSubscription.individual?.priceId === plan.id
-                  : userSubscription.business?.type === 'subscription' && userSubscription.business?.priceId === plan.id
-              }
+              isCurrentPlan={isCurrentPlan}
               displayBillingSlash={plan.interval !== 'lifetime'}
               isBusiness={subscriptionSelected.business}
             />
