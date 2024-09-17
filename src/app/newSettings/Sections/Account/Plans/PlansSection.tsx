@@ -277,6 +277,12 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     }
   };
 
+  const isCurrentSubscriptionPlan = (plan: DisplayPrice) => {
+    return isIndividualSubscriptionSelected
+      ? individualSubscription?.type === 'subscription' && individualSubscription?.priceId === plan.id
+      : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === plan.id;
+  };
+
   return (
     <Section title="Plans" onClosePreferences={onClosePreferences}>
       {shouldDisplayChangePlanDialog() && priceSelected && (
@@ -340,11 +346,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
             individual: isIndividualSubscriptionSelected,
             business: isBusinessSubscriptionSelected,
           }}
-          isCurrentPlan={
-            isIndividualSubscriptionSelected
-              ? individualSubscription?.type === 'subscription' && individualSubscription?.priceId === priceSelected.id
-              : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === priceSelected.id
-          }
+          isCurrentSubscriptionPlan={isCurrentSubscriptionPlan}
           translate={translate}
         />
 

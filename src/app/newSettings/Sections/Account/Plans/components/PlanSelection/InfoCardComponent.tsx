@@ -13,9 +13,9 @@ interface InfoCardComponentProps {
   currentChangePlanType: ChangePlanType;
   isCurrentFreePlan: boolean;
   isCurrentPlan: boolean;
+  isLoadingCheckout: boolean;
   onCancelSubscription: (cancelSubscription: boolean) => void;
   handleOnPlanSelected: (priceSelected: DisplayPrice) => void;
-  isLoadingCheckout: boolean;
   translate: (key: string, props?: Record<string, unknown>) => string;
 }
 

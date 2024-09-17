@@ -15,24 +15,24 @@ interface PlanSelectionComponentProps {
   priceSelected: DisplayPrice;
   freePlanData: DisplayPrice;
   showFreePriceCard: boolean;
-  isCurrentPlan: boolean;
   isFreePlan: boolean;
   subscriptionSelected: {
     individual: boolean;
     business: boolean;
   };
+  isCurrentSubscriptionPlan: (plan: DisplayPrice) => boolean;
   translate: (key: string, props?: Record<string, unknown>) => string;
   onPriceSelected: (plan) => void;
 }
 
 export const PlanSelectionComponent = ({
   pricesToRender,
-  isCurrentPlan,
   freePlanData,
   priceSelected,
   subscriptionSelected,
   showFreePriceCard,
   isFreePlan,
+  isCurrentSubscriptionPlan,
   translate,
   onPriceSelected,
 }: PlanSelectionComponentProps) => {
@@ -74,7 +74,7 @@ export const PlanSelectionComponent = ({
                   ? translate('views.account.tabs.plans.card.oneTimePayment')
                   : translate(`preferences.account.plans.${plan.interval}`)?.toLowerCase()
               }
-              isCurrentPlan={isCurrentPlan}
+              isCurrentPlan={isCurrentSubscriptionPlan(plan)}
               displayBillingSlash={plan.interval !== 'lifetime'}
               isBusiness={subscriptionSelected.business}
             />
