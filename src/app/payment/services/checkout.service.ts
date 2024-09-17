@@ -2,6 +2,7 @@ import { StripeElementsOptions } from '@stripe/stripe-js';
 import paymentService from '../../payment/services/payment.service';
 import { ClientSecretData, CouponCodeData, PlanData, RequestedPlanData } from '../types';
 import envService from '../../core/services/env.service';
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 const IS_PRODUCTION = envService.isProduction();
 const BORDER_SHADOW = 'rgb(0 102 255)';
@@ -41,6 +42,21 @@ const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: stri
     amountOff: dataJson.amountOff,
     percentOff: dataJson.percentOff,
   };
+};
+
+const fetchPrices = async (userType: UserType, currency: string): Promise<DisplayPrice[]> => {
+  const response = await fetch(
+    `${process.env.REACT_APP_PAYMENTS_API_URL}/prices?userType=${userType}&currency=${currency}`,
+  );
+
+  if (response.status !== 200) {
+    const message = await response.text();
+    throw new Error(message);
+  }
+
+  const dataJson = await response.json();
+
+  return dataJson;
 };
 
 const getClientSecretForPaymentIntent = async ({
@@ -238,6 +254,7 @@ const checkoutService = {
   getClientSecretForSubscriptionIntent,
   getClientSecret,
   loadStripeElements,
+  fetchPrices,
 };
 
 export default checkoutService;

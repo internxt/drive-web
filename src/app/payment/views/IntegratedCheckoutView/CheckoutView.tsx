@@ -29,7 +29,6 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
 };
 
 interface CheckoutViewProps {
-  authMethod: AuthMethodTypes;
   userInfo: UserInfoProps;
   isUserAuthenticated: boolean;
   upsellManager: UpsellManagerProps;
@@ -38,8 +37,11 @@ interface CheckoutViewProps {
   checkoutViewManager: CheckoutViewManager;
 }
 
+const AUTH_METHOD_VALUES = {
+  IS_SIGNED_IN: 'userIsSignedIn',
+};
+
 const CheckoutView = ({
-  authMethod,
   userInfo,
   isUserAuthenticated,
   upsellManager,
@@ -52,7 +54,8 @@ const CheckoutView = ({
   const stripeSDK = useStripe();
   const elements = useElements();
 
-  const { isPaying, error, couponCodeData, seatsForBusinessSubscription, currentSelectedPlan } = checkoutViewVariables;
+  const { isPaying, error, authMethod, couponCodeData, seatsForBusinessSubscription, currentSelectedPlan } =
+    checkoutViewVariables;
 
   const {
     register,
@@ -62,6 +65,8 @@ const CheckoutView = ({
   } = useForm<IFormValues>({
     mode: 'onChange',
   });
+
+  const isButtonDisabled = authMethod === AUTH_METHOD_VALUES.IS_SIGNED_IN ? isPaying : isPaying && isValid;
 
   function onAuthMethodToggled(authMethod: AuthMethodTypes) {
     reset({
@@ -124,8 +129,8 @@ const CheckoutView = ({
                       {error.stripe}
                     </div>
                   )}
-                  <Button type="submit" id="submit" className="hidden lg:flex" disabled={isPaying && isValid}>
-                    {isPaying && isValid ? translate('checkout.processing') : translate('checkout.pay')}
+                  <Button type="submit" id="submit" className="hidden lg:flex" disabled={isButtonDisabled}>
+                    {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
                   </Button>
                 </div>
               </div>
@@ -140,8 +145,8 @@ const CheckoutView = ({
                   onCouponInputChange={checkoutViewManager.onCouponInputChange}
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
                 />
-                <Button type="submit" id="submit" className="flex lg:hidden" disabled={isPaying && isValid}>
-                  {isPaying && isValid ? translate('checkout.processing') : translate('checkout.pay')}
+                <Button type="submit" id="submit" className="flex lg:hidden" disabled={isButtonDisabled}>
+                  {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
                 </Button>
               </div>
             </div>
