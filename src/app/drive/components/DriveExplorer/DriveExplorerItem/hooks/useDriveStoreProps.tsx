@@ -15,7 +15,6 @@ interface DriveItemStoreProps {
   isDriveItemInfoMenuOpen: boolean;
   isEditingName: (item: DriveItemData) => boolean;
   dirtyName: string;
-  breadcrumbDirtyName: string;
 }
 
 const useDriveItemStoreProps = (): DriveItemStoreProps => {
@@ -38,7 +37,6 @@ const useDriveItemStoreProps = (): DriveItemStoreProps => {
   const isDriveItemInfoMenuOpen = useAppSelector((state: RootState) => state.ui.isDriveItemInfoMenuOpen);
   const isEditingName = useAppSelector(isEditingNameSelector);
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
-  const breadcrumbDirtyName = useAppSelector((state: RootState) => state.ui.currentEditingBreadcrumbNameDirty);
 
   return {
     isSomeItemSelected,
@@ -51,7 +49,6 @@ const useDriveItemStoreProps = (): DriveItemStoreProps => {
     isDriveItemInfoMenuOpen,
     isEditingName,
     dirtyName,
-    breadcrumbDirtyName,
   };
 };
 
