@@ -5,7 +5,7 @@ import dateService from '../../../core/services/date.service';
 import { bytesToString } from '../../../drive/services/size.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import Spinner from '../../../shared/components/Spinner/Spinner';
-import moneyService from 'app/payment/services/money.service';
+import currencyService from 'app/payment/services/currency.service';
 
 const InvoicesList = ({ invoices, state }: { invoices: Invoice[]; state: 'loading' | 'empty' | 'ready' }) => {
   const [hoverItemIndex, setHoverItemIndex] = useState<string | null>(null);
@@ -40,7 +40,7 @@ const InvoicesList = ({ invoices, state }: { invoices: Invoice[]; state: 'loadin
         setHoverItemIndex={setHoverItemIndex}
         hoverItemIndex={hoverItemIndex}
       />
-      <InvoiceAmmountColumn
+      <InvoiceAmountColumn
         invoices={invoices}
         isLastInvoice={isLastInvoice}
         translate={translate}
@@ -111,12 +111,12 @@ const InvoiceStorageColumn = ({
   </div>
 );
 
-const InvoiceAmmountColumn = ({
+const InvoiceAmountColumn = ({
   invoices,
+  hoverItemIndex,
   isLastInvoice,
   translate,
   setHoverItemIndex,
-  hoverItemIndex,
 }: ColumnProps) => (
   <div className="-mr-5 -mt-5 flex flex-col rounded-tr-xl">
     <h1
@@ -133,7 +133,7 @@ const InvoiceAmmountColumn = ({
         onMouseEnter={() => setHoverItemIndex(id)}
         onMouseLeave={() => setHoverItemIndex(null)}
       >
-        {`${total / 100} ` + moneyService.getCurrencySymbol(currency.toUpperCase())}
+        {`${total / 100} ` + currencyService.getCurrencySymbol(currency.toUpperCase())}
         <a className="px-2 text-gray-100" href={pdf} target="_blank" rel="noopener noreferrer">
           <DownloadSimple colorRendering={'bg-gray-100'} size={20} />
         </a>

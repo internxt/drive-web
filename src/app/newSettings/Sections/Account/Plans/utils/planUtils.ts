@@ -3,7 +3,7 @@ import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { bytesToString } from 'app/drive/services/size.service';
 import { t } from 'i18next';
 import { FreeStoragePlan } from '../../../../../drive/types';
-import moneyService from '../../../../../payment/services/money.service';
+import moneyService from '../../../../../payment/services/currency.service';
 import { ChangePlanType } from '../components/PlanCard';
 
 function displayAmount(value: number, decimalPoints = 2) {
