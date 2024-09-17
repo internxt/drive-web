@@ -37,6 +37,10 @@ interface CheckoutViewProps {
   checkoutViewManager: CheckoutViewManager;
 }
 
+const AUTH_METHOD_VALUES = {
+  IS_SIGNED_IN: 'userIsSignedIn',
+};
+
 const CheckoutView = ({
   userInfo,
   isUserAuthenticated,
@@ -62,7 +66,7 @@ const CheckoutView = ({
     mode: 'onChange',
   });
 
-  const isButtonDisabled = authMethod === 'userIsSignedIn' ? isPaying : isPaying && isValid;
+  const isButtonDisabled = authMethod === AUTH_METHOD_VALUES.IS_SIGNED_IN ? isPaying : isPaying && isValid;
 
   function onAuthMethodToggled(authMethod: AuthMethodTypes) {
     reset({
