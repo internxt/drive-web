@@ -15,9 +15,10 @@ import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { checkDuplicatedFiles } from '../fileNameUtils/checkDuplicatedFiles';
 import { getUniqueFilename } from '../fileNameUtils/getUniqueFilename';
 import { checkFolderDuplicated } from '../folderNameUtils/checkFolderDuplicated';
+import renameFolderIfNeeded from '../folderNameUtils/renameFolderIfNeeded';
 import { StorageState } from '../storage.model';
 import storageSelectors from '../storage.selectors';
-import renameFolderIfNeeded, { IRoot } from './uploadFolderThunk';
+import { IRoot } from './uploadFolderThunk';
 
 export const handleRepeatedUploadingFiles = async (
   files: (DriveItemData | File)[],

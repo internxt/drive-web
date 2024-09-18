@@ -1,6 +1,6 @@
 import newStorageService from '../../../../drive/services/new-storage.service';
 import { DriveFolderData } from '../../../../drive/types';
-import renameFolderIfNeeded from '../storage.thunks/uploadFolderThunk';
+import renameFolderIfNeeded from './renameFolderIfNeeded';
 
 export const getUniqueFolderName = async (
   folderName: string,
