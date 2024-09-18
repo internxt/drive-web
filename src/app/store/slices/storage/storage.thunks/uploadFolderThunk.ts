@@ -15,9 +15,17 @@ import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { checkFolderDuplicated } from '../folderNameUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from '../folderNameUtils/getUniqueFolderName';
 import { StorageState } from '../storage.model';
-import { IRoot } from '../types';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
+
+// TODO: REMOVE IROOT from this file, it is in types.ts
+export interface IRoot {
+  name: string;
+  folderId: string | null;
+  childrenFiles: File[];
+  childrenFolders: IRoot[];
+  fullPathEdited: string;
+}
 
 interface UploadFolderThunkPayload {
   root: IRoot;
