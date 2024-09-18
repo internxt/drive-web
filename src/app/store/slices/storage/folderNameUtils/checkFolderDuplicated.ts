@@ -1,7 +1,6 @@
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import newStorageService from '../../../../drive/services/new-storage.service';
-// import { DriveFolderData } from '../../../../drive/types';
-import { IRoot } from '../storage.thunks/uploadFolderThunk';
+import { IRoot } from '../types';
 
 interface DuplicatedFoldersResult {
   duplicatedFoldersResponse: DriveFolderData[];
