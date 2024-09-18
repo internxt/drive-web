@@ -11,6 +11,9 @@ import tasksService from '../../../../tasks/services/tasks.service';
 import { TaskStatus, TaskType, UploadFolderTask } from '../../../../tasks/types';
 import { planThunks } from '../../plan';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
+
+import { checkFolderDuplicated } from '../folderNameUtils/checkFolderDuplicated';
+import { getUniqueFolderName } from '../folderNameUtils/getUniqueFolderName';
 import { StorageState } from '../storage.model';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
@@ -33,14 +36,20 @@ interface UploadFolderThunkPayload {
   };
 }
 
-const handleFoldersRename = async (root: IRoot, currentFolderId: string, tokenHeader?: string) => {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(currentFolderId, false, tokenHeader);
-  const parentFolderContent = await parentFolderContentPromise;
-  const [, , finalFilename] = renameFolderIfNeeded(parentFolderContent.children, root.name);
-  const fileContent: IRoot = { ...root, name: finalFilename };
+const handleFoldersRename = async (root: IRoot, currentFolderId: string) => {
+  const { duplicatedFoldersResponse } = await checkFolderDuplicated([root], currentFolderId);
 
-  return fileContent;
+  let finalFilename = root.name;
+  if (duplicatedFoldersResponse.length > 0)
+    finalFilename = await getUniqueFolderName(
+      root.name,
+      duplicatedFoldersResponse as DriveFolderData[],
+      currentFolderId,
+    );
+
+  const folder: IRoot = { ...root, name: finalFilename };
+
+  return folder;
 };
 const wait = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -73,8 +82,6 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
   'storage/createFolderStructure',
   async ({ root, currentFolderId, options }, { dispatch, requestId, getState }) => {
     const state = getState();
-    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
-
     const workspaceSelected = workspacesSelectors.getSelectedWorkspace(state);
     const memberId = workspaceSelected?.workspaceUser?.memberId;
 
@@ -85,7 +92,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
     let rootFolderItem: DriveFolderData | undefined;
     let rootFolderData: DriveFolderData | undefined;
 
-    const renamedRoot = await handleFoldersRename(root, currentFolderId, workspaceCredentials?.tokenHeader);
+    const renamedRoot = await handleFoldersRename(root, currentFolderId);
     const levels = [renamedRoot];
 
     const itemsUnderRoot = countItemsUnderRoot(renamedRoot);

@@ -1,0 +1,1 @@
+export { prepareFilesToUpload } from './prepareFilesToUpload';
