@@ -17,6 +17,7 @@
     "@stripe/stripe-js": "^3.5.0",
     "@typeform/embed-react": "^1.19.0",
     "@types/uuid": "^8.3.4",
+    "argon2": "^0.41.1",
     "asmcrypto.js": "git+https://github.com/asmcrypto/asmcrypto.js.git",
     "assert": "^2.1.0",
     "axios": "^0.21.1",
