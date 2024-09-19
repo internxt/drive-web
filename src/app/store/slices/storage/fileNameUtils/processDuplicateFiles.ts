@@ -1,32 +1,32 @@
 import { items as itemUtils } from '@internxt/lib';
-
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { renameFile } from '../../../../crypto/services/utils';
-import { FileToUpload } from '../../../../drive/services/file.service/uploadFile';
+import { FileToUpload } from '../../../../drive/services/file.service/types';
 import { getUniqueFilename } from './getUniqueFilename';
 
+interface ProcessDuplicateFilesParams {
+  files: File[];
+  existingFilesToUpload: FileToUpload[];
+  fileType?: string;
+  parentFolderId: string;
+  disableDuplicatedNamesCheck?: boolean;
+  duplicatedFiles?: DriveFileData[];
+}
+
 export const processDuplicateFiles = async ({
-  filesWithDuplicates,
-  filesToUpload,
+  files,
+  existingFilesToUpload,
   fileType,
   parentFolderId,
   disableDuplicatedNamesCheck,
   duplicatedFiles,
-}: {
-  filesWithDuplicates: File[];
-  filesToUpload: FileToUpload[];
-  fileType: string | undefined;
-  parentFolderId: string;
-  disableDuplicatedNamesCheck: boolean | undefined;
-  duplicatedFiles?: DriveFileData[];
-}): Promise<number> => {
-  let zeroLengthFiles = 0;
+}: ProcessDuplicateFilesParams): Promise<{ newFilesToUpload: FileToUpload[]; zeroLengthFiles: number }> => {
+  const zeroLengthFiles = files.filter((file) => file.size === 0).length;
+  const newFilesToUpload: FileToUpload[] = [...existingFilesToUpload];
 
-  for (const file of filesWithDuplicates) {
-    if (file.size === 0) {
-      zeroLengthFiles++;
-      continue;
-    }
+  const processFile = async (file: File): Promise<void> => {
+    if (file.size === 0) return;
+
     const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
     let finalFilename = filename;
 
@@ -36,13 +36,16 @@ export const processDuplicateFiles = async ({
 
     const fileContent = renameFile(file, finalFilename);
 
-    filesToUpload.push({
+    newFilesToUpload.push({
       name: finalFilename,
       size: file.size,
       type: extension ?? fileType,
       content: fileContent,
       parentFolderId,
     });
-  }
-  return zeroLengthFiles;
+  };
+
+  await Promise.all(files.filter((file) => file.size > 0).map(processFile));
+
+  return { newFilesToUpload, zeroLengthFiles };
 };

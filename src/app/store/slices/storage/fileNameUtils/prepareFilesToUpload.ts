@@ -15,7 +15,7 @@ export const prepareFilesToUpload = async ({
   disableDuplicatedNamesCheck?: boolean;
   fileType?: string;
 }): Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }> => {
-  const filesToUpload: FileToUpload[] = [];
+  let filesToUpload: FileToUpload[] = [];
   let zeroLengthFilesNumber = 0;
 
   const processFilesBatch = async (filesBatch: File[]) => {
@@ -24,21 +24,28 @@ export const prepareFilesToUpload = async ({
       parentFolderId,
     );
 
-    zeroLengthFilesNumber += await processDuplicateFiles({
-      filesWithDuplicates: filesWithoutDuplicates as File[],
-      filesToUpload,
+    const { zeroLengthFiles, newFilesToUpload: filesToUploadReturned } = await processDuplicateFiles({
+      files: filesWithoutDuplicates as File[],
+      existingFilesToUpload: filesToUpload,
       fileType,
       parentFolderId,
       disableDuplicatedNamesCheck: true,
     });
-    zeroLengthFilesNumber += await processDuplicateFiles({
-      filesWithDuplicates: filesWithDuplicates as File[],
-      filesToUpload,
-      fileType,
-      parentFolderId,
-      disableDuplicatedNamesCheck,
-      duplicatedFiles: duplicatedFilesResponse,
-    });
+    filesToUpload = filesToUploadReturned;
+    zeroLengthFilesNumber += zeroLengthFiles;
+
+    const { zeroLengthFiles: zeroLengthFilesReturned, newFilesToUpload: filesToUploadReturned2 } =
+      await processDuplicateFiles({
+        files: filesWithDuplicates as File[],
+        existingFilesToUpload: filesToUpload,
+        fileType,
+        parentFolderId,
+        disableDuplicatedNamesCheck,
+        duplicatedFiles: duplicatedFilesResponse,
+      });
+
+    filesToUpload = filesToUploadReturned2;
+    zeroLengthFilesNumber += zeroLengthFilesReturned;
   };
 
   for (let i = 0; i < files.length; i += BATCH_SIZE) {
