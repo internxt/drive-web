@@ -23,7 +23,7 @@ import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
-import { prepareFilesToUpload } from '../fileNameUtils/prepareFilesToUpload';
+import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
 
 interface UploadItemsThunkOptions {

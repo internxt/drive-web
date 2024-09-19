@@ -12,8 +12,8 @@ import { TaskStatus, TaskType, UploadFolderTask } from '../../../../tasks/types'
 import { planThunks } from '../../plan';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
-import { checkFolderDuplicated } from '../folderNameUtils/checkFolderDuplicated';
-import { getUniqueFolderName } from '../folderNameUtils/getUniqueFolderName';
+import { checkFolderDuplicated } from '../folderUtils/checkFolderDuplicated';
+import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
 import { StorageState } from '../storage.model';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
