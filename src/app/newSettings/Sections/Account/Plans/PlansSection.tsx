@@ -17,7 +17,7 @@ import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
 import { PlanState, planThunks } from '../../../../store/slices/plan';
 import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
-import { createCheckoutSession, fetchPlanPrices, getStripe } from './api/plansApi';
+import { fetchPlanPrices, getStripe } from './api/plansApi';
 import ChangePlanDialog from './components/ChangePlanDialog';
 import PlanCard from './components/PlanCard';
 import PlanSelectionCard from './components/PlanSelectionCard';
@@ -197,28 +197,6 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       const error = errorService.castError(err);
       errorService.reportError(error);
       showCancelSubscriptionErrorNotification(error.message);
-    }
-  };
-
-  const handleCheckoutSession = async ({
-    priceId,
-    currency,
-    userEmail,
-    mode,
-  }: {
-    userEmail: string;
-    priceId: string;
-    mode: string;
-    currency: string;
-  }) => {
-    try {
-      const response = await createCheckoutSession({ userEmail, priceId, currency, mode });
-      localStorage.setItem('sessionId', response.sessionId);
-      await paymentService.redirectToCheckout(response);
-    } catch (err) {
-      const error = errorService.castError(err);
-      errorService.reportError(error);
-      showCancelSubscriptionErrorNotification();
     }
   };
 

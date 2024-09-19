@@ -1,5 +1,4 @@
 import {
-  CreateCheckoutSessionPayload,
   CreatedSubscriptionData,
   CustomerBillingInfo,
   DisplayPrice,
@@ -165,14 +164,6 @@ const paymentService = {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
     return paymentsClient.cancelSubscription(userType);
-  },
-
-  async createCheckoutSession(
-    payload: CreateCheckoutSessionPayload & { mode?: string },
-  ): Promise<{ sessionId: string }> {
-    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-
-    return paymentsClient.createCheckoutSession(payload);
   },
 
   async updateCustomerBillingInfo(payload: CustomerBillingInfo): Promise<void> {
