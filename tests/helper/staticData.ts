@@ -1,8 +1,6 @@
 export const staticData = {
   //CREDENTIALS
-  email: 'testingb2b@inxt.com',
-  password: 'test123.',
-  invalidPassword: 'test1234.',
+  invalidPassword: 'invalid',
   tooShortPassword: 'tes',
   notComplexPassword: 'password',
 

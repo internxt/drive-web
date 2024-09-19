@@ -2,8 +2,11 @@ import { test, expect } from '@playwright/test';
 import { signUpPage } from '../pages/signUpPage';
 import { staticData } from '../helper/staticData';
 import { faker } from '@faker-js/faker';
+const fs = require('fs');
+const credentialsFile = './tests/specs/playwright/.auth/credentials.json';
 
 test.describe('Internxt SignUp', async () => {
+  const credentialsData = JSON.parse(fs.readFileSync(credentialsFile, 'utf-8'));
   test.use({ storageState: { cookies: [], origins: [] } });
   test.beforeEach('Visiting Internxt Sign Up Page', async ({ page }) => {
     await page.goto(staticData.signUpURL);
@@ -24,8 +27,8 @@ test.describe('Internxt SignUp', async () => {
   test('TC2: Validate that the user can’t sign up if the email address is already used', async ({ page }) => {
     const signupPage = new signUpPage(page);
 
-    await signupPage.typeInEmail(staticData.email);
-    await signupPage.typeInPassword(staticData.password);
+    await signupPage.typeInEmail(credentialsData.email);
+    await signupPage.typeInPassword(credentialsData.password);
     await signupPage.clickOnCreateAccountButton();
     const userAlreadyRegisteredText = await signupPage.UserAlreadyExistAssertion();
     expect(userAlreadyRegisteredText).toContain(staticData.userAlreadyRegistered);
@@ -33,16 +36,18 @@ test.describe('Internxt SignUp', async () => {
 
   test('TC3: Validate that the user can’t sign up if the password is too short', async ({ page }) => {
     const signupPage = new signUpPage(page);
+    const email = faker.internet.email();
 
-    await signupPage.typeInEmail(staticData.email);
+    await signupPage.typeInEmail(email);
     const passwordWarning = await signupPage.typeInPassword(staticData.tooShortPassword);
     expect(passwordWarning).toEqual(staticData.passwordNotLongEnough);
   });
 
   test('TC4: Validate that the user can’t sign up if the password is not complex enough', async ({ page }) => {
     const signupPage = new signUpPage(page);
+    const email = faker.internet.email();
 
-    await signupPage.typeInEmail(staticData.email);
+    await signupPage.typeInEmail(email);
     const passwordWarning = await signupPage.typeInPassword(staticData.notComplexPassword);
     expect(passwordWarning).toEqual(staticData.passwordNotComplex);
   });

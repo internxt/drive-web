@@ -73,8 +73,10 @@ export default defineConfig({
 
     /* Test against branded browsers. */
     {
-      name: 'edge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge' },
+      name: 'Internxt E2E tests on Edge',
+      testDir: './tests/specs',
+      use: { ...devices['Desktop Edge'], channel: 'msedge', storageState: './tests/specs/playwright/.auth/user.json' },
+      dependencies: ['setup'],
     },
     // {
     //   name: 'Google Chrome',

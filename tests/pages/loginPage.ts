@@ -1,6 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { Context } from 'vm';
-import { userCredentials } from '../global';
 
 export class loginPage {
   page: Page;
@@ -57,21 +56,24 @@ export class loginPage {
     expect(passPlaceholder).toEqual('Password');
     await this.passwordInput.fill(password);
   }
-  async clickLogIn(password: string | any) {
-    if (password === userCredentials.password) {
-      const loginButtonText = await this.loginButtonText.textContent();
-      expect(loginButtonText).toEqual('Log in');
-      await this.loginButton.click();
-      await this.driveTitle.waitFor();
-      const driveTitle = await this.driveTitle.textContent();
-      return driveTitle;
-    } else {
-      await this.loginButton.click();
-      await this.wrongCredentials.waitFor();
-      const wrongLoginText = await this.wrongCredentials.textContent();
-      return wrongLoginText;
-    }
+  async clickLogIn() {
+    const loginButtonText = await this.loginButtonText.textContent();
+    expect(loginButtonText).toEqual('Log in');
+    await this.loginButton.click();
+    await this.driveTitle.waitFor({ state: 'visible', timeout: 9000 });
+    const driveTitle = await this.driveTitle.textContent();
+    return driveTitle;
   }
+
+  async clickLoginWrongPass() {
+    const loginButtonText = await this.loginButtonText.textContent();
+    expect(loginButtonText).toEqual('Log in');
+    await this.loginButton.click();
+    await this.wrongCredentials.waitFor({ state: 'visible', timeout: 6000 });
+    const wrongLoginText = await this.wrongCredentials.textContent();
+    return wrongLoginText;
+  }
+
   async clickOnForgotYourPassword() {
     await this.loginTitle.waitFor({ state: 'visible' });
     await this.forgotPassword.click();

@@ -2,8 +2,10 @@ import { expect, test as setup } from '@playwright/test';
 import { loginPage } from '../pages/loginPage';
 import { signUpPage } from '../pages/signUpPage';
 import { faker } from '@faker-js/faker';
-import { userCredentials } from '../global';
+const fs = require('fs');
+
 const authFile = './tests/specs/playwright/.auth/user.json';
+const credentialsFile = './tests/specs/playwright/.auth/credentials.json';
 
 //UI LOGIN
 
@@ -14,8 +16,8 @@ setup('Creating new user and logging in', async ({ browser }) => {
 
   const email = faker.internet.email();
   const password = faker.internet.password();
-  userCredentials.email = email;
-  userCredentials.password = password;
+  const userCredentials = { email, password };
+  fs.writeFileSync(credentialsFile, JSON.stringify(userCredentials));
 
   console.log(`User data, new user: ${email}`);
 
@@ -25,11 +27,10 @@ setup('Creating new user and logging in', async ({ browser }) => {
   await SignupPage.typeInPassword(password);
   await SignupPage.clickOnCreateAccountButton();
   await SignupPage.userWelcome();
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(2000);
 
   await context.close();
 
-  // Create a new context for logging in (fresh session)
   const newContext = await browser.newContext();
   const newPage = await newContext.newPage();
 
@@ -37,9 +38,28 @@ setup('Creating new user and logging in', async ({ browser }) => {
 
   await newPage.goto('https://staging.drive.internxt.com/login');
   await expect(newPage).toHaveURL(/.*login/);
+
+  const endpointPromise = newPage.waitForResponse('https://drive.internxt.com/api/access');
   await loginpage.typeEmail(email);
   await loginpage.typePassword(password);
-  await loginpage.clickLogIn(password);
+  await loginpage.clickLogIn();
+
+  const response = await endpointPromise;
+  const responseJSON = await response.json();
+  const userId = responseJSON.user.userId;
 
   await newPage.context().storageState({ path: authFile });
+
+  const authData = JSON.parse(fs.readFileSync(authFile, 'utf-8'));
+
+  const tutorialComplete = {
+    name: 'signUpTutorialCompleted',
+    value: userId,
+  };
+
+  authData.origins[0].localStorage.push(tutorialComplete);
+
+  fs.writeFileSync(authFile, JSON.stringify(authData, null, 2));
+
+  await newContext.close();
 });

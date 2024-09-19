@@ -1,11 +1,10 @@
 import { Page, Locator } from '@playwright/test';
-import { basePage } from './basePage';
 
-export class recoveryPasswordPage extends basePage {
+export class recoveryPasswordPage {
   private accountRecoveryTitle: Locator;
-
+  private page: Page;
   constructor(page: Page) {
-    super(page);
+    this.page = page;
 
     this.accountRecoveryTitle = this.page.getByRole('heading', { name: 'Account recovery' });
   }

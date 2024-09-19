@@ -1,7 +1,7 @@
 import { test, expect, Locator, Page } from '@playwright/test';
-import { basePage } from './basePage';
 
-export class DrivePage extends basePage {
+export class DrivePage {
+  private page: Page;
   private driveTitle: Locator;
   private createFolderHeaderButton: Locator;
   private folderCreationModal: Locator;
@@ -19,7 +19,7 @@ export class DrivePage extends basePage {
   private contextMenuCreateFolderButtonSymbol: Locator;
 
   constructor(page: Page) {
-    super(page);
+    this.page = page;
     this.driveTitle = this.page.locator('[title="Drive"]');
     this.createFolderHeaderButton = this.page.locator('div[data-tooltip-id="createfolder-tooltip"]');
     //FOLDER CREATION MODAL
@@ -50,7 +50,7 @@ export class DrivePage extends basePage {
   }
 
   async clickOnCreateFolderHeaderButton() {
-    await this.createFolderHeaderButton.waitFor({ state: 'visible' });
+    await this.createFolderHeaderButton.waitFor({ state: 'visible', timeout: 5000 });
     await this.createFolderHeaderButton.click();
   }
 
@@ -70,7 +70,6 @@ export class DrivePage extends basePage {
     const createButtonText = await this.createFolderButtonText.textContent();
     expect(createButtonText).toEqual('Create');
     await this.createFolderButton.click();
-    await this.folderCreationModal.waitFor({ state: 'hidden' });
     const createdFolderName = await this.checkFolder(folderName);
     return createdFolderName;
   }
@@ -81,12 +80,11 @@ export class DrivePage extends basePage {
     const buttonText = await cancelButton.textContent();
     expect(buttonText).toEqual('Cancel');
     await cancelButton.click();
-    await this.folderCreationModal.waitFor({ state: 'hidden', timeout: 2000 });
     return this.folderCreationModal;
   }
   async rightClickOnBody() {
     await this.driveTitle.waitFor({ state: 'visible' });
-    await this.rightClickOn('body');
+    await this.page.locator('body').click({ button: 'right' });
     await this.rightClickOnBodyModal.waitFor({ state: 'visible' });
   }
 

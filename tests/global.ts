@@ -1,2 +1,5 @@
 // global.ts
-export let userCredentials: { email: string; password: string } = { email: '', password: '' };
+export const userCredentials = {
+  email: '',
+  password: '',
+};
