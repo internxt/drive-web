@@ -7,7 +7,6 @@ import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { SdkFactory } from '../../../../core/factory/sdk';
 import { storageActions } from '../../../../store/slices/storage';
 import {
   handleRepeatedUploadingFiles,
@@ -15,6 +14,7 @@ import {
 } from '../../../../store/slices/storage/storage.thunks/renameItemsThunk';
 import { uiActions } from '../../../../store/slices/ui';
 import { BreadcrumbItemData, BreadcrumbsMenuProps } from '../types';
+import newStorageService from 'app/drive/services/new-storage.service';
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
   totalBreadcrumbsLength: number;
@@ -53,13 +53,11 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
       });
 
       dispatch(storageActions.setMoveDestinationFolderId(props.item.uuid));
-      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
-      const [folderContentPromise] = storageClient.getFolderContentByUuid(
-        props.item.uuid,
-        false,
-        workspacesCredentials?.tokenHeader,
-      );
+      const [folderContentPromise] = newStorageService.getFolderContentByUuid({
+        folderUuid: props.item.uuid,
+        workspacesToken: workspacesCredentials?.tokenHeader,
+      });
 
       const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
 

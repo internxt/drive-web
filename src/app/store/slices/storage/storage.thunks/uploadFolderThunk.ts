@@ -14,6 +14,7 @@ import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
+import newStorageService from 'app/drive/services/new-storage.service';
 
 export interface IRoot {
   name: string;
@@ -33,9 +34,11 @@ interface UploadFolderThunkPayload {
   };
 }
 
-const handleFoldersRename = async (root: IRoot, currentFolderId: string, tokenHeader?: string) => {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(currentFolderId, false, tokenHeader);
+const handleFoldersRename = async (root: IRoot, currentFolderId: string, workspaceTokenHeader?: string) => {
+  const [parentFolderContentPromise] = newStorageService.getFolderContentByUuid({
+    folderUuid: currentFolderId,
+    workspacesToken: workspaceTokenHeader,
+  });
   const parentFolderContent = await parentFolderContentPromise;
   const [, , finalFilename] = renameFolderIfNeeded(parentFolderContent.children, root.name);
   const fileContent: IRoot = { ...root, name: finalFilename };

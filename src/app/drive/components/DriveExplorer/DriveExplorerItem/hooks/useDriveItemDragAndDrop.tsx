@@ -1,6 +1,5 @@
 import { ConnectDragSource, ConnectDropTarget, useDrag, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { SdkFactory } from '../../../../../core/factory/sdk';
 import { transformDraggedItems } from '../../../../../core/services/drag-and-drop.service';
 import { DragAndDropType } from '../../../../../core/types';
 import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
@@ -12,6 +11,7 @@ import {
   handleRepeatedUploadingFolders,
 } from '../../../../../store/slices/storage/storage.thunks/renameItemsThunk';
 import { DriveItemData } from '../../../../types';
+import newStorageService from 'app/drive/services/new-storage.service';
 
 interface DragSourceCollectorProps {
   isDraggingThisItem: boolean;
@@ -88,15 +88,13 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
             return i.isFolder;
           });
 
-          const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-
           dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
 
-          const [folderContentPromise] = storageClient.getFolderContentByUuid(
-            item.uuid,
-            false,
-            workspacesCredentials?.tokenHeader,
-          );
+          const [folderContentPromise] = newStorageService.getFolderContentByUuid({
+            folderUuid: item.uuid,
+            workspacesToken: workspacesCredentials?.tokenHeader,
+          });
+
           const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
           const foldersInDestinationFolderParsed = foldersInDestinationFolder.map((folder) => ({
             ...folder,

@@ -14,7 +14,6 @@ import { t } from 'i18next';
 
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
 import workspacesService from '../../../../core/services/workspace.service';
 import { uploadFileWithManager } from '../../../../network/UploadManager';
@@ -24,6 +23,7 @@ import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
+import newStorageService from 'app/drive/services/new-storage.service';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -112,12 +112,13 @@ const prepareFilesToUpload = async ({
   workspaceToken?: string;
 }): Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }> => {
   const filesToUpload: FileToUpload[] = [];
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-
   let parentFolderContent;
 
   if (!disableDuplicatedNamesCheck) {
-    const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(parentFolderId, false, workspaceToken);
+    const [parentFolderContentPromise] = newStorageService.getFolderContentByUuid({
+      folderUuid: parentFolderId,
+      workspacesToken: workspaceToken,
+    });
     parentFolderContent = await parentFolderContentPromise;
   }
 
