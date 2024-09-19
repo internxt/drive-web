@@ -26,7 +26,7 @@ describe('checkFolderDuplicated', () => {
   });
 
   it('should return all folders as duplicated when all are duplicated', async () => {
-    const folders = [{ name: 'Folder1' }, { name: 'Folder2' }] as unknown as DriveFolderData[];
+    const folders = [{ name: 'Folder1' }, { name: 'Folder2' }] as DriveFolderData[];
 
     (newStorageService.checkDuplicatedFolders as jest.Mock).mockResolvedValue({
       existentFolders: [{ plainName: 'Folder1' }, { plainName: 'Folder2' }],
@@ -43,7 +43,7 @@ describe('checkFolderDuplicated', () => {
   });
 
   it('should return some folders as duplicated and others without duplicates', async () => {
-    const folders = [{ name: 'Folder1' }, { name: 'Folder2' }, { name: 'Folder3' }] as unknown as DriveFolderData[];
+    const folders = [{ name: 'Folder1' }, { name: 'Folder2' }, { name: 'Folder3' }] as DriveFolderData[];
     const parentFolderId = 'someParentId';
 
     (newStorageService.checkDuplicatedFolders as jest.Mock).mockResolvedValue({
@@ -65,7 +65,7 @@ describe('checkFolderDuplicated', () => {
   });
 
   it('should return all folders without duplicates when none are duplicated', async () => {
-    const folders = [{ name: 'Folder1' }, { name: 'Folder2' }] as unknown as DriveFolderData[];
+    const folders = [{ name: 'Folder1' }, { name: 'Folder2' }] as DriveFolderData[];
 
     (newStorageService.checkDuplicatedFolders as jest.Mock).mockResolvedValue({
       existentFolders: [],

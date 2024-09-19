@@ -35,7 +35,7 @@ describe('getUniqueFolderName', () => {
 
   it('should rename the folder if duplicates exist', async () => {
     const folderName = 'TestFolder';
-    const duplicatedFolders = [{ name: 'TestFolder', plainName: 'TestFolder' }] as unknown as DriveFolderData[];
+    const duplicatedFolders = [{ name: 'TestFolder', plainName: 'TestFolder' }] as DriveFolderData[];
     const parentFolderId = 'parent123';
 
     (newStorageService.checkDuplicatedFolders as jest.Mock)
@@ -56,7 +56,7 @@ describe('getUniqueFolderName', () => {
     const duplicatedFolders = [
       { name: 'TestFolder', plainName: 'TestFolder' },
       { name: 'TestFolder (1)', plainName: 'TestFolder (1)' },
-    ] as unknown as DriveFolderData[];
+    ] as DriveFolderData[];
     const parentFolderId = 'parent123';
 
     (newStorageService.checkDuplicatedFolders as jest.Mock)

@@ -22,7 +22,8 @@ import shareService from '../../../../share/services/share.service';
 import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
-import { prepareFilesToUpload } from '../fileNameUtils';
+
+import { prepareFilesToUpload } from '../fileNameUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
 
 interface UploadItemsThunkOptions {
