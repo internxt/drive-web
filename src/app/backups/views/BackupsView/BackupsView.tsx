@@ -1,8 +1,8 @@
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import BreadcrumbsBackupsView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsBackupsView';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { backupsActions, backupsThunks } from 'app/store/slices/backups';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import BreadcrumbsBackupsView from '../../../shared/components/Breadcrumbs/Containers/BreadcrumbsBackupsView';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { backupsActions, backupsThunks } from '../../../store/slices/backups';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import DeleteBackupDialog from '../../../drive/components/DeleteBackupDialog/DeleteBackupDialog';
@@ -14,6 +14,15 @@ import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/d
 import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
 import DeviceList from '../../components/DeviceList/DeviceList';
 import { Device } from '../../types';
+import newStorageService from 'app/drive/services/new-storage.service';
+import _ from 'lodash';
+import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
+import { deleteFile } from '../../../drive/services/file.service';
+import { ListItemMenu } from '../../../shared/components/List/ListItem';
+import { uiActions } from '../../../store/slices/ui';
+
+const DEFAULT_LIMIT = 50;
 
 export default function BackupsView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -25,6 +34,41 @@ export default function BackupsView(): JSX.Element {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedDevices, setSelectedDevices] = useState<(Device | DriveFolderData)[]>([]);
   const [backupsAsFoldersPath, setBackupsAsFoldersPath] = useState<DriveFolderData[]>([]);
+  const [folderUuid, setFolderUuid] = useState<string>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentItems, setCurrentItems] = useState<DriveItemData[]>([]);
+  const [selectedItems, setSelectedItems] = useState<DriveItemData[]>([]);
+  const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
+  const [offset, setOffset] = useState<number>(0);
+
+  useEffect(() => {
+    dispatch(backupsActions.setCurrentDevice(null));
+    setBackupsAsFoldersPath([]);
+    setFolderUuid(undefined);
+    dispatch(backupsThunks.fetchDevicesThunk());
+  }, []);
+
+  useEffect(() => {
+    if (currentDevice && !('mac' in currentDevice)) {
+      setBackupsAsFoldersPath([currentDevice]);
+      setFolderUuid(currentDevice.uuid);
+    }
+  }, [currentDevice]);
+
+  useEffect(() => {
+    refreshFolderContent();
+  }, [folderUuid]);
+
+  function goToFolder(folderId: number, folderUuid?: string) {
+    setBackupsAsFoldersPath((current) => {
+      const index = current.findIndex((i) => i.id === folderId);
+      return current.slice(0, index + 1);
+    });
+
+    if (folderUuid) {
+      setFolderUuid(folderUuid);
+    }
+  }
 
   const onDeviceClicked = (target: Device | DriveFolderData) => {
     setSelectedDevices([]);
@@ -68,22 +112,114 @@ export default function BackupsView(): JSX.Element {
     setSelectedDevices([]);
   };
 
-  useEffect(() => {
-    dispatch(backupsActions.setCurrentDevice(null));
-    setBackupsAsFoldersPath([]);
-    dispatch(backupsThunks.fetchDevicesThunk());
-  }, []);
+  const onDownloadSelectedItems = () => {
+    dispatch(downloadItemsThunk(selectedItems));
+  };
 
-  useEffect(() => {
-    if (currentDevice && !('mac' in currentDevice)) setBackupsAsFoldersPath([currentDevice]);
-  }, [currentDevice]);
-
-  function goToFolder(folderId: number) {
-    setBackupsAsFoldersPath((current) => {
-      const index = current.findIndex((i) => i.id === folderId);
-      return current.slice(0, index + 1);
-    });
+  async function onDeleteSelectedItems() {
+    for (const item of selectedItems) {
+      if (item.isFolder) {
+        await deleteBackupDeviceAsFolder(item as DriveWebFolderData);
+      } else {
+        await deleteFile(item);
+      }
+      setCurrentItems((items) => items.filter((i) => !(i.id === item.id && i.isFolder === item.isFolder)));
+    }
+    dispatch(deleteItemsThunk(selectedItems));
   }
+
+  const contextMenu: ListItemMenu<DriveItemData> = contextMenuSelectedBackupItems({
+    onDownloadSelectedItems,
+    onDeleteSelectedItems,
+  });
+
+  const onItemClicked = (item: DriveItemData) => {
+    if (item.isFolder) {
+      if (!isLoading) {
+        setIsLoading(true);
+        setBackupsAsFoldersPath((current) => [...current, item]);
+        dispatch(backupsActions.setCurrentFolder(item));
+        setFolderUuid(item.uuid);
+      }
+    } else {
+      dispatch(uiActions.setIsFileViewerOpen(true));
+      dispatch(uiActions.setFileViewerItem(item));
+    }
+  };
+
+  const onItemSelected = (changes: { device: DriveItemData; isSelected: boolean }[]) => {
+    let updatedSelectedItems = selectedItems;
+    for (const change of changes) {
+      updatedSelectedItems = updatedSelectedItems.filter((item) => item.id !== change.device.id);
+      if (change.isSelected) {
+        updatedSelectedItems = [...updatedSelectedItems, change.device];
+      }
+    }
+    setSelectedItems(updatedSelectedItems);
+  };
+
+  async function refreshFolderContent() {
+    if (!folderUuid) return;
+
+    setIsLoading(true);
+    setOffset(0);
+    setSelectedItems([]);
+    setCurrentItems([]);
+
+    const [folderContentPromise] = newStorageService.getFolderContentByUuid({
+      folderUuid,
+      limit: DEFAULT_LIMIT,
+      offset: 0,
+    });
+
+    const response = await folderContentPromise;
+    const files = response.files.map((file) => ({ ...file, isFolder: false, name: file.plainName }));
+    const folders = response.children.map((folder) => ({ ...folder, isFolder: true, name: folder.plainName }));
+    const items = _.concat(folders as DriveItemData[], files as DriveItemData[]);
+
+    setCurrentItems(items);
+
+    if (items.length >= DEFAULT_LIMIT) {
+      setHasMoreItems(true);
+      setOffset(items.length);
+    } else {
+      setHasMoreItems(false);
+    }
+
+    setIsLoading(false);
+  }
+
+  const getPaginatedBackupList = async () => {
+    if (!folderUuid || !hasMoreItems) return;
+
+    setIsLoading(true);
+
+    const [folderContentPromise] = newStorageService.getFolderContentByUuid({
+      folderUuid,
+      limit: DEFAULT_LIMIT,
+      offset,
+    });
+
+    const folderContentResponse = await folderContentPromise;
+    const files = folderContentResponse.files.map((file) => ({ ...file, isFolder: false, name: file.plainName }));
+    const folders = folderContentResponse.children.map((folder) => ({
+      ...folder,
+      isFolder: true,
+      name: folder.plainName,
+    }));
+    const items = _.concat(folders as DriveItemData[], files as DriveItemData[]);
+
+    setCurrentItems((prevItems) => [...prevItems, ...items]);
+
+    if (items.length >= DEFAULT_LIMIT) {
+      setHasMoreItems(true);
+      setOffset((prevOffset) => prevOffset + items.length);
+    } else {
+      setHasMoreItems(false);
+    }
+
+    setIsLoading(false);
+  };
 
   let body;
 
@@ -101,8 +237,14 @@ export default function BackupsView(): JSX.Element {
   } else if (backupsAsFoldersPath.length) {
     body = (
       <BackupsAsFoldersList
-        onFolderPush={(folder) => setBackupsAsFoldersPath((current) => [...current, folder])}
-        folderId={backupsAsFoldersPath[backupsAsFoldersPath.length - 1].uuid}
+        contextMenu={contextMenu}
+        currentItems={currentItems}
+        selectedItems={selectedItems}
+        hasMoreItems={hasMoreItems}
+        isLoading={isLoading}
+        getPaginatedBackupList={getPaginatedBackupList}
+        onItemClicked={onItemClicked}
+        onItemSelected={onItemSelected}
       />
     );
   }
@@ -137,7 +279,7 @@ export default function BackupsView(): JSX.Element {
             goToFolder={goToFolder}
           />
         ) : (
-          <p className="text-lg"> {translate('backups.your-devices')}</p>
+          <p className="text-lg">{translate('backups.your-devices')}</p>
         )}
       </div>
       <WarningMessageWrapper />

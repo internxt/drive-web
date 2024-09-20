@@ -11,7 +11,7 @@ import { BreadcrumbItemData } from '../types';
 interface BreadcrumbsBackupsViewProps {
   setSelectedDevices: Dispatch<SetStateAction<(Device | DriveFolderData)[]>>;
   backupsAsFoldersPath: DriveFolderData[];
-  goToFolder: (folderId: number) => void;
+  goToFolder: (folderId: number, folderUuid?: string) => void;
 }
 
 const BreadcrumbsBackupsView = ({
@@ -53,7 +53,7 @@ const BreadcrumbsBackupsView = ({
           active: true,
           onClick: () => {
             dispatch(backupsActions.setCurrentFolder(item));
-            goToFolder(item.id);
+            goToFolder(item.id, item.uuid);
           },
         };
         items.push({
