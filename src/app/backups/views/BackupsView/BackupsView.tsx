@@ -317,7 +317,7 @@ export default function BackupsView(): JSX.Element {
           <BreadcrumbsBackupsView
             backupsAsFoldersPath={backupsAsFoldersPath}
             goToFolder={goToFolder}
-            gotoFolderRoot={goToFolderRoot}
+            goToFolderRoot={goToFolderRoot}
           />
         ) : (
           <p className="text-lg">{translate('backups.your-devices')}</p>
