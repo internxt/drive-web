@@ -72,9 +72,9 @@ export default function BackupsAsFoldersList({
                     <Icon className="h-8 w-8" />
                   </div>
                   <div className="grow cursor-default truncate">
-                    <span className="z-10 shrink cursor-pointer truncate" onClick={() => onItemClicked(item)}>
+                    <button className="z-10 shrink cursor-pointer truncate" onClick={() => onItemClicked(item)}>
                       {displayName}
-                    </span>
+                    </button>
                   </div>
                 </div>
               );

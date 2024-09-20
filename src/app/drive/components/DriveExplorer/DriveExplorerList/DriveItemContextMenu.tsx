@@ -348,15 +348,15 @@ const contextMenuSelectedBackupItems = ({
   onDeleteSelectedItems,
 }: {
   onDownloadSelectedItems: () => void;
-  onDeleteSelectedItems: () => void;
+  onDeleteSelectedItems: () => Promise<void>;
 }): ListItemMenu<unknown> => [
   getDownloadMenuItem(onDownloadSelectedItems),
   { name: '', action: () => false, separator: true },
   {
     name: t('drive.dropdown.delete'),
     icon: Trash,
-    action: () => {
-      onDeleteSelectedItems();
+    action: async () => {
+      await onDeleteSelectedItems();
     },
     disabled: () => {
       return false;
