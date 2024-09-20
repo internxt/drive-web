@@ -99,8 +99,10 @@ export function useSignUp(
     const mnemonic = bip39.generateMnemonic(256);
     const encMnemonic = encryptTextWithKey(mnemonic, password);
 
-    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
+    const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
+      await generateNewKeys();
     const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
+    const encPrivateKyberKey = aes.encrypt(privateKyberKeyBase64, password, getAesInitFromEnv());
 
     const authClient = SdkFactory.getNewApiInstance().createAuthClient();
 
@@ -108,6 +110,8 @@ export function useSignUp(
       privateKeyEncrypted: encPrivateKey,
       publicKey: publicKeyArmored,
       revocationCertificate: revocationCertificate,
+      publicKyberKey: publicKyberKeyBase64,
+      privateKyberKeyEncrypted: encPrivateKyberKey,
     };
     const registerDetails: RegisterDetails = {
       name: 'My',
@@ -164,13 +168,17 @@ export function useSignUp(
     const mnemonic = bip39.generateMnemonic(256);
     const encMnemonic = encryptTextWithKey(mnemonic, password);
 
-    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
+    const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
+      await generateNewKeys();
     const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
+    const encPrivateKyberKey = aes.encrypt(privateKyberKeyBase64, password, getAesInitFromEnv());
 
     const keys: Keys = {
       privateKeyEncrypted: encPrivateKey,
       publicKey: publicKeyArmored,
       revocationCertificate: revocationCertificate,
+      publicKyberKey: publicKyberKeyBase64,
+      privateKyberKeyEncrypted: encPrivateKyberKey,
     };
     const registerDetails: RegisterDetails = {
       name: 'My',

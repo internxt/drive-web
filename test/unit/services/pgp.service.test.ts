@@ -17,10 +17,12 @@ describe('Encryption and Decryption', () => {
     const keys = await generateNewKeys();
     const publicKeyInBase64 = keys.publicKeyArmored;
     const message = 'This is a test message';
+    const publicKyberKeyBase64 = keys.publicKyberKeyBase64;
 
     const encryptedMessage = await encryptMessageWithPublicKey({
       message,
       publicKeyInBase64,
+      publicKyberKeyBase64,
     });
 
     expect(encryptedMessage).toBeDefined();
@@ -37,12 +39,14 @@ describe('Encryption and Decryption', () => {
     const encryptedMessage = await encryptMessageWithPublicKey({
       message: originalMessage,
       publicKeyInBase64: keys.publicKeyArmored,
+      publicKyberKeyBase64: keys.publicKyberKeyBase64,
     });
 
     // Step 4: Decrypt the message using the private key
     const decryptedMessage = await decryptMessageWithPrivateKey({
       encryptedMessage,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKyberKeyBase64: keys.privateKyberKeyBase64,
     });
 
     // Step 5: Assert that the decrypted message matches the original message

@@ -3,6 +3,7 @@
   "version": "v1.0.320",
   "private": true,
   "dependencies": {
+    "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
     "@headlessui/react": "1.7.5",
     "@iconscout/react-unicons": "^1.1.6",
     "@internxt/inxt-js": "=1.2.21",
