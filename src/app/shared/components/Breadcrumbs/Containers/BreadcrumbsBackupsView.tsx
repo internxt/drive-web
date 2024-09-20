@@ -9,10 +9,10 @@ import { BreadcrumbItemData } from '../types';
 interface BreadcrumbsBackupsViewProps {
   backupsAsFoldersPath: DriveFolderData[];
   goToFolder: (folderId: number, folderUuid?: string) => void;
-  goToRootFolder: () => void;
+  gotoFolderRoot: () => void;
 }
 
-const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToRootFolder }: BreadcrumbsBackupsViewProps) => {
+const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, gotoFolderRoot }: BreadcrumbsBackupsViewProps) => {
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
   const dispatch = useAppDispatch();
 
@@ -25,7 +25,7 @@ const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToRootFold
       icon: null,
       isFirstPath: true,
       active: true,
-      onClick: () => goToRootFolder(),
+      onClick: () => gotoFolderRoot(),
     });
 
     if (currentDevice && 'mac' in currentDevice) {

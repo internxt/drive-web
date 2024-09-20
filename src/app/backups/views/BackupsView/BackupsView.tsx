@@ -20,7 +20,8 @@ import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveE
 import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { deleteFile } from '../../../drive/services/file.service';
 import { ListItemMenu } from '../../../shared/components/List/ListItem';
-import { uiActions } from '../../../store/slices/ui';
+import FileViewerWrapper from 'app/drive/components/FileViewer/FileViewerWrapper';
+import { PreviewFileItem } from 'app/share/types';
 
 const DEFAULT_LIMIT = 50;
 
@@ -40,6 +41,8 @@ export default function BackupsView(): JSX.Element {
   const [selectedItems, setSelectedItems] = useState<DriveItemData[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [offset, setOffset] = useState<number>(0);
+  const [itemToPreview, setItemToPreview] = useState<PreviewFileItem>();
+  const [isFileViewerOpen, setIsFileViewerOpen] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch(backupsActions.setCurrentDevice(null));
@@ -70,7 +73,7 @@ export default function BackupsView(): JSX.Element {
     }
   }
 
-  const goToRootFolder = () => {
+  const goToFolderRoot = () => {
     setSelectedDevices([]);
     setFolderUuid(undefined);
     dispatch(backupsActions.setCurrentDevice(null));
@@ -148,8 +151,8 @@ export default function BackupsView(): JSX.Element {
         setFolderUuid(item.uuid);
       }
     } else {
-      dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item));
+      setItemToPreview(item);
+      setIsFileViewerOpen(false);
     }
   };
 
@@ -174,12 +177,12 @@ export default function BackupsView(): JSX.Element {
   };
 
   async function refreshFolderContent() {
+    if (!folderUuid) return;
+
     setIsLoading(true);
     setOffset(0);
     setSelectedItems([]);
     setCurrentItems([]);
-
-    if (!folderUuid) return;
 
     const [folderContentPromise] = newStorageService.getFolderContentByUuid({
       folderUuid,
@@ -289,12 +292,21 @@ export default function BackupsView(): JSX.Element {
         secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
         primaryActionColor="danger"
       />
+      {itemToPreview && (
+        <FileViewerWrapper
+          file={itemToPreview}
+          onClose={() => setIsFileViewerOpen(false)}
+          showPreview={isFileViewerOpen}
+          folderItems={currentItems}
+          onShowStopSharingDialog={() => setIsDeleteModalOpen(true)}
+        />
+      )}
       <div className="z-50 flex h-14 shrink-0 items-center px-5">
         {currentDevice ? (
           <BreadcrumbsBackupsView
             backupsAsFoldersPath={backupsAsFoldersPath}
             goToFolder={goToFolder}
-            goToRootFolder={goToRootFolder}
+            gotoFolderRoot={goToFolderRoot}
           />
         ) : (
           <p className="text-lg">{translate('backups.your-devices')}</p>

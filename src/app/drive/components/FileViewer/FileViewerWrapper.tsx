@@ -5,7 +5,6 @@ import { DriveFileData, DriveItemData } from '../../types';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { getAppConfig } from 'app/core/services/config.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import navigationService from 'app/core/services/navigation.service';
 import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import errorService from '../../../core/services/error.service';
@@ -43,6 +42,7 @@ interface FileViewerWrapperProps {
   file: PreviewFileItem;
   onClose: () => void;
   showPreview: boolean;
+  folderItems?: DriveItemData[];
   onShowStopSharingDialog?: () => void;
   sharedKeyboardShortcuts?: {
     removeItemFromKeyboard?: (item: DriveItemData) => void;
@@ -54,6 +54,7 @@ const FileViewerWrapper = ({
   file,
   onClose,
   showPreview,
+  folderItems,
   onShowStopSharingDialog,
   sharedKeyboardShortcuts,
 }: FileViewerWrapperProps): JSX.Element => {
@@ -157,8 +158,11 @@ const FileViewerWrapper = ({
     }
     return [];
   }, [folderFiles]);
-  const fileIndex = sortFolderFiles?.findIndex((item) => item.id === currentFile?.id);
-  const totalFolderIndex = sortFolderFiles?.length;
+
+  const folderItemsFiltered = folderItems && folderItems.filter((item) => !item.isFolder || item.type !== 'folder');
+  const currentFolder = folderItemsFiltered ?? sortFolderFiles;
+  const fileIndex = currentFolder?.findIndex((item) => item.id === currentFile?.id);
+  const totalFolderIndex = currentFolder?.length;
 
   //Switch to the next or previous file in the folder
   function changeFile(direction: 'next' | 'prev') {
@@ -166,9 +170,9 @@ const FileViewerWrapper = ({
     setIsDownloadStarted(false);
     setUpdateProgress(0);
     if (direction === 'next') {
-      setCurrentFile?.(sortFolderFiles[fileIndex + 1]);
+      setCurrentFile?.(currentFolder[fileIndex + 1]);
     } else {
-      setCurrentFile?.(sortFolderFiles[fileIndex - 1]);
+      setCurrentFile?.(currentFolder[fileIndex - 1]);
     }
   }
 
