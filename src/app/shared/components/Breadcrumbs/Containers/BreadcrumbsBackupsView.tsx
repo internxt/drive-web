@@ -1,31 +1,20 @@
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import { Device } from 'app/backups/types';
 import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { backupsActions } from 'app/store/slices/backups';
 import { t } from 'i18next';
-import { Dispatch, SetStateAction } from 'react';
 import BreadcrumbsMenuBackups from '../BreadcrumbsMenu/BreadcrumbsMenuBackups';
 import { BreadcrumbItemData } from '../types';
 
 interface BreadcrumbsBackupsViewProps {
-  setSelectedDevices: Dispatch<SetStateAction<(Device | DriveFolderData)[]>>;
   backupsAsFoldersPath: DriveFolderData[];
   goToFolder: (folderId: number, folderUuid?: string) => void;
+  goToRootFolder: () => void;
 }
 
-const BreadcrumbsBackupsView = ({
-  setSelectedDevices,
-  backupsAsFoldersPath,
-  goToFolder,
-}: BreadcrumbsBackupsViewProps) => {
+const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToRootFolder }: BreadcrumbsBackupsViewProps) => {
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
   const dispatch = useAppDispatch();
-
-  const goBack = () => {
-    setSelectedDevices([]);
-    dispatch(backupsActions.setCurrentDevice(null));
-  };
 
   const breadcrumbBackupsViewItems = (): BreadcrumbItemData[] => {
     const items: BreadcrumbItemData[] = [];
@@ -36,7 +25,7 @@ const BreadcrumbsBackupsView = ({
       icon: null,
       isFirstPath: true,
       active: true,
-      onClick: () => goBack(),
+      onClick: () => goToRootFolder(),
     });
 
     if (currentDevice && 'mac' in currentDevice) {
@@ -53,6 +42,7 @@ const BreadcrumbsBackupsView = ({
           active: true,
           onClick: () => {
             dispatch(backupsActions.setCurrentFolder(item));
+            console.log(item);
             goToFolder(item.id, item.uuid);
           },
         };

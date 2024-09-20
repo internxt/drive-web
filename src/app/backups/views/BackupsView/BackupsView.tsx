@@ -40,7 +40,6 @@ export default function BackupsView(): JSX.Element {
   const [selectedItems, setSelectedItems] = useState<DriveItemData[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [offset, setOffset] = useState<number>(0);
-  const [areAllItemsSelected, setAreAllItemsSelected] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch(backupsActions.setCurrentDevice(null));
@@ -58,25 +57,7 @@ export default function BackupsView(): JSX.Element {
 
   useEffect(() => {
     refreshFolderContent();
-    setAreAllItemsSelected(false);
   }, [folderUuid]);
-
-  useEffect(() => {
-    const areAllItemsSelected = selectedItems.length === currentItems.length;
-    const itemsLengthIsNotZero = currentItems.length !== 0;
-
-    if (areAllItemsSelected && itemsLengthIsNotZero) {
-      setAreAllItemsSelected(true);
-    } else {
-      setAreAllItemsSelected(false);
-    }
-  }, [selectedItems]);
-
-  useEffect(() => {
-    if (areAllItemsSelected) {
-      setSelectedItems(currentItems);
-    }
-  }, [currentItems.length]);
 
   function goToFolder(folderId: number, folderUuid?: string) {
     setBackupsAsFoldersPath((current) => {
@@ -88,6 +69,12 @@ export default function BackupsView(): JSX.Element {
       setFolderUuid(folderUuid);
     }
   }
+
+  const goToRootFolder = () => {
+    setSelectedDevices([]);
+    setFolderUuid(undefined);
+    dispatch(backupsActions.setCurrentDevice(null));
+  };
 
   const onDeviceClicked = (target: Device | DriveFolderData) => {
     setSelectedDevices([]);
@@ -187,12 +174,12 @@ export default function BackupsView(): JSX.Element {
   };
 
   async function refreshFolderContent() {
-    if (!folderUuid) return;
-
     setIsLoading(true);
     setOffset(0);
     setSelectedItems([]);
     setCurrentItems([]);
+
+    if (!folderUuid) return;
 
     const [folderContentPromise] = newStorageService.getFolderContentByUuid({
       folderUuid,
@@ -305,9 +292,9 @@ export default function BackupsView(): JSX.Element {
       <div className="z-50 flex h-14 shrink-0 items-center px-5">
         {currentDevice ? (
           <BreadcrumbsBackupsView
-            setSelectedDevices={setSelectedDevices}
             backupsAsFoldersPath={backupsAsFoldersPath}
             goToFolder={goToFolder}
+            goToRootFolder={goToRootFolder}
           />
         ) : (
           <p className="text-lg">{translate('backups.your-devices')}</p>
