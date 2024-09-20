@@ -130,7 +130,7 @@ export default function BackupsView(): JSX.Element {
 
   const contextMenu: ListItemMenu<DriveItemData> = contextMenuSelectedBackupItems({
     onDownloadSelectedItems,
-    onDeleteSelectedItems,
+    onDeleteSelectedItems: onDeleteSelectedItems,
   });
 
   const onItemClicked = (item: DriveItemData) => {
@@ -181,7 +181,7 @@ export default function BackupsView(): JSX.Element {
 
     if (items.length >= DEFAULT_LIMIT) {
       setHasMoreItems(true);
-      setOffset(items.length);
+      setOffset(DEFAULT_LIMIT);
     } else {
       setHasMoreItems(false);
     }
@@ -213,7 +213,7 @@ export default function BackupsView(): JSX.Element {
 
     if (items.length >= DEFAULT_LIMIT) {
       setHasMoreItems(true);
-      setOffset((prevOffset) => prevOffset + items.length);
+      setOffset((prevOffset) => prevOffset + DEFAULT_LIMIT);
     } else {
       setHasMoreItems(false);
     }
