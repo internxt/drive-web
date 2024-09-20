@@ -1612,10 +1612,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@^1.5.15":
-  version "1.5.15"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.5.15/8b8febc6f5d37f66db525f66d85fbfdba36b7357#8b8febc6f5d37f66db525f66d85fbfdba36b7357"
-  integrity sha512-LO2VpJsZKmPzAkz7Lu4JVubjpv27XwwunHKT3XTZ4BntGS7JxAVljOQ0LtY9GN5pdV3Id5YzQwB6SAzdm03z3A==
+"@internxt/sdk@^1.5.17":
+  version "1.5.17"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.5.17/a08d06a5bbb603cecb0ba71f6114701ff91e9ab2#a08d06a5bbb603cecb0ba71f6114701ff91e9ab2"
+  integrity sha512-s9uw1l2EIbHNR8qZ8mCYYIkqU6mXharS9SK3e67NuLuzmWDJYd4Tei/wpVu4DGrSH4AvVGoIIeSFQAshLnI2Zg==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
@@ -1970,7 +1970,7 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@phosphor-icons/react@^2.0.10":
+"@phosphor-icons/react@^2.1.7":
   version "2.1.7"
   resolved "https://registry.yarnpkg.com/@phosphor-icons/react/-/react-2.1.7.tgz#b11a4b25849b7e3849970b688d9fe91e5d4fd8d7"
   integrity sha512-g2e2eVAn1XG2a+LI09QU3IORLhnFNAFkNbo2iwbX6NOKSLOwvEMmTa7CgOzEbgNWR47z8i8kwjdvYZ5fkGx1mQ==
@@ -4811,7 +4811,7 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.1, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
-crypto-browserify@^3.12.0:
+crypto-browserify@^3.12.0, "crypto@npm:crypto-browserify":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/crypto-browserify/-/crypto-browserify-3.12.0.tgz#396cf9f3137f03e4b8e532c58f698254e00f80ec"
   integrity sha512-fz4spIh+znjO2VjL+IdhEpRJ3YN6sMzITSBijk6FK2UvTqruSQW+/cCZTSNsMiZNvUeq0CqurF+dAbyiGOY6Wg==
@@ -4837,23 +4837,6 @@ crypto-random-string@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-2.0.0.tgz#ef2a7a966ec11083388369baa02ebead229b30d5"
   integrity sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==
-
-"crypto@npm:crypto-browserify":
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/crypto-browserify/-/crypto-browserify-3.12.0.tgz#396cf9f3137f03e4b8e532c58f698254e00f80ec"
-  integrity sha512-fz4spIh+znjO2VjL+IdhEpRJ3YN6sMzITSBijk6FK2UvTqruSQW+/cCZTSNsMiZNvUeq0CqurF+dAbyiGOY6Wg==
-  dependencies:
-    browserify-cipher "^1.0.0"
-    browserify-sign "^4.0.0"
-    create-ecdh "^4.0.0"
-    create-hash "^1.1.0"
-    create-hmac "^1.1.0"
-    diffie-hellman "^5.0.0"
-    inherits "^2.0.1"
-    pbkdf2 "^3.0.3"
-    public-encrypt "^4.0.0"
-    randombytes "^2.0.0"
-    randomfill "^1.0.3"
 
 css-blank-pseudo@^3.0.3:
   version "3.0.3"
