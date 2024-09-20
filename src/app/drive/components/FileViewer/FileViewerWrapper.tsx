@@ -40,9 +40,10 @@ const SPECIAL_MIME_TYPES = ['heic'];
 
 interface FileViewerWrapperProps {
   file: PreviewFileItem;
-  onClose: () => void;
   showPreview: boolean;
+  onClose: () => void;
   folderItems?: DriveItemData[];
+  contextMenu?: ListItemMenu<DriveItemData>;
   onShowStopSharingDialog?: () => void;
   sharedKeyboardShortcuts?: {
     removeItemFromKeyboard?: (item: DriveItemData) => void;
@@ -55,6 +56,7 @@ const FileViewerWrapper = ({
   onClose,
   showPreview,
   folderItems,
+  contextMenu,
   onShowStopSharingDialog,
   sharedKeyboardShortcuts,
 }: FileViewerWrapperProps): JSX.Element => {
@@ -123,14 +125,16 @@ const FileViewerWrapper = ({
     return currentUserRole === UserRoles.Reader;
   }, [currentUserRole]);
 
-  const topActionsMenu = topDropdownBarActionsMenu({
-    currentFile,
-    user,
-    onClose,
-    onShowStopSharingDialog,
-    driveItemActions,
-    isCurrentUserViewer,
-  });
+  const topActionsMenu =
+    contextMenu ??
+    topDropdownBarActionsMenu({
+      currentFile,
+      user,
+      onClose,
+      onShowStopSharingDialog,
+      driveItemActions,
+      isCurrentUserViewer,
+    });
 
   const { removeItemFromKeyboard, renameItemFromKeyboard } = useFileViewerKeyboardShortcuts({
     sharedKeyboardShortcuts,

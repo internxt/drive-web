@@ -135,7 +135,17 @@ export default function BackupsView(): JSX.Element {
       setCurrentItems((items) => items.filter((i) => !(i.id === item.id && i.isFolder === item.isFolder)));
     }
     dispatch(deleteItemsThunk(selectedItems));
+
+    if (isFileViewerOpen) {
+      setIsFileViewerOpen(false);
+      setItemToPreview(undefined);
+    }
   }
+
+  const onCloseFileViewer = () => {
+    setIsFileViewerOpen(false);
+    setItemToPreview(undefined);
+  };
 
   const contextMenu: ListItemMenu<DriveItemData> = contextMenuSelectedBackupItems({
     onDownloadSelectedItems,
@@ -152,7 +162,7 @@ export default function BackupsView(): JSX.Element {
       }
     } else {
       setItemToPreview(item);
-      setIsFileViewerOpen(false);
+      setIsFileViewerOpen(true);
     }
   };
 
@@ -295,10 +305,11 @@ export default function BackupsView(): JSX.Element {
       {itemToPreview && (
         <FileViewerWrapper
           file={itemToPreview}
-          onClose={() => setIsFileViewerOpen(false)}
+          onClose={onCloseFileViewer}
           showPreview={isFileViewerOpen}
           folderItems={currentItems}
           onShowStopSharingDialog={() => setIsDeleteModalOpen(true)}
+          contextMenu={contextMenu}
         />
       )}
       <div className="z-50 flex h-14 shrink-0 items-center px-5">
