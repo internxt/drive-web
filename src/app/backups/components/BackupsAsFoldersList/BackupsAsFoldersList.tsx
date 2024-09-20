@@ -19,6 +19,7 @@ export default function BackupsAsFoldersList({
   getPaginatedBackupList,
   onItemClicked,
   onItemSelected,
+  onSelectedItemsChanged,
 }: {
   className?: string;
   contextMenu: ListItemMenu<DriveItemData>;
@@ -29,6 +30,7 @@ export default function BackupsAsFoldersList({
   getPaginatedBackupList: () => void;
   onItemClicked: (item: DriveItemData) => void;
   onItemSelected: (changes: { device: DriveItemData; isSelected: boolean }[]) => void;
+  onSelectedItemsChanged: (changes: { props: DriveItemData; value: boolean }[]) => void;
 }): JSX.Element {
   const { translate } = useTranslationContext();
 
@@ -108,13 +110,7 @@ export default function BackupsAsFoldersList({
           menu={contextMenu}
           selectedItems={selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
-          onSelectedItemsChanged={(changes) => {
-            const selectedDevicesParsed = changes.map((change) => ({
-              device: change.props,
-              isSelected: change.value,
-            }));
-            onItemSelected(selectedDevicesParsed);
-          }}
+          onSelectedItemsChanged={onSelectedItemsChanged}
         />
       </div>
     </div>

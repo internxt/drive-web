@@ -40,6 +40,7 @@ export default function BackupsView(): JSX.Element {
   const [selectedItems, setSelectedItems] = useState<DriveItemData[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [offset, setOffset] = useState<number>(0);
+  const [areAllItemsSelected, setAreAllItemsSelected] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch(backupsActions.setCurrentDevice(null));
@@ -57,7 +58,25 @@ export default function BackupsView(): JSX.Element {
 
   useEffect(() => {
     refreshFolderContent();
+    setAreAllItemsSelected(false);
   }, [folderUuid]);
+
+  useEffect(() => {
+    const areAllItemsSelected = selectedItems.length === currentItems.length;
+    const itemsLengthIsNotZero = currentItems.length !== 0;
+
+    if (areAllItemsSelected && itemsLengthIsNotZero) {
+      setAreAllItemsSelected(true);
+    } else {
+      setAreAllItemsSelected(false);
+    }
+  }, [selectedItems]);
+
+  useEffect(() => {
+    if (areAllItemsSelected) {
+      setSelectedItems(currentItems);
+    }
+  }, [currentItems.length]);
 
   function goToFolder(folderId: number, folderUuid?: string) {
     setBackupsAsFoldersPath((current) => {
@@ -147,8 +166,17 @@ export default function BackupsView(): JSX.Element {
     }
   };
 
+  const onSelectedItemsChanged = (changes: { props: DriveItemData; value: boolean }[]) => {
+    const selectedDevicesParsed = changes.map((change) => ({
+      device: change.props,
+      isSelected: change.value,
+    }));
+    onItemSelected(selectedDevicesParsed);
+  };
+
   const onItemSelected = (changes: { device: DriveItemData; isSelected: boolean }[]) => {
     let updatedSelectedItems = selectedItems;
+
     for (const change of changes) {
       updatedSelectedItems = updatedSelectedItems.filter((item) => item.id !== change.device.id);
       if (change.isSelected) {
@@ -209,7 +237,9 @@ export default function BackupsView(): JSX.Element {
     }));
     const items = _.concat(folders as DriveItemData[], files as DriveItemData[]);
 
-    setCurrentItems((prevItems) => [...prevItems, ...items]);
+    const totalCurrentItems = _.concat(currentItems, items);
+
+    setCurrentItems(totalCurrentItems);
 
     if (items.length >= DEFAULT_LIMIT) {
       setHasMoreItems(true);
@@ -245,6 +275,7 @@ export default function BackupsView(): JSX.Element {
         getPaginatedBackupList={getPaginatedBackupList}
         onItemClicked={onItemClicked}
         onItemSelected={onItemSelected}
+        onSelectedItemsChanged={onSelectedItemsChanged}
       />
     );
   }
