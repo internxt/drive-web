@@ -25,7 +25,7 @@ export class loginPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.loginTitle = this.page.getByRole('heading', { level: 1 });
+    this.loginTitle = this.page.getByRole('heading', { name: 'Log in' });
     this.emailInput = this.page.getByPlaceholder('Email', { exact: true });
     this.passwordInput = this.page.getByPlaceholder('Password', { exact: true });
     this.loginButton = this.page.getByRole('button', { name: 'Log in' });
@@ -39,9 +39,9 @@ export class loginPage {
     //drive
     this.driveTitle = this.page.locator('[title="Drive"]');
     //account recovery
-    this.accountRecoveryTitle = this.page.getByRole('heading', { level: 1 });
+    this.accountRecoveryTitle = this.page.getByRole('heading', { name: 'Account recovery' });
     //Sign Up
-    this.createAccounTitle = this.page.getByRole('heading', { level: 1 });
+    this.createAccounTitle = this.page.getByRole('heading', { name: 'Create account' });
     // terms of service
   }
 
@@ -60,7 +60,6 @@ export class loginPage {
     const loginButtonText = await this.loginButtonText.textContent();
     expect(loginButtonText).toEqual('Log in');
     await this.loginButton.click();
-    await this.driveTitle.waitFor({ state: 'visible', timeout: 9000 });
     const driveTitle = await this.driveTitle.textContent();
     return driveTitle;
   }
@@ -69,7 +68,6 @@ export class loginPage {
     const loginButtonText = await this.loginButtonText.textContent();
     expect(loginButtonText).toEqual('Log in');
     await this.loginButton.click();
-    await this.wrongCredentials.waitFor({ state: 'visible', timeout: 6000 });
     const wrongLoginText = await this.wrongCredentials.textContent();
     return wrongLoginText;
   }

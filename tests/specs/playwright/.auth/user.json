@@ -2,10 +2,10 @@
   "cookies": [
     {
       "name": "_ga",
-      "value": "GA1.1.786849808.1726712258",
+      "value": "GA1.1.1994028776.1727121103",
       "domain": ".internxt.com",
       "path": "/",
-      "expires": 1761272257.697788,
+      "expires": 1761681103.228633,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -22,10 +22,10 @@
     },
     {
       "name": "_ga_CHHGLQTHSB",
-      "value": "GS1.1.1726712257.1.0.1726712263.54.0.0",
+      "value": "GS1.1.1727121103.1.0.1727121109.54.0.0",
       "domain": ".internxt.com",
       "path": "/",
-      "expires": 1761272263.256536,
+      "expires": 1761681109.538933,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -37,11 +37,11 @@
       "localStorage": [
         {
           "name": "xMnemonic",
-          "value": "old myself lend puzzle teach sphere depth craft benefit wet immune husband response control cheese midnight alone sadness friend comfort before wise ladder rural"
+          "value": "depart hazard science pigeon urge enemy real switch saddle green inmate wagon clinic edit barrel wonder blush candy account atom raccoon castle library episode"
         },
         {
           "name": "xUser",
-          "value": "{\"email\":\"wilford_huels@yahoo.com\",\"userId\":\"$2a$08$cOLSh0nmGbMGPqBtxMoCOOgwbDZd47ic.qxRChQwPUtUh0BxECtja\",\"mnemonic\":\"old myself lend puzzle teach sphere depth craft benefit wet immune husband response control cheese midnight alone sadness friend comfort before wise ladder rural\",\"root_folder_id\":82521276,\"rootFolderId\":\"c96f3215-028a-433e-a2ef-f63baefd3124\",\"name\":\"My\",\"lastname\":\"Internxt\",\"uuid\":\"a55a3fdd-9a2a-4504-8186-434dd22f00f8\",\"credit\":0,\"createdAt\":\"2024-09-19T02:17:35.000Z\",\"privateKey\":\"LS0tLS1CRUdJTiBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQoKeFZnRVp1dUp1aFlKS3dZQkJBSGFSdzhCQVFkQVQwM1JjRG4xdzN0THhaUlJkSlBORjlNZ2FvT0VxTDdCCjdlbHlPT2RVY2Q4QUFRQytvZ0ZFcit0NHV4V1hWT0pETi95ZFgwZk9lcXRpakFLeVl3TDNZZkMzekJEVAp6UTg4YVc1NGRFQnBibmgwTG1OdmJUN0NqQVFRRmdvQVBnV0NadXVKdWdRTENRY0lDWkFrRnd0bVZpZCsKWVFNVkNBb0VGZ0FDQVFJWkFRS2JBd0llQVJZaEJINGFRbXQ1bThqOTVMeHJQQ1FYQzJaV0ozNWhBQUNvCi9nRCtONWNnTkNIcXpXRSszaTMzZHFXZ1lrWFU4VU0zM1dRaGVLNGdPNlhjZkhZQkFJQlZQUTM2c2Z6dQpYVXU0RUFhb2pXVXlRWXNRcnY5RkVRcXh4MlhhdjI0RngxMEVadXVKdWhJS0t3WUJCQUdYVlFFRkFRRUgKUUZUcEhEaXpyWnFQbVZFSW81SkZXREoxb0loT29KVzZRM0w3bXpmUWtadFdBd0VJQndBQS8yQ1I4MzVZCmhjNi9UamMrNk1KWVdPZFlSbEViQzN0OFRvQ1VCSyt0NEV2QUVJakNlQVFZRmdnQUtnV0NadXVKdWdtUQpKQmNMWmxZbmZtRUNtd3dXSVFSK0drSnJlWnZJL2VTOGF6d2tGd3RtVmlkK1lRQUFkYm9BL2lwYjh4Z3kKWmQrWXRnZ0dWNkhSd0k5Rlc5T0g2emJSTHVOMG41Sy9QdjdGQVFEbDZrNjRqOHVIMy9vblNLcnpvRzZFCk01TlE4UUlnQXAxMHNocm9iZmcrRGc9PQo9MlpiWQotLS0tLUVORCBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQo=\",\"publicKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgp4ak1FWnV1SnVoWUpLd1lCQkFIYVJ3OEJBUWRBVDAzUmNEbjF3M3RMeFpSUmRKUE5GOU1nYW9PRXFMN0IKN2VseU9PZFVjZC9ORHp4cGJuaDBRR2x1ZUhRdVkyOXRQc0tNQkJBV0NnQStCWUptNjRtNkJBc0pCd2dKCmtDUVhDMlpXSjM1aEF4VUlDZ1FXQUFJQkFoa0JBcHNEQWg0QkZpRUVmaHBDYTNtYnlQM2t2R3M4SkJjTApabFluZm1FQUFLaitBUDQzbHlBMEllck5ZVDdlTGZkMnBhQmlSZFR4UXpmZFpDRjRyaUE3cGR4OGRnRUEKZ0ZVOURmcXgvTzVkUzdnUUJxaU5aVEpCaXhDdS8wVVJDckhIWmRxL2JnWE9PQVJtNjRtNkVnb3JCZ0VFCkFaZFZBUVVCQVFkQVZPa2NPTE90bW8rWlVRaWpra1ZZTW5XZ2lFNmdsYnBEY3Z1Yk45Q1JtMVlEQVFnSAp3bmdFR0JZSUFDb0ZnbWJyaWJvSmtDUVhDMlpXSjM1aEFwc01GaUVFZmhwQ2EzbWJ5UDNrdkdzOEpCY0wKWmxZbmZtRUFBSFc2QVA0cVcvTVlNbVhmbUxZSUJsZWgwY0NQUlZ2VGgrczIwUzdqZEorU3Z6Nyt4UUVBCjVlcE91SS9MaDkvNkowaXE4NkJ1aERPVFVQRUNJQUtkZExJYTZHMzRQZzQ9Cj1GQ1ZUCi0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\",\"revocateKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCkNvbW1lbnQ6IFRoaXMgaXMgYSByZXZvY2F0aW9uIGNlcnRpZmljYXRlCgp3bmdFSUJZS0FDb0ZnbWJyaWJvSmtDUVhDMlpXSjM1aEFwMEFGaUVFZmhwQ2EzbWJ5UDNrdkdzOEpCY0wKWmxZbmZtRUFBQTNGQVA5TWtvek9aREdJSWdQTGFicW1COFNwL0NBdzhzdmFKNzk1ZEZkQUVUWjBRQUVBCnBBWlpPSzh3QlRRM1JVbkk1RlllOU1iVld5T21HYXFkM2FzWjFRNWJKUUU9Cj1BbjZVCi0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\",\"bucket\":\"f07143ff707b84225460798a\",\"registerCompleted\":true,\"teams\":false,\"username\":\"wilford_huels@yahoo.com\",\"bridgeUser\":\"wilford_huels@yahoo.com\",\"sharedWorkspace\":false,\"appSumoDetails\":null,\"hasReferralsProgram\":false,\"backupsBucket\":null,\"avatar\":null,\"emailVerified\":false,\"lastPasswordChangedAt\":null,\"revocationKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCkNvbW1lbnQ6IFRoaXMgaXMgYSByZXZvY2F0aW9uIGNlcnRpZmljYXRlCgp3bmdFSUJZS0FDb0ZnbWJyaWJvSmtDUVhDMlpXSjM1aEFwMEFGaUVFZmhwQ2EzbWJ5UDNrdkdzOEpCY0wKWmxZbmZtRUFBQTNGQVA5TWtvek9aREdJSWdQTGFicW1COFNwL0NBdzhzdmFKNzk1ZEZkQUVUWjBRQUVBCnBBWlpPSzh3QlRRM1JVbkk1RlllOU1iVld5T21HYXFkM2FzWjFRNWJKUUU9Cj1BbjZVCi0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\"}"
+          "value": "{\"email\":\"art.goyette77@yahoo.com\",\"userId\":\"$2a$08$Z3gwaravbdSxLAuJ4RMvfOvh6NdK6Ivk.Qr9GpuX2srYldWZ3Irh.\",\"mnemonic\":\"depart hazard science pigeon urge enemy real switch saddle green inmate wagon clinic edit barrel wonder blush candy account atom raccoon castle library episode\",\"root_folder_id\":82779588,\"rootFolderId\":\"88e90434-f1fb-445d-829c-87e17a3bb4fc\",\"name\":\"My\",\"lastname\":\"Internxt\",\"uuid\":\"bf28aa09-818f-47ca-b7fb-9d33fe983668\",\"credit\":0,\"createdAt\":\"2024-09-23T19:51:40.000Z\",\"privateKey\":\"LS0tLS1CRUdJTiBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQoKeFZnRVp2SEd5UllKS3dZQkJBSGFSdzhCQVFkQVlVczIwNXMwSWNvUnd4YWRsZzVqNHpuSXhYYzBzdkxkCm5wM2lnVnhjV3BNQUFRRDkxWkhXaUp1TUtFT0t6cjA5dHAzK0d3UFhNZnBXenJZSy9rVEVtYXNielJJdAp6UTg4YVc1NGRFQnBibmgwTG1OdmJUN0NqQVFRRmdvQVBnV0NadkhHeVFRTENRY0lDWkM1dlp2RGZaakwKeXdNVkNBb0VGZ0FDQVFJWkFRS2JBd0llQVJZaEJPaGV5eG9IWTFUeHBZZDd4N205bThOOW1NdkxBQUExCmh3RUF4S1F1QkpMRUV2eThXZnJtTkh4bGY2RmRqMFVHVWg1UWV6QTRXeTR5eVBzQkFQQnE1V3BiQS9PVgpSdGhPTWNINWJ4VHhGLzFuaFNFbzJpVWNzcE9uT2xZR3gxMEVadkhHeVJJS0t3WUJCQUdYVlFFRkFRRUgKUVBOZHhpNkxUdVc4T0lLUmRSTUsvdlliSkdCejRZSkJxMEx0TmhGOG03dE5Bd0VJQndBQS8yT1M5aXA3Cjh6NlI3dHVKTUxEQmxudzdIKzQyZS9RTGIzbGlEbHJveXRXSUVnL0NlQVFZRmdnQUtnV0NadkhHeVFtUQp1YjJidzMyWXk4c0Ntd3dXSVFUb1hzc2FCMk5VOGFXSGU4ZTV2WnZEZlpqTHl3QUFlOThBL2oyQUo0WEoKTHZqMG5hNHVMWVRCSDFjMEFTNEF5aVNZTlk2OGRTRWhONDVtQVA5eDQrNkNyVVBGL2tMc2M1RU9ZVEo4CldZV2lGN3ZDTUVxMEhKbkx0NlFoRGc9PQo9S0t2UQotLS0tLUVORCBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQo=\",\"publicKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgp4ak1FWnZIR3lSWUpLd1lCQkFIYVJ3OEJBUWRBWVVzMjA1czBJY29Sd3hhZGxnNWo0em5JeFhjMHN2TGQKbnAzaWdWeGNXcFBORHp4cGJuaDBRR2x1ZUhRdVkyOXRQc0tNQkJBV0NnQStCWUptOGNiSkJBc0pCd2dKCmtMbTltOE45bU12TEF4VUlDZ1FXQUFJQkFoa0JBcHNEQWg0QkZpRUU2RjdMR2dkalZQR2xoM3ZIdWIyYgp3MzJZeThzQUFEV0hBUURFcEM0RWtzUVMvTHhaK3VZMGZHVi9vVjJQUlFaU0hsQjdNRGhiTGpMSSt3RUEKOEdybGFsc0Q4NVZHMkU0eHdmbHZGUEVYL1dlRklTamFKUnl5azZjNlZnYk9PQVJtOGNiSkVnb3JCZ0VFCkFaZFZBUVVCQVFkQTgxM0dMb3RPNWJ3NGdwRjFFd3IrOWhza1lIUGhna0dyUXUwMkVYeWJ1MDBEQVFnSAp3bmdFR0JZSUFDb0ZnbWJ4eHNrSmtMbTltOE45bU12TEFwc01GaUVFNkY3TEdnZGpWUEdsaDN2SHViMmIKdzMyWXk4c0FBSHZmQVA0OWdDZUZ5Uzc0OUoydUxpMkV3UjlYTkFFdUFNb2ttRFdPdkhVaElUZU9aZ0QvCmNlUHVncTFEeGY1QzdIT1JEbUV5ZkZtRm9oZTd3akJLdEJ5Wnk3ZWtJUTQ9Cj0yTUQ4Ci0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\",\"revocateKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCkNvbW1lbnQ6IFRoaXMgaXMgYSByZXZvY2F0aW9uIGNlcnRpZmljYXRlCgp3bmdFSUJZS0FDb0ZnbWJ4eHNrSmtMbTltOE45bU12TEFwMEFGaUVFNkY3TEdnZGpWUEdsaDN2SHViMmIKdzMyWXk4c0FBSWVtQVAwWHVkSG5DRmJXLzNzTG9rMWM2b3BVSHhEMEk4a1dqM2lRMHkvemFGMzlTUUVBCndobGJQRHVSbDNYUDFXVE5scEQ3ZVRBZkdnMnZjdHdBbVRsczVTT0dhUVU9Cj1yN1diCi0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\",\"bucket\":\"0fb9e0a46a54dd1d9d834f82\",\"registerCompleted\":true,\"teams\":false,\"username\":\"art.goyette77@yahoo.com\",\"bridgeUser\":\"art.goyette77@yahoo.com\",\"sharedWorkspace\":false,\"appSumoDetails\":null,\"hasReferralsProgram\":false,\"backupsBucket\":null,\"avatar\":null,\"emailVerified\":false,\"lastPasswordChangedAt\":null,\"revocationKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCkNvbW1lbnQ6IFRoaXMgaXMgYSByZXZvY2F0aW9uIGNlcnRpZmljYXRlCgp3bmdFSUJZS0FDb0ZnbWJ4eHNrSmtMbTltOE45bU12TEFwMEFGaUVFNkY3TEdnZGpWUEdsaDN2SHViMmIKdzMyWXk4c0FBSWVtQVAwWHVkSG5DRmJXLzNzTG9rMWM2b3BVSHhEMEk4a1dqM2lRMHkvemFGMzlTUUVBCndobGJQRHVSbDNYUDFXVE5scEQ3ZVRBZkdnMnZjdHdBbVRsczVTT0dhUVU9Cj1yN1diCi0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\"}"
         },
         {
           "name": "workspace",
@@ -53,7 +53,7 @@
         },
         {
           "name": "xNewToken",
-          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InV1aWQiOiJhNTVhM2ZkZC05YTJhLTQ1MDQtODE4Ni00MzRkZDIyZjAwZjgiLCJlbWFpbCI6IndpbGZvcmRfaHVlbHNAeWFob28uY29tIiwibmFtZSI6Ik15IiwibGFzdG5hbWUiOiJJbnRlcm54dCIsInVzZXJuYW1lIjoid2lsZm9yZF9odWVsc0B5YWhvby5jb20iLCJzaGFyZWRXb3Jrc3BhY2UiOnRydWUsIm5ldHdvcmtDcmVkZW50aWFscyI6eyJ1c2VyIjoid2lsZm9yZF9odWVsc0B5YWhvby5jb20iLCJwYXNzIjoiJDJhJDA4JGNPTFNoMG5tR2JNR1BxQnR4TW9DT09nd2JEWmQ0N2ljLnF4UkNoUXdQVXRVaDBCeEVDdGphIn19LCJpYXQiOjE3MjY3MTIyNjUsImV4cCI6MTcyNzkyMTg2NX0.V1DGMBzgP9dSQkAnReb25_rUtJrfsn3WpAUigXLDl6Y"
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InV1aWQiOiJiZjI4YWEwOS04MThmLTQ3Y2EtYjdmYi05ZDMzZmU5ODM2NjgiLCJlbWFpbCI6ImFydC5nb3lldHRlNzdAeWFob28uY29tIiwibmFtZSI6Ik15IiwibGFzdG5hbWUiOiJJbnRlcm54dCIsInVzZXJuYW1lIjoiYXJ0LmdveWV0dGU3N0B5YWhvby5jb20iLCJzaGFyZWRXb3Jrc3BhY2UiOnRydWUsIm5ldHdvcmtDcmVkZW50aWFscyI6eyJ1c2VyIjoiYXJ0LmdveWV0dGU3N0B5YWhvby5jb20iLCJwYXNzIjoiJDJhJDA4JFozZ3dhcmF2YmRTeExBdUo0Uk12Zk92aDZOZEs2SXZrLlFyOUdwdVgyc3JZbGRXWjNJcmguIn19LCJpYXQiOjE3MjcxMjExMTEsImV4cCI6MTcyODMzMDcxMX0.8gbMj8jFyMeqjEbXYjCghspqiPWnNVUV62EDxBGPe9o"
         },
         {
           "name": "workspace_credentials",
@@ -61,7 +61,7 @@
         },
         {
           "name": "xToken",
-          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndpbGZvcmRfaHVlbHNAeWFob28uY29tIiwiaWF0IjoxNzI2NzEyMjY1LCJleHAiOjE3Mjc5MjE4NjV9.T4e2WhckQ3_R_yl1tXjZyug3qAj6VhCuMTz-0evfs1w"
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydC5nb3lldHRlNzdAeWFob28uY29tIiwiaWF0IjoxNzI3MTIxMTExLCJleHAiOjE3MjgzMzA3MTF9.42QPNW3txSB3v1ylo8wK6gsjVKWcE-Qjuc5K-KOMUe0"
         },
         {
           "name": "i18nextLng",
@@ -73,11 +73,11 @@
         },
         {
           "name": "NRBA_SESSION",
-          "value": "{\"value\":\"2bbb186b36c6316b\",\"inactiveAt\":1726714060180,\"expiresAt\":1726726660100,\"updatedAt\":1726712260180,\"sessionReplayMode\":0,\"sessionReplaySentFirstChunk\":false,\"sessionTraceMode\":0,\"traceHarvestStarted\":false,\"custom\":{}}"
+          "value": "{\"value\":\"30c01682d3fd17e9\",\"inactiveAt\":1727122905933,\"expiresAt\":1727135505903,\"updatedAt\":1727121105933,\"sessionReplayMode\":0,\"sessionReplaySentFirstChunk\":false,\"sessionTraceMode\":0,\"traceHarvestStarted\":false,\"custom\":{}}"
         },
         {
           "name": "signUpTutorialCompleted",
-          "value": "$2a$08$cOLSh0nmGbMGPqBtxMoCOOgwbDZd47ic.qxRChQwPUtUh0BxECtja"
+          "value": "$2a$08$Z3gwaravbdSxLAuJ4RMvfOvh6NdK6Ivk.Qr9GpuX2srYldWZ3Irh."
         }
       ]
     }

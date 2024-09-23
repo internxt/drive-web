@@ -50,12 +50,10 @@ export class DrivePage {
   }
 
   async clickOnCreateFolderHeaderButton() {
-    await this.createFolderHeaderButton.waitFor({ state: 'visible', timeout: 5000 });
     await this.createFolderHeaderButton.click();
   }
 
   async typeInFolderName(folderName: string) {
-    await this.folderCreationModal.waitFor({ state: 'visible' });
     const modalTitle = await this.newFolderModalTitle.textContent();
     expect(modalTitle).toEqual('New folder');
     const inputTitle = await this.inputTitle.textContent();
@@ -85,11 +83,10 @@ export class DrivePage {
   async rightClickOnBody() {
     await this.driveTitle.waitFor({ state: 'visible' });
     await this.page.locator('body').click({ button: 'right' });
-    await this.rightClickOnBodyModal.waitFor({ state: 'visible' });
   }
 
   async clickOnNewFolderContextMenu() {
-    await this.contextMenuCreateFolderButton.waitFor({ state: 'visible' });
+    await this.contextMenuCreateFolderButton.waitFor({ state: 'visible', timeout: 6000 });
     const newFolderButtonText = await this.contextMenuCreateFolderButtonText.textContent();
     expect(newFolderButtonText).toEqual('New folder');
     const buttonSymbols = await this.contextMenuCreateFolderButtonSymbol.textContent();
