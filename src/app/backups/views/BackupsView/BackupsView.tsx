@@ -14,14 +14,13 @@ import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/d
 import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
 import DeviceList from '../../components/DeviceList/DeviceList';
 import { Device } from '../../types';
-import newStorageService from 'app/drive/services/new-storage.service';
-import _ from 'lodash';
 import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { deleteFile } from '../../../drive/services/file.service';
 import { ListItemMenu } from '../../../shared/components/List/ListItem';
 import FileViewerWrapper from 'app/drive/components/FileViewer/FileViewerWrapper';
 import { PreviewFileItem } from 'app/share/types';
+import { useBackupsPagination } from 'hooks/backups/usePagination';
 
 const DEFAULT_LIMIT = 50;
 
@@ -36,11 +35,16 @@ export default function BackupsView(): JSX.Element {
   const [selectedDevices, setSelectedDevices] = useState<(Device | DriveFolderData)[]>([]);
   const [backupsAsFoldersPath, setBackupsAsFoldersPath] = useState<DriveFolderData[]>([]);
   const [folderUuid, setFolderUuid] = useState<string>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentItems, setCurrentItems] = useState<DriveItemData[]>([]);
   const [selectedItems, setSelectedItems] = useState<DriveItemData[]>([]);
-  const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
-  const [offset, setOffset] = useState<number>(0);
+
+  const { currentItems, isLoading, hasMoreItems, getMorePaginatedItems, getFolderContent, setIsLoading } =
+    useBackupsPagination(folderUuid);
+
+  useEffect(() => {
+    setSelectedItems([]);
+    getFolderContent();
+  }, [folderUuid]);
+
   const [itemToPreview, setItemToPreview] = useState<PreviewFileItem>();
   const [isFileViewerOpen, setIsFileViewerOpen] = useState<boolean>(false);
 
@@ -57,10 +61,6 @@ export default function BackupsView(): JSX.Element {
       setFolderUuid(currentDevice.uuid);
     }
   }, [currentDevice]);
-
-  useEffect(() => {
-    refreshFolderContent();
-  }, [folderUuid]);
 
   function goToFolder(folderId: number, folderUuid?: string) {
     setBackupsAsFoldersPath((current) => {
@@ -132,7 +132,6 @@ export default function BackupsView(): JSX.Element {
       } else {
         await deleteFile(item);
       }
-      setCurrentItems((items) => items.filter((i) => !(i.id === item.id && i.isFolder === item.isFolder)));
     }
     dispatch(deleteItemsThunk(selectedItems));
 
@@ -140,6 +139,9 @@ export default function BackupsView(): JSX.Element {
       setIsFileViewerOpen(false);
       setItemToPreview(undefined);
     }
+
+    setSelectedItems([]);
+    await getFolderContent();
   }
 
   const onCloseFileViewer = () => {
@@ -186,71 +188,6 @@ export default function BackupsView(): JSX.Element {
     setSelectedItems(updatedSelectedItems);
   };
 
-  async function refreshFolderContent() {
-    if (!folderUuid) return;
-
-    setIsLoading(true);
-    setOffset(0);
-    setSelectedItems([]);
-    setCurrentItems([]);
-
-    const [folderContentPromise] = newStorageService.getFolderContentByUuid({
-      folderUuid,
-      limit: DEFAULT_LIMIT,
-      offset: 0,
-    });
-
-    const response = await folderContentPromise;
-    const files = response.files.map((file) => ({ ...file, isFolder: false, name: file.plainName }));
-    const folders = response.children.map((folder) => ({ ...folder, isFolder: true, name: folder.plainName }));
-    const items = _.concat(folders as DriveItemData[], files as DriveItemData[]);
-
-    setCurrentItems(items);
-
-    if (items.length >= DEFAULT_LIMIT) {
-      setHasMoreItems(true);
-      setOffset(DEFAULT_LIMIT);
-    } else {
-      setHasMoreItems(false);
-    }
-
-    setIsLoading(false);
-  }
-
-  const getPaginatedBackupList = async () => {
-    if (!folderUuid || !hasMoreItems) return;
-
-    setIsLoading(true);
-
-    const [folderContentPromise] = newStorageService.getFolderContentByUuid({
-      folderUuid,
-      limit: DEFAULT_LIMIT,
-      offset,
-    });
-
-    const folderContentResponse = await folderContentPromise;
-    const files = folderContentResponse.files.map((file) => ({ ...file, isFolder: false, name: file.plainName }));
-    const folders = folderContentResponse.children.map((folder) => ({
-      ...folder,
-      isFolder: true,
-      name: folder.plainName,
-    }));
-    const items = _.concat(folders as DriveItemData[], files as DriveItemData[]);
-
-    const totalCurrentItems = _.concat(currentItems, items);
-
-    setCurrentItems(totalCurrentItems);
-
-    if (items.length >= DEFAULT_LIMIT) {
-      setHasMoreItems(true);
-      setOffset((prevOffset) => prevOffset + DEFAULT_LIMIT);
-    } else {
-      setHasMoreItems(false);
-    }
-
-    setIsLoading(false);
-  };
-
   let body;
 
   if (!currentDevice) {
@@ -272,7 +209,7 @@ export default function BackupsView(): JSX.Element {
         selectedItems={selectedItems}
         hasMoreItems={hasMoreItems}
         isLoading={isLoading}
-        getPaginatedBackupList={getPaginatedBackupList}
+        getPaginatedBackupList={getMorePaginatedItems}
         onItemClicked={onItemClicked}
         onItemSelected={onItemSelected}
         onSelectedItemsChanged={onSelectedItemsChanged}
