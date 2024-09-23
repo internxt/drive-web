@@ -1,6 +1,6 @@
 import { ActionReducerMapBuilder, createAsyncThunk, Dispatch } from '@reduxjs/toolkit';
 
-import { DriveItemData } from 'app/drive/types';
+import { DriveFolderData, DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import tasksService from 'app/tasks/services/tasks.service';
 import { RenameFileTask, RenameFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
@@ -8,16 +8,13 @@ import { t } from 'i18next';
 import storageThunks from '.';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
 import { uiActions } from '../../ui';
-import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { checkDuplicatedFiles } from '../fileUtils/checkDuplicatedFiles';
 import { getUniqueFilename } from '../fileUtils/getUniqueFilename';
 import { checkFolderDuplicated } from '../folderUtils/checkFolderDuplicated';
-import renameFolderIfNeeded from '../folderUtils/renameFolderIfNeeded';
+import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
 import { StorageState } from '../storage.model';
-import storageSelectors from '../storage.selectors';
 import { IRoot } from './uploadFolderThunk';
 
 export const handleRepeatedUploadingFiles = async (
@@ -70,32 +67,23 @@ export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { sta
   'storage/renameItems',
   async ({ items, destinationFolderId, onRenameSuccess }: RenameItemsPayload, { getState, dispatch }) => {
     const promises: Promise<any>[] = [];
-    const state = getState();
-    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
 
     if (items.some((item) => item.isFolder && item.uuid === destinationFolderId)) {
       return void notificationsService.show({ text: t('error.movingItemInsideItself'), type: ToastType.Error });
     }
 
-    const currentFolderItems = storageSelectors.currentFolderItems(state);
-
     for (const [index, item] of items.entries()) {
       let itemParsed: DriveItemData;
 
-      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-
-      const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(
-        destinationFolderId,
-        false,
-        workspaceCredentials?.tokenHeader,
-      );
-      const parentFolderContent = await parentFolderContentPromise;
-
       if (item.isFolder) {
-        const currentFolderFolders = currentFolderItems.filter((item) => item?.isFolder);
-        const allFolderToCheckNames = [...parentFolderContent.children, ...currentFolderFolders];
-        const [, , finalFilename] = renameFolderIfNeeded(allFolderToCheckNames, item.name);
-        itemParsed = { ...item, name: finalFilename, plain_name: finalFilename };
+        const { duplicatedFoldersResponse } = await checkFolderDuplicated([item], destinationFolderId);
+
+        const finalFolderName = await getUniqueFolderName(
+          item.plainName ?? item.name,
+          duplicatedFoldersResponse as DriveFolderData[],
+          destinationFolderId,
+        );
+        itemParsed = { ...item, name: finalFolderName, plain_name: finalFolderName };
       } else {
         const { duplicatedFilesResponse } = await checkDuplicatedFiles([item], destinationFolderId);
 
