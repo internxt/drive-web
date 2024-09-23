@@ -55,7 +55,8 @@ const FileViewerWrapper = ({
 
   const driveItemActions = useDriveItemActions(currentFile);
 
-  const onDownload = () => currentFile && dispatch(storageThunks.downloadItemsThunk([currentFile as DriveItemData]));
+  const onDownloadFile = () =>
+    currentFile && dispatch(storageThunks.downloadItemsThunk([currentFile as DriveItemData]));
 
   const { blob, updateProgress, handleProgress, abortDownload, setBlob } = useFileViewerDownload({
     currentFile,
@@ -139,7 +140,7 @@ const FileViewerWrapper = ({
         onClose();
         abortDownload();
       }}
-      onDownload={onDownload}
+      onDownload={onDownloadFile}
       progress={updateProgress}
       isAuthenticated={isAuthenticated}
       blob={blob}
