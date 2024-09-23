@@ -1,37 +1,21 @@
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
-import { DriveFileData, DriveItemData } from '../../types';
+import { DriveItemData } from '../../types';
 
-import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { getAppConfig } from 'app/core/services/config.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import navigationService from 'app/core/services/navigation.service';
 import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import errorService from '../../../core/services/error.service';
 import { OrderDirection } from '../../../core/types';
-import { FileToUpload } from '../../../drive/services/file.service/uploadFile';
-import {
-  ThumbnailToUpload,
-  compareThumbnail,
-  getThumbnailFrom,
-  setCurrentThumbnail,
-  setThumbnails,
-  uploadThumbnail,
-} from '../../../drive/services/thumbnail.service';
 import { AdvancedSharedItem, PreviewFileItem, UserRoles } from '../../../share/types';
 import { RootState } from '../../../store';
 import { uiActions } from '../../../store/slices/ui';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
-import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from '../../services/database.service';
-import downloadService from '../../services/download.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import FileViewer from './FileViewer';
-import {
-  getFileContentManager,
-  topDropdownBarActionsMenu,
-  useFileViewerKeyboardShortcuts,
-} from './utils/fileViewerWrapperUtils';
+import { topDropdownBarActionsMenu, useFileViewerKeyboardShortcuts } from './utils/fileViewerWrapperUtils';
+import { handleFileThumbnail } from './utils/handleThumbnails';
+import { useFileViewerDownload } from './hooks/useFileViewerDownload';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
 
@@ -63,14 +47,9 @@ const FileViewerWrapper = ({
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
 
-  const [isDownloadStarted, setIsDownloadStarted] = useState(false);
-  const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<PreviewFileItem>(file);
 
-  const [blob, setBlob] = useState<Blob | null>(null);
-
   const user = localStorageService.getUser();
-  const userEmail = user?.email;
 
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id as pathProps;
@@ -80,32 +59,11 @@ const FileViewerWrapper = ({
 
   const onDownload = () => currentFile && dispatch(storageThunks.downloadItemsThunk([currentFile as DriveItemData]));
 
-  useEffect(() => {
-    setBlob(null);
-    dispatch(uiActions.setFileViewerItem(currentFile));
-    if (currentFile && !updateProgress && !isDownloadStarted) {
-      setIsDownloadStarted(true);
-      fileContentManager
-        .download()
-        .then((downloadedFile) => {
-          setBlob(downloadedFile.blob);
-          setUpdateProgress(0);
-          setIsDownloadStarted(false);
-          if (downloadedFile.shouldHandleFileThumbnail) {
-            handleFileThumbnail(currentFile, downloadedFile.blob).catch(errorService.reportError);
-          }
-        })
-        .catch((error) => {
-          if (error.name === 'AbortError') {
-            return;
-          }
-          console.error(error);
-          setBlob(null);
-          errorService.reportError(error);
-          setIsDownloadStarted(false);
-        });
-    }
-  }, [showPreview, currentFile]);
+  const { blob, updateProgress, handleProgress, abortDownload, setBlob } = useFileViewerDownload({
+    currentFile,
+    isWorkspace,
+    dispatch,
+  });
 
   useEffect(() => {
     setBlob(null);
@@ -162,117 +120,13 @@ const FileViewerWrapper = ({
 
   //Switch to the next or previous file in the folder
   function changeFile(direction: 'next' | 'prev') {
-    setBlob(null);
-    setIsDownloadStarted(false);
-    setUpdateProgress(0);
+    abortDownload();
     if (direction === 'next') {
-      setCurrentFile?.(sortFolderFiles[fileIndex + 1]);
+      setCurrentFile(sortFolderFiles[fileIndex + 1]);
     } else {
-      setCurrentFile?.(sortFolderFiles[fileIndex - 1]);
+      setCurrentFile(sortFolderFiles[fileIndex - 1]);
     }
   }
-
-  function handleProgress(progress: number, fileType?: string) {
-    if (fileType && SPECIAL_MIME_TYPES.includes(fileType)) {
-      setUpdateProgress(progress * 0.95);
-    } else {
-      setUpdateProgress(progress);
-    }
-  }
-
-  function downloadFile(currentFile: PreviewFileItem, abortController: AbortController) {
-    setBlob(null);
-    return downloadService.fetchFileBlob(
-      { ...currentFile, bucketId: currentFile.bucket },
-      {
-        updateProgressCallback: (progress) => handleProgress(progress, currentFile.type.toLowerCase()),
-        isWorkspace,
-        abortController,
-      },
-      currentFile.credentials,
-      currentFile.mnemonic,
-    );
-  }
-
-  const handleUpdateLocalImageThumbnail = async (
-    thumbnailFile: File,
-    driveFile: DriveFileData,
-    currentThumbnail: Thumbnail | null,
-    thumbnailUploaded?: Thumbnail,
-  ) => {
-    const isThumbnailGeneratedAndUploaded = thumbnailUploaded && thumbnailFile;
-
-    if (isThumbnailGeneratedAndUploaded) {
-      setCurrentThumbnail(thumbnailFile, thumbnailUploaded, driveFile as DriveItemData, dispatch);
-
-      let newThumbnails: Thumbnail[];
-
-      const existLocalThumbnail = !!currentThumbnail;
-      if (existLocalThumbnail) {
-        //Replace existing thumbnail with the new uploadedThumbnail
-        newThumbnails = driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails] : [thumbnailUploaded];
-        newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
-      } else {
-        newThumbnails =
-          driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
-      }
-
-      setThumbnails(newThumbnails, driveFile as DriveItemData, dispatch);
-      await updateDatabaseFilePreviewData({
-        fileId: driveFile.id,
-        folderId: driveFile.folderId,
-        previewBlob: thumbnailFile,
-        updatedAt: driveFile.updatedAt,
-      });
-    }
-  };
-
-  const handleFileThumbnail = async (driveFile: PreviewFileItem, file: File | Blob) => {
-    const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
-    const databaseThumbnail = await getDatabaseFilePreviewData({ fileId: driveFile.id });
-    const existsThumbnailInDatabase = !!databaseThumbnail;
-
-    const fileObject = new File([file], driveFile.name);
-
-    const fileUpload: FileToUpload = {
-      name: driveFile.name,
-      size: driveFile.size,
-      type: driveFile.type,
-      content: fileObject,
-      parentFolderId: driveFile.folderUuid,
-    };
-
-    const thumbnailGenerated = await getThumbnailFrom(fileUpload);
-
-    const isDifferentThumbnailOrNotExists =
-      !currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated);
-
-    if (isDifferentThumbnailOrNotExists && thumbnailGenerated.file) {
-      const thumbnailToUpload: ThumbnailToUpload = {
-        fileId: driveFile.id,
-        size: thumbnailGenerated.file.size,
-        max_width: thumbnailGenerated.max_width,
-        max_height: thumbnailGenerated.max_height,
-        type: thumbnailGenerated.type,
-        content: thumbnailGenerated.file,
-      };
-
-      const thumbnailUploaded = await uploadThumbnail(userEmail as string, thumbnailToUpload, false, () => {});
-
-      setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
-
-      await handleUpdateLocalImageThumbnail(thumbnailGenerated.file, driveFile, currentThumbnail, thumbnailUploaded);
-    } else if (!existsThumbnailInDatabase && thumbnailGenerated?.file) {
-      await updateDatabaseFilePreviewData({
-        fileId: driveFile.id,
-        folderId: driveFile.folderId,
-        previewBlob: new Blob([thumbnailGenerated?.file], { type: thumbnailGenerated.file?.type }),
-        updatedAt: driveFile.updatedAt,
-      });
-    }
-  };
-
-  const fileContentManager = getFileContentManager(currentFile, downloadFile);
 
   const handlersForSpecialItems = {
     handleUpdateProgress: handleProgress,
@@ -285,7 +139,7 @@ const FileViewerWrapper = ({
       file={currentFile}
       onClose={() => {
         onClose();
-        fileContentManager.abort();
+        abortDownload();
       }}
       onDownload={onDownload}
       progress={updateProgress}

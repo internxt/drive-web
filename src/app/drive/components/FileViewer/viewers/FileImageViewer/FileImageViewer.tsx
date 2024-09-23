@@ -15,6 +15,7 @@ const FileImageViewer = ({
   blob,
   handlersForSpecialItems,
   setIsPreviewAvailable,
+  dispatch,
 }: FormatFileViewerProps): JSX.Element => {
   const [imageBlob, setImageBlob] = useState<Blob | null>();
 
@@ -30,7 +31,7 @@ const FileImageViewer = ({
 
           setImageBlob(convertedBlob as Blob);
 
-          await handlersForSpecialItems?.handleUpdateThumbnail(updatedFile, convertedBlob as Blob);
+          await handlersForSpecialItems?.handleUpdateThumbnail(updatedFile, convertedBlob as Blob, dispatch);
         } else {
           setImageBlob(blob);
         }

@@ -48,6 +48,7 @@ const DriveView = (props: DriveViewProps) => {
   useEffect(() => {
     if (fileViewer) {
       setTitle(`${fileViewer?.plainName ?? fileViewer?.name} - Internxt Drive`);
+      navigationService.replaceState(fileViewer.uuid);
     }
   }, [fileViewer]);
 

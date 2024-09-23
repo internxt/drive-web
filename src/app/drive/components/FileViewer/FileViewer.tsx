@@ -8,7 +8,7 @@ import { FileExtensionGroup } from 'app/drive/types/file-types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';
 import { ListItemMenu } from 'app/shared/components/List/ListItem';
-import { RootState } from 'app/store';
+import { AppDispatch, RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { Fragment, Suspense, useEffect, useState } from 'react';
@@ -47,7 +47,7 @@ interface FileViewerProps {
   };
   handlersForSpecialItems?: {
     handleUpdateProgress: (progress: number) => void;
-    handleUpdateThumbnail: (driveFile: PreviewFileItem, blob: Blob) => Promise<void>;
+    handleUpdateThumbnail: (driveFile: PreviewFileItem, file: File | Blob, dispatch: AppDispatch) => Promise<void>;
   };
 }
 
@@ -58,8 +58,9 @@ export interface FormatFileViewerProps {
   setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
   handlersForSpecialItems?: {
     handleUpdateProgress: (progress: number) => void;
-    handleUpdateThumbnail: (driveFile: PreviewFileItem, blob: Blob) => Promise<void>;
+    handleUpdateThumbnail: (driveFile: PreviewFileItem, file: File | Blob, dispatch: AppDispatch) => Promise<void>;
   };
+  dispatch: AppDispatch;
 }
 
 const FileViewer = ({
@@ -256,6 +257,7 @@ const FileViewer = ({
                       file={file}
                       setIsPreviewAvailable={setIsPreviewAvailable}
                       handlersForSpecialItems={handlersForSpecialItems}
+                      dispatch={dispatch}
                     />
                   </Suspense>
                 ) : null}
