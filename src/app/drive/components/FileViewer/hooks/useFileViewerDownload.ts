@@ -50,37 +50,39 @@ export const useFileViewerDownload = ({
     if (isDownloadStarted) {
       fileContentManager.abort();
     }
+
     setBlob(null);
     setUpdateProgress(0);
     setIsDownloadStarted(false);
   };
 
+  const downloadFileBlob = async () => {
+    try {
+      const { blob, shouldHandleFileThumbnail } = await fileContentManager.download();
+
+      setBlob(blob);
+      if (shouldHandleFileThumbnail) {
+        handleFileThumbnail(currentFile, blob, dispatch).catch(errorService.reportError);
+      }
+    } catch (error) {
+      if ((error as any).name === 'AbortError') {
+        return;
+      }
+      console.error(error);
+      setBlob(null);
+      errorService.reportError(error);
+    } finally {
+      setIsDownloadStarted(false);
+      setUpdateProgress(undefined);
+    }
+  };
+
   useEffect(() => {
-    setBlob(null);
     dispatch(uiActions.setFileViewerItem(currentFile));
     if (currentFile && !updateProgress && !isDownloadStarted) {
       setUpdateProgress(0);
       setIsDownloadStarted(true);
-      fileContentManager
-        .download()
-        .then((downloadedFile) => {
-          setBlob(downloadedFile.blob);
-          if (downloadedFile.shouldHandleFileThumbnail) {
-            handleFileThumbnail(currentFile, downloadedFile.blob, dispatch).catch(errorService.reportError);
-          }
-        })
-        .catch((error) => {
-          if (error.name === 'AbortError') {
-            return;
-          }
-          console.error(error);
-          setBlob(null);
-          errorService.reportError(error);
-        })
-        .finally(() => {
-          setIsDownloadStarted(false);
-          setUpdateProgress(undefined);
-        });
+      downloadFileBlob();
     }
   }, [currentFile]);
 

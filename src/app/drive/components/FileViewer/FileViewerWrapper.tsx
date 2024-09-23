@@ -21,8 +21,6 @@ export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<Advan
 
 type pathProps = 'drive' | 'trash' | 'shared' | 'recents';
 
-const SPECIAL_MIME_TYPES = ['heic'];
-
 interface FileViewerWrapperProps {
   file: PreviewFileItem;
   onClose: () => void;
