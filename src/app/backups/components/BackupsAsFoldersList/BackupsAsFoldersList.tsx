@@ -69,12 +69,18 @@ export default function BackupsAsFoldersList({
               const Icon = iconService.getItemIcon(item.isFolder, item.type);
 
               return (
-                <div className="flex min-w-activity grow items-center justify-start pr-3">
+                <div className="relative flex min-w-activity grow items-center justify-start pr-3">
                   <div className="mr-3 h-8 w-8">
                     <Icon className="h-8 w-8" />
                   </div>
-                  <div className="grow cursor-default truncate">
-                    <button className="z-30 shrink cursor-pointer truncate" onClick={() => onItemClicked(item)}>
+                  <div className="relative flex grow cursor-default truncate">
+                    <button
+                      className="z-30 shrink cursor-pointer truncate"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onItemClicked(item);
+                      }}
+                    >
                       {displayName}
                     </button>
                   </div>
