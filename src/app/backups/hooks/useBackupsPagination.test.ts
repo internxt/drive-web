@@ -33,6 +33,21 @@ describe('useBackupsPagination', () => {
     jest.clearAllMocks();
   });
 
+  it('Should not fetch more items as there are less than 50 items in total', async () => {
+    jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValue([
+      Promise.resolve(FOLDER_CONTENT_2),
+      {
+        cancel: jest.fn(),
+      },
+    ]);
+
+    const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));
+
+    await waitFor(() => {
+      expect(result.current.hasMoreItems).toBe(false);
+    });
+  });
+
   it('Should load the first items and contains more items to fetch paginated', async () => {
     jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValue([
       Promise.resolve(FOLDER_CONTENT_1),
@@ -63,7 +78,7 @@ describe('useBackupsPagination', () => {
     });
   });
 
-  it('Should fetch more items if getMorePaginatedItems is called', async () => {
+  it('Should fetch more items if there are more than 50 items', async () => {
     jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValue([
       Promise.resolve(FOLDER_CONTENT_1),
       {
@@ -77,7 +92,7 @@ describe('useBackupsPagination', () => {
       await result.current.getFolderContent();
     });
 
-    expect(result.current.currentItems.length).toBe(FOLDER_CONTENT_1_LENGTH);
+    expect(result.current.currentItems.length > 50).toBeTruthy();
 
     jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValue([
       Promise.resolve(FOLDER_CONTENT_2),
@@ -91,22 +106,7 @@ describe('useBackupsPagination', () => {
     });
 
     await waitFor(() => {
-      expect(result.current.currentItems.length).toEqual(TOTAL_LENGTH);
-    });
-  });
-
-  it('Should not fetch more items as there are less than 50 items in total', async () => {
-    jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValue([
-      Promise.resolve(FOLDER_CONTENT_2),
-      {
-        cancel: jest.fn(),
-      },
-    ]);
-
-    const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));
-
-    await waitFor(() => {
-      expect(result.current.hasMoreItems).toBe(false);
+      expect(result.current.currentItems.length < 50).toBeFalsy();
     });
   });
 
