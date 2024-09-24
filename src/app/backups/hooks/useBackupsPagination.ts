@@ -1,7 +1,7 @@
-import newStorageService from 'app/drive/services/new-storage.service';
-import { DriveItemData } from 'app/drive/types';
-import _ from 'lodash';
 import { useEffect, useState } from 'react';
+import _ from 'lodash';
+import newStorageService from '../../drive/services/new-storage.service';
+import { DriveItemData } from '../../drive/types';
 
 const DEFAULT_LIMIT = 50;
 

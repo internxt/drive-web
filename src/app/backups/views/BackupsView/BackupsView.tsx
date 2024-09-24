@@ -9,7 +9,6 @@ import Dialog from '../../../shared/components/Dialog/Dialog';
 import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
 import DeviceList from '../../components/DeviceList/DeviceList';
 import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
-import { useBackupsPagination } from 'hooks/backups/useBackupsPagination';
 import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import { deleteFile } from '../../../drive/services/file.service';
@@ -18,8 +17,9 @@ import { ListItemMenu } from '../../../shared/components/List/ListItem';
 import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import { useBackupListActions } from 'hooks/backups/useBackupListActions';
-import { useBackupDeviceActions } from 'hooks/backups/useBackupDeviceActions';
+import { useBackupListActions } from 'app/backups/hooks/useBackupListActions';
+import { useBackupDeviceActions } from 'app/backups/hooks/useBackupDeviceActions';
+import { useBackupsPagination } from 'app/backups/hooks/useBackupsPagination';
 
 export default function BackupsView(): JSX.Element {
   const { translate } = useTranslationContext();
