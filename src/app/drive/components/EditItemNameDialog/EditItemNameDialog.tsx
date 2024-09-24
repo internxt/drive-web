@@ -17,12 +17,11 @@ type EditItemNameDialogProps = {
 };
 
 const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourceToken, onClose, onSuccess }) => {
-  const [newItemName, setNewItemName] = useState('');
+  const dispatch = useAppDispatch();
+  const { translate } = useTranslationContext();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  const { translate } = useTranslationContext();
-  const dispatch = useAppDispatch();
+  const [newItemName, setNewItemName] = useState('');
 
   useEffect(() => {
     setNewItemName(item?.plainName ?? '');
@@ -72,7 +71,6 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
         <p className="text-2xl font-medium text-gray-100" data-cy="editItemNameDialogTitle">
           {translate('modals.renameItemDialog.title')}
         </p>
-
         <Input
           disabled={isLoading}
           className={`${error !== '' ? 'error' : ''}`}
@@ -89,7 +87,6 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
           message={error}
           autofocus
         />
-
         <div className="flex flex-row items-center justify-end space-x-2">
           <Button
             disabled={isLoading}

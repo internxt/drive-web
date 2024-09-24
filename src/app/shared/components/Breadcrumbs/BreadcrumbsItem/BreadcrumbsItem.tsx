@@ -13,7 +13,6 @@ import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../../store/slices/storage/storage.thunks/renameItemsThunk';
-import { uiActions } from '../../../../store/slices/ui';
 import { BreadcrumbItemData, BreadcrumbsMenuProps } from '../types';
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
@@ -125,7 +124,6 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   );
 
   const onItemClicked = (item: BreadcrumbItemData): void => {
-    dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(''));
     if (item.active) {
       item.onClick && item.onClick();
     }
