@@ -1,19 +1,24 @@
 import newStorageService from 'app/drive/services/new-storage.service';
 import { DriveItemData } from 'app/drive/types';
 import _ from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const DEFAULT_LIMIT = 50;
 
-export const useBackupsPagination = (folderUuid: string | undefined) => {
-  const [isLoading, setIsLoading] = useState(true);
+export const useBackupsPagination = (folderUuid: string | undefined, clearSelectedItems: () => void) => {
+  const [areFetchingItems, setAreFetchingItems] = useState(true);
   const [currentItems, setCurrentItems] = useState<DriveItemData[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [offset, setOffset] = useState<number>(0);
 
+  useEffect(() => {
+    getFolderContent();
+  }, [folderUuid]);
+
   const getFolderContent = async () => {
-    setIsLoading(true);
+    setAreFetchingItems(true);
     setCurrentItems([]);
+    clearSelectedItems();
     setOffset(0);
 
     if (!folderUuid) return;
@@ -38,13 +43,13 @@ export const useBackupsPagination = (folderUuid: string | undefined) => {
       setHasMoreItems(false);
     }
 
-    setIsLoading(false);
+    setAreFetchingItems(false);
   };
 
   const getMorePaginatedItems = async () => {
     if (!folderUuid || !hasMoreItems) return;
 
-    setIsLoading(true);
+    setAreFetchingItems(true);
 
     const [folderContentPromise] = newStorageService.getFolderContentByUuid({
       folderUuid,
@@ -72,15 +77,14 @@ export const useBackupsPagination = (folderUuid: string | undefined) => {
       setHasMoreItems(false);
     }
 
-    setIsLoading(false);
+    setAreFetchingItems(false);
   };
 
   return {
     currentItems,
-    isLoading,
+    areFetchingItems,
     hasMoreItems,
     getFolderContent,
     getMorePaginatedItems,
-    setIsLoading,
   };
 };
