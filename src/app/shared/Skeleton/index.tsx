@@ -1,5 +1,5 @@
 export const skinSkeleton = [
-  <div className="mr-3 flex w-full flex-row items-center space-x-4">
+  <div key={'skin-skeleton-1'} className="mr-3 flex w-full flex-row items-center space-x-4">
     <div className="h-8 w-8 rounded-md bg-gray-5" />
     <div className="h-4 w-full rounded bg-gray-5" />
   </div>,
