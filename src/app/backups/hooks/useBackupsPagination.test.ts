@@ -29,6 +29,10 @@ describe('useBackupsPagination', () => {
   const FOLDER_CONTENT_2_LENGTH = _.concat(FOLDER_CONTENT_2.files, FOLDER_CONTENT_2.children).length;
   const TOTAL_LENGTH = FOLDER_CONTENT_1_LENGTH + FOLDER_CONTENT_2_LENGTH;
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('Should load the first items and contains more items to fetch paginated', async () => {
     jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValue([
       Promise.resolve(FOLDER_CONTENT_1),
@@ -73,7 +77,7 @@ describe('useBackupsPagination', () => {
       await result.current.getFolderContent();
     });
 
-    expect(result.current.currentItems.length).toBe(FOLDER_CONTENT_1.files.length + FOLDER_CONTENT_1.children.length);
+    expect(result.current.currentItems.length).toBe(FOLDER_CONTENT_1_LENGTH);
 
     jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValue([
       Promise.resolve(FOLDER_CONTENT_2),
@@ -91,27 +95,32 @@ describe('useBackupsPagination', () => {
     });
   });
 
-  // it('no debería cargar más elementos si no hay más elementos por cargar', async () => {
-  //   const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));
+  it('Should not fetch more items as there are less than 50 items in total', async () => {
+    jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValue([
+      Promise.resolve(FOLDER_CONTENT_2),
+      {
+        cancel: jest.fn(),
+      },
+    ]);
 
-  //   expect(result.current.hasMoreItems).toBe(false);
+    const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));
 
-  //   await act(async () => {
-  //     await result.current.getMorePaginatedItems();
-  //   });
+    await waitFor(() => {
+      expect(result.current.hasMoreItems).toBe(false);
+    });
+  });
 
-  //   expect(result.current.currentItems.length).toBe(3);
-  // });
+  it('should clean all items when navigating to a subfolder', async () => {
+    const { rerender } = renderHook(({ folderUuid }) => useBackupsPagination(folderUuid, clearSelectedItems), {
+      initialProps: FOLDER_CONTENT_2,
+    });
 
-  // it('debería limpiar los elementos seleccionados cuando se cambia folderUuid', async () => {
-  //   const { rerender } = renderHook(({ folderUuid }) => useBackupsPagination(folderUuid, clearSelectedItems), {
-  //     initialProps: { folderUuid: 'folder-1' },
-  //   });
+    expect(clearSelectedItems).toHaveBeenCalledTimes(1);
 
-  //   expect(clearSelectedItems).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      rerender({ folderUuid: 'folder-2' });
+    });
 
-  //   rerender({ folderUuid: 'folder-2' });
-
-  //   expect(clearSelectedItems).toHaveBeenCalledTimes(2);
-  // });
+    expect(clearSelectedItems).toHaveBeenCalledTimes(2);
+  });
 });
