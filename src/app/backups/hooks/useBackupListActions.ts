@@ -25,6 +25,7 @@ export const useBackupListActions = (
 
   const onItemClicked = (item: DriveItemData) => {
     if (item.isFolder) {
+      clearSelectedItems();
       onBreadcrumbFolderChanges((current) => [...current, item]);
       dispatch(backupsActions.setCurrentFolder(item));
       setFolderUuid(item.uuid);

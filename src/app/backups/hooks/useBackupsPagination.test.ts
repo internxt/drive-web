@@ -27,7 +27,6 @@ describe('useBackupsPagination', () => {
 
   const FOLDER_CONTENT_1_LENGTH = _.concat(FOLDER_CONTENT_1.files, FOLDER_CONTENT_1.children).length;
   const FOLDER_CONTENT_2_LENGTH = _.concat(FOLDER_CONTENT_2.files, FOLDER_CONTENT_2.children).length;
-  const TOTAL_LENGTH = FOLDER_CONTENT_1_LENGTH + FOLDER_CONTENT_2_LENGTH;
 
   beforeEach(() => {
     jest.clearAllMocks();
