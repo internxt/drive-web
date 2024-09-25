@@ -98,7 +98,7 @@ type ShareDialogProps = {
   onCloseDialog?: () => void;
 };
 
-const isAdvanchedShareItem = (item: DriveItemData | AdvancedSharedItem): item is AdvancedSharedItem => {
+const isAdvancedShareItem = (item: DriveItemData | AdvancedSharedItem): item is AdvancedSharedItem => {
   return item['encryptionKey'];
 };
 
@@ -251,7 +251,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     const itemId = itemToShare?.item.uuid ?? '';
 
     const isItemNotSharedYet =
-      !isAdvanchedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length && !sharingMeta;
+      !isAdvancedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length && !sharingMeta;
 
     if (!isItemNotSharedYet) {
       try {
@@ -343,7 +343,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       };
 
       trackPublicShared(trackingPublicSharedProperties);
-      const encryptionKey = isAdvanchedShareItem(itemToShare.item) ? itemToShare?.item?.encryptionKey : undefined;
+      const encryptionKey = isAdvancedShareItem(itemToShare.item) ? itemToShare?.item?.encryptionKey : undefined;
       const sharingInfo = await shareService.getPublicShareLink(
         itemToShare?.item.uuid,
         itemToShare.item.isFolder ? 'folder' : 'file',
