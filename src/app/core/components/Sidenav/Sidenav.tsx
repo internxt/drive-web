@@ -46,6 +46,33 @@ const handleDownloadApp = async (): Promise<void> => {
   }
 };
 
+const LoadingSpinner = ({ translate }: { translate: (key: string, props?: Record<string, unknown>) => string }) => (
+  <div className="absolute z-50 flex h-full w-full flex-col items-center justify-center bg-highlight/40">
+    <Spinner className="h-10 w-10" />
+    <p className="mt-5 text-2xl font-medium text-gray-100">{translate('workspaces.messages.switchingWorkspace')}</p>
+  </div>
+);
+
+const SideNavItems = ({ sideNavItems }) => (
+  <>
+    {sideNavItems.map((item) => (
+      <>
+        {item.show && (
+          <SidenavItem
+            label={item.label}
+            to={item.to}
+            Icon={item.icon}
+            iconDataCy={item.iconDataCy}
+            isActive={item.isActive}
+            notifications={item.notifications}
+            onClick={item.onclick}
+          />
+        )}
+      </>
+    ))}
+  </>
+);
+
 const Sidenav = ({
   user,
   subscription,
@@ -59,7 +86,7 @@ const Sidenav = ({
   const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
 
-  const sideNavItems = [
+  const itemsNavigation = [
     {
       to: '/',
       isActive: isActiveButton('/') || isActiveButton('/file/:uuid') || isActiveButton('/folder/:uuid'),
@@ -110,36 +137,9 @@ const Sidenav = ({
     },
   ];
 
-  const LoadingSpinner = () => (
-    <div className="absolute z-50 flex h-full w-full flex-col items-center justify-center bg-highlight/40">
-      <Spinner className="h-10 w-10" />
-      <p className="mt-5 text-2xl font-medium text-gray-100">{translate('workspaces.messages.switchingWorkspace')}</p>
-    </div>
-  );
-
-  const SideNavItems = () => (
-    <>
-      {sideNavItems.map((item) => (
-        <>
-          {item.show && (
-            <SidenavItem
-              label={item.label}
-              to={item.to}
-              Icon={item.icon}
-              iconDataCy={item.iconDataCy}
-              isActive={item.isActive}
-              notifications={item.notifications}
-              onClick={item.onclick}
-            />
-          )}
-        </>
-      ))}
-    </>
-  );
-
   return (
     <div className="flex w-64 flex-col">
-      {isLoadingCredentials && <LoadingSpinner />}
+      {isLoadingCredentials && <LoadingSpinner translate={translate} />}
 
       <div
         className="flex h-14 shrink-0 cursor-pointer items-center border-b border-gray-5 pl-8 dark:bg-gray-1"
@@ -151,7 +151,7 @@ const Sidenav = ({
       <div className="flex grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2">
           {user && <WorkspaceSelectorContainer user={user} />}
-          <SideNavItems />
+          <SideNavItems sideNavItems={itemsNavigation} />
         </div>
 
         {subscription && subscription.type === 'free' ? <ReferralsWidget /> : <div className="grow"></div>}
