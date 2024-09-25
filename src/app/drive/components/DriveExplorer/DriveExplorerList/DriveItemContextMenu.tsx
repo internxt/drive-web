@@ -348,7 +348,7 @@ const contextMenuSelectedBackupItems = ({
   onDeleteSelectedItems,
 }: {
   onDownloadSelectedItems: () => void;
-  onDeleteSelectedItems: () => void;
+  onDeleteSelectedItems: () => Promise<void>;
 }): ListItemMenu<unknown> => [
   getDownloadMenuItem(onDownloadSelectedItems),
   { name: '', action: () => false, separator: true },
