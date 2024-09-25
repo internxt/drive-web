@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import dateService from './date.service';
+import { describe, expect, test } from 'vitest';
 
 describe('dateService', () => {
   test('format function should correctly format a date string', () => {

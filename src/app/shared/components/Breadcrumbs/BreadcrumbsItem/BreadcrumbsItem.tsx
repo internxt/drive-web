@@ -55,11 +55,11 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
       dispatch(storageActions.setMoveDestinationFolderId(props.item.uuid));
       const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
-      const [folderContentPromise] = storageClient.getFolderContentByUuid(
-        props.item.uuid,
-        false,
-        workspacesCredentials?.tokenHeader,
-      );
+      const [folderContentPromise] = storageClient.getFolderContentByUuid({
+        folderUuid: props.item.uuid,
+        trash: false,
+        workspacesToken: workspacesCredentials?.tokenHeader,
+      });
 
       const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
 

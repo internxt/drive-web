@@ -120,11 +120,11 @@ export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { sta
 
       const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
-      const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(
-        destinationFolderId,
-        false,
-        workspaceCredentials?.tokenHeader,
-      );
+      const [parentFolderContentPromise] = storageClient.getFolderContentByUuid({
+        folderUuid: destinationFolderId,
+        trash: false,
+        workspacesToken: workspaceCredentials?.tokenHeader,
+      });
       const parentFolderContent = await parentFolderContentPromise;
 
       if (item.isFolder) {

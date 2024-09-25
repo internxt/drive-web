@@ -1,5 +1,6 @@
 import kemBuilder from '@dashlane/pqc-kem-kyber512-browser';
 import { WebStream, MaybeStream, Data } from 'openpgp';
+import { Buffer } from 'buffer';
 
 export async function getOpenpgp(): Promise<typeof import('openpgp')> {
   return import('openpgp');
@@ -25,11 +26,11 @@ export async function generateNewKeys(): Promise<{
     privateKeyArmored: privateKey,
     publicKeyArmored: Buffer.from(publicKey).toString('base64'),
     revocationCertificate: Buffer.from(revocationCertificate).toString('base64'),
-    publicKyberKeyBase64: Buffer.from(privateKyberKey).toString('base64'),
-    privateKyberKeyBase64: Buffer.from(publicKyberKey).toString('base64'),
+    publicKyberKeyBase64: Buffer.from(publicKyberKey).toString('base64'),
+    privateKyberKeyBase64: Buffer.from(privateKyberKey).toString('base64'),
   };
 }
-function XOR_hex(a, b) {
+export function XORhex(a: string, b: string): string {
   let res = '',
     i = a.length,
     j = b.length;
@@ -55,10 +56,11 @@ export const encryptMessageWithPublicKey = async ({
   const publicKyberKey = Buffer.from(publicKyberKeyBase64, 'base64');
   const { ciphertext, sharedSecret: secret } = await kem.encapsulate(publicKyberKey);
   const kyberCiphertextStr = Buffer.from(ciphertext).toString('base64');
-  const secretStr = Buffer.from(secret).toString('base64');
+  const secretHex = Buffer.from(secret).toString('hex');
+  const messageHex = Buffer.from(message).toString('hex');
 
   // message should be the same length as secret, which is 256 bits
-  const xoredMessage = XOR_hex(message, secretStr);
+  const xoredMessage = XORhex(messageHex, secretHex);
 
   const encryptedMessage = await openpgp.encrypt({
     message: await openpgp.createMessage({ text: xoredMessage }),
@@ -84,9 +86,6 @@ export const decryptMessageWithPrivateKey = async ({
   const openpgp = await getOpenpgp();
   const kem = await kemBuilder();
 
-  const privateKeyArmored = Buffer.from(privateKeyInBase64, 'base64').toString();
-  const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyArmored });
-
   const ciphertexts = encryptedMessage.split('$');
   const eccCiphertextStr = ciphertexts[0];
   const kyberCiphertextBase64 = ciphertexts[1];
@@ -94,19 +93,21 @@ export const decryptMessageWithPrivateKey = async ({
   const privateKyberKey = Buffer.from(privateKyberKeyBase64, 'base64');
   const kyberCiphertext = Buffer.from(kyberCiphertextBase64, 'base64');
   const { sharedSecret: secret } = await kem.decapsulate(kyberCiphertext, privateKyberKey);
-  const secretStr = Buffer.from(secret).toString('base64');
+  const secretHex = Buffer.from(secret).toString('hex');
 
   const message = await openpgp.readMessage({
-    armoredMessage: eccCiphertextStr,
+    armoredMessage: atob(eccCiphertextStr),
   });
 
+  const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyInBase64 });
   const { data: decryptedMessage } = await openpgp.decrypt({
     message,
     decryptionKeys: privateKey,
   });
-  const decryptedMessageStr = btoa(decryptedMessage as string);
 
-  const result = XOR_hex(decryptedMessageStr, secretStr);
+  const decryptedMessageHex = decryptedMessage as string;
+  const result = XORhex(decryptedMessageHex, secretHex);
+  const resultStr = Buffer.from(result, 'hex').toString('utf8');
 
-  return result;
+  return resultStr;
 };

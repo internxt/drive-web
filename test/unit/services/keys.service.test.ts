@@ -5,13 +5,15 @@ import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
 import { getAesInitFromEnv } from '../../../src/app/crypto/services/keys.service';
 
 import { config } from 'dotenv';
+import { describe, expect, it } from 'vitest';
+
 config();
 
 //TODO: Disabled because validateFormat functions is not exists, review it and remove it or change them
 describe('# keys service tests', () => {
   const aesInit = getAesInitFromEnv();
 
-  xit('Should not update private key if encryption & encoding is fine', async () => {
+  it.skip('Should not update private key if encryption & encoding is fine', async () => {
     const keys = await generateNewKeys();
     const plainPrivateKey = keys.privateKeyArmored;
 
