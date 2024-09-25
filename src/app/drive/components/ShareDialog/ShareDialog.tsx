@@ -95,6 +95,7 @@ type ShareDialogProps = {
   user: UserSettings;
   isDriveItem?: boolean;
   onShareItem?: () => void;
+  onStopSharingItem?: () => void;
   onCloseDialog?: () => void;
 };
 
@@ -463,6 +464,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       }),
     );
     props.onShareItem?.();
+    props.onStopSharingItem?.();
     setShowStopSharingConfirmation(false);
     onClose();
     setIsLoading(false);

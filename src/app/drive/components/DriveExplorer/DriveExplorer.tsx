@@ -523,8 +523,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   );
 
   const handleOnShareItem = useCallback(() => {
-    resetPaginationState();
-    dispatch(fetchSortedFolderContentThunk(currentFolderId));
+    setTimeout(() => {
+      resetPaginationState();
+      dispatch(fetchSortedFolderContentThunk(currentFolderId));
+    }, 500);
   }, [currentFolderId]);
 
   const onSuccessEditingName = useCallback(() => {

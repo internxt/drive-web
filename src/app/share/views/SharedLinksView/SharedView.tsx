@@ -293,6 +293,7 @@ function SharedView({
           : translate('shared-links.toast.link-deleted');
       notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
       closeConfirmDelete();
+      actionDispatch(setSelectedItems([]));
       actionDispatch(setIsLoading(false));
     }
   };
@@ -313,6 +314,8 @@ function SharedView({
     }));
 
     await moveItemsToTrash(itemsToTrash, () => removeItemsFromList(itemsToTrash));
+
+    actionDispatch(setSelectedItems([]));
   };
 
   const renameItem = (shareItem: AdvancedSharedItem | DriveItemData) => {
@@ -330,14 +333,14 @@ function SharedView({
       const mnemonic =
         selectedWorkspace?.workspaceUser.key ??
         (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : clickedShareItemEncryptionKey));
-      handleOpemItemPreview(true, { ...previewItem, mnemonic });
+      handleOpenItemPreview(true, { ...previewItem, mnemonic });
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
     }
   };
 
-  const handleOpemItemPreview = (openItemPreview: boolean, item?: PreviewFileItem) => {
+  const handleOpenItemPreview = (openItemPreview: boolean, item?: PreviewFileItem) => {
     actionDispatch(setItemToView(item));
     actionDispatch(setIsFileViewerOpen(openItemPreview));
   };
@@ -465,7 +468,7 @@ function SharedView({
     await moveSelectedItemsToTrash(items);
 
     if (isFileViewerOpen) {
-      handleOpemItemPreview(false);
+      handleOpenItemPreview(false);
     }
   };
 
@@ -536,7 +539,7 @@ function SharedView({
           onOpenStopSharingDialog={onOpenStopSharingDialog}
           onRenameSelectedItem={renameItem}
           onOpenItemPreview={(item: PreviewFileItem) => {
-            handleOpemItemPreview(true, item);
+            handleOpenItemPreview(true, item);
           }}
         />
       </div>
@@ -558,7 +561,7 @@ function SharedView({
         <FileViewerWrapper
           file={itemToView}
           showPreview={isFileViewerOpen}
-          onClose={() => handleOpemItemPreview(false)}
+          onClose={() => handleOpenItemPreview(false)}
           onShowStopSharingDialog={onOpenStopSharingDialog}
           sharedKeyboardShortcuts={{
             renameItemFromKeyboard: !isCurrentUserViewer(currentUserRole) ? renameItem : undefined,
@@ -574,7 +577,10 @@ function SharedView({
         moveItemsToTrash={moveItemsToTrashOnStopSharing}
       />
       <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
-      <ShareDialog onCloseDialog={handleOnCloseShareDialog} />
+      <ShareDialog
+        onCloseDialog={handleOnCloseShareDialog}
+        onStopSharingItem={() => actionDispatch(setSelectedItems([]))}
+      />
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
