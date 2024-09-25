@@ -1259,7 +1259,9 @@
     "errorCreatingSubscription": "建立您的訂閱時出現問題",
     "errorPurchaseBusinessPlan": "您已經有一個商業計劃",
     "couponIsNotValidForUserError": "優惠券只能由新客戶兌換。",
-    "errorApplyingCoupon": "應用優惠券時出錯"
+    "errorApplyingCoupon": "應用優惠券時出錯",
+    "errorWhileFetchingMoreItems": "獲取更多項目時出現錯誤",
+    "errorDeletingItems": "刪除此項目時出現錯誤"
   },
   "actions": {
     "undo": "撤銷",

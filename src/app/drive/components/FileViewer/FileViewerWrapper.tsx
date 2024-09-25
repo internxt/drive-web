@@ -163,9 +163,7 @@ const FileViewerWrapper = ({
     return [];
   }, [folderFiles]);
 
-  const folderItemsFiltered = folderItems
-    ? folderItems.filter((item) => !item.isFolder || item.type !== 'folder')
-    : undefined;
+  const folderItemsFiltered = folderItems?.filter((item) => !item.isFolder || item.type !== 'folder');
   const currentFolder = folderItemsFiltered ?? sortFolderFiles;
   const fileIndex = currentFolder?.findIndex((item) => item.id === currentFile?.id);
   const totalFolderIndex = currentFolder?.length;

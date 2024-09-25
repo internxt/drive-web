@@ -20,6 +20,8 @@ import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveE
 import { useBackupListActions } from 'app/backups/hooks/useBackupListActions';
 import { useBackupDeviceActions } from 'app/backups/hooks/useBackupDeviceActions';
 import { useBackupsPagination } from 'app/backups/hooks/useBackupsPagination';
+import errorService from 'app/core/services/error.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 export default function BackupsView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -54,34 +56,63 @@ export default function BackupsView(): JSX.Element {
     onCloseDeleteModal,
   } = useBackupDeviceActions(onFolderUuidChanges, setFoldersInBreadcrumbs, dispatch);
 
-  const { currentItems, areFetchingItems, hasMoreItems, getMorePaginatedItems, getFolderContent } =
+  const { currentItems, areFetchingItems, hasMoreItems, getMorePaginatedItems, updateCurrentItemsList } =
     useBackupsPagination(folderUuid, clearSelectedItems);
 
   const onDownloadSelectedItems = () => {
     dispatch(downloadItemsThunk(selectedItems));
   };
 
-  async function onDeleteSelectedItems() {
-    for (const item of selectedItems) {
-      if (item.isFolder) {
-        await deleteBackupDeviceAsFolder(item as DriveWebFolderData);
-      } else {
-        await deleteFile(item);
+  const onDownloadFileFormFileViewer = () => {
+    if (itemToPreview && isFileViewerOpen) dispatch(downloadItemsThunk([itemToPreview as DriveItemData]));
+  };
+
+  const onDeleteSelectedItems = async () => {
+    const selectedItemsIDs = new Set(selectedItems.map((item) => item.id));
+    const filteredCurrentItems = currentItems.filter((item) => !selectedItemsIDs.has(item.id));
+    try {
+      const deletePromises = selectedItems.map((item) =>
+        item.isFolder ? deleteBackupDeviceAsFolder(item as DriveWebFolderData) : deleteFile(item),
+      );
+      await Promise.all(deletePromises);
+      dispatch(deleteItemsThunk(selectedItems));
+      clearSelectedItems();
+      updateCurrentItemsList(filteredCurrentItems);
+    } catch (error) {
+      errorService.reportError(error);
+      notificationsService.show({
+        text: translate('notificationMessages.errorDeletingItems'),
+        type: ToastType.Error,
+      });
+    }
+  };
+
+  const onDeleteFileItemFromFilePreview = async () => {
+    try {
+      if (isFileViewerOpen && itemToPreview) {
+        await deleteFile(itemToPreview as DriveItemData);
+        dispatch(deleteItemsThunk([itemToPreview as DriveItemData]));
       }
-    }
-    dispatch(deleteItemsThunk(selectedItems));
-
-    if (isFileViewerOpen) {
+      clearSelectedItems();
+      updateCurrentItemsList([itemToPreview] as DriveItemData[]);
       onCloseFileViewer();
+    } catch (error) {
+      errorService.reportError(error);
+      notificationsService.show({
+        text: translate('notificationMessages.errorDeletingItems'),
+        type: ToastType.Error,
+      });
     }
-
-    onSelectedItemsChanged([]);
-    await getFolderContent();
-  }
+  };
 
   const contextMenu: ListItemMenu<DriveItemData> = contextMenuSelectedBackupItems({
     onDownloadSelectedItems,
     onDeleteSelectedItems: onDeleteSelectedItems,
+  });
+
+  const contextMenuForFileViewer: ListItemMenu<DriveItemData> = contextMenuSelectedBackupItems({
+    onDownloadSelectedItems: onDownloadFileFormFileViewer,
+    onDeleteSelectedItems: onDeleteFileItemFromFilePreview,
   });
 
   let body;
@@ -141,7 +172,7 @@ export default function BackupsView(): JSX.Element {
           onClose={onCloseFileViewer}
           showPreview={isFileViewerOpen}
           folderItems={currentItems}
-          contextMenu={contextMenu}
+          contextMenu={contextMenuForFileViewer}
         />
       )}
       <div className="z-50 flex h-14 shrink-0 items-center px-5">
