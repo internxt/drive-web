@@ -137,13 +137,17 @@ const Sidenav = ({
     },
   ];
 
+  const onLogoClicked = () => {
+    navigationService.push(AppView.Drive);
+  };
+
   return (
     <div className="flex w-64 flex-col">
       {isLoadingCredentials && <LoadingSpinner translate={translate} />}
 
       <div
         className="flex h-14 shrink-0 cursor-pointer items-center border-b border-gray-5 pl-8 dark:bg-gray-1"
-        onClick={() => navigationService.push(AppView.Drive)}
+        onClick={onLogoClicked}
       >
         <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
