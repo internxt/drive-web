@@ -1660,7 +1660,7 @@
       "levelUpStorage": "Erhöhe deinen Speicherplatz und erhalte viele andere Vorteile",
       "upgradeNow": "Jetzt upgraden",
       "emptyTrash": "Papierkorb leeren",
-      "emptryTrashDescription": "Elemente im Papierkorb werden nach 15 Tagen endgültig gelöscht",
+      "emptyTrashDescription": "Objekte im Papierkorb werden dauerhaft gelöscht",
       "plans": {
         "title": "Tarife",
         "current": "Aktuell",

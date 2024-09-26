@@ -1645,7 +1645,7 @@
       "levelUpStorage": "Améliorez votre espace de stockage et bénéficiez de nombreux autres avantages",
       "upgradeNow": "Mettre à niveau maintenant",
       "emptyTrash": "Vider la corbeille",
-      "emptryTrashDescription": "Les éléments dans la corbeille seront supprimés définitivement après 15 jours",
+      "emptyTrashDescription": "Les éléments contenus dans la corbeille seront définitivement supprimés",
       "plans": {
         "title": "Plans",
         "current": "Actuel",
