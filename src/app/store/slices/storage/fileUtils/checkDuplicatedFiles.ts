@@ -20,31 +20,46 @@ export const checkDuplicatedFiles = async (
     } as DuplicatedFilesResult;
   }
 
-  const filesToUploadParsedToCheck = files.map((file) => {
-    const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
-    return { plainName: filename, type: extension };
-  });
+  const parsedFiles = files.map(parseFile);
+  const checkDuplicatedFileResponse = await newStorageService.checkDuplicatedFiles(parentFolderId, parsedFiles);
 
-  const checkDuplicatedFileResponse = await newStorageService.checkDuplicatedFiles(
-    parentFolderId,
-    filesToUploadParsedToCheck,
-  );
   const duplicatedFilesResponse = checkDuplicatedFileResponse.existentFiles;
-  const filesWithoutDuplicates: (File | DriveFileData)[] = [];
-  const filesWithDuplicates: (File | DriveFileData)[] = [];
 
-  files.forEach((file) => {
-    const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
-    const isDuplicated = duplicatedFilesResponse.some(
-      (duplicatedFile) => duplicatedFile.plainName === filename && duplicatedFile.type === extension,
-    );
+  const { filesWithDuplicates, filesWithoutDuplicates } = parsedFiles.reduce(
+    (acc, parsedFile) => {
+      const isDuplicated = duplicatedFilesResponse.some(
+        (duplicatedFile) =>
+          duplicatedFile.plainName === parsedFile.plainName && duplicatedFile.type === parsedFile.type,
+      );
 
-    if (isDuplicated) {
-      filesWithDuplicates.push(file);
-    } else {
-      filesWithoutDuplicates.push(file);
-    }
-  });
+      if (isDuplicated) {
+        acc.filesWithDuplicates.push(parsedFile.originalFile);
+      } else {
+        acc.filesWithoutDuplicates.push(parsedFile.originalFile);
+      }
+
+      return acc;
+    },
+    { filesWithDuplicates: [], filesWithoutDuplicates: [] } as {
+      filesWithDuplicates: (File | DriveFileData)[];
+      filesWithoutDuplicates: (File | DriveFileData)[];
+    },
+  );
 
   return { duplicatedFilesResponse, filesWithoutDuplicates, filesWithDuplicates };
+};
+
+interface ParsedFile {
+  plainName: string;
+  type: string;
+  originalFile: File | DriveFileData;
+}
+
+const parseFile = (file: File | DriveFileData): ParsedFile => {
+  if (file instanceof File) {
+    const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
+    return { plainName: filename, type: extension, originalFile: file };
+  } else {
+    return { plainName: file.name, type: file.type, originalFile: file };
+  }
 };

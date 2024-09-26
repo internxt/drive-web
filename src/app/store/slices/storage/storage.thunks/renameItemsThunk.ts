@@ -1,5 +1,6 @@
 import { ActionReducerMapBuilder, createAsyncThunk, Dispatch } from '@reduxjs/toolkit';
 
+import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { DriveFolderData, DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import tasksService from 'app/tasks/services/tasks.service';
@@ -18,10 +19,10 @@ import { StorageState } from '../storage.model';
 import { IRoot } from './uploadFolderThunk';
 
 export const handleRepeatedUploadingFiles = async (
-  files: (DriveItemData | File)[],
+  files: (DriveFileData | File)[],
   dispatch: Dispatch,
   destinationFolderUuid: string,
-): Promise<(DriveItemData | File)[]> => {
+): Promise<(DriveFileData | File)[]> => {
   const {
     filesWithDuplicates: filesRepeated,
     duplicatedFilesResponse,
@@ -38,10 +39,10 @@ export const handleRepeatedUploadingFiles = async (
 };
 
 export const handleRepeatedUploadingFolders = async (
-  folders: (DriveItemData | IRoot)[],
+  folders: (DriveFolderData | IRoot)[],
   dispatch: Dispatch,
   destinationFolderUuid: string,
-): Promise<(DriveItemData | IRoot)[]> => {
+): Promise<(DriveFolderData | IRoot)[]> => {
   const {
     foldersWithDuplicates: foldersRepeated,
     duplicatedFoldersResponse,
