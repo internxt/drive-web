@@ -7,13 +7,13 @@ import { getAesInitFromEnv } from '../../../src/app/crypto/services/keys.service
 import { config } from 'dotenv';
 import { describe, expect, it } from 'vitest';
 
-config();
+//config();
 
 //TODO: Disabled because validateFormat functions is not exists, review it and remove it or change them
 describe('# keys service tests', () => {
-  const aesInit = getAesInitFromEnv();
+  //const aesInit = getAesInitFromEnv();
 
-  it.skip('Should not update private key if encryption & encoding is fine', async () => {
+  it('Should not update private key if encryption & encoding is fine', async () => {
     const keys = await generateNewKeys();
     const plainPrivateKey = keys.privateKeyArmored;
 

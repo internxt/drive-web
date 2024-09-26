@@ -36,9 +36,8 @@ describe('foldersZip', () => {
 
     test('should add all shared folders to the zip correctly', async () => {
       const zip = new MockFlatFolderZip();
-
-      const result = await addAllSharedFoldersToZip('/path/to/folders', iterator, zip as unknown as FlatFolderZip);
       const addFolder = vi.spyOn(zip.zip, 'addFolder');
+      const result = await addAllSharedFoldersToZip('/path/to/folders', iterator, zip as unknown as FlatFolderZip);
       const allFoldersLength = foldersPage1.length + foldersPage2.length + foldersPage3.length;
 
       expect(addFolder).toHaveBeenCalledTimes(allFoldersLength);
@@ -79,8 +78,8 @@ describe('foldersZip', () => {
     const zip = new MockFlatFolderZip();
 
     test('should add all folders to the zip correctly', async () => {
-      const result = await addAllFoldersToZip('/path/to/folders', iterator, zip as unknown as FlatFolderZip);
       const addFolder = vi.spyOn(zip.zip, 'addFolder');
+      const result = await addAllFoldersToZip('/path/to/folders', iterator, zip as unknown as FlatFolderZip);
       const allFoldersLength = foldersPage1.length + foldersPage2.length + foldersPage3.length;
 
       expect(addFolder).toHaveBeenCalledTimes(allFoldersLength);

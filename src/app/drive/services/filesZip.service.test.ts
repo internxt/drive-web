@@ -96,6 +96,7 @@ describe('filesZip', () => {
     test('should add all files to the zip correctly', async () => {
       mockDownloadFile.mockResolvedValue('Mocked file stream');
       const zip = new MockFlatFolderZip('folderName');
+      const addFile = vi.spyOn(zip.zip, 'addFile');
 
       const result = await addAllFilesToZip(
         '/path/to/files',
@@ -103,7 +104,6 @@ describe('filesZip', () => {
         iterator,
         zip as unknown as FlatFolderZip,
       );
-      const addFile = vi.spyOn(zip.zip, 'addFile');
 
       const allFilesLength = filesPage1.length + filesPage2.length + filesPage3.length;
       const allFiles = [...filesPage1, ...filesPage2, ...filesPage3];
@@ -141,6 +141,7 @@ describe('filesZip', () => {
     test('should add all shared files to the zip correctly', async () => {
       mockDownloadFile.mockResolvedValue('Mocked file stream');
       const zip = new MockFlatFolderZip('folderName');
+      const addFile = vi.spyOn(zip.zip, 'addFile');
 
       const result = await addAllSharedFilesToZip(
         '/path/to/files',
@@ -148,7 +149,7 @@ describe('filesZip', () => {
         sharedIterator,
         zip as unknown as FlatFolderZip,
       );
-      const addFile = vi.spyOn(zip.zip, 'addFile');
+
       const allFilesLength = filesPage1.length + filesPage2.length + filesPage3.length;
       const allFiles = [...filesPage1, ...filesPage2, ...filesPage3];
       expect(mockDownloadFile).toHaveBeenCalledTimes(allFilesLength);
