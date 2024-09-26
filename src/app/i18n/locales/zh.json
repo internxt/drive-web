@@ -1718,7 +1718,7 @@
       "levelUpStorage": "升级您的存储空间，并获得许多其他好处",
       "upgradeNow": "立即升级",
       "emptyTrash": "清空回收站",
-      "emptryTrashDescription": "回收站中的项目将在15天后被永久删除",
+      "emptyTrashDescription": "回收站中的项目将被永久删除",
       "plans": {
         "title": "计划",
         "current": "当前",

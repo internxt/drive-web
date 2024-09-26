@@ -1676,7 +1676,7 @@
       "levelUpStorage": "提升您的存儲空間並獲得許多其他好處",
       "upgradeNow": "立即升級",
       "emptyTrash": "清空垃圾桶",
-      "emptryTrashDescription": "垃圾桶中的項目將在15天後永久刪除",
+      "emptyTrashDescription": "垃圾桶中的項目將被永久刪除",
       "plans": {
         "title": "計劃",
         "current": "當前",
