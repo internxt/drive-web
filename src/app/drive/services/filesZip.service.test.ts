@@ -113,14 +113,13 @@ describe('filesZip', () => {
     });
 
     test('should handle empty iterator correctly', async () => {
+      const addFile = vi.spyOn(zip.zip, 'addFile');
       const result = await addAllFilesToZip(
         '/path/to/files',
         mockDownloadFile,
         { next: vi.fn().mockReturnValue({ value: [], done: true }) },
         zip as unknown as FlatFolderZip,
       );
-      const addFile = vi.spyOn(zip.zip, 'addFile');
-
       expect(mockDownloadFile).not.toHaveBeenCalled();
       expect(addFile).not.toHaveBeenCalled();
       expect(result).toEqual([]);
@@ -159,13 +158,13 @@ describe('filesZip', () => {
     });
 
     test('should handle empty shared iterator correctly', async () => {
+      const addFile = vi.spyOn(zip.zip, 'addFile');
       const result = await addAllSharedFilesToZip(
         '/path/to/files',
         mockDownloadFile,
         { next: vi.fn().mockReturnValue({ value: [], done: true, token: 'token' }) },
         zip as unknown as FlatFolderZip,
       );
-      const addFile = vi.spyOn(zip.zip, 'addFile');
 
       expect(mockDownloadFile).not.toHaveBeenCalled();
       expect(addFile).not.toHaveBeenCalled();
@@ -174,8 +173,8 @@ describe('filesZip', () => {
     });
 
     test('should handle errors during shared file download', async () => {
-      mockDownloadFile.mockRejectedValueOnce(new Error('Download error'));
       const addFile = vi.spyOn(zip.zip, 'addFile');
+      mockDownloadFile.mockRejectedValueOnce(new Error('Download error'));
 
       await expect(
         addAllSharedFilesToZip('/path/to/files', mockDownloadFile, sharedIterator, zip as unknown as FlatFolderZip),
