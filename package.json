@@ -8,7 +8,7 @@
     "@iconscout/react-unicons": "^1.1.6",
     "@internxt/inxt-js": "=1.2.21",
     "@internxt/lib": "^1.2.0",
-    "@internxt/sdk": "^1.5.15",
+    "@internxt/sdk": "1.5.17",
     "@phosphor-icons/react": "^2.1.7",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.6.0",
@@ -45,6 +45,7 @@
     "lodash": "^4.17.21",
     "openpgp": "^5.9.0",
     "os-browserify": "^0.3.0",
+    "patch-package": "^8.0.0",
     "path-browserify": "^1.0.1",
     "prettysize": "^2.0.0",
     "query-string": "^6.13.8",
@@ -87,6 +88,7 @@
     "xlsx-preview": "^1.0.4"
   },
   "scripts": {
+    "postinstall": "patch-package",
     "preinstall": "node scripts/use-yarn.js",
     "prepare": "husky install",
     "dev": "craco start",
