@@ -8,9 +8,9 @@ export async function searchItemsByName(name: string): Promise<DriveFileData[]> 
   return result;
 }
 
-export async function getFolderAncestors(uuid: string): Promise<FolderAncestor[]> {
+export async function getFolderAncestors(uuid: string, isShared = false): Promise<FolderAncestor[]> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  return storageClient.getFolderAncestors(uuid);
+  return storageClient.getFolderAncestors(uuid, isShared);
 }
 
 export async function getFolderMeta(uuid: string, workspaceId?: string, resourcesToken?: string): Promise<FolderMeta> {
