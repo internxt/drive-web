@@ -381,6 +381,13 @@ export function getWorkspace(workspaceId: string): Promise<Workspace> {
   });
 }
 
+export function leaveWorkspace(workspaceId: string): Promise<void> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.leaveWorkspace(workspaceId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const workspacesService = {
   getWorkspaces,
   getWorkspacesMembers,
@@ -422,6 +429,7 @@ const workspacesService = {
   removeMember,
   getUsage,
   getWorkspace,
+  leaveWorkspace,
 };
 
 export default workspacesService;

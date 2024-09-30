@@ -1527,6 +1527,12 @@
           "remove": "Eliminar",
           "removing": "Eliminando"
         },
+        "leaveModal": {
+          "title": "Abandonar espacio de trabajo",
+          "description": "{{name}}, perderás acceso al espacio de trabajo. Todos sus archivos y carpetas permanecerán iguales.",
+          "leave": "Abandonar",
+          "leaving": "Abandonando"
+        },
         "changePasswordModal": {
           "title": "Solicitar cambio de contraseña",
           "description": "El usuario recibirá una recomendación para actualizar la contraseña de su cuenta personal. Utilice esta función si cree que su contraseña podría haber sido comprometida.",
@@ -1585,6 +1591,7 @@
           "deactivate": "Desactivar miembro",
           "reactivate": "Reactivar miembro",
           "remove": "Eliminar miembro",
+          "leave": "Abandonar espacio de trabajo",
           "passwordChange": "Solicitar cambio de contraseña"
         }
       },

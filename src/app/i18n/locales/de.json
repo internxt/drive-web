@@ -1488,8 +1488,14 @@
         "removalModal": {
           "title": "Mitglied entfernen",
           "description": "{{name}} verliert den Zugriff auf den Arbeitsbereich. Alle ihre Dateien und Ordner bleiben unverändert.",
-          "remove": "Entfernen",
-          "removing": "Entfernen läuft"
+          "leave": "Entfernen",
+          "leaving": "Entfernen läuft"
+        },
+        "leaveModal": {
+          "title": "Arbeitsbereich verlassen",
+          "description": "{{name}}, Sie verlieren den Zugriff auf den Arbeitsbereich. Alle ihre Dateien und Ordner bleiben unverändert.",
+          "remove": "Verlassen",
+          "removing": "Jetzt verlassen"
         },
         "changePasswordModal": {
           "title": "Passwortänderung anfordern",
@@ -1549,6 +1555,7 @@
           "deactivate": "Mitglied deaktivieren",
           "reactivate": "Mitglied reaktivieren",
           "remove": "Mitglied entfernen",
+          "leave": "Arbeitsbereich verlassen",
           "passwordChange": "Passwortänderung anfordern"
         }
       },

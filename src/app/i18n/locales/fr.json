@@ -1476,6 +1476,12 @@
           "remove": "Supprimer",
           "removing": "Suppression"
         },
+        "leaveModal": {
+          "title": "Quitter l'espace de travail",
+          "description": "{{name}}, vous perdrez l'accès à l'espace de travail. Tous leurs fichiers et dossiers resteront inchangés.",
+          "leave": "Partir",
+          "leaving": "Sortie"
+        },
         "changePasswordModal": {
           "title": "Demander un changement de mot de passe",
           "description": "L'utilisateur recevra une recommandation pour mettre à jour le mot de passe de son compte personnel. Utilisez cette fonction si vous pensez que son mot de passe pourrait avoir été compromis.",
@@ -1534,6 +1540,7 @@
           "deactivate": "Désactiver le membre",
           "reactivate": "Réactiver le membre",
           "remove": "Supprimer le membre",
+          "leave": "Quitter l'espace de travail",
           "passwordChange": "Demande de changement de mot de passe"
         }
       },
