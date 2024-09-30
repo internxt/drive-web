@@ -7,11 +7,11 @@ import { AudioExtensions } from 'app/drive/types/file-types';
 const FileAudioViewer = ({
   file,
   blob,
-  setIsErrorWhileDownloading,
+  setIsPreviewAvailable,
 }: {
   file: DriveFileData;
   blob: Blob;
-  setIsErrorWhileDownloading: (isError: boolean) => void;
+  setIsPreviewAvailable: (isError: boolean) => void;
 }): JSX.Element => {
   const audioRef = useRef<HTMLAudioElement>(null);
   useEffect(() => {
@@ -20,7 +20,7 @@ const FileAudioViewer = ({
     if (audioPlayer) {
       loadAudioIntoPlayer(audioPlayer, blob, file.type as keyof AudioExtensions).catch((err) => {
         console.error('Error loading audio into player', err);
-        setIsErrorWhileDownloading(true);
+        setIsPreviewAvailable(false);
       });
     }
   }, []);

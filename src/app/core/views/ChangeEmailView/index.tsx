@@ -1,18 +1,37 @@
 import { CheckCircle, ClockCountdown, Envelope, WarningCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Input from 'app/shared/components/Input';
-import Button from 'app/shared/components/Button/Button';
-import { areCredentialsCorrect } from 'app/auth/services/auth.service';
-import Spinner from 'app/shared/components/Spinner/Spinner';
+import { areCredentialsCorrect } from '../../../auth/services/auth.service';
+import userService from '../../../auth/services/user.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import Button from '../../../shared/components/Button/Button';
+import Input from '../../../shared/components/Input';
+import Spinner from '../../../shared/components/Spinner/Spinner';
+import { uiActions } from '../../../store/slices/ui';
+import { userThunks } from '../../../store/slices/user';
+import errorService from '../../services/error.service';
+import localStorageService from '../../services/local-storage.service';
+
+type StatusType = 'loading' | 'auth' | 'error' | 'success' | 'expired';
+
+const STATUS = {
+  LOADING: 'loading',
+  AUTH: 'auth',
+  ERROR: 'error',
+  SUCCESS: 'success',
+  EXPIRED: 'expired',
+} as const;
 
 export default function ChangeEmailView(): JSX.Element {
   const { translate } = useTranslationContext();
+  const dispatch = useDispatch();
   const { params } = useRouteMatch<{ token: string }>();
   const { token } = params;
+  const urlParams = new URLSearchParams(window.location.search);
+  const newEmailParam = urlParams.get('n');
 
-  const [status, setStatus] = useState<'auth' | 'loading' | 'error' | 'success' | 'expired'>('loading');
+  const [status, setStatus] = useState<StatusType>(STATUS.LOADING);
   const [email, setEmail] = useState<string>('');
   const [newEmail, setNewEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -20,19 +39,23 @@ export default function ChangeEmailView(): JSX.Element {
   const [auth, setAuth] = useState<boolean>(false);
 
   async function getInfo() {
-    // TODO -> Get user "email", "newEmail" and "expired" from the token
-    const isExpired = false; //! Check if link has expired
+    try {
+      const isExpired = (await userService.checkChangeEmailLinkExpiration(token)).isExpired;
 
-    if (isExpired) {
-      setStatus('expired');
-      setExpired(true);
-    } else {
-      setStatus('auth');
-      setExpired(false);
+      if (isExpired) {
+        setStatus(STATUS.EXPIRED);
+        setExpired(true);
+      } else {
+        setStatus(STATUS.AUTH);
+        setExpired(false);
 
-      // TODO -> Set info from "email" and "newEmail"
-      setEmail('current_email@inxt.com'); //! Change with current email
-      setNewEmail('new_email@inxt.com'); //! Change with new email
+        const user = localStorageService.getUser();
+        if (user) setEmail(user.email);
+        if (newEmailParam) setNewEmail(newEmailParam);
+      }
+    } catch (error) {
+      errorService.reportError(error, { extra: { view: 'Change email view', emailLinkExpirationToken: token } });
+      setStatus(STATUS.ERROR);
     }
   }
 
@@ -42,32 +65,30 @@ export default function ChangeEmailView(): JSX.Element {
 
   async function verify(e) {
     e.preventDefault();
-    setStatus('loading');
+    setStatus(STATUS.LOADING);
 
     try {
-      const correctPassword = await areCredentialsCorrect(email, password);
-      if (correctPassword) {
-        try {
-          // TODO -> Run changeEmail thunk (if chaged successfully return true, if not return false)
-          const emailChanged = true; //! Change for changeEmail thunk
+      const isCorrectPassword = await areCredentialsCorrect(email, password);
+      if (isCorrectPassword) {
+        setAuth(true);
 
-          if (emailChanged) {
-            setStatus('success');
-            setAuth(true);
-          } else {
-            setStatus('error');
-            setAuth(true);
-          }
-        } catch (err) {
-          console.error(err);
-          setStatus('error');
+        try {
+          const { newAuthentication } = await userService.verifyEmailChange(token);
+          const { user, token: oldToken, newToken } = newAuthentication;
+          dispatch(userThunks.updateUserEmailCredentialsThunk({ newUserData: user, token: oldToken, newToken }));
+
+          setStatus(STATUS.SUCCESS);
+        } catch (error) {
+          errorService.reportError(error);
+          setStatus(STATUS.ERROR);
         }
       } else {
-        setStatus('error');
+        setStatus(STATUS.ERROR);
+        setAuth(false);
       }
-    } catch (err) {
-      console.error(err);
-      setStatus('error');
+    } catch (error) {
+      errorService.reportError(error);
+      setStatus(STATUS.ERROR);
     }
   }
 
@@ -83,7 +104,7 @@ export default function ChangeEmailView(): JSX.Element {
       subtitle: translate('views.emailChange.success.subtitle'),
     },
     error: {
-      icon: <WarningCircle className="text-red-std" weight="thin" size={96} />,
+      icon: <WarningCircle className="text-red" weight="thin" size={96} />,
       title: translate('views.emailChange.error.title'),
       subtitle: translate('views.emailChange.error.subtitle'),
     },
@@ -101,11 +122,11 @@ export default function ChangeEmailView(): JSX.Element {
     },
     error: {
       label: translate('views.emailChange.error.cta'),
-      path: '/preferences?tab=account',
+      path: '/?preferences=open&section=account&subsection=account',
     },
     expired: {
       label: translate('views.emailChange.expired.cta'),
-      path: '/preferences?tab=account',
+      path: '/?preferences=open&section=account&subsection=account',
     },
   };
 
@@ -123,27 +144,29 @@ export default function ChangeEmailView(): JSX.Element {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex w-full max-w-xs flex-col items-center space-y-5">
-        {status === 'loading' && expired === null ? (
+        {status === STATUS.LOADING && expired === null ? (
           <Spinner size={24} />
         ) : !expired && !auth ? (
           <>
-            <State {...layout['auth']} />
+            <State {...layout[STATUS.AUTH]} />
 
             <form className="flex w-full flex-col space-y-3" onSubmit={verify}>
               <Input
                 required
-                disabled={status === 'loading'}
+                disabled={status === STATUS.LOADING}
                 variant="password"
                 label={translate('views.emailChange.password')}
                 onChange={setPassword}
                 autofocus
-                accent={status === 'error' ? 'error' : undefined}
-                message={status === 'error' ? (translate('views.emailChange.auth.wrongPassword') as string) : undefined}
+                accent={status === STATUS.ERROR ? 'error' : undefined}
+                message={
+                  status === STATUS.ERROR ? (translate('views.emailChange.auth.wrongPassword') as string) : undefined
+                }
                 name="password"
               />
 
-              <Button loading={status === 'loading'} type="submit">
-                {translate('views.account.tabs.account.accountDetails.changeEmail.sendingVerification')}
+              <Button loading={status === STATUS.LOADING} type="submit">
+                {translate('views.account.tabs.account.accountDetails.changeEmail.confirm')}
               </Button>
             </form>
           </>
@@ -152,10 +175,13 @@ export default function ChangeEmailView(): JSX.Element {
             <State {...layout[status]} />
 
             <Link
-              className="flex h-10 items-center justify-center rounded-lg bg-primary px-5 font-medium text-white no-underline hover:text-white"
-              to={cta[status].path}
+              className="flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 font-medium text-white no-underline hover:text-white"
+              to={cta[status]?.path}
+              onClick={() => {
+                if (status !== STATUS.SUCCESS) dispatch(uiActions.setIsPreferencesDialogOpen(true));
+              }}
             >
-              {cta[status].label}
+              {cta[status]?.label}
             </Link>
           </>
         )}

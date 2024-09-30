@@ -3,31 +3,32 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import queryString from 'query-string';
 import { auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
-import { WarningCircle } from '@phosphor-icons/react';
+import { Info, WarningCircle } from '@phosphor-icons/react';
 import { Helmet } from 'react-helmet-async';
-import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
+import localStorageService from '../../../core/services/local-storage.service';
 
-import { useAppDispatch } from 'app/store/hooks';
-import { userActions, userThunks } from 'app/store/slices/user';
-import { planThunks } from 'app/store/slices/plan';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
-import { productsThunks } from 'app/store/slices/products';
-import { AppView, IFormValues } from 'app/core/types';
-import { referralsThunks } from 'app/store/slices/referrals';
-import TextInput from '../../components/TextInput/TextInput';
-import PasswordInput from '../../components/PasswordInput/PasswordInput';
-import Button from '../../components/Button/Button';
+import { useAppDispatch } from '../../../store/hooks';
+import { userActions, userThunks } from '../../../store/slices/user';
+import { planThunks } from '../../../store/slices/plan';
+import errorService from '../../../core/services/error.service';
+import navigationService from '../../../core/services/navigation.service';
+import { productsThunks } from '../../../store/slices/products';
+import { AppView, IFormValues } from '../../../core/types';
+import { referralsThunks } from '../../../store/slices/referrals';
+import TextInput from '../TextInput/TextInput';
+import PasswordInput from '../PasswordInput/PasswordInput';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
+import PasswordStrengthIndicator from '../../../shared/components/PasswordStrengthIndicator';
 import { useSignUp } from './useSignUp';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import authService, { getNewToken } from 'app/auth/services/auth.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import authService, { getNewToken } from '../../../auth/services/auth.service';
 import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
-import paymentService from 'app/payment/services/payment.service';
+import paymentService from '../../../payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
-import { decryptPrivateKey } from 'app/crypto/services/keys.service';
+import { decryptPrivateKey } from '../../../crypto/services/keys.service';
+import analyticsService from '../../../analytics/services/analytics.service';
+import Button from '../../../shared/components/Button/Button';
 
 export interface SignUpProps {
   location: {
@@ -36,9 +37,12 @@ export interface SignUpProps {
   isNewUser: boolean;
 }
 
+export type Views = 'signUp' | 'downloadBackupKey';
+
 function SignUp(props: SignUpProps): JSX.Element {
   const { translate } = useTranslationContext();
   const [isValidPassword, setIsValidPassword] = useState(false);
+  const [view, setView] = useState<Views>('signUp');
 
   const qs = queryString.parse(navigationService.history.location.search);
   const autoSubmit = useMemo(
@@ -143,8 +147,6 @@ function SignUp(props: SignUpProps): JSX.Element {
         ? await doRegister(email, password, token)
         : await updateInfo(email, password);
 
-      localStorageService.removeItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
-
       localStorageService.clear();
 
       localStorageService.set('xToken', xToken);
@@ -153,9 +155,9 @@ function SignUp(props: SignUpProps): JSX.Element {
       const xNewToken = await getNewToken();
       localStorageService.set('xNewToken', xNewToken);
 
-      const privateKey = xUser.privateKey ? 
-        Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64') : 
-        undefined;
+      const privateKey = xUser.privateKey
+        ? Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64')
+        : undefined;
 
       const user = {
         ...xUser,
@@ -165,28 +167,36 @@ function SignUp(props: SignUpProps): JSX.Element {
       dispatch(userActions.setUser(user));
       await dispatch(userThunks.initializeUserThunk());
       dispatch(productsThunks.initializeThunk());
-      dispatch(planThunks.initializeThunk());
+      if (!redeemCodeObject) {
+        dispatch(planThunks.initializeThunk());
+      }
 
       if (isNewUser) {
         dispatch(referralsThunks.initializeThunk());
       }
 
-      window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
-      window.rudderanalytics.track('User Signup', { email });
+      await analyticsService.trackSignUp(xUser.uuid, email);
 
-      const redirectUrl = authService.getRedirectUrl(new URLSearchParams(window.location.search), xToken);
+      const urlParams = new URLSearchParams(window.location.search);
+      const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
+
+      const redirectUrl = authService.getRedirectUrl(urlParams, xToken);
 
       if (redirectUrl) {
         window.location.replace(redirectUrl);
         return;
       } else if (redeemCodeObject) {
-        await paymentService.redeemCode(redeemCodeObject).catch((err) => {
-          errorService.reportError(err);
-        });
+        await paymentService.redeemCode(redeemCodeObject);
         dispatch(planThunks.initializeThunk());
         navigationService.push(AppView.Drive);
       } else {
-        navigationService.push(AppView.Drive);
+        if (isUniversalLinkMode) {
+          return navigationService.push(AppView.UniversalLinkSuccess);
+        } else {
+          //TODO: Use this setState when we have to implement the download of the backup key
+          // setView('downloadBackupKey');
+          return navigationService.push(AppView.Drive);
+        }
       }
     } catch (err: unknown) {
       setIsLoading(false);
@@ -203,6 +213,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
     return currentParams.toString() ? '/login?' + currentParams.toString() : '/login';
   };
+
   return (
     <>
       <Helmet>
@@ -212,33 +223,33 @@ function SignUp(props: SignUpProps): JSX.Element {
         className={`flex ${
           showPreparingWorkspaceAnimation
             ? 'h-full w-full'
-            : 'h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft'
+            : 'h-fit w-96 flex-col items-center justify-center px-8 py-10'
         }`}
       >
         {showPreparingWorkspaceAnimation ? (
           <PreparingWorkspaceAnimation />
+        ) : view === 'downloadBackupKey' ? (
+          //TODO: Use this component when we have to implement the download of the backup key
+          // <DownloadBackupKey onRedirect={onRedirect} />
+          <></>
         ) : (
-          <>
-            <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-              <span className="text-2xl font-medium">{translate('auth.signup.title')}</span>
+          <div className="flex flex-col items-start space-y-5">
+            <div className="flex flex-col items-start space-y-5">
+              <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>
 
-              <div className="flex flex-col space-y-3">
-                <label className="space-y-0.5">
-                  <span>{translate('auth.email')}</span>
-                  <TextInput
-                    placeholder={translate('auth.email') as string}
-                    label="email"
-                    type="email"
-                    disabled={hasEmailParam}
-                    register={register}
-                    required={true}
-                    minLength={{ value: 1, message: 'Email must not be empty' }}
-                    error={errors.email}
-                  />
-                </label>
+              <form className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
+                <TextInput
+                  placeholder={translate('auth.email') as string}
+                  label="email"
+                  type="email"
+                  disabled={hasEmailParam}
+                  register={register}
+                  required={true}
+                  minLength={{ value: 1, message: 'Email must not be empty' }}
+                  error={errors.email}
+                />
 
                 <label className="space-y-0.5">
-                  <span>{translate('auth.password')}</span>
                   <PasswordInput
                     className={passwordState ? passwordState.tag : ''}
                     placeholder={translate('auth.password')}
@@ -259,46 +270,66 @@ function SignUp(props: SignUpProps): JSX.Element {
                   {bottomInfoError && (
                     <div className="flex flex-row items-start pt-1">
                       <div className="flex h-5 flex-row items-center">
-                        <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+                        <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
                       </div>
-                      <span className="font-base w-56 text-sm text-red-60">{bottomInfoError}</span>
+                      <span className="font-base w-56 text-sm text-red">{bottomInfoError}</span>
                     </div>
                   )}
                 </label>
 
+                <div className="flex space-x-2.5 rounded-lg bg-primary/10 p-3 pr-4 dark:bg-primary/20">
+                  <Info size={20} className="shrink-0 text-primary" />
+                  <p className="text-xs">
+                    {translate('auth.signup.info.normalText')}{' '}
+                    <span className="font-semibold">{translate('auth.signup.info.boldText')}</span>{' '}
+                    <span className="font-semibold text-primary underline">
+                      <a
+                        href="https://help.internxt.com/en/articles/8450457-how-do-i-create-a-backup-key"
+                        target="_blank"
+                      >
+                        {translate('auth.signup.info.cta')}
+                      </a>
+                    </span>
+                  </p>
+                </div>
+
                 <Button
                   disabled={isLoading || !isValidPassword}
-                  text={translate('auth.signup.title')}
-                  disabledText={
-                    isValid && isValidPassword
-                      ? `${translate('auth.signup.encrypting')}...`
-                      : translate('auth.signup.title')
-                  }
                   loading={isLoading}
-                  style="button-primary"
+                  type="submit"
+                  variant="primary"
                   className="w-full"
-                />
-              </div>
-            </form>
-            <span className="mt-2 w-full text-xs text-gray-50">
-              {translate('auth.terms1')}{' '}
-              <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-80">
-                {translate('auth.terms2')}
-              </a>
-            </span>
+                >
+                  {isLoading && isValid && isValidPassword
+                    ? `${translate('auth.signup.encrypting')}...`
+                    : translate('auth.signup.title')}
+                </Button>
+              </form>
 
-            <div className="mt-4 flex w-full items-center justify-center">
-              <span className="select-none text-sm text-gray-80">
-                {translate('auth.signup.haveAccount')}{' '}
+              <span className="mt-2 w-full text-xs text-gray-50">
+                {translate('auth.terms1')}{' '}
+                <a
+                  href="https://internxt.com/legal"
+                  target="_blank"
+                  className="text-xs text-gray-50 hover:text-gray-60"
+                >
+                  {translate('auth.terms2')}
+                </a>
+              </span>
+
+              <div className="w-full border-b border-gray-10" />
+
+              <div className="flex w-full items-center justify-center space-x-1.5 font-medium">
+                <span>{translate('auth.signup.haveAccount')}</span>
                 <Link
                   to={getLoginLink()}
-                  className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
+                  className="cursor-pointer font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
                 >
                   {translate('auth.signup.login')}
                 </Link>
-              </span>
+              </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </>

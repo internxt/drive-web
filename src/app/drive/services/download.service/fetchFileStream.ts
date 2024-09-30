@@ -1,31 +1,31 @@
+import { Downloadable, downloadFile } from 'app/network/download';
 import { getEnvironmentConfig } from '../network.service';
-import { downloadFile, Downloadable } from 'app/network/download';
 
 type FetchFileStreamOptions = {
   updateProgressCallback: (progress: number) => void;
-  isTeam?: boolean,
-  abortController?: AbortController
+  isWorkspace?: boolean;
+  abortController?: AbortController;
 };
 
 export default function fetchFileStream(
   item: Downloadable,
   options: FetchFileStreamOptions,
 ): Promise<ReadableStream<Uint8Array>> {
-  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(!!options.isTeam);
+  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(!!options.isWorkspace);
 
   return downloadFile({
     bucketId: item.bucketId,
     fileId: item.fileId,
     creds: {
       pass: bridgePass,
-      user: bridgeUser
+      user: bridgeUser,
     },
     mnemonic: encryptionKey,
     options: {
       notifyProgress: (totalBytes: number, downloadedBytes: number) => {
         options.updateProgressCallback(downloadedBytes / totalBytes);
       },
-      abortController: options.abortController
-    }
+      abortController: options.abortController,
+    },
   });
 }

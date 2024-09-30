@@ -5,7 +5,6 @@ export default function Tooltip({
   title,
   subtitle,
   popsFrom,
-  style = 'light',
   className,
   delayInMs,
 }: {
@@ -13,7 +12,6 @@ export default function Tooltip({
   title: string;
   subtitle?: string;
   popsFrom: 'right' | 'left' | 'top' | 'bottom';
-  style?: 'dark' | 'light';
   className?: string;
   delayInMs?: number;
 }): JSX.Element {
@@ -81,19 +79,17 @@ export default function Tooltip({
       style={{ lineHeight: 0 }}
     >
       <div
-        className={`absolute pointer-events-none transform ${tooltipPosition} flex items-center ${trianglePosition} transition-all duration-150 ${
-          style === 'light' ? 'drop-shadow-tooltip filter' : ''
-        } ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
+        className={`pointer-events-none absolute ${tooltipPosition} flex items-center ${trianglePosition} drop-shadow-tooltip transition-all duration-150 ${
+          visible ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
+        }`}
       >
-        <div className={`w-max rounded-lg px-4 py-1.5 text-center ${style === 'dark' ? 'bg-gray-90' : 'bg-white'}`}>
-          <h1 className={`text-base ${style === 'dark' ? 'text-white' : 'text-gray-80'}`}>{title}</h1>
-          {subtitle && (
-            <h2 className={`text-sm -mt-1 ${style === 'dark' ? 'text-white opacity-50' : 'text-gray-50'}`}>{subtitle}</h2>
-          )}
+        <div className="w-max rounded-lg bg-gray-90 px-4 py-1.5 text-center dark:bg-gray-5">
+          <p className="text-base text-white">{title}</p>
+          {subtitle && <p className="-mt-1 text-sm text-gray-40">{subtitle}</p>}
         </div>
         <div
-          className={`${popsFrom === 'bottom' || popsFrom === 'top' ? 'h-1.5 w-4' : 'h-4 w-1.5'} ${
-            style === 'dark' ? 'bg-gray-90' : 'bg-white'
+          className={`bg-gray-90 dark:bg-gray-5 ${
+            popsFrom === 'bottom' || popsFrom === 'top' ? 'h-1.5 w-4' : 'h-4 w-1.5'
           }`}
           style={{ clipPath: triangle, marginTop: popsFrom === 'top' ? '-1px' : undefined }}
         ></div>

@@ -21,6 +21,10 @@ interface IUploadParams {
   mnemonic: string;
   progressCallback: UploadProgressCallback;
   abortController?: AbortController;
+  continueUploadOptions?: {
+    taskId: string;
+    isPaused: boolean;
+  };
 }
 
 export async function uploadFileBlob(
@@ -103,14 +107,16 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
   console.time('multipart-upload');
 
   const uploadAbortController = new AbortController();
+  const context = typeof window === 'undefined' ? self : window;
 
   let connectionLost = false;
+
   function connectionLostListener() {
     connectionLost = true;
     uploadAbortController.abort();
-    window.removeEventListener('offline', connectionLostListener);
+    context.removeEventListener('offline', connectionLostListener);
   }
-  window.addEventListener('offline', connectionLostListener);
+  context.addEventListener('offline', connectionLostListener);
 
   function onAbort() {
     if (!connectionLost) {
@@ -129,11 +135,13 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
       uploadingCallback: params.progressCallback,
       abortController: uploadAbortController,
       parts: Math.ceil(params.filesize / partSize),
+      continueUploadOptions: params?.continueUploadOptions,
     });
   } else {
     uploadPromise = facade.upload(bucketId, params.mnemonic, file, {
       uploadingCallback: params.progressCallback,
       abortController: uploadAbortController,
+      continueUploadOptions: params?.continueUploadOptions,
     });
   }
 

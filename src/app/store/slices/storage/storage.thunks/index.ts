@@ -1,42 +1,46 @@
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 
 import { StorageState } from '../storage.model';
-import { initializeThunk, initializeThunkExtraReducers } from './initializeThunk';
-import { resetNamePathThunk, resetNamePathThunkExtraReducers } from './resetNamePathThunk';
-import { uploadItemsThunk, uploadItemsThunkNoCheck, uploadItemsThunkExtraReducers } from './uploadItemsThunk';
-import { downloadItemsThunk, downloadItemsThunkExtraReducers } from './downloadItemsThunk';
+import { createFolderThunk, createFolderThunkExtraReducers } from './createFolderThunk';
+import { deleteItemsThunk, deleteItemsThunkExtraReducers } from './deleteItemsThunk';
 import { downloadFileThunk, downloadFileThunkExtraReducers } from './downloadFileThunk';
 import { downloadFolderThunk, downloadFolderThunkExtraReducers } from './downloadFolderThunk';
-import { createFolderThunk, createFolderThunkExtraReducers } from './createFolderThunk';
-import { fetchRecentsThunk, fetchRecentsThunkExtraReducers } from './fetchRecentsThunk';
-import { fetchFolderContentThunk, fetchFolderContentThunkExtraReducers } from './fetchFolderContentThunk';
-import { deleteItemsThunk, deleteItemsThunkExtraReducers } from './deleteItemsThunk';
-import { goToFolderThunk, goToFolderThunkExtraReducers } from './goToFolderThunk';
-import { uploadFolderThunk, uploadFolderThunkNoCheck, uploadFolderThunkExtraReducers } from './uploadFolderThunk';
-import { updateItemMetadataThunk, updateItemMetadataThunkExtraReducers } from './updateItemMetadataThunk';
-import { moveItemsThunk, moveItemsThunkExtraReducers } from './moveItemsThunk';
+import { downloadItemsThunk, downloadItemsThunkExtraReducers } from './downloadItemsThunk';
 import { fetchDeletedThunk, fetchDeletedThunkExtraReducers } from './fetchDeletedThunk';
+import { fetchFolderContentThunkExtraReducers, fetchPaginatedFolderContentThunk } from './fetchFolderContentThunk';
+import { fetchRecentsThunk, fetchRecentsThunkExtraReducers } from './fetchRecentsThunk';
+import { goToFolderThunk, goToFolderThunkExtraReducers } from './goToFolderThunk';
+import { initializeThunk, initializeThunkExtraReducers } from './initializeThunk';
+import { moveItemsThunk, moveItemsThunkExtraReducers } from './moveItemsThunk';
 import { renameItemsThunk, renameItemsThunkExtraReducers } from './renameItemsThunk';
+import { resetNamePathThunk, resetNamePathThunkExtraReducers } from './resetNamePathThunk';
+import { updateItemMetadataThunk, updateItemMetadataThunkExtraReducers } from './updateItemMetadataThunk';
+import {
+  uploadFolderThunk,
+  uploadFolderThunkExtraReducers,
+  uploadMultipleFolderThunkNoCheck,
+} from './uploadFolderThunk';
+import { uploadItemsThunk, uploadItemsThunkExtraReducers, uploadSharedItemsThunk } from './uploadItemsThunk';
 
 const storageThunks = {
   initializeThunk,
   resetNamePathThunk,
   uploadItemsThunk,
-  uploadItemsThunkNoCheck,
   downloadItemsThunk,
   downloadFileThunk,
   downloadFolderThunk,
-  fetchFolderContentThunk,
+  fetchPaginatedFolderContentThunk,
   deleteItemsThunk,
   goToFolderThunk,
   uploadFolderThunk,
-  uploadFolderThunkNoCheck,
+  uploadMultipleFolderThunkNoCheck,
   updateItemMetadataThunk,
   fetchRecentsThunk,
   createFolderThunk,
   moveItemsThunk,
   fetchDeletedThunk,
   renameItemsThunk,
+  uploadSharedItemsThunk,
 };
 
 export const storageExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {

@@ -14,12 +14,9 @@ const folderThreeBlobItems: DriveItemBlobData[] = [
 ];
 const levels_blobs = { 1: [...folderBlobItems], 2: [...folderTwoBlobItems], 34: [...folderThreeBlobItems] };
 
-const photos = { id1: { source: {} }, id2: { source: {} } };
-
 const database = {
   [DatabaseCollection.Levels]: { ...levels_blobs },
   [DatabaseCollection.LevelsBlobs]: { ...levels_blobs },
-  [DatabaseCollection.Photos]: { ...photos },
 };
 
-export { folderBlobItems, folderTwoBlobItems, folderThreeBlobItems, levels_blobs, photos, database };
+export { folderBlobItems, folderTwoBlobItems, folderThreeBlobItems, levels_blobs, database };

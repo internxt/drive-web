@@ -1,7 +1,8 @@
-import { SVGProps } from 'react';
-import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
-import { RenewalPeriod } from '../../payment/types';
+import { RenewalPeriod } from '@internxt/sdk/dist/drive/payments/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
+import { AdvancedSharedItem } from 'app/share/types';
+import { SVGProps } from 'react';
 
 export interface DriveFolderData {
   id: number;
@@ -18,16 +19,18 @@ export interface DriveFolderData {
   plain_name: string;
   plainName?: string | null;
   parentId: number;
+  parentUuid: string;
   parent_id: number | null;
   updatedAt: string;
   userId: number;
   user_id: number;
   shares?: Array<ShareLink>;
-  uuid?: string;
+  sharings?: { type: string; id: string }[];
+  uuid: string;
 }
 
 export interface DriveFolderMetadataPayload {
-  itemName?: string;
+  itemName: string;
   color?: string;
   icon?: string;
 }
@@ -42,6 +45,7 @@ export interface DriveFileData {
   fileId: string;
   folderId: number;
   folder_id: number;
+  folderUuid: string;
   id: number;
   name: string;
   plain_name: string | null;
@@ -49,10 +53,12 @@ export interface DriveFileData {
   size: number;
   type: string;
   updatedAt: string;
+  status: string;
   thumbnails: Array<Thumbnail>;
   currentThumbnail: Thumbnail | null;
   shares?: Array<ShareLink>;
-  uuid?: string;
+  sharings?: { type: string; id: string }[];
+  uuid: string;
 }
 
 interface Thumbnail {
@@ -76,7 +82,7 @@ export enum ThumbnailConfig {
 }
 
 export interface DriveFileMetadataPayload {
-  itemName?: string;
+  itemName: string;
 }
 
 export type DriveItemData = DriveFileData & DriveFolderData;
@@ -95,21 +101,6 @@ export interface FileInfoMenuItem {
   icon: React.FunctionComponent<SVGProps<SVGSVGElement>>;
   title: string;
   features: { label: string; value: string }[];
-}
-
-export interface FolderTree {
-  id: number;
-  bucket: string | null;
-  children: FolderTree[];
-  encrypt_version: string;
-  files: DriveFileData[];
-  name: string;
-  parentId: number;
-  parent_id: number;
-  userId: number;
-  user_id: number;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export type StoragePlan = {
@@ -131,12 +122,12 @@ export type StoragePlan = {
 
 export interface FolderPath {
   name: string;
-  id: number;
+  uuid: string;
 }
 
 export interface FolderPathDialog {
   name: string;
-  id: number;
+  uuid: string;
 }
 
 export enum FileViewMode {
@@ -150,6 +141,23 @@ export enum DownloadFolderMethod {
 }
 
 export enum FreeStoragePlan {
-  simpleName = '2GB',
-  storageLimit = 2147483648,
+  simpleName = '1GB',
+  storageLimit = 1073741824,
 }
+
+export type DriveItemDetails = (DriveItemData | AdvancedSharedItem) & {
+  isShared: boolean;
+  userEmail?: string;
+  view: 'Drive' | 'Shared';
+};
+
+export type ItemDetailsProps = {
+  name: string;
+  uploadedBy: string;
+  location: string;
+  uploaded: string;
+  modified: string;
+  shared: string;
+  type?: string;
+  size?: string;
+};

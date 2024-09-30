@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react';
 import { aes } from '@internxt/lib';
 import {
   CryptoProvider,
@@ -7,8 +6,23 @@ import {
   Password,
   SecurityDetails,
   TwoFactorAuthQR,
-  UserAccessError,
 } from '@internxt/sdk/dist/auth';
+import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import * as Sentry from '@sentry/react';
+import analyticsService from 'app/analytics/services/analytics.service';
+import { getCookie, setCookie } from 'app/analytics/utils';
+import localStorageService from 'app/core/services/local-storage.service';
+import navigationService from 'app/core/services/navigation.service';
+import RealtimeService from 'app/core/services/socket.service';
+import { AppView } from 'app/core/types';
+import {
+  assertPrivateKeyIsValid,
+  assertValidateKeys,
+  decryptPrivateKey,
+  getAesInitFromEnv,
+} from 'app/crypto/services/keys.service';
+import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import {
   decryptText,
   decryptTextWithKey,
@@ -17,31 +31,18 @@ import {
   passToHash,
 } from 'app/crypto/services/utils';
 import databaseService from 'app/database/services/database.service';
-import navigationService from 'app/core/services/navigation.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import analyticsService from 'app/analytics/services/analytics.service';
-import {
-  getAesInitFromEnv,
-  assertPrivateKeyIsValid,
-  decryptPrivateKey,
-  assertValidateKeys,
-} from 'app/crypto/services/keys.service';
-import { AppView } from 'app/core/types';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
-import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
-import RealtimeService from 'app/core/services/socket.service';
-import { getCookie, setCookie } from 'app/analytics/utils';
-import { validateMnemonic } from 'bip39';
 
-export async function logOut(): Promise<void> {
+export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   analyticsService.trackSignOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
-  navigationService.push(AppView.Login);
+  if (!navigationService.isCurrentPath(AppView.BlockedAccount) && !navigationService.isCurrentPath(AppView.Checkout)) {
+    navigationService.push(AppView.Login, loginParams);
+  }
 }
 
 export function cancelAccount(): Promise<void> {
@@ -71,15 +72,26 @@ const generateNewKeysWithEncrypted = async (password: string) => {
   };
 };
 
+const getAuthClient = (authType: 'web' | 'desktop') => {
+  const AUTH_CLIENT = {
+    web: SdkFactory.getInstance().createAuthClient(),
+    desktop: SdkFactory.getInstance().createDesktopAuthClient(),
+  };
+
+  return AUTH_CLIENT[authType];
+};
+
 export const doLogin = async (
   email: string,
   password: string,
   twoFactorCode: string,
+  loginType: 'web' | 'desktop' | undefined = 'web',
 ): Promise<{
   user: UserSettings;
   token: string;
+  mnemonic: string;
 }> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = getAuthClient(loginType);
   const loginDetails: LoginDetails = {
     email: email.toLowerCase(),
     password: password,
@@ -141,12 +153,11 @@ export const doLogin = async (
       return {
         user: clearUser,
         token: token,
+        mnemonic: clearMnemonic,
       };
     })
     .catch((error) => {
-      if (error instanceof UserAccessError) {
-        analyticsService.signInAttempted(email, error.message);
-      }
+      analyticsService.signInAttempted(email, error.message);
       throw error;
     });
 };
@@ -195,8 +206,6 @@ const updateCredentialsWithToken = async (
   const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
 
   const encryptedMnemonic = encryptTextWithKey(mnemonicInPlain, newPassword);
-  // const privateKey = Buffer.from(privateKeyInPlain, 'base64').toString();
-  // const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.changePasswordWithLink(
@@ -204,6 +213,30 @@ const updateCredentialsWithToken = async (
     encryptedHashedNewPassword,
     encryptedHashedNewPasswordSalt,
     encryptedMnemonic,
+  );
+};
+
+const resetAccountWithToken = async (token: string | undefined, newPassword: string): Promise<void> => {
+  const newMnemonic = generateMnemonic(256);
+  const mnemonicIsInvalid = !validateMnemonic(newMnemonic);
+
+  if (mnemonicIsInvalid) {
+    throw new Error('Invalid mnemonic');
+  }
+
+  const encryptedNewMnemonic = encryptTextWithKey(newMnemonic, newPassword);
+
+  const hashedNewPassword = passToHash({ password: newPassword });
+  const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
+  const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
+
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+
+  return authClient.resetAccountWithToken(
+    token,
+    encryptedHashedNewPassword,
+    encryptedHashedNewPasswordSalt,
+    encryptedNewMnemonic,
   );
 };
 
@@ -233,8 +266,11 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       encryptedPrivateKey: privateKeyEncrypted,
       encryptVersion: '', // !TODO: Add the version used
     })
-    .then(() => {
+    .then((res) => {
       // !TODO: Add the correct analytics event  when change password is completed
+      const { token, newToken } = res as any;
+      if (token) localStorageService.set('xToken', token);
+      if (newToken) localStorageService.set('xNewToken', newToken);
     })
     .catch((error) => {
       // !TODO: Add the correct analytics event when change password fails
@@ -269,7 +305,7 @@ export const deactivate2FA = (
 };
 
 export async function getNewToken(): Promise<string> {
-  const res = await fetch(`${process.env.REACT_APP_API_URL}/api/new-token`, {
+  const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
     headers: httpService.getHeaders(true, false),
   });
   if (!res.ok) {
@@ -363,6 +399,16 @@ const sendChangePasswordEmail = (email: string): Promise<void> => {
   return authClient.sendChangePasswordEmail(email);
 };
 
+export const requestUnblockAccount = (email: string): Promise<void> => {
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.requestUnblockAccount(email);
+};
+
+export const unblockAccount = (token: string): Promise<void> => {
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.unblockAccount(token);
+};
+
 const authService = {
   logOut,
   doLogin,
@@ -375,6 +421,9 @@ const authService = {
   getRedirectUrl,
   sendChangePasswordEmail,
   updateCredentialsWithToken,
+  resetAccountWithToken,
+  requestUnblockAccount,
+  unblockAccount,
 };
 
 export default authService;

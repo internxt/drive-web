@@ -1,16 +1,16 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
+import { Network } from 'app/drive/services/network.service';
 import { DriveFileData } from 'app/drive/types';
-import analyticsService from '../../../analytics/services/analytics.service';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import { AppView } from '../../../core/types';
+import analyticsService from '../../../analytics/services/analytics.service';
+import { SdkFactory } from '../../../core/factory/sdk';
+import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
-import { getEnvironmentConfig } from '../network.service';
-import { encryptFilename } from '../../../crypto/services/utils';
-import errorService from '../../../core/services/error.service';
-import { SdkFactory } from '../../../core/factory/sdk';
-import { uploadFile as uploadToBucket } from 'app/network/upload';
+import workspacesService from '../../../core/services/workspace.service';
+import { AppView } from '../../../core/types';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { getEnvironmentConfig } from '../network.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
 
 export interface FileToUpload {
@@ -18,18 +18,40 @@ export interface FileToUpload {
   size: number;
   type: string;
   content: File;
-  parentFolderId: number;
+  parentFolderId: string;
+}
+
+export interface FileUploadOptions {
+  isTeam: boolean;
+  trackingParameters: { isMultipleUpload: 0 | 1; processIdentifier: string };
+  abortController?: AbortController;
+  ownerUserAuthenticationData?: {
+    token: string;
+    bridgeUser: string;
+    bridgePass: string;
+    encryptionKey: string;
+    bucketId: string;
+    // to manage B2B workspaces
+    resourcesToken: string;
+    workspaceId?: string;
+    workspacesToken?: string;
+  };
+  abortCallback?: (abort?: () => void) => void;
 }
 
 export async function uploadFile(
   userEmail: string,
   file: FileToUpload,
-  isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-  trackingParameters: { isMultipleUpload: 0 | 1; processIdentifier: string },
-  abortController?: AbortController,
+  options: FileUploadOptions,
+  continueUploadOptions: {
+    taskId: string;
+    isPaused: boolean;
+    isRetriedUpload: boolean;
+  },
 ): Promise<DriveFileData> {
-  const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
+  const { bridgeUser, bridgePass, encryptionKey, bucketId } =
+    options.ownerUserAuthenticationData ?? getEnvironmentConfig(options.isTeam);
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   const trackingUploadProperties: TrackingPlan.UploadProperties = {
@@ -40,12 +62,16 @@ export async function uploadFile(
     file_name: file.name,
     bandwidth: 0,
     band_utilization: 0,
-    process_identifier: trackingParameters?.processIdentifier,
-    is_multiple: trackingParameters?.isMultipleUpload,
+    process_identifier: options.trackingParameters?.processIdentifier,
+    is_multiple: options.trackingParameters?.isMultipleUpload,
     is_brave: isBrave,
   };
   try {
     analyticsService.trackFileUploadStarted(trackingUploadProperties);
+
+    if (continueUploadOptions?.isRetriedUpload) {
+      analyticsService.trackFileUploadRetried(trackingUploadProperties);
+    }
 
     if (!bucketId) {
       analyticsService.trackFileUploadError({
@@ -62,35 +88,67 @@ export async function uploadFile(
       throw new Error('Bucket not found!');
     }
 
-    const fileId = await uploadToBucket(bucketId, {
-      creds: {
-        pass: bridgePass,
-        user: bridgeUser,
-      },
-      filecontent: file.content,
-      filesize: file.size,
-      mnemonic: encryptionKey,
-      progressCallback: (totalBytes, uploadedBytes) => {
-        updateProgressCallback(uploadedBytes / totalBytes);
-      },
-      abortController,
-    });
-
-    const name = encryptFilename(file.name, file.parentFolderId);
-
-    const storageClient = SdkFactory.getInstance().createStorageClient();
-    const fileEntry: StorageTypes.FileEntry = {
-      id: fileId,
-      type: file.type,
-      size: file.size,
-      name: name,
-      plain_name: file.name,
-      bucket: bucketId,
-      folder_id: file.parentFolderId,
-      encrypt_version: StorageTypes.EncryptionVersion.Aes03,
+    const analyticsCallbacks = {
+      pauseUploadCallback: () => analyticsService.trackFileUploadPaused(trackingUploadProperties),
+      resumeUploadCallback: () => analyticsService.trackFileUploadResumed(trackingUploadProperties),
     };
 
-    let response = await storageClient.createFileEntry(fileEntry);
+    const [promise, abort] = new Network(bridgeUser, bridgePass, encryptionKey).uploadFile(
+      bucketId,
+      {
+        filecontent: file.content,
+        filesize: file.size,
+        progressCallback: (progress) => {
+          updateProgressCallback(progress);
+        },
+      },
+      continueUploadOptions,
+      analyticsCallbacks,
+    );
+
+    options.abortCallback?.(abort?.abort);
+
+    const fileId = await promise;
+
+    const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
+    const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;
+    const resourcesToken = options?.ownerUserAuthenticationData?.resourcesToken;
+
+    const isWorkspacesUpload = workspaceId && workspacesToken;
+    let response;
+
+    if (isWorkspacesUpload) {
+      const dateISO = '2023-05-30T12:34:56.789Z';
+      const date = new Date(dateISO);
+      const workspaceFileEntry = {
+        name: file.name,
+        bucket: bucketId,
+        fileId: fileId,
+        encryptVersion: StorageTypes.EncryptionVersion.Aes03,
+        folderUuid: file.parentFolderId,
+        size: file.size,
+        plainName: file.name,
+        type: file.type,
+        modificationTime: date.toISOString(),
+        date: date.toISOString(),
+      };
+
+      response = await workspacesService.createFileEntry(workspaceFileEntry, workspaceId, resourcesToken);
+    } else {
+      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+      const fileEntry: StorageTypes.FileEntryByUuid = {
+        id: fileId,
+        type: file.type,
+        size: file.size,
+        name: file.name,
+        plain_name: file.name,
+        bucket: bucketId,
+        folder_id: file.parentFolderId,
+        encrypt_version: StorageTypes.EncryptionVersion.Aes03,
+      };
+
+      response = await storageClient.createFileEntryByUuid(fileEntry, options.ownerUserAuthenticationData?.token);
+    }
     if (!response.thumbnails) {
       response = {
         ...response,
@@ -98,8 +156,8 @@ export async function uploadFile(
       };
     }
 
-    const generatedThumbnail = await generateThumbnailFromFile(file, response.id, userEmail, isTeam);
-    if (generatedThumbnail && generatedThumbnail.thumbnail) {
+    const generatedThumbnail = await generateThumbnailFromFile(file, response.id, userEmail, options.isTeam);
+    if (generatedThumbnail?.thumbnail) {
       response.thumbnails.push(generatedThumbnail.thumbnail);
       if (generatedThumbnail.thumbnailFile) {
         generatedThumbnail.thumbnail.urlObject = URL.createObjectURL(generatedThumbnail.thumbnailFile);
@@ -117,7 +175,7 @@ export async function uploadFile(
   } catch (err: unknown) {
     const castedError = errorService.castError(err);
 
-    if (!abortController?.signal.aborted) {
+    if (!options.abortController?.signal.aborted) {
       analyticsService.trackFileUploadError({
         ...trackingUploadProperties,
         bucket_id: parseInt(bucketId),

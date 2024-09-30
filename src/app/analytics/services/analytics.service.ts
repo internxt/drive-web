@@ -1,18 +1,25 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import errorService from 'app/core/services/error.service';
 import * as prettySize from 'prettysize';
 import httpService from '../../../../src/app/core/services/http.service';
-import errorService from 'app/core/services/error.service';
 
-import Analytics from '../Analytics';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
-import { AnalyticsTrackNames } from '../types';
-import { TrackingPlan } from '../TrackingPlan';
+import axios from 'axios';
+import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
+import Analytics from '../Analytics';
+import { TrackingPlan } from '../TrackingPlan';
+import { AnalyticsTrackNames } from '../types';
+import { getCookie } from '../utils';
+
+const IMPACT_API = process.env.REACT_APP_IMPACT_API as string;
 
 const analytics: Analytics = Analytics.getInstance();
+const anonymousID = getCookie('impactAnonymousId');
+const source = getCookie('impactSource');
 
 export function getTrackingActionId() {
   return uuidv4();
@@ -26,7 +33,7 @@ export const PATH_NAMES = {
   '/settings': 'Settings',
   '/invite': 'Invite',
   '/remove': 'Remove Account',
-  '/app': 'App',
+  '/': 'App',
 };
 
 export function trackFileUploadStarted(properties: TrackingPlan.UploadProperties): void {
@@ -43,6 +50,18 @@ export function trackFileUploadError(properties: TrackingPlan.UploadErrorPropert
 
 export function trackFileUploadAborted(properties: TrackingPlan.UploadAbortedProperties): void {
   analytics.track(TrackingPlan.EventNames.FileUploadAborted, properties);
+}
+
+function trackFileUploadPaused(properties: TrackingPlan.UploadProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadPause, properties);
+}
+
+function trackFileUploadResumed(properties: TrackingPlan.UploadProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadResume, properties);
+}
+
+function trackFileUploadRetried(properties: TrackingPlan.UploadProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadRetry, properties);
 }
 
 export function trackFileDownloadStarted(properties: TrackingPlan.DownloadProperties): void {
@@ -65,9 +84,48 @@ export function trackCanceledSubscription(properties: TrackingPlan.CanceledSubsc
   analytics.track(TrackingPlan.EventNames.CanceledSubscription, properties);
 }
 
+export function trackPublicShared(properties: TrackingPlan.PublicSharedProperties): void {
+  analytics.track(TrackingPlan.EventNames.PublicShared, properties);
+}
+
+export function trackRestrictedShared(properties: TrackingPlan.RestrictedSharedProperties): void {
+  analytics.track(TrackingPlan.EventNames.RestrictedShared, properties);
+}
+
+export function trackSharedInvitationsAccepted(properties: TrackingPlan.SharedInvitationsAcceptedProperties): void {
+  analytics.track(TrackingPlan.EventNames.SharedInvitationsAccepted, properties);
+}
+
+export function trackFilePreviewOpened(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewOpened, properties);
+}
+
+export function trackFilePreviewed(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewed, properties);
+}
+
+export function trackFilePreviewClicked(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewClicked, properties);
+}
+
+export function trackBackupKeyDownloaded(properties: TrackingPlan.BackupKeyDownloadedProperties): void {
+  analytics.track(TrackingPlan.EventNames.BackupKeyDownloaded, properties);
+}
+
+export function trackPasswordRecovered(properties: TrackingPlan.PasswordRecoveredProperties): void {
+  analytics.track(TrackingPlan.EventNames.PasswordRecovered, properties);
+}
+
+export function trackAccountUnblockEmailSent(properties: TrackingPlan.AccountUnblockProperties): void {
+  analytics.track(TrackingPlan.EventNames.UnblockAccountEmailSent, properties);
+}
+export function trackAccountUnblocked(properties: TrackingPlan.AccountUnblockProperties): void {
+  analytics.track(TrackingPlan.EventNames.AccountUnblocked, properties);
+}
+
 function trackData(properties, actionName) {
   const user = localStorageService.getUser();
-  httpService.post(`${process.env.REACT_APP_API_URL}/api/data`, {
+  httpService.post(`${process.env.REACT_APP_API_URL}/data`, {
     actionName,
     user,
     properties,
@@ -148,23 +206,27 @@ export function signInAttempted(email: string, error: string | Error): void {
   }); */
 }
 
-export function trackSignUp(payload: {
-  properties: { signup_source; email: string };
-  traits: {
-    member_tier?: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    usage: number;
-    createdAt: string;
-    signup_device_source: string;
-    acquisition_channel;
-  };
-  userId: string;
-}): void {
-  /* window.analytics.identify(payload.userId, payload.traits);
-  window.analytics.track(AnalyticsTrackNames.SignUp, payload.properties); */
-  trackSignUpServer(payload);
+export async function trackSignUp(uuid, email) {
+  try {
+    window.rudderanalytics.identify(uuid, { email, uuid: uuid });
+    window.rudderanalytics.track('User Signup', { email });
+    window.gtag('event', 'User Signup');
+
+    if (source && source !== 'direct') {
+      await axios.post(IMPACT_API, {
+        anonymousId: anonymousID,
+        timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+        messageId: uuidv4(),
+        userId: uuid,
+        type: 'track',
+        event: 'User Signup',
+      });
+    }
+  } catch (e) {
+    const castedError = errorService.castError(e);
+    console.error(castedError);
+    errorService.reportError(castedError);
+  }
 }
 
 export function trackUserEnterPayments(priceId: string): void {
@@ -185,7 +247,7 @@ export function trackFolderCreated(payload: { email: string; platform: DevicePla
   // window.analytics.track(AnalyticsTrackNames.FolderCreated, payload);
 }
 
-export function trackFolderRename(payload: { email: string; fileId: number; platform: DevicePlatform }): void {
+export function trackFolderRename(payload: { email: string; fileId: string; platform: DevicePlatform }): void {
   // window.analytics.track(AnalyticsTrackNames.FolderRename, payload);
 }
 
@@ -195,7 +257,7 @@ export function trackFileRename(payload: { email: string; file_id: number | stri
 
 export function trackMoveItem(
   keyOp: string,
-  payload: { email: string; file_id: number; platform: DevicePlatform },
+  payload: { email: string; file_id?: number; uuid?: string; platform: DevicePlatform },
 ): void {
   // window.analytics.track(`${keyOp}-move`.toLowerCase(), payload);
 }
@@ -253,12 +315,12 @@ export async function trackCancelPayment(priceId: string) {
       amount_total,
       id: sessionId,
       customer_email,
-    } = await httpService.get(`${process.env.REACT_APP_API_URL}/api/stripe/session`, {
+    } = (await httpService.get(`${process.env.REACT_APP_API_URL}/stripe/session`, {
       params: {
         sessionId: checkoutSessionId,
       },
       headers: httpService.getHeaders(true, false),
-    });
+    })) as any;
 
     const amount = amount_total * 0.01;
 
@@ -277,42 +339,102 @@ export async function trackCancelPayment(priceId: string) {
 export async function trackPaymentConversion() {
   try {
     const checkoutSessionId = localStorage.getItem('sessionId');
-    const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get(
-      `${process.env.REACT_APP_API_URL}/api/stripe/session`,
-      {
+
+    const { username, uuid } = getUser();
+    let metadata, amount_total, currency, customer, subscription, paymentIntent;
+    // TODO: REVIEW IN ORDER TO MAKE WORK CORRECTLY WITH THE NEW INTEGRATED CHECKOUT
+    try {
+      const {
+        metadata: metadataRetrived,
+        amount_total: totalAmountRetrieved,
+        currency: currencyRetrieved,
+        customer: customerRetrieved,
+        subscription: subscriptionId,
+        payment_intent: paymentIntentRetrieved,
+      } = (await httpService.get(`${process.env.REACT_APP_API_URL}/stripe/session`, {
         params: {
           sessionId: checkoutSessionId,
         },
         headers: httpService.getHeaders(true, false),
-      },
-    );
-    const { username, uuid } = getUser();
-    const amount = amount_total * 0.01;
+      })) as any;
+      metadata = metadataRetrived;
+      amount_total = totalAmountRetrieved;
+      currency = currencyRetrieved;
+      customer = customerRetrieved;
+      paymentIntent = paymentIntentRetrieved;
+      subscription = subscriptionId;
+    } catch (error) {
+      console.log(error);
+    }
 
-    window.rudderanalytics.identify(uuid, {
-      email: username,
-      plan: metadata.priceId,
-      customer_id: customer,
-      storage_limit: metadata.maxSpaceBytes,
-      plan_name: metadata.name,
-      subscription_id: subscription,
-      payment_intent,
-    });
-    window.rudderanalytics.track(AnalyticsTrackNames.PaymentConversionEvent, {
-      price_id: metadata.priceId,
-      product: metadata.product,
-      email: username,
-      customer_id: customer,
-      currency: currency.toUpperCase(),
-      value: amount,
-      revenue: amount,
-      quantity: 1,
-      type: metadata.type,
-      plan_name: metadata.name,
-      impact_value: amount_total === 0 ? 5 : amount,
-      subscription_id: subscription,
-      payment_intent,
-    });
+    subscription = subscription ?? localStorageService.get('subscriptionId');
+    paymentIntent = paymentIntent ?? localStorageService.get('paymentIntentId');
+    // TO MANTAIN OLD BEHAVIOR
+    const amount = amount_total ? amount_total * 0.01 : parseFloat(localStorageService.get('amountPaid') ?? '0');
+    amount_total = amount_total ?? parseFloat(localStorageService.get('amountPaid') ?? '0');
+
+    try {
+      window.rudderanalytics.identify(uuid, {
+        email: username,
+        plan: metadata.priceId,
+        customer_id: customer,
+        storage_limit: metadata.maxSpaceBytes,
+        plan_name: metadata.name,
+        subscription_id: subscription,
+        payment_intent: paymentIntent,
+      });
+      window.rudderanalytics.track(AnalyticsTrackNames.PaymentConversionEvent, {
+        price_id: metadata.priceId,
+        product: metadata.product,
+        email: username,
+        customer_id: customer,
+        currency: currency.toUpperCase(),
+        value: amount,
+        revenue: amount,
+        quantity: 1,
+        type: metadata.type,
+        plan_name: metadata.name,
+        impact_value: amount_total === 0 ? 0.01 : amount,
+        subscription_id: subscription,
+        payment_intent: paymentIntent,
+      });
+
+      window.gtag('event', 'purchase', {
+        transaction_id: uuidv4(),
+        value: amount,
+        currency: currency.toUpperCase(),
+        items: [
+          {
+            item_id: metadata.priceId,
+            item_name: metadata.name,
+            quantity: 1,
+            price: amount,
+          },
+        ],
+      });
+    } catch (error) {
+      console.log(error);
+    }
+
+    if (source && source !== 'direct') {
+      axios
+        .post(IMPACT_API, {
+          anonymousId: anonymousID,
+          timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+          properties: {
+            impact_value: amount_total === 0 ? 0.01 : amount,
+            subscription_id: subscription,
+            payment_intent: paymentIntent,
+          },
+          userId: uuid,
+          type: 'track',
+          event: 'Payment Conversion',
+        })
+        .catch((err) => {
+          const error = errorService.castError(err);
+          errorService.reportError(error);
+        });
+    }
   } catch (err) {
     const castedError = errorService.castError(err);
     window.rudderanalytics.track('Error Signup After Payment Conversion', {
@@ -367,7 +489,7 @@ async function getBodyPage(segmentName?: string) {
 export async function serverPage(segmentName: string) {
   const page = await getBodyPage(segmentName);
   return httpService
-    .post(`${process.env.REACT_APP_API_URL}/api/data/p`, {
+    .post(`${process.env.REACT_APP_API_URL}/data/p`, {
       page,
     })
     .catch(() => {
@@ -391,7 +513,7 @@ export async function trackSignUpServer(payload: {
 }) {
   const page = await getBodyPage();
   return httpService
-    .post(`${process.env.REACT_APP_API_URL}/api/data/t`, {
+    .post(`${process.env.REACT_APP_API_URL}/data/t`, {
       page,
       track: payload,
       actionName: 'server_signup',
@@ -422,6 +544,9 @@ const analyticsService = {
   trackFileUploadCompleted,
   trackFileUploadAborted,
   trackFileUploadError,
+  trackFileUploadPaused,
+  trackFileUploadResumed,
+  trackFileUploadRetried,
   trackMoveItem,
   trackDeleteItem,
   trackOpenWelcomeFile,

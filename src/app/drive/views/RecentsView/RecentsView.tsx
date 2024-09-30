@@ -1,5 +1,6 @@
-import { Component, ReactNode, useEffect } from 'react';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet-async';
 
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import navigationService from '../../../core/services/navigation.service';
@@ -36,12 +37,17 @@ const RecentsView = (props: RecentsViewProps) => {
   const { items, isLoadingRecents } = props;
 
   return (
-    <DriveExplorer
-      title={translate('views.recents.head') as string}
-      isLoading={isLoadingRecents}
-      items={items}
-      onFolderCreated={redirectToDrive}
-    />
+    <>
+      <Helmet>
+        <title>{translate('sideNav.recents')} - Internxt Drive</title>
+      </Helmet>
+      <DriveExplorer
+        title={translate('views.recents.head') as string}
+        isLoading={isLoadingRecents}
+        items={items}
+        onFolderCreated={redirectToDrive}
+      />
+    </>
   );
 };
 

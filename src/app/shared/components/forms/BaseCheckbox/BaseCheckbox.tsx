@@ -1,5 +1,6 @@
-import { Check, Minus } from '@phosphor-icons/react';
 import React from 'react';
+import { ReactComponent as Check } from './Check.svg';
+import { ReactComponent as Minus } from './Minus.svg';
 
 interface BaseCheckboxProps {
   id?: string;
@@ -8,18 +9,33 @@ interface BaseCheckboxProps {
   onClick?: React.DOMAttributes<HTMLLabelElement>['onClick'];
   required?: boolean;
   className?: string;
+  checkboxDataCy?: string;
 }
 
-const BaseCheckbox = ({ id, checked, indeterminate, onClick, required, className }: BaseCheckboxProps): JSX.Element => {
+const BaseCheckbox = ({
+  id,
+  checked,
+  indeterminate,
+  onClick,
+  required,
+  className,
+  checkboxDataCy,
+}: BaseCheckboxProps): JSX.Element => {
   return (
-    <label className={`focus-within:outline-primary relative h-5 w-5 rounded ${className}`} onClick={onClick}>
+    <label
+      className={`relative h-5 w-5 rounded focus-within:outline-primary ${className}`}
+      onClick={onClick}
+      onKeyDown={() => {}}
+    >
       <div
         onClick={(e) => e.preventDefault()}
-        className={`relative flex h-5 w-5 cursor-pointer flex-col items-center justify-center rounded border bg-white text-white ${
+        data-cy={checkboxDataCy}
+        onKeyDown={() => {}}
+        className={`relative flex h-5 w-5 cursor-pointer flex-col items-center justify-center rounded border text-white ${
           indeterminate || checked ? 'border-primary bg-primary' : 'border-gray-30 hover:border-gray-40'
         }`}
       >
-        {indeterminate ? <Minus size={16} weight="bold" /> : checked && <Check size={16} weight="bold" />}
+        {indeterminate ? <Minus className="absolute -inset-px" /> : checked && <Check className="absolute -inset-px" />}
       </div>
       <input
         id={id}

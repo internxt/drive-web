@@ -1,16 +1,16 @@
 import { Environment } from '@internxt/inxt-js';
 import { ActionState, FileInfo } from '@internxt/inxt-js/build/api';
-import { Readable } from 'stream';
-import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { TeamsSettings } from '../../../teams/types';
-import { uploadFile } from 'app/network/upload';
 import { Abortable } from 'app/network/Abortable';
+import { Readable } from 'stream';
+import { createUploadWebWorker } from '../../../../WebWorker';
+import localStorageService from '../../../core/services/local-storage.service';
+import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
 
-export const MAX_ALLOWED_UPLOAD_SIZE = 10 * 1024 * 1024 * 1024;
+export const MAX_ALLOWED_UPLOAD_SIZE = 40 * 1024 * 1024 * 1024;
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
-interface IUploadParams {
+export interface IUploadParams {
   filesize: number;
   filecontent: File;
   progressCallback: ProgressCallback;
@@ -74,7 +74,17 @@ export class Network {
    * @param params Required params for uploading a file
    * @returns Id of the created file
    */
-  uploadFile(bucketId: string, params: IUploadParams): [Promise<string>, Abortable | undefined] {
+  uploadFile(
+    bucketId: string,
+    params: IUploadParams,
+    continueUploadOptions: {
+      taskId: string;
+    },
+    analyticsServiceCallbacks?: {
+      pauseUploadCallback: () => void;
+      resumeUploadCallback: () => void;
+    },
+  ): [Promise<string>, Abortable | undefined] {
     if (!bucketId) {
       throw new Error('Bucket id not provided');
     }
@@ -83,23 +93,25 @@ export class Network {
       throw new Error('File size can not be 0');
     }
 
-    const abortController = new AbortController();
+    const worker: Worker = createUploadWebWorker();
+    const payload: Omit<IUploadParams, 'progressCallback'> & {
+      creds: any;
+      mnemonic: string;
+      continueUploadOptions: {
+        taskId: string;
+        isPaused?: boolean;
+      };
+    } = {
+      filecontent: params.filecontent,
+      filesize: params.filesize,
+      creds: this.creds,
+      mnemonic: this.mnemonic,
+      continueUploadOptions,
+    };
 
-    return [
-      uploadFile(bucketId, {
-        ...params,
-        ...{
-          progressCallback: (totalBytes, uploadedBytes) => {
-            params.progressCallback(uploadedBytes / totalBytes, totalBytes, uploadedBytes);
-          },
-        },
-        creds: this.creds,
-        mnemonic: this.mnemonic,
-      }),
-      {
-        abort: () => abortController.abort(),
-      },
-    ];
+    worker.postMessage({ bucketId, params: payload, type: 'upload' });
+
+    return createWorkerMessageHandlerPromise(worker, params, continueUploadOptions);
   }
 
   /**
@@ -194,20 +206,23 @@ export class Network {
   }
 }
 
+// MIRAR DE AÑADIR AQUI EL WORKSPACE TOKEN
 /**
  * Returns required config to upload files to the Internxt Network
  * @param isTeam Flag to indicate if is a team or not
  * @returns
  */
-export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
-  if (isTeam) {
-    const team = localStorageService.getTeams() as TeamsSettings;
+export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
+  const workspaceCredentials = localStorageService.getWorkspaceCredentials();
+  const workspace = localStorageService.getB2BWorkspace();
 
+  if (isWorkspace && workspaceCredentials && workspace) {
     return {
-      bridgeUser: team.bridge_user,
-      bridgePass: team.bridge_password,
-      encryptionKey: team.bridge_mnemonic,
-      bucketId: team.bucket,
+      bridgeUser: workspaceCredentials?.credentials?.networkUser,
+      bridgePass: workspaceCredentials?.credentials?.networkPass,
+      // decrypted mnemonic
+      encryptionKey: workspace.workspaceUser.key,
+      bucketId: workspaceCredentials?.bucket,
       useProxy: process.env.REACT_APP_DONT_USE_PROXY !== 'true',
     };
   }

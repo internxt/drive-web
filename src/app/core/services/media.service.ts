@@ -1,4 +1,4 @@
-import { VideoExtensions, AudioExtensions, videoExtensions, audioExtensions } from '../../drive/types/file-types';
+import { VideoExtensions, AudioExtensions } from '../../drive/types/file-types';
 
 type VideoTypes = Record<keyof VideoExtensions, string>;
 type AudioTypes = Record<keyof AudioExtensions, string>;
@@ -23,7 +23,7 @@ export function isTypeSupportedByAudioPlayer(type: keyof AudioExtensions): boole
 }
 
 export function isLargeFile(size: number): boolean {
-  return size < 100 * 1024 * 1024;
+  return size > 100 * 1024 * 1024;
 }
 
 export async function loadVideoIntoPlayer(

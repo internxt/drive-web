@@ -1,6 +1,8 @@
 /*eslint-disable @typescript-eslint/no-explicit-any */
 /*eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
+import { CSSProperties } from 'react';
+
 export interface TextInputProps {
   className?: string;
   type?: 'text' | 'email' | 'number' | 'password';
@@ -52,8 +54,10 @@ export interface TextInputProps {
   passwordError?: boolean;
   onChange?: (e: any) => void | (() => void);
   onChangeText?: (text: string) => void;
+  style?: CSSProperties;
   onFocus?: (e: any) => void | (() => void);
   onBlur?: (e: any) => void | (() => void);
+  onKeyDown?: (e: any) => void | (() => void);
   autoCompleteOnFocus?: boolean;
 }
 
@@ -64,6 +68,7 @@ const TextInput = (props: TextInputProps) => {
       placeholder={props.placeholder}
       value={props.value}
       required={props.required}
+      style={props.style}
       id={props.id}
       name={props.name}
       min={props.min}
@@ -75,13 +80,14 @@ const TextInput = (props: TextInputProps) => {
       autoComplete={props.autoComplete ?? 'off'}
       className={`h-11 w-full appearance-none rounded-lg  border-gray-30 bg-white px-3 ${
         props.isPasswordInput ? 'pr-12' : ''
-      } focus:outline-none text-lg text-gray-100 shadow-sm transition duration-100 ${
-        props.passwordError ? 'border-2 focus:border-red-std' : 'border focus:border-primary'
+      } text-lg text-gray-100 shadow-sm transition duration-100 focus:outline-none ${
+        props.passwordError ? 'border-2 focus:border-red' : 'border focus:border-primary'
       } focus:shadow-none focus:ring focus:ring-primary/10 disabled:cursor-not-allowed disabled:border-gray-10 disabled:text-gray-30 md:text-base ${
         props.className ?? ''
       }`}
       onChange={props.onChange}
       onKeyPress={() => props.onChangeText}
+      onKeyDown={props.onKeyDown}
       onFocus={(e) => {
         if (props.autoCompleteOnFocus) {
           e.target.removeAttribute('readonly');

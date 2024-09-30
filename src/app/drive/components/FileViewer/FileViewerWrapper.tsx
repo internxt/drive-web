@@ -1,68 +1,245 @@
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { DriveFileData, DriveItemData } from '../../types';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 
-import FileViewer from './FileViewer';
-import { sessionSelectors } from '../../../store/slices/session/session.selectors';
-import downloadService from '../../services/download.service';
-import { useState } from 'react';
+import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
+import { getAppConfig } from 'app/core/services/config.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import navigationService from 'app/core/services/navigation.service';
+import { ListItemMenu } from 'app/shared/components/List/ListItem';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import errorService from '../../../core/services/error.service';
+import { OrderDirection } from '../../../core/types';
+import { FileToUpload } from '../../../drive/services/file.service/uploadFile';
 import {
-  getDatabaseFileSourceData,
-  getDatabaseFilePrewiewData,
-  updateDatabaseFilePrewiewData,
-  canFileBeCached,
-  updateDatabaseFileSourceData,
-} from '../../services/database.service';
-import dateService from '../../../core/services/date.service';
-import {
+  ThumbnailToUpload,
   compareThumbnail,
   getThumbnailFrom,
   setCurrentThumbnail,
   setThumbnails,
-  ThumbnailToUpload,
-} from 'app/drive/services/thumbnail.service';
-import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
-import localStorageService from 'app/core/services/local-storage.service';
+  uploadThumbnail,
+} from '../../../drive/services/thumbnail.service';
+import { AdvancedSharedItem, PreviewFileItem, UserRoles } from '../../../share/types';
+import { RootState } from '../../../store';
+import { uiActions } from '../../../store/slices/ui';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from '../../services/database.service';
+import downloadService from '../../services/download.service';
+import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
+import FileViewer from './FileViewer';
+import {
+  getFileContentManager,
+  topDropdownBarActionsMenu,
+  useFileViewerKeyboardShortcuts,
+} from './utils/fileViewerWrapperUtils';
+
+export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
+
+type pathProps = 'drive' | 'trash' | 'shared' | 'recents';
+
+const SPECIAL_MIME_TYPES = ['heic'];
 
 interface FileViewerWrapperProps {
-  file: DriveFileData;
+  file: PreviewFileItem;
   onClose: () => void;
   showPreview: boolean;
+  onShowStopSharingDialog?: () => void;
+  sharedKeyboardShortcuts?: {
+    removeItemFromKeyboard?: (item: DriveItemData) => void;
+    renameItemFromKeyboard?: (item: DriveItemData) => void;
+  };
 }
 
-const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProps): JSX.Element => {
-  const isTeam = useAppSelector(sessionSelectors.isTeam);
-  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
+const FileViewerWrapper = ({
+  file,
+  onClose,
+  showPreview,
+  onShowStopSharingDialog,
+  sharedKeyboardShortcuts,
+}: FileViewerWrapperProps): JSX.Element => {
   const dispatch = useAppDispatch();
+  const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
+  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
+  const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
+
+  const [isDownloadStarted, setIsDownloadStarted] = useState(false);
+  const [updateProgress, setUpdateProgress] = useState(0);
+  const [currentFile, setCurrentFile] = useState<PreviewFileItem>(file);
+
+  const [blob, setBlob] = useState<Blob | null>(null);
+
+  const user = localStorageService.getUser();
+  const userEmail = user?.email;
+
+  const path = getAppConfig().views.find((view) => view.path === location.pathname);
+  const pathId = path?.id as pathProps;
+  const isSharedView = pathId === 'shared';
+
+  const driveItemActions = useDriveItemActions(currentFile);
+
   const onDownload = () => currentFile && dispatch(storageThunks.downloadItemsThunk([currentFile as DriveItemData]));
 
-  const [updateProgress, setUpdateProgress] = useState(0);
-  const [currentFile, setCurrentFile] = useState<DriveFileData>(file);
+  useEffect(() => {
+    setBlob(null);
+    dispatch(uiActions.setFileViewerItem(currentFile));
+    if (currentFile && !updateProgress && !isDownloadStarted) {
+      setIsDownloadStarted(true);
+      fileContentManager
+        .download()
+        .then((downloadedFile) => {
+          setBlob(downloadedFile.blob);
+          setUpdateProgress(0);
+          setIsDownloadStarted(false);
+          if (downloadedFile.shouldHandleFileThumbnail) {
+            handleFileThumbnail(currentFile, downloadedFile.blob).catch(errorService.reportError);
+          }
+        })
+        .catch((error) => {
+          if (error.name === 'AbortError') {
+            return;
+          }
+          console.error(error);
+          setBlob(null);
+          errorService.reportError(error);
+          setIsDownloadStarted(false);
+        });
+    }
+  }, [showPreview, currentFile]);
 
-  function downloadFile(currentFile: DriveFileData, abortController: AbortController) {
+  useEffect(() => {
+    setBlob(null);
+    if (dirtyName && dirtyName !== '') {
+      setCurrentFile?.({
+        ...currentFile,
+        plainName: dirtyName,
+      });
+    }
+    dispatch(uiActions.setCurrentEditingNameDirty(''));
+  }, [dirtyName, currentFile]);
+
+  const isCurrentUserViewer = useCallback(() => {
+    return currentUserRole === UserRoles.Reader;
+  }, [currentUserRole]);
+
+  const topActionsMenu = topDropdownBarActionsMenu({
+    currentFile,
+    user,
+    onClose,
+    onShowStopSharingDialog,
+    driveItemActions,
+    isCurrentUserViewer,
+  });
+
+  const { removeItemFromKeyboard, renameItemFromKeyboard } = useFileViewerKeyboardShortcuts({
+    sharedKeyboardShortcuts,
+    driveItemActions,
+    onClose,
+  });
+
+  const driveItemsOrder = useAppSelector((state) => state.storage.driveItemsOrder);
+  const driveItemsSort = useAppSelector((state) => state.storage.driveItemsSort);
+
+  // Get all files in the current folder, sort the files and find the current file to display the file
+  const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderUuid || '']);
+  const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
+
+  const sortFolderFiles = useMemo(() => {
+    if (folderFiles) {
+      return folderFiles.sort((a, b) => {
+        if (driveItemsOrder === OrderDirection.Asc) {
+          return a[driveItemsSort] > b[driveItemsSort] ? 1 : -1;
+        } else if (driveItemsOrder === OrderDirection.Desc) {
+          return a[driveItemsSort] < b[driveItemsSort] ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return [];
+  }, [folderFiles]);
+  const fileIndex = sortFolderFiles?.findIndex((item) => item.id === currentFile?.id);
+  const totalFolderIndex = sortFolderFiles?.length;
+
+  //Switch to the next or previous file in the folder
+  function changeFile(direction: 'next' | 'prev') {
+    setBlob(null);
+    setIsDownloadStarted(false);
+    setUpdateProgress(0);
+    if (direction === 'next') {
+      setCurrentFile?.(sortFolderFiles[fileIndex + 1]);
+    } else {
+      setCurrentFile?.(sortFolderFiles[fileIndex - 1]);
+    }
+  }
+
+  function handleProgress(progress: number, fileType?: string) {
+    if (fileType && SPECIAL_MIME_TYPES.includes(fileType)) {
+      setUpdateProgress(progress * 0.95);
+    } else {
+      setUpdateProgress(progress);
+    }
+  }
+
+  function downloadFile(currentFile: PreviewFileItem, abortController: AbortController) {
+    setBlob(null);
     return downloadService.fetchFileBlob(
       { ...currentFile, bucketId: currentFile.bucket },
       {
-        updateProgressCallback: (progress) => setUpdateProgress(progress),
-        isTeam,
+        updateProgressCallback: (progress) => handleProgress(progress, currentFile.type.toLowerCase()),
+        isWorkspace,
         abortController,
       },
+      currentFile.credentials,
+      currentFile.mnemonic,
     );
   }
 
-  const userEmail: string = localStorageService.getUser()?.email || '';
-  const handleFileThumbnail = async (driveFile: DriveFileData, file: File) => {
+  const handleUpdateLocalImageThumbnail = async (
+    thumbnailFile: File,
+    driveFile: DriveFileData,
+    currentThumbnail: Thumbnail | null,
+    thumbnailUploaded?: Thumbnail,
+  ) => {
+    const isThumbnailGeneratedAndUploaded = thumbnailUploaded && thumbnailFile;
+
+    if (isThumbnailGeneratedAndUploaded) {
+      setCurrentThumbnail(thumbnailFile, thumbnailUploaded, driveFile as DriveItemData, dispatch);
+
+      let newThumbnails: Thumbnail[];
+
+      const existLocalThumbnail = !!currentThumbnail;
+      if (existLocalThumbnail) {
+        //Replace existing thumbnail with the new uploadedThumbnail
+        newThumbnails = driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails] : [thumbnailUploaded];
+        newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
+      } else {
+        newThumbnails =
+          driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
+      }
+
+      setThumbnails(newThumbnails, driveFile as DriveItemData, dispatch);
+      await updateDatabaseFilePreviewData({
+        fileId: driveFile.id,
+        folderId: driveFile.folderId,
+        previewBlob: thumbnailFile,
+        updatedAt: driveFile.updatedAt,
+      });
+    }
+  };
+
+  const handleFileThumbnail = async (driveFile: PreviewFileItem, file: File | Blob) => {
     const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
-    const databaseThumbnail = await getDatabaseFilePrewiewData({ fileId: driveFile.id });
+    const databaseThumbnail = await getDatabaseFilePreviewData({ fileId: driveFile.id });
+    const existsThumbnailInDatabase = !!databaseThumbnail;
 
     const fileObject = new File([file], driveFile.name);
+
     const fileUpload: FileToUpload = {
       name: driveFile.name,
       size: driveFile.size,
       type: driveFile.type,
       content: fileObject,
-      parentFolderId: driveFile.folderId,
+      parentFolderId: driveFile.folderUuid,
     };
 
     const thumbnailGenerated = await getThumbnailFrom(fileUpload);
@@ -70,7 +247,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
     const isDifferentThumbnailOrNotExists =
       !currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated);
 
-    if (thumbnailGenerated.file && isDifferentThumbnailOrNotExists) {
+    if (isDifferentThumbnailOrNotExists && thumbnailGenerated.file) {
       const thumbnailToUpload: ThumbnailToUpload = {
         fileId: driveFile.id,
         size: thumbnailGenerated.file.size,
@@ -79,30 +256,14 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
         type: thumbnailGenerated.type,
         content: thumbnailGenerated.file,
       };
-      let thumbnailUploaded;
 
-      if (thumbnailUploaded && thumbnailGenerated.file) {
-        setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
+      const thumbnailUploaded = await uploadThumbnail(userEmail as string, thumbnailToUpload, false, () => {});
 
-        let newThumbnails: Thumbnail[];
-        if (currentThumbnail) {
-          //Replace existing thumbnail with the new uploadedThumbnail
-          newThumbnails = driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails] : [thumbnailUploaded];
-          newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
-        } else {
-          newThumbnails =
-            driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
-        }
-        setThumbnails(newThumbnails, driveFile as DriveItemData, dispatch);
-        await updateDatabaseFilePrewiewData({
-          fileId: driveFile.id,
-          folderId: driveFile.folderId,
-          previewBlob: thumbnailToUpload.content,
-          updatedAt: driveFile.updatedAt,
-        });
-      }
-    } else if (!databaseThumbnail && thumbnailGenerated?.file) {
-      await updateDatabaseFilePrewiewData({
+      setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
+
+      await handleUpdateLocalImageThumbnail(thumbnailGenerated.file, driveFile, currentThumbnail, thumbnailUploaded);
+    } else if (!existsThumbnailInDatabase && thumbnailGenerated?.file) {
+      await updateDatabaseFilePreviewData({
         fileId: driveFile.id,
         folderId: driveFile.folderId,
         previewBlob: new Blob([thumbnailGenerated?.file], { type: thumbnailGenerated.file?.type }),
@@ -111,57 +272,12 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
     }
   };
 
-  function getFileContentManager() {
-    const abortController = new AbortController();
+  const fileContentManager = getFileContentManager(currentFile, downloadFile);
 
-    return {
-      download: async (): Promise<Blob> => {
-        const shouldFileBeCached = canFileBeCached(currentFile);
-
-        const fileSource = await getDatabaseFileSourceData({ fileId: currentFile.id });
-        const isCached = !!fileSource;
-        let fileContent: Blob;
-
-        if (isCached) {
-          const isCacheExpired = !fileSource?.updatedAt
-            ? true
-            : dateService.isDateOneBefore({
-                dateOne: fileSource?.updatedAt as string,
-                dateTwo: currentFile?.updatedAt as string,
-              });
-          if (isCacheExpired) {
-            fileContent = await downloadFile(currentFile, abortController);
-            await updateDatabaseFileSourceData({
-              folderId: currentFile.folderId,
-              sourceBlob: fileContent,
-              fileId: currentFile.id,
-              updatedAt: currentFile.updatedAt,
-            });
-          } else {
-            fileContent = fileSource.source as Blob;
-            await handleFileThumbnail(currentFile, fileSource.source as File);
-          }
-        } else {
-          fileContent = await downloadFile(currentFile, abortController);
-          if (shouldFileBeCached) {
-            await updateDatabaseFileSourceData({
-              folderId: currentFile.folderId,
-              sourceBlob: fileContent,
-              fileId: currentFile.id,
-              updatedAt: currentFile.updatedAt,
-            });
-          }
-        }
-
-        return fileContent;
-      },
-      abort: () => {
-        abortController.abort();
-      },
-    };
-  }
-
-  const fileContentManager = getFileContentManager();
+  const handlersForSpecialItems = {
+    handleUpdateProgress: handleProgress,
+    handleUpdateThumbnail: handleFileThumbnail,
+  };
 
   return showPreview ? (
     <FileViewer
@@ -172,10 +288,19 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
         fileContentManager.abort();
       }}
       onDownload={onDownload}
-      downloader={fileContentManager.download.bind(fileContentManager)}
-      setCurrentFile={setCurrentFile}
       progress={updateProgress}
       isAuthenticated={isAuthenticated}
+      blob={blob}
+      fileIndex={fileIndex}
+      totalFolderIndex={totalFolderIndex}
+      changeFile={changeFile}
+      dropdownItems={topActionsMenu}
+      isShareView={isSharedView}
+      keyboardShortcuts={{
+        removeItemFromKeyboard,
+        renameItemFromKeyboard,
+      }}
+      handlersForSpecialItems={handlersForSpecialItems}
     />
   ) : (
     <div className="hidden" />

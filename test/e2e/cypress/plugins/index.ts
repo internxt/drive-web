@@ -15,12 +15,11 @@
 import * as fs from 'fs';
 
 const pluginConfig: Cypress.PluginConfig = (on, config) => {
-
   on('task', {
     removeFile(path) {
       fs.unlinkSync(path);
       return null;
-    }
+    },
   });
 
   return config;

@@ -1,18 +1,20 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { StorageState } from '../storage.model';
-import { RootState } from '../../..';
+import { Iterator } from 'app/core/collections';
 import errorService from 'app/core/services/error.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { t } from 'i18next';
-import { TaskStatus } from 'app/tasks/types';
-import tasksService from 'app/tasks/services/tasks.service';
 import AppError from 'app/core/types';
-import { DriveFolderData } from 'app/drive/types';
 import folderService from 'app/drive/services/folder.service';
-import downloadFolderUsingBlobs from '../../../../drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import tasksService from 'app/tasks/services/tasks.service';
+import { TaskStatus } from 'app/tasks/types';
+import { t } from 'i18next';
 import { isFirefox } from 'react-device-detect';
+import { RootState } from '../../..';
+import downloadFolderUsingBlobs from '../../../../drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
+import { DriveFileData, DriveFolderData } from '../../../../drive/types';
 import { ConnectionLostError } from '../../../../network/requests';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
+import { StorageState } from '../storage.model';
 
 interface DownloadFolderThunkOptions {
   taskId: string;
@@ -22,6 +24,8 @@ interface DownloadFolderThunkOptions {
 
 interface DownloadFolderThunkPayload {
   folder: DriveFolderData;
+  fileIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFileData>;
+  folderIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFolderData>;
   options: DownloadFolderThunkOptions;
 }
 
@@ -33,7 +37,10 @@ const defaultDownloadFolderThunkOptions = {
 // TODO: Enable compatibility for this functionality on Teams
 export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPayload, { state: RootState }>(
   'storage/downloadFolder',
-  async (payload: DownloadFolderThunkPayload, { rejectWithValue }) => {
+  async (payload: DownloadFolderThunkPayload, { rejectWithValue, getState }) => {
+    const state = getState();
+    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
     const folder = payload.folder;
     const options = { ...defaultDownloadFolderThunkOptions, ...payload.options };
     const task = tasksService.findTask(options.taskId);
@@ -79,10 +86,40 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       });
 
       if (isFirefox) {
-        await downloadFolderUsingBlobs({ folder, updateProgressCallback });
+        await downloadFolderUsingBlobs({ folder, updateProgressCallback, isWorkspace: !!selectedWorkspace });
       } else {
-        await folderService.downloadFolderAsZip(folder.id, folder.name, (progress) => {
-          updateProgressCallback(progress);
+        tasksService.updateTask({
+          taskId: options.taskId,
+          merge: {
+            status: TaskStatus.InProcess,
+            progress: Infinity,
+          },
+        });
+        const isWorkspaceSelected = !!selectedWorkspace;
+        const credentials = isWorkspaceSelected
+          ? {
+              credentials: {
+                user: workspaceCredentials?.credentials.networkUser,
+                pass: workspaceCredentials?.credentials.networkPass,
+              },
+              workspaceId: selectedWorkspace?.workspace.id,
+              mnemonic: selectedWorkspace.workspaceUser.key,
+            }
+          : undefined;
+
+        await folderService.downloadFolderAsZip({
+          folderId: folder.id,
+          folderName: folder.name,
+          folderUUID: folder.uuid,
+          foldersIterator: payload.folderIterator,
+          filesIterator: payload.fileIterator,
+          updateProgress: (progress) => {
+            updateProgressCallback(progress);
+          },
+          options: {
+            ...credentials,
+          },
+          abortController,
         });
       }
 

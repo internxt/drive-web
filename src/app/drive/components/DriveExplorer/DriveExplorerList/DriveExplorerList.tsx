@@ -1,36 +1,45 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
-import { connect } from 'react-redux';
 import { useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { connect, useSelector } from 'react-redux';
 
-import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
-import { AppDispatch, RootState } from '../../../../store';
-import { storageActions } from '../../../../store/slices/storage';
-import { DriveItemData } from '../../../types';
-import { OrderDirection, OrderSettings } from '../../../../core/types';
+import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
+import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import List from '../../../../shared/components/List';
-import storageThunks from '../../../../store/slices/storage/storage.thunks';
-import { sharedThunks } from '../../../../store/slices/sharedLinks';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
+import workspacesService from '../../../../core/services/workspace.service';
+import { OrderDirection, OrderSettings } from '../../../../core/types';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import shareService from '../../../../share/services/share.service';
+import List from '../../../../shared/components/List';
+import { AppDispatch, RootState } from '../../../../store';
+import { sharedThunks } from '../../../../store/slices/sharedLinks';
+import { storageActions } from '../../../../store/slices/storage';
+import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../store/slices/ui';
+import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
+import { DriveItemData, DriveItemDetails } from '../../../types';
+import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
+import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
+import { shareItemWithTeam } from '../utils';
 import {
-  contextMenuDriveNotSharedLink,
-  contextMenuDriveItemShared,
-  contextMenuSelectedItems,
-  contextMenuTrashItems,
-  contextMenuMultipleSelectedTrashItems,
-  contextMenuTrashFolder,
-  contextMenuDriveFolderShared,
   contextMenuDriveFolderNotSharedLink,
+  contextMenuDriveFolderShared,
+  contextMenuDriveItemShared,
+  contextMenuDriveNotSharedLink,
+  contextMenuMultipleSelectedTrashItems,
+  contextMenuSelectedItems,
+  contextMenuTrashFolder,
+  contextMenuTrashItems,
+  contextMenuWorkspaceFile,
+  contextMenuWorkspaceFolder,
 } from './DriveItemContextMenu';
-import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
-import envService from '../../../../core/services/env.service';
 
 interface DriveExplorerListProps {
-  folderId: number;
+  folderId: string;
   isLoading: boolean;
+  forceLoading: boolean;
   items: DriveItemData[];
   selectedItems: DriveItemData[];
   order: OrderSettings;
@@ -41,6 +50,9 @@ interface DriveExplorerListProps {
   isTrash?: boolean;
   onHoverListItems?: (areHover: boolean) => void;
   title: JSX.Element | string;
+  onOpenStopSharingAndMoveToTrashDialog: () => void;
+  showStopSharingConfirmation: boolean;
+  roles: Role[];
 }
 
 type ObjectWithId = { id: string | number };
@@ -73,10 +85,41 @@ const createDriveListItem = (item: DriveItemData, isTrash?: boolean) => (
   <DriveExplorerListItem item={item} isTrash={isTrash} />
 );
 
+const resetDriveOrder = ({
+  dispatch,
+  orderType,
+  direction,
+  currentFolderId,
+}: {
+  dispatch;
+  orderType: string;
+  direction: string;
+  currentFolderId: string;
+}) => {
+  dispatch(storageActions.setDriveItemsSort(orderType));
+  dispatch(storageActions.setDriveItemsOrder(direction));
+
+  dispatch(storageActions.setHasMoreDriveFolders({ folderId: currentFolderId, status: true }));
+  dispatch(storageActions.setHasMoreDriveFiles({ folderId: currentFolderId, status: true }));
+  dispatch(fetchSortedFolderContentThunk(currentFolderId));
+};
+
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
+  const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll, forceLoading, roles } = props;
+  const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
   const [isAllSelectedEnabled, setIsAllSelectedEnabled] = useState(false);
+  const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
+
+  const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspaceSelected = !!workspaceSelected;
   const isSelectedMultipleItemsAndNotTrash = props.selectedItems.length > 1 && !props.isTrash;
-  const isSelectedSharedItem = props.selectedItems.length === 1 && (props.selectedItems?.[0].shares?.length || 0) > 0;
+  const isSelectedSharedItem =
+    props.selectedItems.length === 1 &&
+    props.selectedItems?.[0].sharings &&
+    props.selectedItems?.[0].sharings.length > 0;
+  const isSelectedSharedItems =
+    (props.selectedItems.length > 1 && props.selectedItems.some((item) => item.sharings && item.sharings.length > 0)) ||
+    isSelectedSharedItem;
 
   const { translate } = useTranslationContext();
 
@@ -110,13 +153,11 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         updatedSelectedItems = [...updatedSelectedItems, change.props];
       }
     }
-    //  const deselecteditems = props.selectedItems.filter((selectedItem) => updatedSelectedItems.map().includes())
-    const deselecteditems = findUniqueItems<DriveItemData>(updatedSelectedItems, props.selectedItems);
-    dispatch(storageActions.deselectItems(deselecteditems));
+
+    const deselectedItems = findUniqueItems<DriveItemData>(updatedSelectedItems, props.selectedItems);
+    dispatch(storageActions.deselectItems(deselectedItems));
     dispatch(storageActions.selectItems(updatedSelectedItems));
   };
-
-  const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll } = props;
 
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const isRecents = props.title === translate('views.recents.head');
@@ -129,24 +170,19 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           ? OrderDirection.Asc
           : OrderDirection.Desc
         : OrderDirection.Asc;
+
     dispatch(storageActions.setOrder({ by: value.field, direction }));
 
     if (value.field === 'name') {
-      dispatch(storageActions.setDriveItemsSort('plainName'));
-      dispatch(storageActions.setDriveItemsOrder(direction));
-
-      dispatch(storageActions.setHasMoreDriveFolders(true));
-      dispatch(storageActions.setHasMoreDriveFiles(true));
-      dispatch(fetchSortedFolderContentThunk(currentFolderId));
+      resetDriveOrder({ dispatch, orderType: 'plainName', direction, currentFolderId });
     }
 
     if (value.field === 'updatedAt') {
-      dispatch(storageActions.setDriveItemsSort('updatedAt'));
-      dispatch(storageActions.setDriveItemsOrder(direction));
+      resetDriveOrder({ dispatch, orderType: 'updatedAt', direction, currentFolderId });
+    }
 
-      dispatch(storageActions.setHasMoreDriveFolders(true));
-      dispatch(storageActions.setHasMoreDriveFiles(true));
-      dispatch(fetchSortedFolderContentThunk(currentFolderId));
+    if (value.field === 'size') {
+      resetDriveOrder({ dispatch, orderType: 'size', direction, currentFolderId });
     }
   };
 
@@ -159,11 +195,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   }
 
   const renameItem = useCallback(
-    (item: ContextMenuDriveItem) => {
-      dispatch(uiActions.setCurrentEditingNameDirty((item as DriveItemData).name));
-      dispatch(uiActions.setCurrentEditingNameDriveItem(item as DriveItemData));
+    (item) => {
+      setEditNameItem(item as DriveItemData);
     },
-    [dispatch, uiActions],
+    [setEditNameItem],
   );
 
   const moveItem = useCallback(
@@ -192,53 +227,56 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
   const openPreview = useCallback(
     (item: ContextMenuDriveItem) => {
-      dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+      const driveItem = item as DriveItemData;
+      navigationService.pushFile(driveItem.uuid, selectedWorkspace?.workspaceUser.workspaceId);
+    },
+    [dispatch, uiActions],
+  );
+
+  const showDetails = useCallback(
+    (item: DriveItemData) => {
+      const itemDetails: DriveItemDetails = {
+        ...item,
+        isShared: !!item.sharings?.length,
+        view: 'Drive',
+      };
+      dispatch(uiActions.setItemDetailsItem(itemDetails));
+      dispatch(uiActions.setIsItemDetailsDialogOpen(true));
     },
     [dispatch, uiActions],
   );
 
   const getLink = useCallback(
     (item: ContextMenuDriveItem) => {
-      dispatch(sharedThunks.getSharedLinkThunk({ item: item as DriveItemData }));
+      const driveItem = item as DriveItemData;
+      shareService.getPublicShareLink(driveItem.uuid, driveItem.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );
 
   const copyLink = useCallback(
     (item: ContextMenuDriveItem) => {
-      dispatch(sharedThunks.getSharedLinkThunk({ item: item as DriveItemData }));
+      const driveItem = item as DriveItemData;
+      shareService.getPublicShareLink(driveItem.uuid, driveItem.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );
 
-  const isProduction = envService.isProduction();
-
   const openLinkSettings = useCallback(
-    isProduction
-      ? (item) => {
-          dispatch(
-            storageActions.setItemToShare({
-              share: (item as DriveItemData)?.shares?.[0],
-              item: item as DriveItemData,
-            }),
-          );
-          dispatch(uiActions.setIsShareItemDialogOpen(true));
-        }
-      : (item: ContextMenuDriveItem) => {
-          dispatch(
-            storageActions.setItemToShare({
-              share: (item as DriveItemData)?.shares?.[0],
-              item: item as DriveItemData,
-            }),
-          );
-          dispatch(uiActions.setIsShareDialogOpen(true));
-        },
-    [dispatch, storageActions, uiActions, isProduction],
+    (item: ContextMenuDriveItem) => {
+      dispatch(
+        storageActions.setItemToShare({
+          share: (item as DriveItemData)?.shares?.[0],
+          item: item as DriveItemData,
+        }),
+      );
+      dispatch(uiActions.setIsShareDialogOpen(true));
+    },
+    [dispatch, storageActions, uiActions],
   );
 
   const downloadItem = useCallback(
-    (item: ContextMenuDriveItem) => {
+    async (item: ContextMenuDriveItem) => {
       dispatch(storageThunks.downloadItemsThunk([item as DriveItemData]));
     },
     [dispatch, storageThunks],
@@ -246,55 +284,231 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
   const moveToTrash = useCallback(
     (item: ContextMenuDriveItem) => {
-      moveItemsToTrash([item as DriveItemData]);
+      const driveItem = item as DriveItemData;
+
+      if (isSelectedSharedItem) {
+        props.onOpenStopSharingAndMoveToTrashDialog();
+      } else {
+        moveItemsToTrash([driveItem]);
+      }
     },
-    [moveItemsToTrash],
+    [isSelectedSharedItem, props.onOpenStopSharingAndMoveToTrashDialog, moveItemsToTrash],
   );
 
-  const skinSkeleton = [
-    <div className="flex flex-row items-center space-x-4">
-      <div className="h-8 w-8 rounded-md bg-gray-5" />
-    </div>,
-    <div className="h-4 w-64 rounded bg-gray-5" />,
-    <div className="ml-3 h-4 w-24 rounded bg-gray-5" />,
-    <div className="ml-4 h-4 w-20 rounded bg-gray-5" />,
-  ];
+  const selectedItemsContextMenu = contextMenuSelectedItems({
+    selectedItems: props.selectedItems,
+    moveItems: () => {
+      dispatch(storageActions.setItemsToMove(props.selectedItems));
+      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+    },
+    downloadItems: () => {
+      dispatch(storageThunks.downloadItemsThunk(props.selectedItems));
+    },
+    moveToTrash: () => {
+      isSelectedSharedItems ? props.onOpenStopSharingAndMoveToTrashDialog() : moveItemsToTrash(props.selectedItems);
+    },
+  });
+
+  const multipleSelectedTrashItemsContextMenu = contextMenuMultipleSelectedTrashItems({
+    restoreItem: () => {
+      dispatch(storageActions.setItemsToMove(props.selectedItems));
+      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+    },
+    deletePermanently: () => {
+      dispatch(storageActions.setItemsToDelete(props.selectedItems));
+      dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+    },
+  });
+
+  const folderSharedTrashMenu = contextMenuTrashFolder({
+    restoreItem: restoreItem,
+    deletePermanently: deletePermanently,
+  });
+
+  const fileSharedTrashMenu = contextMenuTrashItems({
+    openPreview: openPreview,
+    restoreItem: restoreItem,
+    deletePermanently: deletePermanently,
+  });
+
+  const selectedSharedFolderMenu = contextMenuDriveFolderShared({
+    copyLink: copyLink,
+    openShareAccessSettings: (item) => {
+      openLinkSettings(item);
+    },
+    showDetails,
+    renameItem: renameItem,
+    moveItem: moveItem,
+    downloadItem: downloadItem,
+    moveToTrash: props.onOpenStopSharingAndMoveToTrashDialog,
+  });
+
+  const selectedSharedFileMenu = contextMenuDriveItemShared({
+    openPreview: openPreview,
+    showDetails,
+    copyLink: copyLink,
+    openShareAccessSettings: (item) => {
+      openLinkSettings(item);
+    },
+    renameItem: renameItem,
+    moveItem: moveItem,
+    downloadItem: downloadItem,
+    moveToTrash: props.onOpenStopSharingAndMoveToTrashDialog,
+  });
+
+  const selectedFolderMenu = contextMenuDriveFolderNotSharedLink({
+    shareLink: openLinkSettings,
+    showDetails,
+    getLink: getLink,
+    renameItem: renameItem,
+    moveItem: moveItem,
+    downloadItem: downloadItem,
+    moveToTrash: moveToTrash,
+  });
+
+  const selectedFileMenu = contextMenuDriveNotSharedLink({
+    shareLink: openLinkSettings,
+    openPreview: openPreview,
+    showDetails,
+    getLink: getLink,
+    renameItem: renameItem,
+    moveItem: moveItem,
+    downloadItem: downloadItem,
+    moveToTrash: moveToTrash,
+  });
+
+  const shareWithTeam = useCallback(
+    async (item: ContextMenuDriveItem) => {
+      const driveItem = item as DriveItemData;
+      const editorRole = roles.find((role) => role.name === 'EDITOR');
+      if (selectedWorkspace && editorRole) {
+        const isSharedSuccessfully = await shareItemWithTeam(driveItem, selectedWorkspace, editorRole);
+        if (isSharedSuccessfully) {
+          notificationsService.show({
+            text: translate('workspaces.messages.sharedSuccess'),
+            type: ToastType.Success,
+          });
+          return;
+        }
+      }
+
+      notificationsService.show({
+        text: translate('modals.shareModal.errors.copy-to-clipboard'),
+        type: ToastType.Error,
+      });
+    },
+    [dispatch, workspacesService, selectedWorkspace, roles, notificationsService],
+  );
+
+  const workspaceItemMenu = contextMenuWorkspaceFile({
+    shareLink: openLinkSettings,
+    shareWithTeam: shareWithTeam,
+    openPreview: openPreview,
+    showDetails,
+    getLink: getLink,
+    renameItem: renameItem,
+    moveItem: moveItem,
+    downloadItem: downloadItem,
+    moveToTrash: moveToTrash,
+  });
+
+  const workspaceFolderMenu = contextMenuWorkspaceFolder({
+    shareLink: openLinkSettings,
+    shareWithTeam: shareWithTeam,
+    showDetails,
+    getLink: getLink,
+    renameItem: renameItem,
+    moveItem: moveItem,
+    downloadItem: downloadItem,
+    moveToTrash: moveToTrash,
+  });
+
+  const getContextMenu = () => {
+    if (isSelectedMultipleItemsAndNotTrash) {
+      return selectedItemsContextMenu;
+    }
+
+    if (props.isTrash) {
+      if (props.selectedItems.length > 1) {
+        return multipleSelectedTrashItemsContextMenu;
+      }
+
+      if (props.selectedItems[0]?.isFolder) {
+        return folderSharedTrashMenu;
+      }
+
+      return fileSharedTrashMenu;
+    }
+
+    if (isSelectedSharedItem) {
+      if (props.selectedItems[0]?.isFolder) {
+        return selectedSharedFolderMenu;
+      }
+
+      return selectedSharedFileMenu;
+    }
+
+    if (isWorkspaceSelected) {
+      if (props.selectedItems[0]?.isFolder) {
+        return workspaceFolderMenu;
+      }
+      return workspaceItemMenu;
+    }
+
+    if (props.selectedItems[0]?.isFolder) {
+      return selectedFolderMenu;
+    }
+    return selectedFileMenu;
+  };
+
+  const menu = getContextMenu();
 
   return (
-    <div className="flex h-full flex-grow flex-col">
-      <div className="h-full overflow-y-auto">
+    <div className="flex h-full grow flex-col">
+      <div className="h-full w-full overflow-y-auto">
+        {editNameItem && (
+          <EditItemNameDialog
+            item={editNameItem}
+            isOpen={true}
+            onSuccess={() => {
+              setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
+            }}
+            onClose={() => {
+              setEditNameItem(null);
+            }}
+          />
+        )}
         <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
           header={[
             {
-              label: translate('drive.list.columns.type'),
-              width: 'flex w-1/12 items-center px-6',
-              name: 'type',
-              orderable: false,
-            },
-            {
               label: translate('drive.list.columns.name'),
-              width: 'flex flex-grow items-center pl-6',
+              width: 'flex grow items-center min-w-driveNameHeader',
               name: 'name',
-              orderable: isRecents || isTrash ? false : true,
+              orderable: !isRecents && !isTrash,
               defaultDirection: 'ASC',
+              buttonDataCy: 'driveListHeaderNameButton',
+              textDataCy: 'driveListHeaderNameButtonText',
             },
             {
               label: translate('drive.list.columns.modified'),
-              width: 'hidden w-3/12 lg:flex pl-4',
+              width: 'w-date',
               name: 'updatedAt',
-              orderable: isRecents || isTrash ? false : true,
+              orderable: !isRecents && !isTrash,
               defaultDirection: 'ASC',
             },
             {
               label: translate('drive.list.columns.size'),
-              width: 'flex w-1/12 items-center',
+              orderable: !isRecents && !isTrash,
+              defaultDirection: 'ASC',
+              width: 'w-size',
               name: 'size',
-              orderable: false,
             },
           ]}
-          disableKeyboardShortcuts={props.disableKeyboardShortcuts}
+          checkboxDataCy="driveListHeaderCheckbox"
+          disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
           items={props.items}
           isLoading={isLoading}
+          forceLoading={forceLoading}
           itemComposition={[(item) => createDriveListItem(item, props.isTrash)]}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -303,127 +517,24 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           onNextPage={onEndOfScroll}
           onEnterPressed={(driveItem) => {
             if (driveItem.isFolder) {
-              dispatch(storageThunks.goToFolderThunk({ name: driveItem.name, id: driveItem.id }));
+              navigationService.pushFolder(driveItem.uuid, selectedWorkspace?.workspaceUser.workspaceId);
             } else {
-              dispatch(uiActions.setIsFileViewerOpen(true));
-              dispatch(uiActions.setFileViewerItem(driveItem));
+              navigationService.pushFile(driveItem.uuid, selectedWorkspace?.workspaceUser.workspaceId);
             }
           }}
           hasMoreItems={hasMoreItems}
-          menu={
-            isSelectedMultipleItemsAndNotTrash
-              ? contextMenuSelectedItems({
-                  selectedItems: props.selectedItems,
-                  moveItems: () => {
-                    dispatch(storageActions.setItemsToMove(props.selectedItems));
-                    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-                  },
-                  downloadItems: () => {
-                    dispatch(storageThunks.downloadItemsThunk(props.selectedItems));
-                  },
-                  moveToTrash: () => {
-                    moveItemsToTrash(props.selectedItems);
-                  },
-                })
-              : props.isTrash
-              ? props.selectedItems.length > 1
-                ? contextMenuMultipleSelectedTrashItems({
-                    restoreItem: () => {
-                      dispatch(storageActions.setItemsToMove(props.selectedItems));
-                      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-                    },
-                    deletePermanently: () => {
-                      dispatch(storageActions.setItemsToDelete(props.selectedItems));
-                      dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
-                    },
-                  })
-                : props.selectedItems[0]?.isFolder
-                ? contextMenuTrashFolder({
-                    restoreItem: restoreItem,
-                    deletePermanently: deletePermanently,
-                  })
-                : contextMenuTrashItems({
-                    openPreview: openPreview,
-                    restoreItem: restoreItem,
-                    deletePermanently: deletePermanently,
-                  })
-              : isSelectedSharedItem
-              ? props.selectedItems[0]?.isFolder
-                ? contextMenuDriveFolderShared({
-                    copyLink: copyLink,
-                    openShareAccessSettings: (item) => {
-                      openLinkSettings(item);
-                    },
-                    deleteLink: (item) => {
-                      dispatch(
-                        sharedThunks.deleteLinkThunk({
-                          linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
-                          item: item as DriveItemData,
-                        }),
-                      );
-                    },
-                    renameItem: renameItem,
-                    moveItem: moveItem,
-                    downloadItem: downloadItem,
-                    moveToTrash: moveToTrash,
-                  })
-                : contextMenuDriveItemShared({
-                    openPreview: openPreview,
-                    copyLink: copyLink,
-                    openShareAccessSettings: (item) => {
-                      openLinkSettings(item);
-                    },
-                    deleteLink: (item) => {
-                      dispatch(
-                        sharedThunks.deleteLinkThunk({
-                          linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
-                          item: item as DriveItemData,
-                        }),
-                      );
-                    },
-                    renameItem: renameItem,
-                    moveItem: moveItem,
-                    downloadItem: downloadItem,
-                    moveToTrash: moveToTrash,
-                  })
-              : props.selectedItems[0]?.isFolder
-              ? contextMenuDriveFolderNotSharedLink({
-                  shareLink: (item) => {
-                    //TODO: ADD OPEN SHARE DIALOG WITH PUBLIC SHARED LINK, MAYBE NOT NEED TO DO SOMETHING
-                    // WAITING BACKEND ENDPOINTS
-                    // openAdvancedShareLinkSettings(item);
-                    openLinkSettings(item);
-                  },
-                  getLink: getLink,
-                  renameItem: renameItem,
-                  moveItem: moveItem,
-                  downloadItem: downloadItem,
-                  moveToTrash: moveToTrash,
-                })
-              : contextMenuDriveNotSharedLink({
-                  shareLink: (item) => {
-                    //TODO: ADD OPEN SHARE DIALOG WITH PUBLIC SHARED LINK, MAYBE NOT NEED TO DO SOMETHING
-                    // WAITING BACKEND ENDPOINTS
-                    // openAdvancedShareLinkSettings(item);
-                    openLinkSettings(item);
-                  },
-                  openPreview: openPreview,
-                  getLink: getLink,
-                  renameItem: renameItem,
-                  moveItem: moveItem,
-                  downloadItem: downloadItem,
-                  moveToTrash: moveToTrash,
-                })
-          }
+          menu={menu}
           selectedItems={props.selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
           keyBoardShortcutActions={{
-            onBackspaceKeyPressed: () => moveItemsToTrash(props.selectedItems),
+            onBackspaceKeyPressed: () =>
+              isSelectedSharedItems
+                ? props.onOpenStopSharingAndMoveToTrashDialog()
+                : moveItemsToTrash(props.selectedItems),
             onRKeyPressed: () => {
               if (props.selectedItems.length === 1) {
                 const selectedItem = props.selectedItems[0];
-                dispatch(uiActions.setCurrentEditingNameDirty(selectedItem.name));
-                dispatch(uiActions.setCurrentEditingNameDriveItem(selectedItem));
+                renameItem(selectedItem);
               }
             },
           }}
@@ -443,6 +554,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 export default connect((state: RootState) => ({
   selectedItems: state.storage.selectedItems,
   order: state.storage.order,
+  forceLoading: state.storage.forceLoading,
+  roles: state.shared.roles,
   disableKeyboardShortcuts:
     state.ui.isShareDialogOpen ||
     state.ui.isSurveyDialogOpen ||
@@ -451,5 +564,17 @@ export default connect((state: RootState) => ({
     state.ui.isMoveItemsDialogOpen ||
     state.ui.isCreateFolderDialogOpen ||
     state.ui.isNameCollisionDialogOpen ||
-    state.ui.isReachedPlanLimitDialogOpen,
+    state.ui.isReachedPlanLimitDialogOpen ||
+    state.ui.isItemDetailsDialogOpen ||
+    state.ui.isPreferencesDialogOpen,
 }))(DriveExplorerList);
+
+const skinSkeleton = [
+  <div className="mr-3 flex w-full flex-row items-center space-x-4">
+    <div className="h-8 w-8 rounded-md bg-gray-5" />
+    <div className="h-4 w-full rounded bg-gray-5" />
+  </div>,
+  <div className="h-4 w-64 rounded bg-gray-5" />,
+  <div className="ml-3 h-4 w-24 rounded bg-gray-5" />,
+  <div className="ml-4 h-4 w-20 rounded bg-gray-5" />,
+];

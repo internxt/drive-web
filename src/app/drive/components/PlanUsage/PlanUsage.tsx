@@ -1,31 +1,41 @@
-import { useSelector } from 'react-redux';
-import { RootState } from 'app/store';
-import { PlanState } from 'app/store/slices/plan';
+import navigationService from 'app/core/services/navigation.service';
 import limitService from 'app/drive/services/limit.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import usageService from 'app/drive/services/usage.service';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '../../../store/hooks';
+import { uiActions } from '../../../store/slices/ui';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 
 export default function PlanUsage({
   limit,
   usage,
   isLoading,
+  subscriptionType,
   className = '',
 }: {
   limit: number;
   usage: number;
   isLoading: boolean;
+  subscriptionType?: string;
   className?: string;
 }): JSX.Element {
   const { translate } = useTranslationContext();
+  const dispatch = useDispatch();
   const usagePercent = usageService.getUsagePercent(usage, limit);
-  const plan = useSelector<RootState, PlanState>((state) => state.plan);
-  const subscriptionType = plan.subscription?.type;
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+
+  const isLimitReached = usage >= limit;
+  const componentColor = isLimitReached ? 'bg-red' : 'bg-primary';
 
   const onUpgradeButtonClicked = () => {
-    navigationService.push(AppView.Preferences, { tab: 'plans' });
+    navigationService.openPreferencesDialog({
+      section: 'account',
+      subsection: 'plans',
+      workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+    });
+    dispatch(uiActions.setIsPreferencesDialogOpen(true));
   };
 
   return (
@@ -38,10 +48,13 @@ export default function PlanUsage({
         </p>
       )}
       <div className="mt-1 flex h-1.5 w-full justify-start overflow-hidden rounded-lg bg-gray-5">
-        <div className="h-full bg-primary" style={{ width: isLoading ? 0 : `${usagePercent}%` }} />
+        <div className={`h-full ${componentColor}`} style={{ width: isLoading ? 0 : `${usagePercent}%` }} />
       </div>
       {subscriptionType === 'free' && (
-        <p onClick={onUpgradeButtonClicked} className="mt-3 cursor-pointer text-sm font-medium text-blue-60">
+        <p
+          onClick={onUpgradeButtonClicked}
+          className={`mt-3 h-full cursor-pointer text-sm font-medium ${isLimitReached ? 'text-red' : 'text-primary'}`}
+        >
           {translate('actions.upgradeNow')}
         </p>
       )}

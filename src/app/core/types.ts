@@ -23,6 +23,8 @@ export interface IFormValues {
   teamMembers: number;
   token: string;
   userRole: string;
+  companyName: string;
+  companyVatId: string;
 }
 
 export interface AppConfig {
@@ -106,6 +108,7 @@ export enum CampaignLinks {
 export enum AppView {
   Signup = 'signup',
   AppSumo = 'appsumo',
+  BlockedAccount = 'blocked-account',
   Login = 'login',
   SignupBlog = 'signup-blog',
   Auth = 'auth',
@@ -116,26 +119,28 @@ export enum AppView {
   Trash = 'trash',
   Backups = 'backups',
   SharedLinks = 'shared-links',
-  Photos = 'photos',
+  Shared = 'shared',
   Preferences = 'preferences',
-  TeamsJoin = 'teams-join',
+  DriveItems = 'drive-items',
+  FolderFileNotFound = 'folder-file-not-found',
   Deactivation = 'deactivation',
-  TeamsDeactivation = 'teams-deactivation',
-  TeamSuccess = 'team-success',
   CheckoutSuccess = 'checkout-success',
   CheckoutCancel = 'checkout-cancel',
-  CheckoutPlan = 'checkout-plan',
   Checkout = 'checkout',
   RecoveryLink = 'recovery-link',
   ShareFileToken = 'share-token',
+  ShareFileToken2 = 'share-token-2',
   ShareFolderToken = 'share-folder-token',
-  SharePhotosToken = 'share-photos-token',
+  ShareFolderToken2 = 'share-folder-token-2',
+  ShareGuestAcceptInvite = 'share-guest-accept-invite',
+  WorkspaceGuestInvite = 'workspace-guest-invite',
   GuestAcceptInvite = 'guest-accept-invite',
   RedirectToApp = 'redirect-to-app',
   NotFound = 'not-found',
   VerifyEmail = 'verify-email',
   ChangeEmail = 'change-email',
   RequestAccess = 'request-access',
+  UniversalLinkSuccess = 'auth-success',
 }
 
 export enum SignupDeviceSource {

@@ -19,10 +19,11 @@ import { TFunction } from 'i18next';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { domainManager } from '../../services/DomainManager';
 import _ from 'lodash';
+import { AdvancedSharedItem } from 'app/share/types';
 
 interface ShareItemDialogProps {
   share?: ShareLink;
-  item: DriveItemData;
+  item: DriveItemData | AdvancedSharedItem;
   isPreviewView?: boolean;
 }
 
@@ -31,7 +32,7 @@ async function copyShareLink(type: string, code: string, token: string, translat
     domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
   const shareDomain = _.sample(domainList);
 
-  copy(`${shareDomain}/s/${type}/${token}/${code}`);
+  copy(`${shareDomain}/sh/${type}/${token}/${code}`);
   notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
@@ -82,12 +83,12 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
       dialogRounded={true}
       panelClasses="w-screen max-w-lg"
       titleClasses="text-black font-medium text-left"
-      closeClass="flex-shrink-0 flex items-center justify-center h-10 w-10 text-black hover:bg-black hover:bg-opacity-2 rounded-md focus:bg-black focus:bg-opacity-5"
+      closeClass="shrink-0 flex items-center justify-center h-10 w-10 text-black hover:bg-black/2 rounded-md focus:bg-black/5"
       onClose={onClose}
       weightIcon="light"
       dataTest="share-item-dialog"
     >
-      <hr className="border-translate-1 mb-5 w-screen border-neutral-40" />
+      <hr className="border-translate-1 mb-5 w-screen border-gray-10" />
       <div className="mb-5 flex flex-col">
         <div className="mx-5">
           <div className="justify-left flex flex-col">
@@ -113,7 +114,7 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
               onFocus={() => setPasswordInputVirgin(false)}
             />
           </div>
-          <hr className="border-translate-1 my-6 border-neutral-40" />
+          <hr className="border-translate-1 my-6 border-gray-10" />
           <div className="mb-8 flex flex-row justify-between">
             <div className="flex w-52 flex-col items-start">
               <p className="text-base font-medium">{translate('shareItemDialog.views')}</p>
@@ -131,7 +132,7 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
           <div className="flex flex-row justify-between">
             <button
               className={`${
-                isLinkCopied ? ' z-10 flex bg-blue-10 bg-opacity-5' : ''
+                isLinkCopied ? ' z-10 flex bg-primary/5' : ''
               } flex h-10 flex-row items-center justify-center rounded-md border border-primary px-5`}
               onClick={() => {
                 setIsLinkCopied(true);

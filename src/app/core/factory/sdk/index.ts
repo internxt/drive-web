@@ -1,13 +1,13 @@
-import { Backups, Payments, Referrals, Share, Storage, Trash, Users } from '@internxt/sdk/dist/drive';
 import { Auth, Token } from '@internxt/sdk/dist/auth';
+import { Backups, Payments, Referrals, Share, Storage, Trash, Users } from '@internxt/sdk/dist/drive';
 import { ApiSecurity, ApiUrl, AppDetails } from '@internxt/sdk/dist/shared';
+import { WorkspaceCredentialsDetails, Workspaces } from '@internxt/sdk/dist/workspaces';
 import packageJson from '../../../../../package.json';
-import { LocalStorageService } from '../../services/local-storage.service';
-import { Workspace } from '../../types';
+import authService from '../../../auth/services/auth.service';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
-import { Photos } from '@internxt/sdk/dist/photos';
-import authService from '../../../auth/services/auth.service';
+import { LocalStorageService, STORAGE_KEYS } from '../../services/local-storage.service';
+import { Workspace } from '../../types';
 
 export class SdkFactory {
   private static sdk: {
@@ -26,7 +26,7 @@ export class SdkFactory {
     this.sdk = {
       dispatch,
       localStorage,
-      instance: new SdkFactory(process.env.REACT_APP_API_URL + '/api'),
+      instance: new SdkFactory(process.env.REACT_APP_API_URL),
       newApiInstance: new SdkFactory(process.env.REACT_APP_DRIVE_NEW_API_URL),
     };
   }
@@ -52,6 +52,13 @@ export class SdkFactory {
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
 
+  public createDesktopAuthClient(): Auth {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getDesktopAppDetails();
+    const apiSecurity = this.getApiSecurity();
+    return Auth.client(apiUrl, appDetails, apiSecurity);
+  }
+
   public createStorageClient(): Storage {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
@@ -64,6 +71,13 @@ export class SdkFactory {
     const appDetails = SdkFactory.getAppDetails();
     const apiSecurity = this.getNewApiSecurity();
     return Storage.client(apiUrl, appDetails, apiSecurity);
+  }
+
+  public createWorkspacesClient(): Workspaces {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getAppDetails();
+    const apiSecurity = this.getNewApiSecurity();
+    return Workspaces.client(apiUrl, appDetails, apiSecurity);
   }
 
   public createShareClient(): Share {
@@ -123,25 +137,14 @@ export class SdkFactory {
     return Backups.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public async createPhotosClient(): Promise<Photos> {
-    if (!SdkFactory.sdk.localStorage.get('xToken')) {
-      return new Photos(process.env.REACT_APP_PHOTOS_API_URL);
-    }
-
-    let newToken = SdkFactory.sdk.localStorage.get('xNewToken');
-
-    if (!newToken) {
-      newToken = await authService.getNewToken();
-      SdkFactory.sdk.localStorage.set('xNewToken', newToken);
-    }
-    return new Photos(process.env.REACT_APP_PHOTOS_API_URL, newToken);
-  }
   /** Helpers **/
 
   private getApiSecurity(): ApiSecurity {
     const workspace = SdkFactory.sdk.localStorage.getWorkspace();
+    const workspaceToken = this.getWorkspaceToken();
     return {
       token: this.getToken(workspace),
+      workspaceToken,
       unauthorizedCallback: async () => {
         SdkFactory.sdk.dispatch(userThunks.logoutThunk());
       },
@@ -150,8 +153,10 @@ export class SdkFactory {
 
   private getNewApiSecurity(): ApiSecurity {
     const workspace = SdkFactory.sdk.localStorage.getWorkspace();
+    const workspaceToken = this.getWorkspaceToken();
     return {
       token: this.getNewToken(workspace),
+      workspaceToken,
       unauthorizedCallback: async () => {
         SdkFactory.sdk.dispatch(userThunks.logoutThunk());
       },
@@ -169,12 +174,11 @@ export class SdkFactory {
     };
   }
 
-  private getMnemonic(workspace: string): string {
-    const mnemonicByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get('xMnemonic') || '',
-      [Workspace.Business]: SdkFactory.sdk.localStorage.getTeams()?.bridge_mnemonic || '',
+  private static getDesktopAppDetails(): AppDetails {
+    return {
+      clientName: 'drive-desktop',
+      clientVersion: packageJson.version,
     };
-    return mnemonicByWorkspace[workspace];
   }
 
   private getToken(workspace: string): Token {
@@ -191,5 +195,19 @@ export class SdkFactory {
       [Workspace.Business]: SdkFactory.sdk.localStorage.get('xTokenTeam') || '',
     };
     return tokenByWorkspace[workspace];
+  }
+
+  private getWorkspaceToken(): Token | undefined {
+    const workspace = SdkFactory.sdk.localStorage.get(STORAGE_KEYS.B2B_WORKSPACE);
+    let token: string | undefined = undefined;
+    if (workspace) {
+      const credentials: WorkspaceCredentialsDetails | null = JSON.parse(
+        SdkFactory.sdk.localStorage.get(STORAGE_KEYS.WORKSPACE_CREDENTIALS) ?? 'null',
+      );
+      if (credentials) {
+        token = credentials.tokenHeader;
+      }
+    }
+    return token;
   }
 }

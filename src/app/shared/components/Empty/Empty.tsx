@@ -1,5 +1,6 @@
 import { Upload } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
+import Button from '../Button/Button';
 
 interface EmptyProps {
   icon: JSX.Element;
@@ -11,32 +12,28 @@ interface EmptyProps {
     style: 'plain' | 'elevated';
     onClick: () => void;
   };
+  contextMenuClick?: (event: any) => void;
 }
 
-export default function Empty({ icon, title, subtitle, action }: EmptyProps): JSX.Element {
+export default function Empty({ icon, title, subtitle, action, contextMenuClick }: EmptyProps): JSX.Element {
   let button: ReactNode = null;
 
   if (action) {
     button = (
-      <button
-        onClick={action.onClick}
-        className={`mx-auto flex items-center rounded-lg ${
-          action.style === 'elevated' ? 'mt-5 bg-primary' : 'mt-2.5 bg-transparent'
-        } h-10 bg-opacity-10 px-5 font-medium text-primary hover:bg-opacity-15 active:bg-opacity-20`}
-      >
-        {action.text}
-        <action.icon className="ml-2" size={20} weight="bold" />
-      </button>
+      <Button variant="secondary" onClick={action.onClick}>
+        <span>{action.text}</span>
+        <action.icon size={20} />
+      </Button>
     );
   }
 
   return (
-    <div className="h-full w-full p-8">
-      <div className="flex h-full flex-col items-center justify-center pb-20">
-        <div className="pointer-events-none mx-auto mb-10 w-max">{icon}</div>
-        <div className="pointer-events-none text-center">
-          <p className="mb-1 block text-3xl font-semibold text-gray-100">{title}</p>
-          <p className="block text-lg text-gray-60">{subtitle}</p>
+    <div className="h-full w-full p-8" onContextMenu={contextMenuClick}>
+      <div className="flex h-full flex-col items-center justify-center space-y-6 pb-20">
+        <div className="pointer-events-none mx-auto w-max">{icon}</div>
+        <div className="pointer-events-none space-y-1 text-center">
+          <p className="text-2xl font-medium text-gray-100">{title}</p>
+          <p className="text-lg text-gray-60">{subtitle}</p>
         </div>
         {button}
       </div>

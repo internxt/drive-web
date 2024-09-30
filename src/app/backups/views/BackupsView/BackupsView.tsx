@@ -1,19 +1,19 @@
+import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import BreadcrumbsBackupsView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsBackupsView';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { backupsActions, backupsThunks } from 'app/store/slices/backups';
 import { useEffect, useState } from 'react';
-import UilHdd from '@iconscout/react-unicons/icons/uil-hdd';
-
+import { Helmet } from 'react-helmet-async';
+import DeleteBackupDialog from '../../../drive/components/DeleteBackupDialog/DeleteBackupDialog';
+import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
+import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
+import { DriveItemData, DriveFolderData as DriveWebFolderData } from '../../../drive/types';
+import Dialog from '../../../shared/components/Dialog/Dialog';
+import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
+import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
 import DeviceList from '../../components/DeviceList/DeviceList';
 import { Device } from '../../types';
-import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
-import { backupsActions, backupsThunks } from 'app/store/slices/backups';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
-import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
-import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
-import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
-import Dialog from '../../../shared/components/Dialog/Dialog';
-import DeleteBackupDialog from '../../../drive/components/DeleteBackupDialog/DeleteBackupDialog';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function BackupsView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -24,16 +24,14 @@ export default function BackupsView(): JSX.Element {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedDevices, setSelectedDevices] = useState<(Device | DriveFolderData)[]>([]);
+  const [backupsAsFoldersPath, setBackupsAsFoldersPath] = useState<DriveFolderData[]>([]);
 
   const onDeviceClicked = (target: Device | DriveFolderData) => {
+    setSelectedDevices([]);
     dispatch(backupsActions.setCurrentDevice(target));
     if ('mac' in target) {
       dispatch(backupsThunks.fetchDeviceBackupsThunk(target.mac));
     }
-  };
-
-  const goBack = () => {
-    dispatch(backupsActions.setCurrentDevice(null));
   };
 
   const onOpenDeleteModal = (targets: (Device | DriveFolderData)[]) => {
@@ -71,10 +69,11 @@ export default function BackupsView(): JSX.Element {
   };
 
   useEffect(() => {
+    dispatch(backupsActions.setCurrentDevice(null));
+    setBackupsAsFoldersPath([]);
     dispatch(backupsThunks.fetchDevicesThunk());
   }, []);
 
-  const [backupsAsFoldersPath, setBackupsAsFoldersPath] = useState<DriveFolderData[]>([]);
   useEffect(() => {
     if (currentDevice && !('mac' in currentDevice)) setBackupsAsFoldersPath([currentDevice]);
   }, [currentDevice]);
@@ -85,41 +84,6 @@ export default function BackupsView(): JSX.Element {
       return current.slice(0, index + 1);
     });
   }
-
-  const breadcrumbsItems: BreadcrumbItemData[] = [
-    {
-      id: -1,
-      label: `${translate('backups.your-devices')}`,
-      icon: <UilHdd className="mr-1 h-4 w-4" />,
-      active: true,
-      onClick: () => goBack(),
-    },
-  ];
-  if (currentDevice && 'mac' in currentDevice) {
-    breadcrumbsItems.push({
-      id: currentDevice.id,
-      label: currentDevice.name,
-      icon: null,
-      active: false,
-      isBackup: true,
-    });
-  } else if (currentDevice) {
-    backupsAsFoldersPath.forEach((item, i) => {
-      const clickableOptions = {
-        active: true,
-        onClick: () => goToFolder(item.id),
-      };
-      breadcrumbsItems.push({
-        id: item.id,
-        label: item.name,
-        icon: null,
-        isBackup: true,
-        ...(i === backupsAsFoldersPath.length - 1 ? { active: false } : clickableOptions),
-      });
-    });
-  }
-
-  const backupsBreadcrumbs = <Breadcrumbs items={breadcrumbsItems} />;
 
   let body;
 
@@ -138,19 +102,22 @@ export default function BackupsView(): JSX.Element {
     body = (
       <BackupsAsFoldersList
         onFolderPush={(folder) => setBackupsAsFoldersPath((current) => [...current, folder])}
-        folderId={backupsAsFoldersPath[backupsAsFoldersPath.length - 1].id}
+        folderId={backupsAsFoldersPath[backupsAsFoldersPath.length - 1].uuid}
       />
     );
   }
 
   return (
     <div
-      className="flex flex-grow flex-col"
+      className="flex w-full shrink-0 grow flex-col"
       onContextMenu={(e) => {
         e.preventDefault();
       }}
     >
-      <DeleteBackupDialog items={breadcrumbsItems} goToFolder={goToFolder} />
+      <Helmet>
+        <title>{translate('sideNav.backups')} - Internxt Drive</title>
+      </Helmet>
+      <DeleteBackupDialog backupsAsFoldersPath={backupsAsFoldersPath} goToFolder={goToFolder} />
       <Dialog
         isOpen={isDeleteModalOpen}
         onClose={onCloseDeleteModal}
@@ -162,9 +129,18 @@ export default function BackupsView(): JSX.Element {
         secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
         primaryActionColor="danger"
       />
-      <div className="z-50 flex h-14 flex-shrink-0 items-center px-5">
-        {currentDevice ? backupsBreadcrumbs : <p className="text-lg"> {translate('backups.your-devices')}</p>}
+      <div className="z-50 flex h-14 shrink-0 items-center px-5">
+        {currentDevice ? (
+          <BreadcrumbsBackupsView
+            setSelectedDevices={setSelectedDevices}
+            backupsAsFoldersPath={backupsAsFoldersPath}
+            goToFolder={goToFolder}
+          />
+        ) : (
+          <p className="text-lg"> {translate('backups.your-devices')}</p>
+        )}
       </div>
+      <WarningMessageWrapper />
       {body}
     </div>
   );

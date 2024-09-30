@@ -1,27 +1,28 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../..';
-
-import { teamActions } from '../team';
-import { uiActions } from '../ui';
-import { sessionActions } from '../session';
-import { storageActions } from '../storage';
-import navigationService from '../../../core/services/navigation.service';
-import { sessionSelectors } from '../session/session.selectors';
-import { AppView, LocalStorageItem } from '../../../core/types';
-import tasksService from '../../../tasks/services/tasks.service';
-import authService from '../../../auth/services/auth.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import userService from '../../../auth/services/user.service';
 import { InitializeUserResponse, UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
-import { storeTeamsInfo } from '../../../teams/services/teams.service';
-import localStorageService from '../../../core/services/local-storage.service';
-import { referralsActions } from '../referrals';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
-import { saveAvatarToDatabase } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
+import { RootState } from '../..';
+import authService from '../../../auth/services/auth.service';
+import userService from '../../../auth/services/user.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import navigationService from '../../../core/services/navigation.service';
+import { AppView, LocalStorageItem } from '../../../core/types';
+import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
+import { saveAvatarToDatabase } from '../../../newSettings/Sections/Account/Account/components/AvatarWrapper';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import tasksService from '../../../tasks/services/tasks.service';
+import { referralsActions } from '../referrals';
+import { sessionActions } from '../session';
+import { sessionSelectors } from '../session/session.selectors';
+import { storageActions } from '../storage';
+import { uiActions } from '../ui';
+import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
 
-interface UserState {
+import errorService from '../../../core/services/error.service';
+import { isTokenExpired } from '../../utils';
+
+export interface UserState {
   isInitializing: boolean;
   isAuthenticated: boolean;
   isInitialized: boolean;
@@ -63,14 +64,6 @@ export const initializeUserThunk = createAsyncThunk<
       );
     }
 
-    if (user.teams) {
-      try {
-        await storeTeamsInfo();
-        dispatch(teamActions.initialize());
-      } catch (err: unknown) {
-        localStorageService.removeItem('xTeam');
-      }
-    }
     dispatch(refreshUserThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
@@ -78,18 +71,40 @@ export const initializeUserThunk = createAsyncThunk<
   }
 });
 
-export const refreshUserThunk = createAsyncThunk<void, void, { state: RootState }>(
+export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean } | undefined, { state: RootState }>(
   'user/refresh',
-  async (payload: void, { dispatch, getState }) => {
-    const { user, token } = await userService.refreshUser();
+  async ({ forceRefresh } = {}, { dispatch, getState }) => {
+    const userToken = localStorageService.get(LocalStorageItem.UserToken);
+    const isExpired = isTokenExpired(userToken);
 
     const currentUser = getState().user.user;
     if (!currentUser) throw new Error('Current user is not defined');
 
-    const { avatar, emailVerified, name, lastname } = user;
+    if (isExpired || forceRefresh) {
+      const { user, token } = await userService.refreshUser();
 
-    dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
-    dispatch(userActions.setToken(token));
+      const { avatar, emailVerified, name, lastname } = user;
+
+      dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
+      dispatch(userActions.setToken(token));
+    }
+  },
+);
+
+export const refreshUserDataThunk = createAsyncThunk<void, void, { state: RootState }>(
+  'user/refreshUser',
+  async (_, { dispatch, getState }) => {
+    const currentUser = getState().user.user;
+    if (!currentUser) throw new Error('Current user is not defined');
+
+    try {
+      const { user } = await userService.refreshUserData(currentUser.uuid);
+      const { avatar, emailVerified, name, lastname } = user;
+
+      dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
+    } catch (err) {
+      errorService.reportError(err, { extra: { thunk: 'refreshUserData' } });
+    }
   },
 );
 
@@ -100,10 +115,10 @@ export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
 
     dispatch(sessionActions.resetState());
     dispatch(userActions.resetState());
-    dispatch(teamActions.resetState());
     dispatch(storageActions.resetState());
     dispatch(uiActions.resetState());
     dispatch(referralsActions.resetState());
+    dispatch(workspacesActions.resetState());
 
     tasksService.clearTasks();
   },
@@ -144,6 +159,25 @@ export const deleteUserAvatarThunk = createAsyncThunk<void, void, { state: RootS
     dispatch(userActions.setUser({ ...currentUser, avatar: null }));
   },
 );
+
+const updateUserEmailCredentialsThunk = createAsyncThunk<
+  void,
+  { newUserData: UserSettings; token: string; newToken: string },
+  { state: RootState }
+>('user/updateUser', async (payload, { dispatch, getState }) => {
+  const currentUser = getState().user.user as UserSettings;
+  const { newUserData, token, newToken } = payload;
+
+  const user = {
+    ...currentUser,
+    email: newUserData.email,
+    bridgeUser: newUserData.email,
+    username: newUserData.email,
+  };
+  localStorageService.set('xToken', token);
+  localStorageService.set('xNewToken', newToken);
+  dispatch(userActions.setUser(user));
+});
 
 export const userSlice = createSlice({
   name: 'user',
@@ -226,7 +260,9 @@ export const userActions = userSlice.actions;
 export const userThunks = {
   initializeUserThunk,
   refreshUserThunk,
+  refreshUserDataThunk,
   logoutThunk,
+  updateUserEmailCredentialsThunk,
 };
 
 export default userSlice.reducer;

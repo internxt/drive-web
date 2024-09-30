@@ -1,15 +1,14 @@
-import { connect } from 'react-redux';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { connect } from 'react-redux';
 
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import httpService from 'app/core/services/http.service';
 import { IFormValues } from 'app/core/types';
-import { RootState } from 'app/store';
-import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import AuthButton from 'app/shared/components/AuthButton';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
+import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import httpService from 'app/core/services/http.service';
 import { AxiosError } from 'axios';
 import localStorageService from '../../../core/services/local-storage.service';
 
@@ -36,7 +35,7 @@ const GuestInviteDialog = () => {
 
     return httpService
       .post<{ guest: string }, void>(
-        '/api/guest/invite',
+        '/guest/invite',
         {
           guest: guestEmail,
         },
@@ -92,6 +91,4 @@ const GuestInviteDialog = () => {
   );
 };
 
-export default connect((state: RootState) => ({
-  team: state.team.team,
-}))(GuestInviteDialog);
+export default connect(() => ({}))(GuestInviteDialog);

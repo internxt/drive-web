@@ -1,20 +1,19 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-import { ReactComponent as Logo } from 'assets/icons/brand/x-white.svg';
+import { ReactComponent as Logo } from 'assets/icons/logo.svg';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { userThunks } from '../../../store/slices/user';
 import desktopService from '../../../core/services/desktop.service';
-import bg from 'assets/images/shared-file/bg.png';
-import Shield from 'assets/images/shared-file/icons/shield.png';
-import EndToEnd from 'assets/images/shared-file/icons/end-to-end.png';
-import Lock from 'assets/images/shared-file/icons/lock.png';
-import EyeSlash from 'assets/images/shared-file/icons/eye-slash.png';
 import '../../../share/views/ShareView/ShareView.scss';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ReportButton from '../../../share/views/ShareView/ReportButon';
+import { ShieldCheck, Password, Key, Eye } from '@phosphor-icons/react';
+import Avatar from 'app/shared/components/Avatar';
+import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
+import Button from 'app/shared/components/Button/Button';
 
 interface ShareLayoutProps {
   children: JSX.Element;
@@ -22,15 +21,16 @@ interface ShareLayoutProps {
 
 export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
   const { translate } = useTranslationContext();
+
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useAppSelector((state) => state.user.user);
-  const dispatch = useAppDispatch();
+  const fullName = `${user?.name} ${user?.lastname}`;
+  const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
 
-  const getAvatarLetters = () => {
-    const initials = user && `${user['name'].charAt(0)}${user['lastname'].charAt(0)}`.toUpperCase();
-
-    return initials;
-  };
+  useEffect(() => {
+    getDatabaseProfileAvatar().then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null));
+  }, [user]);
 
   const getDownloadApp = async () => {
     const download = await desktopService.getDownloadAppUrl();
@@ -57,51 +57,43 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
   return (
     <>
       {/* Content */}
-      <div className="flex h-screen flex-row items-stretch justify-center bg-white text-cool-gray-90">
+      <div className="flex h-screen flex-row items-stretch justify-center bg-surface text-gray-90 dark:bg-gray-1">
         {/* Banner */}
-        <div className="relative hidden h-full w-96 flex-shrink-0 flex-col bg-blue-80 text-white lg:flex">
-          <img src={bg} className="absolute top-0 left-0 h-full w-full object-cover object-center" />
-
+        <div
+          className="relative hidden h-full w-96 shrink-0 flex-col overflow-hidden text-white lg:flex"
+          style={{ background: 'radial-gradient(65% 65% at 50% 50%, #0058DB 0%, rgb(24,24,27) 100%)' }}
+        >
           <div className="z-10 flex h-full flex-col space-y-12 p-12">
             <div className="relative flex flex-row items-center space-x-2 font-semibold">
-              <Logo className="h-4 w-4" />
-              <span>INTERNXT</span>
+              <Logo className="w-36 text-white" />
             </div>
-
             <div className="flex h-full flex-col justify-center space-y-20">
               <div className="flex flex-col space-y-2">
-                <span className="text-xl opacity-60">{translate('shareLayout.title')}</span>
                 <p className="text-3xl font-semibold leading-none">{translate('shareLayout.subtitle')}</p>
               </div>
 
               <div className="flex flex-col space-y-3 text-xl">
                 {[
-                  { icon: Shield, label: translate('shareLayout.labels.privacy') },
-                  { icon: EndToEnd, label: translate('shareLayout.labels.end-to-end') },
-                  { icon: Lock, label: translate('shareLayout.labels.military-grade') },
-                  { icon: EyeSlash, label: translate('shareLayout.labels.zero-knowledge') },
+                  { id: 1, icon: Password, label: translate('shareLayout.labels.military-grade') },
+                  { id: 2, icon: Key, label: translate('shareLayout.labels.zero-knowledge') },
+                  { id: 3, icon: ShieldCheck, label: translate('shareLayout.labels.privacy') },
+                  { id: 4, icon: Eye, label: translate('shareLayout.labels.open-source') },
                 ].map((item) => (
-                  <div className="flex flex-row items-center space-x-3" key={item.icon}>
-                    <img src={item.icon} className="h-6 w-6" />
-                    <span>{item.label}</span>
+                  <div className="flex flex-row items-center space-x-3" key={item.id}>
+                    <item.icon className="h-6 w-6" />
+                    <span className="text-lg font-medium">{item.label}</span>
                   </div>
                 ))}
               </div>
             </div>
-
             {!isAuthenticated && (
-              <a href="https://internxt.com" className="no-underline" target="_blank" rel="noopener noreferrer">
-                <div
-                  className="flex cursor-pointer flex-row items-center justify-center rounded-xl p-1 no-underline
-                                ring-3 ring-blue-30"
-                >
-                  <div
-                    className="flex h-12 w-full flex-row items-center justify-center rounded-lg bg-white
-                                  px-6 text-xl font-semibold text-blue-70 no-underline"
-                  >
-                    <span>{translate('shareLayout.tryInternxt')}</span>
-                  </div>
-                </div>
+              <a
+                href="https://internxt.com"
+                className="cursor-pointer no-underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="primary">{translate('shareLayout.tryInternxt')}</Button>
               </a>
             )}
           </div>
@@ -110,50 +102,39 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
         {/* Download container */}
         <div className="flex flex-1 flex-col">
           {/* Top bar */}
-          <div className="hidden h-20 flex-shrink-0 flex-row items-center justify-end px-6 sm:flex">
+          <div className="hidden h-20 shrink-0 flex-row items-center justify-end px-6 sm:flex">
             {isAuthenticated ? (
               <>
                 {/* User avatar */}
                 <Menu as="div" className="relative inline-block text-left">
-                  <div>
-                    <Menu.Button
-                      className="focus:outline-none inline-flex w-full justify-center rounded-lg px-4
-                                              py-2 font-medium focus-visible:ring-2
-                                              focus-visible:ring-blue-20 focus-visible:ring-opacity-75"
-                    >
-                      <div className="flex flex-row space-x-3">
-                        <div
-                          className="flex h-8 w-8 flex-row items-center justify-center
-                                        rounded-full bg-blue-10 text-blue-80"
-                        >
-                          <span className="text-sm font-semibold">{getAvatarLetters()}</span>
-                        </div>
-                        <div className="flex flex-row items-center font-semibold">
-                          <span>{`${user && user['name']} ${user && user['lastname']}`}</span>
-                        </div>
-                      </div>
-                    </Menu.Button>
-                  </div>
+                  <Menu.Button className="inline-flex w-full justify-center rounded-lg px-4 py-2 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/10">
+                    <div className="flex flex-row space-x-2.5">
+                      <Avatar
+                        diameter={36}
+                        fullName={fullName}
+                        src={avatarBlob ? URL.createObjectURL(avatarBlob) : null}
+                      />
+                      <span className="flex flex-row items-center font-medium">{fullName}</span>
+                    </div>
+                  </Menu.Button>
+
                   <Transition
                     as={Fragment}
                     enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
                     leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
                   >
-                    <Menu.Items
-                      className="focus:outline-none absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-white
-                                            p-1 shadow-lg ring-1 ring-cool-gray-100 ring-opacity-5
-                                            "
-                    >
+                    <Menu.Items className="absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-surface p-1 shadow-lg ring-1 ring-gray-100/5 focus:outline-none dark:bg-gray-5">
                       <Menu.Item>
                         {({ active }) => (
-                          <Link to="/app" className="text-cool-gray-90 no-underline hover:text-cool-gray-90">
+                          <Link to="/" className="text-gray-90 no-underline hover:text-gray-90">
                             <button
-                              className={`${active && 'bg-cool-gray-5'} group flex w-full items-center rounded-md
-                                            px-4 py-2 font-medium`}
+                              className={`${
+                                active && 'bg-gray-1 dark:bg-gray-10'
+                              } group flex w-full items-center rounded-md px-4 py-2 font-medium`}
                             >
                               {translate('shareLayout.topBar.drive')}
                             </button>
@@ -167,8 +148,9 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                             onClick={() => {
                               downloadDesktopApp();
                             }}
-                            className={`${active && 'bg-cool-gray-5'} group flex w-full items-center rounded-md
-                                            px-4 py-2 font-medium`}
+                            className={`${
+                              active && 'bg-gray-1 dark:bg-gray-10'
+                            } group flex w-full items-center rounded-md px-4 py-2 font-medium`}
                           >
                             {translate('shareLayout.topBar.downloadApp')}
                           </button>
@@ -181,8 +163,9 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                             onClick={() => {
                               logout();
                             }}
-                            className={`${active && 'bg-red-10 bg-opacity-50 text-red-60'} group flex w-full
-                                            items-center rounded-md px-4 py-2 font-medium`}
+                            className={`${
+                              active && 'bg-gray-1 dark:bg-gray-10'
+                            } group flex w-full items-center rounded-md px-4 py-2 font-medium`}
                           >
                             {translate('shareLayout.topBar.logout')}
                           </button>
@@ -195,40 +178,33 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
             ) : (
               <>
                 {/* Login / Create account */}
-                <div className="flex flex-row space-x-3">
-                  <div
-                    className="flex h-9 cursor-pointer flex-row items-center justify-center rounded-lg px-4
-                                    font-medium text-cool-gray-90 no-underline hover:text-cool-gray-90"
+                <div className="flex flex-row space-x-2">
+                  <Button
+                    variant="secondary"
                     onClick={() => {
                       window.location.href = process.env.REACT_APP_HOSTNAME + '/login';
                     }}
                   >
                     {translate('shareLayout.topBar.login')}
-                  </div>
+                  </Button>
 
-                  <div
-                    className="flex h-9 cursor-pointer flex-row items-center justify-center rounded-lg bg-cool-gray-10
-                                    px-4 font-medium text-cool-gray-90 no-underline
-                                    hover:text-cool-gray-90"
+                  <Button
+                    variant="primary"
                     onClick={() => {
                       window.location.href = process.env.REACT_APP_HOSTNAME + '/new';
                     }}
                   >
                     {translate('shareLayout.topBar.createAccount')}
-                  </div>
+                  </Button>
                 </div>
               </>
             )}
           </div>
 
           <div className="flex flex-row items-center justify-between p-4 sm:hidden">
-            <InternxtLogo className="h-3 w-auto" />
+            <InternxtLogo className="h-3 w-auto text-gray-100" />
             <Link to="/new" className="no-underline">
-              <div
-                className="flex h-9 cursor-pointer flex-row items-center justify-end rounded-full border border-primary
-                                    px-4 font-medium text-primary no-underline
-                                    hover:text-primary-dark"
-              >
+              <div className="flex h-9 cursor-pointer flex-row items-center justify-end rounded-full border border-primary px-4 font-medium text-primary no-underline hover:text-primary-dark">
                 {translate('shareLayout.topBar.getStarted')}
               </div>
             </Link>
@@ -236,8 +212,9 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
 
           {/* File container */}
           <div className="mb-20 flex h-full flex-col items-center justify-center space-y-10">{props.children}</div>
+
           {/* Bottom bar */}
-          <div className="hidden h-20 flex-shrink-0 flex-row items-center justify-end px-6 sm:flex">
+          <div className="hidden h-20 shrink-0 flex-row items-center justify-end px-6 sm:flex">
             <div className="ml-auto px-4">
               <ReportButton />
             </div>

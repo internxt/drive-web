@@ -1,12 +1,15 @@
 import { CheckCircle, WarningCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { SdkFactory } from '../../factory/sdk';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { uiActions } from '../../../store/slices/ui';
 
 export default function VerifyEmailView(): JSX.Element {
   const { translate } = useTranslationContext();
+  const dispatch = useDispatch();
   const { params } = useRouteMatch<{ token: string }>();
   const { token } = params;
 
@@ -36,7 +39,7 @@ export default function VerifyEmailView(): JSX.Element {
       subtitle: translate('views.emailVerification.success.subtitle'),
     },
     error: {
-      icon: <WarningCircle className="text-red-std" weight="thin" size={96} />,
+      icon: <WarningCircle className="text-red" weight="thin" size={96} />,
       title: translate('views.emailVerification.error.title'),
       subtitle: translate('views.emailVerification.error.subtitle'),
     },
@@ -49,7 +52,7 @@ export default function VerifyEmailView(): JSX.Element {
     },
     error: {
       label: translate('views.emailVerification.error.cta'),
-      path: '/preferences?tab=account',
+      path: '/?preferences=open&section=account&subsection=account',
     },
   };
 
@@ -71,8 +74,11 @@ export default function VerifyEmailView(): JSX.Element {
 
         {status !== 'loading' && (
           <Link
-            className="flex h-10 items-center justify-center rounded-lg bg-primary px-5 font-medium text-white no-underline hover:text-white"
+            className="flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 font-medium text-white no-underline hover:text-white"
             to={cta[status].path}
+            onClick={() => {
+              if (status === 'error') dispatch(uiActions.setIsPreferencesDialogOpen(true));
+            }}
           >
             {cta[status].label}
           </Link>
