@@ -19,7 +19,7 @@ export const fetchRecentsThunk = createAsyncThunk<void, void, { state: RootState
 
     const recentsWithoutHiddenFiles = excludeHiddenItems(recents);
 
-    recentsWithoutHiddenFiles.map((item) => (item.plainName = item.plain_name));
+    recentsWithoutHiddenFiles.forEach((item) => (item.plainName = item.plain_name));
 
     dispatch(storageActions.clearSelectedItems());
     dispatch(storageActions.setRecents(recentsWithoutHiddenFiles));
