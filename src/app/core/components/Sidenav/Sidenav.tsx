@@ -1,4 +1,4 @@
-import { Clock, ClockCounterClockwise, Desktop, FolderSimple, Trash, Users } from '@phosphor-icons/react';
+import { Clock, ClockCounterClockwise, Desktop, FolderSimple, Icon, Trash, Users } from '@phosphor-icons/react';
 import { connect, useSelector } from 'react-redux';
 import { matchPath } from 'react-router-dom';
 
@@ -20,6 +20,7 @@ import workspacesSelectors from '../../../store/slices/workspaces/workspaces.sel
 import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
+import { t } from 'i18next';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -28,6 +29,17 @@ interface SidenavProps {
   planLimit: number;
   isLoadingPlanLimit: boolean;
   isLoadingPlanUsage: boolean;
+}
+
+interface SideNavItemsProps {
+  label: string;
+  icon: Icon;
+  iconDataCy: string;
+  isVisible: boolean;
+  to?: string;
+  isActive?: boolean;
+  notifications?: number;
+  onClick?: () => Promise<void>;
 }
 
 const isActiveButton = (path: string) => {
@@ -40,24 +52,24 @@ const handleDownloadApp = async (): Promise<void> => {
     window.open(download, '_self');
   } catch {
     notificationsService.show({
-      text: 'Something went wrong while downloading the desktop app',
+      text: t('notificationMessages.errorDownloadingDesktopApp'),
       type: ToastType.Error,
     });
   }
 };
 
-const LoadingSpinner = ({ translate }: { translate: (key: string, props?: Record<string, unknown>) => string }) => (
+const LoadingSpinner = ({ text }: { text: string }) => (
   <div className="absolute z-50 flex h-full w-full flex-col items-center justify-center bg-highlight/40">
     <Spinner className="h-10 w-10" />
-    <p className="mt-5 text-2xl font-medium text-gray-100">{translate('workspaces.messages.switchingWorkspace')}</p>
+    <p className="mt-5 text-2xl font-medium text-gray-100">{text}</p>
   </div>
 );
 
-const SideNavItems = ({ sideNavItems }) => (
+const SideNavItems = ({ sideNavItems }: { sideNavItems: SideNavItemsProps[] }) => (
   <>
     {sideNavItems.map((item) => (
       <>
-        {item.show && (
+        {item.isVisible && (
           <SidenavItem
             label={item.label}
             to={item.to}
@@ -65,7 +77,7 @@ const SideNavItems = ({ sideNavItems }) => (
             iconDataCy={item.iconDataCy}
             isActive={item.isActive}
             notifications={item.notifications}
-            onClick={item.onclick}
+            onClick={() => item.onClick}
           />
         )}
       </>
@@ -86,14 +98,14 @@ const Sidenav = ({
   const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
 
-  const itemsNavigation = [
+  const itemsNavigation: SideNavItemsProps[] = [
     {
       to: '/',
       isActive: isActiveButton('/') || isActiveButton('/file/:uuid') || isActiveButton('/folder/:uuid'),
       label: translate('sideNav.drive'),
       icon: FolderSimple,
       iconDataCy: 'sideNavDriveIcon',
-      show: true,
+      isVisible: true,
     },
     {
       to: '/backups',
@@ -101,7 +113,7 @@ const Sidenav = ({
       label: translate('sideNav.backups'),
       icon: ClockCounterClockwise,
       iconDataCy: 'sideNavBackupsIcon',
-      show: !isB2BWorkspace,
+      isVisible: !isB2BWorkspace,
     },
     {
       to: '/shared',
@@ -110,7 +122,7 @@ const Sidenav = ({
       icon: Users,
       notifications: pendingInvitations.length,
       iconDataCy: 'sideNavSharedIcon',
-      show: true,
+      isVisible: true,
     },
     {
       to: '/recents',
@@ -118,7 +130,7 @@ const Sidenav = ({
       label: translate('sideNav.recents'),
       icon: Clock,
       iconDataCy: 'sideNavRecentsIcon',
-      show: !isB2BWorkspace,
+      isVisible: !isB2BWorkspace,
     },
     {
       to: '/trash',
@@ -126,14 +138,14 @@ const Sidenav = ({
       label: translate('sideNav.trash'),
       icon: Trash,
       iconDataCy: 'sideNavTrashIcon',
-      show: true,
+      isVisible: true,
     },
     {
       label: translate('sideNav.desktop'),
       icon: Desktop,
       iconDataCy: 'sideNavDesktopIcon',
-      onclick: handleDownloadApp,
-      show: !isB2BWorkspace,
+      onClick: handleDownloadApp,
+      isVisible: !isB2BWorkspace,
     },
   ];
 
@@ -143,7 +155,7 @@ const Sidenav = ({
 
   return (
     <div className="flex w-64 flex-col">
-      {isLoadingCredentials && <LoadingSpinner translate={translate} />}
+      {isLoadingCredentials && <LoadingSpinner text={translate('workspaces.messages.switchingWorkspace')} />}
 
       <div
         className="flex h-14 shrink-0 cursor-pointer items-center border-b border-gray-5 pl-8 dark:bg-gray-1"
