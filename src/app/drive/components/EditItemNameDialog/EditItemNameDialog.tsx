@@ -22,7 +22,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [newItemName, setNewItemName] = useState('');
-  const itemName = item?.plainName ?? item?.plain_name ?? '';
+  const itemName = item?.plainName ?? '';
 
   useEffect(() => {
     setNewItemName(itemName);
