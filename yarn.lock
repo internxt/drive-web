@@ -1612,10 +1612,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@^1.5.15":
-  version "1.5.15"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.5.15/8b8febc6f5d37f66db525f66d85fbfdba36b7357#8b8febc6f5d37f66db525f66d85fbfdba36b7357"
-  integrity sha512-LO2VpJsZKmPzAkz7Lu4JVubjpv27XwwunHKT3XTZ4BntGS7JxAVljOQ0LtY9GN5pdV3Id5YzQwB6SAzdm03z3A==
+"@internxt/sdk@^1.5.19":
+  version "1.5.19"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.5.19/efbd2745afe86b551a32235ac92b1a54615aa949#efbd2745afe86b551a32235ac92b1a54615aa949"
+  integrity sha512-KIVs/KPQL1Hs1AAIG9d35Co+fKEMUQTnpW8XrxYw+uXJzvW7UWrw5Wl79nppw5x4HSx9E9Kg7y2LznyEtSjejA==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
@@ -1970,7 +1970,7 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@phosphor-icons/react@^2.0.10":
+"@phosphor-icons/react@^2.1.7":
   version "2.1.7"
   resolved "https://registry.yarnpkg.com/@phosphor-icons/react/-/react-2.1.7.tgz#b11a4b25849b7e3849970b688d9fe91e5d4fd8d7"
   integrity sha512-g2e2eVAn1XG2a+LI09QU3IORLhnFNAFkNbo2iwbX6NOKSLOwvEMmTa7CgOzEbgNWR47z8i8kwjdvYZ5fkGx1mQ==

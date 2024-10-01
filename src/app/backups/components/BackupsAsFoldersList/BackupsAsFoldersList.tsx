@@ -1,4 +1,5 @@
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { backupsActions } from 'app/store/slices/backups';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -18,7 +19,6 @@ import List from '../../../shared/components/List';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
 import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { uiActions } from '../../../store/slices/ui';
-import { backupsActions } from 'app/store/slices/backups';
 
 export default function BackupsAsFoldersList({
   className = '',
@@ -44,7 +44,7 @@ export default function BackupsAsFoldersList({
     setIsloading(true);
     setSelectedItems([]);
     const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-    const [responsePromise] = storageClient.getFolderContentByUuid(folderId);
+    const [responsePromise] = storageClient.getFolderContentByUuid({ folderUuid: folderId });
     const response = await responsePromise;
     const files = response.files.map((file) => ({ ...file, isFolder: false, name: file.plainName }));
     const folders = response.children.map((folder) => ({ ...folder, isFolder: true, name: folder.plainName }));

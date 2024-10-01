@@ -35,7 +35,10 @@ interface UploadFolderThunkPayload {
 
 const handleFoldersRename = async (root: IRoot, currentFolderId: string, tokenHeader?: string) => {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(currentFolderId, false, tokenHeader);
+  const [parentFolderContentPromise] = storageClient.getFolderContentByUuid({
+    folderUuid: currentFolderId,
+    workspacesToken: tokenHeader,
+  });
   const parentFolderContent = await parentFolderContentPromise;
   const [, , finalFilename] = renameFolderIfNeeded(parentFolderContent.children, root.name);
   const fileContent: IRoot = { ...root, name: finalFilename };

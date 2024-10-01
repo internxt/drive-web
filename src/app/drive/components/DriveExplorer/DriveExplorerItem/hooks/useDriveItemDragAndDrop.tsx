@@ -92,11 +92,10 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
 
           dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
 
-          const [folderContentPromise] = storageClient.getFolderContentByUuid(
-            item.uuid,
-            false,
-            workspacesCredentials?.tokenHeader,
-          );
+          const [folderContentPromise] = storageClient.getFolderContentByUuid({
+            folderUuid: item.uuid,
+            workspacesToken: workspacesCredentials?.tokenHeader,
+          });
           const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
           const foldersInDestinationFolderParsed = foldersInDestinationFolder.map((folder) => ({
             ...folder,
