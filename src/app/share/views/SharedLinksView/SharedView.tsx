@@ -61,7 +61,12 @@ import {
 } from './context/SharedViewContext.actions';
 import { useShareViewContext } from './context/SharedViewContextProvider';
 import useFetchSharedData from './hooks/useFetchSharedData';
-import { getFolderUserRole, isCurrentUserViewer, isItemOwnedByCurrentUser } from './sharedViewUtils';
+import {
+  getDraggedItemsWithoutFolders,
+  getFolderUserRole,
+  isCurrentUserViewer,
+  isItemOwnedByCurrentUser,
+} from './sharedViewUtils';
 
 export const MAX_SHARED_NAME_LENGTH = 32;
 
@@ -162,9 +167,19 @@ function SharedView({
   }, [currentShareId]);
 
   const onItemDropped = async (_, monitor: DropTargetMonitor) => {
-    const droppedData: any = monitor.getItem();
+    const droppedData: any = monitor.getItem() || [];
+    const itemsArray: DataTransferItem[] = Array.from(droppedData.dataTransfer.items);
 
-    const transformedObject = droppedData.files.reduce((acc, file, index) => {
+    const { filteredItems, hasFolders } = await getDraggedItemsWithoutFolders(itemsArray);
+
+    if (hasFolders) {
+      notificationsService.show({
+        text: translate('notificationMessages.foldersCannotBeUploadedAsEditor'),
+        type: ToastType.Info,
+      });
+    }
+
+    const transformedObject: FileList = filteredItems.reduce((acc: any, file, index) => {
       acc[index] = file;
       return acc;
     }, {});
@@ -172,7 +187,7 @@ function SharedView({
     await onUploadFileInputChanged({
       files: {
         ...transformedObject,
-        length: droppedData.files.length,
+        length: filteredItems.length,
       },
     });
   };

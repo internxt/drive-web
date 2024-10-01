@@ -167,6 +167,48 @@ const isUserItemOwner = ({
   return isUserOwner;
 };
 
+/**
+ * Get the items filtered when dragged, removing the folders in case the user has the role of EDITOR
+ * @param {DataTransferItem[]} draggedItemsList - All dragged items into a folder
+ * @param {boolean} hasFolder - Used to display a notification to the user in case he tries to upload a folder as EDITOR
+ * @returns {File[]} An array of files ready to upload
+ */
+const getDraggedItemsWithoutFolders = async (draggedItemsList: DataTransferItem[]) => {
+  let hasFolders = false;
+
+  const removeFoldersFromDroppedItems = draggedItemsList.filter((item: DataTransferItem) => {
+    const entry = item.webkitGetAsEntry?.();
+
+    if (entry?.isDirectory) {
+      hasFolders = true;
+    }
+
+    return entry?.isFile;
+  });
+
+  const filesPromises = removeFoldersFromDroppedItems.map((item: DataTransferItem) => {
+    const entry = item.webkitGetAsEntry() as FileSystemFileEntry;
+
+    return getFilePromises(entry);
+  });
+
+  const loadedFiles = (await Promise.all(filesPromises)).filter((file): file is File => file !== null);
+
+  return {
+    filteredItems: loadedFiles,
+    hasFolders,
+  };
+};
+
+const getFilePromises = (entry: FileSystemFileEntry) => {
+  return new Promise<File | null>((resolve, reject) => {
+    entry.file(
+      (file: File) => resolve(file),
+      () => reject(new Error('Error loading files')),
+    );
+  });
+};
+
 export {
   isCurrentUserViewer,
   isItemsOwnedByCurrentUser,
@@ -174,4 +216,5 @@ export {
   isItemOwnedByCurrentUser,
   sortSharedItems,
   isUserItemOwner,
+  getDraggedItemsWithoutFolders,
 };

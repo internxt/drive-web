@@ -1241,7 +1241,8 @@
     "errorCreatingSubscription": "Beim Erstellen Ihres Abonnements ist ein Fehler aufgetreten",
     "errorPurchaseBusinessPlan": "Sie haben bereits einen Geschäftstarif.",
     "couponIsNotValidForUserError": "Der Gutschein kann nur von neuen Kunden eingelöst werden.",
-    "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten"
+    "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten",
+    "foldersCannotBeUploadedAsEditor": "Ordner können nicht als EDITOR hochgeladen werden"
   },
   "actions": {
     "undo": "Rückgängig machen",

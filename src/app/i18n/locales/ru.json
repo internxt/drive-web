@@ -1265,7 +1265,8 @@
     "errorCreatingSubscription": "Что-то пошло не так при создании вашей подписки",
     "errorPurchaseBusinessPlan": "У вас уже есть бизнес-тариф.",
     "couponIsNotValidForUserError": "Купон может быть использован только новыми клиентами.",
-    "errorApplyingCoupon": "Произошла ошибка при применении купона"
+    "errorApplyingCoupon": "Произошла ошибка при применении купона",
+    "foldersCannotBeUploadedAsEditor": "Папки не могут быть загружены как РЕДАКТОР"
   },
   "actions": {
     "undo": "Отменить",
