@@ -9,7 +9,6 @@ import { t } from 'i18next';
 import storageThunks from '.';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import errorService from '../../../../core/services/error.service';
 import { uiActions } from '../../ui';
 import { checkDuplicatedFiles } from '../fileUtils/checkDuplicatedFiles';
 import { getUniqueFilename } from '../fileUtils/getUniqueFilename';
@@ -66,7 +65,7 @@ export interface RenameItemsPayload {
 
 export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { state: RootState }>(
   'storage/renameItems',
-  async ({ items, destinationFolderId, onRenameSuccess }: RenameItemsPayload, { getState, dispatch }) => {
+  async ({ items, destinationFolderId, onRenameSuccess }: RenameItemsPayload, { dispatch }) => {
     const promises: Promise<any>[] = [];
 
     if (items.some((item) => item.isFolder && item.uuid === destinationFolderId)) {
@@ -97,39 +96,44 @@ export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { sta
         itemParsed = { ...item, name: finalFilename, plain_name: finalFilename };
       }
 
-      let taskId: string;
-      if (itemParsed.isFolder) {
-        taskId = tasksService.create<RenameFolderTask>({
-          action: TaskType.RenameFolder,
-          showNotification: true,
-          folder: itemParsed,
-          destinationFolderId,
-          cancellable: true,
-        });
-      } else {
-        taskId = tasksService.create<RenameFileTask>({
-          action: TaskType.RenameFile,
-          showNotification: true,
-          file: itemParsed,
-          destinationFolderId,
-          cancellable: true,
-        });
-      }
+      const taskId: string = itemParsed.isFolder
+        ? tasksService.create<RenameFolderTask>({
+            action: TaskType.RenameFolder,
+            showNotification: true,
+            folder: itemParsed,
+            destinationFolderId,
+            cancellable: true,
+          })
+        : tasksService.create<RenameFileTask>({
+            action: TaskType.RenameFile,
+            showNotification: true,
+            file: itemParsed,
+            destinationFolderId,
+            cancellable: true,
+          });
 
       promises.push(dispatch(storageThunks.updateItemMetadataThunk({ item, metadata: { itemName: itemParsed.name } })));
 
       promises[index]
-        .then(async () => {
-          tasksService.updateTask({
-            taskId,
-            merge: {
-              status: TaskStatus.Success,
-            },
-          });
-          setTimeout(() => onRenameSuccess?.(itemParsed), 1000);
+        .then(async (result) => {
+          if (!result.error) {
+            tasksService.updateTask({
+              taskId,
+              merge: {
+                status: TaskStatus.Success,
+              },
+            });
+            setTimeout(() => onRenameSuccess?.(itemParsed), 1000);
+          } else {
+            tasksService.updateTask({
+              taskId,
+              merge: {
+                status: TaskStatus.Error,
+              },
+            });
+          }
         })
-        .catch((e) => {
-          errorService.reportError(e);
+        .catch(() => {
           tasksService.updateTask({
             taskId,
             merge: {
