@@ -188,7 +188,7 @@ const App = (props: AppProps): JSX.Element => {
               to={`/?preferences=open&section=account&subsection=${params.get('tab') ?? 'account'}`}
             />
             <Redirect from="/app/:section?" to={{ pathname: '/:section?', search: `${queryParameters}` }} />
-            {pathName !== 'checkout-plan' && pathName !== 'checkout' && isMobile && isAuthenticated ? (
+            {pathName !== 'checkout' && isMobile && isAuthenticated ? (
               <Route path="*">
                 <Mobile user={props.user} />
               </Route>

@@ -31,7 +31,6 @@ import ChangeEmailView from '../views/ChangeEmailView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
 import VerifyEmailView from '../views/VerifyEmailView';
 import CheckoutViewWrapper from '../../payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
-import CheckoutPlanView from '../../payment/views/RedirectToCheckoutView/CheckoutPlanView';
 
 const views: Array<{
   id: string;
@@ -59,7 +58,6 @@ const views: Array<{
   { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
   { id: AppView.CheckoutCancel, component: CheckoutCancelView },
   { id: AppView.Checkout, component: CheckoutViewWrapper },
-  { id: AppView.CheckoutPlan, component: CheckoutPlanView },
   { id: AppView.RecoveryLink, component: RecoveryLinkView },
   { id: AppView.ShareFileToken, component: ShareFileView },
   { id: AppView.ShareFileToken2, component: ShareFileView },

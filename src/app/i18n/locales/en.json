@@ -183,6 +183,14 @@
       "emailMustNotBeEmpty": "Email must not be empty",
       "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
     },
+    "addressBillingTitle": "Address Billing",
+    "addressBilling": {
+      "optional": {
+        "cta": "Optional",
+        "companyName": "Company name",
+        "companyVatId": "Company Vat ID"
+      }
+    },
     "paymentTitle": "Select a payment method",
     "productCard": {
       "renewalPeriod": {
@@ -192,6 +200,7 @@
       },
       "title": "Order summary",
       "selectedPlan": "Selected plan",
+      "numberOfUsers": "Number of users: {{seats}}",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}} plan",
         "year": "{{spaceToUpgrade}} - 1 {{interval}} plan",
@@ -202,28 +211,40 @@
         "year": "Billed annually",
         "lifetime": "One-time payment"
       },
+      "perUser": "/per user",
       "saving": "You're saving {{percent}}%",
       "planDetails": {
         "title": "Plan details:",
-        "features": [
-          "{{spaceToUpgrade}} encrypted storage",
-          "Encrypted file and folder sharing",
-          "Password-protected file sharing",
-          "Access your files from any device",
-          "Get access to all our services",
-          "Upload files up to 20GB",
-          "Two-factor authentication (2FA)",
-          "Premium customer support",
-          "30-day money-back guarantee"
-        ]
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} encrypted storage",
+            "Encrypted file and folder sharing",
+            "Password-protected file sharing",
+            "Access your files from any device",
+            "Get access to all our services",
+            "Two-factor authentication (2FA)",
+            "Premium customer support",
+            "30-day money-back guarantee"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} storage/user",
+            "Encrypted file and folder sharing",
+            "Create and manage users & teams",
+            "Starting at {{minimumSeats}} users and up to {{maximumSeats}}",
+            "GDPR compliant",
+            "Manage account billing & payments",
+            "Premium customer support"
+          ]
+        }
       },
       "total": "Total: ",
+      "totalForBusiness": "Total for {{N}} users: ",
       "addCoupon": {
         "buttonTitle": "Add coupon",
-        "inputText": "Coupon code",
-        "applyCodeButtonTitle": "Apply"
+        "inputText": "Coupon code"
       },
       "amountSaved": "Save ",
+      "apply": "Apply",
       "withAnnualBilling": "with annual billing"
     }
   },
@@ -1275,7 +1296,8 @@
     "errorApplyCoupon": "An error occurred while applying the discount",
     "alreadyAppliedCoupon": "The coupon has been already applied",
     "errorPurchaseBusinessPlan": "You already have a business plan.",
-    "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers"
+    "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers",
+    "errorApplyingCoupon": "Something went wrong while applying the coupon"
   },
   "actions": {
     "undo": "Undo",
@@ -1696,7 +1718,7 @@
       "levelUpStorage": "Level up your storage space and get many other benefits",
       "upgradeNow": "Upgrade now",
       "emptyTrash": "Empty trash",
-      "emptryTrashDescription": "Items in trash will be deleted permanently after 15 days",
+      "emptyTrashDescription": "Items in trash will be deleted permanently",
       "plans": {
         "title": "Plans",
         "current": "Current",
@@ -1714,7 +1736,7 @@
           "featureOne": "Encrypted file and folder sharing.",
           "featureTwo": "Password-protected file sharing.",
           "featureThree": "Access your files from any device.",
-          "featureFour": "Upload files up to 20GB.",
+          "featureFour": "Upload files up to 40GB.",
           "featureFive": "Two-factor authentication (2FA).",
           "featureSix": "Premium customer support.",
           "featureSeven": "30-day money-back guarantee."
@@ -1726,7 +1748,7 @@
           "featureTwo": "Create and manage users & teams.",
           "featureThree": "Starting at 3 users and up to 100.",
           "featureFour": "GDPR compliant.",
-          "featureFive": "Upload files of up to 20GB.",
+          "featureFive": "Upload files of up to 40GB.",
           "featureSix": "Manage account billing & payments.",
           "featureSeven": "Premium customer support."
         },

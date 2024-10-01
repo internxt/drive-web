@@ -184,7 +184,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-[550px]" className="p-5">
       <div className="flex flex-col space-y-5">
         {/* Title */}
         <div className="flex text-2xl font-medium text-gray-100">

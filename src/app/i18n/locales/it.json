@@ -183,10 +183,19 @@
       "emailMustNotBeEmpty": "L'email non deve essere vuota",
       "privacyGuarantee": "Garanzia di privacy: Non condividiamo le tue informazioni e ti contatteremo solo se necessario per fornire il nostro servizio."
     },
+    "addressBillingTitle": "Indirizzo di Fatturazione",
+    "addressBilling": {
+      "optional": {
+        "cta": "Opzionale",
+        "companyName": "Nome dell'azienda",
+        "companyVatId": "Partita IVA dell'azienda"
+      }
+    },
     "paymentTitle": "Seleziona un metodo di pagamento",
     "productCard": {
       "title": "Riepilogo dell'ordine",
       "selectedPlan": "Piano selezionato",
+      "numberOfUsers": "Numero di utenti: {{seats}}",
       "renewalPeriod": {
         "month": "mensile",
         "year": "annuale",
@@ -202,27 +211,39 @@
         "year": "Fatturato annualmente",
         "lifetime": "Pagamento unico"
       },
+      "perUser": "/per utente",
       "saving": "Stai risparmiando {{percent}}%",
       "planDetails": {
         "title": "Dettagli del piano:",
-        "features": [
-          "{{spaceToUpgrade}} di spazio di archiviazione crittografato",
-          "Condivisione di file e cartelle crittografati",
-          "Condivisione di file protetta da password",
-          "Accedi ai tuoi file da qualsiasi dispositivo",
-          "Accesso a tutti i nostri servizi",
-          "Carica file fino a 20GB",
-          "Autenticazione a due fattori (2FA)",
-          "Assistenza clienti premium",
-          "Garanzia di rimborso di 30 giorni"
-        ]
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} di spazio di archiviazione crittografato",
+            "Condivisione di file e cartelle crittografati",
+            "Condivisione di file protetta da password",
+            "Accedi ai tuoi file da qualsiasi dispositivo",
+            "Accesso a tutti i nostri servizi",
+            "Autenticazione a due fattori (2FA)",
+            "Assistenza clienti premium",
+            "Garanzia di rimborso di 30 giorni"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} spazio di archiviazione/utente",
+            "Condivisione di file e cartelle crittografata",
+            "Creare e gestire utenti e team",
+            "A partire da {{minimumSeats}} utenti e fino a {{maximumSeats}}",
+            "Conforme al GDPR",
+            "Gestire la fatturazione e i pagamenti dell'account",
+            "Supporto clienti premium"
+          ]
+        }
       },
       "total": "Totale: ",
+      "totalForBusiness": "Totale per {{N}} utenti: ",
       "addCoupon": {
         "buttonTitle": "Aggiungi coupon",
-        "inputText": "Codice coupon",
-        "applyCodeButtonTitle": "Applica"
+        "inputText": "Codice coupon"
       },
+      "apply": "Applica",
       "amountSaved": "Risparmia ",
       "withAnnualBilling": "con fatturazione annuale"
     }
@@ -1263,7 +1284,8 @@
     "errorCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento",
     "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
     "errorPurchaseBusinessPlan": "Hai già un piano aziendale.",
-    "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti."
+    "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti.",
+    "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon"
   },
   "actions": {
     "undo": "Annulla",
@@ -1683,7 +1705,7 @@
       "levelUpStorage": "Aumenta il tuo spazio di archiviazione e ottieni molti altri vantaggi",
       "upgradeNow": "Aggiorna ora",
       "emptyTrash": "Svuota cestino",
-      "emptryTrashDescription": "Gli elementi nel cestino verranno eliminati definitivamente dopo 15 giorni",
+      "emptyTrashDescription": "Gli elementi nel cestino verranno eliminati in modo permanente",
       "plans": {
         "title": "Piani",
         "current": "Corrente",

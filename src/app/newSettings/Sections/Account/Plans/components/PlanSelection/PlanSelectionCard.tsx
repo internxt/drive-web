@@ -1,5 +1,5 @@
 import { t } from 'i18next';
-import RoleBadge from '../../../Workspace/Members/components/RoleBadge';
+import RoleBadge from '../../../../Workspace/Members/components/RoleBadge';
 
 interface PlanSelectionCardProps {
   capacity: string;
