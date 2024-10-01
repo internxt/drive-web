@@ -20,6 +20,7 @@ import LeaveMemberModal from '../components/LeaveModal';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { planThunks } from 'app/store/slices/plan';
 import { useDispatch } from 'react-redux';
+import { useAppSelector } from 'app/store/hooks';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;
@@ -31,6 +32,7 @@ interface MemberDetailsContainer {
 const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselectMember }: MemberDetailsContainer) => {
   const dispatch = useDispatch();
   const { translate } = useTranslationContext();
+  const user = useAppSelector((state) => state.user.user);
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState<boolean>(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState<boolean>(false);
@@ -43,6 +45,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
   const [isRequestChangePasswordModalOpen, setIsRequestChangePasswordModalOpen] = useState<boolean>(false);
   const [isSendingPasswordRequest, setIsSendingPasswordRequest] = useState<boolean>(false);
   const [memberRole, setMemberRole] = useState<MemberRole>('current');
+  const guestOptions = !isOwner && !member.isOwner && member.member.uuid === user?.uuid;
 
   useEffect(() => {
     const memberRole = getMemberRole(member);
@@ -220,7 +223,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
           </div>
         )}
 
-        {!isOwner && (
+        {guestOptions && (
           <div className="relative flex items-center justify-end">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-10 bg-gray-5 shadow-sm"
