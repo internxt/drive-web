@@ -5,6 +5,7 @@ import dateService from '../../../core/services/date.service';
 import { bytesToString } from '../../../drive/services/size.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import Spinner from '../../../shared/components/Spinner/Spinner';
+import currencyService from 'app/payment/services/currency.service';
 
 const InvoicesList = ({ invoices, state }: { invoices: Invoice[]; state: 'loading' | 'empty' | 'ready' }) => {
   const [hoverItemIndex, setHoverItemIndex] = useState<string | null>(null);
