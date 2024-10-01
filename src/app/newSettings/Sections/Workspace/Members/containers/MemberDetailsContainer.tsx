@@ -220,7 +220,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
           </div>
         )}
 
-        {!isOwner && !member.isOwner && (
+        {!isOwner && (
           <div className="relative flex items-center justify-end">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-10 bg-gray-5 shadow-sm"
