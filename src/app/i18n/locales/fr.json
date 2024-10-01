@@ -1225,7 +1225,8 @@
     "errorCancelSubscription": "Quelque chose s'est mal passé lors de l'annulation de votre abonnement",
     "errorPurchaseBusinessPlan": "Vous avez déjà un plan d'affaires.",
     "couponIsNotValidForUserError": "Le coupon ne peut être utilisé que par de nouveaux clients.",
-    "errorApplyingCoupon": "Une erreur s'est produite lors de l'application du coupon"
+    "errorApplyingCoupon": "Une erreur s'est produite lors de l'application du coupon",
+    "errorDownloadingDesktopApp": "Une erreur est survenue lors du téléchargement de l'application de bureau"
   },
   "actions": {
     "undo": "Annuler",
