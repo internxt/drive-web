@@ -12,9 +12,7 @@ import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../../store/slices/storage/storage.thunks/renameItemsThunk';
-import { uiActions } from '../../../../store/slices/ui';
 import { BreadcrumbItemData, BreadcrumbsMenuProps } from '../types';
-import newStorageService from 'app/drive/services/new-storage.service';
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
   totalBreadcrumbsLength: number;
@@ -27,7 +25,6 @@ interface BreadcrumbsItemProps {
 const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const namePath = useAppSelector((state) => state.storage.namePath);
-  const workspacesCredentials = useAppSelector((state) => state.workspaces.workspaceCredentials);
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
   const selectedItems = useAppSelector((state) => state.storage.selectedItems);
 
@@ -54,28 +51,9 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
 
       dispatch(storageActions.setMoveDestinationFolderId(props.item.uuid));
 
-      const [folderContentPromise] = newStorageService.getFolderContentByUuid({
-        folderUuid: props.item.uuid,
-        workspacesToken: workspacesCredentials?.tokenHeader,
-      });
-
-      const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
-
-      const foldersInDestinationFolderParsed = foldersInDestinationFolder.map((folder) => ({
-        ...folder,
-        isFolder: true,
-      }));
-
-      const unrepeatedFiles = handleRepeatedUploadingFiles(
-        filesToMove,
-        filesInDestinationFolder as DriveItemData[],
-        dispatch,
-      );
-      const unrepeatedFolders = handleRepeatedUploadingFolders(
-        foldersToMove,
-        foldersInDestinationFolderParsed as DriveItemData[],
-        dispatch,
-      );
+      const folderUuid = props.item.uuid;
+      const unrepeatedFiles = await handleRepeatedUploadingFiles(filesToMove, dispatch, folderUuid);
+      const unrepeatedFolders = await handleRepeatedUploadingFolders(foldersToMove, dispatch, folderUuid);
       const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
 
       if (unrepeatedItems.length === itemsToMove.length) dispatch(storageActions.setMoveDestinationFolderId(null));
@@ -123,7 +101,6 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   );
 
   const onItemClicked = (item: BreadcrumbItemData): void => {
-    dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(''));
     if (item.active) {
       item.onClick && item.onClick();
     }

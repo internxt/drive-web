@@ -1353,6 +1353,7 @@
       "openPreview": "Abrir previsualización",
       "shareLink": "Compartir",
       "shareTeam": "Compartir con el equipo",
+      "shareWithWorkspace": "Compartir con el espacio de trabajo",
       "getLink": "Copiar enlace",
       "details": "Detalles",
       "rename": "Renombrar",
@@ -1698,7 +1699,7 @@
       "levelUpStorage": "Aumenta tu espacio de almacenamiento y obtén muchos otros beneficios",
       "upgradeNow": "Mejorar ahora",
       "emptyTrash": "Vaciar la papelera",
-      "emptryTrashDescription": "Los elementos en la papelera serán eliminados permanentemente después de 15 días",
+      "emptyTrashDescription": "Los elementos de la papelera se borrarán permanentemente",
       "plans": {
         "title": "Planes",
         "current": "Actual",

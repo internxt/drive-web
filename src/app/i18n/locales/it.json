@@ -1362,6 +1362,7 @@
       "openPreview": "Anteprima aperta",
       "shareLink": "Condividi",
       "shareTeam": "Condividi con il team",
+      "shareWithWorkspace": "Condividi con lo spazio di lavoro",
       "getLink": "Ottenere link",
       "rename": "Rinomina",
       "download": "Scarica",
@@ -1707,7 +1708,7 @@
       "levelUpStorage": "Aumenta il tuo spazio di archiviazione e ottieni molti altri vantaggi",
       "upgradeNow": "Aggiorna ora",
       "emptyTrash": "Svuota cestino",
-      "emptryTrashDescription": "Gli elementi nel cestino verranno eliminati definitivamente dopo 15 giorni",
+      "emptyTrashDescription": "Gli elementi nel cestino verranno eliminati in modo permanente",
       "plans": {
         "title": "Piani",
         "current": "Corrente",

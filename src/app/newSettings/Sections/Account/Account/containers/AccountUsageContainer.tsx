@@ -94,7 +94,7 @@ const AccountUsageContainer = ({
           <div className="flex flex-col">
             <p className="text-base font-medium text-gray-100">{translate('preferences.account.emptyTrash')}</p>
             <p className="text-base font-normal text-gray-60">
-              {translate('preferences.account.emptryTrashDescription')}{' '}
+              {translate('preferences.account.emptyTrashDescription')}{' '}
             </p>
             <div className="mt-3">
               <Button variant="secondary" onClick={openTrashDialog}>

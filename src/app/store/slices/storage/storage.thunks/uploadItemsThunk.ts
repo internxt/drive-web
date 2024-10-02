@@ -22,8 +22,9 @@ import shareService from '../../../../share/services/share.service';
 import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
+
+import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
-import newStorageService from 'app/drive/services/new-storage.service';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -98,61 +99,6 @@ const isUploadAllowed = ({
   return true;
 };
 
-const prepareFilesToUpload = async ({
-  files,
-  parentFolderId,
-  disableDuplicatedNamesCheck,
-  fileType,
-  workspaceToken,
-}: {
-  files: File[];
-  parentFolderId: string;
-  disableDuplicatedNamesCheck?: boolean;
-  fileType?: string;
-  workspaceToken?: string;
-}): Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }> => {
-  const filesToUpload: FileToUpload[] = [];
-  let parentFolderContent;
-
-  if (!disableDuplicatedNamesCheck) {
-    const [parentFolderContentPromise] = newStorageService.getFolderContentByUuid({
-      folderUuid: parentFolderId,
-      workspacesToken: workspaceToken,
-    });
-    parentFolderContent = await parentFolderContentPromise;
-  }
-
-  let zeroLengthFilesNumber = 0;
-
-  for (const file of files) {
-    if (file.size === 0) {
-      zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
-      continue;
-    }
-    const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
-    let fileContent;
-    let finalFilename = filename;
-
-    if (!disableDuplicatedNamesCheck) {
-      const [, , renamedFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
-      finalFilename = renamedFilename;
-      fileContent = renameFile(file, renamedFilename);
-    } else {
-      fileContent = renameFile(file, filename);
-    }
-
-    filesToUpload.push({
-      name: finalFilename,
-      size: file.size,
-      type: extension ?? fileType,
-      content: fileContent,
-      parentFolderId,
-    });
-  }
-
-  return { filesToUpload, zeroLengthFilesNumber };
-};
-
 /**
  * @description
  *  1. Prepare files to upload
@@ -200,7 +146,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       fileType,
-      workspaceToken: workspaceCredentials?.tokenHeader,
     });
 
     showEmptyFilesNotification(zeroLengthFilesNumber);
@@ -479,7 +424,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       files,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
-      workspaceToken: workspaceCredentials?.tokenHeader,
     });
 
     showEmptyFilesNotification(zeroLengthFilesNumber);

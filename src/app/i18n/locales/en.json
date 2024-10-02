@@ -1375,6 +1375,7 @@
       "details": "Details",
       "shareLink": "Share",
       "shareTeam": "Share with team",
+      "shareWithWorkspace": "Share with workspace",
       "manageLinkAccess": "Manage access",
       "getLink": "Get link",
       "rename": "Rename",
@@ -1720,7 +1721,7 @@
       "levelUpStorage": "Level up your storage space and get many other benefits",
       "upgradeNow": "Upgrade now",
       "emptyTrash": "Empty trash",
-      "emptryTrashDescription": "Items in trash will be deleted permanently after 15 days",
+      "emptyTrashDescription": "Items in trash will be deleted permanently",
       "plans": {
         "title": "Plans",
         "current": "Current",

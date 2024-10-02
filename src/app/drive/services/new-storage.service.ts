@@ -1,5 +1,8 @@
 import {
+  CheckDuplicatedFilesResponse,
+  CheckDuplicatedFoldersResponse,
   DriveFileData,
+  FileStructure,
   FetchFolderContentResponse,
   FolderAncestor,
   FolderMeta,
@@ -30,6 +33,22 @@ export async function getFolderTree(uuid: string): Promise<FolderTreeResponse> {
   return storageClient.getFolderTree(uuid);
 }
 
+export async function checkDuplicatedFiles(
+  folderUuid: string,
+  filesList: FileStructure[],
+): Promise<CheckDuplicatedFilesResponse> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  return storageClient.checkDuplicatedFiles({ folderUuid, filesList });
+}
+
+export async function checkDuplicatedFolders(
+  folderUuid: string,
+  folderNamesList: string[],
+): Promise<CheckDuplicatedFoldersResponse> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  return storageClient.checkDuplicatedFolders({ folderUuid, folderNamesList });
+}
+
 export function getFolderContentByUuid({
   folderUuid,
   limit,
@@ -58,6 +77,8 @@ const newStorageService = {
   getFolderAncestors,
   getFolderMeta,
   getFolderTree,
+  checkDuplicatedFiles,
+  checkDuplicatedFolders,
   getFolderContentByUuid,
 };
 

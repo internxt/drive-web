@@ -70,6 +70,7 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
+import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 
 const TRASH_PAGINATION_OFFSET = 50;
 export const UPLOAD_ITEMS_LIMIT = 3000;
@@ -369,11 +370,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     folderInputRef.current?.click();
   }, [currentFolderId]);
 
-  const onUploadFileInputChanged = (e) => {
+  const onUploadFileInputChanged = async (e) => {
     const files = e.target.files;
 
     if (files.length <= UPLOAD_ITEMS_LIMIT) {
-      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(Array.from(files), items, dispatch) as File[];
+      const unrepeatedUploadedFiles = (await handleRepeatedUploadingFiles(
+        Array.from(files),
+        dispatch,
+        currentFolderId,
+      )) as File[];
       dispatch(
         storageThunks.uploadItemsThunk({
           files: Array.from(unrepeatedUploadedFiles),
@@ -429,7 +434,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       if (isFileViewerOpen) {
         dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
       } else if (itemToRename && editNameItem.isFolder) {
-        dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(newItem.plainName ?? newItem.name));
+        getAncestorsAndSetNamePath(newItem.uuid, dispatch);
       }
     }
     dispatch(storageActions.setItemToRename(null));
@@ -921,7 +926,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
           itemsDragged: items,
         },
       });
-      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch) as File[];
+      const unrepeatedUploadedFiles = (await handleRepeatedUploadingFiles(files, dispatch, currentFolderId)) as File[];
       // files where dragged directly
       await dispatch(
         storageThunks.uploadItemsThunk({
@@ -946,7 +951,11 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
           itemsDragged: items,
         },
       });
-      const unrepeatedUploadedFolders = handleRepeatedUploadingFolders(rootList, items, dispatch) as IRoot[];
+      const unrepeatedUploadedFolders = (await handleRepeatedUploadingFolders(
+        rootList,
+        dispatch,
+        currentFolderId,
+      )) as IRoot[];
 
       if (unrepeatedUploadedFolders.length > 0) {
         const folderDataToUpload = unrepeatedUploadedFolders.map((root) => ({
