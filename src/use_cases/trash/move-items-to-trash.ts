@@ -42,11 +42,13 @@ async function sendItemsToTrashConcurrent({
   }
 }
 
+const isFolder = (item: DriveItemData) => item?.type === 'folder' || item?.isFolder;
+
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () => void): Promise<void> => {
   const items: Array<{ uuid: string; type: string }> = itemsToTrash.map((item) => {
     return {
       uuid: item.uuid,
-      type: item.isFolder ? 'folder' : 'file',
+      type: isFolder(item) ? 'folder' : 'file',
     };
   });
   let movingItemsToastId;
@@ -81,10 +83,10 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
         item:
           itemsToTrash.length > 1
             ? t('general.files')
-            : itemsToTrash[0].isFolder
+            : isFolder(itemsToTrash[0])
             ? t('general.folder')
             : t('general.file'),
-        s: itemsToTrash.length > 1 ? 'os' : itemsToTrash[0].isFolder ? 'a' : 'o',
+        s: itemsToTrash.length > 1 ? 'os' : isFolder(itemsToTrash[0]) ? 'a' : 'o',
       }),
 
       action: {
@@ -92,7 +94,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
         onClick: async () => {
           notificationsService.dismiss(id);
           if (itemsToTrash.length > 0) {
-            const destinationId = itemsToTrash[0].isFolder ? itemsToTrash[0].parentUuid : itemsToTrash[0].folderUuid;
+            const destinationId = isFolder(itemsToTrash[0]) ? itemsToTrash[0].parentUuid : itemsToTrash[0].folderUuid;
 
             store.dispatch(
               storageActions.pushItems({ updateRecents: true, items: itemsToTrash, folderIds: [destinationId] }),
