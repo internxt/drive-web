@@ -1260,7 +1260,8 @@
     "errorPurchaseBusinessPlan": "您已經有一個商業計劃",
     "couponIsNotValidForUserError": "優惠券只能由新客戶兌換。",
     "errorApplyingCoupon": "應用優惠券時出錯",
-    "foldersCannotBeUploadedAsEditor": "文件夾無法作為EDITOR上傳"
+    "foldersCannotBeUploadedAsEditor": "文件夾無法作為EDITOR上傳",
+    "errorDownloadingDesktopApp": "下載桌面應用時出現錯誤"
   },
   "actions": {
     "undo": "撤銷",

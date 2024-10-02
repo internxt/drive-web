@@ -1266,7 +1266,8 @@
     "errorPurchaseBusinessPlan": "У вас уже есть бизнес-тариф.",
     "couponIsNotValidForUserError": "Купон может быть использован только новыми клиентами.",
     "errorApplyingCoupon": "Произошла ошибка при применении купона",
-    "foldersCannotBeUploadedAsEditor": "Папки не могут быть загружены как РЕДАКТОР"
+    "foldersCannotBeUploadedAsEditor": "Папки не могут быть загружены как РЕДАКТОР",
+    "errorDownloadingDesktopApp": "Произошла ошибка при загрузке настольного приложения"
   },
   "actions": {
     "undo": "Отменить",

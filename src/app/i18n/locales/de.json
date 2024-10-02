@@ -1242,7 +1242,8 @@
     "errorPurchaseBusinessPlan": "Sie haben bereits einen Geschäftstarif.",
     "couponIsNotValidForUserError": "Der Gutschein kann nur von neuen Kunden eingelöst werden.",
     "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten",
-    "foldersCannotBeUploadedAsEditor": "Ordner können nicht als EDITOR hochgeladen werden"
+    "foldersCannotBeUploadedAsEditor": "Ordner können nicht als EDITOR hochgeladen werden",
+    "errorDownloadingDesktopApp": "Beim Herunterladen der Desktop-App ist ein Fehler aufgetreten"
   },
   "actions": {
     "undo": "Rückgängig machen",

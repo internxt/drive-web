@@ -1262,7 +1262,8 @@
     "errorPurchaseBusinessPlan": "Ya tienes un plan para empresas",
     "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes.",
     "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón",
-    "foldersCannotBeUploadedAsEditor": "No se pueden subir carpetas como EDITOR"
+    "foldersCannotBeUploadedAsEditor": "No se pueden subir carpetas como EDITOR",
+    "errorDownloadingDesktopApp": "Algo salió mal al descargar la aplicación de escritorio"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",

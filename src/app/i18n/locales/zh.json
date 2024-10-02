@@ -1297,7 +1297,8 @@
     "errorPurchaseBusinessPlan": "您已经有一个商业计划",
     "couponIsNotValidForUserError": "优惠券只能由新客户兑换。",
     "errorApplyingCoupon": "应用优惠券时出错",
-    "foldersCannotBeUploadedAsEditor": "文件夹无法作为EDITOR上传"
+    "foldersCannotBeUploadedAsEditor": "文件夹无法作为EDITOR上传",
+    "errorDownloadingDesktopApp": "下载桌面应用时出现错误"
   },
   "actions": {
     "undo": "撤销",

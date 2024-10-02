@@ -1286,7 +1286,8 @@
     "errorPurchaseBusinessPlan": "Hai già un piano aziendale.",
     "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti.",
     "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon",
-    "foldersCannotBeUploadedAsEditor": "Le cartelle non possono essere caricate come EDITOR"
+    "foldersCannotBeUploadedAsEditor": "Le cartelle non possono essere caricate come EDITOR",
+    "errorDownloadingDesktopApp": "Qualcosa è andato storto durante il download dell'app desktop"
   },
   "actions": {
     "undo": "Annulla",
