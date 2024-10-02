@@ -370,11 +370,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     folderInputRef.current?.click();
   }, [currentFolderId]);
 
-  const onUploadFileInputChanged = (e) => {
+  const onUploadFileInputChanged = async (e) => {
     const files = e.target.files;
 
     if (files.length <= UPLOAD_ITEMS_LIMIT) {
-      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(Array.from(files), items, dispatch) as File[];
+      const unrepeatedUploadedFiles = (await handleRepeatedUploadingFiles(
+        Array.from(files),
+        dispatch,
+        currentFolderId,
+      )) as File[];
       dispatch(
         storageThunks.uploadItemsThunk({
           files: Array.from(unrepeatedUploadedFiles),
@@ -920,7 +924,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
           itemsDragged: items,
         },
       });
-      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch) as File[];
+      const unrepeatedUploadedFiles = (await handleRepeatedUploadingFiles(files, dispatch, currentFolderId)) as File[];
       // files where dragged directly
       await dispatch(
         storageThunks.uploadItemsThunk({
@@ -945,7 +949,11 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
           itemsDragged: items,
         },
       });
-      const unrepeatedUploadedFolders = handleRepeatedUploadingFolders(rootList, items, dispatch) as IRoot[];
+      const unrepeatedUploadedFolders = (await handleRepeatedUploadingFolders(
+        rootList,
+        dispatch,
+        currentFolderId,
+      )) as IRoot[];
 
       if (unrepeatedUploadedFolders.length > 0) {
         const folderDataToUpload = unrepeatedUploadedFolders.map((root) => ({
