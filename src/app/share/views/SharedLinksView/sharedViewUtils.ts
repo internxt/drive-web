@@ -175,6 +175,7 @@ const isUserItemOwner = ({
  */
 const getDraggedItemsWithoutFolders = async (draggedItemsList: DataTransferItem[]) => {
   let hasFolders = false;
+  let loadedFiles;
 
   const removeFoldersFromDroppedItems = draggedItemsList.filter((item: DataTransferItem) => {
     const entry = item.webkitGetAsEntry?.();
@@ -186,13 +187,18 @@ const getDraggedItemsWithoutFolders = async (draggedItemsList: DataTransferItem[
     return entry?.isFile;
   });
 
-  const filesPromises = removeFoldersFromDroppedItems.map((item: DataTransferItem) => {
-    const entry = item.webkitGetAsEntry() as FileSystemFileEntry;
+  try {
+    const filesPromises = removeFoldersFromDroppedItems.map((item: DataTransferItem) => {
+      const entry = item.webkitGetAsEntry() as FileSystemFileEntry;
 
-    return getFilePromises(entry);
-  });
+      return getFilePromises(entry);
+    });
 
-  const loadedFiles = (await Promise.all(filesPromises)).filter((file): file is File => file !== null);
+    loadedFiles = (await Promise.all(filesPromises)).filter((file): file is File => file !== null);
+  } catch (error) {
+    loadedFiles = [];
+    hasFolders = false;
+  }
 
   return {
     filteredItems: loadedFiles,
