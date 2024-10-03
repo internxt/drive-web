@@ -542,6 +542,7 @@ function SharedView({
           )
         }
         <SharedItemListContainer
+          isRootFolder={isRootFolder}
           disableKeyboardShortcuts={disableKeyboardShortcuts || showStopSharingConfirmation}
           onItemDoubleClicked={handleOnItemDoubleClick}
           onUploadFileButtonClicked={onUploadFileButtonClicked}
