@@ -163,7 +163,7 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
                 })}
               </div>
               {/* CENTER COLUMN */}
-              <div className="flex grow flex-col">
+              <div className="flex w-full max-w-[256px] grow flex-col">
                 <div className="flex h-12 items-center border-b border-t border-gray-10 bg-gray-5 py-2">
                   <span
                     className={
@@ -180,7 +180,7 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
                   return (
                     <button
                       key={id}
-                      className={`justify-betweendw flex h-14 items-center border-gray-10 px-5 py-2 text-base font-normal text-gray-60 dark:bg-gray-1 ${
+                      className={`flex h-14 items-center justify-between border-gray-10 px-5 py-2 text-base font-normal text-gray-60 dark:bg-gray-1 ${
                         members && i === members.length - 1 ? 'border-b' : ' border-b'
                       } ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : 'bg-surface'}`}
                       onMouseEnter={() => setHoverItemIndex(id)}
