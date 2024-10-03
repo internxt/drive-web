@@ -27,6 +27,7 @@ export interface DriveFolderData {
   shares?: Array<ShareLink>;
   sharings?: { type: string; id: string }[];
   uuid: string;
+  type?: string;
 }
 
 export interface DriveFolderMetadataPayload {

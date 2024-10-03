@@ -13,6 +13,7 @@ import notificationsService, { ToastType } from '../../../notifications/services
 import { getEnvironmentConfig } from '../network.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
 
+// TODO: REMOVE FROM HERE, DUPLICATED TO MAKE TESTS
 export interface FileToUpload {
   name: string;
   size: number;
