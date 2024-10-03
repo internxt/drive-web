@@ -172,11 +172,7 @@ export default function LogIn(): JSX.Element {
         navigationService.history.push(`/activate/${email}`);
       }
 
-      setLoginError([
-        castedError.message.includes('Wrong login credentials')
-          ? translate('auth.login.wrongLogin')
-          : castedError.message,
-      ]);
+      setLoginError([(err as AppError)?.status === 401 ? translate('auth.login.wrongLogin') : castedError.message]);
       setShowErrors(true);
       if ((err as AppError)?.status === 403) {
         await sendUnblockAccountEmail(email);
