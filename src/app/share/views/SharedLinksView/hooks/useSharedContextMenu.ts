@@ -73,7 +73,7 @@ const useSharedContextMenu = ({
 
     const getItemContextMenu = (item: AdvancedSharedItem) => {
       const userUUID = item?.user?.uuid;
-      const isNotRootFolderAndIsNotViewerUser = !isCurrentUserViewer && !isRootFolder;
+      const isSubFolderAndEditorUser = !isCurrentUserViewer && !isRootFolder;
       const isRootFolderAndIsOwner = isRootFolder && isItemOwnedByCurrentUser(userUUID);
 
       const ownerCurrentUserOptions = isItemOwnedByCurrentUser(userUUID)
@@ -93,7 +93,7 @@ const useSharedContextMenu = ({
         showDetails,
         copyLink,
         downloadItem: handleDownload,
-        renameItem: isNotRootFolderAndIsNotViewerUser || isRootFolderAndIsOwner ? renameItem : undefined,
+        renameItem: isSubFolderAndEditorUser || isRootFolderAndIsOwner ? renameItem : undefined,
         ...ownerCurrentUserOptions,
       });
     };
