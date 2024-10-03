@@ -1226,7 +1226,7 @@
     "errorPurchaseBusinessPlan": "Vous avez déjà un plan d'affaires.",
     "couponIsNotValidForUserError": "Le coupon ne peut être utilisé que par de nouveaux clients.",
     "errorApplyingCoupon": "Une erreur s'est produite lors de l'application du coupon",
-    "foldersCannotBeUploadedAsEditor": "Les dossiers ne peuvent pas être téléchargés en tant qu'ÉDITEUR",
+    "foldersCannotBeUploadedToSharedFolder": "Les dossiers ne peuvent pas être téléchargés dans des dossiers partagés",
     "errorDownloadingDesktopApp": "Une erreur est survenue lors du téléchargement de l'application de bureau"
   },
   "actions": {

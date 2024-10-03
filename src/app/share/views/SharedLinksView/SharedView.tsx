@@ -174,7 +174,7 @@ function SharedView({
 
     if (hasFolders) {
       notificationsService.show({
-        text: translate('notificationMessages.foldersCannotBeUploadedAsEditor'),
+        text: translate('notificationMessages.foldersCannotBeUploadedToSharedFolder'),
         type: ToastType.Info,
       });
     }

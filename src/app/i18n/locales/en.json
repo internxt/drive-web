@@ -1298,7 +1298,7 @@
     "errorPurchaseBusinessPlan": "You already have a business plan.",
     "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers",
     "errorApplyingCoupon": "Something went wrong while applying the coupon",
-    "foldersCannotBeUploadedAsEditor": "Folders cannot be uploaded to shared folders",
+    "foldersCannotBeUploadedToSharedFolder": "Folders cannot be uploaded to shared folders",
     "errorDownloadingDesktopApp": "Something went wrong while downloading the desktop app"
   },
   "actions": {
