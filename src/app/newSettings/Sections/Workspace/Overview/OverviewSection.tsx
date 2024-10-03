@@ -189,8 +189,7 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
         isOwner={isOwner}
         subscriptionData={subscriptionData}
         onMembersCardClick={() => changeSection({ section: 'workspace', subsection: 'members' })}
-        // TODO: ADD NAVIGATION WHEN TEAMS HAS BEEN IMPLEMENTED
-        onTeamsCardClick={() => undefined}
+        onTeamsCardClick={() => changeSection({ section: 'workspace', subsection: 'teams' })}
         onBillingCardClick={() => changeSection({ section: 'workspace', subsection: 'billing' })}
       />
       <EditWorkspaceDetailsModal
