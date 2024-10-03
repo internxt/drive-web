@@ -1266,6 +1266,7 @@
     "errorPurchaseBusinessPlan": "У вас уже есть бизнес-тариф.",
     "couponIsNotValidForUserError": "Купон может быть использован только новыми клиентами.",
     "errorApplyingCoupon": "Произошла ошибка при применении купона",
+    "foldersCannotBeUploadedToSharedFolder": "Папки нельзя загружать в общие папки",
     "errorDownloadingDesktopApp": "Произошла ошибка при загрузке настольного приложения"
   },
   "actions": {
