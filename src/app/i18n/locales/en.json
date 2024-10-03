@@ -81,7 +81,8 @@
       "dontHaveAccount": "Don't have an account?",
       "createAccount": "Create account",
       "2FA": "Two factor code",
-      "twoFactorAuthenticationCode": "Two factor authentication code"
+      "twoFactorAuthenticationCode": "Two factor authentication code",
+      "wrongLogin": "Invalid username or password"
     },
     "signup": {
       "title": "Create account",

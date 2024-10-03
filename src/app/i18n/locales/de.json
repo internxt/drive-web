@@ -60,7 +60,8 @@
       "dontHaveAccount": "Sie haben kein Konto?",
       "createAccount": "Konto erstellen",
       "2FA": "Zwei-Faktor-Code",
-      "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode"
+      "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode",
+       "wrongLogin": "Ungültiger Benutzername oder Passwort"
     },
     "signup": {
       "title": "Konto erstellen",
