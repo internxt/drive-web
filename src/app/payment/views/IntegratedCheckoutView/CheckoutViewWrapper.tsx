@@ -196,7 +196,17 @@ const CheckoutViewWrapper = () => {
       return;
     }
 
-    paymentService.getStripe().then((stripe) => (stripeSdk = stripe));
+    paymentService
+      .getStripe()
+      .then((stripe) => (stripeSdk = stripe))
+      .catch((error) => {
+        errorService.reportError(error);
+        if (user) {
+          navigationService.push(AppView.Drive);
+        } else {
+          navigationService.push(AppView.Signup);
+        }
+      });
 
     handleFetchSelectedPlan(planId, currencyValue)
       .then(async (plan) => {
