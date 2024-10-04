@@ -28,7 +28,6 @@ import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutRe
 import { AuthMethodTypes, CouponCodeData, RequestedPlanData } from '../../types';
 import CheckoutView from './CheckoutView';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
-import { getStripe } from '../../../newSettings/Sections/Account/Plans/api/plansApi';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
 export const THEME_STYLES = {
@@ -85,10 +84,8 @@ const STATUS_CODE_ERROR = {
   USER_EXISTS: 409,
   COUPON_NOT_VALID: 422,
   PROMO_CODE_BY_NAME_NOT_FOUND: 404,
-  PROMO_CODE_IS_NOT_VALID: 400,
+  BAD_REQUEST: 400,
 };
-
-let stripe;
 
 function savePaymentDataInLocalStorage(
   subscriptionId: string | undefined,
@@ -203,8 +200,8 @@ const CheckoutViewWrapper = () => {
           if (promotionCode) {
             handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
           }
+
           checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, plan);
-          stripe = await getStripe(stripe);
           const prices = await checkoutService.fetchPrices(plan.selectedPlan.type, currencyValue);
           setPrices(prices);
           setIsCheckoutReadyToRender(true);
@@ -278,12 +275,13 @@ const CheckoutViewWrapper = () => {
     if (!currentSelectedPlan) return;
 
     try {
-      stripe = await getStripe(stripe);
       const updatedSubscription = await paymentService.updateSubscriptionPrice({
         priceId,
         userType: currentSelectedPlan.type,
       });
       if (updatedSubscription.request3DSecure) {
+        const stripe = await paymentService.getStripe();
+
         stripe
           .confirmCardPayment(updatedSubscription.clientSecret)
           .then(async (result) => {
@@ -375,7 +373,7 @@ const CheckoutViewWrapper = () => {
         couponCodeData,
       );
 
-      // DO NOT REMOVE THIS
+      // !DO NOT REMOVE THIS
       // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
       // no client secret will be provided.
       if (invoiceStatus && invoiceStatus === 'paid') {
@@ -399,7 +397,12 @@ const CheckoutViewWrapper = () => {
     } catch (err) {
       const statusCode = (err as any).status;
 
-      if (statusCode === STATUS_CODE_ERROR.USER_EXISTS) {
+      if (statusCode === STATUS_CODE_ERROR.BAD_REQUEST) {
+        notificationsService.show({
+          text: translate('notificationMessages.invalidTaxIdIsProvided'),
+          type: ToastType.Error,
+        });
+      } else if (statusCode === STATUS_CODE_ERROR.USER_EXISTS) {
         setIsUpdateSubscriptionDialogOpen(true);
       } else if (statusCode === STATUS_CODE_ERROR.COUPON_NOT_VALID) {
         notificationsService.show({
@@ -455,7 +458,7 @@ const CheckoutViewWrapper = () => {
     if (statusCode) {
       if (
         statusCode === STATUS_CODE_ERROR.PROMO_CODE_BY_NAME_NOT_FOUND ||
-        statusCode === STATUS_CODE_ERROR.PROMO_CODE_IS_NOT_VALID
+        statusCode === STATUS_CODE_ERROR.BAD_REQUEST
       ) {
         errorMessage = error.message;
       }
@@ -502,8 +505,8 @@ const CheckoutViewWrapper = () => {
 
   return (
     <>
-      {isCheckoutReadyToRender && elementsOptions && stripe ? (
-        <Elements stripe={stripe} options={elementsOptions}>
+      {isCheckoutReadyToRender && elementsOptions ? (
+        <Elements stripe={paymentService.getStripe()} options={{ ...elementsOptions }}>
           <CheckoutView
             checkoutViewVariables={state}
             userAuthComponentRef={userAuthComponentRef}
