@@ -11,7 +11,7 @@ import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { initializeUserThunk, userActions } from 'app/store/slices/user';
-import authService, { doLogin, is2FANeeded } from '../../services/auth.service';
+import authService, { authenticateUser, is2FANeeded } from '../../services/auth.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WarningCircle } from '@phosphor-icons/react';
@@ -136,25 +136,15 @@ export default function LogIn(): JSX.Element {
 
       if (!isTfaEnabled || showTwoFactor) {
         const loginType = isUniversalLinkMode ? 'desktop' : 'web';
-        const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
-        dispatch(userActions.setUser(user));
 
-        window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
-        window.rudderanalytics.track('User Signin', { email: user.email });
-        window.gtag('event', 'User Signin', { method: 'email' });
-
-        try {
-          dispatch(productsThunks.initializeThunk());
-          dispatch(planThunks.initializeThunk());
-          dispatch(referralsThunks.initializeThunk());
-          await dispatch(initializeUserThunk()).unwrap();
-          dispatch(workspaceThunks.fetchWorkspaces());
-          dispatch(workspaceThunks.checkAndSetLocalWorkspace());
-        } catch (e: unknown) {
-          // PASS
-        }
-
-        userActions.setUser(user);
+        const { token, user, mnemonic } = await authenticateUser(
+          email,
+          password,
+          'signIn',
+          twoFactorCode,
+          dispatch,
+          loginType,
+        );
 
         const redirectUrl = authService.getRedirectUrl(urlParams, token);
 
