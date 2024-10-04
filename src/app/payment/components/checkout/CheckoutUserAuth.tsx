@@ -45,12 +45,21 @@ export const CheckoutUserAuth = ({
     signUp: translate('auth.signup.login'),
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
+
   return (
     <div className="flex flex-col space-y-8">
       <p className="text-2xl font-semibold text-gray-100">
         1. {translate(`checkout.authComponent.title.${authMethod}`)}
       </p>
-      <div className="flex flex-col space-y-4 rounded-2xl border border-gray-10 bg-surface p-5">
+      <div
+        onKeyDown={handleKeyDown}
+        className="flex flex-col space-y-4 rounded-2xl border border-gray-10 bg-surface p-5"
+      >
         {isUserSignedIn ? (
           <div className="flex w-full items-center justify-center">
             <div className="flex flex-col items-center gap-2.5">
