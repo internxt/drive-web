@@ -5,13 +5,13 @@ import { IFormValues } from 'app/core/types';
 import { useState } from 'react';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 
-interface OptionalB2BDropdownComponentProps {
+interface OptionalB2BDropdownProps {
   errors: FieldErrors<IFormValues>;
   translate: (key: string, props?: Record<string, unknown>) => string;
   register: UseFormRegister<IFormValues>;
 }
 
-export const OptionalB2BDropdownComponent = ({ errors, translate, register }: OptionalB2BDropdownComponentProps) => {
+export const OptionalB2BDropdown = ({ errors, translate, register }: OptionalB2BDropdownProps) => {
   const [optionalAddressBillingDetailsDialogClicked, setOptionalAddressBillingDetailsDialogClicked] =
     useState<boolean>();
 

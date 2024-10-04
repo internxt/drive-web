@@ -5,7 +5,7 @@ import { Check, SealPercent, X } from '@phosphor-icons/react';
 
 import { bytesToString } from '../../../drive/services/size.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { UpsellManagerProps } from '../../../payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
+import { UpsellManagerProps } from '../../views/IntegratedCheckoutView/CheckoutViewWrapper';
 import TextInput from '../../../share/components/ShareItemDialog/components/TextInput';
 import Button from '../../../shared/components/Button/Button';
 import { useThemeContext } from '../../../theme/ThemeProvider';
@@ -15,7 +15,7 @@ import { CouponCodeData, Currency, RequestedPlanData } from '../../types';
 import { SelectSeatsComponent } from './SelectSeatsComponent';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
-interface ProductFeaturesComponentProps {
+interface CheckoutProductCardProps {
   selectedPlan: RequestedPlanData;
   seatsForBusinessSubscription: number;
   upsellManager: UpsellManagerProps;
@@ -58,7 +58,7 @@ const getTextContent = (
   };
 };
 
-export const ProductFeaturesComponent = ({
+export const CheckoutProductCard = ({
   selectedPlan,
   couponCodeData,
   couponError,
@@ -67,7 +67,7 @@ export const ProductFeaturesComponent = ({
   onSeatsChange,
   onRemoveAppliedCouponCode,
   onCouponInputChange,
-}: ProductFeaturesComponentProps) => {
+}: CheckoutProductCardProps) => {
   const { translate, translateList } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const [couponName, setCouponName] = useState<string>('');

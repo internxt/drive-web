@@ -7,7 +7,7 @@ import Button from 'app/shared/components/Button/Button';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { InputsComponent } from './InputsComponent';
 
-interface CreateAccountComponentProps {
+interface CheckoutUserAuthProps {
   userData: {
     name: string;
     avatar: Blob | null;
@@ -21,7 +21,7 @@ interface CreateAccountComponentProps {
   onLogOut: () => void;
 }
 
-export const UserAuthComponent = ({
+export const CheckoutUserAuth = ({
   register,
   errors,
   authMethod,
@@ -29,7 +29,7 @@ export const UserAuthComponent = ({
   onAuthMethodToggled,
   userData,
   onLogOut,
-}: CreateAccountComponentProps) => {
+}: CheckoutUserAuthProps) => {
   const { translate } = useTranslationContext();
 
   const isUserSignedIn = authMethod === 'userIsSignedIn';
