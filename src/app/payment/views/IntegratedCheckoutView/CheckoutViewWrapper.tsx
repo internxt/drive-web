@@ -102,6 +102,8 @@ function savePaymentDataInLocalStorage(
   }
 }
 
+let stripeSdk: Stripe;
+
 const CheckoutViewWrapper = () => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
@@ -194,6 +196,8 @@ const CheckoutViewWrapper = () => {
       return;
     }
 
+    paymentService.getStripe().then((stripe) => (stripeSdk = stripe));
+
     handleFetchSelectedPlan(planId, currencyValue)
       .then(async (plan) => {
         if (checkoutTheme && plan) {
@@ -280,9 +284,7 @@ const CheckoutViewWrapper = () => {
         userType: currentSelectedPlan.type,
       });
       if (updatedSubscription.request3DSecure) {
-        const stripe = await paymentService.getStripe();
-
-        stripe
+        stripeSdk
           .confirmCardPayment(updatedSubscription.clientSecret)
           .then(async (result) => {
             if (result.error) {
@@ -505,8 +507,8 @@ const CheckoutViewWrapper = () => {
 
   return (
     <>
-      {isCheckoutReadyToRender && elementsOptions ? (
-        <Elements stripe={paymentService.getStripe()} options={{ ...elementsOptions }}>
+      {isCheckoutReadyToRender && elementsOptions && stripeSdk ? (
+        <Elements stripe={stripeSdk} options={{ ...elementsOptions }}>
           <CheckoutView
             checkoutViewVariables={state}
             userAuthComponentRef={userAuthComponentRef}
