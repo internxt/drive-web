@@ -1285,7 +1285,8 @@
     "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
     "errorPurchaseBusinessPlan": "Hai già un piano aziendale.",
     "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti.",
-    "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon"
+    "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon",
+    "invalidTaxIdIsProvided": "L'ID fiscale fornito non è valido"
   },
   "actions": {
     "undo": "Annulla",

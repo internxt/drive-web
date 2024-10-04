@@ -1296,7 +1296,8 @@
     "errorCreatingSubscription": "创建您的订阅时出现问题",
     "errorPurchaseBusinessPlan": "您已经有一个商业计划",
     "couponIsNotValidForUserError": "优惠券只能由新客户兑换。",
-    "errorApplyingCoupon": "应用优惠券时出错"
+    "errorApplyingCoupon": "应用优惠券时出错",
+    "invalidTaxIdIsProvided": "提供的税号无效"
   },
   "actions": {
     "undo": "撤销",
