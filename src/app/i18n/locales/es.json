@@ -176,6 +176,7 @@
       "selectedPlan": "Plan seleccionado",
       "numberOfUsers": "Número de usuarios: {{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* Se renueva en",
         "month": "mensual",
         "year": "anual",
         "lifetime": "lifetime"

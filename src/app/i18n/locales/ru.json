@@ -180,6 +180,7 @@
       "selectedPlan": "Выбранный план",
       "numberOfUsers": "Количество пользователей: {{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* Продлевается",
         "month": "ежемесячный",
         "year": "ежегодный",
         "lifetime": "пожизненный"
