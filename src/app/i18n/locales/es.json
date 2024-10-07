@@ -1263,7 +1263,9 @@
     "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes.",
     "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón",
     "foldersCannotBeUploadedToSharedFolder": "No se pueden subir carpetas a una carpeta compartida",
-    "errorDownloadingDesktopApp": "Algo salió mal al descargar la aplicación de escritorio"
+    "errorDownloadingDesktopApp": "Algo salió mal al descargar la aplicación de escritorio",
+    "errorWhileFetchingMoreItems": "Algo salió mal al obtener más elementos",
+    "errorDeletingItems": "Algo salió mal al eliminar este elemento"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",

@@ -1227,7 +1227,9 @@
     "couponIsNotValidForUserError": "Le coupon ne peut être utilisé que par de nouveaux clients.",
     "errorApplyingCoupon": "Une erreur s'est produite lors de l'application du coupon",
     "foldersCannotBeUploadedToSharedFolder": "Les dossiers ne peuvent pas être téléchargés dans des dossiers partagés",
-    "errorDownloadingDesktopApp": "Une erreur est survenue lors du téléchargement de l'application de bureau"
+    "errorDownloadingDesktopApp": "Une erreur est survenue lors du téléchargement de l'application de bureau",
+    "errorWhileFetchingMoreItems": "Une erreur est survenue lors de la récupération d'éléments supplémentaires",
+    "errorDeletingItems": "Une erreur est survenue lors de la suppression de cet élément"
   },
   "actions": {
     "undo": "Annuler",

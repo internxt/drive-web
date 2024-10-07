@@ -1267,7 +1267,9 @@
     "couponIsNotValidForUserError": "Купон может быть использован только новыми клиентами.",
     "errorApplyingCoupon": "Произошла ошибка при применении купона",
     "foldersCannotBeUploadedToSharedFolder": "Папки нельзя загружать в общие папки",
-    "errorDownloadingDesktopApp": "Произошла ошибка при загрузке настольного приложения"
+    "errorDownloadingDesktopApp": "Произошла ошибка при загрузке настольного приложения",
+    "errorWhileFetchingMoreItems": "Произошла ошибка при получении дополнительных элементов",
+    "errorDeletingItems": "Произошла ошибка при удалении этого элемента"
   },
   "actions": {
     "undo": "Отменить",
