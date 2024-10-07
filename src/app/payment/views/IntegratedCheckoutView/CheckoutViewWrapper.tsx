@@ -30,6 +30,7 @@ import CheckoutView from './CheckoutView';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import { getStripe } from '../../../newSettings/Sections/Account/Plans/api/plansApi';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
+import { loadStripeElements } from 'app/payment/utils/loadStripeElements';
 
 export const THEME_STYLES = {
   dark: {
@@ -203,7 +204,8 @@ const CheckoutViewWrapper = () => {
           if (promotionCode) {
             handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
           }
-          checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, plan);
+
+          loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, plan);
           stripe = await getStripe(stripe);
           const prices = await checkoutService.fetchPrices(plan.selectedPlan.type, currencyValue);
           setPrices(prices);
