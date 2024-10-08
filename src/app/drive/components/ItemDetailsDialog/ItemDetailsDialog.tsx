@@ -129,7 +129,7 @@ const ItemDetailsDialog = ({
     const uuid = item.isFolder ? item.uuid : item.folderUuid;
     const rootPathName = item.view;
 
-    const ancestors = await newStorageService.getFolderAncestors(uuid as string);
+    const ancestors = await newStorageService.getFolderAncestors(uuid as string, item.isShared);
 
     const getPathName = ancestors.map((ancestor) => getItemPlainName(ancestor as unknown as DriveItemData)).reverse();
 
