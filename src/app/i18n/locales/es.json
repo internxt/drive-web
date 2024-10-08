@@ -1262,6 +1262,9 @@
     "errorPurchaseBusinessPlan": "Ya tienes un plan para empresas",
     "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes.",
     "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón",
+    "invalidTaxIdIsProvided": "El ID fiscal proporcionado es inválido",
+    "errorWhileFetchingMoreItems": "Algo salió mal al obtener más elementos",
+    "errorDeletingItems": "Algo salió mal al eliminar este elemento",
     "foldersCannotBeUploadedToSharedFolder": "No se pueden subir carpetas a una carpeta compartida",
     "errorDownloadingDesktopApp": "Algo salió mal al descargar la aplicación de escritorio"
   },

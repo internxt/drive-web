@@ -1297,6 +1297,9 @@
     "errorPurchaseBusinessPlan": "您已经有一个商业计划",
     "couponIsNotValidForUserError": "优惠券只能由新客户兑换。",
     "errorApplyingCoupon": "应用优惠券时出错",
+    "errorWhileFetchingMoreItems": "获取更多项目时出现错误",
+    "errorDeletingItems": "删除此项目时出现错误",
+    "invalidTaxIdIsProvided": "提供的税号无效",
     "foldersCannotBeUploadedToSharedFolder": "无法将文件夹上传到共享文件夹",
     "errorDownloadingDesktopApp": "下载桌面应用时出现错误"
   },
