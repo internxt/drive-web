@@ -7,7 +7,7 @@ import Button from 'app/shared/components/Button/Button';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { InputsComponent } from './InputsComponent';
 
-interface CreateAccountComponentProps {
+interface CheckoutUserAuthProps {
   userData: {
     name: string;
     avatar: Blob | null;
@@ -21,7 +21,7 @@ interface CreateAccountComponentProps {
   onLogOut: () => void;
 }
 
-export const UserAuthComponent = ({
+export const CheckoutUserAuth = ({
   register,
   errors,
   authMethod,
@@ -29,7 +29,7 @@ export const UserAuthComponent = ({
   onAuthMethodToggled,
   userData,
   onLogOut,
-}: CreateAccountComponentProps) => {
+}: CheckoutUserAuthProps) => {
   const { translate } = useTranslationContext();
 
   const isUserSignedIn = authMethod === 'userIsSignedIn';
@@ -45,12 +45,21 @@ export const UserAuthComponent = ({
     signUp: translate('auth.signup.login'),
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
+
   return (
     <div className="flex flex-col space-y-8">
       <p className="text-2xl font-semibold text-gray-100">
         1. {translate(`checkout.authComponent.title.${authMethod}`)}
       </p>
-      <div className="flex flex-col space-y-4 rounded-2xl border border-gray-10 bg-surface p-5">
+      <div
+        onKeyDown={handleKeyDown}
+        className="flex flex-col space-y-4 rounded-2xl border border-gray-10 bg-surface p-5"
+      >
         {isUserSignedIn ? (
           <div className="flex w-full items-center justify-center">
             <div className="flex flex-col items-center gap-2.5">

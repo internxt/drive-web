@@ -197,6 +197,7 @@
       "selectedPlan": "选择的计划",
       "numberOfUsers": "用户数量：{{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* 续订日期为",
         "month": "每月",
         "year": "每年",
         "lifetime": "终身"

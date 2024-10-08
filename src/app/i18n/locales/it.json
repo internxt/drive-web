@@ -197,6 +197,7 @@
       "selectedPlan": "Piano selezionato",
       "numberOfUsers": "Numero di utenti: {{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* Si rinnova il",
         "month": "mensile",
         "year": "annuale",
         "lifetime": "a vita"

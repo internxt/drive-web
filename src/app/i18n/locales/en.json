@@ -194,6 +194,7 @@
     "paymentTitle": "Select a payment method",
     "productCard": {
       "renewalPeriod": {
+        "renewsAt": "* Renews at",
         "month": "month",
         "year": "year",
         "lifetime": "lifetime"
