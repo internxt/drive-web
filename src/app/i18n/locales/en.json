@@ -1298,6 +1298,7 @@
     "errorPurchaseBusinessPlan": "You already have a business plan.",
     "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers",
     "errorApplyingCoupon": "Something went wrong while applying the coupon",
+    "invalidTaxIdIsProvided": "The provided Tax ID is invalid",
     "errorWhileFetchingMoreItems": "Something went wrong while fetching more items",
     "errorDeletingItems": "Something went wrong while deleting this item"
   },
