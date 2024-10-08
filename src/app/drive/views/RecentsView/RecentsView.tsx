@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet-async';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import navigationService from '../../../core/services/navigation.service';
 import { AppDispatch, RootState } from '../../../store';
-import { storageSelectors } from '../../../store/slices/storage';
+import { storageActions, storageSelectors } from '../../../store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { DriveItemData } from '../../types';
 import { AppView } from '../../../core/types';
@@ -18,23 +18,22 @@ export interface RecentsViewProps {
 }
 
 const RecentsView = (props: RecentsViewProps) => {
+  const { items, isLoadingRecents, dispatch } = props;
   const { translate } = useTranslationContext();
+
   useEffect(() => {
+    dispatch(storageActions.clearSelectedItems());
     props.dispatch(storageThunks.resetNamePathThunk());
     refreshRecents();
   }, []);
 
   const refreshRecents = () => {
-    const { dispatch } = props;
-
     dispatch(storageThunks.fetchRecentsThunk());
   };
 
   const redirectToDrive = () => {
     navigationService.push(AppView.Drive);
   };
-
-  const { items, isLoadingRecents } = props;
 
   return (
     <>
@@ -46,6 +45,7 @@ const RecentsView = (props: RecentsViewProps) => {
         isLoading={isLoadingRecents}
         items={items}
         onFolderCreated={redirectToDrive}
+        onfetchItems={refreshRecents}
       />
     </>
   );

@@ -251,8 +251,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
     const itemId = itemToShare?.item.uuid ?? '';
 
-    const isItemNotSharedYet =
-      !isAdvancedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length && !sharingMeta;
+    const isItemNotSharedYet = !isAdvancedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length;
 
     if (!isItemNotSharedYet) {
       try {
