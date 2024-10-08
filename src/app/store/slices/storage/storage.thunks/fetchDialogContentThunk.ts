@@ -19,7 +19,10 @@ export const fetchDialogContentThunk = createAsyncThunk<void, string, { state: R
 
     const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
-    const [responsePromise] = storageClient.getFolderContentByUuid(folderId, false, workspaceCredentials?.tokenHeader);
+    const [responsePromise] = storageClient.getFolderContentByUuid({
+      folderUuid: folderId,
+      workspacesToken: workspaceCredentials?.tokenHeader,
+    });
     const databaseContent = await databaseService.get<DatabaseCollection.MoveDialogLevels>(
       DatabaseCollection.MoveDialogLevels,
       folderId,

@@ -7,13 +7,15 @@ import {
   SecurityDetails,
   TwoFactorAuthQR,
 } from '@internxt/sdk/dist/auth';
-import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
+import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
 import analyticsService from 'app/analytics/services/analytics.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import localStorageService from 'app/core/services/local-storage.service';
+import navigationService from 'app/core/services/navigation.service';
 import RealtimeService from 'app/core/services/socket.service';
+import { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -32,8 +34,6 @@ import databaseService from 'app/database/services/database.service';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   analyticsService.trackSignOut();
@@ -206,8 +206,6 @@ const updateCredentialsWithToken = async (
   const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
 
   const encryptedMnemonic = encryptTextWithKey(mnemonicInPlain, newPassword);
-  // const privateKey = Buffer.from(privateKeyInPlain, 'base64').toString();
-  // const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.changePasswordWithLink(
@@ -257,15 +255,16 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
-  const usersClient = SdkFactory.getInstance().createUsersClient();
+  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
 
   return usersClient
-    .changePassword(<ChangePasswordPayload>{
+    .changePassword(<ChangePasswordPayloadNew>{
       currentEncryptedPassword: encryptedCurrentPassword,
       newEncryptedPassword: encryptedNewPassword,
       newEncryptedSalt: encryptedNewSalt,
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
+      encryptVersion: '', // !TODO: Add the version used
     })
     .then((res) => {
       // !TODO: Add the correct analytics event  when change password is completed
