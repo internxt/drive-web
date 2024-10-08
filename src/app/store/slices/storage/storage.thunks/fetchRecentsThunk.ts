@@ -14,15 +14,14 @@ export const fetchRecentsThunk = createAsyncThunk<void, void, { state: RootState
   async (payload: void, { dispatch }) => {
     const fileExplorerConfig: AppFileExplorerConfig = configService.getAppConfig().fileExplorer;
     const recents = (await fileService.fetchRecents(fileExplorerConfig.recentsLimit)) as DriveItemData[];
-
-    const recentsWithoutHiddenFiles = excludeHiddenItems(recents);
-
-    const formattedRecents = recentsWithoutHiddenFiles.map((item) => ({
+    const formattedRecents = recents.map((item) => ({
       ...item,
       name: getItemPlainName(item),
     }));
 
-    dispatch(storageActions.setRecents(formattedRecents));
+    const recentsWithoutHiddenFiles = excludeHiddenItems(formattedRecents);
+
+    dispatch(storageActions.setRecents(recentsWithoutHiddenFiles));
   },
 );
 

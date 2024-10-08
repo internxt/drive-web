@@ -62,7 +62,7 @@ function encryptFilename(filename: string, folderId: number): string {
 }
 
 function excludeHiddenItems(items: DriveItemData[]): DriveItemData[] {
-  return items.filter((item) => !itemUtils.isHiddenItem({ name: item.plainName ?? item.plain_name }));
+  return items.filter((item) => !itemUtils.isHiddenItem(item));
 }
 
 function renameFile(file: File, newName: string): File {
