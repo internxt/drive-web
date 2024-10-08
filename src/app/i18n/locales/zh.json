@@ -1552,6 +1552,12 @@
           "remove": "删除",
           "removing": "去除"
         },
+        "leaveModal": {
+          "title": "离开工作区",
+          "description": "{{name}},您将无法访问工作区。其所有文件和文件夹将保持不变。",
+          "leave": "离开",
+          "leaving": "离开"
+        },
         "changePasswordModal": {
           "title": "请求更改密码",
           "description": "用户将收到一个建议更新其个人帐户密码的通知。如果您认为他们的密码可能已被泄露，请使用此功能。",
@@ -1610,6 +1616,7 @@
           "deactivate": "停用会员",
           "reactivate": "重新激活成员",
           "remove": "移除成員",
+          "leave": "离开工作区",
           "passwordChange": "请求更改密码"
         }
       },

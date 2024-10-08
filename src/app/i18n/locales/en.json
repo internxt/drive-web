@@ -1552,6 +1552,12 @@
           "remove": "Remove",
           "removing": "Removing"
         },
+        "leaveModal": {
+          "title": "Leave workspace",
+          "description": "{{name}}, you will lose access to the Workspace. All their files and folders will stay the same.",
+          "leave": "Leave",
+          "leaving": "Leaving"
+        },
         "changePasswordModal": {
           "title": "Request password change",
           "description": "User will receive a recommendation to update their personal account password. Use this function in case you believe their password may have been breached.",
@@ -1610,6 +1616,7 @@
           "deactivate": "Deactivate member",
           "reactivate": "Reactivate member",
           "remove": "Remove member",
+          "leave": "Leave workspace",
           "passwordChange": "Request password change"
         }
       },

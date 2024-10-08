@@ -1539,6 +1539,12 @@
           "remove": "Rimuovi",
           "removing": "Rimuovendo"
         },
+        "leaveModal": {
+          "title": "Lascia spazio di lavoro",
+          "description": "{{name}}, perderai l'accesso al spazio di lavoro. Tutti i loro file e cartelle rimarranno gli stessi.",
+          "leave": "Lascia",
+          "leaving": "Lascia"
+        },
         "changePasswordModal": {
           "title": "Richiedi cambio password",
           "description": "L'utente riceverà una raccomandazione per aggiornare la password del proprio account personale. Utilizza questa funzione se ritieni che la sua password possa essere stata compromessa.",
@@ -1597,6 +1603,7 @@
           "deactivate": "Disattiva membro",
           "reactivate": "Riattiva membro",
           "remove": "Rimuovi membro",
+          "leave": "Lascia spazio di lavoro",
           "passwordChange": "Richiedi la modifica della password"
         }
       },
