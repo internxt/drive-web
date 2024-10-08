@@ -17,6 +17,7 @@ import errorService from 'app/core/services/error.service';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
 import { AdvancedSharedItem } from 'app/share/types';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -72,6 +73,8 @@ const ItemDetailsDialog = ({
 }: {
   onDetailsButtonClicked: (item: AdvancedSharedItem | DriveItemData) => void;
 }) => {
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspace = !!selectedWorkspace;
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
@@ -128,8 +131,9 @@ const ItemDetailsDialog = ({
   ) {
     const uuid = item.isFolder ? item.uuid : item.folderUuid;
     const rootPathName = item.view;
+    const isDriveView = item.view === 'Drive';
 
-    const ancestors = await newStorageService.getFolderAncestors(uuid as string, item.isShared);
+    const ancestors = await newStorageService.getFolderAncestors(uuid as string, isWorkspace, item.isShared);
 
     const getPathName = ancestors.map((ancestor) => getItemPlainName(ancestor as unknown as DriveItemData)).reverse();
 
@@ -137,7 +141,7 @@ const ItemDetailsDialog = ({
       getPathName.pop();
     }
 
-    if (item.view === 'Drive') {
+    if (isDriveView && !isWorkspace) {
       getPathName.shift();
     }
 
