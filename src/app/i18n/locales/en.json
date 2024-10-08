@@ -4,19 +4,19 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Up to 75% OFF",
-    "title": "Time to switch to privacy!",
+    "label": "Save 80%",
+    "title": "Secure your digital world!",
     "subtitle": "Win our premium backpack with our lifetime plans.",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
-      "Save on all Internxt plans",
+      "Save big on all Internxt plans",
       "Safe and secure cloud storage",
-      "Zero-knowledge technology",
-      "Open source and audited",
+      "Open source and transparent",
       "End-to-end encrypted transfers",
-      "No unauthorized access"
+      "No unauthorized access",
+      "Offer ends October 31"
     ]
   },
   "valentinesBanner": {
