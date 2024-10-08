@@ -22,7 +22,7 @@ import PasswordStrengthIndicator from '../../../shared/components/PasswordStreng
 import { useSignUp } from './useSignUp';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import authService, { getNewToken } from '../../../auth/services/auth.service';
+import authService, { authenticateUser, getNewToken } from '../../../auth/services/auth.service';
 import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import paymentService from '../../../payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
@@ -143,37 +143,19 @@ function SignUp(props: SignUpProps): JSX.Element {
     try {
       const { isNewUser } = props;
       const { email, password, token } = formData;
-      const { xUser, xToken, mnemonic } = isNewUser
-        ? await doRegister(email, password, token)
-        : await updateInfo(email, password);
 
-      localStorageService.clear();
-
-      localStorageService.set('xToken', xToken);
-      localStorageService.set('xMnemonic', mnemonic);
-
-      const xNewToken = await getNewToken();
-      localStorageService.set('xNewToken', xNewToken);
-
-      const privateKey = xUser.privateKey
-        ? Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64')
-        : undefined;
-
-      const user = {
-        ...xUser,
-        privateKey,
-      } as UserSettings;
-
-      dispatch(userActions.setUser(user));
-      await dispatch(userThunks.initializeUserThunk());
-      dispatch(productsThunks.initializeThunk());
-      if (!redeemCodeObject) {
-        dispatch(planThunks.initializeThunk());
-      }
-
-      if (isNewUser) {
-        dispatch(referralsThunks.initializeThunk());
-      }
+      const { token: xToken, user: xUser } = await authenticateUser(
+        email,
+        password,
+        'signUp',
+        '',
+        dispatch,
+        'web',
+        token,
+        isNewUser,
+        redeemCodeObject !== undefined,
+        isNewUser ? doRegister : updateInfo,
+      );
 
       await analyticsService.trackSignUp(xUser.uuid, email);
 

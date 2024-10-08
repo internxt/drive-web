@@ -34,6 +34,20 @@ import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
+import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
+import { AppDispatch } from 'app/store';
+import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
+import { planThunks } from 'app/store/slices/plan';
+import { productsThunks } from 'app/store/slices/products';
+import { referralsThunks } from 'app/store/slices/referrals';
+import { AuthMethodTypes } from 'app/payment/types';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+
+type ProfileInfo = {
+  user: UserSettings;
+  token: string;
+  mnemonic: string;
+};
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   analyticsService.trackSignOut();
@@ -86,11 +100,7 @@ export const doLogin = async (
   password: string,
   twoFactorCode: string,
   loginType: 'web' | 'desktop' | undefined = 'web',
-): Promise<{
-  user: UserSettings;
-  token: string;
-  mnemonic: string;
-}> => {
+): Promise<ProfileInfo> => {
   const authClient = getAuthClient(loginType);
   const loginDetails: LoginDetails = {
     email: email.toLowerCase(),
@@ -410,9 +420,101 @@ export const unblockAccount = (token: string): Promise<void> => {
   return authClient.unblockAccount(token);
 };
 
+export const signUp = async (
+  doSignUp: RegisterFunction | UpdateInfoFunction,
+  email: string,
+  password: string,
+  token: string,
+  isNewUser: boolean,
+  redeemCodeObject: boolean,
+  dispatch: AppDispatch,
+) => {
+  const { xUser, xToken, mnemonic } = isNewUser
+    ? await (doSignUp as RegisterFunction)(email, password, token)
+    : await (doSignUp as UpdateInfoFunction)(email, password);
+
+  localStorageService.clear();
+
+  localStorageService.set('xToken', xToken);
+  localStorageService.set('xMnemonic', mnemonic);
+
+  const xNewToken = await getNewToken();
+  localStorageService.set('xNewToken', xNewToken);
+
+  const privateKey = xUser.privateKey
+    ? Buffer.from(decryptPrivateKey(xUser.privateKey, password)).toString('base64')
+    : undefined;
+
+  const user = {
+    ...xUser,
+    privateKey,
+  } as UserSettings;
+
+  dispatch(userActions.setUser(user));
+  await dispatch(userThunks.initializeUserThunk());
+  dispatch(productsThunks.initializeThunk());
+
+  if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
+  if (isNewUser) dispatch(referralsThunks.initializeThunk());
+  return { token: xToken, user: xUser, mnemonic };
+};
+
+export const logIn = async (
+  email: string,
+  password: string,
+  twoFactorCode: string,
+  dispatch: AppDispatch,
+  loginType: 'web' | 'desktop' | undefined = 'web',
+): Promise<ProfileInfo> => {
+  const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
+  dispatch(userActions.setUser(user));
+  window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
+
+  try {
+    dispatch(productsThunks.initializeThunk());
+    dispatch(planThunks.initializeThunk());
+    dispatch(referralsThunks.initializeThunk());
+    await dispatch(initializeUserThunk()).unwrap();
+    dispatch(workspaceThunks.fetchWorkspaces());
+    dispatch(workspaceThunks.checkAndSetLocalWorkspace());
+  } catch (e: unknown) {
+    const error = e as Error;
+
+    throw new Error(error.message);
+  }
+
+  userActions.setUser(user);
+
+  return { token, user, mnemonic };
+};
+
+export const authenticateUser = async (
+  email: string,
+  password: string,
+  authMethod: AuthMethodTypes,
+  twoFactorCode: string,
+  dispatch: AppDispatch,
+  loginType: 'web' | 'desktop' | undefined = 'web',
+  token = '',
+  isNewUser = true,
+  redeemCodeObject = false,
+  doSignUp?: RegisterFunction | UpdateInfoFunction,
+): Promise<ProfileInfo> => {
+  if (authMethod === 'signIn') {
+    const profileInfo = await logIn(email, password, twoFactorCode, dispatch, loginType);
+    window.rudderanalytics.track('User Signin', { email });
+    window.gtag('event', 'User Signin', { method: 'email' });
+    return profileInfo;
+  } else if (authMethod === 'signUp' && doSignUp) {
+    const profileInfo = await signUp(doSignUp, email, password, token, isNewUser, redeemCodeObject, dispatch);
+    return profileInfo;
+  } else {
+    throw new Error(`Unknown authMethod: ${authMethod}`);
+  }
+};
+
 const authService = {
   logOut,
-  doLogin,
   check2FANeeded: is2FANeeded,
   readReferalCookie,
   cancelAccount,
@@ -425,6 +527,9 @@ const authService = {
   resetAccountWithToken,
   requestUnblockAccount,
   unblockAccount,
+  logIn,
+  signUp,
+  authenticateUser,
 };
 
 export default authService;
