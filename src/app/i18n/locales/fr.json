@@ -1227,7 +1227,9 @@
     "errorPurchaseBusinessPlan": "Vous avez déjà un plan d'affaires.",
     "couponIsNotValidForUserError": "Le coupon ne peut être utilisé que par de nouveaux clients.",
     "errorApplyingCoupon": "Une erreur s'est produite lors de l'application du coupon",
-    "invalidTaxIdIsProvided": "Le numéro d'identification fiscale fourni est invalide"
+    "invalidTaxIdIsProvided": "Le numéro d'identification fiscale fourni est invalide",
+    "errorWhileFetchingMoreItems": "Une erreur est survenue lors de la récupération d'éléments supplémentaires",
+    "errorDeletingItems": "Une erreur est survenue lors de la suppression de cet élément"
   },
   "actions": {
     "undo": "Annuler",

@@ -13,7 +13,7 @@ export type ListItemMenu<T> = Array<
         keyboardShortcutIcon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
         keyboardShortcutText?: string;
       };
-      action: (target: T) => void;
+      action: (target: T) => void | Promise<void>;
       disabled?: (target: T) => boolean;
     }
   | undefined
