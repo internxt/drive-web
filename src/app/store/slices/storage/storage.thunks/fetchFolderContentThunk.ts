@@ -117,42 +117,6 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
   },
 );
 
-// export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
-//   'storage/fetchFolderContent',
-//   async (folderId, { dispatch }) => {
-//     const storageClient = SdkFactory.getInstance().createStorageClient();
-//     const [responsePromise] = storageClient.getFolderContent(folderId);
-//     const databaseContent = await databaseService.get<DatabaseCollection.Levels>(DatabaseCollection.Levels, folderId);
-
-//     dispatch(storageActions.resetOrder());
-
-//     if (databaseContent) {
-//       dispatch(
-//         storageActions.setItems({
-//           folderId,
-//           items: databaseContent,
-//         }),
-//       );
-//     } else {
-//       await responsePromise;
-//     }
-
-//     responsePromise.then((response) => {
-//       const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
-//       const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
-//       const parsedItems = items.map((item) => ({ ...item, plainName: item?.plain_name }));
-
-//       dispatch(
-//         storageActions.setItems({
-//           folderId,
-//           items: parsedItems,
-//         }),
-//       );
-//       databaseService.put(DatabaseCollection.Levels, folderId, parsedItems);
-//     });
-//   },
-// );
-
 export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
     .addCase(fetchPaginatedFolderContentThunk.pending, (state, action) => {

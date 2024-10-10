@@ -3,29 +3,25 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { excludeHiddenItems } from '../../../../crypto/services/utils';
+import { excludeHiddenItems, getItemPlainName } from '../../../../crypto/services/utils';
 import configService from '../../../../core/services/config.service';
 import fileService from '../../../../drive/services/file.service';
-import { DriveItemData } from '../../../../drive/types';
 import { AppFileExplorerConfig } from '../../../../core/types';
+import { DriveItemData } from 'app/drive/types';
 
 export const fetchRecentsThunk = createAsyncThunk<void, void, { state: RootState }>(
   'storage/fetchRecents',
   async (payload: void, { dispatch }) => {
     const fileExplorerConfig: AppFileExplorerConfig = configService.getAppConfig().fileExplorer;
-    const recents: DriveItemData[] = (await fileService.fetchRecents(
-      fileExplorerConfig.recentsLimit,
-    )) as DriveItemData[];
-
-    const recentsWithoutHiddenFiles = excludeHiddenItems(recents);
-
-    const recentsWithPlainNameParam = recentsWithoutHiddenFiles.map((item) => ({
+    const recents = (await fileService.fetchRecents(fileExplorerConfig.recentsLimit)) as DriveItemData[];
+    const formattedRecents = recents.map((item) => ({
       ...item,
-      plainName: item.plain_name,
+      name: getItemPlainName(item),
     }));
 
-    dispatch(storageActions.clearSelectedItems());
-    dispatch(storageActions.setRecents(recentsWithPlainNameParam));
+    const recentsWithoutHiddenFiles = excludeHiddenItems(formattedRecents);
+
+    dispatch(storageActions.setRecents(recentsWithoutHiddenFiles));
   },
 );
 

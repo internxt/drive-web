@@ -204,9 +204,9 @@ ListProps<T, F>): JSX.Element {
   }
 
   function onTopSelectionCheckboxClick() {
-    const atLeastOneItemSelected = selectedItems.length !== 0;
+    const areAllItemsSelected = selectedItems.length === items.length;
 
-    if (atLeastOneItemSelected) {
+    if (areAllItemsSelected) {
       unselectAllItems();
     } else {
       selectAllItems();

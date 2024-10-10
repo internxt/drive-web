@@ -99,8 +99,8 @@ export function deleteFile(fileData: DriveFileData): Promise<void> {
   });
 }
 
-async function fetchRecents(limit: number): Promise<DriveFileData[]> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
+async function fetchRecents(limit: number): Promise<StorageTypes.DriveFileData[]> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   return storageClient.getRecentFiles(limit);
 }
 

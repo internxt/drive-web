@@ -1,7 +1,7 @@
 import { useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
 import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
@@ -35,6 +35,7 @@ import {
   contextMenuWorkspaceFile,
   contextMenuWorkspaceFolder,
 } from './DriveItemContextMenu';
+import { skinSkeleton } from 'app/shared/Skeleton';
 
 interface DriveExplorerListProps {
   folderId: string;
@@ -107,7 +108,6 @@ const resetDriveOrder = ({
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll, forceLoading, roles } = props;
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
-  const [isAllSelectedEnabled, setIsAllSelectedEnabled] = useState(false);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
@@ -122,27 +122,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     isSelectedSharedItem;
 
   const { translate } = useTranslationContext();
-
-  useEffect(() => {
-    setIsAllSelectedEnabled(false);
-  }, [props.folderId]);
-
-  useEffect(() => {
-    const isAllItemsSelected = props.selectedItems.length === props.items.length;
-    const itemsLengthIsNotZero = props.items.length !== 0;
-
-    if (isAllItemsSelected && itemsLengthIsNotZero) {
-      setIsAllSelectedEnabled(true);
-    } else {
-      setIsAllSelectedEnabled(false);
-    }
-  }, [props.selectedItems]);
-
-  useEffect(() => {
-    if (isAllSelectedEnabled) {
-      dispatch(storageActions.selectItems(props.items));
-    }
-  }, [props.items.length]);
 
   const onSelectedItemsChanged = (changes: { props: DriveItemData; value: boolean }[]) => {
     let updatedSelectedItems = props.selectedItems;
@@ -568,13 +547,3 @@ export default connect((state: RootState) => ({
     state.ui.isItemDetailsDialogOpen ||
     state.ui.isPreferencesDialogOpen,
 }))(DriveExplorerList);
-
-const skinSkeleton = [
-  <div className="mr-3 flex w-full flex-row items-center space-x-4">
-    <div className="h-8 w-8 rounded-md bg-gray-5" />
-    <div className="h-4 w-full rounded bg-gray-5" />
-  </div>,
-  <div className="h-4 w-64 rounded bg-gray-5" />,
-  <div className="ml-3 h-4 w-24 rounded bg-gray-5" />,
-  <div className="ml-4 h-4 w-20 rounded bg-gray-5" />,
-];
