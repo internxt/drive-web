@@ -5,7 +5,7 @@ import { Check, SealPercent, X } from '@phosphor-icons/react';
 
 import { bytesToString } from '../../../drive/services/size.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { UpsellManagerProps } from '../../../payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
+import { UpsellManagerProps } from '../../views/IntegratedCheckoutView/CheckoutViewWrapper';
 import TextInput from '../../../share/components/ShareItemDialog/components/TextInput';
 import Button from '../../../shared/components/Button/Button';
 import { useThemeContext } from '../../../theme/ThemeProvider';
@@ -15,7 +15,7 @@ import { CouponCodeData, Currency, RequestedPlanData } from '../../types';
 import { SelectSeatsComponent } from './SelectSeatsComponent';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
-interface ProductFeaturesComponentProps {
+interface CheckoutProductCardProps {
   selectedPlan: RequestedPlanData;
   seatsForBusinessSubscription: number;
   upsellManager: UpsellManagerProps;
@@ -58,7 +58,7 @@ const getTextContent = (
   };
 };
 
-export const ProductFeaturesComponent = ({
+export const CheckoutProductCard = ({
   selectedPlan,
   couponCodeData,
   couponError,
@@ -67,12 +67,14 @@ export const ProductFeaturesComponent = ({
   onSeatsChange,
   onRemoveAppliedCouponCode,
   onCouponInputChange,
-}: ProductFeaturesComponentProps) => {
+}: CheckoutProductCardProps) => {
   const { translate, translateList } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const [couponName, setCouponName] = useState<string>('');
   const [openCouponCodeDropdown, setOpenCouponCodeDropdown] = useState<boolean>(false);
   const bytes = bytesToString(selectedPlan.bytes);
+  const currencySymbol = Currency[selectedPlan.currency];
+  const normalPriceAmount = selectedPlan.decimalAmount;
 
   const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
   const isBusiness = selectedPlan.type === UserType.Business;
@@ -84,8 +86,11 @@ export const ProductFeaturesComponent = ({
     translate,
     translateList,
   );
+  const renewalPeriodLabel = `${translate('checkout.productCard.renewalPeriod.renewsAt')}
+          ${currencySymbol}${normalPriceAmount}/${translate(
+    `checkout.productCard.renewalPeriod.${selectedPlan.interval}`,
+  )}`;
 
-  const normalPriceAmount = selectedPlan.decimalAmount;
   const planAmount = getProductAmount(selectedPlan.decimalAmount, 1, couponCodeData);
   const totalAmount = getProductAmount(selectedPlan.decimalAmount, seatsForBusinessSubscription, couponCodeData);
   const upsellPlanAmount =
@@ -134,7 +139,7 @@ export const ProductFeaturesComponent = ({
               {textContent.perUserLabel}
             </p>
             <p className="font-semibold">
-              {Currency[selectedPlan.currency]}
+              {currencySymbol}
               {planAmount}
             </p>
           </div>
@@ -149,7 +154,7 @@ export const ProductFeaturesComponent = ({
                 </p>
               </div>
               <p className="text-gray-50 line-through">
-                {Currency[selectedPlan.currency]}
+                {currencySymbol}
                 {normalPriceAmount}
               </p>
             </div>
@@ -170,7 +175,7 @@ export const ProductFeaturesComponent = ({
           <div className="flex flex-row items-center justify-between text-2xl font-semibold text-gray-100">
             <p>{textContent.totalLabel}</p>
             <p>
-              {Currency[selectedPlan.currency]}
+              {currencySymbol}
               {totalAmount}
             </p>
           </div>
@@ -197,7 +202,7 @@ export const ProductFeaturesComponent = ({
                   <div className="flex h-full rounded-lg bg-green/10 px-3 py-1">
                     <p className="text-sm text-green">
                       {translate('checkout.productCard.amountSaved')}
-                      {Currency[selectedPlan.currency]}
+                      {currencySymbol}
                       {upsellManager.amountSaved}
                     </p>
                   </div>
@@ -205,7 +210,7 @@ export const ProductFeaturesComponent = ({
                 </div>
                 <div className="flex flex-row items-center">
                   <p className="text-sm text-gray-80">
-                    {Currency[selectedPlan.currency]}
+                    {currencySymbol}
                     {upsellPlanAmount}/{translate('views.account.tabs.account.view.subscription.yearly')}
                   </p>
                 </div>
@@ -292,6 +297,7 @@ export const ProductFeaturesComponent = ({
           )}
         </div>
       </div>
+      {couponCodeData && selectedPlan.interval !== 'lifetime' && <p className="text-gray-60">{renewalPeriodLabel}</p>}
     </div>
   );
 };
