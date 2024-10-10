@@ -1,0 +1,108 @@
+diff --git a/node_modules/@internxt/sdk/.DS_Store b/node_modules/@internxt/sdk/.DS_Store
+new file mode 100644
+index 0000000..945abaa
+Binary files /dev/null and b/node_modules/@internxt/sdk/.DS_Store differ
+diff --git a/node_modules/@internxt/sdk/dist/auth/index.js b/node_modules/@internxt/sdk/dist/auth/index.js
+index 0389bcd..aa76d63 100644
+--- a/node_modules/@internxt/sdk/dist/auth/index.js
++++ b/node_modules/@internxt/sdk/dist/auth/index.js
+@@ -75,6 +75,8 @@ var Auth = /** @class */ (function () {
+             salt: registerDetails.salt,
+             privateKey: registerDetails.keys.privateKeyEncrypted,
+             publicKey: registerDetails.keys.publicKey,
++            privateKyberKey: registerDetails.keys.privateKyberKeyEncrypted,
++            publicKyberKey: registerDetails.keys.publicKyberKey,
+             revocationKey: registerDetails.keys.revocationCertificate,
+             referral: registerDetails.referral,
+             referrer: registerDetails.referrer,
+@@ -96,6 +98,8 @@ var Auth = /** @class */ (function () {
+             salt: registerDetails.salt,
+             privateKey: registerDetails.keys.privateKeyEncrypted,
+             publicKey: registerDetails.keys.publicKey,
++            privateKyberKey: registerDetails.keys.privateKyberKeyEncrypted,
++            publicKyberKey: registerDetails.keys.publicKyberKey,
+             revocationKey: registerDetails.keys.revocationCertificate,
+             referral: registerDetails.referral,
+             referrer: registerDetails.referrer,
+@@ -136,9 +140,11 @@ var Auth = /** @class */ (function () {
+                     case 1:
+                         securityDetails = _a.sent();
+                         encryptedSalt = securityDetails.encryptedSalt;
+-                        encryptedPasswordHash = cryptoProvider.encryptPasswordHash(details.password, encryptedSalt);
+-                        return [4 /*yield*/, cryptoProvider.generateKeys(details.password)];
++                        return [4 /*yield*/, cryptoProvider.encryptPasswordHash(details.password, encryptedSalt)];
+                     case 2:
++                        encryptedPasswordHash = _a.sent();
++                        return [4 /*yield*/, cryptoProvider.generateKeys(details.password)];
++                    case 3:
+                         keys = _a.sent();
+                         return [2 /*return*/, this.client
+                                 .post('/access', {
+@@ -148,6 +154,8 @@ var Auth = /** @class */ (function () {
+                                 privateKey: keys.privateKeyEncrypted,
+                                 publicKey: keys.publicKey,
+                                 revocateKey: keys.revocationCertificate,
++                                publicKyberKey: keys.publicKyberKey,
++                                privateKyberKey: keys.privateKyberKeyEncrypted,
+                             }, this.basicHeaders())
+                                 .then(function (data) {
+                                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+@@ -169,6 +177,8 @@ var Auth = /** @class */ (function () {
+             publicKey: keys.publicKey,
+             privateKey: keys.privateKeyEncrypted,
+             revocationKey: keys.revocationCertificate,
++            publicKyberKey: keys.publicKyberKey,
++            privateKyberKey: keys.privateKyberKeyEncrypted,
+         }, this.headersWithToken(token));
+     };
+     /**
+diff --git a/node_modules/@internxt/sdk/dist/auth/types.d.ts b/node_modules/@internxt/sdk/dist/auth/types.d.ts
+index c104ac5..d9ec1b8 100644
+--- a/node_modules/@internxt/sdk/dist/auth/types.d.ts
++++ b/node_modules/@internxt/sdk/dist/auth/types.d.ts
+@@ -33,9 +33,11 @@ export interface Keys {
+     privateKeyEncrypted: string;
+     publicKey: string;
+     revocationCertificate: string;
++    publicKyberKey: string;
++    privateKyberKeyEncrypted: string;
+ }
+ export interface CryptoProvider {
+-    encryptPasswordHash: (password: Password, encryptedSalt: string) => string;
++    encryptPasswordHash: (password: Password, encryptedSalt: string) => Promise<string>;
+     generateKeys: (password: Password) => Promise<Keys>;
+ }
+ export declare class UserAccessError extends Error {
+diff --git a/node_modules/@internxt/sdk/dist/drive/users/types.d.ts b/node_modules/@internxt/sdk/dist/drive/users/types.d.ts
+index 60143e8..f6038c6 100644
+--- a/node_modules/@internxt/sdk/dist/drive/users/types.d.ts
++++ b/node_modules/@internxt/sdk/dist/drive/users/types.d.ts
+@@ -15,6 +15,7 @@ export interface ChangePasswordPayload {
+ export declare type UpdateProfilePayload = Partial<Pick<UserSettings, 'name' | 'lastname'>>;
+ export declare type PreCreateUserResponse = {
+     publicKey: string;
++    publicKyberKey: string;
+     user: {
+         uuid: UUID;
+         email: string;
+@@ -28,6 +29,7 @@ export declare type FriendInvite = {
+ };
+ export declare type UserPublicKeyResponse = {
+     publicKey: string;
++    publicKyberKey: string;
+ };
+ export declare type VerifyEmailChangeResponse = {
+     oldEmail: string;
+diff --git a/node_modules/@internxt/sdk/dist/shared/types/userSettings.d.ts b/node_modules/@internxt/sdk/dist/shared/types/userSettings.d.ts
+index 1a78d69..b855661 100644
+--- a/node_modules/@internxt/sdk/dist/shared/types/userSettings.d.ts
++++ b/node_modules/@internxt/sdk/dist/shared/types/userSettings.d.ts
+@@ -18,6 +18,8 @@ export interface UserSettings {
+     mnemonic: string;
+     privateKey: string;
+     publicKey: string;
++    privateKyberKey: string;
++    publicKyberKey: string;
+     revocationKey: string;
+     teams?: boolean;
+     appSumoDetails: AppSumoDetails | null;

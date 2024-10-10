@@ -596,6 +596,7 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
       decryptedKey = await decryptMessageWithPrivateKey({
         encryptedMessage: atob(encryptionKey),
         privateKeyInBase64: user.privateKey,
+        privateKyberKeyBase64: user.privateKyberKey,
       });
     } catch (err) {
       decryptedKey = user.mnemonic;
