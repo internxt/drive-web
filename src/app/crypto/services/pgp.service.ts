@@ -30,10 +30,20 @@ export async function generateNewKeys(): Promise<{
     privateKyberKeyBase64: Buffer.from(privateKyberKey).toString('base64'),
   };
 }
+
+/**
+ * XORs two strings of the identical length
+ * @param {string} a The first string
+ * @param {string} b The second string
+ * @returns {string} The result of XOR of strings a and b.
+ */
 export function XORhex(a: string, b: string): string {
   let res = '',
     i = a.length,
     j = b.length;
+  if (i != j) {
+    throw new Error('Can XOR only strings with identical length');
+  }
   while (i-- > 0 && j-- > 0) res = (parseInt(a.charAt(i), 16) ^ parseInt(b.charAt(j), 16)).toString(16) + res;
   return res;
 }
@@ -47,6 +57,9 @@ export const encryptMessageWithPublicKey = async ({
   publicKeyInBase64: string;
   publicKyberKeyBase64: string;
 }): Promise<string> => {
+  if (message.length != 32) {
+    return Promise.reject(new Error('The message should be 256 bits'));
+  }
   const openpgp = await getOpenpgp();
   const kem = await kemBuilder();
 
@@ -54,10 +67,11 @@ export const encryptMessageWithPublicKey = async ({
   const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
 
   const publicKyberKey = Buffer.from(publicKyberKeyBase64, 'base64');
-  const { ciphertext, sharedSecret: secret } = await kem.encapsulate(publicKyberKey);
+  const { ciphertext, sharedSecret: secret } = await kem.encapsulate(new Uint8Array(publicKyberKey));
   const kyberCiphertextStr = Buffer.from(ciphertext).toString('base64');
   const secretHex = Buffer.from(secret).toString('hex');
   const messageHex = Buffer.from(message).toString('hex');
+  console.log(`secret length is ${secret.length} and hex len is ${secretHex.length}`);
 
   // message should be the same length as secret, which is 256 bits
   const xoredMessage = XORhex(messageHex, secretHex);
@@ -92,7 +106,10 @@ export const decryptMessageWithPrivateKey = async ({
 
   const privateKyberKey = Buffer.from(privateKyberKeyBase64, 'base64');
   const kyberCiphertext = Buffer.from(kyberCiphertextBase64, 'base64');
-  const { sharedSecret: secret } = await kem.decapsulate(kyberCiphertext, privateKyberKey);
+  const { sharedSecret: secret } = await kem.decapsulate(
+    new Uint8Array(kyberCiphertext),
+    new Uint8Array(privateKyberKey),
+  );
   const secretHex = Buffer.from(secret).toString('hex');
 
   const message = await openpgp.readMessage({
