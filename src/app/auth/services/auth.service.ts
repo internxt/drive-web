@@ -33,7 +33,7 @@ import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
 import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
+import AppError, { AppView } from 'app/core/types';
 import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
 import { AppDispatch } from 'app/store';
 import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
@@ -100,7 +100,7 @@ export const is2FANeeded = async (email: string): Promise<boolean> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
     analyticsService.signInAttempted(email, error.message);
-    throw new Error(error.message ?? 'Login error');
+    throw new AppError(error.message ?? 'Login error', error.status ?? 500);
   });
 
   return securityDetails.tfaEnabled;

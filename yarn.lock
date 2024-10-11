@@ -1612,10 +1612,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@^1.5.16":
-  version "1.5.16"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.5.16/6449a68049a83e9820cc59791d3fc239e32aa715#6449a68049a83e9820cc59791d3fc239e32aa715"
-  integrity sha512-e6anhV6PL04M+kEshBvHgjNMFUz2qylLwvhWzk4csEA/iBZHEJ5FeKN7RKcnP6XDuAjPKIYB2Vz3mnNdq3w/iA==
+"@internxt/sdk@^1.5.17":
+  version "1.5.17"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.5.17/a08d06a5bbb603cecb0ba71f6114701ff91e9ab2#a08d06a5bbb603cecb0ba71f6114701ff91e9ab2"
+  integrity sha512-s9uw1l2EIbHNR8qZ8mCYYIkqU6mXharS9SK3e67NuLuzmWDJYd4Tei/wpVu4DGrSH4AvVGoIIeSFQAshLnI2Zg==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
@@ -2365,7 +2365,7 @@
   dependencies:
     tslib "^2.4.0"
 
-"@testing-library/dom@^7.26.0", "@testing-library/dom@^7.28.1":
+"@testing-library/dom@^7.26.0":
   version "7.31.2"
   resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-7.31.2.tgz#df361db38f5212b88555068ab8119f5d841a8c4a"
   integrity sha512-3UqjCpey6HiTZT92vODYLPxTBWlM8ZOOjr3LX5F37/VRipW2M1kX6I/Cm4VXzteZqfGfagg8yXywpcOgQBlNsQ==
@@ -2393,13 +2393,12 @@
     lodash "^4.17.15"
     redent "^3.0.0"
 
-"@testing-library/react@^11.1.0":
-  version "11.2.7"
-  resolved "https://registry.yarnpkg.com/@testing-library/react/-/react-11.2.7.tgz#b29e2e95c6765c815786c0bc1d5aed9cb2bf7818"
-  integrity sha512-tzRNp7pzd5QmbtXNG/mhdcl7Awfu/Iz1RaVHY75zTdOkmHCuzMhRL83gWHSgOAcjS3CCbyfwUHMZgRJb4kAfpA==
+"@testing-library/react@^16.0.1":
+  version "16.0.1"
+  resolved "https://registry.yarnpkg.com/@testing-library/react/-/react-16.0.1.tgz#29c0ee878d672703f5e7579f239005e4e0faa875"
+  integrity sha512-dSmwJVtJXmku+iocRhWOUFbrERC76TX2Mnf0ATODz8brzAZrMBbzLwQixlBSanZxR6LddK3eiwpSFZgDET1URg==
   dependencies:
     "@babel/runtime" "^7.12.5"
-    "@testing-library/dom" "^7.28.1"
 
 "@testing-library/user-event@^12.1.10":
   version "12.8.3"

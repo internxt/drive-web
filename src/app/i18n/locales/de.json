@@ -4,19 +4,19 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Bis zu 75% Rabatt",
-    "title": "Zeit, auf Privatsphäre umzusteigen!",
-    "subtitle": "Gewinnen Sie unseren Premium-Rucksack mit unseren Lebenszeitplänen.",
-    "cta": "Plan wählen",
-    "guarantee": "30-Tage-Geld-zurück-Garantie",
+    "label": "Sparen Sie 80%",
+    "title": "Sichern Sie Ihre digitale Welt!",
+    "subtitle": "Gewinnen Sie unseren Premium-Rucksack mit unseren lebenslangen Plänen.",
+    "cta": "Plan auswählen",
+    "guarantee": "30 Tage Geld-zurück-Garantie",
     "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
     "features": [
-      "Sparen Sie bei allen Internxt-Plänen",
+      "Große Einsparungen bei allen Internxt-Plänen",
       "Sicherer und geschützter Cloud-Speicher",
-      "Zero-Knowledge-Technologie",
-      "Open Source und geprüft",
-      "Ende-zu-Ende verschlüsselte Übertragungen",
-      "Kein unbefugter Zugriff"
+      "Open Source und transparent",
+      "End-to-End-verschlüsselte Übertragungen",
+      "Kein unbefugter Zugriff",
+      "Angebot endet am 31. Oktober"
     ]
   },
   "valentinesBanner": {
@@ -60,7 +60,8 @@
       "dontHaveAccount": "Sie haben kein Konto?",
       "createAccount": "Konto erstellen",
       "2FA": "Zwei-Faktor-Code",
-      "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode"
+      "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode",
+      "wrongLogin": "Ungültiger Benutzername oder Passwort"
     },
     "signup": {
       "title": "Konto erstellen",
@@ -174,6 +175,7 @@
       "selectedPlan": "Ausgewählter Plan",
       "numberOfUsers": "Anzahl der Benutzer: {{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* Verlängert sich am",
         "month": "monatlich",
         "year": "jährlich",
         "lifetime": "lebenslang"
@@ -1243,7 +1245,10 @@
     "couponIsNotValidForUserError": "Der Gutschein kann nur von neuen Kunden eingelöst werden.",
     "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten",
     "foldersCannotBeUploadedToSharedFolder": "Ordner können nicht in freigegebene Ordner hochgeladen werden",
-    "errorDownloadingDesktopApp": "Beim Herunterladen der Desktop-App ist ein Fehler aufgetreten"
+    "errorDownloadingDesktopApp": "Beim Herunterladen der Desktop-App ist ein Fehler aufgetreten",
+    "invalidTaxIdIsProvided": "Die angegebene Steuernummer ist ungültig",
+    "errorWhileFetchingMoreItems": "Beim Abrufen weiterer Elemente ist ein Fehler aufgetreten",
+    "errorDeletingItems": "Beim Löschen dieses Elements ist ein Fehler aufgetreten"
   },
   "actions": {
     "undo": "Rückgängig machen",
@@ -1494,6 +1499,12 @@
           "remove": "Entfernen",
           "removing": "Entfernen läuft"
         },
+        "leaveModal": {
+          "title": "Arbeitsbereich verlassen",
+          "description": "{{name}}, Sie verlieren den Zugriff auf den Arbeitsbereich. Alle ihre Dateien und Ordner bleiben unverändert.",
+          "leave": "Verlassen",
+          "leaving": "Jetzt verlassen"
+        },
         "changePasswordModal": {
           "title": "Passwortänderung anfordern",
           "description": "Der Benutzer erhält eine Empfehlung, sein persönliches Kontopasswort zu aktualisieren. Verwenden Sie diese Funktion, wenn Sie glauben, dass sein Passwort möglicherweise kompromittiert wurde.",
@@ -1552,6 +1563,7 @@
           "deactivate": "Mitglied deaktivieren",
           "reactivate": "Mitglied reaktivieren",
           "remove": "Mitglied entfernen",
+          "leave": "Arbeitsbereich verlassen",
           "passwordChange": "Passwortänderung anfordern"
         }
       },

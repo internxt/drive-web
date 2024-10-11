@@ -4,19 +4,19 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "高达75%的折扣",
-    "title": "是时候转向隐私了！",
-    "subtitle": "赢取我们的高级背包与我们的终身计划。",
+    "label": "节省 80%",
+    "title": "保护你的数字世界！",
+    "subtitle": "通过我们的终身计划赢取我们的高级背包。",
     "cta": "选择计划",
     "guarantee": "30天退款保证",
-    "lastCta": "*仅限新客户或免费账户的优惠",
+    "lastCta": "*优惠仅适用于免费账户或新客户",
     "features": [
-      "节省所有Internxt计划的费用",
+      "所有 Internxt 计划大幅优惠",
       "安全可靠的云存储",
-      "零知识技术",
-      "开源并经过审计",
+      "开源且透明",
       "端到端加密传输",
-      "无未授权访问"
+      "无未经授权的访问",
+      "优惠截止至10月31日"
     ]
   },
   "valentinesBanner": {
@@ -81,7 +81,8 @@
       "dontHaveAccount": "没有账户？",
       "createAccount": "创建账户",
       "2FA": "双因素代码",
-      "twoFactorAuthenticationCode": "双因素验证码"
+      "twoFactorAuthenticationCode": "双因素验证码",
+      "wrongLogin": "用户名或密码无效"
     },
     "signup": {
       "title": "创建账户",
@@ -197,6 +198,7 @@
       "selectedPlan": "选择的计划",
       "numberOfUsers": "用户数量：{{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* 续订日期为",
         "month": "每月",
         "year": "每年",
         "lifetime": "终身"
@@ -1298,7 +1300,10 @@
     "couponIsNotValidForUserError": "优惠券只能由新客户兑换。",
     "errorApplyingCoupon": "应用优惠券时出错",
     "foldersCannotBeUploadedToSharedFolder": "无法将文件夹上传到共享文件夹",
-    "errorDownloadingDesktopApp": "下载桌面应用时出现错误"
+    "errorDownloadingDesktopApp": "下载桌面应用时出现错误",
+    "errorWhileFetchingMoreItems": "获取更多项目时出现错误",
+    "errorDeletingItems": "删除此项目时出现错误",
+    "invalidTaxIdIsProvided": "提供的税号无效"
   },
   "actions": {
     "undo": "撤销",
@@ -1552,6 +1557,12 @@
           "remove": "删除",
           "removing": "去除"
         },
+        "leaveModal": {
+          "title": "离开工作区",
+          "description": "{{name}},您将无法访问工作区。其所有文件和文件夹将保持不变。",
+          "leave": "离开",
+          "leaving": "离开"
+        },
         "changePasswordModal": {
           "title": "请求更改密码",
           "description": "用户将收到一个建议更新其个人帐户密码的通知。如果您认为他们的密码可能已被泄露，请使用此功能。",
@@ -1610,6 +1621,7 @@
           "deactivate": "停用会员",
           "reactivate": "重新激活成员",
           "remove": "移除成員",
+          "leave": "离开工作区",
           "passwordChange": "请求更改密码"
         }
       },

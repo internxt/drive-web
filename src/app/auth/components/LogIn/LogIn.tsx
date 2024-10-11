@@ -29,6 +29,8 @@ import PasswordInput from '../PasswordInput/PasswordInput';
 import TextInput from '../TextInput/TextInput';
 import { AuthMethodTypes } from 'app/payment/types';
 
+const UNAUTHORIZED_STATUS_CODE = 401;
+
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
     text,
@@ -92,6 +94,14 @@ export default function LogIn(): JSX.Element {
     () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
     [],
   );
+
+  const getLoginErrorMessage = (err: unknown): string => {
+    const appError = err as AppError;
+    if (appError?.status === UNAUTHORIZED_STATUS_CODE) {
+      return translate('auth.login.wrongLogin');
+    }
+    return appError?.message || 'An unexpected error occurred';
+  };
 
   const {
     register,
@@ -160,7 +170,7 @@ export default function LogIn(): JSX.Element {
         navigationService.history.push(`/activate/${email}`);
       }
 
-      setLoginError([castedError.message]);
+      setLoginError([getLoginErrorMessage(err)]);
       setShowErrors(true);
       if ((err as AppError)?.status === 403) {
         await sendUnblockAccountEmail(email);

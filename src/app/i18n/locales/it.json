@@ -9,19 +9,19 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Fino al 75% di sconto",
-    "title": "È il momento di passare alla privacy!",
+    "label": "Risparmia l'80%",
+    "title": "Proteggi il tuo mondo digitale!",
     "subtitle": "Vinci il nostro zaino premium con i nostri piani a vita.",
     "cta": "Scegli il piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
-    "lastCta": "*Offerta valida per conti gratuiti o nuovi clienti",
+    "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
     "features": [
-      "Risparmia su tutti i piani di Internxt",
+      "Risparmia tanto su tutti i piani Internxt",
       "Archiviazione cloud sicura e protetta",
-      "Tecnologia a conoscenza zero",
-      "Open source e verificato",
+      "Open source e trasparente",
       "Trasferimenti criptati end-to-end",
-      "Nessun accesso non autorizzato"
+      "Nessun accesso non autorizzato",
+      "Offerta valida fino al 31 ottobre"
     ]
   },
   "banner": {
@@ -81,7 +81,8 @@
       "dontHaveAccount": "Non hai un account?",
       "createAccount": "Creare un account",
       "2FA": "Codice a due fattori",
-      "twoFactorAuthenticationCode": "Codice di autenticazione a due fattori"
+      "twoFactorAuthenticationCode": "Codice di autenticazione a due fattori",
+      "wrongLogin": "Nome utente o password non validi"
     },
     "signup": {
       "title": "Creare un account",
@@ -197,6 +198,7 @@
       "selectedPlan": "Piano selezionato",
       "numberOfUsers": "Numero di utenti: {{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* Si rinnova il",
         "month": "mensile",
         "year": "annuale",
         "lifetime": "a vita"
@@ -1287,7 +1289,10 @@
     "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti.",
     "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon",
     "foldersCannotBeUploadedToSharedFolder": "Le cartelle non possono essere caricate nelle cartelle condivise",
-    "errorDownloadingDesktopApp": "Qualcosa è andato storto durante il download dell'app desktop"
+    "errorDownloadingDesktopApp": "Qualcosa è andato storto durante il download dell'app desktop",
+    "invalidTaxIdIsProvided": "L'ID fiscale fornito non è valido",
+    "errorWhileFetchingMoreItems": "Qualcosa è andato storto durante il recupero di ulteriori elementi",
+    "errorDeletingItems": "Qualcosa è andato storto durante l'eliminazione di questo elemento"
   },
   "actions": {
     "undo": "Annulla",
@@ -1539,6 +1544,12 @@
           "remove": "Rimuovi",
           "removing": "Rimuovendo"
         },
+        "leaveModal": {
+          "title": "Lascia spazio di lavoro",
+          "description": "{{name}}, perderai l'accesso al spazio di lavoro. Tutti i loro file e cartelle rimarranno gli stessi.",
+          "leave": "Lascia",
+          "leaving": "Lascia"
+        },
         "changePasswordModal": {
           "title": "Richiedi cambio password",
           "description": "L'utente riceverà una raccomandazione per aggiornare la password del proprio account personale. Utilizza questa funzione se ritieni che la sua password possa essere stata compromessa.",
@@ -1597,6 +1608,7 @@
           "deactivate": "Disattiva membro",
           "reactivate": "Riattiva membro",
           "remove": "Rimuovi membro",
+          "leave": "Lascia spazio di lavoro",
           "passwordChange": "Richiedi la modifica della password"
         }
       },

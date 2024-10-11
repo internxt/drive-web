@@ -4,19 +4,19 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Jusqu'à 75% de réduction",
-    "title": "Il est temps de passer à la confidentialité !",
+    "label": "Économisez 80%",
+    "title": "Sécurisez votre monde numérique!",
     "subtitle": "Gagnez notre sac à dos premium avec nos plans à vie.",
     "cta": "Choisir un plan",
     "guarantee": "Garantie de remboursement de 30 jours",
-    "lastCta": "*Offre valable pour les comptes gratuits ou les nouveaux clients",
+    "lastCta": "*L'offre est destinée aux comptes gratuits ou aux nouveaux clients",
     "features": [
-      "Économisez sur tous les plans Internxt",
+      "Économisez gros sur tous les plans Internxt",
       "Stockage cloud sûr et sécurisé",
-      "Technologie sans connaissance",
-      "Open source et audité",
+      "Open source et transparent",
       "Transferts cryptés de bout en bout",
-      "Aucun accès non autorisé"
+      "Pas d'accès non autorisé",
+      "Offre valable jusqu'au 31 octobre"
     ]
   },
   "valentinesBanner": {
@@ -60,7 +60,8 @@
       "dontHaveAccount": "Vous n'avez pas de compte ?",
       "createAccount": "Créer un compte",
       "2FA": "Code à deux facteurs",
-      "twoFactorAuthenticationCode": "Code d'authentification à deux facteurs"
+      "twoFactorAuthenticationCode": "Code d'authentification à deux facteurs",
+      "wrongLogin": "Nom d'utilisateur ou mot de passe invalide"
     },
     "signup": {
       "title": "Créer un compte",
@@ -180,6 +181,7 @@
       "selectedPlan": "Plan sélectionné",
       "numberOfUsers": "Nombre d'utilisateurs : {{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* Se renouvelle le",
         "month": "mensuel",
         "year": "annuel",
         "lifetime": "à vie"
@@ -1227,7 +1229,10 @@
     "couponIsNotValidForUserError": "Le coupon ne peut être utilisé que par de nouveaux clients.",
     "errorApplyingCoupon": "Une erreur s'est produite lors de l'application du coupon",
     "foldersCannotBeUploadedToSharedFolder": "Les dossiers ne peuvent pas être téléchargés dans des dossiers partagés",
-    "errorDownloadingDesktopApp": "Une erreur est survenue lors du téléchargement de l'application de bureau"
+    "errorDownloadingDesktopApp": "Une erreur est survenue lors du téléchargement de l'application de bureau",
+    "invalidTaxIdIsProvided": "Le numéro d'identification fiscale fourni est invalide",
+    "errorWhileFetchingMoreItems": "Une erreur est survenue lors de la récupération d'éléments supplémentaires",
+    "errorDeletingItems": "Une erreur est survenue lors de la suppression de cet élément"
   },
   "actions": {
     "undo": "Annuler",
@@ -1479,6 +1484,12 @@
           "remove": "Supprimer",
           "removing": "Suppression"
         },
+        "leaveModal": {
+          "title": "Quitter l'espace de travail",
+          "description": "{{name}}, vous perdrez l'accès à l'espace de travail. Tous leurs fichiers et dossiers resteront inchangés.",
+          "leave": "Partir",
+          "leaving": "Sortie"
+        },
         "changePasswordModal": {
           "title": "Demander un changement de mot de passe",
           "description": "L'utilisateur recevra une recommandation pour mettre à jour le mot de passe de son compte personnel. Utilisez cette fonction si vous pensez que son mot de passe pourrait avoir été compromis.",
@@ -1537,6 +1548,7 @@
           "deactivate": "Désactiver le membre",
           "reactivate": "Réactiver le membre",
           "remove": "Supprimer le membre",
+          "leave": "Quitter l'espace de travail",
           "passwordChange": "Demande de changement de mot de passe"
         }
       },

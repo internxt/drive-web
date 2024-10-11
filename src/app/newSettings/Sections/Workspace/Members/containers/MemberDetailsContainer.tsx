@@ -4,18 +4,23 @@ import errorService from 'app/core/services/error.service';
 import workspacesService from 'app/core/services/workspace.service';
 import Usage from 'app/newSettings/components/Usage/Usage';
 import { getMemberRole } from 'app/newSettings/utils/membersUtils';
+import { useAppSelector } from 'app/store/hooks';
+import { planThunks } from 'app/store/slices/plan';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import { MemberRole, Teams, TypeTabs } from '../../../../types/types';
 import ActivityTab from '../components/ActivityTab';
 import DeactivateMemberModal from '../components/DeactivateModal';
+import LeaveMemberModal from '../components/LeaveModal';
 import ReactivateMemberModal from '../components/ReactivateModal';
+import RemoveMemberModal from '../components/RemoveModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import TeamsTab from '../components/TeamsTab';
 import UserCard from '../components/UserCard';
-import RemoveMemberModal from '../components/RemoveModal';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;
@@ -25,17 +30,24 @@ interface MemberDetailsContainer {
 }
 
 const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselectMember }: MemberDetailsContainer) => {
+  const dispatch = useDispatch();
   const { translate } = useTranslationContext();
+  const user = useAppSelector((state) => state.user.user);
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState<boolean>(false);
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = useState<boolean>(false);
   const [isDeactivatingMember, setIsDeactivatingMember] = useState<boolean>(false);
   const [isReactivateModalOpen, setIsReactivateModalOpen] = useState<boolean>(false);
   const [isReactivatingMember, setIsReactivatingMember] = useState<boolean>(false);
   const [isRemovingMember, setIsRemovingMember] = useState<boolean>(false);
+  const [isLeavingMember, setIsLeavingMember] = useState<boolean>(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState<boolean>(false);
   const [isRequestChangePasswordModalOpen, setIsRequestChangePasswordModalOpen] = useState<boolean>(false);
   const [isSendingPasswordRequest, setIsSendingPasswordRequest] = useState<boolean>(false);
   const [memberRole, setMemberRole] = useState<MemberRole>('current');
+  const isCurrentUser = user ? member.member.uuid === user.uuid : false;
+  const isMemberOwner = isOwner || member.isOwner;
+  const displayGuestOptions = !isMemberOwner && isCurrentUser;
 
   useEffect(() => {
     const memberRole = getMemberRole(member);
@@ -81,6 +93,22 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
       setIsRemovingMember(false);
       setIsRemoveModalOpen(false);
       deselectMember();
+    }
+  };
+
+  const leaveMember = async () => {
+    try {
+      setIsLeavingMember(true);
+      await workspacesService.leaveWorkspace(member.workspaceId);
+    } catch (error) {
+      errorService.reportError(error);
+    } finally {
+      setIsLeavingMember(false);
+      setIsLeaveModalOpen(false);
+      deselectMember();
+      dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: null }));
+      dispatch(workspaceThunks.fetchWorkspaces());
+      dispatch(planThunks.fetchBusinessLimitUsageThunk());
     }
   };
 
@@ -197,6 +225,29 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
             )}
           </div>
         )}
+
+        {displayGuestOptions && (
+          <div className="relative flex items-center justify-end">
+            <button
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-10 bg-gray-5 shadow-sm"
+              onClick={() => setIsOptionsOpen(!isOptionsOpen)}
+            >
+              <DotsThreeVertical size={24} />
+            </button>
+            {isOptionsOpen && (
+              <button onClick={() => setIsOptionsOpen(false)} className="absolute flex h-full w-full">
+                <div className="absolute right-0 top-16 flex flex-col items-center justify-center rounded-md border border-gray-10 bg-gray-5 shadow-sm">
+                  <button
+                    onClick={() => setIsLeaveModalOpen(true)}
+                    className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"
+                  >
+                    <span className="truncate">{translate('preferences.workspace.members.actions.leave')}</span>
+                  </button>
+                </div>
+              </button>
+            )}
+          </div>
+        )}
       </div>
       <Card className={' w-full space-y-6 '}>
         {member ? (
@@ -247,6 +298,13 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
         onClose={() => setIsRemoveModalOpen(false)}
         onRemove={removeMember}
         isLoading={isRemovingMember}
+      />
+      <LeaveMemberModal
+        name={member.member.name + ' ' + member.member.lastname}
+        isOpen={isLeaveModalOpen}
+        onClose={() => setIsLeaveModalOpen(false)}
+        onLeave={leaveMember}
+        isLoading={isLeavingMember}
       />
     </div>
   );
