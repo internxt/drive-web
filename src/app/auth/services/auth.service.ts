@@ -49,6 +49,37 @@ type ProfileInfo = {
   mnemonic: string;
 };
 
+type SignUpParams = {
+  doSignUp: RegisterFunction | UpdateInfoFunction;
+  email: string;
+  password: string;
+  token: string;
+  isNewUser: boolean;
+  redeemCodeObject: boolean;
+  dispatch: AppDispatch;
+};
+
+type LogInParams = {
+  email: string;
+  password: string;
+  twoFactorCode: string;
+  dispatch: AppDispatch;
+  loginType?: 'web' | 'desktop';
+};
+
+export type AuthenticateUserParams = {
+  email: string;
+  password: string;
+  authMethod: AuthMethodTypes;
+  twoFactorCode: string;
+  dispatch: AppDispatch;
+  loginType?: 'web' | 'desktop';
+  token?: string;
+  isNewUser?: boolean;
+  redeemCodeObject?: boolean;
+  doSignUp?: RegisterFunction | UpdateInfoFunction;
+};
+
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   analyticsService.trackSignOut();
   await databaseService.clear();
@@ -315,7 +346,7 @@ export const deactivate2FA = (
   return authClient.disableTwoFactorAuth(encPass, deactivationCode);
 };
 
-export async function getNewToken(): Promise<string> {
+export const getNewToken = async (): Promise<string> => {
   const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
     headers: httpService.getHeaders(true, false),
   });
@@ -326,7 +357,7 @@ export async function getNewToken(): Promise<string> {
   const { newToken } = await res.json();
 
   return newToken;
-}
+};
 
 export async function areCredentialsCorrect(email: string, password: string): Promise<boolean> {
   const salt = await getSalt();
@@ -420,15 +451,8 @@ export const unblockAccount = (token: string): Promise<void> => {
   return authClient.unblockAccount(token);
 };
 
-export const signUp = async (
-  doSignUp: RegisterFunction | UpdateInfoFunction,
-  email: string,
-  password: string,
-  token: string,
-  isNewUser: boolean,
-  redeemCodeObject: boolean,
-  dispatch: AppDispatch,
-) => {
+export const signUp = async (params: SignUpParams) => {
+  const { doSignUp, email, password, token, isNewUser, redeemCodeObject, dispatch } = params;
   const { xUser, xToken, mnemonic } = isNewUser
     ? await (doSignUp as RegisterFunction)(email, password, token)
     : await (doSignUp as UpdateInfoFunction)(email, password);
@@ -459,13 +483,8 @@ export const signUp = async (
   return { token: xToken, user: xUser, mnemonic };
 };
 
-export const logIn = async (
-  email: string,
-  password: string,
-  twoFactorCode: string,
-  dispatch: AppDispatch,
-  loginType: 'web' | 'desktop' | undefined = 'web',
-): Promise<ProfileInfo> => {
+export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
+  const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
   const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
   dispatch(userActions.setUser(user));
   window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
@@ -474,7 +493,7 @@ export const logIn = async (
     dispatch(productsThunks.initializeThunk());
     dispatch(planThunks.initializeThunk());
     dispatch(referralsThunks.initializeThunk());
-    await dispatch(initializeUserThunk()).unwrap();
+    await dispatch(initializeUserThunk())?.unwrap();
     dispatch(workspaceThunks.fetchWorkspaces());
     dispatch(workspaceThunks.checkAndSetLocalWorkspace());
   } catch (e: unknown) {
@@ -488,25 +507,26 @@ export const logIn = async (
   return { token, user, mnemonic };
 };
 
-export const authenticateUser = async (
-  email: string,
-  password: string,
-  authMethod: AuthMethodTypes,
-  twoFactorCode: string,
-  dispatch: AppDispatch,
-  loginType: 'web' | 'desktop' | undefined = 'web',
-  token = '',
-  isNewUser = true,
-  redeemCodeObject = false,
-  doSignUp?: RegisterFunction | UpdateInfoFunction,
-): Promise<ProfileInfo> => {
+export const authenticateUser = async (params: AuthenticateUserParams): Promise<ProfileInfo> => {
+  const {
+    email,
+    password,
+    authMethod,
+    twoFactorCode,
+    dispatch,
+    loginType = 'web',
+    token = '',
+    isNewUser = true,
+    redeemCodeObject = false,
+    doSignUp,
+  } = params;
   if (authMethod === 'signIn') {
-    const profileInfo = await logIn(email, password, twoFactorCode, dispatch, loginType);
+    const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, loginType });
     window.rudderanalytics.track('User Signin', { email });
     window.gtag('event', 'User Signin', { method: 'email' });
     return profileInfo;
   } else if (authMethod === 'signUp' && doSignUp) {
-    const profileInfo = await signUp(doSignUp, email, password, token, isNewUser, redeemCodeObject, dispatch);
+    const profileInfo = await signUp({ doSignUp, email, password, token, isNewUser, redeemCodeObject, dispatch });
     return profileInfo;
   } else {
     throw new Error(`Unknown authMethod: ${authMethod}`);
@@ -527,8 +547,6 @@ const authService = {
   resetAccountWithToken,
   requestUnblockAccount,
   unblockAccount,
-  logIn,
-  signUp,
   authenticateUser,
 };
 

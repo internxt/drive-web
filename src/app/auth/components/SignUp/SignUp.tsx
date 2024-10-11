@@ -5,30 +5,25 @@ import { auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
 import { Info, WarningCircle } from '@phosphor-icons/react';
 import { Helmet } from 'react-helmet-async';
-import localStorageService from '../../../core/services/local-storage.service';
 
 import { useAppDispatch } from '../../../store/hooks';
-import { userActions, userThunks } from '../../../store/slices/user';
 import { planThunks } from '../../../store/slices/plan';
 import errorService from '../../../core/services/error.service';
 import navigationService from '../../../core/services/navigation.service';
-import { productsThunks } from '../../../store/slices/products';
 import { AppView, IFormValues } from '../../../core/types';
-import { referralsThunks } from '../../../store/slices/referrals';
 import TextInput from '../TextInput/TextInput';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import PasswordStrengthIndicator from '../../../shared/components/PasswordStrengthIndicator';
 import { useSignUp } from './useSignUp';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import authService, { authenticateUser, getNewToken } from '../../../auth/services/auth.service';
+import authService, { authenticateUser } from '../../../auth/services/auth.service';
 import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import paymentService from '../../../payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
-import { decryptPrivateKey } from '../../../crypto/services/keys.service';
 import analyticsService from '../../../analytics/services/analytics.service';
 import Button from '../../../shared/components/Button/Button';
+import { AuthMethodTypes } from 'app/payment/types';
 
 export interface SignUpProps {
   location: {
@@ -144,18 +139,19 @@ function SignUp(props: SignUpProps): JSX.Element {
       const { isNewUser } = props;
       const { email, password, token } = formData;
 
-      const { token: xToken, user: xUser } = await authenticateUser(
+      const authParams = {
         email,
         password,
-        'signUp',
-        '',
+        authMethod: 'signUp' as AuthMethodTypes,
+        twoFactorCode: '',
         dispatch,
-        'web',
         token,
         isNewUser,
-        redeemCodeObject !== undefined,
-        isNewUser ? doRegister : updateInfo,
-      );
+        redeemCodeObject: redeemCodeObject !== undefined,
+        doSignUp: isNewUser ? doRegister : updateInfo,
+      };
+
+      const { token: xToken, user: xUser } = await authenticateUser(authParams);
 
       await analyticsService.trackSignUp(xUser.uuid, email);
 

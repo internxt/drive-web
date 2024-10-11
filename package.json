@@ -159,6 +159,7 @@
     "eslint": "^7.32.0",
     "eslint-plugin-cypress": "^2.15.1",
     "husky": "^7.0.2",
+    "jest-transform-stub": "^2.0.0",
     "postcss": "^8.4.31",
     "prettier": "^2.5.0",
     "prettier-plugin-tailwindcss": "^0.1.8",
