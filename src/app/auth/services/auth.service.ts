@@ -15,7 +15,7 @@ import { getCookie, setCookie } from 'app/analytics/utils';
 import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import RealtimeService from 'app/core/services/socket.service';
-import { AppView } from 'app/core/types';
+import AppError, { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -55,7 +55,7 @@ export const is2FANeeded = async (email: string): Promise<boolean> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
     analyticsService.signInAttempted(email, error.message);
-    throw new Error(error.message ?? 'Login error');
+    throw new AppError(error.message ?? 'Login error', error.status ?? 500);
   });
 
   return securityDetails.tfaEnabled;
