@@ -34,7 +34,9 @@ export default function AccountPopover({
   const limit = !memberId ? plan.planLimit : plan.businessPlanLimit;
 
   const { translate } = useTranslationContext();
-  const fullName = `${user.name} ${user.lastname}`;
+  const name = user?.name ?? '';
+  const lastName = user?.lastname ?? '';
+  const fullName = name + ' ' + lastName;
 
   const avatarWrapper = (
     <AvatarWrapper diameter={36} style={{ minWidth: 36 }} fullName={fullName} avatarSrcURL={user.avatar} />
