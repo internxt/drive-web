@@ -14,62 +14,62 @@ jest.mock('../../../WebWorker');
 jest.mock('app/store/slices/user');
 jest.mock('app/core/services/local-storage.service');
 
-describe('authService', () => {
-  const mockDispatch = jest.fn();
-  const mockToken = 'test-token';
-  const mockMnemonic = 'test-mnemonic';
-  const mockUuid = 'test-uuid';
-  const mockEmail = 'test@test.com';
-  const mockUserId = 'user-id';
-  const mockPassword = 'password123';
-  const mockTwoFactorCode = '123456';
-  const mockLoginType = 'web';
-  const mockPrivateKey = 'mockPrivateKey';
-  const mockPrivateKeyDecript = 'mockPrivateKeyDecript';
-  const mockSignUpToken = 'signup-token';
-  const mockNewToken = 'new-token';
-  const mockUser: UserSettings = {
-    uuid: mockUuid,
-    email: mockEmail,
-    privateKey: mockPrivateKey,
+const mockDispatch = jest.fn();
+const mockToken = 'test-token';
+const mockMnemonic = 'test-mnemonic';
+const mockUuid = 'test-uuid';
+const mockEmail = 'test@test.com';
+const mockUserId = 'user-id';
+const mockPassword = 'password123';
+const mockTwoFactorCode = '123456';
+const mockLoginType = 'web';
+const mockPrivateKey = 'mockPrivateKey';
+const mockPrivateKeyDecript = 'mockPrivateKeyDecript';
+const mockSignUpToken = 'signup-token';
+const mockNewToken = 'new-token';
+const mockUser: UserSettings = {
+  uuid: mockUuid,
+  email: mockEmail,
+  privateKey: mockPrivateKey,
+  mnemonic: mockMnemonic,
+  userId: mockUserId,
+  name: '',
+  lastname: '',
+  username: '',
+  bridgeUser: '',
+  bucket: '',
+  backupsBucket: null,
+  root_folder_id: 0,
+  rootFolderId: '',
+  rootFolderUuid: undefined,
+  sharedWorkspace: false,
+  credit: 0,
+  publicKey: '',
+  revocationKey: '',
+  appSumoDetails: null,
+  registerCompleted: false,
+  hasReferralsProgram: false,
+  createdAt: new Date(),
+  avatar: null,
+  emailVerified: false,
+};
+const mockSignUpFunction = jest.fn();
+
+beforeEach(() => {
+  window.rudderanalytics = { identify: jest.fn(), track: jest.fn() };
+  window.gtag = jest.fn();
+
+  mockSignUpFunction.mockResolvedValue({
+    xUser: { ...mockUser, privateKey: mockPrivateKey },
+    xToken: mockToken,
     mnemonic: mockMnemonic,
-    userId: mockUserId,
-    name: '',
-    lastname: '',
-    username: '',
-    bridgeUser: '',
-    bucket: '',
-    backupsBucket: null,
-    root_folder_id: 0,
-    rootFolderId: '',
-    rootFolderUuid: undefined,
-    sharedWorkspace: false,
-    credit: 0,
-    publicKey: '',
-    revocationKey: '',
-    appSumoDetails: null,
-    registerCompleted: false,
-    hasReferralsProgram: false,
-    createdAt: new Date(),
-    avatar: null,
-    emailVerified: false,
-  };
-  const mockSignUpFunction = jest.fn();
-
-  beforeEach(() => {
-    window.rudderanalytics = { identify: jest.fn(), track: jest.fn() };
-    window.gtag = jest.fn();
-
-    mockSignUpFunction.mockResolvedValue({
-      xUser: { ...mockUser, privateKey: mockPrivateKey },
-      xToken: mockToken,
-      mnemonic: mockMnemonic,
-    });
   });
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+});
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
+describe('logIn', () => {
   it('should log in and dispatch necessary actions', async () => {
     const doLoginSpy = jest.spyOn(authService, 'doLogin').mockResolvedValue({
       user: mockUser,
@@ -99,7 +99,9 @@ describe('authService', () => {
       mnemonic: mockMnemonic,
     });
   });
+});
 
+describe('signIn', () => {
   it('should sign up a new user and set user details', async () => {
     jest.spyOn(authService, 'getNewToken').mockResolvedValueOnce(mockNewToken);
     jest.spyOn(keysService, 'decryptPrivateKey').mockImplementation(() => mockPrivateKeyDecript);
@@ -145,7 +147,9 @@ describe('authService', () => {
     };
     await expect(authService.signUp(mockParams)).rejects.toThrow('Signup failed');
   });
+});
 
+describe('authMethod', () => {
   it('should log in the user when authMethod is signIn', async () => {
     jest.spyOn(authService, 'logIn');
 
