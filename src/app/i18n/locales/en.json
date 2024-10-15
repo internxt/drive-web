@@ -4,19 +4,19 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Up to 75% OFF",
-    "title": "Time to switch to privacy!",
+    "label": "Save 80%",
+    "title": "Secure your digital world!",
     "subtitle": "Win our premium backpack with our lifetime plans.",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
-      "Save on all Internxt plans",
+      "Save big on all Internxt plans",
       "Safe and secure cloud storage",
-      "Zero-knowledge technology",
-      "Open source and audited",
+      "Open source and transparent",
       "End-to-end encrypted transfers",
-      "No unauthorized access"
+      "No unauthorized access",
+      "Offer ends October 31"
     ]
   },
   "valentinesBanner": {
@@ -81,7 +81,8 @@
       "dontHaveAccount": "Don't have an account?",
       "createAccount": "Create account",
       "2FA": "Two factor code",
-      "twoFactorAuthenticationCode": "Two factor authentication code"
+      "twoFactorAuthenticationCode": "Two factor authentication code",
+      "wrongLogin": "Invalid username or password"
     },
     "signup": {
       "title": "Create account",
@@ -194,6 +195,7 @@
     "paymentTitle": "Select a payment method",
     "productCard": {
       "renewalPeriod": {
+        "renewsAt": "* Renews at",
         "month": "month",
         "year": "year",
         "lifetime": "lifetime"
@@ -1300,9 +1302,7 @@
     "errorApplyingCoupon": "Something went wrong while applying the coupon",
     "invalidTaxIdIsProvided": "The provided Tax ID is invalid",
     "errorWhileFetchingMoreItems": "Something went wrong while fetching more items",
-    "errorDeletingItems": "Something went wrong while deleting this item",
-    "foldersCannotBeUploadedToSharedFolder": "Folders cannot be uploaded to shared folders",
-    "errorDownloadingDesktopApp": "Something went wrong while downloading the desktop app"
+    "errorDeletingItems": "Something went wrong while deleting this item"
   },
   "actions": {
     "undo": "Undo",
