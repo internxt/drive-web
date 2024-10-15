@@ -1302,7 +1302,9 @@
     "errorApplyingCoupon": "Something went wrong while applying the coupon",
     "invalidTaxIdIsProvided": "The provided Tax ID is invalid",
     "errorWhileFetchingMoreItems": "Something went wrong while fetching more items",
-    "errorDeletingItems": "Something went wrong while deleting this item"
+    "errorDeletingItems": "Something went wrong while deleting this item",
+    "foldersCannotBeUploadedToSharedFolder": "Folders cannot be uploaded to shared folders",
+    "errorDownloadingDesktopApp": "Something went wrong while downloading the desktop app"
   },
   "actions": {
     "undo": "Undo",
