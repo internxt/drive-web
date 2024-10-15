@@ -403,6 +403,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         }
 
         setIsPasswordProtected(true);
+        props.onShareItem?.();
       } catch (error) {
         errorService.castError(error);
       } finally {

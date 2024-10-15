@@ -529,14 +529,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  const resetPaginationStateAndFetchFolderContent = (currentFolderId: string) => {
+  const resetPaginationStateAndFetchDriveFolderContent = (currentFolderId: string) => {
     resetPaginationState();
     dispatch(fetchSortedFolderContentThunk(currentFolderId));
   };
 
   const handleOnShareItem = useCallback(() => {
     setTimeout(() => {
-      onfetchItems?.() ?? resetPaginationStateAndFetchFolderContent(currentFolderId);
+      onfetchItems?.() ?? resetPaginationStateAndFetchDriveFolderContent(currentFolderId);
     }, 500);
   }, [currentFolderId]);
 
