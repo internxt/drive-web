@@ -124,7 +124,6 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
       ) : (
         <div className="pb-5">
           {selectedTeamMembers.map((member) => {
-            const isOwner = selectedWorkspace?.workspace.ownerId === member.uuid;
             const isManager = team.team.managerId === member.uuid;
             const isLastItem = selectedTeamMembers.indexOf(member) === selectedTeamMembers.length - 1;
             const isFirstItem = selectedTeamMembers.indexOf(member) === 0;
@@ -145,14 +144,7 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
                       <span className="break-all text-base font-medium leading-5 text-gray-100">
                         {member.name} {member.lastname}
                       </span>
-                      {isOwner && (
-                        <RoleBadge
-                          role="owner"
-                          roleText={t('preferences.workspace.members.role.owner')}
-                          size={'small'}
-                        />
-                      )}
-                      {isManager && !isOwner && (
+                      {isManager && (
                         <RoleBadge
                           role="manager"
                           roleText={t('preferences.workspace.members.role.manager')}
@@ -168,7 +160,7 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
                 {hoveredMember === member.uuid && (isCurrentUserManager || isCurrentUserWorkspaceOwner) && (
                   <div className="relative flex items-center">
                     <div className="flex items-center">
-                      {!isOwner && !isManager && (
+                      {!isManager && (
                         <Button
                           variant="secondary"
                           size="medium"
