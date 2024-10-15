@@ -7,7 +7,6 @@ import {
   SecurityDetails,
   TwoFactorAuthQR,
 } from '@internxt/sdk/dist/auth';
-import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
 import analyticsService from 'app/analytics/services/analytics.service';
@@ -34,6 +33,7 @@ import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
 import navigationService from 'app/core/services/navigation.service';
 import AppError, { AppView } from 'app/core/types';
+import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   analyticsService.trackSignOut();
@@ -260,7 +260,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const usersClient = SdkFactory.getInstance().createUsersClient();
 
   return usersClient
-    .changePassword(<ChangePasswordPayloadNew>{
+    .changePassword(<ChangePasswordPayload>{
       currentEncryptedPassword: encryptedCurrentPassword,
       newEncryptedPassword: encryptedNewPassword,
       newEncryptedSalt: encryptedNewSalt,

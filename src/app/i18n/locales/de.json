@@ -1248,9 +1248,7 @@
     "errorDownloadingDesktopApp": "Beim Herunterladen der Desktop-App ist ein Fehler aufgetreten",
     "invalidTaxIdIsProvided": "Die angegebene Steuernummer ist ungültig",
     "errorWhileFetchingMoreItems": "Beim Abrufen weiterer Elemente ist ein Fehler aufgetreten",
-    "errorDeletingItems": "Beim Löschen dieses Elements ist ein Fehler aufgetreten",
-    "foldersCannotBeUploadedToSharedFolder": "Ordner können nicht in freigegebene Ordner hochgeladen werden",
-    "errorDownloadingDesktopApp": "Beim Herunterladen der Desktop-App ist ein Fehler aufgetreten"
+    "errorDeletingItems": "Beim Löschen dieses Elements ist ein Fehler aufgetreten"
   },
   "actions": {
     "undo": "Rückgängig machen",

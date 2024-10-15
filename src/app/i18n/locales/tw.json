@@ -1266,9 +1266,7 @@
     "errorDownloadingDesktopApp": "下載桌面應用時出現錯誤",
     "errorWhileFetchingMoreItems": "獲取更多項目時出現錯誤",
     "errorDeletingItems": "刪除此項目時出現錯誤",
-    "invalidTaxIdIsProvided": "提供的稅號無效",
-    "foldersCannotBeUploadedToSharedFolder": "無法將文件夾上傳到共享文件夾",
-    "errorDownloadingDesktopApp": "下載桌面應用時出現錯誤"
+    "invalidTaxIdIsProvided": "提供的稅號無效"
   },
   "actions": {
     "undo": "撤銷",

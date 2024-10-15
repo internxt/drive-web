@@ -1272,9 +1272,7 @@
     "errorDownloadingDesktopApp": "Произошла ошибка при загрузке настольного приложения",
     "invalidTaxIdIsProvided": "Предоставленный ИНН недействителен",
     "errorWhileFetchingMoreItems": "Произошла ошибка при получении дополнительных элементов",
-    "errorDeletingItems": "Произошла ошибка при удалении этого элемента",
-    "foldersCannotBeUploadedToSharedFolder": "Папки нельзя загружать в общие папки",
-    "errorDownloadingDesktopApp": "Произошла ошибка при загрузке настольного приложения"
+    "errorDeletingItems": "Произошла ошибка при удалении этого элемента"
   },
   "actions": {
     "undo": "Отменить",
