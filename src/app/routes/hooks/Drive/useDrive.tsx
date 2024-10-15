@@ -23,7 +23,7 @@ const useDriveNavigation = () => {
     setItemUuid(currentUuid);
     setWorkspaceUuid(currentWorkspaceUuid[0]);
     setIsOverviewSubsection(isOverview);
-  }, [pathname]);
+  }, [pathname, params]);
 
   return { isFolderView, isFileView, itemUuid, workspaceUuid, isOverviewSubsection };
 };

@@ -117,6 +117,14 @@ const App = (props: AppProps): JSX.Element => {
 
       dispatch(workspaceThunks.fetchWorkspaces());
 
+      // check if we have a workspaceId in params
+      const params = new URLSearchParams(window.location.search);
+      const currentWorkspaceUuid = params.getAll('workspaceid');
+      currentWorkspaceUuid.length === 1 &&
+        !window.location.pathname.includes('file') &&
+        !window.location.pathname.includes('folder') &&
+        dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid[0] }));
+
       await props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,
@@ -155,7 +163,7 @@ const App = (props: AppProps): JSX.Element => {
       dispatch(uiActions.setIsFileViewerOpen(false));
     } else if (isRootDrive) {
       dispatch(uiActions.setIsFileViewerOpen(false));
-      navigationService.push(AppView.Drive);
+      navigationService.push(AppView.Drive, {}, selectedWorkspace?.workspaceUser.workspaceId);
     } else {
       navigationService.pushFolder(fileViewerItem?.folderUuid, selectedWorkspace?.workspaceUser.workspaceId);
     }

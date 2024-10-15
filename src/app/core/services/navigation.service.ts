@@ -33,9 +33,11 @@ instance.listen((nav) => {
 
 const navigationService = {
   history: instance,
-  push(viewId: AppView, queryMap: Record<string, unknown> = {}): void {
+  push(viewId: AppView, queryMap: Record<string, unknown> = {}, workspaceUuid?: string): void {
     const viewConfig = configService.getViewConfig({ id: viewId });
-    const viewSearch = queryString.stringify(queryMap);
+    let viewSearch = queryString.stringify(queryMap);
+
+    if (workspaceUuid) viewSearch += `${viewSearch ? '&' : ''}workspaceid=${workspaceUuid}`;
 
     if (!viewConfig) {
       console.warn(`(NavigationService) View with ID ${viewId} not found`);

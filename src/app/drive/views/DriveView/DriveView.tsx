@@ -57,7 +57,7 @@ const DriveView = (props: DriveViewProps) => {
       setWorkspaceWithUrl(workspaceUuid);
     }
 
-    if (!workspaceUuid && isSelectedWorkspace) {
+    if (!workspaceUuid) {
       setPersonalWithUrl();
     }
 

@@ -97,10 +97,12 @@ const Sidenav = ({
   const isB2BWorkspace = !!useSelector(workspacesSelectors.getSelectedWorkspace);
   const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceUuid = selectedWorkspace?.workspaceUser.workspaceId;
 
   const itemsNavigation: SideNavItemsProps[] = [
     {
-      to: '/',
+      to: workspaceUuid ? `/?workspaceid=${workspaceUuid}` : '/',
       isActive: isActiveButton('/') || isActiveButton('/file/:uuid') || isActiveButton('/folder/:uuid'),
       label: translate('sideNav.drive'),
       icon: FolderSimple,
@@ -108,7 +110,7 @@ const Sidenav = ({
       isVisible: true,
     },
     {
-      to: '/backups',
+      to: workspaceUuid ? `/backups/?workspaceid=${workspaceUuid}` : '/backups',
       isActive: isActiveButton('/backups'),
       label: translate('sideNav.backups'),
       icon: ClockCounterClockwise,
@@ -116,7 +118,7 @@ const Sidenav = ({
       isVisible: !isB2BWorkspace,
     },
     {
-      to: '/shared',
+      to: workspaceUuid ? `/shared/?workspaceid=${workspaceUuid}` : '/shared',
       isActive: isActiveButton('/shared'),
       label: translate('sideNav.shared'),
       icon: Users,
@@ -125,7 +127,7 @@ const Sidenav = ({
       isVisible: true,
     },
     {
-      to: '/recents',
+      to: workspaceUuid ? `/recents/?workspaceid=${workspaceUuid}` : '/recents',
       isActive: isActiveButton('/recents'),
       label: translate('sideNav.recents'),
       icon: Clock,
@@ -133,7 +135,7 @@ const Sidenav = ({
       isVisible: !isB2BWorkspace,
     },
     {
-      to: '/trash',
+      to: workspaceUuid ? `/trash/?workspaceid=${workspaceUuid}` : '/trash',
       isActive: isActiveButton('/trash'),
       label: translate('sideNav.trash'),
       icon: Trash,
@@ -150,7 +152,7 @@ const Sidenav = ({
   ];
 
   const onLogoClicked = () => {
-    navigationService.push(AppView.Drive);
+    navigationService.push(AppView.Drive, {}, workspaceUuid);
   };
 
   return (
