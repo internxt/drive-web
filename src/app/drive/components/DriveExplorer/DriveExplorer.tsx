@@ -84,7 +84,7 @@ interface DriveExplorerProps {
   onItemsMoved?: () => void;
   onFileUploaded?: () => void;
   onFolderUploaded?: () => void;
-  onfetchItems?: () => void;
+  fetchFolderContent?: () => void;
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
   user: UserSettings | undefined;
@@ -128,7 +128,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     items,
     onItemsDeleted,
     onFolderCreated,
-    onfetchItems,
+    fetchFolderContent,
     isOver,
     connectDropTarget,
     storageFilters,
@@ -536,7 +536,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const handleOnShareItem = useCallback(() => {
     setTimeout(() => {
-      onfetchItems?.() ?? resetPaginationStateAndFetchDriveFolderContent(currentFolderId);
+      fetchFolderContent?.() ?? resetPaginationStateAndFetchDriveFolderContent(currentFolderId);
     }, 500);
   }, [currentFolderId]);
 

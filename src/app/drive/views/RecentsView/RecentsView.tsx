@@ -24,10 +24,10 @@ const RecentsView = (props: RecentsViewProps) => {
   useEffect(() => {
     dispatch(storageActions.clearSelectedItems());
     props.dispatch(storageThunks.resetNamePathThunk());
-    refreshRecents();
+    fetchRecentsContent();
   }, []);
 
-  const refreshRecents = () => {
+  const fetchRecentsContent = () => {
     dispatch(storageThunks.fetchRecentsThunk());
   };
 
@@ -45,7 +45,7 @@ const RecentsView = (props: RecentsViewProps) => {
         isLoading={isLoadingRecents}
         items={items}
         onFolderCreated={redirectToDrive}
-        onfetchItems={refreshRecents}
+        fetchFolderContent={fetchRecentsContent}
       />
     </>
   );
