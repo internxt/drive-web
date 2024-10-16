@@ -538,7 +538,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     setTimeout(() => {
       fetchFolderContent?.() ?? resetPaginationStateAndFetchDriveFolderContent(currentFolderId);
     }, 500);
-  }, [currentFolderId]);
+  }, [currentFolderId, fetchFolderContent]);
 
   const onSuccessEditingName = useCallback(() => {
     setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
