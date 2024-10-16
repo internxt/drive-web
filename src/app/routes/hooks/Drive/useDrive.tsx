@@ -23,7 +23,12 @@ const useDriveNavigation = () => {
     setItemUuid(currentUuid);
     setWorkspaceUuid(currentWorkspaceUuid[0]);
     setIsOverviewSubsection(isOverview);
-  }, [pathname, params]);
+  }, [pathname]);
+
+  useEffect(() => {
+    const currentWorkspaceUuid = params.getAll('workspaceid');
+    setWorkspaceUuid(currentWorkspaceUuid[0]);
+  }, [params]);
 
   return { isFolderView, isFileView, itemUuid, workspaceUuid, isOverviewSubsection };
 };

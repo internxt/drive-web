@@ -52,15 +52,17 @@ const DriveView = (props: DriveViewProps) => {
   }, [fileViewer]);
 
   useEffect(() => {
-    dispatch(uiActions.setIsFileViewerOpen(false));
     if (!isFileView && !isFolderView && workspaceUuid && !isSelectedWorkspace && !isOverviewSubsection) {
       setWorkspaceWithUrl(workspaceUuid);
     }
 
-    if (!workspaceUuid) {
+    if (!workspaceUuid && isSelectedWorkspace) {
       setPersonalWithUrl();
     }
+  }, [workspaceUuid, workspaces, isFileView, isFolderView]);
 
+  useEffect(() => {
+    dispatch(uiActions.setIsFileViewerOpen(false));
     if (isFolderView && itemUuid && workspaceUuid && !isSelectedWorkspace) {
       setWorkspaceWithUrl(workspaceUuid);
     } else if (isFolderView && itemUuid && !workspaceUuid) {
