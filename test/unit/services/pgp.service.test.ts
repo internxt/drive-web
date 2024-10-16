@@ -46,6 +46,7 @@ describe('Encryption and Decryption', () => {
       publicKyberKeyBase64,
     });
 
+    console.log(btoa(encryptedMessage as string));
     expect(encryptedMessage).toBeDefined();
   });
 

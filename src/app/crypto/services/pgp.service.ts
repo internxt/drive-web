@@ -71,7 +71,6 @@ export const encryptMessageWithPublicKey = async ({
   const kyberCiphertextStr = Buffer.from(ciphertext).toString('base64');
   const secretHex = Buffer.from(secret).toString('hex');
   const messageHex = Buffer.from(message).toString('hex');
-  console.log(`secret length is ${secret.length} and hex len is ${secretHex.length}`);
 
   // message should be the same length as secret, which is 256 bits
   const xoredMessage = XORhex(messageHex, secretHex);
