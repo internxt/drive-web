@@ -7,7 +7,6 @@ import {
   SecurityDetails,
   TwoFactorAuthQR,
 } from '@internxt/sdk/dist/auth';
-import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
 import analyticsService from 'app/analytics/services/analytics.service';
@@ -42,6 +41,7 @@ import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { AuthMethodTypes } from 'app/payment/types';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -301,7 +301,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const usersClient = SdkFactory.getInstance().createUsersClient();
 
   return usersClient
-    .changePassword(<ChangePasswordPayload>{
+    .changePasswordLegacy(<ChangePasswordPayload>{
       currentEncryptedPassword: encryptedCurrentPassword,
       newEncryptedPassword: encryptedNewPassword,
       newEncryptedSalt: encryptedNewSalt,
