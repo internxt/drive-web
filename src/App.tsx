@@ -117,13 +117,7 @@ const App = (props: AppProps): JSX.Element => {
 
       dispatch(workspaceThunks.fetchWorkspaces());
 
-      // check if we have a workspaceId in params
-      const params = new URLSearchParams(window.location.search);
-      const currentWorkspaceUuid = params.getAll('workspaceid');
-      currentWorkspaceUuid.length === 1 &&
-        !window.location.pathname.includes('file') &&
-        !window.location.pathname.includes('folder') &&
-        dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid[0] }));
+      navigationService.setWorkspaceFromParams(workspaceThunks, dispatch);
 
       await props.dispatch(
         initializeUserThunk({

@@ -14,10 +14,6 @@ const storageSelectors = {
   currentFolderId(state: RootState): string {
     const { namePath } = state.storage;
 
-    if (state.workspaces.selectedWorkspace) {
-      return rootFolderId(state);
-    }
-
     const currentFolderId = namePath.length > 0 ? namePath[namePath.length - 1].uuid : rootFolderId(state);
     return currentFolderId;
   },

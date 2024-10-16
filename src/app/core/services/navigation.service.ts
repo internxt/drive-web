@@ -6,6 +6,7 @@ import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.servi
 import { AppView } from '../types';
 import configService from './config.service';
 import errorService from './error.service';
+import { AppDispatch } from 'app/store';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
@@ -82,6 +83,14 @@ const navigationService = {
     } catch (error) {
       errorService.reportError(error);
     }
+  },
+  setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch): void {
+    const params = new URLSearchParams(window.location.search);
+    const currentWorkspaceUuid = params.getAll('workspaceid');
+    currentWorkspaceUuid.length === 1 &&
+      !window.location.pathname.includes('file') &&
+      !window.location.pathname.includes('folder') &&
+      dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid[0] }));
   },
 };
 
