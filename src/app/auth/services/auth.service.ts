@@ -41,6 +41,7 @@ import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { AuthMethodTypes } from 'app/payment/types';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 
 type ProfileInfo = {
   user: UserSettings;
