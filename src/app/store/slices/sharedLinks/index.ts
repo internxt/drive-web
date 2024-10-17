@@ -41,6 +41,7 @@ export interface ShareFileWithUserPayload {
   encryptionAlgorithm: string;
   roleId: string;
   publicKey?: string;
+  publicKyberKey?: string;
   isNewUser?: boolean;
 }
 
@@ -57,23 +58,25 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       const { mnemonic } = user;
 
       let publicKey = payload.publicKey;
+      let publicKyberKey = payload.publicKyberKey;
 
-      if (payload.isNewUser && !publicKey) {
+      if (payload.isNewUser && !publicKey && !publicKyberKey) {
         const prCreatedUserResponse = await userService.preCreateUser(payload.sharedWith);
         publicKey = prCreatedUserResponse.publicKey;
+        publicKyberKey = prCreatedUserResponse.publicKyberKey;
       }
 
-      if ((!publicKey && !payload.isNewUser) || !publicKey) {
+      if ((!publicKyberKey && !publicKey && !payload.isNewUser) || !publicKey || !publicKyberKey) {
         const publicKeyResponse = await userService.getPublicKeyByEmail(payload.sharedWith);
         publicKey = publicKeyResponse.publicKey;
+        publicKyberKey = publicKeyResponse.publicKyberKey;
       }
 
-      const encryptedMnemonic = await encryptMessageWithPublicKey({
+      const encryptedMnemonicInBase64 = await encryptMessageWithPublicKey({
         message: mnemonic,
         publicKeyInBase64: publicKey,
+        publicKyberKeyBase64: publicKyberKey,
       });
-
-      const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
 
       await inviteUserToSharedFolder({
         itemId: payload.itemId,

@@ -1,6 +1,7 @@
 import { DriveItemData } from '../drive/types';
 import { AdvancedSharedItem } from '../share/types';
 import { removeDuplicates } from './driveItemsUtils';
+import { describe, expect, it } from 'vitest';
 
 describe('removeDuplicates', () => {
   const sharedItems = [

@@ -41,9 +41,11 @@ const processInvitation = async (
     }
     const { mnemonic } = user;
     let publicKey;
+    let publicKyberKey;
     try {
       const publicKeyResponse = await userService.getPublicKeyByEmail(email);
       publicKey = publicKeyResponse.publicKey;
+      publicKyberKey = publicKeyResponse.publicKyberKey;
     } catch (err) {
       console.log(err);
     }
@@ -52,14 +54,14 @@ const processInvitation = async (
     if (isNewUser) {
       const preCreatedUserResponse = await userService.preCreateUser(email);
       publicKey = preCreatedUserResponse.publicKey;
+      publicKyberKey = preCreatedUserResponse.publicKyberKey;
     }
 
-    const encryptedMnemonic = await encryptMessageWithPublicKey({
+    const encryptedMnemonicInBase64 = await encryptMessageWithPublicKey({
       message: mnemonic,
       publicKeyInBase64: publicKey,
+      publicKyberKeyBase64: publicKyberKey,
     });
-
-    const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
 
     // TODO: CHECK WHEN BACKEND ADD DEFUALT WORKSPACE LIMIT FOR MVP
     await workspacesService.inviteUserToTeam({

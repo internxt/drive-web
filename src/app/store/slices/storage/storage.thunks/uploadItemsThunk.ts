@@ -117,7 +117,11 @@ const prepareFilesToUpload = async ({
   let parentFolderContent;
 
   if (!disableDuplicatedNamesCheck) {
-    const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(parentFolderId, false, workspaceToken);
+    const [parentFolderContentPromise] = storageClient.getFolderContentByUuid({
+      folderUuid: parentFolderId,
+      trash: false,
+      workspacesToken: workspaceToken,
+    });
     parentFolderContent = await parentFolderContentPromise;
   }
 
