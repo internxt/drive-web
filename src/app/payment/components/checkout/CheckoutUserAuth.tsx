@@ -2,8 +2,7 @@
 import { AuthMethodTypes } from '../../types';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
-import Avatar from 'app/shared/components/Avatar';
-import Button from 'app/shared/components/Button/Button';
+import { Button, Avatar } from '@internxt/internxtui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { InputsComponent } from './InputsComponent';
 

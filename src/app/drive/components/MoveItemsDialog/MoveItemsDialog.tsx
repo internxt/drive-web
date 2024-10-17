@@ -6,9 +6,8 @@ import databaseService, { DatabaseCollection } from 'app/database/services/datab
 import newStorageService from 'app/drive/services/new-storage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import BreadcrumbsMoveItemsDialogView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsMoveItemsDialogView';
-import Button from 'app/shared/components/Button/Button';
+import { Button, Spinner } from '@internxt/internxtui';
 import Modal from 'app/shared/components/Modal';
-import Spinner from 'app/shared/components/Spinner/Spinner';
 import { RootState, store } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { setItemsToMove, storageActions } from 'app/store/slices/storage';

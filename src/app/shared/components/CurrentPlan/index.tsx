@@ -1,5 +1,5 @@
 import { bytesToString } from '../../../drive/services/size.service';
-import Button from '../Button/Button';
+import { Button } from '@internxt/internxtui';
 
 export default function CurrentPlan({
   className = '',

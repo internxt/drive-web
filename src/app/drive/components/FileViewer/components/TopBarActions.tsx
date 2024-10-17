@@ -3,7 +3,7 @@ import { DotsThree, Link } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { DriveItemData } from 'app/drive/types';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
-import Button from '../../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { t } from 'i18next';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import Dropdown from 'app/shared/components/Dropdown';

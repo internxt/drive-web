@@ -4,9 +4,9 @@ import {
   getDatabaseProfileAvatar,
   updateDatabaseProfileAvatar,
 } from '../../../../../drive/services/database.service';
-import Avatar from '../../../../../shared/components/Avatar';
 import * as Sentry from '@sentry/react';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
+import { Avatar } from '@internxt/internxtui';
 
 export const extractAvatarURLID = (url: string): string | null => {
   const regex = /internxt\.com\/(.*?)[?&]/;

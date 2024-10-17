@@ -4,9 +4,9 @@ import { useState } from 'react';
 
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-import Avatar from '../../../../../shared/components/Avatar';
 import Dropdown from '../../../../../shared/components/Dropdown';
 import UploadAvatarModal from './UploadAvatarModal';
+import { Avatar } from '@internxt/internxtui';
 
 interface UserHeaderProps {
   className?: string;

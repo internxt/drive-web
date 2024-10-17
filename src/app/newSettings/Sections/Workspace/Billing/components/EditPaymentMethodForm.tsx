@@ -3,7 +3,7 @@ import { t } from 'i18next';
 
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 
 interface EditPaymentMethodFormProps {
   setIsEditPaymentMethodModalOpen: (isEditPaymentMethodModalOpen: boolean) => void;

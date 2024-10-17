@@ -2,10 +2,8 @@ import { WorkspaceData, WorkspaceTeam, TeamMembers } from '@internxt/sdk/dist/wo
 import { t } from 'i18next';
 import { DotsThreeVertical } from '@phosphor-icons/react';
 
-import Avatar from 'app/shared/components/Avatar';
 import RoleBadge from 'app/newSettings/Sections/Workspace/Members/components/RoleBadge';
-import Button from 'app/shared/components/Button/Button';
-import Spinner from 'app/shared/components/Spinner/Spinner';
+import { Button, Avatar, Spinner } from '@internxt/internxtui';
 
 interface TeamDetailsProps {
   team: WorkspaceTeam;

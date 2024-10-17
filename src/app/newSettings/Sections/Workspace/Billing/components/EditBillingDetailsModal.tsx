@@ -2,7 +2,7 @@ import { t } from 'i18next';
 import { useState } from 'react';
 
 import { CustomerBillingInfo } from '@internxt/sdk/dist/drive/payments/types';
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Modal from 'app/shared/components/Modal';
 
 import { PhoneInput } from 'react-international-phone';

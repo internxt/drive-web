@@ -5,7 +5,7 @@ import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';

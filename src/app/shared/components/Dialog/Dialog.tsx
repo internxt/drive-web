@@ -1,6 +1,6 @@
 import { Transition } from '@headlessui/react';
 import { useEffect } from 'react';
-import Button from '../Button/Button';
+import { Button } from '@internxt/internxtui';
 
 export default function Dialog({
   isOpen,
@@ -71,7 +71,7 @@ export default function Dialog({
           <Button
             onClick={onPrimaryAction}
             loading={isLoading}
-            variant={primaryActionColor === 'primary' ? 'primary' : 'accent'}
+            variant={primaryActionColor === 'primary' ? 'primary' : 'destructive'}
           >
             {primaryAction}
           </Button>

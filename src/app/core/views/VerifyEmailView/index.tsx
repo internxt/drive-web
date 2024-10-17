@@ -2,10 +2,10 @@ import { CheckCircle, WarningCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import Spinner from '../../../shared/components/Spinner/Spinner';
 import { SdkFactory } from '../../factory/sdk';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { uiActions } from '../../../store/slices/ui';
+import { Spinner } from '@internxt/internxtui';
 
 export default function VerifyEmailView(): JSX.Element {
   const { translate } = useTranslationContext();

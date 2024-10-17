@@ -26,7 +26,7 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { HTTP_CODES } from '../../../core/services/http.service';
 import AppError from '../../../core/types';
-import Button from '../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import SendBanner from './SendBanner';
 import ShareItemPwdView from './ShareItemPwdView';
 

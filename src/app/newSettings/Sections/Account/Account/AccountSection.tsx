@@ -9,7 +9,7 @@ import errorService from '../../../../core/services/error.service';
 import ClearTrashDialog from '../../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import Button from '../../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
 import { updateUserProfileThunk, userThunks } from '../../../../store/slices/user';

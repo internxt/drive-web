@@ -2,7 +2,7 @@ import { CheckoutProductCard } from '../../components/checkout/CheckoutProductCa
 import { HeaderComponent } from '../../components/checkout/Header';
 import LoadingPulse from 'app/shared/components/LoadingPulse/LoadingPulse';
 import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { useForm } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
 import { AuthMethodTypes } from '../../types';

@@ -1,4 +1,4 @@
-import Button from '../../../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Modal from '../../../../../shared/components/Modal';
 
 // TODO: MOVE TO COMPONENTS LIBRARY
@@ -8,7 +8,7 @@ const ActionModal = ({
   onActionButtonClicked,
   isLoading,
   modalTexts,
-  actionButtonVariant = 'accent',
+  actionButtonVariant = 'destructive',
   children,
   modalWitdhClassname,
 }: {
@@ -16,7 +16,7 @@ const ActionModal = ({
   onActionButtonClicked: () => void;
   onClose: () => void;
   isLoading: boolean;
-  actionButtonVariant?: 'primary' | 'accent' | 'secondary' | 'tertiary';
+  actionButtonVariant?: 'primary' | 'destructive' | 'secondary' | 'ghost';
   modalTexts: {
     title: string;
     description: string;

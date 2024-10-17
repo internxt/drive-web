@@ -1,9 +1,8 @@
 import { t } from 'i18next';
 import { WorkspaceTeam, WorkspaceTeamResponse } from '@internxt/sdk/dist/workspaces/types';
 
-import Button from 'app/shared/components/Button/Button';
+import { Button, Spinner } from '@internxt/internxtui';
 import EmptyTab from 'app/newSettings/components/EmptyTab';
-import Spinner from 'app/shared/components/Spinner/Spinner';
 
 import membersTeams from 'assets/icons/empty/members-teams.svg';
 interface TeamsListProps {

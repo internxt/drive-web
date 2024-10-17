@@ -1,6 +1,6 @@
 import { WorkspaceTeam } from '@internxt/sdk/dist/workspaces/types';
 import Modal from 'app/shared/components/Modal';
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface DeleteTeamDialogProps {
@@ -32,7 +32,7 @@ const DeleteTeamDialog: React.FC<DeleteTeamDialogProps> = ({
         <Button disabled={isDeleteTeamLoading} variant="secondary" onClick={onClose}>
           {translate('preferences.workspace.teams.deleteTeamDialog.cancel')}
         </Button>
-        <Button loading={isDeleteTeamLoading} variant="accent" onClick={deleteTeam}>
+        <Button loading={isDeleteTeamLoading} variant="destructive" onClick={deleteTeam}>
           {translate('preferences.workspace.teams.deleteTeamDialog.delete')}
         </Button>
       </div>

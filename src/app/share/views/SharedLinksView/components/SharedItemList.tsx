@@ -6,10 +6,10 @@ import { OrderDirection } from '../../../../core/types';
 import iconService from '../../../../drive/services/icon.service';
 import sizeService from '../../../../drive/services/size.service';
 import { DriveFileData } from '../../../../drive/types';
-import Avatar from '../../../../shared/components/Avatar';
 import List from '../../../../shared/components/List';
 import { ListItemMenu } from '../../../../shared/components/List/ListItem';
 import { AdvancedSharedItem } from '../../../types';
+import { Avatar } from '@internxt/internxtui';
 
 const skinSkeleton = [
   <div key="1" className="flex flex-row items-center space-x-4">

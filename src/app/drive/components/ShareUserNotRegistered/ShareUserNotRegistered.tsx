@@ -1,4 +1,4 @@
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Modal from 'app/shared/components/Modal';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 

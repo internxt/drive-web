@@ -3,14 +3,13 @@ import WindowsLogo from 'assets/windows_logo.svg';
 import LinuxLogo from 'assets/linux_logo.svg';
 import DevicesSVG from 'assets/devices.svg';
 import XSVG from 'assets/close_x.svg';
-import Button from '../Button/Button';
+import { Button, Spinner } from '@internxt/internxtui';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import desktopService from '../../../core/services/desktop.service';
 import operatingSystemService from '../../../core/services/operating-system.service';
 import { t } from 'i18next';
 import { FC, useMemo, useState } from 'react';
-import Spinner from '../Spinner/Spinner';
 
 const separatorV = <div className=" my-2 border-r border-gray-10" />;
 
