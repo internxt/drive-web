@@ -96,7 +96,7 @@ const useFetchSharedData = () => {
       const isRootFolder = !currentFolderId;
       try {
         if (isRootFolder && hasMoreFolders) {
-          await fetchRootFolders(workspaceId, defaultTeamId);
+          await fetchRootFolders(workspaceId);
         } else if (isRootFolder && !hasMoreFolders && hasMoreFiles) {
           await fetchRootFiles(workspaceId, defaultTeamId);
         } else if (!isRootFolder && hasMoreFolders) {
@@ -112,7 +112,7 @@ const useFetchSharedData = () => {
     }
   };
 
-  const fetchRootFolders = async (workspaceId?: string, teamId?: string) => {
+  const fetchRootFolders = async (workspaceId?: string) => {
     dispatch(sharedActions.setCurrentShareId(null));
     dispatch(sharedActions.setCurrentSharingRole(null));
     actionDispatch(setIsLoading(true));
@@ -123,8 +123,8 @@ const useFetchSharedData = () => {
     try {
       let response;
 
-      if (workspaceId && teamId) {
-        const [promise] = workspacesService.getAllWorkspaceTeamSharedFolders(workspaceId, teamId);
+      if (workspaceId) {
+        const [promise] = workspacesService.getAllWorkspaceTeamSharedFolders(workspaceId);
         response = await promise;
       } else {
         response = await shareService.getAllSharedFolders(page, ITEMS_PER_PAGE);
