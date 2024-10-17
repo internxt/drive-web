@@ -1,5 +1,5 @@
 import { MutableRefObject, memo } from 'react';
-import Button from '../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { FolderSimplePlus, UploadSimple } from '@phosphor-icons/react';
 import { ReactComponent as FolderSimpleArrowUp } from 'assets/icons/FolderSimpleArrowUp.svg';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
@@ -37,7 +37,7 @@ const DriveTopBarItems = memo(
         data-tooltip-place="bottom"
       >
         <Button
-          variant="tertiary"
+          variant="ghost"
           className="aspect-square"
           onClick={onUploadFolderButtonClicked}
           buttonDataCy="topBarUploadFolderButton"
@@ -53,7 +53,7 @@ const DriveTopBarItems = memo(
         data-tooltip-place="bottom"
       >
         <Button
-          variant="tertiary"
+          variant="ghost"
           className="aspect-square"
           onClick={onCreateFolderButtonClicked}
           buttonDataCy="topBarCreateFolderButton"

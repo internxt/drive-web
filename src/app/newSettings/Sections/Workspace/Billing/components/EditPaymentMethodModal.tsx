@@ -7,9 +7,9 @@ import paymentService from 'app/payment/services/payment.service';
 import useEffectAsync from 'app/core/hooks/useEffectAsync';
 
 import Modal from 'app/shared/components/Modal';
-import Spinner from 'app/shared/components/Spinner/Spinner';
 import EditPaymentMethodForm from './EditPaymentMethodForm';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { Spinner } from '@internxt/internxtui';
 
 interface EditPaymentMethodModalProps {
   isEditPaymentMethodModalOpen: boolean;

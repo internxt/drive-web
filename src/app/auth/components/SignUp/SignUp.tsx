@@ -22,7 +22,7 @@ import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/Preparin
 import paymentService from '../../../payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import analyticsService from '../../../analytics/services/analytics.service';
-import Button from '../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { AuthMethodTypes } from 'app/payment/types';
 
 export interface SignUpProps {
