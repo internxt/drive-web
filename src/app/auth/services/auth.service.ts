@@ -160,6 +160,10 @@ export const doLogin = async (
       localStorageService.set('xMnemonic', clearMnemonic);
       localStorageService.set('xNewToken', newToken);
 
+      const argon2Hash = await passToHash({ password });
+
+      authClient.upgradeHash(argon2Hash.hash);
+
       return {
         user: clearUser,
         token: token,

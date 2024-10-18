@@ -1,9 +1,29 @@
 diff --git a/node_modules/@internxt/sdk/.DS_Store b/node_modules/@internxt/sdk/.DS_Store
 new file mode 100644
-index 0000000..945abaa
+index 0000000..3cc50b2
 Binary files /dev/null and b/node_modules/@internxt/sdk/.DS_Store differ
+diff --git a/node_modules/@internxt/sdk/dist/.DS_Store b/node_modules/@internxt/sdk/dist/.DS_Store
+new file mode 100644
+index 0000000..381419f
+Binary files /dev/null and b/node_modules/@internxt/sdk/dist/.DS_Store differ
+diff --git a/node_modules/@internxt/sdk/dist/auth/index.d.ts b/node_modules/@internxt/sdk/dist/auth/index.d.ts
+index a1a8bf7..3668c3f 100644
+--- a/node_modules/@internxt/sdk/dist/auth/index.d.ts
++++ b/node_modules/@internxt/sdk/dist/auth/index.d.ts
+@@ -101,6 +101,11 @@ export declare class Auth {
+      * @param email
+      */
+     sendChangePasswordEmail(email: string): Promise<void>;
++    /**
++     * Upgrade hash in the database
++     * @param newHash
++     */
++    upgradeHash(newHash: string): Promise<void>;
+     /**
+      * Restore password with email link
+      * @param token
 diff --git a/node_modules/@internxt/sdk/dist/auth/index.js b/node_modules/@internxt/sdk/dist/auth/index.js
-index 0389bcd..aa76d63 100644
+index 0389bcd..9073209 100644
 --- a/node_modules/@internxt/sdk/dist/auth/index.js
 +++ b/node_modules/@internxt/sdk/dist/auth/index.js
 @@ -75,6 +75,8 @@ var Auth = /** @class */ (function () {
@@ -56,6 +76,22 @@ index 0389bcd..aa76d63 100644
          }, this.headersWithToken(token));
      };
      /**
+@@ -271,6 +281,15 @@ var Auth = /** @class */ (function () {
+             email: email,
+         }, this.basicHeaders());
+     };
++    /**
++     * Upgrade hash in the database
++     * @param newHash
++     */
++    Auth.prototype.upgradeHash = function (newHash) {
++        return this.client.post('/users/upgrade-hash', {
++            newHash: newHash,
++        }, this.basicHeaders());
++    };
+     /**
+      * Restore password with email link
+      * @param token
 diff --git a/node_modules/@internxt/sdk/dist/auth/types.d.ts b/node_modules/@internxt/sdk/dist/auth/types.d.ts
 index c104ac5..d9ec1b8 100644
 --- a/node_modules/@internxt/sdk/dist/auth/types.d.ts
