@@ -44,7 +44,10 @@ export default function BackupsAsFoldersList({
     setIsloading(true);
     setSelectedItems([]);
     const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-    const [responsePromise] = storageClient.getFolderContentByUuid(folderId);
+    const input = {
+      folderUuid: folderId,
+    };
+    const [responsePromise] = storageClient.getFolderContentByUuid(input);
     const response = await responsePromise;
     const files = response.files.map((file) => ({ ...file, isFolder: false, name: file.plainName }));
     const folders = response.children.map((folder) => ({ ...folder, isFolder: true, name: folder.plainName }));
