@@ -277,11 +277,10 @@ export function getAllWorkspaceTeamSharedFolders(
 
 export function getAllWorkspaceTeamSharedFiles(
   workspaceId: string,
-  teamId: string,
   orderBy?: OrderByOptions,
 ): [Promise<ListAllSharedFoldersResponse>, RequestCanceler] {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.getWorkspaceTeamSharedFiles(workspaceId, teamId, orderBy);
+  return workspaceClient.getWorkspaceTeamSharedFilesV2(workspaceId, orderBy);
 }
 
 export function getAllWorkspaceTeamSharedFolderFolders(
