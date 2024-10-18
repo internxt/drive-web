@@ -431,7 +431,7 @@ function SharedView({
     );
 
     actionDispatch(setHasMoreFiles(true));
-    fetchFiles(true, workspaceId, defaultTeamId);
+    fetchFiles(true, workspaceId);
   };
 
   const handleIsItemOwnedByCurrentUser = (givenItemUserUUID?: string) => {

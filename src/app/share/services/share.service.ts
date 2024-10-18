@@ -501,12 +501,11 @@ class DirectorySharedFilesIterator implements Iterator<SharedFiles> {
   }
 
   async next() {
-    const { directoryId, resourcesToken, workspaceId, teamId } = this.queryValues;
+    const { directoryId, resourcesToken, workspaceId } = this.queryValues;
     let items;
-    if (workspaceId && teamId) {
+    if (workspaceId) {
       const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(
         workspaceId,
-        teamId,
         directoryId,
         this.page,
         this.itemsPerPage,

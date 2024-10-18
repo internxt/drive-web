@@ -306,7 +306,6 @@ export function getAllWorkspaceTeamSharedFolderFolders(
 
 export function getAllWorkspaceTeamSharedFolderFiles(
   workspaceId: string,
-  teamId: string,
   sharedFolderUUID: string,
   page: number,
   perPage: number,
@@ -314,9 +313,8 @@ export function getAllWorkspaceTeamSharedFolderFiles(
   orderBy?: OrderByOptions,
 ): [Promise<ListWorkspaceSharedItemsResponse>, RequestCanceler] {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.getWorkspaceTeamSharedFolderFiles(
+  return workspaceClient.getWorkspaceTeamSharedFolderFilesV2(
     workspaceId,
-    teamId,
     sharedFolderUUID,
     page,
     perPage,

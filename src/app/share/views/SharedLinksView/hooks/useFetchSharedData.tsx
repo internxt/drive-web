@@ -102,7 +102,7 @@ const useFetchSharedData = () => {
         } else if (!isRootFolder && hasMoreFolders) {
           await fetchFolders(workspaceId, defaultTeamId);
         } else if (!isRootFolder && !hasMoreFolders && hasMoreFiles) {
-          await fetchFiles(false, workspaceId, defaultTeamId);
+          await fetchFiles(false, workspaceId);
         }
       } catch (error) {
         errorService.reportError(error);
@@ -240,15 +240,14 @@ const useFetchSharedData = () => {
     }
   };
 
-  const fetchFiles = async (forceFetch: boolean, workspaceId?: string, teamId?: string) => {
+  const fetchFiles = async (forceFetch: boolean, workspaceId?: string) => {
     if (currentFolderId && !hasMoreFolders && (hasMoreFiles || forceFetch)) {
       actionDispatch(setIsLoading(true));
       try {
         let response;
-        if (workspaceId && teamId) {
+        if (workspaceId) {
           const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(
             workspaceId,
-            teamId,
             currentFolderId,
             page,
             ITEMS_PER_PAGE,
