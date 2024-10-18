@@ -71,6 +71,7 @@ const getPDFThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> 
   if (canvasContext) {
     const renderTask = page.render({ canvasContext, viewport });
     await renderTask.promise;
+    await loadingTask.destroy();
     return new Promise((resolve) => {
       // Convert the canvas to an image buffer.
       canvas.toBlob((blob: Blob | null) => {
