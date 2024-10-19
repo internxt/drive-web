@@ -97,7 +97,7 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
       ) : (
         <>
           {/* MEMBERS AND GUESTS CARDS */}
-          <div className="fles-row flex w-full justify-between space-x-6">
+          <div className="flex w-full flex-row justify-between space-x-6">
             <Card className="w-full">
               <div className="flex grow flex-col">
                 <span className="text-xl font-medium text-gray-100">{members?.length}</span>
@@ -157,7 +157,7 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
                       onMouseLeave={() => setHoverItemIndex(null)}
                       onClick={() => setSelectedMember(member)}
                     >
-                      <UserCard name={name} lastname={lastname} role={role} email={email} avatarsrc={''} />
+                      <UserCard name={name} lastName={lastname} role={role} email={email} avatarSrc={''} />
                     </button>
                   );
                 })}

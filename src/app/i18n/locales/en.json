@@ -1619,6 +1619,7 @@
         },
         "actions": {
           "deactivate": "Deactivate member",
+          "modifyStorage": "Modify storage",
           "reactivate": "Reactivate member",
           "remove": "Remove member",
           "leave": "Leave workspace",

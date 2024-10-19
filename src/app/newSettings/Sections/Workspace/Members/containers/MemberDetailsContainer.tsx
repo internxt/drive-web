@@ -21,6 +21,7 @@ import RemoveMemberModal from '../components/RemoveModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import TeamsTab from '../components/TeamsTab';
 import UserCard from '../components/UserCard';
+import { ModifyStorageModal } from '../components/ModifyStorageModal';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;
@@ -34,6 +35,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
   const { translate } = useTranslationContext();
   const user = useAppSelector((state) => state.user.user);
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
+  const [isModifyStorageModalOpen, setIsModifyStorageModalOpen] = useState<boolean>(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState<boolean>(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState<boolean>(false);
   const [isDeactivatingMember, setIsDeactivatingMember] = useState<boolean>(false);
@@ -168,10 +170,10 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
       <div className="flex flex-row  justify-between">
         <UserCard
           name={member.member.name}
-          lastname={member.member.lastname}
+          lastName={member.member.lastname}
           role={memberRole}
           email={member.member.email}
-          avatarsrc={null}
+          avatarSrc={null}
           styleOptions={{
             avatarDiameter: 80,
             containerClassName: '!gap-4',
@@ -198,6 +200,12 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
                 >
                   <span className="truncate">{translate('preferences.workspace.members.actions.passwordChange')}</span>
                 </button> */}
+                  <button
+                    onClick={() => setIsModifyStorageModalOpen(true)}
+                    className="flex h-10 w-full items-center rounded-b-md px-3 hover:bg-gray-5 dark:hover:bg-gray-20"
+                  >
+                    <span className="truncate">{translate('preferences.workspace.members.actions.modifyStorage')}</span>
+                  </button>
                   {memberRole !== 'deactivated' && (
                     <button
                       onClick={() => setIsDeactivateModalOpen(true)}
@@ -265,6 +273,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
       </Card>
       {/* NOT INCLUDED IN INITIAL SCOPE OF MVP */}
       {/* <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} /> */}
+      <ModifyStorageModal isOpen={isModifyStorageModalOpen} onClose={() => setIsModifyStorageModalOpen(false)} />
       <DeactivateMemberModal
         name={member.member.name + ' ' + member.member.lastname}
         isOpen={isDeactivateModalOpen}
