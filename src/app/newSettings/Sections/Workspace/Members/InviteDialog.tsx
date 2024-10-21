@@ -4,7 +4,7 @@ import { UserPlus, X } from '@phosphor-icons/react';
 import { useForm } from 'react-hook-form';
 import { IFormValues } from '../../../../core/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import Button from '../../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Card from '../../../../shared/components/Card';
 import Input from '../../../../shared/components/Input';
 import Modal from '../../../../shared/components/Modal';

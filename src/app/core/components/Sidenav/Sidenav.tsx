@@ -11,7 +11,6 @@ import { AppView } from '../../types';
 
 import SidenavItem from './SidenavItem/SidenavItem';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
-import Spinner from 'app/shared/components/Spinner/Spinner';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -21,6 +20,7 @@ import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import { t } from 'i18next';
+import { Spinner } from '@internxt/internxtui';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -84,6 +84,9 @@ const SideNavItems = ({ sideNavItems }: { sideNavItems: SideNavItemsProps[] }) =
     ))}
   </>
 );
+const getItemNavigationPath = (path: string, workspaceUuid?: string) => {
+  return workspaceUuid ? `${path}?workspaceid=${workspaceUuid}` : `${path}`;
+};
 
 const Sidenav = ({
   user,
@@ -97,10 +100,12 @@ const Sidenav = ({
   const isB2BWorkspace = !!useSelector(workspacesSelectors.getSelectedWorkspace);
   const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceUuid = selectedWorkspace?.workspaceUser.workspaceId;
 
   const itemsNavigation: SideNavItemsProps[] = [
     {
-      to: '/',
+      to: getItemNavigationPath('/', workspaceUuid),
       isActive: isActiveButton('/') || isActiveButton('/file/:uuid') || isActiveButton('/folder/:uuid'),
       label: translate('sideNav.drive'),
       icon: FolderSimple,
@@ -108,7 +113,7 @@ const Sidenav = ({
       isVisible: true,
     },
     {
-      to: '/backups',
+      to: getItemNavigationPath('/backups'),
       isActive: isActiveButton('/backups'),
       label: translate('sideNav.backups'),
       icon: ClockCounterClockwise,
@@ -116,7 +121,7 @@ const Sidenav = ({
       isVisible: !isB2BWorkspace,
     },
     {
-      to: '/shared',
+      to: getItemNavigationPath('/shared', workspaceUuid),
       isActive: isActiveButton('/shared'),
       label: translate('sideNav.shared'),
       icon: Users,
@@ -125,7 +130,7 @@ const Sidenav = ({
       isVisible: true,
     },
     {
-      to: '/recents',
+      to: getItemNavigationPath('/recents'),
       isActive: isActiveButton('/recents'),
       label: translate('sideNav.recents'),
       icon: Clock,
@@ -133,7 +138,7 @@ const Sidenav = ({
       isVisible: !isB2BWorkspace,
     },
     {
-      to: '/trash',
+      to: getItemNavigationPath('/trash', workspaceUuid),
       isActive: isActiveButton('/trash'),
       label: translate('sideNav.trash'),
       icon: Trash,
@@ -150,7 +155,7 @@ const Sidenav = ({
   ];
 
   const onLogoClicked = () => {
-    navigationService.push(AppView.Drive);
+    navigationService.push(AppView.Drive, {}, workspaceUuid);
   };
 
   return (
