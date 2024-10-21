@@ -1,6 +1,6 @@
 diff --git a/node_modules/@internxt/sdk/.DS_Store b/node_modules/@internxt/sdk/.DS_Store
 new file mode 100644
-index 0000000..3cc50b2
+index 0000000..7da8278
 Binary files /dev/null and b/node_modules/@internxt/sdk/.DS_Store differ
 diff --git a/node_modules/@internxt/sdk/dist/.DS_Store b/node_modules/@internxt/sdk/dist/.DS_Store
 new file mode 100644
@@ -110,14 +110,14 @@ index c104ac5..d9ec1b8 100644
  }
  export declare class UserAccessError extends Error {
 diff --git a/node_modules/@internxt/sdk/dist/drive/share/types.d.ts b/node_modules/@internxt/sdk/dist/drive/share/types.d.ts
-index b9c0de7..c09fba3 100644
+index b9c0de7..ee08f1c 100644
 --- a/node_modules/@internxt/sdk/dist/drive/share/types.d.ts
 +++ b/node_modules/@internxt/sdk/dist/drive/share/types.d.ts
 @@ -172,6 +172,7 @@ export declare type ShareFolderWithUserPayload = {
      encryptionAlgorithm?: string;
      roleId: string;
      persistPreviousSharing?: boolean;
-+    pqEnabled: boolean | false;
++    hybrdiModeEnabled: boolean | false;
  };
  export declare type CreateSharingPayload = {
      itemId: string;
@@ -155,14 +155,14 @@ index 1a78d69..b855661 100644
      teams?: boolean;
      appSumoDetails: AppSumoDetails | null;
 diff --git a/node_modules/@internxt/sdk/dist/workspaces/index.test.js b/node_modules/@internxt/sdk/dist/workspaces/index.test.js
-index aebc27e..dbc2b54 100644
+index aebc27e..aa0c97e 100644
 --- a/node_modules/@internxt/sdk/dist/workspaces/index.test.js
 +++ b/node_modules/@internxt/sdk/dist/workspaces/index.test.js
 @@ -70,6 +70,7 @@ describe('Workspaces service tests', function () {
                          id: '1',
                          memberId: 'member1',
                          key: 'user_key_1',
-+                        pqEnabled: false,
++                        hybridModeEnabled: false,
                          workspaceId: 'workspace1',
                          spaceLimit: '10GB',
                          driveUsage: '2GB',
@@ -170,7 +170,7 @@ index aebc27e..dbc2b54 100644
                          id: '2',
                          memberId: 'member2',
                          key: 'user_key_2',
-+                        pqEnabled: false,
++                        hybridModeEnabled: false,
                          workspaceId: 'workspace2',
                          spaceLimit: '15GB',
                          driveUsage: '5GB',
@@ -178,7 +178,7 @@ index aebc27e..dbc2b54 100644
                                  address: 'Workspace Address',
                                  description: 'Workspace Description',
                                  encryptedMnemonic: 'encryptedMnemonic',
-+                                pqEnabled: false,
++                                hybridModeEnabled: false,
                              };
                              workspaceSetupInfo = __assign({ workspaceId: 'workspaceId' }, workspaceData);
                              _a = clientAndHeaders(), client = _a.client, headers = _a.headers;
@@ -187,7 +187,7 @@ index aebc27e..dbc2b54 100644
          describe('inviteMemberToWorkspace', function () {
              it('should invite a member to the workspace successfully', function () { return __awaiter(void 0, void 0, void 0, function () {
 -                var workspaceId, invitedUserEmail, spaceLimitBytes, encryptedMnemonicInBase64, encryptionAlgorithm, _a, client, headers, postCall, message;
-+                var workspaceId, invitedUserEmail, spaceLimitBytes, encryptedMnemonicInBase64, encryptionAlgorithm, _a, client, headers, postCall, message, pqEnabled;
++                var workspaceId, invitedUserEmail, spaceLimitBytes, encryptedMnemonicInBase64, encryptionAlgorithm, _a, client, headers, postCall, message, hybridModeEnabled;
                  return __generator(this, function (_b) {
                      switch (_b.label) {
                          case 0:
@@ -195,7 +195,7 @@ index aebc27e..dbc2b54 100644
                              _a = clientAndHeaders(), client = _a.client, headers = _a.headers;
                              postCall = sinon_1.default.stub(httpClient, 'post').resolves();
                              message = 'Test message';
-+                            pqEnabled = false;
++                            hybridModeEnabled = false;
                              return [4 /*yield*/, client.inviteMemberToWorkspace({
                                      workspaceId: workspaceId,
                                      invitedUserEmail: invitedUserEmail,
@@ -203,19 +203,19 @@ index aebc27e..dbc2b54 100644
                                      encryptedMnemonicInBase64: encryptedMnemonicInBase64,
                                      encryptionAlgorithm: encryptionAlgorithm,
                                      message: message,
-+                                    pqEnabled: pqEnabled,
++                                    hybridModeEnabled: hybridModeEnabled,
                                  })];
                          case 1:
                              _b.sent();
 diff --git a/node_modules/@internxt/sdk/dist/workspaces/types.d.ts b/node_modules/@internxt/sdk/dist/workspaces/types.d.ts
-index 99be4ce..626ac3c 100644
+index 99be4ce..98f232c 100644
 --- a/node_modules/@internxt/sdk/dist/workspaces/types.d.ts
 +++ b/node_modules/@internxt/sdk/dist/workspaces/types.d.ts
 @@ -9,6 +9,7 @@ export interface WorkspaceUser {
      isManager: boolean;
      isOwner: boolean;
      key: string;
-+    pqEnabled: boolean;
++    hybridModeEnabled: boolean;
      member: Member;
      memberId: string;
      rootFolderId: string;
@@ -223,7 +223,7 @@ index 99be4ce..626ac3c 100644
      address: string;
      description: string;
      encryptedMnemonic: string;
-+    pqEnabled: boolean | false;
++    hybridModeEnabled: boolean | false;
  };
  export declare type PendingWorkspace = {
      address: string | null;
@@ -231,7 +231,7 @@ index 99be4ce..626ac3c 100644
      encryptedMnemonicInBase64: string;
      encryptionAlgorithm: string;
      message: string;
-+    pqEnabled: boolean | false;
++    hybridModeEnabled: boolean | false;
  };
  interface Invite {
      id: string;

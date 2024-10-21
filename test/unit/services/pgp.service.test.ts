@@ -1,10 +1,10 @@
 import {
   XORhex,
   generateNewKeys,
-  encryptMessageWithPublicKey,
-  decryptMessageWithPrivateKey,
-  oldEncryptMessageWithPublicKey,
-  oldDecryptMessageWithPrivateKey,
+  hybridEncryptMessageWithPublicKey,
+  hybridDecryptMessageWithPrivateKey,
+  standardEncryptMessageWithPublicKey,
+  standardDecryptMessageWithPrivateKey,
 } from '../../../src/app/crypto/services/pgp.service';
 
 import { Buffer } from 'buffer';
@@ -26,7 +26,7 @@ describe('Post-quantum Encryption and Decryption', () => {
     const publicKyberKeyBase64 = keys.publicKyberKeyBase64;
 
     const encrypt = async () => {
-      await encryptMessageWithPublicKey({
+      await hybridEncryptMessageWithPublicKey({
         message,
         publicKeyInBase64,
         publicKyberKeyBase64,
@@ -42,7 +42,7 @@ describe('Post-quantum Encryption and Decryption', () => {
     const message = 'A secret key of exactly 256 bits';
     const publicKyberKeyBase64 = keys.publicKyberKeyBase64;
 
-    const encryptedMessage = await encryptMessageWithPublicKey({
+    const encryptedMessage = await hybridEncryptMessageWithPublicKey({
       message,
       publicKeyInBase64,
       publicKyberKeyBase64,
@@ -101,14 +101,14 @@ describe('Post-quantum Encryption and Decryption', () => {
     expect(Buffer.from(originalMessage).toString('hex').length).toEqual(64);
 
     // Step 3: Encrypt the message using the public key
-    const encryptedMessage = await encryptMessageWithPublicKey({
+    const encryptedMessage = await hybridEncryptMessageWithPublicKey({
       message: originalMessage,
       publicKeyInBase64: keys.publicKeyArmored,
       publicKyberKeyBase64: keys.publicKyberKeyBase64,
     });
 
     // Step 4: Decrypt the message using the private key
-    const decryptedMessage = await decryptMessageWithPrivateKey({
+    const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessage,
       privateKeyInBase64: keys.privateKeyArmored,
       privateKyberKeyBase64: keys.privateKyberKeyBase64,
@@ -136,7 +136,7 @@ describe('Encryption and Decryption', () => {
     const publicKeyInBase64 = keys.publicKeyArmored;
     const message = 'This is a test message';
 
-    const encryptedMessage = await oldEncryptMessageWithPublicKey({
+    const encryptedMessage = await standardEncryptMessageWithPublicKey({
       message,
       publicKeyInBase64,
     });
@@ -152,13 +152,13 @@ describe('Encryption and Decryption', () => {
     const originalMessage = 'This is a secret message!';
 
     // Step 3: Encrypt the message using the public key
-    const encryptedMessage = await oldEncryptMessageWithPublicKey({
+    const encryptedMessage = await standardEncryptMessageWithPublicKey({
       message: originalMessage,
       publicKeyInBase64: keys.publicKeyArmored,
     });
 
     // Step 4: Decrypt the message using the private key
-    const decryptedMessage = await oldDecryptMessageWithPrivateKey({
+    const decryptedMessage = await standardDecryptMessageWithPrivateKey({
       encryptedMessage,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
     });

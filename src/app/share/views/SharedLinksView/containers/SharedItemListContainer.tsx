@@ -62,7 +62,7 @@ const SharedItemListContainer = ({
     currentShareOwnerAvatar,
     clickedShareItemUser: sharedItemUser,
     clickedShareItemEncryptionKey: sharedItemEncryptionKey,
-    clickedShareItemPqEnabled: sharedItemPqEbnabled,
+    clickedShareItemHybridModeEnabled: sharedItemPqEbnabled,
     orderBy,
   } = state;
   const shareItems = [...shareFolders, ...shareFiles];
@@ -98,7 +98,7 @@ const SharedItemListContainer = ({
       if (shareItem.isRootLink) {
         const encryptionKey =
           selectedWorkspace?.workspaceUser?.key ??
-          (await decryptMnemonic(shareItem.encryptionKey, shareItem.pqEnabled));
+          (await decryptMnemonic(shareItem.encryptionKey, shareItem.hybridModeEnabled));
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
@@ -182,7 +182,7 @@ const SharedItemListContainer = ({
         selectedWorkspace?.workspaceUser.key ??
         (await decryptMnemonic(
           shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey,
-          shareItem.pqEnabled,
+          shareItem.hybridModeEnabled,
         ));
       onOpenItemPreview({ ...previewItem, mnemonic });
     } catch (err) {

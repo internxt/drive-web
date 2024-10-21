@@ -7,8 +7,8 @@ import navigationService from '../../../../../core/services/navigation.service';
 import workspacesService from '../../../../../core/services/workspace.service';
 import { AppView } from '../../../../../core/types';
 import {
-  encryptMessageWithPublicKey,
-  oldEncryptMessageWithPublicKey,
+  hybridEncryptMessageWithPublicKey,
+  standardEncryptMessageWithPublicKey,
 } from '../../../../../crypto/services/pgp.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import { RootState } from '../../../../../store';
@@ -61,16 +61,16 @@ const processInvitation = async (
     }
 
     let encryptedMnemonicInBase64;
-    let pqEnabled = false;
+    let hybridModeEnabled = false;
     if (publicKyberKey) {
-      encryptedMnemonicInBase64 = await encryptMessageWithPublicKey({
+      encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
         message: mnemonic,
         publicKeyInBase64: publicKey,
         publicKyberKeyBase64: publicKyberKey,
       });
-      pqEnabled = true;
+      hybridModeEnabled = true;
     } else {
-      encryptedMnemonicInBase64 = await oldEncryptMessageWithPublicKey({
+      encryptedMnemonicInBase64 = await standardEncryptMessageWithPublicKey({
         message: mnemonic,
         publicKeyInBase64: publicKey,
       });
@@ -83,7 +83,7 @@ const processInvitation = async (
       encryptedMnemonicInBase64: encryptedMnemonicInBase64,
       encryptionAlgorithm: 'aes-256-gcm',
       message: messageText,
-      pqEnabled: pqEnabled,
+      hybridModeEnabled: hybridModeEnabled,
     });
 
     notificationsService.show({

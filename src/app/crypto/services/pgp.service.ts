@@ -6,19 +6,6 @@ export async function getOpenpgp(): Promise<typeof import('openpgp')> {
   return import('openpgp');
 }
 
-export async function generateKyberKeys(): Promise<{
-  publicKyberKeyBase64: string;
-  privateKyberKeyBase64: string;
-}> {
-  const kem = await kemBuilder();
-  const { publicKey: publicKyberKey, privateKey: privateKyberKey } = await kem.keypair();
-
-  return {
-    publicKyberKeyBase64: Buffer.from(publicKyberKey).toString('base64'),
-    privateKyberKeyBase64: Buffer.from(privateKyberKey).toString('base64'),
-  };
-}
-
 export async function generateNewKeys(): Promise<{
   privateKeyArmored: string;
   publicKeyArmored: string;
@@ -62,7 +49,7 @@ export function XORhex(a: string, b: string): string {
   return res;
 }
 
-export const encryptMessageWithPublicKey = async ({
+export const hybridEncryptMessageWithPublicKey = async ({
   message,
   publicKeyInBase64,
   publicKyberKeyBase64,
@@ -101,7 +88,7 @@ export const encryptMessageWithPublicKey = async ({
   return combinedCiphertext;
 };
 
-export const decryptMessageWithPrivateKey = async ({
+export const hybridDecryptMessageWithPrivateKey = async ({
   encryptedMessage,
   privateKeyInBase64,
   privateKyberKeyBase64,
@@ -142,7 +129,7 @@ export const decryptMessageWithPrivateKey = async ({
   return resultStr;
 };
 
-export const oldEncryptMessageWithPublicKey = async ({
+export const standardEncryptMessageWithPublicKey = async ({
   message,
   publicKeyInBase64,
 }: {
@@ -162,7 +149,7 @@ export const oldEncryptMessageWithPublicKey = async ({
   return encryptedMessage;
 };
 
-export const oldDecryptMessageWithPrivateKey = async ({
+export const standardDecryptMessageWithPrivateKey = async ({
   encryptedMessage,
   privateKeyInBase64,
 }: {

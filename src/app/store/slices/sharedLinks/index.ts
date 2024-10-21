@@ -14,7 +14,10 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { UserRoles } from 'app/share/types';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
-import { encryptMessageWithPublicKey, oldEncryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import {
+  hybridEncryptMessageWithPublicKey,
+  standardEncryptMessageWithPublicKey,
+} from '../../../crypto/services/pgp.service';
 
 export interface ShareLinksState {
   isLoadingRoles: boolean;
@@ -73,17 +76,17 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       }
 
       let encryptedMnemonicInBase64;
-      let pqEnabled = false;
+      let hybridModeEnabled = false;
 
       if (publicKyberKey) {
-        encryptedMnemonicInBase64 = await encryptMessageWithPublicKey({
+        encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
           message: mnemonic,
           publicKeyInBase64: publicKey,
           publicKyberKeyBase64: publicKyberKey,
         });
-        pqEnabled = true;
+        hybridModeEnabled = true;
       } else {
-        encryptedMnemonicInBase64 = await oldEncryptMessageWithPublicKey({
+        encryptedMnemonicInBase64 = await standardEncryptMessageWithPublicKey({
           message: mnemonic,
           publicKeyInBase64: publicKey,
         });
@@ -99,7 +102,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         encryptionAlgorithm: payload.encryptionAlgorithm,
         roleId: payload.roleId,
         persistPreviousSharing: true,
-        pqEnabled: pqEnabled,
+        hybridModeEnabled: hybridModeEnabled,
       });
 
       notificationsService.show({

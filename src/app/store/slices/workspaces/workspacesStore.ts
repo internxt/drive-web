@@ -6,7 +6,10 @@ import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-
 import navigationService from '../../../core/services/navigation.service';
 import workspacesService from '../../../core/services/workspace.service';
 import { AppView } from '../../../core/types';
-import { encryptMessageWithPublicKey, oldEncryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import {
+  hybridEncryptMessageWithPublicKey,
+  standardEncryptMessageWithPublicKey,
+} from '../../../crypto/services/pgp.service';
 import {
   deleteWorkspaceAvatarFromDatabase,
   saveWorkspaceAvatarToDatabase,
@@ -51,7 +54,7 @@ const decryptWorkspacesMnemonic = async (workspaces: WorkspaceData[]): Promise<W
         ...workspace,
         workspaceUser: {
           ...workspace.workspaceUser,
-          key: await decryptMnemonic(workspace.workspaceUser.key, workspace.workspaceUser.pqEnabled),
+          key: await decryptMnemonic(workspace.workspaceUser.key, workspace.workspaceUser.hybridModeEnabled),
         },
       } as WorkspaceData;
     }),
@@ -150,17 +153,17 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
       const { mnemonic, publicKey, publicKyberKey } = user;
 
       let encryptedMnemonicInBase64;
-      let pqEnabled = false;
+      let hybridModeEnabled = false;
 
       if (publicKyberKey) {
-        encryptedMnemonicInBase64 = await encryptMessageWithPublicKey({
+        encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
           message: mnemonic,
           publicKeyInBase64: publicKey,
           publicKyberKeyBase64: publicKyberKey,
         });
-        pqEnabled = true;
+        hybridModeEnabled = true;
       } else {
-        encryptedMnemonicInBase64 = await oldEncryptMessageWithPublicKey({
+        encryptedMnemonicInBase64 = await standardEncryptMessageWithPublicKey({
           message: mnemonic,
           publicKeyInBase64: publicKey,
         });
@@ -172,7 +175,7 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         address: pendingWorkspace?.address ?? '',
         description: pendingWorkspace?.description ?? '',
         encryptedMnemonic: encryptedMnemonicInBase64,
-        pqEnabled: pqEnabled,
+        hybridModeEnabled: hybridModeEnabled,
       });
 
       // to avoid backend update delay

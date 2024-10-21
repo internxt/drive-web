@@ -344,11 +344,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
       trackPublicShared(trackingPublicSharedProperties);
       const encryptionKey = isAdvanchedShareItem(itemToShare.item) ? itemToShare?.item?.encryptionKey : undefined;
-      const pqEnabled = isAdvanchedShareItem(itemToShare.item) ? itemToShare?.item?.pqEnabled : false;
+      const hybridModeEnabled = isAdvanchedShareItem(itemToShare.item) ? itemToShare?.item?.hybridModeEnabled : false;
       const sharingInfo = await shareService.getPublicShareLink(
         itemToShare?.item.uuid,
         itemToShare.item.isFolder ? 'folder' : 'file',
-        pqEnabled,
+        hybridModeEnabled,
         encryptionKey,
       );
       if (sharingInfo) {

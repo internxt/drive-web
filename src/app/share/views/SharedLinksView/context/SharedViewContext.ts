@@ -23,7 +23,7 @@ export interface ShareViewState {
   nextFolderLevelResourcesToken: string;
   clickedShareItemUser?: AdvancedSharedItem['user'];
   clickedShareItemEncryptionKey: string;
-  clickedShareItemPqEnabled: boolean;
+  clickedShareItemHybridModeEnabled: boolean;
   currentFolderId: string;
   currentParentFolderId?: string;
   currentShareOwnerAvatar: string;
@@ -33,7 +33,7 @@ export interface ShareViewState {
   };
   ownerBucket: null | string;
   ownerEncryptionKey: null | string;
-  ownerPqEnabled: false | boolean;
+  ownerHybridModeEnabled: false | boolean;
 }
 
 export type Action =
