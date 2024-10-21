@@ -86,11 +86,11 @@ const navigationService = {
   },
   setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch): void {
     const params = new URLSearchParams(window.location.search);
-    const currentWorkspaceUuid = params.getAll('workspaceid');
-    currentWorkspaceUuid.length === 1 &&
+    const [currentWorkspaceUuid] = params.getAll('workspaceid');
+    currentWorkspaceUuid &&
       !window.location.pathname.includes('file') &&
       !window.location.pathname.includes('folder') &&
-      dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid[0] }));
+      dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid }));
   },
 };
 

@@ -84,6 +84,9 @@ const SideNavItems = ({ sideNavItems }: { sideNavItems: SideNavItemsProps[] }) =
     ))}
   </>
 );
+const getItemNavigatoinPath = (path: string, workspaceUuid?: string) => {
+  return workspaceUuid ? `${path}?workspaceid=${workspaceUuid}` : `${path}`;
+};
 
 const Sidenav = ({
   user,
@@ -102,7 +105,7 @@ const Sidenav = ({
 
   const itemsNavigation: SideNavItemsProps[] = [
     {
-      to: workspaceUuid ? `/?workspaceid=${workspaceUuid}` : '/',
+      to: getItemNavigatoinPath('/', workspaceUuid),
       isActive: isActiveButton('/') || isActiveButton('/file/:uuid') || isActiveButton('/folder/:uuid'),
       label: translate('sideNav.drive'),
       icon: FolderSimple,
@@ -110,7 +113,7 @@ const Sidenav = ({
       isVisible: true,
     },
     {
-      to: workspaceUuid ? `/backups/?workspaceid=${workspaceUuid}` : '/backups',
+      to: getItemNavigatoinPath('/backups'),
       isActive: isActiveButton('/backups'),
       label: translate('sideNav.backups'),
       icon: ClockCounterClockwise,
@@ -118,7 +121,7 @@ const Sidenav = ({
       isVisible: !isB2BWorkspace,
     },
     {
-      to: workspaceUuid ? `/shared/?workspaceid=${workspaceUuid}` : '/shared',
+      to: getItemNavigatoinPath('/shared', workspaceUuid),
       isActive: isActiveButton('/shared'),
       label: translate('sideNav.shared'),
       icon: Users,
@@ -127,7 +130,7 @@ const Sidenav = ({
       isVisible: true,
     },
     {
-      to: workspaceUuid ? `/recents/?workspaceid=${workspaceUuid}` : '/recents',
+      to: getItemNavigatoinPath('/recents'),
       isActive: isActiveButton('/recents'),
       label: translate('sideNav.recents'),
       icon: Clock,
@@ -135,7 +138,7 @@ const Sidenav = ({
       isVisible: !isB2BWorkspace,
     },
     {
-      to: workspaceUuid ? `/trash/?workspaceid=${workspaceUuid}` : '/trash',
+      to: getItemNavigatoinPath('/trash', workspaceUuid),
       isActive: isActiveButton('/trash'),
       label: translate('sideNav.trash'),
       icon: Trash,
