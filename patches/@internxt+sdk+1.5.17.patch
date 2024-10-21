@@ -1,6 +1,6 @@
 diff --git a/node_modules/@internxt/sdk/.DS_Store b/node_modules/@internxt/sdk/.DS_Store
 new file mode 100644
-index 0000000..7da8278
+index 0000000..009dbeb
 Binary files /dev/null and b/node_modules/@internxt/sdk/.DS_Store differ
 diff --git a/node_modules/@internxt/sdk/dist/.DS_Store b/node_modules/@internxt/sdk/dist/.DS_Store
 new file mode 100644
@@ -110,14 +110,14 @@ index c104ac5..d9ec1b8 100644
  }
  export declare class UserAccessError extends Error {
 diff --git a/node_modules/@internxt/sdk/dist/drive/share/types.d.ts b/node_modules/@internxt/sdk/dist/drive/share/types.d.ts
-index b9c0de7..ee08f1c 100644
+index b9c0de7..e8e9b0c 100644
 --- a/node_modules/@internxt/sdk/dist/drive/share/types.d.ts
 +++ b/node_modules/@internxt/sdk/dist/drive/share/types.d.ts
 @@ -172,6 +172,7 @@ export declare type ShareFolderWithUserPayload = {
      encryptionAlgorithm?: string;
      roleId: string;
      persistPreviousSharing?: boolean;
-+    hybrdiModeEnabled: boolean | false;
++    hybridModeEnabled: boolean;
  };
  export declare type CreateSharingPayload = {
      itemId: string;
