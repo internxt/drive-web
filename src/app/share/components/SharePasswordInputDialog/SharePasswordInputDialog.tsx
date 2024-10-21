@@ -32,8 +32,8 @@ export const SharePasswordInputDialog = ({
   };
 
   return (
-    <Modal maxWidth="max-w-sm" className="space-y-5 p-5" isOpen={isOpen} onClose={onClose}>
-      <form onSubmit={handleConfirm}>
+    <Modal maxWidth="max-w-sm" isOpen={isOpen} onClose={onClose}>
+      <form onSubmit={handleConfirm} className="space-y-5 p-5">
         <p className="text-2xl font-medium">
           {!isAlreadyProtected
             ? translate('modals.shareModal.protectSharingModal.protect')

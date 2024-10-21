@@ -1303,7 +1303,6 @@
     "invalidTaxIdIsProvided": "The provided Tax ID is invalid",
     "errorWhileFetchingMoreItems": "Something went wrong while fetching more items",
     "errorDeletingItems": "Something went wrong while deleting this item",
-    "errorApplyingCoupon": "Something went wrong while applying the coupon",
     "foldersCannotBeUploadedToSharedFolder": "Folders cannot be uploaded to shared folders",
     "errorDownloadingDesktopApp": "Something went wrong while downloading the desktop app"
   },
