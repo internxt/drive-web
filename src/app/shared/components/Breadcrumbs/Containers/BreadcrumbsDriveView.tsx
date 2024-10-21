@@ -37,7 +37,7 @@ const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
         onClick: () => {
           dispatch(uiActions.setIsGlobalSearch(false));
           dispatch(storageThunks.goToFolderThunk(firstPath));
-          navigationService.push(AppView.Drive);
+          navigationService.push(AppView.Drive, {}, selectedWorkspace?.workspaceUser.workspaceId);
         },
       });
 

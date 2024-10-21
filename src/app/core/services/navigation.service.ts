@@ -6,6 +6,7 @@ import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.servi
 import { AppView } from '../types';
 import configService from './config.service';
 import errorService from './error.service';
+import { AppDispatch } from 'app/store';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
@@ -33,9 +34,11 @@ instance.listen((nav) => {
 
 const navigationService = {
   history: instance,
-  push(viewId: AppView, queryMap: Record<string, unknown> = {}): void {
+  push(viewId: AppView, queryMap: Record<string, unknown> = {}, workspaceUuid?: string): void {
     const viewConfig = configService.getViewConfig({ id: viewId });
-    const viewSearch = queryString.stringify(queryMap);
+    let viewSearch = queryString.stringify(queryMap);
+
+    if (workspaceUuid) viewSearch += `${viewSearch ? '&' : ''}workspaceid=${workspaceUuid}`;
 
     if (!viewConfig) {
       console.warn(`(NavigationService) View with ID ${viewId} not found`);
@@ -80,6 +83,14 @@ const navigationService = {
     } catch (error) {
       errorService.reportError(error);
     }
+  },
+  setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch): void {
+    const params = new URLSearchParams(window.location.search);
+    const [currentWorkspaceUuid] = params.getAll('workspaceid');
+    currentWorkspaceUuid &&
+      !window.location.pathname.includes('file') &&
+      !window.location.pathname.includes('folder') &&
+      dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid }));
   },
 };
 

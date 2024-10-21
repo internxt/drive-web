@@ -117,6 +117,8 @@ const App = (props: AppProps): JSX.Element => {
 
       dispatch(workspaceThunks.fetchWorkspaces());
 
+      navigationService.setWorkspaceFromParams(workspaceThunks, dispatch);
+
       await props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,
@@ -155,7 +157,7 @@ const App = (props: AppProps): JSX.Element => {
       dispatch(uiActions.setIsFileViewerOpen(false));
     } else if (isRootDrive) {
       dispatch(uiActions.setIsFileViewerOpen(false));
-      navigationService.push(AppView.Drive);
+      navigationService.push(AppView.Drive, {}, selectedWorkspace?.workspaceUser.workspaceId);
     } else {
       navigationService.pushFolder(fileViewerItem?.folderUuid, selectedWorkspace?.workspaceUser.workspaceId);
     }
