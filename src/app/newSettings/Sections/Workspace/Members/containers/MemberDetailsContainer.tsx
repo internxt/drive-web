@@ -273,7 +273,17 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
       </Card>
       {/* NOT INCLUDED IN INITIAL SCOPE OF MVP */}
       {/* <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} /> */}
-      <ModifyStorageModal isOpen={isModifyStorageModalOpen} onClose={() => setIsModifyStorageModalOpen(false)} />
+      <ModifyStorageModal
+        memberEmail={member.member.email}
+        memberStorage={member.spaceLimit}
+        memberName={{
+          name: member.member.name,
+          lastName: member.member.lastname,
+        }}
+        memberRole={memberRole}
+        isOpen={isModifyStorageModalOpen}
+        onClose={() => setIsModifyStorageModalOpen(false)}
+      />
       <DeactivateMemberModal
         name={member.member.name + ' ' + member.member.lastname}
         isOpen={isDeactivateModalOpen}

@@ -1233,6 +1233,7 @@
     "copyLink": "Geteilter Link in die Zwischenablage kopiert",
     "linkUpdated": "Link aktualisiert",
     "itemsMovedToTrash": "{{item}} in den Papierkorb verschoben",
+    "storageModified": "Speicher erfolgreich geändert",
     "restoreItems": "{{itemsToRecover}} verschoben nach {{destination}}",
     "itemDeleted": "{{item}} gelöscht",
     "itemsDeleted": "Dateien gelöscht",
@@ -1480,6 +1481,14 @@
           "manager": "Manager",
           "member": "Mitglied",
           "deactivated": "Deaktiviert"
+        },
+        "modifyStorageModal": {
+          "user": "Benutzer",
+          "storage": "Speicher",
+          "spaceAssigned": "Zugewiesener Speicher",
+          "spaceLeft": "Verbleibender Gesamtspeicher",
+          "cancel": "Abbrechen",
+          "saveChanges": "Änderungen speichern"
         },
         "deactivationModal": {
           "title": "Mitglied deaktivieren",

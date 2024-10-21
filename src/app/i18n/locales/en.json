@@ -1287,6 +1287,7 @@
     "itemsMovedToTrash": "{{item}} moved to trash",
     "restoreItems": "{{itemsToRecover}} restored successfully",
     "moveItems": "{{itemsToMove}} moved successfully",
+    "storageModified": "Storage modified successfully",
     "itemDeleted": "{{item}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
@@ -1538,6 +1539,14 @@
           "manager": "Manager",
           "member": "Member",
           "deactivated": "Deactivated"
+        },
+        "modifyStorageModal": {
+          "user": "User",
+          "storage": "Storage",
+          "spaceAssigned": "Space assigned",
+          "spaceLeft": "Total space left",
+          "cancel": "Cancel",
+          "saveChanges": "Save changes"
         },
         "deactivationModal": {
           "title": "Deactivate member",

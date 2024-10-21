@@ -1218,6 +1218,7 @@
     "linkUpdated": "Lien mis à jour",
     "itemsMovedToTrash": "{{item}} déplacé vers la corbeille",
     "restoreItems": "{{itemsToRecover}} restauré avec succès",
+    "storageModified": "Stockage modifié avec succès",
     "itemDeleted": "{{itemsToDelete}} supprimé",
     "itemsDeleted": "Fichiers supprimés",
     "emailNotEmpty": "L'adresse électronique ne doit pas être vide",
@@ -1465,6 +1466,14 @@
           "manager": "Gestionnaire",
           "member": "Membre",
           "deactivated": "Désactivé"
+        },
+        "modifyStorageModal": {
+          "user": "Utilisateur",
+          "storage": "Stockage",
+          "spaceAssigned": "Espace assigné",
+          "spaceLeft": "Espace total restant",
+          "cancel": "Annuler",
+          "saveChanges": "Enregistrer les modifications"
         },
         "deactivationModal": {
           "title": "Désactiver le membre",
