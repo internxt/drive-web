@@ -3,7 +3,7 @@ import { CheckCircle, X } from '@phosphor-icons/react';
 import errorService from 'app/core/services/error.service';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Modal from 'app/shared/components/Modal';
 import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';

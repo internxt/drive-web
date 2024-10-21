@@ -1,4 +1,4 @@
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Modal from 'app/shared/components/Modal';
 import { useState } from 'react';
 import Input from 'app/shared/components/Input';
@@ -24,8 +24,9 @@ export const SharePasswordInputDialog = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [password, setPassword] = useState('');
 
-  const handleConfirm = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleConfirm = async (e?: unknown) => {
+    const event = e as React.FormEvent<HTMLFormElement>;
+    event.preventDefault();
     setIsLoading(true);
     await onSavePassword(password);
     setIsLoading(false);

@@ -11,7 +11,6 @@ import { AppView } from '../../types';
 
 import SidenavItem from './SidenavItem/SidenavItem';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
-import Spinner from 'app/shared/components/Spinner/Spinner';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -21,6 +20,7 @@ import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import { t } from 'i18next';
+import { Spinner } from '@internxt/internxtui';
 
 interface SidenavProps {
   user: UserSettings | undefined;
