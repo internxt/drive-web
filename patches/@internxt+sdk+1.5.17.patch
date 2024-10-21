@@ -109,6 +109,18 @@ index c104ac5..d9ec1b8 100644
      generateKeys: (password: Password) => Promise<Keys>;
  }
  export declare class UserAccessError extends Error {
+diff --git a/node_modules/@internxt/sdk/dist/drive/share/types.d.ts b/node_modules/@internxt/sdk/dist/drive/share/types.d.ts
+index b9c0de7..c09fba3 100644
+--- a/node_modules/@internxt/sdk/dist/drive/share/types.d.ts
++++ b/node_modules/@internxt/sdk/dist/drive/share/types.d.ts
+@@ -172,6 +172,7 @@ export declare type ShareFolderWithUserPayload = {
+     encryptionAlgorithm?: string;
+     roleId: string;
+     persistPreviousSharing?: boolean;
++    pqEnabled: boolean | false;
+ };
+ export declare type CreateSharingPayload = {
+     itemId: string;
 diff --git a/node_modules/@internxt/sdk/dist/drive/users/types.d.ts b/node_modules/@internxt/sdk/dist/drive/users/types.d.ts
 index 60143e8..f6038c6 100644
 --- a/node_modules/@internxt/sdk/dist/drive/users/types.d.ts
@@ -142,3 +154,84 @@ index 1a78d69..b855661 100644
      revocationKey: string;
      teams?: boolean;
      appSumoDetails: AppSumoDetails | null;
+diff --git a/node_modules/@internxt/sdk/dist/workspaces/index.test.js b/node_modules/@internxt/sdk/dist/workspaces/index.test.js
+index aebc27e..dbc2b54 100644
+--- a/node_modules/@internxt/sdk/dist/workspaces/index.test.js
++++ b/node_modules/@internxt/sdk/dist/workspaces/index.test.js
+@@ -70,6 +70,7 @@ describe('Workspaces service tests', function () {
+                         id: '1',
+                         memberId: 'member1',
+                         key: 'user_key_1',
++                        pqEnabled: false,
+                         workspaceId: 'workspace1',
+                         spaceLimit: '10GB',
+                         driveUsage: '2GB',
+@@ -128,6 +129,7 @@ describe('Workspaces service tests', function () {
+                         id: '2',
+                         memberId: 'member2',
+                         key: 'user_key_2',
++                        pqEnabled: false,
+                         workspaceId: 'workspace2',
+                         spaceLimit: '15GB',
+                         driveUsage: '5GB',
+@@ -229,6 +231,7 @@ describe('Workspaces service tests', function () {
+                                 address: 'Workspace Address',
+                                 description: 'Workspace Description',
+                                 encryptedMnemonic: 'encryptedMnemonic',
++                                pqEnabled: false,
+                             };
+                             workspaceSetupInfo = __assign({ workspaceId: 'workspaceId' }, workspaceData);
+                             _a = clientAndHeaders(), client = _a.client, headers = _a.headers;
+@@ -463,7 +466,7 @@ describe('Workspaces service tests', function () {
+         });
+         describe('inviteMemberToWorkspace', function () {
+             it('should invite a member to the workspace successfully', function () { return __awaiter(void 0, void 0, void 0, function () {
+-                var workspaceId, invitedUserEmail, spaceLimitBytes, encryptedMnemonicInBase64, encryptionAlgorithm, _a, client, headers, postCall, message;
++                var workspaceId, invitedUserEmail, spaceLimitBytes, encryptedMnemonicInBase64, encryptionAlgorithm, _a, client, headers, postCall, message, pqEnabled;
+                 return __generator(this, function (_b) {
+                     switch (_b.label) {
+                         case 0:
+@@ -475,6 +478,7 @@ describe('Workspaces service tests', function () {
+                             _a = clientAndHeaders(), client = _a.client, headers = _a.headers;
+                             postCall = sinon_1.default.stub(httpClient, 'post').resolves();
+                             message = 'Test message';
++                            pqEnabled = false;
+                             return [4 /*yield*/, client.inviteMemberToWorkspace({
+                                     workspaceId: workspaceId,
+                                     invitedUserEmail: invitedUserEmail,
+@@ -482,6 +486,7 @@ describe('Workspaces service tests', function () {
+                                     encryptedMnemonicInBase64: encryptedMnemonicInBase64,
+                                     encryptionAlgorithm: encryptionAlgorithm,
+                                     message: message,
++                                    pqEnabled: pqEnabled,
+                                 })];
+                         case 1:
+                             _b.sent();
+diff --git a/node_modules/@internxt/sdk/dist/workspaces/types.d.ts b/node_modules/@internxt/sdk/dist/workspaces/types.d.ts
+index 99be4ce..626ac3c 100644
+--- a/node_modules/@internxt/sdk/dist/workspaces/types.d.ts
++++ b/node_modules/@internxt/sdk/dist/workspaces/types.d.ts
+@@ -9,6 +9,7 @@ export interface WorkspaceUser {
+     isManager: boolean;
+     isOwner: boolean;
+     key: string;
++    pqEnabled: boolean;
+     member: Member;
+     memberId: string;
+     rootFolderId: string;
+@@ -42,6 +43,7 @@ export declare type WorkspaceSetupInfo = {
+     address: string;
+     description: string;
+     encryptedMnemonic: string;
++    pqEnabled: boolean | false;
+ };
+ export declare type PendingWorkspace = {
+     address: string | null;
+@@ -138,6 +140,7 @@ export declare type InviteMemberBody = {
+     encryptedMnemonicInBase64: string;
+     encryptionAlgorithm: string;
+     message: string;
++    pqEnabled: boolean | false;
+ };
+ interface Invite {
+     id: string;

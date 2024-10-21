@@ -76,7 +76,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     if (!isDuplicated && isValidEmail(userInvitedEmail)) {
       const { publicKey, publicKyberKey } = await getUserPublicKey(email);
 
-      const markUserAsNew = !publicKey || !publicKyberKey;
+      const markUserAsNew = !publicKey;
 
       if (markUserAsNew) {
         userInvited.isNewUser = true;
@@ -161,13 +161,13 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
 
     if (usersList.length === 0 && isValidEmail(email)) {
       const { publicKey, publicKyberKey } = await getUserPublicKey(email);
-      if (!publicKey && !preCreateUsers && !publicKyberKey) {
+      if (!publicKey && !preCreateUsers) {
         isThereAnyNewUser = true;
       }
       usersList.push({
         email,
         userRole,
-        isNewUser: !publicKey || !publicKyberKey,
+        isNewUser: !publicKey,
         publicKey,
         publicKyberKey,
       });
