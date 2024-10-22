@@ -54,7 +54,7 @@ interface DriveExplorerListProps {
   onOpenStopSharingAndMoveToTrashDialog: () => void;
   showStopSharingConfirmation: boolean;
   roles: Role[];
-  setHasMoreTrashFolders: (boolean) => void;
+  resetPaginationState: () => void;
 }
 
 type ObjectWithId = { id: string | number };
@@ -155,7 +155,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
     if (value.field === 'name') {
       if (isTrash) {
-        props.setHasMoreTrashFolders(true);
+        props.resetPaginationState();
       } else {
         resetDriveOrder({ dispatch, orderType: 'plainName', direction, currentFolderId });
       }
@@ -163,7 +163,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
     if (value.field === 'updatedAt') {
       if (isTrash) {
-        props.setHasMoreTrashFolders(true);
+        props.resetPaginationState();
       } else {
         resetDriveOrder({ dispatch, orderType: 'updatedAt', direction, currentFolderId });
       }

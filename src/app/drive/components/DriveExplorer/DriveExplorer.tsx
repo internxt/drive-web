@@ -831,7 +831,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 title={title}
                 onOpenStopSharingAndMoveToTrashDialog={onOpenStopSharingAndMoveToTrashDialog}
                 showStopSharingConfirmation={showStopSharingConfirmation}
-                setHasMoreTrashFolders={setHasMoreTrashFolders}
+                resetPaginationState={resetPaginationState}
               />
             </div>
             {
