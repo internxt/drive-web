@@ -42,8 +42,7 @@ import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -118,8 +117,6 @@ const App = (props: AppProps): JSX.Element => {
 
       dispatch(workspaceThunks.fetchWorkspaces());
 
-      navigationService.setWorkspaceFromParams(workspaceThunks, dispatch);
-
       await props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,
@@ -158,7 +155,7 @@ const App = (props: AppProps): JSX.Element => {
       dispatch(uiActions.setIsFileViewerOpen(false));
     } else if (isRootDrive) {
       dispatch(uiActions.setIsFileViewerOpen(false));
-      navigationService.push(AppView.Drive, {}, selectedWorkspace?.workspaceUser.workspaceId);
+      navigationService.push(AppView.Drive);
     } else {
       navigationService.pushFolder(fileViewerItem?.folderUuid, selectedWorkspace?.workspaceUser.workspaceId);
     }
