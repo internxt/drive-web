@@ -42,8 +42,7 @@ import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -117,7 +116,6 @@ const App = (props: AppProps): JSX.Element => {
       RealtimeService.getInstance().init();
 
       dispatch(workspaceThunks.fetchWorkspaces());
-
       navigationService.setWorkspaceFromParams(workspaceThunks, dispatch);
 
       await props.dispatch(
