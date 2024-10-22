@@ -11,7 +11,6 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Card from '../../../../../shared/components/Card';
-import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import { MemberRole, Teams, TypeTabs } from '../../../../types/types';
 import ActivityTab from '../components/ActivityTab';
 import DeactivateMemberModal from '../components/DeactivateModal';
@@ -21,6 +20,7 @@ import RemoveMemberModal from '../components/RemoveModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import TeamsTab from '../components/TeamsTab';
 import UserCard from '../components/UserCard';
+import { Spinner } from '@internxt/internxtui';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;

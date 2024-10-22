@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { useAppDispatch } from 'app/store/hooks';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 import { DriveItemData } from '../../types';
@@ -92,7 +92,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
           <Button
             disabled={isLoading}
             variant="secondary"
-            onClick={handleOnClose}
+            onClick={() => handleOnClose()}
             buttonDataCy="editItemNameDialogCancelButton"
             buttonChildrenDataCy="editItemNameDialogCancelButtonText"
           >
