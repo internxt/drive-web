@@ -1,12 +1,18 @@
 /**
  * @jest-environment node
  */
-
 import { isValid } from '../../../src/app/crypto/services/utilspgp';
 import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
-import { encryptTextWithPassword, decryptTextWithPassword } from '../../../src/app/crypto/services/utils';
-
+import {
+  encryptTextWithPassword,
+  decryptTextWithPassword,
+  encryptText,
+  decryptText,
+  passToHash,
+} from '../../../src/app/crypto/services/utils';
+import { validateMnemonic } from 'bip39';
 import { config } from 'dotenv';
+import crypto from 'crypto';
 config();
 
 describe('# keys service tests', () => {
@@ -19,8 +25,52 @@ describe('# keys service tests', () => {
 
     const encrypted = encryptTextWithPassword(plainPrivateKey, password);
     const decrypted = decryptTextWithPassword(encrypted, password);
-
     expect(plainPrivateKey).toStrictEqual(decrypted);
+
+    const encryptedText = encryptText(plainPrivateKey);
+    const decryptedText = decryptText(encryptedText);
+    expect(plainPrivateKey).toStrictEqual(decryptedText);
+  });
+
+  it('Should have the expected ciphertext length', async () => {
+    const password = '1234 qwerty hola';
+
+    // when encrypt private key
+    const keys = await generateNewKeys();
+    const plainPrivateKey = keys.privateKeyArmored;
+    expect(isValid(plainPrivateKey)).toBeTruthy();
+    expect(plainPrivateKey.length).toStrictEqual(716);
+    // PrivateKey: expected length 64 (salt from scrypt) + 16 (iv) + 716 (enc private key) + 16 (tag) = 812
+    // 812 in base64  ceil(812/3)*4 = 271*4 = 1084
+    const encryptedPrivateKey = encryptTextWithPassword(plainPrivateKey, password);
+    expect(encryptedPrivateKey.length).toStrictEqual(1084);
+
+    // when encrypt mnemonic
+    const mnemonic =
+      'sponsor atom gun uncle ugly museum truth they opinion thunder front apart involve trim pair stove truck omit tornado abstract trip ignore include symptom';
+    expect(validateMnemonic(mnemonic)).toBeTruthy();
+    const encryptedMnemonic = encryptTextWithPassword(mnemonic, password);
+    // Mnemonic: expected length 64 (salt from scrypt) + 16 (iv) + 153 (enc mnemonic) + 16 (tag) = 249
+    // 249 in base64  ceil(249/3)*4 = 83*4 = 332
+    expect(encryptedMnemonic.length).toStrictEqual(332);
+
+    // when encrypt code
+    const code = crypto.randomBytes(32).toString('hex');
+    const encryptedCode = encryptTextWithPassword(code, mnemonic);
+    // Code: expected length 64 (salt from scrypt) + 16 (iv) + 64 (enc code) + 16 (tag) = 160
+    // 160 in base64  ceil(160/3)*4 = 54*4 = 216
+    expect(encryptedCode.length).toStrictEqual(216);
+
+    //when encrypt salt and hash
+    const hashObj = passToHash({ password });
+    const encryptedHash = encryptText(hashObj.hash);
+    // Hash: expected length 64 (salt) + 16 (iv) + 64 (enc hash) + 16 (tag) = 160
+    // 160 in base64  ceil(160/3)*4 = 54*4 = 216
+    expect(encryptedHash.length).toStrictEqual(216);
+    const encryptedSalt = encryptText(hashObj.salt);
+    // Salt: expected length 64 (salt from scrypt) + 16 (iv) + 32 (enc salt) + 16 (tag) = 128
+    // 128 in base64  ceil(128/3)*4 = 43*4 = 172
+    expect(encryptedSalt.length).toStrictEqual(172);
   });
 
   it('Should fail with incorrect password', async () => {
@@ -62,8 +112,6 @@ describe('# keys service tests', () => {
     const encrypted = encryptTextWithPassword(plainPrivateKey, password);
 
     const chr = String.fromCharCode(encrypted.charCodeAt(3) + 1);
-    console.log('before', encrypted.charAt(3));
-    console.log('after', chr);
     const alteredEncrypted = encrypted.substring(0, 3) + chr + encrypted.substring(4);
 
     expect(() => decryptTextWithPassword(alteredEncrypted, password)).toThrow('Decryption failed');
