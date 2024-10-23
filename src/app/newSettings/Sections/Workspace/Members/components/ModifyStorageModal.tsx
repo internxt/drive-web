@@ -1,9 +1,13 @@
+import { useState } from 'react';
 import { X } from '@phosphor-icons/react';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Modal from 'app/shared/components/Modal';
+import { Button, RangeSlider } from '@internxt/internxtui';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
+import Modal from '../../../../../shared/components/Modal';
 import UserCard from './UserCard';
-import { MemberRole } from 'app/newSettings/types/types';
-import { bytesToString } from 'app/drive/services/size.service';
+import { MemberRole } from '../../../../../newSettings/types/types';
+import { bytesToString } from '../../../../../drive/services/size.service';
+
+const MINIMUM_BYTES_TO_ASSIGN = 100 * 1024 * 1024;
 
 interface ModifyStorageModal {
   isOpen: boolean;
@@ -14,6 +18,7 @@ interface ModifyStorageModal {
   };
   memberStorage: string;
   memberEmail: string;
+  totalUsedStorage: string;
   isLoading?: boolean;
   onClose: () => void;
 }
@@ -24,11 +29,23 @@ export const ModifyStorageModal = ({
   memberName,
   memberEmail,
   memberStorage,
+  totalUsedStorage,
   isLoading,
   onClose,
 }: ModifyStorageModal): JSX.Element => {
   const { translate } = useTranslationContext();
-  const storage = bytesToString(Number(memberStorage));
+
+  const maxStorage = Number(memberStorage);
+  const initialStorage = Math.max(Number(totalUsedStorage), MINIMUM_BYTES_TO_ASSIGN);
+  const [newStorage, setNewStorage] = useState(initialStorage);
+
+  const spaceLeft = Math.max(maxStorage - newStorage, 0);
+  const formattedAssignedStorage = bytesToString(newStorage);
+  const formattedSpaceLeft = spaceLeft === 0 ? '-' : bytesToString(spaceLeft);
+
+  const handleSliderChange = (newValue: number) => {
+    setNewStorage(newValue);
+  };
 
   return (
     <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading}>
@@ -43,7 +60,7 @@ export const ModifyStorageModal = ({
           <X onClick={() => (isLoading ? null : onClose())} size={22} />
         </div>
       </div>
-      <div className="flex flex-col gap-4 p-5">
+      <div className="flex flex-col gap-6 p-5">
         <div className="flex w-full overflow-hidden rounded-xl border border-gray-10 drop-shadow">
           <table width={'100%'}>
             <colgroup>
@@ -52,7 +69,7 @@ export const ModifyStorageModal = ({
             </colgroup>
             <thead className="bg-gray-1">
               <tr>
-                <th scope="col" className="text-gray-500 py-3.5 pl-6 text-left text-sm  font-medium">
+                <th scope="col" className="text-gray-500 py-3.5 pl-6 text-left text-sm font-medium">
                   {translate('preferences.workspace.members.modifyStorageModal.user')}
                 </th>
                 <th scope="col" className="text-gray-500 text-left text-sm font-medium">
@@ -73,24 +90,48 @@ export const ModifyStorageModal = ({
                     role={memberRole}
                   />
                 </td>
-                <td className="text-gray-500 px-6 text-left text-sm font-medium">{storage}</td>
+                <td className="text-gray-500 px-6 text-left text-sm font-medium">{bytesToString(maxStorage)}</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div className="w-full-center flex flex-col rounded-xl border border-gray-10 bg-surface p-6 drop-shadow">
-          <div className="flex h-full w-full flex-row justify-center gap-8">
-            <div className="flex w-full max-w-[165px] flex-col items-start gap-0.5">
-              <p className="text-3xl font-medium text-gray-100">{storage}</p>
-              <p className="text-gray-60">
-                {translate('preferences.workspace.members.modifyStorageModal.spaceAssigned')}
-              </p>
+        <div className="flex w-full flex-col gap-2.5">
+          <div className="flex w-full flex-col gap-6 rounded-xl border border-gray-10 bg-surface p-6 drop-shadow">
+            <div className="flex h-full w-full flex-row justify-center gap-8">
+              <div className="flex w-full max-w-[165px] flex-col items-start gap-0.5">
+                <p className="text-3xl font-medium text-gray-100">{formattedAssignedStorage}</p>
+                <p className="text-gray-60">
+                  {translate('preferences.workspace.members.modifyStorageModal.spaceAssigned')}
+                </p>
+              </div>
+              <div className="flex flex-col border border-gray-1" />
+              <div className="flex w-full max-w-[165px] flex-col items-start gap-0.5">
+                <p className="text-3xl font-medium text-gray-100">{formattedSpaceLeft}</p>
+                <p className="text-gray-60">
+                  {translate('preferences.workspace.members.modifyStorageModal.spaceLeft')}
+                </p>
+              </div>
             </div>
-            <div className="flex flex-col border border-gray-1" />
-            <div className="flex w-full max-w-[165px] flex-col items-start gap-0.5">
-              <p className="text-3xl font-medium text-gray-100">{storage}</p>
-              <p className="text-gray-60">{translate('preferences.workspace.members.modifyStorageModal.spaceLeft')}</p>
-            </div>
+
+            <RangeSlider
+              value={newStorage}
+              min={initialStorage}
+              max={maxStorage + initialStorage}
+              step={0.1 * 1024 * 1024 * 1024}
+              onChange={handleSliderChange}
+              disabled={isLoading}
+              ariaLabel="Modify storage"
+              className="flex w-full flex-col"
+            />
+          </div>
+
+          <div className="flex w-full flex-row items-end justify-end gap-2">
+            <Button id={'cancel-button'} disabled={isLoading} variant="secondary" onClick={onClose}>
+              {translate('preferences.workspace.members.modifyStorageModal.cancel')}
+            </Button>
+            <Button loading={isLoading} disabled={isLoading}>
+              {translate('preferences.workspace.members.modifyStorageModal.saveChanges')}
+            </Button>
           </div>
         </div>
       </div>

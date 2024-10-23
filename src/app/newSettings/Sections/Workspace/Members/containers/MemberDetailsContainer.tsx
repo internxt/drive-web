@@ -280,6 +280,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
           name: member.member.name,
           lastName: member.member.lastname,
         }}
+        totalUsedStorage={member.usedSpace}
         memberRole={memberRole}
         isOpen={isModifyStorageModalOpen}
         onClose={() => setIsModifyStorageModalOpen(false)}
