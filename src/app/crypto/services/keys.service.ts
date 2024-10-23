@@ -50,7 +50,7 @@ export async function assertPrivateKeyIsValid(privateKey: string, password: stri
     privateKeyDecrypted = decryptPrivateKey(privateKey, password);
   } catch {
     try {
-      aes.decrypt(privateKey, password, 9999);
+      aes.decrypt(privateKey, password);
     } catch {
       throw new CorruptedEncryptedPrivateKeyError();
     }
@@ -90,10 +90,4 @@ export async function assertValidateKeys(privateKey: string, publicKey: string):
   if (decryptedMessage !== plainMessage) {
     throw new KeysDoNotMatchError();
   }
-}
-
-export function getAesInitFromEnv(): { iv: string; salt: string } {
-  const { REACT_APP_MAGIC_IV: MAGIC_IV, REACT_APP_MAGIC_SALT: MAGIC_SALT } = process.env;
-
-  return { iv: MAGIC_IV as string, salt: MAGIC_SALT as string };
 }

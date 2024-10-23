@@ -1,7 +1,6 @@
 import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
-import { getAesInitFromEnv } from '../services/keys.service';
 import { AdvancedSharedItem } from '../../share/types';
 
 interface PassObjectInterface {
@@ -23,32 +22,35 @@ function passToHash(passObject: PassObjectInterface): { salt: string; hash: stri
 
 // AES Plain text encryption method
 function encryptText(textToEncrypt: string): string {
-  return encryptTextWithKey(textToEncrypt, process.env.REACT_APP_CRYPTO_SECRET);
+  return encryptTextWithPassword(textToEncrypt, process.env.REACT_APP_CRYPTO_SECRET);
 }
 
 // AES Plain text decryption method
 function decryptText(encryptedText: string): string {
-  return decryptTextWithKey(encryptedText, process.env.REACT_APP_CRYPTO_SECRET);
+  return decryptTextWithPassword(encryptedText, process.env.REACT_APP_CRYPTO_SECRET);
 }
 
 // AES Plain text encryption method with enc. key
-function encryptTextWithKey(textToEncrypt: string, keyToEncrypt: string): string {
-  const bytes = CryptoJS.AES.encrypt(textToEncrypt, keyToEncrypt).toString();
-  const text64 = CryptoJS.enc.Base64.parse(bytes);
+function encryptTextWithPassword(textToEncrypt: string, password: string): string {
+  if (!password) {
+    throw new Error('No password given');
+  }
 
-  return text64.toString(CryptoJS.enc.Hex);
+  return aes.encrypt(textToEncrypt, password);
 }
 
 // AES Plain text decryption method with enc. key
-function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string {
+function decryptTextWithPassword(encryptedText: string, keyToDecrypt: string): string {
   if (!keyToDecrypt) {
-    throw new Error('No key defined. Check .env file');
+    throw new Error('No password given');
   }
 
-  const reb = CryptoJS.enc.Hex.parse(encryptedText);
-  const bytes = CryptoJS.AES.decrypt(reb.toString(CryptoJS.enc.Base64), keyToDecrypt);
-
-  return bytes.toString(CryptoJS.enc.Utf8);
+  try {
+    const decrypted = aes.decrypt(encryptedText, keyToDecrypt);
+    return decrypted;
+  } catch (error) {
+    throw new Error('Decryption failed');
+  }
 }
 
 function encryptFilename(filename: string, folderId: number): string {
@@ -58,7 +60,7 @@ function encryptFilename(filename: string, folderId: number): string {
     throw new Error('Cannot encrypt filename due to missing encryption key');
   }
 
-  return aes.encrypt(filename, `${CRYPTO_KEY}-${folderId}`, getAesInitFromEnv());
+  return encryptTextWithPassword(filename, `${CRYPTO_KEY}-${folderId}`);
 }
 
 function excludeHiddenItems(items: DriveItemData[]): DriveItemData[] {
@@ -90,8 +92,8 @@ export {
   encryptText,
   decryptText,
   encryptFilename,
-  encryptTextWithKey,
-  decryptTextWithKey,
+  encryptTextWithPassword,
+  decryptTextWithPassword,
   excludeHiddenItems,
   renameFile,
   getItemPlainName,

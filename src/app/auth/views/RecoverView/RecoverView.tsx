@@ -13,7 +13,7 @@ import errorService from 'app/core/services/error.service';
 import { AppView, IFormValues, LocalStorageItem } from 'app/core/types';
 import navigationService from 'app/core/services/navigation.service';
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
-import { decryptTextWithKey } from '../../../crypto/services/utils';
+import { decryptTextWithPassword } from '../../../crypto/services/utils';
 import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Link } from 'react-router-dom';
@@ -97,7 +97,7 @@ export default function RecoverView(): JSX.Element {
   ): Promise<void> => {
     const mnemonic = user.mnemonic;
 
-    const clearMnemonic = decryptTextWithKey(mnemonic, last_password);
+    const clearMnemonic = decryptTextWithPassword(mnemonic, last_password);
     const isCorrupted = checkIfMnemonicIsCorrupted(clearMnemonic);
 
     if (isCorrupted) {
