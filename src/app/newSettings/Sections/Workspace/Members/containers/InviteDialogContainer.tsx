@@ -11,21 +11,33 @@ import notificationsService, { ToastType } from '../../../../../notifications/se
 import { RootState } from '../../../../../store';
 import UserInviteDialog from '../InviteDialog';
 
+export interface InvitationData {
+  email: string;
+  storage?: number;
+}
+
 const InviteDialogContainer = ({ isOpen, onClose }) => {
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const user = useSelector((state: RootState) => state.user.user);
 
-  const processWorkspaceInvitation = async (emailList: string[], messageText: string) => {
+  const processWorkspaceInvitation = async (userData: InvitationData[], messageText: string) => {
     if (selectedWorkspace && user) {
-      const invitePromises = emailList.map((email) => {
-        return processInvitation(user, email, selectedWorkspace.workspace.id, messageText);
+      const invitePromises = userData.map((userData) => {
+        return processInvitation(user, userData.email, selectedWorkspace.workspace.id, messageText, userData.storage);
       });
 
       await Promise.all(invitePromises);
     }
   };
 
-  return <UserInviteDialog isOpen={isOpen} onClose={onClose} processInvitation={processWorkspaceInvitation} />;
+  return (
+    <UserInviteDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      maxSpaceAllowed={selectedWorkspace?.workspaceUser.spaceLimit as string}
+      processInvitation={processWorkspaceInvitation}
+    />
+  );
 };
 
 const processInvitation = async (
@@ -33,6 +45,7 @@ const processInvitation = async (
   email: string,
   workspaceId: string,
   messageText: string,
+  customSpace?: number,
 ) => {
   try {
     if (!user) {
@@ -60,15 +73,13 @@ const processInvitation = async (
     });
 
     const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
-
-    // TODO: CHECK WHEN BACKEND ADD DEFUALT WORKSPACE LIMIT FOR MVP
     await workspacesService.inviteUserToTeam({
       workspaceId: workspaceId,
       invitedUserEmail: email,
-      spaceLimitBytes: 52428800,
       encryptedMnemonicInBase64: encryptedMnemonicInBase64,
       encryptionAlgorithm: 'aes-256-gcm',
       message: messageText,
+      spaceLimitBytes: customSpace ?? 52428800,
     });
 
     notificationsService.show({

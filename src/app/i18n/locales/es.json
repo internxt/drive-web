@@ -1250,6 +1250,7 @@
     "linkUpdated": "Enlace actualizado",
     "itemsMovedToTrash": "{{item}} movid{{s}} a la papelera",
     "restoreItems": "{{itemsToRecover}} restaurad{{s}} con éxito",
+    "storageModified": "Almacenamiento modificado con éxito",
     "moveItems": "{{itemsToMove}} movid{{s}} con éxito",
     "itemDeleted": "{{item}} eliminado",
     "itemsDeleted": "Archivos eliminados",
@@ -1516,6 +1517,14 @@
           "manager": "Manager",
           "member": "Miembro",
           "deactivated": "Desactivado"
+        },
+        "modifyStorageModal": {
+          "user": "Usuario",
+          "storage": "Almacenamiento",
+          "spaceAssigned": "Espacio asignado",
+          "spaceLeft": "Espacio total restante",
+          "cancel": "Cancelar",
+          "saveChanges": "Guardar cambios"
         },
         "deactivationModal": {
           "title": "Desactivar miembro",
