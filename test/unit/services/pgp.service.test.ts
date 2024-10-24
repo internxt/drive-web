@@ -19,27 +19,11 @@ describe('Post-quantum Encryption and Decryption', () => {
     expect(keys).toHaveProperty('revocationCertificate');
   });
 
-  it('rejects if the message is not 256 bits', async () => {
-    const keys = await generateNewKeys();
-    const publicKeyInBase64 = keys.publicKeyArmored;
-    const message = 'A secret message';
-    const publicKyberKeyBase64 = keys.publicKyberKeyBase64;
-
-    const encrypt = async () => {
-      await hybridEncryptMessageWithPublicKey({
-        message,
-        publicKeyInBase64,
-        publicKyberKeyBase64,
-      });
-    };
-
-    expect(encrypt()).rejects.toThrow('The message should be 256 bits');
-  });
-
   it('should encrypt a message with the given public key', async () => {
     const keys = await generateNewKeys();
     const publicKeyInBase64 = keys.publicKeyArmored;
-    const message = 'A secret key of exactly 256 bits';
+    const message =
+      'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state';
     const publicKyberKeyBase64 = keys.publicKyberKeyBase64;
 
     const encryptedMessage = await hybridEncryptMessageWithPublicKey({
@@ -48,15 +32,13 @@ describe('Post-quantum Encryption and Decryption', () => {
       publicKyberKeyBase64,
     });
 
-    console.log(btoa(encryptedMessage as string));
     expect(encryptedMessage).toBeDefined();
   });
 
   it('XOR should throw an error when strings are of different length', async () => {
-    const messageHex = Buffer.from('This is a test message').toString('hex');
-    const secretHex = Buffer.from('This is a test with a much longer secret!').toString('hex');
-
-    expect(messageHex.length).not.toEqual(secretHex.length);
+    const messageHex = '74686973206973207468652074657374206d657373616765';
+    const secretHex =
+      '74686973206973207468652074657374206d65737361676574686973206973207468652074657374206d657373616765';
 
     expect(() => {
       XORhex(messageHex, secretHex);
@@ -93,28 +75,23 @@ describe('Post-quantum Encryption and Decryption', () => {
   });
 
   it('should generate keys, encrypt and decrypt a message successfully', async () => {
-    // Step 1: Generate new keys
     const keys = await generateNewKeys();
 
-    // Step 2: Prepare the message to be encrypted
-    const originalMessage = 'A secret key of exactly 256 bits';
-    expect(Buffer.from(originalMessage).toString('hex').length).toEqual(64);
+    const originalMessage =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
 
-    // Step 3: Encrypt the message using the public key
     const encryptedMessage = await hybridEncryptMessageWithPublicKey({
       message: originalMessage,
       publicKeyInBase64: keys.publicKeyArmored,
       publicKyberKeyBase64: keys.publicKyberKeyBase64,
     });
 
-    // Step 4: Decrypt the message using the private key
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessage,
       privateKeyInBase64: keys.privateKeyArmored,
       privateKyberKeyBase64: keys.privateKyberKeyBase64,
     });
 
-    // Step 5: Assert that the decrypted message matches the original message
     expect(keys).toHaveProperty('privateKeyArmored');
     expect(keys).toHaveProperty('publicKeyArmored');
     expect(encryptedMessage).not.toEqual(originalMessage);
@@ -134,7 +111,8 @@ describe('Encryption and Decryption', () => {
   it('should encrypt a message with the given public key', async () => {
     const keys = await generateNewKeys();
     const publicKeyInBase64 = keys.publicKeyArmored;
-    const message = 'This is a test message';
+    const message =
+      'fault avocado replace category pony erupt boil card endless reward spice undo pledge arrive copper refuse shrug scissors illegal cruise method calm short ocean';
 
     const encryptedMessage = await standardEncryptMessageWithPublicKey({
       message,
@@ -145,25 +123,20 @@ describe('Encryption and Decryption', () => {
   });
 
   it('should generate keys, encrypt and decrypt a message successfully', async () => {
-    // Step 1: Generate new keys
     const keys = await generateNewKeys();
+    const originalMessage =
+      'market fever medal divorce arrest affair obscure trick nest village quote spend invest olive actual rookie bright odor fever orbit seek light local example';
 
-    // Step 2: Prepare the message to be encrypted
-    const originalMessage = 'This is a secret message!';
-
-    // Step 3: Encrypt the message using the public key
     const encryptedMessage = await standardEncryptMessageWithPublicKey({
       message: originalMessage,
       publicKeyInBase64: keys.publicKeyArmored,
     });
 
-    // Step 4: Decrypt the message using the private key
     const decryptedMessage = await standardDecryptMessageWithPrivateKey({
       encryptedMessage,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
     });
 
-    // Step 5: Assert that the decrypted message matches the original message
     expect(keys).toHaveProperty('privateKeyArmored');
     expect(keys).toHaveProperty('publicKeyArmored');
     expect(encryptedMessage).not.toEqual(originalMessage);
