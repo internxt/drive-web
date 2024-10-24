@@ -35,41 +35,35 @@ describe('# keys service tests', () => {
   it('Should have the expected ciphertext length', async () => {
     const password = '1234 qwerty hola';
 
-    // when encrypt private key
+    /**
+     * Expected ciphertext length:
+     *        N = 64 (salt) + 16 (iv) + X (message) + 16 (auth tag)
+     * N in base64:
+     *        L = ceil(N/3)*4
+     */
+
     const keys = await generateNewKeys();
     const plainPrivateKey = keys.privateKeyArmored;
     expect(isValid(plainPrivateKey)).toBeTruthy();
     expect(plainPrivateKey.length).toStrictEqual(716);
-    // PrivateKey: expected length 64 (salt from scrypt) + 16 (iv) + 716 (enc private key) + 16 (tag) = 812
-    // 812 in base64  ceil(812/3)*4 = 271*4 = 1084
     const encryptedPrivateKey = encryptTextWithPassword(plainPrivateKey, password);
     expect(encryptedPrivateKey.length).toStrictEqual(1084);
 
-    // when encrypt mnemonic
     const mnemonic =
       'sponsor atom gun uncle ugly museum truth they opinion thunder front apart involve trim pair stove truck omit tornado abstract trip ignore include symptom';
     expect(validateMnemonic(mnemonic)).toBeTruthy();
     const encryptedMnemonic = encryptTextWithPassword(mnemonic, password);
-    // Mnemonic: expected length 64 (salt from scrypt) + 16 (iv) + 153 (enc mnemonic) + 16 (tag) = 249
-    // 249 in base64  ceil(249/3)*4 = 83*4 = 332
     expect(encryptedMnemonic.length).toStrictEqual(332);
 
-    // when encrypt code
     const code = crypto.randomBytes(32).toString('hex');
     const encryptedCode = encryptTextWithPassword(code, mnemonic);
-    // Code: expected length 64 (salt from scrypt) + 16 (iv) + 64 (enc code) + 16 (tag) = 160
-    // 160 in base64  ceil(160/3)*4 = 54*4 = 216
     expect(encryptedCode.length).toStrictEqual(216);
 
-    //when encrypt salt and hash
     const hashObj = passToHash({ password });
     const encryptedHash = encryptText(hashObj.hash);
-    // Hash: expected length 64 (salt) + 16 (iv) + 64 (enc hash) + 16 (tag) = 160
-    // 160 in base64  ceil(160/3)*4 = 54*4 = 216
     expect(encryptedHash.length).toStrictEqual(216);
+
     const encryptedSalt = encryptText(hashObj.salt);
-    // Salt: expected length 64 (salt from scrypt) + 16 (iv) + 32 (enc salt) + 16 (tag) = 128
-    // 128 in base64  ceil(128/3)*4 = 43*4 = 172
     expect(encryptedSalt.length).toStrictEqual(172);
   });
 
