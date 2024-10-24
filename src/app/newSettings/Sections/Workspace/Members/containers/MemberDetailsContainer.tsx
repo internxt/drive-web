@@ -5,10 +5,10 @@ import workspacesService from 'app/core/services/workspace.service';
 import Usage from 'app/newSettings/components/Usage/Usage';
 import { getMemberRole } from 'app/newSettings/utils/membersUtils';
 import { useAppSelector } from 'app/store/hooks';
-import { planThunks } from 'app/store/slices/plan';
+import { PlanState, planThunks } from 'app/store/slices/plan';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Card from '../../../../../shared/components/Card';
 import { MemberRole, Teams, TypeTabs } from '../../../../types/types';
@@ -21,7 +21,8 @@ import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import TeamsTab from '../components/TeamsTab';
 import UserCard from '../components/UserCard';
 import { Spinner } from '@internxt/internxtui';
-import { ModifyStorageModal } from '../components/ModifyStorageModal';
+import { ActionDialog, useActionDialog } from 'hooks/dialogManager/ActionDialogManager.context';
+import { RootState } from 'app/store';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;
@@ -33,9 +34,11 @@ interface MemberDetailsContainer {
 const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselectMember }: MemberDetailsContainer) => {
   const dispatch = useDispatch();
   const { translate } = useTranslationContext();
+  const { openDialog } = useActionDialog();
   const user = useAppSelector((state) => state.user.user);
+
+  const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
-  const [isModifyStorageModalOpen, setIsModifyStorageModalOpen] = useState<boolean>(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState<boolean>(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState<boolean>(false);
   const [isDeactivatingMember, setIsDeactivatingMember] = useState<boolean>(false);
@@ -201,7 +204,23 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
                   <span className="truncate">{translate('preferences.workspace.members.actions.passwordChange')}</span>
                 </button> */}
                   <button
-                    onClick={() => setIsModifyStorageModalOpen(true)}
+                    onClick={() =>
+                      openDialog(ActionDialog.ModifyStorage, {
+                        data: {
+                          totalUsageAllowed: plan.businessPlanLimit,
+                          memberRole,
+                          memberName: {
+                            name: member.member.name,
+                            lastName: member.member.lastname,
+                          },
+                          memberEmail: member.member.email,
+                          memberSpace: member.spaceLimit,
+                          totalUsedStorage: member.usedSpace,
+                          isLoading: false,
+                          onUpdateUserStorage: () => {},
+                        },
+                      })
+                    }
                     className="flex h-10 w-full items-center rounded-b-md px-3 hover:bg-gray-5 dark:hover:bg-gray-20"
                   >
                     <span className="truncate">{translate('preferences.workspace.members.actions.modifyStorage')}</span>
@@ -273,18 +292,6 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
       </Card>
       {/* NOT INCLUDED IN INITIAL SCOPE OF MVP */}
       {/* <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} /> */}
-      <ModifyStorageModal
-        memberEmail={member.member.email}
-        memberStorage={member.spaceLimit}
-        memberName={{
-          name: member.member.name,
-          lastName: member.member.lastname,
-        }}
-        totalUsedStorage={member.usedSpace}
-        memberRole={memberRole}
-        isOpen={isModifyStorageModalOpen}
-        onClose={() => setIsModifyStorageModalOpen(false)}
-      />
       <DeactivateMemberModal
         name={member.member.name + ' ' + member.member.lastname}
         isOpen={isDeactivateModalOpen}

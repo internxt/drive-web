@@ -11,11 +11,14 @@ import Modal from '../../../../shared/components/Modal';
 import BaseCheckbox from '../../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
 import TextArea from '../../Account/Account/components/TextArea';
 import UserCard from './components/UserCard';
+import { InvitationData } from './containers/InviteDialogContainer';
+import { ActionDialog, useActionDialog } from 'hooks/dialogManager/ActionDialogManager.context';
 
 interface UserInviteDialogProps {
   isOpen: boolean;
+  maxSpaceAllowed: string;
   onClose: () => void;
-  processInvitation: (emailList: string[], messageText: string) => Promise<void>;
+  processInvitation: (userData: InvitationData[], messageText: string) => Promise<void>;
 }
 
 type UsersToInvite = {
@@ -24,11 +27,18 @@ type UsersToInvite = {
   lastname: string;
   email: string;
   avatar: null | string;
+  storage?: number;
 };
 
-const UserInviteDialog = ({ isOpen, onClose, processInvitation }: UserInviteDialogProps): JSX.Element => {
+const UserInviteDialog = ({
+  isOpen,
+  maxSpaceAllowed,
+  onClose,
+  processInvitation,
+}: UserInviteDialogProps): JSX.Element => {
   const { handleSubmit } = useForm<IFormValues>({ mode: 'onChange' });
   const { translate } = useTranslationContext();
+  const { openDialog, closeDialog } = useActionDialog();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [emailAccent, setEmailAccent] = useState<string>('');
@@ -60,7 +70,10 @@ const UserInviteDialog = ({ isOpen, onClose, processInvitation }: UserInviteDial
   const onInviteUser = async () => {
     setIsLoading(true);
 
-    const emailList = usersToInvite.map((user) => user.email);
+    const emailList = usersToInvite.map((user) => ({
+      email: user.email,
+      storage: user.storage,
+    }));
     await processInvitation(emailList, messageText);
 
     setUsersToInvite([]);
@@ -112,9 +125,41 @@ const UserInviteDialog = ({ isOpen, onClose, processInvitation }: UserInviteDial
         {usersToInvite.map(({ id, name, lastname, email: userEmail }) => (
           <div key={id} className="flex flex-row justify-between py-2">
             <UserCard name={name} lastName={lastname} email={userEmail} avatarSrc={''} />
-            <Button variant="secondary" className="h-8" disabled={isLoading} onClick={() => onRemoveUser(userEmail)}>
-              {translate('preferences.workspace.members.inviteDialog.remove')}
-            </Button>
+            <div className="flex flex-row gap-2">
+              <Button variant="secondary" className="h-8" disabled={isLoading} onClick={() => onRemoveUser(userEmail)}>
+                {translate('preferences.workspace.members.inviteDialog.remove')}
+              </Button>
+              <Button
+                variant="secondary"
+                className="h-8"
+                disabled={isLoading}
+                onClick={() =>
+                  openDialog(ActionDialog.ModifyStorage, {
+                    data: {
+                      totalUsageAllowed: maxSpaceAllowed,
+                      totalUsedStorage: 0,
+                      isLoading: false,
+                      onUpdateUserStorage: (newStorage: number) => {
+                        const updatedUsers = usersToInvite.map((user) => {
+                          if (user.id === id) {
+                            return {
+                              ...user,
+                              storage: newStorage,
+                            };
+                          }
+                          return user;
+                        });
+
+                        setUsersToInvite(updatedUsers);
+                        closeDialog(ActionDialog.ModifyStorage);
+                      },
+                    },
+                  })
+                }
+              >
+                Storage
+              </Button>
+            </div>
           </div>
         ))}
         <Card className="mt-6 dark:bg-gray-5">
