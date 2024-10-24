@@ -95,32 +95,6 @@ export const ModifyStorageModal = (): JSX.Element => {
               handleSliderChange={handleSliderChange}
               translate={translate}
             />
-            <div className="flex h-full w-full flex-row justify-center gap-8">
-              <div className="flex w-full max-w-[165px] flex-col items-start gap-0.5">
-                <p className="text-3xl font-medium text-gray-100">{formattedAssignedStorage}</p>
-                <p className="text-gray-60">
-                  {translate('preferences.workspace.members.modifyStorageModal.spaceAssigned')}
-                </p>
-              </div>
-              <div className="flex flex-col border border-gray-1" />
-              <div className="flex w-full max-w-[165px] flex-col items-start gap-0.5">
-                <p className="text-3xl font-medium text-gray-100">{formattedSpaceLeft}</p>
-                <p className="text-gray-60">
-                  {translate('preferences.workspace.members.modifyStorageModal.spaceLeft')}
-                </p>
-              </div>
-            </div>
-
-            <RangeSlider
-              value={newStorage}
-              min={minimumUserStorage}
-              max={maxStorageForWorkspaceMember + minimumUserStorage}
-              step={100 * 1024 * 1024}
-              onChange={handleSliderChange}
-              disabled={isLoading}
-              ariaLabel="Modify storage"
-              className="flex w-full flex-col"
-            />
           </div>
 
           <div className="flex w-full flex-row items-end justify-end gap-2">
