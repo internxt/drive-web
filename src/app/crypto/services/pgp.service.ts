@@ -1,10 +1,12 @@
 import kemBuilder from '@dashlane/pqc-kem-kyber512-browser';
 import { WebStream, MaybeStream, Data } from 'openpgp';
 import { Buffer } from 'buffer';
+import { blake3 } from 'hash-wasm';
 
 export async function getOpenpgp(): Promise<typeof import('openpgp')> {
   return import('openpgp');
 }
+
 export async function generateNewKeys(): Promise<{
   privateKeyArmored: string;
   publicKeyArmored: string;
@@ -48,7 +50,7 @@ export function XORhex(a: string, b: string): string {
   return res;
 }
 
-export const encryptMessageWithPublicKey = async ({
+export const hybridEncryptMessageWithPublicKey = async ({
   message,
   publicKeyInBase64,
   publicKyberKeyBase64,
@@ -57,9 +59,6 @@ export const encryptMessageWithPublicKey = async ({
   publicKeyInBase64: string;
   publicKyberKeyBase64: string;
 }): Promise<string> => {
-  if (message.length != 32) {
-    return Promise.reject(new Error('The message should be 256 bits'));
-  }
   const openpgp = await getOpenpgp();
   const kem = await kemBuilder();
 
@@ -69,12 +68,12 @@ export const encryptMessageWithPublicKey = async ({
   const publicKyberKey = Buffer.from(publicKyberKeyBase64, 'base64');
   const { ciphertext, sharedSecret: secret } = await kem.encapsulate(new Uint8Array(publicKyberKey));
   const kyberCiphertextStr = Buffer.from(ciphertext).toString('base64');
-  const secretHex = Buffer.from(secret).toString('hex');
+
+  const bits = message.length * 8;
+  const secretHex = await blake3(secret, bits);
   const messageHex = Buffer.from(message).toString('hex');
 
-  // message should be the same length as secret, which is 256 bits
   const xoredMessage = XORhex(messageHex, secretHex);
-
   const encryptedMessage = await openpgp.encrypt({
     message: await openpgp.createMessage({ text: xoredMessage }),
     encryptionKeys: publicKey,
@@ -87,7 +86,7 @@ export const encryptMessageWithPublicKey = async ({
   return combinedCiphertext;
 };
 
-export const decryptMessageWithPrivateKey = async ({
+export const hybridDecryptMessageWithPrivateKey = async ({
   encryptedMessage,
   privateKeyInBase64,
   privateKyberKeyBase64,
@@ -95,7 +94,7 @@ export const decryptMessageWithPrivateKey = async ({
   encryptedMessage: string;
   privateKeyInBase64: string;
   privateKyberKeyBase64: string;
-}): Promise<MaybeStream<Data> & WebStream<Uint8Array>> => {
+}): Promise<string> => {
   const openpgp = await getOpenpgp();
   const kem = await kemBuilder();
 
@@ -109,7 +108,6 @@ export const decryptMessageWithPrivateKey = async ({
     new Uint8Array(kyberCiphertext),
     new Uint8Array(privateKyberKey),
   );
-  const secretHex = Buffer.from(secret).toString('hex');
 
   const message = await openpgp.readMessage({
     armoredMessage: atob(eccCiphertextStr),
@@ -122,8 +120,55 @@ export const decryptMessageWithPrivateKey = async ({
   });
 
   const decryptedMessageHex = decryptedMessage as string;
+  const bits = decryptedMessageHex.length * 4;
+  const secretHex = await blake3(secret, bits);
   const result = XORhex(decryptedMessageHex, secretHex);
+
   const resultStr = Buffer.from(result, 'hex').toString('utf8');
 
   return resultStr;
+};
+
+export const standardEncryptMessageWithPublicKey = async ({
+  message,
+  publicKeyInBase64,
+}: {
+  message: string;
+  publicKeyInBase64: string;
+}): Promise<WebStream<string>> => {
+  const openpgp = await getOpenpgp();
+
+  const publicKeyArmored = Buffer.from(publicKeyInBase64, 'base64').toString();
+  const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
+
+  const encryptedMessage = await openpgp.encrypt({
+    message: await openpgp.createMessage({ text: message }),
+    encryptionKeys: publicKey,
+  });
+
+  return encryptedMessage;
+};
+
+export const standardDecryptMessageWithPrivateKey = async ({
+  encryptedMessage,
+  privateKeyInBase64,
+}: {
+  encryptedMessage: WebStream<string>;
+  privateKeyInBase64: string;
+}): Promise<MaybeStream<Data> & WebStream<Uint8Array>> => {
+  const openpgp = await getOpenpgp();
+
+  const privateKeyArmored = Buffer.from(privateKeyInBase64, 'base64').toString();
+  const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyArmored });
+
+  const message = await openpgp.readMessage({
+    armoredMessage: encryptedMessage,
+  });
+
+  const { data: decryptedMessage } = await openpgp.decrypt({
+    message,
+    decryptionKeys: privateKey,
+  });
+
+  return decryptedMessage;
 };

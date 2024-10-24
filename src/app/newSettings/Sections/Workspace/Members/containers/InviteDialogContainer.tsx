@@ -6,7 +6,10 @@ import errorService from '../../../../../core/services/error.service';
 import navigationService from '../../../../../core/services/navigation.service';
 import workspacesService from '../../../../../core/services/workspace.service';
 import { AppView } from '../../../../../core/types';
-import { encryptMessageWithPublicKey } from '../../../../../crypto/services/pgp.service';
+import {
+  hybridEncryptMessageWithPublicKey,
+  standardEncryptMessageWithPublicKey,
+} from '../../../../../crypto/services/pgp.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import { RootState } from '../../../../../store';
 import UserInviteDialog from '../InviteDialog';
@@ -57,12 +60,21 @@ const processInvitation = async (
       publicKyberKey = preCreatedUserResponse.publicKyberKey;
     }
 
-    const encryptedMnemonicInBase64 = await encryptMessageWithPublicKey({
-      message: mnemonic,
-      publicKeyInBase64: publicKey,
-      publicKyberKeyBase64: publicKyberKey,
-    });
-
+    let encryptedMnemonicInBase64;
+    let hybridModeEnabled = false;
+    if (publicKyberKey) {
+      encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
+        message: mnemonic,
+        publicKeyInBase64: publicKey,
+        publicKyberKeyBase64: publicKyberKey,
+      });
+      hybridModeEnabled = true;
+    } else {
+      encryptedMnemonicInBase64 = await standardEncryptMessageWithPublicKey({
+        message: mnemonic,
+        publicKeyInBase64: publicKey,
+      });
+    }
     // TODO: CHECK WHEN BACKEND ADD DEFUALT WORKSPACE LIMIT FOR MVP
     await workspacesService.inviteUserToTeam({
       workspaceId: workspaceId,
@@ -71,6 +83,7 @@ const processInvitation = async (
       encryptedMnemonicInBase64: encryptedMnemonicInBase64,
       encryptionAlgorithm: 'aes-256-gcm',
       message: messageText,
+      hybridModeEnabled: hybridModeEnabled,
     });
 
     notificationsService.show({

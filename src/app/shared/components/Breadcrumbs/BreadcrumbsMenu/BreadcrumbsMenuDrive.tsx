@@ -72,7 +72,7 @@ const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
 
   const onCopyLinkButtonClicked = () => {
     const item = currentFolder[0];
-    shareService.getPublicShareLink(item.uuid as string, item.isFolder ? 'folder' : 'file');
+    shareService.getPublicShareLink(item.uuid as string, item.isFolder ? 'folder' : 'file', false);
   };
 
   const onMoveButtonClicked = () => {

@@ -10,6 +10,7 @@ export type AdvancedSharedItem = SharedFolders &
     sharingId?: string;
     sharingType: 'public' | 'private';
     encryptedPassword: string | null;
+    hybridModeEnabled: boolean | false;
   };
 
 export type SharedNetworkCredentials = {

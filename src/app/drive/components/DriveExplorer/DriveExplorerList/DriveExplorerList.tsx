@@ -249,7 +249,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const getLink = useCallback(
     (item: ContextMenuDriveItem) => {
       const driveItem = item as DriveItemData;
-      shareService.getPublicShareLink(driveItem.uuid, driveItem.isFolder ? 'folder' : 'file');
+      shareService.getPublicShareLink(driveItem.uuid, driveItem.isFolder ? 'folder' : 'file', false);
     },
     [dispatch, sharedThunks],
   );
@@ -257,7 +257,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const copyLink = useCallback(
     (item: ContextMenuDriveItem) => {
       const driveItem = item as DriveItemData;
-      shareService.getPublicShareLink(driveItem.uuid, driveItem.isFolder ? 'folder' : 'file');
+      shareService.getPublicShareLink(driveItem.uuid, driveItem.isFolder ? 'folder' : 'file', false);
     },
     [dispatch, sharedThunks],
   );
