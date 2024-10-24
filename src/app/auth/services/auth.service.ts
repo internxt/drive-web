@@ -1,4 +1,3 @@
-import { aes } from '@internxt/lib';
 import {
   CryptoProvider,
   Keys,
@@ -14,18 +13,13 @@ import analyticsService from 'app/analytics/services/analytics.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import localStorageService from 'app/core/services/local-storage.service';
 import RealtimeService from 'app/core/services/socket.service';
-import {
-  assertPrivateKeyIsValid,
-  assertValidateKeys,
-  decryptPrivateKey,
-  getAesInitFromEnv,
-} from 'app/crypto/services/keys.service';
+import { assertPrivateKeyIsValid, assertValidateKeys, decryptPrivateKey } from 'app/crypto/services/keys.service';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import {
   decryptText,
-  decryptTextWithKey,
+  decryptTextWithPassword,
   encryptText,
-  encryptTextWithKey,
+  encryptTextWithPassword,
   passToHash,
 } from 'app/crypto/services/utils';
 import databaseService from 'app/database/services/database.service';
@@ -66,7 +60,7 @@ const generateNewKeysWithEncrypted = async (password: string) => {
 
   return {
     privateKeyArmored,
-    privateKeyArmoredEncrypted: aes.encrypt(privateKeyArmored, password, getAesInitFromEnv()),
+    privateKeyArmoredEncrypted: encryptTextWithPassword(privateKeyArmored, password),
     publicKeyArmored,
     revocationCertificate,
   };
@@ -139,7 +133,7 @@ export const doLogin = async (
         );
       }
 
-      const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
+      const clearMnemonic = decryptTextWithPassword(user.mnemonic, password);
       const clearUser = {
         ...user,
         mnemonic: clearMnemonic,
@@ -205,9 +199,7 @@ const updateCredentialsWithToken = async (
   const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
   const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
 
-  const encryptedMnemonic = encryptTextWithKey(mnemonicInPlain, newPassword);
-  // const privateKey = Buffer.from(privateKeyInPlain, 'base64').toString();
-  // const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
+  const encryptedMnemonic = encryptTextWithPassword(mnemonicInPlain, newPassword);
 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.changePasswordWithLink(
@@ -226,7 +218,7 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
     throw new Error('Invalid mnemonic');
   }
 
-  const encryptedNewMnemonic = encryptTextWithKey(newMnemonic, newPassword);
+  const encryptedNewMnemonic = encryptTextWithPassword(newMnemonic, newPassword);
 
   const hashedNewPassword = passToHash({ password: newPassword });
   const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
@@ -253,9 +245,9 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const encryptedNewSalt = encryptText(hashedNewPassword.salt);
 
   // Encrypt the mnemonic
-  const encryptedMnemonic = encryptTextWithKey(user.mnemonic, newPassword);
+  const encryptedMnemonic = encryptTextWithPassword(user.mnemonic, newPassword);
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
-  const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
+  const privateKeyEncrypted = encryptTextWithPassword(privateKey, newPassword);
 
   const usersClient = SdkFactory.getInstance().createUsersClient();
 

@@ -37,6 +37,7 @@ import {
   downloadItemsThunk,
 } from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { domainManager } from './DomainManager';
+import { encryptTextWithPassword } from 'app/crypto/services/utils';
 
 interface CreateShareResponse {
   created: boolean;
@@ -322,9 +323,9 @@ export const createPublicShareFromOwnerUser = async (
   const { mnemonic } = user;
   const code = crypto.randomBytes(32).toString('hex');
 
-  const encryptedMnemonic = aes.encrypt(mnemonic, code);
-  const encryptedCode = aes.encrypt(code, mnemonic);
-  const encryptedPassword = plainPassword ? aes.encrypt(plainPassword, code) : null;
+  const encryptedMnemonic = encryptTextWithPassword(mnemonic, code);
+  const encryptedCode = encryptTextWithPassword(code, mnemonic);
+  const encryptedPassword = plainPassword ? encryptTextWithPassword(plainPassword, code) : null;
 
   return createPublicSharingItem({
     encryptionAlgorithm: encryptionAlgorithm ?? 'inxt-v2',
@@ -809,7 +810,7 @@ export function saveSharingPassword(
   encryptedCode: string,
 ): Promise<SharingMeta> {
   const code = shareService.decryptPublicSharingCodeWithOwner(encryptedCode);
-  const encryptedPassword = aes.encrypt(plainPassword, code);
+  const encryptedPassword = encryptTextWithPassword(plainPassword, code);
 
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.saveSharingPassword(sharingId, encryptedPassword).catch((error) => {

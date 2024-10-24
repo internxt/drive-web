@@ -1,4 +1,3 @@
-import { aes } from '@internxt/lib';
 import { Keys, RegisterDetails } from '@internxt/sdk';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as bip39 from 'bip39';
@@ -6,9 +5,8 @@ import * as bip39 from 'bip39';
 import { readReferalCookie } from 'app/auth/services/auth.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import httpService from 'app/core/services/http.service';
-import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
-import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
+import { decryptTextWithPassword, encryptText, encryptTextWithPassword, passToHash } from 'app/crypto/services/utils';
 
 type UpdateInfoFunction = (
   email: string,
@@ -55,7 +53,7 @@ export function useSignUp(
 
     // Setup mnemonic
     const mnemonic = bip39.generateMnemonic(256);
-    const encMnemonic = encryptTextWithKey(mnemonic, password);
+    const encMnemonic = encryptTextWithPassword(mnemonic, password);
 
     const registerUserPayload = {
       email: email.toLowerCase(),
@@ -97,10 +95,10 @@ export function useSignUp(
     const encPass = encryptText(hashObj.hash);
     const encSalt = encryptText(hashObj.salt);
     const mnemonic = bip39.generateMnemonic(256);
-    const encMnemonic = encryptTextWithKey(mnemonic, password);
+    const encMnemonic = encryptTextWithPassword(mnemonic, password);
 
     const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
-    const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
+    const encPrivateKey = encryptTextWithPassword(privateKeyArmored, password);
 
     const authClient = SdkFactory.getNewApiInstance().createAuthClient();
 
@@ -127,7 +125,7 @@ export function useSignUp(
     const user: UserSettings = data.user as unknown as UserSettings;
 
     // user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
-    user.mnemonic = decryptTextWithKey(user.mnemonic, password);
+    user.mnemonic = decryptTextWithPassword(user.mnemonic, password);
 
     return { xUser: user, xToken: token, mnemonic: user.mnemonic };
   };
@@ -141,7 +139,7 @@ export function useSignUp(
     const { token } = data;
     const user = data.user as UserSettings;
 
-    user.mnemonic = decryptTextWithKey(user.mnemonic, password);
+    user.mnemonic = decryptTextWithPassword(user.mnemonic, password);
 
     return {
       xUser: {
@@ -162,10 +160,10 @@ export function useSignUp(
     const encPass = encryptText(hashObj.hash);
     const encSalt = encryptText(hashObj.salt);
     const mnemonic = bip39.generateMnemonic(256);
-    const encMnemonic = encryptTextWithKey(mnemonic, password);
+    const encMnemonic = encryptTextWithPassword(mnemonic, password);
 
     const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
-    const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
+    const encPrivateKey = encryptTextWithPassword(privateKeyArmored, password);
 
     const keys: Keys = {
       privateKeyEncrypted: encPrivateKey,

@@ -1,87 +1,113 @@
 /**
  * @jest-environment node
  */
-
 import { isValid } from '../../../src/app/crypto/services/utilspgp';
 import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
-import { getAesInitFromEnv } from '../../../src/app/crypto/services/keys.service';
-
+import {
+  encryptTextWithPassword,
+  decryptTextWithPassword,
+  encryptText,
+  decryptText,
+  passToHash,
+} from '../../../src/app/crypto/services/utils';
+import { validateMnemonic } from 'bip39';
 import { config } from 'dotenv';
+import crypto from 'crypto';
 config();
 
-//TODO: Disabled because validateFormat functions is not exists, review it and remove it or change them
 describe('# keys service tests', () => {
-  const aesInit = getAesInitFromEnv();
-
-  xit('Should not update private key if encryption & encoding is fine', async () => {
+  it('Should symmetrically encrypt and decrypt key', async () => {
     const keys = await generateNewKeys();
     const plainPrivateKey = keys.privateKeyArmored;
 
     expect(isValid(plainPrivateKey)).toBeTruthy();
-    /** 
-    const password = '1234';
-    
-    const encryptedPrivateKey = aes.encrypt(plainPrivateKey, password, aesInit);
+    const password = '1234 qwerty hola';
 
-    const { update, newPrivKey, privkeyDecrypted } = await validateFormat(encryptedPrivateKey, password);
+    const encrypted = encryptTextWithPassword(plainPrivateKey, password);
+    const decrypted = decryptTextWithPassword(encrypted, password);
+    expect(plainPrivateKey).toStrictEqual(decrypted);
 
-    expect(update).toBeFalsy();
-    expect(newPrivKey).toBeUndefined();
-    expect(privkeyDecrypted).toStrictEqual(plainPrivateKey);
-    */
+    const encryptedText = encryptText(plainPrivateKey);
+    const decryptedText = decryptText(encryptedText);
+    expect(plainPrivateKey).toStrictEqual(decryptedText);
   });
 
-  /** 
-  it('Should reencrypt with 2145 hops', async () => {
+  it('Should have the expected ciphertext length', async () => {
+    const password = '1234 qwerty hola';
+
+    /**
+     * Expected ciphertext length:
+     *        N = 64 (salt) + 16 (iv) + X (message) + 16 (auth tag)
+     * N in base64:
+     *        L = ceil(N/3)*4
+     */
+
+    const keys = await generateNewKeys();
+    const plainPrivateKey = keys.privateKeyArmored;
+    expect(isValid(plainPrivateKey)).toBeTruthy();
+    expect(plainPrivateKey.length).toStrictEqual(716);
+    const encryptedPrivateKey = encryptTextWithPassword(plainPrivateKey, password);
+    expect(encryptedPrivateKey.length).toStrictEqual(1084);
+
+    const mnemonic =
+      'sponsor atom gun uncle ugly museum truth they opinion thunder front apart involve trim pair stove truck omit tornado abstract trip ignore include symptom';
+    expect(validateMnemonic(mnemonic)).toBeTruthy();
+    const encryptedMnemonic = encryptTextWithPassword(mnemonic, password);
+    expect(encryptedMnemonic.length).toStrictEqual(332);
+
+    const code = crypto.randomBytes(32).toString('hex');
+    const encryptedCode = encryptTextWithPassword(code, mnemonic);
+    expect(encryptedCode.length).toStrictEqual(216);
+
+    const hashObj = passToHash({ password });
+    const encryptedHash = encryptText(hashObj.hash);
+    expect(encryptedHash.length).toStrictEqual(216);
+
+    const encryptedSalt = encryptText(hashObj.salt);
+    expect(encryptedSalt.length).toStrictEqual(172);
+  });
+
+  it('Should fail with incorrect password', async () => {
     const keys = await generateNewKeys();
     const plainPrivateKey = keys.privateKeyArmored;
 
     expect(isValid(plainPrivateKey)).toBeTruthy();
 
     const password = '1234';
+    const incorrectPassword = '12345';
 
-    const oldEncryptionPrivateKey = aes.encrypt(plainPrivateKey, password, aesInit, 9999);
-    const newEncryptionPrivateKey = aes.encrypt(plainPrivateKey, password, aesInit);
+    const encrypted = encryptTextWithPassword(plainPrivateKey, password);
 
-    const { update, newPrivKey, privkeyDecrypted } = await validateFormat(oldEncryptionPrivateKey, password);
-
-    expect(update).toBeTruthy();
-    expect(newPrivKey).toStrictEqual(newEncryptionPrivateKey);
-    expect(privkeyDecrypted).toStrictEqual(plainPrivateKey);
+    expect(() => decryptTextWithPassword(encrypted, incorrectPassword)).toThrow('Decryption failed');
   });
 
-  it('Should decode private key from base64 & reencrypt with 2145 hops (using 2145 hops)', async () => {
+  it('Should fail if no password', async () => {
     const keys = await generateNewKeys();
-    const password = '1234';
+    const emptyPassword = '';
 
     const plainPrivateKey = keys.privateKeyArmored;
-    const encryptedPrivateKeyUtf8 = aes.encrypt(plainPrivateKey, password, aesInit);
+    expect(isValid(plainPrivateKey)).toBeTruthy();
 
-    const base64PrivateKey = Buffer.from(plainPrivateKey).toString('base64');
-    const encryptedPrivateKeyBase64 = aes.encrypt(base64PrivateKey, password, aesInit);
+    expect(() => encryptTextWithPassword(plainPrivateKey, emptyPassword)).toThrow('No password given');
 
-    const { update, newPrivKey, privkeyDecrypted } = await validateFormat(encryptedPrivateKeyBase64, password);
-
-    expect(update).toBeTruthy();
-    expect(newPrivKey).toStrictEqual(encryptedPrivateKeyUtf8);
-    expect(privkeyDecrypted).toStrictEqual(plainPrivateKey);
-  });
-
-  it('Should decode private key from base64 & reencrypt with 2145 hops (using 9999 hops)', async () => {
-    const keys = await generateNewKeys();
     const password = '1234';
+    const encrypted = encryptTextWithPassword(plainPrivateKey, password);
 
-    const plainPrivateKey = keys.privateKeyArmored;
-    const encryptedPrivateKeyUtf8 = aes.encrypt(plainPrivateKey, password, aesInit);
-
-    const base64PrivateKey = Buffer.from(plainPrivateKey).toString('base64');
-
-    const encryptedPrivateKeyBase64 = aes.encrypt(base64PrivateKey, password, aesInit, 9999);
-    const { update, newPrivKey, privkeyDecrypted } = await validateFormat(encryptedPrivateKeyBase64, password);
-
-    expect(update).toBeTruthy();
-    expect(newPrivKey).toStrictEqual(encryptedPrivateKeyUtf8);
-    expect(privkeyDecrypted).toStrictEqual(plainPrivateKey);
+    expect(() => decryptTextWithPassword(encrypted, emptyPassword)).toThrow('No password given');
   });
-  */
+
+  it('Should fail is ciphertext is altered by even one symbol', async () => {
+    const keys = await generateNewKeys();
+    const plainPrivateKey = keys.privateKeyArmored;
+
+    expect(isValid(plainPrivateKey)).toBeTruthy();
+    const password = '1234 qwerty hola';
+
+    const encrypted = encryptTextWithPassword(plainPrivateKey, password);
+
+    const chr = String.fromCharCode(encrypted.charCodeAt(3) + 1);
+    const alteredEncrypted = encrypted.substring(0, 3) + chr + encrypted.substring(4);
+
+    expect(() => decryptTextWithPassword(alteredEncrypted, password)).toThrow('Decryption failed');
+  });
 });
