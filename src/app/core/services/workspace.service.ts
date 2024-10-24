@@ -25,6 +25,7 @@ import {
   WorkspaceSetupInfo,
   WorkspaceTeamResponse,
   WorkspacesResponse,
+  UsersAndTeamsAnItemIsShareWidthResponse,
 } from '@internxt/sdk/dist/workspaces';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
@@ -321,6 +322,19 @@ export function getAllWorkspaceTeamSharedFolderFiles(
   );
 }
 
+export function getUsersAndTeamsAnItemIsShareWidth({
+  workspaceId,
+  itemType,
+  itemId,
+}: {
+  workspaceId: string;
+  itemId: string;
+  itemType: 'folder' | 'file';
+}): [Promise<UsersAndTeamsAnItemIsShareWidthResponse>, RequestCanceler] {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getUsersAndTeamsAnItemIsShareWidth({ workspaceId, itemType, itemId });
+}
+
 export function getWorkspaceFolders(
   workspaceId: string,
   folderId: string,
@@ -416,6 +430,7 @@ const workspacesService = {
   getAllWorkspaceTeamSharedFolders,
   getAllWorkspaceTeamSharedFolderFiles,
   getAllWorkspaceTeamSharedFolderFolders,
+  getUsersAndTeamsAnItemIsShareWidth,
   getWorkspaceFolders,
   getWorkspaceFiles,
   deactivateMember,
