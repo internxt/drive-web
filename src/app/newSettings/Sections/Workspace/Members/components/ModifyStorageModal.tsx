@@ -72,30 +72,26 @@ export const ModifyStorageModal = (): JSX.Element => {
         </div>
       </div>
       <div className="flex flex-col gap-6 p-5">
-        <div className="flex w-full overflow-hidden rounded-xl border border-gray-10">
-          {shouldRenderUserTable && (
-            <UserCardAndStorageTable
-              memberEmail={memberEmail}
-              memberName={memberName}
-              memberRole={memberRole}
-              maxStorageForWorkspaceMember={Number(memberSpace)}
-              translate={translate}
-            />
-          )}
-        </div>
+        {shouldRenderUserTable && (
+          <UserCardAndStorageTable
+            memberEmail={memberEmail}
+            memberName={memberName}
+            memberRole={memberRole}
+            maxStorageForWorkspaceMember={Number(memberSpace)}
+            translate={translate}
+          />
+        )}
         <div className="flex w-full flex-col gap-2.5">
-          <div className="flex w-full flex-col gap-6 rounded-xl border border-gray-10 bg-surface p-6">
-            <StorageSelectionCard
-              newStorage={newStorage}
-              minimumUserStorage={minimumUserStorage}
-              maxStorageForWorkspaceMember={maxStorageForWorkspaceMember}
-              formattedAssignedStorage={formattedAssignedStorage}
-              formattedSpaceLeft={formattedSpaceLeft}
-              isLoading={isLoading ?? false}
-              handleSliderChange={handleSliderChange}
-              translate={translate}
-            />
-          </div>
+          <StorageSelectionCard
+            newStorage={newStorage}
+            minimumUserStorage={minimumUserStorage}
+            maxStorageForWorkspaceMember={maxStorageForWorkspaceMember}
+            formattedAssignedStorage={formattedAssignedStorage}
+            formattedSpaceLeft={formattedSpaceLeft}
+            isLoading={isLoading ?? false}
+            handleSliderChange={handleSliderChange}
+            translate={translate}
+          />
 
           <div className="flex w-full flex-row items-end justify-end gap-2">
             <Button id={'cancel-button'} disabled={isLoading} variant="secondary" onClick={onClose}>
@@ -124,40 +120,42 @@ const UserCardAndStorageTable = ({
   maxStorageForWorkspaceMember: number;
   translate: (key: string, props?: Record<string, unknown>) => string;
 }) => (
-  <table width={'100%'}>
-    <colgroup>
-      <col width={'70%'} />
-      <col width={'30%'} />
-    </colgroup>
-    <thead className="border-b border-gray-10 bg-gray-1">
-      <tr>
-        <th scope="col" className="text-gray-500 py-3.5 pl-6 text-left text-sm font-medium">
-          {translate('preferences.workspace.members.modifyStorageModal.user')}
-        </th>
-        <th scope="col" className="text-gray-500 text-left text-sm font-medium">
-          <div className="flex h-full w-full flex-row border-l border-gray-10 px-5">
-            {translate('preferences.workspace.members.modifyStorageModal.storage')}
-          </div>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td className="text-gray-500 py-2.5 pl-6 text-left text-sm font-medium">
-          <UserCard
-            email={memberEmail}
-            name={memberName.name}
-            lastName={memberName.lastName}
-            avatarSrc={null}
-            role={memberRole}
-          />
-        </td>
-        <td className="text-gray-500 px-6 text-left text-sm font-medium">
-          {bytesToString(maxStorageForWorkspaceMember)}
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div className="flex w-full overflow-hidden rounded-xl border border-gray-10">
+    <table width={'100%'}>
+      <colgroup>
+        <col width={'70%'} />
+        <col width={'30%'} />
+      </colgroup>
+      <thead className="border-b border-gray-10 bg-gray-1">
+        <tr>
+          <th scope="col" className="text-gray-500 py-3.5 pl-6 text-left text-sm font-medium">
+            {translate('preferences.workspace.members.modifyStorageModal.user')}
+          </th>
+          <th scope="col" className="text-gray-500 text-left text-sm font-medium">
+            <div className="flex h-full w-full flex-row border-l border-gray-10 px-5">
+              {translate('preferences.workspace.members.modifyStorageModal.storage')}
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td className="text-gray-500 py-2.5 pl-6 text-left text-sm font-medium">
+            <UserCard
+              email={memberEmail}
+              name={memberName.name}
+              lastName={memberName.lastName}
+              avatarSrc={null}
+              role={memberRole}
+            />
+          </td>
+          <td className="text-gray-500 px-6 text-left text-sm font-medium">
+            {bytesToString(maxStorageForWorkspaceMember)}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 );
 
 const StorageSelectionCard = ({
