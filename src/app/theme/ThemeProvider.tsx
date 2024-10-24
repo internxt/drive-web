@@ -1,7 +1,8 @@
 import StarWarsBG from 'assets/images/banner/star-wars-bg.webp';
+import HalloweenBG from 'assets/images/banner/Ghosties-1.png';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-export type Theme = 'system' | 'light' | 'dark' | 'starwars';
+export type Theme = 'system' | 'light' | 'dark' | 'starwars' | 'halloween';
 
 interface ThemeContextProps {
   currentTheme: Theme | undefined;
@@ -51,6 +52,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         setCheckoutTheme('dark');
       } else if (currentTheme === 'starwars') {
         root.style.backgroundImage = `url(${StarWarsBG})`;
+        document.documentElement.classList.add('dark');
+        setCheckoutTheme('dark');
+      } else if (currentTheme === 'halloween') {
+        // Añadir condición para el tema Halloween
+        root.style.backgroundImage = `url(${HalloweenBG})`;
         document.documentElement.classList.add('dark');
         setCheckoutTheme('dark');
       } else {
