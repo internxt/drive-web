@@ -84,13 +84,12 @@ const navigationService = {
       errorService.reportError(error);
     }
   },
-  setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch): void {
+  setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch, updateUrl = true): void {
     const params = new URLSearchParams(window.location.search);
     const [currentWorkspaceUuid] = params.getAll('workspaceid');
-    currentWorkspaceUuid &&
-      !window.location.pathname.includes('file') &&
+    !window.location.pathname.includes('file') &&
       !window.location.pathname.includes('folder') &&
-      dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid }));
+      dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid || null, updateUrl }));
   },
 };
 
