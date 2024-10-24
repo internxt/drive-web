@@ -1,4 +1,6 @@
-import { aes } from '@internxt/lib';
+/**
+ * @jest-environment node
+ */
 
 import { isValid } from '../../../src/app/crypto/services/utilspgp';
 import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';

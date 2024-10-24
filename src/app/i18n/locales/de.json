@@ -4,19 +4,19 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Bis zu 75% Rabatt",
-    "title": "Zeit, auf Privatsphäre umzusteigen!",
-    "subtitle": "Gewinnen Sie unseren Premium-Rucksack mit unseren Lebenszeitplänen.",
-    "cta": "Plan wählen",
-    "guarantee": "30-Tage-Geld-zurück-Garantie",
+    "label": "Sparen Sie 80%",
+    "title": "Sichern Sie Ihre digitale Welt!",
+    "subtitle": "Gewinnen Sie unseren Premium-Rucksack mit unseren lebenslangen Plänen.",
+    "cta": "Plan auswählen",
+    "guarantee": "30 Tage Geld-zurück-Garantie",
     "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
     "features": [
-      "Sparen Sie bei allen Internxt-Plänen",
+      "Große Einsparungen bei allen Internxt-Plänen",
       "Sicherer und geschützter Cloud-Speicher",
-      "Zero-Knowledge-Technologie",
-      "Open Source und geprüft",
-      "Ende-zu-Ende verschlüsselte Übertragungen",
-      "Kein unbefugter Zugriff"
+      "Open Source und transparent",
+      "End-to-End-verschlüsselte Übertragungen",
+      "Kein unbefugter Zugriff",
+      "Angebot endet am 31. Oktober"
     ]
   },
   "valentinesBanner": {
@@ -174,6 +174,7 @@
       "selectedPlan": "Ausgewählter Plan",
       "numberOfUsers": "Anzahl der Benutzer: {{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* Verlängert sich am",
         "month": "monatlich",
         "year": "jährlich",
         "lifetime": "lebenslang"
@@ -1241,7 +1242,10 @@
     "errorCreatingSubscription": "Beim Erstellen Ihres Abonnements ist ein Fehler aufgetreten",
     "errorPurchaseBusinessPlan": "Sie haben bereits einen Geschäftstarif.",
     "couponIsNotValidForUserError": "Der Gutschein kann nur von neuen Kunden eingelöst werden.",
-    "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten"
+    "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten",
+    "invalidTaxIdIsProvided": "Die angegebene Steuernummer ist ungültig",
+    "errorWhileFetchingMoreItems": "Beim Abrufen weiterer Elemente ist ein Fehler aufgetreten",
+    "errorDeletingItems": "Beim Löschen dieses Elements ist ein Fehler aufgetreten"
   },
   "actions": {
     "undo": "Rückgängig machen",
@@ -1316,6 +1320,7 @@
       "details": "Einzelheiten",
       "shareLink": "Teilen",
       "shareTeam": "Mit Team teilen",
+      "shareWithWorkspace": "Mit dem Arbeitsbereich teilen",
       "getLink": "Erhalte Link",
       "rename": "Umbenennen",
       "download": "Herunterladen",
