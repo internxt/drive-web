@@ -10,7 +10,6 @@ import Button from 'app/shared/components/Button/Button';
 import Input from 'app/shared/components/Input';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { CaretLeft, WarningCircle, CheckCircle } from '@phosphor-icons/react';
-import { TrackingPlan } from 'app/analytics/TrackingPlan';
 
 interface RestartAccount {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;
@@ -94,9 +93,6 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
     setIsLoading(true);
 
     const token = window.location.pathname.split('/').pop();
-    const trackPasswordRecoveredProperties: TrackingPlan.PasswordRecoveredProperties = {
-      method: 'reset',
-    };
 
     if (!token) {
       notificationsService.show({

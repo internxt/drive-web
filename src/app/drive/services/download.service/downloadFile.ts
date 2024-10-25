@@ -83,7 +83,6 @@ export default async function downloadFile(
   abortController?: AbortController,
   sharingOptions?: { credentials: { user: string; pass: string }; mnemonic: string },
 ): Promise<void> {
-  const fileId = itemData.fileId;
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
   const isCypress = window['Cypress'] !== undefined;

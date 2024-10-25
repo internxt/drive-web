@@ -139,7 +139,6 @@ class UploadManager {
 
       const upload = async () => {
         uploadAttempts++;
-        const isMultipleUpload = this.items.length > 1 ? 1 : 0;
 
         if (!existsRelatedTask)
           tasksService.updateTask({

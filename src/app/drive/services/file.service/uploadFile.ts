@@ -49,7 +49,6 @@ export async function uploadFile(
 ): Promise<DriveFileData> {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } =
     options.ownerUserAuthenticationData ?? getEnvironmentConfig(options.isTeam);
-  const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (!bucketId) {
     notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });

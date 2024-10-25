@@ -1,7 +1,6 @@
 import { saveAs } from 'file-saver';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import { TrackingPlan } from 'app/analytics/TrackingPlan';
 
 /**
  * Downloads the backup key of the user and shows a notification
@@ -9,9 +8,6 @@ import { TrackingPlan } from 'app/analytics/TrackingPlan';
  */
 
 export function handleExportBackupKey(translate) {
-  const trackBackupKeyDownloadedProperties: TrackingPlan.BackupKeyDownloadedProperties = {
-    backup_key_downloaded: true,
-  };
   const mnemonic = localStorageService.get('xMnemonic');
   if (!mnemonic) {
     notificationsService.show({
