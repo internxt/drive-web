@@ -23,7 +23,6 @@ import Button from 'app/shared/components/Button/Button';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
-import { trackAccountUnblockEmailSent } from '../../../analytics/services/analytics.service';
 import workspacesService from '../../../core/services/workspace.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import useLoginRedirections from '../../../routes/hooks/Login/useLoginRedirections';
@@ -176,7 +175,6 @@ export default function LogIn(): JSX.Element {
       setShowErrors(true);
       if ((err as AppError)?.status === 403) {
         await sendUnblockAccountEmail(email);
-        trackAccountUnblockEmailSent({ email });
         navigationService.history.push({
           pathname: AppView.BlockedAccount,
           search: QueryString.stringify({ email: email }),

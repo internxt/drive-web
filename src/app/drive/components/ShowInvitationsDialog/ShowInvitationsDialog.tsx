@@ -11,7 +11,6 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 import { acceptSharedFolderInvite, declineSharedFolderInvite } from '../../../share/services/share.service';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import { trackSharedInvitationsAccepted } from '../../../analytics/services/analytics.service';
 
 const Header = ({ title, isLoading, onClose }): JSX.Element => {
   return (
@@ -58,7 +57,6 @@ const ShowInvitationsDialog = ({ onClose }): JSX.Element => {
       const trackSharedInvitationsAcceptedProperties: TrackingPlan.SharedInvitationsAcceptedProperties = {
         invitation_id: invitationId,
       };
-      trackSharedInvitationsAccepted(trackSharedInvitationsAcceptedProperties);
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);

@@ -2,7 +2,6 @@ import { BrowserHistoryBuildOptions, createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
 import { SelectSectionProps } from 'app/newSettings/types/types';
-import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
 import { AppView } from '../types';
 import configService from './config.service';
 import errorService from './error.service';
@@ -16,20 +15,6 @@ if (process.env.REACT_APP_BASE_URL) {
 }
 
 const instance = createBrowserHistory(browserHistoryConfig);
-
-instance.listen((nav) => {
-  const keys = Object.keys(PATH_NAMES);
-  const index = keys.indexOf(nav.pathname);
-
-  if (index > -1) {
-    const pageName = PATH_NAMES[keys[index]];
-
-    window.rudderanalytics.page(pageName);
-    serverPage(pageName).catch(() => {
-      // NO OP
-    });
-  }
-});
 
 const navigationService = {
   history: instance,

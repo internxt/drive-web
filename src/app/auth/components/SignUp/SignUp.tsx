@@ -27,7 +27,6 @@ import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/Preparin
 import paymentService from '../../../payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import { decryptPrivateKey } from '../../../crypto/services/keys.service';
-import analyticsService from '../../../analytics/services/analytics.service';
 import Button from '../../../shared/components/Button/Button';
 
 export interface SignUpProps {
@@ -174,8 +173,6 @@ function SignUp(props: SignUpProps): JSX.Element {
       if (isNewUser) {
         dispatch(referralsThunks.initializeThunk());
       }
-
-      await analyticsService.trackSignUp(xUser.uuid, email);
 
       const urlParams = new URLSearchParams(window.location.search);
       const isUniversalLinkMode = urlParams.get('universalLink') == 'true';

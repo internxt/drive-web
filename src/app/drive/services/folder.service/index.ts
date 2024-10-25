@@ -1,12 +1,9 @@
-import analyticsService from '../../../analytics/services/analytics.service';
 import errorService from '../../../core/services/error.service';
 import httpService from '../../../core/services/http.service';
-import { DevicePlatform } from '../../../core/types';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../../types';
 
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Iterator } from 'app/core/collections';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import { downloadFile } from 'app/network/download';
@@ -79,11 +76,6 @@ export function createFolder(
 
   const finalPromise = createdFolderPromise
     .then((response) => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackFolderCreated({
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
       return response;
     })
     .catch((error) => {
@@ -95,13 +87,7 @@ export function createFolder(
 
 export function deleteFolder(folderData: DriveFolderData): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
-  return storageClient.deleteFolder(folderData.id).then(() => {
-    const user = localStorageService.getUser() as UserSettings;
-    analyticsService.trackDeleteItem(folderData as DriveItemData, {
-      email: user.email,
-      platform: DevicePlatform.Web,
-    });
-  });
+  return storageClient.deleteFolder(folderData.id).then(() => {});
 }
 
 interface GetDirectoryFoldersResponse {
@@ -314,12 +300,6 @@ export async function moveFolder(folderId: number, destination: number): Promise
   return storageClient
     .moveFolder(payload)
     .then((response) => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackMoveItem('folder', {
-        file_id: response.item.id,
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
       return response;
     })
     .catch((err) => {

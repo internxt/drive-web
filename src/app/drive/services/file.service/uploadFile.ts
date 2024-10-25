@@ -1,10 +1,7 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { Network } from 'app/drive/services/network.service';
 import { DriveFileData } from 'app/drive/types';
-import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import analyticsService from '../../../analytics/services/analytics.service';
 import { SdkFactory } from '../../../core/factory/sdk';
-import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import workspacesService from '../../../core/services/workspace.service';
@@ -24,7 +21,6 @@ export interface FileToUpload {
 
 export interface FileUploadOptions {
   isTeam: boolean;
-  trackingParameters: { isMultipleUpload: 0 | 1; processIdentifier: string };
   abortController?: AbortController;
   ownerUserAuthenticationData?: {
     token: string;
@@ -55,144 +51,86 @@ export async function uploadFile(
     options.ownerUserAuthenticationData ?? getEnvironmentConfig(options.isTeam);
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
-  const trackingUploadProperties: TrackingPlan.UploadProperties = {
-    file_upload_id: analyticsService.getTrackingActionId(),
-    file_size: file.size,
-    file_extension: file.type,
-    parent_folder_id: file.parentFolderId,
-    file_name: file.name,
-    bandwidth: 0,
-    band_utilization: 0,
-    process_identifier: options.trackingParameters?.processIdentifier,
-    is_multiple: options.trackingParameters?.isMultipleUpload,
-    is_brave: isBrave,
-  };
-  try {
-    analyticsService.trackFileUploadStarted(trackingUploadProperties);
+  if (!bucketId) {
+    notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
+    localStorageService.clear();
+    navigationService.push(AppView.Login);
 
-    if (continueUploadOptions?.isRetriedUpload) {
-      analyticsService.trackFileUploadRetried(trackingUploadProperties);
-    }
+    throw new Error('Bucket not found!');
+  }
 
-    if (!bucketId) {
-      analyticsService.trackFileUploadError({
-        ...trackingUploadProperties,
-        bucket_id: 0,
-        error_message: 'Bucket not found',
-        error_message_user: 'Login again to start uploading files',
-        stack_trace: '',
-      });
-      notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
-      localStorageService.clear();
-      navigationService.push(AppView.Login);
+  const [promise, abort] = new Network(bridgeUser, bridgePass, encryptionKey).uploadFile(
+    bucketId,
+    {
+      filecontent: file.content,
+      filesize: file.size,
+      progressCallback: (progress) => {
+        updateProgressCallback(progress);
+      },
+    },
+    continueUploadOptions,
+  );
 
-      throw new Error('Bucket not found!');
-    }
+  options.abortCallback?.(abort?.abort);
 
-    const analyticsCallbacks = {
-      pauseUploadCallback: () => analyticsService.trackFileUploadPaused(trackingUploadProperties),
-      resumeUploadCallback: () => analyticsService.trackFileUploadResumed(trackingUploadProperties),
+  const fileId = await promise;
+
+  const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
+  const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;
+  const resourcesToken = options?.ownerUserAuthenticationData?.resourcesToken;
+
+  const isWorkspacesUpload = workspaceId && workspacesToken;
+  let response;
+
+  if (isWorkspacesUpload) {
+    const dateISO = '2023-05-30T12:34:56.789Z';
+    const date = new Date(dateISO);
+    const workspaceFileEntry = {
+      name: file.name,
+      bucket: bucketId,
+      fileId: fileId,
+      encryptVersion: StorageTypes.EncryptionVersion.Aes03,
+      folderUuid: file.parentFolderId,
+      size: file.size,
+      plainName: file.name,
+      type: file.type,
+      modificationTime: date.toISOString(),
+      date: date.toISOString(),
     };
 
-    const [promise, abort] = new Network(bridgeUser, bridgePass, encryptionKey).uploadFile(
-      bucketId,
-      {
-        filecontent: file.content,
-        filesize: file.size,
-        progressCallback: (progress) => {
-          updateProgressCallback(progress);
-        },
-      },
-      continueUploadOptions,
-      analyticsCallbacks,
-    );
+    response = await workspacesService.createFileEntry(workspaceFileEntry, workspaceId, resourcesToken);
+  } else {
+    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+    const fileEntry: StorageTypes.FileEntryByUuid = {
+      id: fileId,
+      type: file.type,
+      size: file.size,
+      name: file.name,
+      plain_name: file.name,
+      bucket: bucketId,
+      folder_id: file.parentFolderId,
+      encrypt_version: StorageTypes.EncryptionVersion.Aes03,
+    };
 
-    options.abortCallback?.(abort?.abort);
-
-    const fileId = await promise;
-
-    const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
-    const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;
-    const resourcesToken = options?.ownerUserAuthenticationData?.resourcesToken;
-
-    const isWorkspacesUpload = workspaceId && workspacesToken;
-    let response;
-
-    if (isWorkspacesUpload) {
-      const dateISO = '2023-05-30T12:34:56.789Z';
-      const date = new Date(dateISO);
-      const workspaceFileEntry = {
-        name: file.name,
-        bucket: bucketId,
-        fileId: fileId,
-        encryptVersion: StorageTypes.EncryptionVersion.Aes03,
-        folderUuid: file.parentFolderId,
-        size: file.size,
-        plainName: file.name,
-        type: file.type,
-        modificationTime: date.toISOString(),
-        date: date.toISOString(),
-      };
-
-      response = await workspacesService.createFileEntry(workspaceFileEntry, workspaceId, resourcesToken);
-    } else {
-      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-      const fileEntry: StorageTypes.FileEntryByUuid = {
-        id: fileId,
-        type: file.type,
-        size: file.size,
-        name: file.name,
-        plain_name: file.name,
-        bucket: bucketId,
-        folder_id: file.parentFolderId,
-        encrypt_version: StorageTypes.EncryptionVersion.Aes03,
-      };
-
-      response = await storageClient.createFileEntryByUuid(fileEntry, options.ownerUserAuthenticationData?.token);
-    }
-    if (!response.thumbnails) {
-      response = {
-        ...response,
-        thumbnails: [],
-      };
-    }
-
-    const generatedThumbnail = await generateThumbnailFromFile(file, response.id, userEmail, options.isTeam);
-    if (generatedThumbnail?.thumbnail) {
-      response.thumbnails.push(generatedThumbnail.thumbnail);
-      if (generatedThumbnail.thumbnailFile) {
-        generatedThumbnail.thumbnail.urlObject = URL.createObjectURL(generatedThumbnail.thumbnailFile);
-        response.currentThumbnail = generatedThumbnail.thumbnail;
-      }
-    }
-
-    analyticsService.trackFileUploadCompleted({
-      ...trackingUploadProperties,
-      file_id: response.id,
-      bucket_id: parseInt(bucketId),
-    });
-
-    return response;
-  } catch (err: unknown) {
-    const castedError = errorService.castError(err);
-
-    if (!options.abortController?.signal.aborted) {
-      analyticsService.trackFileUploadError({
-        ...trackingUploadProperties,
-        bucket_id: parseInt(bucketId),
-        error_message: castedError.message,
-        error_message_user: castedError.message,
-        stack_trace: castedError?.stack ?? 'Unknwon stack trace',
-      });
-    } else {
-      analyticsService.trackFileUploadAborted({
-        ...trackingUploadProperties,
-        bucket_id: parseInt(bucketId),
-      });
-    }
-
-    throw err;
+    response = await storageClient.createFileEntryByUuid(fileEntry, options.ownerUserAuthenticationData?.token);
   }
+  if (!response.thumbnails) {
+    response = {
+      ...response,
+      thumbnails: [],
+    };
+  }
+
+  const generatedThumbnail = await generateThumbnailFromFile(file, response.id, userEmail, options.isTeam);
+  if (generatedThumbnail?.thumbnail) {
+    response.thumbnails.push(generatedThumbnail.thumbnail);
+    if (generatedThumbnail.thumbnailFile) {
+      generatedThumbnail.thumbnail.urlObject = URL.createObjectURL(generatedThumbnail.thumbnailFile);
+      response.currentThumbnail = generatedThumbnail.thumbnail;
+    }
+  }
+
+  return response;
 }
 
 export default uploadFile;
