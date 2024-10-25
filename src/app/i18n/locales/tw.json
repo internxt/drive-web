@@ -67,8 +67,7 @@
     "light": "淺色",
     "dark": "深色",
     "system": "系統",
-    "starwars": "星際大戰",
-    "halloween": "Halloween"
+    "starwars": "星際大戰"
   },
   "auth": {
     "email": "電子郵件",

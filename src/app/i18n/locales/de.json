@@ -46,8 +46,7 @@
     "light": "Hell",
     "dark": "Dunkel",
     "system": "System",
-    "starwars": "Star Wars",
-    "halloween": "Halloween"
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "E-Mail",
