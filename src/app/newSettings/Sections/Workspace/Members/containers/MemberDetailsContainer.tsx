@@ -26,21 +26,31 @@ import { RootState } from 'app/store';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;
-  getWorkspacesMembers: (string) => void;
   isOwner: boolean;
+  refreshWorkspaceMembers: () => Promise<void>;
+  updateSelectedMember: (updatedMember: WorkspaceUser) => void;
+  getWorkspacesMembers: (string) => void;
   deselectMember: () => void;
 }
 
-const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselectMember }: MemberDetailsContainer) => {
+const MemberDetailsContainer = ({
+  member,
+  isOwner,
+  refreshWorkspaceMembers,
+  updateSelectedMember,
+  getWorkspacesMembers,
+  deselectMember,
+}: MemberDetailsContainer) => {
   const dispatch = useDispatch();
   const { translate } = useTranslationContext();
-  const { openDialog } = useActionDialog();
+  const { openDialog, closeDialog } = useActionDialog();
   const user = useAppSelector((state) => state.user.user);
 
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState<boolean>(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState<boolean>(false);
+  const [isModifyingMemberStorage, setIsModifyingMemberStorage] = useState<boolean>();
   const [isDeactivatingMember, setIsDeactivatingMember] = useState<boolean>(false);
   const [isReactivateModalOpen, setIsReactivateModalOpen] = useState<boolean>(false);
   const [isReactivatingMember, setIsReactivatingMember] = useState<boolean>(false);
@@ -58,6 +68,24 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
     const memberRole = getMemberRole(member);
     setMemberRole(memberRole);
   }, []);
+
+  const modifyStorageMember = async (spaceLimitBytes: number) => {
+    try {
+      setIsModifyingMemberStorage(true);
+      const memberUpdated = await workspacesService.modifyMemberUsage(
+        member.workspaceId,
+        member.memberId,
+        spaceLimitBytes,
+      );
+      refreshWorkspaceMembers();
+      updateSelectedMember(memberUpdated);
+    } catch (error) {
+      errorService.reportError(error);
+    } finally {
+      setIsModifyingMemberStorage(false);
+      closeDialog(ActionDialog.ModifyStorage);
+    }
+  };
 
   const deactivateMember = async () => {
     try {
@@ -216,8 +244,8 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
                           memberEmail: member.member.email,
                           memberSpace: member.spaceLimit,
                           totalUsedStorage: member.usedSpace,
-                          isLoading: false,
-                          onUpdateUserStorage: () => {},
+                          isLoading: isModifyingMemberStorage,
+                          onUpdateUserStorage: modifyStorageMember,
                         },
                       })
                     }

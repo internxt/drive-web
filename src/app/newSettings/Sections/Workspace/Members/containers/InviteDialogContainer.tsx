@@ -79,7 +79,7 @@ const processInvitation = async (
       encryptedMnemonicInBase64: encryptedMnemonicInBase64,
       encryptionAlgorithm: 'aes-256-gcm',
       message: messageText,
-      spaceLimitBytes: customSpace ?? 52428800,
+      spaceLimitBytes: customSpace,
     });
 
     notificationsService.show({
