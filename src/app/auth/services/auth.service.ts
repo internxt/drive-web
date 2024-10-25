@@ -256,7 +256,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const usersClient = SdkFactory.getInstance().createUsersClient();
 
   return usersClient
-    .changePasswordLegacy(<ChangePasswordPayload>{
+    .changePassword(<ChangePasswordPayload>{
       currentEncryptedPassword: encryptedCurrentPassword,
       newEncryptedPassword: encryptedNewPassword,
       newEncryptedSalt: encryptedNewSalt,
