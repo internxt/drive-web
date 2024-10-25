@@ -4,7 +4,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { areCredentialsCorrect } from 'app/auth/services/auth.service';
 import errorService from 'app/core/services/error.service';
 
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Card from 'app/shared/components/Card';
 import Input from 'app/shared/components/Input';
 

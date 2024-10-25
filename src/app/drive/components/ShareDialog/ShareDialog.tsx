@@ -17,10 +17,8 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
 import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
 import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
-import Avatar from 'app/shared/components/Avatar';
-import Button from 'app/shared/components/Button/Button';
+import { Avatar, Button, Spinner } from '@internxt/internxtui';
 import Modal from 'app/shared/components/Modal';
-import Spinner from 'app/shared/components/Spinner/Spinner';
 import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { RootState } from 'app/store';
@@ -251,8 +249,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
     const itemId = itemToShare?.item.uuid ?? '';
 
-    const isItemNotSharedYet =
-      !isAdvancedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length && !sharingMeta;
+    const isItemNotSharedYet = !isAdvancedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length;
 
     if (!isItemNotSharedYet) {
       try {
@@ -404,6 +401,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         }
 
         setIsPasswordProtected(true);
+        props.onShareItem?.();
       } catch (error) {
         errorService.castError(error);
       } finally {

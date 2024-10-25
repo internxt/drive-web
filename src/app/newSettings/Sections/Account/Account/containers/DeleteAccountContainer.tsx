@@ -5,7 +5,7 @@ import authService from '../../../../../auth/services/auth.service';
 import errorService from '../../../../../core/services/error.service';
 import Section from '../../../../../newSettings/Sections/General/components/Section';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
-import Button from '../../../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Modal from '../../../../../shared/components/Modal';
 import { RootState } from '../../../../../store';
 import { PlanState } from '../../../../../store/slices/plan';
@@ -71,7 +71,7 @@ const DeleteAccountContainer = (): JSX.Element => {
           <Button variant="secondary" onClick={onClose} disabled={isLoading}>
             {translate('modals.deleteAccountModal.cancel')}
           </Button>
-          <Button onClick={onConfirm} loading={isLoading} variant={'accent'}>
+          <Button onClick={onConfirm} loading={isLoading} variant={'destructive'}>
             {translate('modals.deleteAccountModal.confirm')}
           </Button>
         </div>

@@ -1,9 +1,8 @@
 import { Warning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import authService, { generateNew2FA } from 'app/auth/services/auth.service';
-import Button from 'app/shared/components/Button/Button';
+import { Button, Spinner } from '@internxt/internxtui';
 import Modal from 'app/shared/components/Modal';
-import Spinner from 'app/shared/components/Spinner/Spinner';
 import appStoreIcon from 'app/../assets/icons/app-store.svg';
 import playStoreIcon from 'app/../assets/icons/play-store.svg';
 import useEffectAsync from 'app/core/hooks/useEffectAsync';

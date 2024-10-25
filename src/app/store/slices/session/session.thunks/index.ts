@@ -18,7 +18,8 @@ const changeWorkspaceThunk = createAsyncThunk<void, void, { state: RootState }>(
     // dispatch(planThunks.initializeThunk());
 
     const rootFolderId = storageSelectors.rootFolderId(state);
-    navigationService.push(AppView.Drive);
+    const workspaceid = state.workspaces.selectedWorkspace?.workspace.id;
+    navigationService.push(AppView.Drive, {}, workspaceid);
     dispatch(uiActions.setIsGlobalSearch(false));
     dispatch(storageActions.resetDrivePagination());
     dispatch(storageThunks.resetNamePathThunk());

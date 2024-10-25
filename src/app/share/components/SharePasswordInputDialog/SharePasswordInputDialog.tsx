@@ -1,4 +1,4 @@
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Modal from 'app/shared/components/Modal';
 import { useState } from 'react';
 import Input from 'app/shared/components/Input';
@@ -24,16 +24,17 @@ export const SharePasswordInputDialog = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [password, setPassword] = useState('');
 
-  const handleConfirm = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleConfirm = async (e?: unknown) => {
+    const event = e as React.FormEvent<HTMLFormElement>;
+    event.preventDefault();
     setIsLoading(true);
     await onSavePassword(password);
     setIsLoading(false);
   };
 
   return (
-    <Modal maxWidth="max-w-sm" className="space-y-5 p-5" isOpen={isOpen} onClose={onClose}>
-      <form onSubmit={handleConfirm}>
+    <Modal maxWidth="max-w-sm" isOpen={isOpen} onClose={onClose}>
+      <form onSubmit={handleConfirm} className="space-y-5 p-5">
         <p className="text-2xl font-medium">
           {!isAlreadyProtected
             ? translate('modals.shareModal.protectSharingModal.protect')

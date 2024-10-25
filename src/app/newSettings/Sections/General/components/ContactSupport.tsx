@@ -1,7 +1,7 @@
 import { useChat } from 'react-live-chat-loader';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import Button from '../../../../shared/components/Button/Button';
 import Section from './Section';
+import { Button } from '@internxt/internxtui';
 
 const ContactSupport = () => {
   const { translate } = useTranslationContext();

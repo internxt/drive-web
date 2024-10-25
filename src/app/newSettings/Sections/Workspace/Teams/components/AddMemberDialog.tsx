@@ -1,12 +1,10 @@
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-import Avatar from 'app/shared/components/Avatar';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import Modal from 'app/shared/components/Modal';
 import Input from 'app/shared/components/Input';
-import Spinner from 'app/shared/components/Spinner/Spinner';
-import Button from 'app/shared/components/Button/Button';
+import { Button, Avatar, Spinner } from '@internxt/internxtui';
 
 interface AddMemberDialogProps {
   isOpen: boolean;
