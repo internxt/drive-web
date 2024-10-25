@@ -67,7 +67,8 @@
     "light": "明亮",
     "dark": "暗",
     "system": "系统",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "电子邮件",
