@@ -20,7 +20,12 @@ import { uiActions } from 'app/store/slices/ui';
 import folderImage from 'assets/icons/light/folder.svg';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { DriveItemData, FolderPathDialog } from '../../types';
+import {
+  handleRepeatedUploadingFiles,
+  handleRepeatedUploadingFolders,
+} from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
+import { IRoot } from '../../../store/slices/storage/types';
+import { DriveFileData, DriveFolderData, DriveItemData, FolderPathDialog } from '../../types';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
 
 interface MoveItemsDialogProps {
@@ -152,6 +157,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
   const onAccept = async (destinationFolderId, name, namePaths): Promise<void> => {
     try {
+      dispatch(storageActions.setMoveDestinationFolderId(destinationFolderId));
+
       setIsLoading(true);
       if (itemsToMove.length > 0) {
         if (destinationFolderId != currentFolderId) {
@@ -162,14 +169,23 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           destinationFolderId = currentFolderId;
         }
 
-        await dispatch(
-          storageThunks.moveItemsThunk({
-            items: itemsToMove,
-            destinationFolderId: destinationFolderId,
-          }),
-        );
-      }
+        const files = itemsToMove.filter((item) => item.type !== 'folder') as DriveFileData[];
+        const folders = itemsToMove.filter((item) => item.type === 'folder') as (IRoot | DriveFolderData)[];
 
+        const filesWithoutDuplicates = await handleRepeatedUploadingFiles(files, dispatch, destinationFolderId);
+        const foldersWithoutDuplicates = await handleRepeatedUploadingFolders(folders, dispatch, destinationFolderId);
+
+        const itemsToMoveWithoutDuplicates = [...filesWithoutDuplicates, ...foldersWithoutDuplicates];
+
+        if (itemsToMoveWithoutDuplicates.length > 0) {
+          await dispatch(
+            storageThunks.moveItemsThunk({
+              items: itemsToMoveWithoutDuplicates as DriveItemData[],
+              destinationFolderId: destinationFolderId,
+            }),
+          );
+        }
+      }
       props.onItemsMoved?.();
 
       setIsLoading(false);

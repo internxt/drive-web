@@ -37,7 +37,7 @@ const shareLinkMenuItem = (shareLink: (target) => void) => ({
 });
 
 const shareWithTeamMenuItem = (shareWithTeam: (target) => void) => ({
-  name: t('drive.dropdown.shareTeam'),
+  name: t('drive.dropdown.shareWithWorkspace'),
   icon: Users,
   action: shareWithTeam,
   disabled: () => {
@@ -145,12 +145,12 @@ const contextMenuSelectedItems = ({
 }): ListItemMenu<DriveItemData> => [
   {
     name: `${selectedItems.length} ${t('contextMenu.itemsSelected')}`,
-    action: () => ({}),
+    action: () => {},
     disabled: () => {
       return true;
     },
   },
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   getMoveItemMenuItem(moveItems),
   getDownloadMenuItem(downloadItems),
   { name: '', action: () => false, separator: true },
@@ -178,13 +178,13 @@ const contextMenuDriveNotSharedLink = ({
 }): ListItemMenu<DriveItemData> => [
   shareLinkMenuItem(shareLink),
   getCopyLinkMenuItem(getLink),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   openPreview && getOpenPreviewMenuItem(openPreview),
   showDetailsMenuItem(showDetails),
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   getMoveToTrashMenuItem(moveToTrash),
 ];
 
@@ -207,12 +207,12 @@ const contextMenuDriveFolderNotSharedLink = ({
 }): ListItemMenu<DriveItemData> => [
   shareLinkMenuItem(shareLink),
   getCopyLinkMenuItem(getLink),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   showDetailsMenuItem(showDetails),
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   getMoveToTrashMenuItem(moveToTrash),
 ];
 
@@ -236,13 +236,13 @@ const contextMenuDriveItemShared = ({
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
 }): ListItemMenu<DriveItemData | (ListShareLinksItem & { code: string })> => [
   ...[manageLinkAccessMenuItem(openShareAccessSettings), getCopyLinkMenuItem(copyLink)],
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   openPreview && getOpenPreviewMenuItem(openPreview),
   showDetailsMenuItem(showDetails),
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   getMoveToTrashMenuItem(moveToTrash),
 ];
 
@@ -264,12 +264,12 @@ const contextMenuDriveFolderShared = ({
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
 }): ListItemMenu<DriveItemData | (ListShareLinksItem & { code: string })> => [
   ...[manageLinkAccessMenuItem(openShareAccessSettings), getCopyLinkMenuItem(copyLink)],
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   showDetailsMenuItem(showDetails),
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   getMoveToTrashMenuItem(moveToTrash),
 ];
 
@@ -281,7 +281,7 @@ const contextMenuMultipleSharedView = ({
   moveToTrash: (item: ListShareLinksItem) => void;
 }): ListItemMenu<ListShareLinksItem> => [
   getDownloadMenuItem(downloadItem),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   getMoveToTrashMenuItem(moveToTrash),
 ];
 
@@ -296,7 +296,7 @@ const contextMenuTrashItems = ({
 }): ListItemMenu<DriveItemData> => [
   openPreview && getOpenPreviewMenuItem(openPreview),
   getRestoreMenuItem(restoreItem),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   getDeletePermanentlyMenuItem(deletePermanently),
 ];
 
@@ -308,7 +308,7 @@ const contextMenuTrashFolder = ({
   deletePermanently: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
   getRestoreMenuItem(restoreItem),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   getDeletePermanentlyMenuItem(deletePermanently),
 ];
 
@@ -320,7 +320,7 @@ const contextMenuMultipleSelectedTrashItems = ({
   deletePermanently: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
   getRestoreMenuItem(restoreItem),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   getDeletePermanentlyMenuItem(deletePermanently),
 ];
 
@@ -337,9 +337,7 @@ const contextMenuBackupItems = ({
     action: () => {
       onDeviceDeleted(selectedDevices);
     },
-    disabled: () => {
-      return false;
-    },
+    disabled: () => false,
   },
 ];
 
@@ -348,16 +346,14 @@ const contextMenuSelectedBackupItems = ({
   onDeleteSelectedItems,
 }: {
   onDownloadSelectedItems: () => void;
-  onDeleteSelectedItems: () => void;
+  onDeleteSelectedItems: () => Promise<void>;
 }): ListItemMenu<unknown> => [
   getDownloadMenuItem(onDownloadSelectedItems),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   {
     name: t('drive.dropdown.delete'),
     icon: Trash,
-    action: () => {
-      onDeleteSelectedItems();
-    },
+    action: onDeleteSelectedItems,
     disabled: () => {
       return false;
     },
@@ -399,7 +395,7 @@ const contextMenuDriveItemSharedAFS = ({
   renameItem && getRenameMenuItem(renameItem),
   moveItem && getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
-  moveToTrash && { name: '', action: () => false, separator: true },
+  moveToTrash && { name: '', action: () => {}, separator: true },
   moveToTrash && getMoveToTrashMenuItem(moveToTrash),
 ];
 
@@ -421,12 +417,12 @@ const contextMenuDriveFolderSharedAFS = ({
   moveToTrash?: (item: any) => void;
 }): ListItemMenu<any> => [
   openShareAccessSettings && manageLinkAccessMenuItem(openShareAccessSettings),
-  openShareAccessSettings && { name: '', action: () => false, separator: true },
+  openShareAccessSettings && { name: '', action: () => {}, separator: true },
   showDetailsMenuItem(showDetails),
   renameItem && getRenameMenuItem(renameItem),
   moveItem && getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
-  moveToTrash && { name: '', action: () => false, separator: true },
+  moveToTrash && { name: '', action: () => {}, separator: true },
   moveToTrash && getMoveToTrashMenuItem(moveToTrash),
 ];
 
@@ -438,7 +434,7 @@ const contextMenuMultipleSharedViewAFS = ({
   moveToTrash?: (item: AdvancedSharedItem) => void;
 }): ListItemMenu<AdvancedSharedItem> => [
   getDownloadMenuItem(downloadItem),
-  moveToTrash && { name: '', action: () => false, separator: true },
+  moveToTrash && { name: '', action: () => {}, separator: true },
   moveToTrash && getMoveToTrashMenuItem(moveToTrash),
 ];
 
@@ -464,12 +460,12 @@ const contextMenuWorkspaceFolder = ({
   shareLinkMenuItem(shareLink),
   getCopyLinkMenuItem(getLink),
   shareWithTeamMenuItem(shareWithTeam),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   showDetailsMenuItem(showDetails),
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   getMoveToTrashMenuItem(moveToTrash),
 ];
 
@@ -497,13 +493,13 @@ const contextMenuWorkspaceFile = ({
   shareLinkMenuItem(shareLink),
   getCopyLinkMenuItem(getLink),
   shareWithTeamMenuItem(shareWithTeam),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   openPreview && getOpenPreviewMenuItem(openPreview),
   showDetailsMenuItem(showDetails),
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
-  { name: '', action: () => false, separator: true },
+  { name: '', action: () => {}, separator: true },
   getMoveToTrashMenuItem(moveToTrash),
 ];
 

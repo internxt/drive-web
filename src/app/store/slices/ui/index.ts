@@ -33,7 +33,6 @@ interface UISliceState {
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
-  currentEditingBreadcrumbNameDirty: string;
   isToastNotificationOpen: boolean;
   isGlobalSearch: boolean;
 }
@@ -69,7 +68,6 @@ const initialState: UISliceState = {
   currentFileInfoMenuItem: null,
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
-  currentEditingBreadcrumbNameDirty: '',
   isToastNotificationOpen: false,
   isGlobalSearch: false,
 };
@@ -173,12 +171,6 @@ export const uiSlice = createSlice({
       action: PayloadAction<UISliceState['currentEditingNameDirty']>,
     ) => {
       state.currentEditingNameDirty = action.payload;
-    },
-    setCurrentEditingBreadcrumbNameDirty: (
-      state: UISliceState,
-      action: PayloadAction<UISliceState['currentEditingBreadcrumbNameDirty']>,
-    ) => {
-      state.currentEditingBreadcrumbNameDirty = action.payload;
     },
     resetState: (state: UISliceState) => {
       Object.assign(state, initialState);

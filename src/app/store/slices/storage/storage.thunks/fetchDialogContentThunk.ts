@@ -4,12 +4,12 @@ import _ from 'lodash';
 import { t } from 'i18next';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { SdkFactory } from '../../../../core/factory/sdk';
 import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
+import newStorageService from 'app/drive/services/new-storage.service';
 
 export const fetchDialogContentThunk = createAsyncThunk<void, string, { state: RootState }>(
   'storage/fetchDialogContentThunk',
@@ -17,11 +17,8 @@ export const fetchDialogContentThunk = createAsyncThunk<void, string, { state: R
     const state = getState();
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
 
-    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-
-    const [responsePromise] = storageClient.getFolderContentByUuid({
+    const [responsePromise] = newStorageService.getFolderContentByUuid({
       folderUuid: folderId,
-      trash: false,
       workspacesToken: workspaceCredentials?.tokenHeader,
     });
     const databaseContent = await databaseService.get<DatabaseCollection.MoveDialogLevels>(

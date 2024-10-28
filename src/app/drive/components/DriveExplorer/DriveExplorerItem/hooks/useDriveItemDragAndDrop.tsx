@@ -1,6 +1,5 @@
 import { ConnectDragSource, ConnectDropTarget, useDrag, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { SdkFactory } from '../../../../../core/factory/sdk';
 import { transformDraggedItems } from '../../../../../core/services/drag-and-drop.service';
 import { DragAndDropType } from '../../../../../core/types';
 import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
@@ -49,7 +48,6 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
   const dispatch = useAppDispatch();
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
   const { selectedItems } = useAppSelector((state) => state.storage);
-  const workspacesCredentials = useAppSelector((state) => state.workspaces.workspaceCredentials);
   const namePath = useAppSelector((state) => state.storage.namePath);
   const [{ isDraggingOverThisItem, canDrop }, connectDropTarget] = useDrop<
     DriveItemData | DriveItemData[],
@@ -88,30 +86,10 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
             return i.isFolder;
           });
 
-          const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-
           dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
 
-          const [folderContentPromise] = storageClient.getFolderContentByUuid({
-            folderUuid: item.uuid,
-            trash: false,
-            workspacesToken: workspacesCredentials?.tokenHeader,
-          });
-          const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
-          const foldersInDestinationFolderParsed = foldersInDestinationFolder.map((folder) => ({
-            ...folder,
-            isFolder: true,
-          }));
-          const unrepeatedFiles = handleRepeatedUploadingFiles(
-            filesToMove,
-            filesInDestinationFolder as DriveItemData[],
-            dispatch,
-          );
-          const unrepeatedFolders = handleRepeatedUploadingFolders(
-            foldersToMove,
-            foldersInDestinationFolderParsed as DriveItemData[],
-            dispatch,
-          );
+          const unrepeatedFiles = await handleRepeatedUploadingFiles(filesToMove, dispatch, item.uuid);
+          const unrepeatedFolders = await handleRepeatedUploadingFolders(foldersToMove, dispatch, item.uuid);
           const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
 
           if (unrepeatedItems.length === itemsToMove.length)
