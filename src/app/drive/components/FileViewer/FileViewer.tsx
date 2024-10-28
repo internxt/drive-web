@@ -13,12 +13,6 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { Fragment, Suspense, useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import {
-  trackFilePreviewClicked,
-  trackFilePreviewOpened,
-  trackFilePreviewed,
-} from '../../../analytics/services/analytics.service';
 import { PreviewFileItem } from '../../../share/types';
 import { setItemsToMove, storageActions } from '../../../store/slices/storage';
 import { TopBarActionsMenu } from './FileViewerWrapper';
@@ -107,12 +101,6 @@ const FileViewer = ({
 
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
 
-  const trackFilePreviewProperties: TrackingPlan.FilePreviewProperties = {
-    file_size: file?.size,
-    file_extension: file?.type,
-    preview_id: file?.uuid,
-  };
-
   useEffect(() => {
     const handleContextmenu = (e) => {
       e.preventDefault();
@@ -126,13 +114,11 @@ const FileViewer = ({
   useEffect(() => {
     setIsPreviewAvailable(true);
 
-    trackFilePreviewClicked(trackFilePreviewProperties);
     if (show && isTypeAllowed) {
       if (shouldRenderThePreview) {
         setIsPreviewAvailable(false);
         return;
       }
-      trackFilePreviewOpened(trackFilePreviewProperties);
     } else {
       setIsPreviewAvailable(false);
     }
@@ -206,7 +192,6 @@ const FileViewer = ({
 
   const onClosePreview = () => {
     onClose();
-    trackFilePreviewed(trackFilePreviewProperties);
   };
 
   return (

@@ -4,7 +4,6 @@ import { AppView } from 'app/core/types';
 import Section from 'app/newSettings/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
 import { FreeStoragePlan } from '../../../../drive/types';
@@ -226,7 +225,6 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       await paymentService.cancelSubscription(selectedSubscriptionType);
       notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
       setIsCancelSubscriptionModalOpen(false);
-      trackCanceledSubscription({ feedback });
     } catch (error) {
       errorService.reportError(error);
       notificationsService.show({

@@ -48,8 +48,6 @@ const logIn = async (email: string, password: string, twoFactorCode: string, dis
   const { user } = await doLogin(email, password, twoFactorCode);
   dispatch(userActions.setUser(user));
 
-  window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
-  window.rudderanalytics.track('User Signin in Integrated Checkout', { email: user.email });
   window.gtag('event', 'User Signin in Integrated Checkout', { method: 'email' });
 
   try {

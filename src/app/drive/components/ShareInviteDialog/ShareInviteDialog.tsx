@@ -5,8 +5,6 @@ import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import { trackRestrictedShared } from '../../../analytics/services/analytics.service';
 import userService from '../../../auth/services/user.service';
 import errorService from '../../../core/services/error.service';
 import { HTTP_CODES } from '../../../core/services/http.service';
@@ -138,16 +136,8 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
         ),
       );
     });
-    const trackingRestrictedSharedProperties: TrackingPlan.RestrictedSharedProperties = {
-      is_folder: props.itemToShare?.isFolder,
-      share_type: 'private',
-      user_id: props.itemToShare?.userId,
-      item_id: props.itemToShare?.id,
-      invitations_send: 1,
-    };
 
     await Promise.all(sharingPromises);
-    trackRestrictedShared(trackingRestrictedSharedProperties);
   };
 
   //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG

@@ -10,7 +10,6 @@ import {
 import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
-import analyticsService from 'app/analytics/services/analytics.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import localStorageService from 'app/core/services/local-storage.service';
 import RealtimeService from 'app/core/services/socket.service';
@@ -36,7 +35,6 @@ import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
-  analyticsService.trackSignOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
@@ -54,7 +52,6 @@ export function cancelAccount(): Promise<void> {
 export const is2FANeeded = async (email: string): Promise<boolean> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
-    analyticsService.signInAttempted(email, error.message);
     throw new Error(error.message ?? 'Login error');
   });
 
@@ -157,7 +154,6 @@ export const doLogin = async (
       };
     })
     .catch((error) => {
-      analyticsService.signInAttempted(email, error.message);
       throw error;
     });
 };
