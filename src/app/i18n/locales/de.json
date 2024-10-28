@@ -4,19 +4,19 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Sparen Sie 80%",
-    "title": "Sichern Sie Ihre digitale Welt!",
-    "subtitle": "Gewinnen Sie unseren Premium-Rucksack mit unseren lebenslangen Plänen.",
-    "cta": "Plan auswählen",
-    "guarantee": "30 Tage Geld-zurück-Garantie",
+    "label": "Spare 80%",
+    "title": "Boo! Sparen Sie mit uns...",
+    "subtitle": "Gewinne unseren Premium-Rucksack mit unseren lebenslangen Plänen.",
+    "cta": "Plan wählen",
+    "guarantee": "30-Tage-Geld-zurück-Garantie",
     "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
     "features": [
-      "Große Einsparungen bei allen Internxt-Plänen",
-      "Sicherer und geschützter Cloud-Speicher",
-      "Open Source und transparent",
+      "Spare bei allen lebenslangen Plänen",
+      "Privater, verschlüsselter Cloud-Speicher",
+      "Quelloffen und geprüft",
       "End-to-End-verschlüsselte Übertragungen",
       "Kein unbefugter Zugriff",
-      "Angebot endet am 31. Oktober"
+      "Angebot endet am 10. November"
     ]
   },
   "valentinesBanner": {
