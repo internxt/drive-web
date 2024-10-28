@@ -965,7 +965,13 @@
       "primaryAction": "Conferma",
       "secondaryAction": "Annulla"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Condividi \"{{name}}\"",
+      "teams": "Squadre",
+      "teamsWithAccess": "Squadre con accesso:",
+      "shareButton": "Condividi"
+    }
   },
   "form": {
     "fields": {

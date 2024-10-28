@@ -906,7 +906,13 @@
       "primaryAction": "Confirmer",
       "secondaryAction": "Annuler"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Partager \"{{name}}\"",
+      "teams": "Équipes",
+      "teamsWithAccess": "Équipes avec accès :",
+      "shareButton": "Partager"
+    }
   },
   "form": {
     "fields": {

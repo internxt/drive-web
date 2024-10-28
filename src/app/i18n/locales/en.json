@@ -973,7 +973,13 @@
       "primaryAction": "Confirm",
       "secondaryAction": "Cancel"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Share \"{{name}}\"",
+      "teams": "Teams",
+      "teamsWithAcces": "Teams with Access:",
+      "shareButton": "Share"
+    }
   },
   "form": {
     "fields": {

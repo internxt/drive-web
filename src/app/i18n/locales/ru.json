@@ -945,7 +945,13 @@
       "primaryAction": "Подтвердить",
       "secondaryAction": "Отмена"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Поделиться \"{{name}}\"",
+      "teams": "Команды",
+      "teamsWithAccess": "Команды с доступом:",
+      "shareButton": "Поделиться"
+    }
   },
   "form": {
     "fields": {
