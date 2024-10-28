@@ -20,7 +20,6 @@ import navigationService from 'app/core/services/navigation.service';
 import AppError, { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button } from '@internxt/internxtui';
-import { trackAccountUnblockEmailSent } from '../../../analytics/services/analytics.service';
 import workspacesService from '../../../core/services/workspace.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import useLoginRedirections from '../../../routes/hooks/Login/useLoginRedirections';
@@ -174,7 +173,6 @@ export default function LogIn(): JSX.Element {
       setShowErrors(true);
       if ((err as AppError)?.status === 403) {
         await sendUnblockAccountEmail(email);
-        trackAccountUnblockEmailSent({ email });
         navigationService.history.push({
           pathname: AppView.BlockedAccount,
           search: QueryString.stringify({ email: email }),

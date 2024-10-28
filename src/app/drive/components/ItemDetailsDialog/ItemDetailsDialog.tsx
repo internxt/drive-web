@@ -44,7 +44,7 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
             <p className="text-sm font-medium text-gray-50">
               {translate(`modals.itemDetailsModal.itemDetails.${key}`)}
             </p>
-            <p title={value} className="line-clamp-2 w-full text-base font-medium text-gray-100">
+            <p title={value} className="block w-full truncate text-base font-medium text-gray-100">
               {value}
             </p>
           </div>

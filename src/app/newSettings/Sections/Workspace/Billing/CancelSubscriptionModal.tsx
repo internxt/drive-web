@@ -1,7 +1,6 @@
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { ArrowRight } from '@phosphor-icons/react';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import analyticsService from '../../../../analytics/services/analytics.service';
 import sizeService from '../../../../drive/services/size.service';
 import { FreeStoragePlan } from '../../../../drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
@@ -56,7 +55,6 @@ const CancelSubscriptionModal = ({
   useEffect(() => {
     if (couponAvailable && isOpen) {
       setStep(1);
-      analyticsService.page('Cancelation incentive');
     }
   }, [couponAvailable]);
 
@@ -150,7 +148,6 @@ const Step1 = ({
           className={'shadow-subtle-hard'}
           variant="secondary"
           onClick={() => {
-            analyticsService.page('Cancel Subscription');
             setStep(2);
           }}
         >
@@ -159,7 +156,6 @@ const Step1 = ({
         <Button
           className="ml-2 shadow-subtle-hard"
           onClick={() => {
-            analyticsService.track('Subscription Cancelation Incentive Accepted');
             applyCoupon();
           }}
         >
@@ -264,7 +260,6 @@ const Step2 = ({
         <Button
           className="ml-2 shadow-subtle-hard"
           onClick={() => {
-            analyticsService.track('Keep Subscription Clicked');
             onClose();
           }}
         >

@@ -182,9 +182,6 @@ function ShareGuestSingUpView(): JSX.Element {
 
       dispatch(referralsThunks.initializeThunk());
 
-      window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
-      window.rudderanalytics.track('User Signup', { email });
-
       //TODO: Use this setState when we have to implement the download of the backup key
       // setView('downloadBackupKey');
       return navigationService.push(AppView.Shared);

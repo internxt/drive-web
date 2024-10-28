@@ -24,7 +24,9 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useAppSelector((state) => state.user.user);
-  const fullName = `${user?.name} ${user?.lastname}`;
+  const name = user?.name ?? '';
+  const lastName = user?.lastname ?? '';
+  const fullName = name + ' ' + lastName;
   const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
 
   useEffect(() => {

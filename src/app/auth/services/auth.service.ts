@@ -10,7 +10,6 @@ import {
 import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
-import analyticsService from 'app/analytics/services/analytics.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -81,7 +80,6 @@ export type AuthenticateUserParams = {
 };
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
-  analyticsService.trackSignOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
@@ -99,7 +97,6 @@ export function cancelAccount(): Promise<void> {
 export const is2FANeeded = async (email: string): Promise<boolean> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
-    analyticsService.signInAttempted(email, error.message);
     throw new AppError(error.message ?? 'Login error', error.status ?? 500);
   });
 
@@ -198,7 +195,6 @@ export const doLogin = async (
       };
     })
     .catch((error) => {
-      analyticsService.signInAttempted(email, error.message);
       throw error;
     });
 };
@@ -486,7 +482,6 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
   const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
   dispatch(userActions.setUser(user));
-  window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
 
   try {
     dispatch(productsThunks.initializeThunk());
@@ -521,7 +516,6 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
   } = params;
   if (authMethod === 'signIn') {
     const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, loginType });
-    window.rudderanalytics.track('User Signin', { email });
     window.gtag('event', 'User Signin', { method: 'email' });
     return profileInfo;
   } else if (authMethod === 'signUp' && doSignUp) {

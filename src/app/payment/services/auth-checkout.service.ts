@@ -15,8 +15,6 @@ const authenticateUser = async (params: AuthParams) => {
   const { email, password, authMethod, dispatch, doRegister } = params;
   if (authMethod === 'signIn') {
     await logIn({ email, password, twoFactorCode: '', dispatch });
-    window.rudderanalytics.track('User Signin in Integrated Checkout', { email });
-    window.gtag('event', 'User Signin in Integrated Checkout', { method: 'email' });
   } else if (authMethod === 'signUp') {
     const signUpParams = {
       doSignUp: doRegister,
