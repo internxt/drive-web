@@ -138,8 +138,6 @@ export default function LogIn(): JSX.Element {
         const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
         dispatch(userActions.setUser(user));
 
-        window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
-        window.rudderanalytics.track('User Signin', { email: user.email });
         window.gtag('event', 'User Signin', { method: 'email' });
 
         try {
