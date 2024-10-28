@@ -9,19 +9,19 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia l'80%",
-    "title": "Proteggi il tuo mondo digitale!",
+    "label": "Risparmia 80%",
+    "title": "Boo! Vieni a risparmiare con noi...",
     "subtitle": "Vinci il nostro zaino premium con i nostri piani a vita.",
-    "cta": "Scegli il piano",
+    "cta": "Scegli un piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
-    "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
+    "lastCta": "*Offerta valida per conti gratuiti o nuovi clienti",
     "features": [
-      "Risparmia tanto su tutti i piani Internxt",
-      "Archiviazione cloud sicura e protetta",
-      "Open source e trasparente",
-      "Trasferimenti criptati end-to-end",
+      "Risparmia su tutti i piani a vita",
+      "Archiviazione cloud privata e criptata",
+      "Codice open-source e verificato",
+      "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
-      "Offerta valida fino al 31 ottobre"
+      "Offerta valida fino al 10 novembre"
     ]
   },
   "banner": {
@@ -67,7 +67,8 @@
     "light": "Chiaro",
     "dark": "Scuro",
     "system": "Sistema",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "Email",

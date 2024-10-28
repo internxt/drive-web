@@ -5,18 +5,18 @@
   },
   "featuresBanner": {
     "label": "Économisez 80%",
-    "title": "Sécurisez votre monde numérique!",
+    "title": "Boo ! Venez économiser avec nous...",
     "subtitle": "Gagnez notre sac à dos premium avec nos plans à vie.",
-    "cta": "Choisir un plan",
+    "cta": "Choisissez un plan",
     "guarantee": "Garantie de remboursement de 30 jours",
-    "lastCta": "*L'offre est destinée aux comptes gratuits ou aux nouveaux clients",
+    "lastCta": "*Offre réservée aux comptes gratuits ou nouveaux clients",
     "features": [
-      "Économisez gros sur tous les plans Internxt",
-      "Stockage cloud sûr et sécurisé",
-      "Open source et transparent",
+      "Économisez sur tous les plans à vie",
+      "Stockage cloud privé et crypté",
+      "Code source ouvert et audité",
       "Transferts cryptés de bout en bout",
-      "Pas d'accès non autorisé",
-      "Offre valable jusqu'au 31 octobre"
+      "Aucun accès non autorisé",
+      "Offre valable jusqu’au 10 novembre"
     ]
   },
   "valentinesBanner": {
@@ -46,7 +46,8 @@
     "light": "Clair",
     "dark": "Sombre",
     "system": "Système",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "Email",

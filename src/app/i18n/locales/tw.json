@@ -4,19 +4,19 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "節省 80%",
-    "title": "保護你的數位世界！",
-    "subtitle": "透過我們的終身計劃贏取我們的高級背包。",
+    "label": "節省80%",
+    "title": "Boo！來和我們一起省錢...",
+    "subtitle": "贏取我們終身計劃的高級背包。",
     "cta": "選擇計劃",
     "guarantee": "30天退款保證",
     "lastCta": "*優惠僅適用於免費帳戶或新客戶",
     "features": [
-      "所有 Internxt 計劃大幅優惠",
-      "安全可靠的雲端存儲",
-      "開源且透明",
+      "節省所有終身計劃",
+      "私人加密雲存儲",
+      "開源並經過審核",
       "端到端加密傳輸",
       "無未經授權的訪問",
-      "優惠截止至10月31日"
+      "優惠截止至11月10日"
     ]
   },
   "valentinesBanner": {
@@ -67,7 +67,8 @@
     "light": "淺色",
     "dark": "深色",
     "system": "系統",
-    "starwars": "星際大戰"
+    "starwars": "星際大戰",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "電子郵件",
