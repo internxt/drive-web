@@ -85,9 +85,9 @@ export function createFolder(
   return [finalPromise, requestCanceler];
 }
 
-export function deleteFolder(folderData: DriveFolderData): Promise<void> {
+export async function deleteFolder(folderData: DriveFolderData): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
-  return storageClient.deleteFolder(folderData.id).then(() => {});
+  await storageClient.deleteFolder(folderData.id);
 }
 
 interface GetDirectoryFoldersResponse {
@@ -297,18 +297,13 @@ export async function moveFolder(folderId: number, destination: number): Promise
     destinationFolderId: destination,
   };
 
-  return storageClient
-    .moveFolder(payload)
-    .then((response) => {
-      return response;
-    })
-    .catch((err) => {
-      const castedError = errorService.castError(err);
-      if (castedError.status) {
-        castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
-      }
-      throw castedError;
-    });
+  return storageClient.moveFolder(payload).catch((err) => {
+    const castedError = errorService.castError(err);
+    if (castedError.status) {
+      castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
+    }
+    throw castedError;
+  });
 }
 
 const folderService = {

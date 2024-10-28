@@ -139,14 +139,14 @@ export async function updateMetaData(folderUuid: string, metadata: DriveFolderMe
   return storageClient.updateFolderNameWithUUID(payload);
 }
 
-export function deleteFolder(folderData: DriveFolderData): Promise<void> {
+export async function deleteFolder(folderData: DriveFolderData): Promise<void> {
   const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
-  return trashClient.deleteFolder(folderData.id).then(() => {});
+  await trashClient.deleteFolder(folderData.id);
 }
 
-export function deleteBackupDeviceAsFolder(folderData: DriveFolderData): Promise<void> {
+export async function deleteBackupDeviceAsFolder(folderData: DriveFolderData): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
-  return storageClient.deleteFolder(folderData.id).then(() => {});
+  await storageClient.deleteFolder(folderData.id);
 }
 
 interface GetDirectoryFoldersResponse {
@@ -548,18 +548,13 @@ export async function moveFolderByUuid(
     destinationFolderUuid: destinationFolderUuid,
   };
 
-  return storageClient
-    .moveFolderByUuid(payload)
-    .then((response) => {
-      return response;
-    })
-    .catch((err) => {
-      const castedError = errorService.castError(err);
-      if (castedError.status) {
-        castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
-      }
-      throw castedError;
-    });
+  return storageClient.moveFolderByUuid(payload).catch((err) => {
+    const castedError = errorService.castError(err);
+    if (castedError.status) {
+      castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
+    }
+    throw castedError;
+  });
 }
 
 const folderService = {

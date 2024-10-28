@@ -4,7 +4,7 @@ import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 
 const CheckoutCancelView = (): JSX.Element => {
-  const onCancelCheckout = useCallback(async () => {
+  const onCancelCheckout = useCallback(() => {
     navigationService.push(AppView.Drive);
   }, []);
 
