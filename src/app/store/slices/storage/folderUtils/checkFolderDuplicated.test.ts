@@ -1,17 +1,18 @@
 import newStorageService from '../../../../drive/services/new-storage.service';
 import { DriveFolderData } from '../../../../drive/types';
+import {vi, describe, it, expect, beforeEach, Mock} from 'vitest';
 
 import { checkFolderDuplicated } from './checkFolderDuplicated';
 
-jest.mock('../../../../drive/services/new-storage.service', () => ({
-  checkDuplicatedFolders: jest.fn(),
+vi.mock('../../../../drive/services/new-storage.service', () => ({
+  checkDuplicatedFolders: vi.fn(),
 }));
 
 describe('checkFolderDuplicated', () => {
   const parentFolderId = 'parent-folder-id';
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should return empty results when there are no folders', async () => {
@@ -28,7 +29,7 @@ describe('checkFolderDuplicated', () => {
   it('should return all folders as duplicated when all are duplicated', async () => {
     const folders = [{ name: 'Folder1' }, { name: 'Folder2' }] as DriveFolderData[];
 
-    (newStorageService.checkDuplicatedFolders as jest.Mock).mockResolvedValue({
+    (newStorageService.checkDuplicatedFolders as Mock).mockResolvedValue({
       existentFolders: [{ plainName: 'Folder1' }, { plainName: 'Folder2' }],
     });
 
@@ -46,7 +47,7 @@ describe('checkFolderDuplicated', () => {
     const folders = [{ name: 'Folder1' }, { name: 'Folder2' }, { name: 'Folder3' }] as DriveFolderData[];
     const parentFolderId = 'someParentId';
 
-    (newStorageService.checkDuplicatedFolders as jest.Mock).mockResolvedValue({
+    (newStorageService.checkDuplicatedFolders as Mock).mockResolvedValue({
       existentFolders: [{ plainName: 'Folder1' }, { plainName: 'Folder3' }],
     });
 
@@ -67,7 +68,7 @@ describe('checkFolderDuplicated', () => {
   it('should return all folders without duplicates when none are duplicated', async () => {
     const folders = [{ name: 'Folder1' }, { name: 'Folder2' }] as DriveFolderData[];
 
-    (newStorageService.checkDuplicatedFolders as jest.Mock).mockResolvedValue({
+    (newStorageService.checkDuplicatedFolders as Mock).mockResolvedValue({
       existentFolders: [],
     });
 

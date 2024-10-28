@@ -1,12 +1,13 @@
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
 
 import newStorageService from '../../../../drive/services/new-storage.service';
 import * as checkDuplicatedFilesModule from './checkDuplicatedFiles';
 import { prepareFilesToUpload } from './prepareFilesToUpload';
 import * as processDuplicateFilesModule from './processDuplicateFiles';
 
-jest.mock('../../../../drive/services/new-storage.service', () => ({
-  checkDuplicatedFiles: jest.fn(),
+
+vi.mock('../../../../drive/services/new-storage.service', () => ({
+  checkDuplicatedFiles: vi.fn(),
 }));
 
 // MOCK FILE NECESSARY BECAUSE IN NODE, THE CLASS FILE NOT EXISTS
@@ -26,7 +27,7 @@ global.File = MockFile as any;
 
 describe('prepareFilesToUpload', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should process files in batches', async () => {
@@ -35,12 +36,12 @@ describe('prepareFilesToUpload', () => {
       .fill(null)
       .map((_, i) => new MockFile([], `file${i}.txt`, { type: 'text/plain', size: 13 }));
     const parentFolderId = 'parent123';
-    (newStorageService.checkDuplicatedFiles as jest.Mock).mockResolvedValue({
+    (newStorageService.checkDuplicatedFiles as Mock).mockResolvedValue({
       existentFiles: [],
     });
 
-    const checkDuplicatedFilesSpy = jest.spyOn(checkDuplicatedFilesModule, 'checkDuplicatedFiles');
-    const processDuplicateFiles = jest.spyOn(processDuplicateFilesModule, 'processDuplicateFiles');
+    const checkDuplicatedFilesSpy = vi.spyOn(checkDuplicatedFilesModule, 'checkDuplicatedFiles');
+    const processDuplicateFiles = vi.spyOn(processDuplicateFilesModule, 'processDuplicateFiles');
     const result = await prepareFilesToUpload({ files: mockFiles as File[], parentFolderId });
 
     expect(checkDuplicatedFilesSpy).toHaveBeenCalledTimes(4);
@@ -55,14 +56,14 @@ describe('prepareFilesToUpload', () => {
       .map((_, i) => new MockFile([], `file${i}.txt`, { type: 'text/plain', size: i === 0 ? 0 : 1 }));
     const parentFolderId = 'parent123';
 
-    (newStorageService.checkDuplicatedFiles as jest.Mock)
+    (newStorageService.checkDuplicatedFiles as Mock)
       .mockResolvedValueOnce({
         existentFiles: [{ plainName: 'file2', type: 'txt' }],
       })
       .mockResolvedValueOnce({ existentFiles: [] });
 
-    const checkDuplicatedFilesSpy = jest.spyOn(checkDuplicatedFilesModule, 'checkDuplicatedFiles');
-    const processDuplicateFiles = jest.spyOn(processDuplicateFilesModule, 'processDuplicateFiles');
+    const checkDuplicatedFilesSpy = vi.spyOn(checkDuplicatedFilesModule, 'checkDuplicatedFiles');
+    const processDuplicateFiles = vi.spyOn(processDuplicateFilesModule, 'processDuplicateFiles');
 
     const result = await prepareFilesToUpload({ files: files as File[], parentFolderId });
 
@@ -75,13 +76,13 @@ describe('prepareFilesToUpload', () => {
     const files = [new File([], 'file.txt')];
     const parentFolderId = 'parent123';
 
-    (checkDuplicatedFilesModule.checkDuplicatedFiles as jest.Mock).mockResolvedValue({
+    (checkDuplicatedFilesModule.checkDuplicatedFiles as Mock).mockResolvedValue({
       duplicatedFilesResponse: [{ name: 'file.txt' }],
       filesWithoutDuplicates: [],
       filesWithDuplicates: files,
     });
 
-    const processDuplicateFiles = jest.spyOn(processDuplicateFilesModule, 'processDuplicateFiles');
+    const processDuplicateFiles = vi.spyOn(processDuplicateFilesModule, 'processDuplicateFiles');
 
     await prepareFilesToUpload({ files, parentFolderId, disableDuplicatedNamesCheck: true });
 
@@ -97,13 +98,13 @@ describe('prepareFilesToUpload', () => {
     const parentFolderId = 'parent123';
     const fileType = 'text/plain';
 
-    (checkDuplicatedFilesModule.checkDuplicatedFiles as jest.Mock).mockResolvedValue({
+    (checkDuplicatedFilesModule.checkDuplicatedFiles as Mock).mockResolvedValue({
       duplicatedFilesResponse: [],
       filesWithoutDuplicates: files,
       filesWithDuplicates: [],
     });
 
-    const processDuplicateFiles = jest.spyOn(processDuplicateFilesModule, 'processDuplicateFiles');
+    const processDuplicateFiles = vi.spyOn(processDuplicateFilesModule, 'processDuplicateFiles');
 
     await prepareFilesToUpload({ files, parentFolderId, fileType });
 

@@ -1,19 +1,19 @@
 import * as internxtLib from '@internxt/lib';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
 import newStorageService from '../../../../drive/services/new-storage.service';
 import { getUniqueFilename } from './getUniqueFilename';
 
-jest.mock('../../../../drive/services/new-storage.service', () => ({
-  checkDuplicatedFiles: jest.fn(),
+vi.mock('../../../../drive/services/new-storage.service', () => ({
+  checkDuplicatedFiles: vi.fn(),
 }));
 
 describe('getUniqueFilename', () => {
   let renameIfNeededSpy;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    renameIfNeededSpy = jest.spyOn(internxtLib.items, 'renameIfNeeded');
+    vi.clearAllMocks();
+    renameIfNeededSpy = vi.spyOn(internxtLib.items, 'renameIfNeeded');
   });
 
   it('should return the original name if no duplicates exist', async () => {
@@ -22,7 +22,7 @@ describe('getUniqueFilename', () => {
     const duplicatedFiles = [] as DriveFileData[];
     const parentFolderId = 'parent123';
 
-    (newStorageService.checkDuplicatedFiles as jest.Mock).mockResolvedValue({ existentFiles: [] });
+    (newStorageService.checkDuplicatedFiles as Mock).mockResolvedValue({ existentFiles: [] });
 
     const result = await getUniqueFilename(filename, extension, duplicatedFiles, parentFolderId);
 
@@ -39,7 +39,7 @@ describe('getUniqueFilename', () => {
     const duplicatedFiles = [{ name: 'TestFile.txt', plainName: 'TestFile', type: 'txt' }] as DriveFileData[];
     const parentFolderId = 'parent123';
 
-    (newStorageService.checkDuplicatedFiles as jest.Mock)
+    (newStorageService.checkDuplicatedFiles as Mock)
       .mockResolvedValueOnce({ existentFiles: [{ plainName: 'TestFile', type: 'txt' }] })
       .mockResolvedValueOnce({ existentFiles: [] });
 
@@ -59,7 +59,7 @@ describe('getUniqueFilename', () => {
     ] as DriveFileData[];
     const parentFolderId = 'parent123';
 
-    (newStorageService.checkDuplicatedFiles as jest.Mock)
+    (newStorageService.checkDuplicatedFiles as Mock)
       .mockResolvedValueOnce({ existentFiles: [{ plainName: 'TestFile', type: 'txt' }] })
       .mockResolvedValueOnce({ existentFiles: [{ plainName: 'TestFile (1)', type: 'txt' }] })
       .mockResolvedValueOnce({ existentFiles: [] });
@@ -80,7 +80,7 @@ describe('getUniqueFilename', () => {
     ] as DriveFileData[];
     const parentFolderId = 'parent123';
 
-    (newStorageService.checkDuplicatedFiles as jest.Mock)
+    (newStorageService.checkDuplicatedFiles as Mock)
       .mockResolvedValueOnce({ existentFiles: [{ plainName: 'TestFile', type: 'txt' }] })
       .mockResolvedValueOnce({ existentFiles: [] });
 
