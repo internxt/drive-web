@@ -65,7 +65,6 @@ const processInvitation = async (
     await workspacesService.inviteUserToTeam({
       workspaceId: workspaceId,
       invitedUserEmail: email,
-      spaceLimitBytes: 52428800,
       encryptedMnemonicInBase64: encryptedMnemonicInBase64,
       encryptionAlgorithm: 'aes-256-gcm',
       message: messageText,
