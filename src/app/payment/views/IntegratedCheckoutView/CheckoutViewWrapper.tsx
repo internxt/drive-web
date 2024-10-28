@@ -378,7 +378,6 @@ const CheckoutViewWrapper = () => {
 
       // TEMPORARY HOT FIX
       // Store subscriptionId, paymentIntendId, and amountPaid to send to IMPACT API
-      // need to check all rest of needed values to add it to analytics in trackPaymentConversion function
       savePaymentDataInLocalStorage(
         subscriptionId,
         paymentIntentId,
