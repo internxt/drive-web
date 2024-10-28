@@ -82,8 +82,7 @@ export async function uploadFile(
   let response;
 
   if (isWorkspacesUpload) {
-    const dateISO = '2023-05-30T12:34:56.789Z';
-    const date = new Date(dateISO);
+    const date = new Date();
     const workspaceFileEntry = {
       name: file.name,
       bucket: bucketId,
