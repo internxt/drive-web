@@ -28,7 +28,8 @@ interface Window {
   gtag: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _adftrack: any;
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  rudderanalytics: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rdt: any;
   grecaptcha: {

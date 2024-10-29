@@ -9,6 +9,7 @@ import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
 import { AuthMethodTypes } from '../types';
+import { trackSignUp } from 'app/analytics/impact.service';
 
 const signUp = async (
   doRegister: RegisterFunction,
@@ -35,6 +36,8 @@ const signUp = async (
     ...xUser,
     privateKey,
   } as UserSettings;
+
+  await trackSignUp(xUser.uuid, email);
 
   dispatch(userActions.setUser(user));
   await dispatch(userThunks.initializeUserThunk());
