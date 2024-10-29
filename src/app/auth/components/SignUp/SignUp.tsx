@@ -28,6 +28,7 @@ import paymentService from '../../../payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import { decryptPrivateKey } from '../../../crypto/services/keys.service';
 import Button from '../../../shared/components/Button/Button';
+import { trackSignUp } from 'app/analytics/impact.service';
 
 export interface SignUpProps {
   location: {
@@ -173,6 +174,8 @@ function SignUp(props: SignUpProps): JSX.Element {
       if (isNewUser) {
         dispatch(referralsThunks.initializeThunk());
       }
+
+      await trackSignUp(xUser.uuid, email);
 
       const urlParams = new URLSearchParams(window.location.search);
       const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
