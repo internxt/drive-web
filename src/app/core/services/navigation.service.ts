@@ -6,6 +6,7 @@ import { AppView } from '../types';
 import configService from './config.service';
 import errorService from './error.service';
 import { AppDispatch } from 'app/store';
+import localStorageService from './local-storage.service';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
@@ -70,9 +71,11 @@ const navigationService = {
     }
   },
   setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch, updateUrl = true): void {
+    const user = localStorageService.getUser();
     const params = new URLSearchParams(window.location.search);
     const [currentWorkspaceUuid] = params.getAll('workspaceid');
-    !window.location.pathname.includes('file') &&
+    user &&
+      !window.location.pathname.includes('file') &&
       !window.location.pathname.includes('folder') &&
       dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid || null, updateUrl }));
   },
