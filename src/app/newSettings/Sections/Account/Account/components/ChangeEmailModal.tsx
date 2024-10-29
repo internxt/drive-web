@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import Button from '../../../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Input from '../../../../../shared/components/Input';
 import Modal from '../../../../../shared/components/Modal';
 

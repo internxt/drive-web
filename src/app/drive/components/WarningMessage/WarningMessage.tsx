@@ -1,6 +1,6 @@
 import { WarningCircle } from '@phosphor-icons/react';
 import { t } from 'i18next';
-import Button from '../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 
 export const WarningMessage = ({ onUpgradeButtonClicked }: { onUpgradeButtonClicked: () => void }): JSX.Element => {
   return (
@@ -10,7 +10,7 @@ export const WarningMessage = ({ onUpgradeButtonClicked }: { onUpgradeButtonClic
         <b>{t('error.storageIsFull')}.&nbsp;</b>
         {t('error.storageIsFullDescription')}
       </span>
-      <Button variant="tertiary" className="px-4 text-red" onClick={onUpgradeButtonClicked}>
+      <Button variant="ghost" className="px-4 text-red" onClick={onUpgradeButtonClicked}>
         {t('actions.upgradeNow')}
       </Button>
     </div>

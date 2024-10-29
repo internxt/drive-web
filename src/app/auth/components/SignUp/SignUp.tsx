@@ -21,8 +21,7 @@ import authService, { authenticateUser } from '../../../auth/services/auth.servi
 import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import paymentService from '../../../payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
-import analyticsService from '../../../analytics/services/analytics.service';
-import Button from '../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { AuthMethodTypes } from 'app/payment/types';
 
 export interface SignUpProps {
@@ -152,8 +151,6 @@ function SignUp(props: SignUpProps): JSX.Element {
       };
 
       const { token: xToken, user: xUser } = await authenticateUser(authParams);
-
-      await analyticsService.trackSignUp(xUser.uuid, email);
 
       const urlParams = new URLSearchParams(window.location.search);
       const isUniversalLinkMode = urlParams.get('universalLink') == 'true';

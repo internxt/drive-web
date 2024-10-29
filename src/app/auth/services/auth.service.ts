@@ -7,12 +7,15 @@ import {
   SecurityDetails,
   TwoFactorAuthQR,
 } from '@internxt/sdk/dist/auth';
+import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
-import analyticsService from 'app/analytics/services/analytics.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
+import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
 import localStorageService from 'app/core/services/local-storage.service';
+import navigationService from 'app/core/services/navigation.service';
 import RealtimeService from 'app/core/services/socket.service';
+import AppError, { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -28,20 +31,16 @@ import {
   passToHash,
 } from 'app/crypto/services/utils';
 import databaseService from 'app/database/services/database.service';
-import { generateMnemonic, validateMnemonic } from 'bip39';
-import { SdkFactory } from '../../core/factory/sdk';
-import httpService from '../../core/services/http.service';
-import navigationService from 'app/core/services/navigation.service';
-import AppError, { AppView } from 'app/core/types';
-import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
+import { AuthMethodTypes } from 'app/payment/types';
 import { AppDispatch } from 'app/store';
-import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
-import { AuthMethodTypes } from 'app/payment/types';
+import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
+import { generateMnemonic, validateMnemonic } from 'bip39';
+import { SdkFactory } from '../../core/factory/sdk';
+import httpService from '../../core/services/http.service';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -81,7 +80,6 @@ export type AuthenticateUserParams = {
 };
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
-  analyticsService.trackSignOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
@@ -99,7 +97,6 @@ export function cancelAccount(): Promise<void> {
 export const is2FANeeded = async (email: string): Promise<boolean> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
-    analyticsService.signInAttempted(email, error.message);
     throw new AppError(error.message ?? 'Login error', error.status ?? 500);
   });
 
@@ -198,7 +195,6 @@ export const doLogin = async (
       };
     })
     .catch((error) => {
-      analyticsService.signInAttempted(email, error.message);
       throw error;
     });
 };
@@ -247,8 +243,6 @@ const updateCredentialsWithToken = async (
   const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
 
   const encryptedMnemonic = encryptTextWithKey(mnemonicInPlain, newPassword);
-  // const privateKey = Buffer.from(privateKeyInPlain, 'base64').toString();
-  // const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.changePasswordWithLink(
@@ -298,15 +292,16 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
-  const usersClient = SdkFactory.getInstance().createUsersClient();
+  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
 
   return usersClient
-    .changePasswordLegacy(<ChangePasswordPayload>{
+    .changePassword(<ChangePasswordPayloadNew>{
       currentEncryptedPassword: encryptedCurrentPassword,
       newEncryptedPassword: encryptedNewPassword,
       newEncryptedSalt: encryptedNewSalt,
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
+      encryptVersion: '', // !TODO: Add the version used
     })
     .then((res) => {
       // !TODO: Add the correct analytics event  when change password is completed
@@ -487,7 +482,6 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
   const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
   dispatch(userActions.setUser(user));
-  window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
 
   try {
     dispatch(productsThunks.initializeThunk());
@@ -522,7 +516,6 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
   } = params;
   if (authMethod === 'signIn') {
     const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, loginType });
-    window.rudderanalytics.track('User Signin', { email });
     window.gtag('event', 'User Signin', { method: 'email' });
     return profileInfo;
   } else if (authMethod === 'signUp' && doSignUp) {

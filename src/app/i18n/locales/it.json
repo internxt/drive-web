@@ -9,19 +9,19 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia l'80%",
-    "title": "Proteggi il tuo mondo digitale!",
+    "label": "Risparmia 80%",
+    "title": "Boo! Vieni a risparmiare con noi...",
     "subtitle": "Vinci il nostro zaino premium con i nostri piani a vita.",
-    "cta": "Scegli il piano",
+    "cta": "Scegli un piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
-    "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
+    "lastCta": "*Offerta valida per conti gratuiti o nuovi clienti",
     "features": [
-      "Risparmia tanto su tutti i piani Internxt",
-      "Archiviazione cloud sicura e protetta",
-      "Open source e trasparente",
-      "Trasferimenti criptati end-to-end",
+      "Risparmia su tutti i piani a vita",
+      "Archiviazione cloud privata e criptata",
+      "Codice open-source e verificato",
+      "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
-      "Offerta valida fino al 31 ottobre"
+      "Offerta valida fino al 10 novembre"
     ]
   },
   "banner": {
@@ -67,7 +67,8 @@
     "light": "Chiaro",
     "dark": "Scuro",
     "system": "Sistema",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "Email",
@@ -81,8 +82,7 @@
       "dontHaveAccount": "Non hai un account?",
       "createAccount": "Creare un account",
       "2FA": "Codice a due fattori",
-      "twoFactorAuthenticationCode": "Codice di autenticazione a due fattori",
-      "wrongLogin": "Nome utente o password non validi"
+      "twoFactorAuthenticationCode": "Codice di autenticazione a due fattori"
     },
     "signup": {
       "title": "Creare un account",
@@ -1294,8 +1294,6 @@
     "errorPurchaseBusinessPlan": "Hai già un piano aziendale.",
     "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti.",
     "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon",
-    "foldersCannotBeUploadedToSharedFolder": "Le cartelle non possono essere caricate nelle cartelle condivise",
-    "errorDownloadingDesktopApp": "Qualcosa è andato storto durante il download dell'app desktop",
     "invalidTaxIdIsProvided": "L'ID fiscale fornito non è valido",
     "errorWhileFetchingMoreItems": "Qualcosa è andato storto durante il recupero di ulteriori elementi",
     "errorDeletingItems": "Qualcosa è andato storto durante l'eliminazione di questo elemento"
@@ -1550,12 +1548,6 @@
           "remove": "Rimuovi",
           "removing": "Rimuovendo"
         },
-        "leaveModal": {
-          "title": "Lascia spazio di lavoro",
-          "description": "{{name}}, perderai l'accesso al spazio di lavoro. Tutti i loro file e cartelle rimarranno gli stessi.",
-          "leave": "Lascia",
-          "leaving": "Lascia"
-        },
         "changePasswordModal": {
           "title": "Richiedi cambio password",
           "description": "L'utente riceverà una raccomandazione per aggiornare la password del proprio account personale. Utilizza questa funzione se ritieni che la sua password possa essere stata compromessa.",
@@ -1614,7 +1606,6 @@
           "deactivate": "Disattiva membro",
           "reactivate": "Riattiva membro",
           "remove": "Rimuovi membro",
-          "leave": "Lascia spazio di lavoro",
           "passwordChange": "Richiedi la modifica della password"
         }
       },

@@ -1,7 +1,7 @@
 import { UploadSimple } from '@phosphor-icons/react';
 import { t } from 'i18next';
 import { MutableRefObject } from 'react';
-import Button from '../Button/Button';
+import { Button } from '@internxt/internxtui';
 import { OnboardingModal } from './OnBoardingModal';
 import { Step } from './Tutorial';
 

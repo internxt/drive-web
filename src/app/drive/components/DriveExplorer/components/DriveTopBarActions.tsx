@@ -17,7 +17,7 @@ import navigationService from '../../../../core/services/navigation.service';
 import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import shareService from '../../../../share/services/share.service';
-import Button from '../../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Dropdown from '../../../../shared/components/Dropdown';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../../shared/components/Tooltip/Tooltip';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
@@ -266,7 +266,7 @@ const DriveTopBarActions = ({
                   data-tooltip-place="bottom"
                 >
                   <Button
-                    variant="tertiary"
+                    variant="ghost"
                     className="aspect-square"
                     onClick={() => {
                       dispatch(storageActions.setItemToShare({ item: selectedItems[0] }));
@@ -284,7 +284,7 @@ const DriveTopBarActions = ({
                   data-tooltip-content={translate('drive.dropdown.copyLink')}
                   data-tooltip-place="bottom"
                 >
-                  <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
+                  <Button variant="ghost" className="aspect-square" onClick={onSelectedOneItemShare}>
                     <Link className="h-6 w-6" />
                   </Button>
                   <TooltipElement id="copyLink-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -298,7 +298,7 @@ const DriveTopBarActions = ({
                 data-tooltip-content={translate('drive.dropdown.move')}
                 data-tooltip-place="bottom"
               >
-                <Button variant="tertiary" className="aspect-square" onClick={onMoveItemButtonClicked}>
+                <Button variant="ghost" className="aspect-square" onClick={onMoveItemButtonClicked}>
                   <MoveActionIcon className="h-6 w-6" />
                 </Button>
                 <TooltipElement id="move-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -310,7 +310,7 @@ const DriveTopBarActions = ({
               data-tooltip-content={translate('drive.dropdown.download')}
               data-tooltip-place="bottom"
             >
-              <Button variant="tertiary" className="aspect-square" onClick={onDownloadButtonClicked}>
+              <Button variant="ghost" className="aspect-square" onClick={onDownloadButtonClicked}>
                 <DownloadSimple className="h-6 w-6" />
               </Button>
               <TooltipElement id="download-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -321,7 +321,7 @@ const DriveTopBarActions = ({
               data-tooltip-content={translate('drive.dropdown.moveToTrash')}
               data-tooltip-place="bottom"
             >
-              <Button variant="tertiary" className="aspect-square" onClick={onBulkDeleteButtonClicked}>
+              <Button variant="ghost" className="aspect-square" onClick={onBulkDeleteButtonClicked}>
                 <Trash className="h-6 w-6" />
               </Button>
               <TooltipElement id="trash-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -340,7 +340,7 @@ const DriveTopBarActions = ({
                   data-tooltip-content={translate('actions.more')}
                   data-tooltip-place="bottom"
                 >
-                  <Button variant="tertiary" className="aspect-square">
+                  <Button variant="ghost" className="aspect-square">
                     <DotsThreeVertical size={24} />
                   </Button>
                   <TooltipElement id="more-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -354,7 +354,7 @@ const DriveTopBarActions = ({
         <>
           {separatorV}
           <div className="flex items-center justify-center">
-            <Button variant="tertiary" className="aspect-square" onClick={onViewModeButtonClicked}>
+            <Button variant="ghost" className="aspect-square" onClick={onViewModeButtonClicked}>
               {viewModesIcons[viewMode]}
             </Button>
             <TooltipElement id="viewMode-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -368,7 +368,7 @@ const DriveTopBarActions = ({
           data-tooltip-content={translate('trash.item-menu.restore')}
           data-tooltip-place="bottom"
         >
-          <Button variant="tertiary" className="aspect-square" onClick={onRecoverButtonClicked}>
+          <Button variant="ghost" className="aspect-square" onClick={onRecoverButtonClicked}>
             <ClockCounterClockwise className="h-6 w-6" />
           </Button>
           <TooltipElement id="restore-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -382,7 +382,7 @@ const DriveTopBarActions = ({
           data-tooltip-place="bottom"
         >
           <Button
-            variant="tertiary"
+            variant="ghost"
             className="aspect-square"
             disabled={!hasItems}
             onClick={onDeletePermanentlyButtonClicked}

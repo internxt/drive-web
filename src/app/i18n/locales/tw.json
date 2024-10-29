@@ -4,19 +4,19 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "節省 80%",
-    "title": "保護你的數位世界！",
-    "subtitle": "透過我們的終身計劃贏取我們的高級背包。",
+    "label": "節省80%",
+    "title": "Boo！來和我們一起省錢...",
+    "subtitle": "贏取我們終身計劃的高級背包。",
     "cta": "選擇計劃",
     "guarantee": "30天退款保證",
     "lastCta": "*優惠僅適用於免費帳戶或新客戶",
     "features": [
-      "所有 Internxt 計劃大幅優惠",
-      "安全可靠的雲端存儲",
-      "開源且透明",
+      "節省所有終身計劃",
+      "私人加密雲存儲",
+      "開源並經過審核",
       "端到端加密傳輸",
       "無未經授權的訪問",
-      "優惠截止至10月31日"
+      "優惠截止至11月10日"
     ]
   },
   "valentinesBanner": {
@@ -67,7 +67,8 @@
     "light": "淺色",
     "dark": "深色",
     "system": "系統",
-    "starwars": "星際大戰"
+    "starwars": "星際大戰",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "電子郵件",
@@ -81,8 +82,7 @@
       "dontHaveAccount": "沒有帳戶？",
       "createAccount": "創建帳戶",
       "2FA": "雙重身份驗證代碼",
-      "twoFactorAuthenticationCode": "雙重身份驗證代碼",
-      "wrongLogin": "使用者名稱或密碼無效"
+      "twoFactorAuthenticationCode": "雙重身份驗證代碼"
     },
     "signup": {
       "title": "創建帳戶",
@@ -1268,8 +1268,6 @@
     "errorPurchaseBusinessPlan": "您已經有一個商業計劃",
     "couponIsNotValidForUserError": "優惠券只能由新客戶兌換。",
     "errorApplyingCoupon": "應用優惠券時出錯",
-    "foldersCannotBeUploadedToSharedFolder": "無法將文件夾上傳到共享文件夾",
-    "errorDownloadingDesktopApp": "下載桌面應用時出現錯誤",
     "errorWhileFetchingMoreItems": "獲取更多項目時出現錯誤",
     "errorDeletingItems": "刪除此項目時出現錯誤",
     "invalidTaxIdIsProvided": "提供的稅號無效"
@@ -1525,12 +1523,6 @@
           "remove": "删除",
           "removing": "去除"
         },
-        "leaveModal": {
-          "title": "离开工作区",
-          "description": "{{name}},您将无法访问工作区。其所有文件和文件夹将保持不变。",
-          "leave": "离开",
-          "leaving": "离开"
-        },
         "changePasswordModal": {
           "title": "要求更改密碼",
           "description": "用戶將收到更新個人帳戶密碼的建議。如果您認為其密碼可能已被洩露，請使用此功能。",
@@ -1589,7 +1581,6 @@
           "deactivate": "停用成員",
           "reactivate": "重新啟用成員",
           "remove": "移除成員",
-          "leave": "离开工作区",
           "passwordChange": "要求更改密碼"
         }
       },

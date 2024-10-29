@@ -1,4 +1,4 @@
-import Button from '../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { handleExportBackupKey } from '../../../utils/backupKeyUtils';
 

@@ -1,7 +1,6 @@
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import paymentService from '../../../../payment/services/payment.service';
 import { RootState } from '../../../../store';
@@ -43,7 +42,6 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
       await paymentService.cancelSubscription();
       notificationsService.show({ text: t('notificationMessages.successCancelSubscription') });
       setIsCancelSubscriptionModalOpen(false);
-      trackCanceledSubscription({ feedback });
     } catch (err) {
       console.error(err);
       notificationsService.show({

@@ -56,7 +56,6 @@ const mockUser: UserSettings = {
 const mockSignUpFunction = jest.fn();
 
 beforeEach(() => {
-  window.rudderanalytics = { identify: jest.fn(), track: jest.fn() };
   window.gtag = jest.fn();
 
   mockSignUpFunction.mockResolvedValue({
@@ -87,10 +86,6 @@ describe('logIn', () => {
 
     expect(doLoginSpy).toHaveBeenCalledWith(mockEmail, mockPassword, mockTwoFactorCode, mockLoginType);
     expect(mockDispatch).toHaveBeenCalledWith(userActions.setUser(mockUser));
-    expect(window.rudderanalytics.identify).toHaveBeenCalledWith(mockUser.uuid, {
-      email: mockUser.email,
-      uuid: mockUser.uuid,
-    });
     expect(mockDispatch).toHaveBeenCalledTimes(7);
 
     expect(result).toEqual({

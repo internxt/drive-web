@@ -12,7 +12,6 @@ import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import i18next, { t } from 'i18next';
 import { pdfjs } from 'react-pdf';
-import { PATH_NAMES, serverPage } from './app/analytics/services/analytics.service';
 import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import authService from './app/auth/services/auth.service';
 import configService from './app/core/services/config.service';
@@ -116,6 +115,7 @@ const App = (props: AppProps): JSX.Element => {
       RealtimeService.getInstance().init();
 
       dispatch(workspaceThunks.fetchWorkspaces());
+      navigationService.setWorkspaceFromParams(workspaceThunks, dispatch);
 
       await props.dispatch(
         initializeUserThunk({
@@ -136,15 +136,6 @@ const App = (props: AppProps): JSX.Element => {
     isMobile = true;
   }
 
-  if (window.location.pathname) {
-    if ((pathName === 'new' || pathName === 'appsumo') && window.location.search !== '') {
-      window.rudderanalytics.page(PATH_NAMES[window.location.pathname]);
-      serverPage(PATH_NAMES[window.location.pathname]).catch(() => {
-        // NO OP
-      });
-    }
-  }
-
   const onCloseFileViewer = () => {
     const isRecentsView = navigationService.isCurrentPath('recents');
     const isSharedView = navigationService.isCurrentPath('shared');
@@ -155,7 +146,7 @@ const App = (props: AppProps): JSX.Element => {
       dispatch(uiActions.setIsFileViewerOpen(false));
     } else if (isRootDrive) {
       dispatch(uiActions.setIsFileViewerOpen(false));
-      navigationService.push(AppView.Drive);
+      navigationService.push(AppView.Drive, {}, selectedWorkspace?.workspaceUser.workspaceId);
     } else {
       navigationService.pushFolder(fileViewerItem?.folderUuid, selectedWorkspace?.workspaceUser.workspaceId);
     }

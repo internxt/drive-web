@@ -52,6 +52,7 @@ interface DriveExplorerListProps {
   onOpenStopSharingAndMoveToTrashDialog: () => void;
   showStopSharingConfirmation: boolean;
   roles: Role[];
+  resetPaginationState: () => void;
 }
 
 type ObjectWithId = { id: string | number };
@@ -151,11 +152,19 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     dispatch(storageActions.setOrder({ by: value.field, direction }));
 
     if (value.field === 'name') {
-      resetDriveOrder({ dispatch, orderType: 'plainName', direction, currentFolderId });
+      if (isTrash) {
+        props.resetPaginationState();
+      } else {
+        resetDriveOrder({ dispatch, orderType: 'plainName', direction, currentFolderId });
+      }
     }
 
     if (value.field === 'updatedAt') {
-      resetDriveOrder({ dispatch, orderType: 'updatedAt', direction, currentFolderId });
+      if (isTrash) {
+        props.resetPaginationState();
+      } else {
+        resetDriveOrder({ dispatch, orderType: 'updatedAt', direction, currentFolderId });
+      }
     }
 
     if (value.field === 'size') {
@@ -443,7 +452,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               label: translate('drive.list.columns.name'),
               width: 'flex grow items-center min-w-driveNameHeader',
               name: 'name',
-              orderable: !isRecents && !isTrash,
+              orderable: !isRecents,
               defaultDirection: 'ASC',
               buttonDataCy: 'driveListHeaderNameButton',
               textDataCy: 'driveListHeaderNameButtonText',
@@ -452,7 +461,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               label: translate('drive.list.columns.modified'),
               width: 'w-date',
               name: 'updatedAt',
-              orderable: !isRecents && !isTrash,
+              orderable: !isRecents,
               defaultDirection: 'ASC',
             },
             {
