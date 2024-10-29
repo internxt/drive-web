@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageActions } from '../../../store/slices/storage';
 import { uiActions } from '../../../store/slices/ui';
 
-import BreadcrumbsSharedView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsSharedView';
+import BreadcrumbsSharedView from '../../../shared/components/Breadcrumbs/Containers/BreadcrumbsSharedView';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';

@@ -1,9 +1,9 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import fileService from 'app/drive/services/file.service';
-import folderService from 'app/drive/services/folder.service';
-import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from 'app/drive/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import fileService from '../../../../drive/services/file.service';
+import folderService from '../../../../drive/services/folder.service';
+import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../drive/types';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import { t } from 'i18next';
 import { storageActions } from '..';
 import { RootState } from '../../..';

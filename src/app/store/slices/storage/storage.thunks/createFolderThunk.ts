@@ -1,5 +1,5 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import { t } from 'i18next';
 import { storageActions, storageSelectors } from '..';
 import { RootState } from '../../..';

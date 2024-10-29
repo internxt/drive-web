@@ -1,8 +1,8 @@
 import { saveAs } from 'file-saver';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import { TrackingPlan } from 'app/analytics/TrackingPlan';
-import { trackBackupKeyDownloaded } from 'app/analytics/services/analytics.service';
+import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
+import localStorageService from '../../app/core/services/local-storage.service';
+import { TrackingPlan } from '../../app/analytics/TrackingPlan';
+import { trackBackupKeyDownloaded } from '../../app/analytics/services/analytics.service';
 
 /**
  * Downloads the backup key of the user and shows a notification

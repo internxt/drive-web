@@ -1,6 +1,6 @@
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Button from 'app/shared/components/Button/Button';
-import Modal from 'app/shared/components/Modal';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import Button from '../../../shared/components/Button/Button';
+import Modal from '../../../shared/components/Modal';
 import { useState } from 'react';
 
 type SharePasswordDisableWarningDialogProps = {

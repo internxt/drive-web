@@ -1,14 +1,14 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { getAppConfig } from 'app/core/services/config.service';
-import dateService from 'app/core/services/date.service';
+import { getAppConfig } from '../../../../core/services/config.service';
+import dateService from '../../../../core/services/date.service';
 import {
   canFileBeCached,
   getDatabaseFileSourceData,
   updateDatabaseFileSourceData,
-} from 'app/drive/services/database.service';
-import { DriveItemData } from 'app/drive/types';
-import { AdvancedSharedItem, PreviewFileItem } from 'app/share/types';
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
+} from '../../../../drive/services/database.service';
+import { DriveItemData } from '../../../../drive/types';
+import { AdvancedSharedItem, PreviewFileItem } from '../../../../share/types';
+import { ListItemMenu } from '../../../../shared/components/List/ListItem';
 import { DriveItemActions } from '../../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import {
   contextMenuDriveItemShared,

@@ -1,6 +1,6 @@
 import { items } from '@internxt/lib';
-import { Iterator } from 'app/core/collections';
-import { downloadFile } from 'app/network/download';
+import { Iterator } from '../../../core/collections';
+import { downloadFile } from '../../../network/download';
 
 export interface DownloadableFolder {
   name: string;

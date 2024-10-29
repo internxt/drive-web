@@ -4,7 +4,7 @@ import { RootState } from '../../..';
 import { storageActions } from '..';
 import { StorageState } from '../storage.model';
 import storageSelectors from '../storage.selectors';
-import { FolderPath } from 'app/drive/types';
+import { FolderPath } from '../../../../../app/drive/types';
 
 export const resetNamePathThunk = createAsyncThunk<FolderPath[], void, { state: RootState }>(
   'storage/resetNamePath',

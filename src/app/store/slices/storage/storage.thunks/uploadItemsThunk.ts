@@ -4,11 +4,11 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { renameFile } from 'app/crypto/services/utils';
-import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
-import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
-import { DriveFileData, DriveItemData } from 'app/drive/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { renameFile } from '../../../../crypto/services/utils';
+import { FileToUpload } from '../../../../drive/services/file.service/uploadFile';
+import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../drive/services/network.service';
+import { DriveFileData, DriveItemData } from '../../../../drive/types';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 
 import { t } from 'i18next';
 

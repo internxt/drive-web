@@ -1,4 +1,4 @@
-import errorService from 'app/core/services/error.service';
+import errorService from '../core/services/error.service';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
 import { encryptFilename, generateHMAC, sha256 } from './crypto';
 

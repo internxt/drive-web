@@ -1,7 +1,7 @@
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { backupsActions } from 'app/store/slices/backups';
+import Breadcrumbs from '../../../../shared/components/Breadcrumbs/Breadcrumbs';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import { backupsActions } from '../../../../store/slices/backups';
 import { t } from 'i18next';
 import BreadcrumbsMenuBackups from '../BreadcrumbsMenu/BreadcrumbsMenuBackups';
 import { BreadcrumbItemData } from '../types';

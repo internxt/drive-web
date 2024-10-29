@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import desktopService from 'app/core/services/desktop.service';
-import navigationService from 'app/core/services/navigation.service';
-import usersReferralsService from 'app/referrals/services/users-referrals.service';
+import desktopService from '../../../core/services/desktop.service';
+import navigationService from '../../../core/services/navigation.service';
+import usersReferralsService from '../../../referrals/services/users-referrals.service';
 
 import { ReferralKey, UserReferral } from '@internxt/sdk/dist/drive/referrals/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { RootState } from 'app/store';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { RootState } from '../../../store';
 import { planThunks } from '../plan';
 import { uiActions } from '../ui';
 import { userSelectors } from '../user';

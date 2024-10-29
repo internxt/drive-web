@@ -1,6 +1,6 @@
 import { getEnvironmentConfig } from '../network.service';
 import { DeviceBackup } from '../../../backups/types';
-import { downloadFile } from 'app/network/download';
+import { downloadFile } from '../../../network/download';
 
 export default async function downloadBackup(
   backup: DeviceBackup,

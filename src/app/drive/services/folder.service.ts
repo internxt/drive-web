@@ -4,12 +4,12 @@ import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types
 import { FolderTree } from '@internxt/sdk/dist/drive/storage/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { Iterator } from 'app/core/collections';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
-import { FlatFolderZip } from 'app/core/services/zip.service';
-import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
-import { downloadFile } from 'app/network/download';
-import { checkIfCachedSourceIsOlder } from 'app/store/slices/storage/storage.thunks/downloadFileThunk';
+import { Iterator } from '../../core/collections';
+import { binaryStreamToBlob } from '../../core/services/stream.service';
+import { FlatFolderZip } from '../../core/services/zip.service';
+import { LRUFilesCacheManager } from '../../database/services/database.service/LRUFilesCacheManager';
+import { downloadFile } from '../../network/download';
+import { checkIfCachedSourceIsOlder } from '../../store/slices/storage/storage.thunks/downloadFileThunk';
 import { t } from 'i18next';
 import { TrackingPlan } from '../../analytics/TrackingPlan';
 import analyticsService from '../../analytics/services/analytics.service';

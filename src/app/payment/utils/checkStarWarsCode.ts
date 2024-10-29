@@ -1,7 +1,7 @@
-import localStorageService from 'app/core/services/local-storage.service';
-import { PlanState } from 'app/store/slices/plan';
+import localStorageService from '../../core/services/local-storage.service';
+import { PlanState } from '../../store/slices/plan';
 import paymentService from '../services/payment.service';
-import errorService from 'app/core/services/error.service';
+import errorService from '../../core/services/error.service';
 
 export const STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY = 'star_wars_theme_enabled';
 

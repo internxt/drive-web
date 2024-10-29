@@ -1,8 +1,8 @@
 import { BreadcrumbItemData } from '../types';
 import { t } from 'i18next';
-import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
-import { SharedNamePath } from 'app/share/types';
-import { useShareViewContext } from 'app/share/views/SharedLinksView/context/SharedViewContextProvider';
+import Breadcrumbs from '../../../../shared/components/Breadcrumbs/Breadcrumbs';
+import { SharedNamePath } from '../../../../share/types';
+import { useShareViewContext } from '../../../../share/views/SharedLinksView/context/SharedViewContextProvider';
 import {
   setPage,
   setHasMoreFolders,
@@ -10,9 +10,9 @@ import {
   setSelectedItems,
   setCurrentFolderLevelResourcesToken,
   setCurrentFolderId,
-} from 'app/share/views/SharedLinksView/context/SharedViewContext.actions';
-import { useAppDispatch } from 'app/store/hooks';
-import { storageActions } from 'app/store/slices/storage';
+} from '../../../../share/views/SharedLinksView/context/SharedViewContext.actions';
+import { useAppDispatch } from '../../../../store/hooks';
+import { storageActions } from '../../../../store/slices/storage';
 
 interface BreadcrumbsSharedViewProps {
   resetSharedItems: () => void;

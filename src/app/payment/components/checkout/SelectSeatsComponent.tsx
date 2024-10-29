@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Button from '../../../shared/components/Button/Button';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 
 interface SelectUsersComponentProps {
   maxSeats: number;

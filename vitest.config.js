@@ -8,5 +8,11 @@ export default defineConfig({
     setupFiles: './src/setupTests.ts',
     exclude: ['node_modules', 'dist'],
     include: ['src/**/*.test.{ts,tsx,js,jsx}', 'test/unit/**/*.test.{ts,tsx,js,jsx}'],
+    browser: {
+      provider: 'playwright',
+      enabled: true,
+      name: 'chromium',
+      headless: true,
+    },
   },
 });

@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { WorkspaceData, WorkspaceTeamResponse } from '@internxt/sdk/dist/workspaces/types';
 
 import { t } from 'i18next';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import workspacesService from 'app/core/services/workspace.service';
-import errorService from 'app/core/services/error.service';
+import errorService from '../../../../../core/services/error.service';
 
 import CreateTeamDialog from '../components/CreateTeamDialog';
 

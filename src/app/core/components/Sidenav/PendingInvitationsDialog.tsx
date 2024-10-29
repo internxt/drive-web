@@ -1,13 +1,13 @@
 import { PendingInvitesResponse } from '@internxt/sdk/dist/workspaces';
 import { CheckCircle, X } from '@phosphor-icons/react';
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import workspacesService from 'app/core/services/workspace.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Button from 'app/shared/components/Button/Button';
-import Modal from 'app/shared/components/Modal';
-import { useAppDispatch } from 'app/store/hooks';
-import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import errorService from '../../../core/services/error.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import workspacesService from '../../../core/services/workspace.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import Button from '../../../shared/components/Button/Button';
+import Modal from '../../../shared/components/Modal';
+import { useAppDispatch } from '../../../store/hooks';
+import { workspaceThunks } from '../../../store/slices/workspaces/workspacesStore';
 import dayjs from 'dayjs';
 
 const PendingInvitationsDialog = ({

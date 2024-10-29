@@ -28,7 +28,7 @@ import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutRe
 import { AuthMethodTypes, CouponCodeData, RequestedPlanData } from '../../types';
 import CheckoutView from './CheckoutView';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
-import { getProductAmount } from 'app/payment/utils/getProductAmount';
+import { getProductAmount } from '../../../payment/utils/getProductAmount';
 
 export const THEME_STYLES = {
   dark: {
