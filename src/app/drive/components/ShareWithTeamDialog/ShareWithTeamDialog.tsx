@@ -12,12 +12,10 @@ import { uiActions } from 'app/store/slices/ui';
 import { shareItemWithTeamV2 } from 'app/drive/components/DriveExplorer/utils';
 import workspacesService from 'app/core/services/workspace.service';
 import errorService from 'app/core/services/error.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 import Modal from 'app/shared/components/Modal';
 import { X } from '@phosphor-icons/react';
-import Button from 'app/shared/components/Button/Button';
-import Spinner from 'app/shared/components/Spinner/Spinner';
+import { Button, Spinner } from '@internxt/internxtui';
 
 interface ShareWithTeamDialogProps {
   item: DriveItemData;
@@ -103,10 +101,6 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
       selectedWorkspace && editorRole && (await shareItemWithTeamV2(workspaceId, item, teamId, editorRole));
       fetchTeams();
     } catch (error) {
-      notificationsService.show({
-        text: translate('auth.recoverAccount.changePassword.serverError'),
-        type: ToastType.Error,
-      });
       errorService.reportError(error);
     }
   };

@@ -37,7 +37,7 @@ const shareLinkMenuItem = (shareLink: (target) => void) => ({
 });
 
 const shareWithTeamMenuItem = (shareWithTeam: (target) => void) => ({
-  name: t('drive.dropdown.shareWithWorkspace'),
+  name: t('drive.dropdown.shareTeam'),
   icon: Users,
   action: shareWithTeam,
   disabled: () => {
