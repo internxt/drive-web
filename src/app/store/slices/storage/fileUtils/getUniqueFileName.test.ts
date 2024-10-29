@@ -4,8 +4,10 @@ import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
 import newStorageService from '../../../../drive/services/new-storage.service';
 import { getUniqueFilename } from './getUniqueFilename';
 
-vi.mock('../../../../drive/services/new-storage.service', () => ({
-  checkDuplicatedFiles: vi.fn(),
+vi.mock('../../../../drive/services/new-storage.service', async () => ({
+  default: {
+    checkDuplicatedFiles: vi.fn(),
+  },
 }));
 
 describe('getUniqueFilename', () => {

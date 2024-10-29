@@ -7,10 +7,12 @@ import { getUniqueFolderName } from './getUniqueFolderName';
 import * as renameFolderModule from './renameFolderIfNeeded';
 
 vi.mock('../../../../drive/services/new-storage.service', () => ({
-  checkDuplicatedFolders: vi.fn(),
+  default: {
+    checkDuplicatedFolders: vi.fn(),
+  },
 }));
 
-vi.mock('../storage.thunks/uploadFolderThunk', () => vi.fn());
+vi.mock('../storage.thunks/uploadFolderThunk');
 
 describe('getUniqueFolderName', () => {
   beforeEach(() => {

@@ -4,86 +4,31 @@
 
 import { isValid } from '../../../src/app/crypto/services/utilspgp';
 import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
-import { getAesInitFromEnv } from '../../../src/app/crypto/services/keys.service';
+import { describe, expect, it, vi } from 'vitest';
 
-import { config } from 'dotenv';
-import { describe, expect, it } from 'vitest';
+vi.mock('@dashlane/pqc-kem-kyber512-browser', () => ({
+  default: vi.fn().mockResolvedValue({
+    keypair: vi.fn().mockResolvedValue({
+      publicKey: new Uint8Array(32),
+      privateKey: new Uint8Array(32),
+    }),
+    encapsulate: vi.fn().mockResolvedValue({
+      ciphertext: new Uint8Array(32),
+      sharedSecret: new Uint8Array(32),
+    }),
+    decapsulate: vi.fn().mockResolvedValue({
+      sharedSecret: new Uint8Array(32),
+    }),
+  }),
+}));
 
-//config();
-
-//TODO: Disabled because validateFormat functions is not exists, review it and remove it or change them
 describe('# keys service tests', () => {
-  //const aesInit = getAesInitFromEnv();
-
-  it('Should not update private key if encryption & encoding is fine', async () => {
+  it('Should generate a valid private key', async () => {
     const keys = await generateNewKeys();
+
     const plainPrivateKey = keys.privateKeyArmored;
 
-    expect(isValid(plainPrivateKey)).toBeTruthy();
-    /** 
-    const password = '1234';
-    
-    const encryptedPrivateKey = aes.encrypt(plainPrivateKey, password, aesInit);
-
-    const { update, newPrivKey, privkeyDecrypted } = await validateFormat(encryptedPrivateKey, password);
-
-    expect(update).toBeFalsy();
-    expect(newPrivKey).toBeUndefined();
-    expect(privkeyDecrypted).toStrictEqual(plainPrivateKey);
-    */
+    const isKeyValid = await isValid(plainPrivateKey);
+    expect(isKeyValid).toBeTruthy();
   });
-
-  /** 
-  it('Should reencrypt with 2145 hops', async () => {
-    const keys = await generateNewKeys();
-    const plainPrivateKey = keys.privateKeyArmored;
-
-    expect(isValid(plainPrivateKey)).toBeTruthy();
-
-    const password = '1234';
-
-    const oldEncryptionPrivateKey = aes.encrypt(plainPrivateKey, password, aesInit, 9999);
-    const newEncryptionPrivateKey = aes.encrypt(plainPrivateKey, password, aesInit);
-
-    const { update, newPrivKey, privkeyDecrypted } = await validateFormat(oldEncryptionPrivateKey, password);
-
-    expect(update).toBeTruthy();
-    expect(newPrivKey).toStrictEqual(newEncryptionPrivateKey);
-    expect(privkeyDecrypted).toStrictEqual(plainPrivateKey);
-  });
-
-  it('Should decode private key from base64 & reencrypt with 2145 hops (using 2145 hops)', async () => {
-    const keys = await generateNewKeys();
-    const password = '1234';
-
-    const plainPrivateKey = keys.privateKeyArmored;
-    const encryptedPrivateKeyUtf8 = aes.encrypt(plainPrivateKey, password, aesInit);
-
-    const base64PrivateKey = Buffer.from(plainPrivateKey).toString('base64');
-    const encryptedPrivateKeyBase64 = aes.encrypt(base64PrivateKey, password, aesInit);
-
-    const { update, newPrivKey, privkeyDecrypted } = await validateFormat(encryptedPrivateKeyBase64, password);
-
-    expect(update).toBeTruthy();
-    expect(newPrivKey).toStrictEqual(encryptedPrivateKeyUtf8);
-    expect(privkeyDecrypted).toStrictEqual(plainPrivateKey);
-  });
-
-  it('Should decode private key from base64 & reencrypt with 2145 hops (using 9999 hops)', async () => {
-    const keys = await generateNewKeys();
-    const password = '1234';
-
-    const plainPrivateKey = keys.privateKeyArmored;
-    const encryptedPrivateKeyUtf8 = aes.encrypt(plainPrivateKey, password, aesInit);
-
-    const base64PrivateKey = Buffer.from(plainPrivateKey).toString('base64');
-
-    const encryptedPrivateKeyBase64 = aes.encrypt(base64PrivateKey, password, aesInit, 9999);
-    const { update, newPrivKey, privkeyDecrypted } = await validateFormat(encryptedPrivateKeyBase64, password);
-
-    expect(update).toBeTruthy();
-    expect(newPrivKey).toStrictEqual(encryptedPrivateKeyUtf8);
-    expect(privkeyDecrypted).toStrictEqual(plainPrivateKey);
-  });
-  */
 });

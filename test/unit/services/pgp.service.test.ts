@@ -10,7 +10,23 @@ import {
 } from '../../../src/app/crypto/services/pgp.service';
 
 import { Buffer } from 'buffer';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('@dashlane/pqc-kem-kyber512-browser', () => ({
+  default: vi.fn().mockResolvedValue({
+    keypair: vi.fn().mockResolvedValue({
+      publicKey: new Uint8Array(32),
+      privateKey: new Uint8Array(32),
+    }),
+    encapsulate: vi.fn().mockResolvedValue({
+      ciphertext: new Uint8Array(32),
+      sharedSecret: new Uint8Array(32),
+    }),
+    decapsulate: vi.fn().mockResolvedValue({
+      sharedSecret: new Uint8Array(32),
+    }),
+  }),
+}));
 
 describe('Encryption and Decryption', () => {
   it('should generate new keys', async () => {
@@ -19,23 +35,23 @@ describe('Encryption and Decryption', () => {
     expect(keys).toHaveProperty('privateKeyArmored');
     expect(keys).toHaveProperty('publicKeyArmored');
     expect(keys).toHaveProperty('revocationCertificate');
+    expect(keys).toHaveProperty('publicKyberKeyBase64');
+    expect(keys).toHaveProperty('privateKyberKeyBase64');
   });
 
   it('rejects if the message is not 256 bits', async () => {
     const keys = await generateNewKeys();
     const publicKeyInBase64 = keys.publicKeyArmored;
-    const message = 'A secret message';
+    const message = 'A short message';
     const publicKyberKeyBase64 = keys.publicKyberKeyBase64;
 
-    const encrypt = async () => {
-      await encryptMessageWithPublicKey({
+    await expect(
+      encryptMessageWithPublicKey({
         message,
         publicKeyInBase64,
         publicKyberKeyBase64,
-      });
-    };
-
-    expect(encrypt()).rejects.toThrow('The message should be 256 bits');
+      }),
+    ).rejects.toThrow('The message should be 256 bits');
   });
 
   it('should encrypt a message with the given public key', async () => {
@@ -50,7 +66,6 @@ describe('Encryption and Decryption', () => {
       publicKyberKeyBase64,
     });
 
-    console.log(btoa(encryptedMessage as string));
     expect(encryptedMessage).toBeDefined();
   });
 
@@ -70,7 +85,7 @@ describe('Encryption and Decryption', () => {
     const secondHex = '7468697320697320746865207365636f6e64206d65737361';
     const resultHex = '0000000000000000000000000700101b4e09451e16121404';
 
-    const xoredMessage = await XORhex(firstHex, secondHex);
+    const xoredMessage = XORhex(firstHex, secondHex);
 
     expect(xoredMessage).toEqual(resultHex);
   });
@@ -79,7 +94,7 @@ describe('Encryption and Decryption', () => {
     const strHex = '74686973206973207468652074657374206d657373616765';
     const resultHex = '000000000000000000000000000000000000000000000000';
 
-    const xoredMessage = await XORhex(strHex, strHex);
+    const xoredMessage = XORhex(strHex, strHex);
 
     expect(xoredMessage).toEqual(resultHex);
   });
@@ -88,35 +103,30 @@ describe('Encryption and Decryption', () => {
     const str1 = '74686973206973207468652074657374206d657373616765';
     const str2 = '7468697320697320746865207365636f6e64206d65737361';
 
-    const str3 = await XORhex(str1, str2);
-    const should_be_str2 = await XORhex(str3, str1);
+    const str3 = XORhex(str1, str2);
+    const shouldBeStr2 = XORhex(str3, str1);
 
-    expect(should_be_str2).toEqual(str2);
+    expect(shouldBeStr2).toEqual(str2);
   });
 
-  it('should generate keys, encrypt and decrypt a message successfully', async () => {
-    // Step 1: Generate new keys
+  it('should generate keys, encrypt, and decrypt a message successfully', async () => {
     const keys = await generateNewKeys();
 
-    // Step 2: Prepare the message to be encrypted
     const originalMessage = 'A secret key of exactly 256 bits';
-    expect(Buffer.from(originalMessage).toString('hex').length).toEqual(64);
+    expect(Buffer.from(originalMessage).length).toBe(32);
 
-    // Step 3: Encrypt the message using the public key
     const encryptedMessage = await encryptMessageWithPublicKey({
       message: originalMessage,
       publicKeyInBase64: keys.publicKeyArmored,
       publicKyberKeyBase64: keys.publicKyberKeyBase64,
     });
 
-    // Step 4: Decrypt the message using the private key
     const decryptedMessage = await decryptMessageWithPrivateKey({
       encryptedMessage,
       privateKeyInBase64: keys.privateKeyArmored,
       privateKyberKeyBase64: keys.privateKyberKeyBase64,
     });
 
-    // Step 5: Assert that the decrypted message matches the original message
     expect(keys).toHaveProperty('privateKeyArmored');
     expect(keys).toHaveProperty('publicKeyArmored');
     expect(encryptedMessage).not.toEqual(originalMessage);

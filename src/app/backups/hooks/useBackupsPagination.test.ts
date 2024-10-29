@@ -10,20 +10,27 @@ import _ from 'lodash';
 import { FetchFolderContentResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { DriveItemData } from '../../drive/types';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
-import {vi, describe, it, expect, beforeEach, Mock} from 'vitest';
+import { vi, describe, it, expect, beforeEach, Mock } from 'vitest';
 
 vi.mock('../../notifications/services/notifications.service', () => ({
-  show: vi.fn(),
+  default: {
+    show: vi.fn(),
+  },
   ToastType: {
     Error: 'ERROR',
   },
 }));
+
 vi.mock('../../drive/services/new-storage.service', () => ({
-  getFolderContentByUuid: vi.fn(),
+  default: {
+    getFolderContentByUuid: vi.fn(),
+  },
 }));
 
 vi.mock('../../core/services/error.service', () => ({
-  reportError: vi.fn(),
+  default: {
+    reportError: vi.fn(),
+  },
 }));
 
 describe('useBackupsPagination', () => {
@@ -36,7 +43,7 @@ describe('useBackupsPagination', () => {
 
   const FOLDER_CONTENT_2 = {
     files: Array.from({ length: 20 }, (_, i) => ({ plainName: `file-${i + 31}.txt` })),
-    children: Array.from({ length: 0 }, (_, i) => []),
+    children: Array.from({ length: 0 }, () => []),
   } as unknown as FetchFolderContentResponse;
 
   const LIMIT_OF_ITEMS_FETCHED = 50;
@@ -53,11 +60,9 @@ describe('useBackupsPagination', () => {
   });
 
   it('Should not fetch more items as there are less than 50 items in total', async () => {
-    vi.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValue([
+    (newStorageService.getFolderContentByUuid as Mock).mockReturnValue([
       Promise.resolve(FOLDER_CONTENT_2),
-      {
-        cancel: vi.fn(),
-      },
+      { cancel: vi.fn() },
     ]);
 
     const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));
@@ -68,11 +73,9 @@ describe('useBackupsPagination', () => {
   });
 
   it('Should load the first items and contains more items to fetch paginated', async () => {
-    vi.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValue([
+    (newStorageService.getFolderContentByUuid as Mock).mockReturnValue([
       Promise.resolve(FOLDER_CONTENT_1),
-      {
-        cancel: vi.fn(),
-      },
+      { cancel: vi.fn() },
     ]);
 
     const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));
@@ -98,11 +101,9 @@ describe('useBackupsPagination', () => {
   });
 
   it('Should fetch more items if there are more than 50 items', async () => {
-    vi.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValueOnce([
+    (newStorageService.getFolderContentByUuid as Mock).mockReturnValueOnce([
       Promise.resolve(FOLDER_CONTENT_1),
-      {
-        cancel: vi.fn(),
-      },
+      { cancel: vi.fn() },
     ]);
 
     const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));
@@ -115,11 +116,9 @@ describe('useBackupsPagination', () => {
       expect(result.current.currentItems.length > LIMIT_OF_ITEMS_FETCHED).toBeTruthy();
     });
 
-    vi.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValueOnce([
+    (newStorageService.getFolderContentByUuid as Mock).mockReturnValueOnce([
       Promise.resolve(FOLDER_CONTENT_2),
-      {
-        cancel: vi.fn(),
-      },
+      { cancel: vi.fn() },
     ]);
 
     await act(async () => {
@@ -146,11 +145,9 @@ describe('useBackupsPagination', () => {
   });
 
   it('should update current items list by removing an item', async () => {
-    vi.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValueOnce([
+    (newStorageService.getFolderContentByUuid as Mock).mockReturnValueOnce([
       Promise.resolve(FOLDER_CONTENT_1),
-      {
-        cancel: vi.fn(),
-      },
+      { cancel: vi.fn() },
     ]);
 
     const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));
@@ -168,11 +165,9 @@ describe('useBackupsPagination', () => {
   });
 
   it('should show a notification when there is an error fetching items', async () => {
-    vi.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValueOnce([
+    (newStorageService.getFolderContentByUuid as Mock).mockReturnValueOnce([
       Promise.reject(new Error('Error fetching items')),
-      {
-        cancel: vi.fn(),
-      },
+      { cancel: vi.fn() },
     ]);
 
     const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));
