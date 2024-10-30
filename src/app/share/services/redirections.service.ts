@@ -30,11 +30,7 @@ const handlePrivateSharedFolderAccess = async ({
 }) => {
   let statusError: null | number = null;
   try {
-    const sharedFolderData = await getPrivateSharedFolderAccessData(
-      folderUUID,
-      workspaceItemData?.workspaceId,
-      workspaceItemData?.teamId,
-    );
+    const sharedFolderData = await getPrivateSharedFolderAccessData(folderUUID, workspaceItemData?.workspaceId);
     navigateToFolder(sharedFolderData as AdvancedSharedItem);
   } catch (error: any) {
     let errorMessage;
@@ -59,10 +55,10 @@ const handlePrivateSharedFolderAccess = async ({
   }
 };
 
-const getPrivateSharedFolderAccessData = async (folderUUID: string, workspaceId?: string, teamId?: string) => {
+const getPrivateSharedFolderAccessData = async (folderUUID: string, workspaceId?: string) => {
   let response;
-  if (workspaceId && teamId) {
-    const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(workspaceId, teamId, folderUUID, 0, 0);
+  if (workspaceId) {
+    const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(workspaceId, folderUUID, 0, 0);
     response = await promise;
   } else {
     response = await shareService.getSharedFolderContent(folderUUID, 'folders', '', 0, 0);

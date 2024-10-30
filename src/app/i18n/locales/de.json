@@ -924,7 +924,13 @@
       "primaryAction": "Bestätige",
       "secondaryAction": "Abbrechen"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Teilen \"{{name}}\"",
+      "teams": "Teams",
+      "teamsWithAccess": "Teams mit Zugriff:",
+      "shareButton": "Teilen"
+    }
   },
   "form": {
     "fields": {

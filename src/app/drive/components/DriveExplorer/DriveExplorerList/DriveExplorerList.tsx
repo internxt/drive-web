@@ -8,9 +8,7 @@ import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
-import workspacesService from '../../../../core/services/workspace.service';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import shareService from '../../../../share/services/share.service';
 import List from '../../../../shared/components/List';
 import { AppDispatch, RootState } from '../../../../store';
@@ -22,7 +20,6 @@ import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.
 import { DriveItemData, DriveItemDetails } from '../../../types';
 import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
-import { shareItemWithTeam } from '../utils';
 import {
   contextMenuDriveFolderNotSharedLink,
   contextMenuDriveFolderShared,
@@ -36,6 +33,7 @@ import {
   contextMenuWorkspaceFolder,
 } from './DriveItemContextMenu';
 import { skinSkeleton } from 'app/shared/Skeleton';
+import ShareWithTeamDialog from '../../ShareWithTeamDialog/ShareWithTeamDialog';
 
 interface DriveExplorerListProps {
   folderId: string;
@@ -365,28 +363,9 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     moveToTrash: moveToTrash,
   });
 
-  const shareWithTeam = useCallback(
-    async (item: ContextMenuDriveItem) => {
-      const driveItem = item as DriveItemData;
-      const editorRole = roles.find((role) => role.name === 'EDITOR');
-      if (selectedWorkspace && editorRole) {
-        const isSharedSuccessfully = await shareItemWithTeam(driveItem, selectedWorkspace, editorRole);
-        if (isSharedSuccessfully) {
-          notificationsService.show({
-            text: translate('workspaces.messages.sharedSuccess'),
-            type: ToastType.Success,
-          });
-          return;
-        }
-      }
-
-      notificationsService.show({
-        text: translate('modals.shareModal.errors.copy-to-clipboard'),
-        type: ToastType.Error,
-      });
-    },
-    [dispatch, workspacesService, selectedWorkspace, roles, notificationsService],
-  );
+  const shareWithTeam = () => {
+    dispatch(uiActions.setIsShareWhithTeamDialogOpen(true));
+  };
 
   const workspaceItemMenu = contextMenuWorkspaceFile({
     shareLink: openLinkSettings,
@@ -428,7 +407,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       return fileSharedTrashMenu;
     }
 
-    if (isSelectedSharedItem) {
+    if (isSelectedSharedItem && !isWorkspaceSelected) {
       if (props.selectedItems[0]?.isFolder) {
         return selectedSharedFolderMenu;
       }
@@ -466,6 +445,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
             }}
           />
         )}
+        <ShareWithTeamDialog item={props.selectedItems[0]} roles={roles} />
         <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
           header={[
             {

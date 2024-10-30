@@ -972,7 +972,13 @@
       "primaryAction": "确定",
       "secondaryAction": "取消"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "分享 \"{{name}}\"",
+      "teams": "团队",
+      "teamsWithAccess": "有权限的团队：",
+      "shareButton": "分享"
+    }
   },
   "form": {
     "fields": {

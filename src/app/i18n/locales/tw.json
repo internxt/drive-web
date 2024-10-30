@@ -935,7 +935,13 @@
       "primaryAction": "確認",
       "secondaryAction": "取消"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "分享 \"{{name}}\"",
+      "teams": "團隊",
+      "teamsWithAccess": "有權限的團隊：",
+      "shareButton": "分享"
+    }
   },
   "form": {
     "fields": {

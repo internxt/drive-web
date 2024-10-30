@@ -26,6 +26,7 @@ import {
   WorkspaceTeamResponse,
   WorkspaceUser,
   WorkspacesResponse,
+  UsersAndTeamsAnItemIsShareWidthResponse,
 } from '@internxt/sdk/dist/workspaces';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
@@ -270,25 +271,22 @@ export function shareItemWithTeam(shareItemWithTeamPayload: CreateWorkspaceShari
 
 export function getAllWorkspaceTeamSharedFolders(
   workspaceId: string,
-  teamId: string,
   orderBy?: OrderByOptions,
 ): [Promise<ListAllSharedFoldersResponse>, RequestCanceler] {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.getWorkspaceTeamSharedFolders(workspaceId, teamId, orderBy);
+  return workspaceClient.getWorkspaceTeamSharedFoldersV2(workspaceId, orderBy);
 }
 
 export function getAllWorkspaceTeamSharedFiles(
   workspaceId: string,
-  teamId: string,
   orderBy?: OrderByOptions,
 ): [Promise<ListAllSharedFoldersResponse>, RequestCanceler] {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.getWorkspaceTeamSharedFiles(workspaceId, teamId, orderBy);
+  return workspaceClient.getWorkspaceTeamSharedFilesV2(workspaceId, orderBy);
 }
 
 export function getAllWorkspaceTeamSharedFolderFolders(
   workspaceId: string,
-  teamId: string,
   sharedFolderUUID: string,
   page: number,
   perPage: number,
@@ -296,9 +294,8 @@ export function getAllWorkspaceTeamSharedFolderFolders(
   orderBy?: OrderByOptions,
 ): [Promise<ListWorkspaceSharedItemsResponse>, RequestCanceler] {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.getWorkspaceTeamSharedFolderFolders(
+  return workspaceClient.getWorkspaceTeamSharedFolderFoldersV2(
     workspaceId,
-    teamId,
     sharedFolderUUID,
     page,
     perPage,
@@ -309,7 +306,6 @@ export function getAllWorkspaceTeamSharedFolderFolders(
 
 export function getAllWorkspaceTeamSharedFolderFiles(
   workspaceId: string,
-  teamId: string,
   sharedFolderUUID: string,
   page: number,
   perPage: number,
@@ -317,15 +313,27 @@ export function getAllWorkspaceTeamSharedFolderFiles(
   orderBy?: OrderByOptions,
 ): [Promise<ListWorkspaceSharedItemsResponse>, RequestCanceler] {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.getWorkspaceTeamSharedFolderFiles(
+  return workspaceClient.getWorkspaceTeamSharedFolderFilesV2(
     workspaceId,
-    teamId,
     sharedFolderUUID,
     page,
     perPage,
     token,
     orderBy,
   );
+}
+
+export function getUsersAndTeamsAnItemIsShareWidth({
+  workspaceId,
+  itemType,
+  itemId,
+}: {
+  workspaceId: string;
+  itemId: string;
+  itemType: 'folder' | 'file';
+}): [Promise<UsersAndTeamsAnItemIsShareWidthResponse>, RequestCanceler] {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getUsersAndTeamsAnItemIsShareWidth({ workspaceId, itemType, itemId });
 }
 
 export function getWorkspaceFolders(
@@ -440,6 +448,7 @@ const workspacesService = {
   getAllWorkspaceTeamSharedFolders,
   getAllWorkspaceTeamSharedFolderFiles,
   getAllWorkspaceTeamSharedFolderFolders,
+  getUsersAndTeamsAnItemIsShareWidth,
   getWorkspaceFolders,
   getWorkspaceFiles,
   deactivateMember,

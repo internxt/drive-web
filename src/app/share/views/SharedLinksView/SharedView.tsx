@@ -135,14 +135,14 @@ function SharedView({
     dispatch(sharedThunks.getPendingInvitations());
 
     if (page === 0 && !folderUUID) {
-      fetchRootFolders(workspaceId, defaultTeamId);
+      fetchRootFolders(workspaceId);
       dispatch(storageActions.resetSharedNamePath());
     }
 
     if (folderUUID) {
       const onRedirectionToFolderError = (errorMessage: string) => {
         notificationsService.show({ text: errorMessage, type: ToastType.Error });
-        fetchRootFolders(workspaceId, defaultTeamId);
+        fetchRootFolders(workspaceId);
       };
 
       handlePrivateSharedFolderAccess({
@@ -239,7 +239,7 @@ function SharedView({
   const onShowInvitationsModalClose = () => {
     resetSharedViewState();
     actionDispatch(setCurrentFolderId(''));
-    fetchRootFolders(workspaceId, defaultTeamId);
+    fetchRootFolders(workspaceId);
     dispatch(sharedThunks.getPendingInvitations());
     dispatch(uiActions.setIsInvitationsDialogOpen(false));
   };
@@ -431,7 +431,7 @@ function SharedView({
     );
 
     actionDispatch(setHasMoreFiles(true));
-    fetchFiles(true, workspaceId, defaultTeamId);
+    fetchFiles(true, workspaceId);
   };
 
   const handleIsItemOwnedByCurrentUser = (givenItemUserUUID?: string) => {
@@ -493,7 +493,7 @@ function SharedView({
         // This is added so that in case the element is no longer shared due
         // to changes in the share dialog it will disappear from the list.
         resetSharedViewState();
-        fetchRootFolders(workspaceId, defaultTeamId);
+        fetchRootFolders(workspaceId);
       }
     }, 200);
   };
