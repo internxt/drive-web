@@ -16,7 +16,6 @@ import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
 import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import shareService from '../../../../share/services/share.service';
 import { Button } from '@internxt/internxtui';
 import Dropdown from '../../../../shared/components/Dropdown';
@@ -35,7 +34,6 @@ import {
   contextMenuWorkspaceFolder,
 } from '../DriveExplorerList/DriveItemContextMenu';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import { shareItemWithTeam } from '../utils';
 
 const DriveTopBarActions = ({
   selectedItems,
@@ -45,7 +43,6 @@ const DriveTopBarActions = ({
   isTrash,
   hasItems,
   driveActionsRef,
-  roles,
 }: {
   selectedItems: DriveItemData[];
   currentFolderId: string;
@@ -173,23 +170,8 @@ const DriveTopBarActions = ({
     }
   };
 
-  const shareWithTeam = async (driveItem: DriveItemData) => {
-    const editorRole = roles.find((role) => role.name === 'EDITOR');
-    if (selectedWorkspace && editorRole) {
-      const isSharedSuccessfully = await shareItemWithTeam(driveItem, selectedWorkspace, editorRole);
-      if (isSharedSuccessfully) {
-        notificationsService.show({
-          text: translate('workspaces.messages.sharedSuccess'),
-          type: ToastType.Success,
-        });
-        return;
-      }
-    }
-
-    notificationsService.show({
-      text: translate('modals.shareModal.errors.copy-to-clipboard'),
-      type: ToastType.Error,
-    });
+  const shareWithTeam = (): void => {
+    dispatch(uiActions.setIsShareWhithTeamDialogOpen(true));
   };
 
   const workspaceItemMenu = contextMenuWorkspaceFile({

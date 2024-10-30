@@ -951,7 +951,13 @@
       "primaryAction": "Confirmar",
       "secondaryAction": "Cancelar"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Compartir \"{{name}}\"",
+      "teams": "Equipos",
+      "teamsWithAccess": "Equipos con acceso:",
+      "shareButton": "Compartir"
+    }
   },
   "form": {
     "fields": {
