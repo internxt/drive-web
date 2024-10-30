@@ -1285,6 +1285,8 @@
     "linkUpdated": "链接已更新",
     "itemsMovedToTrash": "{{item}} 已被移至回收站",
     "storageModified": "存储修改成功",
+    "errorModifyingStorage": "新存储空间对该成员无效。",
+    "generalErrorWhileModifyingStorage": "修改存储时出错。",
     "moveItems": "{{itemsToMove}} 成功移动",
     "restoreItems": "{{itemsToRecover}} 成功恢复",
     "itemDeleted": "{{item}} 已删除",

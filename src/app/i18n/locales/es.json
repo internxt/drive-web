@@ -1251,6 +1251,8 @@
     "itemsMovedToTrash": "{{item}} movid{{s}} a la papelera",
     "restoreItems": "{{itemsToRecover}} restaurad{{s}} con éxito",
     "storageModified": "Almacenamiento modificado con éxito",
+    "errorModifyingStorage": "El nuevo almacenamiento no es válido para este miembro.",
+    "generalErrorWhileModifyingStorage": "Algo salió mal al modificar el almacenamiento.",
     "moveItems": "{{itemsToMove}} movid{{s}} con éxito",
     "itemDeleted": "{{item}} eliminado",
     "itemsDeleted": "Archivos eliminados",

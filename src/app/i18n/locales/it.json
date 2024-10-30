@@ -1279,6 +1279,8 @@
     "itemsMovedToTrash": "{{item}} spostati nel cestino",
     "restoreItems": "{{itemsToRecover}} ripristinato correttamente",
     "storageModified": "Archiviazione modificata con successo",
+    "errorModifyingStorage": "Il nuovo spazio di archiviazione non è valido per questo membro.",
+    "generalErrorWhileModifyingStorage": "Si è verificato un errore durante la modifica dello spazio di archiviazione.",
     "itemDeleted": "{{item}} eliminate",
     "itemsDeleted": "File eliminati",
     "emailNotEmpty": "L'e-mail non deve essere vuota",

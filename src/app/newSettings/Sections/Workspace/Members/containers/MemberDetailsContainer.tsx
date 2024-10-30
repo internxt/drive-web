@@ -24,6 +24,8 @@ import { Spinner } from '@internxt/internxtui';
 import { RootState } from '../../../../../store';
 import { ActionDialog } from '../../../../../contexts/dialog-manager/ActionDialogManager.context';
 import { useActionDialog } from '../../../../../contexts/dialog-manager/useActionDialog';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import AppError from 'app/core/types';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;
@@ -33,6 +35,8 @@ interface MemberDetailsContainer {
   getWorkspacesMembers: (string) => void;
   deselectMember: () => void;
 }
+
+const UPDATED_SPACE_IS_NOT_VALID_FOR_MEMBER = 400;
 
 const MemberDetailsContainer = ({
   member,
@@ -83,7 +87,23 @@ const MemberDetailsContainer = ({
       refreshWorkspaceMembers();
       dispatch(planThunks.fetchBusinessLimitUsageThunk());
       updateSelectedMember(memberUpdated);
+      notificationsService.show({
+        text: translate('notificationMessages.storageModified'),
+        type: ToastType.Success,
+      });
     } catch (error) {
+      const appError = error as AppError;
+      if (appError.status === UPDATED_SPACE_IS_NOT_VALID_FOR_MEMBER) {
+        notificationsService.show({
+          text: translate('notificationMessages.errorModifyingStorage'),
+          type: ToastType.Error,
+        });
+      } else {
+        notificationsService.show({
+          text: translate('notificationMessages.generalErrorWhileModifyingStorage'),
+          type: ToastType.Error,
+        });
+      }
       errorService.reportError(error);
     } finally {
       setIsModifyingMemberStorage(false);
@@ -239,7 +259,7 @@ const MemberDetailsContainer = ({
                     onClick={() =>
                       openDialog(ActionDialog.ModifyStorage, {
                         data: {
-                          totalUsageAllowed: maxSpacePerMember,
+                          maxSpacePerMember,
                           memberRole,
                           memberName: {
                             name: member.member.name,

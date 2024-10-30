@@ -12,7 +12,7 @@ import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 const MINIMUM_BYTES_TO_ASSIGN = 100 * 1024 * 1024;
 const MODIFY_STORAGE_DIALOG_KEY = ActionDialog.ModifyStorage;
 interface ModifyStorageModalProps {
-  totalUsageAllowed: string;
+  maxSpacePerMember: string;
   memberRole?: MemberRole;
   memberName?: {
     name: string;
@@ -32,7 +32,7 @@ export const ModifyStorageModal = (): JSX.Element => {
   const isOpen = isDialogOpen(MODIFY_STORAGE_DIALOG_KEY);
 
   const {
-    totalUsageAllowed,
+    maxSpacePerMember,
     isLoading,
     memberEmail,
     memberName,
@@ -42,7 +42,7 @@ export const ModifyStorageModal = (): JSX.Element => {
     onUpdateUserStorage,
   } = getDialogData(MODIFY_STORAGE_DIALOG_KEY) as ModifyStorageModalProps;
 
-  const maxStorageForWorkspaceMember = Number(totalUsageAllowed);
+  const maxStorageForWorkspaceMember = Number(maxSpacePerMember);
   const minimumUserStorage = Math.max(Number(totalUsedStorage), MINIMUM_BYTES_TO_ASSIGN);
   const [newStorage, setNewStorage] = useState(minimumUserStorage);
   const shouldRenderUserTable = memberEmail && memberName?.name && memberName?.lastName && memberRole && memberSpace;
