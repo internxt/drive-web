@@ -1,7 +1,6 @@
 import { queue, QueueObject } from 'async';
 import { randomBytes } from 'crypto';
 import { t } from 'i18next';
-import analyticsService from '../analytics/services/analytics.service';
 import errorService from '../core/services/error.service';
 import { HTTP_CODES } from '../core/services/http.service';
 import uploadFile, { FileToUpload } from '../drive/services/file.service/uploadFile';
@@ -82,7 +81,6 @@ class UploadManager {
   private items: UploadManagerFileParams[];
   private options?: Options;
   private relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
-  private uploadUUIDV4: string;
   private maxSpaceOccupiedCallback: () => void;
   private uploadRepository?: PersistUploadRepository;
   private filesUploadedList: (DriveFileData & { taskId: string })[] = [];
@@ -141,7 +139,6 @@ class UploadManager {
 
       const upload = async () => {
         uploadAttempts++;
-        const isMultipleUpload = this.items.length > 1 ? 1 : 0;
 
         if (!existsRelatedTask)
           tasksService.updateTask({
@@ -184,7 +181,6 @@ class UploadManager {
           },
           {
             isTeam: false,
-            trackingParameters: { isMultipleUpload, processIdentifier: this.uploadUUIDV4 },
             abortController: this.abortController ?? fileData.abortController,
             ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,
             abortCallback: (abort?: () => void) =>
@@ -284,7 +280,6 @@ class UploadManager {
     this.abortController = abortController;
     this.options = options;
     this.relatedTaskProgress = relatedTaskProgress;
-    this.uploadUUIDV4 = analyticsService.getTrackingActionId();
     this.maxSpaceOccupiedCallback = maxSpaceOccupiedCallback;
     this.uploadRepository = uploadRepository;
   }

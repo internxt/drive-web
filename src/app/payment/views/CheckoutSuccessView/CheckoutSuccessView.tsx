@@ -1,4 +1,3 @@
-import analyticsService from 'app/analytics/services/analytics.service';
 import useEffectAsync from 'app/core/hooks/useEffectAsync';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
@@ -26,7 +25,6 @@ const CheckoutSuccessView = (): JSX.Element => {
     }, 3000);
 
     try {
-      await analyticsService.trackPaymentConversion();
       localStorageService.removeItem('subscriptionId');
       localStorageService.removeItem('paymentIntentId');
       localStorageService.removeItem('amountPaid');

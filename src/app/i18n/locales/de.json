@@ -4,19 +4,19 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Sparen Sie 80%",
-    "title": "Sichern Sie Ihre digitale Welt!",
-    "subtitle": "Gewinnen Sie unseren Premium-Rucksack mit unseren lebenslangen Plänen.",
-    "cta": "Plan auswählen",
-    "guarantee": "30 Tage Geld-zurück-Garantie",
+    "label": "Spare 80%",
+    "title": "Boo! Sparen Sie mit uns...",
+    "subtitle": "Gewinne unseren Premium-Rucksack mit unseren lebenslangen Plänen.",
+    "cta": "Plan wählen",
+    "guarantee": "30-Tage-Geld-zurück-Garantie",
     "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
     "features": [
-      "Große Einsparungen bei allen Internxt-Plänen",
-      "Sicherer und geschützter Cloud-Speicher",
-      "Open Source und transparent",
+      "Spare bei allen lebenslangen Plänen",
+      "Privater, verschlüsselter Cloud-Speicher",
+      "Quelloffen und geprüft",
       "End-to-End-verschlüsselte Übertragungen",
       "Kein unbefugter Zugriff",
-      "Angebot endet am 31. Oktober"
+      "Angebot endet am 10. November"
     ]
   },
   "valentinesBanner": {
@@ -46,7 +46,8 @@
     "light": "Hell",
     "dark": "Dunkel",
     "system": "System",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "E-Mail",
@@ -60,8 +61,7 @@
       "dontHaveAccount": "Sie haben kein Konto?",
       "createAccount": "Konto erstellen",
       "2FA": "Zwei-Faktor-Code",
-      "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode",
-      "wrongLogin": "Ungültiger Benutzername oder Passwort"
+      "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode"
     },
     "signup": {
       "title": "Konto erstellen",
@@ -731,7 +731,7 @@
         "uploadedBy": "Hochgeladen von",
         "shared": "Freigegeben",
         "size": "Größe",
-        "modified": "Geändert",
+        "modified": "Feändert",
         "Ort": "Ort"
       }
     },
@@ -1245,8 +1245,6 @@
     "errorPurchaseBusinessPlan": "Sie haben bereits einen Geschäftstarif.",
     "couponIsNotValidForUserError": "Der Gutschein kann nur von neuen Kunden eingelöst werden.",
     "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten",
-    "foldersCannotBeUploadedToSharedFolder": "Ordner können nicht in freigegebene Ordner hochgeladen werden",
-    "errorDownloadingDesktopApp": "Beim Herunterladen der Desktop-App ist ein Fehler aufgetreten",
     "invalidTaxIdIsProvided": "Die angegebene Steuernummer ist ungültig",
     "errorWhileFetchingMoreItems": "Beim Abrufen weiterer Elemente ist ein Fehler aufgetreten",
     "errorDeletingItems": "Beim Löschen dieses Elements ist ein Fehler aufgetreten"
@@ -1336,8 +1334,8 @@
       "deleteLink": "Lösche Link",
       "restore": "Wiederherstellen",
       "deletePermanently": "Lösche dauerhaft",
-      "move": "Verschieben",
-      "delete": "Löschen"
+      "move": "Verschiebe",
+      "delete": "Lösche"
     },
     "deleteItems": {
       "title": "Dauerhaft löschen?",
@@ -1508,12 +1506,6 @@
           "remove": "Entfernen",
           "removing": "Entfernen läuft"
         },
-        "leaveModal": {
-          "title": "Arbeitsbereich verlassen",
-          "description": "{{name}}, Sie verlieren den Zugriff auf den Arbeitsbereich. Alle ihre Dateien und Ordner bleiben unverändert.",
-          "leave": "Verlassen",
-          "leaving": "Jetzt verlassen"
-        },
         "changePasswordModal": {
           "title": "Passwortänderung anfordern",
           "description": "Der Benutzer erhält eine Empfehlung, sein persönliches Kontopasswort zu aktualisieren. Verwenden Sie diese Funktion, wenn Sie glauben, dass sein Passwort möglicherweise kompromittiert wurde.",
@@ -1572,7 +1564,6 @@
           "deactivate": "Mitglied deaktivieren",
           "reactivate": "Mitglied reaktivieren",
           "remove": "Mitglied entfernen",
-          "leave": "Arbeitsbereich verlassen",
           "passwordChange": "Passwortänderung anfordern"
         }
       },

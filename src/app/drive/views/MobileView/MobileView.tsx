@@ -19,7 +19,9 @@ const Mobile = (props: MobileProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [osMobile, setOsMobile] = useState('');
   const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
-  const fullName = `${props.user?.name} ${props.user?.lastname}`;
+  const name = props.user?.name ?? '';
+  const lastName = props.user?.lastname ?? '';
+  const fullName = name + ' ' + lastName;
 
   useEffect(() => {
     getDatabaseProfileAvatar().then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null));

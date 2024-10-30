@@ -5,18 +5,18 @@
   },
   "featuresBanner": {
     "label": "Save 80%",
-    "title": "Secure your digital world!",
+    "title": "Boo! Come save with us...",
     "subtitle": "Win our premium backpack with our lifetime plans.",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
-      "Save big on all Internxt plans",
-      "Safe and secure cloud storage",
-      "Open source and transparent",
+      "Save on all lifetime plans",
+      "Private, encrypted cloud storage",
+      "Open-source and audited",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends October 31"
+      "Offer ends November 10"
     ]
   },
   "valentinesBanner": {
@@ -67,7 +67,8 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "Email",
@@ -81,8 +82,7 @@
       "dontHaveAccount": "Don't have an account?",
       "createAccount": "Create account",
       "2FA": "Two factor code",
-      "twoFactorAuthenticationCode": "Two factor authentication code",
-      "wrongLogin": "Invalid username or password"
+      "twoFactorAuthenticationCode": "Two factor authentication code"
     },
     "signup": {
       "title": "Create account",
@@ -1303,9 +1303,7 @@
     "errorApplyingCoupon": "Something went wrong while applying the coupon",
     "invalidTaxIdIsProvided": "The provided Tax ID is invalid",
     "errorWhileFetchingMoreItems": "Something went wrong while fetching more items",
-    "errorDeletingItems": "Something went wrong while deleting this item",
-    "foldersCannotBeUploadedToSharedFolder": "Folders cannot be uploaded to shared folders",
-    "errorDownloadingDesktopApp": "Something went wrong while downloading the desktop app"
+    "errorDeletingItems": "Something went wrong while deleting this item"
   },
   "actions": {
     "undo": "Undo",
@@ -1566,12 +1564,6 @@
           "remove": "Remove",
           "removing": "Removing"
         },
-        "leaveModal": {
-          "title": "Leave workspace",
-          "description": "{{name}}, you will lose access to the Workspace. All their files and folders will stay the same.",
-          "leave": "Leave",
-          "leaving": "Leaving"
-        },
         "changePasswordModal": {
           "title": "Request password change",
           "description": "User will receive a recommendation to update their personal account password. Use this function in case you believe their password may have been breached.",
@@ -1631,7 +1623,6 @@
           "modifyStorage": "Modify storage",
           "reactivate": "Reactivate member",
           "remove": "Remove member",
-          "leave": "Leave workspace",
           "passwordChange": "Request password change"
         }
       },

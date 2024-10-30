@@ -2,11 +2,11 @@ import { BrowserHistoryBuildOptions, createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
 import { SelectSectionProps } from 'app/newSettings/types/types';
-import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
 import { AppView } from '../types';
 import configService from './config.service';
 import errorService from './error.service';
 import { AppDispatch } from 'app/store';
+import localStorageService from './local-storage.service';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
@@ -17,20 +17,6 @@ if (process.env.REACT_APP_BASE_URL) {
 }
 
 const instance = createBrowserHistory(browserHistoryConfig);
-
-instance.listen((nav) => {
-  const keys = Object.keys(PATH_NAMES);
-  const index = keys.indexOf(nav.pathname);
-
-  if (index > -1) {
-    const pageName = PATH_NAMES[keys[index]];
-
-    window.rudderanalytics.page(pageName);
-    serverPage(pageName).catch(() => {
-      // NO OP
-    });
-  }
-});
 
 const navigationService = {
   history: instance,
@@ -84,13 +70,14 @@ const navigationService = {
       errorService.reportError(error);
     }
   },
-  setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch): void {
+  setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch, updateUrl = true): void {
+    const user = localStorageService.getUser();
     const params = new URLSearchParams(window.location.search);
     const [currentWorkspaceUuid] = params.getAll('workspaceid');
-    currentWorkspaceUuid &&
+    user &&
       !window.location.pathname.includes('file') &&
       !window.location.pathname.includes('folder') &&
-      dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid }));
+      dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid || null, updateUrl }));
   },
 };
 

@@ -114,7 +114,9 @@ const CheckoutViewWrapper = () => {
   const { doRegister } = useSignUp('activate');
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
 
-  const fullName = `${user?.name} ${user?.lastname}`;
+  const name = user?.name ?? '';
+  const lastName = user?.lastname ?? '';
+  const fullName = name + ' ' + lastName;
   const isUserAuthenticated = !!user;
   const thereIsAnyError = state.error?.coupon || state.error?.auth || state.error?.stripe;
 
@@ -376,7 +378,6 @@ const CheckoutViewWrapper = () => {
 
       // TEMPORARY HOT FIX
       // Store subscriptionId, paymentIntendId, and amountPaid to send to IMPACT API
-      // need to check all rest of needed values to add it to analytics in trackPaymentConversion function
       savePaymentDataInLocalStorage(
         subscriptionId,
         paymentIntentId,

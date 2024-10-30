@@ -17,9 +17,10 @@ import { useAppSelector } from '../../../store/hooks';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
-import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
+import { workspacesActions, workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 import workspacesService from 'app/core/services/workspace.service';
+import { useHistory } from 'react-router-dom';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -38,6 +39,7 @@ const DriveView = (props: DriveViewProps) => {
   const [tokenHeader, setTokenHeader] = useState<string>('');
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const isSelectedWorkspace = selectedWorkspace?.workspace.id === workspaceUuid;
+  const history = useHistory();
 
   useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));
@@ -50,6 +52,20 @@ const DriveView = (props: DriveViewProps) => {
       setTitle(`${fileViewer?.plainName ?? fileViewer?.name} - Internxt Drive`);
     }
   }, [fileViewer]);
+
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      e.preventDefault();
+      if (!isFileView && !isFolderView && !isOverviewSubsection) {
+        navigationService.setWorkspaceFromParams(workspaceThunks, dispatch, false);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [history]);
 
   useEffect(() => {
     if (!isFileView && !isFolderView && workspaceUuid && !isSelectedWorkspace && !isOverviewSubsection) {

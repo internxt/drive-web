@@ -11,12 +11,12 @@
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
     "features": [
-      "Ahorra mucho en todos los planes de Internxt",
+      "Ahorra en planes de por vida",
       "Almacenamiento en la nube seguro y protegido",
       "Código abierto y transparente",
       "Transferencias encriptadas de extremo a extremo",
       "Sin acceso no autorizado",
-      "La oferta termina el 31 de octubre"
+      "La oferta termina el 10 de noviembre"
     ]
   },
   "valentinesBanner": {
@@ -46,7 +46,8 @@
     "light": "Claro",
     "dark": "Oscuro",
     "system": "Sistema",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -60,8 +61,7 @@
       "dontHaveAccount": "¿No tienes cuenta?",
       "createAccount": "Crear cuenta",
       "2FA": "Código de dos factores",
-      "twoFactorAuthenticationCode": "Código de autenticación de dos factores",
-      "wrongLogin": "Nombre de usuario o contraseña no válidos"
+      "twoFactorAuthenticationCode": "Código de autenticación de dos factores"
     },
     "signup": {
       "title": "Crear cuenta",
@@ -1265,8 +1265,6 @@
     "errorPurchaseBusinessPlan": "Ya tienes un plan para empresas",
     "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes.",
     "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón",
-    "foldersCannotBeUploadedToSharedFolder": "No se pueden subir carpetas a una carpeta compartida",
-    "errorDownloadingDesktopApp": "Algo salió mal al descargar la aplicación de escritorio",
     "invalidTaxIdIsProvided": "El ID fiscal proporcionado es inválido",
     "errorWhileFetchingMoreItems": "Algo salió mal al obtener más elementos",
     "errorDeletingItems": "Algo salió mal al eliminar este elemento"
@@ -1544,12 +1542,6 @@
           "remove": "Eliminar",
           "removing": "Eliminando"
         },
-        "leaveModal": {
-          "title": "Abandonar espacio de trabajo",
-          "description": "{{name}}, perderás acceso al espacio de trabajo. Todos sus archivos y carpetas permanecerán iguales.",
-          "leave": "Abandonar",
-          "leaving": "Abandonando"
-        },
         "changePasswordModal": {
           "title": "Solicitar cambio de contraseña",
           "description": "El usuario recibirá una recomendación para actualizar la contraseña de su cuenta personal. Utilice esta función si cree que su contraseña podría haber sido comprometida.",
@@ -1608,7 +1600,6 @@
           "deactivate": "Desactivar miembro",
           "reactivate": "Reactivar miembro",
           "remove": "Eliminar miembro",
-          "leave": "Abandonar espacio de trabajo",
           "passwordChange": "Solicitar cambio de contraseña"
         }
       },
