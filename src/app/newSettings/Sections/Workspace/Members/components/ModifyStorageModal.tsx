@@ -8,6 +8,7 @@ import { MemberRole } from '../../../../../newSettings/types/types';
 import { bytesToString } from '../../../../../drive/services/size.service';
 import { ActionDialog } from '../../../../../contexts/dialog-manager/ActionDialogManager.context';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 const MINIMUM_BYTES_TO_ASSIGN = 100 * 1024 * 1024;
 const MODIFY_STORAGE_DIALOG_KEY = ActionDialog.ModifyStorage;
@@ -58,6 +59,27 @@ export const ModifyStorageModal = (): JSX.Element => {
   const onClose = () => {
     closeDialog(MODIFY_STORAGE_DIALOG_KEY);
   };
+
+  useHotkeys(
+    'Enter',
+    () => {
+      onUpdateUserStorage(newStorage);
+    },
+    [newStorage],
+    { enableOnFormTags: ['input'] },
+  );
+
+  useHotkeys(
+    'Esc',
+    (event) => {
+      if (isOpen) {
+        event.preventDefault();
+        event.stopPropagation();
+        onClose();
+      }
+    },
+    { enableOnFormTags: ['input'], preventDefault: true },
+  );
 
   return (
     <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading}>
