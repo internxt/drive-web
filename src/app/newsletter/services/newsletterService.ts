@@ -1,5 +1,5 @@
-import errorService from 'app/core/services/error.service';
-import httpService from 'app/core/services/http.service';
+import errorService from '../../core/services/error.service';
+import httpService from '../../core/services/http.service';
 
 const newsletterService = {
   subscribe(email: string): Promise<void> {

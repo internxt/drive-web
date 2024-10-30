@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { TeamMember, WorkspaceData, WorkspaceTeam } from '@internxt/sdk/dist/workspaces/types';
 
-import workspacesService from 'app/core/services/workspace.service';
-import errorService from 'app/core/services/error.service';
+import workspacesService from '../../../../../core/services/workspace.service';
+import errorService from '../../../../../core/services/error.service';
 
 import ChangeManagerDialog from '../components/ChangeManagerDialog';
 

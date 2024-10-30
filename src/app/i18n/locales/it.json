@@ -9,19 +9,19 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Fino al 75% di sconto",
-    "title": "È il momento di passare alla privacy!",
+    "label": "Risparmia l'80%",
+    "title": "Proteggi il tuo mondo digitale!",
     "subtitle": "Vinci il nostro zaino premium con i nostri piani a vita.",
     "cta": "Scegli il piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
-    "lastCta": "*Offerta valida per conti gratuiti o nuovi clienti",
+    "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
     "features": [
-      "Risparmia su tutti i piani di Internxt",
+      "Risparmia tanto su tutti i piani Internxt",
       "Archiviazione cloud sicura e protetta",
-      "Tecnologia a conoscenza zero",
-      "Open source e verificato",
+      "Open source e trasparente",
       "Trasferimenti criptati end-to-end",
-      "Nessun accesso non autorizzato"
+      "Nessun accesso non autorizzato",
+      "Offerta valida fino al 31 ottobre"
     ]
   },
   "banner": {
@@ -197,6 +197,7 @@
       "selectedPlan": "Piano selezionato",
       "numberOfUsers": "Numero di utenti: {{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* Si rinnova il",
         "month": "mensile",
         "year": "annuale",
         "lifetime": "a vita"
@@ -1285,7 +1286,10 @@
     "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
     "errorPurchaseBusinessPlan": "Hai già un piano aziendale.",
     "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti.",
-    "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon"
+    "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon",
+    "invalidTaxIdIsProvided": "L'ID fiscale fornito non è valido",
+    "errorWhileFetchingMoreItems": "Qualcosa è andato storto durante il recupero di ulteriori elementi",
+    "errorDeletingItems": "Qualcosa è andato storto durante l'eliminazione di questo elemento"
   },
   "actions": {
     "undo": "Annulla",
@@ -1360,6 +1364,7 @@
       "openPreview": "Anteprima aperta",
       "shareLink": "Condividi",
       "shareTeam": "Condividi con il team",
+      "shareWithWorkspace": "Condividi con lo spazio di lavoro",
       "getLink": "Ottenere link",
       "rename": "Rinomina",
       "download": "Scarica",
@@ -1705,7 +1710,7 @@
       "levelUpStorage": "Aumenta il tuo spazio di archiviazione e ottieni molti altri vantaggi",
       "upgradeNow": "Aggiorna ora",
       "emptyTrash": "Svuota cestino",
-      "emptryTrashDescription": "Gli elementi nel cestino verranno eliminati definitivamente dopo 15 giorni",
+      "emptyTrashDescription": "Gli elementi nel cestino verranno eliminati in modo permanente",
       "plans": {
         "title": "Piani",
         "current": "Corrente",

@@ -10,7 +10,7 @@ import { useReduxActions } from '../../../store/slices/storage/hooks/useReduxAct
 import tasksService from '../../services/tasks.service';
 import { TaskData, TaskNotification, TaskStatus, TaskType, UploadFileData, UploadFolderData } from '../../types';
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import workspacesSelectors from '../../../../app/store/slices/workspaces/workspaces.selectors';
 
 const THREE_HUNDRED_MB_IN_BYTES = 3 * 100 * 1024 * 1024;
 interface TaskLoggerItemProps {

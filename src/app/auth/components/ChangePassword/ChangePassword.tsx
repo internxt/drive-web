@@ -1,19 +1,19 @@
 import { Dispatch, SetStateAction, useState, RefObject, createRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import authService from 'app/auth/services/auth.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import authService from '../../../auth/services/auth.service';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Button from 'app/shared/components/Button/Button';
-import Input from 'app/shared/components/Input';
-import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
-import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import Button from '../../../shared/components/Button/Button';
+import Input from '../../../shared/components/Input';
+import PasswordStrengthIndicator from '../../../shared/components/PasswordStrengthIndicator';
+import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import { CaretLeft, FileArrowUp, Warning, WarningCircle, CheckCircle } from '@phosphor-icons/react';
 import { validateMnemonic } from 'bip39';
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import { TrackingPlan } from 'app/analytics/TrackingPlan';
-import { trackPasswordRecovered } from 'app/analytics/services/analytics.service';
+import errorService from '../../../core/services/error.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import { TrackingPlan } from '../../../analytics/TrackingPlan';
+import { trackPasswordRecovered } from '../../../analytics/services/analytics.service';
 
 interface ChangePasswordProps {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;

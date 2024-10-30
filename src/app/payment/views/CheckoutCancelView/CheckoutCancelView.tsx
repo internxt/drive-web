@@ -1,7 +1,7 @@
-import useEffectAsync from 'app/core/hooks/useEffectAsync';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
-import analyticsService from 'app/analytics/services/analytics.service';
+import useEffectAsync from '../../../core/hooks/useEffectAsync';
+import navigationService from '../../../core/services/navigation.service';
+import { AppView } from '../../../core/types';
+import analyticsService from '../../../analytics/services/analytics.service';
 import { useCallback } from 'react';
 
 const CheckoutCancelView = (): JSX.Element => {

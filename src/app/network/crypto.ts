@@ -4,7 +4,7 @@ import {
   sha512HmacBuffer,
   sha512HmacBufferFromHex,
 } from '@internxt/inxt-js/build/lib/utils/crypto';
-import { streamFileIntoChunks } from 'app/core/services/stream.service';
+import { streamFileIntoChunks } from '../core/services/stream.service';
 import { Sha256 } from 'asmcrypto.js';
 import { mnemonicToSeed } from 'bip39';
 import { Cipher, CipherCCM, createCipheriv, createHash } from 'crypto';

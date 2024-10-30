@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
-import { AdvancedSharedItem, SharedNamePath } from 'app/share/types';
+import { AdvancedSharedItem, SharedNamePath } from '../../../../app/share/types';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
 import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from '../../../drive/types';

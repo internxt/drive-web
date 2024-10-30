@@ -1,10 +1,10 @@
-import { aes } from '@internxt/lib';
+/**
+ * @jest-environment jsdom
+ */
 
 import { isValid } from '../../../src/app/crypto/services/utilspgp';
 import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
-import { getAesInitFromEnv } from '../../../src/app/crypto/services/keys.service';
 
-import { config } from 'dotenv';
 import { describe, expect, it } from 'vitest';
 
 //config();

@@ -12,11 +12,11 @@ import { bytesToString } from '../../../drive/services/size.service';
 import date from '../../../core/services/date.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { DriveItemData, DriveItemDetails, ItemDetailsProps } from '../../../drive/types';
-import newStorageService from 'app/drive/services/new-storage.service';
-import errorService from 'app/core/services/error.service';
-import { getItemPlainName } from 'app/crypto/services/utils';
+import newStorageService from '../../../drive/services/new-storage.service';
+import errorService from '../../../core/services/error.service';
+import { getItemPlainName } from '../../../crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
-import { AdvancedSharedItem } from 'app/share/types';
+import { AdvancedSharedItem } from '../../../share/types';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -44,7 +44,7 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
             <p className="text-sm font-medium text-gray-50">
               {translate(`modals.itemDetailsModal.itemDetails.${key}`)}
             </p>
-            <p title={value} className="line-clamp-2 w-full text-base font-medium text-gray-100">
+            <p title={value} className="block w-full truncate text-base font-medium text-gray-100">
               {value}
             </p>
           </div>

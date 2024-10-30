@@ -1,4 +1,4 @@
-import { downloadFile, Downloadable } from 'app/network/download';
+import { downloadFile, Downloadable } from '../../../network/download';
 
 type FetchFileStreamOptions = {
   updateProgressCallback: (progress: number) => void;

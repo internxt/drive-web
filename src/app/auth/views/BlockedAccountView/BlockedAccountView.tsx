@@ -1,17 +1,17 @@
-import navigationService from 'app/core/services/navigation.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import navigationService from '../../../core/services/navigation.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import { ShieldWarning } from '@phosphor-icons/react';
-import Button from 'app/shared/components/Button/Button';
-import { AppView } from 'app/core/types';
+import Button from '../../../shared/components/Button/Button';
+import { AppView } from '../../../core/types';
 import { useCallback, useEffect, useState } from 'react';
 import queryString from 'query-string';
 import { useParams } from 'react-router-dom';
-import Spinner from 'app/shared/components/Spinner/Spinner';
-import authService from 'app/auth/services/auth.service';
-import errorService from 'app/core/services/error.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
+import Spinner from '../../../shared/components/Spinner/Spinner';
+import authService from '../../../auth/services/auth.service';
+import errorService from '../../../core/services/error.service';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import ExpiredLink from '../../../shared/views/ExpiredLink/ExpiredLinkView';
 import { ResendButton } from '../../components/ResendButton/ResendButton';
 import { trackAccountUnblockEmailSent } from '../../../analytics/services/analytics.service';
 

@@ -20,6 +20,6 @@
     "baseUrl": "./src",
     "incremental": true
   },
-  "types": ["filesystem", "@types/react"],
+  "types": ["filesystem", "@types/react", "vitest/globals", "@testing-library/jest-dom"], 
   "include": ["src"]
 }

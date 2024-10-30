@@ -1,6 +1,6 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { Network } from 'app/drive/services/network.service';
-import { DriveFileData } from 'app/drive/types';
+import { Network } from '../../../drive/services/network.service';
+import { DriveFileData } from '../../../drive/types';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import analyticsService from '../../../analytics/services/analytics.service';
 import { SdkFactory } from '../../../core/factory/sdk';
@@ -13,6 +13,7 @@ import notificationsService, { ToastType } from '../../../notifications/services
 import { getEnvironmentConfig } from '../network.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
 
+// TODO: REMOVE FROM HERE, DUPLICATED TO MAKE TESTS
 export interface FileToUpload {
   name: string;
   size: number;

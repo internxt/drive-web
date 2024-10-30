@@ -1,7 +1,7 @@
 import { Menu, Transition } from '@headlessui/react';
 import { ReactNode } from 'react';
 import { ListItemMenu } from '../List/ListItem';
-import { DriveItemData } from 'app/drive/types';
+import { DriveItemData } from '../../../drive/types';
 
 export default function Dropdown({
   children,

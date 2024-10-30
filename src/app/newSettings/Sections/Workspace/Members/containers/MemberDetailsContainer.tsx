@@ -1,9 +1,9 @@
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { DotsThreeVertical } from '@phosphor-icons/react';
-import errorService from 'app/core/services/error.service';
-import workspacesService from 'app/core/services/workspace.service';
-import Usage from 'app/newSettings/components/Usage/Usage';
-import { getMemberRole } from 'app/newSettings/utils/membersUtils';
+import errorService from '../../../../../core/services/error.service';
+import workspacesService from '../../../../../core/services/workspace.service';
+import Usage from '../../../../../newSettings/components/Usage/Usage';
+import { getMemberRole } from '../../../../../newSettings/utils/membersUtils';
 import { useEffect, useState } from 'react';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Card from '../../../../../shared/components/Card';

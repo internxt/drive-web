@@ -1,12 +1,11 @@
 import desktopService from '../../../core/services/desktop.service';
 import { Device } from '../../types';
-import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
 
 import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
 import { DownloadSimple } from '@phosphor-icons/react';
 import Empty from '../../../shared/components/Empty/Empty';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import List from '../../../shared/components/List';
 import { contextMenuBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import UilApple from '@iconscout/react-unicons/icons/uil-apple';
@@ -16,6 +15,7 @@ import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
 import dateService from '../../../core/services/date.service';
 import sizeService from '../../../drive/services/size.service';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { skinSkeleton } from '../../../shared/Skeleton';
 
 interface Props {
   items: (Device | DriveFolderData)[];
@@ -34,11 +34,6 @@ const DeviceList = (props: Props): JSX.Element => {
   const getDownloadApp = async () => {
     const download = await desktopService.getDownloadAppUrl();
     return download;
-  };
-  const getLoadingSkeleton = () => {
-    return Array(20)
-      .fill(0)
-      .map((n, i) => <DriveListItemSkeleton key={i} />);
   };
 
   return (
@@ -116,7 +111,7 @@ const DeviceList = (props: Props): JSX.Element => {
             onDeviceSelected([...unselectedDevices, { device: item, isSelected: true }]);
           }}
           onDoubleClick={onDeviceClicked}
-          skinSkeleton={getLoadingSkeleton()}
+          skinSkeleton={skinSkeleton}
           emptyState={
             <Empty
               icon={<img className="w-36" alt="" src={folderEmptyImage} />}

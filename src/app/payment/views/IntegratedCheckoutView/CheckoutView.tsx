@@ -1,18 +1,18 @@
-import { ProductFeaturesComponent } from '../../components/checkout/ProductCardComponent';
+import { CheckoutProductCard } from '../../components/checkout/CheckoutProductCard';
 import { HeaderComponent } from '../../components/checkout/Header';
-import LoadingPulse from 'app/shared/components/LoadingPulse/LoadingPulse';
+import LoadingPulse from '../../../shared/components/LoadingPulse/LoadingPulse';
 import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import Button from 'app/shared/components/Button/Button';
+import Button from '../../../shared/components/Button/Button';
 import { useForm } from 'react-hook-form';
-import { IFormValues } from 'app/core/types';
+import { IFormValues } from '../../../core/types';
 import { AuthMethodTypes } from '../../types';
-import { UserAuthComponent } from '../../components/checkout/UserAuthComponent';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { CheckoutUserAuth } from '../../components/checkout/CheckoutUserAuth';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
-import { State } from 'app/payment/store/types';
+import { State } from '../../../payment/store/types';
 import { LegacyRef } from 'react';
-import { OptionalB2BDropdownComponent } from 'app/payment/components/checkout/OptionalB2BDropdownComponent';
+import { OptionalB2BDropdown } from '../../../payment/components/checkout/OptionalB2BDropdown';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
@@ -92,7 +92,7 @@ const CheckoutView = ({
           {currentSelectedPlan ? (
             <div className="flex flex-col items-center justify-center gap-10 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex w-full max-w-xl flex-col space-y-14" ref={userAuthComponentRef}>
-                <UserAuthComponent
+                <CheckoutUserAuth
                   errors={errors}
                   authError={error?.auth}
                   register={register}
@@ -119,7 +119,7 @@ const CheckoutView = ({
                       />
                     </div>
                     {currentSelectedPlan.type === UserType.Business ? (
-                      <OptionalB2BDropdownComponent errors={errors} register={register} translate={translate} />
+                      <OptionalB2BDropdown errors={errors} register={register} translate={translate} />
                     ) : undefined}
                   </div>
                   <p className="text-2xl font-semibold text-gray-100">3. {translate('checkout.paymentTitle')}</p>
@@ -135,7 +135,7 @@ const CheckoutView = ({
                 </div>
               </div>
               <div className="top-5 flex w-full max-w-xl flex-col gap-5 pb-10 lg:sticky lg:max-w-lg">
-                <ProductFeaturesComponent
+                <CheckoutProductCard
                   selectedPlan={currentSelectedPlan}
                   couponCodeData={couponCodeData}
                   couponError={error?.coupon}

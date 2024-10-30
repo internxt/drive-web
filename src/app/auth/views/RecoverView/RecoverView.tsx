@@ -2,22 +2,22 @@ import { useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
-import { RootState } from 'app/store';
-import { useAppSelector } from 'app/store/hooks';
-import AuthButton from 'app/shared/components/AuthButton';
+import { RootState } from '../../../store';
+import { useAppSelector } from '../../../store/hooks';
+import AuthButton from '../../../shared/components/AuthButton';
 import { changePassword } from '../../services/auth.service';
 import UilLock from '@iconscout/react-unicons/icons/uil-lock';
 import UilEyeSlash from '@iconscout/react-unicons/icons/uil-eye-slash';
 import UilEye from '@iconscout/react-unicons/icons/uil-eye';
-import errorService from 'app/core/services/error.service';
-import { AppView, IFormValues, LocalStorageItem } from 'app/core/types';
-import navigationService from 'app/core/services/navigation.service';
-import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
+import errorService from '../../../core/services/error.service';
+import { AppView, IFormValues, LocalStorageItem } from '../../../core/types';
+import navigationService from '../../../core/services/navigation.service';
+import BaseInput from '../../../shared/components/forms/inputs/BaseInput';
 import { decryptTextWithKey } from '../../../crypto/services/utils';
 import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Link } from 'react-router-dom';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 
 export default function RecoverView(): JSX.Element {
   const { translate } = useTranslationContext();

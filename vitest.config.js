@@ -1,19 +1,37 @@
+// vitest.config.ts
+import replace from '@rollup/plugin-replace';
+import react from '@vitejs/plugin-react';
+import reactRefresh from '@vitejs/plugin-react-refresh';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  tsetupFiles: ['./tests/setup.js'],
+  plugins: [
+    reactRefresh(),
+    react(),
+    replace({
+      preventAssignment: true,
+      'process.browser': true,
+    }),
+  ],
   test: {
-    exclude: ['./tests-examples/demo-todo-app.spec.ts', './tests/example.spec.ts', 'test/e2e/*', './node_modules/*'],
-    globals: true,
     environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/setupTests.ts',
+    exclude: ['node_modules', 'dist'],
+    include: ['src/**/*.test.{ts,tsx,js,jsx}', 'test/unit/**/*.test.{ts,tsx,js,jsx}'],
     browser: {
       provider: 'playwright',
       enabled: true,
       name: 'chromium',
       headless: true,
     },
-    reporters: ['default'],
   },
-
-  optimizeDeps: { exclude: ['fsevents'] },
+  optimizeDeps: {
+    esbuildOptions: {
+      // Node.js global to browser globalThis
+      define: {
+        global: 'globalThis',
+      },
+    },
+  },
 });

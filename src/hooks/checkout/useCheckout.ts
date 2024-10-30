@@ -1,6 +1,6 @@
 import { Dispatch } from 'react';
-import { Action } from 'app/payment/store/types';
-import { AuthMethodTypes, CouponCodeData, ErrorType, PlanData } from 'app/payment/types';
+import { Action } from '../../app/payment/store/types';
+import { AuthMethodTypes, CouponCodeData, ErrorType, PlanData } from '../../app/payment/types';
 import { StripeElementsOptions } from '@stripe/stripe-js';
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 

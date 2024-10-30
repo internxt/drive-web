@@ -4,19 +4,19 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "高達75%的折扣",
-    "title": "是時候轉向隱私了！",
-    "subtitle": "贏取我們的高級背包與我們的終身計劃。",
+    "label": "節省 80%",
+    "title": "保護你的數位世界！",
+    "subtitle": "透過我們的終身計劃贏取我們的高級背包。",
     "cta": "選擇計劃",
     "guarantee": "30天退款保證",
-    "lastCta": "*僅限新客戶或免費賬戶的優惠",
+    "lastCta": "*優惠僅適用於免費帳戶或新客戶",
     "features": [
-      "節省所有Internxt計劃的費用",
-      "安全可靠的雲存儲",
-      "零知識技術",
-      "開源並經過審計",
+      "所有 Internxt 計劃大幅優惠",
+      "安全可靠的雲端存儲",
+      "開源且透明",
       "端到端加密傳輸",
-      "無未授權訪問"
+      "無未經授權的訪問",
+      "優惠截止至10月31日"
     ]
   },
   "valentinesBanner": {
@@ -197,6 +197,7 @@
       "selectedPlan": "選擇的計劃",
       "numberOfUsers": "用戶數：{{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* 續訂日期為",
         "month": "每月",
         "year": "每年",
         "lifetime": "終身"
@@ -1259,7 +1260,10 @@
     "errorCreatingSubscription": "建立您的訂閱時出現問題",
     "errorPurchaseBusinessPlan": "您已經有一個商業計劃",
     "couponIsNotValidForUserError": "優惠券只能由新客戶兌換。",
-    "errorApplyingCoupon": "應用優惠券時出錯"
+    "errorApplyingCoupon": "應用優惠券時出錯",
+    "errorWhileFetchingMoreItems": "獲取更多項目時出現錯誤",
+    "errorDeletingItems": "刪除此項目時出現錯誤",
+    "invalidTaxIdIsProvided": "提供的稅號無效"
   },
   "actions": {
     "undo": "撤銷",
@@ -1334,6 +1338,8 @@
       "openPreview": "打開預覽",
       "details": "詳細信息",
       "shareLink": "分享",
+      "shareTeam": "与团队分享",
+      "shareWithWorkspace": "與工作區共享",
       "manageLinkAccess": "管理訪問權限",
       "getLink": "獲取鏈接",
       "rename": "重新命名",
@@ -1676,7 +1682,7 @@
       "levelUpStorage": "提升您的存儲空間並獲得許多其他好處",
       "upgradeNow": "立即升級",
       "emptyTrash": "清空垃圾桶",
-      "emptryTrashDescription": "垃圾桶中的項目將在15天後永久刪除",
+      "emptyTrashDescription": "垃圾桶中的項目將被永久刪除",
       "plans": {
         "title": "計劃",
         "current": "當前",

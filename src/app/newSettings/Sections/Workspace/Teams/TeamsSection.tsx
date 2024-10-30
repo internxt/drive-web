@@ -8,12 +8,12 @@ import {
   TeamMember,
 } from '@internxt/sdk/dist/workspaces/types';
 
-import { useAppSelector } from 'app/store/hooks';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import workspacesService from 'app/core/services/workspace.service';
-import errorService from 'app/core/services/error.service';
+import { useAppSelector } from '../../../../store/hooks';
+import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
+import workspacesService from '../../../../core/services/workspace.service';
+import errorService from '../../../../core/services/error.service';
 
-import Section from 'app/newSettings/components/Section';
+import Section from '../../../../newSettings/components/Section';
 import TeamsList from './components/TeamsList';
 import AddMemberDialogContainer from './containers/AddMemberDialogContainer';
 import CreateTeamDialogContainer from './containers/CreateTeamDialogContainer';

@@ -1,5 +1,5 @@
 import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
 import _ from 'lodash';
 import React, { ReactNode, useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -204,9 +204,9 @@ ListProps<T, F>): JSX.Element {
   }
 
   function onTopSelectionCheckboxClick() {
-    const atLeastOneItemSelected = selectedItems.length !== 0;
+    const areAllItemsSelected = selectedItems.length === items.length;
 
-    if (atLeastOneItemSelected) {
+    if (areAllItemsSelected) {
       unselectAllItems();
     } else {
       selectAllItems();

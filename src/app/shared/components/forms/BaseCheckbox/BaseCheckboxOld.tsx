@@ -1,5 +1,5 @@
 import { Path, UseFormRegister } from 'react-hook-form';
-import { IFormValues } from 'app/core/types';
+import { IFormValues } from '../../../../core/types';
 
 interface BaseCheckboxProps {
   label: Path<IFormValues>;

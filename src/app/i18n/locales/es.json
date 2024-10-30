@@ -4,19 +4,19 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": "Hasta un 75% de descuento",
-    "title": "¡Es hora de pasar a la privacidad!",
+    "label": "Ahorra hasta un 80%",
+    "title": "¡Protege tu mundo digital!",
     "subtitle": "Gana nuestra mochila premium con nuestros planes de por vida.",
     "cta": "Elegir plan",
-    "guarantee": "Garantía de devolución de dinero de 30 días",
-    "lastCta": "*Oferta para cuentas gratuitas o nuevos clientes",
+    "guarantee": "Garantía de devolución de 30 días",
+    "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
     "features": [
-      "Ahorra en todos los planes de Internxt",
+      "Ahorra mucho en todos los planes de Internxt",
       "Almacenamiento en la nube seguro y protegido",
-      "Tecnología de conocimiento cero",
-      "Código abierto y auditado",
-      "Transferencias cifradas de extremo a extremo",
-      "Sin acceso no autorizado"
+      "Código abierto y transparente",
+      "Transferencias encriptadas de extremo a extremo",
+      "Sin acceso no autorizado",
+      "La oferta termina el 31 de octubre"
     ]
   },
   "valentinesBanner": {
@@ -176,6 +176,7 @@
       "selectedPlan": "Plan seleccionado",
       "numberOfUsers": "Número de usuarios: {{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* Se renueva en",
         "month": "mensual",
         "year": "anual",
         "lifetime": "lifetime"
@@ -1261,7 +1262,10 @@
     "alreadyAppliedCoupon": "El cupón ya se ha aplicado",
     "errorPurchaseBusinessPlan": "Ya tienes un plan para empresas",
     "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes.",
-    "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón"
+    "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón",
+    "invalidTaxIdIsProvided": "El ID fiscal proporcionado es inválido",
+    "errorWhileFetchingMoreItems": "Algo salió mal al obtener más elementos",
+    "errorDeletingItems": "Algo salió mal al eliminar este elemento"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",
@@ -1351,6 +1355,7 @@
       "openPreview": "Abrir previsualización",
       "shareLink": "Compartir",
       "shareTeam": "Compartir con el equipo",
+      "shareWithWorkspace": "Compartir con el espacio de trabajo",
       "getLink": "Copiar enlace",
       "details": "Detalles",
       "rename": "Renombrar",
@@ -1696,7 +1701,7 @@
       "levelUpStorage": "Aumenta tu espacio de almacenamiento y obtén muchos otros beneficios",
       "upgradeNow": "Mejorar ahora",
       "emptyTrash": "Vaciar la papelera",
-      "emptryTrashDescription": "Los elementos en la papelera serán eliminados permanentemente después de 15 días",
+      "emptyTrashDescription": "Los elementos de la papelera se borrarán permanentemente",
       "plans": {
         "title": "Planes",
         "current": "Actual",

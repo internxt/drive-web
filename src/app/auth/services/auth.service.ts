@@ -10,30 +10,30 @@ import {
 import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
-import analyticsService from 'app/analytics/services/analytics.service';
-import { getCookie, setCookie } from 'app/analytics/utils';
-import localStorageService from 'app/core/services/local-storage.service';
-import RealtimeService from 'app/core/services/socket.service';
+import analyticsService from '../../analytics/services/analytics.service';
+import { getCookie, setCookie } from '../../analytics/utils';
+import localStorageService from '../../core/services/local-storage.service';
+import RealtimeService from '../../core/services/socket.service';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
   decryptPrivateKey,
   getAesInitFromEnv,
-} from 'app/crypto/services/keys.service';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
+} from '../../crypto/services/keys.service';
+import { generateNewKeys } from '../../crypto/services/pgp.service';
 import {
   decryptText,
   decryptTextWithKey,
   encryptText,
   encryptTextWithKey,
   passToHash,
-} from 'app/crypto/services/utils';
-import databaseService from 'app/database/services/database.service';
+} from '../../crypto/services/utils';
+import databaseService from '../../database/services/database.service';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
+import navigationService from '../../core/services/navigation.service';
+import { AppView } from '../../core/types';
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   analyticsService.trackSignOut();

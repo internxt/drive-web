@@ -2,17 +2,17 @@ import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { RootState } from 'app/store';
-import { PlanState, planThunks } from 'app/store/slices/plan';
+import { RootState } from '../../../../store';
+import { PlanState, planThunks } from '../../../../store/slices/plan';
 
 import { CustomerBillingInfo, UserType } from '@internxt/sdk/dist/drive/payments/types';
-import { trackCanceledSubscription } from 'app/analytics/services/analytics.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Section from 'app/newSettings/components/Section';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import paymentService from 'app/payment/services/payment.service';
-import { useAppDispatch } from 'app/store/hooks';
-import { WorkspacesState, workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
+import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
+import Section from '../../../../newSettings/components/Section';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import paymentService from '../../../../payment/services/payment.service';
+import { useAppDispatch } from '../../../../store/hooks';
+import { WorkspacesState, workspaceThunks } from '../../../../store/slices/workspaces/workspacesStore';
 import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCard';
 import Invoices from '../../../containers/InvoicesContainer';
 import CancelSubscription from '../../Account/Billing/components/CancelSubscription';

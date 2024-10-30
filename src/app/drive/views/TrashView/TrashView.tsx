@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { connect, useSelector } from 'react-redux';
 
-import DriveExplorer from 'app/drive/components/DriveExplorer/DriveExplorer';
-import { DriveItemData } from 'app/drive/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { AppDispatch, RootState } from 'app/store';
-import { storageActions } from 'app/store/slices/storage';
+import DriveExplorer from '../../../drive/components/DriveExplorer/DriveExplorer';
+import { DriveItemData } from '../../../drive/types';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { AppDispatch, RootState } from '../../../store';
+import { storageActions } from '../../../store/slices/storage';
 import { getTrashPaginated, getWorkspaceTrashPaginated } from '../../../../use_cases/trash/get_trash';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';

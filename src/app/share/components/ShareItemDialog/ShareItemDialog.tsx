@@ -1,25 +1,25 @@
 import { useState } from 'react';
 
 import copy from 'copy-to-clipboard';
-import { DriveItemData } from 'app/drive/types';
-import { uiActions } from 'app/store/slices/ui';
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
+import { DriveItemData } from '../../../drive/types';
+import { uiActions } from '../../../store/slices/ui';
+import BaseDialog from '../../../shared/components/BaseDialog/BaseDialog';
 import './ShareItemDialog.scss';
-import { storageActions } from 'app/store/slices/storage';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { storageActions } from '../../../store/slices/storage';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { aes, items } from '@internxt/lib';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import PasswordInput from './components/PasswordInput';
 import { Check, Copy } from '@phosphor-icons/react';
-import dateService from 'app/core/services/date.service';
-import shareService from 'app/share/services/share.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import dateService from '../../../core/services/date.service';
+import shareService from '../../../share/services/share.service';
+import localStorageService from '../../../core/services/local-storage.service';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { TFunction } from 'i18next';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { domainManager } from '../../services/DomainManager';
 import _ from 'lodash';
-import { AdvancedSharedItem } from 'app/share/types';
+import { AdvancedSharedItem } from '../../../share/types';
 
 interface ShareItemDialogProps {
   share?: ShareLink;

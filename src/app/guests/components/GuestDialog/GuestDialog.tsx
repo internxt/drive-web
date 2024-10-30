@@ -1,14 +1,14 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { connect } from 'react-redux';
 
-import httpService from 'app/core/services/http.service';
-import { IFormValues } from 'app/core/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import AuthButton from 'app/shared/components/AuthButton';
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
-import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
+import httpService from '../../../core/services/http.service';
+import { IFormValues } from '../../../core/types';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import AuthButton from '../../../shared/components/AuthButton';
+import BaseDialog from '../../../shared/components/BaseDialog/BaseDialog';
+import BaseInput from '../../../shared/components/forms/inputs/BaseInput';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { uiActions } from 'app/store/slices/ui';
+import { uiActions } from '../../../store/slices/ui';
 import { AxiosError } from 'axios';
 import localStorageService from '../../../core/services/local-storage.service';
 
