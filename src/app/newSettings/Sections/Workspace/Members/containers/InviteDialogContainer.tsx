@@ -25,14 +25,7 @@ const InviteDialogContainer = ({ isOpen, onClose }) => {
     }
   };
 
-  return (
-    <UserInviteDialog
-      isOpen={isOpen}
-      onClose={onClose}
-      maxSpaceAllowed={selectedWorkspace?.workspaceUser.spaceLimit as string}
-      processInvitation={processWorkspaceInvitation}
-    />
-  );
+  return <UserInviteDialog isOpen={isOpen} onClose={onClose} processInvitation={processWorkspaceInvitation} />;
 };
 
 const processInvitation = async (
