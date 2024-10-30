@@ -11,19 +11,14 @@ import notificationsService, { ToastType } from '../../../../../notifications/se
 import { RootState } from '../../../../../store';
 import UserInviteDialog from '../InviteDialog';
 
-export interface InvitationData {
-  email: string;
-  storage?: number;
-}
-
 const InviteDialogContainer = ({ isOpen, onClose }) => {
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const user = useSelector((state: RootState) => state.user.user);
 
-  const processWorkspaceInvitation = async (userData: InvitationData[], messageText: string) => {
+  const processWorkspaceInvitation = async (emailList: string[], messageText: string) => {
     if (selectedWorkspace && user) {
-      const invitePromises = userData.map((userData) => {
-        return processInvitation(user, userData.email, selectedWorkspace.workspace.id, messageText, userData.storage);
+      const invitePromises = emailList.map((email) => {
+        return processInvitation(user, email, selectedWorkspace.workspace.id, messageText);
       });
 
       await Promise.all(invitePromises);
@@ -45,7 +40,6 @@ const processInvitation = async (
   email: string,
   workspaceId: string,
   messageText: string,
-  customSpace?: number,
 ) => {
   try {
     if (!user) {
@@ -79,7 +73,6 @@ const processInvitation = async (
       encryptedMnemonicInBase64: encryptedMnemonicInBase64,
       encryptionAlgorithm: 'aes-256-gcm',
       message: messageText,
-      spaceLimitBytes: customSpace,
     });
 
     notificationsService.show({

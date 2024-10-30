@@ -11,14 +11,13 @@ import Modal from '../../../../shared/components/Modal';
 import BaseCheckbox from '../../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
 import TextArea from '../../Account/Account/components/TextArea';
 import UserCard from './components/UserCard';
-import { InvitationData } from './containers/InviteDialogContainer';
 import { ActionDialog, useActionDialog } from 'hooks/dialogManager/ActionDialogManager.context';
 
 interface UserInviteDialogProps {
   isOpen: boolean;
   maxSpaceAllowed: string;
   onClose: () => void;
-  processInvitation: (userData: InvitationData[], messageText: string) => Promise<void>;
+  processInvitation: (emailList: string[], messageText: string) => Promise<void>;
 }
 
 type UsersToInvite = {
@@ -70,10 +69,7 @@ const UserInviteDialog = ({
   const onInviteUser = async () => {
     setIsLoading(true);
 
-    const emailList = usersToInvite.map((user) => ({
-      email: user.email,
-      storage: user.storage,
-    }));
+    const emailList = usersToInvite.map((user) => user.email);
     await processInvitation(emailList, messageText);
 
     setUsersToInvite([]);
