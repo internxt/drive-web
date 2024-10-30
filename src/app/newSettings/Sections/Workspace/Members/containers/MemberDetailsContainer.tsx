@@ -48,6 +48,8 @@ const MemberDetailsContainer = ({
   const user = useAppSelector((state) => state.user.user);
 
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  const maxSpacePerMember =
+    plan.businessSubscription?.type === 'subscription' && plan.businessSubscription.plan?.storageLimit;
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState<boolean>(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState<boolean>(false);
@@ -79,6 +81,7 @@ const MemberDetailsContainer = ({
         spaceLimitBytes,
       );
       refreshWorkspaceMembers();
+      dispatch(planThunks.fetchBusinessLimitUsageThunk());
       updateSelectedMember(memberUpdated);
     } catch (error) {
       errorService.reportError(error);
@@ -236,7 +239,7 @@ const MemberDetailsContainer = ({
                     onClick={() =>
                       openDialog(ActionDialog.ModifyStorage, {
                         data: {
-                          totalUsageAllowed: plan.businessPlanLimit,
+                          totalUsageAllowed: maxSpacePerMember,
                           memberRole,
                           memberName: {
                             name: member.member.name,
