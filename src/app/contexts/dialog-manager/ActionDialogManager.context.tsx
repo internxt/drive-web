@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useContext, useMemo, useState, useCallback } from 'react';
+import React, { FC, ReactNode, useMemo, useState, useCallback } from 'react';
 
 export enum ActionDialog {
   MoveItem = 'move-item',
@@ -59,32 +59,4 @@ export const DialogManagerProvider: FC<{ children: ReactNode }> = ({ children })
   );
 
   return <DialogManagerContext.Provider value={memoizedValue}>{children}</DialogManagerContext.Provider>;
-};
-
-export const useActionDialog = () => {
-  const ctx = useContext(DialogManagerContext);
-  if (!ctx) {
-    throw new Error('useActionDialog must be used within a DialogManagerProvider');
-  }
-
-  const isDialogOpen = useCallback(
-    (key: ActionDialog) => {
-      return ctx.actionDialogs[key]?.isOpen || false;
-    },
-    [ctx.actionDialogs],
-  );
-
-  const getDialogData = useCallback(
-    (key: ActionDialog) => {
-      return ctx.actionDialogs[key]?.data || null;
-    },
-    [ctx.actionDialogs],
-  );
-
-  return {
-    isDialogOpen,
-    getDialogData,
-    openDialog: ctx.openDialog,
-    closeDialog: ctx.closeDialog,
-  };
 };

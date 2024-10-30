@@ -21,7 +21,7 @@ import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import TeamsTab from '../components/TeamsTab';
 import UserCard from '../components/UserCard';
 import { Spinner } from '@internxt/internxtui';
-import { ActionDialog, useActionDialog } from 'hooks/dialogManager/ActionDialogManager.context';
+import { ActionDialog, useActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import { RootState } from 'app/store';
 
 interface MemberDetailsContainer {

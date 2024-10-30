@@ -4,8 +4,9 @@
 
 import { ReactNode } from 'react';
 import { renderHook, act } from '@testing-library/react';
-import { ActionDialog, DialogManagerProvider, useActionDialog } from './ActionDialogManager.context';
-import { DriveItemData } from 'app/drive/types';
+import { DriveItemData } from '../../drive/types';
+import { ActionDialog, DialogManagerProvider } from './ActionDialogManager.context';
+import { useActionDialog } from './useActionDialog';
 
 describe('useActionDialog custom hook', () => {
   const wrapper = ({ children }: { children: ReactNode }) => <DialogManagerProvider>{children}</DialogManagerProvider>;

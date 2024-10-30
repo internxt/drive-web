@@ -22,7 +22,7 @@ import { TranslationProvider } from 'app/i18n/provider/TranslationProvider';
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from 'app/theme/ThemeProvider';
 import { LiveChatLoaderProvider } from 'react-live-chat-loader';
-import { DialogManagerProvider } from 'hooks/dialogManager/ActionDialogManager.context';
+import { DialogManagerProvider } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));
