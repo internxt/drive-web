@@ -42,7 +42,8 @@ import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
 import { ModifyStorageModal } from 'app/newSettings/Sections/Workspace/Members/components/ModifyStorageModal';
-import { ActionDialog, useActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
+import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
+import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {

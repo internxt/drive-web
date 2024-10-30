@@ -21,8 +21,9 @@ import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import TeamsTab from '../components/TeamsTab';
 import UserCard from '../components/UserCard';
 import { Spinner } from '@internxt/internxtui';
-import { ActionDialog, useActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
-import { RootState } from 'app/store';
+import { RootState } from '../../../../../store';
+import { ActionDialog } from '../../../../../contexts/dialog-manager/ActionDialogManager.context';
+import { useActionDialog } from '../../../../../contexts/dialog-manager/useActionDialog';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;

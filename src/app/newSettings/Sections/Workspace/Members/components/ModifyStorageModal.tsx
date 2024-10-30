@@ -6,7 +6,8 @@ import Modal from '../../../../../shared/components/Modal';
 import UserCard from './UserCard';
 import { MemberRole } from '../../../../../newSettings/types/types';
 import { bytesToString } from '../../../../../drive/services/size.service';
-import { ActionDialog, useActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
+import { ActionDialog } from '../../../../../contexts/dialog-manager/ActionDialogManager.context';
+import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 
 const MINIMUM_BYTES_TO_ASSIGN = 100 * 1024 * 1024;
 const MODIFY_STORAGE_DIALOG_KEY = ActionDialog.ModifyStorage;
