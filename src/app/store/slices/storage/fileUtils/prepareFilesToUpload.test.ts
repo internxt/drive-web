@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
 
 import newStorageService from '../../../../drive/services/new-storage.service';
-import * as checkDuplicatedFilesModule from './checkDuplicatedFiles';
+import { checkDuplicatedFiles } from './checkDuplicatedFiles';
 import { prepareFilesToUpload } from './prepareFilesToUpload';
-import * as processDuplicateFilesModule from './processDuplicateFiles';
+import { processDuplicateFiles } from './processDuplicateFiles';
 
 vi.mock('../../../../drive/services/new-storage.service', () => ({
   default: {
@@ -36,13 +36,13 @@ describe('prepareFilesToUpload', () => {
       existentFiles: [],
     });
 
-    const checkDuplicatedFilesSpy = vi.spyOn(checkDuplicatedFilesModule, 'checkDuplicatedFiles');
-    const processDuplicateFilesSpy = vi.spyOn(processDuplicateFilesModule, 'processDuplicateFiles');
+    vi.mock('./checkDuplicatedFiles', { spy: true });
+    vi.mock('./processDuplicateFiles', { spy: true });
 
     const result = await prepareFilesToUpload({ files: mockFiles, parentFolderId });
 
-    expect(checkDuplicatedFilesSpy).toHaveBeenCalledTimes(4);
-    expect(processDuplicateFilesSpy).toHaveBeenCalledTimes(8);
+    expect(checkDuplicatedFiles).toHaveBeenCalledTimes(4);
+    expect(processDuplicateFiles).toHaveBeenCalledTimes(8);
     expect(result.zeroLengthFilesNumber).toBe(0);
     expect(result.filesToUpload.length).toBe(TOTAL_FILES);
   });
@@ -59,13 +59,13 @@ describe('prepareFilesToUpload', () => {
       })
       .mockResolvedValueOnce({ existentFiles: [] });
 
-    const checkDuplicatedFilesSpy = vi.spyOn(checkDuplicatedFilesModule, 'checkDuplicatedFiles');
-    const processDuplicateFilesSpy = vi.spyOn(processDuplicateFilesModule, 'processDuplicateFiles');
+    vi.mock('./checkDuplicatedFiles', { spy: true });
+    vi.mock('./processDuplicateFiles', { spy: true });
 
     const result = await prepareFilesToUpload({ files, parentFolderId });
 
-    expect(checkDuplicatedFilesSpy).toHaveBeenCalledTimes(1);
-    expect(processDuplicateFilesSpy).toHaveBeenCalledTimes(2);
+    expect(checkDuplicatedFiles).toHaveBeenCalledTimes(1);
+    expect(processDuplicateFiles).toHaveBeenCalledTimes(2);
     expect(result.zeroLengthFilesNumber).toBe(1);
   });
 
@@ -73,17 +73,17 @@ describe('prepareFilesToUpload', () => {
     const files = [createMockFile('file.txt')];
     const parentFolderId = 'parent123';
 
-    (checkDuplicatedFilesModule.checkDuplicatedFiles as Mock).mockResolvedValue({
+    (checkDuplicatedFiles as Mock).mockResolvedValue({
       duplicatedFilesResponse: [{ name: 'file.txt' }],
       filesWithoutDuplicates: [],
       filesWithDuplicates: files,
     });
 
-    const processDuplicateFilesSpy = vi.spyOn(processDuplicateFilesModule, 'processDuplicateFiles');
+    vi.mock('./processDuplicateFiles', { spy: true });
 
     await prepareFilesToUpload({ files, parentFolderId, disableDuplicatedNamesCheck: true });
 
-    expect(processDuplicateFilesSpy).toHaveBeenCalledWith(
+    expect(processDuplicateFiles).toHaveBeenCalledWith(
       expect.objectContaining({
         disableDuplicatedNamesCheck: true,
       }),
@@ -95,17 +95,17 @@ describe('prepareFilesToUpload', () => {
     const parentFolderId = 'parent123';
     const fileType = 'text/plain';
 
-    (checkDuplicatedFilesModule.checkDuplicatedFiles as Mock).mockResolvedValue({
+    (checkDuplicatedFiles as Mock).mockResolvedValue({
       duplicatedFilesResponse: [],
       filesWithoutDuplicates: files,
       filesWithDuplicates: [],
     });
 
-    const processDuplicateFilesSpy = vi.spyOn(processDuplicateFilesModule, 'processDuplicateFiles');
+    vi.mock('./processDuplicateFiles', { spy: true });
 
     await prepareFilesToUpload({ files, parentFolderId, fileType });
 
-    expect(processDuplicateFilesSpy).toHaveBeenCalledWith(
+    expect(processDuplicateFiles).toHaveBeenCalledWith(
       expect.objectContaining({
         fileType: 'text/plain',
       }),

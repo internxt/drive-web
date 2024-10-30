@@ -7,11 +7,11 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   plugins: [
     reactRefresh(),
-react(),
-  replace({
-		preventAssignment: true,
-		'process.browser': true,
-	}),
+    react(),
+    replace({
+      preventAssignment: true,
+      'process.browser': true,
+    }),
   ],
   test: {
     environment: 'jsdom',
