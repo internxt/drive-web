@@ -96,6 +96,17 @@ const Navbar = (props: NavbarProps) => {
     }
   }, [filters]);
 
+  useEffect(() => {
+    resetGlobalSearch();
+  }, [selectedWorkspace]);
+
+  const resetGlobalSearch = () => {
+    setQuery('');
+    setSelectedResult(0);
+    setLoadingSearch(false);
+    setSearchResult([]);
+  };
+
   const filteredSearchResults = searchResult.filter((result) => {
     for (const filter of filters) {
       if (filter === 'folder' && result.itemType?.toLowerCase() === 'folder') {
