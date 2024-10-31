@@ -111,7 +111,10 @@ const Navbar = (props: NavbarProps) => {
     const query = searchInput.current?.value ?? '';
     if (query.length > 0) {
       const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-      const [itemsPromise] = await storageClient.getGlobalSearchItems(query);
+      const [itemsPromise] = await storageClient.getGlobalSearchItems(
+        query,
+        selectedWorkspace?.workspaceUser.workspaceId,
+      );
       const items = await itemsPromise;
       setSearchResult(items.data);
     } else {
