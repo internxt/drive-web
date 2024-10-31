@@ -1263,6 +1263,9 @@
     "copyLink": "Ссылка с общим доступом скопирована в буфер обмена",
     "linkUpdated": "Ссылка обновлена",
     "itemsMovedToTrash": "{{item}} перемещен в корзину",
+    "storageModified": "Хранилище успешно изменено",
+    "errorModifyingStorage": "Новый объём хранения недоступен для этого участника.",
+    "generalErrorWhileModifyingStorage": "Произошла ошибка при изменении объёма хранения.",
     "restoreItems": "{{itemsToRecover}} успешно восстановлено",
     "itemDeleted": "{{item}} удален",
     "itemsDeleted": "Файлы удалены",
@@ -1509,6 +1512,14 @@
           "manager": "Менеджер",
           "member": "Участник",
           "deactivated": "Деактивирован"
+        },
+        "modifyStorageModal": {
+          "user": "Пользователь",
+          "storage": "Хранилище",
+          "spaceAssigned": "Назначенное пространство",
+          "spaceLeft": "Оставшееся пространство",
+          "cancel": "Отменить",
+          "saveChanges": "Сохранить изменения"
         },
         "deactivationModal": {
           "title": "Деактивировать участника",

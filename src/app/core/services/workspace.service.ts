@@ -24,6 +24,7 @@ import {
   WorkspacePendingInvitations,
   WorkspaceSetupInfo,
   WorkspaceTeamResponse,
+  WorkspaceUser,
   WorkspacesResponse,
   UsersAndTeamsAnItemIsShareWidthResponse,
 } from '@internxt/sdk/dist/workspaces';
@@ -381,10 +382,27 @@ export function getUsage(workspaceId: string): Promise<GetMemberUsageResponse> {
     throw errorService.castError(error);
   });
 }
+export function modifyMemberUsage(
+  workspaceId: string,
+  memberId: string,
+  spaceLimitBytes: number,
+): Promise<WorkspaceUser> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.modifyMemberUsage(workspaceId, memberId, spaceLimitBytes);
+}
 
 export function getWorkspace(workspaceId: string): Promise<Workspace> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.getWorkspace(workspaceId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getWorkspaceUsage(
+  workspaceId: string,
+): Promise<{ totalWorkspaceSpace: number; spaceAssigned: number; spaceUsed: number }> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspaceUsage(workspaceId).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -437,6 +455,7 @@ const workspacesService = {
   reactivateMember,
   removeMember,
   getUsage,
+  modifyMemberUsage,
   getWorkspace,
   leaveWorkspace,
 };

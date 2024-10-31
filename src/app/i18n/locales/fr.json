@@ -1224,6 +1224,9 @@
     "linkUpdated": "Lien mis à jour",
     "itemsMovedToTrash": "{{item}} déplacé vers la corbeille",
     "restoreItems": "{{itemsToRecover}} restauré avec succès",
+    "storageModified": "Stockage modifié avec succès",
+    "errorModifyingStorage": "Le nouvel espace de stockage n'est pas valide pour ce membre.",
+    "generalErrorWhileModifyingStorage": "Une erreur s'est produite lors de la modification du stockage.",
     "itemDeleted": "{{itemsToDelete}} supprimé",
     "itemsDeleted": "Fichiers supprimés",
     "emailNotEmpty": "L'adresse électronique ne doit pas être vide",
@@ -1469,6 +1472,14 @@
           "manager": "Gestionnaire",
           "member": "Membre",
           "deactivated": "Désactivé"
+        },
+        "modifyStorageModal": {
+          "user": "Utilisateur",
+          "storage": "Stockage",
+          "spaceAssigned": "Espace assigné",
+          "spaceLeft": "Espace total restant",
+          "cancel": "Annuler",
+          "saveChanges": "Enregistrer les modifications"
         },
         "deactivationModal": {
           "title": "Désactiver le membre",

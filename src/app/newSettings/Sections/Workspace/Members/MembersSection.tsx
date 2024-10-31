@@ -34,9 +34,7 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
   const [guestUsers, setGuestUsers] = useState<number>(0);
 
   useEffect(() => {
-    const selectedWorkspaceId = selectedWorkspace?.workspace.id;
-    selectedWorkspaceId && getWorkspacesMembers(selectedWorkspaceId);
-    getWorkspacePendingInvitations(selectedWorkspace?.workspaceUser.workspaceId);
+    refreshWorkspaceMembers();
   }, []);
 
   useEffect(() => {
@@ -77,6 +75,12 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
     workspaceCurrentMember?.isOwner && setIsCurrentMemberOwner(true);
   };
 
+  const refreshWorkspaceMembers = async () => {
+    const selectedWorkspaceId = selectedWorkspace?.workspace.id;
+    selectedWorkspaceId && (await getWorkspacesMembers(selectedWorkspaceId));
+    await getWorkspacePendingInvitations(selectedWorkspace?.workspaceUser.workspaceId);
+  };
+
   return (
     <Section
       title={
@@ -90,14 +94,16 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
       {selectedMember ? (
         <MemberDetailsContainer
           member={selectedMember}
+          refreshWorkspaceMembers={refreshWorkspaceMembers}
           getWorkspacesMembers={getWorkspacesMembers}
+          updateSelectedMember={setSelectedMember}
           isOwner={isCurrentUserWorkspaceOwner}
           deselectMember={() => setSelectedMember(null)}
         />
       ) : (
         <>
           {/* MEMBERS AND GUESTS CARDS */}
-          <div className="fles-row flex w-full justify-between space-x-6">
+          <div className="flex w-full flex-row justify-between space-x-6">
             <Card className="w-full">
               <div className="flex grow flex-col">
                 <span className="text-xl font-medium text-gray-100">{members?.length}</span>
@@ -157,7 +163,7 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
                       onMouseLeave={() => setHoverItemIndex(null)}
                       onClick={() => setSelectedMember(member)}
                     >
-                      <UserCard name={name} lastname={lastname} role={role} email={email} avatarsrc={''} />
+                      <UserCard name={name} lastName={lastname} role={role} email={email} avatarSrc={''} />
                     </button>
                   );
                 })}

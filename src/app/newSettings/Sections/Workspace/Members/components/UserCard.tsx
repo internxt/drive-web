@@ -5,10 +5,10 @@ import RoleBadge from './RoleBadge';
 
 interface UserProps {
   name: string;
-  lastname: string;
+  lastName: string;
   role?: MemberRole;
   email: string;
-  avatarsrc: string | null;
+  avatarSrc: string | null;
   styleOptions?: {
     avatarDiameter?: number;
     containerClassName?: string;
@@ -18,12 +18,12 @@ interface UserProps {
   };
 }
 
-const UserCard = ({ name, lastname, role, email, avatarsrc, styleOptions }: UserProps) => {
+const UserCard = ({ name, lastName, role, email, avatarSrc, styleOptions }: UserProps) => {
   const { translate } = useTranslationContext();
   const rolePosition = styleOptions?.rolePosition ?? 'row';
   return (
     <div className={`flex w-full flex-row items-center gap-2 ${styleOptions?.containerClassName}`}>
-      <Avatar src={avatarsrc} fullName={`${name} ${lastname}`} diameter={styleOptions?.avatarDiameter ?? 36} />
+      <Avatar src={avatarSrc} fullName={`${name} ${lastName}`} diameter={styleOptions?.avatarDiameter ?? 36} />
       <div className="flex flex-col gap-2">
         {rolePosition === 'column' && (
           <RoleBadge role={role} roleText={translate(`preferences.workspace.members.role.${role}`)} size={'small'} />
@@ -35,7 +35,7 @@ const UserCard = ({ name, lastname, role, email, avatarsrc, styleOptions }: User
                 styleOptions?.nameStyle ?? 'max-w-[120px] truncate break-all text-base font-medium text-gray-100'
               }
             >
-              {name} {lastname}
+              {name} {lastName}
             </span>
             {rolePosition === 'row' && (
               <RoleBadge
@@ -45,7 +45,7 @@ const UserCard = ({ name, lastname, role, email, avatarsrc, styleOptions }: User
               />
             )}
           </div>
-          <span className={styleOptions?.emailStyle ?? 'break-all text-left text-sm font-normal text-gray-50'}>
+          <span className={styleOptions?.emailStyle ?? 'truncate break-all text-left text-sm font-normal text-gray-50'}>
             {email}
           </span>
         </div>

@@ -1606,11 +1606,12 @@
     "@typescript-eslint/parser" "^5.4.0"
     eslint-config-prettier "^8.3.0"
 
-"@internxt/internxtui@^0.0.4":
-  version "0.0.4"
-  resolved "https://npm.pkg.github.com/download/@internxt/internxtui/0.0.4/ff006e44c13a74eae9da319c2b1b71efc16146f1#ff006e44c13a74eae9da319c2b1b71efc16146f1"
-  integrity sha512-SA8RArrdhPAeh2lr0f4/h2BS0plqIXZ650FChUjaGoLDLbnqyXqjRe+5suQ66QBNjuiK5N0kNX+dDu+BGZjhwg==
+"@internxt/internxtui@^0.0.6":
+  version "0.0.6"
+  resolved "https://npm.pkg.github.com/download/@internxt/internxtui/0.0.6/871a1798d2e20d5efe102886cb67c1ecd807dd96#871a1798d2e20d5efe102886cb67c1ecd807dd96"
+  integrity sha512-OP/h1W2PuvYQTO/QvZ9pZ+cneMj4odrXPpP8xWNXk8iQ91ryCZLtxo1m1tBQ+dRtE2gLwpxQRBkdkp+/C06XiA==
   dependencies:
+    "@phosphor-icons/react" "^2.1.5"
     "@radix-ui/react-switch" "^1.1.0"
     "@radix-ui/themes" "^3.0.0"
 
@@ -2008,7 +2009,7 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@phosphor-icons/react@^2.1.7":
+"@phosphor-icons/react@^2.1.5", "@phosphor-icons/react@^2.1.7":
   version "2.1.7"
   resolved "https://registry.yarnpkg.com/@phosphor-icons/react/-/react-2.1.7.tgz#b11a4b25849b7e3849970b688d9fe91e5d4fd8d7"
   integrity sha512-g2e2eVAn1XG2a+LI09QU3IORLhnFNAFkNbo2iwbX6NOKSLOwvEMmTa7CgOzEbgNWR47z8i8kwjdvYZ5fkGx1mQ==

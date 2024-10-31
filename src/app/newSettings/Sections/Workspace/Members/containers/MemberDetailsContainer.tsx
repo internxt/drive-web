@@ -5,10 +5,10 @@ import workspacesService from 'app/core/services/workspace.service';
 import Usage from 'app/newSettings/components/Usage/Usage';
 import { getMemberRole } from 'app/newSettings/utils/membersUtils';
 import { useAppSelector } from 'app/store/hooks';
-import { planThunks } from 'app/store/slices/plan';
+import { PlanState, planThunks } from 'app/store/slices/plan';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Card from '../../../../../shared/components/Card';
 import { MemberRole, Teams, TypeTabs } from '../../../../types/types';
@@ -21,21 +21,43 @@ import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import TeamsTab from '../components/TeamsTab';
 import UserCard from '../components/UserCard';
 import { Spinner } from '@internxt/internxtui';
+import { RootState } from '../../../../../store';
+import { ActionDialog } from '../../../../../contexts/dialog-manager/ActionDialogManager.context';
+import { useActionDialog } from '../../../../../contexts/dialog-manager/useActionDialog';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import AppError from 'app/core/types';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;
-  getWorkspacesMembers: (string) => void;
   isOwner: boolean;
+  refreshWorkspaceMembers: () => Promise<void>;
+  updateSelectedMember: (updatedMember: WorkspaceUser) => void;
+  getWorkspacesMembers: (string) => void;
   deselectMember: () => void;
 }
 
-const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselectMember }: MemberDetailsContainer) => {
+const UPDATED_SPACE_IS_NOT_VALID_FOR_MEMBER = 400;
+
+const MemberDetailsContainer = ({
+  member,
+  isOwner,
+  refreshWorkspaceMembers,
+  updateSelectedMember,
+  getWorkspacesMembers,
+  deselectMember,
+}: MemberDetailsContainer) => {
   const dispatch = useDispatch();
   const { translate } = useTranslationContext();
+  const { openDialog, closeDialog } = useActionDialog();
   const user = useAppSelector((state) => state.user.user);
+
+  const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  const maxSpacePerMember =
+    plan.businessSubscription?.type === 'subscription' && plan.businessSubscription.plan?.storageLimit;
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState<boolean>(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState<boolean>(false);
+  const [isModifyingMemberStorage, setIsModifyingMemberStorage] = useState<boolean>();
   const [isDeactivatingMember, setIsDeactivatingMember] = useState<boolean>(false);
   const [isReactivateModalOpen, setIsReactivateModalOpen] = useState<boolean>(false);
   const [isReactivatingMember, setIsReactivatingMember] = useState<boolean>(false);
@@ -53,6 +75,41 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
     const memberRole = getMemberRole(member);
     setMemberRole(memberRole);
   }, []);
+
+  const modifyStorageMember = async (spaceLimitBytes: number) => {
+    try {
+      setIsModifyingMemberStorage(true);
+      const memberUpdated = await workspacesService.modifyMemberUsage(
+        member.workspaceId,
+        member.memberId,
+        spaceLimitBytes,
+      );
+      refreshWorkspaceMembers();
+      dispatch(planThunks.fetchBusinessLimitUsageThunk());
+      updateSelectedMember(memberUpdated);
+      notificationsService.show({
+        text: translate('notificationMessages.storageModified'),
+        type: ToastType.Success,
+      });
+    } catch (error) {
+      const appError = error as AppError;
+      if (appError.status === UPDATED_SPACE_IS_NOT_VALID_FOR_MEMBER) {
+        notificationsService.show({
+          text: translate('notificationMessages.errorModifyingStorage'),
+          type: ToastType.Error,
+        });
+      } else {
+        notificationsService.show({
+          text: translate('notificationMessages.generalErrorWhileModifyingStorage'),
+          type: ToastType.Error,
+        });
+      }
+      errorService.reportError(error);
+    } finally {
+      setIsModifyingMemberStorage(false);
+      closeDialog(ActionDialog.ModifyStorage);
+    }
+  };
 
   const deactivateMember = async () => {
     try {
@@ -168,10 +225,10 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
       <div className="flex flex-row  justify-between">
         <UserCard
           name={member.member.name}
-          lastname={member.member.lastname}
+          lastName={member.member.lastname}
           role={memberRole}
           email={member.member.email}
-          avatarsrc={null}
+          avatarSrc={null}
           styleOptions={{
             avatarDiameter: 80,
             containerClassName: '!gap-4',
@@ -198,6 +255,28 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner, deselec
                 >
                   <span className="truncate">{translate('preferences.workspace.members.actions.passwordChange')}</span>
                 </button> */}
+                  <button
+                    onClick={() =>
+                      openDialog(ActionDialog.ModifyStorage, {
+                        data: {
+                          maxSpacePerMember,
+                          memberRole,
+                          memberName: {
+                            name: member.member.name,
+                            lastName: member.member.lastname,
+                          },
+                          memberEmail: member.member.email,
+                          memberSpace: member.spaceLimit,
+                          totalUsedStorage: member.usedSpace,
+                          isLoading: isModifyingMemberStorage,
+                          onUpdateUserStorage: modifyStorageMember,
+                        },
+                      })
+                    }
+                    className="flex h-10 w-full items-center rounded-b-md px-3 hover:bg-gray-5 dark:hover:bg-gray-20"
+                  >
+                    <span className="truncate">{translate('preferences.workspace.members.actions.modifyStorage')}</span>
+                  </button>
                   {memberRole !== 'deactivated' && (
                     <button
                       onClick={() => setIsDeactivateModalOpen(true)}
