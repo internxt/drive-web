@@ -10,15 +10,7 @@ import notificationsService, { ToastType } from '../../../notifications/services
 import { getEnvironmentConfig } from '../network.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
 import { OwnerUserAuthenticationData } from '../../../network/UploadManager';
-
-// TODO: REMOVE FROM HERE, DUPLICATED TO MAKE TESTS
-export interface FileToUpload {
-  name: string;
-  size: number;
-  type: string;
-  content: File;
-  parentFolderId: string;
-}
+import { FileToUpload } from './types';
 
 export interface FileUploadOptions {
   isTeam: boolean;

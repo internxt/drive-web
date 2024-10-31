@@ -3,12 +3,13 @@ import { randomBytes } from 'crypto';
 import { t } from 'i18next';
 import errorService from '../core/services/error.service';
 import { HTTP_CODES } from '../core/services/http.service';
-import uploadFile, { FileToUpload } from '../drive/services/file.service/uploadFile';
+import uploadFile from '../drive/services/file.service/uploadFile';
 import { DriveFileData } from '../drive/types';
 import { PersistUploadRepository } from '../repositories/DatabaseUploadRepository';
 import tasksService from '../tasks/services/tasks.service';
 import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 import { ConnectionLostError } from './requests';
+import { FileToUpload } from '../drive/services/file.service/types';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
