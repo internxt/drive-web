@@ -1254,6 +1254,9 @@
     "linkUpdated": "鏈接已更新",
     "itemsMovedToTrash": "{{item}} 已移到垃圾桶",
     "restoreItems": "{{itemsToRecover}} 成功還原",
+    "storageModified": "儲存空間修改成功",
+    "errorModifyingStorage": "新存儲空間對此成員無效。",
+    "generalErrorWhileModifyingStorage": "修改存儲時出錯。",
     "moveItems": "{{itemsToMove}} 成功移動",
     "itemDeleted": "{{item}} 已刪除",
     "itemsDeleted": "文件已刪除",
@@ -1504,6 +1507,14 @@
           "manager": "經理",
           "member": "成員",
           "deactivated": "已停用"
+        },
+        "modifyStorageModal": {
+          "user": "用戶",
+          "storage": "儲存空間",
+          "spaceAssigned": "分配的空間",
+          "spaceLeft": "剩餘總空間",
+          "cancel": "取消",
+          "saveChanges": "保存更改"
         },
         "deactivationModal": {
           "title": "停用成員",

@@ -1290,6 +1290,9 @@
     "copyLink": "已复制分享链接到剪贴板",
     "linkUpdated": "链接已更新",
     "itemsMovedToTrash": "{{item}} 已被移至回收站",
+    "storageModified": "存储修改成功",
+    "errorModifyingStorage": "新存储空间对该成员无效。",
+    "generalErrorWhileModifyingStorage": "修改存储时出错。",
     "moveItems": "{{itemsToMove}} 成功移动",
     "restoreItems": "{{itemsToRecover}} 成功恢复",
     "itemDeleted": "{{item}} 已删除",
@@ -1542,6 +1545,14 @@
           "manager": "管理员",
           "member": "成员",
           "deactivated": "已停用"
+        },
+        "modifyStorageModal": {
+          "user": "用户",
+          "storage": "存储",
+          "spaceAssigned": "分配的空间",
+          "spaceLeft": "剩余总空间",
+          "cancel": "取消",
+          "saveChanges": "保存更改"
         },
         "deactivationModal": {
           "title": "停用成员",
