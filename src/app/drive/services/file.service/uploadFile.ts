@@ -9,6 +9,7 @@ import { AppView } from '../../../core/types';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { getEnvironmentConfig } from '../network.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
+import { OwnerUserAuthenticationData } from '../../../network/UploadManager';
 
 // TODO: REMOVE FROM HERE, DUPLICATED TO MAKE TESTS
 export interface FileToUpload {
@@ -22,17 +23,7 @@ export interface FileToUpload {
 export interface FileUploadOptions {
   isTeam: boolean;
   abortController?: AbortController;
-  ownerUserAuthenticationData?: {
-    token: string;
-    bridgeUser: string;
-    bridgePass: string;
-    encryptionKey: string;
-    bucketId: string;
-    // to manage B2B workspaces
-    resourcesToken: string;
-    workspaceId?: string;
-    workspacesToken?: string;
-  };
+  ownerUserAuthenticationData?: OwnerUserAuthenticationData;
   abortCallback?: (abort?: () => void) => void;
 }
 

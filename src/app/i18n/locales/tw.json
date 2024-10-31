@@ -1264,7 +1264,11 @@
     "errorApplyingCoupon": "應用優惠券時出錯",
     "errorWhileFetchingMoreItems": "獲取更多項目時出現錯誤",
     "errorDeletingItems": "刪除此項目時出現錯誤",
-    "invalidTaxIdIsProvided": "提供的稅號無效"
+    "invalidTaxIdIsProvided": "提供的稅號無效",
+    "errorFetchingWorkspace": "獲取工作區時出錯 {{error}}",
+    "errorSettingUpWorkspace": "設置工作區時出錯 {{error}}",
+    "errorWhileLoadingWorkspace": "加載工作區時出錯 {{error}}",
+    "errorFetchingWorkspaceCredentials": "獲取工作區憑證時出錯 {{error}}"
   },
   "actions": {
     "undo": "撤銷",

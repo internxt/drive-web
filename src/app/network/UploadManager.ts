@@ -13,7 +13,7 @@ import { ConnectionLostError } from './requests';
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
 
-const MAX_UPLOAD_ATTEMPS = 1;
+const MAX_UPLOAD_ATTEMPTS = 1;
 
 enum FileSizeType {
   Big = 'big',
@@ -21,22 +21,23 @@ enum FileSizeType {
   Small = 'small',
 }
 
+export interface OwnerUserAuthenticationData {
+  token: string;
+  bridgeUser: string;
+  bridgePass: string;
+  encryptionKey: string;
+  bucketId: string;
+  // to manage B2B workspaces
+  workspaceId?: string;
+  workspacesToken?: string;
+  resourcesToken: string;
+}
+
 type Options = {
   isRetriedUpload?: boolean;
   showNotifications?: boolean;
   showErrors?: boolean;
-  // TOOD: REMOVE DUPLICATED TYPE FileUploadOptions IN uploadFile.ts
-  ownerUserAuthenticationData?: {
-    token: string;
-    bridgeUser: string;
-    bridgePass: string;
-    encryptionKey: string;
-    bucketId: string;
-    // to manage B2B workspaces
-    workspaceId?: string;
-    workspacesToken?: string;
-    resourcesToken: string;
-  };
+  ownerUserAuthenticationData?: OwnerUserAuthenticationData;
   sharedItemData?: {
     isDeepFolder?: boolean;
     currentFolderId?: string;
@@ -246,7 +247,7 @@ class UploadManager {
               !!this.abortController?.signal.aborted || !!fileData.abortController?.signal.aborted || error === 'abort';
             const isLostConnectionError = error instanceof ConnectionLostError || error.message === 'Network Error';
 
-            if (uploadAttempts < MAX_UPLOAD_ATTEMPS && !isUploadAborted && !isLostConnectionError) {
+            if (uploadAttempts < MAX_UPLOAD_ATTEMPTS && !isUploadAborted && !isLostConnectionError) {
               upload();
             } else {
               this.handleUploadErrors({

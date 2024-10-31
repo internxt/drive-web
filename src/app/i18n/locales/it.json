@@ -1290,7 +1290,11 @@
     "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon",
     "invalidTaxIdIsProvided": "L'ID fiscale fornito non è valido",
     "errorWhileFetchingMoreItems": "Qualcosa è andato storto durante il recupero di ulteriori elementi",
-    "errorDeletingItems": "Qualcosa è andato storto durante l'eliminazione di questo elemento"
+    "errorDeletingItems": "Qualcosa è andato storto durante l'eliminazione di questo elemento",
+    "errorFetchingWorkspace": "Errore durante il recupero dell'area di lavoro {{error}}",
+    "errorSettingUpWorkspace": "Errore durante la configurazione dell'area di lavoro {{error}}",
+    "errorWhileLoadingWorkspace": "Errore durante il caricamento dell'area di lavoro {{error}}",
+    "errorFetchingWorkspaceCredentials": "Errore durante il recupero delle credenziali dell'area di lavoro {{error}}"
   },
   "actions": {
     "undo": "Annulla",

@@ -1246,7 +1246,11 @@
     "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten",
     "invalidTaxIdIsProvided": "Die angegebene Steuernummer ist ungültig",
     "errorWhileFetchingMoreItems": "Beim Abrufen weiterer Elemente ist ein Fehler aufgetreten",
-    "errorDeletingItems": "Beim Löschen dieses Elements ist ein Fehler aufgetreten"
+    "errorDeletingItems": "Beim Löschen dieses Elements ist ein Fehler aufgetreten",
+    "errorFetchingWorkspace": "Fehler beim Abrufen des Arbeitsbereichs {{error}}",
+    "errorSettingUpWorkspace": "Fehler beim Einrichten des Arbeitsbereichs {{error}}",
+    "errorWhileLoadingWorkspace": "Fehler beim Laden des Arbeitsbereichs {{error}}",
+    "errorFetchingWorkspaceCredentials": "Fehler beim Abrufen der Anmeldeinformationen für den Arbeitsbereich {{error}}"
   },
   "actions": {
     "undo": "Rückgängig machen",
