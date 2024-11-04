@@ -31,7 +31,6 @@ export async function trackSignUp(uuid, email) {
     }
   } catch (e) {
     const castedError = errorService.castError(e);
-    console.error(castedError);
     errorService.reportError(castedError);
   }
 }
@@ -63,7 +62,7 @@ export async function trackPaymentConversion() {
       paymentIntent = paymentIntentRetrieved;
       subscription = subscriptionId;
     } catch (error) {
-      console.log(error);
+      //
     }
 
     subscription = subscription ?? localStorageService.get('subscriptionId');
@@ -112,7 +111,7 @@ export async function trackPaymentConversion() {
         ],
       });
     } catch (error) {
-      console.log(error);
+      //
     }
 
     if (source && source !== 'direct') {
