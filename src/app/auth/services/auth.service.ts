@@ -40,6 +40,8 @@ import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
+import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
+import { trackSignUp } from 'app/analytics/impact.service';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -474,6 +476,7 @@ export const signUp = async (params: SignUpParams) => {
 
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
   if (isNewUser) dispatch(referralsThunks.initializeThunk());
+  await trackSignUp(xUser.uuid, email);
   return { token: xToken, user: xUser, mnemonic };
 };
 
