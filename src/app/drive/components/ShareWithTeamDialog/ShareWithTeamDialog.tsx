@@ -29,7 +29,7 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceId = selectedWorkspace?.workspaceUser.workspaceId;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isLoadingInvite, setIsLoadingInvite] = useState<string>('');
+  const [isIdLoadingInvite, setIsIdLoadingInvite] = useState<string>('');
   const [teams, setTeams] = useState<WorkspaceTeam[] | null>(null);
   const [usersAndTeams, setUsersAndTeams] = useState<UsersAndTeamsAnItemIsShareWidthResponse | null>(null);
   const [parsedTeams, setParsedTeams] = useState<WorkspaceTeam[] | null>();
@@ -105,7 +105,7 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
     } catch (error) {
       errorService.reportError(error);
     }
-    setIsLoadingInvite('');
+    setIsIdLoadingInvite('');
   };
 
   return (
@@ -133,10 +133,10 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
                     <div key={team.team.id} className="flex items-center justify-between border-b border-gray-10 py-2">
                       <h6>{team.team.name}</h6>
                       <Button
-                        loading={team.team.id === isLoadingInvite}
+                        loading={team.team.id === isIdLoadingInvite}
                         size="medium"
                         onClick={() => {
-                          setIsLoadingInvite(team.team.id);
+                          setIsIdLoadingInvite(team.team.id);
                           shareWithTeam(team.team.workspaceId, team.team.id);
                         }}
                       >
