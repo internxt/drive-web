@@ -11,6 +11,7 @@ import { RootState } from '../../../store';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import { isStarWarsThemeAvailable } from '../../utils/checkStarWarsCode';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { trackPaymentConversion } from 'app/analytics/impact.service';
 
 const CheckoutSuccessView = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -25,6 +26,7 @@ const CheckoutSuccessView = (): JSX.Element => {
     }, 3000);
 
     try {
+      await trackPaymentConversion();
       localStorageService.removeItem('subscriptionId');
       localStorageService.removeItem('paymentIntentId');
       localStorageService.removeItem('amountPaid');

@@ -7,7 +7,6 @@ import {
   SecurityDetails,
   TwoFactorAuthQR,
 } from '@internxt/sdk/dist/auth';
-import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
 import { getCookie, setCookie } from 'app/analytics/utils';
@@ -295,7 +294,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
 
   return usersClient
-    .changePassword(<ChangePasswordPayloadNew>{
+    .changePasswordLegacy(<ChangePasswordPayload>{
       currentEncryptedPassword: encryptedCurrentPassword,
       newEncryptedPassword: encryptedNewPassword,
       newEncryptedSalt: encryptedNewSalt,

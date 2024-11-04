@@ -56,7 +56,7 @@ export class BannerManager {
   }
 
   onCloseBanner(setShowBanner: (show: boolean) => void): void {
-    localStorageService.set(BANNER_NAME_IN_LOCAL_STORAGE, this.todayDate);
+    localStorageService.set(BANNER_NAME_FOR_FREE_USERS, this.todayDate);
     setShowBanner(false);
   }
 }
