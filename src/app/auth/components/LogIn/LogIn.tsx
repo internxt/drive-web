@@ -125,6 +125,19 @@ export default function LogIn(): JSX.Element {
     }
   };
 
+  const initializeThunks = async () => {
+    try {
+      dispatch(productsThunks.initializeThunk());
+      dispatch(planThunks.initializeThunk());
+      dispatch(referralsThunks.initializeThunk());
+      await dispatch(initializeUserThunk()).unwrap();
+      dispatch(workspaceThunks.fetchWorkspaces());
+      dispatch(workspaceThunks.checkAndSetLocalWorkspace());
+    } catch (e: unknown) {
+      // PASS
+    }
+  };
+
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     event?.preventDefault();
     setIsLoggingIn(true);
@@ -133,35 +146,26 @@ export default function LogIn(): JSX.Element {
     try {
       const isTfaEnabled = await is2FANeeded(email);
 
-      if (!isTfaEnabled || showTwoFactor) {
-        const loginType = isUniversalLinkMode ? 'desktop' : 'web';
-        const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
-        dispatch(userActions.setUser(user));
-
-        window.gtag('event', 'User Signin', { method: 'email' });
-
-        try {
-          dispatch(productsThunks.initializeThunk());
-          dispatch(planThunks.initializeThunk());
-          dispatch(referralsThunks.initializeThunk());
-          await dispatch(initializeUserThunk()).unwrap();
-          dispatch(workspaceThunks.fetchWorkspaces());
-          dispatch(workspaceThunks.checkAndSetLocalWorkspace());
-        } catch (e: unknown) {
-          // PASS
-        }
-
-        userActions.setUser(user);
-
-        const redirectUrl = authService.getRedirectUrl(urlParams, token);
-
-        if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
-          window.location.replace(redirectUrl);
-        }
-        redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode, isSharingInvitation });
-      } else {
+      if (isTfaEnabled || showTwoFactor) {
         setShowTwoFactor(true);
+        return;
       }
+
+      const loginType = isUniversalLinkMode ? 'desktop' : 'web';
+      const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
+      dispatch(userActions.setUser(user));
+
+      window.gtag('event', 'User Signin', { method: 'email' });
+
+      await initializeThunks();
+      userActions.setUser(user);
+
+      const redirectUrl = authService.getRedirectUrl(urlParams, token);
+
+      if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
+        window.location.replace(redirectUrl);
+      }
+      redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode, isSharingInvitation });
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 

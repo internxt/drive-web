@@ -42,7 +42,6 @@ export async function trackPaymentConversion() {
 
     const { username, uuid } = localStorageService.getUser() as UserSettings;
     let metadata, amount_total, currency, customer, subscription, paymentIntent;
-    // TODO: REVIEW IN ORDER TO MAKE WORK CORRECTLY WITH THE NEW INTEGRATED CHECKOUT
     try {
       const {
         metadata: metadataRetrived,

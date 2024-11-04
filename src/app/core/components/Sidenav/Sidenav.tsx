@@ -72,14 +72,14 @@ const Sidenav = (props: SidenavProps) => {
         </div>
       )}
 
-      <div
+      <button
         className="flex h-14 shrink-0 cursor-pointer items-center border-b border-gray-5 pl-8 dark:bg-gray-1"
         onClick={onLogoClicked}
       >
         <InternxtLogo className="h-auto w-28 text-gray-100" />
-      </div>
+      </button>
       <div className="flex grow flex-col overflow-x-auto border-r border-gray-5 px-2">
-        <div className="mt-2">
+        <div className="mt-2 flex w-full flex-col">
           {user && <WorkspaceSelectorContainer user={user} />}
           <SidenavItem label={translate('sideNav.drive')} to="/" Icon={FolderSimple} iconDataCy="sideNavDriveIcon" />
           {!isB2BWorskpace && (

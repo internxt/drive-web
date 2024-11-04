@@ -17,7 +17,7 @@ interface ChangePasswordProps {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;
 }
 
-export default function ChangePassword(props: ChangePasswordProps): JSX.Element {
+export default function ChangePassword(props: Readonly<ChangePasswordProps>): JSX.Element {
   const { translate } = useTranslationContext();
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmNewPassword, setConfirmNewPassword] = useState<string>('');
@@ -137,6 +137,8 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
     setIsLoading(false);
   };
 
+  console.log('RECOVERY COMPONENT');
+
   return (
     <>
       {!backupKeyContent ? (
@@ -148,13 +150,13 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
             onChange={onUploadBackupKeyInputChanged}
             accept=".txt"
           />
-          <span
+          <button
             onClick={() => props.setHasBackupKey(undefined)}
             className="font-regular mb-1 flex cursor-pointer items-center text-base text-primary"
           >
             <CaretLeft size={18} className="mr-0.5" />
             {translate('auth.recoverAccount.title')}
-          </span>
+          </button>
           <h3 className="mb-5 text-2xl font-medium">{translate('auth.recoverAccount.backupKey.title')}</h3>
           <div className="font-regular mb-4 flex rounded-md border border-orange/30 bg-orange/5 p-4 text-sm text-orange-dark">
             <span className="mr-1.5 pt-0.5">
@@ -178,13 +180,13 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
         <>
           {!isEmailSent ? (
             <>
-              <span
+              <button
                 onClick={() => setBackupKeyContent('')}
                 className="font-regular mb-1 flex cursor-pointer items-center text-base text-primary"
               >
                 <CaretLeft size={18} className="mr-0.5" />
                 {translate('auth.recoverAccount.backupKey.title')}
-              </span>
+              </button>
               <h3 className="mb-5 text-2xl font-medium">{translate('auth.recoverAccount.changePassword.title')}</h3>
               <form
                 className="flex w-full flex-col space-y-6"

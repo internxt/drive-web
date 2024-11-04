@@ -7,6 +7,17 @@ import { SdkFactory } from '../../factory/sdk';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { uiActions } from '../../../store/slices/ui';
 
+const State = ({ icon, title, subtitle }: { icon: JSX.Element; title: string; subtitle: string }) => (
+  <div className="flex w-full max-w-xs flex-col items-center space-y-5">
+    {icon}
+
+    <div className="flex flex-col items-center space-y-1 text-center">
+      <h1 className="text-2xl font-medium text-gray-100">{title}</h1>
+      <p className="text-base leading-tight text-gray-80">{subtitle}</p>
+    </div>
+  </div>
+);
+
 export default function VerifyEmailView(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useDispatch();
@@ -55,17 +66,6 @@ export default function VerifyEmailView(): JSX.Element {
       path: '/?preferences=open&section=account&subsection=account',
     },
   };
-
-  const State = ({ icon, title, subtitle }: { icon: JSX.Element; title: string; subtitle: string }) => (
-    <div className="flex w-full max-w-xs flex-col items-center space-y-5">
-      {icon}
-
-      <div className="flex flex-col items-center space-y-1 text-center">
-        <h1 className="text-2xl font-medium text-gray-100">{title}</h1>
-        <p className="text-base leading-tight text-gray-80">{subtitle}</p>
-      </div>
-    </div>
-  );
 
   return (
     <div className="flex min-h-screen items-center justify-center">

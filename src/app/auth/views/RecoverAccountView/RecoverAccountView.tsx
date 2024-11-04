@@ -18,7 +18,7 @@ export default function RecoverAccountView(): JSX.Element {
       </div>
 
       <div className="flex h-full flex-col items-center justify-center">
-        <div className="flex w-96 flex-col rounded-2xl bg-white p-8 shadow-soft">
+        <div className="flex w-96 flex-col rounded-2xl bg-surface p-8 shadow-soft">
           {hasBackupKey === undefined && (
             <>
               <h3 className="font-regular mb-1 text-base text-gray-60">{translate('auth.recoverAccount.title')}</h3>

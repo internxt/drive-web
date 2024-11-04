@@ -6,7 +6,6 @@ import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
-import squareLogo from 'assets/icons/square-logo-64.svg';
 import { useEffect, useMemo } from 'react';
 
 const DEEPLINK_SUCCESS_REDIRECT_BASE = 'internxt://login-success';
@@ -35,6 +34,7 @@ export default function UniversalLinkSuccessView(): JSX.Element {
   const handleGoToLogin = () => {
     authService.logOut();
   };
+
   return (
     <main className="flex h-full w-full flex-col bg-gray-5 dark:bg-surface">
       <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
@@ -61,9 +61,9 @@ export default function UniversalLinkSuccessView(): JSX.Element {
           <div className="separator my-6"></div>
           <div className="flex flex-row justify-center">
             <h4 className="text-base font-medium">{translate('auth.universalLinkSuccess.anotherAccount')}</h4>
-            <a onClick={handleGoToLogin} className="ml-2.5 text-base font-medium no-underline">
+            <button onClick={handleGoToLogin} className="ml-2.5 text-base font-medium no-underline">
               {translate('auth.universalLinkSuccess.login')}
-            </a>
+            </button>
           </div>
         </div>
       </div>

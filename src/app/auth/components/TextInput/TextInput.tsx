@@ -38,7 +38,7 @@ export default function TextInput({
   autoFocus,
   autoComplete,
   inputDataCy,
-}: InputProps): JSX.Element {
+}: Readonly<InputProps>): JSX.Element {
   return (
     <div className={`${className}`}>
       <input

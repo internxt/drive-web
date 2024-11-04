@@ -131,7 +131,10 @@ const App = (props: AppProps): JSX.Element => {
   let template = <PreparingWorkspaceAnimation />;
   let isMobile = false;
 
-  if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/Android/i)) {
+  const isIphone = /iPhone/i.exec(navigator.userAgent);
+  const isAndroid = /Android/i.exec(navigator.userAgent);
+
+  if (isIphone || isAndroid) {
     isMobile = true;
   }
 
