@@ -29,6 +29,7 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceId = selectedWorkspace?.workspaceUser.workspaceId;
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isIdLoadingInvite, setIsIdLoadingInvite] = useState<string>('');
   const [teams, setTeams] = useState<WorkspaceTeam[] | null>(null);
   const [usersAndTeams, setUsersAndTeams] = useState<UsersAndTeamsAnItemIsShareWidthResponse | null>(null);
   const [parsedTeams, setParsedTeams] = useState<WorkspaceTeam[] | null>();
@@ -40,6 +41,7 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
   }, [isOpen]);
 
   useEffect(() => {
+    setParsedTeams(null);
     getParsedTeams();
   }, [teams, usersAndTeams]);
 
@@ -103,6 +105,7 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
     } catch (error) {
       errorService.reportError(error);
     }
+    setIsIdLoadingInvite('');
   };
 
   return (
@@ -126,18 +129,21 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
                 </div>
               ) : (
                 <>
-                  {parsedTeams &&
-                    parsedTeams.map((team) => (
-                      <div
-                        key={team.team.id}
-                        className="flex items-center justify-between border-b border-gray-10 py-2"
+                  {parsedTeams?.map((team) => (
+                    <div key={team.team.id} className="flex items-center justify-between border-b border-gray-10 py-2">
+                      <h6>{team.team.name}</h6>
+                      <Button
+                        loading={team.team.id === isIdLoadingInvite}
+                        size="medium"
+                        onClick={() => {
+                          setIsIdLoadingInvite(team.team.id);
+                          shareWithTeam(team.team.workspaceId, team.team.id);
+                        }}
                       >
-                        <h6>{team.team.name}</h6>
-                        <Button size="medium" onClick={() => shareWithTeam(team.team.workspaceId, team.team.id)}>
-                          {translate('modals.shareWithTeamModal.shareButton')}
-                        </Button>
-                      </div>
-                    ))}
+                        {translate('modals.shareWithTeamModal.shareButton')}
+                      </Button>
+                    </div>
+                  ))}
                 </>
               )}
             </div>
@@ -147,13 +153,19 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
               <h5 className="mb-2 w-full text-base font-medium">
                 {translate('modals.shareWithTeamModal.teamsWithAcces')}
               </h5>
-              <div className="flex max-h-60 flex-col overflow-scroll">
-                {usersAndTeams?.teamsWithRoles.map((team) => (
-                  <div className="flex items-center justify-between py-2" key={team.id}>
-                    <h6>{team.name}</h6>
-                  </div>
-                ))}
-              </div>
+              {isLoading ? (
+                <div className="flex h-full items-center justify-center">
+                  <Spinner className="h-7 w-7" />
+                </div>
+              ) : (
+                <div className="flex max-h-60 flex-col overflow-scroll">
+                  {usersAndTeams?.teamsWithRoles.map((team) => (
+                    <div className="flex items-center justify-between py-2" key={team.id}>
+                      <h6>{team.name}</h6>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
