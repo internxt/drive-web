@@ -338,7 +338,7 @@ const CheckoutViewWrapper = () => {
     const customerName = companyName ?? userNameFromAddressElement;
 
     try {
-      await authCheckoutService.authenticateUser(email, password, authMethod, dispatch, doRegister);
+      await authCheckoutService.authenticateUser({ email, password, authMethod, dispatch, doRegister });
     } catch (err) {
       const error = err as Error;
       setError('auth', error.message);

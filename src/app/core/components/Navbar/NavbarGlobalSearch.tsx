@@ -96,6 +96,17 @@ const Navbar = (props: NavbarProps) => {
     }
   }, [filters]);
 
+  useEffect(() => {
+    resetGlobalSearch();
+  }, [selectedWorkspace]);
+
+  const resetGlobalSearch = () => {
+    setQuery('');
+    setSelectedResult(0);
+    setLoadingSearch(false);
+    setSearchResult([]);
+  };
+
   const filteredSearchResults = searchResult.filter((result) => {
     for (const filter of filters) {
       if (filter === 'folder' && result.itemType?.toLowerCase() === 'folder') {
@@ -109,11 +120,13 @@ const Navbar = (props: NavbarProps) => {
 
   const search = async () => {
     const query = searchInput.current?.value ?? '';
+    const workspaceId = selectedWorkspace?.workspaceUser.workspaceId;
     if (query.length > 0) {
       const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-      const [itemsPromise] = await storageClient.getGlobalSearchItems(query);
+      const [itemsPromise] = await storageClient.getGlobalSearchItems(query, workspaceId);
       const items = await itemsPromise;
-      setSearchResult(items.data);
+      const resultItems: SearchResult[] = Array.isArray(items) ? items : items.data;
+      setSearchResult(resultItems);
     } else {
       setSearchResult([]);
     }

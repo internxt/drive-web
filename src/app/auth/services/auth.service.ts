@@ -7,12 +7,14 @@ import {
   SecurityDetails,
   TwoFactorAuthQR,
 } from '@internxt/sdk/dist/auth';
-import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
 import { getCookie, setCookie } from 'app/analytics/utils';
+import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
 import localStorageService from 'app/core/services/local-storage.service';
+import navigationService from 'app/core/services/navigation.service';
 import RealtimeService from 'app/core/services/socket.service';
+import AppError, { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -28,11 +30,55 @@ import {
   passToHash,
 } from 'app/crypto/services/utils';
 import databaseService from 'app/database/services/database.service';
+import { AuthMethodTypes } from 'app/payment/types';
+import { AppDispatch } from 'app/store';
+import { planThunks } from 'app/store/slices/plan';
+import { productsThunks } from 'app/store/slices/products';
+import { referralsThunks } from 'app/store/slices/referrals';
+import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
+import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
+import { trackSignUp } from 'app/analytics/impact.service';
+
+type ProfileInfo = {
+  user: UserSettings;
+  token: string;
+  mnemonic: string;
+};
+
+type SignUpParams = {
+  doSignUp: RegisterFunction | UpdateInfoFunction;
+  email: string;
+  password: string;
+  token: string;
+  isNewUser: boolean;
+  redeemCodeObject: boolean;
+  dispatch: AppDispatch;
+};
+
+type LogInParams = {
+  email: string;
+  password: string;
+  twoFactorCode: string;
+  dispatch: AppDispatch;
+  loginType?: 'web' | 'desktop';
+};
+
+export type AuthenticateUserParams = {
+  email: string;
+  password: string;
+  authMethod: AuthMethodTypes;
+  twoFactorCode: string;
+  dispatch: AppDispatch;
+  loginType?: 'web' | 'desktop';
+  token?: string;
+  isNewUser?: boolean;
+  redeemCodeObject?: boolean;
+  doSignUp?: RegisterFunction | UpdateInfoFunction;
+};
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   await databaseService.clear();
@@ -52,7 +98,7 @@ export function cancelAccount(): Promise<void> {
 export const is2FANeeded = async (email: string): Promise<boolean> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
-    throw new Error(error.message ?? 'Login error');
+    throw new AppError(error.message ?? 'Login error', error.status ?? 500);
   });
 
   return securityDetails.tfaEnabled;
@@ -83,11 +129,7 @@ export const doLogin = async (
   password: string,
   twoFactorCode: string,
   loginType: 'web' | 'desktop' | undefined = 'web',
-): Promise<{
-  user: UserSettings;
-  token: string;
-  mnemonic: string;
-}> => {
+): Promise<ProfileInfo> => {
   const authClient = getAuthClient(loginType);
   const loginDetails: LoginDetails = {
     email: email.toLowerCase(),
@@ -202,8 +244,6 @@ const updateCredentialsWithToken = async (
   const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
 
   const encryptedMnemonic = encryptTextWithKey(mnemonicInPlain, newPassword);
-  // const privateKey = Buffer.from(privateKeyInPlain, 'base64').toString();
-  // const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.changePasswordWithLink(
@@ -253,7 +293,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
-  const usersClient = SdkFactory.getInstance().createUsersClient();
+  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
 
   return usersClient
     .changePasswordLegacy(<ChangePasswordPayload>{
@@ -262,6 +302,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       newEncryptedSalt: encryptedNewSalt,
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
+      encryptVersion: '', // !TODO: Add the version used
     })
     .then((res) => {
       const { token, newToken } = res;
@@ -299,7 +340,7 @@ export const deactivate2FA = (
   return authClient.disableTwoFactorAuth(encPass, deactivationCode);
 };
 
-export async function getNewToken(): Promise<string> {
+export const getNewToken = async (): Promise<string> => {
   const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
     headers: httpService.getHeaders(true, false),
   });
@@ -310,7 +351,7 @@ export async function getNewToken(): Promise<string> {
   const { newToken } = await res.json();
 
   return newToken;
-}
+};
 
 export async function areCredentialsCorrect(email: string, password: string): Promise<boolean> {
   const salt = await getSalt();
@@ -404,9 +445,89 @@ export const unblockAccount = (token: string): Promise<void> => {
   return authClient.unblockAccount(token);
 };
 
+export const signUp = async (params: SignUpParams) => {
+  const { doSignUp, email, password, token, isNewUser, redeemCodeObject, dispatch } = params;
+  const { xUser, xToken, mnemonic } = isNewUser
+    ? await (doSignUp as RegisterFunction)(email, password, token)
+    : await (doSignUp as UpdateInfoFunction)(email, password);
+
+  localStorageService.clear();
+
+  localStorageService.set('xToken', xToken);
+  localStorageService.set('xMnemonic', mnemonic);
+
+  const xNewToken = await getNewToken();
+  localStorageService.set('xNewToken', xNewToken);
+
+  const privateKey = xUser.privateKey
+    ? Buffer.from(decryptPrivateKey(xUser.privateKey, password)).toString('base64')
+    : undefined;
+
+  const user = {
+    ...xUser,
+    privateKey,
+  } as UserSettings;
+
+  dispatch(userActions.setUser(user));
+  await dispatch(userThunks.initializeUserThunk());
+  dispatch(productsThunks.initializeThunk());
+
+  if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
+  if (isNewUser) dispatch(referralsThunks.initializeThunk());
+  await trackSignUp(xUser.uuid, email);
+  return { token: xToken, user: xUser, mnemonic };
+};
+
+export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
+  const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
+  const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
+  dispatch(userActions.setUser(user));
+
+  try {
+    dispatch(productsThunks.initializeThunk());
+    dispatch(planThunks.initializeThunk());
+    dispatch(referralsThunks.initializeThunk());
+    await dispatch(initializeUserThunk())?.unwrap();
+    dispatch(workspaceThunks.fetchWorkspaces());
+    dispatch(workspaceThunks.checkAndSetLocalWorkspace());
+  } catch (e: unknown) {
+    const error = e as Error;
+
+    throw new Error(error.message);
+  }
+
+  userActions.setUser(user);
+
+  return { token, user, mnemonic };
+};
+
+export const authenticateUser = async (params: AuthenticateUserParams): Promise<ProfileInfo> => {
+  const {
+    email,
+    password,
+    authMethod,
+    twoFactorCode,
+    dispatch,
+    loginType = 'web',
+    token = '',
+    isNewUser = true,
+    redeemCodeObject = false,
+    doSignUp,
+  } = params;
+  if (authMethod === 'signIn') {
+    const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, loginType });
+    window.gtag('event', 'User Signin', { method: 'email' });
+    return profileInfo;
+  } else if (authMethod === 'signUp' && doSignUp) {
+    const profileInfo = await signUp({ doSignUp, email, password, token, isNewUser, redeemCodeObject, dispatch });
+    return profileInfo;
+  } else {
+    throw new Error(`Unknown authMethod: ${authMethod}`);
+  }
+};
+
 const authService = {
   logOut,
-  doLogin,
   check2FANeeded: is2FANeeded,
   readReferalCookie,
   cancelAccount,
@@ -419,6 +540,7 @@ const authService = {
   resetAccountWithToken,
   requestUnblockAccount,
   unblockAccount,
+  authenticateUser,
 };
 
 export default authService;

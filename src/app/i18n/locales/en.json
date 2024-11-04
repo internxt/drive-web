@@ -14,6 +14,9 @@
       "Save on all lifetime plans",
       "Private, encrypted cloud storage",
       "Open-source and audited",
+      "Save on all lifetime plans",
+      "Private, encrypted cloud storage",
+      "Open-source and audited",
       "End-to-end encrypted transfers",
       "No unauthorized access",
       "Offer ends November 10"
@@ -973,7 +976,13 @@
       "primaryAction": "Confirm",
       "secondaryAction": "Cancel"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Share \"{{name}}\"",
+      "teams": "Teams",
+      "teamsWithAcces": "Teams with Access:",
+      "shareButton": "Share"
+    }
   },
   "form": {
     "fields": {
@@ -1287,6 +1296,9 @@
     "itemsMovedToTrash": "{{item}} moved to trash",
     "restoreItems": "{{itemsToRecover}} restored successfully",
     "moveItems": "{{itemsToMove}} moved successfully",
+    "storageModified": "Storage modified successfully",
+    "errorModifyingStorage": "The new storage is not valid for this member.",
+    "generalErrorWhileModifyingStorage": "Something went wrong while modifying storage",
     "itemDeleted": "{{item}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
@@ -1541,6 +1553,14 @@
           "member": "Member",
           "deactivated": "Deactivated"
         },
+        "modifyStorageModal": {
+          "user": "User",
+          "storage": "Storage",
+          "spaceAssigned": "Space assigned",
+          "spaceLeft": "Total space left",
+          "cancel": "Cancel",
+          "saveChanges": "Save changes"
+        },
         "deactivationModal": {
           "title": "Deactivate member",
           "description": "{{name}} will lose access to the Workspace. All their files and folders will stay the same.",
@@ -1615,6 +1635,7 @@
         },
         "actions": {
           "deactivate": "Deactivate member",
+          "modifyStorage": "Modify storage",
           "reactivate": "Reactivate member",
           "remove": "Remove member",
           "passwordChange": "Request password change"

@@ -951,7 +951,13 @@
       "primaryAction": "Confirmar",
       "secondaryAction": "Cancelar"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Compartir \"{{name}}\"",
+      "teams": "Equipos",
+      "teamsWithAccess": "Equipos con acceso:",
+      "shareButton": "Compartir"
+    }
   },
   "form": {
     "fields": {
@@ -1250,6 +1256,9 @@
     "linkUpdated": "Enlace actualizado",
     "itemsMovedToTrash": "{{item}} movid{{s}} a la papelera",
     "restoreItems": "{{itemsToRecover}} restaurad{{s}} con éxito",
+    "storageModified": "Almacenamiento modificado con éxito",
+    "errorModifyingStorage": "El nuevo almacenamiento no es válido para este miembro.",
+    "generalErrorWhileModifyingStorage": "Algo salió mal al modificar el almacenamiento.",
     "moveItems": "{{itemsToMove}} movid{{s}} con éxito",
     "itemDeleted": "{{item}} eliminado",
     "itemsDeleted": "Archivos eliminados",
@@ -1518,6 +1527,14 @@
           "manager": "Manager",
           "member": "Miembro",
           "deactivated": "Desactivado"
+        },
+        "modifyStorageModal": {
+          "user": "Usuario",
+          "storage": "Almacenamiento",
+          "spaceAssigned": "Espacio asignado",
+          "spaceLeft": "Espacio total restante",
+          "cancel": "Cancelar",
+          "saveChanges": "Guardar cambios"
         },
         "deactivationModal": {
           "title": "Desactivar miembro",

@@ -2,10 +2,10 @@ import { CheckCircle, WarningCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import Spinner from '../../../shared/components/Spinner/Spinner';
 import { SdkFactory } from '../../factory/sdk';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { uiActions } from '../../../store/slices/ui';
+import { Spinner } from '@internxt/internxtui';
 
 const State = ({ icon, title, subtitle }: { icon: JSX.Element; title: string; subtitle: string }) => (
   <div className="flex w-full max-w-xs flex-col items-center space-y-5">

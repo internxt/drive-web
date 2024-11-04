@@ -9,16 +9,22 @@ import { fetchPaginatedFolderContentThunk } from '../../storage/storage.thunks/f
 import { uiActions } from '../../ui';
 import { SessionState } from '../session.model';
 
-const changeWorkspaceThunk = createAsyncThunk<void, void, { state: RootState }>(
+interface ChangeWorkspacePayload {
+  updateUrl?: boolean;
+}
+
+const changeWorkspaceThunk = createAsyncThunk<void, ChangeWorkspacePayload | void, { state: RootState }>(
   'session/changeWorkspace',
-  async (payload: void, { dispatch, getState }) => {
+  async (payload: ChangeWorkspacePayload | void, { dispatch, getState }) => {
     const state = getState();
+    const updateUrl = (payload as ChangeWorkspacePayload)?.updateUrl ?? true;
     // const isTeam: boolean = sessionSelectors.isTeam(state);
     // const newWorkspace = isTeam ? Workspace.Individuals : Workspace.Business;
     // dispatch(planThunks.initializeThunk());
 
     const rootFolderId = storageSelectors.rootFolderId(state);
-    navigationService.push(AppView.Drive);
+    const workspaceid = state.workspaces.selectedWorkspace?.workspace.id;
+    updateUrl && navigationService.push(AppView.Drive, {}, workspaceid);
     dispatch(uiActions.setIsGlobalSearch(false));
     dispatch(storageActions.resetDrivePagination());
     dispatch(storageThunks.resetNamePathThunk());

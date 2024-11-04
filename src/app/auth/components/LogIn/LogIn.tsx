@@ -10,8 +10,8 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
-import { initializeUserThunk, userActions } from 'app/store/slices/user';
-import authService, { doLogin, is2FANeeded } from '../../services/auth.service';
+import { userActions } from 'app/store/slices/user';
+import authService, { authenticateUser, is2FANeeded } from '../../services/auth.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WarningCircle } from '@phosphor-icons/react';
@@ -19,17 +19,16 @@ import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import AppError, { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Button from 'app/shared/components/Button/Button';
-import { planThunks } from 'app/store/slices/plan';
-import { productsThunks } from 'app/store/slices/products';
-import { referralsThunks } from 'app/store/slices/referrals';
+import { Button } from '@internxt/internxtui';
 import workspacesService from '../../../core/services/workspace.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import useLoginRedirections from '../../../routes/hooks/Login/useLoginRedirections';
 import shareService from '../../../share/services/share.service';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import TextInput from '../TextInput/TextInput';
-import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { AuthMethodTypes } from 'app/payment/types';
+
+const UNAUTHORIZED_STATUS_CODE = 401;
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -95,6 +94,14 @@ export default function LogIn(): JSX.Element {
     [],
   );
 
+  const getLoginErrorMessage = (err: unknown): string => {
+    const appError = err as AppError;
+    if (appError?.status === UNAUTHORIZED_STATUS_CODE) {
+      return translate('auth.login.wrongLogin');
+    }
+    return appError?.message || 'An unexpected error occurred';
+  };
+
   const {
     register,
     formState: { errors, isValid },
@@ -125,19 +132,6 @@ export default function LogIn(): JSX.Element {
     }
   };
 
-  const initializeThunks = async () => {
-    try {
-      dispatch(productsThunks.initializeThunk());
-      dispatch(planThunks.initializeThunk());
-      dispatch(referralsThunks.initializeThunk());
-      await dispatch(initializeUserThunk()).unwrap();
-      dispatch(workspaceThunks.fetchWorkspaces());
-      dispatch(workspaceThunks.checkAndSetLocalWorkspace());
-    } catch (e: unknown) {
-      // PASS
-    }
-  };
-
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     event?.preventDefault();
     setIsLoggingIn(true);
@@ -146,26 +140,28 @@ export default function LogIn(): JSX.Element {
     try {
       const isTfaEnabled = await is2FANeeded(email);
 
-      if (isTfaEnabled || showTwoFactor) {
+      if (!isTfaEnabled || showTwoFactor) {
+        const loginType: 'desktop' | 'web' = isUniversalLinkMode ? 'desktop' : 'web';
+        const authParams = {
+          email,
+          password,
+          authMethod: 'signIn' as AuthMethodTypes,
+          twoFactorCode,
+          dispatch,
+          loginType,
+        };
+
+        const { token, user, mnemonic } = await authenticateUser(authParams);
+
+        const redirectUrl = authService.getRedirectUrl(urlParams, token);
+
+        if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
+          window.location.replace(redirectUrl);
+        }
+        redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode, isSharingInvitation });
+      } else {
         setShowTwoFactor(true);
-        return;
       }
-
-      const loginType = isUniversalLinkMode ? 'desktop' : 'web';
-      const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
-      dispatch(userActions.setUser(user));
-
-      window.gtag('event', 'User Signin', { method: 'email' });
-
-      await initializeThunks();
-      userActions.setUser(user);
-
-      const redirectUrl = authService.getRedirectUrl(urlParams, token);
-
-      if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
-        window.location.replace(redirectUrl);
-      }
-      redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode, isSharingInvitation });
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
@@ -173,7 +169,7 @@ export default function LogIn(): JSX.Element {
         navigationService.history.push(`/activate/${email}`);
       }
 
-      setLoginError([castedError.message]);
+      setLoginError([getLoginErrorMessage(err)]);
       setShowErrors(true);
       if ((err as AppError)?.status === 403) {
         await sendUnblockAccountEmail(email);

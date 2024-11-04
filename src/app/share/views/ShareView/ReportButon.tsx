@@ -1,6 +1,6 @@
 import { WarningCircle } from '@phosphor-icons/react';
 import { t } from 'i18next';
-import Button from '../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 
 const handleReportShare = () => {
   const email = 'hello@internxt.com';

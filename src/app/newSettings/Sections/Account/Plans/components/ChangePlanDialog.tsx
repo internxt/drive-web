@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { bytesToString } from '../../../../../drive/services/size.service';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import moneyService from '../../../../../payment/services/currency.service';
-import Button from '../../../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Modal from '../../../../../shared/components/Modal';
 import { RootState } from '../../../../../store';
 import { PlanState } from '../../../../../store/slices/plan';

@@ -41,6 +41,9 @@ import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
+import { ModifyStorageModal } from 'app/newSettings/Sections/Workspace/Members/components/ModifyStorageModal';
+import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
+import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -68,6 +71,8 @@ const App = (props: AppProps): JSX.Element => {
     dispatch,
   } = props;
 
+  const { isDialogOpen } = useActionDialog();
+  const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
   const token = localStorageService.get('xToken');
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
@@ -115,6 +120,7 @@ const App = (props: AppProps): JSX.Element => {
       RealtimeService.getInstance().init();
 
       dispatch(workspaceThunks.fetchWorkspaces());
+      navigationService.setWorkspaceFromParams(workspaceThunks, dispatch);
 
       await props.dispatch(
         initializeUserThunk({
@@ -148,7 +154,7 @@ const App = (props: AppProps): JSX.Element => {
       dispatch(uiActions.setIsFileViewerOpen(false));
     } else if (isRootDrive) {
       dispatch(uiActions.setIsFileViewerOpen(false));
-      navigationService.push(AppView.Drive);
+      navigationService.push(AppView.Drive, {}, selectedWorkspace?.workspaceUser.workspaceId);
     } else {
       navigationService.pushFolder(fileViewerItem?.folderUuid, selectedWorkspace?.workspaceUser.workspaceId);
     }
@@ -203,6 +209,8 @@ const App = (props: AppProps): JSX.Element => {
             haveParamsChanged={havePreferencesParamsChanged}
             isPreferencesDialogOpen={isPreferencesDialogOpen}
           />
+
+          {isOpen && <ModifyStorageModal />}
 
           <NewsletterDialog isOpen={isNewsletterDialogOpen} />
           {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}

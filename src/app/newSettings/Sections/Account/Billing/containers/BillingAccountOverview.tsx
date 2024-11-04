@@ -9,7 +9,7 @@ import { bytesToString } from '../../../../../drive/services/size.service';
 
 import Card from 'app/shared/components/Card';
 
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { PlanState } from 'app/store/slices/plan';
 import { getNextBillingDate, getSubscriptionData } from '../../../../utils/suscriptionUtils';
 

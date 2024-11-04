@@ -1,5 +1,5 @@
 import { Document, Page } from 'react-pdf';
-import { useState, Fragment, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
 import { MagnifyingGlassMinus, MagnifyingGlassPlus } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -26,7 +26,7 @@ const PageWithObserver: React.FC<PageWithObserverProps> = ({ pageNumber, zoom, o
     setObserverReady(false);
   }, [zoom]);
 
-  const prepareObserver = (entry: Element) => {
+  const prepareObserver = (entry: HTMLCanvasElement) => {
     const observer = new IntersectionObserver((entries) => {
       const entry = entries[0];
       if (entry.isIntersecting) {
@@ -39,7 +39,7 @@ const PageWithObserver: React.FC<PageWithObserverProps> = ({ pageNumber, zoom, o
 
   return (
     <Page
-      canvasRef={(entry: Element) => {
+      canvasRef={(entry: HTMLCanvasElement) => {
         if (entry && !observerReady) {
           prepareObserver(entry);
           setObserverReady(true);
@@ -47,6 +47,8 @@ const PageWithObserver: React.FC<PageWithObserverProps> = ({ pageNumber, zoom, o
       }}
       pageNumber={pageNumber}
       height={window.innerHeight * zoomRange[zoom]}
+      renderAnnotationLayer={false}
+      renderTextLayer={false}
       {...otherProps}
     />
   );
