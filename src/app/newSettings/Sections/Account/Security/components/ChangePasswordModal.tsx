@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { changePassword } from 'app/auth/services/auth.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 import ValidPassword from 'app/shared/components/ValidPassword';
@@ -34,7 +34,8 @@ const ChangePasswordModal = ({
 
   const isConfirmationWrong = passwordPayload.password.slice(0, passwordConfirmation.length) !== passwordConfirmation;
 
-  async function handleSubmit() {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsLoading(true);
     await changePassword(passwordPayload.password, currentPassword, email);
     notificationsService.show({ text: translate('success.passwordChanged'), type: ToastType.Success });
@@ -53,41 +54,43 @@ const ChangePasswordModal = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">{translate('modals.changePasswordModal.title')}</h1>
-      <ValidPassword
-        username={email}
-        className="mt-4"
-        label={translate('modals.changePasswordModal.newPassword')}
-        value={passwordPayload.password}
-        onChange={setPasswordPayload}
-        disabled={isLoading}
-        dataTest="new-password"
-      />
-      <Input
-        value={passwordConfirmation}
-        onChange={setPasswordConfirmation}
-        variant="password"
-        className="mt-3"
-        label={translate('modals.changePasswordModal.confirmPassword')}
-        accent={isConfirmationWrong ? 'error' : undefined}
-        message={isConfirmationWrong ? translate('modals.changePasswordModal.errors.doesntMatch') : undefined}
-        disabled={isLoading}
-        dataTest="new-password-confirmation"
-      />
-      <div className="mt-3 flex justify-end">
-        <Button variant="secondary" disabled={isLoading} onClick={onClose}>
-          {translate('actions.cancel')}
-        </Button>
-        <Button
-          loading={isLoading}
-          onClick={handleSubmit}
-          disabled={!passwordPayload.valid || passwordConfirmation !== passwordPayload.password}
-          className="ml-2"
-          dataTest="next-button"
-        >
-          {translate('modals.changePasswordModal.title')}
-        </Button>
-      </div>
+      <form onSubmit={handleSubmit}>
+        <h1 className="text-2xl font-medium text-gray-80">{translate('modals.changePasswordModal.title')}</h1>
+        <ValidPassword
+          username={email}
+          className="mt-4"
+          label={translate('modals.changePasswordModal.newPassword')}
+          value={passwordPayload.password}
+          onChange={setPasswordPayload}
+          disabled={isLoading}
+          dataTest="new-password"
+        />
+        <Input
+          value={passwordConfirmation}
+          onChange={setPasswordConfirmation}
+          variant="password"
+          className="mt-3"
+          label={translate('modals.changePasswordModal.confirmPassword')}
+          accent={isConfirmationWrong ? 'error' : undefined}
+          message={isConfirmationWrong ? translate('modals.changePasswordModal.errors.doesntMatch') : undefined}
+          disabled={isLoading}
+          dataTest="new-password-confirmation"
+        />
+        <div className="mt-3 flex justify-end">
+          <Button variant="secondary" disabled={isLoading} onClick={onClose}>
+            {translate('actions.cancel')}
+          </Button>
+          <Button
+            loading={isLoading}
+            type="submit"
+            disabled={!passwordPayload.valid || passwordConfirmation !== passwordPayload.password}
+            className="ml-2"
+            dataTest="next-button"
+          >
+            {translate('modals.changePasswordModal.title')}
+          </Button>
+        </div>
+      </form>
     </Modal>
   );
 };

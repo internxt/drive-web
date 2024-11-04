@@ -37,7 +37,7 @@ const shareLinkMenuItem = (shareLink: (target) => void) => ({
 });
 
 const shareWithTeamMenuItem = (shareWithTeam: (target) => void) => ({
-  name: t('drive.dropdown.shareWithWorkspace'),
+  name: t('drive.dropdown.shareTeam'),
   icon: Users,
   action: shareWithTeam,
   disabled: () => {
@@ -373,7 +373,6 @@ const contextMenuDriveItemSharedsView = ({
 const contextMenuDriveItemSharedAFS = ({
   openPreview,
   showDetails,
-  copyLink,
   openShareAccessSettings,
   renameItem,
   moveItem,
@@ -400,7 +399,6 @@ const contextMenuDriveItemSharedAFS = ({
 ];
 
 const contextMenuDriveFolderSharedAFS = ({
-  copyLink,
   openShareAccessSettings,
   showDetails,
   renameItem,
@@ -450,7 +448,7 @@ const contextMenuWorkspaceFolder = ({
 }: {
   shareLink: (item: DriveItemData) => void;
   getLink: (item: DriveItemData) => void;
-  shareWithTeam: (item: DriveItemData) => Promise<void>;
+  shareWithTeam: (item: DriveItemData) => void;
   showDetails: (item: DriveItemData) => void;
   renameItem: (item: DriveItemData) => void;
   moveItem: (item: DriveItemData) => void;
@@ -481,7 +479,7 @@ const contextMenuWorkspaceFile = ({
   moveToTrash,
 }: {
   shareLink: (item: DriveItemData) => void;
-  shareWithTeam: (item: DriveItemData) => Promise<void>;
+  shareWithTeam: (item: DriveItemData) => void;
   openPreview?: (item: DriveItemData) => void;
   showDetails: (item: DriveItemData) => void;
   getLink: (item: DriveItemData) => void;

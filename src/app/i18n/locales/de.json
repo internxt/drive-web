@@ -924,7 +924,13 @@
       "primaryAction": "Bestätige",
       "secondaryAction": "Abbrechen"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Teilen \"{{name}}\"",
+      "teams": "Teams",
+      "teamsWithAccess": "Teams mit Zugriff:",
+      "shareButton": "Teilen"
+    }
   },
   "form": {
     "fields": {
@@ -1233,6 +1239,9 @@
     "copyLink": "Geteilter Link in die Zwischenablage kopiert",
     "linkUpdated": "Link aktualisiert",
     "itemsMovedToTrash": "{{item}} in den Papierkorb verschoben",
+    "storageModified": "Speicher erfolgreich geändert",
+    "errorModifyingStorage": "Der neue Speicherplatz ist für dieses Mitglied ungültig.",
+    "generalErrorWhileModifyingStorage": "Beim Ändern des Speicherplatzes ist ein Fehler aufgetreten.",
     "restoreItems": "{{itemsToRecover}} verschoben nach {{destination}}",
     "itemDeleted": "{{item}} gelöscht",
     "itemsDeleted": "Dateien gelöscht",
@@ -1478,6 +1487,14 @@
           "manager": "Manager",
           "member": "Mitglied",
           "deactivated": "Deaktiviert"
+        },
+        "modifyStorageModal": {
+          "user": "Benutzer",
+          "storage": "Speicher",
+          "spaceAssigned": "Zugewiesener Speicher",
+          "spaceLeft": "Verbleibender Gesamtspeicher",
+          "cancel": "Abbrechen",
+          "saveChanges": "Änderungen speichern"
         },
         "deactivationModal": {
           "title": "Mitglied deaktivieren",

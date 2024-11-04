@@ -35,6 +35,7 @@ interface UISliceState {
   currentEditingNameDirty: string;
   isToastNotificationOpen: boolean;
   isGlobalSearch: boolean;
+  isShareWhithTeamDialogOpen: boolean;
 }
 
 const initialState: UISliceState = {
@@ -70,6 +71,7 @@ const initialState: UISliceState = {
   currentEditingNameDirty: '',
   isToastNotificationOpen: false,
   isGlobalSearch: false,
+  isShareWhithTeamDialogOpen: false,
 };
 
 export const uiSlice = createSlice({
@@ -181,6 +183,9 @@ export const uiSlice = createSlice({
     setIsGlobalSearch: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isGlobalSearch = action.payload;
     },
+    setIsShareWhithTeamDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isShareWhithTeamDialogOpen = action.payload;
+    },
   },
 });
 
@@ -210,6 +215,7 @@ export const {
   setIsToastNotificacionOpen,
   setIsGlobalSearch,
   setIsItemDetailsDialogOpen,
+  setIsShareWhithTeamDialogOpen,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;

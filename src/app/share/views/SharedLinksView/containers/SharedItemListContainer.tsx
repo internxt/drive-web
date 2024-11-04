@@ -22,6 +22,7 @@ import { isItemsOwnedByCurrentUser, sortSharedItems } from '../sharedViewUtils';
 type ShareItemListContainerProps = {
   disableKeyboardShortcuts: boolean;
   sharedNamePath: SharedNamePath[];
+  isRootFolder: boolean;
   onItemDoubleClicked: (shareItem: AdvancedSharedItem) => void;
   onUploadFileButtonClicked: () => void;
   isCurrentUserViewer: () => boolean;
@@ -33,6 +34,7 @@ type ShareItemListContainerProps = {
 
 const SharedItemListContainer = ({
   disableKeyboardShortcuts,
+  isRootFolder,
   onItemDoubleClicked,
   onUploadFileButtonClicked,
   isCurrentUserViewer,
@@ -111,10 +113,9 @@ const SharedItemListContainer = ({
       } else {
         const pageItemsNumber = 5;
         let sharedToken;
-        if (workspaceCredentials && workspaceId && defaultTeamId) {
+        if (workspaceCredentials && workspaceId) {
           const [responsePromise] = workspacesService.getAllWorkspaceTeamSharedFolderFolders(
             workspaceId,
-            defaultTeamId,
             currentFolderId,
             page,
             5,
@@ -241,6 +242,7 @@ const SharedItemListContainer = ({
     isItemsOwnedByCurrentUser: checkIfIsItemsOwnedByCurrentUser(),
     isCurrentUserViewer: isCurrentUserViewer(),
     isItemOwnedByCurrentUser,
+    isRootFolder,
   });
 
   return (

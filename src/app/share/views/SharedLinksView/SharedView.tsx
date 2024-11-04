@@ -61,7 +61,12 @@ import {
 } from './context/SharedViewContext.actions';
 import { useShareViewContext } from './context/SharedViewContextProvider';
 import useFetchSharedData from './hooks/useFetchSharedData';
-import { getFolderUserRole, isCurrentUserViewer, isItemOwnedByCurrentUser } from './sharedViewUtils';
+import {
+  getDraggedItemsWithoutFolders,
+  getFolderUserRole,
+  isCurrentUserViewer,
+  isItemOwnedByCurrentUser,
+} from './sharedViewUtils';
 
 export const MAX_SHARED_NAME_LENGTH = 32;
 
@@ -130,14 +135,14 @@ function SharedView({
     dispatch(sharedThunks.getPendingInvitations());
 
     if (page === 0 && !folderUUID) {
-      fetchRootFolders(workspaceId, defaultTeamId);
+      fetchRootFolders(workspaceId);
       dispatch(storageActions.resetSharedNamePath());
     }
 
     if (folderUUID) {
       const onRedirectionToFolderError = (errorMessage: string) => {
         notificationsService.show({ text: errorMessage, type: ToastType.Error });
-        fetchRootFolders(workspaceId, defaultTeamId);
+        fetchRootFolders(workspaceId);
       };
 
       handlePrivateSharedFolderAccess({
@@ -162,9 +167,19 @@ function SharedView({
   }, [currentShareId]);
 
   const onItemDropped = async (_, monitor: DropTargetMonitor) => {
-    const droppedData: any = monitor.getItem();
+    const droppedData: any = monitor.getItem() || [];
+    const itemsArray: DataTransferItem[] = Array.from(droppedData.dataTransfer.items);
 
-    const transformedObject = droppedData.files.reduce((acc, file, index) => {
+    const { filteredItems, hasFolders } = await getDraggedItemsWithoutFolders(itemsArray);
+
+    if (hasFolders) {
+      notificationsService.show({
+        text: translate('notificationMessages.foldersCannotBeUploadedToSharedFolder'),
+        type: ToastType.Info,
+      });
+    }
+
+    const transformedObject: FileList = filteredItems.reduce((acc: any, file, index) => {
       acc[index] = file;
       return acc;
     }, {});
@@ -172,7 +187,7 @@ function SharedView({
     await onUploadFileInputChanged({
       files: {
         ...transformedObject,
-        length: droppedData.files.length,
+        length: filteredItems.length,
       },
     });
   };
@@ -224,7 +239,7 @@ function SharedView({
   const onShowInvitationsModalClose = () => {
     resetSharedViewState();
     actionDispatch(setCurrentFolderId(''));
-    fetchRootFolders(workspaceId, defaultTeamId);
+    fetchRootFolders(workspaceId);
     dispatch(sharedThunks.getPendingInvitations());
     dispatch(uiActions.setIsInvitationsDialogOpen(false));
   };
@@ -416,7 +431,7 @@ function SharedView({
     );
 
     actionDispatch(setHasMoreFiles(true));
-    fetchFiles(true, workspaceId, defaultTeamId);
+    fetchFiles(true, workspaceId);
   };
 
   const handleIsItemOwnedByCurrentUser = (givenItemUserUUID?: string) => {
@@ -478,7 +493,7 @@ function SharedView({
         // This is added so that in case the element is no longer shared due
         // to changes in the share dialog it will disappear from the list.
         resetSharedViewState();
-        fetchRootFolders(workspaceId, defaultTeamId);
+        fetchRootFolders(workspaceId);
       }
     }, 200);
   };
@@ -530,6 +545,7 @@ function SharedView({
           )
         }
         <SharedItemListContainer
+          isRootFolder={isRootFolder}
           disableKeyboardShortcuts={disableKeyboardShortcuts || showStopSharingConfirmation}
           onItemDoubleClicked={handleOnItemDoubleClick}
           onUploadFileButtonClicked={onUploadFileButtonClicked}

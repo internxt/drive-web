@@ -60,8 +60,6 @@ const processInvitation = async (
     });
 
     const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
-
-    // TODO: CHECK WHEN BACKEND ADD DEFUALT WORKSPACE LIMIT FOR MVP
     await workspacesService.inviteUserToTeam({
       workspaceId: workspaceId,
       invitedUserEmail: email,

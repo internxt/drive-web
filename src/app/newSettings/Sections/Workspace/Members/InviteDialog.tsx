@@ -4,7 +4,7 @@ import { UserPlus, X } from '@phosphor-icons/react';
 import { useForm } from 'react-hook-form';
 import { IFormValues } from '../../../../core/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import Button from '../../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Card from '../../../../shared/components/Card';
 import Input from '../../../../shared/components/Input';
 import Modal from '../../../../shared/components/Modal';
@@ -24,6 +24,7 @@ type UsersToInvite = {
   lastname: string;
   email: string;
   avatar: null | string;
+  storage?: number;
 };
 
 const UserInviteDialog = ({ isOpen, onClose, processInvitation }: UserInviteDialogProps): JSX.Element => {
@@ -111,7 +112,7 @@ const UserInviteDialog = ({ isOpen, onClose, processInvitation }: UserInviteDial
         </form>
         {usersToInvite.map(({ id, name, lastname, email: userEmail }) => (
           <div key={id} className="flex flex-row justify-between py-2">
-            <UserCard name={name} lastname={lastname} email={userEmail} avatarsrc={''} />
+            <UserCard name={name} lastName={lastname} email={userEmail} avatarSrc={''} />
             <Button variant="secondary" className="h-8" disabled={isLoading} onClick={() => onRemoveUser(userEmail)}>
               {translate('preferences.workspace.members.inviteDialog.remove')}
             </Button>

@@ -5,30 +5,24 @@ import { auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
 import { Info, WarningCircle } from '@phosphor-icons/react';
 import { Helmet } from 'react-helmet-async';
-import localStorageService from '../../../core/services/local-storage.service';
 
 import { useAppDispatch } from '../../../store/hooks';
-import { userActions, userThunks } from '../../../store/slices/user';
 import { planThunks } from '../../../store/slices/plan';
 import errorService from '../../../core/services/error.service';
 import navigationService from '../../../core/services/navigation.service';
-import { productsThunks } from '../../../store/slices/products';
 import { AppView, IFormValues } from '../../../core/types';
-import { referralsThunks } from '../../../store/slices/referrals';
 import TextInput from '../TextInput/TextInput';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import PasswordStrengthIndicator from '../../../shared/components/PasswordStrengthIndicator';
 import { useSignUp } from './useSignUp';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import authService, { getNewToken } from '../../../auth/services/auth.service';
+import authService, { authenticateUser } from '../../../auth/services/auth.service';
 import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import paymentService from '../../../payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
-import { decryptPrivateKey } from '../../../crypto/services/keys.service';
-import Button from '../../../shared/components/Button/Button';
-import { trackSignUp } from 'app/analytics/impact.service';
+import { Button } from '@internxt/internxtui';
+import { AuthMethodTypes } from 'app/payment/types';
 
 export interface SignUpProps {
   location: {
@@ -143,39 +137,20 @@ function SignUp(props: SignUpProps): JSX.Element {
     try {
       const { isNewUser } = props;
       const { email, password, token } = formData;
-      const { xUser, xToken, mnemonic } = isNewUser
-        ? await doRegister(email, password, token)
-        : await updateInfo(email, password);
 
-      localStorageService.clear();
+      const authParams = {
+        email,
+        password,
+        authMethod: 'signUp' as AuthMethodTypes,
+        twoFactorCode: '',
+        dispatch,
+        token,
+        isNewUser,
+        redeemCodeObject: redeemCodeObject !== undefined,
+        doSignUp: isNewUser ? doRegister : updateInfo,
+      };
 
-      localStorageService.set('xToken', xToken);
-      localStorageService.set('xMnemonic', mnemonic);
-
-      const xNewToken = await getNewToken();
-      localStorageService.set('xNewToken', xNewToken);
-
-      const privateKey = xUser.privateKey
-        ? Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64')
-        : undefined;
-
-      const user = {
-        ...xUser,
-        privateKey,
-      } as UserSettings;
-
-      dispatch(userActions.setUser(user));
-      await dispatch(userThunks.initializeUserThunk());
-      dispatch(productsThunks.initializeThunk());
-      if (!redeemCodeObject) {
-        dispatch(planThunks.initializeThunk());
-      }
-
-      if (isNewUser) {
-        dispatch(referralsThunks.initializeThunk());
-      }
-
-      await trackSignUp(xUser.uuid, email);
+      const { token: xToken, user: xUser } = await authenticateUser(authParams);
 
       const urlParams = new URLSearchParams(window.location.search);
       const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
