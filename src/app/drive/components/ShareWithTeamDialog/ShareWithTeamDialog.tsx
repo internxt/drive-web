@@ -41,8 +41,9 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
   }, [isOpen]);
 
   useEffect(() => {
+    setParsedTeams(null);
     getParsedTeams();
-  }, [usersAndTeams]);
+  }, [teams, usersAndTeams]);
 
   const onClose = (): void => {
     dispatch(uiActions.setIsShareWhithTeamDialogOpen(false));
@@ -54,7 +55,6 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
   const fetchTeams = () => {
     if (workspaceId) {
       setIsLoading(true);
-      setParsedTeams([]);
       getWorkspacesTeams(workspaceId);
       getUsersAndTeams();
     }
