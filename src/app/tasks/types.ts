@@ -1,6 +1,6 @@
 import { FunctionComponent, SVGProps } from 'react';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../drive/types';
-import { IRoot } from '../store/slices/storage/storage.thunks/uploadFolderThunk';
+import { IRoot } from '../store/slices/storage/types';
 
 export enum TaskStatus {
   Pending = 'pending',
