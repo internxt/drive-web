@@ -31,6 +31,11 @@ export interface SignUpProps {
   isNewUser: boolean;
 }
 
+type PasswordState = {
+  tag: 'error' | 'warning' | 'success';
+  label: string;
+};
+
 export type Views = 'signUp' | 'downloadBackupKey';
 
 function SignUp(props: SignUpProps): JSX.Element {
@@ -77,10 +82,7 @@ function SignUp(props: SignUpProps): JSX.Element {
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [passwordState, setPasswordState] = useState<{
-    tag: 'error' | 'warning' | 'success';
-    label: string;
-  } | null>(null);
+  const [passwordState, setPasswordState] = useState<PasswordState | null>(null);
   const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
   const showPreparingWorkspaceAnimation = useMemo(() => autoSubmit.enabled && !showError, [autoSubmit, showError]);
 
@@ -104,6 +106,23 @@ function SignUp(props: SignUpProps): JSX.Element {
     if (password.length > 0) onChangeHandler(password);
   }, [password]);
 
+  const getPasswordState = (result: { valid: boolean; strength?: string; reason?: string }): PasswordState => {
+    if (result.valid) {
+      if (result.strength === 'medium') {
+        return { tag: 'warning', label: 'Password is weak' };
+      }
+      return { tag: 'success', label: 'Password is strong' };
+    } else {
+      return {
+        tag: 'error',
+        label:
+          result.reason === 'NOT_COMPLEX_ENOUGH'
+            ? 'Password is not complex enough'
+            : 'Password has to be at least 8 characters long',
+      };
+    }
+  };
+
   const onChangeHandler = (input: string) => {
     setIsValidPassword(false);
     if (input.length > MAX_PASSWORD_LENGTH) {
@@ -113,19 +132,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
     const result = testPasswordStrength(input, String(qs.email || ''));
     setIsValidPassword(result.valid);
-    setPasswordState(
-      result.valid
-        ? result.strength === 'medium'
-          ? { tag: 'warning', label: 'Password is weak' }
-          : { tag: 'success', label: 'Password is strong' }
-        : {
-            tag: 'error',
-            label:
-              result.reason === 'NOT_COMPLEX_ENOUGH'
-                ? 'Password is not complex enough'
-                : 'Password has to be at least 8 characters long',
-          },
-    );
+    setPasswordState(getPasswordState(result));
   };
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
