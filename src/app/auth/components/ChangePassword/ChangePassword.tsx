@@ -137,8 +137,6 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
     setIsLoading(false);
   };
 
-  console.log('RECOVERY COMPONENT');
-
   return (
     <>
       {!backupKeyContent ? (
