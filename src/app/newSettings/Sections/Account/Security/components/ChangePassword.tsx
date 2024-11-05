@@ -6,15 +6,7 @@ import Section from '../../../../../newSettings/Sections/General/components/Sect
 import Card from '../../../../../shared/components/Card';
 import { Button } from '@internxt/internxtui';
 
-const ChangePassword = ({
-  currentPassword,
-  onPasswordChanged,
-  user,
-}: {
-  currentPassword: string;
-  onPasswordChanged: (newPassword: string) => void;
-  user: UserSettings | undefined;
-}): JSX.Element => {
+const ChangePassword = ({ user }: { user: UserSettings | undefined }): JSX.Element => {
   const { translate } = useTranslationContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -31,13 +23,7 @@ const ChangePassword = ({
           {translate('views.account.tabs.security.changePassword.button')}
         </Button>
       </Card>
-      <ChangePasswordModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        currentPassword={currentPassword}
-        onPasswordChanged={onPasswordChanged}
-        user={user}
-      />
+      <ChangePasswordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} user={user} />
     </Section>
   );
 };

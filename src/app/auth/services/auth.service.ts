@@ -40,7 +40,7 @@ import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
-import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
+import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { trackSignUp } from 'app/analytics/impact.service';
 
 type ProfileInfo = {
@@ -278,10 +278,8 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
   );
 };
 
-export const changePassword = async (newPassword: string, currentPassword: string, email: string): Promise<void> => {
+export const changePassword = async (newPassword: string, email: string): Promise<void> => {
   const user = localStorageService.getUser() as UserSettings;
-
-  const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword);
 
   // Encrypt the new password
   const hashedNewPassword = passToHash({ password: newPassword });
@@ -296,8 +294,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
 
   return usersClient
-    .changePasswordLegacy(<ChangePasswordPayload>{
-      currentEncryptedPassword: encryptedCurrentPassword,
+    .changePassword(<ChangePasswordPayloadNew>{
       newEncryptedPassword: encryptedNewPassword,
       newEncryptedSalt: encryptedNewSalt,
       encryptedMnemonic: encryptedMnemonic,
@@ -330,16 +327,9 @@ export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
   return authClient.generateTwoFactorAuthQR();
 };
 
-export const deactivate2FA = (
-  passwordSalt: string,
-  deactivationPassword: string,
-  deactivationCode: string,
-): Promise<void> => {
-  const salt = decryptText(passwordSalt);
-  const hashObj = passToHash({ password: deactivationPassword, salt });
-  const encPass = encryptText(hashObj.hash);
+export const deactivate2FA = (deactivationCode: string): Promise<void> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.disableTwoFactorAuth(encPass, deactivationCode);
+  return authClient.disableTwoFactorAuth(deactivationCode);
 };
 
 export const getNewToken = async (): Promise<string> => {

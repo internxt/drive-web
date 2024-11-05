@@ -7,7 +7,7 @@ import { Button, Spinner } from '@internxt/internxtui';
 import TwoFactorAuthenticationEnableModal from './TwoFactorAuthenticationEnableModal';
 import TwoFactorAuthenticationDisableModal from './TwoFactorAuthenticationDisableModal';
 
-const TwoFactorAuthentication = ({ password }: { password: string }): JSX.Element => {
+const TwoFactorAuthentication = (): JSX.Element => {
   const [status, setStatus] = useState<'loading' | 'enabled' | 'disabled'>('loading');
   const { translate } = useTranslationContext();
 
@@ -72,7 +72,6 @@ const TwoFactorAuthentication = ({ password }: { password: string }): JSX.Elemen
         isOpen={disableModalOpen}
         onClose={() => setDisableModalOpen(false)}
         onDisabled={() => setStatus('disabled')}
-        password={password}
       />
     </Section>
   );

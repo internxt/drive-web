@@ -11,12 +11,10 @@ const TwoFactorAuthenticationDisableModal = ({
   isOpen,
   onClose,
   onDisabled,
-  password,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onDisabled: () => void;
-  password: string;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
   useEffect(() => {
@@ -33,9 +31,7 @@ const TwoFactorAuthenticationDisableModal = ({
     e.preventDefault();
     setStatus('loading');
     try {
-      const { encryptedSalt } = await userHas2FAStored();
-
-      await deactivate2FA(encryptedSalt, password, authCode);
+      await deactivate2FA(authCode);
 
       notificationsService.show({ text: translate('success.twoFactorAuthDisabled'), type: ToastType.Success });
       onDisabled();

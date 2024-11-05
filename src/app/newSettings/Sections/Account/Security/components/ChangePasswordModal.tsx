@@ -9,21 +9,20 @@ import { Button } from '@internxt/internxtui';
 import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 import ValidPassword from 'app/shared/components/ValidPassword';
+import { useAppDispatch } from 'app/store/hooks';
+import { refreshUserThunk } from 'app/store/slices/user';
 
 const ChangePasswordModal = ({
   isOpen,
   onClose,
-  currentPassword,
-  onPasswordChanged,
   user,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  currentPassword: string;
-  onPasswordChanged: (newPassword: string) => void;
   user: UserSettings | undefined;
 }) => {
   const { translate } = useTranslationContext();
+  const dispatch = useAppDispatch();
   if (!user) throw new Error('User is not defined');
   const { email } = user;
 
@@ -37,11 +36,11 @@ const ChangePasswordModal = ({
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
-    await changePassword(passwordPayload.password, currentPassword, email);
+    await changePassword(passwordPayload.password, email);
     notificationsService.show({ text: translate('success.passwordChanged'), type: ToastType.Success });
-    onPasswordChanged(passwordPayload.password);
     onClose();
     setIsLoading(false);
+    setTimeout(() => dispatch(refreshUserThunk({ forceRefresh: true })), 2000);
   }
 
   useEffect(() => {
