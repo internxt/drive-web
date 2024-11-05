@@ -98,7 +98,7 @@ const PendingInvitationsDialog = ({
                           <p className="truncate text-sm text-gray-50">
                             {translate('workspaces.pendingInvitations.invitedOn')}
                             {': '}
-                            {formatDate(invitation.workspace.createdAt)}
+                            {formatDate(invitation.createdAt)}
                           </p>
                         </div>
                       </div>
