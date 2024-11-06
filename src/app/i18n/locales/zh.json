@@ -82,7 +82,8 @@
       "dontHaveAccount": "没有账户？",
       "createAccount": "创建账户",
       "2FA": "双因素代码",
-      "twoFactorAuthenticationCode": "双因素验证码"
+      "twoFactorAuthenticationCode": "双因素验证码",
+      "wrongLogin": "用户名或密码无效"
     },
     "signup": {
       "title": "创建账户",

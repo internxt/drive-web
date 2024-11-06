@@ -61,7 +61,8 @@
       "dontHaveAccount": "У вас нет учетной записи?",
       "createAccount": "Создать учетную запись",
       "2FA": "Двухфакторный код",
-      "twoFactorAuthenticationCode": "Код двухфакторной аутентификации"
+      "twoFactorAuthenticationCode": "Код двухфакторной аутентификации",
+      "wrongLogin": "Неверное имя пользователя или пароль"
     },
     "signup": {
       "title": "Создать учетную запись",
