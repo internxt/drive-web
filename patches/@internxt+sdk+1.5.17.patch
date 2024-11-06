@@ -1,7 +1,6 @@
 diff --git a/node_modules/@internxt/sdk/.DS_Store b/node_modules/@internxt/sdk/.DS_Store
 new file mode 100644
-index 0000000..009dbeb
-Binary files /dev/null and b/node_modules/@internxt/sdk/.DS_Store differ
+index 0000000..e69de29
 diff --git a/node_modules/@internxt/sdk/dist/.DS_Store b/node_modules/@internxt/sdk/dist/.DS_Store
 new file mode 100644
 index 0000000..381419f
@@ -23,28 +22,58 @@ index a1a8bf7..3668c3f 100644
       * Restore password with email link
       * @param token
 diff --git a/node_modules/@internxt/sdk/dist/auth/index.js b/node_modules/@internxt/sdk/dist/auth/index.js
-index 0389bcd..9073209 100644
+index 0389bcd..199096f 100644
 --- a/node_modules/@internxt/sdk/dist/auth/index.js
 +++ b/node_modules/@internxt/sdk/dist/auth/index.js
-@@ -75,6 +75,8 @@ var Auth = /** @class */ (function () {
+@@ -73,9 +73,23 @@ var Auth = /** @class */ (function () {
+             password: registerDetails.password,
+             mnemonic: registerDetails.mnemonic,
              salt: registerDetails.salt,
++            /**
++            / @deprecated The individual fields for keys should not be used
++            */
              privateKey: registerDetails.keys.privateKeyEncrypted,
              publicKey: registerDetails.keys.publicKey,
-+            privateKyberKey: registerDetails.keys.privateKyberKeyEncrypted,
-+            publicKyberKey: registerDetails.keys.publicKyberKey,
              revocationKey: registerDetails.keys.revocationCertificate,
++            keys: {
++                ec: {
++                    privateKey: registerDetails.keys.privateKeyEncrypted,
++                    publicKey: registerDetails.keys.publicKey,
++                    revocationKey: registerDetails.keys.revocationCertificate,
++                },
++                kyber: {
++                    privateKyberKey: registerDetails.keys.privateKyberKeyEncrypted,
++                    publicKyberKey: registerDetails.keys.publicKyberKey,
++                }
++            },
              referral: registerDetails.referral,
              referrer: registerDetails.referrer,
-@@ -96,6 +98,8 @@ var Auth = /** @class */ (function () {
+         }, this.basicHeaders());
+@@ -94,9 +108,23 @@ var Auth = /** @class */ (function () {
+             password: registerDetails.password,
+             mnemonic: registerDetails.mnemonic,
              salt: registerDetails.salt,
++            /**
++            / @deprecated The individual fields for keys should not be used
++            */
              privateKey: registerDetails.keys.privateKeyEncrypted,
              publicKey: registerDetails.keys.publicKey,
-+            privateKyberKey: registerDetails.keys.privateKyberKeyEncrypted,
-+            publicKyberKey: registerDetails.keys.publicKyberKey,
              revocationKey: registerDetails.keys.revocationCertificate,
++            keys: {
++                ec: {
++                    privateKey: registerDetails.keys.privateKeyEncrypted,
++                    publicKey: registerDetails.keys.publicKey,
++                    revocationKey: registerDetails.keys.revocationCertificate,
++                },
++                kyber: {
++                    privateKyberKey: registerDetails.keys.privateKyberKeyEncrypted,
++                    publicKyberKey: registerDetails.keys.publicKyberKey,
++                }
++            },
              referral: registerDetails.referral,
              referrer: registerDetails.referrer,
-@@ -136,9 +140,11 @@ var Auth = /** @class */ (function () {
+             invitationId: registerDetails.invitationId,
+@@ -136,18 +164,34 @@ var Auth = /** @class */ (function () {
                      case 1:
                          securityDetails = _a.sent();
                          encryptedSalt = securityDetails.encryptedSalt;
@@ -58,25 +87,55 @@ index 0389bcd..9073209 100644
                          keys = _a.sent();
                          return [2 /*return*/, this.client
                                  .post('/access', {
-@@ -148,6 +154,8 @@ var Auth = /** @class */ (function () {
+                                 email: details.email,
+                                 password: encryptedPasswordHash,
+                                 tfa: details.tfaCode,
++                                /**
++                                / @deprecated The individual fields for keys should not be used
++                                */
                                  privateKey: keys.privateKeyEncrypted,
                                  publicKey: keys.publicKey,
-                                 revocateKey: keys.revocationCertificate,
-+                                publicKyberKey: keys.publicKyberKey,
-+                                privateKyberKey: keys.privateKyberKeyEncrypted,
+-                                revocateKey: keys.revocationCertificate,
++                                revocationKey: keys.revocationCertificate,
++                                keys: {
++                                    ec: {
++                                        privateKey: keys.privateKeyEncrypted,
++                                        publicKey: keys.publicKey,
++                                        revocationKey: keys.revocationCertificate,
++                                    },
++                                    kyber: {
++                                        privateKyberKey: keys.publicKyberKey,
++                                        publicKyberKey: keys.privateKyberKeyEncrypted,
++                                    }
++                                },
                              }, this.basicHeaders())
                                  .then(function (data) {
                                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-@@ -169,6 +177,8 @@ var Auth = /** @class */ (function () {
+@@ -166,9 +210,23 @@ var Auth = /** @class */ (function () {
+      */
+     Auth.prototype.updateKeys = function (keys, token) {
+         return this.client.patch('/user/keys', {
++            /**
++            / @deprecated The individual fields for keys should not be used
++            */
              publicKey: keys.publicKey,
              privateKey: keys.privateKeyEncrypted,
              revocationKey: keys.revocationCertificate,
-+            publicKyberKey: keys.publicKyberKey,
-+            privateKyberKey: keys.privateKyberKeyEncrypted,
++            keys: {
++                ec: {
++                    privateKey: keys.privateKeyEncrypted,
++                    publicKey: keys.publicKey,
++                    revocationKey: keys.revocationCertificate,
++                },
++                kyber: {
++                    privateKyberKey: keys.publicKyberKey,
++                    publicKyberKey: keys.privateKyberKeyEncrypted,
++                }
++            },
          }, this.headersWithToken(token));
      };
      /**
-@@ -271,6 +281,15 @@ var Auth = /** @class */ (function () {
+@@ -271,6 +329,15 @@ var Auth = /** @class */ (function () {
              email: email,
          }, this.basicHeaders());
      };
@@ -121,11 +180,180 @@ index b9c0de7..e8e9b0c 100644
  };
  export declare type CreateSharingPayload = {
      itemId: string;
+diff --git a/node_modules/@internxt/sdk/dist/drive/storage/index.d.ts b/node_modules/@internxt/sdk/dist/drive/storage/index.d.ts
+index 795cdb9..5c0a6e1 100644
+--- a/node_modules/@internxt/sdk/dist/drive/storage/index.d.ts
++++ b/node_modules/@internxt/sdk/dist/drive/storage/index.d.ts
+@@ -183,8 +183,14 @@ export declare class Storage {
+     /**
+      * Returns a list of the n most recent files
+      * @param limit
++     * @deprecated use `getRecentFilesV2` call instead.
+      */
+     getRecentFiles(limit: number): Promise<DriveFileData[]>;
++    /**
++     * Returns a list of the n most recent files
++     * @param limit
++     */
++    getRecentFilesV2(limit: number): Promise<DriveFileData[]>;
+     /**
+      * Returns a list of items in trash
+      */
+@@ -222,10 +228,11 @@ export declare class Storage {
+     /**
+      * Gets the ancestors of a given folder UUID
+      *
+-     * @param {string} folderUUID - UUID of the folder.
+-     * @returns {Promise<FolderAncestor[]>}
++     * @param {string} uuid - UUID of the folder.
++     * @param {boolean} [isShared=false] - Whether the folder is a shared item or not.
++     * @returns {Promise<FolderAncestor[]>} A promise that resolves with an array of ancestors of the given folder.
+      */
+-    getFolderAncestors(uuid: string): Promise<FolderAncestor[]>;
++    getFolderAncestors(uuid: string, isShared?: boolean): Promise<FolderAncestor[]>;
+     /**
+      * Gets the meta of a given folder UUID
+      *
+diff --git a/node_modules/@internxt/sdk/dist/drive/storage/index.js b/node_modules/@internxt/sdk/dist/drive/storage/index.js
+index e51cab5..4d5b63b 100644
+--- a/node_modules/@internxt/sdk/dist/drive/storage/index.js
++++ b/node_modules/@internxt/sdk/dist/drive/storage/index.js
+@@ -428,10 +428,22 @@ var Storage = /** @class */ (function () {
+     /**
+      * Returns a list of the n most recent files
+      * @param limit
++     * @deprecated use `getRecentFilesV2` call instead.
+      */
+     Storage.prototype.getRecentFiles = function (limit) {
+         return this.client.get("/storage/recents?limit=" + limit, this.headers());
+     };
++    /**
++     * Returns a list of the n most recent files
++     * @param limit
++     */
++    Storage.prototype.getRecentFilesV2 = function (limit) {
++        return __awaiter(this, void 0, void 0, function () {
++            return __generator(this, function (_a) {
++                return [2 /*return*/, this.client.get("/files/recents?limit=" + limit, this.headers())];
++            });
++        });
++    };
+     /**
+      * Returns a list of items in trash
+      */
+@@ -488,11 +500,13 @@ var Storage = /** @class */ (function () {
+     /**
+      * Gets the ancestors of a given folder UUID
+      *
+-     * @param {string} folderUUID - UUID of the folder.
+-     * @returns {Promise<FolderAncestor[]>}
++     * @param {string} uuid - UUID of the folder.
++     * @param {boolean} [isShared=false] - Whether the folder is a shared item or not.
++     * @returns {Promise<FolderAncestor[]>} A promise that resolves with an array of ancestors of the given folder.
+      */
+-    Storage.prototype.getFolderAncestors = function (uuid) {
+-        return this.client.get("folders/" + uuid + "/ancestors", this.headers());
++    Storage.prototype.getFolderAncestors = function (uuid, isShared) {
++        if (isShared === void 0) { isShared = false; }
++        return this.client.get("folders/" + uuid + "/ancestors?isSharedItem=" + isShared, this.headers());
+     };
+     /**
+      * Gets the meta of a given folder UUID
+diff --git a/node_modules/@internxt/sdk/dist/drive/users/index.d.ts b/node_modules/@internxt/sdk/dist/drive/users/index.d.ts
+index bc22945..ef932b8 100644
+--- a/node_modules/@internxt/sdk/dist/drive/users/index.d.ts
++++ b/node_modules/@internxt/sdk/dist/drive/users/index.d.ts
+@@ -1,6 +1,6 @@
+ import { ApiSecurity, ApiUrl, AppDetails } from '../../shared';
+ import { UserSettings } from '../../shared/types/userSettings';
+-import { ChangePasswordPayload, CheckChangeEmailExpirationResponse, FriendInvite, InitializeUserResponse, PreCreateUserResponse, UpdateProfilePayload, UserPublicKeyResponse, VerifyEmailChangeResponse } from './types';
++import { ChangePasswordPayload, ChangePasswordPayloadNew, CheckChangeEmailExpirationResponse, FriendInvite, InitializeUserResponse, PreCreateUserResponse, UpdateProfilePayload, UserPublicKeyResponse, VerifyEmailChangeResponse } from './types';
+ export * as UserTypes from './types';
+ export declare class Users {
+     private readonly client;
+@@ -44,12 +44,22 @@ export declare class Users {
+         user: UserSettings;
+     }>;
+     /**
+-     * Updates the authentication credentials and invalidates previous tokens
++     * Updates the authentication credentials and invalidates previous tokens (Legacy backend (drive-server))
+      * @param payload
+      *
+      * @returns {Promise<{token: string, newToken: string}>} A promise that returns new tokens for this user.
+      */
+-    changePassword(payload: ChangePasswordPayload): Promise<{
++    changePasswordLegacy(payload: ChangePasswordPayload): Promise<{
++        token: string;
++        newToken: string;
++    }>;
++    /**
++     * Updates the authentication credentials and invalidates previous tokens (New backend (drive-server-wip))
++     * @param payload
++     *
++     * @returns {Promise<{token: string, newToken: string}>} A promise that returns new tokens for this user.
++     */
++    changePassword(payload: ChangePasswordPayloadNew): Promise<{
+         token: string;
+         newToken: string;
+     }>;
+diff --git a/node_modules/@internxt/sdk/dist/drive/users/index.js b/node_modules/@internxt/sdk/dist/drive/users/index.js
+index 61f8a80..d26ff2e 100644
+--- a/node_modules/@internxt/sdk/dist/drive/users/index.js
++++ b/node_modules/@internxt/sdk/dist/drive/users/index.js
+@@ -77,12 +77,12 @@ var Users = /** @class */ (function () {
+         return this.client.get("/users/c/" + userUuid, this.headers());
+     };
+     /**
+-     * Updates the authentication credentials and invalidates previous tokens
++     * Updates the authentication credentials and invalidates previous tokens (Legacy backend (drive-server))
+      * @param payload
+      *
+      * @returns {Promise<{token: string, newToken: string}>} A promise that returns new tokens for this user.
+      */
+-    Users.prototype.changePassword = function (payload) {
++    Users.prototype.changePasswordLegacy = function (payload) {
+         return this.client.patch('/user/password', {
+             currentPassword: payload.currentEncryptedPassword,
+             newPassword: payload.newEncryptedPassword,
+@@ -91,6 +91,22 @@ var Users = /** @class */ (function () {
+             privateKey: payload.encryptedPrivateKey,
+         }, this.headers());
+     };
++    /**
++     * Updates the authentication credentials and invalidates previous tokens (New backend (drive-server-wip))
++     * @param payload
++     *
++     * @returns {Promise<{token: string, newToken: string}>} A promise that returns new tokens for this user.
++     */
++    Users.prototype.changePassword = function (payload) {
++        return this.client.patch('/users/password', {
++            currentPassword: payload.currentEncryptedPassword,
++            newPassword: payload.newEncryptedPassword,
++            newSalt: payload.newEncryptedSalt,
++            mnemonic: payload.encryptedMnemonic,
++            privateKey: payload.encryptedPrivateKey,
++            encryptVersion: payload.encryptVersion,
++        }, this.headers());
++    };
+     /**
+      * Pre registers an email
+      * @param email
 diff --git a/node_modules/@internxt/sdk/dist/drive/users/types.d.ts b/node_modules/@internxt/sdk/dist/drive/users/types.d.ts
-index 60143e8..f6038c6 100644
+index 60143e8..99c3b38 100644
 --- a/node_modules/@internxt/sdk/dist/drive/users/types.d.ts
 +++ b/node_modules/@internxt/sdk/dist/drive/users/types.d.ts
-@@ -15,6 +15,7 @@ export interface ChangePasswordPayload {
+@@ -12,9 +12,18 @@ export interface ChangePasswordPayload {
+     encryptedMnemonic: string;
+     encryptedPrivateKey: string;
+ }
++export interface ChangePasswordPayloadNew {
++    currentEncryptedPassword: string;
++    newEncryptedPassword: string;
++    newEncryptedSalt: string;
++    encryptedMnemonic: string;
++    encryptedPrivateKey: string;
++    encryptVersion: string;
++}
  export declare type UpdateProfilePayload = Partial<Pick<UserSettings, 'name' | 'lastname'>>;
  export declare type PreCreateUserResponse = {
      publicKey: string;
@@ -133,7 +361,7 @@ index 60143e8..f6038c6 100644
      user: {
          uuid: UUID;
          email: string;
-@@ -28,6 +29,7 @@ export declare type FriendInvite = {
+@@ -28,6 +37,7 @@ export declare type FriendInvite = {
  };
  export declare type UserPublicKeyResponse = {
      publicKey: string;
@@ -208,7 +436,7 @@ index aebc27e..aa0c97e 100644
                          case 1:
                              _b.sent();
 diff --git a/node_modules/@internxt/sdk/dist/workspaces/types.d.ts b/node_modules/@internxt/sdk/dist/workspaces/types.d.ts
-index 99be4ce..98f232c 100644
+index 99be4ce..a075704 100644
 --- a/node_modules/@internxt/sdk/dist/workspaces/types.d.ts
 +++ b/node_modules/@internxt/sdk/dist/workspaces/types.d.ts
 @@ -9,6 +9,7 @@ export interface WorkspaceUser {
@@ -223,7 +451,7 @@ index 99be4ce..98f232c 100644
      address: string;
      description: string;
      encryptedMnemonic: string;
-+    hybridModeEnabled: boolean | false;
++    hybridModeEnabled: boolean;
  };
  export declare type PendingWorkspace = {
      address: string | null;
@@ -231,7 +459,7 @@ index 99be4ce..98f232c 100644
      encryptedMnemonicInBase64: string;
      encryptionAlgorithm: string;
      message: string;
-+    hybridModeEnabled: boolean | false;
++    hybridModeEnabled: boolean;
  };
  interface Invite {
      id: string;
