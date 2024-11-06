@@ -61,7 +61,8 @@
       "dontHaveAccount": "¿No tienes cuenta?",
       "createAccount": "Crear cuenta",
       "2FA": "Código de dos factores",
-      "twoFactorAuthenticationCode": "Código de autenticación de dos factores"
+      "twoFactorAuthenticationCode": "Código de autenticación de dos factores",
+      "wrongLogin": "Nombre de usuario o contraseña no válidos"
     },
     "signup": {
       "title": "Crear cuenta",
