@@ -120,7 +120,7 @@ const App = (props: AppProps): JSX.Element => {
       RealtimeService.getInstance().init();
 
       dispatch(workspaceThunks.fetchWorkspaces());
-      navigationService.setWorkspaceFromParams(workspaceThunks, dispatch);
+      navigationService.setWorkspaceFromParams(workspaceThunks, dispatch, false);
 
       await props.dispatch(
         initializeUserThunk({
