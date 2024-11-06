@@ -10,6 +10,8 @@ import {
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from '../../core/factory/sdk';
 
+const TEMPORAL_AVATAR_API_URL = process.env.REACT_APP_AVATAR_URL;
+
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
   const usersClient = SdkFactory.getInstance().createUsersClient();
   return usersClient.initialize(email, mnemonic);
@@ -49,7 +51,7 @@ const getFriendInvites = (): Promise<FriendInvite[]> => {
 };
 
 const updateUserAvatar = (payload: { avatar: Blob }): Promise<{ avatar: string }> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
+  const usersClient = SdkFactory.getInstance().createUsersClient(TEMPORAL_AVATAR_API_URL);
   return usersClient.updateAvatar(payload);
 };
 
