@@ -3,10 +3,10 @@
 @layer components {
   .copy-effect {
     animation-duration: 1s;
-    animation-name: fadeOutTop;
+    animation-name: fade-out-top;
   }
 
-  @keyframes fadeOutTop {
+  @keyframes fade-out-top {
     from {
       opacity: 1;
       top: 0;
