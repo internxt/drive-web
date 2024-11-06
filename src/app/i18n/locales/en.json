@@ -1797,7 +1797,8 @@
       "billing": "Billing",
       "account": "Account",
       "plans": "Plans",
-      "security": "Security"
+      "security": "Security",
+      "logs": "Logs"
     }
   },
   "workspaces": {

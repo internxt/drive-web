@@ -1720,7 +1720,8 @@
       "billing": "Facturation",
       "account": "Compte",
       "plans": "Plans",
-      "security": "Sécurité"
+      "security": "Sécurité",
+      "logs": "Journaux"
     }
   },
   "workspaces": {

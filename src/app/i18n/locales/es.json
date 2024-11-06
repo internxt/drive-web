@@ -1771,7 +1771,8 @@
       "billing": "Facturación",
       "account": "Cuenta",
       "plans": "Planes",
-      "security": "Seguridad"
+      "security": "Seguridad",
+      "logs": "Registros"
     }
   },
   "workspaces": {

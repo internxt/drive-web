@@ -1780,7 +1780,8 @@
       "billing": "Fatturazione",
       "account": "Account",
       "plans": "Piani",
-      "security": "Sicurezza"
+      "security": "Sicurezza",
+      "logs": "Registri"
     }
   },
   "workspaces": {

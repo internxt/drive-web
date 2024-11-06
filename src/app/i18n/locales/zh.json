@@ -1793,7 +1793,8 @@
       "billing": "账单",
       "account": "账户",
       "plans": "计划",
-      "security": "安全"
+      "security": "安全",
+      "logs": "日志"
     }
   },
   "workspaces": {

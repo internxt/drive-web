@@ -47,6 +47,13 @@ export const sectionItems = [
     notificationsNumber: 0,
     onlyOwner: true,
   },
+  {
+    section: 'workspace',
+    subsection: 'logs',
+    isDisabled: false,
+    isSubsection: true,
+    notificationsNumber: 0,
+  },
   { section: 'account', isSection: true, notificationsNumber: 0 },
   {
     section: 'account',

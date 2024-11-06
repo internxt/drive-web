@@ -1752,7 +1752,8 @@
       "billing": "計費",
       "account": "帳戶",
       "plans": "計劃",
-      "security": "安全"
+      "security": "安全",
+      "logs": "日誌"
     }
   },
   "workspaces": {

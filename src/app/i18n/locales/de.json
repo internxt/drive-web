@@ -1735,7 +1735,8 @@
       "billing": "Abrechnung",
       "account": "Konto",
       "plans": "Pläne",
-      "security": "Sicherheit"
+      "security": "Sicherheit",
+      "logs": "Protokolle"
     }
   },
   "workspaces": {

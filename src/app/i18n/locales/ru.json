@@ -1760,7 +1760,8 @@
       "billing": "Оплата",
       "account": "Аккаунт",
       "plans": "Планы",
-      "security": "Безопасность"
+      "security": "Безопасность",
+      "logs": "Логи"
     }
   },
   "workspaces": {
