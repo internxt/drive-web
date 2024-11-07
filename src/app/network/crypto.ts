@@ -5,9 +5,9 @@ import {
   sha512HmacBufferFromHex,
 } from '@internxt/inxt-js/build/lib/utils/crypto';
 import { streamFileIntoChunks } from '../core/services/stream.service';
-import { Sha256 } from 'asmcrypto.js';
+import { createSHA256, sha512, ripemd160 } from 'hash-wasm';
 import { mnemonicToSeed } from 'bip39';
-import { Cipher, CipherCCM, createCipheriv, createHash } from 'crypto';
+import { Cipher, CipherCCM, createCipheriv } from 'crypto';
 
 const BUCKET_META_MAGIC = [
   66, 150, 71, 16, 50, 114, 88, 160, 163, 35, 154, 65, 162, 213, 226, 215, 70, 138, 57, 61, 52, 19, 210, 170, 38, 164,
@@ -32,16 +32,17 @@ export function generateHMAC(
   return hmac.digest();
 }
 
-function getDeterministicKey(key: string, data: string): Buffer {
+async function getDeterministicKey(key: string, data: string): Promise<string> {
   const input = key + data;
 
-  return createHash('sha512').update(Buffer.from(input, 'hex')).digest();
+  return await sha512(input);
 }
 
 async function getBucketKey(mnemonic: string, bucketId: string): Promise<string> {
   const seed = (await mnemonicToSeed(mnemonic)).toString('hex');
+  const result = await getDeterministicKey(seed, bucketId);
 
-  return getDeterministicKey(seed, bucketId).toString('hex').slice(0, 64);
+  return result.slice(0, 64);
 }
 
 export function encryptMeta(fileMeta: string, key: Buffer, iv: Buffer): string {
@@ -130,7 +131,7 @@ export async function getEncryptedFile(
   cipher: Cipher,
 ): Promise<[Blob, string]> {
   const readable = encryptReadable(plainFile.stream(), cipher).getReader();
-  const hasher = new Sha256();
+  const hasher = await createSHA256();
   const blobParts: ArrayBuffer[] = [];
 
   let done = false;
@@ -139,25 +140,15 @@ export async function getEncryptedFile(
     const status = await readable.read();
 
     if (!status.done) {
-      hasher.process(status.value);
+      hasher.update(status.value);
       blobParts.push(status.value);
     }
 
     done = status.done;
   }
 
-  hasher.finish();
-
-  return [
-    new Blob(blobParts, { type: 'application/octet-stream' }),
-    createHash('ripemd160')
-      .update(Buffer.from(hasher.result as Uint8Array))
-      .digest('hex'),
-  ];
-}
-
-export function sha256(input: Buffer): Buffer {
-  return createHash('sha256').update(input).digest();
+  const ripemd160Hash = await ripemd160(hasher.digest());
+  return [new Blob(blobParts, { type: 'application/octet-stream' }), ripemd160Hash];
 }
 
 export async function processEveryFileBlobReturnHash(
@@ -165,7 +156,8 @@ export async function processEveryFileBlobReturnHash(
   onEveryBlob: (blob: Blob) => Promise<void>,
 ): Promise<string> {
   const reader = chunkedFileReadable.getReader();
-  const hasher = new Sha256();
+  const hasher = await createSHA256();
+  hasher.init();
 
   let done = false;
 
@@ -173,7 +165,7 @@ export async function processEveryFileBlobReturnHash(
     const status = await reader.read();
     if (!status.done) {
       const value = status.value;
-      hasher.process(value);
+      hasher.update(value);
       const blob = new Blob([value], { type: 'application/octet-stream' });
       await onEveryBlob(blob);
     }
@@ -181,9 +173,7 @@ export async function processEveryFileBlobReturnHash(
     done = status.done;
   }
 
-  hasher.finish();
+  const ripemd160Hash = await ripemd160(hasher.digest());
 
-  return createHash('ripemd160')
-    .update(Buffer.from(hasher.result as Uint8Array))
-    .digest('hex');
+  return ripemd160Hash;
 }
