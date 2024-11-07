@@ -52,7 +52,6 @@ const getFriendInvites = (): Promise<FriendInvite[]> => {
 };
 
 const updateUserAvatar = (payload: { avatar: Blob }): Promise<{ avatar: string }> => {
-  console.log(envService.isProduction());
   const usersClient = SdkFactory.getInstance().createUsersClient(TEMPORAL_AVATAR_API_URL);
   return usersClient.updateAvatar(payload);
 };
