@@ -118,8 +118,16 @@ export const doLogin = async (
         privateKeyEncrypted: privateKeyArmoredEncrypted,
         publicKey: publicKeyArmored,
         revocationCertificate: revocationCertificate,
-        publicKyberKey: publicKyberKeyBase64,
-        privateKyberKeyEncrypted: encPrivateKyberKey,
+        keys: {
+          ecc: {
+            privateKeyEncrypted: privateKeyArmoredEncrypted,
+            publicKey: publicKeyArmored,
+          },
+          kyber: {
+            publicKey: publicKyberKeyBase64,
+            privateKeyEncrypted: encPrivateKyberKey,
+          },
+        },
       };
       return keys;
     },

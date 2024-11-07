@@ -603,8 +603,8 @@ export const decryptMnemonic = async (
       if (hybridModeEnabled) {
         decryptedKey = await hybridDecryptMessageWithPrivateKey({
           encryptedMessage: atob(encryptionKey),
-          privateKeyInBase64: user.privateKey,
-          privateKyberKeyBase64: user.privateKyberKey,
+          privateKeyInBase64: user.keys.ecc.privateKey,
+          privateKyberKeyBase64: user.keys.kyber.privateKyberKey,
         });
       } else {
         decryptedKey = await standardDecryptMessageWithPrivateKey({

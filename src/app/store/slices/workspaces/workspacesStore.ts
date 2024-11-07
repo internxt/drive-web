@@ -150,7 +150,9 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         navigationService.push(AppView.Login);
         return;
       }
-      const { mnemonic, publicKey, publicKyberKey } = user;
+      const mnemonic = user.mnemonic;
+      const publicKey = user.keys.ecc.publicKey;
+      const publicKyberKey = user.keys.kyber.publicKyberKey;
 
       let encryptedMnemonicInBase64;
       let hybridModeEnabled = false;
