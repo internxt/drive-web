@@ -13,6 +13,7 @@ import { AuthMethodTypes } from 'app/payment/types';
 jest.mock('../../../WebWorker');
 jest.mock('app/store/slices/user');
 jest.mock('app/core/services/local-storage.service');
+jest.mock('app/core/services/error.service');
 
 const mockDispatch = jest.fn();
 const mockToken = 'test-token';

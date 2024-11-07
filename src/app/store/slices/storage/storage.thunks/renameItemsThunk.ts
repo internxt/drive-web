@@ -15,7 +15,7 @@ import { getUniqueFilename } from '../fileUtils/getUniqueFilename';
 import { checkFolderDuplicated } from '../folderUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
 import { StorageState } from '../storage.model';
-import { IRoot } from './uploadFolderThunk';
+import { IRoot } from '../types';
 
 export const handleRepeatedUploadingFiles = async (
   files: (DriveFileData | File)[],

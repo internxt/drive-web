@@ -1280,7 +1280,11 @@
     "errorApplyingCoupon": "Произошла ошибка при применении купона",
     "invalidTaxIdIsProvided": "Предоставленный ИНН недействителен",
     "errorWhileFetchingMoreItems": "Произошла ошибка при получении дополнительных элементов",
-    "errorDeletingItems": "Произошла ошибка при удалении этого элемента"
+    "errorDeletingItems": "Произошла ошибка при удалении этого элемента",
+    "errorFetchingWorkspace": "Ошибка при получении рабочего пространства {{error}}",
+    "errorSettingUpWorkspace": "Ошибка при настройке рабочего пространства {{error}}",
+    "errorWhileLoadingWorkspace": "Ошибка при загрузке рабочего пространства {{error}}",
+    "errorFetchingWorkspaceCredentials": "Ошибка при получении учетных данных рабочего пространства {{error}}"
   },
   "actions": {
     "undo": "Отменить",

@@ -305,13 +305,11 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       encryptVersion: '', // !TODO: Add the version used
     })
     .then((res) => {
-      // !TODO: Add the correct analytics event  when change password is completed
-      const { token, newToken } = res as any;
+      const { token, newToken } = res;
       if (token) localStorageService.set('xToken', token);
       if (newToken) localStorageService.set('xNewToken', newToken);
     })
     .catch((error) => {
-      // !TODO: Add the correct analytics event when change password fails
       if (error.status === 500) {
         throw new Error('The password you introduced does not match your current password');
       }

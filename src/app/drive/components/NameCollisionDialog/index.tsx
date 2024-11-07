@@ -4,8 +4,8 @@ import { RadioGroup } from '@headlessui/react';
 import { Button } from '@internxt/internxtui';
 import Modal from 'app/shared/components/Modal';
 import { DriveItemData } from '../../types';
-import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { IRoot } from '../../../store/slices/storage/types';
 
 export const OPERATION_TYPE = {
   UPLOAD: 'upload',
