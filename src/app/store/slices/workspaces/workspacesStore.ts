@@ -147,14 +147,13 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         navigationService.push(AppView.Login);
         return;
       }
-      const { mnemonic, publicKey } = user;
+      const { mnemonic, publicKey, publicKyberKey } = user;
 
-      const encryptedMnemonic = await encryptMessageWithPublicKey({
+      const encryptedMnemonicInBase64 = await encryptMessageWithPublicKey({
         message: mnemonic,
         publicKeyInBase64: publicKey,
+        publicKyberKeyBase64: publicKyberKey,
       });
-
-      const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
 
       await workspacesService.setupWorkspace({
         workspaceId: pendingWorkspace.id,

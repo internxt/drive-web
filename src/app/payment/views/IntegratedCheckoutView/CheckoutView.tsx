@@ -1,18 +1,18 @@
 import { CheckoutProductCard } from '../../components/checkout/CheckoutProductCard';
 import { HeaderComponent } from '../../components/checkout/Header';
-import LoadingPulse from 'app/shared/components/LoadingPulse/LoadingPulse';
+import LoadingPulse from '../../../shared/components/LoadingPulse/LoadingPulse';
 import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import Button from 'app/shared/components/Button/Button';
+import Button from '../../../shared/components/Button/Button';
 import { useForm } from 'react-hook-form';
-import { IFormValues } from 'app/core/types';
+import { IFormValues } from '../../../core/types';
 import { AuthMethodTypes } from '../../types';
 import { CheckoutUserAuth } from '../../components/checkout/CheckoutUserAuth';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
-import { State } from 'app/payment/store/types';
+import { State } from '../../../payment/store/types';
 import { LegacyRef } from 'react';
-import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
+import { OptionalB2BDropdown } from '../../../payment/components/checkout/OptionalB2BDropdown';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {

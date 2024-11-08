@@ -1,7 +1,7 @@
 import { LegacyRef, useEffect, useRef, useState } from 'react';
 import { Menu } from '@headlessui/react';
 import { DotsThree } from '@phosphor-icons/react';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 export type ListItemMenu<T> = Array<

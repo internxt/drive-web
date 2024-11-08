@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import newsletterService from 'app/newsletter/services/newsletterService';
+import newsletterService from '../../../newsletter/services/newsletterService';
 import { t } from 'i18next';
 
 import { RootState } from '../..';

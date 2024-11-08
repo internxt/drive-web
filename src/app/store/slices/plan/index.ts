@@ -3,13 +3,13 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { GetMemberUsageResponse } from '@internxt/sdk/dist/workspaces';
-import workspacesService from 'app/core/services/workspace.service';
-import limitService from 'app/drive/services/limit.service';
-import usageService from 'app/drive/services/usage.service';
+import workspacesService from '../../../core/services/workspace.service';
+import limitService from '../../../drive/services/limit.service';
+import usageService from '../../../drive/services/usage.service';
 import { RootState } from '../..';
 import paymentService from '../../../payment/services/payment.service';
 import { sessionSelectors } from '../session/session.selectors';
-import { FreeStoragePlan } from 'app/drive/types';
+import { FreeStoragePlan } from '../../../drive/types';
 
 export interface PlanState {
   isLoadingPlans: boolean;

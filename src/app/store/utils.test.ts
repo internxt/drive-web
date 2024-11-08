@@ -1,4 +1,5 @@
 import { isTokenExpired } from './utils';
+import { describe, expect, it } from 'vitest';
 
 describe('isTokenExpired', () => {
   it('should return true for an expired token', () => {

@@ -1,10 +1,10 @@
-import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
-import { DragAndDropType } from 'app/core/types';
-import iconService from 'app/drive/services/icon.service';
-import { DriveItemData } from 'app/drive/types';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { transformDraggedItems } from '../../../../core/services/drag-and-drop.service';
+import { DragAndDropType } from '../../../../core/types';
+import iconService from '../../../../drive/services/icon.service';
+import { DriveItemData } from '../../../../drive/types';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import storageSelectors from '../../../../store/slices/storage/storage.selectors';
+import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { storageActions } from '../../../../store/slices/storage';

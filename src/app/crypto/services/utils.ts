@@ -3,6 +3,8 @@ import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
 import { getAesInitFromEnv } from '../services/keys.service';
 import { AdvancedSharedItem } from '../../share/types';
+import { argon2id } from 'hash-wasm';
+import crypto from 'crypto';
 
 interface PassObjectInterface {
   salt?: string | null;
@@ -10,9 +12,39 @@ interface PassObjectInterface {
 }
 
 // Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
-function passToHash(passObject: PassObjectInterface): { salt: string; hash: string } {
-  const salt = passObject.salt ? CryptoJS.enc.Hex.parse(passObject.salt) : CryptoJS.lib.WordArray.random(128 / 8);
-  const hash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256 / 32, iterations: 10000 });
+async function passToHash(passObject: PassObjectInterface): Promise<{ salt: string; hash: string }> {
+  let salt;
+  let hash;
+
+  if (passObject.salt) {
+    // if salt =>   argon2id(PBKDF2(pwd))
+    salt = CryptoJS.enc.Hex.parse(passObject.salt);
+    const oldhash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256 / 32, iterations: 10000 });
+    const argonSalt = crypto.randomBytes(16);
+    hash = await argon2id({
+      password: oldhash,
+      salt: argonSalt,
+      parallelism: 1,
+      iterations: 2,
+      memorySize: 19456,
+      hashLength: 32,
+      outputType: 'encoded',
+    });
+  } else {
+    // if no salt =>  Argon2id
+    salt = null;
+    const argonSalt = crypto.randomBytes(16);
+    hash = await argon2id({
+      password: passObject.password,
+      salt: argonSalt,
+      parallelism: 1,
+      iterations: 2,
+      memorySize: 19456,
+      hashLength: 32,
+      outputType: 'encoded',
+    });
+  }
+
   const hashedObjetc = {
     salt: salt.toString(),
     hash: hash.toString(),

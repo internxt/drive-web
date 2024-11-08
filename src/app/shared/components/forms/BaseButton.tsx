@@ -1,4 +1,4 @@
-import Spinner from 'app/shared/components/Spinner/Spinner';
+import Spinner from '../../../shared/components/Spinner/Spinner';
 
 interface ButtonProps {
   className?: string;

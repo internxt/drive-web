@@ -2,10 +2,10 @@ import { Clock, ClockCounterClockwise, Desktop, FolderSimple, Trash, Users } fro
 import { connect, useSelector } from 'react-redux';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import desktopService from 'app/core/services/desktop.service';
-import PlanUsage from 'app/drive/components/PlanUsage/PlanUsage';
-import { RootState } from 'app/store';
-import { planSelectors } from 'app/store/slices/plan';
+import desktopService from '../../../core/services/desktop.service';
+import PlanUsage from '../../../drive/components/PlanUsage/PlanUsage';
+import { RootState } from '../../../store';
+import { planSelectors } from '../../../store/slices/plan';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import navigationService from '../../services/navigation.service';
 import { AppView } from '../../types';
@@ -13,13 +13,13 @@ import SidenavItem from './SidenavItem/SidenavItem';
 
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
-import { useAppSelector } from 'app/store/hooks';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import ReferralsWidget from '../../../referrals/components/ReferralsWidget/ReferralsWidget';
+import { useAppSelector } from '../../../store/hooks';
 
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
-import Spinner from 'app/shared/components/Spinner/Spinner';
+import Spinner from '../../../shared/components/Spinner/Spinner';
 
 interface SidenavProps {
   user: UserSettings | undefined;

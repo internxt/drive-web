@@ -20,7 +20,7 @@ import {
   UpdateUserRoleResponse,
 } from '@internxt/sdk/dist/drive/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import folderService from 'app/drive/services/folder.service';
+import folderService from '../../drive/services/folder.service';
 import copy from 'copy-to-clipboard';
 import crypto from 'crypto';
 import { t } from 'i18next';
@@ -596,6 +596,7 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
       decryptedKey = await decryptMessageWithPrivateKey({
         encryptedMessage: atob(encryptionKey),
         privateKeyInBase64: user.privateKey,
+        privateKyberKeyBase64: user.privateKyberKey,
       });
     } catch (err) {
       decryptedKey = user.mnemonic;

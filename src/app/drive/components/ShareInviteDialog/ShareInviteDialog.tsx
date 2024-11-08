@@ -33,6 +33,7 @@ interface UsersToInvite {
   email: string;
   userRole: string;
   publicKey: string;
+  publicKyberKey: string;
   isNewUser: boolean;
 }
 
@@ -73,9 +74,9 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     const isDuplicated = usersToInvite.find((user) => user.email === userInvited.email);
 
     if (!isDuplicated && isValidEmail(userInvitedEmail)) {
-      const publicKey = await getUserPublicKey(email);
+      const { publicKey, publicKyberKey } = await getUserPublicKey(email);
 
-      const markUserAsNew = !publicKey;
+      const markUserAsNew = !publicKey || !publicKyberKey;
 
       if (markUserAsNew) {
         userInvited.isNewUser = true;
@@ -83,7 +84,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
       }
 
       const unique: Array<UsersToInvite> = [...usersToInvite];
-      unique.push({ ...userInvited, publicKey });
+      unique.push({ ...userInvited, publicKey, publicKyberKey });
       setUsersToInvite(unique);
       setEmail('');
     } else {
@@ -102,17 +103,19 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     setUsersToInvite(newUserToInvite);
   };
 
-  const getUserPublicKey = async (email: string): Promise<string> => {
+  const getUserPublicKey = async (email: string): Promise<{ publicKey: string; publicKyberKey: string }> => {
     let publicKey = '';
+    let publicKyberKey = '';
     try {
       const publicKeyResponse = await userService.getPublicKeyByEmail(email);
       publicKey = publicKeyResponse.publicKey;
+      publicKyberKey = publicKeyResponse.publicKyberKey;
     } catch (error) {
       if ((error as AppError)?.status !== HTTP_CODES.NOT_FOUND) {
         errorService.reportError(error);
       }
     }
-    return publicKey;
+    return { publicKey, publicKyberKey };
   };
 
   const processInvites = async (usersToInvite: UsersToInvite[]) => {
@@ -157,15 +160,16 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     let isThereAnyNewUser = newUsersExists;
 
     if (usersList.length === 0 && isValidEmail(email)) {
-      const publicKey = await getUserPublicKey(email);
-      if (!publicKey && !preCreateUsers) {
+      const { publicKey, publicKyberKey } = await getUserPublicKey(email);
+      if (!publicKey && !preCreateUsers && !publicKyberKey) {
         isThereAnyNewUser = true;
       }
       usersList.push({
         email,
         userRole,
-        isNewUser: !publicKey,
+        isNewUser: !publicKey || !publicKyberKey,
         publicKey,
+        publicKyberKey,
       });
     }
 

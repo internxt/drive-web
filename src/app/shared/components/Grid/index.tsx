@@ -2,7 +2,7 @@ import GridItem from './GridItem';
 import SkinSkeletonItem from './SkinSketelonItem';
 import { useEffect, useState } from 'react';
 import { ArrowUp, ArrowDown } from '@phosphor-icons/react';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
 
 interface HeaderProps {
   name: string;

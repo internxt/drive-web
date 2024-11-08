@@ -17,11 +17,11 @@ import { ListItemMenu } from '../../../shared/components/List/ListItem';
 import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import { useBackupListActions } from 'app/backups/hooks/useBackupListActions';
-import { useBackupDeviceActions } from 'app/backups/hooks/useBackupDeviceActions';
-import { useBackupsPagination } from 'app/backups/hooks/useBackupsPagination';
-import errorService from 'app/core/services/error.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { useBackupListActions } from '../../../backups/hooks/useBackupListActions';
+import { useBackupDeviceActions } from '../../../backups/hooks/useBackupDeviceActions';
+import { useBackupsPagination } from '../../../backups/hooks/useBackupsPagination';
+import errorService from '../../../core/services/error.service';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 
 export default function BackupsView(): JSX.Element {
   const { translate } = useTranslationContext();

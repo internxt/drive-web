@@ -12,11 +12,11 @@ import { bytesToString } from '../../../drive/services/size.service';
 import date from '../../../core/services/date.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { DriveItemData, DriveItemDetails, ItemDetailsProps } from '../../../drive/types';
-import newStorageService from 'app/drive/services/new-storage.service';
-import errorService from 'app/core/services/error.service';
-import { getItemPlainName } from 'app/crypto/services/utils';
+import newStorageService from '../../../drive/services/new-storage.service';
+import errorService from '../../../core/services/error.service';
+import { getItemPlainName } from '../../../crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
-import { AdvancedSharedItem } from 'app/share/types';
+import { AdvancedSharedItem } from '../../../share/types';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (

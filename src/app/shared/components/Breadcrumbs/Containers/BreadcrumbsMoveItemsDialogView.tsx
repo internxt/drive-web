@@ -1,8 +1,8 @@
-import { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/types';
-import { FolderPathDialog } from 'app/drive/types';
-import { useAppSelector } from 'app/store/hooks';
-import { RootState } from 'app/store';
-import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
+import { BreadcrumbItemData } from '../../../../shared/components/Breadcrumbs/types';
+import { FolderPathDialog } from '../../../../drive/types';
+import { useAppSelector } from '../../../../store/hooks';
+import { RootState } from '../../../../store';
+import Breadcrumbs from '../../../../shared/components/Breadcrumbs/Breadcrumbs';
 
 interface BreadcrumbsMoveItemsDialogViewProps {
   onShowFolderContentClicked: (folderId: string, name: string) => void;

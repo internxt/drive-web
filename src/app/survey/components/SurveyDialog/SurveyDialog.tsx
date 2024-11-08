@@ -1,14 +1,14 @@
 import { Widget } from '@typeform/embed-react';
 import { useSelector } from 'react-redux';
-import { RootState } from 'app/store';
+import { RootState } from '../../../../app/store';
 import { useEffect } from 'react';
 
-import { useAppDispatch } from 'app/store/hooks';
-import { uiActions } from 'app/store/slices/ui';
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
+import { useAppDispatch } from '../../../../app/store/hooks';
+import { uiActions } from '../../../../app/store/slices/ui';
+import BaseDialog from '../../../../app/shared/components/BaseDialog/BaseDialog';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import RealtimeService from 'app/core/services/socket.service';
-import { referralsThunks } from 'app/store/slices/referrals';
+import RealtimeService from '../../../../app/core/services/socket.service';
+import { referralsThunks } from '../../../../app/store/slices/referrals';
 
 const SurveyDialog = (props: { isOpen: boolean }): JSX.Element => {
   const clientId = RealtimeService.getInstance().getClientId();

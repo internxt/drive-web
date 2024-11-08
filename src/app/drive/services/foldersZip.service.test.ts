@@ -1,12 +1,13 @@
 import { FlatFolderZip } from '../../core/services/zip.service';
 import { addAllFoldersToZip, addAllSharedFoldersToZip } from './foldersZip.service';
+import { vi, describe, expect, afterEach, test } from 'vitest';
 
 class MockFlatFolderZip {
   public zip: any;
 
   constructor() {
     this.zip = {
-      addFolder: jest.fn(),
+      addFolder: vi.fn(),
     };
   }
 
@@ -17,7 +18,7 @@ class MockFlatFolderZip {
 
 describe('foldersZip', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('addAllSharedFoldersToZip', () => {
@@ -26,7 +27,7 @@ describe('foldersZip', () => {
     const foldersPage3 = [{ name: 'folder5' }];
 
     const iterator = {
-      next: jest
+      next: vi
         .fn()
         .mockReturnValueOnce({ value: foldersPage1, done: false, token: 'token1' })
         .mockReturnValueOnce({ value: foldersPage2, done: false, token: 'token2' })
@@ -35,9 +36,8 @@ describe('foldersZip', () => {
 
     test('should add all shared folders to the zip correctly', async () => {
       const zip = new MockFlatFolderZip();
-
+      const addFolder = vi.spyOn(zip.zip, 'addFolder');
       const result = await addAllSharedFoldersToZip('/path/to/folders', iterator, zip as unknown as FlatFolderZip);
-      const addFolder = jest.spyOn(zip.zip, 'addFolder');
       const allFoldersLength = foldersPage1.length + foldersPage2.length + foldersPage3.length;
 
       expect(addFolder).toHaveBeenCalledTimes(allFoldersLength);
@@ -51,9 +51,9 @@ describe('foldersZip', () => {
     });
 
     test('should handle empty iterator correctly', async () => {
-      const emptyIterator = { next: jest.fn().mockReturnValue({ value: [], done: true, token: 'token' }) };
+      const emptyIterator = { next: vi.fn().mockReturnValue({ value: [], done: true, token: 'token' }) };
       const zip = new MockFlatFolderZip();
-      const addFolder = jest.spyOn(zip.zip, 'addFolder');
+      const addFolder = vi.spyOn(zip.zip, 'addFolder');
 
       const result = await addAllSharedFoldersToZip('/path/to/folders', emptyIterator, zip as unknown as FlatFolderZip);
 
@@ -69,7 +69,7 @@ describe('foldersZip', () => {
     const foldersPage3 = [];
 
     const iterator = {
-      next: jest
+      next: vi
         .fn()
         .mockReturnValueOnce({ value: foldersPage1, done: false })
         .mockReturnValueOnce({ value: foldersPage2, done: false })
@@ -78,8 +78,8 @@ describe('foldersZip', () => {
     const zip = new MockFlatFolderZip();
 
     test('should add all folders to the zip correctly', async () => {
+      const addFolder = vi.spyOn(zip.zip, 'addFolder');
       const result = await addAllFoldersToZip('/path/to/folders', iterator, zip as unknown as FlatFolderZip);
-      const addFolder = jest.spyOn(zip.zip, 'addFolder');
       const allFoldersLength = foldersPage1.length + foldersPage2.length + foldersPage3.length;
 
       expect(addFolder).toHaveBeenCalledTimes(allFoldersLength);
@@ -91,8 +91,8 @@ describe('foldersZip', () => {
     });
 
     test('should handle empty iterator correctly', async () => {
-      const emptyIterator = { next: jest.fn().mockReturnValue({ value: [], done: true }) };
-      const addFolder = jest.spyOn(zip.zip, 'addFolder');
+      const emptyIterator = { next: vi.fn().mockReturnValue({ value: [], done: true }) };
+      const addFolder = vi.spyOn(zip.zip, 'addFolder');
 
       const result = await addAllFoldersToZip('/path/to/folders', emptyIterator, zip as unknown as FlatFolderZip);
 
