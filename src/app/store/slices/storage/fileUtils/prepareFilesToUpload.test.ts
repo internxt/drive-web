@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
+import { beforeEach, afterEach, describe, expect, it, vi, Mock } from 'vitest';
 
 import newStorageService from '../../../../drive/services/new-storage.service';
 import { checkDuplicatedFiles } from './checkDuplicatedFiles';
@@ -23,6 +23,10 @@ function createMockFile(name: string, size = 0, type = ''): File {
 describe('prepareFilesToUpload', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should process files in batches', async () => {
