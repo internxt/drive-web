@@ -55,7 +55,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
                 <CheckCircle size={24} className="" />
                 <p className="whitespace-nowrap font-medium lg:text-lg">{translate('featuresBanner.guarantee')}</p>
               </div>
-              <p className="text-sm font-medium text-gray-80 dark:text-gray-20">
+              <p className="text-sm font-medium text-gray-50 dark:text-gray-20">
                 {translate('featuresBanner.lastCta')}
               </p>
             </div>
