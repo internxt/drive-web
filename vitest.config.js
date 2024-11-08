@@ -1,12 +1,10 @@
 // vitest.config.ts
 import replace from '@rollup/plugin-replace';
 import react from '@vitejs/plugin-react';
-import reactRefresh from '@vitejs/plugin-react-refresh';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [
-    reactRefresh(),
     react(),
     replace({
       preventAssignment: true,

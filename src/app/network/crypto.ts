@@ -1,11 +1,7 @@
 import { ShardMeta } from '@internxt/inxt-js/build/lib/models';
-import {
-  Aes256gcmEncrypter,
-  sha512HmacBuffer,
-  sha512HmacBufferFromHex,
-} from '@internxt/inxt-js/build/lib/utils/crypto';
+import { Aes256gcmEncrypter, sha512HmacBufferFromHex } from '@internxt/inxt-js/build/lib/utils/crypto';
 import { streamFileIntoChunks } from '../core/services/stream.service';
-import { createSHA256, sha512, ripemd160 } from 'hash-wasm';
+import { createSHA256, sha512, ripemd160, createHMAC, createSHA512 } from 'hash-wasm';
 import { mnemonicToSeed } from 'bip39';
 import { Cipher, CipherCCM, createCipheriv } from 'crypto';
 
@@ -18,24 +14,26 @@ export function createAES256Cipher(key: Buffer, iv: Buffer): Cipher {
   return createCipheriv('aes-256-ctr', key, iv);
 }
 
-export function generateHMAC(
+export async function generateHMAC(
   shardMetas: Omit<ShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
   encryptionKey: Buffer,
-): Buffer {
+): Promise<string> {
   const shardHashesSorted = [...shardMetas].sort((sA, sB) => sA.index - sB.index);
-  const hmac = sha512HmacBuffer(encryptionKey);
+  const hashFunc = createSHA512();
+  const hmac = await createHMAC(hashFunc, encryptionKey);
+  hmac.init();
 
   for (const shardMeta of shardHashesSorted) {
-    hmac.update(Buffer.from(shardMeta.hash, 'hex'));
+    hmac.update(shardMeta.hash);
   }
 
   return hmac.digest();
 }
 
-async function getDeterministicKey(key: string, data: string): Promise<string> {
+function getDeterministicKey(key: string, data: string): Promise<string> {
   const input = key + data;
 
-  return await sha512(input);
+  return sha512(input);
 }
 
 async function getBucketKey(mnemonic: string, bucketId: string): Promise<string> {
@@ -132,6 +130,7 @@ export async function getEncryptedFile(
 ): Promise<[Blob, string]> {
   const readable = encryptReadable(plainFile.stream(), cipher).getReader();
   const hasher = await createSHA256();
+  hasher.init();
   const blobParts: ArrayBuffer[] = [];
 
   let done = false;
