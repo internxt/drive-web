@@ -1,7 +1,6 @@
 import { CheckCircle, SealPercent, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import styles from 'app/banners/FeaturesBanner.module.scss';
-import webBanner from 'assets/images/banner/web.svg';
 
 interface FeaturesBannerProps {
   showBanner: boolean;
