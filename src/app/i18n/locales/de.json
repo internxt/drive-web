@@ -1661,6 +1661,16 @@
         "empty": {
           "text": "Keine früheren Rechnungen"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "searchMembers": "Search members",
+          "fromDate": "From:",
+          "toDate": "To:",
+          "platform": "By platform:",
+          "clear": "Clear"
+        },
+        "headerTable": ["Datum", "Mitglied", "Aktivität", "Zugang"]
       }
     },
     "account": {

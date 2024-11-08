@@ -1678,6 +1678,16 @@
           "text": "您的計劃將降級到免費等級。",
           "button": "取消訂閱"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "searchMembers": "Search members",
+          "fromDate": "From:",
+          "toDate": "To:",
+          "platform": "By platform:",
+          "clear": "Clear"
+        },
+        "headerTable": ["日期", "成員", "活動", "訪問"]
       }
     },
     "account": {

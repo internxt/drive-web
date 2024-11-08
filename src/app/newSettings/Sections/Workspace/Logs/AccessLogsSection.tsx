@@ -1,7 +1,11 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Section from '../../../../newSettings/components/Section';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { ScrollableTable } from 'app/shared/tables/ScrollableTable';
+import 'react-calendar/dist/Calendar.css';
+import { TableCell, TableRow } from '@internxt/internxtui';
+import { AccessLogsFilterOptions } from './components/AccessLogsFilterOptions';
+import { useAccessLogs } from './hooks/useAccessLogs';
 
 interface LogsView {
   onClosePreferences: () => void;
@@ -37,7 +41,7 @@ function generateMockData(numItems = 100): ActivityRow[] {
     { action: 'Changed', color: 'text-orange' },
   ];
 
-  const accessTypes = ['Web', 'Mobile'];
+  const accessTypes = ['Web', 'Desktop', 'Mobile'];
 
   const mockData: ActivityRow[] = [];
 
@@ -81,48 +85,84 @@ function generateMockData(numItems = 100): ActivityRow[] {
 const mockTableData = generateMockData();
 
 export const AccessLogsSection = ({ onClosePreferences }: LogsView): JSX.Element => {
-  const { translate } = useTranslationContext();
-  const [visibleData, setVisibleData] = useState(mockTableData.slice(0, ITEMS_PER_PAGE));
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const { translate, translateList } = useTranslationContext();
+  const [searchMembersInputValue, setSearchMembersInputValue] = useState<string>('');
+  const [fromCalendarValue, setFromCalendarValue] = useState<Date | null>(null);
+  const [toCalendarValue, setToCalendarValue] = useState<Date | null>(null);
+  const [selectedPlatform, setSelectedPlatform] = useState<string>('');
+  const { visibleData, isLoading, hasMoreItems, loadMoreItems } = useAccessLogs({
+    fromCalendarValue: fromCalendarValue,
+    searchMembersInputValue: searchMembersInputValue,
+    selectedPlatform: selectedPlatform,
+    toCalendarValue: toCalendarValue,
+  });
 
-  const headers = [
-    {
-      label: 'Date',
-    },
-    {
-      label: 'Name',
-    },
-    {
-      label: 'Activity',
-    },
-    {
-      label: 'Platform',
-    },
-  ];
-
-  const loadMoreItems = useCallback(() => {
-    if (loading) return;
-
-    setLoading(true);
-    setTimeout(() => {
-      const nextData = mockTableData.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
-      setVisibleData((prevData) => [...prevData, ...nextData]);
-      setPage((prevPage) => prevPage + 1);
-      setLoading(false);
-    }, 500);
-  }, [loading, page]);
+  const headers = translateList('preferences.workspace.accessLogs.headerTable');
 
   return (
     <Section title={translate('preferences.navBarSections.logs')} onClosePreferences={onClosePreferences}>
-      <ScrollableTable
-        headers={headers}
-        data={visibleData}
-        scrollable
-        loadMoreItems={loadMoreItems}
-        hasMoreItems={page * ITEMS_PER_PAGE < mockTableData.length}
-        loading={loading}
-      />
+      <div className="flex h-screen w-full flex-col gap-6 overflow-hidden">
+        <AccessLogsFilterOptions
+          searchMembersInputValue={searchMembersInputValue}
+          onFromCalendarChange={setFromCalendarValue}
+          onToCalendarChange={setToCalendarValue}
+          onSearchMembersInputValueChange={setSearchMembersInputValue}
+          onPlatformChange={setSelectedPlatform}
+          fromDate={fromCalendarValue}
+          toDate={toCalendarValue}
+          translate={translate}
+        />
+        {visibleData.length > 0 ? (
+          <ScrollableTable
+            renderHeader={() => (
+              <TableRow>
+                {headers.map((header, index) => (
+                  <TableCell key={header} isHeader className="py-2 text-left font-medium">
+                    <div className="flex h-full flex-row justify-between py-2 pl-4">
+                      {header}
+                      {index === headers.length - 1 ? undefined : <div className="border border-gray-10" />}
+                    </div>
+                  </TableCell>
+                ))}
+              </TableRow>
+            )}
+            renderBody={() => (
+              <>
+                {visibleData.map((item) => (
+                  <TableRow className="border-b border-gray-10 text-sm last:border-none hover:bg-gray-5" key={item.id}>
+                    <TableCell className="py-2 pl-4">
+                      <div className="flex flex-col gap-1">
+                        <p className="font-medium">{item.date}</p>
+                        <p className="text-gay-10">{item.time}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-2 pl-4">
+                      <div>{item.member.name}</div>
+                      <div className="text-sm text-gray-50">{item.member.email}</div>
+                    </TableCell>
+                    <TableCell className="py-2 pl-4">
+                      <span className={`${item.activity.color} font-medium`}>{item.activity.action}</span>
+                    </TableCell>
+                    <TableCell className="py-2 pl-4">{item.access}</TableCell>
+                  </TableRow>
+                ))}
+              </>
+            )}
+            tableClassName="min-w-full rounded-lg border border-gray-10"
+            tableHeaderClassName="sticky top-0 z-10 border-b border-gray-10 bg-gray-5 font-semibold text-gray-100"
+            tableBodyClassName="bg-none"
+            numOfColumnsForSkeleton={headers.length ?? 4}
+            scrollable
+            loadMoreItems={loadMoreItems}
+            hasMoreItems={hasMoreItems}
+            isLoading={isLoading}
+          />
+        ) : (
+          <div className="flex h-full w-full flex-col items-center justify-center">
+            <p>There are not results</p>
+          </div>
+        )}
+      </div>
     </Section>
   );
 };

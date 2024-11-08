@@ -50,7 +50,7 @@ export const sectionItems = [
   {
     section: 'workspace',
     subsection: 'logs',
-    isDisabled: false,
+    onlyOwner: true,
     isSubsection: true,
     notificationsNumber: 0,
   },

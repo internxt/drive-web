@@ -7,7 +7,7 @@ import { bytesToString } from '../../../../drive/services/size.service';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import UsageBar from '../../../../newSettings/components/Usage/UsageBar';
 import { getMemberRole, searchMembers } from '../../../../newSettings/utils/membersUtils';
-import { Button } from '@internxt/internxtui';
+import { Button, TableCell, TableRow } from '@internxt/internxtui';
 import Card from '../../../../shared/components/Card';
 import Input from '../../../../shared/components/Input';
 import { RootState } from '../../../../store';
@@ -16,6 +16,7 @@ import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.
 import UserCard from './components/UserCard';
 import InviteDialogContainer from './containers/InviteDialogContainer';
 import MemberDetailsContainer from './containers/MemberDetailsContainer';
+import { ScrollableTable } from 'app/shared/tables/ScrollableTable';
 
 const PENDING_INVITATIONS_LIMIT = 25;
 const PENDING_INVITATIONS_OFFSET = 0;
@@ -81,6 +82,12 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
     await getWorkspacePendingInvitations(selectedWorkspace?.workspaceUser.workspaceId);
   };
 
+  const headerList = [
+    translate('preferences.workspace.members.list.user'),
+    translate('preferences.workspace.members.list.usage'),
+    translate('preferences.workspace.members.list.storage'),
+  ];
+
   return (
     <Section
       title={
@@ -137,102 +144,100 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
                 </Button>
               )}
             </div>
-            <div className="flex">
-              {/* LEFT COLUMN */}
-              <div className="flex grow flex-col">
-                <div className="flex grow flex-col">
-                  <span
-                    className={
-                      'flex h-12 flex-row items-center justify-between rounded-tl-xl border-b border-l border-t border-gray-10 bg-gray-5 px-5 py-2 '
-                    }
+            <ScrollableTable
+              renderHeader={() => (
+                <TableRow className="rounded-t-lg bg-gray-5">
+                  <TableCell
+                    isHeader
+                    style={{
+                      width: '40%',
+                    }}
+                    className="text-left"
                   >
-                    {translate('preferences.workspace.members.list.user')}
-                  </span>
-                </div>
-                {displayedMembers?.map((member, i) => {
-                  const role = getMemberRole(member);
-                  const { id, name, lastname, email } = member.member;
-                  return (
-                    <button
-                      key={id}
-                      className={`flex h-14 flex-row justify-between border-l border-gray-10 px-5 py-2 text-base  font-medium text-gray-100 dark:bg-gray-1 ${
-                        members && i === members.length - 1 ? 'rounded-bl-xl border-b' : ' border-b'
-                      }
-              ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : 'bg-surface'}`}
-                      onMouseEnter={() => setHoverItemIndex(id)}
-                      onMouseLeave={() => setHoverItemIndex(null)}
-                      onClick={() => setSelectedMember(member)}
-                    >
-                      <UserCard name={name} lastName={lastname} role={role} email={email} avatarSrc={''} />
-                    </button>
-                  );
-                })}
-              </div>
-              {/* CENTER COLUMN */}
-              <div className="flex w-full max-w-[256px] grow flex-col">
-                <div className="flex h-12 items-center border-b border-t border-gray-10 bg-gray-5 py-2">
-                  <span
-                    className={
-                      'flex w-full items-center justify-between border-l border-r border-gray-10 bg-gray-5 pl-5 pr-1 '
-                    }
+                    <div className="flex h-full w-full justify-between py-2.5 pl-5">
+                      <p className="text-base font-normal">{translate('preferences.workspace.members.list.user')}</p>
+                      <div className="border-[0.5px] border-gray-10" />
+                    </div>
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      width: '40%',
+                    }}
+                    isHeader
+                    className="text-left"
                   >
-                    {translate('preferences.workspace.members.list.usage')}
-                  </span>
-                </div>
-                {displayedMembers?.map((member, i) => {
-                  const { spaceLimit, usedSpace, backupsUsage, driveUsage } = member;
-                  const { id } = member.member;
-                  const usedSpaceBytes = bytesToString(Number(usedSpace));
-                  return (
-                    <button
-                      key={id}
-                      className={`flex h-14 items-center justify-between border-gray-10 px-5 py-2 text-base font-normal text-gray-60 dark:bg-gray-1 ${
-                        members && i === members.length - 1 ? 'border-b' : ' border-b'
-                      } ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : 'bg-surface'}`}
-                      onMouseEnter={() => setHoverItemIndex(id)}
-                      onMouseLeave={() => setHoverItemIndex(null)}
-                      onClick={() => setSelectedMember(member)}
-                    >
-                      <div className="flex w-full items-center justify-between">
-                        <UsageBar
-                          backupsUsage={backupsUsage}
-                          driveUsage={driveUsage}
-                          spaceLimit={spaceLimit}
-                          height={'h-4'}
-                        />
-                        <span className="ml-4">{usedSpaceBytes ?? '0Bytes'}</span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-              {/* RIGHT COLUMN */}
-              <div className="flex w-28 flex-col rounded-tr-xl">
-                <div>
-                  <div className="flex h-12 items-center truncate rounded-tr-xl border-b border-t border-gray-10 bg-gray-5 p-5">
-                    <span className={'truncate rounded-tr-xl'}>
-                      {translate('preferences.workspace.members.list.storage')}
-                    </span>
-                  </div>
-                </div>
-                {displayedMembers?.map((member, i) => {
-                  const { spaceLimit } = member;
-                  const { id } = member.member;
-                  return (
-                    <button
-                      key={id}
-                      className={`flex h-14 flex-row items-center justify-between border-r border-gray-10 py-2 pl-5 text-base font-normal text-gray-60 dark:bg-gray-1 ${
-                        members && i === members.length - 1 ? 'rounded-br-xl border-b' : 'border-b'
-                      } ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : ''}`}
-                      onMouseEnter={() => setHoverItemIndex(id)}
-                      onMouseLeave={() => setHoverItemIndex(null)}
-                    >
-                      <span className=" text-base font-medium leading-5">{bytesToString(Number(spaceLimit))}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+                    <div className="flex w-full justify-between py-2.5 pl-5">
+                      <p className="font-normal">{translate('preferences.workspace.members.list.usage')}</p>
+                      <div className="border-[0.5px] border-gray-10" />
+                    </div>
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      width: '20%',
+                    }}
+                    isHeader
+                    className="text-left"
+                  >
+                    <div className="flex h-full w-full justify-between py-2.5 pl-5">
+                      <p className="font-normal">{translate('preferences.workspace.members.list.storage')}</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+              renderBody={() => (
+                <>
+                  {displayedMembers?.map((member, i) => {
+                    const role = getMemberRole(member);
+                    const { id, name, lastname, email } = member.member;
+                    const { spaceLimit, usedSpace, backupsUsage, driveUsage } = member;
+                    const usedSpaceBytes = bytesToString(Number(usedSpace));
+
+                    return (
+                      <TableRow
+                        key={id}
+                        onMouseEnter={() => setHoverItemIndex(i)}
+                        onMouseDown={() => setHoverItemIndex(i)}
+                        className={
+                          'cursor-pointer border-b border-gray-10 bg-surface hover:bg-gray-5 dark:bg-gray-1 dark:hover:bg-gray-5 '
+                        }
+                        onClick={() => setSelectedMember(member)}
+                      >
+                        {/* LEFT COLUMN */}
+                        <TableCell className="max-w-[256px] overflow-hidden py-2 pl-5">
+                          <div className="flex w-full items-center justify-between font-medium text-gray-100">
+                            <UserCard name={name} lastName={lastname} role={role} email={email} avatarSrc="" />
+                          </div>
+                        </TableCell>
+                        {/* CENTER COLUMN */}
+                        <TableCell className="py-2 pl-5">
+                          <div className="flex w-full items-center justify-between text-gray-60">
+                            <UsageBar
+                              backupsUsage={backupsUsage}
+                              driveUsage={driveUsage}
+                              spaceLimit={spaceLimit}
+                              height="h-4"
+                            />
+                            <span className="ml-4">{usedSpaceBytes ?? '0Bytes'}</span>
+                          </div>
+                        </TableCell>
+                        {/* RIGHT COLUMN */}
+                        <TableCell className="py-2 pl-5">
+                          <div className="flex w-full items-center justify-between text-gray-60">
+                            <span className="text-base font-medium leading-5">{bytesToString(Number(spaceLimit))}</span>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </>
+              )}
+              containerClassName="rounded-xl border border-gray-10"
+              tableHeaderClassName="sticky top-0 z-10 border-b border-gray-10 bg-gray-1 text-gray-100"
+              tableClassName="table-fixed w-full"
+              tableBodyClassName="bg-none"
+              numOfColumnsForSkeleton={3}
+              scrollable
+            />
           </div>
           <InviteDialogContainer isOpen={isInviteDialogOpen} onClose={() => setIsInviteDialogOpen(false)} />
         </>

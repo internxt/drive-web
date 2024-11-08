@@ -1706,6 +1706,16 @@
         "empty": {
           "text": "Nessuna fattura precedente"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "searchMembers": "Search members",
+          "fromDate": "From:",
+          "toDate": "To:",
+          "platform": "By platform:",
+          "clear": "Clear"
+        },
+        "headerTable": ["Data", "Membro", "Attività", "Accesso"]
       }
     },
     "account": {

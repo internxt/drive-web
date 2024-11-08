@@ -1719,6 +1719,16 @@
         "empty": {
           "text": "以前没有发票"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "searchMembers": "Search members",
+          "fromDate": "From:",
+          "toDate": "To:",
+          "platform": "By platform:",
+          "clear": "Clear"
+        },
+        "headerTable": ["日期", "成员", "活动", "访问"]
       }
     },
     "account": {

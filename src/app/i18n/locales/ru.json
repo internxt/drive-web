@@ -1686,6 +1686,16 @@
         "empty": {
           "text": "Отсутствие предыдущих счетов-фактур"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "searchMembers": "Search members",
+          "fromDate": "From:",
+          "toDate": "To:",
+          "platform": "By platform:",
+          "clear": "Clear"
+        },
+        "headerTable": ["Дата", "Участник", "Деятельность", "Доступ"]
       }
     },
     "account": {

@@ -1697,6 +1697,16 @@
         "empty": {
           "text": "Sin facturas anteriores"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "searchMembers": "Search members",
+          "fromDate": "From:",
+          "toDate": "To:",
+          "platform": "By platform:",
+          "clear": "Clear"
+        },
+        "headerTable": ["Fecha", "Miembro", "Actividad", "Acceso"]
       }
     },
     "account": {

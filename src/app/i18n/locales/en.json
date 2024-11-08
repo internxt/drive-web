@@ -1723,6 +1723,16 @@
         "empty": {
           "text": "No previous invoices"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "searchMembers": "Search members",
+          "fromDate": "From:",
+          "toDate": "To:",
+          "platform": "By platform:",
+          "clear": "Clear"
+        },
+        "headerTable": ["Date", "Member", "Activity", "Access"]
       }
     },
     "account": {
