@@ -1730,9 +1730,14 @@
           "searchMembers": "Search members",
           "filters": "Filters",
           "clear": "Clear",
-          "activity": { "signedIn": "Signed in", "changed": "Changed", "signedOut": "Signed out" },
-          "platform": { "web": "Web", "mobile": "Mobile", "desktop": "Desktop" },
-          "dateRange": { "7days": "Last 7 days", "30days": "Last 30 days", "90days": "Last 90 days" }
+          "activity": { "title": "Activity", "signedIn": "Signed in", "changed": "Changed", "signedOut": "Signed out" },
+          "platform": { "title": "Platform", "web": "Web", "mobile": "Mobile", "desktop": "Desktop" },
+          "dateRange": {
+            "title": "Date range",
+            "7days": "Last 7 days",
+            "30days": "Last 30 days",
+            "90days": "Last 90 days"
+          }
         },
         "headerTable": ["Date", "Member", "Activity", "Access"]
       }

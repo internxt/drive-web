@@ -23,8 +23,6 @@ interface ActivityRow {
   access: string;
 }
 
-const ITEMS_PER_PAGE = 20;
-
 function generateMockData(numItems = 100): ActivityRow[] {
   const members = [
     { name: 'Daniel Dun', email: 'daniel@internxt.com' },
@@ -159,7 +157,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsView): JSX.Element
 
   return (
     <Section title={translate('preferences.navBarSections.logs')} onClosePreferences={onClosePreferences}>
-      <div className="relative flex h-screen w-full flex-col gap-6 overflow-hidden">
+      <div className="flex h-screen w-full flex-col gap-6 overflow-hidden">
         <AccessLogsFilterOptions
           searchMembersInputValue={searchMembersInputValue}
           onFromCalendarChange={setFromCalendarValue}

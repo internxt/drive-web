@@ -1681,11 +1681,28 @@
       },
       "accessLogs": {
         "filterActions": {
-          "searchMembers": "Search members",
-          "fromDate": "From:",
-          "toDate": "To:",
-          "platform": "By platform:",
-          "clear": "Clear"
+          "title": "篩選",
+          "searchMembers": "搜尋成員",
+          "filters": "篩選器",
+          "clear": "清除",
+          "activity": {
+            "title": "活動",
+            "signedIn": "登入",
+            "changed": "更改",
+            "signedOut": "登出"
+          },
+          "platform": {
+            "title": "平台",
+            "web": "網頁",
+            "mobile": "行動端",
+            "desktop": "桌面端"
+          },
+          "dateRange": {
+            "title": "日期範圍",
+            "7days": "最近7天",
+            "30days": "最近30天",
+            "90days": "最近90天"
+          }
         },
         "headerTable": ["日期", "成員", "活動", "訪問"]
       }

@@ -1664,11 +1664,28 @@
       },
       "accessLogs": {
         "filterActions": {
-          "searchMembers": "Search members",
-          "fromDate": "From:",
-          "toDate": "To:",
-          "platform": "By platform:",
-          "clear": "Clear"
+          "title": "Filter",
+          "searchMembers": "Mitglieder suchen",
+          "filters": "Filter",
+          "clear": "Löschen",
+          "activity": {
+            "title": "Aktivität",
+            "signedIn": "Angemeldet",
+            "changed": "Geändert",
+            "signedOut": "Abgemeldet"
+          },
+          "platform": {
+            "title": "Plattform",
+            "web": "Web",
+            "mobile": "Mobil",
+            "desktop": "Desktop"
+          },
+          "dateRange": {
+            "title": "Datumsbereich",
+            "7days": "Letzte 7 Tage",
+            "30days": "Letzte 30 Tage",
+            "90days": "Letzte 90 Tage"
+          }
         },
         "headerTable": ["Datum", "Mitglied", "Aktivität", "Zugang"]
       }

@@ -1722,11 +1722,28 @@
       },
       "accessLogs": {
         "filterActions": {
-          "searchMembers": "Search members",
-          "fromDate": "From:",
-          "toDate": "To:",
-          "platform": "By platform:",
-          "clear": "Clear"
+          "title": "筛选",
+          "searchMembers": "搜索成员",
+          "filters": "筛选器",
+          "clear": "清除",
+          "activity": {
+            "title": "活动",
+            "signedIn": "登录",
+            "changed": "更改",
+            "signedOut": "登出"
+          },
+          "platform": {
+            "title": "平台",
+            "web": "网页",
+            "mobile": "移动端",
+            "desktop": "桌面端"
+          },
+          "dateRange": {
+            "title": "日期范围",
+            "7days": "最近7天",
+            "30days": "最近30天",
+            "90days": "最近90天"
+          }
         },
         "headerTable": ["日期", "成员", "活动", "访问"]
       }

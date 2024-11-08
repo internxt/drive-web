@@ -1649,11 +1649,28 @@
       },
       "accessLogs": {
         "filterActions": {
-          "searchMembers": "Search members",
-          "fromDate": "From:",
-          "toDate": "To:",
-          "platform": "By platform:",
-          "clear": "Clear"
+          "title": "Filtrer",
+          "searchMembers": "Rechercher des membres",
+          "filters": "Filtres",
+          "clear": "Effacer",
+          "activity": {
+            "title": "Activité",
+            "signedIn": "Connecté",
+            "changed": "Modifié",
+            "signedOut": "Déconnecté"
+          },
+          "platform": {
+            "title": "Plateforme",
+            "web": "Web",
+            "mobile": "Mobile",
+            "desktop": "Bureau"
+          },
+          "dateRange": {
+            "title": "Plage de dates",
+            "7days": "7 derniers jours",
+            "30days": "30 derniers jours",
+            "90days": "90 derniers jours"
+          }
         },
         "headerTable": ["Date", "Membre", "Activité", "Accès"]
       }

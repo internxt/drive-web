@@ -1689,11 +1689,28 @@
       },
       "accessLogs": {
         "filterActions": {
-          "searchMembers": "Search members",
-          "fromDate": "From:",
-          "toDate": "To:",
-          "platform": "By platform:",
-          "clear": "Clear"
+          "title": "Фильтр",
+          "searchMembers": "Поиск участников",
+          "filters": "Фильтры",
+          "clear": "Очистить",
+          "activity": {
+            "title": "Деятельность",
+            "signedIn": "Вошел в систему",
+            "changed": "Изменено",
+            "signedOut": "Вышел из системы"
+          },
+          "platform": {
+            "title": "Платформа",
+            "web": "Веб",
+            "mobile": "Мобильный",
+            "desktop": "Настольный"
+          },
+          "dateRange": {
+            "title": "Диапазон дат",
+            "7days": "Последние 7 дней",
+            "30days": "Последние 30 дней",
+            "90days": "Последние 90 дней"
+          }
         },
         "headerTable": ["Дата", "Участник", "Деятельность", "Доступ"]
       }
