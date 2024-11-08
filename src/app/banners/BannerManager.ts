@@ -19,7 +19,7 @@ export class BannerManager {
     this.plan = plan;
     this.offerEndDay = offerEndDay;
     this.isTutorialCompleted = localStorageService.hasCompletedTutorial(user.userId);
-    this.bannerItemInLocalStorage = localStorageService.get(BANNER_NAME_FOR_FREE_USERS);
+    this.bannerItemInLocalStorage = localStorageService.get(BANNER_NAME_IN_LOCAL_STORAGE);
     this.isNewAccount = useAppSelector(userSelectors.hasSignedToday);
     this.todayDate = new Date().getDate().toString();
   }
