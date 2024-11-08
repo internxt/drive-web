@@ -54,13 +54,7 @@ jobs:
       - name: Install
         run: yarn
       - name: Check and Install Playwright
-        run: |
-          if ! yarn list playwright > /dev/null 2>&1; then
-            echo "Playwright not found, installing..."
-            yarn playwright install
-          else
-            echo "Playwright is already installed."
-          fi
+        run: yarn playwright install
       - name: Unit test run
         run: yarn test:coverage
 
