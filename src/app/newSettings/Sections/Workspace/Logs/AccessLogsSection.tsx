@@ -97,11 +97,69 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsView): JSX.Element
     toCalendarValue: toCalendarValue,
   });
 
-  const headers = translateList('preferences.workspace.accessLogs.headerTable');
+  const headerList = translateList('preferences.workspace.accessLogs.headerTable');
+
+  const renderHeader = (headers: string[]) => (
+    <TableRow>
+      {headers.map((header, index) => (
+        <TableCell key={header} isHeader className="py-3 text-left font-medium">
+          <div className="flex h-full flex-row justify-between pl-4">
+            {header}
+            {index === headers.length - 1 ? undefined : <div className="border border-gray-10" />}
+          </div>
+        </TableCell>
+      ))}
+    </TableRow>
+  );
+
+  const renderBody = (visibleData: ActivityRow[]) => (
+    <>
+      {visibleData.map((item) => (
+        <TableRow key={item.id} className="border-b border-gray-10 text-sm last:border-none hover:bg-gray-5">
+          <TableCell
+            style={{
+              width: '30%',
+            }}
+            className="py-2 pl-4"
+          >
+            <div className="flex flex-col gap-1">
+              <p className="font-medium">{item.date}</p>
+              <p className="text-gray-50">{item.time}</p>
+            </div>
+          </TableCell>
+          <TableCell
+            style={{
+              width: '30%',
+            }}
+            className="py-2 pl-4"
+          >
+            <div>{item.member.name}</div>
+            <div className="text-sm text-gray-50">{item.member.email}</div>
+          </TableCell>
+          <TableCell
+            style={{
+              width: '20%',
+            }}
+            className="py-2 pl-4"
+          >
+            <span className={`${item.activity.color} font-medium`}>{item.activity.action}</span>
+          </TableCell>
+          <TableCell
+            style={{
+              width: '20%',
+            }}
+            className="py-2 pl-4"
+          >
+            {item.access}
+          </TableCell>
+        </TableRow>
+      ))}
+    </>
+  );
 
   return (
     <Section title={translate('preferences.navBarSections.logs')} onClosePreferences={onClosePreferences}>
-      <div className="flex h-screen w-full flex-col gap-6 overflow-hidden">
+      <div className="relative flex h-screen w-full flex-col gap-6 overflow-hidden">
         <AccessLogsFilterOptions
           searchMembersInputValue={searchMembersInputValue}
           onFromCalendarChange={setFromCalendarValue}
@@ -114,44 +172,12 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsView): JSX.Element
         />
         {visibleData.length > 0 ? (
           <ScrollableTable
-            renderHeader={() => (
-              <TableRow>
-                {headers.map((header, index) => (
-                  <TableCell key={header} isHeader className="py-2 text-left font-medium">
-                    <div className="flex h-full flex-row justify-between py-2 pl-4">
-                      {header}
-                      {index === headers.length - 1 ? undefined : <div className="border border-gray-10" />}
-                    </div>
-                  </TableCell>
-                ))}
-              </TableRow>
-            )}
-            renderBody={() => (
-              <>
-                {visibleData.map((item) => (
-                  <TableRow className="border-b border-gray-10 text-sm last:border-none hover:bg-gray-5" key={item.id}>
-                    <TableCell className="py-2 pl-4">
-                      <div className="flex flex-col gap-1">
-                        <p className="font-medium">{item.date}</p>
-                        <p className="text-gay-10">{item.time}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-2 pl-4">
-                      <div>{item.member.name}</div>
-                      <div className="text-sm text-gray-50">{item.member.email}</div>
-                    </TableCell>
-                    <TableCell className="py-2 pl-4">
-                      <span className={`${item.activity.color} font-medium`}>{item.activity.action}</span>
-                    </TableCell>
-                    <TableCell className="py-2 pl-4">{item.access}</TableCell>
-                  </TableRow>
-                ))}
-              </>
-            )}
-            tableClassName="min-w-full rounded-lg border border-gray-10"
             tableHeaderClassName="sticky top-0 z-10 border-b border-gray-10 bg-gray-5 font-semibold text-gray-100"
-            tableBodyClassName="bg-none"
-            numOfColumnsForSkeleton={headers.length ?? 4}
+            tableClassName="min-w-full rounded-lg border border-gray-10"
+            tableBodyClassName="bg-surface dark:bg-gray-1"
+            renderHeader={() => renderHeader(headerList)}
+            renderBody={() => renderBody(visibleData)}
+            numOfColumnsForSkeleton={headerList.length ?? 4}
             scrollable
             loadMoreItems={loadMoreItems}
             hasMoreItems={hasMoreItems}

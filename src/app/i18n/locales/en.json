@@ -1726,11 +1726,13 @@
       },
       "accessLogs": {
         "filterActions": {
+          "title": "Filter",
           "searchMembers": "Search members",
-          "fromDate": "From:",
-          "toDate": "To:",
-          "platform": "By platform:",
-          "clear": "Clear"
+          "filters": "Filters",
+          "clear": "Clear",
+          "activity": { "signedIn": "Signed in", "changed": "Changed", "signedOut": "Signed out" },
+          "platform": { "web": "Web", "mobile": "Mobile", "desktop": "Desktop" },
+          "dateRange": { "7days": "Last 7 days", "30days": "Last 30 days", "90days": "Last 90 days" }
         },
         "headerTable": ["Date", "Member", "Activity", "Access"]
       }

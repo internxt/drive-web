@@ -21,18 +21,40 @@ import { ScrollableTable } from 'app/shared/tables/ScrollableTable';
 const PENDING_INVITATIONS_LIMIT = 25;
 const PENDING_INVITATIONS_OFFSET = 0;
 
+interface HeaderListProps {
+  label: string;
+  separator: boolean;
+  width: string;
+}
+
 const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const { translate } = useTranslationContext();
   const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const isCurrentUserWorkspaceOwner = useAppSelector(workspacesSelectors.isWorkspaceOwner);
   const [searchedMemberName, setSearchedMemberName] = useState('');
-  const [hoverItemIndex, setHoverItemIndex] = useState<number | null>(null);
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<WorkspaceUser | null>(null);
   const [members, setMembers] = useState<WorkspaceUser[] | null>(null);
   const [displayedMembers, setDisplayedMembers] = useState(members);
   const [isCurrentMemberOwner, setIsCurrentMemberOwner] = useState<boolean>(false);
   const [guestUsers, setGuestUsers] = useState<number>(0);
+  const headerList: HeaderListProps[] = [
+    {
+      label: translate('preferences.workspace.members.list.user'),
+      separator: true,
+      width: '40%',
+    },
+    {
+      label: translate('preferences.workspace.members.list.usage'),
+      separator: true,
+      width: '40%',
+    },
+    {
+      label: translate('preferences.workspace.members.list.storage'),
+      separator: false,
+      width: '20%',
+    },
+  ];
 
   useEffect(() => {
     refreshWorkspaceMembers();
@@ -82,11 +104,64 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
     await getWorkspacePendingInvitations(selectedWorkspace?.workspaceUser.workspaceId);
   };
 
-  const headerList = [
-    translate('preferences.workspace.members.list.user'),
-    translate('preferences.workspace.members.list.usage'),
-    translate('preferences.workspace.members.list.storage'),
-  ];
+  const renderHeader = (headerList: HeaderListProps[]) => (
+    <TableRow className="rounded-t-lg bg-gray-5">
+      {headerList.map((header) => (
+        <TableCell
+          key={header.label}
+          isHeader
+          style={{
+            width: header.width,
+          }}
+          className="text-left"
+        >
+          <div className="flex h-full w-full justify-between py-2.5 pl-5">
+            <p className="text-base font-normal">{header.label}</p>
+            {header.separator && <div className="border-[0.5px] border-gray-10" />}
+          </div>
+        </TableCell>
+      ))}
+    </TableRow>
+  );
+
+  const renderBody = (displayedMembers: WorkspaceUser[] | null, setSelectedMember: (member: WorkspaceUser) => void) => (
+    <>
+      {displayedMembers?.map((member) => {
+        const role = getMemberRole(member);
+        const { id, name, lastname, email } = member.member;
+        const { spaceLimit, usedSpace, backupsUsage, driveUsage } = member;
+        const usedSpaceBytes = bytesToString(Number(usedSpace));
+
+        return (
+          <TableRow
+            key={id}
+            className="cursor-pointer border-b border-gray-10 bg-surface hover:bg-gray-5 dark:bg-gray-1 dark:hover:bg-gray-5"
+            onClick={() => setSelectedMember(member)}
+          >
+            {/* LEFT COLUMN */}
+            <TableCell className="max-w-[256px] overflow-hidden py-2 pl-5">
+              <div className="flex w-full items-center justify-between font-medium text-gray-100">
+                <UserCard name={name} lastName={lastname} role={role} email={email} avatarSrc="" />
+              </div>
+            </TableCell>
+            {/* CENTER COLUMN */}
+            <TableCell className="py-2 pl-5">
+              <div className="flex w-full items-center justify-between text-gray-60">
+                <UsageBar backupsUsage={backupsUsage} driveUsage={driveUsage} spaceLimit={spaceLimit} height="h-4" />
+                <span className="ml-4">{usedSpaceBytes ?? '0Bytes'}</span>
+              </div>
+            </TableCell>
+            {/* RIGHT COLUMN */}
+            <TableCell className="py-2 pl-5">
+              <div className="flex w-full items-center justify-between text-gray-60">
+                <span className="text-base font-medium leading-5">{bytesToString(Number(spaceLimit))}</span>
+              </div>
+            </TableCell>
+          </TableRow>
+        );
+      })}
+    </>
+  );
 
   return (
     <Section
@@ -144,99 +219,16 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
                 </Button>
               )}
             </div>
-            <ScrollableTable
-              renderHeader={() => (
-                <TableRow className="rounded-t-lg bg-gray-5">
-                  <TableCell
-                    isHeader
-                    style={{
-                      width: '40%',
-                    }}
-                    className="text-left"
-                  >
-                    <div className="flex h-full w-full justify-between py-2.5 pl-5">
-                      <p className="text-base font-normal">{translate('preferences.workspace.members.list.user')}</p>
-                      <div className="border-[0.5px] border-gray-10" />
-                    </div>
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      width: '40%',
-                    }}
-                    isHeader
-                    className="text-left"
-                  >
-                    <div className="flex w-full justify-between py-2.5 pl-5">
-                      <p className="font-normal">{translate('preferences.workspace.members.list.usage')}</p>
-                      <div className="border-[0.5px] border-gray-10" />
-                    </div>
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      width: '20%',
-                    }}
-                    isHeader
-                    className="text-left"
-                  >
-                    <div className="flex h-full w-full justify-between py-2.5 pl-5">
-                      <p className="font-normal">{translate('preferences.workspace.members.list.storage')}</p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-              renderBody={() => (
-                <>
-                  {displayedMembers?.map((member, i) => {
-                    const role = getMemberRole(member);
-                    const { id, name, lastname, email } = member.member;
-                    const { spaceLimit, usedSpace, backupsUsage, driveUsage } = member;
-                    const usedSpaceBytes = bytesToString(Number(usedSpace));
 
-                    return (
-                      <TableRow
-                        key={id}
-                        onMouseEnter={() => setHoverItemIndex(i)}
-                        onMouseDown={() => setHoverItemIndex(i)}
-                        className={
-                          'cursor-pointer border-b border-gray-10 bg-surface hover:bg-gray-5 dark:bg-gray-1 dark:hover:bg-gray-5 '
-                        }
-                        onClick={() => setSelectedMember(member)}
-                      >
-                        {/* LEFT COLUMN */}
-                        <TableCell className="max-w-[256px] overflow-hidden py-2 pl-5">
-                          <div className="flex w-full items-center justify-between font-medium text-gray-100">
-                            <UserCard name={name} lastName={lastname} role={role} email={email} avatarSrc="" />
-                          </div>
-                        </TableCell>
-                        {/* CENTER COLUMN */}
-                        <TableCell className="py-2 pl-5">
-                          <div className="flex w-full items-center justify-between text-gray-60">
-                            <UsageBar
-                              backupsUsage={backupsUsage}
-                              driveUsage={driveUsage}
-                              spaceLimit={spaceLimit}
-                              height="h-4"
-                            />
-                            <span className="ml-4">{usedSpaceBytes ?? '0Bytes'}</span>
-                          </div>
-                        </TableCell>
-                        {/* RIGHT COLUMN */}
-                        <TableCell className="py-2 pl-5">
-                          <div className="flex w-full items-center justify-between text-gray-60">
-                            <span className="text-base font-medium leading-5">{bytesToString(Number(spaceLimit))}</span>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </>
-              )}
+            {/* Table */}
+            <ScrollableTable
+              renderHeader={() => renderHeader(headerList)}
+              renderBody={() => renderBody(displayedMembers, setSelectedMember)}
               containerClassName="rounded-xl border border-gray-10"
               tableHeaderClassName="sticky top-0 z-10 border-b border-gray-10 bg-gray-1 text-gray-100"
-              tableClassName="table-fixed w-full"
+              tableClassName="rounded-xl overflow-hidden w-full"
               tableBodyClassName="bg-none"
               numOfColumnsForSkeleton={3}
-              scrollable
             />
           </div>
           <InviteDialogContainer isOpen={isInviteDialogOpen} onClose={() => setIsInviteDialogOpen(false)} />

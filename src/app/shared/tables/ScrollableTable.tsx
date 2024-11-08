@@ -21,7 +21,7 @@ export const ScrollableTable: React.FC<ScrollableTableProps> = ({
   scrollable = false,
   hasMoreItems = false,
   isLoading = false,
-  containerClassName = 'min-w-full border border-gray-10 h-full rounded-lg overflow-hidden',
+  containerClassName = 'min-w-full relative border border-gray-10 h-full rounded-lg overflow-hidden',
   tableClassName,
   tableHeaderClassName,
   tableBodyClassName,
