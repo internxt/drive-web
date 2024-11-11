@@ -4,19 +4,19 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 80%",
-    "title": "Boo ! Venez économiser avec nous...",
-    "subtitle": "Gagnez notre sac à dos premium avec nos plans à vie.",
-    "cta": "Choisissez un plan",
+    "label": "Économisez 85% !",
+    "title": "Les meilleures offres du Black Friday",
+    "subtitle": "Recevez notre sac à dos premium avec nos plans à vie.",
+    "cta": "Choisissez votre plan",
     "guarantee": "Garantie de remboursement de 30 jours",
-    "lastCta": "*Offre réservée aux comptes gratuits ou nouveaux clients",
+    "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
     "features": [
-      "Économisez sur tous les plans à vie",
+      "Économisez gros sur tous les plans premium",
       "Stockage cloud privé et crypté",
-      "Code source ouvert et audité",
+      "Open source et audité",
       "Transferts cryptés de bout en bout",
       "Aucun accès non autorisé",
-      "Offre valable jusqu’au 10 novembre"
+      "L'offre se termine le 3 décembre"
     ]
   },
   "valentinesBanner": {
