@@ -1276,7 +1276,9 @@
     "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón",
     "invalidTaxIdIsProvided": "El ID fiscal proporcionado es inválido",
     "errorWhileFetchingMoreItems": "Algo salió mal al obtener más elementos",
-    "errorDeletingItems": "Algo salió mal al eliminar este elemento"
+    "errorDeletingItems": "Algo salió mal al eliminar este elemento",
+    "invalidWorkspaceInvitationError": "Espacio de trabajo lleno. Contacta al propietario.",
+    "errorAcceptingWorkspaceInvitation": "Ocurrió un error al aceptar la invitación"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",

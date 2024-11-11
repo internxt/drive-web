@@ -1311,7 +1311,9 @@
     "errorApplyingCoupon": "应用优惠券时出错",
     "errorWhileFetchingMoreItems": "获取更多项目时出现错误",
     "errorDeletingItems": "删除此项目时出现错误",
-    "invalidTaxIdIsProvided": "提供的税号无效"
+    "invalidTaxIdIsProvided": "提供的税号无效",
+    "invalidWorkspaceInvitationError": "工作区已满。请联系所有者。",
+    "errorAcceptingWorkspaceInvitation": "接受邀请时出错"
   },
   "actions": {
     "undo": "撤销",
