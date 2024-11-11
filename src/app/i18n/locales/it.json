@@ -9,19 +9,19 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia 80%",
-    "title": "Boo! Vieni a risparmiare con noi...",
-    "subtitle": "Vinci il nostro zaino premium con i nostri piani a vita.",
-    "cta": "Scegli un piano",
+    "label": "Risparmia l'85%!",
+    "title": "Le migliori offerte del Black Friday",
+    "subtitle": "Ottieni il nostro zaino premium con i nostri piani a vita.",
+    "cta": "Scegli il tuo piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
-    "lastCta": "*Offerta valida per conti gratuiti o nuovi clienti",
+    "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
     "features": [
-      "Risparmia su tutti i piani a vita",
-      "Archiviazione cloud privata e criptata",
-      "Codice open-source e verificato",
+      "Risparmia su tutti i piani premium",
+      "Archivio cloud privato e crittografato",
+      "Open source e verificato",
       "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
-      "Offerta valida fino al 10 novembre"
+      "L'offerta termina il 3 dicembre"
     ]
   },
   "banner": {

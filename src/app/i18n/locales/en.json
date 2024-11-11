@@ -4,19 +4,19 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 80%",
-    "title": "Boo! Come save with us...",
+    "label": "Save 85%!",
+    "title": "The best Black Friday deals",
     "subtitle": "Win our premium backpack with our lifetime plans.",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
-      "Save on all lifetime plans",
+      "Save big on all premium plans",
       "Private, encrypted cloud storage",
       "Open-source and audited",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends November 10"
+      "Offer ends December 3rd"
     ]
   },
   "valentinesBanner": {
