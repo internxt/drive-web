@@ -54,7 +54,7 @@ jobs:
       - name: Clear Yarn cache
         run: yarn cache clean
       - name: Install
-        run: yarn
+        run: yarn install --verbose
       - name: Check and Install Playwright
         run: yarn playwright install
       - name: Unit test run
