@@ -28,6 +28,7 @@ export default defineConfig({
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'lcov'],
+      reportsDirectory: './coverage',
       include: ['src/**/*.{js,ts,jsx,tsx}', 'test/unit/**/*.{js,ts,jsx,tsx}'],
       exclude: ['src/app/drive/components/FileViewer/viewers/FileDocumentViewer/**'],
     },
