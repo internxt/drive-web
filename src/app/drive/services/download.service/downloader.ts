@@ -17,11 +17,8 @@ export interface DownloadableFile {
 async function downloadFolders(
   iterator: Iterator<DownloadableFolder>,
   opts: {
-    onFolderRetrieved: (
-      folder: DownloadableFolder,
-      onFolderCreated: (err: Error | null) => void
-    ) => void
-  }
+    onFolderRetrieved: (folder: DownloadableFolder, onFolderCreated: (err: Error | null) => void) => void;
+  },
 ): Promise<void> {
   const { done, value } = await iterator.next();
   let allFoldersDownloaded = done;
@@ -57,12 +54,12 @@ async function downloadFiles(
   opts: {
     onFileRetrieved: (
       file: DownloadableFile & {
-        stream: ReadableStream<Uint8Array>
+        stream: ReadableStream<Uint8Array>;
       },
-      onFileDownloaded: (err: Error | null) => void
-    ) => void
+      onFileDownloaded: (err: Error | null) => void,
+    ) => void;
   },
-  token?: string
+  token?: string,
 ): Promise<void> {
   const { value, done } = await iterator.next();
   let allFilesDownloaded = done;
@@ -84,21 +81,24 @@ async function downloadFiles(
         bucketId: bucket,
         fileId: (file as any).fileId,
         encryptionKey: Buffer.from(file.encryptionKey, 'hex'),
-        token
+        token,
       });
 
       await new Promise((resolve, reject) => {
-        opts.onFileRetrieved({
-          ...file,
-          name: displayFilename,
-          stream: readable
-        }, (err) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(null);
-          }
-        });
+        opts.onFileRetrieved(
+          {
+            ...file,
+            name: displayFilename,
+            stream: readable,
+          },
+          (err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(null);
+            }
+          },
+        );
       });
     }
 
@@ -118,7 +118,7 @@ export class FolderLevel {
     foldersIterator: Iterator<DownloadableFolder>,
     filesIterator: Iterator<DownloadableFile>,
     bucket: string,
-    token?: string
+    token?: string,
   ) {
     this.token = token;
     this.bucket = bucket;
@@ -129,14 +129,11 @@ export class FolderLevel {
   async download(opts: {
     onFileRetrieved: (
       file: DownloadableFile & {
-        stream: ReadableStream<Uint8Array>
+        stream: ReadableStream<Uint8Array>;
       },
-      onFileDownloaded: (err: Error | null) => void
-    ) => void,
-    onFolderRetrieved: (
-      folder: DownloadableFolder,
-      onFolderCreated: (err: Error | null) => void
-    ) => void
+      onFileDownloaded: (err: Error | null) => void,
+    ) => void;
+    onFolderRetrieved: (folder: DownloadableFolder, onFolderCreated: (err: Error | null) => void) => void;
   }): Promise<void> {
     await downloadFiles(this.filesIterator, this.bucket, opts, this.token);
     await downloadFolders(this.foldersIterator, opts);
