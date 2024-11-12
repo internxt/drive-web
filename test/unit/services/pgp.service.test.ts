@@ -11,7 +11,6 @@ import {
   standardDecryptMessageWithPrivateKey,
 } from '../../../src/app/crypto/services/pgp.service';
 
-import { Buffer } from 'buffer';
 import { describe, expect, it } from 'vitest';
 
 describe('Post-quantum Encryption and Decryption', () => {
@@ -138,7 +137,7 @@ describe('Encryption and Decryption', () => {
 
     const decryptedMessage = await standardDecryptMessageWithPrivateKey({
       encryptedMessage,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
     });
 
     expect(keys).toHaveProperty('privateKeyArmored');

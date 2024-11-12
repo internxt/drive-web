@@ -8,7 +8,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import httpService from 'app/core/services/http.service';
 import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
-import { passToHash, decryptTextWithKey, encryptText, encryptTextWithKey } from 'app/crypto/services/utils';
+import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 
 type UpdateInfoFunction = (
   email: string,

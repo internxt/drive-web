@@ -609,7 +609,7 @@ export const decryptMnemonic = async (
       } else {
         decryptedKey = await standardDecryptMessageWithPrivateKey({
           encryptedMessage: atob(encryptionKey),
-          privateKeyInBase64: user.privateKey,
+          privateKeyInBase64: user.keys.ecc.privateKey,
         });
       }
     } catch (err) {

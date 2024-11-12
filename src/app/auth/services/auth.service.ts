@@ -22,11 +22,11 @@ import {
 } from '../../crypto/services/keys.service';
 import { generateNewKeys } from '../../crypto/services/pgp.service';
 import {
-  passToHash,
   decryptText,
   decryptTextWithKey,
   encryptText,
   encryptTextWithKey,
+  passToHash,
 } from '../../crypto/services/utils';
 import databaseService from '../../database/services/database.service';
 import { generateMnemonic, validateMnemonic } from 'bip39';
