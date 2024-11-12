@@ -1,5 +1,5 @@
 import { Network } from '@internxt/sdk/dist/network';
-import { sha256 } from 'hash-wasm';
+import { getSha256 } from '../../crypto/services/utils';
 import { NetworkFacade } from '../NetworkFacade';
 
 type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
@@ -61,7 +61,7 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
 async function getAuthFromCredentials(creds: NetworkCredentials): Promise<{ username: string; password: string }> {
   return {
     username: creds.user,
-    password: await sha256(creds.pass),
+    password: await getSha256(creds.pass),
   };
 }
 

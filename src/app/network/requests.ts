@@ -1,7 +1,7 @@
 import errorService from '../core/services/error.service';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
 import { encryptFilename, generateHMAC } from './crypto';
-import { sha256 } from 'hash-wasm';
+import { getSha256 } from '../crypto/services/utils';
 
 // TODO: Make this injectable
 const networkApiUrl = process.env.REACT_APP_STORJ_BRIDGE;
@@ -52,7 +52,7 @@ interface NetworkCredentials {
 async function getAuthFromCredentials(creds: NetworkCredentials): Promise<AxiosBasicCredentials> {
   return {
     username: creds.user,
-    password: await sha256(creds.pass),
+    password: await getSha256(creds.pass),
   };
 }
 

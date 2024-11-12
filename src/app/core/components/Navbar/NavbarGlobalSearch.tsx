@@ -20,7 +20,7 @@ import fileExtensionGroups, { FileExtensionGroup, FileExtensionMap } from 'app/d
 import NotFoundState from './NotFoundState';
 import EmptyState from './EmptyState';
 import FilterItem from './FilterItem';
-import { getItemPlainName } from 'app/crypto/services/utils';
+import { getItemPlainName } from '../../../crypto/services/utils';
 import navigationService from 'app/core/services/navigation.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 

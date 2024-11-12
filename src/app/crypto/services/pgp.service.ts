@@ -1,7 +1,7 @@
 import kemBuilder from '@dashlane/pqc-kem-kyber512-browser';
 import { WebStream, MaybeStream, Data } from 'openpgp';
 import { Buffer } from 'buffer';
-import { blake3 } from 'hash-wasm';
+import { extendSecret } from './utils';
 
 export async function getOpenpgp(): Promise<typeof import('openpgp')> {
   return import('openpgp');
@@ -70,7 +70,7 @@ export const hybridEncryptMessageWithPublicKey = async ({
   const kyberCiphertextStr = Buffer.from(ciphertext).toString('base64');
 
   const bits = message.length * 8;
-  const secretHex = await blake3(secret, bits);
+  const secretHex = await extendSecret(secret, bits);
   const messageHex = Buffer.from(message).toString('hex');
 
   const xoredMessage = XORhex(messageHex, secretHex);
@@ -121,7 +121,7 @@ export const hybridDecryptMessageWithPrivateKey = async ({
 
   const decryptedMessageHex = decryptedMessage as string;
   const bits = decryptedMessageHex.length * 4;
-  const secretHex = await blake3(secret, bits);
+  const secretHex = await extendSecret(secret, bits);
   const result = XORhex(decryptedMessageHex, secretHex);
 
   const resultStr = Buffer.from(result, 'hex').toString('utf8');

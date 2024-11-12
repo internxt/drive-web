@@ -1,4 +1,4 @@
-import { beforeEach, afterEach, describe, expect, it, vi, Mock } from 'vitest';
+import { beforeEach, afterEach, afterAll, describe, expect, it, vi, Mock } from 'vitest';
 
 import newStorageService from '../../../../drive/services/new-storage.service';
 import { checkDuplicatedFiles } from './checkDuplicatedFiles';
@@ -26,6 +26,10 @@ describe('prepareFilesToUpload', () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  afterAll(() => {
     vi.restoreAllMocks();
   });
 
