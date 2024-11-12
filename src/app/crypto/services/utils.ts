@@ -13,6 +13,9 @@ const ARGON2ID_ITERATIONS = 256;
 const ARGON2ID_MEMORY = 512;
 const ARGON2ID_TAG_LEN = 32;
 
+const PBKDF2_ITERATIONS = 10000;
+const PBKDF2_TAG_LEN = 32;
+
 interface PassObjectInterface {
   salt?: string | null;
   password: string;
@@ -55,8 +58,8 @@ function extendSecret(message: Uint8Array, length: number): Promise<string> {
 function getPBKDF2(
   password: string,
   salt: string,
-  iterations: number = 10000,
-  hashLength: number = 32,
+  iterations = PBKDF2_ITERATIONS,
+  hashLength = PBKDF2_TAG_LEN,
 ): Promise<string> {
   return pbkdf2({
     password,
@@ -70,7 +73,7 @@ function getPBKDF2(
 
 function getArgon2(
   password: string,
-  salt: string = '',
+  salt = '',
   parallelism: number = ARGON2ID_PARALLELISM,
   iterations: number = ARGON2ID_ITERATIONS,
   memorySize: number = ARGON2ID_MEMORY,
