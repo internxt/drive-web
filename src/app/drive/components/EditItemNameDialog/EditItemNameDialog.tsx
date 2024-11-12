@@ -85,7 +85,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
             setError('');
           }}
           accent={error ? 'error' : undefined}
-          message={error}
+          message={translate('error.changingName')}
           autofocus
         />
         <div className="flex flex-row items-center justify-end space-x-2">
