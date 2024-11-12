@@ -84,6 +84,7 @@ const App = (props: AppProps): JSX.Element => {
     path: navigationService.history.location.pathname,
   });
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspaceIdParam = params.get('workspaceid');
 
   useBeforeUnload();
 
@@ -91,6 +92,12 @@ const App = (props: AppProps): JSX.Element => {
     initializeInitialAppState();
     i18next.changeLanguage();
   }, []);
+
+  useEffect(() => {
+    if (!isWorkspaceIdParam) {
+      navigationService.resetB2BWorkspaceCredentials(dispatch);
+    }
+  }, [params]);
 
   if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
     /**
