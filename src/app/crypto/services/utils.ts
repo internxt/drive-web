@@ -12,6 +12,7 @@ const ARGON2ID_PARALLELISM = 1;
 const ARGON2ID_ITERATIONS = 256;
 const ARGON2ID_MEMORY = 512;
 const ARGON2ID_TAG_LEN = 32;
+const ARGON2ID_SALT_LEN = 16;
 
 const PBKDF2_ITERATIONS = 10000;
 const PBKDF2_TAG_LEN = 32;
@@ -73,24 +74,21 @@ function getPBKDF2(
 
 function getArgon2(
   password: string,
-  salt = '',
+  salt: string,
   parallelism: number = ARGON2ID_PARALLELISM,
   iterations: number = ARGON2ID_ITERATIONS,
   memorySize: number = ARGON2ID_MEMORY,
   hashLength: number = ARGON2ID_TAG_LEN,
+  outputType: 'hex' | 'binary' | 'encoded' = 'encoded',
 ): Promise<string> {
-  let argonSalt = salt;
-  if (!salt) {
-    argonSalt = crypto.randomBytes(16).toString();
-  }
   return argon2id({
-    password: password,
-    salt: argonSalt,
+    password,
+    salt,
     parallelism,
     iterations,
     memorySize,
     hashLength,
-    outputType: 'hex',
+    outputType,
   });
 }
 
@@ -99,23 +97,23 @@ async function passToHash(passObject: PassObjectInterface): Promise<{ salt: stri
   let salt;
   let hash;
 
-  if (passObject.salt) {
-    // if salt =>   argon2id(PBKDF2(pwd))
-    salt = CryptoJS.enc.Hex.parse(passObject.salt);
-    const oldhash = await getPBKDF2(passObject.password, salt);
-    hash = await getArgon2(oldhash);
+  if (!passObject.salt) {
+    const argonSalt = crypto.randomBytes(ARGON2ID_SALT_LEN).toString('hex');
+    hash = await getArgon2(passObject.password, argonSalt);
+    salt = 'argon2id$' + argonSalt;
+  } else if (passObject.salt.startsWith('argon2id$')) {
+    const argonSalt = passObject.salt.split('$').pop() ?? '';
+    hash = await getArgon2(passObject.password, argonSalt);
+    salt = passObject.salt;
+  } else if (passObject.salt.startsWith('hybrid$')) {
+    const params = passObject.salt.split('$');
+    const oldhash = await getPBKDF2(passObject.password, params[1]);
+    hash = await getArgon2(oldhash, params[2]);
+    salt = passObject.salt;
   } else {
-    // if no salt =>  Argon2id
-    salt = null;
-    hash = await getArgon2(passObject.password);
+    throw Error('Incorrect salt format');
   }
-
-  const hashedObjetc = {
-    salt: salt.toString(),
-    hash: hash.toString(),
-  };
-
-  return hashedObjetc;
+  return { salt, hash };
 }
 
 // AES Plain text encryption method
