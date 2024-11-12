@@ -9,30 +9,13 @@ import { AppView } from '../../../core/types';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { getEnvironmentConfig } from '../network.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
-
-// TODO: REMOVE FROM HERE, DUPLICATED TO MAKE TESTS
-export interface FileToUpload {
-  name: string;
-  size: number;
-  type: string;
-  content: File;
-  parentFolderId: string;
-}
+import { OwnerUserAuthenticationData } from '../../../network/UploadManager';
+import { FileToUpload } from './types';
 
 export interface FileUploadOptions {
   isTeam: boolean;
   abortController?: AbortController;
-  ownerUserAuthenticationData?: {
-    token: string;
-    bridgeUser: string;
-    bridgePass: string;
-    encryptionKey: string;
-    bucketId: string;
-    // to manage B2B workspaces
-    resourcesToken: string;
-    workspaceId?: string;
-    workspacesToken?: string;
-  };
+  ownerUserAuthenticationData?: OwnerUserAuthenticationData;
   abortCallback?: (abort?: () => void) => void;
 }
 

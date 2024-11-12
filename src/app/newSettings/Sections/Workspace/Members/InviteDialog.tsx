@@ -110,14 +110,24 @@ const UserInviteDialog = ({ isOpen, onClose, processInvitation }: UserInviteDial
             </span>
           </div>
         </form>
-        {usersToInvite.map(({ id, name, lastname, email: userEmail }) => (
-          <div key={id} className="flex flex-row justify-between py-2">
-            <UserCard name={name} lastName={lastname} email={userEmail} avatarSrc={''} />
-            <Button variant="secondary" className="h-8" disabled={isLoading} onClick={() => onRemoveUser(userEmail)}>
-              {translate('preferences.workspace.members.inviteDialog.remove')}
-            </Button>
-          </div>
-        ))}
+        <div className="mt-3 max-h-44 overflow-y-scroll">
+          {usersToInvite
+            .slice()
+            .reverse()
+            .map(({ id, name, lastname, email: userEmail }) => (
+              <div key={id} className="flex flex-row justify-between py-2">
+                <UserCard name={name} lastName={lastname} email={userEmail} avatarSrc={''} />
+                <Button
+                  variant="secondary"
+                  className="h-8"
+                  disabled={isLoading}
+                  onClick={() => onRemoveUser(userEmail)}
+                >
+                  {translate('preferences.workspace.members.inviteDialog.remove')}
+                </Button>
+              </div>
+            ))}
+        </div>
         <Card className="mt-6 dark:bg-gray-5">
           <div className="flex w-full items-center justify-center">
             {usersToInvite.length ? (

@@ -273,7 +273,6 @@ export const workspacesSlice = createSlice({
       state.isLoadingCredentials = action.payload;
     },
   },
-  // TODO: TO CHANGE MESSAGES
   extraReducers: (builder) => {
     builder
       .addCase(fetchWorkspaces.pending, (state) => {
@@ -286,7 +285,12 @@ export const workspacesSlice = createSlice({
         const errorMsg = action.payload ? action.payload : '';
 
         state.isLoadingWorkspaces = false;
-        notificationsService.show({ text: 'Fetching workspaces error ' + errorMsg, type: ToastType.Warning });
+        notificationsService.show({
+          text: t('notificationMessages.errorFetchingWorkspace', {
+            error: errorMsg,
+          }),
+          type: ToastType.Warning,
+        });
       })
       .addCase(setSelectedWorkspace.pending, (state) => {
         state.isLoadingWorkspaces = true;
@@ -315,7 +319,9 @@ export const workspacesSlice = createSlice({
         state.isLoadingCredentials = false;
         state.isLoadingWorkspaces = false;
         notificationsService.show({
-          text: 'Fetching workspace credentials error ' + errorMsg,
+          text: t('notificationMessages.errorFetchingWorkspaceCredentials', {
+            error: errorMsg,
+          }),
           type: ToastType.Warning,
         });
       })
@@ -329,7 +335,10 @@ export const workspacesSlice = createSlice({
         const errorMsg = action.payload ? action.payload : '';
 
         state.isLoadingWorkspaces = false;
-        notificationsService.show({ text: 'Setting up workspace error ' + errorMsg, type: ToastType.Warning });
+        notificationsService.show({
+          text: t('notificationMessages.errorSettingUpWorkspace', { error: errorMsg }),
+          type: ToastType.Warning,
+        });
       })
       .addCase(checkAndSetLocalWorkspace.pending, (state) => {
         state.isLoadingWorkspaces = true;
@@ -341,7 +350,10 @@ export const workspacesSlice = createSlice({
         const errorMsg = action.payload ? action.payload : '';
 
         state.isLoadingWorkspaces = false;
-        notificationsService.show({ text: 'checking workspaces error ' + errorMsg, type: ToastType.Warning });
+        notificationsService.show({
+          text: t('notificationMessages.errorWhileLoadingWorkspace', { error: errorMsg }),
+          type: ToastType.Warning,
+        });
       })
 
       .addCase(editWorkspace.rejected, () => {

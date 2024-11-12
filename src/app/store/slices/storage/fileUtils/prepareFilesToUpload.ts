@@ -1,7 +1,7 @@
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-import { FileToUpload } from '../../../../drive/services/file.service/uploadFile';
 import { checkDuplicatedFiles } from './checkDuplicatedFiles';
 import { processDuplicateFiles } from './processDuplicateFiles';
+import { FileToUpload } from '../../../../drive/services/file.service/types';
 
 const BATCH_SIZE = 200;
 
