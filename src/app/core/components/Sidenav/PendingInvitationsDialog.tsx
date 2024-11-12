@@ -54,13 +54,14 @@ const PendingInvitationsDialog = ({
           text: translate('notificationMessages.invalidWorkspaceInvitationError'),
           type: ToastType.Error,
         });
+      } else {
+        const error = errorService.castError(err);
+        errorService.reportError(error);
+        notificationsService.show({
+          text: translate('notificationMessages.errorAcceptingWorkspaceInvitation'),
+          type: ToastType.Error,
+        });
       }
-      const error = errorService.castError(err);
-      errorService.reportError(error);
-      notificationsService.show({
-        text: translate('notificationMessages.errorAcceptingWorkspaceInvitation'),
-        type: ToastType.Error,
-      });
     } finally {
       setIsLoading(false);
     }
