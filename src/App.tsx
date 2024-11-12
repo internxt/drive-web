@@ -37,13 +37,14 @@ import { AppDispatch, RootState } from './app/store';
 import { sessionActions } from './app/store/slices/session';
 import { uiActions } from './app/store/slices/ui';
 import { initializeUserThunk } from './app/store/slices/user';
-import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
+import { workspacesActions, workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
 import { ModifyStorageModal } from 'app/newSettings/Sections/Workspace/Members/components/ModifyStorageModal';
 import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
+import { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -84,6 +85,7 @@ const App = (props: AppProps): JSX.Element => {
     path: navigationService.history.location.pathname,
   });
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspaceIdParam = params.get('workspaceid');
 
   useBeforeUnload();
 
@@ -91,6 +93,15 @@ const App = (props: AppProps): JSX.Element => {
     initializeInitialAppState();
     i18next.changeLanguage();
   }, []);
+
+  useEffect(() => {
+    if (!isWorkspaceIdParam) {
+      localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
+      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
+      dispatch(workspacesActions.setSelectedWorkspace(null));
+      dispatch(workspacesActions.setCredentials(null));
+    }
+  }, [params]);
 
   if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
     /**
