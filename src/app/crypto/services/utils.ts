@@ -8,6 +8,11 @@ import { aes, items as itemUtils } from '@internxt/lib';
 import { getAesInitFromEnv } from '../services/keys.service';
 import { AdvancedSharedItem } from '../../share/types';
 
+const ARGON2ID_PARALLELISM = 1;
+const ARGON2ID_ITERATIONS = 256;
+const ARGON2ID_MEMORY = 512;
+const ARGON2ID_TAG_LEN = 32;
+
 interface PassObjectInterface {
   salt?: string | null;
   password: string;
@@ -47,26 +52,41 @@ async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer
 function extendSecret(message: Uint8Array, length: number): Promise<string> {
   return blake3(message, length);
 }
-function getPBKDF2(password: string, salt: string): Promise<string> {
+function getPBKDF2(
+  password: string,
+  salt: string,
+  iterations: number = 10000,
+  hashLength: number = 32,
+): Promise<string> {
   return pbkdf2({
     password,
     salt,
-    iterations: 10000,
-    hashLength: 32,
+    iterations,
+    hashLength,
     hashFunction: createSHA256(),
     outputType: 'hex',
   });
 }
 
-function getArgon2(password: string): Promise<string> {
-  const argonSalt = crypto.randomBytes(16);
+function getArgon2(
+  password: string,
+  salt: string = '',
+  parallelism: number = ARGON2ID_PARALLELISM,
+  iterations: number = ARGON2ID_ITERATIONS,
+  memorySize: number = ARGON2ID_MEMORY,
+  hashLength: number = ARGON2ID_TAG_LEN,
+): Promise<string> {
+  let argonSalt = salt;
+  if (!salt) {
+    argonSalt = crypto.randomBytes(16).toString();
+  }
   return argon2id({
     password: password,
     salt: argonSalt,
-    parallelism: 1,
-    iterations: 2,
-    memorySize: 19456,
-    hashLength: 32,
+    parallelism,
+    iterations,
+    memorySize,
+    hashLength,
     outputType: 'hex',
   });
 }

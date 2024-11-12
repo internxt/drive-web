@@ -9,6 +9,7 @@ import {
   getSha256,
   getSha512,
   getRipemd160,
+  getArgon2,
 } from '../../../src/app/crypto/services/utils';
 
 import { describe, expect, it } from 'vitest';
@@ -168,6 +169,286 @@ describe('Test extendSecret with blake3 test vectors', () => {
     const result = await extendSecret(message, 1048);
     const testResult =
       'bc3e3d41a1146b069abffad3c0d44860cf664390afce4d9661f7902e7943e085e01c59dab908c04c3342b816941a26d69c2605ebee5ec5291cc55e15b76146e6745f0601156c3596cb75065a9c57f35585a52e1ac70f69131c23d611ce11ee4ab1ec2c009012d236648e77be9295dd0426f29b764d65de58eb7d01dd42248204f45f8e';
+    expect(result).toBe(testResult);
+  });
+});
+
+describe('Test getPBKDF2 with RFC 7914 test vectors', () => {
+  it('getPBKDF2 should pass test 1 for PBKDF2-HMAC-SHA-256 from RFC 7914', async () => {
+    const passord = 'passwd';
+    const salt = 'salt';
+    const iterations = 1;
+    const hashLength = 64;
+    const result = await getPBKDF2(passord, salt, iterations, hashLength);
+    const testResult =
+      '55ac046e56e3089fec1691c22544b605f94185216dde0465e68b9d57c20dacbc49ca9cccf179b645991664b39d77ef317c71b845b1e30bd509112041d3a19783';
+    expect(result).toBe(testResult);
+  });
+
+  it('getPBKDF2 should pass test 2 for PBKDF2-HMAC-SHA-256 from RFC 7914', async () => {
+    const passord = 'Password';
+    const salt = 'NaCl';
+    const iterations = 80000;
+    const hashLength = 64;
+    const result = await getPBKDF2(passord, salt, iterations, hashLength);
+    const testResult =
+      '4ddcd8f60b98be21830cee5ef22701f9641a4418d04c0414aeff08876b34ab56a1d425a1225833549adb841b51c9b3176a272bdebba1d078478f62b397f33c8d';
+    expect(result).toBe(testResult);
+  });
+});
+
+describe('Test getSha256 with NIST test vectors', () => {
+  it('getSha256 should pass NIST test vector 1', async () => {
+    const message = 'abc';
+    const result = await getSha256(message);
+    const testResult = 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad';
+    expect(result).toBe(testResult);
+  });
+
+  it('getSha256 should pass NIST test vector 2', async () => {
+    const message = '';
+    const result = await getSha256(message);
+    const testResult = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+    expect(result).toBe(testResult);
+  });
+
+  it('getSha256 should pass NIST test vector 3', async () => {
+    const message = 'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq';
+    const result = await getSha256(message);
+    const testResult = '248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1';
+    expect(result).toBe(testResult);
+  });
+
+  it('getSha256 should pass NIST test vector 4', async () => {
+    const message =
+      'abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu';
+    const result = await getSha256(message);
+    const testResult = 'cf5b16a778af8380036ce59e7b0492370b249b11e8f07a51afac45037afee9d1';
+    expect(result).toBe(testResult);
+  });
+
+  it('getSha256 should pass NIST test vector 5', async () => {
+    let message = '';
+    for (let i = 0; i < 1000000; i++) {
+      message += 'a';
+    }
+    const result = await getSha256(message);
+    const testResult = 'cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0';
+    expect(result).toBe(testResult);
+  });
+});
+
+describe('Test getSha512 with NIST test vectors', () => {
+  it('getSha512 should pass NIST test vector 1', async () => {
+    const message = 'abc';
+    const result = await getSha512(message);
+    const testResult =
+      'ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f';
+    expect(result).toBe(testResult);
+  });
+
+  it('getSha512 should pass NIST test vector 2', async () => {
+    const message = '';
+    const result = await getSha512(message);
+    const testResult =
+      'cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e';
+    expect(result).toBe(testResult);
+  });
+
+  it('getSha512 should pass NIST test vector 3', async () => {
+    const message = 'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq';
+    const result = await getSha512(message);
+    const testResult =
+      '204a8fc6dda82f0a0ced7beb8e08a41657c16ef468b228a8279be331a703c33596fd15c13b1b07f9aa1d3bea57789ca031ad85c7a71dd70354ec631238ca3445';
+    expect(result).toBe(testResult);
+  });
+
+  it('getSha512 should pass NIST test vector 4', async () => {
+    const message =
+      'abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu';
+    const result = await getSha512(message);
+    const testResult =
+      '8e959b75dae313da8cf4f72814fc143f8f7779c6eb9f7fa17299aeadb6889018501d289e4900f7e4331b99dec4b5433ac7d329eeb6dd26545e96e55b874be909';
+    expect(result).toBe(testResult);
+  });
+
+  it('getSha512 should pass NIST test vector 5', async () => {
+    let message = '';
+    for (let i = 0; i < 1000000; i++) {
+      message += 'a';
+    }
+    const result = await getSha512(message);
+    const testResult =
+      'e718483d0ce769644e2e42c7bc15b4638e1f98b13b2044285632a803afa973ebde0ff244877ea60a4cb0432ce577c31beb009c5c2c49aa2e4eadb217ad8cc09b';
+    expect(result).toBe(testResult);
+  });
+});
+
+describe('Test getRipemd160 with test vectors published by the authors', () => {
+  it('getRipemd160 should pass test 1', async () => {
+    const message = '';
+    const result = await getRipemd160(message);
+    const testResult = '9c1185a5c5e9fc54612808977ee8f548b2258d31';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 2', async () => {
+    const message = 'a';
+    const result = await getRipemd160(message);
+    const testResult = '0bdc9d2d256b3ee9daae347be6f4dc835a467ffe';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 3', async () => {
+    const message = 'abc';
+    const result = await getRipemd160(message);
+    const testResult = '8eb208f7e05d987a9b044a8e98c6b087f15a0bfc';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 4', async () => {
+    const message = 'message digest';
+    const result = await getRipemd160(message);
+    const testResult = '5d0689ef49d2fae572b881b123a85ffa21595f36';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 5', async () => {
+    const message = 'abcdefghijklmnopqrstuvwxyz';
+    const result = await getRipemd160(message);
+    const testResult = 'f71c27109c692c1b56bbdceb5b9d2865b3708dbc';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 6', async () => {
+    const message = 'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq';
+    const result = await getRipemd160(message);
+    const testResult = '12a053384a9c0c88e405a06c27dcf49ada62eb2b';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 7', async () => {
+    const message = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const result = await getRipemd160(message);
+    const testResult = 'b0e20b6e3116640286ed3a87a5713079b21f5189';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 8', async () => {
+    let message = '';
+    for (let i = 0; i < 8; i++) {
+      message += '1234567890';
+    }
+    const result = await getRipemd160(message);
+    const testResult = '9b752e45573d4b39f4dbd3323cab82bf63326bfb';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 9', async () => {
+    let message = '';
+    for (let i = 0; i < 1000000; i++) {
+      message += 'a';
+    }
+    const result = await getRipemd160(message);
+    const testResult = '52783243c1697bdbe16d37f97f68f08325dc1528';
+    expect(result).toBe(testResult);
+  });
+});
+
+describe('Test getArgon2 with test vectors from the reference implementation that won Password Hashing Competition ', () => {
+  it('getArgon2 should pass test 1', async () => {
+    const passord = 'password';
+    const salt = 'somesalt';
+    const parallelism = 1;
+    const iterations = 2;
+    const memorySize = 65536;
+    const hashLength = 32;
+    const result = await getArgon2(passord, salt, parallelism, iterations, memorySize, hashLength);
+    const testResult = '09316115d5cf24ed5a15a31a3ba326e5cf32edc24702987c02b6566f61913cf7';
+    expect(result).toBe(testResult);
+  });
+
+  it('getArgon2 should pass test 2', async () => {
+    const passord = 'password';
+    const salt = 'somesalt';
+    const parallelism = 1;
+    const iterations = 2;
+    const memorySize = 262144;
+    const hashLength = 32;
+    const result = await getArgon2(passord, salt, parallelism, iterations, memorySize, hashLength);
+    const testResult = '78fe1ec91fb3aa5657d72e710854e4c3d9b9198c742f9616c2f085bed95b2e8c';
+    expect(result).toBe(testResult);
+  });
+
+  it('getArgon2 should pass test 3', async () => {
+    const passord = 'password';
+    const salt = 'somesalt';
+    const parallelism = 1;
+    const iterations = 2;
+    const memorySize = 256;
+    const hashLength = 32;
+    const result = await getArgon2(passord, salt, parallelism, iterations, memorySize, hashLength);
+    const testResult = '9dfeb910e80bad0311fee20f9c0e2b12c17987b4cac90c2ef54d5b3021c68bfe';
+    expect(result).toBe(testResult);
+  });
+
+  it('getArgon2 should pass test 4', async () => {
+    const passord = 'password';
+    const salt = 'somesalt';
+    const parallelism = 2;
+    const iterations = 2;
+    const memorySize = 256;
+    const hashLength = 32;
+    const result = await getArgon2(passord, salt, parallelism, iterations, memorySize, hashLength);
+    const testResult = '6d093c501fd5999645e0ea3bf620d7b8be7fd2db59c20d9fff9539da2bf57037';
+    expect(result).toBe(testResult);
+  });
+
+  it('getArgon2 should pass test 5', async () => {
+    const passord = 'password';
+    const salt = 'somesalt';
+    const parallelism = 1;
+    const iterations = 1;
+    const memorySize = 65536;
+    const hashLength = 32;
+    const result = await getArgon2(passord, salt, parallelism, iterations, memorySize, hashLength);
+    const testResult = 'f6a5adc1ba723dddef9b5ac1d464e180fcd9dffc9d1cbf76cca2fed795d9ca98';
+    expect(result).toBe(testResult);
+  });
+
+  it('getArgon2 should pass test 6', async () => {
+    const passord = 'password';
+    const salt = 'somesalt';
+    const parallelism = 1;
+    const iterations = 4;
+    const memorySize = 65536;
+    const hashLength = 32;
+    const result = await getArgon2(passord, salt, parallelism, iterations, memorySize, hashLength);
+    const testResult = '9025d48e68ef7395cca9079da4c4ec3affb3c8911fe4f86d1a2520856f63172c';
+    expect(result).toBe(testResult);
+  });
+
+  it('getArgon2 should pass test 7', async () => {
+    const passord = 'differentpassword';
+    const salt = 'somesalt';
+    const parallelism = 1;
+    const iterations = 2;
+    const memorySize = 65536;
+    const hashLength = 32;
+    const result = await getArgon2(passord, salt, parallelism, iterations, memorySize, hashLength);
+    const testResult = '0b84d652cf6b0c4beaef0dfe278ba6a80df6696281d7e0d2891b817d8c458fde';
+    expect(result).toBe(testResult);
+  });
+
+  it('getArgon2 should pass test 8', async () => {
+    const passord = 'password';
+    const salt = 'diffsalt';
+    const parallelism = 1;
+    const iterations = 2;
+    const memorySize = 65536;
+    const hashLength = 32;
+    const result = await getArgon2(passord, salt, parallelism, iterations, memorySize, hashLength);
+    const testResult = 'bdf32b05ccc42eb15d58fd19b1f856b113da1e9a5874fdcc544308565aa8141c';
     expect(result).toBe(testResult);
   });
 });
