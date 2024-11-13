@@ -11,9 +11,12 @@ import {
   getRipemd160,
   getArgon2,
   passToHash,
+  getSha256Hasher,
+  encryptText,
+  decryptText,
 } from '../../../src/app/crypto/services/utils';
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi, afterAll, beforeAll } from 'vitest';
 import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js';
 
@@ -609,5 +612,51 @@ describe('Test passToHash', () => {
     const password = 'Test password';
     const salt = 'argon2id$6c';
     await expect(passToHash({ password, salt })).rejects.toThrow('Salt should be at least 8 bytes long');
+  });
+});
+
+describe('Test getSha256Hasher', () => {
+  it('getSha256Hasher should give the same result as getSha256 for a single string', async () => {
+    const message = 'Test message';
+    const hasher = await getSha256Hasher();
+    hasher.init();
+    hasher.update(message);
+    const result = hasher.digest();
+    const expectedResult = await getSha256(message);
+    expect(result).toBe(expectedResult);
+  });
+
+  it('getSha256Hasher should give the same result as getSha256 for an array', async () => {
+    const messageArray = ['Test message 1', 'Test message 2', 'Test message 3', 'Test message 4'];
+    const hasher = await getSha256Hasher();
+    hasher.init();
+    for (const message of messageArray) {
+      hasher.update(message);
+    }
+    const result = hasher.digest();
+    const expectedResult = await getSha256(messageArray.join(''));
+    expect(result).toBe(expectedResult);
+  });
+});
+
+describe('Test encryption', () => {
+  if (typeof globalThis.process === 'undefined') {
+    globalThis.process = { env: {} } as any;
+  }
+  const originalEnv = process.env.REACT_APP_CRYPTO_SECRET;
+
+  beforeAll(() => {
+    process.env.REACT_APP_CRYPTO_SECRET = '123456789QWERTY';
+  });
+  afterAll(() => {
+    process.env.REACT_APP_CRYPTO_SECRET = originalEnv;
+  });
+
+  it('Should be able to encrypt and decrypt', async () => {
+    const message = 'Test message';
+    expect(process.env.REACT_APP_CRYPTO_SECRET, '123456789QWERTY');
+    const ciphertext = encryptText(message);
+    const result = decryptText(ciphertext);
+    expect(result).toBe(message);
   });
 });

@@ -170,7 +170,7 @@ export const doLogin = async (
 
       const argon2Hash = await passToHash({ password });
 
-      authClient.upgradeHash(argon2Hash.hash);
+      await authClient.upgradeHash(argon2Hash.hash);
 
       return {
         user: clearUser,
