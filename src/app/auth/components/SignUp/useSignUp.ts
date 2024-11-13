@@ -110,8 +110,16 @@ export function useSignUp(
       privateKeyEncrypted: encPrivateKey,
       publicKey: publicKeyArmored,
       revocationCertificate: revocationCertificate,
-      publicKyberKey: publicKyberKeyBase64,
-      privateKyberKeyEncrypted: encPrivateKyberKey,
+      keys: {
+        ecc: {
+          privateKeyEncrypted: encPrivateKey,
+          publicKey: publicKeyArmored,
+        },
+        kyber: {
+          publicKey: publicKyberKeyBase64,
+          privateKeyEncrypted: encPrivateKyberKey,
+        },
+      },
     };
     const registerDetails: RegisterDetails = {
       name: 'My',
@@ -177,8 +185,16 @@ export function useSignUp(
       privateKeyEncrypted: encPrivateKey,
       publicKey: publicKeyArmored,
       revocationCertificate: revocationCertificate,
-      publicKyberKey: publicKyberKeyBase64,
-      privateKyberKeyEncrypted: encPrivateKyberKey,
+      keys: {
+        ecc: {
+          privateKeyEncrypted: encPrivateKey,
+          publicKey: publicKeyArmored,
+        },
+        kyber: {
+          publicKey: publicKyberKeyBase64,
+          privateKeyEncrypted: encPrivateKyberKey,
+        },
+      },
     };
     const registerDetails: RegisterDetails = {
       name: 'My',

@@ -14,7 +14,10 @@ import notificationsService, { ToastType } from '../../../notifications/services
 import { UserRoles } from '../../../share/types';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
-import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import {
+  hybridEncryptMessageWithPublicKey,
+  standardEncryptMessageWithPublicKey,
+} from '../../../crypto/services/pgp.service';
 
 export interface ShareLinksState {
   isLoadingRoles: boolean;
@@ -60,23 +63,34 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       let publicKey = payload.publicKey;
       let publicKyberKey = payload.publicKyberKey;
 
-      if (payload.isNewUser && !publicKey && !publicKyberKey) {
+      if (payload.isNewUser && !publicKey) {
         const prCreatedUserResponse = await userService.preCreateUser(payload.sharedWith);
         publicKey = prCreatedUserResponse.publicKey;
         publicKyberKey = prCreatedUserResponse.publicKyberKey;
       }
 
-      if ((!publicKyberKey && !publicKey && !payload.isNewUser) || !publicKey || !publicKyberKey) {
+      if ((!publicKey && !payload.isNewUser) || !publicKey) {
         const publicKeyResponse = await userService.getPublicKeyByEmail(payload.sharedWith);
         publicKey = publicKeyResponse.publicKey;
         publicKyberKey = publicKeyResponse.publicKyberKey;
       }
 
-      const encryptedMnemonicInBase64 = await encryptMessageWithPublicKey({
-        message: mnemonic,
-        publicKeyInBase64: publicKey,
-        publicKyberKeyBase64: publicKyberKey,
-      });
+      let encryptedMnemonicInBase64;
+      let hybridModeEnabled = false;
+
+      if (publicKyberKey) {
+        encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
+          message: mnemonic,
+          publicKeyInBase64: publicKey,
+          publicKyberKeyBase64: publicKyberKey,
+        });
+        hybridModeEnabled = true;
+      } else {
+        encryptedMnemonicInBase64 = await standardEncryptMessageWithPublicKey({
+          message: mnemonic,
+          publicKeyInBase64: publicKey,
+        });
+      }
 
       await inviteUserToSharedFolder({
         itemId: payload.itemId,
@@ -88,6 +102,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         encryptionAlgorithm: payload.encryptionAlgorithm,
         roleId: payload.roleId,
         persistPreviousSharing: true,
+        hybridModeEnabled: hybridModeEnabled,
       });
 
       notificationsService.show({
