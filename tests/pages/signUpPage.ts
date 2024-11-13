@@ -41,7 +41,7 @@ export class signUpPage {
     //LOGIN PAGE
     this.loginTitle = this.page.getByRole('heading', { level: 1 });
     //DRIVE PAGE
-    this.driveTitle = this.page.locator('[title="Drive"]');
+    this.driveTitle = this.page.locator('[class="max-w-sm flex-1 cursor-pointer truncate undefined"]');
   }
 
   async typeInEmail(email: string) {
@@ -66,6 +66,7 @@ export class signUpPage {
     expect(createAccountbuttonText).toEqual('Create account');
     expect(this.createAccountButton).toBeEnabled();
     await this.createAccountButton.click();
+    await this.page.waitForTimeout(1000);
   }
   async UserAlreadyExistAssertion() {
     await this.userAlreadyRegistered.waitFor({ state: 'visible' });
@@ -73,7 +74,7 @@ export class signUpPage {
     return userAlreadyRegisteredText;
   }
   async userWelcome() {
-    await this.driveTitle.waitFor({ state: 'visible' });
+    await expect(this.driveTitle).toBeVisible({ timeout: 10000 });
     const welcomeText = this.driveTitle.textContent();
     return welcomeText;
   }

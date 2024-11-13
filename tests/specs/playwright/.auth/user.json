@@ -1,11 +1,21 @@
 {
   "cookies": [
     {
+      "name": "INGRESSCOOKIE",
+      "value": "1731526833.62.32.806616|a2ae347d347ad94b4053aa5870843d1f",
+      "domain": "notifications.internxt.com",
+      "path": "/socket.io",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
       "name": "_ga",
-      "value": "GA1.1.1994028776.1727121103",
+      "value": "GA1.1.1221571230.1731526825",
       "domain": ".internxt.com",
       "path": "/",
-      "expires": 1761681103.228633,
+      "expires": 1766086825.07381,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -13,7 +23,7 @@
     {
       "name": "i18next",
       "value": "en-US",
-      "domain": "staging.drive.internxt.com",
+      "domain": "drive.internxt.com",
       "path": "/",
       "expires": -1,
       "httpOnly": false,
@@ -21,11 +31,101 @@
       "sameSite": "Strict"
     },
     {
-      "name": "_ga_CHHGLQTHSB",
-      "value": "GS1.1.1727121103.1.0.1727121109.54.0.0",
+      "name": "rl_user_id",
+      "value": "RudderEncrypt%3AU2FsdGVkX18%2Ft0v5z9gB%2BtUW5ETB81GsNMj93IeHoSk%3D",
       "domain": ".internxt.com",
       "path": "/",
-      "expires": 1761681109.538933,
+      "expires": 1763062827,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_trait",
+      "value": "RudderEncrypt%3AU2FsdGVkX1%2B1XoJsZU%2FmdKuWpuLa1X0GfuL0s35mLFM%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1763062827,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_group_id",
+      "value": "RudderEncrypt%3AU2FsdGVkX1%2BeDxJJWGVl3%2F%2F%2F7Ej676LF8PXpka3ROpM%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1763062827,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_group_trait",
+      "value": "RudderEncrypt%3AU2FsdGVkX187JKognsOUDu0F4PfSN51LesqXe4xxOMM%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1763062827,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_anonymous_id",
+      "value": "RudderEncrypt%3AU2FsdGVkX1%2BztVaXWQR1mQPbh%2BJar4g5AwzLu0stMmC0mus0BuqI0L8oqWRJvDySpzzZ4WhnQC1ReW%2BR7%2FJgJQ%3D%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1763062827,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_page_init_referrer",
+      "value": "RudderEncrypt%3AU2FsdGVkX1%2FQ%2BKDZbmQ5Z4GovjzkiSxo07V8r3MO9iQ%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1763062827,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_page_init_referring_domain",
+      "value": "RudderEncrypt%3AU2FsdGVkX1%2FT4e45yVehsD%2FVDel12uazniTONdcQ8ok%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1763062827,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_session",
+      "value": "RudderEncrypt%3AU2FsdGVkX189vS3rNCmAay8k94ChAWml019cnH7OyD%2F%2BLJjTx72%2FO1GRjt6%2BaAswPbwcyuOif%2BunBQVHuUw0cTmVNPwX3pWkpCW2m7McEnJi2XYnBoO6K4qvSnIp%2BM387HvA2wTpozw%2BEFC%2B2OvXAg%3D%3D",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1763062827,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_4MJH1Y6RS3",
+      "value": "GS1.1.1731526825.1.0.1731526828.57.0.0",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1766086828.13007,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_CHHGLQTHSB",
+      "value": "GS1.1.1731526824.1.0.1731526832.52.0.0",
+      "domain": ".internxt.com",
+      "path": "/",
+      "expires": 1766086832.027712,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -33,15 +133,27 @@
   ],
   "origins": [
     {
-      "origin": "https://staging.drive.internxt.com",
+      "origin": "https://drive.internxt.com",
       "localStorage": [
         {
+          "name": "rudder.b9bc3936-ff7e-430c-ab8f-b120551fb429.queue",
+          "value": "[{\"item\":{\"url\":\"https://cdp.internxt.com/v1/page\",\"headers\":{\"Content-Type\":\"application/json\",\"Authorization\":\"Basic MkVMMTV4eXpEWUJaMVY4QzRvdjZ2WDZNU09WOg==\",\"AnonymousId\":\"Njg1MjhmODItZDg2ZS00MzY5LWE2NjctZTZhNjNlNTFkZTA5\"},\"message\":{\"channel\":\"web\",\"context\":{\"app\":{\"name\":\"RudderLabs JavaScript SDK\",\"namespace\":\"com.rudderlabs.javascript\",\"version\":\"2.33.1\"},\"traits\":{},\"library\":{\"name\":\"RudderLabs JavaScript SDK\",\"version\":\"2.33.1\"},\"userAgent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36\",\"device\":null,\"network\":null,\"os\":{\"name\":\"\",\"version\":\"\"},\"locale\":\"en-US\",\"screen\":{\"density\":1,\"width\":1280,\"height\":720,\"innerWidth\":1280,\"innerHeight\":720},\"sessionId\":1731526827679,\"sessionStart\":true,\"campaign\":{},\"page\":{\"path\":\"/login\",\"referrer\":\"$direct\",\"referring_domain\":\"\",\"search\":\"\",\"title\":\"Internxt Drive – Private & Secure Cloud Storage\",\"url\":\"https://drive.internxt.com/login\",\"tab_url\":\"https://drive.internxt.com/login\",\"initial_referrer\":\"$direct\",\"initial_referring_domain\":\"\"}},\"type\":\"page\",\"messageId\":\"a5976fd4-08c4-470f-a1ed-1e8979b5bd55\",\"originalTimestamp\":\"2024-11-13T19:40:27.815Z\",\"anonymousId\":\"68528f82-d86e-4369-a667-e6a63e51de09\",\"userId\":\"\",\"event\":null,\"properties\":{\"path\":\"/login\",\"referrer\":\"$direct\",\"referring_domain\":\"\",\"search\":\"\",\"title\":\"Internxt Drive – Private & Secure Cloud Storage\",\"url\":\"https://drive.internxt.com/login\",\"tab_url\":\"https://drive.internxt.com/login\",\"initial_referrer\":\"$direct\",\"initial_referring_domain\":\"\"},\"user_properties\":null,\"integrations\":{\"All\":true},\"sentAt\":\"2024-11-13T19:40:27.819Z\"}},\"attemptNumber\":1,\"time\":1731526833264,\"id\":\"bc3936ff-7e13-4ceb-8fb1-20551fb429fd\"}]"
+        },
+        {
           "name": "xMnemonic",
-          "value": "depart hazard science pigeon urge enemy real switch saddle green inmate wagon clinic edit barrel wonder blush candy account atom raccoon castle library episode"
+          "value": "cause mom garbage idle festival hard mistake calm village retreat concert birth dune shock verify begin manual egg traffic come galaxy image dinner scrub"
+        },
+        {
+          "name": "rudder.b9bc3936-ff7e-430c-ab8f-b120551fb429.reclaimStart",
+          "value": "null"
+        },
+        {
+          "name": "rudder.b9bc3936-ff7e-430c-ab8f-b120551fb429.reclaimEnd",
+          "value": "null"
         },
         {
           "name": "xUser",
-          "value": "{\"email\":\"art.goyette77@yahoo.com\",\"userId\":\"$2a$08$Z3gwaravbdSxLAuJ4RMvfOvh6NdK6Ivk.Qr9GpuX2srYldWZ3Irh.\",\"mnemonic\":\"depart hazard science pigeon urge enemy real switch saddle green inmate wagon clinic edit barrel wonder blush candy account atom raccoon castle library episode\",\"root_folder_id\":82779588,\"rootFolderId\":\"88e90434-f1fb-445d-829c-87e17a3bb4fc\",\"name\":\"My\",\"lastname\":\"Internxt\",\"uuid\":\"bf28aa09-818f-47ca-b7fb-9d33fe983668\",\"credit\":0,\"createdAt\":\"2024-09-23T19:51:40.000Z\",\"privateKey\":\"LS0tLS1CRUdJTiBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQoKeFZnRVp2SEd5UllKS3dZQkJBSGFSdzhCQVFkQVlVczIwNXMwSWNvUnd4YWRsZzVqNHpuSXhYYzBzdkxkCm5wM2lnVnhjV3BNQUFRRDkxWkhXaUp1TUtFT0t6cjA5dHAzK0d3UFhNZnBXenJZSy9rVEVtYXNielJJdAp6UTg4YVc1NGRFQnBibmgwTG1OdmJUN0NqQVFRRmdvQVBnV0NadkhHeVFRTENRY0lDWkM1dlp2RGZaakwKeXdNVkNBb0VGZ0FDQVFJWkFRS2JBd0llQVJZaEJPaGV5eG9IWTFUeHBZZDd4N205bThOOW1NdkxBQUExCmh3RUF4S1F1QkpMRUV2eThXZnJtTkh4bGY2RmRqMFVHVWg1UWV6QTRXeTR5eVBzQkFQQnE1V3BiQS9PVgpSdGhPTWNINWJ4VHhGLzFuaFNFbzJpVWNzcE9uT2xZR3gxMEVadkhHeVJJS0t3WUJCQUdYVlFFRkFRRUgKUVBOZHhpNkxUdVc4T0lLUmRSTUsvdlliSkdCejRZSkJxMEx0TmhGOG03dE5Bd0VJQndBQS8yT1M5aXA3Cjh6NlI3dHVKTUxEQmxudzdIKzQyZS9RTGIzbGlEbHJveXRXSUVnL0NlQVFZRmdnQUtnV0NadkhHeVFtUQp1YjJidzMyWXk4c0Ntd3dXSVFUb1hzc2FCMk5VOGFXSGU4ZTV2WnZEZlpqTHl3QUFlOThBL2oyQUo0WEoKTHZqMG5hNHVMWVRCSDFjMEFTNEF5aVNZTlk2OGRTRWhONDVtQVA5eDQrNkNyVVBGL2tMc2M1RU9ZVEo4CldZV2lGN3ZDTUVxMEhKbkx0NlFoRGc9PQo9S0t2UQotLS0tLUVORCBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQo=\",\"publicKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgp4ak1FWnZIR3lSWUpLd1lCQkFIYVJ3OEJBUWRBWVVzMjA1czBJY29Sd3hhZGxnNWo0em5JeFhjMHN2TGQKbnAzaWdWeGNXcFBORHp4cGJuaDBRR2x1ZUhRdVkyOXRQc0tNQkJBV0NnQStCWUptOGNiSkJBc0pCd2dKCmtMbTltOE45bU12TEF4VUlDZ1FXQUFJQkFoa0JBcHNEQWg0QkZpRUU2RjdMR2dkalZQR2xoM3ZIdWIyYgp3MzJZeThzQUFEV0hBUURFcEM0RWtzUVMvTHhaK3VZMGZHVi9vVjJQUlFaU0hsQjdNRGhiTGpMSSt3RUEKOEdybGFsc0Q4NVZHMkU0eHdmbHZGUEVYL1dlRklTamFKUnl5azZjNlZnYk9PQVJtOGNiSkVnb3JCZ0VFCkFaZFZBUVVCQVFkQTgxM0dMb3RPNWJ3NGdwRjFFd3IrOWhza1lIUGhna0dyUXUwMkVYeWJ1MDBEQVFnSAp3bmdFR0JZSUFDb0ZnbWJ4eHNrSmtMbTltOE45bU12TEFwc01GaUVFNkY3TEdnZGpWUEdsaDN2SHViMmIKdzMyWXk4c0FBSHZmQVA0OWdDZUZ5Uzc0OUoydUxpMkV3UjlYTkFFdUFNb2ttRFdPdkhVaElUZU9aZ0QvCmNlUHVncTFEeGY1QzdIT1JEbUV5ZkZtRm9oZTd3akJLdEJ5Wnk3ZWtJUTQ9Cj0yTUQ4Ci0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\",\"revocateKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCkNvbW1lbnQ6IFRoaXMgaXMgYSByZXZvY2F0aW9uIGNlcnRpZmljYXRlCgp3bmdFSUJZS0FDb0ZnbWJ4eHNrSmtMbTltOE45bU12TEFwMEFGaUVFNkY3TEdnZGpWUEdsaDN2SHViMmIKdzMyWXk4c0FBSWVtQVAwWHVkSG5DRmJXLzNzTG9rMWM2b3BVSHhEMEk4a1dqM2lRMHkvemFGMzlTUUVBCndobGJQRHVSbDNYUDFXVE5scEQ3ZVRBZkdnMnZjdHdBbVRsczVTT0dhUVU9Cj1yN1diCi0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\",\"bucket\":\"0fb9e0a46a54dd1d9d834f82\",\"registerCompleted\":true,\"teams\":false,\"username\":\"art.goyette77@yahoo.com\",\"bridgeUser\":\"art.goyette77@yahoo.com\",\"sharedWorkspace\":false,\"appSumoDetails\":null,\"hasReferralsProgram\":false,\"backupsBucket\":null,\"avatar\":null,\"emailVerified\":false,\"lastPasswordChangedAt\":null,\"revocationKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCkNvbW1lbnQ6IFRoaXMgaXMgYSByZXZvY2F0aW9uIGNlcnRpZmljYXRlCgp3bmdFSUJZS0FDb0ZnbWJ4eHNrSmtMbTltOE45bU12TEFwMEFGaUVFNkY3TEdnZGpWUEdsaDN2SHViMmIKdzMyWXk4c0FBSWVtQVAwWHVkSG5DRmJXLzNzTG9rMWM2b3BVSHhEMEk4a1dqM2lRMHkvemFGMzlTUUVBCndobGJQRHVSbDNYUDFXVE5scEQ3ZVRBZkdnMnZjdHdBbVRsczVTT0dhUVU9Cj1yN1diCi0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\"}"
+          "value": "{\"email\":\"amir92@hotmail.com\",\"userId\":\"$2a$08$O3LANPHT7yH1M.ZrUVof7ueqDOMUi.69ZjlqQMOkvHHRirjx9nSuW\",\"mnemonic\":\"cause mom garbage idle festival hard mistake calm village retreat concert birth dune shock verify begin manual egg traffic come galaxy image dinner scrub\",\"root_folder_id\":85090308,\"rootFolderId\":\"5820b7b7-5e4a-4d5a-86e2-0f13332977ad\",\"name\":\"My\",\"lastname\":\"Internxt\",\"uuid\":\"25534902-eb4c-4f52-b3bb-45528a76e77d\",\"credit\":0,\"createdAt\":\"2024-11-13T19:40:22.000Z\",\"privateKey\":\"LS0tLS1CRUdJTiBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQoKeFZnRVp6VUFvUllKS3dZQkJBSGFSdzhCQVFkQW41YlZONUhHN0QzYktUZTZaT2dTSCtGM0kwOHpsMkI4CjkzaTVwU0srdGlnQUFRRHBROWpxaDl0Nkx4TjNXa0VRaW5oVXlxYS91dGFuQzRVZS9VdmQ0ZTVpb0JHUAp6UTg4YVc1NGRFQnBibmgwTG1OdmJUN0NqQVFRRmdvQVBnV0NaelVBb1FRTENRY0lDWkMzUlFuOFI2QlYKdGdNVkNBb0VGZ0FDQVFJWkFRS2JBd0llQVJZaEJNdXE4WHVZUmFLU1ZJaDdVcmRGQ2Z4SG9GVzJBQUNkCmdBRDZBb2tCZ2VVWkY2ZE9VK0Vaa0l6c0NUa0pnN1JLMkVIMStKZ3RRUlV1dlhjQkFNTFA0ZTI2dFpmRApsRW1UYVEwUVZIN1FpUXN0Zjh0RXdRNWx5a051L3BNRXgxMEVaelVBb1JJS0t3WUJCQUdYVlFFRkFRRUgKUUdLbHJoT1hMNlVKemtNdFJ5cHpIY2VJeHZlbE5VcmdPMkJxanpiVEFjTTlBd0VJQndBQS8xbjBFc0RSCmo2dEFwbW4yWEV0NnhjNjVUZDVaQkliQnVQUlpBMlYreHRvUUVrWENlQVFZRmdnQUtnV0NaelVBb1FtUQp0MFVKL0VlZ1ZiWUNtd3dXSVFUTHF2RjdtRVdpa2xTSWUxSzNSUW44UjZCVnRnQUExVjhBL1JRcTN6elAKL3llSFlmWGwrdGdWNjVST0JNY3RhQWJYYjh6YTczc3BoY3d5QVAwUmJKYURlUFJ5YVhacVdXN2I5TnRvCjBJK2tFQU03bjZSY09OaHJTV01WQlE9PQo9eTArQgotLS0tLUVORCBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQo=\",\"publicKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgp4ak1FWnpVQW9SWUpLd1lCQkFIYVJ3OEJBUWRBbjViVk41SEc3RDNiS1RlNlpPZ1NIK0YzSTA4emwyQjgKOTNpNXBTSyt0aWpORHp4cGJuaDBRR2x1ZUhRdVkyOXRQc0tNQkJBV0NnQStCWUpuTlFDaEJBc0pCd2dKCmtMZEZDZnhIb0ZXMkF4VUlDZ1FXQUFJQkFoa0JBcHNEQWg0QkZpRUV5NnJ4ZTVoRm9wSlVpSHRTdDBVSgovRWVnVmJZQUFKMkFBUG9DaVFHQjVSa1hwMDVUNFJtUWpPd0pPUW1EdEVyWVFmWDRtQzFCRlM2OWR3RUEKd3MvaDdicTFsOE9VU1pOcERSQlVmdENKQ3kxL3kwVEJEbVhLUTI3K2t3VE9PQVJuTlFDaEVnb3JCZ0VFCkFaZFZBUVVCQVFkQVlxV3VFNWN2cFFuT1F5MUhLbk1keDRqRzk2VTFTdUE3WUdxUE50TUJ3ejBEQVFnSAp3bmdFR0JZSUFDb0ZnbWMxQUtFSmtMZEZDZnhIb0ZXMkFwc01GaUVFeTZyeGU1aEZvcEpVaUh0U3QwVUoKL0VlZ1ZiWUFBTlZmQVAwVUt0ODh6LzhuaDJIMTVmcllGZXVVVGdUSExXZ0cxMi9NMnU5N0tZWE1NZ0Q5CkVXeVdnM2owY21sMmFsbHUyL1RiYU5DUHBCQURPNStrWERqWWEwbGpGUVU9Cj14ekZMCi0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\",\"revocateKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCkNvbW1lbnQ6IFRoaXMgaXMgYSByZXZvY2F0aW9uIGNlcnRpZmljYXRlCgp3bmdFSUJZS0FDb0ZnbWMxQUtFSmtMZEZDZnhIb0ZXMkFwMEFGaUVFeTZyeGU1aEZvcEpVaUh0U3QwVUoKL0VlZ1ZiWUFBRCtNQVFEeTh1Q0FHTCtwOGozMEtxT1QxbFRkYjRTUjhwNjRBVzBXZTJ0dThvMUpGd0VBCnZ1WkhmWTUzekJyUTgzNVE3OWNaZStWT205SWxzcEVrYWlZelNsL1hzZ1U9Cj01QUNDCi0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\",\"bucket\":\"46fc93a25a0c222f2c7703af\",\"registerCompleted\":true,\"teams\":false,\"username\":\"amir92@hotmail.com\",\"bridgeUser\":\"amir92@hotmail.com\",\"sharedWorkspace\":false,\"appSumoDetails\":null,\"hasReferralsProgram\":false,\"backupsBucket\":null,\"avatar\":null,\"emailVerified\":false,\"lastPasswordChangedAt\":null,\"revocationKey\":\"LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCkNvbW1lbnQ6IFRoaXMgaXMgYSByZXZvY2F0aW9uIGNlcnRpZmljYXRlCgp3bmdFSUJZS0FDb0ZnbWMxQUtFSmtMZEZDZnhIb0ZXMkFwMEFGaUVFeTZyeGU1aEZvcEpVaUh0U3QwVUoKL0VlZ1ZiWUFBRCtNQVFEeTh1Q0FHTCtwOGozMEtxT1QxbFRkYjRTUjhwNjRBVzBXZTJ0dThvMUpGd0VBCnZ1WkhmWTUzekJyUTgzNVE3OWNaZStWT205SWxzcEVrYWlZelNsL1hzZ1U9Cj01QUNDCi0tLS0tRU5EIFBHUCBQVUJMSUMgS0VZIEJMT0NLLS0tLS0K\"}"
         },
         {
           "name": "workspace",
@@ -53,15 +165,19 @@
         },
         {
           "name": "xNewToken",
-          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InV1aWQiOiJiZjI4YWEwOS04MThmLTQ3Y2EtYjdmYi05ZDMzZmU5ODM2NjgiLCJlbWFpbCI6ImFydC5nb3lldHRlNzdAeWFob28uY29tIiwibmFtZSI6Ik15IiwibGFzdG5hbWUiOiJJbnRlcm54dCIsInVzZXJuYW1lIjoiYXJ0LmdveWV0dGU3N0B5YWhvby5jb20iLCJzaGFyZWRXb3Jrc3BhY2UiOnRydWUsIm5ldHdvcmtDcmVkZW50aWFscyI6eyJ1c2VyIjoiYXJ0LmdveWV0dGU3N0B5YWhvby5jb20iLCJwYXNzIjoiJDJhJDA4JFozZ3dhcmF2YmRTeExBdUo0Uk12Zk92aDZOZEs2SXZrLlFyOUdwdVgyc3JZbGRXWjNJcmguIn19LCJpYXQiOjE3MjcxMjExMTEsImV4cCI6MTcyODMzMDcxMX0.8gbMj8jFyMeqjEbXYjCghspqiPWnNVUV62EDxBGPe9o"
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InV1aWQiOiIyNTUzNDkwMi1lYjRjLTRmNTItYjNiYi00NTUyOGE3NmU3N2QiLCJlbWFpbCI6ImFtaXI5MkBob3RtYWlsLmNvbSIsIm5hbWUiOiJNeSIsImxhc3RuYW1lIjoiSW50ZXJueHQiLCJ1c2VybmFtZSI6ImFtaXI5MkBob3RtYWlsLmNvbSIsInNoYXJlZFdvcmtzcGFjZSI6dHJ1ZSwibmV0d29ya0NyZWRlbnRpYWxzIjp7InVzZXIiOiJhbWlyOTJAaG90bWFpbC5jb20iLCJwYXNzIjoiJDJhJDA4JE8zTEFOUEhUN3lIMU0uWnJVVm9mN3VlcURPTVVpLjY5WmpscVFNT2t2SEhSaXJqeDluU3VXIn19LCJpYXQiOjE3MzE1MjY4MzQsImV4cCI6MTczMjczNjQzNH0.6IVHfX8fSr43vsg56uNHpffPjiRdTXLcfnugjCCxeGQ"
         },
         {
           "name": "workspace_credentials",
           "value": "null"
         },
         {
+          "name": "rudder.b9bc3936-ff7e-430c-ab8f-b120551fb429.inProgress",
+          "value": "{}"
+        },
+        {
           "name": "xToken",
-          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydC5nb3lldHRlNzdAeWFob28uY29tIiwiaWF0IjoxNzI3MTIxMTExLCJleHAiOjE3MjgzMzA3MTF9.42QPNW3txSB3v1ylo8wK6gsjVKWcE-Qjuc5K-KOMUe0"
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFtaXI5MkBob3RtYWlsLmNvbSIsImlhdCI6MTczMTUyNjgzNCwiZXhwIjoxNzMyNzM2NDM0fQ.an7SYHk01PrceIu55pu82jrkiJDQ8oUASd9tPZ21I6g"
         },
         {
           "name": "i18nextLng",
@@ -72,12 +188,16 @@
           "value": "null"
         },
         {
+          "name": "rudder.b9bc3936-ff7e-430c-ab8f-b120551fb429.ack",
+          "value": "1731526831858"
+        },
+        {
           "name": "NRBA_SESSION",
-          "value": "{\"value\":\"30c01682d3fd17e9\",\"inactiveAt\":1727122905933,\"expiresAt\":1727135505903,\"updatedAt\":1727121105933,\"sessionReplayMode\":0,\"sessionReplaySentFirstChunk\":false,\"sessionTraceMode\":0,\"traceHarvestStarted\":false,\"custom\":{}}"
+          "value": "{\"value\":\"f4dcd75d0fce61ec\",\"inactiveAt\":1731528628166,\"expiresAt\":1731541228091,\"updatedAt\":1731526828166,\"sessionReplayMode\":0,\"sessionReplaySentFirstChunk\":false,\"sessionTraceMode\":0,\"traceHarvestStarted\":false,\"custom\":{}}"
         },
         {
           "name": "signUpTutorialCompleted",
-          "value": "$2a$08$Z3gwaravbdSxLAuJ4RMvfOvh6NdK6Ivk.Qr9GpuX2srYldWZ3Irh."
+          "value": "$2a$08$O3LANPHT7yH1M.ZrUVof7ueqDOMUi.69ZjlqQMOkvHHRirjx9nSuW"
         }
       ]
     }

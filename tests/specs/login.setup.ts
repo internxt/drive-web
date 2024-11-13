@@ -19,9 +19,9 @@ setup('Creating new user and logging in', async ({ browser }) => {
   const userCredentials = { email, password };
   fs.writeFileSync(credentialsFile, JSON.stringify(userCredentials));
 
-  console.log(`User data, new user: ${email}`);
+  console.log(`User data, new user: ${email}, password: ${password}`);
 
-  await page.goto('https://staging.drive.internxt.com/new');
+  await page.goto('https://drive.internxt.com/new');
 
   await SignupPage.typeInEmail(email);
   await SignupPage.typeInPassword(password);
@@ -36,10 +36,11 @@ setup('Creating new user and logging in', async ({ browser }) => {
 
   const loginpage = new loginPage(newPage);
 
-  await newPage.goto('https://staging.drive.internxt.com/login');
+  await newPage.goto('https://drive.internxt.com/login');
   await expect(newPage).toHaveURL(/.*login/);
 
-  const endpointPromise = newPage.waitForResponse('https://drive.internxt.com/api/access');
+  //const endpointPromise = newPage.waitForResponse('https://drive.internxt.com/api/access');
+  const endpointPromise = newPage.waitForResponse('https://gateway.internxt.com/drive-old/access');
   await loginpage.typeEmail(email);
   await loginpage.typePassword(password);
   await loginpage.clickLogIn();

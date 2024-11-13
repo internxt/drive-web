@@ -7,7 +7,7 @@ export const staticData = {
   //URLS
   passwordRecoveryLinkURL: 'https://drive.internxt.com/recovery-link/',
   signUpURL: 'https://drive.internxt.com/new',
-  driveURL: 'https://staging.drive.internxt.com/',
+  driveURL: 'https://drive.internxt.com/',
 
   //SIGNUP DISCLAIMER
   disclaimer:
@@ -27,11 +27,12 @@ export const staticData = {
 
   userAlreadyRegistered: 'already registered',
   accountRecovery: 'Account recovery',
-  wrongLoginWarning: 'Wrong login credentials',
+  wrongLoginWarning: 'Invalid username or password',
   dontHaveAccountText: "Don't have an account?",
   createAccountText: 'Create account',
   termsAndConditionsLinkText: 'Terms and conditions',
   youAcceptTermsLinkText: 'you accept the terms & conditions',
   needHelpLinkText: 'Need help?',
   driveTitle: 'Drive',
+  itemMovedToTrash: 'moved to trash',
 };

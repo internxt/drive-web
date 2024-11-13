@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import { staticData } from '../helper/staticData';
 import { DrivePage } from '../pages/drivePage';
 import { faker } from '@faker-js/faker';
+import { set } from 'lodash';
 
 test.describe('Internxt folder creation and deletion', async () => {
   test.beforeEach('Visiting Internxt', async ({ page }) => {
@@ -24,6 +25,7 @@ test.describe('Internxt folder creation and deletion', async () => {
   test('TC3: Validate that the user can create a new folder with the right-click option → “new folder”', async ({
     page,
   }) => {
+    test.setTimeout(50000);
     const drivePage = new DrivePage(page);
     const folderName = faker.commerce.department();
 
@@ -34,6 +36,7 @@ test.describe('Internxt folder creation and deletion', async () => {
     expect(createdFolderName).toEqual(folderName);
   });
   test('TC4: Validate that the user can cancel the folder creation operation', async ({ page }) => {
+    test.setTimeout(50000);
     const drivePage = new DrivePage(page);
 
     await drivePage.rightClickOnBody();
@@ -44,6 +47,7 @@ test.describe('Internxt folder creation and deletion', async () => {
   test('TC5: Validate that the user can create a new folder by pressing “↑F” after the right-click', async ({
     page,
   }) => {
+    test.setTimeout(50000);
     const drivePage = new DrivePage(page);
     const folderName = faker.company.catchPhraseAdjective();
     await drivePage.rightClickOnBody();

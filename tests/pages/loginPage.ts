@@ -1,4 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
+import { create } from 'lodash';
 import { Context } from 'vm';
 
 export class loginPage {
@@ -35,18 +36,20 @@ export class loginPage {
     this.createAccount = this.page.getByText('Create account');
     this.termsAndConditions = this.page.getByRole('link', { name: 'Terms and conditions' });
     this.needHelp = this.page.getByRole('link', { name: 'Need help?' });
-    this.wrongCredentials = this.page.getByText('Wrong login credentials');
+    this.wrongCredentials = this.page.locator('[class="flex flex-row items-start pt-1"] span');
     //drive
-    this.driveTitle = this.page.locator('[title="Drive"]');
+    this.driveTitle = this.page.locator('span[class="max-w-sm flex-1 cursor-pointer truncate undefined"]');
     //account recovery
-    this.accountRecoveryTitle = this.page.getByRole('heading', { name: 'Account recovery' });
+    this.accountRecoveryTitle = this.page.locator(
+      'h1[class="text-3xl font-medium text-gray-100"]:has-text("Account recovery")',
+    );
     //Sign Up
     this.createAccounTitle = this.page.getByRole('heading', { name: 'Create account' });
     // terms of service
   }
 
   async typeEmail(user: string | any) {
-    await this.emailInput.waitFor({ state: 'visible' });
+    await expect(this.emailInput).toBeVisible();
     const emailPlaceholder = await this.emailInput.getAttribute('placeholder');
     expect(emailPlaceholder).toEqual('Email');
     await this.emailInput.fill(user);
@@ -57,6 +60,7 @@ export class loginPage {
     await this.passwordInput.fill(password);
   }
   async clickLogIn() {
+    await expect(this.loginButton).toBeVisible();
     const loginButtonText = await this.loginButtonText.textContent();
     expect(loginButtonText).toEqual('Log in');
     await this.loginButton.click();
@@ -65,35 +69,43 @@ export class loginPage {
   }
 
   async clickLoginWrongPass() {
+    await expect(this.loginButton).toBeVisible();
     const loginButtonText = await this.loginButtonText.textContent();
     expect(loginButtonText).toEqual('Log in');
     await this.loginButton.click();
+    await this.wrongCredentials.waitFor({ state: 'visible' });
+    await expect(this.wrongCredentials).toBeEnabled();
     const wrongLoginText = await this.wrongCredentials.textContent();
     return wrongLoginText;
   }
 
   async clickOnForgotYourPassword() {
-    await this.loginTitle.waitFor({ state: 'visible' });
+    await expect(this.loginTitle).toBeVisible();
+    await expect(this.forgotPassword).toBeEditable();
     await this.forgotPassword.click();
-    await this.accountRecoveryTitle.waitFor({ state: 'visible' });
-    const accountRecoveryText = await this.accountRecoveryTitle.textContent();
+    await expect(this.accountRecoveryTitle).toBeVisible();
+    const accountRecoveryText = await this.accountRecoveryTitle.textContent({ timeout: 3000 });
     return accountRecoveryText;
   }
 
   async clickOnCreateAccount() {
-    await this.loginTitle.waitFor({ state: 'visible' });
+    await expect(this.loginTitle).toBeVisible();
     const dontHaveAccountText = await this.dontHaveAccountText.textContent();
     const createAccountText = await this.createAccount.textContent();
+    expect(dontHaveAccountText).toEqual("Don't have an account?");
+    expect(createAccountText).toEqual('Create account');
+    await expect(this.createAccount).toBeEnabled();
     await this.createAccount.click();
-    await this.createAccounTitle.waitFor({ state: 'visible', timeout: 3000 });
-    const createAccountTitle = await this.createAccounTitle.textContent();
+    await expect(this.createAccounTitle).toBeVisible();
+    const createAccountHeader = this.createAccounTitle.textContent();
+    //console.log(createAccountHeader)
 
-    return { dontHaveAccountText, createAccountText, createAccountTitle };
+    return createAccountHeader;
   }
 
   async clickOnTermsAndConditions(context: Context) {
     const pagePromise = context.waitForEvent('page');
-    await this.termsAndConditions.waitFor({ state: 'visible' });
+    await expect(this.termsAndConditions).toBeVisible();
     const termsAndConditionsText = await this.termsAndConditions.textContent();
     await this.termsAndConditions.click();
 
@@ -104,7 +116,7 @@ export class loginPage {
 
   async clickOnNeedHelp(context: Context) {
     const pagePromise = context.waitForEvent('page');
-    await this.needHelp.waitFor({ state: 'visible' });
+    await expect(this.needHelp).toBeVisible();
     const needHelpText = await this.needHelp.textContent();
     await this.needHelp.click();
 

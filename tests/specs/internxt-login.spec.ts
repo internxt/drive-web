@@ -40,10 +40,8 @@ test.describe('internxt login', async () => {
   test('TC4: Validate that the user can go to the “create account” page', async ({ page }) => {
     const loginpage = new loginPage(page);
 
-    const { dontHaveAccountText, createAccountText, createAccountTitle } = await loginpage.clickOnCreateAccount();
-    expect(dontHaveAccountText).toEqual(staticData.dontHaveAccountText);
-    expect(createAccountText).toEqual(staticData.createAccountText);
-    expect(createAccountTitle).toEqual(staticData.createAccountText);
+    const createAccountHeader = await loginpage.clickOnCreateAccount();
+    expect(createAccountHeader).toEqual(staticData.createAccountText);
   });
 
   test('TC5: Validate that the user can go to the “terms and conditions” page', async ({ page, context }) => {
