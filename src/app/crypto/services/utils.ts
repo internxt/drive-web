@@ -5,7 +5,6 @@ import crypto from 'crypto';
 
 import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
-import { getAesInitFromEnv } from '../services/keys.service';
 import { AdvancedSharedItem } from '../../share/types';
 
 const ARGON2ID_PARALLELISM = 1;
@@ -146,16 +145,6 @@ function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string
   return bytes.toString(CryptoJS.enc.Utf8);
 }
 
-function encryptFilename(filename: string, folderId: number): string {
-  const { REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY } = process.env;
-
-  if (!CRYPTO_KEY) {
-    throw new Error('Cannot encrypt filename due to missing encryption key');
-  }
-
-  return aes.encrypt(filename, `${CRYPTO_KEY}-${folderId}`, getAesInitFromEnv());
-}
-
 function excludeHiddenItems(items: DriveItemData[]): DriveItemData[] {
   return items.filter((item) => !itemUtils.isHiddenItem(item));
 }
@@ -180,20 +169,14 @@ const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
   }
 };
 
-function createAES256Cipher(key: Uint8Array, iv: Uint8Array): crypto.Cipher {
-  return crypto.createCipheriv('aes-256-ctr', key, iv);
-}
-
 export {
   encryptText,
   decryptText,
-  encryptFilename,
   encryptTextWithKey,
   decryptTextWithKey,
   excludeHiddenItems,
   renameFile,
   getItemPlainName,
-  createAES256Cipher,
   passToHash,
   extendSecret,
   getArgon2,

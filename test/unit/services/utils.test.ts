@@ -14,9 +14,10 @@ import {
   getSha256Hasher,
   encryptText,
   decryptText,
+  decryptTextWithKey,
 } from '../../../src/app/crypto/services/utils';
 
-import { describe, expect, it, vi, afterAll, beforeAll } from 'vitest';
+import { describe, expect, it, afterAll, beforeAll } from 'vitest';
 import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js';
 
@@ -658,5 +659,11 @@ describe('Test encryption', () => {
     const ciphertext = encryptText(message);
     const result = decryptText(ciphertext);
     expect(result).toBe(message);
+  });
+
+  it('decryptTextWithKey should fail with an empty key', async () => {
+    const message = 'Test message';
+    const ciphertext = encryptText(message);
+    expect(() => decryptTextWithKey(ciphertext, '')).toThrowError('No key defined. Check .env file');
   });
 });
