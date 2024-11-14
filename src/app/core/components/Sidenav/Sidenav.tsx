@@ -77,7 +77,7 @@ const SideNavItems = ({ sideNavItems }: { sideNavItems: SideNavItemsProps[] }) =
             iconDataCy={item.iconDataCy}
             isActive={item.isActive}
             notifications={item.notifications}
-            onClick={() => item.onClick}
+            onClick={item.onClick}
           />
         )}
       </>
