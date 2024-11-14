@@ -101,7 +101,7 @@ async function passToHash(passObject: PassObjectInterface): Promise<{ salt: stri
     hash = await getArgon2(passObject.password, argonSalt);
     salt = 'argon2id$' + argonSalt;
   } else if (passObject.salt.startsWith('argon2id$')) {
-    const argonSalt = passObject.salt.split('$').pop() ?? '';
+    const argonSalt = passObject.salt.replace('argon2id$', '');
     hash = await getArgon2(passObject.password, argonSalt);
     salt = passObject.salt;
   } else if (passObject.salt.startsWith('hybrid$')) {
