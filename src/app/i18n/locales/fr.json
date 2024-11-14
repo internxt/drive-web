@@ -1244,7 +1244,9 @@
     "errorFetchingWorkspace": "Erreur lors de la récupération de l'espace de travail {{error}}",
     "errorSettingUpWorkspace": "Erreur lors de la configuration de l'espace de travail {{error}}",
     "errorWhileLoadingWorkspace": "Erreur lors du chargement de l'espace de travail {{error}}",
-    "errorFetchingWorkspaceCredentials": "Erreur lors de la récupération des identifiants de l'espace de travail {{error}}"
+    "errorFetchingWorkspaceCredentials": "Erreur lors de la récupération des identifiants de l'espace de travail {{error}}",
+    "invalidWorkspaceInvitationError": "Espace de travail plein. Contactez le propriétaire.",
+    "errorAcceptingWorkspaceInvitation": "Une erreur s'est produite lors de l'acceptation de l'invitation"
   },
   "actions": {
     "undo": "Annuler",

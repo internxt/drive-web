@@ -1304,7 +1304,9 @@
     "errorFetchingWorkspace": "Errore durante il recupero dell'area di lavoro {{error}}",
     "errorSettingUpWorkspace": "Errore durante la configurazione dell'area di lavoro {{error}}",
     "errorWhileLoadingWorkspace": "Errore durante il caricamento dell'area di lavoro {{error}}",
-    "errorFetchingWorkspaceCredentials": "Errore durante il recupero delle credenziali dell'area di lavoro {{error}}"
+    "errorFetchingWorkspaceCredentials": "Errore durante il recupero delle credenziali dell'area di lavoro {{error}}",
+    "invalidWorkspaceInvitationError": "Spazio di lavoro pieno. Contatta il proprietario.",
+    "errorAcceptingWorkspaceInvitation": "Si è verificato un errore durante l'accettazione dell'invito"
   },
   "actions": {
     "undo": "Annulla",

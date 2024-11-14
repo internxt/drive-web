@@ -1284,7 +1284,9 @@
     "errorFetchingWorkspace": "Ошибка при получении рабочего пространства {{error}}",
     "errorSettingUpWorkspace": "Ошибка при настройке рабочего пространства {{error}}",
     "errorWhileLoadingWorkspace": "Ошибка при загрузке рабочего пространства {{error}}",
-    "errorFetchingWorkspaceCredentials": "Ошибка при получении учетных данных рабочего пространства {{error}}"
+    "errorFetchingWorkspaceCredentials": "Ошибка при получении учетных данных рабочего пространства {{error}}",
+    "invalidWorkspaceInvitationError": "Рабочее пространство заполнено. Свяжитесь с владельцем.",
+    "errorAcceptingWorkspaceInvitation": "Произошла ошибка при принятии приглашения"
   },
   "actions": {
     "undo": "Отменить",

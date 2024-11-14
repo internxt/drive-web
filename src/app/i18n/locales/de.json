@@ -1260,7 +1260,9 @@
     "errorFetchingWorkspace": "Fehler beim Abrufen des Arbeitsbereichs {{error}}",
     "errorSettingUpWorkspace": "Fehler beim Einrichten des Arbeitsbereichs {{error}}",
     "errorWhileLoadingWorkspace": "Fehler beim Laden des Arbeitsbereichs {{error}}",
-    "errorFetchingWorkspaceCredentials": "Fehler beim Abrufen der Anmeldeinformationen für den Arbeitsbereich {{error}}"
+    "errorFetchingWorkspaceCredentials": "Fehler beim Abrufen der Anmeldeinformationen für den Arbeitsbereich {{error}}",
+    "invalidWorkspaceInvitationError": "Arbeitsbereich voll. Kontaktieren Sie den Eigentümer.",
+    "errorAcceptingWorkspaceInvitation": "Beim Annehmen der Einladung ist ein Fehler aufgetreten"
   },
   "actions": {
     "undo": "Rückgängig machen",
