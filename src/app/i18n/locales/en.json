@@ -1312,7 +1312,13 @@
     "errorApplyingCoupon": "Something went wrong while applying the coupon",
     "invalidTaxIdIsProvided": "The provided Tax ID is invalid",
     "errorWhileFetchingMoreItems": "Something went wrong while fetching more items",
-    "errorDeletingItems": "Something went wrong while deleting this item"
+    "errorDeletingItems": "Something went wrong while deleting this item",
+    "errorFetchingWorkspace": "Error while fetching workspace {{error}}",
+    "errorSettingUpWorkspace": "Error while setting up the workspace {{error}}",
+    "errorWhileLoadingWorkspace": "Error while loading the workspace {{error}}",
+    "errorFetchingWorkspaceCredentials": "Error while fetching workspace credentials {{error}}",
+    "invalidWorkspaceInvitationError": "Workspace full. Contact the owner.",
+    "errorAcceptingWorkspaceInvitation": "Something went wrong while accepting the invitation"
   },
   "actions": {
     "undo": "Undo",
