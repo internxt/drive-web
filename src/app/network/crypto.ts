@@ -44,7 +44,7 @@ async function getBucketKey(mnemonic: string, bucketId: string): Promise<string>
 }
 
 export function encryptMeta(fileMeta: string, key: Buffer, iv: Buffer): string {
-  const cipher: crypto.CipherGCM = Aes256gcmEncrypter(key, iv);
+  const cipher = Aes256gcmEncrypter(key, iv);
   const cipherTextBuf = Buffer.concat([cipher.update(fileMeta, 'utf8'), cipher.final()]);
   const digest = cipher.getAuthTag();
 

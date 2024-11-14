@@ -2,6 +2,7 @@
 import replace from '@rollup/plugin-replace';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
+import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 export default defineConfig({
   plugins: [
@@ -10,7 +11,14 @@ export default defineConfig({
       preventAssignment: true,
       'process.browser': true,
     }),
+    nodePolyfills(),
   ],
+  resolve: {
+    alias: {
+      crypto: 'crypto-browserify', // Resolve `crypto` to `crypto-browserify`
+      stream: 'stream-browserify',
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,
