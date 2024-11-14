@@ -1349,6 +1349,7 @@
     "moreInfo": "更多信息",
     "dismiss": "解散",
     "save": "保存",
+    "saveChanges": "保存更改",
     "saving": "保存",
     "back": "返回",
     "edit": "编辑",
@@ -1702,6 +1703,14 @@
         "nextBillingDate": "下一次账单日期",
         "planLimit": "以 {{planLimit}} 计划计费",
         "subscription": "订阅",
+        "membersLabel": "成员",
+        "perUser": "每位用户",
+        "members": {
+          "title": "成员",
+          "editMembers": "编辑成员",
+          "numberOfMembers": "成员数量",
+          "expandNumber": "扩大成员数量。"
+        },
         "lifetimeSubscription": {
           "planType": "终生",
           "text": "无预定账单"

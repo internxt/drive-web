@@ -20,6 +20,8 @@ import BillingDetailsCard from './BillingDetailsCard';
 import EditBillingDetailsModal from './components/EditBillingDetailsModal';
 import BillingWorkspaceOverview from './containers/BillingWorkspaceOverview';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { UpdateMembersCard } from './UpdateMembersCard';
+import { UpdateMembersModal } from './components/UpdateMembersModal';
 
 interface BillingWorkspaceSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -34,6 +36,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const { selectedWorkspace } = useSelector<RootState, WorkspacesState>((state) => state.workspaces);
   const workspaceId = selectedWorkspace?.workspace.id;
   const isOwner = user.uuid === selectedWorkspace?.workspace.ownerId;
+  const currentAmountOfSeats = plan.businessPlan?.amountOfSeats;
 
   const [isSubscription, setIsSubscription] = useState<boolean>(false);
   const [cancellingSubscription, setCancellingSubscription] = useState<boolean>(false);
@@ -41,13 +44,17 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const [planName, setPlanName] = useState<string>('');
   const [planInfo, setPlanInfo] = useState<string>('');
   const [currentUsage, setCurrentUsage] = useState<number>(-1);
+  const [updatedAmountOfSeats, setUpdatedAmountOfSeats] = useState(currentAmountOfSeats);
 
+  const [isEditingMembersWorkspace, setIsEditingMembersWorkspace] = useState(false);
   const [isEditingBillingDetails, setIsEditingBillingDetails] = useState(false);
   const [isSavingBillingDetails, setIsSavingBillingDetails] = useState(false);
   const [billingDetails, setBillingDetails] = useState<CustomerBillingInfo>({
     address: selectedWorkspace?.workspace.address || '',
     phoneNumber: selectedWorkspace?.workspace.phoneNumber || '',
   });
+
+  console.log({ plan, planBusiness: plan.businessPlan, business: plan.businessSubscription });
 
   useEffect(() => {
     plan.businessSubscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
@@ -91,9 +98,32 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
     }
   };
 
+  const onChangeWorkspaceMembers = (updatedMembers: number) => {
+    setUpdatedAmountOfSeats(updatedMembers);
+  };
+
+  const onCloseChangeMembersModal = () => {
+    setIsEditingMembersWorkspace(false);
+    setUpdatedAmountOfSeats(currentAmountOfSeats);
+  };
+
   return (
     <Section title={t('preferences.workspace.billing.title')} onClosePreferences={onClosePreferences}>
       <BillingWorkspaceOverview plan={plan} />
+      <UpdateMembersCard
+        totalWorkspaceSeats={currentAmountOfSeats}
+        translate={translate}
+        onChangeMembersButtonClicked={() => setIsEditingMembersWorkspace(true)}
+      />
+      <UpdateMembersModal
+        isLoading={false}
+        currentAmountOfSeats={currentAmountOfSeats}
+        handleUpdateMembers={onChangeWorkspaceMembers}
+        updatedAmountOfSeats={updatedAmountOfSeats}
+        isOpen={isEditingMembersWorkspace}
+        onClose={onCloseChangeMembersModal}
+        translate={translate}
+      />
       <BillingDetailsCard
         address={billingDetails.address || ''}
         phone={billingDetails.phoneNumber || ''}

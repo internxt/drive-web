@@ -1349,6 +1349,7 @@
     "moreInfo": "More info",
     "dismiss": "Dismiss",
     "save": "Save",
+    "saveChanges": "Save changes",
     "saving": "Saving",
     "share": "Share",
     "back": "Back",
@@ -1702,7 +1703,9 @@
         "title": "Billing",
         "nextBillingDate": "Next billing date",
         "planLimit": "Billed for {{planLimit}} plan",
+        "membersLabel": "members",
         "subscription": "Subscription",
+        "perUser": "per user",
         "lifetimeSubscription": {
           "planType": "Lifetime",
           "text": "No upcoming billings"
@@ -1711,6 +1714,12 @@
           "planType": "Free",
           "action": "Upgrade",
           "actionDescription": "Increase your storage space and get more features"
+        },
+        "members": {
+          "title": "Members",
+          "editMembers": "Edit members",
+          "numberOfMembers": "Number of members",
+          "expandNumber": "Expand the number of members."
         },
         "paymentMethod": {
           "title": "Payment Method",

@@ -1318,6 +1318,7 @@
     "moreInfo": "Больше информации",
     "dismiss": "Пропустить",
     "save": "Сохранить",
+    "saveChanges": "Сохранить изменения",
     "saving": "Экономия",
     "back": "Назад",
     "edit": "Редактировать",
@@ -1669,6 +1670,14 @@
         "nextBillingDate": "Следующая дата выставления счета",
         "planLimit": "Выставлен счет за план {{planLimit}}",
         "subscription": "Подписка",
+        "membersLabel": "участники",
+        "perUser": "на пользователя",
+        "members": {
+          "title": "Участники",
+          "editMembers": "Редактировать участников",
+          "numberOfMembers": "Количество участников",
+          "expandNumber": "Увеличить количество участников."
+        },
         "lifetimeSubscription": {
           "planType": "Пожизненная",
           "text": "Никаких предстоящих счетов"

@@ -1338,6 +1338,7 @@
     "moreInfo": "Maggiori informazioni",
     "dismiss": "Licenziare",
     "save": "Salva",
+    "saveChanges": "Salva modifiche",
     "saving": "Salvare",
     "back": "Indietro",
     "edit": "Modifica",
@@ -1689,6 +1690,14 @@
         "nextBillingDate": "Prossima data di fatturazione",
         "planLimit": "Fatturato per un piano da {{planLimit}}",
         "subscription": "Abbonamento",
+        "membersLabel": "membri",
+        "perUser": "per utente",
+        "members": {
+          "title": "Membri",
+          "editMembers": "Modifica membri",
+          "numberOfMembers": "Numero di membri",
+          "expandNumber": "Espandi il numero di membri."
+        },
         "lifetimeSubscription": {
           "planType": "Durata della vita",
           "text": "Nessuna fatturazione imminente"

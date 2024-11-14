@@ -1311,6 +1311,7 @@
     "moreInfo": "更多信息",
     "dismiss": "忽略",
     "save": "保存",
+    "saveChanges": "儲存更改",
     "saving": "正在保存",
     "share": "分享",
     "back": "返回",
@@ -1664,6 +1665,14 @@
         "nextBillingDate": "下次計費日期",
         "planLimit": "計費計劃：{{planLimit}}",
         "subscription": "訂閱",
+        "membersLabel": "成員",
+        "perUser": "每位使用者",
+        "members": {
+          "title": "成員",
+          "editMembers": "編輯成員",
+          "numberOfMembers": "成員數量",
+          "expandNumber": "擴大成員數量。"
+        },
         "lifetimeSubscription": {
           "planType": "終身",
           "text": "沒有即將到來的賬單"

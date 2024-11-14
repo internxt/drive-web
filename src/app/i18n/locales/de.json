@@ -1294,6 +1294,7 @@
     "moreInfo": "Mehr Info",
     "dismiss": "Zurückweisen",
     "save": "Sichern",
+    "saveChanges": "Änderungen speichern",
     "back": "Zurück",
     "edit": "Bearbeite",
     "submit": "Einreichen",
@@ -1644,6 +1645,14 @@
         "nextBillingDate": "Nächstes Abrechnungsdatum",
         "planLimit": "Abgerechnet für {{planLimit}} plan",
         "subscription": "Abonnement",
+        "membersLabel": "Mitglieder",
+        "perUser": "pro Benutzer",
+        "members": {
+          "title": "Mitglieder",
+          "editMembers": "Mitglieder bearbeiten",
+          "numberOfMembers": "Anzahl der Mitglieder",
+          "expandNumber": "Die Anzahl der Mitglieder erweitern."
+        },
         "lifetimeSubscription": {
           "planType": "Lebenslang",
           "text": "Keine kommenden Rechnungen"
