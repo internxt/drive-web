@@ -1,6 +1,8 @@
 /**
- * @jest-environment node
+ * @jest-environment jsdom
  */
+
+import { describe, expect, it } from 'vitest';
 import { isValid } from '../../../src/app/crypto/services/utilspgp';
 import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
 import {
@@ -10,7 +12,6 @@ import {
   decryptText,
   passToHash,
 } from '../../../src/app/crypto/services/utils';
-import { validateMnemonic } from 'bip39';
 import { config } from 'dotenv';
 import crypto from 'crypto';
 config();
@@ -51,7 +52,6 @@ describe('# keys service tests', () => {
 
     const mnemonic =
       'sponsor atom gun uncle ugly museum truth they opinion thunder front apart involve trim pair stove truck omit tornado abstract trip ignore include symptom';
-    expect(validateMnemonic(mnemonic)).toBeTruthy();
     const encryptedMnemonic = encryptTextWithPassword(mnemonic, password);
     expect(encryptedMnemonic.length).toStrictEqual(332);
 
@@ -59,7 +59,7 @@ describe('# keys service tests', () => {
     const encryptedCode = encryptTextWithPassword(code, mnemonic);
     expect(encryptedCode.length).toStrictEqual(216);
 
-    const hashObj = passToHash({ password });
+    const hashObj = await passToHash({ password });
     const encryptedHash = encryptText(hashObj.hash);
     expect(encryptedHash.length).toStrictEqual(216);
 

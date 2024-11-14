@@ -1,6 +1,7 @@
-import errorService from 'app/core/services/error.service';
+import errorService from '../core/services/error.service';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
-import { encryptFilename, generateHMAC, sha256 } from './crypto';
+import { encryptFilename, generateHMAC } from './crypto';
+import { getSha256 } from '../crypto/services/utils';
 
 // TODO: Make this injectable
 const networkApiUrl = process.env.REACT_APP_STORJ_BRIDGE;
@@ -48,10 +49,10 @@ interface NetworkCredentials {
   pass: string;
 }
 
-function getAuthFromCredentials(creds: NetworkCredentials): AxiosBasicCredentials {
+async function getAuthFromCredentials(creds: NetworkCredentials): Promise<AxiosBasicCredentials> {
   return {
     username: creds.user,
-    password: sha256(Buffer.from(creds.pass)).toString('hex'),
+    password: await getSha256(creds.pass),
   };
 }
 
@@ -76,8 +77,12 @@ export function getFileInfoWithToken(bucketId: string, fileId: string, token: st
   return getFileInfo(bucketId, fileId, { headers: { 'x-token': token } });
 }
 
-export function getFileInfoWithAuth(bucketId: string, fileId: string, creds: NetworkCredentials): Promise<FileInfo> {
-  return getFileInfo(bucketId, fileId, { auth: getAuthFromCredentials(creds) });
+export async function getFileInfoWithAuth(
+  bucketId: string,
+  fileId: string,
+  creds: NetworkCredentials,
+): Promise<FileInfo> {
+  return getFileInfo(bucketId, fileId, { auth: await getAuthFromCredentials(creds) });
 }
 
 async function replaceMirror(
@@ -140,7 +145,7 @@ export async function getMirrors(
 
   let results: Mirror[] = [];
   const requestConfig: AxiosRequestConfig = {
-    auth: creds ? getAuthFromCredentials(creds) : undefined,
+    auth: creds ? await getAuthFromCredentials(creds) : undefined,
     headers: token ? { 'x-token': token } : {},
   };
 
@@ -247,10 +252,10 @@ interface BucketEntry {
   size: number;
 }
 
-export function checkBucketExistence(bucketId: string, creds: NetworkCredentials): Promise<boolean> {
+export async function checkBucketExistence(bucketId: string, creds: NetworkCredentials): Promise<boolean> {
   const options: AxiosRequestConfig = {
     method: 'GET',
-    auth: getAuthFromCredentials(creds),
+    auth: await getAuthFromCredentials(creds),
     url: `${networkApiUrl}/buckets/${bucketId}`,
   };
 
@@ -260,10 +265,10 @@ export function checkBucketExistence(bucketId: string, creds: NetworkCredentials
   });
 }
 
-export function createFrame(creds: NetworkCredentials): Promise<Frame> {
+export async function createFrame(creds: NetworkCredentials): Promise<Frame> {
   const options: AxiosRequestConfig = {
     method: 'POST',
-    auth: getAuthFromCredentials(creds),
+    auth: await getAuthFromCredentials(creds),
     url: `${networkApiUrl}/frames`,
   };
 
@@ -272,10 +277,14 @@ export function createFrame(creds: NetworkCredentials): Promise<Frame> {
   });
 }
 
-export function addShardToFrame(frameId: string, body: LegacyShardMeta, creds: NetworkCredentials): Promise<Contract> {
+export async function addShardToFrame(
+  frameId: string,
+  body: LegacyShardMeta,
+  creds: NetworkCredentials,
+): Promise<Contract> {
   const options: AxiosRequestConfig = {
     method: 'PUT',
-    auth: getAuthFromCredentials(creds),
+    auth: await getAuthFromCredentials(creds),
     data: { ...body, challenges: body.challenges_as_str },
     url: `${networkApiUrl}/frames/${frameId}`,
   };
@@ -285,14 +294,14 @@ export function addShardToFrame(frameId: string, body: LegacyShardMeta, creds: N
   });
 }
 
-export function createEntryFromFrame(
+export async function createEntryFromFrame(
   bucketId: string,
   body: CreateEntryFromFramePayload,
   creds: NetworkCredentials,
 ): Promise<BucketEntry> {
   const options: AxiosRequestConfig = {
     method: 'POST',
-    auth: getAuthFromCredentials(creds),
+    auth: await getAuthFromCredentials(creds),
     data: body,
     url: `${networkApiUrl}/buckets/${bucketId}/files`,
   };
@@ -364,7 +373,7 @@ export async function finishUpload(
     index: index.toString('hex'),
     hmac: {
       type: 'sha512',
-      value: generateHMAC([shardMeta], encryptionKey).toString('hex'),
+      value: await generateHMAC([shardMeta], encryptionKey),
     },
   };
 

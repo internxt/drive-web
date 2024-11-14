@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import iconService from 'app/drive/services/icon.service';
-import sizeService from 'app/drive/services/size.service';
-import network from 'app/network';
-import shareService from 'app/share/services/share.service';
-import { TaskProgress } from 'app/tasks/types';
+import iconService from '../../../drive/services/icon.service';
+import sizeService from '../../../drive/services/size.service';
+import network from '../../../network';
+import shareService from '../../../share/services/share.service';
+import { TaskProgress } from '../../../tasks/types';
 import { useEffect, useState } from 'react';
 import { match } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -15,15 +15,15 @@ import { fileExtensionPreviewableGroups } from '../../../drive/types/file-types'
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
 import { Check, DownloadSimple, Eye } from '@phosphor-icons/react';
 
-import downloadService from 'app/drive/services/download.service';
+import downloadService from '../../../drive/services/download.service';
 import './ShareView.scss';
 
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import errorService from 'app/core/services/error.service';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import errorService from '../../../core/services/error.service';
+import { binaryStreamToBlob } from '../../../core/services/stream.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { HTTP_CODES } from '../../../core/services/http.service';
 import AppError from '../../../core/types';
 import Button from '../../../shared/components/Button/Button';

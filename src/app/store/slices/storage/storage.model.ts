@@ -1,5 +1,5 @@
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
-import { AdvancedSharedItem, SharedNamePath } from 'app/share/types';
+import { AdvancedSharedItem, SharedNamePath } from '../../../../app/share/types';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, FileViewMode, FolderPath, FolderPathDialog } from '../../../drive/types';
 import { IRoot } from './storage.thunks/uploadFolderThunk';

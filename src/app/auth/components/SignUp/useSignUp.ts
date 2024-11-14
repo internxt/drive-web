@@ -47,7 +47,7 @@ export function useSignUp(
 } {
   const updateInfo: UpdateInfoFunction = async (email: string, password: string) => {
     // Setup hash and salt
-    const hashObj = passToHash({ password });
+    const hashObj = await passToHash({ password });
     const encPass = encryptText(hashObj.hash);
     const encSalt = encryptText(hashObj.salt);
 
@@ -91,14 +91,16 @@ export function useSignUp(
   };
 
   const doRegister = async (email: string, password: string, captcha: string) => {
-    const hashObj = passToHash({ password });
+    const hashObj = await passToHash({ password });
     const encPass = encryptText(hashObj.hash);
     const encSalt = encryptText(hashObj.salt);
     const mnemonic = bip39.generateMnemonic(256);
     const encMnemonic = encryptTextWithPassword(mnemonic, password);
 
-    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
+    const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
+      await generateNewKeys();
     const encPrivateKey = encryptTextWithPassword(privateKeyArmored, password);
+    const encPrivateKyberKey = encryptTextWithPassword(privateKyberKeyBase64, password);
 
     const authClient = SdkFactory.getNewApiInstance().createAuthClient();
 
@@ -106,6 +108,16 @@ export function useSignUp(
       privateKeyEncrypted: encPrivateKey,
       publicKey: publicKeyArmored,
       revocationCertificate: revocationCertificate,
+      keys: {
+        ecc: {
+          privateKeyEncrypted: encPrivateKey,
+          publicKey: publicKeyArmored,
+        },
+        kyber: {
+          publicKey: publicKyberKeyBase64,
+          privateKeyEncrypted: encPrivateKyberKey,
+        },
+      },
     };
     const registerDetails: RegisterDetails = {
       name: 'My',
@@ -156,19 +168,31 @@ export function useSignUp(
     password: string,
     captcha: string,
   ): Promise<RegisterDetails> => {
-    const hashObj = passToHash({ password });
+    const hashObj = await passToHash({ password });
     const encPass = encryptText(hashObj.hash);
     const encSalt = encryptText(hashObj.salt);
     const mnemonic = bip39.generateMnemonic(256);
     const encMnemonic = encryptTextWithPassword(mnemonic, password);
 
-    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
+    const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
+      await generateNewKeys();
     const encPrivateKey = encryptTextWithPassword(privateKeyArmored, password);
+    const encPrivateKyberKey = encryptTextWithPassword(privateKyberKeyBase64, password);
 
     const keys: Keys = {
       privateKeyEncrypted: encPrivateKey,
       publicKey: publicKeyArmored,
       revocationCertificate: revocationCertificate,
+      keys: {
+        ecc: {
+          privateKeyEncrypted: encPrivateKey,
+          publicKey: publicKeyArmored,
+        },
+        kyber: {
+          publicKey: publicKyberKeyBase64,
+          privateKeyEncrypted: encPrivateKyberKey,
+        },
+      },
     };
     const registerDetails: RegisterDetails = {
       name: 'My',

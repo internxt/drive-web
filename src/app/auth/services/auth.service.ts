@@ -9,25 +9,25 @@ import {
 import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
-import analyticsService from 'app/analytics/services/analytics.service';
-import { getCookie, setCookie } from 'app/analytics/utils';
-import localStorageService from 'app/core/services/local-storage.service';
-import RealtimeService from 'app/core/services/socket.service';
-import { assertPrivateKeyIsValid, assertValidateKeys, decryptPrivateKey } from 'app/crypto/services/keys.service';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
+import analyticsService from '../../analytics/services/analytics.service';
+import { getCookie, setCookie } from '../../analytics/utils';
+import localStorageService from '../../core/services/local-storage.service';
+import RealtimeService from '../../core/services/socket.service';
+import { assertPrivateKeyIsValid, assertValidateKeys, decryptPrivateKey } from '../../crypto/services/keys.service';
+import { generateNewKeys } from '../../crypto/services/pgp.service';
 import {
   decryptText,
   decryptTextWithPassword,
   encryptText,
   encryptTextWithPassword,
   passToHash,
-} from 'app/crypto/services/utils';
-import databaseService from 'app/database/services/database.service';
+} from '../../crypto/services/utils';
+import databaseService from '../../database/services/database.service';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
+import navigationService from '../../core/services/navigation.service';
+import { AppView } from '../../core/types';
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   analyticsService.trackSignOut();
@@ -56,13 +56,16 @@ export const is2FANeeded = async (email: string): Promise<boolean> => {
 };
 
 const generateNewKeysWithEncrypted = async (password: string) => {
-  const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
+  const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
+    await generateNewKeys();
 
   return {
     privateKeyArmored,
     privateKeyArmoredEncrypted: encryptTextWithPassword(privateKeyArmored, password),
     publicKeyArmored,
     revocationCertificate,
+    publicKyberKeyBase64,
+    encPrivateKyberKey: encryptTextWithPassword(privateKyberKeyBase64, password),
   };
 };
 
@@ -92,18 +95,33 @@ export const doLogin = async (
     tfaCode: twoFactorCode,
   };
   const cryptoProvider: CryptoProvider = {
-    encryptPasswordHash(password: Password, encryptedSalt: string): string {
+    async encryptPasswordHash(password: Password, encryptedSalt: string): Promise<string> {
       const salt = decryptText(encryptedSalt);
-      const hashObj = passToHash({ password, salt });
+      const hashObj = await passToHash({ password, salt });
       return encryptText(hashObj.hash);
     },
     async generateKeys(password: Password): Promise<Keys> {
-      const { privateKeyArmoredEncrypted, publicKeyArmored, revocationCertificate } =
-        await generateNewKeysWithEncrypted(password);
+      const {
+        privateKeyArmoredEncrypted,
+        publicKeyArmored,
+        revocationCertificate,
+        publicKyberKeyBase64,
+        encPrivateKyberKey,
+      } = await generateNewKeysWithEncrypted(password);
       const keys: Keys = {
         privateKeyEncrypted: privateKeyArmoredEncrypted,
         publicKey: publicKeyArmored,
         revocationCertificate: revocationCertificate,
+        keys: {
+          ecc: {
+            privateKeyEncrypted: privateKeyArmoredEncrypted,
+            publicKey: publicKeyArmored,
+          },
+          kyber: {
+            publicKey: publicKyberKeyBase64,
+            privateKeyEncrypted: encPrivateKyberKey,
+          },
+        },
       };
       return keys;
     },
@@ -144,6 +162,10 @@ export const doLogin = async (
       localStorageService.set('xMnemonic', clearMnemonic);
       localStorageService.set('xNewToken', newToken);
 
+      const argon2Hash = await passToHash({ password });
+
+      await authClient.upgradeHash(argon2Hash.hash);
+
       return {
         user: clearUser,
         token: token,
@@ -178,7 +200,8 @@ export const getPasswordDetails = async (
   }
 
   // Encrypt  the password
-  const hashedCurrentPassword = passToHash({ password: currentPassword, salt }).hash;
+  const hashedPassword = await passToHash({ password: currentPassword, salt });
+  const hashedCurrentPassword = hashedPassword.hash;
   const encryptedCurrentPassword = encryptText(hashedCurrentPassword);
 
   return { salt, hashedCurrentPassword, encryptedCurrentPassword };
@@ -195,7 +218,7 @@ const updateCredentialsWithToken = async (
     throw new Error('Invalid mnemonic');
   }
 
-  const hashedNewPassword = passToHash({ password: newPassword });
+  const hashedNewPassword = await passToHash({ password: newPassword });
   const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
   const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
 
@@ -220,7 +243,7 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
 
   const encryptedNewMnemonic = encryptTextWithPassword(newMnemonic, newPassword);
 
-  const hashedNewPassword = passToHash({ password: newPassword });
+  const hashedNewPassword = await passToHash({ password: newPassword });
   const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
   const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
 
@@ -240,7 +263,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword);
 
   // Encrypt the new password
-  const hashedNewPassword = passToHash({ password: newPassword });
+  const hashedNewPassword = await passToHash({ password: newPassword });
   const encryptedNewPassword = encryptText(hashedNewPassword.hash);
   const encryptedNewSalt = encryptText(hashedNewPassword.salt);
 
@@ -252,7 +275,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const usersClient = SdkFactory.getInstance().createUsersClient();
 
   return usersClient
-    .changePassword(<ChangePasswordPayload>{
+    .changePasswordLegacy(<ChangePasswordPayload>{
       currentEncryptedPassword: encryptedCurrentPassword,
       newEncryptedPassword: encryptedNewPassword,
       newEncryptedSalt: encryptedNewSalt,
@@ -285,17 +308,17 @@ export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
   return authClient.generateTwoFactorAuthQR();
 };
 
-export const deactivate2FA = (
+export async function deactivate2FA(
   passwordSalt: string,
   deactivationPassword: string,
   deactivationCode: string,
-): Promise<void> => {
+): Promise<void> {
   const salt = decryptText(passwordSalt);
-  const hashObj = passToHash({ password: deactivationPassword, salt });
+  const hashObj = await passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
   const authClient = SdkFactory.getInstance().createAuthClient();
   return authClient.disableTwoFactorAuth(encPass, deactivationCode);
-};
+}
 
 export async function getNewToken(): Promise<string> {
   const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
@@ -312,7 +335,7 @@ export async function getNewToken(): Promise<string> {
 
 export async function areCredentialsCorrect(email: string, password: string): Promise<boolean> {
   const salt = await getSalt();
-  const { hash: hashedPassword } = passToHash({ password, salt });
+  const { hash: hashedPassword } = await passToHash({ password, salt });
   const authClient = SdkFactory.getInstance().createAuthClient();
 
   return authClient.areCredentialsCorrect(email, hashedPassword);

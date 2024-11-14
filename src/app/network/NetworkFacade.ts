@@ -8,7 +8,7 @@ import { downloadFile } from '@internxt/sdk/dist/network/download';
 import { getEncryptedFile, encryptStreamInParts, processEveryFileBlobReturnHash } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileBlob, UploadProgressCallback } from './upload';
-import { buildProgressStream } from 'app/core/services/stream.service';
+import { buildProgressStream } from '../core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
 import { TaskStatus } from '../tasks/types';

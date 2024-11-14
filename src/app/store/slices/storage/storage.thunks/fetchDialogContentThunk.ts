@@ -9,7 +9,7 @@ import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
-import newStorageService from 'app/drive/services/new-storage.service';
+import newStorageService from '../../../../../app/drive/services/new-storage.service';
 
 export const fetchDialogContentThunk = createAsyncThunk<void, string, { state: RootState }>(
   'storage/fetchDialogContentThunk',

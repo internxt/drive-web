@@ -4,8 +4,8 @@ import { Device } from '../../types';
 import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
 import { DownloadSimple } from '@phosphor-icons/react';
 import Empty from '../../../shared/components/Empty/Empty';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import List from '../../../shared/components/List';
 import { contextMenuBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import UilApple from '@iconscout/react-unicons/icons/uil-apple';
@@ -15,7 +15,7 @@ import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
 import dateService from '../../../core/services/date.service';
 import sizeService from '../../../drive/services/size.service';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import { skinSkeleton } from 'app/shared/Skeleton';
+import { skinSkeleton } from '../../../shared/Skeleton';
 
 interface Props {
   items: (Device | DriveFolderData)[];

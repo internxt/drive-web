@@ -1,10 +1,10 @@
 import { ActionReducerMapBuilder, createAsyncThunk, Dispatch } from '@reduxjs/toolkit';
 
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-import { DriveFolderData, DriveItemData } from 'app/drive/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import tasksService from 'app/tasks/services/tasks.service';
-import { RenameFileTask, RenameFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
+import { DriveFolderData, DriveItemData } from '../../../../drive/types';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import tasksService from '../../../../tasks/services/tasks.service';
+import { RenameFileTask, RenameFolderTask, TaskStatus, TaskType } from '../../../../tasks/types';
 import { t } from 'i18next';
 import storageThunks from '.';
 import { storageActions } from '..';

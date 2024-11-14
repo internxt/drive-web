@@ -1,23 +1,117 @@
-import CryptoJS from 'crypto-js';
+import { Buffer } from 'buffer';
+import { argon2id, blake3, pbkdf2, createSHA256, sha512, sha256, ripemd160, createHMAC, createSHA512 } from 'hash-wasm';
+import crypto from 'crypto';
+
 import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
 import { AdvancedSharedItem } from '../../share/types';
+
+const ARGON2ID_PARALLELISM = 1;
+const ARGON2ID_ITERATIONS = 256;
+const ARGON2ID_MEMORY = 512;
+const ARGON2ID_TAG_LEN = 32;
+const ARGON2ID_SALT_LEN = 16;
+
+const PBKDF2_ITERATIONS = 10000;
+const PBKDF2_TAG_LEN = 32;
 
 interface PassObjectInterface {
   salt?: string | null;
   password: string;
 }
 
-// Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
-function passToHash(passObject: PassObjectInterface): { salt: string; hash: string } {
-  const salt = passObject.salt ? CryptoJS.enc.Hex.parse(passObject.salt) : CryptoJS.lib.WordArray.random(128 / 8);
-  const hash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256 / 32, iterations: 10000 });
-  const hashedObjetc = {
-    salt: salt.toString(),
-    hash: hash.toString(),
-  };
+function getSha256Hasher() {
+  return createSHA256();
+}
 
-  return hashedObjetc;
+function getSha256(data: string) {
+  return sha256(data);
+}
+
+function getSha512(data: string) {
+  return sha512(data);
+}
+
+function getRipemd160(data: string) {
+  return ripemd160(data);
+}
+
+function getHmacSha512FromHexKey(encryptionKeyHex: string, dataArray: string[] | Buffer[]) {
+  const encryptionKey = Buffer.from(encryptionKeyHex, 'hex');
+  return getHmacSha512(encryptionKey, dataArray);
+}
+
+async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer[]) {
+  const hashFunc = createSHA512();
+  const hmac = await createHMAC(hashFunc, encryptionKey);
+  hmac.init();
+  for (const data of dataArray) {
+    hmac.update(data);
+  }
+  return hmac.digest();
+}
+
+function extendSecret(message: Uint8Array, length: number): Promise<string> {
+  return blake3(message, length);
+}
+function getPBKDF2(
+  password: string,
+  salt: string,
+  iterations = PBKDF2_ITERATIONS,
+  hashLength = PBKDF2_TAG_LEN,
+): Promise<string> {
+  return pbkdf2({
+    password,
+    salt,
+    iterations,
+    hashLength,
+    hashFunction: createSHA256(),
+    outputType: 'hex',
+  });
+}
+
+function getArgon2(
+  password: string,
+  salt: string,
+  parallelism: number = ARGON2ID_PARALLELISM,
+  iterations: number = ARGON2ID_ITERATIONS,
+  memorySize: number = ARGON2ID_MEMORY,
+  hashLength: number = ARGON2ID_TAG_LEN,
+  outputType: 'hex' | 'binary' | 'encoded' = 'encoded',
+): Promise<string> {
+  return argon2id({
+    password,
+    salt,
+    parallelism,
+    iterations,
+    memorySize,
+    hashLength,
+    outputType,
+  });
+}
+
+// Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
+async function passToHash(passObject: PassObjectInterface): Promise<{ salt: string; hash: string }> {
+  let salt;
+  let hash;
+
+  if (!passObject.salt) {
+    const argonSalt = crypto.randomBytes(ARGON2ID_SALT_LEN).toString('hex');
+    hash = await getArgon2(passObject.password, argonSalt);
+    salt = 'argon2id$' + argonSalt;
+  } else if (passObject.salt.startsWith('argon2id$')) {
+    const argonSalt = passObject.salt.replace('argon2id$', '');
+    hash = await getArgon2(passObject.password, argonSalt);
+    salt = passObject.salt;
+  } else if (passObject.salt.startsWith('hybrid$')) {
+    const params = passObject.salt.split('$');
+    const oldhash = await getPBKDF2(passObject.password, params[1]);
+    hash = await getArgon2(oldhash, params[2]);
+    salt = passObject.salt;
+  } else {
+    throw Error('Incorrect salt format');
+  }
+  return { salt, hash };
 }
 
 // AES Plain text encryption method
@@ -53,16 +147,6 @@ function decryptTextWithPassword(encryptedText: string, keyToDecrypt: string): s
   }
 }
 
-function encryptFilename(filename: string, folderId: number): string {
-  const { REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY } = process.env;
-
-  if (!CRYPTO_KEY) {
-    throw new Error('Cannot encrypt filename due to missing encryption key');
-  }
-
-  return encryptTextWithPassword(filename, `${CRYPTO_KEY}-${folderId}`);
-}
-
 function excludeHiddenItems(items: DriveItemData[]): DriveItemData[] {
   return items.filter((item) => !itemUtils.isHiddenItem(item));
 }
@@ -88,13 +172,21 @@ const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
 };
 
 export {
-  passToHash,
   encryptText,
   decryptText,
-  encryptFilename,
   encryptTextWithPassword,
   decryptTextWithPassword,
   excludeHiddenItems,
   renameFile,
   getItemPlainName,
+  passToHash,
+  extendSecret,
+  getArgon2,
+  getPBKDF2,
+  getSha256Hasher,
+  getSha256,
+  getSha512,
+  getRipemd160,
+  getHmacSha512,
+  getHmacSha512FromHexKey,
 };

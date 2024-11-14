@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageActions } from '../../../store/slices/storage';
 import { uiActions } from '../../../store/slices/ui';
 
-import BreadcrumbsSharedView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsSharedView';
+import BreadcrumbsSharedView from '../../../shared/components/Breadcrumbs/Containers/BreadcrumbsSharedView';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';
@@ -117,6 +117,7 @@ function SharedView({
     filesOwnerCredentials,
     ownerBucket,
     ownerEncryptionKey,
+    ownerHybridModeEnabled,
   } = state;
 
   const shareItems = [...shareFolders, ...shareFiles];
@@ -332,7 +333,10 @@ function SharedView({
     try {
       const mnemonic =
         selectedWorkspace?.workspaceUser.key ??
-        (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : clickedShareItemEncryptionKey));
+        (await decryptMnemonic(
+          shareItem.encryptionKey ? shareItem.encryptionKey : clickedShareItemEncryptionKey,
+          shareItem.hybridModeEnabled,
+        ));
       handleOpenItemPreview(true, { ...previewItem, mnemonic });
     } catch (err) {
       const error = errorService.castError(err);
@@ -393,7 +397,8 @@ function SharedView({
       };
     } else {
       const mnemonicDecrypted =
-        selectedWorkspace?.workspaceUser.key ?? (ownerEncryptionKey ? await decryptMnemonic(ownerEncryptionKey) : null);
+        selectedWorkspace?.workspaceUser.key ??
+        (ownerEncryptionKey ? await decryptMnemonic(ownerEncryptionKey, ownerHybridModeEnabled) : null);
       if (filesOwnerCredentials && mnemonicDecrypted && ownerBucket) {
         ownerUserAuthenticationData = {
           bridgeUser: filesOwnerCredentials?.networkUser,

@@ -2,7 +2,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { t } from 'i18next';
 import { useHistory } from 'react-router-dom';
 import { AppView } from '../../../core/types';
-import workspacesService from 'app/core/services/workspace.service';
+import workspacesService from '../../../core/services/workspace.service';
 
 const useLoginRedirections = ({
   navigateTo,

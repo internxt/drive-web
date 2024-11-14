@@ -1,5 +1,5 @@
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { useState } from 'react';
 import Input from '../Input';
 import PasswordStrengthIndicator from '../PasswordStrengthIndicator';

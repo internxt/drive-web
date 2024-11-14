@@ -3,7 +3,7 @@ import EventEmitter from 'events';
 import { uniqueId } from 'lodash';
 import { FunctionComponent, SVGProps } from 'react';
 
-import iconService from 'app/drive/services/icon.service';
+import iconService from '../../../../app/drive/services/icon.service';
 import { t } from 'i18next';
 import {
   BaseTask,

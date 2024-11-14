@@ -53,7 +53,7 @@ export default class RealtimeService {
     if (!this.socket) {
       throw new Error('Realtime service is not connected');
     }
-    return this.socket.id;
+    return this.socket.id ?? '';
   }
 
   onEvent(cb: (data: any) => void): boolean {

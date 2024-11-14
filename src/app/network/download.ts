@@ -1,7 +1,7 @@
 import { Environment } from '@internxt/inxt-js';
 import { createDecipheriv, Decipher } from 'crypto';
 
-import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
+import { buildProgressStream, joinReadableBinaryStreams } from '../core/services/stream.service';
 import { Abortable } from './Abortable';
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 

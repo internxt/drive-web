@@ -1,10 +1,10 @@
-import Button from 'app/shared/components/Button/Button';
-import Modal from 'app/shared/components/Modal';
+import Button from '../../../shared/components/Button/Button';
+import Modal from '../../../shared/components/Modal';
 import { useState } from 'react';
 import { Spinner } from '@phosphor-icons/react';
-import Input from 'app/shared/components/Input';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import validationService from 'app/core/services/validation.service';
+import Input from '../../../shared/components/Input';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import validationService from '../../../core/services/validation.service';
 
 type SharePasswordInputDialogProps = {
   isOpen: boolean;

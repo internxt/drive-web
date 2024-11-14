@@ -1,13 +1,13 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { RegisterFunction } from 'app/auth/components/SignUp/useSignUp';
-import { doLogin, getNewToken } from 'app/auth/services/auth.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import { decryptPrivateKey } from 'app/crypto/services/keys.service';
-import { AppDispatch } from 'app/store';
-import { planThunks } from 'app/store/slices/plan';
-import { productsThunks } from 'app/store/slices/products';
-import { referralsThunks } from 'app/store/slices/referrals';
-import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
+import { RegisterFunction } from '../../auth/components/SignUp/useSignUp';
+import { doLogin, getNewToken } from '../../auth/services/auth.service';
+import localStorageService from '../../core/services/local-storage.service';
+import { decryptPrivateKey } from '../../crypto/services/keys.service';
+import { AppDispatch } from '../../store';
+import { planThunks } from '../../store/slices/plan';
+import { productsThunks } from '../../store/slices/products';
+import { referralsThunks } from '../../store/slices/referrals';
+import { initializeUserThunk, userActions, userThunks } from '../../store/slices/user';
 import { AuthMethodTypes } from '../types';
 
 const signUp = async (

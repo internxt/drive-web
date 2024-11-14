@@ -1,8 +1,8 @@
 import streamSaver from 'streamsaver';
 
-import { TrackingPlan } from 'app/analytics/TrackingPlan';
-import analyticsService from 'app/analytics/services/analytics.service';
-import { loadWritableStreamPonyfill } from 'app/network/download';
+import { TrackingPlan } from '../../../analytics/TrackingPlan';
+import analyticsService from '../../../analytics/services/analytics.service';
+import { loadWritableStreamPonyfill } from '../../../network/download';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
 import { DriveFileData } from '../../types';

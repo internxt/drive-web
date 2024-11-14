@@ -1,21 +1,17 @@
+@import url('./assets/fonts/InstrumentSans/font.css');
+
 // @tailwind base;
 @tailwind components;
 // @tailwind utilities;
 
-@import url('./assets/fonts/InstrumentSans/font.css');
-
-// COLORS
+/* COLORS */
 
 :root,
 #root {
   background: rgb(var(--color-surface));
   font-family: 'Instrument Sans', sans-serif;
   height: 100%;
-  -webkit-touch-callout: none; /* iOS Safari */
-  user-select: none; /* Safari */
-  user-select: none; /* Konqueror HTML */
-  user-select: none; /* Old versions of Firefox */
-  user-select: none; /* Internet Explorer/Edge */
+  -webkit-touch-callout: none; /* iOS Safari */ /* Safari */ /* Konqueror HTML */ /* Old versions of Firefox */ /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 
   --footer-height: 1rem;
@@ -157,7 +153,7 @@
   }
 }
 
-// COMPONENTS
+/* COMPONENTS */
 
 iframe#webpack-dev-server-client-overlay {
   display: none !important;
@@ -222,7 +218,7 @@ code {
     &.error {
       @apply bg-white ring-1 ring-1 ring-red;
 
- //border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;border-pinkbg-pinkbg-opacity-10ring-pinkfocus
+      /* border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;border-pinkbg-pinkbg-opacity-10ring-pinkfocusborder-pinkbg-pinkbg-opacity-10ring-pinkfocusborder-pinkbg-pinkbg-opacity-10ring-pinkfocus */
     }
 
     &.warning {

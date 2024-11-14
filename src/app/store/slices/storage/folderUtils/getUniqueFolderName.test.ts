@@ -1,31 +1,32 @@
-import { describe, expect, it, jest } from '@jest/globals';
-
 import newStorageService from '../../../../drive/services/new-storage.service';
 import { DriveFolderData } from '../../../../drive/types';
+import { vi, describe, it, expect, beforeEach, Mock } from 'vitest';
 
 import { getUniqueFolderName } from './getUniqueFolderName';
-import * as renameFolderModule from './renameFolderIfNeeded';
+import renameFolderIfNeeded from './renameFolderIfNeeded';
 
-jest.mock('../../../../drive/services/new-storage.service', () => ({
-  checkDuplicatedFolders: jest.fn(),
+vi.mock('../../../../drive/services/new-storage.service', () => ({
+  default: {
+    checkDuplicatedFolders: vi.fn(),
+  },
 }));
 
-jest.mock('../storage.thunks/uploadFolderThunk', () => jest.fn());
+vi.mock('../storage.thunks/uploadFolderThunk');
 
 describe('getUniqueFolderName', () => {
+  const parentFolderId = 'parent123';
+
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should return the original name if no duplicates exist', async () => {
     const folderName = 'TestFolder';
     const duplicatedFolders: [] = [];
-    const parentFolderId = 'parent123';
 
-    (newStorageService.checkDuplicatedFolders as jest.Mock).mockResolvedValue({ existentFolders: [] });
+    (newStorageService.checkDuplicatedFolders as Mock).mockResolvedValue({ existentFolders: [] });
 
-    const renameFolderIfNeeded = jest.spyOn(renameFolderModule, 'default');
-
+    vi.mock('./renameFolderIfNeeded', { spy: true });
     const result = await getUniqueFolderName(folderName, duplicatedFolders, parentFolderId);
 
     expect(result).toBe(folderName);
@@ -36,13 +37,11 @@ describe('getUniqueFolderName', () => {
   it('should rename the folder if duplicates exist', async () => {
     const folderName = 'TestFolder';
     const duplicatedFolders = [{ name: 'TestFolder', plainName: 'TestFolder' }] as DriveFolderData[];
-    const parentFolderId = 'parent123';
 
-    (newStorageService.checkDuplicatedFolders as jest.Mock)
+    (newStorageService.checkDuplicatedFolders as Mock)
       .mockResolvedValueOnce({ existentFolders: [{ plainName: 'TestFolder' }] })
       .mockResolvedValueOnce({ existentFolders: [] });
-    const renameFolderIfNeeded = jest.spyOn(renameFolderModule, 'default');
-
+    vi.mock('./renameFolderIfNeeded', { spy: true });
     const result = await getUniqueFolderName(folderName, duplicatedFolders, parentFolderId);
 
     expect(result).toBe('TestFolder (1)');
@@ -57,14 +56,13 @@ describe('getUniqueFolderName', () => {
       { name: 'TestFolder', plainName: 'TestFolder' },
       { name: 'TestFolder (1)', plainName: 'TestFolder (1)' },
     ] as DriveFolderData[];
-    const parentFolderId = 'parent123';
 
-    (newStorageService.checkDuplicatedFolders as jest.Mock)
+    (newStorageService.checkDuplicatedFolders as Mock)
       .mockResolvedValueOnce({ existentFolders: [{ plainName: 'TestFolder' }] })
       .mockResolvedValueOnce({ existentFolders: [{ plainName: 'TestFolder (1)' }] })
       .mockResolvedValueOnce({ existentFolders: [] });
 
-    const renameFolderIfNeeded = jest.spyOn(renameFolderModule, 'default');
+    vi.mock('./renameFolderIfNeeded', { spy: true });
 
     const result = await getUniqueFolderName(folderName, duplicatedFolders, parentFolderId);
 
