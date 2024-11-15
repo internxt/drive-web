@@ -13,6 +13,7 @@ jobs:
     env:
       NODE_ENV: 'staging'
       REACT_APP_NODE_ENV: 'staging'
+      CI: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,9 +27,7 @@ jobs:
         run: npm install -g yarn && yarn
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
-      - name: Build the app
-        run: yarn build
-      - name: Start the app
+      - name: Start dev server
         run: yarn start & npx wait-on http://localhost:3000
       - name: Run Playwright tests
         run: yarn playwright test
