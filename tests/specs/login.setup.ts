@@ -1,7 +1,7 @@
+import { faker } from '@faker-js/faker';
 import { expect, test as setup } from '@playwright/test';
 import { loginPage } from '../pages/loginPage';
 import { signUpPage } from '../pages/signUpPage';
-import { faker } from '@faker-js/faker';
 const fs = require('fs');
 
 const authFile = './tests/specs/playwright/.auth/user.json';
@@ -21,7 +21,7 @@ setup('Creating new user and logging in', async ({ browser }) => {
 
   console.log(`User data, new user: ${email}, password: ${password}`);
 
-  await page.goto('https://drive.internxt.com/new');
+  await page.goto('http://localhost:3000//new');
 
   await SignupPage.typeInEmail(email);
   await SignupPage.typeInPassword(password);
@@ -36,7 +36,7 @@ setup('Creating new user and logging in', async ({ browser }) => {
 
   const loginpage = new loginPage(newPage);
 
-  await newPage.goto('https://drive.internxt.com/login');
+  await newPage.goto('http://localhost:3000//login');
   await expect(newPage).toHaveURL(/.*login/);
 
   //const endpointPromise = newPage.waitForResponse('https://drive.internxt.com/api/access');

@@ -5,9 +5,9 @@ export const staticData = {
   notComplexPassword: 'password',
 
   //URLS
-  passwordRecoveryLinkURL: 'https://drive.internxt.com/recovery-link/',
-  signUpURL: 'https://drive.internxt.com/new',
-  driveURL: 'https://drive.internxt.com/',
+  passwordRecoveryLinkURL: 'http://localhost:3000/recovery-link/',
+  signUpURL: 'http://localhost:3000/new',
+  driveURL: 'http://localhost:3000/',
 
   //SIGNUP DISCLAIMER
   disclaimer:
