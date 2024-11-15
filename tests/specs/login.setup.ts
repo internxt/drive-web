@@ -40,7 +40,7 @@ setup('Creating new user and logging in', async ({ browser }) => {
   await expect(newPage).toHaveURL(/.*login/);
 
   //const endpointPromise = newPage.waitForResponse('https://drive.internxt.com/api/access');
-  const endpointPromise = newPage.waitForResponse('https://gateway.internxt.com/drive-old/access');
+  const endpointPromise = newPage.waitForResponse('https://drive.internxt.com/api/access');
   await loginpage.typeEmail(email);
   await loginpage.typePassword(password);
   await loginpage.clickLogIn();
