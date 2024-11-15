@@ -21,7 +21,7 @@ setup('Creating new user and logging in', async ({ browser }) => {
 
   console.log(`User data, new user: ${email}, password: ${password}`);
 
-  await page.goto('http://localhost:3000//new');
+  await page.goto('http://localhost:3000/new');
 
   await SignupPage.typeInEmail(email);
   await SignupPage.typeInPassword(password);
@@ -36,7 +36,7 @@ setup('Creating new user and logging in', async ({ browser }) => {
 
   const loginpage = new loginPage(newPage);
 
-  await newPage.goto('http://localhost:3000//login');
+  await newPage.goto('http://localhost:3000/login');
   await expect(newPage).toHaveURL(/.*login/);
 
   //const endpointPromise = newPage.waitForResponse('https://drive.internxt.com/api/access');
