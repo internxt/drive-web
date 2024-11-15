@@ -10,11 +10,10 @@ import workspacesService from '../../../../core/services/workspace.service';
 import { UsageDetailsProps } from '../../../../drive/services/usage.service';
 import Section from '../../../../newSettings/components/Section';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import Button from '../../../../shared/components/Button/Button';
+import { Button, Spinner } from '@internxt/internxtui';
 import Card from '../../../../shared/components/Card';
 import Dropdown from '../../../../shared/components/Dropdown';
 import Modal from '../../../../shared/components/Modal';
-import Spinner from '../../../../shared/components/Spinner/Spinner';
 import { RootState } from '../../../../store';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { PlanState } from '../../../../store/slices/plan';
@@ -189,8 +188,7 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
         isOwner={isOwner}
         subscriptionData={subscriptionData}
         onMembersCardClick={() => changeSection({ section: 'workspace', subsection: 'members' })}
-        // TODO: ADD NAVIGATION WHEN TEAMS HAS BEEN IMPLEMENTED
-        onTeamsCardClick={() => undefined}
+        onTeamsCardClick={() => changeSection({ section: 'workspace', subsection: 'teams' })}
         onBillingCardClick={() => changeSection({ section: 'workspace', subsection: 'billing' })}
       />
       <EditWorkspaceDetailsModal
@@ -316,22 +314,20 @@ const WorkspaceOverviewDetails = ({
               <h1 className="text-base font-normal leading-5">{t('views.preferences.workspace.overview.teams')}</h1>
             </Card>
           </button>
-          {isOwner && (
+          {isOwner && subscriptionData && (
             <button className="grow text-left" onClick={onBillingCardClick}>
               <Card className="grow">
-                {subscriptionData && (
-                  <>
-                    <p className="text-3xl font-medium leading-9 text-gray-100">
-                      {integerPart}
-                      <span className="text-xl font-medium">{decimalPart && `.${decimalPart}`}</span>
-                    </p>
-                    <h1 className="text-base font-normal leading-5">
-                      {t('views.preferences.workspace.overview.billed', {
-                        renewDate: subscriptionData?.renewDate,
-                      })}
-                    </h1>
-                  </>
-                )}
+                <>
+                  <p className="text-3xl font-medium leading-9 text-gray-100">
+                    {integerPart}
+                    <span className="text-xl font-medium">{decimalPart && `.${decimalPart}`}</span>
+                  </p>
+                  <h1 className="text-base font-normal leading-5">
+                    {t('views.preferences.workspace.overview.billed', {
+                      renewDate: subscriptionData?.renewDate,
+                    })}
+                  </h1>
+                </>
               </Card>
             </button>
           )}

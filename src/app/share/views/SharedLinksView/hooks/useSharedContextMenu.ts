@@ -21,6 +21,7 @@ interface SharedContextMenuProps {
   selectedItems: AdvancedSharedItem[];
   sharedContextMenuActions: SharedContextMenuActions;
   isItemsOwnedByCurrentUser: boolean;
+  isRootFolder?: boolean;
   isItemOwnedByCurrentUser: (userUUID: string | undefined) => boolean;
   isCurrentUserViewer: boolean;
 }
@@ -39,6 +40,7 @@ const useSharedContextMenu = ({
   },
   isItemsOwnedByCurrentUser,
   isItemOwnedByCurrentUser,
+  isRootFolder,
   isCurrentUserViewer,
 }: SharedContextMenuProps) => {
   const menu = useMemo(() => {
@@ -71,6 +73,8 @@ const useSharedContextMenu = ({
 
     const getItemContextMenu = (item: AdvancedSharedItem) => {
       const userUUID = item?.user?.uuid;
+      const isSubFolderAndEditorUser = !isCurrentUserViewer && !isRootFolder;
+      const isRootFolderAndIsOwner = isRootFolder && isItemOwnedByCurrentUser(userUUID);
 
       const ownerCurrentUserOptions = isItemOwnedByCurrentUser(userUUID)
         ? {
@@ -89,7 +93,7 @@ const useSharedContextMenu = ({
         showDetails,
         copyLink,
         downloadItem: handleDownload,
-        renameItem: !isCurrentUserViewer ? renameItem : undefined,
+        renameItem: isSubFolderAndEditorUser || isRootFolderAndIsOwner ? renameItem : undefined,
         ...ownerCurrentUserOptions,
       });
     };
@@ -122,6 +126,7 @@ const useSharedContextMenu = ({
     isItemsOwnedByCurrentUser,
     isItemOwnedByCurrentUser,
     isCurrentUserViewer,
+    isRootFolder,
   ]);
 
   return menu;

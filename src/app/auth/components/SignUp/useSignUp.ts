@@ -10,7 +10,7 @@ import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 
-type UpdateInfoFunction = (
+export type UpdateInfoFunction = (
   email: string,
   password: string,
 ) => Promise<{
@@ -18,7 +18,7 @@ type UpdateInfoFunction = (
   xToken: string;
   mnemonic: string;
 }>;
-type RegisterFunction = (
+export type RegisterFunction = (
   email: string,
   password: string,
   captcha: string,

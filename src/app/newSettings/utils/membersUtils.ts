@@ -12,6 +12,17 @@ const searchMembers = (membersList: WorkspaceUser[] | null, searchString: string
   return resultados || [];
 };
 
+const searchMembersEmail = (membersList: WorkspaceUser[] | null, searchString: string) => {
+  const escapedSearchString = searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(escapedSearchString, 'i');
+
+  const resultados = membersList?.filter((obj) => {
+    return regex.test(obj.member.email);
+  });
+
+  return resultados || [];
+};
+
 const getMemberRole = (member: WorkspaceUser) => {
   let role;
   const isOwner = member.isOwner;
@@ -26,4 +37,4 @@ const getMemberRole = (member: WorkspaceUser) => {
   return role;
 };
 
-export { getMemberRole, searchMembers };
+export { getMemberRole, searchMembers, searchMembersEmail };

@@ -105,11 +105,17 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
   };
 
   const keepAndMoveItem = async (itemsToUpload: DriveItemData[]) => {
-    await dispatch(storageThunks.renameItemsThunk({ items: itemsToUpload, destinationFolderId: folderId }));
-    dispatch(
-      storageThunks.moveItemsThunk({
+    await dispatch(
+      storageThunks.renameItemsThunk({
         items: itemsToUpload,
-        destinationFolderId: moveDestinationFolderId as string,
+        destinationFolderId: folderId,
+        onRenameSuccess: (itemToUpload: DriveItemData) =>
+          dispatch(
+            storageThunks.moveItemsThunk({
+              items: [itemToUpload],
+              destinationFolderId: moveDestinationFolderId as string,
+            }),
+          ),
       }),
     );
   };

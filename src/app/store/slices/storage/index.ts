@@ -276,7 +276,8 @@ export const storageSlice = createSlice({
       action: PayloadAction<{ uuid: string; folderId: string; isFolder: boolean; patch: DriveItemPatch }>,
     ) => {
       const { uuid, folderId, isFolder, patch } = action.payload;
-      const folderItems = [...state.levels[folderId]];
+      const folder = state.levels[folderId];
+      const folderItems = folder && [...state.levels[folderId]];
 
       if (folderItems) {
         const item = folderItems.find((i) => i.uuid === uuid && !!i.isFolder === !!isFolder);
@@ -368,7 +369,8 @@ export const storageSlice = createSlice({
       const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
 
       folderIds.forEach((folderId) => {
-        let items = [...state.levels[folderId]];
+        const folderItems = state.levels[folderId] ?? [];
+        let items = [...folderItems];
 
         items = items.filter(
           (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && i.isFolder === item.isFolder),

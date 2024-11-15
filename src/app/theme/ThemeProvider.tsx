@@ -1,15 +1,18 @@
 import StarWarsBG from 'assets/images/banner/star-wars-bg.webp';
+import HalloweenBG from 'assets/images/banner/Ghosties-bg.webp';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-export type Theme = 'system' | 'light' | 'dark' | 'starwars';
+export type Theme = 'system' | 'light' | 'dark' | 'starwars' | 'halloween';
 
 interface ThemeContextProps {
   currentTheme: Theme | undefined;
+  checkoutTheme: 'light' | 'dark' | undefined;
   toggleTheme: (string: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextProps>({
   currentTheme: undefined,
+  checkoutTheme: undefined,
   toggleTheme: () => {},
 });
 
@@ -20,6 +23,7 @@ interface ThemeProviderProps {
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const root = document.getElementById('root');
   const [currentTheme, setCurrentTheme] = useState<Theme>();
+  const [checkoutTheme, setCheckoutTheme] = useState<'light' | 'dark'>();
 
   const toggleTheme = (theme: Theme) => {
     setCurrentTheme(theme);
@@ -28,8 +32,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   useEffect(() => {
     if (localStorage.getItem('theme')) {
       setCurrentTheme(localStorage.getItem('theme') as Theme);
+      window.matchMedia('(prefers-color-scheme: dark)').matches ? setCheckoutTheme('dark') : setCheckoutTheme('light');
     } else {
       setCurrentTheme('system');
+      window.matchMedia('(prefers-color-scheme: dark)').matches ? setCheckoutTheme('dark') : setCheckoutTheme('light');
     }
   }, []);
 
@@ -43,12 +49,19 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       ) {
         root.style.backgroundImage = 'none';
         document.documentElement.classList.add('dark');
+        setCheckoutTheme('dark');
       } else if (currentTheme === 'starwars') {
         root.style.backgroundImage = `url(${StarWarsBG})`;
         document.documentElement.classList.add('dark');
+        setCheckoutTheme('dark');
+      } else if (currentTheme === 'halloween') {
+        root.style.backgroundImage = `url(${HalloweenBG})`;
+        document.documentElement.classList.add('dark');
+        setCheckoutTheme('dark');
       } else {
         root.style.backgroundImage = 'none';
         document.documentElement.classList.remove('dark');
+        setCheckoutTheme('light');
       }
     };
 
@@ -66,9 +79,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const themeContextValue = useMemo(
     () => ({
       currentTheme,
+      checkoutTheme,
       toggleTheme,
     }),
-    [currentTheme, toggleTheme],
+    [currentTheme, checkoutTheme, toggleTheme],
   );
 
   return <ThemeContext.Provider value={themeContextValue}>{children}</ThemeContext.Provider>;

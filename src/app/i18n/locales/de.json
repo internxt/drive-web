@@ -4,31 +4,20 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": {
-      "upTo": "BIS ZU ",
-      "discount": "80% RABATT"
-    },
-    "title": "Genießen Sie die Sommerangebote von Internxt",
-    "subtitle": {
-      "line1": "Der kostenlose Plan von Internxt wird am 1. Juli auf 1 GB reduziert.",
-      "line2": {
-        "normal1": "Umgehen Sie dieses Downgrade mit dem Code ",
-        "blue": "FREEVIP",
-        "normal2": " um 90% Rabatt auf jeden Premium-Plan zu erhalten."
-      }
-    },
-    "cta": "Plan wählen",
-    "guarantee": "30-tägige Geld-zurück-Garantie",
-    "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
+    "label": "Spare 85%!",
+    "title": "Die besten Black Friday Angebote",
+    "subtitle": "Erhalte unseren Premium-Rucksack mit unseren Lifetime-Plänen.",
+    "cta": "Wähle deinen Plan",
+    "guarantee": "30 Tage Geld-zurück-Garantie",
+    "lastCta": "*Das Angebot gilt für kostenlose Konten oder Neukunden",
     "features": [
-      "Sparen Sie bei allen Internxt-Plänen",
-      "Sichere und geschützte Cloud-Speicherung",
-      "Open Source und transparent",
-      "Ende-zu-Ende-verschlüsselte Übertragungen",
-      "Kein unbefugter Zugriff",
-      "Das Angebot endet am 19. August"
-    ],
-    "copied": "In die Zwischenablage kopiert"
+      "Spare groß bei allen Premium-Plänen",
+      "Privater und verschlüsselter Cloud-Speicher",
+      "Open Source und geprüft",
+      "Verschlüsselte Ende-zu-Ende-Übertragungen",
+      "Kein unautorisierter Zugriff",
+      "Das Angebot endet am 3. Dezember"
+    ]
   },
   "valentinesBanner": {
     "title": "Liebe ohne grenzen!",
@@ -57,7 +46,8 @@
     "light": "Hell",
     "dark": "Dunkel",
     "system": "System",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "E-Mail",
@@ -71,7 +61,8 @@
       "dontHaveAccount": "Sie haben kein Konto?",
       "createAccount": "Konto erstellen",
       "2FA": "Zwei-Faktor-Code",
-      "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode"
+      "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode",
+      "wrongLogin": "Ungültiger Benutzername oder Passwort"
     },
     "signup": {
       "title": "Konto erstellen",
@@ -147,6 +138,94 @@
       "button": "Bestätigung zum Neustart des Kontos senden",
       "successDescription": "Ihr Konto und Passwort wurden zurückgesetzt",
       "error": "Beim Neustart des Kontos ist etwas schief gelaufen"
+    }
+  },
+  "checkout": {
+    "title": "Sie sind fast da! Sicher zur Kasse gehen:",
+    "pay": "Bezahlen",
+    "processing": "Verarbeitung läuft...",
+    "checkout": "Zur Kasse",
+    "authComponent": {
+      "signUp": {
+        "emailAddress": "Ihre E-Mail-Adresse",
+        "password": "Passwort erstellen"
+      },
+      "signIn": {
+        "emailAddress": "Ihre E-Mail-Adresse",
+        "password": "Ihr Passwort"
+      },
+      "title": {
+        "signUp": "Ein Konto erstellen",
+        "signIn": "Anmelden",
+        "userIsSignedIn": "Benutzer angemeldet als"
+      },
+      "emailMustNotBeEmpty": "Die E-Mail darf nicht leer sein",
+      "privacyGuarantee": "Datenschutzgarantie: Wir teilen Ihre Informationen nicht und werden Sie nur kontaktieren, wenn es notwendig ist, um unseren Service zu bieten."
+    },
+    "addressBillingTitle": "Rechnungsadresse",
+    "addressBilling": {
+      "optional": {
+        "cta": "Optional",
+        "companyName": "Firmenname",
+        "companyVatId": "USt-ID der Firma"
+      }
+    },
+    "paymentTitle": "Wählen Sie eine Zahlungsmethode",
+    "productCard": {
+      "title": "Bestellübersicht",
+      "selectedPlan": "Ausgewählter Plan",
+      "numberOfUsers": "Anzahl der Benutzer: {{seats}}",
+      "renewalPeriod": {
+        "renewsAt": "* Verlängert sich am",
+        "month": "monatlich",
+        "year": "jährlich",
+        "lifetime": "lebenslang"
+      },
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 {{interval}}-Plan",
+        "year": "{{spaceToUpgrade}} - 1 {{interval}}-Plan",
+        "lifetime": "{{spaceToUpgrade}} - {{interval}}-Plan"
+      },
+      "billed": {
+        "month": "Monatliche Abrechnung",
+        "year": "Jährliche Abrechnung",
+        "lifetime": "Einmalige Zahlung"
+      },
+      "perUser": "/pro Benutzer",
+      "saving": "Sie sparen {{percent}}%",
+      "planDetails": {
+        "title": "Plandetails:",
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} verschlüsselter Speicher",
+            "Verschlüsseltes Teilen von Dateien und Ordnern",
+            "Passwortgeschütztes Teilen von Dateien",
+            "Zugriff auf Ihre Dateien von jedem Gerät",
+            "Zugang zu allen unseren Diensten",
+            "Zwei-Faktor-Authentifizierung (2FA)",
+            "Premium-Kundensupport",
+            "30-Tage-Geld-zurück-Garantie"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} Speicher/Benutzer",
+            "Verschlüsseltes Teilen von Dateien und Ordnern",
+            "Benutzer und Teams erstellen und verwalten",
+            "Ab {{minimumSeats}} Benutzer bis zu {{maximumSeats}}",
+            "GDPR-konform",
+            "Kontofakturierung und -zahlungen verwalten",
+            "Premium-Kundensupport"
+          ]
+        }
+      },
+      "total": "Gesamt: ",
+      "totalForBusiness": "Gesamtbetrag für {{N}} Benutzer: ",
+      "addCoupon": {
+        "buttonTitle": "Gutschein hinzufügen",
+        "inputText": "Gutscheincode"
+      },
+      "apply": "Anwenden",
+      "amountSaved": "Sparen ",
+      "withAnnualBilling": "mit jährlicher Abrechnung"
     }
   },
   "general": {
@@ -846,7 +925,13 @@
       "primaryAction": "Bestätige",
       "secondaryAction": "Abbrechen"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Teilen \"{{name}}\"",
+      "teams": "Teams",
+      "teamsWithAccess": "Teams mit Zugriff:",
+      "shareButton": "Teilen"
+    }
   },
   "form": {
     "fields": {
@@ -894,14 +979,13 @@
     "workingOnIt": "Wir arbeiten daran, dir eine besseres Erfahrung zu bieten.",
     "noFilePreview": "Keine Dateivorschau vorhanden",
     "browserNotSupported": "Browser wird nicht unterstützt ({{userAgent}})",
-    "inviteAFriend": "Fehler beim Senden der Einladung an einen Freund: {{message}}",
-    "inviteAFriendEmpty": "Fehler beim Senden der Einladung Sie müssen eine E-Mail angeben",
     "subscribeToNewsletter": "Fehler beim Abonnieren des Newsletters: {{message}}",
     "lastPasswordError": "Das von dir zuletzt eingegebene Passwort scheint ungültig zu sein. Versuche es noch einmal. Wenn das Problem weiterhin besteht, wende dich bitte an unseren Support.",
     "incorrectPassword": "Das von dir eingegebene aktuelle Passwort stimmt nicht überein. Achte bitte darauf, dass es richtig ist.",
     "emptyPassword": "Das vorherige Passwort darf nicht leer sein",
     "errorMovingToTrash": "Beim Verschieben der Elemente in den Papierkorb ist ein Fehler aufgetreten.",
     "errorDeletingFromTrash": "Beim Löschen der Elemente aus dem Papierkorb ist ein Fehler aufgetreten.",
+    "maxSizeUploadLimitError": "Datei zu groß (größer als 40 GB)",
     "braveNotSupportMultiplePhotosDowload": "Brave unterstützt nicht das Herunterladen mehrerer Fotos."
   },
   "backups": {
@@ -1134,7 +1218,6 @@
     "twoFactorAuthDisabled": "Deine Zwei-Faktor-Authentifizierung wurde deaktiviert!",
     "joinedToTheTeam": "Du bist dem Team erfolgreich beigetreten",
     "done": "Erledigt",
-    "inviteAFriend": "Einladung an {{email}} gesendet",
     "subscribeToNewsletter": "{{email}} Newsletter erfolgreich abonniert"
   },
   "shareItemDialog": {
@@ -1157,13 +1240,23 @@
     "copyLink": "Geteilter Link in die Zwischenablage kopiert",
     "linkUpdated": "Link aktualisiert",
     "itemsMovedToTrash": "{{item}} in den Papierkorb verschoben",
+    "storageModified": "Speicher erfolgreich geändert",
+    "errorModifyingStorage": "Der neue Speicherplatz ist für dieses Mitglied ungültig.",
+    "generalErrorWhileModifyingStorage": "Beim Ändern des Speicherplatzes ist ein Fehler aufgetreten.",
     "restoreItems": "{{itemsToRecover}} verschoben nach {{destination}}",
     "itemDeleted": "{{item}} gelöscht",
     "itemsDeleted": "Dateien gelöscht",
     "emailNotEmpty": "E-Mail darf nicht leer sein",
     "verificationEmail": "Bestätigungs-E-Mail wurde gesendet",
     "successCancelSubscription": "Dein Abonnement wurde gekündigt",
-    "errorCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten"
+    "errorCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten",
+    "errorCreatingSubscription": "Beim Erstellen Ihres Abonnements ist ein Fehler aufgetreten",
+    "errorPurchaseBusinessPlan": "Sie haben bereits einen Geschäftstarif.",
+    "couponIsNotValidForUserError": "Der Gutschein kann nur von neuen Kunden eingelöst werden.",
+    "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten",
+    "invalidTaxIdIsProvided": "Die angegebene Steuernummer ist ungültig",
+    "errorWhileFetchingMoreItems": "Beim Abrufen weiterer Elemente ist ein Fehler aufgetreten",
+    "errorDeletingItems": "Beim Löschen dieses Elements ist ein Fehler aufgetreten"
   },
   "actions": {
     "undo": "Rückgängig machen",
@@ -1205,7 +1298,7 @@
     "move": "Verschieben",
     "moving": "Verschieben...",
     "navigating": "Navigieren...",
-    "restoreHere": "Hier wiederherstellen",
+    "restoreHere": "Wiederherstellen",
     "rename": "Umbenennen",
     "restore": "Wiederherstellen",
     "copyLink": "Kopiere Link",
@@ -1238,6 +1331,7 @@
       "details": "Einzelheiten",
       "shareLink": "Teilen",
       "shareTeam": "Mit Team teilen",
+      "shareWithWorkspace": "Mit dem Arbeitsbereich teilen",
       "getLink": "Erhalte Link",
       "rename": "Umbenennen",
       "download": "Herunterladen",
@@ -1266,7 +1360,7 @@
     },
     "uploadItems": {
       "title": "Maximaler Datei-Upload",
-      "advice": "Das Maximum ist 1000 Dateien pro Upload.",
+      "advice": "Das Maximum ist 3000 Dateien pro Upload.",
       "close": "Schließen"
     },
     "movingToTrash": "Verschiebe Elemente in den Papierkorb",
@@ -1291,20 +1385,6 @@
     },
     "plans": {
       "advice": "Du wirst zu deinem AppSumo-Konto weitergeleitet"
-    }
-  },
-  "inviteAFriend": {
-    "title": "Lade einen Freund ein",
-    "descriptionWidget": "Erhalte bis zu {{N}}GB zusätzlichen kostenlosen Speicherplatz, indem du deine Freunde einlädst (1 GB pro Nutzer, der sich über deine Einladung registriert hat)",
-    "description": "Erhalte 1 GB pro eingeladenem Freund kostenlos. Du kannst bis zu {{N}}GB erhalten.",
-    "label": "E-Mail deines Freundes",
-    "placeholder": "Gib die E-Mail Adresse deines Freundes ein",
-    "actions": {
-      "sendInvitation": "Sende Einladung",
-      "seeInvitations": "Sieh alle Einladungen"
-    },
-    "errors": {
-      "dailyEmailLimit": "Du hast das Limit von 10 Einladungen/Tag erreicht"
     }
   },
   "newsletter": {
@@ -1355,12 +1435,12 @@
   },
   "itemNotFound": {
     "folder": {
-      "title": "Map niet gevonden",
-      "description": "Controleer of de URL correct is en of de map niet verplaatst of verwijderd is."
+      "title": "Ordner nicht gefunden",
+      "description": "Stellen Sie sicher, dass die URL korrekt ist und der Ordner nicht verschoben oder gelöscht wurde."
     },
     "file": {
-      "title": "Bestand niet gevonden",
-      "description": "Controleer of de URL correct is en of het bestand niet verplaatst of verwijderd is."
+      "title": "Datei nicht gefunden",
+      "description": "Stellen Sie sicher, dass die URL korrekt ist und die Datei nicht verschoben oder gelöscht wurde."
     }
   },
   "preferences": {
@@ -1409,6 +1489,14 @@
           "member": "Mitglied",
           "deactivated": "Deaktiviert"
         },
+        "modifyStorageModal": {
+          "user": "Benutzer",
+          "storage": "Speicher",
+          "spaceAssigned": "Zugewiesener Speicher",
+          "spaceLeft": "Verbleibender Gesamtspeicher",
+          "cancel": "Abbrechen",
+          "saveChanges": "Änderungen speichern"
+        },
         "deactivationModal": {
           "title": "Mitglied deaktivieren",
           "description": "{{name}} verliert den Zugriff auf den Arbeitsbereich. Alle ihre Dateien und Ordner bleiben unverändert.",
@@ -1420,6 +1508,12 @@
           "description": "{{name}} wird wieder Zugriff auf den Arbeitsbereich erhalten.",
           "reactivate": "Reaktivieren",
           "reactivating": "Reaktivieren"
+        },
+        "removalModal": {
+          "title": "Mitglied entfernen",
+          "description": "{{name}} verliert den Zugriff auf den Arbeitsbereich. Alle ihre Dateien und Ordner bleiben unverändert.",
+          "remove": "Entfernen",
+          "removing": "Entfernen läuft"
         },
         "changePasswordModal": {
           "title": "Passwortänderung anfordern",
@@ -1478,11 +1572,66 @@
         "actions": {
           "deactivate": "Mitglied deaktivieren",
           "reactivate": "Mitglied reaktivieren",
+          "remove": "Mitglied entfernen",
           "passwordChange": "Passwortänderung anfordern"
         }
       },
       "teams": {
-        "title": "Teams"
+        "title": "Teams",
+        "createTeam": "Team erstellen",
+        "team": "Team",
+        "members": "Mitglieder",
+        "createTeamDialog": {
+          "title": "Neues Team",
+          "label": "Name",
+          "placeholder": "Mannschaftsname eingeben",
+          "cancel": "Abbrechen",
+          "create": "Erstellen",
+          "nameExists": "Team mit diesem Namen existiert bereits"
+        },
+        "teamDetails": {
+          "member": "Mitglied",
+          "members": "Mitglieder",
+          "remove": "Entfernen",
+          "makeManager": "Manager erstellen",
+          "addMember": "Mitglied hinzufügen",
+          "rename": "Umbenennen",
+          "delete": "Löschen"
+        },
+        "addMemberDialog": {
+          "title": "Mitglieder hinzufügen",
+          "placeholder": "Mitglied suchen",
+          "cancel": "Abbrechen",
+          "addMember": "Mitglied hinzufügen",
+          "addOneMember": "{{membersToInvite}} Mitglied hinzufügen",
+          "addMembers": "{{membersToInvite}} Mitglieder hinzufügen"
+        },
+        "renameTeamDialog": {
+          "title": "Team umbenennen",
+          "label": "Name",
+          "placeholder": "Neuen Teamnamen eingeben",
+          "cancel": "Abbrechen",
+          "rename": "Umbenennen",
+          "nameExists": "Ein Team mit diesem Namen existiert bereits"
+        },
+        "deleteTeamDialog": {
+          "title": "Team löschen",
+          "description": "wird gelöscht und Mitglieder dieses Teams könnten den Zugriff auf Dateien und Ordner verlieren, die mit dem Team geteilt wurden.",
+          "cancel": "Abbrechen",
+          "delete": "Team löschen"
+        },
+        "removeTeamMemberDialog": {
+          "title": "Mitglied entfernen",
+          "description": "wird den Zugriff auf Dateien und Ordner verlieren, die mit diesem Team geteilt wurden.",
+          "cancel": "Abbrechen",
+          "delete": "Entfernen"
+        },
+        "changeManagerDialog": {
+          "title": "Manager ändern",
+          "description": "wird zum Manager dieses Teams. Der vorherige Manager wird zum Mitglied des Teams herabgestuft.",
+          "cancel": "Abbrechen",
+          "change": "Ändern"
+        }
       },
       "billing": {
         "title": "Billing",
@@ -1535,7 +1684,7 @@
       "levelUpStorage": "Erhöhe deinen Speicherplatz und erhalte viele andere Vorteile",
       "upgradeNow": "Jetzt upgraden",
       "emptyTrash": "Papierkorb leeren",
-      "emptryTrashDescription": "Elemente im Papierkorb werden nach 15 Tagen endgültig gelöscht",
+      "emptyTrashDescription": "Objekte im Papierkorb werden dauerhaft gelöscht",
       "plans": {
         "title": "Tarife",
         "current": "Aktuell",
@@ -1600,7 +1749,8 @@
     },
     "pending": "Ausstehende Einladungen",
     "messages": {
-      "sharedSuccess": "Element erfolgreich mit dem Team geteilt"
+      "sharedSuccess": "Element erfolgreich mit dem Team geteilt",
+      "switchingWorkspace": "Arbeitsbereich wechseln"
     },
     "pendingInvitations": {
       "empty": "Keine Einladungen übrig",

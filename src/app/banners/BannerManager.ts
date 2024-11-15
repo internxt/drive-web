@@ -7,26 +7,27 @@ import { userSelectors } from '../store/slices/user';
 
 const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';
 const BANNER_NAME_FOR_FREE_USERS = 'show_free_users_banner';
-const OFFER_END_DAY = new Date('2024-07-08');
 
 export class BannerManager {
   private plan: PlanState;
+  private offerEndDay: Date;
   private isTutorialCompleted: boolean;
   private isNewAccount: boolean;
   private bannerItemInLocalStorage: string | null;
   private todayDate: string;
 
-  constructor(user: UserSettings, plan: PlanState) {
+  constructor(user: UserSettings, plan: PlanState, offerEndDay: Date) {
     this.plan = plan;
+    this.offerEndDay = offerEndDay;
     this.isTutorialCompleted = localStorageService.hasCompletedTutorial(user.userId);
-    this.bannerItemInLocalStorage = localStorageService.get(BANNER_NAME_FOR_FREE_USERS);
+    this.bannerItemInLocalStorage = localStorageService.get(BANNER_NAME_IN_LOCAL_STORAGE);
     this.isNewAccount = useAppSelector(userSelectors.hasSignedToday);
     this.todayDate = new Date().getDate().toString();
   }
 
   shouldShowBanner(): boolean {
     const isNewUser = this.plan.individualSubscription?.type === 'free';
-    const isOfferOffDay = new Date() > OFFER_END_DAY;
+    const isOfferOffDay = new Date() > this.offerEndDay;
     const showBannerIfLocalStorageItemExpires = JSON.parse(this.bannerItemInLocalStorage as string) < this.todayDate;
 
     if (isOfferOffDay) {
@@ -35,6 +36,7 @@ export class BannerManager {
     }
 
     if (showBannerIfLocalStorageItemExpires) {
+      localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
       localStorageService.removeItem(BANNER_NAME_FOR_FREE_USERS);
     }
 
@@ -55,7 +57,7 @@ export class BannerManager {
   }
 
   onCloseBanner(setShowBanner: (show: boolean) => void): void {
-    localStorageService.set(BANNER_NAME_FOR_FREE_USERS, this.todayDate);
+    localStorageService.set(BANNER_NAME_IN_LOCAL_STORAGE, this.todayDate);
     setShowBanner(false);
   }
 }

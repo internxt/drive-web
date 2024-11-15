@@ -14,7 +14,6 @@ import { t } from 'i18next';
 
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
 import workspacesService from '../../../../core/services/workspace.service';
 import { uploadFileWithManager } from '../../../../network/UploadManager';
@@ -23,6 +22,8 @@ import shareService from '../../../../share/services/share.service';
 import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
+
+import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
 
 interface UploadItemsThunkOptions {
@@ -60,10 +61,20 @@ const showEmptyFilesNotification = (zeroLengthFilesNumber: number) => {
   }
 };
 
-const isUploadAllowed = ({ state, files, dispatch }: { state: RootState; files: File[]; dispatch }): boolean => {
+const isUploadAllowed = ({
+  state,
+  files,
+  dispatch,
+  isWorkspaceSelected,
+}: {
+  state: RootState;
+  files: File[];
+  dispatch;
+  isWorkspaceSelected: boolean;
+}): boolean => {
   try {
-    const planLimit = state.plan.planLimit;
-    const planUsage = state.plan.planUsage;
+    const planLimit = isWorkspaceSelected ? state.plan.businessPlanLimit : state.plan.planLimit;
+    const planUsage = isWorkspaceSelected ? state.plan.businessPlanUsage : state.plan.planUsage;
     const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
     const totalItemsSize = uploadItemsSize + planUsage;
     const isPlanSizeLimitExceeded = planLimit && totalItemsSize >= planLimit;
@@ -86,60 +97,6 @@ const isUploadAllowed = ({ state, files, dispatch }: { state: RootState; files: 
   }
 
   return true;
-};
-
-const prepareFilesToUpload = async ({
-  files,
-  parentFolderId,
-  disableDuplicatedNamesCheck,
-  fileType,
-  workspaceToken,
-}: {
-  files: File[];
-  parentFolderId: string;
-  disableDuplicatedNamesCheck?: boolean;
-  fileType?: string;
-  workspaceToken?: string;
-}): Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }> => {
-  const filesToUpload: FileToUpload[] = [];
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-
-  let parentFolderContent;
-
-  if (!disableDuplicatedNamesCheck) {
-    const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(parentFolderId, false, workspaceToken);
-    parentFolderContent = await parentFolderContentPromise;
-  }
-
-  let zeroLengthFilesNumber = 0;
-
-  for (const file of files) {
-    if (file.size === 0) {
-      zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
-      continue;
-    }
-    const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
-    let fileContent;
-    let finalFilename = filename;
-
-    if (!disableDuplicatedNamesCheck) {
-      const [, , renamedFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
-      finalFilename = renamedFilename;
-      fileContent = renameFile(file, renamedFilename);
-    } else {
-      fileContent = renameFile(file, filename);
-    }
-
-    filesToUpload.push({
-      name: finalFilename,
-      size: file.size,
-      type: extension ?? fileType,
-      content: fileContent,
-      parentFolderId,
-    });
-  }
-
-  return { filesToUpload, zeroLengthFilesNumber };
 };
 
 /**
@@ -176,7 +133,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       };
     }
 
-    const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
+    const continueWithUpload = isUploadAllowed({
+      state: getState(),
+      files,
+      dispatch,
+      isWorkspaceSelected: !!workspaceId,
+    });
     if (!continueWithUpload) return;
 
     const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
@@ -184,7 +146,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       fileType,
-      workspaceToken: workspaceCredentials?.tokenHeader,
     });
 
     showEmptyFilesNotification(zeroLengthFilesNumber);
@@ -293,7 +254,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     const teamId = selectedWorkspace?.workspace.defaultTeamId;
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
-    const continueWithUpload = isUploadAllowed({ state: state, files, dispatch });
+    const continueWithUpload = isUploadAllowed({ state: state, files, dispatch, isWorkspaceSelected: !!workspaceId });
     if (!continueWithUpload) return;
 
     let zeroLengthFilesNumber = 0;
@@ -315,7 +276,6 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
         if (workspaceId && teamId) {
           const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(
             workspaceId,
-            teamId,
             currentFolderId,
             page,
             offset,
@@ -463,7 +423,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       files,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
-      workspaceToken: workspaceCredentials?.tokenHeader,
     });
 
     showEmptyFilesNotification(zeroLengthFilesNumber);

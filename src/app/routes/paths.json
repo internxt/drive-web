@@ -110,29 +110,10 @@
       "auth": true
     },
     {
-      "id": "teams-join",
-      "layout": "empty",
-      "path": "/teams/join/:token",
-      "exact": false
-    },
-    {
       "id": "deactivation",
       "layout": "empty",
       "path": "/deactivations/:token",
       "exact": false
-    },
-    {
-      "id": "teams-deactivation",
-      "layout": "empty",
-      "path": "/deactivationsTeams/:token",
-      "exact": false
-    },
-    {
-      "id": "team-success",
-      "layout": "empty",
-      "path": "/team/success/:sessionId",
-      "exact": true,
-      "auth": true
     },
     {
       "id": "checkout-success",
@@ -151,16 +132,16 @@
     {
       "id": "checkout",
       "layout": "empty",
-      "path": "/checkout/:sessionId",
+      "path": "/checkout",
       "exact": false,
-      "auth": true
+      "auth": false
     },
     {
-      "id": "checkout-plan",
+      "id": "checkout-status",
       "layout": "empty",
-      "path": "/checkout-plan/",
+      "path": "/checkout/status",
       "exact": true,
-      "auth": true
+      "auth": false
     },
     {
       "id": "recovery-link",

@@ -33,19 +33,11 @@ const signup = async (data, dispatch, doRegister, setLoading, appRedirect?, setE
     dispatch(referralsThunks.initializeThunk());
     await dispatch(userThunks.initializeUserThunk());
 
-    window.rudderanalytics.identify(xUser.uuid, { email: xUser.email, uuid: xUser.uuid });
-    window.rudderanalytics.track('User Signup', { email: xUser.email });
-
+    window.gtag('event', 'User Signup', { send_to: 'Blog' });
     localStorage.removeItem('email');
     localStorage.removeItem('password');
     setLoading(false);
-    appRedirect
-      ? window.open(`${process.env.REACT_APP_HOSTNAME}`, '_parent', 'noopener')
-      : window.open(
-          `${process.env.REACT_APP_HOSTNAME}/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=g3S2TZFZ&freeTrials=30&mode=subscription`,
-          '_parent',
-          'noopener',
-        );
+    window.open(`${process.env.REACT_APP_HOSTNAME}`, '_parent', 'noopener');
   } catch (err: unknown) {
     setError(errorService.castError(err).message);
     setLoading(false);

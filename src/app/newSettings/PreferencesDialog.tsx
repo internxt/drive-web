@@ -18,6 +18,7 @@ import MembersSection from './Sections/Workspace/Members/MembersSection';
 import OverviewSection from './Sections/Workspace/Overview/OverviewSection';
 import SectionListContainer, { sectionItems } from './containers/SectionListContainer';
 import { PreferencesDialogProps, Section, SelectSectionProps } from './types/types';
+import TeamsSection from './Sections/Workspace/Teams/TeamsSection';
 
 const findSectionItemsBySectionAndSubsection = ({ section, subsection }: SelectSectionProps) => {
   return sectionItems.find((item) => item.section === section && item.subsection === subsection);
@@ -88,6 +89,9 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
         )}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'members' && (
           <MembersSection onClosePreferences={onClosePreferences} />
+        )}
+        {activeSection?.section === 'workspace' && activeSection?.subsection === 'teams' && (
+          <TeamsSection onClosePreferences={onClosePreferences} />
         )}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'billing' && (
           <BillingWorkspaceSection onClosePreferences={onClosePreferences} changeSection={changeSection} />

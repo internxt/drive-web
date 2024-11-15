@@ -9,7 +9,7 @@ import errorService from '../../../../core/services/error.service';
 import ClearTrashDialog from '../../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import Button from '../../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
 import { updateUserProfileThunk, userThunks } from '../../../../store/slices/user';
@@ -18,8 +18,7 @@ import ChangeEmailModal from './components/ChangeEmailModal';
 import EmailVerificationMessageCard from './components/EmailMessageCard';
 import AccountUsageContainer from './containers/AccountUsageContainer';
 import DeleteAccountContainer from './containers/DeleteAccountContainer';
-import InviteFriendSectionContainer from './containers/InviteFriendSectionContainer';
-import InvitedFriendsContainer from './containers/InvitedFriendsContainer';
+
 import UserHeaderContainer from './containers/UserHeaderContainer';
 
 interface AccountSectionProps {
@@ -32,13 +31,11 @@ const AccountSection = ({ changeSection, onClosePreferences }: AccountSectionPro
   const { translate } = useTranslationContext();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
 
-  const isFreeAccount = user?.hasReferralsProgram;
   if (!user) throw new Error('User is not defined');
 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState(false);
-  const [isInvitationsViewVisible, setIsInvitationsViewVisible] = useState(false);
 
   useEffect(() => {
     dispatch(userThunks.refreshUserDataThunk());
@@ -78,40 +75,24 @@ const AccountSection = ({ changeSection, onClosePreferences }: AccountSectionPro
   };
 
   return (
-    <Section
-      onBackButtonClicked={isInvitationsViewVisible ? () => setIsInvitationsViewVisible(false) : undefined}
-      title={
-        isInvitationsViewVisible
-          ? translate('preferences.account.invitedFriends')
-          : translate('preferences.account.title')
-      }
-      onClosePreferences={onClosePreferences}
-    >
-      {isInvitationsViewVisible ? (
-        <InvitedFriendsContainer />
-      ) : (
-        <>
-          <EmailVerificationMessageCard
-            isVerified={user.emailVerified}
-            disableButton={isSendingVerificationEmail}
-            onClickResendButton={onResendEmailVerification}
-          />
-          <UserHeaderContainer />
-          <div className="flex justify-center">
-            <Button variant="secondary" className="-mt-8 w-32" onClick={() => setIsDetailsModalOpen(true)}>
-              <span>{t('views.preferences.workspace.overview.edit')}</span>
-            </Button>
-          </div>
-          {isFreeAccount && (
-            <InviteFriendSectionContainer onSeeInvitationsButtonClicked={() => setIsInvitationsViewVisible(true)} />
-          )}
-          <AccountUsageContainer changeSection={changeSection} />
-          <div>
-            <div className="h-px w-full bg-gray-10" />
-          </div>
-          <DeleteAccountContainer />
-        </>
-      )}
+    <Section title={translate('preferences.account.title')} onClosePreferences={onClosePreferences}>
+      <EmailVerificationMessageCard
+        isVerified={user.emailVerified}
+        disableButton={isSendingVerificationEmail}
+        onClickResendButton={onResendEmailVerification}
+      />
+      <UserHeaderContainer />
+      <div className="flex justify-center">
+        <Button variant="secondary" className="-mt-8 w-32" onClick={() => setIsDetailsModalOpen(true)}>
+          <span>{t('views.preferences.workspace.overview.edit')}</span>
+        </Button>
+      </div>
+      <AccountUsageContainer changeSection={changeSection} />
+      <div>
+        <div className="h-px w-full bg-gray-10" />
+      </div>
+      <DeleteAccountContainer />
+
       <AccountDetailsModal
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}

@@ -4,31 +4,20 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": {
-      "upTo": "高达 ",
-      "discount": "80% 折扣"
-    },
-    "title": "享受 Internxt 的夏季优惠",
-    "subtitle": {
-      "line1": "Internxt 的免费计划将于 7 月 1 日减少到 1GB。",
-      "line2": {
-        "normal1": "使用代码 ",
-        "blue": "FREEVIP",
-        "normal2": " 绕过此降级，享受任何高级计划 90% 的折扣。"
-      }
-    },
-    "cta": "选择计划",
+    "label": "节省85%！",
+    "title": "黑色星期五最佳优惠",
+    "subtitle": "通过我们的终身计划获得我们的高级背包。",
+    "cta": "选择您的计划",
     "guarantee": "30天退款保证",
-    "lastCta": "*优惠适用于免费账户或新客户",
+    "lastCta": "*该优惠适用于免费账户或新客户",
     "features": [
-      "所有 Internxt 计划均可享受优惠",
-      "安全可靠的云存储",
-      "开源和透明",
+      "所有高级计划都享受大幅折扣",
+      "私人加密云存储",
+      "开源并已审核",
       "端到端加密传输",
       "无未授权访问",
-      "优惠截止至8月19日"
-    ],
-    "copied": "已复制到剪贴板"
+      "优惠截止至12月3日"
+    ]
   },
   "valentinesBanner": {
     "title": "爱无极限！",
@@ -78,7 +67,8 @@
     "light": "明亮",
     "dark": "暗",
     "system": "系统",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "电子邮件",
@@ -92,7 +82,8 @@
       "dontHaveAccount": "没有账户？",
       "createAccount": "创建账户",
       "2FA": "双因素代码",
-      "twoFactorAuthenticationCode": "双因素验证码"
+      "twoFactorAuthenticationCode": "双因素验证码",
+      "wrongLogin": "用户名或密码无效"
     },
     "signup": {
       "title": "创建账户",
@@ -170,6 +161,94 @@
       "openDesktopApp": "打开桌面应用程序",
       "anotherAccount": "使用另一个帐户？",
       "login": "登录"
+    }
+  },
+  "checkout": {
+    "title": "您快完成了！请安全结账：",
+    "pay": "支付",
+    "processing": "处理中...",
+    "checkout": "结账",
+    "authComponent": {
+      "signUp": {
+        "emailAddress": "您的电子邮件地址",
+        "password": "创建密码"
+      },
+      "signIn": {
+        "emailAddress": "您的电子邮件地址",
+        "password": "您的密码"
+      },
+      "title": {
+        "signUp": "创建账户",
+        "signIn": "登录",
+        "userIsSignedIn": "用户已登录为"
+      },
+      "emailMustNotBeEmpty": "电子邮件不能为空",
+      "privacyGuarantee": "隐私保证：我们不会分享您的信息，并且只会在提供服务时与您联系。"
+    },
+    "addressBillingTitle": "账单地址",
+    "addressBilling": {
+      "optional": {
+        "cta": "可选",
+        "companyName": "公司名称",
+        "companyVatId": "公司增值税编号"
+      }
+    },
+    "paymentTitle": "选择支付方式",
+    "productCard": {
+      "title": "订单摘要",
+      "selectedPlan": "选择的计划",
+      "numberOfUsers": "用户数量：{{seats}}",
+      "renewalPeriod": {
+        "renewsAt": "* 续订日期为",
+        "month": "每月",
+        "year": "每年",
+        "lifetime": "终身"
+      },
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 {{interval}} 计划",
+        "year": "{{spaceToUpgrade}} - 1 {{interval}} 计划",
+        "lifetime": "{{spaceToUpgrade}} - {{interval}} 计划"
+      },
+      "billed": {
+        "month": "按月计费",
+        "year": "按年计费",
+        "lifetime": "一次性支付"
+      },
+      "perUser": "/每用户",
+      "saving": "您节省了 {{percent}}%",
+      "planDetails": {
+        "title": "计划详情：",
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} 加密存储",
+            "加密文件和文件夹共享",
+            "密码保护的文件共享",
+            "从任何设备访问您的文件",
+            "访问我们所有的服务",
+            "双因素认证（2FA）",
+            "高级客户支持",
+            "30 天退款保证"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} 存储/用户",
+            "加密文件和文件夹共享",
+            "创建和管理用户与团队",
+            "从 {{minimumSeats}} 用户到 {{maximumSeats}}",
+            "符合GDPR",
+            "管理账户计费和支付",
+            "高级客户支持"
+          ]
+        }
+      },
+      "total": "总计：",
+      "totalForBusiness": "总计 {{N}} 用户：",
+      "addCoupon": {
+        "buttonTitle": "添加优惠券",
+        "inputText": "优惠券代码"
+      },
+      "apply": "应用",
+      "amountSaved": "节省 ",
+      "withAnnualBilling": "按年计费"
     }
   },
   "general": {
@@ -894,7 +973,13 @@
       "primaryAction": "确定",
       "secondaryAction": "取消"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "分享 \"{{name}}\"",
+      "teams": "团队",
+      "teamsWithAccess": "有权限的团队：",
+      "shareButton": "分享"
+    }
   },
   "form": {
     "fields": {
@@ -942,15 +1027,13 @@
     "workingOnIt": "我们正在努力为您带来更好的体验。",
     "noFilePreview": "没有可用的文件预览",
     "browserNotSupported": "浏览器不支持 ({{userAgent}})",
-    "inviteAFriend": "向朋友发送邀请时出错: {{message}}",
-    "inviteAFriendEmpty": "发送邀请时出错 您必须指定电子邮件地址",
     "subscribeToNewsletter": "订阅时事通讯时出错: {{message}}",
     "lastPasswordError": "您上次输入的密码似乎无效。再试一次，如果问题仍然存在，请联系我们的支持人员。",
     "incorrectPassword": "您输入的当前密码不匹配。请确保其正确。",
     "emptyPassword": "之前的密码不能为空",
     "errorMovingToTrash": "将项目移至垃圾箱时出错。",
     "errorDeletingFromTrash": "从垃圾箱中删除项目时出错。",
-    "maxSizeUploadLimitError": "文件太大（大于20GB）",
+    "maxSizeUploadLimitError": "文件太大（大于40GB）",
     "connectionLostError": "互联网连接丢失",
     "errorLoadingTrashItems": "加载垃圾箱内的项目时出错"
   },
@@ -1186,7 +1269,6 @@
     "twoFactorAuthDisabled": "您的双因素身份验证已被禁用",
     "joinedToTheTeam": "您已成功加入团队",
     "done": "完成",
-    "inviteAFriend": "已发送邀请至{{email}}",
     "subscribeToNewsletter": "{{email}} 成功订阅电子报"
   },
   "shareItemDialog": {
@@ -1209,6 +1291,9 @@
     "copyLink": "已复制分享链接到剪贴板",
     "linkUpdated": "链接已更新",
     "itemsMovedToTrash": "{{item}} 已被移至回收站",
+    "storageModified": "存储修改成功",
+    "errorModifyingStorage": "新存储空间对该成员无效。",
+    "generalErrorWhileModifyingStorage": "修改存储时出错。",
     "moveItems": "{{itemsToMove}} 成功移动",
     "restoreItems": "{{itemsToRecover}} 成功恢复",
     "itemDeleted": "{{item}} 已删除",
@@ -1219,7 +1304,14 @@
     "errorCancelSubscription": "取消订阅时出了点问题",
     "successApplyCoupon": "3个月免费申请",
     "errorApplyCoupon": "应用折扣时出错",
-    "alreadyAppliedCoupon": "优惠券已使用"
+    "alreadyAppliedCoupon": "优惠券已使用",
+    "errorCreatingSubscription": "创建您的订阅时出现问题",
+    "errorPurchaseBusinessPlan": "您已经有一个商业计划",
+    "couponIsNotValidForUserError": "优惠券只能由新客户兑换。",
+    "errorApplyingCoupon": "应用优惠券时出错",
+    "errorWhileFetchingMoreItems": "获取更多项目时出现错误",
+    "errorDeletingItems": "删除此项目时出现错误",
+    "invalidTaxIdIsProvided": "提供的税号无效"
   },
   "actions": {
     "undo": "撤销",
@@ -1294,6 +1386,7 @@
       "openPreview": "打开预览",
       "shareLink": "分享",
       "shareTeam": "与团队分享",
+      "shareWithWorkspace": "与工作区共享",
       "manageLinkAccess": "管理访问权限",
       "getLink": "获取链接",
       "rename": "重命名",
@@ -1324,7 +1417,7 @@
     },
     "uploadItems": {
       "title": "最大文件上传",
-      "advice": "每次上传最多 1000 个文件。",
+      "advice": "每次上传最多 3000 个文件。",
       "close": "关闭"
     },
     "movingToTrash": "正在将项目移动到回收站",
@@ -1351,20 +1444,7 @@
       "advice": "您将被重定向到您的 AppSumo 帐户"
     }
   },
-  "inviteAFriend": {
-    "title": "邀请一个朋友",
-    "descriptionWidget": "通过邀请您的朋友获得高达 {{N}}GB 的额外免费存储空间（通过您的邀请注册的每个用户 1GB）",
-    "description": "传播这条消息，你每邀请一个朋友加入Internxt，你就能获得1GB。总共可获得{{N}}",
-    "label": "邀请至",
-    "placeholder": "输入好友的邮箱",
-    "actions": {
-      "sendInvitation": "发送邀请",
-      "seeInvitations": "查看所有邀请"
-    },
-    "errors": {
-      "dailyEmailLimit": "您已达到每天 10 次邀请的限制"
-    }
-  },
+
   "newsletter": {
     "dialog": {
       "title": "订阅我们的新闻",
@@ -1467,6 +1547,14 @@
           "member": "成员",
           "deactivated": "已停用"
         },
+        "modifyStorageModal": {
+          "user": "用户",
+          "storage": "存储",
+          "spaceAssigned": "分配的空间",
+          "spaceLeft": "剩余总空间",
+          "cancel": "取消",
+          "saveChanges": "保存更改"
+        },
         "deactivationModal": {
           "title": "停用成员",
           "description": "{{name}} 将失去对工作区的访问权限。所有他们的文件和文件夹将保持不变。",
@@ -1478,6 +1566,12 @@
           "description": "{{name}} 将恢复对工作区的访问权限。",
           "reactivate": "重新激活",
           "reactivating": "重新激活中"
+        },
+        "removalModal": {
+          "title": "删除成员",
+          "description": "{{name}} 将失去对工作区的访问权限。所有他们的文件和文件夹将保持不变。",
+          "remove": "删除",
+          "removing": "去除"
         },
         "changePasswordModal": {
           "title": "请求更改密码",
@@ -1536,11 +1630,66 @@
         "actions": {
           "deactivate": "停用会员",
           "reactivate": "重新激活成员",
+          "remove": "移除成員",
           "passwordChange": "请求更改密码"
         }
       },
       "teams": {
-        "title": "团队"
+        "title": "團隊",
+        "createTeam": "创建团队",
+        "team": "团队",
+        "members": "成员",
+        "createTeamDialog": {
+          "title": "新团队",
+          "label": "名称",
+          "placeholder": "输入队名",
+          "cancel": "取消",
+          "create": "创建",
+          "nameExists": "已存在使用此名称的团队"
+        },
+        "teamDetails": {
+          "member": "成员",
+          "members": "成员",
+          "remove": "删除",
+          "makeManager": "成为管理者",
+          "addMember": "添加成员",
+          "rename": "重新命名",
+          "delete": "删除"
+        },
+        "addMemberDialog": {
+          "title": "添加成员",
+          "placeholder": "搜索成员",
+          "cancel": "取消",
+          "addMember": "添加成员",
+          "addOneMember": "添加{{membersToInvite}}名成员",
+          "addMembers": "添加{{membersToInvite}}名成员"
+        },
+        "renameTeamDialog": {
+          "title": "重命名团队",
+          "label": "名称",
+          "placeholder": "输入新团队名称",
+          "cancel": "取消",
+          "rename": "重命名",
+          "nameExists": "该名称的团队已存在"
+        },
+        "deleteTeamDialog": {
+          "title": "删除团队",
+          "description": "将被删除，该团队的成员可能会失去对与团队共享的文件和文件夹的访问权限。",
+          "cancel": "取消",
+          "delete": "删除团队"
+        },
+        "removeTeamMemberDialog": {
+          "title": "移除成员",
+          "description": "将失去对与该团队共享的文件和文件夹的访问权限。",
+          "cancel": "取消",
+          "delete": "移除"
+        },
+        "changeManagerDialog": {
+          "title": "更换管理员",
+          "description": "将成为该团队的管理员。前任管理员将被降级为团队成员。",
+          "cancel": "取消",
+          "change": "更换"
+        }
       },
       "billing": {
         "title": "计费",
@@ -1593,7 +1742,7 @@
       "levelUpStorage": "升级您的存储空间，并获得许多其他好处",
       "upgradeNow": "立即升级",
       "emptyTrash": "清空回收站",
-      "emptryTrashDescription": "回收站中的项目将在15天后被永久删除",
+      "emptyTrashDescription": "回收站中的项目将被永久删除",
       "plans": {
         "title": "计划",
         "current": "当前",
@@ -1658,7 +1807,8 @@
     },
     "pending": "待发邀请",
     "messages": {
-      "sharedSuccess": "项目成功与团队共享"
+      "sharedSuccess": "项目成功与团队共享",
+      "switchingWorkspace": "切换工作区"
     },
     "pendingInvitations": {
       "empty": "没有剩余的邀请",

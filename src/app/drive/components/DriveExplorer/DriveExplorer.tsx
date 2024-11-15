@@ -20,6 +20,8 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 
 import { Role } from '@internxt/sdk/dist/drive/share/types';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { t } from 'i18next';
 import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
 import errorService from '../../../core/services/error.service';
@@ -36,8 +38,7 @@ import {
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { AdvancedSharedItem } from '../../../share/types';
-import Button from '../../../shared/components/Button/Button';
-import SkinSkeletonItem from '../../../shared/components/List/SkinSketelonItem';
+import { Button } from '@internxt/internxtui';
 import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -69,10 +70,10 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 
 const TRASH_PAGINATION_OFFSET = 50;
-const UPLOAD_ITEMS_LIMIT = 1000;
+export const UPLOAD_ITEMS_LIMIT = 3000;
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -83,6 +84,7 @@ interface DriveExplorerProps {
   onItemsMoved?: () => void;
   onFileUploaded?: () => void;
   onFolderUploaded?: () => void;
+  fetchFolderContent?: () => void;
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
   user: UserSettings | undefined;
@@ -111,6 +113,8 @@ interface DriveExplorerProps {
     offset: number | undefined,
     type: 'files' | 'folders',
     root: boolean,
+    sort: 'plainName' | 'updatedAt',
+    order: 'ASC' | 'DESC',
     folderId?: number | undefined,
   ) => Promise<{ finished: boolean; itemsRetrieved: number }>;
   roles: Role[];
@@ -126,6 +130,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     items,
     onItemsDeleted,
     onFolderCreated,
+    fetchFolderContent,
     isOver,
     connectDropTarget,
     storageFilters,
@@ -157,6 +162,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
+  const order = useAppSelector((state: RootState) => state.storage.order);
 
   // UPLOAD ITEMS STATES
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
@@ -282,7 +288,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   useEffect(() => {
     resetPaginationState();
     fetchItems();
-  }, [currentFolderId]);
+  }, [currentFolderId, order]);
 
   useEffect(() => {
     if (
@@ -326,7 +332,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const getMoreTrashFolders = async () => {
     setIsLoadingTrashItems(true);
     if (getTrashPaginated) {
-      const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, folderOnTrashLength, 'folders', true);
+      const result = await getTrashPaginated(
+        TRASH_PAGINATION_OFFSET,
+        folderOnTrashLength,
+        'folders',
+        true,
+        order.by === 'name' ? 'plainName' : 'updatedAt',
+        order.direction,
+      );
       const existsMoreFolders = !result.finished;
       setHasMoreTrashFolders(existsMoreFolders);
     }
@@ -336,7 +349,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const getMoreTrashFiles = async () => {
     setIsLoadingTrashItems(true);
     if (getTrashPaginated) {
-      const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, filesOnTrashLength, 'files', true);
+      const result = await getTrashPaginated(
+        TRASH_PAGINATION_OFFSET,
+        filesOnTrashLength,
+        'files',
+        true,
+        order.by === 'name' ? 'plainName' : 'updatedAt',
+        order.direction,
+      );
       const existsMoreItems = !result.finished;
       setHasMoreItems(existsMoreItems);
     }
@@ -369,11 +389,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     folderInputRef.current?.click();
   }, [currentFolderId]);
 
-  const onUploadFileInputChanged = (e) => {
+  const onUploadFileInputChanged = async (e) => {
     const files = e.target.files;
 
-    if (files.length < UPLOAD_ITEMS_LIMIT) {
-      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(Array.from(files), items, dispatch) as File[];
+    if (files.length <= UPLOAD_ITEMS_LIMIT) {
+      const unrepeatedUploadedFiles = (await handleRepeatedUploadingFiles(
+        Array.from(files),
+        dispatch,
+        currentFolderId,
+      )) as File[];
       dispatch(
         storageThunks.uploadItemsThunk({
           files: Array.from(unrepeatedUploadedFiles),
@@ -387,7 +411,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     } else {
       dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
       notificationsService.show({
-        text: 'The maximum is 1000 files per upload.',
+        text: translate('drive.uploadItems.advice'),
         type: ToastType.Warning,
       });
     }
@@ -429,7 +453,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       if (isFileViewerOpen) {
         dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
       } else if (itemToRename && editNameItem.isFolder) {
-        dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(newItem.plainName ?? newItem.name));
+        getAncestorsAndSetNamePath(newItem.uuid, dispatch);
       }
     }
     dispatch(storageActions.setItemToRename(null));
@@ -522,56 +546,16 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  const skinSkeleton = [
-    <div className="flex flex-row items-center space-x-4">
-      <div className="h-8 w-8 rounded-md bg-gray-5" />
-    </div>,
-    <div className="h-4 w-64 rounded bg-gray-5" />,
-    <div className="ml-3 h-4 w-24 rounded bg-gray-5" />,
-    <div className="ml-4 h-4 w-20 rounded bg-gray-5" />,
-  ];
-
-  const loader = new Array(25).fill(0).map((col, i) => (
-    <SkinSkeletonItem
-      key={`skinSkeletonRow${i}`}
-      skinSkeleton={skinSkeleton}
-      columns={[
-        {
-          label: translate('drive.list.columns.type'),
-          width: 'flex w-1/12 cursor-pointer items-center px-6',
-          name: 'type',
-          orderable: true,
-          defaultDirection: 'ASC',
-        },
-        {
-          label: translate('drive.list.columns.name'),
-          width: 'flex grow cursor-pointer items-center pl-6',
-          name: 'name',
-          orderable: true,
-          defaultDirection: 'ASC',
-        },
-        {
-          label: translate('drive.list.columns.modified'),
-          width: 'hidden w-3/12 lg:flex pl-4',
-          name: 'updatedAt',
-          orderable: true,
-          defaultDirection: 'ASC',
-        },
-        {
-          label: translate('drive.list.columns.size'),
-          width: 'flex w-1/12 cursor-pointer items-center',
-          name: 'size',
-          orderable: true,
-          defaultDirection: 'ASC',
-        },
-      ].map((column) => column.width)}
-    />
-  ));
-
-  const handleOnShareItem = useCallback(() => {
+  const resetPaginationStateAndFetchDriveFolderContent = (currentFolderId: string) => {
     resetPaginationState();
     dispatch(fetchSortedFolderContentThunk(currentFolderId));
-  }, [currentFolderId]);
+  };
+
+  const handleOnShareItem = useCallback(() => {
+    setTimeout(() => {
+      fetchFolderContent?.() ?? resetPaginationStateAndFetchDriveFolderContent(currentFolderId);
+    }, 500);
+  }, [currentFolderId, fetchFolderContent]);
 
   const onSuccessEditingName = useCallback(() => {
     setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
@@ -847,6 +831,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 title={title}
                 onOpenStopSharingAndMoveToTrashDialog={onOpenStopSharingAndMoveToTrashDialog}
                 showStopSharingConfirmation={showStopSharingConfirmation}
+                resetPaginationState={resetPaginationState}
               />
             </div>
             {
@@ -951,24 +936,10 @@ declare module 'react' {
   }
 }
 
-const countTotalItemsInIRoot = (rootList: IRoot[]) => {
-  let totalFilesToUpload = 0;
-
-  rootList.forEach((n) => {
-    totalFilesToUpload += n.childrenFiles.length;
-    if (n.childrenFolders.length >= 1) {
-      countTotalItemsInIRoot(n.childrenFolders);
-    }
-  });
-
-  return totalFilesToUpload;
-};
-
 const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
   const { dispatch, currentFolderId, onDragAndDropEnd, items } = props;
-  const countTotalItemsToUpload: number = files.length + countTotalItemsInIRoot(rootList);
 
-  if (countTotalItemsToUpload < UPLOAD_ITEMS_LIMIT) {
+  if (files.length <= UPLOAD_ITEMS_LIMIT) {
     if (files.length) {
       errorService.addBreadcrumb({
         level: 'info',
@@ -979,7 +950,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
           itemsDragged: items,
         },
       });
-      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch) as File[];
+      const unrepeatedUploadedFiles = (await handleRepeatedUploadingFiles(files, dispatch, currentFolderId)) as File[];
       // files where dragged directly
       await dispatch(
         storageThunks.uploadItemsThunk({
@@ -1004,7 +975,11 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
           itemsDragged: items,
         },
       });
-      const unrepeatedUploadedFolders = handleRepeatedUploadingFolders(rootList, items, dispatch) as IRoot[];
+      const unrepeatedUploadedFolders = (await handleRepeatedUploadingFolders(
+        rootList,
+        dispatch,
+        currentFolderId,
+      )) as IRoot[];
 
       if (unrepeatedUploadedFolders.length > 0) {
         const folderDataToUpload = unrepeatedUploadedFolders.map((root) => ({
@@ -1022,7 +997,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
   } else {
     dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
     notificationsService.show({
-      text: 'The maximum is 1000 files per upload.',
+      text: t('drive.uploadItems.advice'),
       type: ToastType.Warning,
     });
   }

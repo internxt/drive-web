@@ -4,31 +4,20 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": {
-      "upTo": "高達 ",
-      "discount": "80% 折扣"
-    },
-    "title": "享受 Internxt 的夏季優惠",
-    "subtitle": {
-      "line1": "Internxt 的免費計劃將於 7 月 1 日減少到 1GB。",
-      "line2": {
-        "normal1": "使用代碼 ",
-        "blue": "FREEVIP",
-        "normal2": " 來繞過此降級，享受任何高級計劃 90% 的折扣。"
-      }
-    },
-    "cta": "選擇計劃",
+    "label": "節省85%！",
+    "title": "黑色星期五最佳優惠",
+    "subtitle": "選擇我們的終身方案，獲得我們的高級背包。",
+    "cta": "選擇您的方案",
     "guarantee": "30天退款保證",
-    "lastCta": "*優惠僅限於免費帳戶或新客戶",
+    "lastCta": "*此優惠僅適用於免費帳戶或新客戶",
     "features": [
-      "所有 Internxt 計劃均可享受優惠",
-      "安全可靠的雲存儲",
-      "開源和透明",
+      "所有高級方案享有巨大的折扣",
+      "私人加密雲端存儲",
+      "開源且經過審查",
       "端到端加密傳輸",
       "無未經授權的訪問",
-      "優惠截止至8月19日"
-    ],
-    "copied": "已複製到剪貼板"
+      "優惠截止至12月3日"
+    ]
   },
   "valentinesBanner": {
     "title": "愛無極限！",
@@ -78,7 +67,8 @@
     "light": "淺色",
     "dark": "深色",
     "system": "系統",
-    "starwars": "星際大戰"
+    "starwars": "星際大戰",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "電子郵件",
@@ -92,7 +82,8 @@
       "dontHaveAccount": "沒有帳戶？",
       "createAccount": "創建帳戶",
       "2FA": "雙重身份驗證代碼",
-      "twoFactorAuthenticationCode": "雙重身份驗證代碼"
+      "twoFactorAuthenticationCode": "雙重身份驗證代碼",
+      "wrongLogin": "使用者名稱或密碼無效"
     },
     "signup": {
       "title": "創建帳戶",
@@ -170,6 +161,94 @@
       "openDesktopApp": "打開桌面應用",
       "anotherAccount": "使用其他帳戶？",
       "login": "登錄"
+    }
+  },
+  "checkout": {
+    "title": "您快完成了！請安全結帳：",
+    "pay": "支付",
+    "processing": "處理中...",
+    "checkout": "結帳",
+    "authComponent": {
+      "signUp": {
+        "emailAddress": "您的電子郵件地址",
+        "password": "創建密碼"
+      },
+      "signIn": {
+        "emailAddress": "您的電子郵件地址",
+        "password": "您的密碼"
+      },
+      "title": {
+        "signUp": "創建帳戶",
+        "signIn": "登錄",
+        "userIsSignedIn": "用戶已登錄為"
+      },
+      "emailMustNotBeEmpty": "電子郵件不能為空",
+      "privacyGuarantee": "隱私保證：我們不會分享您的信息，並且只會在提供服務時與您聯繫。"
+    },
+    "addressBillingTitle": "帳單地址",
+    "addressBilling": {
+      "optional": {
+        "cta": "可選",
+        "companyName": "公司名稱",
+        "companyVatId": "公司增值稅編號"
+      }
+    },
+    "paymentTitle": "選擇支付方式",
+    "productCard": {
+      "title": "訂單摘要",
+      "selectedPlan": "選擇的計劃",
+      "numberOfUsers": "用戶數：{{seats}}",
+      "renewalPeriod": {
+        "renewsAt": "* 續訂日期為",
+        "month": "每月",
+        "year": "每年",
+        "lifetime": "終身"
+      },
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",
+        "year": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",
+        "lifetime": "{{spaceToUpgrade}} - {{interval}} 計劃"
+      },
+      "billed": {
+        "month": "按月計費",
+        "year": "按年計費",
+        "lifetime": "一次性支付"
+      },
+      "perUser": "/每用戶",
+      "saving": "您節省了 {{percent}}%",
+      "planDetails": {
+        "title": "計劃詳情：",
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} 加密存儲",
+            "加密文件和文件夾共享",
+            "密碼保護的文件共享",
+            "從任何設備訪問您的文件",
+            "訪問我們所有的服務",
+            "雙因素認證（2FA）",
+            "高級客戶支持",
+            "30 天退款保證"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} 儲存/用戶",
+            "加密檔案和資料夾共享",
+            "創建和管理用戶及團隊",
+            "從 {{minimumSeats}} 用戶到 {{maximumSeats}}",
+            "符合GDPR",
+            "管理帳戶計費與支付",
+            "高級客戶支持"
+          ]
+        }
+      },
+      "total": "總計：",
+      "totalForBusiness": "總計 {{N}} 用戶：",
+      "addCoupon": {
+        "buttonTitle": "添加優惠券",
+        "inputText": "優惠券代碼"
+      },
+      "apply": "應用",
+      "amountSaved": "節省 ",
+      "withAnnualBilling": "按年計費"
     }
   },
   "general": {
@@ -857,7 +936,13 @@
       "primaryAction": "確認",
       "secondaryAction": "取消"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "分享 \"{{name}}\"",
+      "teams": "團隊",
+      "teamsWithAccess": "有權限的團隊：",
+      "shareButton": "分享"
+    }
   },
   "form": {
     "fields": {
@@ -905,15 +990,13 @@
     "workingOnIt": "我們正在努力為您帶來更好的體驗。",
     "noFilePreview": "無法預覽文件",
     "browserNotSupported": "瀏覽器不受支持（{{userAgent}}）",
-    "inviteAFriend": "發送邀請給朋友時出錯：{{message}}",
-    "inviteAFriendEmpty": "發送邀請時出錯：您必須指定電子郵件",
     "subscribeToNewsletter": "訂閱通訊時出錯：{{message}}",
     "lastPasswordError": "您輸入的最後一個密碼似乎無效。請重試，如果問題仍然存在，請聯繫我們的支持。",
     "incorrectPassword": "您輸入的當前密碼不正確。請確保它是正確的。",
     "emptyPassword": "以前的密碼不能為空",
     "errorMovingToTrash": "將項目移動到垃圾桶時出錯。",
     "errorDeletingFromTrash": "從垃圾桶中刪除項目時出錯。",
-    "maxSizeUploadLimitError": "文件過大（大於20GB）",
+    "maxSizeUploadLimitError": "文件過大（大於40GB）",
     "connectionLostError": "網絡連接已丟失",
     "errorLoadingTrashItems": "加載垃圾桶項目時出錯"
   },
@@ -1149,7 +1232,6 @@
     "twoFactorAuthDisabled": "您的雙因素身份驗證已停用",
     "joinedToTheTeam": "您已成功加入團隊",
     "done": "完成",
-    "inviteAFriend": "已發送邀請至{{email}}",
     "subscribeToNewsletter": "{{email}} 成功訂閱電子報"
   },
   "shareItemDialog": {
@@ -1173,6 +1255,9 @@
     "linkUpdated": "鏈接已更新",
     "itemsMovedToTrash": "{{item}} 已移到垃圾桶",
     "restoreItems": "{{itemsToRecover}} 成功還原",
+    "storageModified": "儲存空間修改成功",
+    "errorModifyingStorage": "新存儲空間對此成員無效。",
+    "generalErrorWhileModifyingStorage": "修改存儲時出錯。",
     "moveItems": "{{itemsToMove}} 成功移動",
     "itemDeleted": "{{item}} 已刪除",
     "itemsDeleted": "文件已刪除",
@@ -1182,7 +1267,14 @@
     "errorCancelSubscription": "取消訂閱時出現問題",
     "successApplyCoupon": "免費使用3個月的優惠碼已應用",
     "errorApplyCoupon": "應用折扣時出現錯誤",
-    "alreadyAppliedCoupon": "優惠碼已經應用"
+    "alreadyAppliedCoupon": "優惠碼已經應用",
+    "errorCreatingSubscription": "建立您的訂閱時出現問題",
+    "errorPurchaseBusinessPlan": "您已經有一個商業計劃",
+    "couponIsNotValidForUserError": "優惠券只能由新客戶兌換。",
+    "errorApplyingCoupon": "應用優惠券時出錯",
+    "errorWhileFetchingMoreItems": "獲取更多項目時出現錯誤",
+    "errorDeletingItems": "刪除此項目時出現錯誤",
+    "invalidTaxIdIsProvided": "提供的稅號無效"
   },
   "actions": {
     "undo": "撤銷",
@@ -1257,6 +1349,8 @@
       "openPreview": "打開預覽",
       "details": "詳細信息",
       "shareLink": "分享",
+      "shareTeam": "与团队分享",
+      "shareWithWorkspace": "與工作區共享",
       "manageLinkAccess": "管理訪問權限",
       "getLink": "獲取鏈接",
       "rename": "重新命名",
@@ -1286,7 +1380,7 @@
     },
     "uploadItems": {
       "title": "最大檔案上傳數量",
-      "advice": "最多可一次上傳 1000 個檔案。",
+      "advice": "最多可一次上傳 3000 個檔案。",
       "close": "關閉"
     },
     "movingToTrash": "正在將項目移到垃圾桶",
@@ -1311,20 +1405,6 @@
     },
     "plans": {
       "advice": "您將被重定向到您的 AppSumo 帳戶"
-    }
-  },
-  "inviteAFriend": {
-    "title": "邀請好友",
-    "descriptionWidget": "通過邀請您的朋友（每位透過您的邀請註冊的用戶可獲得 1GB 額外免費存儲空間，最多可達 {{N}}GB）獲得最高 {{N}}GB 的額外免費存儲空間",
-    "description": "每邀請一位朋友，您可以獲得 1GB 的免費存儲空間。您最多可以獲得 {{N}}GB。",
-    "label": "朋友的電子郵件地址",
-    "placeholder": "輸入朋友的電子郵件",
-    "actions": {
-      "sendInvitation": "發送邀請",
-      "seeInvitations": "查看所有邀請"
-    },
-    "errors": {
-      "dailyEmailLimit": "您已達到每日 10 次邀請的限制"
     }
   },
   "newsletter": {
@@ -1429,6 +1509,14 @@
           "member": "成員",
           "deactivated": "已停用"
         },
+        "modifyStorageModal": {
+          "user": "用戶",
+          "storage": "儲存空間",
+          "spaceAssigned": "分配的空間",
+          "spaceLeft": "剩餘總空間",
+          "cancel": "取消",
+          "saveChanges": "保存更改"
+        },
         "deactivationModal": {
           "title": "停用成員",
           "description": "{{name}} 將失去對工作區的訪問權限。所有文件和資料夾將保持不變。",
@@ -1440,6 +1528,12 @@
           "description": "{{name}} 將恢復對工作區的訪問權限。",
           "reactivate": "重新啟用",
           "reactivating": "正在重新啟用"
+        },
+        "removalModal": {
+          "title": "删除成员",
+          "description": "{{name}} 将失去对工作区的访问权限。所有他们的文件和文件夹将保持不变。",
+          "remove": "删除",
+          "removing": "去除"
         },
         "changePasswordModal": {
           "title": "要求更改密碼",
@@ -1498,11 +1592,66 @@
         "actions": {
           "deactivate": "停用成員",
           "reactivate": "重新啟用成員",
+          "remove": "移除成員",
           "passwordChange": "要求更改密碼"
         }
       },
       "teams": {
-        "title": "團隊"
+        "title": "隊伍",
+        "createTeam": "建立隊伍",
+        "team": "隊伍",
+        "members": "成員",
+        "createTeamDialog": {
+          "title": "新隊伍",
+          "label": "名稱",
+          "placeholder": "輸入隊伍名稱",
+          "cancel": "取消",
+          "create": "建立",
+          "nameExists": "已有相同名稱的隊伍"
+        },
+        "teamDetails": {
+          "member": "成員",
+          "members": "成員",
+          "remove": "移除",
+          "makeManager": "設為管理員",
+          "addMember": "新增成員",
+          "rename": "重新命名",
+          "delete": "刪除"
+        },
+        "addMemberDialog": {
+          "title": "加入成員",
+          "placeholder": "搜尋成員",
+          "cancel": "取消",
+          "addMember": "加入成員",
+          "addOneMember": "加入{{membersToInvite}}位成員",
+          "addMembers": "加入{{membersToInvite}}位成員"
+        },
+        "renameTeamDialog": {
+          "title": "重新命名團隊",
+          "label": "名稱",
+          "placeholder": "輸入新團隊名稱",
+          "cancel": "取消",
+          "rename": "重新命名",
+          "nameExists": "該名稱的團隊已存在"
+        },
+        "deleteTeamDialog": {
+          "title": "刪除團隊",
+          "description": "將被刪除，該團隊的成員可能會失去對與團隊共享的文件和文件夾的訪問權限。",
+          "cancel": "取消",
+          "delete": "刪除團隊"
+        },
+        "removeTeamMemberDialog": {
+          "title": "移除成員",
+          "description": "將失去對與該團隊共享的文件和文件夾的訪問權限。",
+          "cancel": "取消",
+          "delete": "移除"
+        },
+        "changeManagerDialog": {
+          "title": "更換管理員",
+          "description": "將成為該團隊的管理員。前任管理員將被降級為團隊成員。",
+          "cancel": "取消",
+          "change": "更換"
+        }
       },
       "billing": {
         "title": "計費",
@@ -1552,7 +1701,7 @@
       "levelUpStorage": "提升您的存儲空間並獲得許多其他好處",
       "upgradeNow": "立即升級",
       "emptyTrash": "清空垃圾桶",
-      "emptryTrashDescription": "垃圾桶中的項目將在15天後永久刪除",
+      "emptyTrashDescription": "垃圾桶中的項目將被永久刪除",
       "plans": {
         "title": "計劃",
         "current": "當前",
@@ -1615,8 +1764,10 @@
       "personal": "個人工作區",
       "business": "商務工作區"
     },
+    "pending": "待處理的邀請",
     "messages": {
-      "sharedSuccess": "項目成功與團隊共享"
+      "sharedSuccess": "項目成功與團隊共享",
+      "switchingWorkspace": "切換工作區"
     },
     "pendingInvitations": {
       "empty": "沒有剩餘的邀請",

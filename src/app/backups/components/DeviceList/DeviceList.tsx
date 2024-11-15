@@ -1,7 +1,6 @@
 import desktopService from '../../../core/services/desktop.service';
 import { Device } from '../../types';
-import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+
 import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
 import { DownloadSimple } from '@phosphor-icons/react';
 import Empty from '../../../shared/components/Empty/Empty';
@@ -15,6 +14,8 @@ import UilWindows from '@iconscout/react-unicons/icons/uil-windows';
 import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
 import dateService from '../../../core/services/date.service';
 import sizeService from '../../../drive/services/size.service';
+import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { skinSkeleton } from 'app/shared/Skeleton';
 
 interface Props {
   items: (Device | DriveFolderData)[];
@@ -33,11 +34,6 @@ const DeviceList = (props: Props): JSX.Element => {
   const getDownloadApp = async () => {
     const download = await desktopService.getDownloadAppUrl();
     return download;
-  };
-  const getLoadingSkeleton = () => {
-    return Array(20)
-      .fill(0)
-      .map((n, i) => <DriveListItemSkeleton key={i} />);
   };
 
   return (
@@ -115,7 +111,7 @@ const DeviceList = (props: Props): JSX.Element => {
             onDeviceSelected([...unselectedDevices, { device: item, isSelected: true }]);
           }}
           onDoubleClick={onDeviceClicked}
-          skinSkeleton={getLoadingSkeleton()}
+          skinSkeleton={skinSkeleton}
           emptyState={
             <Empty
               icon={<img className="w-36" alt="" src={folderEmptyImage} />}

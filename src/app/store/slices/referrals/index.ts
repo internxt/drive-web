@@ -1,15 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import desktopService from 'app/core/services/desktop.service';
 import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
 import usersReferralsService from 'app/referrals/services/users-referrals.service';
 
-import { UserReferral, ReferralKey } from '@internxt/sdk/dist/drive/referrals/types';
+import { ReferralKey, UserReferral } from '@internxt/sdk/dist/drive/referrals/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { RootState } from 'app/store';
 import { planThunks } from '../plan';
 import { uiActions } from '../ui';
 import { userSelectors } from '../user';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface ReferralsState {
   isLoading: boolean;
@@ -50,7 +49,10 @@ const refreshUserReferrals = createAsyncThunk<void, void, { state: RootState }>(
 
 const executeUserReferralActionThunk = createAsyncThunk<void, { referralKey: ReferralKey }, { state: RootState }>(
   'referrals/executeUserReferralActionThunk',
-  ({ referralKey }, { dispatch }) => {
+  ({ referralKey }, { dispatch, getState }) => {
+    const state = getState();
+    const selectedWorkspace = state.workspaces.selectedWorkspace;
+
     const getDownloadApp = async () => {
       const download = await desktopService.getDownloadAppUrl();
       return download;
@@ -74,11 +76,21 @@ const executeUserReferralActionThunk = createAsyncThunk<void, { referralKey: Ref
         break;
       }
       case ReferralKey.InviteFriends: {
-        navigationService.push(AppView.Preferences, { tab: 'account' });
+        navigationService.openPreferencesDialog({
+          section: 'account',
+          subsection: 'account',
+          workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+        });
+        dispatch(uiActions.setIsPreferencesDialogOpen(true));
         break;
       }
       case ReferralKey.Invite2Friends: {
-        navigationService.push(AppView.Preferences, { tab: 'account' });
+        navigationService.openPreferencesDialog({
+          section: 'account',
+          subsection: 'account',
+          workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+        });
+        dispatch(uiActions.setIsPreferencesDialogOpen(true));
         break;
       }
       case ReferralKey.CompleteSurvey: {

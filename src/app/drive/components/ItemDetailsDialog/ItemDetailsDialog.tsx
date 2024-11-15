@@ -7,7 +7,7 @@ import Modal from '../../../shared/components/Modal';
 import { X } from '@phosphor-icons/react';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import iconService from '../../../drive/services/icon.service';
-import Button from '../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { bytesToString } from '../../../drive/services/size.service';
 import date from '../../../core/services/date.service';
 import localStorageService from '../../../core/services/local-storage.service';
@@ -44,7 +44,7 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
             <p className="text-sm font-medium text-gray-50">
               {translate(`modals.itemDetailsModal.itemDetails.${key}`)}
             </p>
-            <p title={value} className="line-clamp-2 w-full text-base font-medium text-gray-100">
+            <p title={value} className="block w-full truncate text-base font-medium text-gray-100">
               {value}
             </p>
           </div>

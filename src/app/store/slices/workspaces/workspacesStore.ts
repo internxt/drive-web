@@ -31,6 +31,7 @@ export interface WorkspacesState {
   selectedWorkspace: WorkspaceData | null;
   isOwner: boolean;
   isLoadingWorkspaces: boolean;
+  isLoadingCredentials: boolean;
 }
 
 const initialState: WorkspacesState = {
@@ -40,6 +41,7 @@ const initialState: WorkspacesState = {
   selectedWorkspace: null,
   isOwner: false,
   isLoadingWorkspaces: false,
+  isLoadingCredentials: false,
 };
 
 const decryptWorkspacesMnemonic = async (workspaces: WorkspaceData[]): Promise<WorkspaceData[]> => {
@@ -86,6 +88,7 @@ const checkAndSetLocalWorkspace = createAsyncThunk<void, undefined, { state: Roo
 const fetchCredentials = createAsyncThunk<void, undefined, { state: RootState }>(
   'workspaces/fetchCredentials',
   async (_, { getState, dispatch }) => {
+    dispatch(workspacesActions.setIsLoadingCredentials(true));
     const state = getState();
     const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
 
@@ -97,40 +100,42 @@ const fetchCredentials = createAsyncThunk<void, undefined, { state: RootState }>
       dispatch(workspacesActions.setCredentials(credentials));
       localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(credentials));
     }
+    dispatch(workspacesActions.setIsLoadingCredentials(false));
   },
 );
 
-const setSelectedWorkspace = createAsyncThunk<void, { workspaceId: string | null }, { state: RootState }>(
-  'workspaces/setSelectedWorkspace',
-  async ({ workspaceId }, { dispatch, getState }) => {
-    const state = getState();
-    const selectedWorkspace = state.workspaces.selectedWorkspace;
-    const localStorageB2BWorkspace = localStorageService.getB2BWorkspace();
+const setSelectedWorkspace = createAsyncThunk<
+  void,
+  { workspaceId: string | null; updateUrl?: boolean },
+  { state: RootState }
+>('workspaces/setSelectedWorkspace', async ({ workspaceId, updateUrl = true }, { dispatch, getState }) => {
+  const state = getState();
+  const selectedWorkspace = state.workspaces.selectedWorkspace;
+  const localStorageB2BWorkspace = localStorageService.getB2BWorkspace();
 
-    const isUnselectingWorkspace = workspaceId === null;
-    const isSelectedWorkspace = localStorageB2BWorkspace?.workspace.id === workspaceId;
+  const isUnselectingWorkspace = workspaceId === null;
+  const isSelectedWorkspace = localStorageB2BWorkspace?.workspace.id === workspaceId;
 
-    if (isUnselectingWorkspace) {
-      localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
-      dispatch(workspacesActions.setSelectedWorkspace(null));
-      dispatch(workspacesActions.setCredentials(null));
-      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
-    } else if (isSelectedWorkspace) {
-      dispatch(workspacesActions.setSelectedWorkspace(localStorageB2BWorkspace ?? null));
-    } else {
-      const workspace = state.workspaces.workspaces.find((workspace) => workspace.workspace.id === workspaceId);
-      if (workspace) {
-        localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
-        dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
-      }
+  if (isUnselectingWorkspace) {
+    localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
+    dispatch(workspacesActions.setSelectedWorkspace(null));
+    dispatch(workspacesActions.setCredentials(null));
+    localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
+  } else if (isSelectedWorkspace) {
+    dispatch(workspacesActions.setSelectedWorkspace(localStorageB2BWorkspace ?? null));
+  } else {
+    const workspace = state.workspaces.workspaces.find((workspace) => workspace.workspace.id === workspaceId);
+    if (workspace) {
+      localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
+      dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
     }
+  }
 
-    if (workspaceId && workspaceId !== selectedWorkspace?.workspace.id) {
-      dispatch(fetchCredentials());
-    }
-    dispatch(sessionThunks.changeWorkspaceThunk());
-  },
-);
+  if (workspaceId && workspaceId !== selectedWorkspace?.workspace.id) {
+    dispatch(fetchCredentials());
+  }
+  dispatch(sessionThunks.changeWorkspaceThunk({ updateUrl }));
+});
 
 const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspace }, { state: RootState }>(
   'workspaces/setupWorkspace',
@@ -232,6 +237,9 @@ export const workspacesSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    resetState: (state: WorkspacesState) => {
+      Object.assign(state, initialState);
+    },
     setWorkspaces: (state: WorkspacesState, action: PayloadAction<WorkspaceData[]>) => {
       state.workspaces = action.payload;
     },
@@ -260,6 +268,9 @@ export const workspacesSlice = createSlice({
         }
         return item;
       });
+    },
+    setIsLoadingCredentials: (state: WorkspacesState, action: PayloadAction<boolean>) => {
+      state.isLoadingCredentials = action.payload;
     },
   },
   // TODO: TO CHANGE MESSAGES
@@ -301,6 +312,7 @@ export const workspacesSlice = createSlice({
       .addCase(fetchCredentials.rejected, (state, action) => {
         const errorMsg = action.payload ? action.payload : '';
 
+        state.isLoadingCredentials = false;
         state.isLoadingWorkspaces = false;
         notificationsService.show({
           text: 'Fetching workspace credentials error ' + errorMsg,

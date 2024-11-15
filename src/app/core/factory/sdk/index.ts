@@ -94,8 +94,8 @@ export class SdkFactory {
     return Trash.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createUsersClient(): Users {
-    const apiUrl = this.getApiUrl();
+  public createUsersClient(optionalApiUrl?: string): Users {
+    const apiUrl = optionalApiUrl ?? this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
     const apiSecurity = this.getApiSecurity();
     return Users.client(apiUrl, appDetails, apiSecurity);
@@ -179,14 +179,6 @@ export class SdkFactory {
       clientName: 'drive-desktop',
       clientVersion: packageJson.version,
     };
-  }
-
-  private getMnemonic(workspace: string): string {
-    const mnemonicByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get('xMnemonic') || '',
-      [Workspace.Business]: SdkFactory.sdk.localStorage.getTeams()?.bridge_mnemonic || '',
-    };
-    return mnemonicByWorkspace[workspace];
   }
 
   private getToken(workspace: string): Token {

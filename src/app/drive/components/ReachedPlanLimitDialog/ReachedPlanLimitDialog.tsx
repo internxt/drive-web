@@ -1,15 +1,17 @@
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
-import { uiActions } from 'app/store/slices/ui';
 import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
+import { Button } from '@internxt/internxtui';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { uiActions } from 'app/store/slices/ui';
 import DriveStorageError from '../../../../assets/images/drive-error.svg';
-import Button from 'app/shared/components/Button/Button';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 
 const ReachedPlanLimitDialog = (): JSX.Element => {
   const { translate } = useTranslationContext();
   const isOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+
   const dispatch = useAppDispatch();
 
   const onClose = (): void => {
@@ -19,14 +21,19 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
   const onAccept = async (): Promise<void> => {
     try {
       dispatch(uiActions.setIsReachedPlanLimitDialogOpen(false));
-      navigationService.push(AppView.Preferences, { tab: 'plans' });
+      navigationService.openPreferencesDialog({
+        section: 'account',
+        subsection: 'plans',
+        workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+      });
+      dispatch(uiActions.setIsPreferencesDialogOpen(true));
     } catch (e: unknown) {
       console.log(e);
     }
   };
 
   return (
-    <BaseDialog hideCloseButton isOpen={isOpen} onClose={onClose}>
+    <BaseDialog hideCloseButton isOpen={isOpen} onClose={onClose} bgColor="bg-surface">
       <div className="px-5 pb-5">
         <img className="mx-auto mb-5" src={DriveStorageError} />
         <div className="mb-2">

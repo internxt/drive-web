@@ -1,14 +1,14 @@
 import {
-  CreateCheckoutSessionPayload,
+  CreatedSubscriptionData,
+  CustomerBillingInfo,
   DisplayPrice,
   FreeTrialAvailable,
   Invoice,
+  InvoicePayload,
   PaymentMethod,
   RedeemCodePayload,
-  UserType,
-  InvoicePayload,
   UserSubscription,
-  CustomerBillingInfo,
+  UserType,
 } from '@internxt/sdk/dist/drive/payments/types';
 import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js/pure';
@@ -51,6 +51,40 @@ const paymentService = {
     return stripe;
   },
 
+  async getCustomerId(
+    name: string,
+    email: string,
+    country?: string,
+    companyVatId?: string,
+  ): Promise<{ customerId: string; token: string }> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.createCustomer(name, email, country, companyVatId);
+  },
+
+  async createSubscription(
+    customerId: string,
+    priceId: string,
+    token: string,
+    currency: string,
+    promoCode?: string,
+    seats = 1,
+  ): Promise<CreatedSubscriptionData> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.createSubscription(customerId, priceId, token, seats, currency, promoCode);
+  },
+
+  async createPaymentIntent(
+    customerId: string,
+    amount: number,
+    planId: string,
+    token: string,
+    currency?: string,
+    promoCode?: string,
+  ): Promise<{ clientSecret: string; id: string; invoiceStatus?: string }> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.createPaymentIntent(customerId, amount, planId, token, currency, promoCode);
+  },
+
   async createSession(payload: CreatePaymentSessionPayload): Promise<{ id: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.createSession(payload);
@@ -91,7 +125,6 @@ const paymentService = {
     couponUsed: boolean;
   }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-
     return paymentsClient.isCouponUsedByUser({ couponCode: couponCode });
   },
 
@@ -113,27 +146,24 @@ const paymentService = {
     });
   },
 
-  async updateSubscriptionPrice(
-    priceId: string,
-    coupon?: string,
-  ): Promise<{ userSubscription: UserSubscription; request3DSecure: boolean; clientSecret: string }> {
+  async updateSubscriptionPrice({
+    priceId,
+    coupon,
+    userType,
+  }: {
+    priceId: string;
+    coupon?: string;
+    userType: UserType.Individual | UserType.Business;
+  }): Promise<{ userSubscription: UserSubscription; request3DSecure: boolean; clientSecret: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
-    return paymentsClient.updateSubscriptionPrice(priceId, coupon);
+    return paymentsClient.updateSubscriptionPrice({ priceId, couponCode: coupon, userType });
   },
 
   async cancelSubscription(userType?: UserType): Promise<void> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
     return paymentsClient.cancelSubscription(userType);
-  },
-
-  async createCheckoutSession(
-    payload: CreateCheckoutSessionPayload & { mode?: string },
-  ): Promise<{ sessionId: string }> {
-    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-
-    return paymentsClient.createCheckoutSession(payload);
   },
 
   async updateCustomerBillingInfo(payload: CustomerBillingInfo): Promise<void> {

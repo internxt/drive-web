@@ -4,31 +4,20 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": {
-      "upTo": "UP TO ",
-      "discount": "80% OFF"
-    },
-    "title": "Soak up Internxt's summer deals",
-    "subtitle": {
-      "line1": "Internxt's free plan will be reduced to 1GB on July 1st.",
-      "line2": {
-        "normal1": "Bypass this downgrade using code  ",
-        "blue": "FREEVIP",
-        "normal2": " to get 90% off any premium plan."
-      }
-    },
+    "label": "Save 85%!",
+    "title": "The best Black Friday deals",
+    "subtitle": "Win our premium backpack with our lifetime plans.",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
-      "Save on all Internxt plans",
-      "Safe and secure cloud storage",
-      "Open source and transparent",
+      "Save big on all premium plans",
+      "Private, encrypted cloud storage",
+      "Open-source and audited",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends August 19th"
-    ],
-    "copied": "Copied to clipboard"
+      "Offer ends December 3rd"
+    ]
   },
   "valentinesBanner": {
     "title": "Love without limits!",
@@ -78,7 +67,8 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "Email",
@@ -92,7 +82,8 @@
       "dontHaveAccount": "Don't have an account?",
       "createAccount": "Create account",
       "2FA": "Two factor code",
-      "twoFactorAuthenticationCode": "Two factor authentication code"
+      "twoFactorAuthenticationCode": "Two factor authentication code",
+      "wrongLogin": "Invalid username or password"
     },
     "signup": {
       "title": "Create account",
@@ -170,6 +161,94 @@
       "openDesktopApp": "Open the desktop app",
       "anotherAccount": "Use another account?",
       "login": "Log in"
+    }
+  },
+  "checkout": {
+    "title": "You're almost there! Checkout securely:",
+    "pay": "Pay",
+    "processing": "Processing...",
+    "checkout": "Checkout",
+    "authComponent": {
+      "signUp": {
+        "emailAddress": "Your email address",
+        "password": "Create password"
+      },
+      "signIn": {
+        "emailAddress": "Your email address",
+        "password": "Your password"
+      },
+      "title": {
+        "signUp": "Create an account",
+        "signIn": "Log in",
+        "userIsSignedIn": "User signed in as"
+      },
+      "emailMustNotBeEmpty": "Email must not be empty",
+      "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
+    },
+    "addressBillingTitle": "Address Billing",
+    "addressBilling": {
+      "optional": {
+        "cta": "Optional",
+        "companyName": "Company name",
+        "companyVatId": "Company Vat ID"
+      }
+    },
+    "paymentTitle": "Select a payment method",
+    "productCard": {
+      "renewalPeriod": {
+        "renewsAt": "* Renews at",
+        "month": "month",
+        "year": "year",
+        "lifetime": "lifetime"
+      },
+      "title": "Order summary",
+      "selectedPlan": "Selected plan",
+      "numberOfUsers": "Number of users: {{seats}}",
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 {{interval}} plan",
+        "year": "{{spaceToUpgrade}} - 1 {{interval}} plan",
+        "lifetime": "{{spaceToUpgrade}} - {{interval}} plan"
+      },
+      "billed": {
+        "month": "Billed monthly",
+        "year": "Billed annually",
+        "lifetime": "One-time payment"
+      },
+      "perUser": "/per user",
+      "saving": "You're saving {{percent}}%",
+      "planDetails": {
+        "title": "Plan details:",
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} encrypted storage",
+            "Encrypted file and folder sharing",
+            "Password-protected file sharing",
+            "Access your files from any device",
+            "Get access to all our services",
+            "Two-factor authentication (2FA)",
+            "Premium customer support",
+            "30-day money-back guarantee"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} storage/user",
+            "Encrypted file and folder sharing",
+            "Create and manage users & teams",
+            "Starting at {{minimumSeats}} users and up to {{maximumSeats}}",
+            "GDPR compliant",
+            "Manage account billing & payments",
+            "Premium customer support"
+          ]
+        }
+      },
+      "total": "Total: ",
+      "totalForBusiness": "Total for {{N}} users: ",
+      "addCoupon": {
+        "buttonTitle": "Add coupon",
+        "inputText": "Coupon code"
+      },
+      "amountSaved": "Save ",
+      "apply": "Apply",
+      "withAnnualBilling": "with annual billing"
     }
   },
   "general": {
@@ -545,7 +624,7 @@
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
-              "title": "Two Factor Authentication",
+              "title": "Two-Factor Authentication",
               "stepsLabel": "{{current}} of {{total}}",
               "button": "Enable",
               "2FALabelCode": "Two-Factor Authentication code",
@@ -557,7 +636,7 @@
                 },
                 "qr": {
                   "title": "Scan QR with the 2FA app",
-                  "description": "If you are unable to scan he QR, insert this code into the app."
+                  "description": "If you are unable to scan the QR, insert this code into the app."
                 },
                 "backup-key": {
                   "title": "Save backup key",
@@ -895,7 +974,13 @@
       "primaryAction": "Confirm",
       "secondaryAction": "Cancel"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Share \"{{name}}\"",
+      "teams": "Teams",
+      "teamsWithAcces": "Teams with Access:",
+      "shareButton": "Share"
+    }
   },
   "form": {
     "fields": {
@@ -943,15 +1028,13 @@
     "workingOnIt": "We are working to bring you a better experience.",
     "noFilePreview": "No file preview available",
     "browserNotSupported": "Browser not supported ({{userAgent}})",
-    "inviteAFriend": "Error sending the invitation to a friend: {{message}}",
-    "inviteAFriendEmpty": "Error sending the invitation: You have to specify an email",
     "subscribeToNewsletter": "Error subscribing to newsletter: {{message}}",
     "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support.",
     "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
     "emptyPassword": "Previous password must not be empty",
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
-    "maxSizeUploadLimitError": "File too large (greater than 20GB)",
+    "maxSizeUploadLimitError": "File too large (greater than 40GB)",
     "connectionLostError": "Internet connection lost",
     "errorLoadingTrashItems": "Error loading trash items"
   },
@@ -1187,7 +1270,6 @@
     "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
     "joinedToTheTeam": "You have successfully joined to the team",
     "done": "Done",
-    "inviteAFriend": "Invitation sent to {{email}}",
     "subscribeToNewsletter": "{{email}} successfully subscribed to newsletter"
   },
   "shareItemDialog": {
@@ -1212,15 +1294,25 @@
     "itemsMovedToTrash": "{{item}} moved to trash",
     "restoreItems": "{{itemsToRecover}} restored successfully",
     "moveItems": "{{itemsToMove}} moved successfully",
+    "storageModified": "Storage modified successfully",
+    "errorModifyingStorage": "The new storage is not valid for this member.",
+    "generalErrorWhileModifyingStorage": "Something went wrong while modifying storage",
     "itemDeleted": "{{item}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
     "verificationEmail": "Verification email has been sent",
     "successCancelSubscription": "Your subscription has been cancelled",
     "errorCancelSubscription": "Something went wrong while cancelling your subscription",
+    "errorCreatingSubscription": "Something went wrong while creating your subscription",
     "successApplyCoupon": "3 months free of charge applied",
     "errorApplyCoupon": "An error occurred while applying the discount",
-    "alreadyAppliedCoupon": "The coupon has been already applied"
+    "alreadyAppliedCoupon": "The coupon has been already applied",
+    "errorPurchaseBusinessPlan": "You already have a business plan.",
+    "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers",
+    "errorApplyingCoupon": "Something went wrong while applying the coupon",
+    "invalidTaxIdIsProvided": "The provided Tax ID is invalid",
+    "errorWhileFetchingMoreItems": "Something went wrong while fetching more items",
+    "errorDeletingItems": "Something went wrong while deleting this item"
   },
   "actions": {
     "undo": "Undo",
@@ -1296,6 +1388,7 @@
       "details": "Details",
       "shareLink": "Share",
       "shareTeam": "Share with team",
+      "shareWithWorkspace": "Share with workspace",
       "manageLinkAccess": "Manage access",
       "getLink": "Get link",
       "rename": "Rename",
@@ -1325,7 +1418,7 @@
     },
     "uploadItems": {
       "title": "Maximum file upload",
-      "advice": "The maximum is 1000 files per upload.",
+      "advice": "The maximum is 3000 files per upload.",
       "close": "Close"
     },
     "movingToTrash": "Moving items to trash",
@@ -1350,20 +1443,6 @@
     },
     "plans": {
       "advice": "You will be redirected to your AppSumo account"
-    }
-  },
-  "inviteAFriend": {
-    "title": "Invite a friend",
-    "descriptionWidget": "Get up to {{N}}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
-    "description": "Get 1GB per friend invited for free. You can get up to {{N}}GB in total.",
-    "label": "Friend email address",
-    "placeholder": "Enter friend email",
-    "actions": {
-      "sendInvitation": "Send invitation",
-      "seeInvitations": "See all invitations"
-    },
-    "errors": {
-      "dailyEmailLimit": "You reached the limit of 10 invitations/day"
     }
   },
   "newsletter": {
@@ -1468,6 +1547,14 @@
           "member": "Member",
           "deactivated": "Deactivated"
         },
+        "modifyStorageModal": {
+          "user": "User",
+          "storage": "Storage",
+          "spaceAssigned": "Space assigned",
+          "spaceLeft": "Total space left",
+          "cancel": "Cancel",
+          "saveChanges": "Save changes"
+        },
         "deactivationModal": {
           "title": "Deactivate member",
           "description": "{{name}} will lose access to the Workspace. All their files and folders will stay the same.",
@@ -1479,6 +1566,12 @@
           "description": "{{name}} will recovery access to the Workspace.",
           "reactivate": "Reactivate",
           "reactivating": "Reactivating"
+        },
+        "removalModal": {
+          "title": "Remove member",
+          "description": "{{name}} will lose access to the Workspace. All their files and folders will stay the same.",
+          "remove": "Remove",
+          "removing": "Removing"
         },
         "changePasswordModal": {
           "title": "Request password change",
@@ -1536,12 +1629,68 @@
         },
         "actions": {
           "deactivate": "Deactivate member",
+          "modifyStorage": "Modify storage",
           "reactivate": "Reactivate member",
+          "remove": "Remove member",
           "passwordChange": "Request password change"
         }
       },
       "teams": {
-        "title": "Teams"
+        "title": "Teams",
+        "createTeam": "Create team",
+        "team": "Team",
+        "members": "Members",
+        "createTeamDialog": {
+          "title": "New team",
+          "label": "Name",
+          "placeholder": "Enter team name",
+          "cancel": "Cancel",
+          "create": "Create",
+          "nameExists": "Team with this name already exists"
+        },
+        "teamDetails": {
+          "member": "Member",
+          "members": "Members",
+          "remove": "Remove",
+          "makeManager": "Make manager",
+          "addMember": "Add member",
+          "rename": "Rename",
+          "delete": "Delete"
+        },
+        "addMemberDialog": {
+          "title": "Add members",
+          "placeholder": "Search member",
+          "cancel": "Cancel",
+          "addMember": "Add member",
+          "addOneMember": "Add {{membersToInvite}} member",
+          "addMembers": "Add {{membersToInvite}} members"
+        },
+        "renameTeamDialog": {
+          "title": "Rename team",
+          "label": "Name",
+          "placeholder": "Enter new team name",
+          "cancel": "Cancel",
+          "rename": "Rename",
+          "nameExists": "Team with this name already exists"
+        },
+        "deleteTeamDialog": {
+          "title": "Delete team",
+          "description": "will be deleted and members of this team may lose access to files and folders shared with the team.",
+          "cancel": "Cancel",
+          "delete": "Delete Team"
+        },
+        "removeTeamMemberDialog": {
+          "title": "Remove member",
+          "description": "will lose access to files and folders shared with this team.",
+          "cancel": "Cancel",
+          "delete": "Remove"
+        },
+        "changeManagerDialog": {
+          "title": "Change manager",
+          "description": "will become the Manager of this team. Previous manager will be downgraded to Member of the team.",
+          "cancel": "Cancel",
+          "change": "Change"
+        }
       },
       "billing": {
         "title": "Billing",
@@ -1594,7 +1743,7 @@
       "levelUpStorage": "Level up your storage space and get many other benefits",
       "upgradeNow": "Upgrade now",
       "emptyTrash": "Empty trash",
-      "emptryTrashDescription": "Items in trash will be deleted permanently after 15 days",
+      "emptyTrashDescription": "Items in trash will be deleted permanently",
       "plans": {
         "title": "Plans",
         "current": "Current",
@@ -1612,7 +1761,7 @@
           "featureOne": "Encrypted file and folder sharing.",
           "featureTwo": "Password-protected file sharing.",
           "featureThree": "Access your files from any device.",
-          "featureFour": "Upload files up to 20GB.",
+          "featureFour": "Upload files up to 40GB.",
           "featureFive": "Two-factor authentication (2FA).",
           "featureSix": "Premium customer support.",
           "featureSeven": "30-day money-back guarantee."
@@ -1624,7 +1773,7 @@
           "featureTwo": "Create and manage users & teams.",
           "featureThree": "Starting at 3 users and up to 100.",
           "featureFour": "GDPR compliant.",
-          "featureFive": "Upload files of up to 20GB.",
+          "featureFive": "Upload files of up to 40GB.",
           "featureSix": "Manage account billing & payments.",
           "featureSeven": "Premium customer support."
         },
@@ -1659,7 +1808,8 @@
     },
     "pending": "Pending Invitations",
     "messages": {
-      "sharedSuccess": "Item shared successfully with the team"
+      "sharedSuccess": "Item shared successfully with the team",
+      "switchingWorkspace": "Switching workspace"
     },
     "pendingInvitations": {
       "empty": "No invitations left",

@@ -4,7 +4,7 @@ import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import squareLogo from 'assets/icons/square-logo-64.svg';
 import { useEffect, useMemo } from 'react';
@@ -43,7 +43,7 @@ export default function UniversalLinkSuccessView(): JSX.Element {
       <div className="flex flex-1 items-center justify-center bg-gray-5 dark:bg-surface">
         <div className="w-96 rounded-lg px-8 py-10 shadow-soft dark:bg-gray-5">
           <div className="mb-6 flex justify-center">
-            <img src={squareLogo} alt="" className="shadow-soft" height={64} />
+            <InternxtLogo className="h-auto w-52 text-gray-100" />
           </div>
           <h2 className="text-center text-xl font-medium text-gray-100">
             {translate('auth.universalLinkSuccess.loginAs')}

@@ -11,10 +11,14 @@ import tasksService from '../../../../tasks/services/tasks.service';
 import { TaskStatus, TaskType, UploadFolderTask } from '../../../../tasks/types';
 import { planThunks } from '../../plan';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
+
+import { checkFolderDuplicated } from '../folderUtils/checkFolderDuplicated';
+import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
 import { StorageState } from '../storage.model';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
 
+// TODO: REMOVE IROOT from this file, it is in types.ts
 export interface IRoot {
   name: string;
   folderId: string | null;
@@ -33,14 +37,20 @@ interface UploadFolderThunkPayload {
   };
 }
 
-const handleFoldersRename = async (root: IRoot, currentFolderId: string, tokenHeader?: string) => {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(currentFolderId, false, tokenHeader);
-  const parentFolderContent = await parentFolderContentPromise;
-  const [, , finalFilename] = renameFolderIfNeeded(parentFolderContent.children, root.name);
-  const fileContent: IRoot = { ...root, name: finalFilename };
+const handleFoldersRename = async (root: IRoot, currentFolderId: string) => {
+  const { duplicatedFoldersResponse } = await checkFolderDuplicated([root], currentFolderId);
 
-  return fileContent;
+  let finalFilename = root.name;
+  if (duplicatedFoldersResponse.length > 0)
+    finalFilename = await getUniqueFolderName(
+      root.name,
+      duplicatedFoldersResponse as DriveFolderData[],
+      currentFolderId,
+    );
+
+  const folder: IRoot = { ...root, name: finalFilename };
+
+  return folder;
 };
 const wait = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -73,8 +83,6 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
   'storage/createFolderStructure',
   async ({ root, currentFolderId, options }, { dispatch, requestId, getState }) => {
     const state = getState();
-    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
-
     const workspaceSelected = workspacesSelectors.getSelectedWorkspace(state);
     const memberId = workspaceSelected?.workspaceUser?.memberId;
 
@@ -85,7 +93,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
     let rootFolderItem: DriveFolderData | undefined;
     let rootFolderData: DriveFolderData | undefined;
 
-    const renamedRoot = await handleFoldersRename(root, currentFolderId, workspaceCredentials?.tokenHeader);
+    const renamedRoot = await handleFoldersRename(root, currentFolderId);
     const levels = [renamedRoot];
 
     const itemsUnderRoot = countItemsUnderRoot(renamedRoot);
@@ -225,43 +233,6 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
     }
   },
 );
-
-// TODO: Move to SDK
-export default function renameFolderIfNeeded(items: { name: string }[], folderName: string): [boolean, number, string] {
-  const FOLDER_INCREMENT_REGEX = /( \([0-9]+\))$/i;
-  const INCREMENT_INDEX_REGEX = /\(([^)]+)\)/;
-
-  const cleanFilename = folderName.replace(FOLDER_INCREMENT_REGEX, '');
-
-  const infoFoldernames: { name: string; cleanName: string; incrementIndex: number }[] = items
-    .map((item) => {
-      const cleanName = item.name.replace(FOLDER_INCREMENT_REGEX, '');
-      const incrementString = item.name.match(FOLDER_INCREMENT_REGEX)?.pop()?.match(INCREMENT_INDEX_REGEX)?.pop();
-      const incrementIndex = parseInt(incrementString || '0');
-
-      return {
-        name: item.name,
-        cleanName,
-        incrementIndex,
-      };
-    })
-    .filter((item) => item.cleanName === cleanFilename)
-    .sort((a, b) => b.incrementIndex - a.incrementIndex);
-
-  const filenameExists = !!infoFoldernames.length;
-
-  if (filenameExists) {
-    const index = infoFoldernames[0].incrementIndex + 1;
-
-    return [true, index, getNextNewName(cleanFilename, index)];
-  } else {
-    return [false, 0, folderName];
-  }
-}
-
-function getNextNewName(filename: string, i: number): string {
-  return `${filename} (${i})`;
-}
 
 const generateTaskIdForFolders = (foldersPayload: UploadFolderThunkPayload[]) => {
   return foldersPayload.map(({ root, currentFolderId, options: payloadOptions }) => {
