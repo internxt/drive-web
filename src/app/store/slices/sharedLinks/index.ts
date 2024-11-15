@@ -85,6 +85,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         encryptionAlgorithm: payload.encryptionAlgorithm,
         roleId: payload.roleId,
         persistPreviousSharing: true,
+        hybridModeEnabled: false,
       });
 
       notificationsService.show({

@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-
-export type Translate = (key: string, props?: Record<string, unknown>) => string;
-export type TranslateArray = (key: string, props?: Record<string, unknown>) => string[];
+import { Translate, TranslateArray } from '../types';
 
 interface TranslationContextProps {
   translate: Translate;

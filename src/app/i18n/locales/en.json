@@ -1369,7 +1369,9 @@
     "report": "Report abuse",
     "yes": "Yes",
     "no": "No",
-    "more": "More"
+    "more": "More",
+    "continue": "Continue",
+    "keepCurrent": "Keep current"
   },
   "drive": {
     "usage": "Usage",
@@ -1719,7 +1721,25 @@
           "title": "Members",
           "editMembers": "Edit members",
           "numberOfMembers": "Number of members",
-          "expandNumber": "Expand the number of members."
+          "expandNumber": "Expand the number of members.",
+          "confirmUpdateModal": {
+            "title": "Change plan",
+            "confirmToProceed": {
+              "text1": "You are about to change your Internxt member plan from ",
+              "to": "to ",
+              "text2": ". Confirm your choice to proceed, please."
+            },
+            "current": "Current",
+            "new": "New",
+            "decreaseStorage": {
+              "text": "This will also decrease your total business storage from ",
+              "to": " to "
+            },
+            "increaseStorage": {
+              "text": "This will also increase your total business storage from ",
+              "to": " to "
+            }
+          }
         },
         "paymentMethod": {
           "title": "Payment Method",

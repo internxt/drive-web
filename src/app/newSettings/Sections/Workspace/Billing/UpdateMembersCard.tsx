@@ -1,8 +1,9 @@
 import { Button } from '@internxt/internxtui';
-import { Translate } from 'app/i18n/provider/TranslationProvider';
+import { Translate } from '../../../../i18n/types';
+import Card from '../../../../shared/components/Card';
 
 interface UpdateMembersCardProps {
-  totalWorkspaceSeats?: number;
+  totalWorkspaceSeats: number;
   translate: Translate;
   onChangeMembersButtonClicked?: () => void;
 }
@@ -20,14 +21,14 @@ export const UpdateMembersCard = ({
           {translate('preferences.workspace.billing.members.editMembers')}
         </Button>
       </div>
-      <div className="flex flex-col gap-1 rounded-xl border border-gray-10 p-5 drop-shadow">
+      <Card className="flex flex-col gap-1 rounded-xl border border-gray-10 p-5 drop-shadow">
         <p className="text-medium text-sm text-gray-100">
           {translate('preferences.workspace.billing.members.numberOfMembers')}
         </p>
         <p className="text-sm text-gray-60">
           {totalWorkspaceSeats + ' ' + translate('preferences.workspace.billing.membersLabel')}
         </p>
-      </div>
+      </Card>
     </div>
   );
 };

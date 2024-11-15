@@ -24,7 +24,7 @@ const BillingWorkspaceOverview = ({ plan }: BillingWorkspaceOverviewProps) => {
 
   const totalStorageInBytes =
     plan.businessPlan && bytesToString(plan.businessPlan?.storageLimit * plan.businessPlan?.amountOfSeats);
-  const totalMembersPerPlan = plan.businessPlan && plan.businessPlan.amountOfSeats;
+  const totalMembersPerPlan = plan.businessPlan?.amountOfSeats;
   const storagePerUserInBytes = plan.businessPlan && bytesToString(plan.businessPlan?.storageLimit);
 
   return (
