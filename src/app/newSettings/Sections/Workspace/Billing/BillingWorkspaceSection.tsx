@@ -137,13 +137,18 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   };
 
   const onConfirmUpdatedMembers = async () => {
-    if (!subscriptionId || !updatedAmountOfSeats) {
+    if (
+      !subscriptionId ||
+      !updatedAmountOfSeats ||
+      (joinedMembersInWorkspace && updatedAmountOfSeats < joinedMembersInWorkspace?.length)
+    ) {
       notificationsService.show({
         text: translate('notificationMessages.errorWhileUpdatingWorkspaceMembers'),
         type: ToastType.Error,
       });
       return;
     }
+
     try {
       await paymentService.updateWorkspaceMembers(subscriptionId, updatedAmountOfSeats);
 
@@ -182,11 +187,13 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
           />
           <UpdateMembersModal
             isOpen={isEditingMembersWorkspace}
-            minimumAllowedSeats={plan.businessPlan.seats?.minimumSeats ?? 3}
-            maximumAllowedSeats={plan.businessPlan.seats?.maximumSeats ?? 10}
-            currentAmountOfSeats={plan.businessPlan.amountOfSeats}
-            updatedAmountOfSeats={updatedAmountOfSeats}
-            actualMembersInWorkspace={joinedMembersInWorkspace?.length}
+            seats={{
+              currentAmountOfSeats: plan.businessPlan.amountOfSeats,
+              minimumAllowedSeats: plan.businessPlan.seats?.minimumSeats ?? 3,
+              maximumAllowedSeats: plan.businessPlan.seats?.maximumSeats ?? 10,
+              actualMembersInWorkspace: joinedMembersInWorkspace?.length,
+              updatedAmountOfSeats: updatedAmountOfSeats,
+            }}
             onSaveChanges={onSaveChanges}
             handleUpdateMembers={onChangeWorkspaceMembers}
             onClose={onCloseChangeMembersModal}
@@ -194,9 +201,11 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
           />
           <ConfirmUpdateMembersModal
             isOpen={isConfirmingMembersWorkspace}
-            currentAmountOfSeats={plan.businessPlan.amountOfSeats}
+            seats={{
+              currentAmountOfSeats: plan.businessPlan.amountOfSeats,
+              updatedAmountOfSeats: updatedAmountOfSeats,
+            }}
             storagePerUser={plan.businessPlan.storageLimit}
-            updatedAmountOfSeats={updatedAmountOfSeats}
             monthlyPrice={plan.businessPlan?.monthlyPrice}
             translate={translate}
             onConfirmUpdate={onConfirmUpdatedMembers}

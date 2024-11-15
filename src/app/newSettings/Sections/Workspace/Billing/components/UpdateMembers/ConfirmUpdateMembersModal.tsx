@@ -6,8 +6,10 @@ import Modal from 'app/shared/components/Modal';
 
 interface ConfirmUpdateMembersModalProps {
   isOpen: boolean;
-  currentAmountOfSeats: number;
-  updatedAmountOfSeats: number;
+  seats: {
+    currentAmountOfSeats: number;
+    updatedAmountOfSeats: number;
+  };
   storagePerUser: number;
   monthlyPrice: number;
   translate: Translate;
@@ -17,8 +19,7 @@ interface ConfirmUpdateMembersModalProps {
 
 export const ConfirmUpdateMembersModal = ({
   isOpen,
-  currentAmountOfSeats,
-  updatedAmountOfSeats,
+  seats: { currentAmountOfSeats, updatedAmountOfSeats },
   storagePerUser,
   monthlyPrice,
   translate,
