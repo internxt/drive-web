@@ -736,6 +736,8 @@
           "edit": "Edit profile",
           "address": "Address",
           "phone": "Phone",
+          "email": "Email",
+          "name": "Name",
           "owner": "Owner",
           "workspaceOverview": "Workspace overview",
           "members": "Members",

@@ -119,7 +119,13 @@ export function setupWorkspace(workspaceSetupInfo: WorkspaceSetupInfo): Promise<
 
 export async function editWorkspace(
   workspaceId: string,
-  details: { name?: string; description?: string; address?: string },
+  details: {
+    name?: string;
+    description?: string;
+    address?: string;
+    phoneNumber?: string | null;
+    email?: string | null;
+  },
 ): Promise<void> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.editWorkspace(workspaceId, details).catch((error) => {

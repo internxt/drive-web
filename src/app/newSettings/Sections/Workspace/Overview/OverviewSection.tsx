@@ -1,5 +1,5 @@
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
-import { WorkspaceTeam, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
+import { Workspace, WorkspaceTeam, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { PencilSimple } from '@phosphor-icons/react';
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
@@ -24,6 +24,8 @@ import { getProductCaptions } from '../../../utils/productUtils';
 import { getSubscriptionData } from '../../../utils/suscriptionUtils';
 import UploadAvatarModal from '../../Account/Account/components/UploadAvatarModal';
 import WorkspaceAvatarWrapper from './components/WorkspaceAvatarWrapper';
+import { PhoneInput } from 'react-international-phone';
+import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
 
 const MIN_NAME_LENGTH = 3;
 
@@ -44,6 +46,8 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
   const workspaceId = selectedWorkspace.workspace.id;
   const companyName = selectedWorkspace.workspace.name;
   const description = selectedWorkspace.workspace.description;
+  const phoneNumber = selectedWorkspace.workspace.phoneNumber;
+  const email = selectedWorkspace.workspace.email;
   const avatarSrcURL = selectedWorkspace.workspace.avatar;
   const ownerId = selectedWorkspace.workspace.ownerId;
   const isOwner = (currentUserId && ownerId && currentUserId === ownerId) || false;
@@ -51,6 +55,9 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [editedCompanyName, setEditedCompanyName] = useState(companyName);
   const [aboutCompany, setAboutCompany] = useState(description);
+  const [phoneNumberCompany, setPhoneNumberCompany] = useState(phoneNumber);
+  const [emailCompany, setEmailCompany] = useState(email);
+
   const [isSavingProfileDetails, setIsSavingProfileDetails] = useState(false);
   const [members, setMembers] = useState<WorkspaceUser[] | null>(null);
   const [teams, setTeams] = useState<WorkspaceTeam[] | null>(null);
@@ -108,7 +115,13 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
     }
   };
 
-  const onSaveProfileDetails = async (newCompanyName: string, newAboutCompany: string) => {
+  const onSaveProfileDetails = async (
+    newCompanyName: string,
+    newAboutCompany: string,
+    newPhoneCompany: string | null,
+    newEmailCompany: string | null,
+    rollback: () => void,
+  ) => {
     setIsSavingProfileDetails(true);
     if (newCompanyName.length < MIN_NAME_LENGTH) {
       notificationsService.show({
@@ -118,26 +131,33 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
       setIsSavingProfileDetails(false);
       return;
     }
+
     try {
-      await workspacesService.editWorkspace(workspaceId, {
+      const payload: Partial<Workspace> = {
         name: newCompanyName,
         description: newAboutCompany,
-      });
+        email: newEmailCompany || null,
+        ...(newPhoneCompany && { phoneNumber: newPhoneCompany }),
+      };
+
+      await workspacesService.editWorkspace(workspaceId, payload);
+
       setEditedCompanyName(newCompanyName);
       setAboutCompany(newAboutCompany);
-      dispatch(
-        workspacesActions.patchWorkspace({
-          workspaceId,
-          patch: {
-            name: newCompanyName,
-            description: newAboutCompany,
-          },
-        }),
-      );
+      setPhoneNumberCompany(newPhoneCompany);
+      setEmailCompany(newEmailCompany);
+
+      dispatch(workspacesActions.patchWorkspace({ workspaceId, patch: payload }));
     } catch (error) {
       errorService.reportError(error);
       const castedError = errorService.castError(error);
-      notificationsService.show({ type: ToastType.Error, text: castedError.message });
+
+      notificationsService.show({
+        type: ToastType.Error,
+        text: castedError.message.replace('phoneNumber', 'Phone'),
+      });
+
+      rollback();
     } finally {
       setIsEditingDetails(false);
       setIsSavingProfileDetails(false);
@@ -174,6 +194,8 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
         workspaceId={workspaceId}
         companyName={editedCompanyName}
         description={aboutCompany}
+        phoneNumber={phoneNumberCompany}
+        email={emailCompany}
         avatarSrcURL={avatarSrcURL}
         onEditButtonClick={() => setIsEditingDetails(true)}
         isOwner={isOwner}
@@ -196,6 +218,8 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
         onClose={() => setIsEditingDetails(false)}
         companyName={editedCompanyName}
         aboutText={aboutCompany}
+        phoneNumber={phoneNumberCompany}
+        email={emailCompany}
         onSave={onSaveProfileDetails}
         isLoading={isSavingProfileDetails}
       />
@@ -208,6 +232,8 @@ const EditWorkspaceDetailsModal = ({
   onClose,
   companyName,
   aboutText,
+  phoneNumber,
+  email,
   onSave,
   isLoading,
 }: {
@@ -215,13 +241,49 @@ const EditWorkspaceDetailsModal = ({
   onClose: () => void;
   companyName: string;
   aboutText: string;
-  onSave: (editedCompanyName: string, editedAbout: string) => void;
+  phoneNumber: string | null;
+  email: string | null;
+  onSave: (
+    editedCompanyName: string,
+    editedAbout: string,
+    editedPhoneNumber: string | null,
+    editedEmailCompany: string | null,
+    rollback: () => void,
+  ) => void;
   isLoading: boolean;
 }) => {
   const MAX_NAME_LENGHT = 50;
   const MAX_ABOUT_NAME = 150;
   const [editedCompanyName, setEditedCompanyName] = useState(companyName);
   const [aboutCompany, setAboutCompany] = useState(aboutText);
+  const [editedPhoneNumber, setEditedPhoneNumber] = useState(phoneNumber);
+  const [editedEmailCompany, setEditedEmailCompany] = useState(email || '');
+  const [blockSubmit, setBlockSubmit] = useState(false);
+  const [emailAccent, setEmailAccent] = useState<'error' | 'warning' | 'success' | 'default'>('default');
+
+  useEffect(() => {
+    if (!editedEmailCompany || !editedEmailCompany?.length) {
+      setEmailAccent('default');
+      setBlockSubmit(false);
+      return;
+    }
+
+    if (isValidEmail(editedEmailCompany)) {
+      setEmailAccent('success');
+      setBlockSubmit(false);
+    } else {
+      setEmailAccent('error');
+      setBlockSubmit(true);
+    }
+  }, [editedEmailCompany]);
+
+  const handleCancel = () => {
+    onClose();
+    setEditedCompanyName(companyName);
+    setAboutCompany(aboutText);
+    setEditedPhoneNumber(phoneNumber);
+    setEditedEmailCompany(email || '');
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -231,12 +293,38 @@ const EditWorkspaceDetailsModal = ({
         </h1>
         <div className="flex grow flex-col space-y-4">
           <DetailsInput
-            label="Name"
+            label={t('views.preferences.workspace.overview.name')}
             textValue={editedCompanyName}
             onChangeTextValue={setEditedCompanyName}
             maxLength={MAX_NAME_LENGHT}
             disabled={isLoading}
+            hideMaxLength={true}
           />
+          <DetailsInput
+            label={t('views.preferences.workspace.overview.email')}
+            textValue={editedEmailCompany || ''}
+            variant={'email'}
+            accent={emailAccent}
+            placeholder="jhondoe@internxt.com"
+            onChangeTextValue={setEditedEmailCompany}
+            disabled={isLoading}
+            hideMaxLength={true}
+          />
+          <div>
+            <span className={'text-sm text-gray-80'}>{t('views.preferences.workspace.overview.phone')}</span>
+            <PhoneInput
+              value={editedPhoneNumber || ''}
+              onChange={setEditedPhoneNumber}
+              inputClassName="!inxt-input !h-10 w-full !rounded-r-md !border !border-gray-20 !bg-transparent !py-1 !px-4 !text-lg !font-normal !text-gray-80 !placeholder-gray-30 !outline-none !ring-primary !ring-opacity-10 !hover:border-gray-30 !focus:border-primary !focus:ring-3 !disabled:border-gray-10 !disabled:text-gray-40 !disabled:placeholder-gray-20 !dark:ring-opacity-20"
+              countrySelectorStyleProps={{
+                buttonClassName:
+                  '!h-10 !bg-transparent !px-2 !py-1 !rounded-l-md !border !border-gray-20 !focus:border-primary !focus-visible:border-primary',
+              }}
+              disabled={isLoading}
+              defaultCountry="es"
+              forceDialCode
+            />
+          </div>
           <div>
             <textarea
               placeholder={aboutCompany}
@@ -256,10 +344,15 @@ const EditWorkspaceDetailsModal = ({
         </div>
 
         <div className="flex w-full flex-row justify-end space-x-2">
-          <Button disabled={isLoading} variant="secondary" onClick={onClose}>
+          <Button disabled={isLoading} variant="secondary" onClick={handleCancel}>
             {t('views.preferences.workspace.overview.editOverviewDetails.cancelButton')}
           </Button>
-          <Button loading={isLoading} variant="primary" onClick={() => onSave(editedCompanyName, aboutCompany)}>
+          <Button
+            loading={isLoading}
+            disabled={blockSubmit}
+            variant="primary"
+            onClick={() => onSave(editedCompanyName, aboutCompany, editedPhoneNumber, editedEmailCompany, handleCancel)}
+          >
             {t('views.preferences.workspace.overview.editOverviewDetails.saveButton')}
           </Button>
         </div>
@@ -353,6 +446,8 @@ interface WorkspaceProfileCardProps {
   avatarSrcURL: string | null;
   companyName: string;
   description: string;
+  phoneNumber: string | null;
+  email: string | null;
   isOwner: boolean;
   onEditButtonClick: () => void;
   onUploadAvatarClicked: ({ avatar }: { avatar: Blob }) => Promise<void>;
@@ -364,6 +459,8 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
   avatarSrcURL,
   companyName,
   description,
+  phoneNumber,
+  email,
   isOwner,
   onEditButtonClick,
   onUploadAvatarClicked,
@@ -422,6 +519,16 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
         )}
       </div>
 
+      <div className={'mx-5 flex grow flex-col'}>
+        {phoneNumber && (
+          <span className={'line-clamp-3 max-w-xs p-1 text-center font-normal leading-4 text-gray-60'}>
+            {phoneNumber}
+          </span>
+        )}
+        {email && (
+          <span className={'line-clamp-3 max-w-xs p-1 text-center font-normal leading-4 text-gray-60'}>{email}</span>
+        )}
+      </div>
       <div className={'mx-5 flex grow flex-col'}>
         <span className={'font-semiboldleading-5 max-w-xs truncate text-center text-lg text-gray-100'}>
           {companyName}

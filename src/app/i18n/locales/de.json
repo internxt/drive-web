@@ -648,6 +648,8 @@
           "edit": "Profil bearbeiten",
           "address": "Adresse",
           "phone": "Telefon",
+          "email": "E-Mail",
+          "name": "Name",
           "owner": "Inhaber",
           "workspaceOverview": "Übersicht des Arbeitsbereichs",
           "members": "Mitglieder",
