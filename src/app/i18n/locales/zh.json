@@ -1368,7 +1368,9 @@
     "report": "举报滥用",
     "yes": "是",
     "no": "否",
-    "more": "更多信息"
+    "more": "更多信息",
+    "continue": "继续",
+    "keepCurrent": "保持当前"
   },
   "drive": {
     "usage": "使用情况",

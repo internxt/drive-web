@@ -1312,7 +1312,9 @@
     "report": "Missbrauch melden",
     "yes": "Ja",
     "no": "Nein",
-    "more": "Mehr"
+    "more": "Mehr",
+    "continue": "Fortsetzen",
+    "keepCurrent": "Aktuell behalten"
   },
   "drive": {
     "usage": "Verwendung",

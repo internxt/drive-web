@@ -1357,7 +1357,9 @@
     "report": "Segnala abuso",
     "yes": "Sì",
     "no": "No",
-    "more": "Di più"
+    "more": "Di più",
+    "continue": "Continua",
+    "keepCurrent": "Mantieni attuale"
   },
   "drive": {
     "usage": "Utilizzo",

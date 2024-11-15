@@ -1331,7 +1331,9 @@
     "report": "檢舉濫用",
     "yes": "是",
     "no": "否",
-    "more": "更多"
+    "more": "更多",
+    "continue": "繼續",
+    "keepCurrent": "保持目前"
   },
   "drive": {
     "usage": "使用量",

@@ -1297,7 +1297,9 @@
     "report": "Signaler un abus",
     "yes": "Oui",
     "no": "Non",
-    "more": "Plus"
+    "more": "Plus",
+    "continue": "Continuer",
+    "keepCurrent": "Garder actuel"
   },
   "drive": {
     "usage": "Usage",
