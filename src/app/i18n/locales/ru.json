@@ -1286,7 +1286,8 @@
     "errorWhileLoadingWorkspace": "Ошибка при загрузке рабочего пространства {{error}}",
     "errorFetchingWorkspaceCredentials": "Ошибка при получении учетных данных рабочего пространства {{error}}",
     "invalidWorkspaceInvitationError": "Рабочее пространство заполнено. Свяжитесь с владельцем.",
-    "errorAcceptingWorkspaceInvitation": "Произошла ошибка при принятии приглашения"
+    "errorAcceptingWorkspaceInvitation": "Произошла ошибка при принятии приглашения",
+    "errorWhileUpdatingWorkspaceMembers": "Произошла ошибка при обновлении участников"
   },
   "actions": {
     "undo": "Отменить",

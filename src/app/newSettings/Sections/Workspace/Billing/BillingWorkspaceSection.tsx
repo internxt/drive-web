@@ -23,11 +23,17 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UpdateMembersCard } from './UpdateMembersCard';
 import { UpdateMembersModal } from './components/UpdateMembers/UpdateMembersModal';
 import { ConfirmUpdateMembersModal } from './components/UpdateMembers/ConfirmUpdateMembersModal';
+import AppError from 'app/core/types';
+import errorService from 'app/core/services/error.service';
+import workspacesService from 'app/core/services/workspace.service';
+import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 
 interface BillingWorkspaceSectionProps {
   changeSection: ({ section, subsection }) => void;
   onClosePreferences: () => void;
 }
+
+const UPDATE_MEMBERS_BAD_RESPONSE = 400;
 
 const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSectionProps) => {
   const dispatch = useAppDispatch();
@@ -48,6 +54,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const [updatedAmountOfSeats, setUpdatedAmountOfSeats] = useState<number | undefined>(
     plan.businessPlan?.amountOfSeats,
   );
+  const [joinedMembersInWorkspace, setJoinedMembersInWorkspace] = useState<WorkspaceUser[]>();
 
   const [isEditingMembersWorkspace, setIsEditingMembersWorkspace] = useState(false);
   const [isConfirmingMembersWorkspace, setIsConfirmingMembersWorkspace] = useState(false);
@@ -60,12 +67,20 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
 
   useEffect(() => {
     plan.businessSubscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
+    getJoinedMembers();
     setPlanName(getPlanName(plan.businessPlan, plan.businessPlanLimit));
     setPlanInfo(getPlanInfo(plan.businessPlan));
     setCurrentUsage(plan.businessPlanUsageDetails?.total ?? -1);
   }, [plan.businessSubscription]);
 
-  async function cancelSubscription(feedback: string) {
+  const getJoinedMembers = async () => {
+    if (!workspaceId) return;
+
+    const members = await workspacesService.getWorkspacesMembers(workspaceId);
+    setJoinedMembersInWorkspace([...members.activatedUsers, ...members.disabledUsers]);
+  };
+
+  const cancelSubscription = async (feedback: string) => {
     setCancellingSubscription(true);
     try {
       await paymentService.cancelSubscription(UserType.Business);
@@ -84,7 +99,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
         type: ToastType.Error,
       });
     }
-  }
+  };
 
   const onSaveBillingDetails = (newBillingDetails: CustomerBillingInfo) => {
     if (workspaceId) {
@@ -124,24 +139,41 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const onConfirmUpdatedMembers = async () => {
     if (!subscriptionId || !updatedAmountOfSeats) {
       notificationsService.show({
-        text: 'Something went wrong. Try again',
+        text: translate('notificationMessages.errorWhileUpdatingWorkspaceMembers'),
         type: ToastType.Error,
       });
       return;
     }
-    await paymentService.updateWorkspaceMembers(subscriptionId, updatedAmountOfSeats);
+    try {
+      await paymentService.updateWorkspaceMembers(subscriptionId, updatedAmountOfSeats);
 
-    await dispatch(
-      planThunks.fetchSubscriptionThunk({
-        userType: UserType.Business,
-      }),
-    );
+      await dispatch(
+        planThunks.fetchSubscriptionThunk({
+          userType: UserType.Business,
+        }),
+      );
+    } catch (err) {
+      const error = err as AppError;
+      if (error.status === UPDATE_MEMBERS_BAD_RESPONSE) {
+        notificationsService.show({
+          text: error.message,
+          type: ToastType.Error,
+        });
+      } else {
+        notificationsService.show({
+          text: translate('notificationMessages.errorWhileUpdatingWorkspaceMembers'),
+          type: ToastType.Error,
+        });
+      }
+
+      errorService.reportError(error);
+    }
   };
 
   return (
     <Section title={t('preferences.workspace.billing.title')} onClosePreferences={onClosePreferences}>
       <BillingWorkspaceOverview plan={plan} />
-      {plan.businessPlan && updatedAmountOfSeats && (
+      {plan.businessPlan && updatedAmountOfSeats && joinedMembersInWorkspace && (
         <>
           <UpdateMembersCard
             totalWorkspaceSeats={plan.businessPlan.amountOfSeats}
@@ -154,6 +186,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
             maximumAllowedSeats={plan.businessPlan.seats?.maximumSeats ?? 10}
             currentAmountOfSeats={plan.businessPlan.amountOfSeats}
             updatedAmountOfSeats={updatedAmountOfSeats}
+            actualMembersInWorkspace={joinedMembersInWorkspace?.length}
             onSaveChanges={onSaveChanges}
             handleUpdateMembers={onChangeWorkspaceMembers}
             onClose={onCloseChangeMembersModal}

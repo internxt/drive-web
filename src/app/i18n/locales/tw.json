@@ -1280,7 +1280,8 @@
     "errorWhileLoadingWorkspace": "加載工作區時出錯 {{error}}",
     "errorFetchingWorkspaceCredentials": "獲取工作區憑證時出錯 {{error}}",
     "invalidWorkspaceInvitationError": "工作區已滿。請聯絡擁有者。",
-    "errorAcceptingWorkspaceInvitation": "接受邀請時出錯"
+    "errorAcceptingWorkspaceInvitation": "接受邀請時出錯",
+    "errorWhileUpdatingWorkspaceMembers": "更新成員時出了點問題"
   },
   "actions": {
     "undo": "撤銷",

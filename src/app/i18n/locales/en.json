@@ -1318,7 +1318,8 @@
     "errorWhileLoadingWorkspace": "Error while loading the workspace {{error}}",
     "errorFetchingWorkspaceCredentials": "Error while fetching workspace credentials {{error}}",
     "invalidWorkspaceInvitationError": "Workspace full. Contact the owner.",
-    "errorAcceptingWorkspaceInvitation": "Something went wrong while accepting the invitation"
+    "errorAcceptingWorkspaceInvitation": "Something went wrong while accepting the invitation",
+    "errorWhileUpdatingWorkspaceMembers": "Something went wrong while updating the members"
   },
   "actions": {
     "undo": "Undo",
