@@ -19,11 +19,14 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useHotkeys } from 'react-hotkeys-hook';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 
+import { Button } from '@internxt/internxtui';
 import { Role } from '@internxt/sdk/dist/drive/share/types';
+import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { t } from 'i18next';
 import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
+import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
@@ -38,7 +41,6 @@ import {
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { AdvancedSharedItem } from '../../../share/types';
-import { Button } from '@internxt/internxtui';
 import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -70,7 +72,6 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
-import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 
 const TRASH_PAGINATION_OFFSET = 50;
 export const UPLOAD_ITEMS_LIMIT = 3000;
@@ -197,6 +198,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const divRef = useRef<HTMLDivElement | null>(null);
 
   const showTutorial =
+    envService.isProduction() &&
     useAppSelector(userSelectors.hasSignedToday) &&
     !isSignUpTutorialCompleted &&
     (showSecondTutorialStep || currentTutorialStep === 0);
