@@ -1256,6 +1256,7 @@
     "itemsMovedToTrash": "{{item}} 已移到垃圾桶",
     "restoreItems": "{{itemsToRecover}} 成功還原",
     "storageModified": "儲存空間修改成功",
+    "membersUpdatedSuccessfully": "成員更新成功",
     "errorModifyingStorage": "新存儲空間對此成員無效。",
     "generalErrorWhileModifyingStorage": "修改存儲時出錯。",
     "moveItems": "{{itemsToMove}} 成功移動",

@@ -1295,6 +1295,7 @@
     "restoreItems": "{{itemsToRecover}} restored successfully",
     "moveItems": "{{itemsToMove}} moved successfully",
     "storageModified": "Storage modified successfully",
+    "membersUpdatedSuccessfully": "Members updated successfully",
     "errorModifyingStorage": "The new storage is not valid for this member.",
     "generalErrorWhileModifyingStorage": "Something went wrong while modifying storage",
     "itemDeleted": "{{item}} deleted",

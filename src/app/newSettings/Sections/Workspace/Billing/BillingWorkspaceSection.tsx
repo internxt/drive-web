@@ -152,11 +152,19 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
     try {
       await paymentService.updateWorkspaceMembers(subscriptionId, updatedAmountOfSeats);
 
-      await dispatch(
-        planThunks.fetchSubscriptionThunk({
-          userType: UserType.Business,
-        }),
-      );
+      await dispatch(planThunks.fetchBusinessLimitUsageThunk());
+      setTimeout(async () => {
+        await dispatch(
+          planThunks.fetchSubscriptionThunk({
+            userType: UserType.Business,
+          }),
+        );
+      }, 500);
+      notificationsService.show({
+        text: translate('notificationMessages.membersUpdatedSuccessfully'),
+        type: ToastType.Success,
+      });
+      setIsConfirmingMembersWorkspace(false);
     } catch (err) {
       const error = err as AppError;
       if (error.status === UPDATE_MEMBERS_BAD_RESPONSE) {
@@ -178,41 +186,29 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   return (
     <Section title={t('preferences.workspace.billing.title')} onClosePreferences={onClosePreferences}>
       <BillingWorkspaceOverview plan={plan} />
-      {plan.businessPlan && updatedAmountOfSeats && joinedMembersInWorkspace && (
-        <>
-          <UpdateMembersCard
-            totalWorkspaceSeats={plan.businessPlan.amountOfSeats}
-            translate={translate}
-            onChangeMembersButtonClicked={() => setIsEditingMembersWorkspace(true)}
-          />
-          <UpdateMembersModal
-            isOpen={isEditingMembersWorkspace}
-            seats={{
-              currentAmountOfSeats: plan.businessPlan.amountOfSeats,
-              minimumAllowedSeats: plan.businessPlan.seats?.minimumSeats ?? 3,
-              maximumAllowedSeats: plan.businessPlan.seats?.maximumSeats ?? 10,
-              actualMembersInWorkspace: joinedMembersInWorkspace?.length,
-              updatedAmountOfSeats: updatedAmountOfSeats,
-            }}
-            onSaveChanges={onSaveChanges}
-            handleUpdateMembers={onChangeWorkspaceMembers}
-            onClose={onCloseChangeMembersModal}
-            translate={translate}
-          />
-          <ConfirmUpdateMembersModal
-            isOpen={isConfirmingMembersWorkspace}
-            seats={{
-              currentAmountOfSeats: plan.businessPlan.amountOfSeats,
-              updatedAmountOfSeats: updatedAmountOfSeats,
-            }}
-            storagePerUser={plan.businessPlan.storageLimit}
-            monthlyPrice={plan.businessPlan?.monthlyPrice}
-            translate={translate}
-            onConfirmUpdate={onConfirmUpdatedMembers}
-            onClose={onCloseConfirmUpdatedMembersModal}
-          />
-        </>
-      )}
+      <UpdateMembersCard
+        plan={plan}
+        translate={translate}
+        onChangeMembersButtonClicked={() => setIsEditingMembersWorkspace(true)}
+      />
+      <UpdateMembersModal
+        isOpen={isEditingMembersWorkspace}
+        plan={plan}
+        joinedUsers={joinedMembersInWorkspace?.length}
+        updatedAmountOfSeats={updatedAmountOfSeats}
+        onSaveChanges={onSaveChanges}
+        handleUpdateMembers={onChangeWorkspaceMembers}
+        onClose={onCloseChangeMembersModal}
+        translate={translate}
+      />
+      <ConfirmUpdateMembersModal
+        isOpen={isConfirmingMembersWorkspace}
+        plan={plan}
+        updatedAmountOfSeats={updatedAmountOfSeats as number}
+        translate={translate}
+        onConfirmUpdate={onConfirmUpdatedMembers}
+        onClose={onCloseConfirmUpdatedMembersModal}
+      />
       <BillingDetailsCard
         address={billingDetails.address || ''}
         phone={billingDetails.phoneNumber || ''}

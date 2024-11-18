@@ -1241,6 +1241,7 @@
     "linkUpdated": "Link aktualisiert",
     "itemsMovedToTrash": "{{item}} in den Papierkorb verschoben",
     "storageModified": "Speicher erfolgreich geändert",
+    "membersUpdatedSuccessfully": "Mitglieder erfolgreich aktualisiert",
     "errorModifyingStorage": "Der neue Speicherplatz ist für dieses Mitglied ungültig.",
     "generalErrorWhileModifyingStorage": "Beim Ändern des Speicherplatzes ist ein Fehler aufgetreten.",
     "restoreItems": "{{itemsToRecover}} verschoben nach {{destination}}",

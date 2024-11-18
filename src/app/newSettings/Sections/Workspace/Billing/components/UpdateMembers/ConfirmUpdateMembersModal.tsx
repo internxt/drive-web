@@ -3,15 +3,12 @@ import { ArrowRight } from '@phosphor-icons/react';
 import { bytesToString } from 'app/drive/services/size.service';
 import { Translate } from 'app/i18n/types';
 import Modal from 'app/shared/components/Modal';
+import { PlanState } from 'app/store/slices/plan';
 
 interface ConfirmUpdateMembersModalProps {
   isOpen: boolean;
-  seats: {
-    currentAmountOfSeats: number;
-    updatedAmountOfSeats: number;
-  };
-  storagePerUser: number;
-  monthlyPrice: number;
+  plan: PlanState;
+  updatedAmountOfSeats: number;
   translate: Translate;
   onConfirmUpdate: () => void;
   onClose: () => void;
@@ -19,15 +16,18 @@ interface ConfirmUpdateMembersModalProps {
 
 export const ConfirmUpdateMembersModal = ({
   isOpen,
-  seats: { currentAmountOfSeats, updatedAmountOfSeats },
-  storagePerUser,
-  monthlyPrice,
+  plan,
+  updatedAmountOfSeats,
   translate,
   onConfirmUpdate,
   onClose,
 }: ConfirmUpdateMembersModalProps): JSX.Element => {
-  const warnMessageKey = currentAmountOfSeats < updatedAmountOfSeats ? 'increaseStorage' : 'decreaseStorage';
-  const currentTotalStorage = bytesToString(storagePerUser * currentAmountOfSeats);
+  const currentAmountOfSeats = plan.businessPlan?.amountOfSeats as number;
+  const storagePerUser = plan.businessPlan?.storageLimit as number;
+  const monthlyPrice = plan.businessPlan?.monthlyPrice as number;
+  const warnMessageKey =
+    currentAmountOfSeats && currentAmountOfSeats < updatedAmountOfSeats ? 'increaseStorage' : 'decreaseStorage';
+  const currentTotalStorage = currentAmountOfSeats && bytesToString(storagePerUser * currentAmountOfSeats);
   const updatedTotalStorage = bytesToString(storagePerUser * updatedAmountOfSeats);
 
   return (

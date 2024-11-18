@@ -1,18 +1,21 @@
 import { Button } from '@internxt/internxtui';
 import { Translate } from '../../../../i18n/types';
 import Card from '../../../../shared/components/Card';
+import { PlanState } from 'app/store/slices/plan';
 
 interface UpdateMembersCardProps {
-  totalWorkspaceSeats: number;
+  plan: PlanState;
   translate: Translate;
   onChangeMembersButtonClicked?: () => void;
 }
 
 export const UpdateMembersCard = ({
-  totalWorkspaceSeats,
+  plan,
   translate,
   onChangeMembersButtonClicked,
 }: UpdateMembersCardProps): JSX.Element => {
+  const totalWorkspaceSeats = plan.businessPlan?.amountOfSeats;
+
   return (
     <div className="flex w-full flex-col gap-3">
       <div className="flex w-full flex-row items-center justify-between">

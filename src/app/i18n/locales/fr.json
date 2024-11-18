@@ -1226,6 +1226,7 @@
     "itemsMovedToTrash": "{{item}} déplacé vers la corbeille",
     "restoreItems": "{{itemsToRecover}} restauré avec succès",
     "storageModified": "Stockage modifié avec succès",
+    "membersUpdatedSuccessfully": "Membres mis à jour avec succès",
     "errorModifyingStorage": "Le nouvel espace de stockage n'est pas valide pour ce membre.",
     "generalErrorWhileModifyingStorage": "Une erreur s'est produite lors de la modification du stockage.",
     "itemDeleted": "{{itemsToDelete}} supprimé",
