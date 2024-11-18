@@ -4,7 +4,6 @@
 
 import { describe, expect, it, vi } from 'vitest';
 import { encryptFilename, generateHMAC, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
-import { getHmacSha512 } from '../crypto/services/utils';
 import { Buffer } from 'buffer';
 import crypto from 'crypto';
 
@@ -20,7 +19,7 @@ describe('Test crypto.ts functions', () => {
   });
 
   it('generateHMAC should generate hmac', async () => {
-    const encryptionKey = crypto.randomBytes(16);
+    const encryptionKey = Buffer.from('0b68dcbb255a4e654bbf361e73cf1b98', 'hex');
     const shardMeta = {
       challenges_as_str: [],
       hash: '',
@@ -30,9 +29,9 @@ describe('Test crypto.ts functions', () => {
       tree: [],
     };
     const result = await generateHMAC([shardMeta], encryptionKey);
-    const expectedResult = await getHmacSha512(encryptionKey, ['']);
-    expect(result).toBeDefined();
-    expect(result).toBe(expectedResult);
+    expect(result).toBe(
+      '85cb55bde42af491c544866d35e2b1fd7a6999d83181782a91c63484a5ff93e0ab1e07d0e09cfa057c0481fc68012cc300de95512f4fcbe9466ee8ca85134b7c',
+    );
   });
 
   it('getEncryptedFile should generate encrypted text and hash', async () => {
@@ -53,13 +52,13 @@ describe('Test crypto.ts functions', () => {
         ),
       } as unknown as File;
     }
-    const encryptionKey = crypto.randomBytes(32);
-    const iv = crypto.randomBytes(16);
+    const encryptionKey = Buffer.from('d82fc82d9265a60aa0d7e703e11809ba60b45038aec705f77d5f84630043b118', 'hex');
+    const iv = Buffer.from('0b68dcbb255a4e654bbf361e73cf1b98', 'hex');
     const file = createMockFile('file.txt', 13, 'text/plain');
     const cipher = crypto.createCipheriv('aes-256-ctr', encryptionKey, iv);
     const [encryptedFile, hash] = await getEncryptedFile(file, cipher);
     expect(encryptedFile).toBeDefined();
-    expect(hash).toBeDefined();
+    expect(hash).toBe('61143e9907dd4a02f733083f9c3f31ae7370c8e4');
   });
 
   it('processEveryFileBlobReturnHash should generate hash', async () => {
@@ -73,10 +72,12 @@ describe('Test crypto.ts functions', () => {
       },
     });
 
-    const onEveryBlob = async (blob) => {
-      console.log('Received blob:', blob);
+    const receivedBlobs: unknown[] = [];
+    const onEveryBlob = async <T>(blob: T) => {
+      receivedBlobs.push(blob);
     };
-    const result = await processEveryFileBlobReturnHash(chunkedFileReadable, onEveryBlob);
-    expect(result).toBeDefined();
+    const hash = await processEveryFileBlobReturnHash(chunkedFileReadable, onEveryBlob);
+    expect(hash).toBe('3afeb50a1fc2325f5faa8d46b49ef16a8ebe7660');
+    expect(receivedBlobs.length).toBe(3);
   });
 });

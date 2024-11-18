@@ -170,39 +170,6 @@ const paymentService = {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.updateCustomerBillingInfo(payload);
   },
-
-  // TODO: refactor as individual
-  async handlePaymentTeams(priceId: string, quantity: number, mode: StripeSessionMode): Promise<void> {
-    const mnemonicTeam = generateMnemonic(256);
-    const encMnemonicTeam = await encryptPGP(mnemonicTeam);
-    const codMnemonicTeam = btoa(encMnemonicTeam as string);
-    const payload: CreateTeamsPaymentSessionPayload = {
-      mode,
-      priceId,
-      quantity,
-      mnemonicTeam: codMnemonicTeam,
-      test: !envService.isProduction(),
-    };
-
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/stripe/teams/session`, {
-      method: 'POST',
-      headers: httpService.getHeaders(true, false),
-      body: JSON.stringify(payload),
-    })
-      .then((response) => response.json())
-      .catch((err) => {
-        console.error('Error starting Stripe session. Reason: %s', err);
-        throw err;
-      });
-
-    if (response.error) {
-      throw Error(response.error);
-    }
-
-    const stripe = await this.getStripe();
-
-    await stripe.redirectToCheckout({ sessionId: response.id });
-  },
 };
 
 export default paymentService;

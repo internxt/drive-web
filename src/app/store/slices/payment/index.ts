@@ -64,29 +64,6 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
   },
 );
 
-export const teamsCheckoutThunk = createAsyncThunk<void, TeamsCheckoutThunkPayload, { state: RootState }>(
-  'payment/teamsCheckout',
-  async (payload: TeamsCheckoutThunkPayload) => {
-    const mode =
-      payload.product.price.type === ProductPriceType.OneTime
-        ? StripeSessionMode.Payment
-        : StripeSessionMode.Subscription;
-
-    try {
-      await paymentService.handlePaymentTeams(payload.product.price.id, payload.teamMembersCount, mode);
-    } catch (err: unknown) {
-      const castedError = errorService.castError(err);
-
-      notificationsService.show({
-        text: t('error.redirectToStripe', {
-          reason: castedError.message,
-        }),
-        type: ToastType.Error,
-      });
-    }
-  },
-);
-
 export const paymentSlice = createSlice({
   name: 'payment',
   initialState,
@@ -104,19 +81,6 @@ export const paymentSlice = createSlice({
         state.isBuying = false;
         state.currentPriceId = '';
       });
-
-    builder
-      .addCase(teamsCheckoutThunk.pending, (state, action) => {
-        state.isBuying = true;
-        state.currentPriceId = action.meta.arg.product.price.id;
-      })
-      .addCase(teamsCheckoutThunk.fulfilled, (state) => {
-        state.isBuying = false;
-      })
-      .addCase(teamsCheckoutThunk.rejected, (state) => {
-        state.isBuying = false;
-        state.currentPriceId = '';
-      });
   },
 });
 
@@ -126,7 +90,6 @@ export const paymentActions = paymentSlice.actions;
 
 export const paymentThunks = {
   checkoutThunk,
-  teamsCheckoutThunk,
 };
 
 export default paymentSlice.reducer;
