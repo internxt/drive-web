@@ -2,7 +2,7 @@ import { Button, RangeSlider } from '@internxt/internxtui';
 import { X } from '@phosphor-icons/react';
 import { Translate } from '../../../../../../i18n/types';
 import Modal from '../../../../../../shared/components/Modal';
-import { PlanState } from 'app/store/slices/plan';
+import { StoragePlan } from '@internxt/sdk/dist/drive/payments/types';
 
 interface SeatsProps {
   minimumAllowedSeats: number;
@@ -14,7 +14,7 @@ interface SeatsProps {
 
 interface UpdateMembersModalProps {
   isOpen: boolean;
-  plan: PlanState;
+  plan: StoragePlan;
   joinedUsers?: number;
   updatedAmountOfSeats?: number;
   onSaveChanges: () => void;
@@ -34,14 +34,12 @@ export const UpdateMembersModal = ({
   onClose,
 }: UpdateMembersModalProps): JSX.Element => {
   const seats: SeatsProps = {
-    currentAmountOfSeats: plan.businessPlan?.amountOfSeats,
+    currentAmountOfSeats: plan.amountOfSeats,
     actualMembersInWorkspace: joinedUsers as number,
-    minimumAllowedSeats: plan.businessPlan?.seats?.minimumSeats ?? 3,
-    maximumAllowedSeats: plan.businessPlan?.seats?.maximumSeats,
+    minimumAllowedSeats: Math.max(joinedUsers as number, plan.seats?.minimumSeats as number) ?? 3,
+    maximumAllowedSeats: plan.seats?.maximumSeats,
     updatedAmountOfSeats: updatedAmountOfSeats as number,
   };
-  const { actualMembersInWorkspace, minimumAllowedSeats } = seats;
-  const minimumSeats = Math.max(actualMembersInWorkspace, minimumAllowedSeats);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="p-0">
@@ -57,14 +55,7 @@ export const UpdateMembersModal = ({
         </div>
       </div>
       <div className="flex flex-col gap-6 p-5">
-        <UpdateMembersCardAndSlider
-          seats={{
-            ...seats,
-            minimumAllowedSeats: minimumSeats,
-          }}
-          translate={translate}
-          handleUpdateMembers={handleUpdateMembers}
-        />
+        <UpdateMembersCard seats={seats} translate={translate} handleUpdateMembers={handleUpdateMembers} />
         <div className="flex w-full flex-row justify-end gap-2">
           <Button variant="secondary" onClick={onClose}>
             {translate('actions.cancel')}
@@ -78,7 +69,7 @@ export const UpdateMembersModal = ({
   );
 };
 
-const UpdateMembersCardAndSlider = ({
+const UpdateMembersCard = ({
   translate,
   seats,
   handleUpdateMembers,

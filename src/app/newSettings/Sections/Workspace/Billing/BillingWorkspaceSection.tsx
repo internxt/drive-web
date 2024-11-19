@@ -51,10 +51,8 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const [planName, setPlanName] = useState<string>('');
   const [planInfo, setPlanInfo] = useState<string>('');
   const [currentUsage, setCurrentUsage] = useState<number>(-1);
-  const [updatedAmountOfSeats, setUpdatedAmountOfSeats] = useState<number | undefined>(
-    plan.businessPlan?.amountOfSeats,
-  );
-  const [joinedMembersInWorkspace, setJoinedMembersInWorkspace] = useState<WorkspaceUser[]>();
+  const [newAmountOfSeats, setNewAmountOfSeats] = useState<number | undefined>(plan.businessPlan?.amountOfSeats);
+  const [currentWorkspaceMembers, setCurrentWorkspaceMembers] = useState<WorkspaceUser[]>();
 
   const [isEditingMembersWorkspace, setIsEditingMembersWorkspace] = useState(false);
   const [isConfirmingMembersWorkspace, setIsConfirmingMembersWorkspace] = useState(false);
@@ -75,9 +73,16 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
 
   const getJoinedMembers = async () => {
     if (!workspaceId) return;
-
-    const members = await workspacesService.getWorkspacesMembers(workspaceId);
-    setJoinedMembersInWorkspace([...members.activatedUsers, ...members.disabledUsers]);
+    try {
+      const members = await workspacesService.getWorkspacesMembers(workspaceId);
+      setCurrentWorkspaceMembers([...members.activatedUsers, ...members.disabledUsers]);
+    } catch (error) {
+      errorService.reportError(error);
+      notificationsService.show({
+        text: translate('notificationMessages.errorWhileFetchingCurrentWorkspaceMembers'),
+        type: ToastType.Error,
+      });
+    }
   };
 
   const cancelSubscription = async (feedback: string) => {
@@ -116,31 +121,31 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   };
 
   const onChangeWorkspaceMembers = (updatedMembers: number) => {
-    setUpdatedAmountOfSeats(updatedMembers);
+    setNewAmountOfSeats(updatedMembers);
   };
 
   const onCloseChangeMembersModal = () => {
     setIsEditingMembersWorkspace(false);
-    setUpdatedAmountOfSeats(plan.businessPlan?.amountOfSeats);
+    setNewAmountOfSeats(plan.businessPlan?.amountOfSeats);
   };
 
   const onCloseConfirmUpdatedMembersModal = () => {
     setIsEditingMembersWorkspace(false);
     setIsConfirmingMembersWorkspace(false);
-    setUpdatedAmountOfSeats(plan.businessPlan?.amountOfSeats);
+    setNewAmountOfSeats(plan.businessPlan?.amountOfSeats);
   };
 
   const onSaveChanges = () => {
     setIsEditingMembersWorkspace(false);
-    if (plan.businessPlan?.amountOfSeats === updatedAmountOfSeats) return;
+    if (plan.businessPlan?.amountOfSeats === newAmountOfSeats) return;
     setIsConfirmingMembersWorkspace(true);
   };
 
   const onConfirmUpdatedMembers = async () => {
     if (
       !subscriptionId ||
-      !updatedAmountOfSeats ||
-      (joinedMembersInWorkspace && updatedAmountOfSeats < joinedMembersInWorkspace?.length)
+      !newAmountOfSeats ||
+      (currentWorkspaceMembers && newAmountOfSeats < currentWorkspaceMembers?.length)
     ) {
       notificationsService.show({
         text: translate('notificationMessages.errorWhileUpdatingWorkspaceMembers'),
@@ -150,7 +155,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
     }
 
     try {
-      await paymentService.updateWorkspaceMembers(subscriptionId, updatedAmountOfSeats);
+      await paymentService.updateWorkspaceMembers(subscriptionId, newAmountOfSeats);
 
       await dispatch(planThunks.fetchBusinessLimitUsageThunk());
       setTimeout(async () => {
@@ -186,29 +191,33 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   return (
     <Section title={t('preferences.workspace.billing.title')} onClosePreferences={onClosePreferences}>
       <BillingWorkspaceOverview plan={plan} />
-      <UpdateMembersCard
-        plan={plan}
-        translate={translate}
-        onChangeMembersButtonClicked={() => setIsEditingMembersWorkspace(true)}
-      />
-      <UpdateMembersModal
-        isOpen={isEditingMembersWorkspace}
-        plan={plan}
-        joinedUsers={joinedMembersInWorkspace?.length}
-        updatedAmountOfSeats={updatedAmountOfSeats}
-        onSaveChanges={onSaveChanges}
-        handleUpdateMembers={onChangeWorkspaceMembers}
-        onClose={onCloseChangeMembersModal}
-        translate={translate}
-      />
-      <ConfirmUpdateMembersModal
-        isOpen={isConfirmingMembersWorkspace}
-        plan={plan}
-        updatedAmountOfSeats={updatedAmountOfSeats as number}
-        translate={translate}
-        onConfirmUpdate={onConfirmUpdatedMembers}
-        onClose={onCloseConfirmUpdatedMembersModal}
-      />
+      {plan.businessPlan && (
+        <>
+          <UpdateMembersCard
+            totalWorkspaceSeats={plan.businessPlan.amountOfSeats}
+            translate={translate}
+            onChangeMembersButtonClicked={() => setIsEditingMembersWorkspace(true)}
+          />
+          <UpdateMembersModal
+            isOpen={isEditingMembersWorkspace}
+            plan={plan.businessPlan}
+            joinedUsers={currentWorkspaceMembers?.length}
+            updatedAmountOfSeats={newAmountOfSeats}
+            onSaveChanges={onSaveChanges}
+            handleUpdateMembers={onChangeWorkspaceMembers}
+            onClose={onCloseChangeMembersModal}
+            translate={translate}
+          />
+          <ConfirmUpdateMembersModal
+            isOpen={isConfirmingMembersWorkspace}
+            plan={plan.businessPlan}
+            updatedAmountOfSeats={newAmountOfSeats as number}
+            translate={translate}
+            onConfirmUpdate={onConfirmUpdatedMembers}
+            onClose={onCloseConfirmUpdatedMembersModal}
+          />
+        </>
+      )}
       <BillingDetailsCard
         address={billingDetails.address || ''}
         phone={billingDetails.phoneNumber || ''}

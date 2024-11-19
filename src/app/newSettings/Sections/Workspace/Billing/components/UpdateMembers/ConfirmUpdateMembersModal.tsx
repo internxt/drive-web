@@ -1,13 +1,13 @@
 import { Button } from '@internxt/internxtui';
+import { StoragePlan } from '@internxt/sdk/dist/drive/payments/types';
 import { ArrowRight } from '@phosphor-icons/react';
 import { bytesToString } from 'app/drive/services/size.service';
 import { Translate } from 'app/i18n/types';
 import Modal from 'app/shared/components/Modal';
-import { PlanState } from 'app/store/slices/plan';
 
 interface ConfirmUpdateMembersModalProps {
   isOpen: boolean;
-  plan: PlanState;
+  plan: StoragePlan;
   updatedAmountOfSeats: number;
   translate: Translate;
   onConfirmUpdate: () => void;
@@ -22,9 +22,9 @@ export const ConfirmUpdateMembersModal = ({
   onConfirmUpdate,
   onClose,
 }: ConfirmUpdateMembersModalProps): JSX.Element => {
-  const currentAmountOfSeats = plan.businessPlan?.amountOfSeats as number;
-  const storagePerUser = plan.businessPlan?.storageLimit as number;
-  const monthlyPrice = plan.businessPlan?.monthlyPrice as number;
+  const currentAmountOfSeats = plan.amountOfSeats;
+  const storagePerUser = plan.storageLimit;
+  const monthlyPrice = plan.monthlyPrice;
   const warnMessageKey =
     currentAmountOfSeats && currentAmountOfSeats < updatedAmountOfSeats ? 'increaseStorage' : 'decreaseStorage';
   const currentTotalStorage = currentAmountOfSeats && bytesToString(storagePerUser * currentAmountOfSeats);
