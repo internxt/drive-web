@@ -1512,7 +1512,7 @@
       "members": {
         "title": "Membri",
         "members": "Membri",
-        "guests": "Ospiti",
+        "guests": "Invitati",
         "search": "Cerca membri",
         "invite": "Invita",
         "inviteDialog": {

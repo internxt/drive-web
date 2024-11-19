@@ -1525,7 +1525,7 @@
       "members": {
         "title": "Members",
         "members": "Members",
-        "guests": "Guests",
+        "guests": "Invited",
         "search": "Search members",
         "invite": "Invite",
         "inviteDialog": {
