@@ -1487,7 +1487,7 @@
       "members": {
         "title": "Участники",
         "members": "Участники",
-        "guests": "Гости",
+        "guests": "Приглашенный",
         "search": "Поиск участников",
         "invite": "Пригласить",
         "inviteDialog": {

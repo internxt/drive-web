@@ -1482,7 +1482,7 @@
       "members": {
         "title": "成員",
         "members": "成員",
-        "guests": "訪客",
+        "guests": "特邀",
         "search": "搜尋成員",
         "invite": "邀請",
         "inviteDialog": {

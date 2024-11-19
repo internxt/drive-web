@@ -1520,7 +1520,7 @@
       "members": {
         "title": "成员",
         "members": "成员",
-        "guests": "访客",
+        "guests": "受邀",
         "search": "搜索成员",
         "invite": "邀请",
         "inviteDialog": {
