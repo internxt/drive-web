@@ -23,7 +23,7 @@ const BannerWrapper = (): JSX.Element => {
 
   const onCloseBanner = () => bannerManager.onCloseBanner(setShowBanner);
 
-  return <FeaturesBanner showBanner={showBanner} onClose={onCloseBanner} />;
+  return <>{showBanner && <FeaturesBanner showBanner={showBanner} onClose={onCloseBanner} />}</>;
 };
 
 export default BannerWrapper;

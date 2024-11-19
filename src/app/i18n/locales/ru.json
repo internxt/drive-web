@@ -1280,7 +1280,13 @@
     "errorApplyingCoupon": "Произошла ошибка при применении купона",
     "invalidTaxIdIsProvided": "Предоставленный ИНН недействителен",
     "errorWhileFetchingMoreItems": "Произошла ошибка при получении дополнительных элементов",
-    "errorDeletingItems": "Произошла ошибка при удалении этого элемента"
+    "errorDeletingItems": "Произошла ошибка при удалении этого элемента",
+    "errorFetchingWorkspace": "Ошибка при получении рабочего пространства {{error}}",
+    "errorSettingUpWorkspace": "Ошибка при настройке рабочего пространства {{error}}",
+    "errorWhileLoadingWorkspace": "Ошибка при загрузке рабочего пространства {{error}}",
+    "errorFetchingWorkspaceCredentials": "Ошибка при получении учетных данных рабочего пространства {{error}}",
+    "invalidWorkspaceInvitationError": "Рабочее пространство заполнено. Свяжитесь с владельцем.",
+    "errorAcceptingWorkspaceInvitation": "Произошла ошибка при принятии приглашения"
   },
   "actions": {
     "undo": "Отменить",
@@ -1481,7 +1487,7 @@
       "members": {
         "title": "Участники",
         "members": "Участники",
-        "guests": "Гости",
+        "guests": "Приглашенный",
         "search": "Поиск участников",
         "invite": "Пригласить",
         "inviteDialog": {

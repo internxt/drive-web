@@ -57,7 +57,7 @@ const SidenavItem = ({
   onClick = onClick || (() => undefined);
 
   return (
-    <div
+    <button
       onClick={onClick}
       className={`cursor-pointer rounded-lg pl-6 pr-3 font-medium ${
         isActive ? 'bg-primary/10 dark:bg-primary/20' : 'hover:bg-gray-1 active:bg-gray-5'
@@ -70,7 +70,7 @@ const SidenavItem = ({
       ) : (
         content
       )}
-    </div>
+    </button>
   );
 };
 

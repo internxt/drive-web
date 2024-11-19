@@ -1240,7 +1240,13 @@
     "errorApplyingCoupon": "Une erreur s'est produite lors de l'application du coupon",
     "invalidTaxIdIsProvided": "Le numéro d'identification fiscale fourni est invalide",
     "errorWhileFetchingMoreItems": "Une erreur est survenue lors de la récupération d'éléments supplémentaires",
-    "errorDeletingItems": "Une erreur est survenue lors de la suppression de cet élément"
+    "errorDeletingItems": "Une erreur est survenue lors de la suppression de cet élément",
+    "errorFetchingWorkspace": "Erreur lors de la récupération de l'espace de travail {{error}}",
+    "errorSettingUpWorkspace": "Erreur lors de la configuration de l'espace de travail {{error}}",
+    "errorWhileLoadingWorkspace": "Erreur lors du chargement de l'espace de travail {{error}}",
+    "errorFetchingWorkspaceCredentials": "Erreur lors de la récupération des identifiants de l'espace de travail {{error}}",
+    "invalidWorkspaceInvitationError": "Espace de travail plein. Contactez le propriétaire.",
+    "errorAcceptingWorkspaceInvitation": "Une erreur s'est produite lors de l'acceptation de l'invitation"
   },
   "actions": {
     "undo": "Annuler",
