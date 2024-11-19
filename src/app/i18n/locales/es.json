@@ -1284,7 +1284,8 @@
     "errorFetchingWorkspaceCredentials": "Error al obtener las credenciales del espacio de trabajo {{error}}",
     "invalidWorkspaceInvitationError": "Espacio de trabajo lleno. Contacta al propietario.",
     "errorAcceptingWorkspaceInvitation": "Ocurrió un error al aceptar la invitación",
-    "errorWhileUpdatingWorkspaceMembers": "Ocurrió un error al actualizar los miembros"
+    "errorWhileUpdatingWorkspaceMembers": "Ocurrió un error al actualizar los miembros",
+    "errorWhileFetchingCurrentWorkspaceMembers": "Ocurrió un error al obtener los miembros del espacio de trabajo"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",

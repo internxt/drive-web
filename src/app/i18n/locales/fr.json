@@ -1248,7 +1248,8 @@
     "errorFetchingWorkspaceCredentials": "Erreur lors de la récupération des identifiants de l'espace de travail {{error}}",
     "invalidWorkspaceInvitationError": "Espace de travail plein. Contactez le propriétaire.",
     "errorAcceptingWorkspaceInvitation": "Une erreur s'est produite lors de l'acceptation de l'invitation",
-    "errorWhileUpdatingWorkspaceMembers": "Une erreur s'est produite lors de la mise à jour des membres"
+    "errorWhileUpdatingWorkspaceMembers": "Une erreur s'est produite lors de la mise à jour des membres",
+    "errorWhileFetchingCurrentWorkspaceMembers": "Une erreur s'est produite lors de la récupération des membres de l'espace de travail"
   },
   "actions": {
     "undo": "Annuler",

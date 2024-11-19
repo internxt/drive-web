@@ -1319,7 +1319,8 @@
     "errorFetchingWorkspaceCredentials": "获取工作区凭据时出错 {{error}}",
     "invalidWorkspaceInvitationError": "工作区已满。请联系所有者。",
     "errorAcceptingWorkspaceInvitation": "接受邀请时出错",
-    "errorWhileUpdatingWorkspaceMembers": "更新成员时出了点问题"
+    "errorWhileUpdatingWorkspaceMembers": "更新成员时出了点问题",
+    "errorWhileFetchingCurrentWorkspaceMembers": "获取工作区成员时出了点问题"
   },
   "actions": {
     "undo": "撤销",
