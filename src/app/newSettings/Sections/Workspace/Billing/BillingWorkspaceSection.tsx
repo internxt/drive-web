@@ -142,18 +142,19 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   };
 
   const onConfirmUpdatedMembers = async () => {
-    if (
-      !subscriptionId ||
-      !newAmountOfSeats ||
-      (currentWorkspaceMembers && newAmountOfSeats < currentWorkspaceMembers?.length)
-    ) {
+    if (!subscriptionId || !newAmountOfSeats) {
       notificationsService.show({
         text: translate('notificationMessages.errorWhileUpdatingWorkspaceMembers'),
         type: ToastType.Error,
       });
       return;
+    } else if (currentWorkspaceMembers && newAmountOfSeats < currentWorkspaceMembers?.length) {
+      notificationsService.show({
+        text: translate('notificationMessages.newMembersCannotBeLessThanTheExistentOnesError'),
+        type: ToastType.Error,
+      });
+      return;
     }
-
     try {
       await paymentService.updateWorkspaceMembers(subscriptionId, newAmountOfSeats);
 

@@ -1321,7 +1321,8 @@
     "invalidWorkspaceInvitationError": "Workspace full. Contact the owner.",
     "errorAcceptingWorkspaceInvitation": "Something went wrong while accepting the invitation",
     "errorWhileUpdatingWorkspaceMembers": "Something went wrong while updating the members",
-    "errorWhileFetchingCurrentWorkspaceMembers": "Something went wrong while fetching workspace members"
+    "errorWhileFetchingCurrentWorkspaceMembers": "Something went wrong while fetching workspace members",
+    "newMembersCannotBeLessThanTheExistentOnesError": "Selected members cannot be fewer than current workspace members"
   },
   "actions": {
     "undo": "Undo",

@@ -1283,7 +1283,8 @@
     "invalidWorkspaceInvitationError": "工作區已滿。請聯絡擁有者。",
     "errorAcceptingWorkspaceInvitation": "接受邀請時出錯",
     "errorWhileUpdatingWorkspaceMembers": "更新成員時出了點問題",
-    "errorWhileFetchingCurrentWorkspaceMembers": "獲取工作區成員時出了點問題"
+    "errorWhileFetchingCurrentWorkspaceMembers": "獲取工作區成員時出了點問題",
+    "newMembersCannotBeLessThanTheExistentOnesError": "選擇的成員數量不能少於當前工作區的成員數量。"
   },
   "actions": {
     "undo": "撤銷",

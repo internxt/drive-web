@@ -1320,7 +1320,8 @@
     "invalidWorkspaceInvitationError": "工作区已满。请联系所有者。",
     "errorAcceptingWorkspaceInvitation": "接受邀请时出错",
     "errorWhileUpdatingWorkspaceMembers": "更新成员时出了点问题",
-    "errorWhileFetchingCurrentWorkspaceMembers": "获取工作区成员时出了点问题"
+    "errorWhileFetchingCurrentWorkspaceMembers": "获取工作区成员时出了点问题",
+    "newMembersCannotBeLessThanTheExistentOnesError": "选择的成员数量不能少于当前工作区的成员数量。"
   },
   "actions": {
     "undo": "撤销",

@@ -1289,7 +1289,8 @@
     "invalidWorkspaceInvitationError": "Рабочее пространство заполнено. Свяжитесь с владельцем.",
     "errorAcceptingWorkspaceInvitation": "Произошла ошибка при принятии приглашения",
     "errorWhileUpdatingWorkspaceMembers": "Произошла ошибка при обновлении участников",
-    "errorWhileFetchingCurrentWorkspaceMembers": "Произошла ошибка при получении участников рабочего пространства"
+    "errorWhileFetchingCurrentWorkspaceMembers": "Произошла ошибка при получении участников рабочего пространства",
+    "newMembersCannotBeLessThanTheExistentOnesError": "Выбранных участников не может быть меньше, чем текущих участников рабочего пространства"
   },
   "actions": {
     "undo": "Отменить",
