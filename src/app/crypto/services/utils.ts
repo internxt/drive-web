@@ -57,7 +57,7 @@ function extendSecret(message: Uint8Array, length: number): Promise<string> {
 }
 function getPBKDF2(
   password: string,
-  salt: string,
+  salt: string | Uint8Array,
   iterations = PBKDF2_ITERATIONS,
   hashLength = PBKDF2_TAG_LEN,
 ): Promise<string> {
@@ -91,6 +91,20 @@ function getArgon2(
   });
 }
 
+function hex2oldEncoding(hex: string): Uint8Array {
+  const words: number[] = [];
+  for (let i = 0; i < hex.length; i += 8) {
+    words.push(parseInt(hex.slice(i, i + 8), 16) | 0);
+  }
+  const sigBytes = hex.length / 2;
+  const uint8Array = new Uint8Array(sigBytes);
+
+  for (let i = 0; i < sigBytes; i++) {
+    uint8Array[i] = (words[i >>> 2] >>> ((3 - (i % 4)) * 8)) & 0xff;
+  }
+
+  return uint8Array;
+}
 // Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
 async function passToHash(passObject: PassObjectInterface): Promise<{ salt: string; hash: string }> {
   let salt;
@@ -104,13 +118,10 @@ async function passToHash(passObject: PassObjectInterface): Promise<{ salt: stri
     const argonSalt = passObject.salt.replace('argon2id$', '');
     hash = await getArgon2(passObject.password, argonSalt);
     salt = passObject.salt;
-  } else if (passObject.salt.startsWith('hybrid$')) {
-    const params = passObject.salt.split('$');
-    const oldhash = await getPBKDF2(passObject.password, params[1]);
-    hash = await getArgon2(oldhash, params[2]);
-    salt = passObject.salt;
   } else {
-    throw Error('Incorrect salt format');
+    salt = passObject.salt;
+    const encoded = hex2oldEncoding(salt);
+    hash = await getPBKDF2(passObject.password, encoded);
   }
   return { salt, hash };
 }
@@ -187,4 +198,5 @@ export {
   getRipemd160,
   getHmacSha512,
   getHmacSha512FromHexKey,
+  hex2oldEncoding,
 };

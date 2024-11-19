@@ -15,6 +15,7 @@ import {
   encryptText,
   decryptText,
   decryptTextWithKey,
+  hex2oldEncoding,
 } from '../../../src/app/crypto/services/utils';
 
 import { describe, expect, it, afterAll, beforeAll } from 'vitest';
@@ -555,13 +556,13 @@ describe('Test passToHash', () => {
     expect(result.hash).toBe(argon2Result);
   });
 
-  it('passToHash should be identical to getArgon2(PBKDF2) in hybrid mode', async () => {
+  it('passToHash should be identical to getPBKDF2 in PBKDF2 mode', async () => {
     const password = 'Test password';
-    const salt = 'hybrid$1238cb8bd0baf1c2d2171b96a0$6c7c6b9938cb8bd0baf1c2d2171b96a0';
+    const salt = '1238cb8bd0baf1c2d2171b96a0';
     const result = await passToHash({ password, salt });
-    const oldHash = await getPBKDF2(password, '1238cb8bd0baf1c2d2171b96a0');
-    const argon2Result = await getArgon2(oldHash, '6c7c6b9938cb8bd0baf1c2d2171b96a0');
-    expect(result.hash).toBe(argon2Result);
+    const encoded_salt = hex2oldEncoding(salt);
+    const pbkdf2Result = await getPBKDF2(password, encoded_salt);
+    expect(result.hash).toBe(pbkdf2Result);
   });
 
   it('passToHash should return the same result for the given password and salt (argon mode)', async () => {
@@ -573,9 +574,9 @@ describe('Test passToHash', () => {
     expect(result1.salt).toBe(result2.salt);
   });
 
-  it('passToHash should return the same result for the given password and salt (hybrid mode)', async () => {
+  it('passToHash should return the same result for the same pwd and salt (PBKDF2)', async () => {
     const password = 'Test password';
-    const salt = 'hybrid$6c7c6b9938cb8bd0baf1c2d2171b96a0$6c7c6b9938cb8bd0baf1c2d2171b96a0';
+    const salt = '6c7c6b9938cb8bd0baf1c2d2171b96a0';
     const result1 = await passToHash({ password, salt });
     const result2 = await passToHash({ password, salt });
     expect(result1.hash).toBe(result2.hash);
@@ -591,10 +592,54 @@ describe('Test passToHash', () => {
     expect(result1.salt).toBe(result2.salt);
   });
 
-  it('passToHash should throw an error if salt has incorrect format', async () => {
+  it('passToHash should return the same result for PBKDF2 as the old function', async () => {
     const password = 'Test password';
-    const salt = '6c7c6b9938cb8bd0baf1c2d2171b96a0';
-    await expect(passToHash({ password, salt })).rejects.toThrow('Incorrect salt format');
+    const salt = '7121910994f21cd848c55e90835d7bd8';
+
+    interface PassObjectInterface {
+      salt?: string | null;
+      password: string;
+    }
+
+    function oldPassToHash(passObject: PassObjectInterface): { salt: string; hash: string } {
+      const salt = passObject.salt ? CryptoJS.enc.Hex.parse(passObject.salt) : CryptoJS.lib.WordArray.random(128 / 8);
+      const hash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256 / 32, iterations: 10000 });
+      const hashedObjetc = {
+        salt: salt.toString(),
+        hash: hash.toString(),
+      };
+
+      return hashedObjetc;
+    }
+    const result = await passToHash({ password, salt });
+    const oldResult = oldPassToHash({ password, salt });
+    expect(result.salt).toBe(oldResult.salt);
+    expect(result.hash).toBe(oldResult.hash);
+  });
+
+  it('passToHash should return sucessfully verify old function hash', async () => {
+    const password = 'Test password';
+
+    interface PassObjectInterface {
+      salt?: string | null;
+      password: string;
+    }
+
+    function oldPassToHash(passObject: PassObjectInterface): { salt: string; hash: string } {
+      const salt = passObject.salt ? CryptoJS.enc.Hex.parse(passObject.salt) : CryptoJS.lib.WordArray.random(128 / 8);
+      const hash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256 / 32, iterations: 10000 });
+      const hashedObjetc = {
+        salt: salt.toString(),
+        hash: hash.toString(),
+      };
+
+      return hashedObjetc;
+    }
+    const oldResult = oldPassToHash({ password });
+    const result = await passToHash({ password, salt: oldResult.salt });
+
+    expect(result.salt).toBe(oldResult.salt);
+    expect(result.hash).toBe(oldResult.hash);
   });
 
   it('passToHash should throw an error if salt is empty', async () => {
