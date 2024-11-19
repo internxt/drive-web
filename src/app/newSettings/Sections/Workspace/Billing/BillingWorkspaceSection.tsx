@@ -58,6 +58,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const [isConfirmingMembersWorkspace, setIsConfirmingMembersWorkspace] = useState(false);
   const [isEditingBillingDetails, setIsEditingBillingDetails] = useState(false);
   const [isSavingBillingDetails, setIsSavingBillingDetails] = useState(false);
+  const [areFetchingCurrentMembers, setAreFetchingCurrentMembers] = useState<boolean>(false);
   const [billingDetails, setBillingDetails] = useState<CustomerBillingInfo>({
     address: selectedWorkspace?.workspace.address || '',
     phoneNumber: selectedWorkspace?.workspace.phoneNumber || '',
@@ -74,6 +75,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const getJoinedMembers = async () => {
     if (!workspaceId) return;
     try {
+      setAreFetchingCurrentMembers(true);
       const members = await workspacesService.getWorkspacesMembers(workspaceId);
       setCurrentWorkspaceMembers([...members.activatedUsers, ...members.disabledUsers]);
     } catch (error) {
@@ -82,6 +84,8 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
         text: translate('notificationMessages.errorWhileFetchingCurrentWorkspaceMembers'),
         type: ToastType.Error,
       });
+    } finally {
+      setAreFetchingCurrentMembers(false);
     }
   };
 
@@ -197,6 +201,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
           <UpdateMembersCard
             totalWorkspaceSeats={plan.businessPlan.amountOfSeats}
             translate={translate}
+            areFetchingCurrentMembers={areFetchingCurrentMembers}
             onChangeMembersButtonClicked={() => setIsEditingMembersWorkspace(true)}
           />
           <SelectNewMembersModal
