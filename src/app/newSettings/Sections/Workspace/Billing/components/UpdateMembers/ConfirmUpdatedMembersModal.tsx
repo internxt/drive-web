@@ -14,7 +14,7 @@ interface ConfirmUpdateMembersModalProps {
   onClose: () => void;
 }
 
-export const ConfirmUpdateMembersModal = ({
+export const ConfirmUpdatedMembersModal = ({
   isOpen,
   plan,
   updatedAmountOfSeats,

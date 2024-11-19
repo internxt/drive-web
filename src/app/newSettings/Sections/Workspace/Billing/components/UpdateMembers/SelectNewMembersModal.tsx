@@ -23,7 +23,7 @@ interface UpdateMembersModalProps {
   translate: Translate;
 }
 
-export const UpdateMembersModal = ({
+export const SelectNewMembersModal = ({
   isOpen,
   plan,
   joinedUsers,

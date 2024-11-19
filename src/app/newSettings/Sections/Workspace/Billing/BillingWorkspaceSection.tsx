@@ -21,8 +21,8 @@ import EditBillingDetailsModal from './components/EditBillingDetailsModal';
 import BillingWorkspaceOverview from './containers/BillingWorkspaceOverview';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UpdateMembersCard } from './UpdateMembersCard';
-import { UpdateMembersModal } from './components/UpdateMembers/UpdateMembersModal';
-import { ConfirmUpdateMembersModal } from './components/UpdateMembers/ConfirmUpdateMembersModal';
+import { SelectNewMembersModal } from './components/UpdateMembers/SelectNewMembersModal';
+import { ConfirmUpdatedMembersModal } from './components/UpdateMembers/ConfirmUpdatedMembersModal';
 import AppError from 'app/core/types';
 import errorService from 'app/core/services/error.service';
 import workspacesService from 'app/core/services/workspace.service';
@@ -198,7 +198,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
             translate={translate}
             onChangeMembersButtonClicked={() => setIsEditingMembersWorkspace(true)}
           />
-          <UpdateMembersModal
+          <SelectNewMembersModal
             isOpen={isEditingMembersWorkspace}
             plan={plan.businessPlan}
             joinedUsers={currentWorkspaceMembers?.length}
@@ -208,7 +208,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
             onClose={onCloseChangeMembersModal}
             translate={translate}
           />
-          <ConfirmUpdateMembersModal
+          <ConfirmUpdatedMembersModal
             isOpen={isConfirmingMembersWorkspace}
             plan={plan.businessPlan}
             updatedAmountOfSeats={newAmountOfSeats as number}
