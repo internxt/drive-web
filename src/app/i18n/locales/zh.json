@@ -4,19 +4,19 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "节省80%",
-    "title": "Boo！来和我们一起省钱...",
-    "subtitle": "赢取我们终身计划的高级背包。",
-    "cta": "选择计划",
+    "label": "节省85%！",
+    "title": "黑色星期五最佳优惠",
+    "subtitle": "通过我们的终身计划获得我们的高级背包。",
+    "cta": "选择您的计划",
     "guarantee": "30天退款保证",
-    "lastCta": "*优惠仅适用于免费账户或新客户",
+    "lastCta": "*该优惠适用于免费账户或新客户",
     "features": [
-      "节省所有终身计划",
+      "所有高级计划都享受大幅折扣",
       "私人加密云存储",
-      "开源并经过审核",
+      "开源并已审核",
       "端到端加密传输",
-      "无未经授权的访问",
-      "优惠截止至11月10日"
+      "无未授权访问",
+      "优惠截止至12月3日"
     ]
   },
   "valentinesBanner": {
@@ -82,7 +82,8 @@
       "dontHaveAccount": "没有账户？",
       "createAccount": "创建账户",
       "2FA": "双因素代码",
-      "twoFactorAuthenticationCode": "双因素验证码"
+      "twoFactorAuthenticationCode": "双因素验证码",
+      "wrongLogin": "用户名或密码无效"
     },
     "signup": {
       "title": "创建账户",
@@ -1310,7 +1311,13 @@
     "errorApplyingCoupon": "应用优惠券时出错",
     "errorWhileFetchingMoreItems": "获取更多项目时出现错误",
     "errorDeletingItems": "删除此项目时出现错误",
-    "invalidTaxIdIsProvided": "提供的税号无效"
+    "invalidTaxIdIsProvided": "提供的税号无效",
+    "errorFetchingWorkspace": "获取工作区时出错 {{error}}",
+    "errorSettingUpWorkspace": "设置工作区时出错 {{error}}",
+    "errorWhileLoadingWorkspace": "加载工作区时出错 {{error}}",
+    "errorFetchingWorkspaceCredentials": "获取工作区凭据时出错 {{error}}",
+    "invalidWorkspaceInvitationError": "工作区已满。请联系所有者。",
+    "errorAcceptingWorkspaceInvitation": "接受邀请时出错"
   },
   "actions": {
     "undo": "撤销",
@@ -1513,7 +1520,7 @@
       "members": {
         "title": "成员",
         "members": "成员",
-        "guests": "访客",
+        "guests": "受邀",
         "search": "搜索成员",
         "invite": "邀请",
         "inviteDialog": {

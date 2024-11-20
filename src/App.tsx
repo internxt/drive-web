@@ -84,6 +84,7 @@ const App = (props: AppProps): JSX.Element => {
     path: navigationService.history.location.pathname,
   });
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspaceIdParam = params.get('workspaceid');
 
   useBeforeUnload();
 
@@ -91,6 +92,12 @@ const App = (props: AppProps): JSX.Element => {
     initializeInitialAppState();
     i18next.changeLanguage();
   }, []);
+
+  useEffect(() => {
+    if (!isWorkspaceIdParam) {
+      navigationService.resetB2BWorkspaceCredentials(dispatch);
+    }
+  }, [params]);
 
   if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
     /**
@@ -120,7 +127,7 @@ const App = (props: AppProps): JSX.Element => {
       RealtimeService.getInstance().init();
 
       dispatch(workspaceThunks.fetchWorkspaces());
-      navigationService.setWorkspaceFromParams(workspaceThunks, dispatch);
+      navigationService.setWorkspaceFromParams(workspaceThunks, dispatch, false);
 
       await props.dispatch(
         initializeUserThunk({
@@ -137,7 +144,10 @@ const App = (props: AppProps): JSX.Element => {
   let template = <PreparingWorkspaceAnimation />;
   let isMobile = false;
 
-  if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/Android/i)) {
+  const isIphone = /iPhone/i.exec(navigator.userAgent);
+  const isAndroid = /Android/i.exec(navigator.userAgent);
+
+  if (isIphone || isAndroid) {
     isMobile = true;
   }
 

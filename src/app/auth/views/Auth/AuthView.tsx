@@ -99,7 +99,7 @@ export const SignupComponent = ({
               type="submit"
               disabled={loading}
               className={`shadow-xm relative flex h-11 w-full flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg focus:outline-none ${
-                buttonColor || 'bg-pcComponentes-orange focus-visible:bg-orange-dark active:bg-orange-dark'
+                buttonColor ?? 'bg-pcComponentes-orange focus-visible:bg-orange-dark active:bg-orange-dark'
               }  px-0 py-2.5 text-lg text-white transition duration-100  disabled:cursor-not-allowed disabled:text-white/75 sm:text-base`}
             >
               {loading ? (

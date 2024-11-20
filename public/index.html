@@ -28,6 +28,15 @@
 
     <!-- <script src="https://www.google.com/recaptcha/api.js?render=%REACT_APP_RECAPTCHA_V3%"></script> -->
     <script src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_ID%"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', '%REACT_APP_GA_ID%', { debug_mode: '%NODE_ENV%' === 'development' });
+      gtag('config', '%REACT_APP_GA_BLOG_ID%', { debug_mode: '%NODE_ENV%' === 'development', groups: 'Blog' });
+    </script>
     <script type="text/javascript">
       !(function () {
         let k = '2EFjDkXZ8xv0qKyI2dHZ4d5VtmM';
@@ -73,14 +82,6 @@
           e.load(k, 'https://cdp.internxt.com'),
           e.page();
       })();
-    </script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-      gtag('config', '%REACT_APP_GA_ID%', { debug_mode: '%NODE_ENV%' === 'development' });
     </script>
 
     <!-- MailerLite Universal -->
