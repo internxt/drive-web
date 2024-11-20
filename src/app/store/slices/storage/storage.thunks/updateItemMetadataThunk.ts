@@ -53,7 +53,6 @@ export const updateItemMetadataThunkExtraReducers = (builder: ActionReducerMapBu
     .addCase(updateItemMetadataThunk.pending, () => undefined)
     .addCase(updateItemMetadataThunk.fulfilled, () => undefined)
     .addCase(updateItemMetadataThunk.rejected, (state, action) => {
-      console.log({ action });
       const errorMessage = (action.error?.message || '').includes('this name exists')
         ? t('error.fileAlreadyExists')
         : t('error.changingName');

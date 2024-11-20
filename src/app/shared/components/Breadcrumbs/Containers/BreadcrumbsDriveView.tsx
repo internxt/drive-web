@@ -24,9 +24,7 @@ const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
 
     if (namePath.length > 0) {
       const breadcrumbNamePath = [...namePath];
-      const parsedBreadcrumbNamePath =
-        selectedWorkspace && breadcrumbNamePath.length > 1 ? breadcrumbNamePath.slice(1) : breadcrumbNamePath;
-      const firstPath = parsedBreadcrumbNamePath[0];
+      const firstPath = breadcrumbNamePath[0];
 
       items.push({
         uuid: firstPath.uuid,
@@ -37,11 +35,11 @@ const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
         onClick: () => {
           dispatch(uiActions.setIsGlobalSearch(false));
           dispatch(storageThunks.goToFolderThunk(firstPath));
-          navigationService.push(AppView.Drive);
+          navigationService.push(AppView.Drive, {}, selectedWorkspace?.workspaceUser.workspaceId);
         },
       });
 
-      parsedBreadcrumbNamePath.slice(1).forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
+      breadcrumbNamePath.slice(1).forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
         items.push({
           uuid: path.uuid,
           label: path.name,

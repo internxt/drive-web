@@ -6,7 +6,6 @@ import { RootState } from 'app/store';
 import { PlanState, planThunks } from 'app/store/slices/plan';
 
 import { CustomerBillingInfo, UserType } from '@internxt/sdk/dist/drive/payments/types';
-import { trackCanceledSubscription } from 'app/analytics/services/analytics.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Section from 'app/newSettings/components/Section';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -63,7 +62,6 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
       await paymentService.cancelSubscription(UserType.Business);
       notificationsService.show({ text: translate('notificationMessages.successCancelSubscription'), duration: 8000 });
       setIsCancelSubscriptionModalOpen(false);
-      trackCanceledSubscription({ feedback });
       dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: null }));
       setTimeout(() => {
         dispatch(workspaceThunks.fetchWorkspaces());

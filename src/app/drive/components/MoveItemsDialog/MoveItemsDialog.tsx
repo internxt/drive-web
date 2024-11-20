@@ -6,9 +6,8 @@ import databaseService, { DatabaseCollection } from 'app/database/services/datab
 import newStorageService from 'app/drive/services/new-storage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import BreadcrumbsMoveItemsDialogView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsMoveItemsDialogView';
-import Button from 'app/shared/components/Button/Button';
+import { Button, Spinner } from '@internxt/internxtui';
 import Modal from 'app/shared/components/Modal';
-import Spinner from 'app/shared/components/Spinner/Spinner';
 import { RootState, store } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { setItemsToMove, storageActions } from 'app/store/slices/storage';
@@ -20,7 +19,12 @@ import { uiActions } from 'app/store/slices/ui';
 import folderImage from 'assets/icons/light/folder.svg';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { DriveItemData, FolderPathDialog } from '../../types';
+import {
+  handleRepeatedUploadingFiles,
+  handleRepeatedUploadingFolders,
+} from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
+import { IRoot } from '../../../store/slices/storage/types';
+import { DriveFileData, DriveFolderData, DriveItemData, FolderPathDialog } from '../../types';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
 
 interface MoveItemsDialogProps {
@@ -152,6 +156,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
   const onAccept = async (destinationFolderId, name, namePaths): Promise<void> => {
     try {
+      dispatch(storageActions.setMoveDestinationFolderId(destinationFolderId));
+
       setIsLoading(true);
       if (itemsToMove.length > 0) {
         if (destinationFolderId != currentFolderId) {
@@ -162,14 +168,23 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           destinationFolderId = currentFolderId;
         }
 
-        await dispatch(
-          storageThunks.moveItemsThunk({
-            items: itemsToMove,
-            destinationFolderId: destinationFolderId,
-          }),
-        );
-      }
+        const files = itemsToMove.filter((item) => item.type !== 'folder') as DriveFileData[];
+        const folders = itemsToMove.filter((item) => item.type === 'folder') as (IRoot | DriveFolderData)[];
 
+        const filesWithoutDuplicates = await handleRepeatedUploadingFiles(files, dispatch, destinationFolderId);
+        const foldersWithoutDuplicates = await handleRepeatedUploadingFolders(folders, dispatch, destinationFolderId);
+
+        const itemsToMoveWithoutDuplicates = [...filesWithoutDuplicates, ...foldersWithoutDuplicates];
+
+        if (itemsToMoveWithoutDuplicates.length > 0) {
+          await dispatch(
+            storageThunks.moveItemsThunk({
+              items: itemsToMoveWithoutDuplicates as DriveItemData[],
+              destinationFolderId: destinationFolderId,
+            }),
+          );
+        }
+      }
       props.onItemsMoved?.();
 
       setIsLoading(false);
@@ -184,7 +199,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-[550px]" className="p-5">
       <div className="flex flex-col space-y-5">
         {/* Title */}
         <div className="flex text-2xl font-medium text-gray-100">

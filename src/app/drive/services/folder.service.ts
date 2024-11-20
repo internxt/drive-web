@@ -3,7 +3,6 @@ import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 import { FolderTree } from '@internxt/sdk/dist/drive/storage/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Iterator } from 'app/core/collections';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { FlatFolderZip } from 'app/core/services/zip.service';
@@ -11,14 +10,11 @@ import { LRUFilesCacheManager } from 'app/database/services/database.service/LRU
 import { downloadFile } from 'app/network/download';
 import { checkIfCachedSourceIsOlder } from 'app/store/slices/storage/storage.thunks/downloadFileThunk';
 import { t } from 'i18next';
-import { TrackingPlan } from '../../analytics/TrackingPlan';
-import analyticsService from '../../analytics/services/analytics.service';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
 import localStorageService from '../../core/services/local-storage.service';
 import workspacesService from '../../core/services/workspace.service';
-import { DevicePlatform } from '../../core/types';
 import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData } from '../types';
 import { updateDatabaseFileSourceData } from './database.service';
 import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
@@ -101,11 +97,6 @@ export function createFolder(
 
   const finalPromise = createdFolderPromise
     .then((response) => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackFolderCreated({
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
       return response;
     })
     .catch((error) => {
@@ -128,11 +119,6 @@ export function createFolderByUuid(
 
   const finalPromise = promise
     .then((response) => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackFolderCreated({
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
       return response;
     })
     .catch((error) => {
@@ -150,36 +136,17 @@ export async function updateMetaData(folderUuid: string, metadata: DriveFolderMe
     name: metadata.itemName,
   };
 
-  return storageClient.updateFolderNameWithUUID(payload).then(() => {
-    const user: UserSettings = localStorageService.getUser() as UserSettings;
-    analyticsService.trackFolderRename({
-      email: user.email,
-      fileId: folderUuid,
-      platform: DevicePlatform.Web,
-    });
-  });
+  return storageClient.updateFolderNameWithUUID(payload);
 }
 
-export function deleteFolder(folderData: DriveFolderData): Promise<void> {
+export async function deleteFolder(folderData: DriveFolderData): Promise<void> {
   const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
-  return trashClient.deleteFolder(folderData.id).then(() => {
-    const user = localStorageService.getUser() as UserSettings;
-    analyticsService.trackDeleteItem(folderData as DriveItemData, {
-      email: user.email,
-      platform: DevicePlatform.Web,
-    });
-  });
+  await trashClient.deleteFolder(folderData.id);
 }
 
-export function deleteBackupDeviceAsFolder(folderData: DriveFolderData): Promise<void> {
+export async function deleteBackupDeviceAsFolder(folderData: DriveFolderData): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
-  return storageClient.deleteFolder(folderData.id).then(() => {
-    const user = localStorageService.getUser() as UserSettings;
-    analyticsService.trackDeleteItem(folderData as DriveItemData, {
-      email: user.email,
-      platform: DevicePlatform.Web,
-    });
-  });
+  await storageClient.deleteFolder(folderData.id);
 }
 
 interface GetDirectoryFoldersResponse {
@@ -328,18 +295,6 @@ async function downloadSharedFolderAsZip(
     throw new Error('user null');
   }
 
-  const analyticsProcessIdentifier = analyticsService.getTrackingActionId();
-  let trackingDownloadProperties: TrackingPlan.DownloadProperties = {
-    process_identifier: analyticsProcessIdentifier,
-    is_multiple: 1,
-    bandwidth: 0,
-    band_utilization: 0,
-    file_size: 0,
-    file_extension: '',
-    file_id: 0,
-    file_name: '',
-    parent_folder_id: 0,
-  };
   try {
     // Necessary tokens to obtain files and folders if the user is not the owner
     let nextFilesToken;
@@ -359,19 +314,6 @@ async function downloadSharedFolderAsZip(
             return cachedFile.source.stream();
           }
 
-          trackingDownloadProperties = {
-            process_identifier: analyticsProcessIdentifier,
-            file_id: typeof file.id === 'string' ? parseInt(file.id) : file.id,
-            file_size: parseInt(file.size),
-            file_extension: file.type,
-            file_name: file.name,
-            parent_folder_id: file.folderId,
-            is_multiple: 1,
-            bandwidth: 0,
-            band_utilization: 0,
-          };
-          analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
-
           const creds = options?.credentials
             ? (options.credentials as Record<'user' | 'pass', string>)
             : { user: user?.bridgeUser || '', pass: user?.userId || '' };
@@ -385,7 +327,6 @@ async function downloadSharedFolderAsZip(
             creds: creds,
             mnemonic: mnemonic,
           });
-          analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 
           const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
           await updateDatabaseFileSourceData({
@@ -428,28 +369,32 @@ async function downloadSharedFolderAsZip(
     }
   } catch (err) {
     const castedError = errorService.castError(err);
-    analyticsService.trackFileDownloadError({
-      ...trackingDownloadProperties,
-      error_message_user: 'Error downloading folder',
-      error_message: castedError.message,
-      stack_trace: castedError.stack ?? '',
-    });
     console.error('ERROR WHILE DOWNLOADING FOLDER', castedError);
     zip.abort();
     throw castedError;
   }
 }
 
-async function downloadFolderAsZip(
-  folderId: DriveFolderData['id'],
-  folderName: DriveFolderData['name'],
-  folderUUID: DriveFolderData['uuid'],
-  foldersIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFolderData>,
-  filesIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFileData>,
-  updateProgress: (progress: number) => void,
-  options?: DownloadFolderAsZipOptions,
-): Promise<void> {
-  const rootFolder: FolderRef = { folderId: folderId, name: folderName, folderUuid: folderUUID };
+async function downloadFolderAsZip({
+  folderId,
+  folderName,
+  folderUUID,
+  foldersIterator,
+  filesIterator,
+  updateProgress,
+  options,
+  abortController,
+}: {
+  folderId: DriveFolderData['id'];
+  folderName: DriveFolderData['name'];
+  folderUUID: DriveFolderData['uuid'];
+  foldersIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFolderData>;
+  filesIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFileData>;
+  updateProgress: (progress: number) => void;
+  options?: DownloadFolderAsZipOptions;
+  abortController?: AbortController;
+}): Promise<void> {
+  const rootFolder: FolderRef = { folderId, name: folderName, folderUuid: folderUUID };
   const pendingFolders: FolderRef[] = [rootFolder];
   let totalSize = 0;
   const zip = options?.destination || new FlatFolderZip(folderName, {});
@@ -460,18 +405,6 @@ async function downloadFolderAsZip(
     throw new Error('user null');
   }
 
-  const analyticsProcessIdentifier = analyticsService.getTrackingActionId();
-  let trackingDownloadProperties: TrackingPlan.DownloadProperties = {
-    process_identifier: analyticsProcessIdentifier,
-    is_multiple: 1,
-    bandwidth: 0,
-    band_utilization: 0,
-    file_size: 0,
-    file_extension: '',
-    file_id: 0,
-    file_name: '',
-    parent_folder_id: 0,
-  };
   try {
     do {
       const folderToDownload = pendingFolders.shift() as FolderRef;
@@ -487,19 +420,6 @@ async function downloadFolderAsZip(
             return cachedFile.source.stream();
           }
 
-          trackingDownloadProperties = {
-            process_identifier: analyticsProcessIdentifier,
-            file_id: typeof file.id === 'string' ? parseInt(file.id) : file.id,
-            file_size: file.size,
-            file_extension: file.type,
-            file_name: file.name,
-            parent_folder_id: file.folderId,
-            is_multiple: 1,
-            bandwidth: 0,
-            band_utilization: 0,
-          };
-          analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
-
           const creds = options?.credentials
             ? (options.credentials as Record<'user' | 'pass', string>)
             : { user: user.bridgeUser, pass: user.userId };
@@ -510,8 +430,11 @@ async function downloadFolderAsZip(
             fileId: file.fileId,
             creds: creds,
             mnemonic: mnemonic,
+            options: {
+              notifyProgress: () => {},
+              abortController,
+            },
           });
-          analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 
           const sourceBlob = await binaryStreamToBlob(downloadedFileStream, file.type || '');
           await updateDatabaseFileSourceData({
@@ -552,12 +475,6 @@ async function downloadFolderAsZip(
     }
   } catch (err) {
     const castedError = errorService.castError(err);
-    analyticsService.trackFileDownloadError({
-      ...trackingDownloadProperties,
-      error_message_user: 'Error downloading folder',
-      error_message: castedError.message,
-      stack_trace: castedError.stack ?? '',
-    });
     zip.abort();
     throw castedError;
   }
@@ -610,12 +527,6 @@ export async function moveFolder(folderId: number, destination: number): Promise
   return storageClient
     .moveFolder(payload)
     .then((response) => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackMoveItem('folder', {
-        file_id: response.item.id,
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
       return response;
     })
     .catch((err) => {
@@ -637,24 +548,13 @@ export async function moveFolderByUuid(
     destinationFolderUuid: destinationFolderUuid,
   };
 
-  return storageClient
-    .moveFolderByUuid(payload)
-    .then((response) => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackMoveItem('folder', {
-        uuid: response.uuid,
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
-      return response;
-    })
-    .catch((err) => {
-      const castedError = errorService.castError(err);
-      if (castedError.status) {
-        castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
-      }
-      throw castedError;
-    });
+  return storageClient.moveFolderByUuid(payload).catch((err) => {
+    const castedError = errorService.castError(err);
+    if (castedError.status) {
+      castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
+    }
+    throw castedError;
+  });
 }
 
 const folderService = {

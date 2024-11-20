@@ -1,29 +1,31 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { AppView } from 'app/core/types';
 import Section from 'app/newSettings/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
-import { bytesToString } from '../../../../drive/services/size.service';
 import { FreeStoragePlan } from '../../../../drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import moneyService from '../../../../payment/services/money.service';
 import paymentService from '../../../../payment/services/payment.service';
 import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
 import { PlanState, planThunks } from '../../../../store/slices/plan';
 import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
-import { createCheckoutSession, fetchPlanPrices, getStripe } from './api/plansApi';
+import { fetchPlanPrices, getStripe } from './api/plansApi';
 import ChangePlanDialog from './components/ChangePlanDialog';
-import PlanCard from './components/PlanCard';
-import PlanSelectionCard from './components/PlanSelectionCard';
 import IntervalSwitch from './components/TabButton';
-import { displayAmount, getCurrentChangePlanType, getCurrentUsage, getPlanInfo, getPlanName } from './utils/planUtils';
-import { AppView } from 'app/core/types';
+import {
+  determineSubscriptionChangeType,
+  getCurrentUsage,
+  getPlanInfo,
+  getPlanName,
+  getRenewalPeriod,
+} from './utils/planUtils';
+import { PlanSelectionComponent } from './components/PlanSelection/PlanSelectionComponent';
+import { InfoCardComponent } from './components/PlanSelection/InfoCardComponent';
 
 interface PlansSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -44,8 +46,6 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
-  const workspaces = useSelector<RootState, WorkspaceData[]>((state) => state.workspaces.workspaces);
-  const isUserOwningWorkspace = workspaces.some((workspace) => workspace.workspace.ownerId === user?.uuid);
 
   const { individualSubscription, businessSubscription } = plan;
   let stripe;
@@ -57,9 +57,10 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const [individualPrices, setIndividualPrices] = useState<DisplayPrice[]>([]);
   const [businessPrices, setBusinessPrices] = useState<DisplayPrice[]>([]);
 
-  const [selectedSubscription, setSelectedSubscription] = useState<UserType>(UserType.Individual);
-  const isIndividualSubscriptionSelected = selectedSubscription == UserType.Individual;
-  const isBussinessSubscriptionSelected = selectedSubscription == UserType.Business;
+  const [selectedSubscriptionType, setSelectedSubscriptionType] = useState<UserType>(UserType.Individual);
+
+  const isIndividualSubscriptionSelected = selectedSubscriptionType == UserType.Individual;
+  const isBusinessSubscriptionSelected = selectedSubscriptionType == UserType.Business;
 
   const defaultInterval = plan.individualPlan?.renewalPeriod === 'monthly' ? 'month' : 'year';
   const [selectedInterval, setSelectedInterval] = useState<DisplayPrice['interval']>(defaultInterval);
@@ -69,11 +70,17 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUpdatingSubscription, setIsUpdatingSubscription] = useState<boolean>(false);
   const [priceSelected, setPriceSelected] = useState<DisplayPrice>(FREE_PLAN_DATA);
-  const currentChangePlanType = getCurrentChangePlanType({
+
+  const currentRenewalInterval = isIndividualSubscriptionSelected
+    ? plan.individualPlan?.renewalPeriod
+    : plan.businessPlan?.renewalPeriod;
+
+  const currentChangePlanType = determineSubscriptionChangeType({
     priceSelected,
     currentUserSubscription: isIndividualSubscriptionSelected ? individualSubscription : businessSubscription,
-    planLimit: isIndividualSubscriptionSelected ? plan.planLimit : plan.businessPlanLimit,
+    planLimit: isIndividualSubscriptionSelected ? plan.planLimit : plan.businessPlan?.storageLimit ?? 0,
     isFreePriceSelected: priceSelected?.id === 'free',
+    currentPlanRenewalInterval: getRenewalPeriod(currentRenewalInterval),
   });
 
   const pricesFilteredAndSorted = (userType: UserType) =>
@@ -135,9 +142,9 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   }, []);
 
   const showCancelSubscriptionErrorNotification = useCallback(
-    () =>
+    (errorMessage?: string) =>
       notificationsService.show({
-        text: translate('notificationMessages.errorCancelSubscription'),
+        text: errorMessage ?? translate('notificationMessages.errorCancelSubscription'),
         type: ToastType.Error,
       }),
     [translate],
@@ -150,13 +157,17 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
   const handlePaymentSuccess = () => {
     showSuccessSubscriptionNotification();
-    dispatch(planThunks.initializeThunk()).unwrap();
+    setTimeout(() => dispatch(planThunks.initializeThunk()).unwrap(), 2000);
   };
 
   const handleSubscriptionPayment = async (priceId: string) => {
     try {
       stripe = await getStripe(stripe);
-      const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
+      const updatedSubscription = await paymentService.updateSubscriptionPrice({
+        priceId,
+        userType: selectedSubscriptionType,
+      });
+
       if (updatedSubscription.request3DSecure) {
         stripe
           .confirmCardPayment(updatedSubscription.clientSecret)
@@ -167,14 +178,13 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
                 text: result.error.message as string,
               });
             } else {
-              showSuccessSubscriptionNotification();
-              dispatch(planThunks.initializeThunk()).unwrap();
+              handlePaymentSuccess();
             }
           })
           .catch((err) => {
             const error = errorService.castError(err);
             errorService.reportError(error);
-            showCancelSubscriptionErrorNotification();
+            showCancelSubscriptionErrorNotification(error.message);
           });
       } else {
         handlePaymentSuccess();
@@ -182,66 +192,28 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
-      showCancelSubscriptionErrorNotification();
-    }
-  };
-
-  const handleCheckoutSession = async ({
-    priceId,
-    currency,
-    userEmail,
-    mode,
-  }: {
-    userEmail: string;
-    priceId: string;
-    mode: string;
-    currency: string;
-  }) => {
-    try {
-      const response = await createCheckoutSession({ userEmail, priceId, currency, mode });
-      localStorage.setItem('sessionId', response.sessionId);
-      await paymentService.redirectToCheckout(response);
-    } catch (err) {
-      const error = errorService.castError(err);
-      errorService.reportError(error);
-      showCancelSubscriptionErrorNotification();
+      showCancelSubscriptionErrorNotification(error.message);
     }
   };
 
   const onChangePlanClicked = async (priceId: string, currency: string) => {
     setIsLoadingCheckout(true);
     setIsUpdatingSubscription(true);
+    const isLifetimeIntervalSelected = selectedInterval === 'lifetime';
     const isCurrentPlanTypeSubscription = isIndividualSubscriptionSelected
       ? individualSubscription?.type === 'subscription'
       : businessSubscription?.type === 'subscription';
 
-    if (!isCurrentPlanTypeSubscription) {
-      const mode = selectedInterval === 'lifetime' ? 'payment' : 'subscription';
-      if (isIndividualSubscriptionSelected) {
-        onClosePreferences();
-        navigationService.push(AppView.Checkout, {
-          planId: priceId,
-          currency: currency,
-        });
-      } else {
-        await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
-      }
-
+    if (!isCurrentPlanTypeSubscription || isLifetimeIntervalSelected) {
+      onClosePreferences();
+      navigationService.push(AppView.Checkout, {
+        planId: priceId,
+        currency: currency,
+      });
       setIsDialogOpen(false);
     } else {
-      const isLifetimeIntervalSelected = selectedInterval === 'lifetime';
-      if (isLifetimeIntervalSelected) {
-        onClosePreferences();
-        navigationService.push(AppView.Checkout, {
-          planId: priceId,
-          currency: currency,
-        });
-        setIsDialogOpen(false);
-      } else {
-        await handleSubscriptionPayment(priceId);
-        dispatch(planThunks.initializeThunk()).unwrap();
-        setIsDialogOpen(false);
-      }
+      await handleSubscriptionPayment(priceId);
+      setIsDialogOpen(false);
     }
     setIsLoadingCheckout(false);
     setIsUpdatingSubscription(false);
@@ -250,10 +222,9 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   async function cancelSubscription(feedback: string) {
     setCancellingSubscription(true);
     try {
-      await paymentService.cancelSubscription(selectedSubscription);
+      await paymentService.cancelSubscription(selectedSubscriptionType);
       notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
       setIsCancelSubscriptionModalOpen(false);
-      trackCanceledSubscription({ feedback });
     } catch (error) {
       errorService.reportError(error);
       notificationsService.show({
@@ -297,11 +268,17 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   };
 
   const handleSubscriptionInterval = (userType: UserType) => {
-    if (userType !== selectedSubscription) {
-      setSelectedSubscription(userType);
+    if (userType !== selectedSubscriptionType) {
+      setSelectedSubscriptionType(userType);
       const price = getDefaultPlanPrice(userType);
       if (price) setPriceSelected(price);
     }
+  };
+
+  const isCurrentSubscriptionPlan = (plan: DisplayPrice) => {
+    return isIndividualSubscriptionSelected
+      ? individualSubscription?.type === 'subscription' && individualSubscription?.priceId === plan.id
+      : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === plan.id;
   };
 
   return (
@@ -314,7 +291,8 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           onPlanClick={onChangePlanClicked}
           isUpdatingSubscription={isUpdatingSubscription}
           priceIdSelected={priceSelected.id}
-          subscriptionSelected={selectedSubscription}
+          subscriptionSelected={selectedSubscriptionType}
+          isLoading={isLoadingCheckout}
         />
       )}
       <div className="flex flex-col">
@@ -355,79 +333,38 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
         </div>
       </div>
       <div className="flex flex-row space-x-6">
-        <div className="flex flex-1 flex-col items-stretch space-y-2.5">
-          {isIndividualSubscriptionSelected && individualPrices && (
-            <PlanSelectionCard
-              key={FREE_PLAN_DATA.id}
-              onClick={() => setPriceSelected(FREE_PLAN_DATA)}
-              isSelected={priceSelected?.id === FREE_PLAN_DATA.id}
-              capacity={bytesToString(FREE_PLAN_DATA.bytes)}
-              currency={FREE_PLAN_DATA.currency}
-              amount={''}
-              billing={''}
-              isCurrentPlan={FREE_PLAN_DATA.id === individualSubscription?.type}
-            />
-          )}
-          {pricesFilteredAndSorted(selectedSubscription).map((plan) => (
-            <PlanSelectionCard
-              key={plan.id}
-              onClick={() => setPriceSelected(plan)}
-              isSelected={priceSelected?.id === plan.id}
-              capacity={bytesToString(plan.bytes)}
-              currency={moneyService.getCurrencySymbol(plan.currency.toUpperCase())}
-              amount={displayAmount(plan.amount, plan.interval === 'lifetime' ? 0 : 2)}
-              billing={
-                plan.interval === 'lifetime'
-                  ? translate('views.account.tabs.plans.card.oneTimePayment')
-                  : translate(`preferences.account.plans.${plan.interval}`)?.toLowerCase()
-              }
-              isCurrentPlan={
-                isIndividualSubscriptionSelected
-                  ? individualSubscription?.type === 'subscription' && individualSubscription?.priceId === plan.id
-                  : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === plan.id
-              }
-              displayBillingSlash={plan.interval !== 'lifetime'}
-              isBusiness={isBussinessSubscriptionSelected}
-            />
-          ))}
-        </div>
-        {priceSelected?.id === FREE_PLAN_DATA.id ? (
-          <PlanCard
-            onClick={() => setIsCancelSubscriptionModalOpen(true)}
-            isCurrentPlan={FREE_PLAN_DATA.id === individualSubscription?.type}
-            capacity={bytesToString(priceSelected?.bytes ?? 0)}
-            currency={translate('preferences.account.plans.freeForever')}
-            price={''}
-            billing={''}
-            changePlanType={currentChangePlanType}
-            isLoading={isLoadingCheckout}
-            disableActionButton={false}
-          />
-        ) : (
-          <PlanCard
-            onClick={() => handleOnPlanSelected(priceSelected)}
-            isCurrentPlan={
-              isIndividualSubscriptionSelected
-                ? individualSubscription?.type === 'subscription' &&
-                  individualSubscription?.priceId === priceSelected.id
-                : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === priceSelected.id
-            }
-            capacity={bytesToString(priceSelected?.bytes ?? 0)}
-            currency={
-              priceSelected?.currency
-                ? moneyService.getCurrencySymbol(priceSelected?.currency)
-                : translate('preferences.account.plans.freeForever')
-            }
-            price={priceSelected ? displayAmount(priceSelected.amount) : '0'}
-            billing={
-              priceSelected ? translate(`preferences.account.plans.${priceSelected.interval}`).toLowerCase() : ''
-            }
-            changePlanType={currentChangePlanType}
-            isLoading={isLoadingCheckout}
-            disableActionButton={isUserOwningWorkspace && isBussinessSubscriptionSelected}
-            isBusiness={isBussinessSubscriptionSelected}
-          />
-        )}
+        <PlanSelectionComponent
+          onPriceSelected={setPriceSelected}
+          priceSelected={priceSelected}
+          freePlanData={FREE_PLAN_DATA}
+          pricesToRender={pricesFilteredAndSorted(selectedSubscriptionType)}
+          showFreePriceCard={isIndividualSubscriptionSelected}
+          isFreePlan={FREE_PLAN_DATA.id === individualSubscription?.type}
+          subscriptionSelected={{
+            individual: isIndividualSubscriptionSelected,
+            business: isBusinessSubscriptionSelected,
+          }}
+          isCurrentSubscriptionPlan={isCurrentSubscriptionPlan}
+          translate={translate}
+        />
+
+        <InfoCardComponent
+          currentChangePlanType={currentChangePlanType}
+          freePlanData={FREE_PLAN_DATA}
+          isCurrentFreePlan={FREE_PLAN_DATA.id === individualSubscription?.type}
+          isLoadingCheckout={isLoadingCheckout}
+          onCancelSubscription={setIsCancelSubscriptionModalOpen}
+          priceSelected={priceSelected}
+          pricesToRender={pricesFilteredAndSorted(selectedSubscriptionType)}
+          isCurrentPlan={
+            isIndividualSubscriptionSelected
+              ? individualSubscription?.type === 'subscription' && individualSubscription?.priceId === priceSelected.id
+              : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === priceSelected.id
+          }
+          isBusinessPlan={isBusinessSubscriptionSelected}
+          translate={translate}
+          handleOnPlanSelected={handleOnPlanSelected}
+        />
       </div>
 
       <CancelSubscriptionModal
@@ -452,7 +389,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
             ? getCurrentUsage(plan.usageDetails)
             : getCurrentUsage(plan.businessPlanUsageDetails)
         }
-        userType={selectedSubscription}
+        userType={selectedSubscriptionType}
       />
     </Section>
   );

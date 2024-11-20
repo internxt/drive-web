@@ -7,9 +7,8 @@ import errorService from '../../../../../core/services/error.service';
 import navigationService from '../../../../../core/services/navigation.service';
 import usageService, { UsageDetailsProps } from '../../../../../drive/services/usage.service';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import Button from '../../../../../shared/components/Button/Button';
+import { Button, Spinner } from '@internxt/internxtui';
 import Card from '../../../../../shared/components/Card';
-import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import { PlanState } from '../../../../../store/slices/plan';
 import { uiActions } from '../../../../../store/slices/ui';
 import VerticalDivider from '../../../../components/VerticalDivider';
@@ -94,7 +93,7 @@ const AccountUsageContainer = ({
           <div className="flex flex-col">
             <p className="text-base font-medium text-gray-100">{translate('preferences.account.emptyTrash')}</p>
             <p className="text-base font-normal text-gray-60">
-              {translate('preferences.account.emptryTrashDescription')}{' '}
+              {translate('preferences.account.emptyTrashDescription')}{' '}
             </p>
             <div className="mt-3">
               <Button variant="secondary" onClick={openTrashDialog}>

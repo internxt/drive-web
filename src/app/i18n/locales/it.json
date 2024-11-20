@@ -9,19 +9,19 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia il 78%",
-    "title": "Offerte di ritorno al lavoro per tutti i piani a vita!",
-    "subtitle": "Vinci il nostro zaino premium con i nostri piani a vita.",
-    "cta": "Scegli un piano",
+    "label": "Risparmia l'85%!",
+    "title": "Le migliori offerte del Black Friday",
+    "subtitle": "Ottieni il nostro zaino premium con i nostri piani a vita.",
+    "cta": "Scegli il tuo piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
     "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
     "features": [
-      "Scegli il tuo piano a vita perfetto",
-      "Archiviazione cloud sicura e protetta",
+      "Risparmia su tutti i piani premium",
+      "Archivio cloud privato e crittografato",
       "Open source e verificato",
-      "Trasferimenti criptati end-to-end",
+      "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
-      "L'offerta termina il 12 settembre"
+      "L'offerta termina il 3 dicembre"
     ]
   },
   "banner": {
@@ -67,7 +67,8 @@
     "light": "Chiaro",
     "dark": "Scuro",
     "system": "Sistema",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "Email",
@@ -81,7 +82,8 @@
       "dontHaveAccount": "Non hai un account?",
       "createAccount": "Creare un account",
       "2FA": "Codice a due fattori",
-      "twoFactorAuthenticationCode": "Codice di autenticazione a due fattori"
+      "twoFactorAuthenticationCode": "Codice di autenticazione a due fattori",
+      "wrongLogin": "Nome utente o password non validi"
     },
     "signup": {
       "title": "Creare un account",
@@ -183,11 +185,21 @@
       "emailMustNotBeEmpty": "L'email non deve essere vuota",
       "privacyGuarantee": "Garanzia di privacy: Non condividiamo le tue informazioni e ti contatteremo solo se necessario per fornire il nostro servizio."
     },
+    "addressBillingTitle": "Indirizzo di Fatturazione",
+    "addressBilling": {
+      "optional": {
+        "cta": "Opzionale",
+        "companyName": "Nome dell'azienda",
+        "companyVatId": "Partita IVA dell'azienda"
+      }
+    },
     "paymentTitle": "Seleziona un metodo di pagamento",
     "productCard": {
       "title": "Riepilogo dell'ordine",
       "selectedPlan": "Piano selezionato",
+      "numberOfUsers": "Numero di utenti: {{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* Si rinnova il",
         "month": "mensile",
         "year": "annuale",
         "lifetime": "a vita"
@@ -202,27 +214,39 @@
         "year": "Fatturato annualmente",
         "lifetime": "Pagamento unico"
       },
+      "perUser": "/per utente",
       "saving": "Stai risparmiando {{percent}}%",
       "planDetails": {
         "title": "Dettagli del piano:",
-        "features": [
-          "{{spaceToUpgrade}} di spazio di archiviazione crittografato",
-          "Condivisione di file e cartelle crittografati",
-          "Condivisione di file protetta da password",
-          "Accedi ai tuoi file da qualsiasi dispositivo",
-          "Accesso a tutti i nostri servizi",
-          "Carica file fino a 20GB",
-          "Autenticazione a due fattori (2FA)",
-          "Assistenza clienti premium",
-          "Garanzia di rimborso di 30 giorni"
-        ]
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} di spazio di archiviazione crittografato",
+            "Condivisione di file e cartelle crittografati",
+            "Condivisione di file protetta da password",
+            "Accedi ai tuoi file da qualsiasi dispositivo",
+            "Accesso a tutti i nostri servizi",
+            "Autenticazione a due fattori (2FA)",
+            "Assistenza clienti premium",
+            "Garanzia di rimborso di 30 giorni"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} spazio di archiviazione/utente",
+            "Condivisione di file e cartelle crittografata",
+            "Creare e gestire utenti e team",
+            "A partire da {{minimumSeats}} utenti e fino a {{maximumSeats}}",
+            "Conforme al GDPR",
+            "Gestire la fatturazione e i pagamenti dell'account",
+            "Supporto clienti premium"
+          ]
+        }
       },
       "total": "Totale: ",
+      "totalForBusiness": "Totale per {{N}} utenti: ",
       "addCoupon": {
         "buttonTitle": "Aggiungi coupon",
-        "inputText": "Codice coupon",
-        "applyCodeButtonTitle": "Applica"
+        "inputText": "Codice coupon"
       },
+      "apply": "Applica",
       "amountSaved": "Risparmia ",
       "withAnnualBilling": "con fatturazione annuale"
     }
@@ -942,7 +966,13 @@
       "primaryAction": "Conferma",
       "secondaryAction": "Annulla"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Condividi \"{{name}}\"",
+      "teams": "Squadre",
+      "teamsWithAccess": "Squadre con accesso:",
+      "shareButton": "Condividi"
+    }
   },
   "form": {
     "fields": {
@@ -996,7 +1026,7 @@
     "emptyPassword": "La password precedente non deve essere vuota",
     "errorMovingToTrash": "Si è verificato un errore durante lo spostamento degli elementi nel cestino.",
     "errorDeletingFromTrash": "Si è verificato un errore durante l'eliminazione degli elementi dal cestino.",
-    "maxSizeUploadLimitError": "File troppo grande (superiore a 20GB)",
+    "maxSizeUploadLimitError": "File troppo grande (superiore a 40GB)",
     "connectionLostError": "Connessione Internet persa",
     "errorLoadingTrashItems": "Errore nel caricamento degli elementi del cestino"
   },
@@ -1255,6 +1285,9 @@
     "linkUpdated": "Link aggiornato",
     "itemsMovedToTrash": "{{item}} spostati nel cestino",
     "restoreItems": "{{itemsToRecover}} ripristinato correttamente",
+    "storageModified": "Archiviazione modificata con successo",
+    "errorModifyingStorage": "Il nuovo spazio di archiviazione non è valido per questo membro.",
+    "generalErrorWhileModifyingStorage": "Si è verificato un errore durante la modifica dello spazio di archiviazione.",
     "itemDeleted": "{{item}} eliminate",
     "itemsDeleted": "File eliminati",
     "emailNotEmpty": "L'e-mail non deve essere vuota",
@@ -1263,7 +1296,17 @@
     "errorCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento",
     "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
     "errorPurchaseBusinessPlan": "Hai già un piano aziendale.",
-    "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti."
+    "couponIsNotValidForUserError": "Il coupon può essere riscattato solo da nuovi clienti.",
+    "errorApplyingCoupon": "Si è verificato un errore durante l'applicazione del coupon",
+    "invalidTaxIdIsProvided": "L'ID fiscale fornito non è valido",
+    "errorWhileFetchingMoreItems": "Qualcosa è andato storto durante il recupero di ulteriori elementi",
+    "errorDeletingItems": "Qualcosa è andato storto durante l'eliminazione di questo elemento",
+    "errorFetchingWorkspace": "Errore durante il recupero dell'area di lavoro {{error}}",
+    "errorSettingUpWorkspace": "Errore durante la configurazione dell'area di lavoro {{error}}",
+    "errorWhileLoadingWorkspace": "Errore durante il caricamento dell'area di lavoro {{error}}",
+    "errorFetchingWorkspaceCredentials": "Errore durante il recupero delle credenziali dell'area di lavoro {{error}}",
+    "invalidWorkspaceInvitationError": "Spazio di lavoro pieno. Contatta il proprietario.",
+    "errorAcceptingWorkspaceInvitation": "Si è verificato un errore durante l'accettazione dell'invito"
   },
   "actions": {
     "undo": "Annulla",
@@ -1338,6 +1381,7 @@
       "openPreview": "Anteprima aperta",
       "shareLink": "Condividi",
       "shareTeam": "Condividi con il team",
+      "shareWithWorkspace": "Condividi con lo spazio di lavoro",
       "getLink": "Ottenere link",
       "rename": "Rinomina",
       "download": "Scarica",
@@ -1367,7 +1411,7 @@
     },
     "uploadItems": {
       "title": "Caricamento massimo dei file",
-      "advice": "Il massimo è di 1000 file per upload.",
+      "advice": "Il massimo è di 3000 file per upload.",
       "close": "Chiudi"
     },
     "movingToTrash": "Spostare gli oggetti nella spazzatura",
@@ -1463,7 +1507,7 @@
       "members": {
         "title": "Membri",
         "members": "Membri",
-        "guests": "Ospiti",
+        "guests": "Invitati",
         "search": "Cerca membri",
         "invite": "Invita",
         "inviteDialog": {
@@ -1496,6 +1540,14 @@
           "member": "Membro",
           "deactivated": "Disattivato"
         },
+        "modifyStorageModal": {
+          "user": "Utente",
+          "storage": "Archiviazione",
+          "spaceAssigned": "Spazio assegnato",
+          "spaceLeft": "Spazio totale rimanente",
+          "cancel": "Annulla",
+          "saveChanges": "Salva modifiche"
+        },
         "deactivationModal": {
           "title": "Disattiva membro",
           "description": "{{name}} perderà l'accesso allo spazio di lavoro. Tutti i loro file e cartelle rimarranno gli stessi.",
@@ -1507,6 +1559,12 @@
           "description": "{{name}} riacquisterà l'accesso allo spazio di lavoro.",
           "reactivate": "Riattiva",
           "reactivating": "Riattivazione"
+        },
+        "removalModal": {
+          "title": "Rimuovi membro",
+          "description": "{{name}} perderà l'accesso allo spazio di lavoro. Tutti i loro file e cartelle rimarranno gli stessi.",
+          "remove": "Rimuovi",
+          "removing": "Rimuovendo"
         },
         "changePasswordModal": {
           "title": "Richiedi cambio password",
@@ -1565,11 +1623,66 @@
         "actions": {
           "deactivate": "Disattiva membro",
           "reactivate": "Riattiva membro",
+          "remove": "Rimuovi membro",
           "passwordChange": "Richiedi la modifica della password"
         }
       },
       "teams": {
-        "title": "Squadre"
+        "title": "Squadre",
+        "createTeam": "Crea squadra",
+        "team": "Squadra",
+        "members": "Membri",
+        "createTeamDialog": {
+          "title": "Nuova squadra",
+          "label": "Nome",
+          "placeholder": "Inserisci il nome della squadra",
+          "cancel": "Annulla",
+          "create": "Crea",
+          "nameExists": "Una squadra con questo nome esiste già"
+        },
+        "teamDetails": {
+          "member": "Membro",
+          "members": "Membri",
+          "remove": "Rimuovere",
+          "makeManager": "Rendere manager",
+          "addMember": "Aggiungi membro",
+          "rename": "Rinominare",
+          "delete": "Eliminare"
+        },
+        "addMemberDialog": {
+          "title": "Aggiungi membri",
+          "placeholder": "Cerca membro",
+          "cancel": "Annulla",
+          "addMember": "Aggiungi membro",
+          "addOneMember": "Aggiungi {{membersToInvite}} membro",
+          "addMembers": "Aggiungi {{membersToInvite}} membri"
+        },
+        "renameTeamDialog": {
+          "title": "Rinomina squadra",
+          "label": "Nome",
+          "placeholder": "Inserisci il nuovo nome della squadra",
+          "cancel": "Annulla",
+          "rename": "Rinomina",
+          "nameExists": "Una squadra con questo nome esiste già"
+        },
+        "deleteTeamDialog": {
+          "title": "Elimina team",
+          "description": "verrà eliminato e i membri di questo team potrebbero perdere l'accesso ai file e alle cartelle condivisi con il team.",
+          "cancel": "Annulla",
+          "delete": "Elimina team"
+        },
+        "removeTeamMemberDialog": {
+          "title": "Rimuovi membro",
+          "description": "perderà l'accesso ai file e alle cartelle condivisi con questo team.",
+          "cancel": "Annulla",
+          "delete": "Rimuovi"
+        },
+        "changeManagerDialog": {
+          "title": "Cambia manager",
+          "description": "diventerà il manager di questo team. Il precedente manager sarà retrocesso a membro del team.",
+          "cancel": "Annulla",
+          "change": "Cambia"
+        }
       },
       "billing": {
         "title": "Fatturazione",
@@ -1622,7 +1735,7 @@
       "levelUpStorage": "Aumenta il tuo spazio di archiviazione e ottieni molti altri vantaggi",
       "upgradeNow": "Aggiorna ora",
       "emptyTrash": "Svuota cestino",
-      "emptryTrashDescription": "Gli elementi nel cestino verranno eliminati definitivamente dopo 15 giorni",
+      "emptyTrashDescription": "Gli elementi nel cestino verranno eliminati in modo permanente",
       "plans": {
         "title": "Piani",
         "current": "Corrente",
@@ -1687,7 +1800,8 @@
     },
     "pending": "Inviti in sospeso",
     "messages": {
-      "sharedSuccess": "Elemento condiviso con successo con il team"
+      "sharedSuccess": "Elemento condiviso con successo con il team",
+      "switchingWorkspace": "Cambio di spazio di lavoro"
     },
     "pendingInvitations": {
       "empty": "Nessun invito rimasto",

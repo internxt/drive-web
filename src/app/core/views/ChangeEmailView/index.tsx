@@ -5,9 +5,8 @@ import { Link, useRouteMatch } from 'react-router-dom';
 import { areCredentialsCorrect } from '../../../auth/services/auth.service';
 import userService from '../../../auth/services/user.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import Button from '../../../shared/components/Button/Button';
+import { Button, Spinner } from '@internxt/internxtui';
 import Input from '../../../shared/components/Input';
-import Spinner from '../../../shared/components/Spinner/Spinner';
 import { uiActions } from '../../../store/slices/ui';
 import { userThunks } from '../../../store/slices/user';
 import errorService from '../../services/error.service';
@@ -22,6 +21,17 @@ const STATUS = {
   SUCCESS: 'success',
   EXPIRED: 'expired',
 } as const;
+
+const State = ({ icon, title, subtitle }: { icon: JSX.Element; title: string; subtitle: string }) => (
+  <div className="flex w-full max-w-xs flex-col items-center space-y-5">
+    {icon}
+
+    <div className="flex flex-col items-center space-y-1 text-center">
+      <h1 className="text-2xl font-medium text-gray-100">{title}</h1>
+      <p className="text-base leading-tight text-gray-80">{subtitle}</p>
+    </div>
+  </div>
+);
 
 export default function ChangeEmailView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -130,23 +140,11 @@ export default function ChangeEmailView(): JSX.Element {
     },
   };
 
-  const State = ({ icon, title, subtitle }: { icon: JSX.Element; title: string; subtitle: string }) => (
-    <div className="flex w-full max-w-xs flex-col items-center space-y-5">
-      {icon}
-
-      <div className="flex flex-col items-center space-y-1 text-center">
-        <h1 className="text-2xl font-medium text-gray-100">{title}</h1>
-        <p className="text-base leading-tight text-gray-80">{subtitle}</p>
-      </div>
-    </div>
-  );
-
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex w-full max-w-xs flex-col items-center space-y-5">
-        {status === STATUS.LOADING && expired === null ? (
-          <Spinner size={24} />
-        ) : !expired && !auth ? (
+        {status === STATUS.LOADING && expired === null && <Spinner size={24} />}
+        {!expired && !auth ? (
           <>
             <State {...layout[STATUS.AUTH]} />
 
@@ -159,9 +157,7 @@ export default function ChangeEmailView(): JSX.Element {
                 onChange={setPassword}
                 autofocus
                 accent={status === STATUS.ERROR ? 'error' : undefined}
-                message={
-                  status === STATUS.ERROR ? (translate('views.emailChange.auth.wrongPassword') as string) : undefined
-                }
+                message={status === STATUS.ERROR ? translate('views.emailChange.auth.wrongPassword') : undefined}
                 name="password"
               />
 

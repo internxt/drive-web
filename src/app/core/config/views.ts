@@ -22,9 +22,6 @@ import GuestAcceptInvitationView from '../../guests/views/GuestAcceptInviteView/
 import CheckoutCancelView from '../../payment/views/CheckoutCancelView/CheckoutCancelView';
 import CheckoutSuccessView from '../../payment/views/CheckoutSuccessView/CheckoutSuccessView';
 import ShareFileView from '../../share/views/ShareView/ShareFileView';
-import DeactivationTeamsView from '../../teams/views/DeactivationTeamsView/DeactivationTeamsView';
-import JoinTeamView from '../../teams/views/JoinTeamView/JoinTeamView';
-import TeamSuccessView from '../../teams/views/TeamSuccessView/TeamSuccessView';
 import WorkspaceGuestSingUpView from '../../auth/components/SignUp/WorkspaceGuestSignUp';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
@@ -34,7 +31,6 @@ import ChangeEmailView from '../views/ChangeEmailView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
 import VerifyEmailView from '../views/VerifyEmailView';
 import CheckoutViewWrapper from '../../payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
-import CheckoutPlanView from '../../payment/views/RedirectToCheckoutView/CheckoutPlanView';
 
 const views: Array<{
   id: string;
@@ -57,15 +53,11 @@ const views: Array<{
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.Shared, component: SharedViewWrapper },
   { id: AppView.FolderFileNotFound, component: FolderFileNotFound },
-  { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
   { id: AppView.Deactivation, component: DeactivationView },
-  { id: AppView.TeamsDeactivation, component: DeactivationTeamsView },
-  { id: AppView.TeamSuccess, component: TeamSuccessView },
   { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
   { id: AppView.CheckoutCancel, component: CheckoutCancelView },
   { id: AppView.Checkout, component: CheckoutViewWrapper },
-  { id: AppView.CheckoutPlan, component: CheckoutPlanView },
   { id: AppView.RecoveryLink, component: RecoveryLinkView },
   { id: AppView.ShareFileToken, component: ShareFileView },
   { id: AppView.ShareFileToken2, component: ShareFileView },

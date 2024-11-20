@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { useAppDispatch } from 'app/store/hooks';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 import { DriveItemData } from '../../types';
@@ -17,15 +17,15 @@ type EditItemNameDialogProps = {
 };
 
 const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourceToken, onClose, onSuccess }) => {
-  const [newItemName, setNewItemName] = useState('');
+  const dispatch = useAppDispatch();
+  const { translate } = useTranslationContext();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  const { translate } = useTranslationContext();
-  const dispatch = useAppDispatch();
+  const [newItemName, setNewItemName] = useState('');
+  const itemName = item?.plainName ?? '';
 
   useEffect(() => {
-    setNewItemName(item?.plainName ?? '');
+    setNewItemName(itemName);
   }, [item]);
 
   const handleOnClose = (newName = ''): void => {
@@ -72,7 +72,6 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
         <p className="text-2xl font-medium text-gray-100" data-cy="editItemNameDialogTitle">
           {translate('modals.renameItemDialog.title')}
         </p>
-
         <Input
           disabled={isLoading}
           className={`${error !== '' ? 'error' : ''}`}
@@ -86,15 +85,14 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
             setError('');
           }}
           accent={error ? 'error' : undefined}
-          message={error}
+          message={translate('error.changingName')}
           autofocus
         />
-
         <div className="flex flex-row items-center justify-end space-x-2">
           <Button
             disabled={isLoading}
             variant="secondary"
-            onClick={handleOnClose}
+            onClick={() => handleOnClose()}
             buttonDataCy="editItemNameDialogCancelButton"
             buttonChildrenDataCy="editItemNameDialogCancelButtonText"
           >

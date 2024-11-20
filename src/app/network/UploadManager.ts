@@ -1,20 +1,20 @@
 import { queue, QueueObject } from 'async';
 import { randomBytes } from 'crypto';
 import { t } from 'i18next';
-import analyticsService from '../analytics/services/analytics.service';
 import errorService from '../core/services/error.service';
 import { HTTP_CODES } from '../core/services/http.service';
-import uploadFile, { FileToUpload } from '../drive/services/file.service/uploadFile';
+import uploadFile from '../drive/services/file.service/uploadFile';
 import { DriveFileData } from '../drive/types';
 import { PersistUploadRepository } from '../repositories/DatabaseUploadRepository';
 import tasksService from '../tasks/services/tasks.service';
 import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 import { ConnectionLostError } from './requests';
+import { FileToUpload } from '../drive/services/file.service/types';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
 
-const MAX_UPLOAD_ATTEMPS = 1;
+const MAX_UPLOAD_ATTEMPTS = 1;
 
 enum FileSizeType {
   Big = 'big',
@@ -22,22 +22,23 @@ enum FileSizeType {
   Small = 'small',
 }
 
+export interface OwnerUserAuthenticationData {
+  token: string;
+  bridgeUser: string;
+  bridgePass: string;
+  encryptionKey: string;
+  bucketId: string;
+  // to manage B2B workspaces
+  workspaceId?: string;
+  workspacesToken?: string;
+  resourcesToken: string;
+}
+
 type Options = {
   isRetriedUpload?: boolean;
   showNotifications?: boolean;
   showErrors?: boolean;
-  // TOOD: REMOVE DUPLICATED TYPE FileUploadOptions IN uploadFile.ts
-  ownerUserAuthenticationData?: {
-    token: string;
-    bridgeUser: string;
-    bridgePass: string;
-    encryptionKey: string;
-    bucketId: string;
-    // to manage B2B workspaces
-    workspaceId?: string;
-    workspacesToken?: string;
-    resourcesToken: string;
-  };
+  ownerUserAuthenticationData?: OwnerUserAuthenticationData;
   sharedItemData?: {
     isDeepFolder?: boolean;
     currentFolderId?: string;
@@ -82,7 +83,6 @@ class UploadManager {
   private items: UploadManagerFileParams[];
   private options?: Options;
   private relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
-  private uploadUUIDV4: string;
   private maxSpaceOccupiedCallback: () => void;
   private uploadRepository?: PersistUploadRepository;
   private filesUploadedList: (DriveFileData & { taskId: string })[] = [];
@@ -141,7 +141,6 @@ class UploadManager {
 
       const upload = async () => {
         uploadAttempts++;
-        const isMultipleUpload = this.items.length > 1 ? 1 : 0;
 
         if (!existsRelatedTask)
           tasksService.updateTask({
@@ -184,7 +183,6 @@ class UploadManager {
           },
           {
             isTeam: false,
-            trackingParameters: { isMultipleUpload, processIdentifier: this.uploadUUIDV4 },
             abortController: this.abortController ?? fileData.abortController,
             ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,
             abortCallback: (abort?: () => void) =>
@@ -250,7 +248,7 @@ class UploadManager {
               !!this.abortController?.signal.aborted || !!fileData.abortController?.signal.aborted || error === 'abort';
             const isLostConnectionError = error instanceof ConnectionLostError || error.message === 'Network Error';
 
-            if (uploadAttempts < MAX_UPLOAD_ATTEMPS && !isUploadAborted && !isLostConnectionError) {
+            if (uploadAttempts < MAX_UPLOAD_ATTEMPTS && !isUploadAborted && !isLostConnectionError) {
               upload();
             } else {
               this.handleUploadErrors({
@@ -284,7 +282,6 @@ class UploadManager {
     this.abortController = abortController;
     this.options = options;
     this.relatedTaskProgress = relatedTaskProgress;
-    this.uploadUUIDV4 = analyticsService.getTrackingActionId();
     this.maxSpaceOccupiedCallback = maxSpaceOccupiedCallback;
     this.uploadRepository = uploadRepository;
   }

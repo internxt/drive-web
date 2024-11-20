@@ -1,7 +1,6 @@
 import { PaymentMethod, UserType } from '@internxt/sdk/dist/drive/payments/types';
-import Button from 'app/shared/components/Button/Button';
+import { Button, Spinner } from '@internxt/internxtui';
 import Card from 'app/shared/components/Card';
-import Spinner from 'app/shared/components/Spinner/Spinner';
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 

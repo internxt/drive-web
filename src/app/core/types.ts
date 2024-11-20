@@ -23,6 +23,8 @@ export interface IFormValues {
   teamMembers: number;
   token: string;
   userRole: string;
+  companyName: string;
+  companyVatId: string;
 }
 
 export interface AppConfig {
@@ -121,13 +123,9 @@ export enum AppView {
   Preferences = 'preferences',
   DriveItems = 'drive-items',
   FolderFileNotFound = 'folder-file-not-found',
-  TeamsJoin = 'teams-join',
   Deactivation = 'deactivation',
-  TeamsDeactivation = 'teams-deactivation',
-  TeamSuccess = 'team-success',
   CheckoutSuccess = 'checkout-success',
   CheckoutCancel = 'checkout-cancel',
-  CheckoutPlan = 'checkout-plan',
   Checkout = 'checkout',
   RecoveryLink = 'recovery-link',
   ShareFileToken = 'share-token',

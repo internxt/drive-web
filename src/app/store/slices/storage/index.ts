@@ -8,7 +8,7 @@ import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from '../../.
 import { storageExtraReducers } from '../storage/storage.thunks';
 import { filtersFactory, orderFactory, StorageSetFiltersPayload, StorageState } from './storage.model';
 import selectors from './storage.selectors';
-import { IRoot } from './storage.thunks/uploadFolderThunk';
+import { IRoot } from './types';
 
 const initialState: StorageState = {
   loadingFolders: {},
@@ -369,7 +369,8 @@ export const storageSlice = createSlice({
       const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
 
       folderIds.forEach((folderId) => {
-        let items = [...state.levels[folderId]];
+        const folderItems = state.levels[folderId] ?? [];
+        let items = [...folderItems];
 
         items = items.filter(
           (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && i.isFolder === item.isFolder),

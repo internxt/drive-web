@@ -5,15 +5,12 @@ import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import { trackRestrictedShared } from '../../../analytics/services/analytics.service';
 import userService from '../../../auth/services/user.service';
 import errorService from '../../../core/services/error.service';
 import { HTTP_CODES } from '../../../core/services/http.service';
 import AppError, { IFormValues } from '../../../core/types';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import Avatar from '../../../shared/components/Avatar';
-import Button from '../../../shared/components/Button/Button';
+import { Button, Avatar } from '@internxt/internxtui';
 import Input from '../../../shared/components/Input';
 import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { RootState } from '../../../store';
@@ -138,16 +135,8 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
         ),
       );
     });
-    const trackingRestrictedSharedProperties: TrackingPlan.RestrictedSharedProperties = {
-      is_folder: props.itemToShare?.isFolder,
-      share_type: 'private',
-      user_id: props.itemToShare?.userId,
-      item_id: props.itemToShare?.id,
-      invitations_send: 1,
-    };
 
     await Promise.all(sharingPromises);
-    trackRestrictedShared(trackingRestrictedSharedProperties);
   };
 
   //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG
@@ -291,7 +280,14 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
               <BaseCheckbox checked={notifyUser} />
               <p className="ml-2 text-base font-medium">{translate('modals.shareModal.invite.notifyUsers')}</p>
             </div>
-            <Button variant="primary" onClick={onInvite} disabled={isInviteButtonDisabled} loading={isAnyInviteLoading}>
+            <Button
+              variant="primary"
+              onClick={() => {
+                onInvite({ preCreateUsers: false });
+              }}
+              disabled={isInviteButtonDisabled}
+              loading={isAnyInviteLoading}
+            >
               <span>{translate('modals.shareModal.invite.invite')}</span>
             </Button>
           </div>

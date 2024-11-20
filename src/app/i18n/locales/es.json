@@ -4,19 +4,19 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": "Ahorra 78%",
-    "title": "Ofertas de vuelta al trabajo para todos los planes lifetime!",
-    "subtitle": "Gana nuestra mochila premium con nuestros planes lifetime.",
-    "cta": "Elige un plan",
-    "guarantee": "Garantía de devolución de dinero de 30 días",
+    "label": "¡Ahorra un 85%!",
+    "title": "Las mejores ofertas de Black Friday",
+    "subtitle": "Gana nuestra mochila premium con nuestros planes de por vida.",
+    "cta": "Elige tu plan",
+    "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
     "features": [
-      "Elige tu plan lifetime perfecto",
-      "Almacenamiento en la nube seguro y protegido",
+      "Ahorra a lo grande en todos los planes premium",
+      "Almacenamiento en la nube privado y encriptado",
       "Código abierto y auditado",
-      "Transferencias cifradas de extremo a extremo",
+      "Transferencias encriptadas de extremo a extremo",
       "Sin acceso no autorizado",
-      "La oferta termina el 12 de septiembre"
+      "La oferta termina el 3 de Diciembre"
     ]
   },
   "valentinesBanner": {
@@ -46,7 +46,8 @@
     "light": "Claro",
     "dark": "Oscuro",
     "system": "Sistema",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -60,7 +61,8 @@
       "dontHaveAccount": "¿No tienes cuenta?",
       "createAccount": "Crear cuenta",
       "2FA": "Código de dos factores",
-      "twoFactorAuthenticationCode": "Código de autenticación de dos factores"
+      "twoFactorAuthenticationCode": "Código de autenticación de dos factores",
+      "wrongLogin": "Nombre de usuario o contraseña no válidos"
     },
     "signup": {
       "title": "Crear cuenta",
@@ -162,11 +164,21 @@
       "emailMustNotBeEmpty": "El correo electrónico no debe estar vacío",
       "privacyGuarantee": "Garantía de privacidad: No compartimos su información y solo contactaremos contigo cuando sea necesario para brindar nuestro servicio."
     },
+    "addressBillingTitle": "Facturación de Dirección",
+    "addressBilling": {
+      "optional": {
+        "cta": "Opcional",
+        "companyName": "Nombre de la empresa",
+        "companyVatId": "ID de IVA de la empresa"
+      }
+    },
     "paymentTitle": "Seleccione un método de pago",
     "productCard": {
       "title": "Resumen del pedido",
       "selectedPlan": "Plan seleccionado",
+      "numberOfUsers": "Número de usuarios: {{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* Se renueva en",
         "month": "mensual",
         "year": "anual",
         "lifetime": "lifetime"
@@ -181,27 +193,39 @@
         "year": "Facturado anualmente",
         "lifetime": "Pago único"
       },
+      "perUser": "/por usuario",
       "saving": "Estás ahorrando un {{percent}}%",
       "planDetails": {
         "title": "Detalles del plan:",
-        "features": [
-          "{{spaceToUpgrade}} de almacenamiento encriptado",
-          "Compartir archivos y carpetas encriptados",
-          "Compartir archivos con protección por contraseña",
-          "Acceda a sus archivos desde cualquier dispositivo",
-          "Acceso a todos nuestros servicios",
-          "Cargar archivos de hasta 20GB",
-          "Autenticación de dos factores (2FA)",
-          "Soporte al cliente premium",
-          "Garantía de devolución de dinero de 30 días"
-        ]
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} de almacenamiento encriptado",
+            "Compartir archivos y carpetas encriptados",
+            "Compartir archivos con protección por contraseña",
+            "Acceda a sus archivos desde cualquier dispositivo",
+            "Acceso a todos nuestros servicios",
+            "Autenticación de dos factores (2FA)",
+            "Soporte al cliente premium",
+            "Garantía de devolución de dinero de 30 días"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} almacenamiento/usuario",
+            "Compartir archivos y carpetas cifrados",
+            "Crear y gestionar usuarios y equipos",
+            "Desde {{minimumSeats}} usuarios y hasta {{maximumSeats}}",
+            "Cumple con el GDPR",
+            "Gestionar facturación y pagos de la cuenta",
+            "Soporte al cliente premium"
+          ]
+        }
       },
       "total": "Total: ",
+      "totalForBusiness": "Total para {{N}} usuarios: ",
       "addCoupon": {
         "buttonTitle": "Añadir cupón",
-        "inputText": "Código de cupón",
-        "applyCodeButtonTitle": "Aplicar"
+        "inputText": "Código de cupón"
       },
+      "apply": "Aplicar",
       "amountSaved": "Ahorre ",
       "withAnnualBilling": "con facturación anual"
     }
@@ -928,7 +952,13 @@
       "primaryAction": "Confirmar",
       "secondaryAction": "Cancelar"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Compartir \"{{name}}\"",
+      "teams": "Equipos",
+      "teamsWithAccess": "Equipos con acceso:",
+      "shareButton": "Compartir"
+    }
   },
   "form": {
     "fields": {
@@ -982,7 +1012,7 @@
     "emptyPassword": "La contraseña no puede estar vacía.",
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
-    "maxSizeUploadLimitError": "File too large (greater than 20GB)",
+    "maxSizeUploadLimitError": "File too large (greater than 40GB)",
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera"
   },
@@ -1227,6 +1257,9 @@
     "linkUpdated": "Enlace actualizado",
     "itemsMovedToTrash": "{{item}} movid{{s}} a la papelera",
     "restoreItems": "{{itemsToRecover}} restaurad{{s}} con éxito",
+    "storageModified": "Almacenamiento modificado con éxito",
+    "errorModifyingStorage": "El nuevo almacenamiento no es válido para este miembro.",
+    "generalErrorWhileModifyingStorage": "Algo salió mal al modificar el almacenamiento.",
     "moveItems": "{{itemsToMove}} movid{{s}} con éxito",
     "itemDeleted": "{{item}} eliminado",
     "itemsDeleted": "Archivos eliminados",
@@ -1239,7 +1272,17 @@
     "errorApplyCoupon": "Se ha producido un error al aplicar el descuento",
     "alreadyAppliedCoupon": "El cupón ya se ha aplicado",
     "errorPurchaseBusinessPlan": "Ya tienes un plan para empresas",
-    "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes."
+    "couponIsNotValidForUserError": "El cupón solo puede ser canjeado por nuevos clientes.",
+    "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón",
+    "invalidTaxIdIsProvided": "El ID fiscal proporcionado es inválido",
+    "errorWhileFetchingMoreItems": "Algo salió mal al obtener más elementos",
+    "errorDeletingItems": "Algo salió mal al eliminar este elemento",
+    "errorFetchingWorkspace": "Error al obtener el espacio de trabajo {{error}}",
+    "errorSettingUpWorkspace": "Error al configurar el espacio de trabajo {{error}}",
+    "errorWhileLoadingWorkspace": "Error al cargar el espacio de trabajo {{error}}",
+    "errorFetchingWorkspaceCredentials": "Error al obtener las credenciales del espacio de trabajo {{error}}",
+    "invalidWorkspaceInvitationError": "Espacio de trabajo lleno. Contacta al propietario.",
+    "errorAcceptingWorkspaceInvitation": "Ocurrió un error al aceptar la invitación"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",
@@ -1329,6 +1372,7 @@
       "openPreview": "Abrir previsualización",
       "shareLink": "Compartir",
       "shareTeam": "Compartir con el equipo",
+      "shareWithWorkspace": "Compartir con el espacio de trabajo",
       "getLink": "Copiar enlace",
       "details": "Detalles",
       "rename": "Renombrar",
@@ -1357,8 +1401,8 @@
       "progress": "Vaciando papelera..."
     },
     "uploadItems": {
-      "title": "Maximum file upload",
-      "advice": "The maximum is 1000 files per upload.",
+      "title": "Subida máxima de archivos alcanzada",
+      "advice": "El máximo es de 3000 archivos por subida.",
       "close": "Cerrar"
     },
     "movingToTrash": "Moviendo elementos a la papelera",
@@ -1487,6 +1531,14 @@
           "member": "Miembro",
           "deactivated": "Desactivado"
         },
+        "modifyStorageModal": {
+          "user": "Usuario",
+          "storage": "Almacenamiento",
+          "spaceAssigned": "Espacio asignado",
+          "spaceLeft": "Espacio total restante",
+          "cancel": "Cancelar",
+          "saveChanges": "Guardar cambios"
+        },
         "deactivationModal": {
           "title": "Desactivar miembro",
           "description": "{{name}} perderá acceso al espacio de trabajo. Todos sus archivos y carpetas permanecerán iguales.",
@@ -1498,6 +1550,12 @@
           "description": "{{name}} recuperará acceso al espacio de trabajo.",
           "reactivate": "Reactivar",
           "reactivating": "Reactivando"
+        },
+        "removalModal": {
+          "title": "Eliminar miembro",
+          "description": "{{name}} perderá acceso al espacio de trabajo. Todos sus archivos y carpetas permanecerán iguales.",
+          "remove": "Eliminar",
+          "removing": "Eliminando"
         },
         "changePasswordModal": {
           "title": "Solicitar cambio de contraseña",
@@ -1556,11 +1614,66 @@
         "actions": {
           "deactivate": "Desactivar miembro",
           "reactivate": "Reactivar miembro",
+          "remove": "Eliminar miembro",
           "passwordChange": "Solicitar cambio de contraseña"
         }
       },
       "teams": {
-        "title": "Equipos"
+        "title": "Equipos",
+        "createTeam": "Crear equipo",
+        "team": "Equipo",
+        "members": "Miembros",
+        "createTeamDialog": {
+          "title": "Nuevo equipo",
+          "label": "Nombre",
+          "placeholder": "Introduce el nombre del equipo",
+          "cancel": "Cancelar",
+          "create": "Crear",
+          "nameExists": "Ya existe un equipo con ese nombre"
+        },
+        "teamDetails": {
+          "member": "Miembro",
+          "members": "Miembros",
+          "remove": "Eliminar",
+          "makeManager": "Hacer manager",
+          "addMember": "Añadir Miembro",
+          "rename": "Renombrar",
+          "delete": "Eliminar"
+        },
+        "addMemberDialog": {
+          "title": "Agregar miembros",
+          "placeholder": "Buscar miembro",
+          "cancel": "Cancelar",
+          "addMember": "Agregar miembro",
+          "addOneMember": "Agregar {{membersToInvite}} miembro",
+          "addMembers": "Agregar {{membersToInvite}} miembros"
+        },
+        "renameTeamDialog": {
+          "title": "Renombrar equipo",
+          "label": "Nombre",
+          "placeholder": "Ingrese el nuevo nombre del equipo",
+          "cancel": "Cancelar",
+          "rename": "Renombrar",
+          "nameExists": "Ya existe un equipo con este nombre"
+        },
+        "deleteTeamDialog": {
+          "title": "Eliminar equipo",
+          "description": "se eliminará y los miembros de este equipo pueden perder el acceso a archivos y carpetas compartidos con el equipo.",
+          "cancel": "Cancelar",
+          "delete": "Eliminar equipo"
+        },
+        "removeTeamMemberDialog": {
+          "title": "Eliminar miembro",
+          "description": "perderá acceso a archivos y carpetas compartidos con este equipo.",
+          "cancel": "Cancelar",
+          "delete": "Eliminar"
+        },
+        "changeManagerDialog": {
+          "title": "Cambiar de administrador",
+          "description": "se convertirá en el administrador de este equipo. El administrador anterior será degradado a miembro del equipo.",
+          "cancel": "Cancelar",
+          "change": "Cambiar"
+        }
       },
       "billing": {
         "title": "Facturación",
@@ -1613,7 +1726,7 @@
       "levelUpStorage": "Aumenta tu espacio de almacenamiento y obtén muchos otros beneficios",
       "upgradeNow": "Mejorar ahora",
       "emptyTrash": "Vaciar la papelera",
-      "emptryTrashDescription": "Los elementos en la papelera serán eliminados permanentemente después de 15 días",
+      "emptyTrashDescription": "Los elementos de la papelera se borrarán permanentemente",
       "plans": {
         "title": "Planes",
         "current": "Actual",
@@ -1678,7 +1791,8 @@
     },
     "pending": "Invitaciones pendientes",
     "messages": {
-      "sharedSuccess": "Elemento compartido exitosamente con el equipo"
+      "sharedSuccess": "Elemento compartido exitosamente con el equipo",
+      "switchingWorkspace": "Cambiando espacio de trabajo"
     },
     "pendingInvitations": {
       "empty": "No quedan invitaciones",

@@ -2,9 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { t } from 'i18next';
 import { FunnelSimple } from '@phosphor-icons/react';
 
-import Button from 'app/shared/components/Button/Button';
+import { Button, RadioButton } from '@internxt/internxtui';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
-import RadioButton from 'app/shared/components/forms/RadioButton/RadioButton';
 
 interface ActivityFiltersProps {
   isSelectedRoles: string[];

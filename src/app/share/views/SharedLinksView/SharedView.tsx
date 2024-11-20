@@ -19,6 +19,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import errorService from '../../../core/services/error.service';
+import { UPLOAD_ITEMS_LIMIT } from '../../../drive/components/DriveExplorer/DriveExplorer';
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
 import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
@@ -60,7 +61,12 @@ import {
 } from './context/SharedViewContext.actions';
 import { useShareViewContext } from './context/SharedViewContextProvider';
 import useFetchSharedData from './hooks/useFetchSharedData';
-import { getFolderUserRole, isCurrentUserViewer, isItemOwnedByCurrentUser } from './sharedViewUtils';
+import {
+  getDraggedItemsWithoutFolders,
+  getFolderUserRole,
+  isCurrentUserViewer,
+  isItemOwnedByCurrentUser,
+} from './sharedViewUtils';
 
 export const MAX_SHARED_NAME_LENGTH = 32;
 
@@ -129,14 +135,14 @@ function SharedView({
     dispatch(sharedThunks.getPendingInvitations());
 
     if (page === 0 && !folderUUID) {
-      fetchRootFolders(workspaceId, defaultTeamId);
+      fetchRootFolders(workspaceId);
       dispatch(storageActions.resetSharedNamePath());
     }
 
     if (folderUUID) {
       const onRedirectionToFolderError = (errorMessage: string) => {
         notificationsService.show({ text: errorMessage, type: ToastType.Error });
-        fetchRootFolders(workspaceId, defaultTeamId);
+        fetchRootFolders(workspaceId);
       };
 
       handlePrivateSharedFolderAccess({
@@ -161,9 +167,19 @@ function SharedView({
   }, [currentShareId]);
 
   const onItemDropped = async (_, monitor: DropTargetMonitor) => {
-    const droppedData: any = monitor.getItem();
+    const droppedData: any = monitor.getItem() || [];
+    const itemsArray: DataTransferItem[] = Array.from(droppedData.dataTransfer.items);
 
-    const transformedObject = droppedData.files.reduce((acc, file, index) => {
+    const { filteredItems, hasFolders } = await getDraggedItemsWithoutFolders(itemsArray);
+
+    if (hasFolders) {
+      notificationsService.show({
+        text: translate('notificationMessages.foldersCannotBeUploadedToSharedFolder'),
+        type: ToastType.Info,
+      });
+    }
+
+    const transformedObject: FileList = filteredItems.reduce((acc: any, file, index) => {
       acc[index] = file;
       return acc;
     }, {});
@@ -171,7 +187,7 @@ function SharedView({
     await onUploadFileInputChanged({
       files: {
         ...transformedObject,
-        length: droppedData.files.length,
+        length: filteredItems.length,
       },
     });
   };
@@ -223,7 +239,7 @@ function SharedView({
   const onShowInvitationsModalClose = () => {
     resetSharedViewState();
     actionDispatch(setCurrentFolderId(''));
-    fetchRootFolders(workspaceId, defaultTeamId);
+    fetchRootFolders(workspaceId);
     dispatch(sharedThunks.getPendingInvitations());
     dispatch(uiActions.setIsInvitationsDialogOpen(false));
   };
@@ -292,6 +308,7 @@ function SharedView({
           : translate('shared-links.toast.link-deleted');
       notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
       closeConfirmDelete();
+      actionDispatch(setSelectedItems([]));
       actionDispatch(setIsLoading(false));
     }
   };
@@ -312,6 +329,8 @@ function SharedView({
     }));
 
     await moveItemsToTrash(itemsToTrash, () => removeItemsFromList(itemsToTrash));
+
+    actionDispatch(setSelectedItems([]));
   };
 
   const renameItem = (shareItem: AdvancedSharedItem | DriveItemData) => {
@@ -329,14 +348,14 @@ function SharedView({
       const mnemonic =
         selectedWorkspace?.workspaceUser.key ??
         (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : clickedShareItemEncryptionKey));
-      handleOpemItemPreview(true, { ...previewItem, mnemonic });
+      handleOpenItemPreview(true, { ...previewItem, mnemonic });
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
     }
   };
 
-  const handleOpemItemPreview = (openItemPreview: boolean, item?: PreviewFileItem) => {
+  const handleOpenItemPreview = (openItemPreview: boolean, item?: PreviewFileItem) => {
     actionDispatch(setItemToView(item));
     actionDispatch(setIsFileViewerOpen(openItemPreview));
   };
@@ -365,10 +384,10 @@ function SharedView({
 
     if (!items) return;
 
-    if (items.length >= 1000 || !currentParentFolderId) {
+    if (items.length >= UPLOAD_ITEMS_LIMIT || !currentParentFolderId) {
       dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
       notificationsService.show({
-        text: 'The maximum is 1000 files per upload.',
+        text: translate('drive.uploadItems.advice'),
         type: ToastType.Warning,
       });
       return; // Exit the function if the condition fails
@@ -412,7 +431,7 @@ function SharedView({
     );
 
     actionDispatch(setHasMoreFiles(true));
-    fetchFiles(true, workspaceId, defaultTeamId);
+    fetchFiles(true, workspaceId);
   };
 
   const handleIsItemOwnedByCurrentUser = (givenItemUserUUID?: string) => {
@@ -464,7 +483,7 @@ function SharedView({
     await moveSelectedItemsToTrash(items);
 
     if (isFileViewerOpen) {
-      handleOpemItemPreview(false);
+      handleOpenItemPreview(false);
     }
   };
 
@@ -474,7 +493,7 @@ function SharedView({
         // This is added so that in case the element is no longer shared due
         // to changes in the share dialog it will disappear from the list.
         resetSharedViewState();
-        fetchRootFolders(workspaceId, defaultTeamId);
+        fetchRootFolders(workspaceId);
       }
     }, 200);
   };
@@ -526,6 +545,7 @@ function SharedView({
           )
         }
         <SharedItemListContainer
+          isRootFolder={isRootFolder}
           disableKeyboardShortcuts={disableKeyboardShortcuts || showStopSharingConfirmation}
           onItemDoubleClicked={handleOnItemDoubleClick}
           onUploadFileButtonClicked={onUploadFileButtonClicked}
@@ -535,7 +555,7 @@ function SharedView({
           onOpenStopSharingDialog={onOpenStopSharingDialog}
           onRenameSelectedItem={renameItem}
           onOpenItemPreview={(item: PreviewFileItem) => {
-            handleOpemItemPreview(true, item);
+            handleOpenItemPreview(true, item);
           }}
         />
       </div>
@@ -557,7 +577,7 @@ function SharedView({
         <FileViewerWrapper
           file={itemToView}
           showPreview={isFileViewerOpen}
-          onClose={() => handleOpemItemPreview(false)}
+          onClose={() => handleOpenItemPreview(false)}
           onShowStopSharingDialog={onOpenStopSharingDialog}
           sharedKeyboardShortcuts={{
             renameItemFromKeyboard: !isCurrentUserViewer(currentUserRole) ? renameItem : undefined,
@@ -573,7 +593,10 @@ function SharedView({
         moveItemsToTrash={moveItemsToTrashOnStopSharing}
       />
       <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
-      <ShareDialog onCloseDialog={handleOnCloseShareDialog} />
+      <ShareDialog
+        onCloseDialog={handleOnCloseShareDialog}
+        onStopSharingItem={() => actionDispatch(setSelectedItems([]))}
+      />
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}

@@ -1,4 +1,4 @@
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 export enum Currency {
   'eur' = '€',
@@ -69,12 +69,17 @@ export enum RenewalPeriod {
   Annually = 'annually',
 }
 
-export type CurrentPlanSelected = DisplayPrice & { decimalAmount: number };
+export type RequestedPlanData = DisplayPrice & {
+  decimalAmount: number;
+  type: UserType;
+  minimumSeats?: number;
+  maximumSeats?: number;
+};
 
 // Checkout View Data
 export type PlanData = {
-  selectedPlan: DisplayPrice & { decimalAmount: number };
-  upsellPlan: DisplayPrice & { decimalAmount: number };
+  selectedPlan: RequestedPlanData;
+  upsellPlan: RequestedPlanData;
 };
 
 export type AuthMethodTypes = 'signUp' | 'signIn' | 'userIsSignedIn';

@@ -3,8 +3,8 @@ import { ArrowRight } from '@phosphor-icons/react';
 import { useSelector } from 'react-redux';
 import { bytesToString } from '../../../../../drive/services/size.service';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import moneyService from '../../../../../payment/services/money.service';
-import Button from '../../../../../shared/components/Button/Button';
+import moneyService from '../../../../../payment/services/currency.service';
+import { Button } from '@internxt/internxtui';
 import Modal from '../../../../../shared/components/Modal';
 import { RootState } from '../../../../../store';
 import { PlanState } from '../../../../../store/slices/plan';
@@ -17,6 +17,7 @@ const ChangePlanDialog = ({
   isUpdatingSubscription,
   priceIdSelected,
   subscriptionSelected,
+  isLoading,
 }: {
   prices: DisplayPrice[];
   isDialogOpen: boolean;
@@ -25,13 +26,21 @@ const ChangePlanDialog = ({
   onPlanClick: (value: string, currency: string) => void;
   priceIdSelected: string;
   subscriptionSelected: UserType;
+  isLoading?: boolean;
 }): JSX.Element => {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const { translate } = useTranslationContext();
   const isIndividualSubscription = subscriptionSelected == UserType.Individual;
 
-  const { planLimit, planUsage, businessPlanLimit, businessPlanUsage, individualSubscription, businessSubscription } =
-    plan;
+  const {
+    planLimit,
+    planUsage,
+    businessPlanLimit,
+    businessPlan,
+    businessPlanUsage,
+    individualSubscription,
+    businessSubscription,
+  } = plan;
 
   const subscription = isIndividualSubscription ? individualSubscription : businessSubscription;
   const selectedPlan: DisplayPrice = prices.find((price) => price.id === priceIdSelected) as DisplayPrice;
@@ -40,7 +49,9 @@ const ChangePlanDialog = ({
   const selectedPlanSizeString = bytesToString(selectedPlanSize);
   const selectedPlanAmount = selectedPlan?.amount;
   const selectedPlanInterval = selectedPlan?.interval;
-  const currentPlanSizeString = bytesToString(isIndividualSubscription ? planLimit : businessPlanLimit);
+  const currentPlanSizeString = bytesToString(
+    isIndividualSubscription ? planLimit : businessPlan?.storageLimit ?? businessPlanLimit,
+  );
   const currentPlanUsage = isIndividualSubscription ? planUsage : businessPlanUsage;
   let amountMonthly: number | null = null;
   let currentAmountMonthly: number | null = null;
@@ -144,8 +155,9 @@ const ChangePlanDialog = ({
         </Button>
         <Button
           variant="primary"
-          disabled={isUpdatingSubscription}
           onClick={() => onPlanClick(priceIdSelected, selectedPlan?.currency)}
+          loading={isLoading}
+          disabled={isUpdatingSubscription}
         >
           {translate('views.account.tabs.plans.dialog.button.continue')}
         </Button>

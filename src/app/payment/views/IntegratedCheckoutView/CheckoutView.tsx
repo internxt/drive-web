@@ -1,17 +1,19 @@
-import { ProductFeaturesComponent } from '../../components/checkout/ProductCardComponent';
+import { CheckoutProductCard } from '../../components/checkout/CheckoutProductCard';
 import { HeaderComponent } from '../../components/checkout/Header';
 import LoadingPulse from 'app/shared/components/LoadingPulse/LoadingPulse';
 import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { useForm } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
 import { AuthMethodTypes } from '../../types';
-import { UserAuthComponent } from '../../components/checkout/UserAuthComponent';
+import { CheckoutUserAuth } from '../../components/checkout/CheckoutUserAuth';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
 import { State } from 'app/payment/store/types';
 import { LegacyRef } from 'react';
+import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -27,7 +29,6 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
 };
 
 interface CheckoutViewProps {
-  authMethod: AuthMethodTypes;
   userInfo: UserInfoProps;
   isUserAuthenticated: boolean;
   upsellManager: UpsellManagerProps;
@@ -36,8 +37,11 @@ interface CheckoutViewProps {
   checkoutViewManager: CheckoutViewManager;
 }
 
+const AUTH_METHOD_VALUES = {
+  IS_SIGNED_IN: 'userIsSignedIn',
+};
+
 const CheckoutView = ({
-  authMethod,
   userInfo,
   isUserAuthenticated,
   upsellManager,
@@ -50,7 +54,8 @@ const CheckoutView = ({
   const stripeSDK = useStripe();
   const elements = useElements();
 
-  const { isPaying, error, couponCodeData, currentSelectedPlan } = checkoutViewVariables;
+  const { isPaying, error, authMethod, couponCodeData, seatsForBusinessSubscription, currentSelectedPlan } =
+    checkoutViewVariables;
 
   const {
     register,
@@ -60,6 +65,8 @@ const CheckoutView = ({
   } = useForm<IFormValues>({
     mode: 'onChange',
   });
+
+  const isButtonDisabled = authMethod === AUTH_METHOD_VALUES.IS_SIGNED_IN ? isPaying : isPaying && isValid;
 
   function onAuthMethodToggled(authMethod: AuthMethodTypes) {
     reset({
@@ -85,7 +92,7 @@ const CheckoutView = ({
           {currentSelectedPlan ? (
             <div className="flex flex-col items-center justify-center gap-10 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex w-full max-w-xl flex-col space-y-14" ref={userAuthComponentRef}>
-                <UserAuthComponent
+                <CheckoutUserAuth
                   errors={errors}
                   authError={error?.auth}
                   register={register}
@@ -95,42 +102,51 @@ const CheckoutView = ({
                   onLogOut={checkoutViewManager.onLogOut}
                 />
                 <div className="flex flex-col space-y-8 pb-20">
-                  <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.paymentTitle')}</p>
-                  <div className="flex flex-col rounded-2xl border border-gray-10 bg-surface p-5">
-                    <AddressElement
-                      onChange={(e) => {
-                        checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
-                      }}
-                      options={{
-                        mode: 'billing',
-                        autocomplete: {
-                          mode: 'automatic',
-                        },
-                      }}
-                    />
+                  <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.addressBillingTitle')}</p>
+                  <div className="flex w-full flex-col items-center gap-10">
+                    <div className="flex w-full flex-col rounded-2xl border border-gray-10 bg-surface p-5">
+                      <AddressElement
+                        onChange={(e) => {
+                          checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
+                          checkoutViewManager.onCountryChange(e.value.address.country);
+                        }}
+                        options={{
+                          mode: 'billing',
+                          autocomplete: {
+                            mode: 'automatic',
+                          },
+                        }}
+                      />
+                    </div>
+                    {currentSelectedPlan.type === UserType.Business ? (
+                      <OptionalB2BDropdown errors={errors} register={register} translate={translate} />
+                    ) : undefined}
                   </div>
+                  <p className="text-2xl font-semibold text-gray-100">3. {translate('checkout.paymentTitle')}</p>
                   <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
                   {error?.stripe && (
                     <div id="stripeError" className="text-red-dark">
                       {error.stripe}
                     </div>
                   )}
-                  <Button type="submit" id="submit" className="hidden lg:flex" disabled={isPaying && isValid}>
-                    {isPaying && isValid ? translate('checkout.processing') : translate('checkout.pay')}
+                  <Button type="submit" id="submit" className="hidden lg:flex" disabled={isButtonDisabled}>
+                    {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
                   </Button>
                 </div>
               </div>
               <div className="top-5 flex w-full max-w-xl flex-col gap-5 pb-10 lg:sticky lg:max-w-lg">
-                <ProductFeaturesComponent
+                <CheckoutProductCard
                   selectedPlan={currentSelectedPlan}
                   couponCodeData={couponCodeData}
                   couponError={error?.coupon}
-                  onCouponInputChange={checkoutViewManager.onCouponInputChange}
+                  seatsForBusinessSubscription={seatsForBusinessSubscription}
                   upsellManager={upsellManager}
+                  onSeatsChange={checkoutViewManager.onSeatsChange}
+                  onCouponInputChange={checkoutViewManager.onCouponInputChange}
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
                 />
-                <Button type="submit" id="submit" className="flex lg:hidden" disabled={isPaying && isValid}>
-                  {isPaying && isValid ? translate('checkout.processing') : translate('checkout.pay')}
+                <Button type="submit" id="submit" className="flex lg:hidden" disabled={isButtonDisabled}>
+                  {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
                 </Button>
               </div>
             </div>

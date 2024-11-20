@@ -72,30 +72,31 @@ export interface AppDatabase extends DBSchema {
   };
 }
 
-export interface DatabaseService {
-  (databaseName: string, databaseVersion: number): {
-    put: <Name extends DatabaseCollection>(
-      collectionName: Name,
-      key: AppDatabase[Name]['key'],
-      value: AppDatabase[Name]['value'],
-    ) => Promise<void>;
-    get: <Name extends DatabaseCollection>(
-      collectionName: Name,
-      key: AppDatabase[Name]['key'],
-    ) => Promise<AppDatabase[Name]['value'] | undefined>;
-    clear: () => Promise<void>;
-    delete: <Name extends DatabaseCollection>(collectionName: Name, key: AppDatabase[Name]['key']) => Promise<void>;
-    getAll: <Name extends keyof AppDatabase>(
-      collectionName: DatabaseCollection,
-    ) => Promise<AppDatabase[Name]['value'][] | undefined>;
-    getAllFromIndex: <Name extends keyof AppDatabase, Index extends keyof AppDatabase[Name]['indexes']>(
-      collectionName: DatabaseCollection,
-      index: Index,
-      key: number,
-    ) => Promise<AppDatabase[Name]['value'][] | undefined>;
-    isAvailable: () => Promise<boolean>;
-  };
-}
+export type DatabaseService = (
+  databaseName: string,
+  databaseVersion: number,
+) => {
+  put: <Name extends DatabaseCollection>(
+    collectionName: Name,
+    key: AppDatabase[Name]['key'],
+    value: AppDatabase[Name]['value'],
+  ) => Promise<void>;
+  get: <Name extends DatabaseCollection>(
+    collectionName: Name,
+    key: AppDatabase[Name]['key'],
+  ) => Promise<AppDatabase[Name]['value'] | undefined>;
+  clear: () => Promise<void>;
+  delete: <Name extends DatabaseCollection>(collectionName: Name, key: AppDatabase[Name]['key']) => Promise<void>;
+  getAll: <Name extends keyof AppDatabase>(
+    collectionName: DatabaseCollection,
+  ) => Promise<AppDatabase[Name]['value'][] | undefined>;
+  getAllFromIndex: <Name extends keyof AppDatabase, Index extends keyof AppDatabase[Name]['indexes']>(
+    collectionName: DatabaseCollection,
+    index: Index,
+    key: number,
+  ) => Promise<AppDatabase[Name]['value'][] | undefined>;
+  isAvailable: () => Promise<boolean>;
+};
 
 const providers: { [key in DatabaseProvider]: DatabaseService } = {
   [DatabaseProvider.IndexedDB]: indexedDBService,

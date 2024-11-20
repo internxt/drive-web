@@ -23,7 +23,6 @@ interface UISliceState {
   isSharedFolderTooBigDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
   isShareItemDialogOpenInPreviewView: boolean;
-  isInviteMemberDialogOpen: boolean;
   isUploadItemsFailsDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
   isGuestInviteDialogOpen: boolean;
@@ -34,9 +33,9 @@ interface UISliceState {
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
-  currentEditingBreadcrumbNameDirty: string;
   isToastNotificationOpen: boolean;
   isGlobalSearch: boolean;
+  isShareWhithTeamDialogOpen: boolean;
 }
 
 const initialState: UISliceState = {
@@ -60,7 +59,6 @@ const initialState: UISliceState = {
   isSharedFolderTooBigDialogOpen: false,
   isShareItemDialogOpen: false,
   isShareItemDialogOpenInPreviewView: false,
-  isInviteMemberDialogOpen: false,
   isUploadItemsFailsDialogOpen: false,
   isDriveItemInfoMenuOpen: false,
   isGuestInviteDialogOpen: false,
@@ -71,9 +69,9 @@ const initialState: UISliceState = {
   currentFileInfoMenuItem: null,
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
-  currentEditingBreadcrumbNameDirty: '',
   isToastNotificationOpen: false,
   isGlobalSearch: false,
+  isShareWhithTeamDialogOpen: false,
 };
 
 export const uiSlice = createSlice({
@@ -140,9 +138,6 @@ export const uiSlice = createSlice({
     setIsShareItemDialogOpenInPreviewView: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isShareItemDialogOpenInPreviewView = action.payload;
     },
-    setIsInviteMemberDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isInviteMemberDialogOpen = action.payload;
-    },
     setIsGuestInvitationDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isGuestInviteDialogOpen = action.payload;
     },
@@ -179,12 +174,6 @@ export const uiSlice = createSlice({
     ) => {
       state.currentEditingNameDirty = action.payload;
     },
-    setCurrentEditingBreadcrumbNameDirty: (
-      state: UISliceState,
-      action: PayloadAction<UISliceState['currentEditingBreadcrumbNameDirty']>,
-    ) => {
-      state.currentEditingBreadcrumbNameDirty = action.payload;
-    },
     resetState: (state: UISliceState) => {
       Object.assign(state, initialState);
     },
@@ -193,6 +182,9 @@ export const uiSlice = createSlice({
     },
     setIsGlobalSearch: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isGlobalSearch = action.payload;
+    },
+    setIsShareWhithTeamDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isShareWhithTeamDialogOpen = action.payload;
     },
   },
 });
@@ -210,7 +202,6 @@ export const {
   setIsReachedPlanLimitDialogOpen,
   setIsSharedFolderTooBigDialogOpen,
   setIsShareItemDialogOpen,
-  setIsInviteMemberDialogOpen,
   setIsDeleteBackupDialog,
   setIsUploadItemsFailsDialogOpen,
   setIsDriveItemInfoMenuOpen,
@@ -224,6 +215,7 @@ export const {
   setIsToastNotificacionOpen,
   setIsGlobalSearch,
   setIsItemDetailsDialogOpen,
+  setIsShareWhithTeamDialogOpen,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;
