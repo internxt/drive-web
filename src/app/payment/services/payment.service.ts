@@ -160,9 +160,9 @@ const paymentService = {
     return paymentsClient.updateSubscriptionPrice({ priceId, couponCode: coupon, userType });
   },
 
-  async updateWorkspaceMembers(subscriptionId: string, updatedMembers: number) {
+  async updateWorkspaceMembers(workspaceId: string, subscriptionId: string, updatedMembers: number) {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.updateWorkspaceMembers(subscriptionId, updatedMembers);
+    return paymentsClient.updateWorkspaceMembers(workspaceId, subscriptionId, updatedMembers);
   },
 
   async cancelSubscription(userType?: UserType): Promise<void> {

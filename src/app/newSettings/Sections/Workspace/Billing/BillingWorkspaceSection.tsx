@@ -146,7 +146,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   };
 
   const onConfirmUpdatedMembers = async () => {
-    if (!subscriptionId || !newAmountOfSeats) {
+    if (!subscriptionId || !newAmountOfSeats || !workspaceId) {
       notificationsService.show({
         text: translate('notificationMessages.errorWhileUpdatingWorkspaceMembers'),
         type: ToastType.Error,
@@ -160,7 +160,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
       return;
     }
     try {
-      await paymentService.updateWorkspaceMembers(subscriptionId, newAmountOfSeats);
+      await paymentService.updateWorkspaceMembers(workspaceId as string, subscriptionId, newAmountOfSeats);
 
       await dispatch(planThunks.fetchBusinessLimitUsageThunk());
       setTimeout(async () => {
