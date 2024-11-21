@@ -20,29 +20,59 @@ interface PassObjectInterface {
   salt?: string | null;
   password: string;
 }
-
+/**
+ * Creates sha256 hashesr
+ * @returns {Promise<IHasher>} The sha256 hasher.
+ */
 function getSha256Hasher() {
   return createSHA256();
 }
 
-function getSha256(data: string) {
+/**
+ * Computes sha256
+ * @param {string} data - The input data
+ * @returns {Promise<string>} The result of applying sha256 to the data.
+ */
+function getSha256(data: string): Promise<string> {
   return sha256(data);
 }
 
-function getSha512(data: string) {
+/**
+ * Computes sha512
+ * @param {string} data - The input data
+ * @returns {Promise<string>} The result of applying sha512 to the data.
+ */
+function getSha512(data: string): Promise<string> {
   return sha512(data);
 }
 
-function getRipemd160(data: string) {
+/**
+ * Computes ripmd160
+ * @param {string} data - The input data
+ * @returns {Promise<string>} The result of applying ripmd160 to the data.
+ */
+function getRipemd160(data: string): Promise<string> {
   return ripemd160(data);
 }
 
-function getHmacSha512FromHexKey(encryptionKeyHex: string, dataArray: string[] | Buffer[]) {
+/**
+ * Computes hmac-sha512
+ * @param {string} encryptionKeyHex - The hmac key in HEX format
+ * @param {string} dataArray - The input array of data
+ * @returns {Promise<string>} The result of applying hmac-sha512 to the array of data.
+ */
+function getHmacSha512FromHexKey(encryptionKeyHex: string, dataArray: string[] | Buffer[]): Promise<string> {
   const encryptionKey = Buffer.from(encryptionKeyHex, 'hex');
   return getHmacSha512(encryptionKey, dataArray);
 }
 
-async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer[]) {
+/**
+ * Computes hmac-sha512
+ * @param {Buffer} encryptionKey - The hmac key
+ * @param {string} dataArray - The input array of data
+ * @returns {Promise<string>} The result of applying hmac-sha512 to the array of data.
+ */
+async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer[]): Promise<string> {
   const hashFunc = createSHA512();
   const hmac = await createHMAC(hashFunc, encryptionKey);
   hmac.init();
@@ -52,9 +82,24 @@ async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer
   return hmac.digest();
 }
 
-function extendSecret(message: Uint8Array, length: number): Promise<string> {
-  return blake3(message, length);
+/**
+ * Extands the given secret to the required number of bits
+ * @param {string} secret - The original secret
+ * @param {number} length - The desired bitlength
+ * @returns {Promise<string>} The extrended secret of the desired bitlength
+ */
+function extendSecret(secret: Uint8Array, length: number): Promise<string> {
+  return blake3(secret, length);
 }
+
+/**
+ * Computes PBKDF2 and outputs the result in HEX format
+ * @param {string} password - The password
+ * @param {number} salt - The salt
+ * @param {number}[iterations=PBKDF2_ITERATIONS] - The number of iterations to perform
+ * @param {number} [hashLength=PBKDF2_TAG_LEN] - The desired output length
+ * @returns {Promise<string>} The result of PBKDF2 in HEX format
+ */
 function getPBKDF2(
   password: string,
   salt: string | Uint8Array,
@@ -71,6 +116,17 @@ function getPBKDF2(
   });
 }
 
+/**
+ * Computes Argon2 and outputs the result in HEX format
+ * @param {string} password - The password
+ * @param {number} salt - The salt
+ * @param {number} [parallelism=ARGON2ID_PARALLELISM] - The parallelism degree
+ * @param {number}[iterations=ARGON2ID_ITERATIONS] - The number of iterations to perform
+ * @param {number}[memorySize=ARGON2ID_MEMORY] - The number of KB of memeory to use
+ * @param {number} [hashLength=ARGON2ID_TAG_LEN] - The desired output length
+ * @param {'hex'|'binary'|'encoded'} [outputType="encoded"] - The output type
+ * @returns {Promise<string>} The result of Argon2
+ */
 function getArgon2(
   password: string,
   salt: string,
@@ -91,6 +147,11 @@ function getArgon2(
   });
 }
 
+/**
+ * Converts HEX string to Uint8Array the same way CryptoJS did it (for compatibility)
+ * @param {string} hex - The input string in hex
+ * @returns {Uint8Array} The resulting Uint8Array identical to what CryptoJS previously did
+ */
 function hex2oldEncoding(hex: string): Uint8Array {
   const words: number[] = [];
   for (let i = 0; i < hex.length; i += 8) {
@@ -105,7 +166,11 @@ function hex2oldEncoding(hex: string): Uint8Array {
 
   return uint8Array;
 }
-// Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
+/**
+ * Password hash computation. If no salt or starts with 'argon2id$'  - uses Argon2, else - PBKDF2
+ * @param {PassObjectInterface} passObject - The input object containing password and salt (optional)
+ * @returns {Promise<{salt: string; hash: string }>} The resulting hash and salt
+ */
 async function passToHash(passObject: PassObjectInterface): Promise<{ salt: string; hash: string }> {
   let salt;
   let hash;

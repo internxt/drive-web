@@ -33,7 +33,7 @@ export interface ShareViewState {
   };
   ownerBucket: null | string;
   ownerEncryptionKey: null | string;
-  ownerHybridModeEnabled: false | boolean;
+  ownerHybridModeEnabled: boolean;
 }
 
 export type Action =

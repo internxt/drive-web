@@ -7,12 +7,8 @@ import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
 
 import { describe, expect, it } from 'vitest';
 
-//config();
-
 //TODO: Disabled because validateFormat functions is not exists, review it and remove it or change them
 describe('# keys service tests', () => {
-  //const aesInit = getAesInitFromEnv();
-
   it('Should not update private key if encryption & encoding is fine', async () => {
     const keys = await generateNewKeys();
     const plainPrivateKey = keys.privateKeyArmored;
