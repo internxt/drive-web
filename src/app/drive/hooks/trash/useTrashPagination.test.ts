@@ -12,6 +12,12 @@ vi.mock('app/core/services/error.service', () => ({
   reportError: vi.fn(),
 }));
 
+vi.mock('../../../core/services/error.service', () => ({
+  default: {
+    reportError: vi.fn(),
+  },
+}));
+
 describe('useTrashPagination', () => {
   const mockGetTrashPaginated = vi.fn();
 
@@ -71,7 +77,6 @@ describe('useTrashPagination', () => {
   });
 
   it('should handle errors when fetching fails', async () => {
-    vi.spyOn(errorService, 'reportError').mockImplementation(() => {});
     mockGetTrashPaginated.mockRejectedValueOnce(new Error('Fetching failed'));
 
     renderHook(() => useTrashPagination(defaultProps));
