@@ -21,8 +21,8 @@ interface PassObjectInterface {
   password: string;
 }
 /**
- * Creates sha256 hashesr
- * @returns {Promise<IHasher>} The sha256 hasher.
+ * Creates sha256 hasher
+ * @returns {Promise<IHasher>} The sha256 hasher
  */
 function getSha256Hasher() {
   return createSHA256();
@@ -83,10 +83,10 @@ async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer
 }
 
 /**
- * Extands the given secret to the required number of bits
+ * Extends the given secret to the required number of bits
  * @param {string} secret - The original secret
  * @param {number} length - The desired bitlength
- * @returns {Promise<string>} The extrended secret of the desired bitlength
+ * @returns {Promise<string>} The extended secret of the desired bitlength
  */
 function extendSecret(secret: Uint8Array, length: number): Promise<string> {
   return blake3(secret, length);
@@ -149,7 +149,7 @@ function getArgon2(
 
 /**
  * Converts HEX string to Uint8Array the same way CryptoJS did it (for compatibility)
- * @param {string} hex - The input string in hex
+ * @param {string} hex - The input string in HEX
  * @returns {Uint8Array} The resulting Uint8Array identical to what CryptoJS previously did
  */
 function hex2oldEncoding(hex: string): Uint8Array {
@@ -167,7 +167,7 @@ function hex2oldEncoding(hex: string): Uint8Array {
   return uint8Array;
 }
 /**
- * Password hash computation. If no salt or starts with 'argon2id$'  - uses Argon2, else - PBKDF2
+ * Password hash computation. If no salt or salt starts with 'argon2id$'  - uses Argon2, else - PBKDF2
  * @param {PassObjectInterface} passObject - The input object containing password and salt (optional)
  * @returns {Promise<{salt: string; hash: string }>} The resulting hash and salt
  */
