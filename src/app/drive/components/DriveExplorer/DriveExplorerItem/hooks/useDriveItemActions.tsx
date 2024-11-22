@@ -66,12 +66,12 @@ const useDriveItemActions = (item): DriveItemActions => {
 
   const onGetLinkButtonClicked = () => {
     const driveItem = item as DriveItemData;
-    shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file', false);
+    shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
   };
 
   const onCopyLinkButtonClicked = () => {
     const driveItem = item as DriveItemData;
-    shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file', false);
+    shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
   };
 
   const onShowDetailsButtonClicked = () => {

@@ -6,10 +6,7 @@ import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-
 import navigationService from '../../../core/services/navigation.service';
 import workspacesService from '../../../core/services/workspace.service';
 import { AppView } from '../../../core/types';
-import {
-  hybridEncryptMessageWithPublicKey,
-  standardEncryptMessageWithPublicKey,
-} from '../../../crypto/services/pgp.service';
+import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import {
   deleteWorkspaceAvatarFromDatabase,
   saveWorkspaceAvatarToDatabase,
@@ -54,7 +51,7 @@ const decryptWorkspacesMnemonic = async (workspaces: WorkspaceData[]): Promise<W
         ...workspace,
         workspaceUser: {
           ...workspace.workspaceUser,
-          key: await decryptMnemonic(workspace.workspaceUser.key, workspace.workspaceUser.hybridModeEnabled),
+          key: await decryptMnemonic(workspace.workspaceUser.key),
         },
       } as WorkspaceData;
     }),
@@ -150,26 +147,14 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         navigationService.push(AppView.Login);
         return;
       }
-      const mnemonic = user.mnemonic;
-      const publicKey = user.keys.ecc.publicKey;
-      const publicKyberKey = user.keys.kyber.publicKyberKey;
+      const { mnemonic, publicKey } = user;
 
-      let encryptedMnemonicInBase64;
-      let hybridModeEnabled = false;
+      const encryptedMnemonic = await encryptMessageWithPublicKey({
+        message: mnemonic,
+        publicKeyInBase64: publicKey,
+      });
 
-      if (publicKyberKey) {
-        encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
-          message: mnemonic,
-          publicKeyInBase64: publicKey,
-          publicKyberKeyBase64: publicKyberKey,
-        });
-        hybridModeEnabled = true;
-      } else {
-        encryptedMnemonicInBase64 = await standardEncryptMessageWithPublicKey({
-          message: mnemonic,
-          publicKeyInBase64: publicKey,
-        });
-      }
+      const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
 
       await workspacesService.setupWorkspace({
         workspaceId: pendingWorkspace.id,
@@ -177,7 +162,6 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         address: pendingWorkspace?.address ?? '',
         description: pendingWorkspace?.description ?? '',
         encryptedMnemonic: encryptedMnemonicInBase64,
-        hybridModeEnabled: hybridModeEnabled,
       });
 
       // to avoid backend update delay

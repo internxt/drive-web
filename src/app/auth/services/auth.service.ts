@@ -62,16 +62,13 @@ export const is2FANeeded = async (email: string): Promise<boolean> => {
 };
 
 const generateNewKeysWithEncrypted = async (password: string) => {
-  const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
-    await generateNewKeys();
+  const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
 
   return {
     privateKeyArmored,
     privateKeyArmoredEncrypted: aes.encrypt(privateKeyArmored, password, getAesInitFromEnv()),
     publicKeyArmored,
     revocationCertificate,
-    publicKyberKeyBase64,
-    encPrivateKyberKey: aes.encrypt(privateKyberKeyBase64, password, getAesInitFromEnv()),
   };
 };
 
@@ -101,33 +98,18 @@ export const doLogin = async (
     tfaCode: twoFactorCode,
   };
   const cryptoProvider: CryptoProvider = {
-    async encryptPasswordHash(password: Password, encryptedSalt: string): Promise<string> {
+    encryptPasswordHash(password: Password, encryptedSalt: string): string {
       const salt = decryptText(encryptedSalt);
-      const hashObj = await passToHash({ password, salt });
+      const hashObj = passToHash({ password, salt });
       return encryptText(hashObj.hash);
     },
     async generateKeys(password: Password): Promise<Keys> {
-      const {
-        privateKeyArmoredEncrypted,
-        publicKeyArmored,
-        revocationCertificate,
-        publicKyberKeyBase64,
-        encPrivateKyberKey,
-      } = await generateNewKeysWithEncrypted(password);
+      const { privateKeyArmoredEncrypted, publicKeyArmored, revocationCertificate } =
+        await generateNewKeysWithEncrypted(password);
       const keys: Keys = {
         privateKeyEncrypted: privateKeyArmoredEncrypted,
         publicKey: publicKeyArmored,
         revocationCertificate: revocationCertificate,
-        keys: {
-          ecc: {
-            privateKeyEncrypted: privateKeyArmoredEncrypted,
-            publicKey: publicKeyArmored,
-          },
-          kyber: {
-            publicKey: publicKyberKeyBase64,
-            privateKeyEncrypted: encPrivateKyberKey,
-          },
-        },
       };
       return keys;
     },
@@ -168,10 +150,6 @@ export const doLogin = async (
       localStorageService.set('xMnemonic', clearMnemonic);
       localStorageService.set('xNewToken', newToken);
 
-      const argon2Hash = await passToHash({ password });
-
-      await authClient.upgradeHash(argon2Hash.hash);
-
       return {
         user: clearUser,
         token: token,
@@ -206,8 +184,7 @@ export const getPasswordDetails = async (
   }
 
   // Encrypt  the password
-  const hashedPassword = await passToHash({ password: currentPassword, salt });
-  const hashedCurrentPassword = hashedPassword.hash;
+  const hashedCurrentPassword = passToHash({ password: currentPassword, salt }).hash;
   const encryptedCurrentPassword = encryptText(hashedCurrentPassword);
 
   return { salt, hashedCurrentPassword, encryptedCurrentPassword };
@@ -224,7 +201,7 @@ const updateCredentialsWithToken = async (
     throw new Error('Invalid mnemonic');
   }
 
-  const hashedNewPassword = await passToHash({ password: newPassword });
+  const hashedNewPassword = passToHash({ password: newPassword });
   const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
   const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
 
@@ -251,7 +228,7 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
 
   const encryptedNewMnemonic = encryptTextWithKey(newMnemonic, newPassword);
 
-  const hashedNewPassword = await passToHash({ password: newPassword });
+  const hashedNewPassword = passToHash({ password: newPassword });
   const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
   const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
 
@@ -271,7 +248,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword);
 
   // Encrypt the new password
-  const hashedNewPassword = await passToHash({ password: newPassword });
+  const hashedNewPassword = passToHash({ password: newPassword });
   const encryptedNewPassword = encryptText(hashedNewPassword.hash);
   const encryptedNewSalt = encryptText(hashedNewPassword.salt);
 
@@ -283,7 +260,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const usersClient = SdkFactory.getInstance().createUsersClient();
 
   return usersClient
-    .changePasswordLegacy(<ChangePasswordPayload>{
+    .changePassword(<ChangePasswordPayload>{
       currentEncryptedPassword: encryptedCurrentPassword,
       newEncryptedPassword: encryptedNewPassword,
       newEncryptedSalt: encryptedNewSalt,
@@ -316,17 +293,17 @@ export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
   return authClient.generateTwoFactorAuthQR();
 };
 
-export async function deactivate2FA(
+export const deactivate2FA = (
   passwordSalt: string,
   deactivationPassword: string,
   deactivationCode: string,
-): Promise<void> {
+): Promise<void> => {
   const salt = decryptText(passwordSalt);
-  const hashObj = await passToHash({ password: deactivationPassword, salt });
+  const hashObj = passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
   const authClient = SdkFactory.getInstance().createAuthClient();
   return authClient.disableTwoFactorAuth(encPass, deactivationCode);
-}
+};
 
 export async function getNewToken(): Promise<string> {
   const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
@@ -343,7 +320,7 @@ export async function getNewToken(): Promise<string> {
 
 export async function areCredentialsCorrect(email: string, password: string): Promise<boolean> {
   const salt = await getSalt();
-  const { hash: hashedPassword } = await passToHash({ password, salt });
+  const { hash: hashedPassword } = passToHash({ password, salt });
   const authClient = SdkFactory.getInstance().createAuthClient();
 
   return authClient.areCredentialsCorrect(email, hashedPassword);

@@ -30,10 +30,7 @@ import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
 import localStorageService from '../../core/services/local-storage.service';
 import workspacesService from '../../core/services/workspace.service';
-import {
-  hybridDecryptMessageWithPrivateKey,
-  standardDecryptMessageWithPrivateKey,
-} from '../../crypto/services/pgp.service';
+import { decryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import {
   downloadItemsAsZipThunk,
@@ -359,7 +356,6 @@ const getRandomElement = (list: string[]) => {
 export const getPublicShareLink = async (
   uuid: string,
   itemType: 'folder' | 'file',
-  hybridModeEnabled: boolean,
   encriptedMnemonic?: string,
 ): Promise<SharingMeta | void> => {
   const user = localStorageService.getUser() as UserSettings;
@@ -372,7 +368,7 @@ export const getPublicShareLink = async (
     const isUserInvited = publicSharingItemData.ownerId !== user.uuid;
 
     if (isUserInvited && encriptedMnemonic) {
-      const ownerMnemonic = await decryptMnemonic(encriptedMnemonic, hybridModeEnabled);
+      const ownerMnemonic = await decryptMnemonic(encriptedMnemonic);
       if (ownerMnemonic) mnemonic = ownerMnemonic;
     }
     const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
@@ -592,26 +588,15 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
   }
 }
 
-export const decryptMnemonic = async (
-  encryptionKey: string,
-  hybridModeEnabled: boolean,
-): Promise<string | undefined> => {
+export const decryptMnemonic = async (encryptionKey: string): Promise<string | undefined> => {
   const user = localStorageService.getUser();
   if (user) {
     let decryptedKey;
     try {
-      if (hybridModeEnabled) {
-        decryptedKey = await hybridDecryptMessageWithPrivateKey({
-          encryptedMessage: atob(encryptionKey),
-          privateKeyInBase64: user.keys.ecc.privateKey,
-          privateKyberKeyBase64: user.keys.kyber.privateKyberKey,
-        });
-      } else {
-        decryptedKey = await standardDecryptMessageWithPrivateKey({
-          encryptedMessage: atob(encryptionKey),
-          privateKeyInBase64: user.keys.ecc.privateKey,
-        });
-      }
+      decryptedKey = await decryptMessageWithPrivateKey({
+        encryptedMessage: atob(encryptionKey),
+        privateKeyInBase64: user.privateKey,
+      });
     } catch (err) {
       decryptedKey = user.mnemonic;
     }

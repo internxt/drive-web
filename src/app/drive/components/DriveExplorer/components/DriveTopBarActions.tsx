@@ -122,7 +122,7 @@ const DriveTopBarActions = ({
         }),
       );
       if (selectedItem?.uuid)
-        shareService.getPublicShareLink(selectedItem.uuid, selectedItem.isFolder ? 'folder' : 'file', false);
+        shareService.getPublicShareLink(selectedItem.uuid, selectedItem.isFolder ? 'folder' : 'file');
     }
   };
 

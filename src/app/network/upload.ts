@@ -1,7 +1,8 @@
 import * as Sentry from '@sentry/react';
 import { Network } from '@internxt/sdk/dist/network';
 import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
-import { getSha256 } from '../crypto/services/utils';
+
+import { sha256 } from './crypto';
 import { NetworkFacade } from './NetworkFacade';
 import axios, { AxiosError } from 'axios';
 import { ConnectionLostError } from './requests';
@@ -68,17 +69,17 @@ export async function uploadFileBlob(
   }
 }
 
-async function getAuthFromCredentials(creds: NetworkCredentials): Promise<{ username: string; password: string }> {
+function getAuthFromCredentials(creds: NetworkCredentials): { username: string; password: string } {
   return {
     username: creds.user,
-    password: await getSha256(creds.pass),
+    password: sha256(Buffer.from(creds.pass)).toString('hex'),
   };
 }
 
-export async function uploadFile(bucketId: string, params: IUploadParams): Promise<string> {
+export function uploadFile(bucketId: string, params: IUploadParams): Promise<string> {
   const file: File = params.filecontent;
 
-  const auth = await getAuthFromCredentials({
+  const auth = getAuthFromCredentials({
     user: params.creds.user,
     pass: params.creds.pass,
   });

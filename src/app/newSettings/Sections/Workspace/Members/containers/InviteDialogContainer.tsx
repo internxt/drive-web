@@ -6,10 +6,7 @@ import errorService from '../../../../../core/services/error.service';
 import navigationService from '../../../../../core/services/navigation.service';
 import workspacesService from '../../../../../core/services/workspace.service';
 import { AppView } from '../../../../../core/types';
-import {
-  hybridEncryptMessageWithPublicKey,
-  standardEncryptMessageWithPublicKey,
-} from '../../../../../crypto/services/pgp.service';
+import { encryptMessageWithPublicKey } from '../../../../../crypto/services/pgp.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import { RootState } from '../../../../../store';
 import UserInviteDialog from '../InviteDialog';
@@ -44,11 +41,9 @@ const processInvitation = async (
     }
     const { mnemonic } = user;
     let publicKey;
-    let publicKyberKey;
     try {
       const publicKeyResponse = await userService.getPublicKeyByEmail(email);
       publicKey = publicKeyResponse.publicKey;
-      publicKyberKey = publicKeyResponse.publicKyberKey;
     } catch (err) {
       console.log(err);
     }
@@ -57,24 +52,15 @@ const processInvitation = async (
     if (isNewUser) {
       const preCreatedUserResponse = await userService.preCreateUser(email);
       publicKey = preCreatedUserResponse.publicKey;
-      publicKyberKey = preCreatedUserResponse.publicKyberKey;
     }
 
-    let encryptedMnemonicInBase64;
-    let hybridModeEnabled = false;
-    if (publicKyberKey) {
-      encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
-        message: mnemonic,
-        publicKeyInBase64: publicKey,
-        publicKyberKeyBase64: publicKyberKey,
-      });
-      hybridModeEnabled = true;
-    } else {
-      encryptedMnemonicInBase64 = await standardEncryptMessageWithPublicKey({
-        message: mnemonic,
-        publicKeyInBase64: publicKey,
-      });
-    }
+    const encryptedMnemonic = await encryptMessageWithPublicKey({
+      message: mnemonic,
+      publicKeyInBase64: publicKey,
+    });
+
+    const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
+
     // TODO: CHECK WHEN BACKEND ADD DEFUALT WORKSPACE LIMIT FOR MVP
     await workspacesService.inviteUserToTeam({
       workspaceId: workspaceId,
@@ -83,7 +69,6 @@ const processInvitation = async (
       encryptedMnemonicInBase64: encryptedMnemonicInBase64,
       encryptionAlgorithm: 'aes-256-gcm',
       message: messageText,
-      hybridModeEnabled: hybridModeEnabled,
     });
 
     notificationsService.show({

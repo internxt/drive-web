@@ -33,7 +33,6 @@ interface UsersToInvite {
   email: string;
   userRole: string;
   publicKey: string;
-  publicKyberKey: string;
   isNewUser: boolean;
 }
 
@@ -74,7 +73,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     const isDuplicated = usersToInvite.find((user) => user.email === userInvited.email);
 
     if (!isDuplicated && isValidEmail(userInvitedEmail)) {
-      const { publicKey, publicKyberKey } = await getUserPublicKey(email);
+      const publicKey = await getUserPublicKey(email);
 
       const markUserAsNew = !publicKey;
 
@@ -84,7 +83,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
       }
 
       const unique: Array<UsersToInvite> = [...usersToInvite];
-      unique.push({ ...userInvited, publicKey, publicKyberKey });
+      unique.push({ ...userInvited, publicKey });
       setUsersToInvite(unique);
       setEmail('');
     } else {
@@ -103,19 +102,17 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     setUsersToInvite(newUserToInvite);
   };
 
-  const getUserPublicKey = async (email: string): Promise<{ publicKey: string; publicKyberKey: string }> => {
+  const getUserPublicKey = async (email: string): Promise<string> => {
     let publicKey = '';
-    let publicKyberKey = '';
     try {
       const publicKeyResponse = await userService.getPublicKeyByEmail(email);
       publicKey = publicKeyResponse.publicKey;
-      publicKyberKey = publicKeyResponse.publicKyberKey;
     } catch (error) {
       if ((error as AppError)?.status !== HTTP_CODES.NOT_FOUND) {
         errorService.reportError(error);
       }
     }
-    return { publicKey, publicKyberKey };
+    return publicKey;
   };
 
   const processInvites = async (usersToInvite: UsersToInvite[]) => {
@@ -160,7 +157,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     let isThereAnyNewUser = newUsersExists;
 
     if (usersList.length === 0 && isValidEmail(email)) {
-      const { publicKey, publicKyberKey } = await getUserPublicKey(email);
+      const publicKey = await getUserPublicKey(email);
       if (!publicKey && !preCreateUsers) {
         isThereAnyNewUser = true;
       }
@@ -169,7 +166,6 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
         userRole,
         isNewUser: !publicKey,
         publicKey,
-        publicKyberKey,
       });
     }
 
