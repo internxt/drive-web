@@ -1,5 +1,5 @@
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
-import { skinSkeleton } from 'app/shared/Skeleton';
+import { ListItemMenu } from '../../../shared/components/List/ListItem';
+import { skinSkeleton } from '../../../shared/Skeleton';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import dateService from '../../../core/services/date.service';
 import iconService from '../../../drive/services/icon.service';

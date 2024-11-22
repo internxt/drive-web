@@ -21,7 +21,7 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { onChangePasswordHandler } from '../../utils';
 import CreateAccountForm from './CreateAccountForm';
-import workspacesService from 'app/core/services/workspace.service';
+import workspacesService from '../../../core/services/workspace.service';
 
 function WorkspaceGuestSingUpView(): JSX.Element {
   const dispatch = useAppDispatch();

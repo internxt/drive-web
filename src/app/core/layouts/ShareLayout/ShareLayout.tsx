@@ -11,7 +11,7 @@ import notificationsService, { ToastType } from '../../../notifications/services
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import ReportButton from '../../../share/views/ShareView/ReportButon';
 import { ShieldCheck, Password, Key, Eye } from '@phosphor-icons/react';
-import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
+import { getDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import { Avatar, Button } from '@internxt/internxtui';
 
 interface ShareLayoutProps {
