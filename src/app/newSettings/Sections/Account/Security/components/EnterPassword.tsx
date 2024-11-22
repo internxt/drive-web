@@ -4,9 +4,9 @@ import { useTranslationContext } from '../../../../../i18n/provider/TranslationP
 import { areCredentialsCorrect } from '../../../../../auth/services/auth.service';
 import errorService from '../../../../../core/services/error.service';
 
-import Button from '../../../../../shared/components/Button/Button';
-import Card from '../../../../../shared/components/Card';
-import Input from '../../../../../shared/components/Input';
+import { Button } from '@internxt/internxtui';
+import Card from 'app/shared/components/Card';
+import Input from 'app/shared/components/Input';
 
 const EnterPassword = ({
   onUnlock,

@@ -1,15 +1,15 @@
 import { WarningCircle } from '@phosphor-icons/react';
-import errorService from '../../../core/services/error.service';
-import validationService from '../../../core/services/validation.service';
-import AppError from '../../../core/types';
-import iconService from '../../../drive/services/icon.service';
-import transformItemService from '../../../drive/services/item-transform.service';
-import sizeService from '../../../drive/services/size.service';
-import { DriveItemData } from '../../../drive/types';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import PasswordInput from '../../../share/components/ShareItemDialog/components/PasswordInput';
-import Button from '../../../shared/components/Button/Button';
+import errorService from 'app/core/services/error.service';
+import validationService from 'app/core/services/validation.service';
+import AppError from 'app/core/types';
+import iconService from 'app/drive/services/icon.service';
+import transformItemService from 'app/drive/services/item-transform.service';
+import sizeService from 'app/drive/services/size.service';
+import { DriveItemData } from 'app/drive/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import PasswordInput from 'app/share/components/ShareItemDialog/components/PasswordInput';
+import { Button } from '@internxt/internxtui';
 import { ReactComponent as LockLogo } from 'assets/icons/Lock.svg';
 import { useState } from 'react';
 
@@ -104,7 +104,8 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
         <Button
           type="submit"
           loading={isSubmitting}
-          onClick={(evt) => {
+          onClick={(e) => {
+            const evt = e as React.MouseEvent<HTMLButtonElement>;
             evt.preventDefault();
             handlePasswordSubmit();
           }}

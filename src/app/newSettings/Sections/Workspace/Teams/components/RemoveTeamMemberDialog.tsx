@@ -1,6 +1,6 @@
 import { TeamMember } from '@internxt/sdk/dist/workspaces/types';
 import Modal from 'app/shared/components/Modal';
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface RemoveTeamMemberDialogProps {

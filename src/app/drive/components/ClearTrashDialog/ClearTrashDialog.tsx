@@ -1,11 +1,11 @@
-import errorService from '../../../core/services/error.service';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import Button from '../../../shared/components/Button/Button';
-import Modal from '../../../shared/components/Modal';
-import { RootState } from '../../../store';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { planThunks } from '../../../store/slices/plan';
-import { uiActions } from '../../../store/slices/ui';
+import errorService from 'app/core/services/error.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { Button } from '@internxt/internxtui';
+import Modal from 'app/shared/components/Modal';
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { planThunks } from 'app/store/slices/plan';
+import { uiActions } from 'app/store/slices/ui';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import clearTrash from '../../../../use_cases/trash/clear-trash';
@@ -61,7 +61,7 @@ const ClearTrashDialog = (props: ClearTrashDialogProps): JSX.Element => {
           <Button disabled={isLoading} variant="secondary" onClick={onClose}>
             {translate('actions.cancel')}
           </Button>
-          <Button loading={isLoading} variant="accent" onClick={onAccept}>
+          <Button loading={isLoading} variant="destructive" onClick={onAccept}>
             {isLoading ? translate('drive.clearTrash.progress') : translate('drive.clearTrash.accept')}
           </Button>
         </div>

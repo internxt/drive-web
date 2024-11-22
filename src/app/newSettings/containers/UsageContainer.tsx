@@ -2,7 +2,7 @@ import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 import { DriveProduct } from '../types/types';
 import Usage from '../components/Usage/Usage';
-import Spinner from 'app/shared/components/Spinner/Spinner';
+import { Spinner } from '@internxt/internxtui';
 
 const UsageContainer = ({
   className = '',

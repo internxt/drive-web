@@ -1,14 +1,18 @@
 import { PendingInvitesResponse } from '@internxt/sdk/dist/workspaces';
 import { CheckCircle, X } from '@phosphor-icons/react';
-import errorService from '../../../core/services/error.service';
-import localStorageService from '../../../core/services/local-storage.service';
-import workspacesService from '../../../core/services/workspace.service';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import Button from '../../../shared/components/Button/Button';
-import Modal from '../../../shared/components/Modal';
-import { useAppDispatch } from '../../../store/hooks';
-import { workspaceThunks } from '../../../store/slices/workspaces/workspacesStore';
+import errorService from 'app/core/services/error.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import workspacesService from 'app/core/services/workspace.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { Button } from '@internxt/internxtui';
+import Modal from 'app/shared/components/Modal';
+import { useAppDispatch } from 'app/store/hooks';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import dayjs from 'dayjs';
+import AppError from 'app/core/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+
+const WORKSPACE_INVITATION_BAD_REQUEST = 400;
 
 const PendingInvitationsDialog = ({
   pendingWorkspacesInvites,
@@ -44,8 +48,20 @@ const PendingInvitationsDialog = ({
       token && (await workspacesService.acceptWorkspaceInvite({ invitationId, token }));
       dispatch(workspaceThunks.fetchWorkspaces());
     } catch (err) {
-      const error = errorService.castError(err);
-      errorService.reportError(error);
+      const appError = err as AppError;
+      if (appError.status === WORKSPACE_INVITATION_BAD_REQUEST) {
+        notificationsService.show({
+          text: translate('notificationMessages.invalidWorkspaceInvitationError'),
+          type: ToastType.Error,
+        });
+      } else {
+        const error = errorService.castError(err);
+        errorService.reportError(error);
+        notificationsService.show({
+          text: translate('notificationMessages.errorAcceptingWorkspaceInvitation'),
+          type: ToastType.Error,
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -98,7 +114,7 @@ const PendingInvitationsDialog = ({
                           <p className="truncate text-sm text-gray-50">
                             {translate('workspaces.pendingInvitations.invitedOn')}
                             {': '}
-                            {formatDate(invitation.workspace.createdAt)}
+                            {formatDate(invitation.createdAt)}
                           </p>
                         </div>
                       </div>

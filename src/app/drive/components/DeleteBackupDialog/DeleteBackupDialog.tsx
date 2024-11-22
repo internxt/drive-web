@@ -57,19 +57,17 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
   };
 
   return (
-    <>
-      <Dialog
-        isOpen={isOpen}
-        onClose={onClose}
-        onSecondaryAction={onClose}
-        onPrimaryAction={onAccept}
-        title={translate('modals.deleteBackupModal.title')}
-        subtitle={translate('modals.deleteBackupModal.subtitle')}
-        primaryAction={translate('modals.deleteBackupModal.primaryAction')}
-        secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
-        primaryActionColor="danger"
-      />
-    </>
+    <Dialog
+      isOpen={isOpen}
+      onClose={onClose}
+      onSecondaryAction={onClose}
+      onPrimaryAction={onAccept}
+      title={translate('modals.deleteBackupModal.title')}
+      subtitle={translate('modals.deleteBackupModal.subtitle')}
+      primaryAction={translate('modals.deleteBackupModal.primaryAction')}
+      secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
+      primaryActionColor="danger"
+    />
   );
 };
 

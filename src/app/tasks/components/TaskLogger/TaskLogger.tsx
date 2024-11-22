@@ -82,19 +82,19 @@ const TaskLogger = (): JSX.Element => {
         </div>
 
         <div className="flex items-center text-gray-60">
-          <div
+          <button
             onClick={() => setIsMinimized(!isMinimized)}
             className={` duration-300 ${isMinimized ? 'rotate-180' : 'rotate-0'} cursor-pointer`}
           >
             <CaretDown size={24} />
-          </div>
+          </button>
 
-          <div
+          <button
             className={`${hasFinished ? 'cursor-pointer' : 'cursor-not-allowed'} ml-4 cursor-pointer`}
             onClick={onCloseButtonClicked}
           >
             <X size={24} />
-          </div>
+          </button>
         </div>
       </div>
 

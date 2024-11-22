@@ -7,7 +7,7 @@ import { bytesToString } from '../../../../drive/services/size.service';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import UsageBar from '../../../../newSettings/components/Usage/UsageBar';
 import { getMemberRole, searchMembers } from '../../../../newSettings/utils/membersUtils';
-import Button from '../../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Card from '../../../../shared/components/Card';
 import Input from '../../../../shared/components/Input';
 import { RootState } from '../../../../store';
@@ -34,9 +34,7 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
   const [guestUsers, setGuestUsers] = useState<number>(0);
 
   useEffect(() => {
-    const selectedWorkspaceId = selectedWorkspace?.workspace.id;
-    selectedWorkspaceId && getWorkspacesMembers(selectedWorkspaceId);
-    getWorkspacePendingInvitations(selectedWorkspace?.workspaceUser.workspaceId);
+    refreshWorkspaceMembers();
   }, []);
 
   useEffect(() => {
@@ -77,6 +75,12 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
     workspaceCurrentMember?.isOwner && setIsCurrentMemberOwner(true);
   };
 
+  const refreshWorkspaceMembers = async () => {
+    const selectedWorkspaceId = selectedWorkspace?.workspace.id;
+    selectedWorkspaceId && (await getWorkspacesMembers(selectedWorkspaceId));
+    await getWorkspacePendingInvitations(selectedWorkspace?.workspaceUser.workspaceId);
+  };
+
   return (
     <Section
       title={
@@ -90,14 +94,16 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
       {selectedMember ? (
         <MemberDetailsContainer
           member={selectedMember}
+          refreshWorkspaceMembers={refreshWorkspaceMembers}
           getWorkspacesMembers={getWorkspacesMembers}
+          updateSelectedMember={setSelectedMember}
           isOwner={isCurrentUserWorkspaceOwner}
           deselectMember={() => setSelectedMember(null)}
         />
       ) : (
         <>
           {/* MEMBERS AND GUESTS CARDS */}
-          <div className="fles-row flex w-full justify-between space-x-6">
+          <div className="flex w-full flex-row justify-between space-x-6">
             <Card className="w-full">
               <div className="flex grow flex-col">
                 <span className="text-xl font-medium text-gray-100">{members?.length}</span>
@@ -157,13 +163,13 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
                       onMouseLeave={() => setHoverItemIndex(null)}
                       onClick={() => setSelectedMember(member)}
                     >
-                      <UserCard name={name} lastname={lastname} role={role} email={email} avatarsrc={''} />
+                      <UserCard name={name} lastName={lastname} role={role} email={email} avatarSrc={''} />
                     </button>
                   );
                 })}
               </div>
               {/* CENTER COLUMN */}
-              <div className="flex grow flex-col">
+              <div className="flex w-full max-w-[256px] grow flex-col">
                 <div className="flex h-12 items-center border-b border-t border-gray-10 bg-gray-5 py-2">
                   <span
                     className={
@@ -180,7 +186,7 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
                   return (
                     <button
                       key={id}
-                      className={`justify-betweendw flex h-14 items-center border-gray-10 px-5 py-2 text-base font-normal text-gray-60 dark:bg-gray-1 ${
+                      className={`flex h-14 items-center justify-between border-gray-10 px-5 py-2 text-base font-normal text-gray-60 dark:bg-gray-1 ${
                         members && i === members.length - 1 ? 'border-b' : ' border-b'
                       } ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : 'bg-surface'}`}
                       onMouseEnter={() => setHoverItemIndex(id)}

@@ -38,7 +38,7 @@ import {
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { AdvancedSharedItem } from '../../../share/types';
-import Button from '../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -52,7 +52,6 @@ import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
-import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
 import { uiActions } from '../../../store/slices/ui';
 import { userSelectors } from '../../../store/slices/user';
 import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
@@ -71,8 +70,9 @@ import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
 import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
+import { IRoot } from '../../../store/slices/storage/types';
+import { useTrashPagination } from 'app/drive/hooks/trash/useTrashPagination';
 
-const TRASH_PAGINATION_OFFSET = 50;
 export const UPLOAD_ITEMS_LIMIT = 3000;
 
 interface DriveExplorerProps {
@@ -84,6 +84,7 @@ interface DriveExplorerProps {
   onItemsMoved?: () => void;
   onFileUploaded?: () => void;
   onFolderUploaded?: () => void;
+  fetchFolderContent?: () => void;
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
   user: UserSettings | undefined;
@@ -112,6 +113,8 @@ interface DriveExplorerProps {
     offset: number | undefined,
     type: 'files' | 'folders',
     root: boolean,
+    sort: 'plainName' | 'updatedAt',
+    order: 'ASC' | 'DESC',
     folderId?: number | undefined,
   ) => Promise<{ finished: boolean; itemsRetrieved: number }>;
   roles: Role[];
@@ -127,6 +130,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     items,
     onItemsDeleted,
     onFolderCreated,
+    fetchFolderContent,
     isOver,
     connectDropTarget,
     storageFilters,
@@ -158,6 +162,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
+  const order = useAppSelector((state: RootState) => state.storage.order);
 
   // UPLOAD ITEMS STATES
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
@@ -167,10 +172,24 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   // PAGINATION STATES
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
-  const [hasMoreTrashFolders, setHasMoreTrashFolders] = useState<boolean>(true);
-  const [isLoadingTrashItems, setIsLoadingTrashItems] = useState(false);
   const hasMoreItemsToLoad = isTrash ? hasMoreItems : hasMoreFiles || hasMoreFolders;
   const isEmptyFolder = !isLoading && !hasMoreItemsToLoad;
+
+  // TRASH PAGINATION
+  const {
+    isLoadingTrashItems,
+    hasMoreTrashFolders,
+    setHasMoreTrashFolders,
+    setIsLoadingTrashItems,
+    getMoreTrashItems,
+  } = useTrashPagination({
+    getTrashPaginated,
+    folderOnTrashLength,
+    isTrash: isTrash,
+    filesOnTrashLength,
+    setHasMoreItems,
+    order,
+  });
 
   // RIGHT CLICK MENU STATES
   const [isListElementsHovered, setIsListElementsHovered] = useState<boolean>(false);
@@ -256,13 +275,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    const isTrashAndNotHasItems = isTrash;
-    if (isTrashAndNotHasItems) {
-      getMoreTrashFolders().catch((error) => errorService.reportError(error));
-    }
-  }, []);
-
-  useEffect(() => {
     if ((!isTrash && !hasMoreFolders) || (isTrash && !hasMoreTrashFolders)) {
       fetchItems();
     }
@@ -283,7 +295,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   useEffect(() => {
     resetPaginationState();
     fetchItems();
-  }, [currentFolderId]);
+  }, [currentFolderId, order]);
 
   useEffect(() => {
     if (
@@ -322,29 +334,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     },
     [dispatch],
   );
-
-  //TODO: MOVE PAGINATED TRASH LOGIC OUT OF VIEW
-  const getMoreTrashFolders = async () => {
-    setIsLoadingTrashItems(true);
-    if (getTrashPaginated) {
-      const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, folderOnTrashLength, 'folders', true);
-      const existsMoreFolders = !result.finished;
-      setHasMoreTrashFolders(existsMoreFolders);
-    }
-    setIsLoadingTrashItems(false);
-  };
-
-  const getMoreTrashFiles = async () => {
-    setIsLoadingTrashItems(true);
-    if (getTrashPaginated) {
-      const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, filesOnTrashLength, 'files', true);
-      const existsMoreItems = !result.finished;
-      setHasMoreItems(existsMoreItems);
-    }
-    setIsLoadingTrashItems(false);
-  };
-
-  const getMoreTrashItems = hasMoreTrashFolders ? getMoreTrashFolders : getMoreTrashFiles;
 
   const onUploadFileButtonClicked = useCallback((): void => {
     errorService.addBreadcrumb({
@@ -527,12 +516,16 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
+  const resetPaginationStateAndFetchDriveFolderContent = (currentFolderId: string) => {
+    resetPaginationState();
+    dispatch(fetchSortedFolderContentThunk(currentFolderId));
+  };
+
   const handleOnShareItem = useCallback(() => {
     setTimeout(() => {
-      resetPaginationState();
-      dispatch(fetchSortedFolderContentThunk(currentFolderId));
+      fetchFolderContent?.() ?? resetPaginationStateAndFetchDriveFolderContent(currentFolderId);
     }, 500);
-  }, [currentFolderId]);
+  }, [currentFolderId, fetchFolderContent]);
 
   const onSuccessEditingName = useCallback(() => {
     setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
@@ -808,6 +801,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 title={title}
                 onOpenStopSharingAndMoveToTrashDialog={onOpenStopSharingAndMoveToTrashDialog}
                 showStopSharingConfirmation={showStopSharingConfirmation}
+                resetPaginationState={resetPaginationState}
               />
             </div>
             {

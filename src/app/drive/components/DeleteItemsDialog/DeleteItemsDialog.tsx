@@ -7,10 +7,10 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { RootState } from '../../../store';
 import { DriveItemData } from '../../types';
 import deleteItems from '../../../../use_cases/trash/delete-items';
-import Button from '../../../shared/components/Button/Button';
-import Modal from '../../../shared/components/Modal';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { planThunks } from '../../../store/slices/plan';
+import { Button } from '@internxt/internxtui';
+import Modal from 'app/shared/components/Modal';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { planThunks } from 'app/store/slices/plan';
 
 interface DeleteItemsDialogProps {
   onItemsDeleted?: () => void;
@@ -64,7 +64,7 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
           <Button disabled={isLoading} variant="secondary" onClick={onClose}>
             {translate('actions.cancel')}
           </Button>
-          <Button disabled={isLoading} variant="accent" onClick={onAccept} dataTest="delete-button">
+          <Button disabled={isLoading} variant="destructive" onClick={onAccept} dataTest="delete-button">
             {isLoading ? translate('drive.deleteItems.progress') : translate('drive.deleteItems.accept')}
           </Button>
         </div>

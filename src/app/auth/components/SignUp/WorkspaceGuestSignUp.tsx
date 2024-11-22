@@ -147,9 +147,6 @@ function WorkspaceGuestSingUpView(): JSX.Element {
 
       dispatch(referralsThunks.initializeThunk());
 
-      window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
-      window.rudderanalytics.track('User Signup', { email });
-
       return navigationService.push(AppView.Drive);
     } catch (err: unknown) {
       setIsLoading(false);

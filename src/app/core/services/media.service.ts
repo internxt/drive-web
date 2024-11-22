@@ -56,9 +56,7 @@ export async function loadVideoIntoPlayer(
       if (!type) {
         return reject(`Unknown video type ${type}`);
       }
-      const mime = `video/${videoType}`;
       const sourceBuffer = mediaSource.addSourceBuffer(type);
-      // const blob = await binaryStreamToBlob(videoStream, mime);
 
       sourceBuffer.addEventListener('updateend', () => {
         mediaSource.endOfStream();

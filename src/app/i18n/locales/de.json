@@ -4,19 +4,19 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Sparen Sie 80%",
-    "title": "Sichern Sie Ihre digitale Welt!",
-    "subtitle": "Gewinnen Sie unseren Premium-Rucksack mit unseren lebenslangen Plänen.",
-    "cta": "Plan auswählen",
+    "label": "Spare 85%!",
+    "title": "Die besten Black Friday Angebote",
+    "subtitle": "Erhalte unseren Premium-Rucksack mit unseren Lifetime-Plänen.",
+    "cta": "Wähle deinen Plan",
     "guarantee": "30 Tage Geld-zurück-Garantie",
-    "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
+    "lastCta": "*Das Angebot gilt für kostenlose Konten oder Neukunden",
     "features": [
-      "Große Einsparungen bei allen Internxt-Plänen",
-      "Sicherer und geschützter Cloud-Speicher",
-      "Open Source und transparent",
-      "End-to-End-verschlüsselte Übertragungen",
-      "Kein unbefugter Zugriff",
-      "Angebot endet am 31. Oktober"
+      "Spare groß bei allen Premium-Plänen",
+      "Privater und verschlüsselter Cloud-Speicher",
+      "Open Source und geprüft",
+      "Verschlüsselte Ende-zu-Ende-Übertragungen",
+      "Kein unautorisierter Zugriff",
+      "Das Angebot endet am 3. Dezember"
     ]
   },
   "valentinesBanner": {
@@ -46,7 +46,8 @@
     "light": "Hell",
     "dark": "Dunkel",
     "system": "System",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "E-Mail",
@@ -60,7 +61,8 @@
       "dontHaveAccount": "Sie haben kein Konto?",
       "createAccount": "Konto erstellen",
       "2FA": "Zwei-Faktor-Code",
-      "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode"
+      "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode",
+      "wrongLogin": "Ungültiger Benutzername oder Passwort"
     },
     "signup": {
       "title": "Konto erstellen",
@@ -923,7 +925,13 @@
       "primaryAction": "Bestätige",
       "secondaryAction": "Abbrechen"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Teilen \"{{name}}\"",
+      "teams": "Teams",
+      "teamsWithAccess": "Teams mit Zugriff:",
+      "shareButton": "Teilen"
+    }
   },
   "form": {
     "fields": {
@@ -1232,6 +1240,9 @@
     "copyLink": "Geteilter Link in die Zwischenablage kopiert",
     "linkUpdated": "Link aktualisiert",
     "itemsMovedToTrash": "{{item}} in den Papierkorb verschoben",
+    "storageModified": "Speicher erfolgreich geändert",
+    "errorModifyingStorage": "Der neue Speicherplatz ist für dieses Mitglied ungültig.",
+    "generalErrorWhileModifyingStorage": "Beim Ändern des Speicherplatzes ist ein Fehler aufgetreten.",
     "restoreItems": "{{itemsToRecover}} verschoben nach {{destination}}",
     "itemDeleted": "{{item}} gelöscht",
     "itemsDeleted": "Dateien gelöscht",
@@ -1245,7 +1256,13 @@
     "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten",
     "invalidTaxIdIsProvided": "Die angegebene Steuernummer ist ungültig",
     "errorWhileFetchingMoreItems": "Beim Abrufen weiterer Elemente ist ein Fehler aufgetreten",
-    "errorDeletingItems": "Beim Löschen dieses Elements ist ein Fehler aufgetreten"
+    "errorDeletingItems": "Beim Löschen dieses Elements ist ein Fehler aufgetreten",
+    "errorFetchingWorkspace": "Fehler beim Abrufen des Arbeitsbereichs {{error}}",
+    "errorSettingUpWorkspace": "Fehler beim Einrichten des Arbeitsbereichs {{error}}",
+    "errorWhileLoadingWorkspace": "Fehler beim Laden des Arbeitsbereichs {{error}}",
+    "errorFetchingWorkspaceCredentials": "Fehler beim Abrufen der Anmeldeinformationen für den Arbeitsbereich {{error}}",
+    "invalidWorkspaceInvitationError": "Arbeitsbereich voll. Kontaktieren Sie den Eigentümer.",
+    "errorAcceptingWorkspaceInvitation": "Beim Annehmen der Einladung ist ein Fehler aufgetreten"
   },
   "actions": {
     "undo": "Rückgängig machen",
@@ -1445,7 +1462,7 @@
       "members": {
         "title": "Mitglieder",
         "members": "Mitglieder",
-        "guests": "Gäste",
+        "guests": "Eingeladen",
         "search": "Mitglieder suchen",
         "invite": "Einladen",
         "inviteDialog": {
@@ -1477,6 +1494,14 @@
           "manager": "Manager",
           "member": "Mitglied",
           "deactivated": "Deaktiviert"
+        },
+        "modifyStorageModal": {
+          "user": "Benutzer",
+          "storage": "Speicher",
+          "spaceAssigned": "Zugewiesener Speicher",
+          "spaceLeft": "Verbleibender Gesamtspeicher",
+          "cancel": "Abbrechen",
+          "saveChanges": "Änderungen speichern"
         },
         "deactivationModal": {
           "title": "Mitglied deaktivieren",

@@ -3,23 +3,21 @@ import { Link } from 'react-router-dom';
 import authService from '../../../auth/services/auth.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import Button from '../../../shared/components/Button/Button';
-import Input from '../../../shared/components/Input';
-import PasswordStrengthIndicator from '../../../shared/components/PasswordStrengthIndicator';
-import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { Button } from '@internxt/internxtui';
+import Input from 'app/shared/components/Input';
+import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
+import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
 import { CaretLeft, FileArrowUp, Warning, WarningCircle, CheckCircle } from '@phosphor-icons/react';
 import { validateMnemonic } from 'bip39';
-import errorService from '../../../core/services/error.service';
-import localStorageService from '../../../core/services/local-storage.service';
-import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import { trackPasswordRecovered } from '../../../analytics/services/analytics.service';
+import errorService from 'app/core/services/error.service';
+import localStorageService from 'app/core/services/local-storage.service';
 
 interface ChangePasswordProps {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;
 }
 
-export default function ChangePassword(props: ChangePasswordProps): JSX.Element {
+export default function ChangePassword(props: Readonly<ChangePasswordProps>): JSX.Element {
   const { translate } = useTranslationContext();
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmNewPassword, setConfirmNewPassword] = useState<string>('');
@@ -118,10 +116,6 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
     const password = newPassword;
     const mnemonic = backupKeyContent;
 
-    const trackPasswordRecoveredProperties: TrackingPlan.PasswordRecoveredProperties = {
-      method: 'backup_key',
-    };
-
     if (!token) {
       notificationsService.show({
         text: translate('auth.recoverAccount.changePassword.tokenError'),
@@ -133,7 +127,6 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
       await authService.updateCredentialsWithToken(token, password, mnemonic, '');
       localStorageService.clear();
       setIsEmailSent(true);
-      trackPasswordRecovered(trackPasswordRecoveredProperties);
     } catch (error) {
       notificationsService.show({
         text: translate('auth.recoverAccount.changePassword.serverError'),
@@ -155,13 +148,13 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
             onChange={onUploadBackupKeyInputChanged}
             accept=".txt"
           />
-          <span
+          <button
             onClick={() => props.setHasBackupKey(undefined)}
             className="font-regular mb-1 flex cursor-pointer items-center text-base text-primary"
           >
             <CaretLeft size={18} className="mr-0.5" />
             {translate('auth.recoverAccount.title')}
-          </span>
+          </button>
           <h3 className="mb-5 text-2xl font-medium">{translate('auth.recoverAccount.backupKey.title')}</h3>
           <div className="font-regular mb-4 flex rounded-md border border-orange/30 bg-orange/5 p-4 text-sm text-orange-dark">
             <span className="mr-1.5 pt-0.5">
@@ -185,13 +178,13 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
         <>
           {!isEmailSent ? (
             <>
-              <span
+              <button
                 onClick={() => setBackupKeyContent('')}
                 className="font-regular mb-1 flex cursor-pointer items-center text-base text-primary"
               >
                 <CaretLeft size={18} className="mr-0.5" />
                 {translate('auth.recoverAccount.backupKey.title')}
-              </span>
+              </button>
               <h3 className="mb-5 text-2xl font-medium">{translate('auth.recoverAccount.changePassword.title')}</h3>
               <form
                 className="flex w-full flex-col space-y-6"

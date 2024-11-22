@@ -48,8 +48,8 @@ export const checkIfCachedSourceIsOlder = ({
   const isCachedFileOlder = !cachedFile?.updatedAt
     ? true
     : dateService.isDateOneBefore({
-        dateOne: cachedFile?.updatedAt as string,
-        dateTwo: file?.updatedAt as string,
+        dateOne: cachedFile?.updatedAt,
+        dateTwo: file?.updatedAt,
       });
 
   return isCachedFileOlder;

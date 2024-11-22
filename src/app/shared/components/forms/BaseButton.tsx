@@ -1,5 +1,4 @@
-import Spinner from '../../../shared/components/Spinner/Spinner';
-
+import { Spinner } from '@internxt/internxtui';
 interface ButtonProps {
   className?: string;
   children: JSX.Element | JSX.Element[] | string;

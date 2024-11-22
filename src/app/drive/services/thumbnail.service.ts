@@ -11,17 +11,16 @@ import { AppDispatch } from '../../store';
 import { storageActions } from '../../store/slices/storage';
 import Resizer from 'react-image-file-resizer';
 import { pdfjs } from 'react-pdf';
-import analyticsService from '../../analytics/services/analytics.service';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 import localStorageService from '../../core/services/local-storage.service';
 import navigationService from '../../core/services/navigation.service';
-import { AppView, DevicePlatform } from '../../core/types';
+import { AppView } from '../../core/types';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { DriveItemData, ThumbnailConfig } from '../types';
 import fetchFileBlob from './download.service/fetchFileBlob';
-import { FileToUpload } from './file.service/uploadFile';
 import { getEnvironmentConfig } from './network.service';
+import { FileToUpload } from './file.service/types';
 
 export interface ThumbnailToUpload {
   fileId: number;
@@ -71,6 +70,7 @@ const getPDFThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> 
   if (canvasContext) {
     const renderTask = page.render({ canvasContext, viewport });
     await renderTask.promise;
+    await loadingTask.destroy();
     return new Promise((resolve) => {
       // Convert the canvas to an image buffer.
       canvas.toBlob((blob: Blob | null) => {
@@ -95,7 +95,6 @@ export const uploadThumbnail = async (
   const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
 
   if (!bucketId) {
-    analyticsService.trackFileUploadBucketIdUndefined({ email: userEmail, platform: DevicePlatform.Web });
     notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
     localStorageService.clear();
     navigationService.push(AppView.Login);
