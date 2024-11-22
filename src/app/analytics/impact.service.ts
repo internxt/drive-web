@@ -2,9 +2,9 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { getCookie } from './utils';
-import errorService from 'app/core/services/error.service';
-import httpService from 'app/core/services/http.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import errorService from '../core/services/error.service';
+import httpService from '../core/services/http.service';
+import localStorageService from '../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { AnalyticsTrackNames } from './types';
 

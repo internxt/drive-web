@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { deactivate2FA, userHas2FAStored } from 'app/auth/services/auth.service';
+import { deactivate2FA, userHas2FAStored } from '../../../../../auth/services/auth.service';
 import { Button } from '@internxt/internxtui';
-import Modal from 'app/shared/components/Modal';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import Input from 'app/shared/components/Input';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import errorService from 'app/core/services/error.service';
+import Modal from '../../../../../shared/components/Modal';
+import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
+import Input from '../../../../../shared/components/Input';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
+import errorService from '../../../../../core/services/error.service';
 
 const TwoFactorAuthenticationDisableModal = ({
   isOpen,

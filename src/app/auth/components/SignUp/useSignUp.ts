@@ -4,11 +4,11 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as bip39 from 'bip39';
 
 import { readReferalCookie } from 'app/auth/services/auth.service';
-import { SdkFactory } from 'app/core/factory/sdk';
-import httpService from 'app/core/services/http.service';
-import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
-import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
+import { SdkFactory } from '../../../core/factory/sdk';
+import httpService from '../../../core/services/http.service';
+import { getAesInitFromEnv } from '../../../crypto/services/keys.service';
+import { generateNewKeys } from '../../../crypto/services/pgp.service';
+import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../../crypto/services/utils';
 
 export type UpdateInfoFunction = (
   email: string,

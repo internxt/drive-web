@@ -1,6 +1,6 @@
 import streamSaver from 'streamsaver';
 
-import { loadWritableStreamPonyfill } from 'app/network/download';
+import { loadWritableStreamPonyfill } from '../../../network/download';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
 import { DriveFileData } from '../../types';

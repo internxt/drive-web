@@ -1,16 +1,16 @@
 import { PendingInvitesResponse } from '@internxt/sdk/dist/workspaces';
 import { CheckCircle, X } from '@phosphor-icons/react';
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import workspacesService from 'app/core/services/workspace.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import errorService from '../../../core/services/error.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import workspacesService from '../../../core/services/workspace.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { Button } from '@internxt/internxtui';
-import Modal from 'app/shared/components/Modal';
-import { useAppDispatch } from 'app/store/hooks';
-import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import Modal from '../../../shared/components/Modal';
+import { useAppDispatch } from '../../../store/hooks';
+import { workspaceThunks } from '../../../store/slices/workspaces/workspacesStore';
 import dayjs from 'dayjs';
-import AppError from 'app/core/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import AppError from '../../../core/types';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 
 const WORKSPACE_INVITATION_BAD_REQUEST = 400;
 

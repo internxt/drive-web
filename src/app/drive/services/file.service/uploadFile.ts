@@ -1,6 +1,6 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { Network } from 'app/drive/services/network.service';
-import { DriveFileData } from 'app/drive/types';
+import { Network } from '../../../drive/services/network.service';
+import { DriveFileData } from '../../../drive/types';
 import { SdkFactory } from '../../../core/factory/sdk';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';

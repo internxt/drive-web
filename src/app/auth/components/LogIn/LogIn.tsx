@@ -6,19 +6,19 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import localStorageService from 'app/core/services/local-storage.service';
-import { twoFactorRegexPattern } from 'app/core/services/validation.service';
-import { RootState } from 'app/store';
-import { useAppDispatch } from 'app/store/hooks';
-import { userActions } from 'app/store/slices/user';
+import localStorageService from '../../../core/services/local-storage.service';
+import { twoFactorRegexPattern } from '../../../core/services/validation.service';
+import { RootState } from '../../../store';
+import { useAppDispatch } from '../../../store/hooks';
+import { userActions } from '../../../store/slices/user';
 import authService, { authenticateUser, is2FANeeded } from '../../services/auth.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WarningCircle } from '@phosphor-icons/react';
 import errorService from '../../../core/services/error.service';
 import navigationService from '../../../core/services/navigation.service';
-import AppError, { AppView, IFormValues } from 'app/core/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import AppError, { AppView, IFormValues } from '../../../core/types';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { Button } from '@internxt/internxtui';
 import workspacesService from '../../../core/services/workspace.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
@@ -26,7 +26,7 @@ import useLoginRedirections from '../../../routes/hooks/Login/useLoginRedirectio
 import shareService from '../../../share/services/share.service';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import TextInput from '../TextInput/TextInput';
-import { AuthMethodTypes } from 'app/payment/types';
+import { AuthMethodTypes } from '../../../payment/types';
 
 const UNAUTHORIZED_STATUS_CODE = 401;
 

@@ -4,9 +4,9 @@ import { DriveFileData, DriveFolderData, DriveItemData } from '../../types';
 
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
-import { Iterator } from 'app/core/collections';
-import { FlatFolderZip } from 'app/core/services/zip.service';
-import { downloadFile } from 'app/network/download';
+import { Iterator } from '../../../core/collections';
+import { FlatFolderZip } from '../../../core/services/zip.service';
+import { downloadFile } from '../../../network/download';
 import { t } from 'i18next';
 import { SdkFactory } from '../../../core/factory/sdk';
 import localStorageService from '../../../core/services/local-storage.service';

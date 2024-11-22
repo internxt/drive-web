@@ -3,18 +3,18 @@
  */
 
 import * as authService from './auth.service';
-import { userActions } from 'app/store/slices/user';
+import { userActions } from '../../store/slices/user';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import localStorageService from 'app/core/services/local-storage.service';
-import * as keysService from 'app/crypto/services/keys.service';
+import localStorageService from '../../core/services/local-storage.service';
+import * as keysService from '../../crypto/services/keys.service';
 import { AuthenticateUserParams } from './auth.service';
-import { AuthMethodTypes } from 'app/payment/types';
+import { AuthMethodTypes } from '../../payment/types';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 vi.mock('../../../WebWorker');
-vi.mock('app/store/slices/user');
-vi.mock('app/core/services/local-storage.service');
-vi.mock('app/core/services/error.service');
+vi.mock('../../store/slices/user');
+vi.mock('../../core/services/local-storage.service');
+vi.mock('../../core/services/error.service');
 
 const mockDispatch = vi.fn();
 const mockToken = 'test-token';
@@ -48,17 +48,6 @@ const mockUser: UserSettings = {
   credit: 0,
   publicKey: '',
   revocationKey: '',
-  keys: {
-    ecc: {
-      publicKey: '',
-      privateKey: '',
-      revocationKey: '',
-    },
-    kyber: {
-      publicKyberKey:'',
-      privateKyberKey:'',
-    }
-  },
   appSumoDetails: null,
   registerCompleted: false,
   hasReferralsProgram: false,

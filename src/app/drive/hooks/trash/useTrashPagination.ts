@@ -1,5 +1,5 @@
-import errorService from 'app/core/services/error.service';
-import { OrderSettings } from 'app/core/types';
+import errorService from '../../../core/services/error.service';
+import { OrderSettings } from '../../../core/types';
 import { useState, useCallback, useEffect } from 'react';
 
 const TRASH_PAGINATION_OFFSET = 50;
