@@ -6,13 +6,11 @@ const DetailsInput = ({
   onChangeTextValue,
   maxLength,
   disabled,
-  hideMaxLength,
 }: {
   label: string;
   textValue: string;
   onChangeTextValue: (text: string) => void;
   maxLength?: number;
-  hideMaxLength?: boolean;
   disabled?: boolean;
 }) => {
   return (
@@ -26,13 +24,6 @@ const DetailsInput = ({
         onChange={onChangeTextValue}
         maxLength={maxLength}
       />
-      {!hideMaxLength && maxLength && (
-        <span className="flex w-full justify-end text-sm font-normal leading-4 text-gray-50">
-          <text>
-            {textValue.length}/{maxLength}
-          </text>
-        </span>
-      )}
     </div>
   );
 };

@@ -1241,6 +1241,7 @@
     "linkUpdated": "Link aktualisiert",
     "itemsMovedToTrash": "{{item}} in den Papierkorb verschoben",
     "storageModified": "Speicher erfolgreich geändert",
+    "membersUpdatedSuccessfully": "Mitglieder erfolgreich aktualisiert",
     "errorModifyingStorage": "Der neue Speicherplatz ist für dieses Mitglied ungültig.",
     "generalErrorWhileModifyingStorage": "Beim Ändern des Speicherplatzes ist ein Fehler aufgetreten.",
     "restoreItems": "{{itemsToRecover}} verschoben nach {{destination}}",
@@ -1262,7 +1263,10 @@
     "errorWhileLoadingWorkspace": "Fehler beim Laden des Arbeitsbereichs {{error}}",
     "errorFetchingWorkspaceCredentials": "Fehler beim Abrufen der Anmeldeinformationen für den Arbeitsbereich {{error}}",
     "invalidWorkspaceInvitationError": "Arbeitsbereich voll. Kontaktieren Sie den Eigentümer.",
-    "errorAcceptingWorkspaceInvitation": "Beim Annehmen der Einladung ist ein Fehler aufgetreten"
+    "errorAcceptingWorkspaceInvitation": "Beim Annehmen der Einladung ist ein Fehler aufgetreten",
+    "errorWhileUpdatingWorkspaceMembers": "Beim Aktualisieren der Mitglieder ist ein Fehler aufgetreten",
+    "errorWhileFetchingCurrentWorkspaceMembers": "Beim Abrufen der Mitglieder des Arbeitsbereichs ist ein Fehler aufgetreten",
+    "newMembersCannotBeLessThanTheExistentOnesError": "Die ausgewählten Mitglieder dürfen nicht weniger sein als die aktuellen Mitglieder des Arbeitsbereichs"
   },
   "actions": {
     "undo": "Rückgängig machen",
@@ -1294,6 +1298,7 @@
     "moreInfo": "Mehr Info",
     "dismiss": "Zurückweisen",
     "save": "Sichern",
+    "saveChanges": "Änderungen speichern",
     "back": "Zurück",
     "edit": "Bearbeite",
     "submit": "Einreichen",
@@ -1311,7 +1316,9 @@
     "report": "Missbrauch melden",
     "yes": "Ja",
     "no": "Nein",
-    "more": "Mehr"
+    "more": "Mehr",
+    "continue": "Fortsetzen",
+    "keepCurrent": "Aktuell behalten"
   },
   "drive": {
     "usage": "Verwendung",
@@ -1644,6 +1651,14 @@
         "nextBillingDate": "Nächstes Abrechnungsdatum",
         "planLimit": "Abgerechnet für {{planLimit}} plan",
         "subscription": "Abonnement",
+        "membersLabel": "Mitglieder",
+        "perUser": "pro Benutzer",
+        "members": {
+          "title": "Mitglieder",
+          "editMembers": "Mitglieder bearbeiten",
+          "numberOfMembers": "Anzahl der Mitglieder",
+          "expandNumber": "Die Anzahl der Mitglieder erweitern."
+        },
         "lifetimeSubscription": {
           "planType": "Lebenslang",
           "text": "Keine kommenden Rechnungen"
