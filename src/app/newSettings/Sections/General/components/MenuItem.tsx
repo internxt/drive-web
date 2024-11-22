@@ -1,5 +1,6 @@
 import { ReactNode, forwardRef } from 'react';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
   return (
     <button

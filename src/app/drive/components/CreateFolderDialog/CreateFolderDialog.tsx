@@ -54,7 +54,7 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
       )
         .unwrap()
         .then(() => {
-          onFolderCreated && onFolderCreated();
+          onFolderCreated?.();
           dispatch(storageActions.setHasMoreDriveFolders({ folderId: parentFolderId, status: true }));
           dispatch(storageActions.setHasMoreDriveFiles({ folderId: parentFolderId, status: true }));
           setTimeout(() => {

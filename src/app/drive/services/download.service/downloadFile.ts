@@ -158,7 +158,7 @@ function downloadFileUsingStreamApi(
 enum DownloadSupport {
   StreamApi = 'StreamApi',
   PartialStreamApi = 'PartialStreamApi',
-  PatchedStreamApi = 'PartialStreamApi',
+  PatchedStreamApi = 'PatchedStreamApi',
   Blob = 'Blob',
 }
 

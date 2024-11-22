@@ -1,11 +1,12 @@
-import databaseService, { AppDatabase, DatabaseCollection } from '../../database/services/database.service';
+import { AppDatabase, DatabaseCollection } from '../../database/services/database.service';
 import { DriveItemData } from '../types';
-import { levels_blobs } from '../../database/services/database.service/mocks';
 
 describe('databaseService', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const get = (database) => (databaseKey: DatabaseCollection, itemKey: number | string) =>
     Promise.resolve<DriveItemData[]>(database[databaseKey][itemKey]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const put =
     (database) =>
     (

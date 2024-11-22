@@ -37,7 +37,7 @@ const ChangePasswordModal = ({
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
-    await changePassword(passwordPayload.password, currentPassword, email);
+    await changePassword(passwordPayload.password, currentPassword);
     notificationsService.show({ text: translate('success.passwordChanged'), type: ToastType.Success });
     onPasswordChanged(passwordPayload.password);
     onClose();

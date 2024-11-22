@@ -50,12 +50,17 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   });
 
   useEffect(() => {
-    plan.businessSubscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
+    if (plan.businessSubscription?.type === 'subscription') {
+      setIsSubscription(true);
+    } else {
+      setIsSubscription(false);
+    }
     setPlanName(getPlanName(plan.businessPlan, plan.businessPlanLimit));
     setPlanInfo(getPlanInfo(plan.businessPlan));
     setCurrentUsage(plan.businessPlanUsageDetails?.total ?? -1);
   }, [plan.businessSubscription]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function cancelSubscription(feedback: string) {
     setCancellingSubscription(true);
     try {

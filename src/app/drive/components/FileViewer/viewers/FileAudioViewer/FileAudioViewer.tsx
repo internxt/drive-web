@@ -1,10 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-
 import { loadAudioIntoPlayer } from 'app/core/services/media.service';
-import { AudioExtensions } from 'app/drive/types/file-types';
 
 const FileAudioViewer = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   file,
   blob,
   setIsPreviewAvailable,
@@ -18,7 +17,7 @@ const FileAudioViewer = ({
     const audioPlayer = audioRef.current;
 
     if (audioPlayer) {
-      loadAudioIntoPlayer(audioPlayer, blob, file.type as keyof AudioExtensions).catch((err) => {
+      loadAudioIntoPlayer(audioPlayer, blob).catch((err) => {
         console.error('Error loading audio into player', err);
         setIsPreviewAvailable(false);
       });

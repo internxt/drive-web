@@ -109,7 +109,7 @@ const DriveTopBarActions = ({
     moveItemsToTrash(selectedItems);
   };
 
-  const onSelectedOneItemShare = (e): void => {
+  const onSelectedOneItemShare = (): void => {
     if (selectedItems.length === 1) {
       const selectedItem = selectedItems[0];
       dispatch(
@@ -123,7 +123,7 @@ const DriveTopBarActions = ({
     }
   };
 
-  const onSelectedOneItemRename = (e): void => {
+  const onSelectedOneItemRename = (): void => {
     if (selectedItems.length === 1) {
       if (!dirtyName || dirtyName === null || dirtyName.trim() === '') {
         setEditNameItem(selectedItems[0]);

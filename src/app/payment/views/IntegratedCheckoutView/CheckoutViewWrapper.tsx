@@ -260,6 +260,7 @@ const CheckoutViewWrapper = () => {
     }
   }, [state.error]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onChangePlanClicked = async (priceId: string, currency: string) => {
     setIsUpdatingSubscription(true);
     await handleSubscriptionPayment(priceId);

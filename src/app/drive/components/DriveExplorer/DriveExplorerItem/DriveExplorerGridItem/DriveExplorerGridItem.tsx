@@ -115,9 +115,10 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       onMouseEnter={props.onMouseEnter}
       onMouseLeave={props.onMouseLeave}
       draggable={false}
-      onKeyDown={(e) => {}}
+      onKeyDown={() => {}}
     >
       <Menu as="div" className="absolute right-2 top-2 z-10">
+        {/*eslint-disable-next-line @typescript-eslint/no-unused-vars*/}
         {({ open, close }) => (
           <div className="relative">
             <Menu.Button

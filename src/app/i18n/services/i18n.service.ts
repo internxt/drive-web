@@ -12,6 +12,15 @@ import de from 'dayjs/locale/de';
 import en from 'dayjs/locale/en';
 import tw from 'dayjs/locale/zh-tw';
 
+import translation_en from '../locales/en.json';
+import translation_es from '../locales/es.json';
+import translation_fr from '../locales/fr.json';
+import translation_it from '../locales/it.json';
+import translation_zh from '../locales/zh.json';
+import translation_ru from '../locales/ru.json';
+import translation_de from '../locales/de.json';
+import translation_tw from '../locales/tw.json';
+
 import localStorageService from 'app/core/services/local-storage.service';
 import envService from 'app/core/services/env.service';
 
@@ -36,28 +45,28 @@ export default i18next
   .init({
     resources: {
       en: {
-        translation: require('../locales/en.json'),
+        translation: translation_en,
       },
       es: {
-        translation: require('../locales/es.json'),
+        translation: translation_es,
       },
       fr: {
-        translation: require('../locales/fr.json'),
+        translation: translation_fr,
       },
       it: {
-        translation: require('../locales/it.json'),
+        translation: translation_it,
       },
       zh: {
-        translation: require('../locales/zh.json'),
+        translation: translation_zh,
       },
       ru: {
-        translation: require('../locales/ru.json'),
+        translation: translation_ru,
       },
       de: {
-        translation: require('../locales/de.json'),
+        translation: translation_de,
       },
       'zh-TW': {
-        translation: require('../locales/tw.json'),
+        translation: translation_tw,
       },
     },
     debug: !envService.isProduction(),

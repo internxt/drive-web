@@ -44,7 +44,9 @@ const RenameTeamDialogContainer: React.FC<RenameTeamDialogContainerProps> = ({
           });
           return;
         }
-        selectedTeam && (await workspacesService.editTeam(selectedTeam.team.id, renameTeamName));
+        if (selectedTeam) {
+          await workspacesService.editTeam(selectedTeam.team.id, renameTeamName);
+        }
         setTimeout(() => {
           getTeams();
         }, 500);

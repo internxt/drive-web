@@ -24,7 +24,9 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }
   const [isWorkspaceSelectorOpen, setIsWorkspaceSelectorOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    (isDialogOpen || isWorkspaceSelectorOpen) && getPendingInvites();
+    if (isDialogOpen || isWorkspaceSelectorOpen) {
+      getPendingInvites();
+    }
   }, [isLoading, isWorkspaceSelectorOpen]);
 
   const getPendingInvites = async () => {
@@ -42,8 +44,9 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }
     if (selectedWorkspace?.isPending) {
       const selectedPendingWorkspace = pendingWorkspaces.find((workspace) => workspace.id === selectedWorkspace.uuid);
 
-      selectedPendingWorkspace &&
+      if (selectedPendingWorkspace) {
         dispatch(workspaceThunks.setupWorkspace({ pendingWorkspace: selectedPendingWorkspace }));
+      }
       return;
     }
     dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId }));

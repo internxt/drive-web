@@ -107,7 +107,7 @@ export default function RecoverView(): JSX.Element {
       // Store it on the state
       setMnemonicToStorage(clearMnemonic);
       // Update persistence
-      await changePassword(current_password, current_password, user.email).catch(() => {
+      await changePassword(current_password, current_password).catch(() => {
         // If there is error, rollback corrupted mnemonic for next try
         setMnemonicToStorage(mnemonic);
         // And alert parent

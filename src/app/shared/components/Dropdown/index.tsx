@@ -65,7 +65,7 @@ export default function Dropdown({
           )}
           {dropdownActionsContext && item && (
             <div className="w-full max-w-xs">
-              {dropdownActionsContext?.map((option, i) => (
+              {dropdownActionsContext?.map((option) => (
                 <div key={option?.name}>
                   {option &&
                     (option.separator ? (

@@ -79,7 +79,7 @@ const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
     } else {
       return aes.decrypt(item.name, `${process.env.REACT_APP_CRYPTO_SECRET2}-${item.folderId}`);
     }
-  } catch (err) {
+  } catch {
     //Decrypt has failed because item.name is not encrypted
     return item.name;
   }

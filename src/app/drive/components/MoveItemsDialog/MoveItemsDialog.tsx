@@ -120,7 +120,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     } else {
       setDestinationId(currentFolderId);
     }
-    name && setSelectedFolderName(name);
+    if (name) {
+      setSelectedFolderName(name);
+    }
   };
 
   const onClose = (): void => {
@@ -189,7 +191,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
       setIsLoading(false);
       onClose();
-      !props.isTrash && setDriveBreadcrumb(itemsToMove);
+      if (!props.isTrash) {
+        setDriveBreadcrumb(itemsToMove);
+      }
       store.dispatch(storageActions.popItemsToDelete(itemsToMove));
     } catch (err: unknown) {
       const castedError = errorService.castError(err);

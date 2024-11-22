@@ -30,12 +30,17 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
   const [currentUsage, setCurrentUsage] = useState<number>(-1);
 
   useEffect(() => {
-    plan.individualSubscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
+    if (plan.individualSubscription?.type === 'subscription') {
+      setIsSubscription(true);
+    } else {
+      setIsSubscription(false);
+    }
     setPlanName(getPlanName(plan.individualPlan || plan.teamPlan, plan.planLimit));
     setPlanInfo(getPlanInfo(plan.individualPlan || plan.teamPlan));
     setCurrentUsage(getCurrentUsage(plan.usageDetails));
   }, [plan.individualSubscription]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function cancelSubscription(feedback: string) {
     setCancellingSubscription(true);
     try {

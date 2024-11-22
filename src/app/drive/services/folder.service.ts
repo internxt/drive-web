@@ -450,6 +450,7 @@ async function downloadFolderAsZip({
         zip,
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       totalSize += files.reduce((a, f) => f.size + a, 0);
 
       const folders = await addAllFoldersToZip(

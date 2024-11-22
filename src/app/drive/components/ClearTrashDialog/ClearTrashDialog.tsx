@@ -34,7 +34,7 @@ const ClearTrashDialog = (props: ClearTrashDialogProps): JSX.Element => {
       setIsLoading(true);
       await emptyTrash();
 
-      props.onItemsDeleted && props.onItemsDeleted();
+      props.onItemsDeleted?.();
 
       setIsLoading(false);
       onClose();

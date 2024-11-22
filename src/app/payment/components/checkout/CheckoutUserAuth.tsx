@@ -1,4 +1,3 @@
-/* eslint-disable quotes */
 import { AuthMethodTypes } from '../../types';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';

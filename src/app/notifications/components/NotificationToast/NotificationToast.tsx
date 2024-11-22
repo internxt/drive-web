@@ -20,7 +20,9 @@ const NotificationToast = ({
   let IconColor: string | undefined;
 
   useEffect(() => {
-    visible && dispatch(uiActions.setIsToastNotificacionOpen(visible));
+    if (visible) {
+      dispatch(uiActions.setIsToastNotificacionOpen(visible));
+    }
   }, [visible]);
 
   switch (type) {

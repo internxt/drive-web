@@ -37,15 +37,21 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
 
   useEffect(() => {
     if (newPassword.length > 0) onChangeHandler(newPassword);
-    confirmNewPassword && confirmNewPassword != newPassword ? setIsEqualPassword(false) : setIsEqualPassword(true);
+    if (confirmNewPassword && confirmNewPassword != newPassword) {
+      setIsEqualPassword(false);
+    } else {
+      setIsEqualPassword(true);
+    }
   }, [newPassword]);
 
   useEffect(() => {
     const confirmNewPasswordLength = confirmNewPassword.length;
     const firstLettersPassword = newPassword.substring(0, confirmNewPasswordLength);
-    confirmNewPassword && confirmNewPassword != firstLettersPassword
-      ? setIsEqualPassword(false)
-      : setIsEqualPassword(true);
+    if (confirmNewPassword && confirmNewPassword != firstLettersPassword) {
+      setIsEqualPassword(false);
+    } else {
+      setIsEqualPassword(true);
+    }
   }, [confirmNewPassword]);
 
   useEffect(() => {
@@ -56,7 +62,9 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
       return () => clearInterval(timer);
     }
 
-    countDown === 0 && window.location.assign(`${window.location.origin}/login`);
+    if (countDown === 0) {
+      window.location.assign(`${window.location.origin}/login`);
+    }
   }, [isEmailSent, countDown]);
 
   const uploadBackupKey = () => {
@@ -68,12 +76,14 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
     const backupKey = await file.text();
     const isValidBackupKey = validateMnemonic(backupKey);
 
-    isValidBackupKey
-      ? setBackupKeyContent(backupKey)
-      : notificationsService.show({
-          text: translate('auth.recoverAccount.changePassword.backupKeyError'),
-          type: ToastType.Error,
-        });
+    if (isValidBackupKey) {
+      setBackupKeyContent(backupKey);
+    } else {
+      notificationsService.show({
+        text: translate('auth.recoverAccount.changePassword.backupKeyError'),
+        type: ToastType.Error,
+      });
+    }
   };
 
   const onChangeHandler = (input: string) => {
@@ -124,7 +134,7 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
     }
 
     try {
-      await authService.updateCredentialsWithToken(token, password, mnemonic, '');
+      await authService.updateCredentialsWithToken(token, password, mnemonic);
       localStorageService.clear();
       setIsEmailSent(true);
     } catch (error) {

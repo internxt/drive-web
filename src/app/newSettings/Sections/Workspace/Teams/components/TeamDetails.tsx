@@ -47,6 +47,7 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
   setIsRemoveTeamMemberDialogOpen,
   setTeamMemberToRemove,
   handleChangeManagerClicked,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   selectedWorkspace,
   isCurrentUserManager,
 }) => {

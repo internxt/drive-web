@@ -35,6 +35,7 @@ describe('useBackupsPagination', () => {
 
   const FOLDER_CONTENT_2 = {
     files: Array.from({ length: 20 }, (_, i) => ({ plainName: `file-${i + 31}.txt` })),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     children: Array.from({ length: 0 }, (_, i) => []),
   } as unknown as FetchFolderContentResponse;
 

@@ -74,7 +74,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
 
     store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToTrash }));
     store.dispatch(storageActions.clearSelectedItems());
-    onSuccess && onSuccess();
+    onSuccess?.();
     notificationsService.dismiss(movingItemsToastId);
 
     const id = notificationsService.show({

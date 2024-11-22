@@ -34,9 +34,11 @@ const httpService = {
     headers.append('internxt-client', 'drive-web');
 
     if (withAuth) {
-      isTeam
-        ? headers.append('Authorization', `Bearer ${localStorageService.get('xTokenTeam')}`)
-        : headers.append('Authorization', `Bearer ${localStorageService.get('xToken')}`);
+      if (isTeam) {
+        headers.append('Authorization', `Bearer ${localStorageService.get('xTokenTeam')}`);
+      } else {
+        headers.append('Authorization', `Bearer ${localStorageService.get('xToken')}`);
+      }
     }
 
     return headers;

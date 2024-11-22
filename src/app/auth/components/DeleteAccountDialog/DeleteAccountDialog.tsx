@@ -6,7 +6,7 @@ import BaseButton from 'app/shared/components/forms/BaseButton';
 
 const DeleteAccountDialog = (props: { isOpen: boolean; onClose: () => void }): JSX.Element => {
   const onClose = (): void => {
-    props.onClose && props.onClose();
+    props.onClose();
   };
   const onAccept = async (): Promise<void> => {
     try {

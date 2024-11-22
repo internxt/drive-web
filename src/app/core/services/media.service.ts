@@ -80,9 +80,9 @@ export async function loadAudioIntoPlayer(
   audioPlayer: HTMLAudioElement,
   audio: Blob,
   // audioStream: ReadableStream<Uint8Array>,
-  audioType: keyof AudioTypes,
+  // audioType: keyof AudioTypes,
 ): Promise<void> {
-  const mime = `audio/${audioType}`;
+  // const mime = `audio/${audioType}`;
   // const blob = await binaryStreamToBlob(audioStream, mime);
 
   audioPlayer.src = URL.createObjectURL(audio);

@@ -26,10 +26,14 @@ const BillingPaymentMethodCard = ({ userType }: { userType: UserType }) => {
   const defaultPaymentMethod = useDefaultPaymentMethod(userFullName, userType);
 
   useEffect(() => {
-    (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.card) ||
-    (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.type)
-      ? setIsPaimentMethod(true)
-      : setIsPaimentMethod(false);
+    if (
+      (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.card) ||
+      (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.type)
+    ) {
+      setIsPaimentMethod(true);
+    } else {
+      setIsPaimentMethod(false);
+    }
   }, [defaultPaymentMethod]);
 
   const cardBrands: Record<PaymentMethod['card']['brand'], string> = {

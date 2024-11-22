@@ -41,6 +41,7 @@ export type Views = 'signUp' | 'downloadBackupKey';
 function SignUp(props: SignUpProps): JSX.Element {
   const { translate } = useTranslationContext();
   const [isValidPassword, setIsValidPassword] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [view, setView] = useState<Views>('signUp');
 
   const qs = queryString.parse(navigationService.history.location.search);
@@ -156,7 +157,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         doSignUp: isNewUser ? doRegister : updateInfo,
       };
 
-      const { token: xToken, user: xUser } = await authenticateUser(authParams);
+      const { token: xToken } = await authenticateUser(authParams);
 
       await redirectTheUserAfterRegistration(xToken, redeemCodeObject);
     } catch (err: unknown) {

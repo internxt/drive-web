@@ -80,6 +80,7 @@ export class Network {
     continueUploadOptions: {
       taskId: string;
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     analyticsServiceCallbacks?: {
       pauseUploadCallback: () => void;
       resumeUploadCallback: () => void;

@@ -8,6 +8,7 @@ jest.mock('../../../share/services/share.service', () => ({}));
 const MOCK_FILE_ENTRY = {
   isFile: true,
   isDirectory: false,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   file: jest.fn((successCallback, errorCallback) =>
     successCallback(new File(['file content'], 'mockFile.txt', { type: 'text/plain' })),
   ),
