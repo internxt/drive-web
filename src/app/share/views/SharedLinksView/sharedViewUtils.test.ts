@@ -4,7 +4,11 @@
 import { getDraggedItemsWithoutFolders } from './sharedViewUtils';
 import { vi, describe, it, expect} from 'vitest';
 
-vi.mock('../../../share/services/share.service', () => ({}));
+vi.mock('../../../share/services/share.service', () => ({
+  default: {
+    shareService: vi.fn(),
+  },
+}));
 
 const MOCK_FILE_ENTRY = {
   isFile: true,

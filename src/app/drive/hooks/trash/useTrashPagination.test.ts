@@ -71,6 +71,7 @@ describe('useTrashPagination', () => {
   });
 
   it('should handle errors when fetching fails', async () => {
+    vi.spyOn(errorService, 'reportError').mockImplementation(() => {});
     mockGetTrashPaginated.mockRejectedValueOnce(new Error('Fetching failed'));
 
     renderHook(() => useTrashPagination(defaultProps));

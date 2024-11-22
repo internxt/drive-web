@@ -5,7 +5,7 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { useBackupsPagination } from './useBackupsPagination';
 import newStorageService from '../../drive/services/new-storage.service';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import _ from 'lodash';
 import { FetchFolderContentResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { DriveItemData } from '../../drive/types';

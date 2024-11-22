@@ -7,7 +7,7 @@ import {
   encryptMessageWithPublicKey,
   decryptMessageWithPrivateKey,
 } from '../../../src/app/crypto/services/pgp.service';
-
+import { Buffer } from 'buffer';
 import { describe, expect, it } from 'vitest';
 
 describe('Encryption and Decryption', () => {

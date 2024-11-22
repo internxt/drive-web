@@ -11,10 +11,10 @@ import { AuthenticateUserParams } from './auth.service';
 import { AuthMethodTypes } from '../../payment/types';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-vi.mock('../../../WebWorker');
-vi.mock('../../store/slices/user');
-vi.mock('../../core/services/local-storage.service');
-vi.mock('../../core/services/error.service');
+vi.mock('../../../WebWorker', { spy: true });
+vi.mock('../../store/slices/user', { spy: true });
+vi.mock('../../core/services/local-storage.service', { spy: true });
+vi.mock('../../core/services/error.service', { spy: true });
 
 const mockDispatch = vi.fn();
 const mockToken = 'test-token';
