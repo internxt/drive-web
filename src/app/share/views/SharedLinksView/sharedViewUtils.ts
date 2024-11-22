@@ -195,7 +195,7 @@ const getDraggedItemsWithoutFolders = async (draggedItemsList: DataTransferItem[
     });
 
     loadedFiles = (await Promise.all(filesPromises)).filter((file): file is File => file !== null);
-  } catch (error) {
+  } catch {
     loadedFiles = [];
     hasFolders = false;
   }

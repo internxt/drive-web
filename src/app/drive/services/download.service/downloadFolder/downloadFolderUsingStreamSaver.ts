@@ -86,7 +86,9 @@ export default async function downloadFolderUsingStreamSaver({
         currentFolderZip?.file(displayFilename, fileStream, { compression: 'DEFLATE' });
 
         fileStreams.push({ file, stream: fileStream });
-        actionState && actionStates.push(actionState);
+        if (actionState) {
+          actionStates.push(actionState);
+        }
       }
 
       // * Adds current folder folders to pending

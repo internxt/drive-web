@@ -38,6 +38,7 @@ export const transformJsonFilesToItems = (
 
 const getChildrenFiles = (jsonObject: JSON): File[] => {
   const childrenFiles = [] as File[];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const [key, value] of Object.entries(jsonObject)) {
     if (value instanceof File) {
       childrenFiles.push(value);

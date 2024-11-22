@@ -46,7 +46,9 @@ const ChangeManagerDialogContainer: React.FC<ChangeManagerDialogContainerProps> 
       setTimeout(() => {
         getTeams();
         getWorkspacesMembers();
-        selectedTeam && getTeamMembers(selectedTeam);
+        if (selectedTeam) {
+          getTeamMembers(selectedTeam);
+        }
       }, 500);
     } catch (err) {
       const castedError = errorService.castError(err);

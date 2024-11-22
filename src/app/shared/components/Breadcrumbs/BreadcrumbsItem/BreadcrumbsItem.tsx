@@ -102,7 +102,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
 
   const onItemClicked = (item: BreadcrumbItemData): void => {
     if (item.active) {
-      item.onClick && item.onClick();
+      item.onClick?.();
     }
   };
   const isDraggingOverClassNames = isOver && canDrop ? 'drag-over-effect' : '';

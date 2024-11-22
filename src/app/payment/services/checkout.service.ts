@@ -1,10 +1,10 @@
 import { StripeElementsOptions } from '@stripe/stripe-js';
 import paymentService from '../../payment/services/payment.service';
 import { ClientSecretData, CouponCodeData, PlanData, RequestedPlanData } from '../types';
-import envService from '../../core/services/env.service';
+//import envService from '../../core/services/env.service';
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 
-const IS_PRODUCTION = envService.isProduction();
+//const IS_PRODUCTION = envService.isProduction();
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
 const fetchPlanById = async (priceId: string, currency?: string): Promise<PlanData> => {

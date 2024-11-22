@@ -95,7 +95,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
       {openDropdown && item && (
         <>
-          {menuItems()?.map((option, i) => (
+          {menuItems()?.map((option) => (
             <div key={option?.name}>
               {option?.separator ? (
                 <div className="my-0.5 flex w-full flex-row px-4">

@@ -41,9 +41,9 @@ async function downloadFolder(
     updateProgress?: (progress: number) => void;
   },
 ) {
-  const { abortController, updateProgress } = opts;
+  const { abortController } = opts;
   const { bridgeUser, bridgePass, encryptionKey } = environment;
-  const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.uuid);
+  const { tree, folderDecryptedNames, fileDecryptedNames } = await folderService.fetchFolderTree(folder.uuid);
   const pendingFolders: { path: string; data: FolderTree }[] = [{ path: '', data: tree }];
 
   const zip = new FlatFolderZip(folder.name, {

@@ -75,12 +75,12 @@ interface Thumbnail {
   urlObject?: string;
 }
 
-export enum ThumbnailConfig {
-  MaxWidth = 300,
-  MaxHeight = 300,
-  Quality = 100,
-  Type = 'png',
-}
+export const ThumbnailConfig = {
+  MaxWidth: 300,
+  MaxHeight: 300,
+  Quality: 100,
+  Type: 'png',
+};
 
 export interface DriveFileMetadataPayload {
   itemName: string;

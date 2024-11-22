@@ -58,7 +58,7 @@ export const fetchDialogContentThunkExtraReducers = (builder: ActionReducerMapBu
   builder
     .addCase(fetchDialogContentThunk.pending, () => undefined)
     .addCase(fetchDialogContentThunk.fulfilled, () => undefined)
-    .addCase(fetchDialogContentThunk.rejected, (state, action) => {
+    .addCase(fetchDialogContentThunk.rejected, (/*state, action*/) => {
       notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
     });
 };

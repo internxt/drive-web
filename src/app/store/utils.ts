@@ -6,7 +6,7 @@ export function isTokenExpired(token): boolean {
       return true;
     }
     return Math.floor(new Date().getTime() / 1000) >= tokenPayload.exp;
-  } catch (error) {
+  } catch {
     return true;
   }
 }

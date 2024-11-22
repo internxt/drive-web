@@ -1,4 +1,3 @@
-/* eslint-disable cypress/unsafe-to-chain-command */
 import { join } from 'path';
 import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
 

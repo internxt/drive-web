@@ -25,6 +25,7 @@ declare namespace NodeJS {
 
 interface Window {
   Stripe: stripe.StripeStatic;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   gtag: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _adftrack: any;

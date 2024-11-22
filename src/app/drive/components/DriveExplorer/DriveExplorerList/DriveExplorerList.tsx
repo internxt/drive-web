@@ -291,7 +291,11 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       dispatch(storageThunks.downloadItemsThunk(props.selectedItems));
     },
     moveToTrash: () => {
-      isSelectedSharedItems ? props.onOpenStopSharingAndMoveToTrashDialog() : moveItemsToTrash(props.selectedItems);
+      if (isSelectedSharedItems) {
+        props.onOpenStopSharingAndMoveToTrashDialog();
+      } else {
+        moveItemsToTrash(props.selectedItems);
+      }
     },
   });
 

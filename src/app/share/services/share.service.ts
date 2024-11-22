@@ -595,7 +595,7 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
         encryptedMessage: atob(encryptionKey),
         privateKeyInBase64: user.privateKey,
       });
-    } catch (err) {
+    } catch {
       decryptedKey = user.mnemonic;
     }
     return decryptedKey;
@@ -744,6 +744,7 @@ export async function downloadPublicSharedFolder({
     item.plainName,
     createFoldersIterator,
     createFilesIterator,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (progress) => ({}),
     item.uuid,
     options,

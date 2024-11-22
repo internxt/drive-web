@@ -66,7 +66,7 @@ const useLoginRedirections = ({
               : t('preferences.workspace.members.invitationFlow.error.acceptedError');
             showNotification({ text: notificationText, isError: true });
           });
-      } catch (error) {
+      } catch {
         showNotification({
           text: t('linkExpired.title'),
           isError: true,

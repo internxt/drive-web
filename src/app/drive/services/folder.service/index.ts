@@ -212,6 +212,7 @@ async function addAllFoldersToZip(
 async function downloadFolderAsZip(
   folderId: DriveFolderData['id'],
   folderName: DriveFolderData['name'],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updateProgress: (progress: number) => void,
 ): Promise<void> {
   const rootFolder: FolderRef = { folderId: folderId, name: folderName };
@@ -267,6 +268,7 @@ async function downloadFolderAsZip(
         zip,
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       totalSize += files.reduce((a, f) => f.size + a, 0);
 
       const folders = await addAllFoldersToZip(folderToDownload.name, foldersIterator, zip);
@@ -281,6 +283,7 @@ async function downloadFolderAsZip(
       );
     } while (pendingFolders.length > 0);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     totalSizeIsReady = true;
 
     await zip.close();

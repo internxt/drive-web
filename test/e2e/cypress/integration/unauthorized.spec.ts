@@ -1,4 +1,3 @@
-/* eslint-disable cypress/unsafe-to-chain-command */
 describe('Unauthorized user', () => {
   const WAIT_MILLISECONDS = 10000;
 

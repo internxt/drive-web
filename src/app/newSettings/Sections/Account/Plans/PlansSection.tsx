@@ -219,6 +219,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     setIsUpdatingSubscription(false);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function cancelSubscription(feedback: string) {
     setCancellingSubscription(true);
     try {

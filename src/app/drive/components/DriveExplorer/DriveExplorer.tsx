@@ -374,7 +374,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           parentFolderId: currentFolderId,
         }),
       ).then(() => {
-        onFileUploaded && onFileUploaded();
+        onFileUploaded?.();
         dispatch(fetchSortedFolderContentThunk(currentFolderId));
       });
       setFileInputKey(Date.now());
@@ -523,7 +523,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const handleOnShareItem = useCallback(() => {
     setTimeout(() => {
-      fetchFolderContent?.() ?? resetPaginationStateAndFetchDriveFolderContent(currentFolderId);
+      if (fetchFolderContent?.()) {
+        resetPaginationStateAndFetchDriveFolderContent(currentFolderId);
+      }
     }, 500);
   }, [currentFolderId, fetchFolderContent]);
 

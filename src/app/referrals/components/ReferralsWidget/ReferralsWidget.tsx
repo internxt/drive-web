@@ -27,7 +27,9 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   };
 
   const onReferralItemClicked = (referral) => {
-    !referral.isCompleted && dispatch(referralsThunks.executeUserReferralActionThunk({ referralKey: referral.key }));
+    if (!referral.isCompleted) {
+      dispatch(referralsThunks.executeUserReferralActionThunk({ referralKey: referral.key }));
+    }
   };
 
   const referralsList = referrals.map((referral) => (

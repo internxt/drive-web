@@ -65,6 +65,7 @@ const WorkspaceCard = ({
 const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   userWorkspace,
   workspaces,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onCreateWorkspaceButtonClicked,
   onChangeWorkspace,
   setIsDialogOpen,

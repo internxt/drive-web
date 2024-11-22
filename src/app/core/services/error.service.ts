@@ -24,11 +24,10 @@ const errorService = {
 
     if ((err as AxiosError).isAxiosError !== undefined) {
       const axiosError = err as AxiosError;
-      castedError =
-        new AppError(
-          axiosError.response?.data.error || axiosError.response?.data.message,
-          axiosError.response?.status,
-        ) || castedError;
+      castedError = new AppError(
+        axiosError.response?.data.error || axiosError.response?.data.message,
+        axiosError.response?.status,
+      );
     } else if (typeof err === 'string') {
       castedError = new AppError(err);
     } else if (err instanceof Error) {

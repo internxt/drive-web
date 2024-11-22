@@ -72,7 +72,7 @@ const useFetchSharedData = () => {
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceCredentials = useSelector(workspacesSelectors.getWorkspaceCredentials);
   const workspaceId = selectedWorkspace?.workspace.id;
-  const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;
+  //const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;
 
   const {
     page,

@@ -138,6 +138,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     setProgress(Number((progress * 100).toFixed(2)));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const download = async (password?: string): Promise<void> => {
     if (!isDownloading) {
       const folderInfo = info as unknown as ShareTypes.ShareLink | null;

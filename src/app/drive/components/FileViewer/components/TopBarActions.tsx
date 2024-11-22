@@ -10,6 +10,7 @@ import Dropdown from 'app/shared/components/Dropdown';
 import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../../shared/components/Tooltip/Tooltip';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MenuItem = ({
   onClick,
   active,

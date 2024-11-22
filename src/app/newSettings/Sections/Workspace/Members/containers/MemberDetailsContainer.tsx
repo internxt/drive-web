@@ -206,6 +206,7 @@ const MemberDetailsContainer = ({
     ],
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const tabs: TypeTabs = [
     {
       name: translate('preferences.workspace.members.tabs.activity.name'),

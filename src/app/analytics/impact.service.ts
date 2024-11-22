@@ -61,7 +61,7 @@ export async function trackPaymentConversion() {
       customer = customerRetrieved;
       paymentIntent = paymentIntentRetrieved;
       subscription = subscriptionId;
-    } catch (error) {
+    } catch {
       //
     }
 
@@ -110,7 +110,7 @@ export async function trackPaymentConversion() {
           },
         ],
       });
-    } catch (error) {
+    } catch {
       //
     }
 

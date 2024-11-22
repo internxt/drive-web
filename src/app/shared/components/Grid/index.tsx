@@ -66,7 +66,7 @@ export default function List({
   // Keyboard shortcuts
   useEffect(() => {
     const onKeyDownListener = (e) => {
-      if ((!disableKeyboardShortcuts ?? true) && !isLoading) {
+      if (!disableKeyboardShortcuts && !isLoading) {
         if (e.code === 'Escape' && keyboardShortcuts?.includes('unselectAll')) {
           unselectAllItems();
         } else if ((e.metaKey || e.ctrlKey) && e.code === 'KeyA' && keyboardShortcuts?.includes('selectAll')) {
@@ -82,7 +82,7 @@ export default function List({
     };
 
     const onKeyUpListener = (e) => {
-      if ((!disableKeyboardShortcuts ?? true) && !isLoading) {
+      if (!disableKeyboardShortcuts && !isLoading) {
         if (
           (e.code === 'MetaLeft' || e.code === 'MetaRight' || e.code === 'ControlLeft' || e.code === 'ControlRight') &&
           keyboardShortcuts?.includes('multiselect')
