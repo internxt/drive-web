@@ -1,15 +1,29 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
+import { describe, it, expect } from 'vitest';
+
+describe('Empty test suite', () => {
+  it('should do nothing', () => {
+    expect(true).toBe(true);
+  });
+});
+
+/*
 import * as authService from './auth.service';
-import { userActions } from '../../store/slices/user';
+import { userActions } from 'app/store/slices/user';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import localStorageService from '../../core/services/local-storage.service';
-import * as keysService from '../../crypto/services/keys.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import * as keysService from 'app/crypto/services/keys.service';
 import { AuthenticateUserParams } from './auth.service';
-import { AuthMethodTypes } from '../../payment/types';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { AuthMethodTypes } from 'app/payment/types';
+import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
+
+vi.mock('../../../WebWorker');
+vi.mock('app/store/slices/user');
+vi.mock('app/core/services/local-storage.service');
+vi.mock('app/core/services/error.service');
 
 const mockDispatch = vi.fn();
 const mockToken = 'test-token';
@@ -61,33 +75,18 @@ beforeEach(() => {
     mnemonic: mockMnemonic,
   });
 });
+
 afterEach(() => {
   vi.clearAllMocks();
 });
-vi.mock('../../../WebWorker');
-vi.mock('../../store/slices/user');
-vi.mock('../../core/services/local-storage.service');
-vi.mock('../../core/services/error.service');
-vi.mock('./auth.service', () => ({
-  ...vi.importActual('./auth.service'),
-  doLogin: vi.fn().mockResolvedValue({
-    user: mockUser,
-    token: mockToken,
-    mnemonic: mockMnemonic,
-  }),
-  getNewToken: vi.fn().mockResolvedValue({
-    mockNewToken,
-  }),
-}));
-
-describe.skip('empty test', () => {});
-/*
-
-
 
 describe('logIn', () => {
-
   it('should log in and dispatch necessary actions', async () => {
+    const doLoginSpy = vi.spyOn(authService, 'doLogin').mockResolvedValue({
+      user: mockUser,
+      token: mockToken,
+      mnemonic: mockMnemonic,
+    });
 
     const result = await authService.logIn({
       email: mockEmail,
@@ -97,7 +96,7 @@ describe('logIn', () => {
       loginType: mockLoginType,
     });
 
-    expect(authService.logIn).toHaveBeenCalledWith(mockEmail, mockPassword, mockTwoFactorCode, mockLoginType);
+    expect(doLoginSpy).toHaveBeenCalledWith(mockEmail, mockPassword, mockTwoFactorCode, mockLoginType);
     expect(mockDispatch).toHaveBeenCalledWith(userActions.setUser(mockUser));
     expect(mockDispatch).toHaveBeenCalledTimes(7);
 
@@ -110,8 +109,8 @@ describe('logIn', () => {
 });
 
 describe('signIn', () => {
-
   it('should sign up a new user and set user details', async () => {
+    vi.spyOn(authService, 'getNewToken').mockResolvedValueOnce(mockNewToken);
     vi.spyOn(keysService, 'decryptPrivateKey').mockImplementation(() => mockPrivateKeyDecript);
 
     const mockParams = {
@@ -224,4 +223,5 @@ describe('authMethod', () => {
 
     await expect(authService.authenticateUser(mockParams)).rejects.toThrow('Unknown authMethod: invalidMethod');
   });
-}); */
+});
+*/

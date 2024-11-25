@@ -19,8 +19,6 @@ function createMockFile(name: string, size = 0, type = ''): File {
     slice: vi.fn(),
   } as unknown as File;
 }
-vi.mock('./checkDuplicatedFiles', { spy: true });
-vi.mock('./processDuplicateFiles', { spy: true });
 
 describe('prepareFilesToUpload', () => {
   beforeEach(() => {
@@ -28,6 +26,10 @@ describe('prepareFilesToUpload', () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  afterAll(() => {
     vi.restoreAllMocks();
   });
 
@@ -41,6 +43,9 @@ describe('prepareFilesToUpload', () => {
     (newStorageService.checkDuplicatedFiles as Mock).mockResolvedValue({
       existentFiles: [],
     });
+
+    vi.mock('./checkDuplicatedFiles', { spy: true });
+    vi.mock('./processDuplicateFiles', { spy: true });
 
     const result = await prepareFilesToUpload({ files: mockFiles, parentFolderId });
 
@@ -62,6 +67,9 @@ describe('prepareFilesToUpload', () => {
       })
       .mockResolvedValueOnce({ existentFiles: [] });
 
+    vi.mock('./checkDuplicatedFiles', { spy: true });
+    vi.mock('./processDuplicateFiles', { spy: true });
+
     const result = await prepareFilesToUpload({ files, parentFolderId });
 
     expect(checkDuplicatedFiles).toHaveBeenCalledTimes(1);
@@ -78,6 +86,8 @@ describe('prepareFilesToUpload', () => {
       filesWithoutDuplicates: [],
       filesWithDuplicates: files,
     });
+
+    vi.mock('./processDuplicateFiles', { spy: true });
 
     await prepareFilesToUpload({ files, parentFolderId, disableDuplicatedNamesCheck: true });
 
