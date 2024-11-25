@@ -1,4 +1,4 @@
-import { beforeEach, afterEach, afterAll, describe, expect, it, vi, Mock } from 'vitest';
+import { afterAll, afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import newStorageService from '../../../../drive/services/new-storage.service';
 import { checkDuplicatedFiles } from './checkDuplicatedFiles';

@@ -1,14 +1,11 @@
-/**
- * @jest-environment jsdom
- */
-
-import {
-  generateNewKeys,
-  encryptMessageWithPublicKey,
-  decryptMessageWithPrivateKey,
-} from '../../../src/app/crypto/services/pgp.service';
+// @vitest-environment node
 import { Buffer } from 'buffer';
 import { describe, expect, it } from 'vitest';
+import {
+  decryptMessageWithPrivateKey,
+  encryptMessageWithPublicKey,
+  generateNewKeys,
+} from '../../../src/app/crypto/services/pgp.service';
 
 describe('Encryption and Decryption', () => {
   it('should generate new keys', async () => {
