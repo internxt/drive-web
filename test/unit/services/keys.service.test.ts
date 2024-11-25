@@ -1,4 +1,6 @@
-// @vitest-environment node
+/**
+ * @jest-environment jsdom
+ */
 
 import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
 import { isValid } from '../../../src/app/crypto/services/utilspgp';

@@ -1,5 +1,6 @@
-// @vitest-environment node
-
+/**
+ * @jest-environment jsdom
+ */
 import { Buffer } from 'buffer';
 import { describe, expect, it } from 'vitest';
 import {
