@@ -6,7 +6,9 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=internxt_drive-web&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=internxt_drive-web)
 
 # Project Manteinance
-We aim to have: 
+
+We aim to have:
+
 - An 'A' score on Maintainability Rating
 - An 'A' score on Security Rating
 - A 3% of duplicated lines
@@ -14,7 +16,8 @@ We aim to have:
 # Getting Started
 
 ## Installation
-- Create a `.npmrc` file from the `.npmrc.template` example provided in the repo. 
+
+- Create a `.npmrc` file from the `.npmrc.template` example provided in the repo.
 - Replace `TOKEN` with your own [Github Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token) with `read:packages` permission **ONLY**
 - Use `yarn` to install project dependencies.
 
@@ -30,13 +33,13 @@ You will also see any lint errors in the console.
 
 ### `yarn run lint` (`yarn run lint:ts` && `yarn run lint:scss`)
 
-* Runs .ts linter
-* Runs .scss linter
+- Runs .ts linter
+- Runs .scss linter
 
 ### `yarn test` (`yarn test:unit` && `yarn test:e2e`)
 
-* Runs unit tests with [Jest](https://jestjs.io/)
-* Runs e2e tests with [Cypress](https://www.cypress.io/)
+- Runs unit tests with [Jest](https://jestjs.io/)
+- Runs e2e tests with [Playwright](https://playwright.dev/)
 
 ### `yarn build`
 
@@ -60,34 +63,34 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 ## Directory structure
 
-* [.github](./.github)
-* [.husky](./.husky)
-* [public](./public)
-* [scripts](./scripts)
-* [src](./src)
-  * [app](./src/app)
-  * [assets](./src/assets)
-  * [App.tsx](./src/App.tsx)
-  * [index.scss](./src/index.scss)
-  * [index.tsx](./src/index.tsx)
-  * [react-app-env.d.ts](./src/react-app-env.d.ts)
-  * [reportWebVitals.ts](./src/reportWebVitals.ts)
-  * [setupTests.ts](./src/setupTests.ts)
-* [test](./test)
-* [.env.example](./.env.example)
-* [.eslintrc.json](./eslintrc.json)
-* [.gitignore](./.gitignore)
-* [.npmrc.template](./.npmrc.template)
-* [.pretierrc.json](./.pretierrc.json)
-* [.stylelintignore](./.stylelintignore)
-* [.stylelintrc.json](./.stylelintrc.json)
-* [craco.config.js](./craco.config.js)
-* [jest.config.js](./jest.config.js)
-* [package.json](./package.json)
-* [README.md](./README.md)
-* [tailwind.config.js](./tailwind.config.js)
-* [tsconfig.json](./tsconfig.json)
-* [yarn.lock](./yarn.lock)
+- [.github](./.github)
+- [.husky](./.husky)
+- [public](./public)
+- [scripts](./scripts)
+- [src](./src)
+  - [app](./src/app)
+  - [assets](./src/assets)
+  - [App.tsx](./src/App.tsx)
+  - [index.scss](./src/index.scss)
+  - [index.tsx](./src/index.tsx)
+  - [react-app-env.d.ts](./src/react-app-env.d.ts)
+  - [reportWebVitals.ts](./src/reportWebVitals.ts)
+  - [setupTests.ts](./src/setupTests.ts)
+- [test](./test)
+- [.env.example](./.env.example)
+- [.eslintrc.json](./eslintrc.json)
+- [.gitignore](./.gitignore)
+- [.npmrc.template](./.npmrc.template)
+- [.pretierrc.json](./.pretierrc.json)
+- [.stylelintignore](./.stylelintignore)
+- [.stylelintrc.json](./.stylelintrc.json)
+- [craco.config.js](./craco.config.js)
+- [jest.config.js](./jest.config.js)
+- [package.json](./package.json)
+- [README.md](./README.md)
+- [tailwind.config.js](./tailwind.config.js)
+- [tsconfig.json](./tsconfig.json)
+- [yarn.lock](./yarn.lock)
 
 The [/src](./src) folder contains the source code. </br>
 The subfolder [/src/app](./src/app) organizes the code in a very similar way to Angular, grouping by feature related files in modules.
@@ -111,15 +114,16 @@ For example, with this snippet we are telling to purge that we are overriding th
     }
   }
 ```
+
 ## Recommended IDE extensions (Visual Studio Code)
+
 To speed up the development and maintenance of the project, it is recommended to use the following extensions for the IDE:
 
-* Better Comments
-* ESLint
-* stylelint
-* PostCSS Language Support
-* SCSS Formatter
-* Tailwind CSS IntelliSense
-
+- Better Comments
+- ESLint
+- stylelint
+- PostCSS Language Support
+- SCSS Formatter
+- Tailwind CSS IntelliSense
 
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/summary/new_code?id=internxt_drive-web)

@@ -7,7 +7,7 @@ describe('playwright meets vitest', () => {
   let context: BrowserContext;
   beforeAll(async () => {
     browser = await chromium.launch();
-    let context = await browser.newContext();
+    const context = await browser.newContext();
     page = await context.newPage();
   });
 
