@@ -1,8 +1,19 @@
 import CryptoJS from 'crypto-js';
+import { argon2id, blake3, pbkdf2, createSHA256 } from 'hash-wasm';
+import crypto from 'crypto';
 import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
 import { getAesInitFromEnv } from '../services/keys.service';
 import { AdvancedSharedItem } from '../../share/types';
+
+const ARGON2ID_PARALLELISM = 1;
+const ARGON2ID_ITERATIONS = 256;
+const ARGON2ID_MEMORY = 512;
+const ARGON2ID_TAG_LEN = 32;
+const ARGON2ID_SALT_LEN = 16;
+
+const PBKDF2_ITERATIONS = 10000;
+const PBKDF2_TAG_LEN = 32;
 
 interface PassObjectInterface {
   salt?: string | null;
@@ -192,7 +203,6 @@ export {
   excludeHiddenItems,
   renameFile,
   getItemPlainName,
-  passToHash,
   extendSecret,
   getArgon2,
   getPBKDF2,
