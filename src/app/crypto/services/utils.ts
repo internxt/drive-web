@@ -3,6 +3,34 @@ import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
 import { getAesInitFromEnv } from '../services/keys.service';
 import { AdvancedSharedItem } from '../../share/types';
+import { createSHA512, createHMAC } from 'hash-wasm';
+import { Buffer } from 'buffer';
+/**
+ * Computes hmac-sha512
+ * @param {string} encryptionKeyHex - The hmac key in HEX format
+ * @param {string} dataArray - The input array of data
+ * @returns {Promise<string>} The result of applying hmac-sha512 to the array of data.
+ */
+function getHmacSha512FromHexKey(encryptionKeyHex: string, dataArray: string[] | Buffer[]): Promise<string> {
+  const encryptionKey = Buffer.from(encryptionKeyHex, 'hex');
+  return getHmacSha512(encryptionKey, dataArray);
+}
+
+/**
+ * Computes hmac-sha512
+ * @param {Buffer} encryptionKey - The hmac key
+ * @param {string} dataArray - The input array of data
+ * @returns {Promise<string>} The result of applying hmac-sha512 to the array of data.
+ */
+async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer[]): Promise<string> {
+  const hashFunc = createSHA512();
+  const hmac = await createHMAC(hashFunc, encryptionKey);
+  hmac.init();
+  for (const data of dataArray) {
+    hmac.update(data);
+  }
+  return hmac.digest();
+}
 
 interface PassObjectInterface {
   salt?: string | null;
@@ -95,4 +123,6 @@ export {
   excludeHiddenItems,
   renameFile,
   getItemPlainName,
+  getHmacSha512FromHexKey,
+  getHmacSha512,
 };

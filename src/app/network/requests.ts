@@ -364,7 +364,7 @@ export async function finishUpload(
     index: index.toString('hex'),
     hmac: {
       type: 'sha512',
-      value: generateHMAC([shardMeta], encryptionKey).toString('hex'),
+      value: await generateHMAC([shardMeta], encryptionKey),
     },
   };
 
