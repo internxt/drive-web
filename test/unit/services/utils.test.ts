@@ -5,109 +5,14 @@
 import {
   extendSecret,
   getPBKDF2,
-  getHmacSha512FromHexKey,
-  getSha256,
-  getSha512,
-  getRipemd160,
   getArgon2,
   passToHash,
-  getSha256Hasher,
-  encryptText,
-  decryptText,
-  decryptTextWithKey,
   hex2oldEncoding,
 } from '../../../src/app/crypto/services/utils';
 
-import { describe, expect, it, afterAll, beforeAll } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js';
-
-describe('Test HMAC with RFC 4231 test vectors', () => {
-  it('hmac should pass RFC 4231 test case 1', async () => {
-    const encryptionKey = '0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b';
-    const data = ['Hi There'];
-    const result = await getHmacSha512FromHexKey(encryptionKey, data);
-    const rfcResult =
-      '87aa7cdea5ef619d4ff0b4241a1d6cb02379f4e2ce4ec2787ad0b30545e17cdedaa833b7d6b8a702038b274eaea3f4e4be9d914eeb61f1702e696c203a126854';
-    expect(result).toBe(rfcResult);
-  });
-
-  it('hmac should pass RFC 4231 test case 2', async () => {
-    const encryptionKey = '4a656665';
-    const data = ['what do ya want ', 'for nothing?'];
-    const result = await getHmacSha512FromHexKey(encryptionKey, data);
-    const rfcResult =
-      '164b7a7bfcf819e2e395fbe73b56e0a387bd64222e831fd610270cd7ea2505549758bf75c05a994a6d034f65f8f0e6fdcaeab1a34d4a6b4b636e070a38bce737';
-    expect(result).toBe(rfcResult);
-  });
-
-  it('hmac should pass RFC 4231 test case 3', async () => {
-    const encryptionKey = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-    const data = [
-      Buffer.from('dddddddddddddddddddddddddddddddd', 'hex'),
-      Buffer.from('dddddddddddddddddddddddddddddddd', 'hex'),
-      Buffer.from('dddddddddddddddddddddddddddddddd', 'hex'),
-      Buffer.from('dddd', 'hex'),
-    ];
-    const result = await getHmacSha512FromHexKey(encryptionKey, data);
-    const rfcResult =
-      'fa73b0089d56a284efb0f0756c890be9b1b5dbdd8ee81a3655f83e33b2279d39bf3e848279a722c806b485a47e67c807b946a337bee8942674278859e13292fb';
-    expect(result).toBe(rfcResult);
-  });
-
-  it('hmac should pass RFC 4231 test case 4', async () => {
-    const encryptionKey = '0102030405060708090a0b0c0d0e0f10111213141516171819';
-    const data = [
-      Buffer.from('cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd', 'hex'),
-      Buffer.from('cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd', 'hex'),
-      Buffer.from('cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd', 'hex'),
-      Buffer.from('cdcd', 'hex'),
-    ];
-    const result = await getHmacSha512FromHexKey(encryptionKey, data);
-    const rfcResult =
-      'b0ba465637458c6990e5a8c5f61d4af7e576d97ff94b872de76f8050361ee3dba91ca5c11aa25eb4d679275cc5788063a5f19741120c4f2de2adebeb10a298dd';
-    expect(result).toBe(rfcResult);
-  });
-
-  it('hmac should pass RFC 4231 test case 5', async () => {
-    const encryptionKey = '0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c';
-    const data = ['Test With Trunca', 'tion'];
-    const result = await getHmacSha512FromHexKey(encryptionKey, data);
-    const rfcResult = '415fad6271580a531d4179bc891d87a6';
-    expect(result.slice(0, 32)).toBe(rfcResult);
-  });
-
-  it('hmac should pass RFC 4231 test case 6', async () => {
-    const encryptionKey =
-      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-    const data = ['Test Using Large', 'r Than Block-Siz', 'e Key - Hash Key', ' First'];
-    const result = await getHmacSha512FromHexKey(encryptionKey, data);
-    const rfcResult =
-      '80b24263c7c1a3ebb71493c1dd7be8b49b46d1f41b4aeec1121b013783f8f3526b56d037e05f2598bd0fd2215d6a1e5295e64f73f63f0aec8b915a985d786598';
-    expect(result).toBe(rfcResult);
-  });
-
-  it('hmac should pass RFC 4231 test case 7', async () => {
-    const encryptionKey =
-      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-    const data = [
-      'This is a test u',
-      'sing a larger th',
-      'an block-size ke',
-      'y and a larger t',
-      'han block-size d',
-      'ata. The key nee',
-      'ds to be hashed ',
-      'before being use',
-      'd by the HMAC al',
-      'gorithm.',
-    ];
-    const result = await getHmacSha512FromHexKey(encryptionKey, data);
-    const rfcResult =
-      'e37b6a775dc87dbaa4dfa9f96e5e3ffddebd71f8867289865df5a32d20cdc944b6022cac3c4982b10d5eeb55c3e4de15134676fb6de0446065c97440fa8c6a58';
-    expect(result).toBe(rfcResult);
-  });
-});
 
 describe('Test extendSecret with blake3 test vectors', () => {
   it('extendSecret should pass test with input length 0 from blake3 team', async () => {
@@ -199,164 +104,6 @@ describe('Test getPBKDF2 with RFC 7914 test vectors', () => {
     const result = await getPBKDF2(password, salt, iterations, hashLength);
     const testResult =
       '4ddcd8f60b98be21830cee5ef22701f9641a4418d04c0414aeff08876b34ab56a1d425a1225833549adb841b51c9b3176a272bdebba1d078478f62b397f33c8d';
-    expect(result).toBe(testResult);
-  });
-});
-
-describe('Test getSha256 with NIST test vectors', () => {
-  it('getSha256 should pass NIST test vector 1', async () => {
-    const message = 'abc';
-    const result = await getSha256(message);
-    const testResult = 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad';
-    expect(result).toBe(testResult);
-  });
-
-  it('getSha256 should pass NIST test vector 2', async () => {
-    const message = '';
-    const result = await getSha256(message);
-    const testResult = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
-    expect(result).toBe(testResult);
-  });
-
-  it('getSha256 should pass NIST test vector 3', async () => {
-    const message = 'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq';
-    const result = await getSha256(message);
-    const testResult = '248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1';
-    expect(result).toBe(testResult);
-  });
-
-  it('getSha256 should pass NIST test vector 4', async () => {
-    const message =
-      'abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu';
-    const result = await getSha256(message);
-    const testResult = 'cf5b16a778af8380036ce59e7b0492370b249b11e8f07a51afac45037afee9d1';
-    expect(result).toBe(testResult);
-  });
-
-  it('getSha256 should pass NIST test vector 5', async () => {
-    let message = '';
-    for (let i = 0; i < 1000000; i++) {
-      message += 'a';
-    }
-    const result = await getSha256(message);
-    const testResult = 'cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0';
-    expect(result).toBe(testResult);
-  });
-});
-
-describe('Test getSha512 with NIST test vectors', () => {
-  it('getSha512 should pass NIST test vector 1', async () => {
-    const message = 'abc';
-    const result = await getSha512(message);
-    const testResult =
-      'ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f';
-    expect(result).toBe(testResult);
-  });
-
-  it('getSha512 should pass NIST test vector 2', async () => {
-    const message = '';
-    const result = await getSha512(message);
-    const testResult =
-      'cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e';
-    expect(result).toBe(testResult);
-  });
-
-  it('getSha512 should pass NIST test vector 3', async () => {
-    const message = 'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq';
-    const result = await getSha512(message);
-    const testResult =
-      '204a8fc6dda82f0a0ced7beb8e08a41657c16ef468b228a8279be331a703c33596fd15c13b1b07f9aa1d3bea57789ca031ad85c7a71dd70354ec631238ca3445';
-    expect(result).toBe(testResult);
-  });
-
-  it('getSha512 should pass NIST test vector 4', async () => {
-    const message =
-      'abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu';
-    const result = await getSha512(message);
-    const testResult =
-      '8e959b75dae313da8cf4f72814fc143f8f7779c6eb9f7fa17299aeadb6889018501d289e4900f7e4331b99dec4b5433ac7d329eeb6dd26545e96e55b874be909';
-    expect(result).toBe(testResult);
-  });
-
-  it('getSha512 should pass NIST test vector 5', async () => {
-    let message = '';
-    for (let i = 0; i < 1000000; i++) {
-      message += 'a';
-    }
-    const result = await getSha512(message);
-    const testResult =
-      'e718483d0ce769644e2e42c7bc15b4638e1f98b13b2044285632a803afa973ebde0ff244877ea60a4cb0432ce577c31beb009c5c2c49aa2e4eadb217ad8cc09b';
-    expect(result).toBe(testResult);
-  });
-});
-
-describe('Test getRipemd160 with test vectors published by the authors', () => {
-  it('getRipemd160 should pass test 1', async () => {
-    const message = '';
-    const result = await getRipemd160(message);
-    const testResult = '9c1185a5c5e9fc54612808977ee8f548b2258d31';
-    expect(result).toBe(testResult);
-  });
-
-  it('getRipemd160 should pass test 2', async () => {
-    const message = 'a';
-    const result = await getRipemd160(message);
-    const testResult = '0bdc9d2d256b3ee9daae347be6f4dc835a467ffe';
-    expect(result).toBe(testResult);
-  });
-
-  it('getRipemd160 should pass test 3', async () => {
-    const message = 'abc';
-    const result = await getRipemd160(message);
-    const testResult = '8eb208f7e05d987a9b044a8e98c6b087f15a0bfc';
-    expect(result).toBe(testResult);
-  });
-
-  it('getRipemd160 should pass test 4', async () => {
-    const message = 'message digest';
-    const result = await getRipemd160(message);
-    const testResult = '5d0689ef49d2fae572b881b123a85ffa21595f36';
-    expect(result).toBe(testResult);
-  });
-
-  it('getRipemd160 should pass test 5', async () => {
-    const message = 'abcdefghijklmnopqrstuvwxyz';
-    const result = await getRipemd160(message);
-    const testResult = 'f71c27109c692c1b56bbdceb5b9d2865b3708dbc';
-    expect(result).toBe(testResult);
-  });
-
-  it('getRipemd160 should pass test 6', async () => {
-    const message = 'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq';
-    const result = await getRipemd160(message);
-    const testResult = '12a053384a9c0c88e405a06c27dcf49ada62eb2b';
-    expect(result).toBe(testResult);
-  });
-
-  it('getRipemd160 should pass test 7', async () => {
-    const message = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const result = await getRipemd160(message);
-    const testResult = 'b0e20b6e3116640286ed3a87a5713079b21f5189';
-    expect(result).toBe(testResult);
-  });
-
-  it('getRipemd160 should pass test 8', async () => {
-    let message = '';
-    for (let i = 0; i < 8; i++) {
-      message += '1234567890';
-    }
-    const result = await getRipemd160(message);
-    const testResult = '9b752e45573d4b39f4dbd3323cab82bf63326bfb';
-    expect(result).toBe(testResult);
-  });
-
-  it('getRipemd160 should pass test 9', async () => {
-    let message = '';
-    for (let i = 0; i < 1000000; i++) {
-      message += 'a';
-    }
-    const result = await getRipemd160(message);
-    const testResult = '52783243c1697bdbe16d37f97f68f08325dc1528';
     expect(result).toBe(testResult);
   });
 });
@@ -459,50 +206,7 @@ describe('Test getArgon2 with test vectors from the reference implementation tha
   });
 });
 
-describe('Test against cryptoJS', () => {
-  it('SHA256 should be identical to CryptoJS result for a test string', async () => {
-    const message = 'Test between hash-wasm and CryptoJS';
-    const result = await getSha256(message);
-    const cryptoJSresult = CryptoJS.SHA256(message).toString(CryptoJS.enc.Hex);
-    expect(result).toBe(cryptoJSresult);
-  });
-
-  it('SHA256 should be identical to CryptoJS result for an empty string', async () => {
-    const message = '';
-    const result = await getSha256(message);
-    const cryptoJSresult = CryptoJS.SHA256(message).toString(CryptoJS.enc.Hex);
-    expect(result).toBe(cryptoJSresult);
-  });
-
-  it('HMAC-SHA512 should be identical to CryptoJS result for a test string', async () => {
-    const message = 'Test between hash-wasm and CryptoJS';
-    const key = '0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b';
-    const result = await getHmacSha512FromHexKey(key, [message]);
-    const cryptoJSresult = CryptoJS.HmacSHA512(message, CryptoJS.enc.Hex.parse(key)).toString(CryptoJS.enc.Hex);
-    expect(result).toBe(cryptoJSresult);
-  });
-
-  it('HMAC-SHA512 should be identical to CryptoJS result for an empty string', async () => {
-    const message = '';
-    const key = '0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b';
-    const result = await getHmacSha512FromHexKey(key, [message]);
-    const cryptoJSresult = CryptoJS.HmacSHA512(message, CryptoJS.enc.Hex.parse(key)).toString(CryptoJS.enc.Hex);
-    expect(result).toBe(cryptoJSresult);
-  });
-
-  it('SHA512 should be identical to CryptoJS result for a test string', async () => {
-    const message = 'Test between hash-wasm and CryptoJS';
-    const result = await getSha512(message);
-    const cryptoJSresult = CryptoJS.SHA512(message).toString(CryptoJS.enc.Hex);
-    expect(result).toBe(cryptoJSresult);
-  });
-
-  it('SHA512 should be identical to CryptoJS result for an empty string', async () => {
-    const message = '';
-    const result = await getSha512(message);
-    const cryptoJSresult = CryptoJS.SHA512(message).toString(CryptoJS.enc.Hex);
-    expect(result).toBe(cryptoJSresult);
-  });
+describe('Test against other crypto libraries', () => {
 
   it('PBKDF2 should be identical to CryptoJS result for a test string', async () => {
     const password = 'Test between hash-wasm and CryptoJS';
@@ -521,20 +225,6 @@ describe('Test against cryptoJS', () => {
     const cryptoJSresult = CryptoJS.PBKDF2(password, salt, { keySize: 256 / 32, iterations: 10000 }).toString(
       CryptoJS.enc.Hex,
     );
-    expect(result).toBe(cryptoJSresult);
-  });
-
-  it('ripemd160 should be identical to CryptoJS result for a test string', async () => {
-    const message = 'Test between hash-wasm and CryptoJS';
-    const result = await getRipemd160(message);
-    const cryptoJSresult = CryptoJS.RIPEMD160(message).toString(CryptoJS.enc.Hex);
-    expect(result).toBe(cryptoJSresult);
-  });
-
-  it('ripemd160 should be identical to CryptoJS result for an empty string', async () => {
-    const message = '';
-    const result = await getRipemd160(message);
-    const cryptoJSresult = CryptoJS.RIPEMD160(message).toString(CryptoJS.enc.Hex);
     expect(result).toBe(cryptoJSresult);
   });
 });
@@ -592,25 +282,26 @@ describe('Test passToHash', () => {
     expect(result1.salt).toBe(result2.salt);
   });
 
+  interface PassObjectInterface {
+    salt?: string | null;
+    password: string;
+  }
+
+  function oldPassToHash(passObject: PassObjectInterface): { salt: string; hash: string } {
+    const salt = passObject.salt ? CryptoJS.enc.Hex.parse(passObject.salt) : CryptoJS.lib.WordArray.random(128 / 8);
+    const hash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256 / 32, iterations: 10000 });
+    const hashedObjetc = {
+      salt: salt.toString(),
+      hash: hash.toString(),
+    };
+
+    return hashedObjetc;
+  }
+
   it('passToHash should return the same result for PBKDF2 as the old function', async () => {
     const password = 'Test password';
     const salt = '7121910994f21cd848c55e90835d7bd8';
-
-    interface PassObjectInterface {
-      salt?: string | null;
-      password: string;
-    }
-
-    function oldPassToHash(passObject: PassObjectInterface): { salt: string; hash: string } {
-      const salt = passObject.salt ? CryptoJS.enc.Hex.parse(passObject.salt) : CryptoJS.lib.WordArray.random(128 / 8);
-      const hash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256 / 32, iterations: 10000 });
-      const hashedObjetc = {
-        salt: salt.toString(),
-        hash: hash.toString(),
-      };
-
-      return hashedObjetc;
-    }
+   
     const result = await passToHash({ password, salt });
     const oldResult = oldPassToHash({ password, salt });
     expect(result.salt).toBe(oldResult.salt);
@@ -619,22 +310,6 @@ describe('Test passToHash', () => {
 
   it('passToHash should return sucessfully verify old function hash', async () => {
     const password = 'Test password';
-
-    interface PassObjectInterface {
-      salt?: string | null;
-      password: string;
-    }
-
-    function oldPassToHash(passObject: PassObjectInterface): { salt: string; hash: string } {
-      const salt = passObject.salt ? CryptoJS.enc.Hex.parse(passObject.salt) : CryptoJS.lib.WordArray.random(128 / 8);
-      const hash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256 / 32, iterations: 10000 });
-      const hashedObjetc = {
-        salt: salt.toString(),
-        hash: hash.toString(),
-      };
-
-      return hashedObjetc;
-    }
     const oldResult = oldPassToHash({ password });
     const result = await passToHash({ password, salt: oldResult.salt });
 
@@ -658,57 +333,5 @@ describe('Test passToHash', () => {
     const password = 'Test password';
     const salt = 'argon2id$6c';
     await expect(passToHash({ password, salt })).rejects.toThrow('Salt should be at least 8 bytes long');
-  });
-});
-
-describe('Test getSha256Hasher', () => {
-  it('getSha256Hasher should give the same result as getSha256 for a single string', async () => {
-    const message = 'Test message';
-    const hasher = await getSha256Hasher();
-    hasher.init();
-    hasher.update(message);
-    const result = hasher.digest();
-    const expectedResult = await getSha256(message);
-    expect(result).toBe(expectedResult);
-  });
-
-  it('getSha256Hasher should give the same result as getSha256 for an array', async () => {
-    const messageArray = ['Test message 1', 'Test message 2', 'Test message 3', 'Test message 4'];
-    const hasher = await getSha256Hasher();
-    hasher.init();
-    for (const message of messageArray) {
-      hasher.update(message);
-    }
-    const result = hasher.digest();
-    const expectedResult = await getSha256(messageArray.join(''));
-    expect(result).toBe(expectedResult);
-  });
-});
-
-describe('Test encryption', () => {
-  if (typeof globalThis.process === 'undefined') {
-    globalThis.process = { env: {} } as any;
-  }
-  const originalEnv = process.env.REACT_APP_CRYPTO_SECRET;
-
-  beforeAll(() => {
-    process.env.REACT_APP_CRYPTO_SECRET = '123456789QWERTY';
-  });
-  afterAll(() => {
-    process.env.REACT_APP_CRYPTO_SECRET = originalEnv;
-  });
-
-  it('Should be able to encrypt and decrypt', async () => {
-    const message = 'Test message';
-    expect(process.env.REACT_APP_CRYPTO_SECRET, '123456789QWERTY');
-    const ciphertext = encryptText(message);
-    const result = decryptText(ciphertext);
-    expect(result).toBe(message);
-  });
-
-  it('decryptTextWithKey should fail with an empty key', async () => {
-    const message = 'Test message';
-    const ciphertext = encryptText(message);
-    expect(() => decryptTextWithKey(ciphertext, '')).toThrowError('No key defined. Check .env file');
   });
 });

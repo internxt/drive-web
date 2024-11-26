@@ -20,67 +20,6 @@ interface PassObjectInterface {
   salt?: string | null;
   password: string;
 }
-/**
- * Creates sha256 hasher
- * @returns {Promise<IHasher>} The sha256 hasher
- */
-function getSha256Hasher() {
-  return createSHA256();
-}
-
-/**
- * Computes sha256
- * @param {string} data - The input data
- * @returns {Promise<string>} The result of applying sha256 to the data.
- */
-function getSha256(data: string): Promise<string> {
-  return sha256(data);
-}
-
-/**
- * Computes sha512
- * @param {string} data - The input data
- * @returns {Promise<string>} The result of applying sha512 to the data.
- */
-function getSha512(data: string): Promise<string> {
-  return sha512(data);
-}
-
-/**
- * Computes ripmd160
- * @param {string} data - The input data
- * @returns {Promise<string>} The result of applying ripmd160 to the data.
- */
-function getRipemd160(data: string): Promise<string> {
-  return ripemd160(data);
-}
-
-/**
- * Computes hmac-sha512
- * @param {string} encryptionKeyHex - The hmac key in HEX format
- * @param {string} dataArray - The input array of data
- * @returns {Promise<string>} The result of applying hmac-sha512 to the array of data.
- */
-function getHmacSha512FromHexKey(encryptionKeyHex: string, dataArray: string[] | Buffer[]): Promise<string> {
-  const encryptionKey = Buffer.from(encryptionKeyHex, 'hex');
-  return getHmacSha512(encryptionKey, dataArray);
-}
-
-/**
- * Computes hmac-sha512
- * @param {Buffer} encryptionKey - The hmac key
- * @param {string} dataArray - The input array of data
- * @returns {Promise<string>} The result of applying hmac-sha512 to the array of data.
- */
-async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer[]): Promise<string> {
-  const hashFunc = createSHA512();
-  const hmac = await createHMAC(hashFunc, encryptionKey);
-  hmac.init();
-  for (const data of dataArray) {
-    hmac.update(data);
-  }
-  return hmac.digest();
-}
 
 /**
  * Extends the given secret to the required number of bits
@@ -257,11 +196,5 @@ export {
   extendSecret,
   getArgon2,
   getPBKDF2,
-  getSha256Hasher,
-  getSha256,
-  getSha512,
-  getRipemd160,
-  getHmacSha512,
-  getHmacSha512FromHexKey,
   hex2oldEncoding,
 };
