@@ -4,11 +4,11 @@ import {
   sha512HmacBuffer,
   sha512HmacBufferFromHex,
 } from '@internxt/inxt-js/build/lib/utils/crypto';
-import { getSha256Hasher, getRipemd160FromHex } from '../crypto/services/utils';
+import { getSha256Hasher, getRipemd160FromHex, getSha512FromHex } from '../crypto/services/utils';
 import { streamFileIntoChunks } from '../core/services/stream.service';
 
 import { mnemonicToSeed } from 'bip39';
-import { Cipher, CipherCCM, createCipheriv, createHash } from 'crypto';
+import { Cipher, CipherCCM, createCipheriv } from 'crypto';
 
 const BUCKET_META_MAGIC = [
   66, 150, 71, 16, 50, 114, 88, 160, 163, 35, 154, 65, 162, 213, 226, 215, 70, 138, 57, 61, 52, 19, 210, 170, 38, 164,
@@ -33,16 +33,17 @@ export function generateHMAC(
   return hmac.digest();
 }
 
-function getDeterministicKey(key: string, data: string): Buffer {
+function getDeterministicKey(key: string, data: string): Promise<string> {
   const input = key + data;
 
-  return createHash('sha512').update(Buffer.from(input, 'hex')).digest();
+  return getSha512FromHex(input);
 }
 
 async function getBucketKey(mnemonic: string, bucketId: string): Promise<string> {
   const seed = (await mnemonicToSeed(mnemonic)).toString('hex');
+  const hash = await getDeterministicKey(seed, bucketId);
 
-  return getDeterministicKey(seed, bucketId).toString('hex').slice(0, 64);
+  return hash.slice(0, 64);
 }
 
 export function encryptMeta(fileMeta: string, key: Buffer, iv: Buffer): string {

@@ -14,6 +14,8 @@ import { Buffer } from 'buffer';
 import crypto from 'crypto';
 import { Sha256 } from 'asmcrypto.js';
 import { getSha256 } from '../crypto/services/utils';
+import { Aes256gcmEncrypter, sha512HmacBufferFromHex } from '@internxt/inxt-js/build/lib/utils/crypto';
+import { mnemonicToSeed } from 'bip39';
 
 describe('Test crypto.ts functions', () => {
   globalThis.Buffer = Buffer;
@@ -24,6 +26,46 @@ describe('Test crypto.ts functions', () => {
     const filename = 'test filename';
     const result = await encryptFilename(mnemonic, bucketId, filename);
     expect(result).toBeDefined();
+  });
+
+  it('encryptFilename should return the same result as before', async () => {
+    const mnemonic =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const bucketId = 'test busket id';
+    const filename = 'test filename';
+    const result = await encryptFilename(mnemonic, bucketId, filename);
+
+    const BUCKET_META_MAGIC = [
+      66, 150, 71, 16, 50, 114, 88, 160, 163, 35, 154, 65, 162, 213, 226, 215, 70, 138, 57, 61, 52, 19, 210, 170, 38,
+      164, 162, 200, 86, 201, 2, 81,
+    ];
+
+    function oldGetDeterministicKey(key: string, data: string): Buffer {
+      const input = key + data;
+      return crypto.createHash('sha512').update(Buffer.from(input, 'hex')).digest();
+    }
+    async function getBucketKey(mnemonic: string, bucketId: string): Promise<string> {
+      const seed = (await mnemonicToSeed(mnemonic)).toString('hex');
+      return oldGetDeterministicKey(seed, bucketId).toString('hex').slice(0, 64);
+    }
+    function encryptMeta(fileMeta: string, key: Buffer, iv: Buffer): string {
+      const cipher: crypto.CipherCCM = Aes256gcmEncrypter(key, iv);
+      const cipherTextBuf = Buffer.concat([cipher.update(fileMeta, 'utf8'), cipher.final()]);
+      const digest = cipher.getAuthTag();
+      return Buffer.concat([digest, iv, cipherTextBuf]).toString('base64');
+    }
+    async function oldEncryptFilename(mnemonic: string, bucketId: string, filename: string): Promise<string> {
+      const bucketKey = await getBucketKey(mnemonic, bucketId);
+      const encryptionKey = sha512HmacBufferFromHex(bucketKey)
+        .update(Buffer.from(BUCKET_META_MAGIC))
+        .digest()
+        .slice(0, 32);
+      const encryptionIv = sha512HmacBufferFromHex(bucketKey).update(bucketId).update(filename).digest().slice(0, 32);
+      return encryptMeta(filename, encryptionKey, encryptionIv);
+    }
+
+    const oldResult = await oldEncryptFilename(mnemonic, bucketId, filename);
+    expect(result).toBe(oldResult);
   });
 
   it('generateHMAC should generate hmac', async () => {
