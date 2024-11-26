@@ -6,6 +6,7 @@ import { RootState } from '../../../../store';
 import { PlanState, planThunks } from '../../../../store/slices/plan';
 
 import { CustomerBillingInfo, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import Section from '../../../../newSettings/components/Section';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
@@ -19,7 +20,6 @@ import { getPlanInfo, getPlanName } from '../../Account/Plans/utils/planUtils';
 import BillingDetailsCard from './BillingDetailsCard';
 import EditBillingDetailsModal from './components/EditBillingDetailsModal';
 import BillingWorkspaceOverview from './containers/BillingWorkspaceOverview';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 interface BillingWorkspaceSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -45,8 +45,8 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const [isEditingBillingDetails, setIsEditingBillingDetails] = useState(false);
   const [isSavingBillingDetails, setIsSavingBillingDetails] = useState(false);
   const [billingDetails, setBillingDetails] = useState<CustomerBillingInfo>({
-    address: selectedWorkspace?.workspace.address || '',
-    phoneNumber: selectedWorkspace?.workspace.phoneNumber || '',
+    address: selectedWorkspace?.workspace.address ?? '',
+    phoneNumber: selectedWorkspace?.workspace.phoneNumber ?? '',
   });
 
   useEffect(() => {
@@ -95,8 +95,8 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
     <Section title={t('preferences.workspace.billing.title')} onClosePreferences={onClosePreferences}>
       <BillingWorkspaceOverview plan={plan} />
       <BillingDetailsCard
-        address={billingDetails.address || ''}
-        phone={billingDetails.phoneNumber || ''}
+        address={billingDetails.address ?? ''}
+        phone={billingDetails.phoneNumber ?? ''}
         isOwner={isOwner}
         onEditButtonClick={() => setIsEditingBillingDetails(true)}
       />

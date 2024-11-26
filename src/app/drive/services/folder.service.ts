@@ -3,18 +3,18 @@ import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 import { FolderTree } from '@internxt/sdk/dist/drive/storage/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
-import { Iterator } from '../../core/collections';
-import { binaryStreamToBlob } from '../../core/services/stream.service';
-import { FlatFolderZip } from '../../core/services/zip.service';
-import { LRUFilesCacheManager } from '../../database/services/database.service/LRUFilesCacheManager';
-import { downloadFile } from '../../network/download';
-import { checkIfCachedSourceIsOlder } from '../../store/slices/storage/storage.thunks/downloadFileThunk';
 import { t } from 'i18next';
+import { Iterator } from '../../core/collections';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
 import localStorageService from '../../core/services/local-storage.service';
+import { binaryStreamToBlob } from '../../core/services/stream.service';
 import workspacesService from '../../core/services/workspace.service';
+import { FlatFolderZip } from '../../core/services/zip.service';
+import { LRUFilesCacheManager } from '../../database/services/database.service/LRUFilesCacheManager';
+import { downloadFile } from '../../network/download';
+import { checkIfCachedSourceIsOlder } from '../../store/slices/storage/storage.thunks/downloadFileThunk';
 import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData } from '../types';
 import { updateDatabaseFileSourceData } from './database.service';
 import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
@@ -316,9 +316,9 @@ async function downloadSharedFolderAsZip(
 
           const creds = options?.credentials
             ? (options.credentials as Record<'user' | 'pass', string>)
-            : { user: user?.bridgeUser || '', pass: user?.userId || '' };
+            : { user: user?.bridgeUser ?? '', pass: user?.userId ?? '' };
 
-          const mnemonic = options?.mnemonic ? options?.mnemonic : user?.mnemonic || '';
+          const mnemonic = options?.mnemonic ? options?.mnemonic : (user?.mnemonic ?? '');
 
           const downloadedFileStream = await downloadFile({
             bucketId: file.bucket as string,
