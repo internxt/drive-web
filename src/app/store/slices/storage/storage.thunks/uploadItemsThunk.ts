@@ -22,9 +22,9 @@ import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
+import { FileToUpload } from '../../../../drive/services/file.service/types';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
-import { FileToUpload } from '../../../../drive/services/file.service/types';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -474,7 +474,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
-      throw new Error(t('error.uploadingItems') as string);
+      throw new Error(t('error.uploadingItems'));
     }
   },
 );

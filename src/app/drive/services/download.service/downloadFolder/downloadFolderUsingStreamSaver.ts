@@ -5,8 +5,8 @@ import internal from 'stream';
 import streamSaver from 'streamsaver';
 
 import { FolderTree } from '@internxt/sdk/dist/drive/storage/types';
-import errorService from '../../../../core/services/error.service';
 import { t } from 'i18next';
+import errorService from '../../../../core/services/error.service';
 import { DriveFileData, DriveFolderData } from '../../../types';
 import folderService from '../../folder.service';
 import { getEnvironmentConfig, Network } from '../../network.service';
@@ -42,7 +42,7 @@ export default async function downloadFolderUsingStreamSaver({
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
-    throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
+    throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }));
   }
 
   const writableStream = streamSaver.createWriteStream(`${folder.name}.zip`, {});

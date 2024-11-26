@@ -1,18 +1,18 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { Iterator } from '../../../../core/collections';
-import errorService from '../../../../core/services/error.service';
-import AppError from '../../../../core/types';
-import folderService from '../../../../drive/services/folder.service';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import tasksService from '../../../../tasks/services/tasks.service';
-import { TaskStatus } from '../../../../tasks/types';
 import { t } from 'i18next';
 import { isFirefox } from 'react-device-detect';
 import { RootState } from '../../..';
+import { Iterator } from '../../../../core/collections';
+import errorService from '../../../../core/services/error.service';
+import AppError from '../../../../core/types';
 import downloadFolderUsingBlobs from '../../../../drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
+import folderService from '../../../../drive/services/folder.service';
 import { DriveFileData, DriveFolderData } from '../../../../drive/types';
 import { ConnectionLostError } from '../../../../network/requests';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import tasksService from '../../../../tasks/services/tasks.service';
+import { TaskStatus } from '../../../../tasks/types';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 
@@ -133,7 +133,7 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       if (err instanceof ConnectionLostError) {
         return tasksService.updateTask({
           taskId: options.taskId,
-          merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
+          merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') },
         });
       }
       if (abortController.signal.aborted) {

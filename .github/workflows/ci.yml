@@ -54,6 +54,8 @@ jobs:
       - run: echo "always-auth=true" >> .npmrc
       - name: Install
         run: yarn
+      - name: Install Playwright Browsers
+        run: yarn playwright install
       - name: Unit test run
         run: yarn test:unit
   build:
