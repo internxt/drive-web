@@ -3,7 +3,6 @@
   "version": "v1.0.333",
   "private": true,
   "dependencies": {
-    "-": "^0.0.1",
     "@headlessui/react": "1.7.5",
     "@iconscout/react-unicons": "^1.1.6",
     "@internxt/css-config": "^1.0.2",
@@ -21,7 +20,6 @@
     "@typeform/embed-react": "^1.19.0",
     "@types/uuid": "^10.0.0",
     "@vitest/browser": "^2.1.5",
-    "D": "^1.0.0",
     "asmcrypto.js": "git+https://github.com/asmcrypto/asmcrypto.js.git",
     "assert": "^2.1.0",
     "axios": "^0.21.1",
