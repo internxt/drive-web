@@ -338,7 +338,7 @@ const CheckoutViewWrapper = () => {
     const customerName = companyName ?? userNameFromAddressElement;
 
     try {
-      await authCheckoutService.authenticateUser(email, password, authMethod, dispatch, doRegister);
+      await authCheckoutService.authenticateUser({ email, password, authMethod, dispatch, doRegister });
     } catch (err) {
       const error = err as Error;
       setError('auth', error.message);
@@ -378,7 +378,6 @@ const CheckoutViewWrapper = () => {
 
       // TEMPORARY HOT FIX
       // Store subscriptionId, paymentIntendId, and amountPaid to send to IMPACT API
-      // need to check all rest of needed values to add it to analytics in trackPaymentConversion function
       savePaymentDataInLocalStorage(
         subscriptionId,
         paymentIntentId,

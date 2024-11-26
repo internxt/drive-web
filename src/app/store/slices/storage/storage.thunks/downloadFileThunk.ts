@@ -1,20 +1,20 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
-import errorService from '../../../../core/services/error.service';
-import AppError from '../../../../core/types';
-import downloadService from '../../../../drive/services/download.service';
-import { DriveFileData } from '../../../../drive/types';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import tasksService from '../../../../tasks/services/tasks.service';
-import { TaskStatus } from '../../../../tasks/types';
 import { saveAs } from 'file-saver';
 import { t } from 'i18next';
 import { RootState } from '../../..';
 import dateService from '../../../../core/services/date.service';
+import errorService from '../../../../core/services/error.service';
+import AppError from '../../../../core/types';
 import { DriveItemBlobData } from '../../../../database/services/database.service';
 import { getDatabaseFileSourceData } from '../../../../drive/services/database.service';
+import downloadService from '../../../../drive/services/download.service';
+import { DriveFileData } from '../../../../drive/types';
 import { ConnectionLostError } from '../../../../network/requests';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import tasksService from '../../../../tasks/services/tasks.service';
+import { TaskStatus } from '../../../../tasks/types';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 
@@ -48,8 +48,8 @@ export const checkIfCachedSourceIsOlder = ({
   const isCachedFileOlder = !cachedFile?.updatedAt
     ? true
     : dateService.isDateOneBefore({
-        dateOne: cachedFile?.updatedAt as string,
-        dateTwo: file?.updatedAt as string,
+        dateOne: cachedFile?.updatedAt,
+        dateTwo: file?.updatedAt,
       });
 
   return isCachedFileOlder;
@@ -145,7 +145,7 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
       if (err instanceof ConnectionLostError) {
         return tasksService.updateTask({
           taskId: options.taskId,
-          merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
+          merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') },
         });
       }
 

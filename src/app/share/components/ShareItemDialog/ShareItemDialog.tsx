@@ -1,25 +1,25 @@
 import { useState } from 'react';
 
-import copy from 'copy-to-clipboard';
-import { DriveItemData } from '../../../drive/types';
-import { uiActions } from '../../../store/slices/ui';
-import BaseDialog from '../../../shared/components/BaseDialog/BaseDialog';
-import './ShareItemDialog.scss';
-import { storageActions } from '../../../store/slices/storage';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { aes, items } from '@internxt/lib';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import PasswordInput from './components/PasswordInput';
-import { Check, Copy } from '@phosphor-icons/react';
-import dateService from '../../../core/services/date.service';
-import shareService from '../../../share/services/share.service';
-import localStorageService from '../../../core/services/local-storage.service';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { Check, Copy } from '@phosphor-icons/react';
+import copy from 'copy-to-clipboard';
 import { TFunction } from 'i18next';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { domainManager } from '../../services/DomainManager';
 import _ from 'lodash';
+import dateService from '../../../core/services/date.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import { DriveItemData } from '../../../drive/types';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import shareService from '../../../share/services/share.service';
 import { AdvancedSharedItem } from '../../../share/types';
+import BaseDialog from '../../../shared/components/BaseDialog/BaseDialog';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { storageActions } from '../../../store/slices/storage';
+import { uiActions } from '../../../store/slices/ui';
+import { domainManager } from '../../services/DomainManager';
+import PasswordInput from './components/PasswordInput';
+import './ShareItemDialog.scss';
 
 interface ShareItemDialogProps {
   share?: ShareLink;
@@ -141,7 +141,7 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
                 }, 4000);
                 const temporaryShare = share as ShareLink & { is_folder: boolean; encryptedCode?: string };
                 const itemType = share?.isFolder || temporaryShare.is_folder ? 'folder' : 'file';
-                const encryptedCode = share?.code || (temporaryShare?.encryptedCode as string);
+                const encryptedCode = share?.code ?? (temporaryShare?.encryptedCode as string);
                 const plainCode = aes.decrypt(encryptedCode, localStorageService.getUser()!.mnemonic);
                 copyShareLink(itemType, plainCode, share?.token as string, translate as TFunction);
               }}

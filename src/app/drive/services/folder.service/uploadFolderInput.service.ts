@@ -1,4 +1,4 @@
-import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
+import { IRoot } from '../../../store/slices/storage/types';
 
 export const transformInputFilesToJSON = (files: File[]): JSON => {
   const result = {} as JSON;

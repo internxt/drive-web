@@ -3,7 +3,7 @@ import { t } from 'i18next';
 
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 
 interface EditPaymentMethodFormProps {
   setIsEditPaymentMethodModalOpen: (isEditPaymentMethodModalOpen: boolean) => void;
@@ -30,7 +30,9 @@ const EditPaymentMethodForm = ({ setIsEditPaymentMethodModalOpen }: EditPaymentM
   }
   return (
     <>
-      <PaymentElement className="mt-5" />
+      <div className="flex max-h-[60vh] flex-col overflow-y-auto">
+        <PaymentElement className="mt-5" />
+      </div>
       {error && <p className="mt-2 text-sm text-red">{error}</p>}
       <div className="mt-3 flex items-center justify-end">
         <Button variant="secondary" onClick={() => setIsEditPaymentMethodModalOpen(false)}>

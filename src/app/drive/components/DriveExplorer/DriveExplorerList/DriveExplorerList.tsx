@@ -8,9 +8,7 @@ import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
-import workspacesService from '../../../../core/services/workspace.service';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import shareService from '../../../../share/services/share.service';
 import List from '../../../../shared/components/List';
 import { AppDispatch, RootState } from '../../../../store';
@@ -22,7 +20,6 @@ import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.
 import { DriveItemData, DriveItemDetails } from '../../../types';
 import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
-import { shareItemWithTeam } from '../utils';
 import {
   contextMenuDriveFolderNotSharedLink,
   contextMenuDriveFolderShared,
@@ -36,6 +33,7 @@ import {
   contextMenuWorkspaceFolder,
 } from './DriveItemContextMenu';
 import { skinSkeleton } from 'app/shared/Skeleton';
+import ShareWithTeamDialog from '../../ShareWithTeamDialog/ShareWithTeamDialog';
 
 interface DriveExplorerListProps {
   folderId: string;
@@ -54,6 +52,7 @@ interface DriveExplorerListProps {
   onOpenStopSharingAndMoveToTrashDialog: () => void;
   showStopSharingConfirmation: boolean;
   roles: Role[];
+  resetPaginationState: () => void;
 }
 
 type ObjectWithId = { id: string | number };
@@ -153,11 +152,19 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     dispatch(storageActions.setOrder({ by: value.field, direction }));
 
     if (value.field === 'name') {
-      resetDriveOrder({ dispatch, orderType: 'plainName', direction, currentFolderId });
+      if (isTrash) {
+        props.resetPaginationState();
+      } else {
+        resetDriveOrder({ dispatch, orderType: 'plainName', direction, currentFolderId });
+      }
     }
 
     if (value.field === 'updatedAt') {
-      resetDriveOrder({ dispatch, orderType: 'updatedAt', direction, currentFolderId });
+      if (isTrash) {
+        props.resetPaginationState();
+      } else {
+        resetDriveOrder({ dispatch, orderType: 'updatedAt', direction, currentFolderId });
+      }
     }
 
     if (value.field === 'size') {
@@ -228,7 +235,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const getLink = useCallback(
     (item: ContextMenuDriveItem) => {
       const driveItem = item as DriveItemData;
-      shareService.getPublicShareLink(driveItem.uuid, driveItem.isFolder ? 'folder' : 'file', false);
+      shareService.getPublicShareLink(driveItem.uuid, driveItem.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );
@@ -236,7 +243,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const copyLink = useCallback(
     (item: ContextMenuDriveItem) => {
       const driveItem = item as DriveItemData;
-      shareService.getPublicShareLink(driveItem.uuid, driveItem.isFolder ? 'folder' : 'file', false);
+      shareService.getPublicShareLink(driveItem.uuid, driveItem.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );
@@ -356,28 +363,9 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     moveToTrash: moveToTrash,
   });
 
-  const shareWithTeam = useCallback(
-    async (item: ContextMenuDriveItem) => {
-      const driveItem = item as DriveItemData;
-      const editorRole = roles.find((role) => role.name === 'EDITOR');
-      if (selectedWorkspace && editorRole) {
-        const isSharedSuccessfully = await shareItemWithTeam(driveItem, selectedWorkspace, editorRole);
-        if (isSharedSuccessfully) {
-          notificationsService.show({
-            text: translate('workspaces.messages.sharedSuccess'),
-            type: ToastType.Success,
-          });
-          return;
-        }
-      }
-
-      notificationsService.show({
-        text: translate('modals.shareModal.errors.copy-to-clipboard'),
-        type: ToastType.Error,
-      });
-    },
-    [dispatch, workspacesService, selectedWorkspace, roles, notificationsService],
-  );
+  const shareWithTeam = () => {
+    dispatch(uiActions.setIsShareWhithTeamDialogOpen(true));
+  };
 
   const workspaceItemMenu = contextMenuWorkspaceFile({
     shareLink: openLinkSettings,
@@ -419,7 +407,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       return fileSharedTrashMenu;
     }
 
-    if (isSelectedSharedItem) {
+    if (isSelectedSharedItem && !isWorkspaceSelected) {
       if (props.selectedItems[0]?.isFolder) {
         return selectedSharedFolderMenu;
       }
@@ -457,13 +445,14 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
             }}
           />
         )}
+        <ShareWithTeamDialog item={props.selectedItems[0]} roles={roles} />
         <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
           header={[
             {
               label: translate('drive.list.columns.name'),
               width: 'flex grow items-center min-w-driveNameHeader',
               name: 'name',
-              orderable: !isRecents && !isTrash,
+              orderable: !isRecents,
               defaultDirection: 'ASC',
               buttonDataCy: 'driveListHeaderNameButton',
               textDataCy: 'driveListHeaderNameButtonText',
@@ -472,7 +461,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               label: translate('drive.list.columns.modified'),
               width: 'w-date',
               name: 'updatedAt',
-              orderable: !isRecents && !isTrash,
+              orderable: !isRecents,
               defaultDirection: 'ASC',
             },
             {

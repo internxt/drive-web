@@ -2,10 +2,8 @@ import { WorkspaceData, WorkspaceTeam, TeamMembers } from '@internxt/sdk/dist/wo
 import { t } from 'i18next';
 import { DotsThreeVertical } from '@phosphor-icons/react';
 
-import Avatar from 'app/shared/components/Avatar';
 import RoleBadge from 'app/newSettings/Sections/Workspace/Members/components/RoleBadge';
-import Button from 'app/shared/components/Button/Button';
-import Spinner from 'app/shared/components/Spinner/Spinner';
+import { Button, Avatar, Spinner } from '@internxt/internxtui';
 
 interface TeamDetailsProps {
   team: WorkspaceTeam;
@@ -124,7 +122,6 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
       ) : (
         <div className="pb-5">
           {selectedTeamMembers.map((member) => {
-            const isOwner = selectedWorkspace?.workspace.ownerId === member.uuid;
             const isManager = team.team.managerId === member.uuid;
             const isLastItem = selectedTeamMembers.indexOf(member) === selectedTeamMembers.length - 1;
             const isFirstItem = selectedTeamMembers.indexOf(member) === 0;
@@ -145,14 +142,7 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
                       <span className="break-all text-base font-medium leading-5 text-gray-100">
                         {member.name} {member.lastname}
                       </span>
-                      {isOwner && (
-                        <RoleBadge
-                          role="owner"
-                          roleText={t('preferences.workspace.members.role.owner')}
-                          size={'small'}
-                        />
-                      )}
-                      {isManager && !isOwner && (
+                      {isManager && (
                         <RoleBadge
                           role="manager"
                           roleText={t('preferences.workspace.members.role.manager')}
@@ -168,7 +158,7 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
                 {hoveredMember === member.uuid && (isCurrentUserManager || isCurrentUserWorkspaceOwner) && (
                   <div className="relative flex items-center">
                     <div className="flex items-center">
-                      {!isOwner && !isManager && (
+                      {!isManager && (
                         <Button
                           variant="secondary"
                           size="medium"

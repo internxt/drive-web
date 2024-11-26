@@ -15,7 +15,6 @@
 .DS_Store
 .env*
 !.env.example
-.vscode/**
 
 npm-debug.log*
 yarn-debug.log*
@@ -26,11 +25,6 @@ debug.log
 
 .npmrc
 
-**/cypress/downloads
-**/cypress/videos
-**/cypress/screenshots
-**/cypress/fixtures/test-user.json
-**/cypress.env.json
 /test-results/
 /playwright-report/
 /blob-report/

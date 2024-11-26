@@ -1,20 +1,8 @@
 import CryptoJS from 'crypto-js';
-import { Buffer } from 'buffer';
-import { argon2id, blake3, pbkdf2, createSHA256, sha512, sha256, ripemd160, createHMAC, createSHA512 } from 'hash-wasm';
-import crypto from 'crypto';
-
 import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
+import { getAesInitFromEnv } from '../services/keys.service';
 import { AdvancedSharedItem } from '../../share/types';
-
-const ARGON2ID_PARALLELISM = 1;
-const ARGON2ID_ITERATIONS = 256;
-const ARGON2ID_MEMORY = 512;
-const ARGON2ID_TAG_LEN = 32;
-const ARGON2ID_SALT_LEN = 16;
-
-const PBKDF2_ITERATIONS = 10000;
-const PBKDF2_TAG_LEN = 32;
 
 interface PassObjectInterface {
   salt?: string | null;
@@ -160,6 +148,16 @@ function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string
   return bytes.toString(CryptoJS.enc.Utf8);
 }
 
+function encryptFilename(filename: string, folderId: number): string {
+  const { REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY } = process.env;
+
+  if (!CRYPTO_KEY) {
+    throw new Error('Cannot encrypt filename due to missing encryption key');
+  }
+
+  return aes.encrypt(filename, `${CRYPTO_KEY}-${folderId}`, getAesInitFromEnv());
+}
+
 function excludeHiddenItems(items: DriveItemData[]): DriveItemData[] {
   return items.filter((item) => !itemUtils.isHiddenItem(item));
 }
@@ -185,8 +183,10 @@ const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
 };
 
 export {
+  passToHash,
   encryptText,
   decryptText,
+  encryptFilename,
   encryptTextWithKey,
   decryptTextWithKey,
   excludeHiddenItems,

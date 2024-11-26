@@ -5,7 +5,6 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { renameFile } from '../../../../crypto/services/utils';
-import { FileToUpload } from '../../../../drive/services/file.service/uploadFile';
 import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../drive/services/network.service';
 import { DriveFileData, DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
@@ -23,6 +22,7 @@ import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
+import { FileToUpload } from '../../../../drive/services/file.service/types';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
 
@@ -276,11 +276,10 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
         if (workspaceId && teamId) {
           const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(
             workspaceId,
-            teamId,
             currentFolderId,
             page,
             offset,
-            isDeepFolder ? ownerUserAuthenticationData?.token ?? '' : '',
+            isDeepFolder ? (ownerUserAuthenticationData?.token ?? '') : '',
           );
           const response = await promise;
           parentFolderContent = response;
@@ -288,7 +287,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
           parentFolderContent = await shareService.getSharedFolderContent(
             currentFolderId,
             'files',
-            isDeepFolder ? ownerUserAuthenticationData?.token ?? '' : '',
+            isDeepFolder ? (ownerUserAuthenticationData?.token ?? '') : '',
             page,
             offset,
           );
@@ -475,7 +474,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
-      throw new Error(t('error.uploadingItems') as string);
+      throw new Error(t('error.uploadingItems'));
     }
   },
 );

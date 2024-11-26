@@ -6,10 +6,7 @@ import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-
 import navigationService from '../../../core/services/navigation.service';
 import workspacesService from '../../../core/services/workspace.service';
 import { AppView } from '../../../core/types';
-import {
-  hybridEncryptMessageWithPublicKey,
-  standardEncryptMessageWithPublicKey,
-} from '../../../crypto/services/pgp.service';
+import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import {
   deleteWorkspaceAvatarFromDatabase,
   saveWorkspaceAvatarToDatabase,
@@ -54,7 +51,7 @@ const decryptWorkspacesMnemonic = async (workspaces: WorkspaceData[]): Promise<W
         ...workspace,
         workspaceUser: {
           ...workspace.workspaceUser,
-          key: await decryptMnemonic(workspace.workspaceUser.key, workspace.workspaceUser.hybridModeEnabled),
+          key: await decryptMnemonic(workspace.workspaceUser.key),
         },
       } as WorkspaceData;
     }),
@@ -107,37 +104,38 @@ const fetchCredentials = createAsyncThunk<void, undefined, { state: RootState }>
   },
 );
 
-const setSelectedWorkspace = createAsyncThunk<void, { workspaceId: string | null }, { state: RootState }>(
-  'workspaces/setSelectedWorkspace',
-  async ({ workspaceId }, { dispatch, getState }) => {
-    const state = getState();
-    const selectedWorkspace = state.workspaces.selectedWorkspace;
-    const localStorageB2BWorkspace = localStorageService.getB2BWorkspace();
+const setSelectedWorkspace = createAsyncThunk<
+  void,
+  { workspaceId: string | null; updateUrl?: boolean },
+  { state: RootState }
+>('workspaces/setSelectedWorkspace', async ({ workspaceId, updateUrl = true }, { dispatch, getState }) => {
+  const state = getState();
+  const selectedWorkspace = state.workspaces.selectedWorkspace;
+  const localStorageB2BWorkspace = localStorageService.getB2BWorkspace();
 
-    const isUnselectingWorkspace = workspaceId === null;
-    const isSelectedWorkspace = localStorageB2BWorkspace?.workspace.id === workspaceId;
+  const isUnselectingWorkspace = workspaceId === null;
+  const isSelectedWorkspace = localStorageB2BWorkspace?.workspace.id === workspaceId;
 
-    if (isUnselectingWorkspace) {
-      localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
-      dispatch(workspacesActions.setSelectedWorkspace(null));
-      dispatch(workspacesActions.setCredentials(null));
-      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
-    } else if (isSelectedWorkspace) {
-      dispatch(workspacesActions.setSelectedWorkspace(localStorageB2BWorkspace ?? null));
-    } else {
-      const workspace = state.workspaces.workspaces.find((workspace) => workspace.workspace.id === workspaceId);
-      if (workspace) {
-        localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
-        dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
-      }
+  if (isUnselectingWorkspace) {
+    localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
+    dispatch(workspacesActions.setSelectedWorkspace(null));
+    dispatch(workspacesActions.setCredentials(null));
+    localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
+  } else if (isSelectedWorkspace) {
+    dispatch(workspacesActions.setSelectedWorkspace(localStorageB2BWorkspace ?? null));
+  } else {
+    const workspace = state.workspaces.workspaces.find((workspace) => workspace.workspace.id === workspaceId);
+    if (workspace) {
+      localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
+      dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
     }
+  }
 
-    if (workspaceId && workspaceId !== selectedWorkspace?.workspace.id) {
-      dispatch(fetchCredentials());
-    }
-    dispatch(sessionThunks.changeWorkspaceThunk());
-  },
-);
+  if (workspaceId && workspaceId !== selectedWorkspace?.workspace.id) {
+    dispatch(fetchCredentials());
+  }
+  dispatch(sessionThunks.changeWorkspaceThunk({ updateUrl }));
+});
 
 const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspace }, { state: RootState }>(
   'workspaces/setupWorkspace',
@@ -150,26 +148,14 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         navigationService.push(AppView.Login);
         return;
       }
-      const mnemonic = user.mnemonic;
-      const publicKey = user.keys.ecc.publicKey;
-      const publicKyberKey = user.keys.kyber.publicKyberKey;
+      const { mnemonic, publicKey } = user;
 
-      let encryptedMnemonicInBase64;
-      let hybridModeEnabled = false;
+      const encryptedMnemonic = await encryptMessageWithPublicKey({
+        message: mnemonic,
+        publicKeyInBase64: publicKey,
+      });
 
-      if (publicKyberKey) {
-        encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
-          message: mnemonic,
-          publicKeyInBase64: publicKey,
-          publicKyberKeyBase64: publicKyberKey,
-        });
-        hybridModeEnabled = true;
-      } else {
-        encryptedMnemonicInBase64 = await standardEncryptMessageWithPublicKey({
-          message: mnemonic,
-          publicKeyInBase64: publicKey,
-        });
-      }
+      const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
 
       await workspacesService.setupWorkspace({
         workspaceId: pendingWorkspace.id,
@@ -177,7 +163,6 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         address: pendingWorkspace?.address ?? '',
         description: pendingWorkspace?.description ?? '',
         encryptedMnemonic: encryptedMnemonicInBase64,
-        hybridModeEnabled: hybridModeEnabled,
       });
 
       // to avoid backend update delay
@@ -288,7 +273,6 @@ export const workspacesSlice = createSlice({
       state.isLoadingCredentials = action.payload;
     },
   },
-  // TODO: TO CHANGE MESSAGES
   extraReducers: (builder) => {
     builder
       .addCase(fetchWorkspaces.pending, (state) => {
@@ -301,7 +285,12 @@ export const workspacesSlice = createSlice({
         const errorMsg = action.payload ? action.payload : '';
 
         state.isLoadingWorkspaces = false;
-        notificationsService.show({ text: 'Fetching workspaces error ' + errorMsg, type: ToastType.Warning });
+        notificationsService.show({
+          text: t('notificationMessages.errorFetchingWorkspace', {
+            error: errorMsg,
+          }),
+          type: ToastType.Warning,
+        });
       })
       .addCase(setSelectedWorkspace.pending, (state) => {
         state.isLoadingWorkspaces = true;
@@ -330,7 +319,9 @@ export const workspacesSlice = createSlice({
         state.isLoadingCredentials = false;
         state.isLoadingWorkspaces = false;
         notificationsService.show({
-          text: 'Fetching workspace credentials error ' + errorMsg,
+          text: t('notificationMessages.errorFetchingWorkspaceCredentials', {
+            error: errorMsg,
+          }),
           type: ToastType.Warning,
         });
       })
@@ -344,7 +335,10 @@ export const workspacesSlice = createSlice({
         const errorMsg = action.payload ? action.payload : '';
 
         state.isLoadingWorkspaces = false;
-        notificationsService.show({ text: 'Setting up workspace error ' + errorMsg, type: ToastType.Warning });
+        notificationsService.show({
+          text: t('notificationMessages.errorSettingUpWorkspace', { error: errorMsg }),
+          type: ToastType.Warning,
+        });
       })
       .addCase(checkAndSetLocalWorkspace.pending, (state) => {
         state.isLoadingWorkspaces = true;
@@ -356,7 +350,10 @@ export const workspacesSlice = createSlice({
         const errorMsg = action.payload ? action.payload : '';
 
         state.isLoadingWorkspaces = false;
-        notificationsService.show({ text: 'checking workspaces error ' + errorMsg, type: ToastType.Warning });
+        notificationsService.show({
+          text: t('notificationMessages.errorWhileLoadingWorkspace', { error: errorMsg }),
+          type: ToastType.Warning,
+        });
       })
 
       .addCase(editWorkspace.rejected, () => {

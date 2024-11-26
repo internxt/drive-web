@@ -5,15 +5,12 @@ import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import { trackRestrictedShared } from '../../../analytics/services/analytics.service';
 import userService from '../../../auth/services/user.service';
 import errorService from '../../../core/services/error.service';
 import { HTTP_CODES } from '../../../core/services/http.service';
 import AppError, { IFormValues } from '../../../core/types';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import Avatar from '../../../shared/components/Avatar';
-import Button from '../../../shared/components/Button/Button';
+import { Button, Avatar } from '@internxt/internxtui';
 import Input from '../../../shared/components/Input';
 import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { RootState } from '../../../store';
@@ -33,7 +30,6 @@ interface UsersToInvite {
   email: string;
   userRole: string;
   publicKey: string;
-  publicKyberKey: string;
   isNewUser: boolean;
 }
 
@@ -74,7 +70,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     const isDuplicated = usersToInvite.find((user) => user.email === userInvited.email);
 
     if (!isDuplicated && isValidEmail(userInvitedEmail)) {
-      const { publicKey, publicKyberKey } = await getUserPublicKey(email);
+      const publicKey = await getUserPublicKey(email);
 
       const markUserAsNew = !publicKey;
 
@@ -84,7 +80,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
       }
 
       const unique: Array<UsersToInvite> = [...usersToInvite];
-      unique.push({ ...userInvited, publicKey, publicKyberKey });
+      unique.push({ ...userInvited, publicKey });
       setUsersToInvite(unique);
       setEmail('');
     } else {
@@ -103,19 +99,17 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     setUsersToInvite(newUserToInvite);
   };
 
-  const getUserPublicKey = async (email: string): Promise<{ publicKey: string; publicKyberKey: string }> => {
+  const getUserPublicKey = async (email: string): Promise<string> => {
     let publicKey = '';
-    let publicKyberKey = '';
     try {
       const publicKeyResponse = await userService.getPublicKeyByEmail(email);
       publicKey = publicKeyResponse.publicKey;
-      publicKyberKey = publicKeyResponse.publicKyberKey;
     } catch (error) {
       if ((error as AppError)?.status !== HTTP_CODES.NOT_FOUND) {
         errorService.reportError(error);
       }
     }
-    return { publicKey, publicKyberKey };
+    return publicKey;
   };
 
   const processInvites = async (usersToInvite: UsersToInvite[]) => {
@@ -141,16 +135,8 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
         ),
       );
     });
-    const trackingRestrictedSharedProperties: TrackingPlan.RestrictedSharedProperties = {
-      is_folder: props.itemToShare?.isFolder,
-      share_type: 'private',
-      user_id: props.itemToShare?.userId,
-      item_id: props.itemToShare?.id,
-      invitations_send: 1,
-    };
 
     await Promise.all(sharingPromises);
-    trackRestrictedShared(trackingRestrictedSharedProperties);
   };
 
   //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG
@@ -160,7 +146,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     let isThereAnyNewUser = newUsersExists;
 
     if (usersList.length === 0 && isValidEmail(email)) {
-      const { publicKey, publicKyberKey } = await getUserPublicKey(email);
+      const publicKey = await getUserPublicKey(email);
       if (!publicKey && !preCreateUsers) {
         isThereAnyNewUser = true;
       }
@@ -169,7 +155,6 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
         userRole,
         isNewUser: !publicKey,
         publicKey,
-        publicKyberKey,
       });
     }
 
@@ -295,7 +280,14 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
               <BaseCheckbox checked={notifyUser} />
               <p className="ml-2 text-base font-medium">{translate('modals.shareModal.invite.notifyUsers')}</p>
             </div>
-            <Button variant="primary" onClick={onInvite} disabled={isInviteButtonDisabled} loading={isAnyInviteLoading}>
+            <Button
+              variant="primary"
+              onClick={() => {
+                onInvite({ preCreateUsers: false });
+              }}
+              disabled={isInviteButtonDisabled}
+              loading={isAnyInviteLoading}
+            >
               <span>{translate('modals.shareModal.invite.invite')}</span>
             </Button>
           </div>

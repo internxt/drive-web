@@ -17,11 +17,11 @@ import { Link } from 'react-router-dom';
 import { WritableStream } from 'streamsaver';
 import { HTTP_CODES } from '../../../core/services/http.service';
 import AppError from '../../../core/types';
-import Spinner from '../../../shared/components/Spinner/Spinner';
 import { useAppSelector } from '../../../store/hooks';
 import SendBanner from './SendBanner';
 import ShareItemPwdView from './ShareItemPwdView';
 import './ShareView.scss';
+import { Spinner } from '@internxt/internxtui';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{

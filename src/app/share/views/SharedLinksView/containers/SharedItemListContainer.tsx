@@ -22,6 +22,7 @@ import { isItemsOwnedByCurrentUser, sortSharedItems } from '../sharedViewUtils';
 type ShareItemListContainerProps = {
   disableKeyboardShortcuts: boolean;
   sharedNamePath: SharedNamePath[];
+  isRootFolder: boolean;
   onItemDoubleClicked: (shareItem: AdvancedSharedItem) => void;
   onUploadFileButtonClicked: () => void;
   isCurrentUserViewer: () => boolean;
@@ -33,6 +34,7 @@ type ShareItemListContainerProps = {
 
 const SharedItemListContainer = ({
   disableKeyboardShortcuts,
+  isRootFolder,
   onItemDoubleClicked,
   onUploadFileButtonClicked,
   isCurrentUserViewer,
@@ -62,7 +64,6 @@ const SharedItemListContainer = ({
     currentShareOwnerAvatar,
     clickedShareItemUser: sharedItemUser,
     clickedShareItemEncryptionKey: sharedItemEncryptionKey,
-    clickedShareItemHybridModeEnabled: sharedItemPqEbnabled,
     orderBy,
   } = state;
   const shareItems = [...shareFolders, ...shareFiles];
@@ -96,9 +97,7 @@ const SharedItemListContainer = ({
   const downloadItem = async (shareItem: AdvancedSharedItem): Promise<void> => {
     try {
       if (shareItem.isRootLink) {
-        const encryptionKey =
-          selectedWorkspace?.workspaceUser?.key ??
-          (await decryptMnemonic(shareItem.encryptionKey, shareItem.hybridModeEnabled));
+        const encryptionKey = selectedWorkspace?.workspaceUser?.key ?? (await decryptMnemonic(shareItem.encryptionKey));
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
@@ -114,10 +113,9 @@ const SharedItemListContainer = ({
       } else {
         const pageItemsNumber = 5;
         let sharedToken;
-        if (workspaceCredentials && workspaceId && defaultTeamId) {
+        if (workspaceCredentials && workspaceId) {
           const [responsePromise] = workspacesService.getAllWorkspaceTeamSharedFolderFolders(
             workspaceId,
-            defaultTeamId,
             currentFolderId,
             page,
             5,
@@ -136,9 +134,7 @@ const SharedItemListContainer = ({
           );
           sharedToken = token;
         }
-        const encryptionKey =
-          selectedWorkspace?.workspaceUser?.key ??
-          (await decryptMnemonic(sharedItemEncryptionKey, sharedItemPqEbnabled));
+        const encryptionKey = selectedWorkspace?.workspaceUser?.key ?? (await decryptMnemonic(sharedItemEncryptionKey));
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
@@ -180,10 +176,7 @@ const SharedItemListContainer = ({
     try {
       const mnemonic =
         selectedWorkspace?.workspaceUser.key ??
-        (await decryptMnemonic(
-          shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey,
-          shareItem.hybridModeEnabled,
-        ));
+        (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey));
       onOpenItemPreview({ ...previewItem, mnemonic });
     } catch (err) {
       const error = errorService.castError(err);
@@ -193,7 +186,7 @@ const SharedItemListContainer = ({
 
   const copyLink = useCallback(
     (item: AdvancedSharedItem) => {
-      shareService.getPublicShareLink(item.uuid, item.isFolder ? 'folder' : 'file', false);
+      shareService.getPublicShareLink(item.uuid, item.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );
@@ -249,6 +242,7 @@ const SharedItemListContainer = ({
     isItemsOwnedByCurrentUser: checkIfIsItemsOwnedByCurrentUser(),
     isCurrentUserViewer: isCurrentUserViewer(),
     isItemOwnedByCurrentUser,
+    isRootFolder,
   });
 
   return (

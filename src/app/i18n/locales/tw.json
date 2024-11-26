@@ -4,19 +4,19 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "節省 80%",
-    "title": "保護你的數位世界！",
-    "subtitle": "透過我們的終身計劃贏取我們的高級背包。",
-    "cta": "選擇計劃",
+    "label": "節省85%！",
+    "title": "黑色星期五最佳優惠",
+    "subtitle": "選擇我們的終身方案，獲得我們的高級背包。",
+    "cta": "選擇您的方案",
     "guarantee": "30天退款保證",
-    "lastCta": "*優惠僅適用於免費帳戶或新客戶",
+    "lastCta": "*此優惠僅適用於免費帳戶或新客戶",
     "features": [
-      "所有 Internxt 計劃大幅優惠",
-      "安全可靠的雲端存儲",
-      "開源且透明",
+      "所有高級方案享有巨大的折扣",
+      "私人加密雲端存儲",
+      "開源且經過審查",
       "端到端加密傳輸",
       "無未經授權的訪問",
-      "優惠截止至10月31日"
+      "優惠截止至12月3日"
     ]
   },
   "valentinesBanner": {
@@ -67,7 +67,8 @@
     "light": "淺色",
     "dark": "深色",
     "system": "系統",
-    "starwars": "星際大戰"
+    "starwars": "星際大戰",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "電子郵件",
@@ -81,7 +82,8 @@
       "dontHaveAccount": "沒有帳戶？",
       "createAccount": "創建帳戶",
       "2FA": "雙重身份驗證代碼",
-      "twoFactorAuthenticationCode": "雙重身份驗證代碼"
+      "twoFactorAuthenticationCode": "雙重身份驗證代碼",
+      "wrongLogin": "使用者名稱或密碼無效"
     },
     "signup": {
       "title": "創建帳戶",
@@ -934,7 +936,13 @@
       "primaryAction": "確認",
       "secondaryAction": "取消"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "分享 \"{{name}}\"",
+      "teams": "團隊",
+      "teamsWithAccess": "有權限的團隊：",
+      "shareButton": "分享"
+    }
   },
   "form": {
     "fields": {
@@ -1247,6 +1255,9 @@
     "linkUpdated": "鏈接已更新",
     "itemsMovedToTrash": "{{item}} 已移到垃圾桶",
     "restoreItems": "{{itemsToRecover}} 成功還原",
+    "storageModified": "儲存空間修改成功",
+    "errorModifyingStorage": "新存儲空間對此成員無效。",
+    "generalErrorWhileModifyingStorage": "修改存儲時出錯。",
     "moveItems": "{{itemsToMove}} 成功移動",
     "itemDeleted": "{{item}} 已刪除",
     "itemsDeleted": "文件已刪除",
@@ -1263,7 +1274,13 @@
     "errorApplyingCoupon": "應用優惠券時出錯",
     "errorWhileFetchingMoreItems": "獲取更多項目時出現錯誤",
     "errorDeletingItems": "刪除此項目時出現錯誤",
-    "invalidTaxIdIsProvided": "提供的稅號無效"
+    "invalidTaxIdIsProvided": "提供的稅號無效",
+    "errorFetchingWorkspace": "獲取工作區時出錯 {{error}}",
+    "errorSettingUpWorkspace": "設置工作區時出錯 {{error}}",
+    "errorWhileLoadingWorkspace": "加載工作區時出錯 {{error}}",
+    "errorFetchingWorkspaceCredentials": "獲取工作區憑證時出錯 {{error}}",
+    "invalidWorkspaceInvitationError": "工作區已滿。請聯絡擁有者。",
+    "errorAcceptingWorkspaceInvitation": "接受邀請時出錯"
   },
   "actions": {
     "undo": "撤銷",
@@ -1465,7 +1482,7 @@
       "members": {
         "title": "成員",
         "members": "成員",
-        "guests": "訪客",
+        "guests": "特邀",
         "search": "搜尋成員",
         "invite": "邀請",
         "inviteDialog": {
@@ -1497,6 +1514,14 @@
           "manager": "經理",
           "member": "成員",
           "deactivated": "已停用"
+        },
+        "modifyStorageModal": {
+          "user": "用戶",
+          "storage": "儲存空間",
+          "spaceAssigned": "分配的空間",
+          "spaceLeft": "剩餘總空間",
+          "cancel": "取消",
+          "saveChanges": "保存更改"
         },
         "deactivationModal": {
           "title": "停用成員",

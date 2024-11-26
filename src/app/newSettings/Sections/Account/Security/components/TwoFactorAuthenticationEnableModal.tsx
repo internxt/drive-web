@@ -1,9 +1,8 @@
 import { Warning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import authService, { generateNew2FA } from 'app/auth/services/auth.service';
-import Button from 'app/shared/components/Button/Button';
+import { Button, Spinner } from '@internxt/internxtui';
 import Modal from 'app/shared/components/Modal';
-import Spinner from 'app/shared/components/Spinner/Spinner';
 import appStoreIcon from 'app/../assets/icons/app-store.svg';
 import playStoreIcon from 'app/../assets/icons/play-store.svg';
 import useEffectAsync from 'app/core/hooks/useEffectAsync';
@@ -99,7 +98,8 @@ const TwoFactorAuthenticationEnableModal = ({
   const [activateState, setActivateState] = useState<'ready' | 'error' | 'loading'>('ready');
   const [activateValue, setActivateValue] = useState('');
 
-  async function handleActivate() {
+  async function handleActivate(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     if (qr) {
       try {
         setActivateState('loading');
@@ -134,37 +134,41 @@ const TwoFactorAuthenticationEnableModal = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">{translate('views.account.tabs.security.2FA.modal.title')}</h1>
-      <h2 className="mt-5 flex items-center">
-        <p className="mt-0.5 text-gray-50">
-          {translate('views.account.tabs.security.2FA.modal.stepsLabel', {
-            current: step + 1,
-            total: steps.length,
-          })}
-        </p>
-        <p className="ml-2 text-xl font-medium text-gray-80">{steps[step]}</p>
-      </h2>
-      {parts[step]}
-      <div className="flex justify-end">
-        <Button
-          variant="secondary"
-          onClick={step === 0 ? onClose : () => setStep(step - 1)}
-          disabled={activateState === 'loading'}
-        >
-          {step === 0 ? translate('actions.cancel') : translate('actions.back')}
-        </Button>
-        <div className="ml-2">
-          {step !== steps.length - 1 ? (
-            <Button onClick={() => setStep(step + 1)} disabled={qr === null && step === 1}>
-              {translate('actions.next')}
-            </Button>
-          ) : (
-            <Button onClick={handleActivate} disabled={activateValue.length < 6} loading={activateState === 'loading'}>
-              {translate('views.account.tabs.security.2FA.modal.button')}
-            </Button>
-          )}
+      <form onSubmit={handleActivate}>
+        <h1 className="text-2xl font-medium text-gray-80">
+          {translate('views.account.tabs.security.2FA.modal.title')}
+        </h1>
+        <h2 className="mt-5 flex items-center">
+          <p className="mt-0.5 text-gray-50">
+            {translate('views.account.tabs.security.2FA.modal.stepsLabel', {
+              current: step + 1,
+              total: steps.length,
+            })}
+          </p>
+          <p className="ml-2 text-xl font-medium text-gray-80">{steps[step]}</p>
+        </h2>
+        {parts[step]}
+        <div className="flex justify-end">
+          <Button
+            variant="secondary"
+            onClick={step === 0 ? onClose : () => setStep(step - 1)}
+            disabled={activateState === 'loading'}
+          >
+            {step === 0 ? translate('actions.cancel') : translate('actions.back')}
+          </Button>
+          <div className="ml-2">
+            {step !== steps.length - 1 ? (
+              <Button onClick={() => setStep(step + 1)} disabled={qr === null && step === 1}>
+                {translate('actions.next')}
+              </Button>
+            ) : (
+              <Button type="submit" disabled={activateValue.length < 6} loading={activateState === 'loading'}>
+                {translate('views.account.tabs.security.2FA.modal.button')}
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      </form>
     </Modal>
   );
 };

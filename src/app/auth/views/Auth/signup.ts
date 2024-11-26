@@ -33,9 +33,7 @@ const signup = async (data, dispatch, doRegister, setLoading, appRedirect?, setE
     dispatch(referralsThunks.initializeThunk());
     await dispatch(userThunks.initializeUserThunk());
 
-    window.rudderanalytics.identify(xUser.uuid, { email: xUser.email, uuid: xUser.uuid });
-    window.rudderanalytics.track('User Signup', { email: xUser.email });
-
+    window.gtag('event', 'User Signup', { send_to: 'Blog' });
     localStorage.removeItem('email');
     localStorage.removeItem('password');
     setLoading(false);

@@ -12,11 +12,8 @@ import {
 } from '@internxt/sdk/dist/drive/payments/types';
 import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js/pure';
-import { generateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import envService from '../../core/services/env.service';
-import httpService from '../../core/services/http.service';
-import { encryptPGP } from '../../crypto/services/utilspgp';
 import { LifetimeTier, StripeSessionMode } from '../types';
 
 export interface CreatePaymentSessionPayload {

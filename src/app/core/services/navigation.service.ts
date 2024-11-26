@@ -2,10 +2,13 @@ import { BrowserHistoryBuildOptions, createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
 import { SelectSectionProps } from 'app/newSettings/types/types';
-import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
 import { AppView } from '../types';
 import configService from './config.service';
 import errorService from './error.service';
+import { AppDispatch } from '../../store';
+import localStorageService from './local-storage.service';
+import { STORAGE_KEYS } from '../../core/services/local-storage.service';
+import { workspacesActions } from '../../store/slices/workspaces/workspacesStore';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
@@ -17,25 +20,13 @@ if (process.env.REACT_APP_BASE_URL) {
 
 const instance = createBrowserHistory(browserHistoryConfig);
 
-instance.listen((nav) => {
-  const keys = Object.keys(PATH_NAMES);
-  const index = keys.indexOf(nav.pathname);
-
-  if (index > -1) {
-    const pageName = PATH_NAMES[keys[index]];
-
-    window.rudderanalytics.page(pageName);
-    serverPage(pageName).catch(() => {
-      // NO OP
-    });
-  }
-});
-
 const navigationService = {
   history: instance,
-  push(viewId: AppView, queryMap: Record<string, unknown> = {}): void {
+  push(viewId: AppView, queryMap: Record<string, unknown> = {}, workspaceUuid?: string): void {
     const viewConfig = configService.getViewConfig({ id: viewId });
-    const viewSearch = queryString.stringify(queryMap);
+    let viewSearch = queryString.stringify(queryMap);
+
+    if (workspaceUuid) viewSearch += `${viewSearch ? '&' : ''}workspaceid=${workspaceUuid}`;
 
     if (!viewConfig) {
       console.warn(`(NavigationService) View with ID ${viewId} not found`);
@@ -80,6 +71,21 @@ const navigationService = {
     } catch (error) {
       errorService.reportError(error);
     }
+  },
+  setWorkspaceFromParams(workspaceThunks, dispatch: AppDispatch, updateUrl = true): void {
+    const user = localStorageService.getUser();
+    const params = new URLSearchParams(window.location.search);
+    const [currentWorkspaceUuid] = params.getAll('workspaceid');
+    user &&
+      !window.location.pathname.includes('file') &&
+      !window.location.pathname.includes('folder') &&
+      dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid || null, updateUrl }));
+  },
+  resetB2BWorkspaceCredentials(dispatch): void {
+    localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
+    localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
+    dispatch(workspacesActions.setSelectedWorkspace(null));
+    dispatch(workspacesActions.setCredentials(null));
   },
 };
 

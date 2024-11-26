@@ -9,7 +9,6 @@ import { ListItemMenu } from '../../../shared/components/List/ListItem';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import errorService from '../../../core/services/error.service';
 import { OrderDirection } from '../../../core/types';
-import { FileToUpload } from '../../../drive/services/file.service/uploadFile';
 import {
   ThumbnailToUpload,
   compareThumbnail,
@@ -31,6 +30,7 @@ import {
   topDropdownBarActionsMenu,
   useFileViewerKeyboardShortcuts,
 } from './utils/fileViewerWrapperUtils';
+import { FileToUpload } from '../../../drive/services/file.service/types';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
 

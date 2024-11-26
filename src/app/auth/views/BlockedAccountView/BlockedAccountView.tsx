@@ -2,18 +2,16 @@ import navigationService from '../../../core/services/navigation.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import { ShieldWarning } from '@phosphor-icons/react';
-import Button from '../../../shared/components/Button/Button';
+import { Button, Spinner } from '@internxt/internxtui';
 import { AppView } from '../../../core/types';
 import { useCallback, useEffect, useState } from 'react';
 import queryString from 'query-string';
 import { useParams } from 'react-router-dom';
-import Spinner from '../../../shared/components/Spinner/Spinner';
 import authService from '../../../auth/services/auth.service';
 import errorService from '../../../core/services/error.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import ExpiredLink from '../../../shared/views/ExpiredLink/ExpiredLinkView';
 import { ResendButton } from '../../components/ResendButton/ResendButton';
-import { trackAccountUnblockEmailSent } from '../../../analytics/services/analytics.service';
 
 const COUNTDOWN_TIME = 30;
 
@@ -70,7 +68,6 @@ export default function BlockedAccountView(): JSX.Element {
     setSendingEmail(true);
     try {
       await authService.requestUnblockAccount(userEmail);
-      trackAccountUnblockEmailSent({ email: userEmail });
       setEnableResendButton(false);
     } catch (error) {
       errorService.reportError(error);

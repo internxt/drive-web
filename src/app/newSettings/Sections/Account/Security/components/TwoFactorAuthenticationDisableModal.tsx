@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { deactivate2FA, userHas2FAStored } from '../../../../../auth/services/auth.service';
-import Button from '../../../../../shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Modal from '../../../../../shared/components/Modal';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Input from '../../../../../shared/components/Input';
@@ -29,7 +29,8 @@ const TwoFactorAuthenticationDisableModal = ({
   const [status, setStatus] = useState<'ready' | 'error' | 'loading'>('ready');
   const [authCode, setAuthCode] = useState('');
 
-  async function handleDisable() {
+  async function handleDisable(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setStatus('loading');
     try {
       const { encryptedSalt } = await userHas2FAStored();
@@ -48,28 +49,32 @@ const TwoFactorAuthenticationDisableModal = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">{translate('views.account.tabs.security.2FA.titleDisable')}</h1>
-      <Input
-        className="mt-4"
-        label={translate('views.account.tabs.security.2FA.modal.2FALabelCode') as string}
-        disabled={status === 'loading'}
-        accent={status === 'error' ? 'error' : undefined}
-        message={
-          status === 'error'
-            ? (translate('views.account.tabs.security.2FA.modal.errors.incorrect') as string)
-            : undefined
-        }
-        value={authCode}
-        onChange={setAuthCode}
-      />
-      <div className="mt-4 flex justify-end">
-        <Button onClick={onClose} variant="secondary" disabled={status === 'loading'}>
-          {translate('actions.cancel')}
-        </Button>
-        <Button className="ml-2" loading={status === 'loading'} onClick={handleDisable} disabled={authCode.length < 6}>
-          {translate('actions.disable')}
-        </Button>
-      </div>
+      <form onSubmit={handleDisable}>
+        <h1 className="text-2xl font-medium text-gray-80">
+          {translate('views.account.tabs.security.2FA.titleDisable')}
+        </h1>
+        <Input
+          className="mt-4"
+          label={translate('views.account.tabs.security.2FA.modal.2FALabelCode') as string}
+          disabled={status === 'loading'}
+          accent={status === 'error' ? 'error' : undefined}
+          message={
+            status === 'error'
+              ? (translate('views.account.tabs.security.2FA.modal.errors.incorrect') as string)
+              : undefined
+          }
+          value={authCode}
+          onChange={setAuthCode}
+        />
+        <div className="mt-4 flex justify-end">
+          <Button onClick={onClose} variant="secondary" disabled={status === 'loading'}>
+            {translate('actions.cancel')}
+          </Button>
+          <Button className="ml-2" type="submit" loading={status === 'loading'} disabled={authCode.length < 6}>
+            {translate('actions.disable')}
+          </Button>
+        </div>
+      </form>
     </Modal>
   );
 };

@@ -8,21 +8,21 @@ import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
 import { Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
 import { PlanState } from '../../../store/slices/plan';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import iconService from 'app/drive/services/icon.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import iconService from '../../../drive/services/icon.service';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { isMacOs } from 'react-device-detect';
-import { SdkFactory } from 'app/core/factory/sdk';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
-import { uiActions } from 'app/store/slices/ui';
-import fileExtensionGroups, { FileExtensionGroup, FileExtensionMap } from 'app/drive/types/file-types';
+import { SdkFactory } from '../../../core/factory/sdk';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
+import { uiActions } from '../../../store/slices/ui';
+import fileExtensionGroups, { FileExtensionGroup, FileExtensionMap } from '../../../drive/types/file-types';
 import NotFoundState from './NotFoundState';
 import EmptyState from './EmptyState';
 import FilterItem from './FilterItem';
 import { getItemPlainName } from '../../../crypto/services/utils';
-import navigationService from 'app/core/services/navigation.service';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import navigationService from '../../../core/services/navigation.service';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -96,6 +96,17 @@ const Navbar = (props: NavbarProps) => {
     }
   }, [filters]);
 
+  useEffect(() => {
+    resetGlobalSearch();
+  }, [selectedWorkspace]);
+
+  const resetGlobalSearch = () => {
+    setQuery('');
+    setSelectedResult(0);
+    setLoadingSearch(false);
+    setSearchResult([]);
+  };
+
   const filteredSearchResults = searchResult.filter((result) => {
     for (const filter of filters) {
       if (filter === 'folder' && result.itemType?.toLowerCase() === 'folder') {
@@ -109,11 +120,13 @@ const Navbar = (props: NavbarProps) => {
 
   const search = async () => {
     const query = searchInput.current?.value ?? '';
+    const workspaceId = selectedWorkspace?.workspaceUser.workspaceId;
     if (query.length > 0) {
       const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-      const [itemsPromise] = await storageClient.getGlobalSearchItems(query);
+      const [itemsPromise] = await storageClient.getGlobalSearchItems(query, workspaceId);
       const items = await itemsPromise;
-      setSearchResult(items.data);
+      const resultItems: SearchResult[] = Array.isArray(items) ? items : items.data;
+      setSearchResult(resultItems);
     } else {
       setSearchResult([]);
     }

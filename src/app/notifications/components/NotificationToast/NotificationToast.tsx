@@ -4,8 +4,8 @@ import { NavLink } from 'react-router-dom';
 import { uiActions } from '../../../store/slices/ui';
 import { Transition } from '@headlessui/react';
 import { CheckCircle, Info, Warning, WarningOctagon, X } from '@phosphor-icons/react';
-import Spinner from '../../../shared/components/Spinner/Spinner';
 import { ToastShowProps, ToastType } from '../../services/notifications.service';
+import { Spinner } from '@internxt/internxtui';
 
 const NotificationToast = ({
   text,
