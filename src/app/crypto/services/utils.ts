@@ -1,15 +1,35 @@
 import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
-import { getAesInitFromEnv } from '../services/keys.service';
 import { AdvancedSharedItem } from '../../share/types';
+import { sha256, createSHA256 } from 'hash-wasm';
 
 interface PassObjectInterface {
   salt?: string | null;
   password: string;
 }
+/**
+ * Computes sha256
+ * @param {string} data - The input data
+ * @returns {Promise<string>} The result of applying sha256 to the data.
+ */
+function getSha256(data: string): Promise<string> {
+  return sha256(data);
+}
 
-// Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
+/**
+ * Creates sha256 hasher
+ * @returns {Promise<IHasher>} The sha256 hasher
+ */
+function getSha256Hasher() {
+  return createSHA256();
+}
+
+/**
+ * Password hash computation with PBKDF2. If salt is passed, use it, in other case use crypto lib for generate salt
+ * @param {PassObjectInterface} passObject - The input object containing password and salt (optional)
+ * @returns {salt: string; hash: string} The resulting hash and salt
+ */
 function passToHash(passObject: PassObjectInterface): { salt: string; hash: string } {
   const salt = passObject.salt ? CryptoJS.enc.Hex.parse(passObject.salt) : CryptoJS.lib.WordArray.random(128 / 8);
   const hash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256 / 32, iterations: 10000 });
@@ -51,16 +71,6 @@ function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string
   return bytes.toString(CryptoJS.enc.Utf8);
 }
 
-function encryptFilename(filename: string, folderId: number): string {
-  const { REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY } = process.env;
-
-  if (!CRYPTO_KEY) {
-    throw new Error('Cannot encrypt filename due to missing encryption key');
-  }
-
-  return aes.encrypt(filename, `${CRYPTO_KEY}-${folderId}`, getAesInitFromEnv());
-}
-
 function excludeHiddenItems(items: DriveItemData[]): DriveItemData[] {
   return items.filter((item) => !itemUtils.isHiddenItem(item));
 }
@@ -89,10 +99,11 @@ export {
   passToHash,
   encryptText,
   decryptText,
-  encryptFilename,
   encryptTextWithKey,
   decryptTextWithKey,
   excludeHiddenItems,
   renameFile,
   getItemPlainName,
+  getSha256,
+  getSha256Hasher,
 };

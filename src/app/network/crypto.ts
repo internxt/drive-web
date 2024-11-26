@@ -4,8 +4,9 @@ import {
   sha512HmacBuffer,
   sha512HmacBufferFromHex,
 } from '@internxt/inxt-js/build/lib/utils/crypto';
+import { getSha256Hasher } from '../crypto/services/utils';
 import { streamFileIntoChunks } from '../core/services/stream.service';
-import { Sha256 } from 'asmcrypto.js';
+
 import { mnemonicToSeed } from 'bip39';
 import { Cipher, CipherCCM, createCipheriv, createHash } from 'crypto';
 
@@ -130,7 +131,8 @@ export async function getEncryptedFile(
   cipher: Cipher,
 ): Promise<[Blob, string]> {
   const readable = encryptReadable(plainFile.stream(), cipher).getReader();
-  const hasher = new Sha256();
+  const hasher = await getSha256Hasher();
+  hasher.init();
   const blobParts: ArrayBuffer[] = [];
 
   let done = false;
@@ -139,20 +141,17 @@ export async function getEncryptedFile(
     const status = await readable.read();
 
     if (!status.done) {
-      hasher.process(status.value);
+      hasher.update(status.value);
       blobParts.push(status.value);
     }
 
     done = status.done;
   }
-
-  hasher.finish();
+  const sha256Result = hasher.digest();
 
   return [
     new Blob(blobParts, { type: 'application/octet-stream' }),
-    createHash('ripemd160')
-      .update(Buffer.from(hasher.result as Uint8Array))
-      .digest('hex'),
+    createHash('ripemd160').update(Buffer.from(sha256Result, 'hex')).digest('hex'),
   ];
 }
 
@@ -165,7 +164,8 @@ export async function processEveryFileBlobReturnHash(
   onEveryBlob: (blob: Blob) => Promise<void>,
 ): Promise<string> {
   const reader = chunkedFileReadable.getReader();
-  const hasher = new Sha256();
+  const hasher = await getSha256Hasher();
+  hasher.init();
 
   let done = false;
 
@@ -173,7 +173,7 @@ export async function processEveryFileBlobReturnHash(
     const status = await reader.read();
     if (!status.done) {
       const value = status.value;
-      hasher.process(value);
+      hasher.update(value);
       const blob = new Blob([value], { type: 'application/octet-stream' });
       await onEveryBlob(blob);
     }
@@ -181,9 +181,8 @@ export async function processEveryFileBlobReturnHash(
     done = status.done;
   }
 
-  hasher.finish();
-
+  const sha256Result = hasher.digest();
   return createHash('ripemd160')
-    .update(Buffer.from(hasher.result as Uint8Array))
+    .update(Buffer.from(Buffer.from(sha256Result, 'hex')))
     .digest('hex');
 }
