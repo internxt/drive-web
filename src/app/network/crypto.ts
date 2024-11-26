@@ -1,5 +1,5 @@
 import { ShardMeta } from '@internxt/inxt-js/build/lib/models';
-import { Aes256gcmEncrypter, sha512HmacBufferFromHex } from '@internxt/inxt-js/build/lib/utils/crypto';
+import { Aes256gcmEncrypter } from '@internxt/inxt-js/build/lib/utils/crypto';
 import { streamFileIntoChunks } from '../core/services/stream.service';
 import { Sha256 } from 'asmcrypto.js';
 import { mnemonicToSeed } from 'bip39';
