@@ -155,10 +155,6 @@ export async function getEncryptedFile(
   ];
 }
 
-export function sha256(input: Buffer): Buffer {
-  return createHash('sha256').update(input).digest();
-}
-
 export async function processEveryFileBlobReturnHash(
   chunkedFileReadable: ReadableStream<Uint8Array>,
   onEveryBlob: (blob: Blob) => Promise<void>,

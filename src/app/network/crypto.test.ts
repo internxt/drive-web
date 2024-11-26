@@ -13,6 +13,7 @@ import {
 import { Buffer } from 'buffer';
 import crypto from 'crypto';
 import { Sha256 } from 'asmcrypto.js';
+import { getSha256 } from '../crypto/services/utils';
 
 describe('Test crypto.ts functions', () => {
   globalThis.Buffer = Buffer;
@@ -186,5 +187,15 @@ describe('Test crypto.ts functions', () => {
 
     expect(hash).toBe(oldHash);
     expect(receivedBlobs).toStrictEqual(oldReceivedBlobs);
+  });
+
+  it('getSha256 should generate the same result as sha256 from crypto', async () => {
+    function oldSha256(input: Buffer): Buffer {
+      return crypto.createHash('sha256').update(input).digest();
+    }
+    const pass = 'Test password';
+    const hash = await getSha256(pass);
+    const oldHash = oldSha256(Buffer.from(pass)).toString('hex');
+    expect(hash).toBe(oldHash);
   });
 });
