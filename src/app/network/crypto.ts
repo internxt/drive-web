@@ -4,7 +4,7 @@ import {
   sha512HmacBuffer,
   sha512HmacBufferFromHex,
 } from '@internxt/inxt-js/build/lib/utils/crypto';
-import { getSha256Hasher } from '../crypto/services/utils';
+import { getSha256Hasher, getRipemd160FromHex } from '../crypto/services/utils';
 import { streamFileIntoChunks } from '../core/services/stream.service';
 
 import { mnemonicToSeed } from 'bip39';
@@ -149,10 +149,7 @@ export async function getEncryptedFile(
   }
   const sha256Result = hasher.digest();
 
-  return [
-    new Blob(blobParts, { type: 'application/octet-stream' }),
-    createHash('ripemd160').update(Buffer.from(sha256Result, 'hex')).digest('hex'),
-  ];
+  return [new Blob(blobParts, { type: 'application/octet-stream' }), await getRipemd160FromHex(sha256Result)];
 }
 
 export async function processEveryFileBlobReturnHash(
@@ -178,7 +175,5 @@ export async function processEveryFileBlobReturnHash(
   }
 
   const sha256Result = hasher.digest();
-  return createHash('ripemd160')
-    .update(Buffer.from(Buffer.from(sha256Result, 'hex')))
-    .digest('hex');
+  return await getRipemd160FromHex(sha256Result);
 }

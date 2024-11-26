@@ -2,7 +2,8 @@ import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
 import { AdvancedSharedItem } from '../../share/types';
-import { sha256, createSHA256 } from 'hash-wasm';
+import { sha256, createSHA256, ripemd160 } from 'hash-wasm';
+import { Buffer } from 'buffer';
 
 interface PassObjectInterface {
   salt?: string | null;
@@ -23,6 +24,16 @@ function getSha256(data: string): Promise<string> {
  */
 function getSha256Hasher() {
   return createSHA256();
+}
+
+/**
+ * Computes ripmd160
+ * @param {string} dataHex - The input data in HEX format
+ * @returns {Promise<string>} The result of applying ripmd160 to the data.
+ */
+function getRipemd160FromHex(dataHex: string): Promise<string> {
+  const data = Buffer.from(dataHex, 'hex');
+  return ripemd160(data);
 }
 
 /**
@@ -106,4 +117,5 @@ export {
   getItemPlainName,
   getSha256,
   getSha256Hasher,
+  getRipemd160FromHex,
 };

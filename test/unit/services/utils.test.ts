@@ -9,12 +9,14 @@ import {
   encryptText,
   decryptText,
   decryptTextWithKey,
+  getRipemd160FromHex,
 } from '../../../src/app/crypto/services/utils';
 
 import { describe, expect, it, afterAll, beforeAll } from 'vitest';
 import { Sha256 } from 'asmcrypto.js';
 import CryptoJS from 'crypto-js';
 import { Buffer } from 'buffer';
+import crypto from 'crypto';
 
 describe('Test getSha256 with NIST test vectors', () => {
   it('getSha256 should pass NIST test vector 1', async () => {
@@ -101,7 +103,7 @@ describe('Test getSha256Hasher', () => {
   });
 });
 
-describe('Test against cryptoJS', () => {
+describe('Test against other crypto libraries', () => {
   it('SHA256 should be identical to CryptoJS result for a test string', async () => {
     const message = 'Test between hash-wasm and CryptoJS';
     const result = await getSha256(message);
@@ -114,6 +116,13 @@ describe('Test against cryptoJS', () => {
     const result = await getSha256(message);
     const cryptoJSresult = CryptoJS.SHA256(message).toString(CryptoJS.enc.Hex);
     expect(result).toBe(cryptoJSresult);
+  });
+
+  it('getRipemd160 should retrun the same result as crypto', async () => {
+    const sha256Result = await getSha256('Test message');
+    const result = await getRipemd160FromHex(sha256Result);
+    const testResult = crypto.createHash('ripemd160').update(Buffer.from(sha256Result, 'hex')).digest('hex');
+    expect(result).toBe(testResult);
   });
 });
 
@@ -161,5 +170,76 @@ describe('Test encryption', () => {
     const message = 'Test message';
     const ciphertext = encryptText(message);
     expect(() => decryptTextWithKey(ciphertext, '')).toThrowError('No key defined. Check .env file');
+  });
+});
+
+describe('Test getRipemd160 with test vectors published by the authors', () => {
+  it('getRipemd160 should pass test 1', async () => {
+    const message = '';
+    const result = await getRipemd160FromHex(message);
+    const testResult = '9c1185a5c5e9fc54612808977ee8f548b2258d31';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 2', async () => {
+    const message = Buffer.from('a').toString('hex');
+    const result = await getRipemd160FromHex(message);
+    const testResult = '0bdc9d2d256b3ee9daae347be6f4dc835a467ffe';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 3', async () => {
+    const message = Buffer.from('abc').toString('hex');
+    const result = await getRipemd160FromHex(message);
+    const testResult = '8eb208f7e05d987a9b044a8e98c6b087f15a0bfc';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 4', async () => {
+    const message = Buffer.from('message digest').toString('hex');
+    const result = await getRipemd160FromHex(message);
+    const testResult = '5d0689ef49d2fae572b881b123a85ffa21595f36';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 5', async () => {
+    const message = Buffer.from('abcdefghijklmnopqrstuvwxyz').toString('hex');
+    const result = await getRipemd160FromHex(message);
+    const testResult = 'f71c27109c692c1b56bbdceb5b9d2865b3708dbc';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 6', async () => {
+    const message = Buffer.from('abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq').toString('hex');
+    const result = await getRipemd160FromHex(message);
+    const testResult = '12a053384a9c0c88e405a06c27dcf49ada62eb2b';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 7', async () => {
+    const message = Buffer.from('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789').toString('hex');
+    const result = await getRipemd160FromHex(message);
+    const testResult = 'b0e20b6e3116640286ed3a87a5713079b21f5189';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 8', async () => {
+    let message = '';
+    for (let i = 0; i < 8; i++) {
+      message += Buffer.from('1234567890').toString('hex');
+    }
+    const result = await getRipemd160FromHex(message);
+    const testResult = '9b752e45573d4b39f4dbd3323cab82bf63326bfb';
+    expect(result).toBe(testResult);
+  });
+
+  it('getRipemd160 should pass test 9', async () => {
+    let message = '';
+    for (let i = 0; i < 1000000; i++) {
+      message += Buffer.from('a').toString('hex');
+    }
+    const result = await getRipemd160FromHex(message);
+    const testResult = '52783243c1697bdbe16d37f97f68f08325dc1528';
+    expect(result).toBe(testResult);
   });
 });
