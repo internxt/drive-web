@@ -474,7 +474,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
-      throw new Error(t('error.uploadingItems'));
+      throw new Error(t('error.uploadingItems') as string);
     }
   },
 );

@@ -133,7 +133,7 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       if (err instanceof ConnectionLostError) {
         return tasksService.updateTask({
           taskId: options.taskId,
-          merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') },
+          merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
         });
       }
       if (abortController.signal.aborted) {

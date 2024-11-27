@@ -145,7 +145,7 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
       if (err instanceof ConnectionLostError) {
         return tasksService.updateTask({
           taskId: options.taskId,
-          merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') },
+          merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
         });
       }
 

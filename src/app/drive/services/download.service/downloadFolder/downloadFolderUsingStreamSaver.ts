@@ -42,7 +42,7 @@ export default async function downloadFolderUsingStreamSaver({
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
-    throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }));
+    throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
   }
 
   const writableStream = streamSaver.createWriteStream(`${folder.name}.zip`, {});
