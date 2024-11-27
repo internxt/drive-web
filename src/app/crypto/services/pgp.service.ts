@@ -1,5 +1,7 @@
 import { WebStream, MaybeStream, Data } from 'openpgp';
+import kemBuilder from '@dashlane/pqc-kem-kyber512-browser';
 import { Buffer } from 'buffer';
+import { extendSecret } from './utils';
 
 export async function getOpenpgp(): Promise<typeof import('openpgp')> {
   return import('openpgp');
@@ -8,6 +10,8 @@ export async function generateNewKeys(): Promise<{
   privateKeyArmored: string;
   publicKeyArmored: string;
   revocationCertificate: string;
+  publicKyberKeyBase64: string;
+  privateKyberKeyBase64: string;
 }> {
   const openpgp = await getOpenpgp();
 
@@ -15,15 +19,100 @@ export async function generateNewKeys(): Promise<{
     userIDs: [{ email: 'inxt@inxt.com' }],
     curve: 'ed25519',
   });
+  const kem = await kemBuilder();
+  const { publicKey: publicKyberKey, privateKey: privateKyberKey } = await kem.keypair();
 
   return {
     privateKeyArmored: privateKey,
     publicKeyArmored: Buffer.from(publicKey).toString('base64'),
     revocationCertificate: Buffer.from(revocationCertificate).toString('base64'),
+    publicKyberKeyBase64: Buffer.from(publicKyberKey).toString('base64'),
+    privateKyberKeyBase64: Buffer.from(privateKyberKey).toString('base64'),
   };
 }
+/**
+ * XORs two strings of the identical length
+ * @param {string} a The first string
+ * @param {string} b The second string
+ * @returns {string} The result of XOR of strings a and b.
+ */
+export function XORhex(a: string, b: string): string {
+  let res = '',
+    i = a.length,
+    j = b.length;
+  if (i != j) {
+    throw new Error('Can XOR only strings with identical length');
+  }
+  while (i-- > 0 && j-- > 0) res = (parseInt(a.charAt(i), 16) ^ parseInt(b.charAt(j), 16)).toString(16) + res;
+  return res;
+}
 
-export const encryptMessageWithPublicKey = async ({
+export const hybridEncryptMessageWithPublicKey = async ({
+  message,
+  publicKeyInBase64,
+  publicKyberKeyBase64,
+}: {
+  message: string;
+  publicKeyInBase64: string;
+  publicKyberKeyBase64: string;
+}): Promise<string> => {
+  const kem = await kemBuilder();
+
+  const publicKyberKey = Buffer.from(publicKyberKeyBase64, 'base64');
+  const { ciphertext, sharedSecret: secret } = await kem.encapsulate(new Uint8Array(publicKyberKey));
+  const kyberCiphertextStr = Buffer.from(ciphertext).toString('base64');
+
+  const bits = message.length * 8;
+  const secretHex = await extendSecret(secret, bits);
+  const messageHex = Buffer.from(message).toString('hex');
+
+  const xoredMessage = XORhex(messageHex, secretHex);
+
+  const encryptedMessage = await standardEncryptMessageWithPublicKey({ message: xoredMessage, publicKeyInBase64 });
+  const eccCiphertextStr = btoa(encryptedMessage as string);
+
+  const combinedCiphertext = eccCiphertextStr.concat('$', kyberCiphertextStr);
+
+  return combinedCiphertext;
+};
+
+export const hybridDecryptMessageWithPrivateKey = async ({
+  encryptedMessage,
+  privateKeyInBase64,
+  privateKyberKeyBase64,
+}: {
+  encryptedMessage: string;
+  privateKeyInBase64: string;
+  privateKyberKeyBase64: string;
+}): Promise<string> => {
+  const kem = await kemBuilder();
+
+  const ciphertexts = encryptedMessage.split('$');
+  const eccCiphertextStr = ciphertexts[0];
+  const kyberCiphertextBase64 = ciphertexts[1];
+
+  const privateKyberKey = Buffer.from(privateKyberKeyBase64, 'base64');
+  const kyberCiphertext = Buffer.from(kyberCiphertextBase64, 'base64');
+  const { sharedSecret: secret } = await kem.decapsulate(
+    new Uint8Array(kyberCiphertext),
+    new Uint8Array(privateKyberKey),
+  );
+
+  const decryptedMessage = await standardDecryptMessageWithPrivateKey({
+    encryptedMessage: atob(eccCiphertextStr),
+    privateKeyInBase64,
+  });
+  const decryptedMessageHex = decryptedMessage as string;
+  const bits = decryptedMessageHex.length * 4;
+  const secretHex = await extendSecret(secret, bits);
+  const result = XORhex(decryptedMessageHex, secretHex);
+
+  const resultStr = Buffer.from(result, 'hex').toString('utf8');
+
+  return resultStr;
+};
+
+export const standardEncryptMessageWithPublicKey = async ({
   message,
   publicKeyInBase64,
 }: {
@@ -43,7 +132,7 @@ export const encryptMessageWithPublicKey = async ({
   return encryptedMessage;
 };
 
-export const decryptMessageWithPrivateKey = async ({
+export const standardDecryptMessageWithPrivateKey = async ({
   encryptedMessage,
   privateKeyInBase64,
 }: {
@@ -52,8 +141,7 @@ export const decryptMessageWithPrivateKey = async ({
 }): Promise<MaybeStream<Data> & WebStream<Uint8Array>> => {
   const openpgp = await getOpenpgp();
 
-  const privateKeyArmored = Buffer.from(privateKeyInBase64, 'base64').toString();
-  const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyArmored });
+  const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyInBase64 });
 
   const message = await openpgp.readMessage({
     armoredMessage: encryptedMessage,
