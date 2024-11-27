@@ -3,10 +3,53 @@ import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
 import { getAesInitFromEnv } from '../services/keys.service';
 import { AdvancedSharedItem } from '../../share/types';
+import crypto from 'crypto';
 
 interface PassObjectInterface {
   salt?: string | null;
   password: string;
+}
+
+/**
+ * Converts HEX string to Uint8Array the same way CryptoJS did it (for compatibility)
+ * @param {string} hex - The input string in HEX
+ * @returns {Uint8Array} The resulting Uint8Array identical to what CryptoJS previously did
+ */
+function hex2oldEncoding(hex: string): Uint8Array {
+  const words: number[] = [];
+  for (let i = 0; i < hex.length; i += 8) {
+    words.push(parseInt(hex.slice(i, i + 8), 16) | 0);
+  }
+  const sigBytes = hex.length / 2;
+  const uint8Array = new Uint8Array(sigBytes);
+
+  for (let i = 0; i < sigBytes; i++) {
+    uint8Array[i] = (words[i >>> 2] >>> ((3 - (i % 4)) * 8)) & 0xff;
+  }
+
+  return uint8Array;
+}
+function uint8ArrayToBase64(uint8Array) {
+  let binaryString = '';
+  for (const byte of uint8Array) {
+    binaryString += String.fromCharCode(byte);
+  }
+  return btoa(binaryString);
+}
+
+function base64ToHex(base64String) {
+  // Decode Base64 to a binary string
+  const binaryString = atob(base64String);
+
+  // Convert binary string to Uint8Array
+  const length = binaryString.length;
+  const bytes = new Uint8Array(length);
+  for (let i = 0; i < length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return Array.from(bytes)
+    .map((byte) => byte.toString(16).padStart(2, '0')) // Convert to hex and pad with leading zero if necessary
+    .join(''); // Combine all hex values into a single string
 }
 
 // Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
@@ -34,9 +77,8 @@ function decryptText(encryptedText: string): string {
 // AES Plain text encryption method with enc. key
 function encryptTextWithKey(textToEncrypt: string, keyToEncrypt: string): string {
   const bytes = CryptoJS.AES.encrypt(textToEncrypt, keyToEncrypt).toString();
-  const text64 = CryptoJS.enc.Base64.parse(bytes);
-
-  return text64.toString(CryptoJS.enc.Hex);
+  const result = base64ToHex(bytes);
+  return result;
 }
 
 // AES Plain text decryption method with enc. key
@@ -45,8 +87,8 @@ function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string
     throw new Error('No key defined. Check .env file');
   }
 
-  const reb = CryptoJS.enc.Hex.parse(encryptedText);
-  const bytes = CryptoJS.AES.decrypt(reb.toString(CryptoJS.enc.Base64), keyToDecrypt);
+  const reb = uint8ArrayToBase64(hex2oldEncoding(encryptedText));
+  const bytes = CryptoJS.AES.decrypt(reb, keyToDecrypt);
 
   return bytes.toString(CryptoJS.enc.Utf8);
 }
@@ -95,4 +137,7 @@ export {
   excludeHiddenItems,
   renameFile,
   getItemPlainName,
+  hex2oldEncoding,
+  uint8ArrayToBase64,
+  base64ToHex,
 };
