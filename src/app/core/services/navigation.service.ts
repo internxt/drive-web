@@ -5,10 +5,10 @@ import { SelectSectionProps } from 'app/newSettings/types/types';
 import { AppView } from '../types';
 import configService from './config.service';
 import errorService from './error.service';
-import { AppDispatch } from 'app/store';
+import { AppDispatch } from '../../store';
 import localStorageService from './local-storage.service';
-import { STORAGE_KEYS } from 'app/core/services/local-storage.service';
-import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
+import { STORAGE_KEYS } from '../../core/services/local-storage.service';
+import { workspacesActions } from '../../store/slices/workspaces/workspacesStore';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,

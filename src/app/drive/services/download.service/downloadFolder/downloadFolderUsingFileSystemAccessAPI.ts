@@ -1,8 +1,8 @@
 import { items } from '@internxt/lib';
 
 import { FolderTree } from '@internxt/sdk/dist/drive/storage/types';
-import { FlatFolderZip } from 'app/core/services/zip.service';
-import network from 'app/network';
+import { FlatFolderZip } from '../../../../core/services/zip.service';
+import network from '../../../../network';
 import { DriveFolderData } from '../../../types';
 import folderService from '../../folder.service';
 import { getEnvironmentConfig } from '../../network.service';

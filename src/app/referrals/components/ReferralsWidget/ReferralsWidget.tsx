@@ -1,12 +1,12 @@
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { uiActions } from 'app/store/slices/ui';
-import { userSelectors } from 'app/store/slices/user';
-import { referralsThunks } from 'app/store/slices/referrals';
-import usersReferralsService from 'app/referrals/services/users-referrals.service';
-import { sessionSelectors } from 'app/store/slices/session/session.selectors';
-import sizeService from 'app/drive/services/size.service';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { uiActions } from '../../../store/slices/ui';
+import { userSelectors } from '../../../store/slices/user';
+import { referralsThunks } from '../../../store/slices/referrals';
+import usersReferralsService from '../../../referrals/services/users-referrals.service';
+import { sessionSelectors } from '../../../store/slices/session/session.selectors';
+import sizeService from '../../../drive/services/size.service';
 import { CaretDown, CaretUp } from '@phosphor-icons/react';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 
 const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   const { translate } = useTranslationContext();

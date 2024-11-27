@@ -1,25 +1,25 @@
 import { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
-import fileService from 'app/drive/services/file.service';
-import newStorageService from 'app/drive/services/new-storage.service';
-import BreadcrumbsDriveView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsDriveView';
-import { AppDispatch, RootState } from 'app/store';
-import { storageActions, storageSelectors } from 'app/store/slices/storage';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
-import { uiActions } from 'app/store/slices/ui';
+import errorService from '../../../core/services/error.service';
+import navigationService from '../../../core/services/navigation.service';
+import { AppView } from '../../../core/types';
+import fileService from '../../../drive/services/file.service';
+import newStorageService from '../../../drive/services/new-storage.service';
+import BreadcrumbsDriveView from '../../../shared/components/Breadcrumbs/Containers/BreadcrumbsDriveView';
+import { AppDispatch, RootState } from '../../../store';
+import { storageActions, storageSelectors } from '../../../store/slices/storage';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
+import { uiActions } from '../../../store/slices/ui';
 import { Helmet } from 'react-helmet-async';
 import useDriveNavigation from '../../../routes/hooks/Drive/useDrive';
 import { useAppSelector } from '../../../store/hooks';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
-import { workspacesActions, workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
-import workspacesService from 'app/core/services/workspace.service';
+import { workspacesActions, workspaceThunks } from '../../../store/slices/workspaces/workspacesStore';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
+import workspacesService from '../../../core/services/workspace.service';
 import { useHistory } from 'react-router-dom';
 
 export interface DriveViewProps {

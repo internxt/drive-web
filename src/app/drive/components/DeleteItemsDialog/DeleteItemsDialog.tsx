@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
-import errorService from 'app/core/services/error.service';
-import { uiActions } from 'app/store/slices/ui';
-import { setItemsToDelete } from 'app/store/slices/storage';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { RootState } from 'app/store';
+import errorService from '../../../core/services/error.service';
+import { uiActions } from '../../../store/slices/ui';
+import { setItemsToDelete } from '../../../store/slices/storage';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { RootState } from '../../../store';
 import { DriveItemData } from '../../types';
 import deleteItems from '../../../../use_cases/trash/delete-items';
 import { Button } from '@internxt/internxtui';

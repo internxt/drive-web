@@ -2,7 +2,7 @@ import { UploadSimple, Users } from '@phosphor-icons/react';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import Empty from '../../../shared/components/Empty/Empty';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
-import { SharedNamePath } from 'app/share/types';
+import { SharedNamePath } from '../../../share/types';
 
 interface EmptySharedViewProps {
   onUploadFileButtonClicked: () => void;

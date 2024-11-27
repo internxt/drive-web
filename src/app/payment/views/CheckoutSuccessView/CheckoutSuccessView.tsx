@@ -1,17 +1,17 @@
-import useEffectAsync from 'app/core/hooks/useEffectAsync';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
-import { useAppDispatch } from 'app/store/hooks';
-import { planThunks } from 'app/store/slices/plan';
-import { userThunks } from 'app/store/slices/user';
+import useEffectAsync from '../../../core/hooks/useEffectAsync';
+import navigationService from '../../../core/services/navigation.service';
+import { AppView } from '../../../core/types';
+import { useAppDispatch } from '../../../store/hooks';
+import { planThunks } from '../../../store/slices/plan';
+import { userThunks } from '../../../store/slices/user';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import localStorageService from '../../../core/services/local-storage.service';
 import { RootState } from '../../../store';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import { isStarWarsThemeAvailable } from '../../utils/checkStarWarsCode';
-import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import { trackPaymentConversion } from 'app/analytics/impact.service';
+import { workspaceThunks } from '../../../store/slices/workspaces/workspacesStore';
+import { trackPaymentConversion } from '../../../analytics/impact.service';
 
 const CheckoutSuccessView = (): JSX.Element => {
   const dispatch = useAppDispatch();

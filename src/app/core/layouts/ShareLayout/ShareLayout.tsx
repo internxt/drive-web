@@ -7,11 +7,11 @@ import { userThunks } from '../../../store/slices/user';
 import desktopService from '../../../core/services/desktop.service';
 import '../../../share/views/ShareView/ShareView.scss';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import ReportButton from '../../../share/views/ShareView/ReportButon';
 import { ShieldCheck, Password, Key, Eye } from '@phosphor-icons/react';
-import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
+import { getDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import { Avatar, Button } from '@internxt/internxtui';
 
 interface ShareLayoutProps {

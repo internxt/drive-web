@@ -1,18 +1,18 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { Iterator } from 'app/core/collections';
-import errorService from 'app/core/services/error.service';
-import AppError from 'app/core/types';
-import folderService from 'app/drive/services/folder.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import tasksService from 'app/tasks/services/tasks.service';
-import { TaskStatus } from 'app/tasks/types';
 import { t } from 'i18next';
 import { isFirefox } from 'react-device-detect';
 import { RootState } from '../../..';
+import { Iterator } from '../../../../core/collections';
+import errorService from '../../../../core/services/error.service';
+import AppError from '../../../../core/types';
 import downloadFolderUsingBlobs from '../../../../drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
+import folderService from '../../../../drive/services/folder.service';
 import { DriveFileData, DriveFolderData } from '../../../../drive/types';
 import { ConnectionLostError } from '../../../../network/requests';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import tasksService from '../../../../tasks/services/tasks.service';
+import { TaskStatus } from '../../../../tasks/types';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 

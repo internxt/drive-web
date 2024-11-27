@@ -1,6 +1,6 @@
 import { getEnvironmentConfig } from '../network.service';
 import { DeviceBackup } from '../../../backups/types';
-import { downloadFile } from 'app/network/download';
+import { downloadFile } from '../../../network/download';
 
 export default async function downloadBackup(
   backup: DeviceBackup,
@@ -8,12 +8,12 @@ export default async function downloadBackup(
     progressCallback,
     finishedCallback,
     errorCallback,
-    abortController
+    abortController,
   }: {
     progressCallback: (progress: number) => void;
     finishedCallback: () => void;
     errorCallback: (err: Error) => void;
-    abortController?: AbortController
+    abortController?: AbortController;
   },
 ): Promise<void> {
   if (!('showSaveFilePicker' in window)) {
@@ -39,20 +39,23 @@ export default async function downloadBackup(
     fileId: backup.fileId,
     creds: {
       pass: bridgePass,
-      user: bridgeUser
+      user: bridgeUser,
     },
     mnemonic: encryptionKey,
     options: {
       notifyProgress: (totalBytes, downloadedBytes) => {
         progressCallback(downloadedBytes / totalBytes);
       },
-      abortController
-    }
+      abortController,
+    },
   });
 
-  downloadStream.pipeTo(writable).then(() => {
-    finishedCallback();
-  }).catch((err) => {
-    errorCallback(err);
-  });
+  downloadStream
+    .pipeTo(writable)
+    .then(() => {
+      finishedCallback();
+    })
+    .catch((err) => {
+      errorCallback(err);
+    });
 }

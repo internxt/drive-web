@@ -1,4 +1,4 @@
-import { IFormValues } from 'app/core/types';
+import { IFormValues } from '../../../../core/types';
 import React from 'react';
 import { FieldError, Path, UseFormRegister, ValidationRule } from 'react-hook-form';
 

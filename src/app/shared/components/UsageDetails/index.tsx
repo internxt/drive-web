@@ -1,9 +1,9 @@
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { useEffect, useRef, useState } from 'react';
 import { bytesToString } from '../../../drive/services/size.service';
 import Tooltip from '../Tooltip';
-import { RootState } from 'app/store';
-import { useAppSelector } from 'app/store/hooks';
+import { RootState } from '../../../store';
+import { useAppSelector } from '../../../store/hooks';
 
 export default function UsageDetails({
   className = '',

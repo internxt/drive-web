@@ -1,10 +1,10 @@
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import { planThunks } from 'app/store/slices/plan';
-import { productsThunks } from 'app/store/slices/products';
-import { referralsThunks } from 'app/store/slices/referrals';
-import { userActions, userThunks } from 'app/store/slices/user';
-import { CampaignLinks } from 'app/core/types';
+import errorService from '../../../core/services/error.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import { planThunks } from '../../../store/slices/plan';
+import { productsThunks } from '../../../store/slices/products';
+import { referralsThunks } from '../../../store/slices/referrals';
+import { userActions, userThunks } from '../../../store/slices/user';
+import { CampaignLinks } from '../../../core/types';
 
 const postMessage = (data: Record<string, unknown>) => {
   window.top?.postMessage(data, CampaignLinks.PcComponentes);

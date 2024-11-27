@@ -1,4 +1,4 @@
-import { Downloadable, downloadFile } from 'app/network/download';
+import { Downloadable, downloadFile } from '../../../network/download';
 import { getEnvironmentConfig } from '../network.service';
 
 type FetchFileStreamOptions = {

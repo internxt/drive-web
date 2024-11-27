@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { areCredentialsCorrect } from 'app/auth/services/auth.service';
-import errorService from 'app/core/services/error.service';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
+import { areCredentialsCorrect } from '../../../../../auth/services/auth.service';
+import errorService from '../../../../../core/services/error.service';
 
 import { Button } from '@internxt/internxtui';
 import Card from 'app/shared/components/Card';

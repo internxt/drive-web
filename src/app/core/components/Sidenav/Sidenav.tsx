@@ -2,19 +2,19 @@ import { Clock, ClockCounterClockwise, Desktop, FolderSimple, Icon, Trash, Users
 import { connect, useSelector } from 'react-redux';
 import { matchPath } from 'react-router-dom';
 
-import desktopService from 'app/core/services/desktop.service';
-import PlanUsage from 'app/drive/components/PlanUsage/PlanUsage';
+import desktopService from '../../../core/services/desktop.service';
+import PlanUsage from '../../../drive/components/PlanUsage/PlanUsage';
 import navigationService from '../../services/navigation.service';
-import { RootState } from 'app/store';
-import { planSelectors } from 'app/store/slices/plan';
+import { RootState } from '../../../store';
+import { planSelectors } from '../../../store/slices/plan';
 import { AppView } from '../../types';
 
 import SidenavItem from './SidenavItem/SidenavItem';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
-import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { useAppSelector } from 'app/store/hooks';
+import ReferralsWidget from '../../../referrals/components/ReferralsWidget/ReferralsWidget';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { useAppSelector } from '../../../store/hooks';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';

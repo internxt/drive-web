@@ -1,22 +1,22 @@
 import { useEffect, useState } from 'react';
 
+import { Button } from '@internxt/internxtui';
+import { X } from '@phosphor-icons/react';
+import date from '../../../core/services/date.service';
+import errorService from '../../../core/services/error.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import { getItemPlainName } from '../../../crypto/services/utils';
+import iconService from '../../../drive/services/icon.service';
+import newStorageService from '../../../drive/services/new-storage.service';
+import { bytesToString } from '../../../drive/services/size.service';
+import { DriveItemData, DriveItemDetails, ItemDetailsProps } from '../../../drive/types';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { AdvancedSharedItem } from '../../../share/types';
+import Modal from '../../../shared/components/Modal';
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
-import Modal from '../../../shared/components/Modal';
-import { X } from '@phosphor-icons/react';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import iconService from '../../../drive/services/icon.service';
-import { Button } from '@internxt/internxtui';
-import { bytesToString } from '../../../drive/services/size.service';
-import date from '../../../core/services/date.service';
-import localStorageService from '../../../core/services/local-storage.service';
-import { DriveItemData, DriveItemDetails, ItemDetailsProps } from '../../../drive/types';
-import newStorageService from 'app/drive/services/new-storage.service';
-import errorService from 'app/core/services/error.service';
-import { getItemPlainName } from 'app/crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
-import { AdvancedSharedItem } from 'app/share/types';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (

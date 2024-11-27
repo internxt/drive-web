@@ -6,7 +6,7 @@ import { TaskStatus } from '../../types';
 import TaskLoggerItem from '../TaskLoggerItem/TaskLoggerItem';
 
 import { CaretDown, CircleNotch, X } from '@phosphor-icons/react';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../../app/i18n/provider/TranslationProvider';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
 

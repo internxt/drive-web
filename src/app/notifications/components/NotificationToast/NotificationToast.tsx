@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-import { uiActions } from 'app/store/slices/ui';
+import { uiActions } from '../../../store/slices/ui';
 import { Transition } from '@headlessui/react';
 import { CheckCircle, Info, Warning, WarningOctagon, X } from '@phosphor-icons/react';
 import { ToastShowProps, ToastType } from '../../services/notifications.service';

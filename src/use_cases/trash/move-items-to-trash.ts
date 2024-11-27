@@ -1,6 +1,6 @@
 import { Trash } from '@internxt/sdk/dist/drive';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
+import storageThunks from '../../app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
 import { SdkFactory } from '../../app/core/factory/sdk';
 import errorService from '../../app/core/services/error.service';

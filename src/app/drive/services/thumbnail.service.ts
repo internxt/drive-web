@@ -4,11 +4,11 @@ import {
   thumbnailableExtension,
   thumbnailableImageExtension,
   thumbnailablePdfExtension,
-} from 'app/drive/types/file-types';
-import { Downloadable } from 'app/network/download';
-import { uploadFile as uploadToBucket } from 'app/network/upload';
-import { AppDispatch } from 'app/store';
-import { storageActions } from 'app/store/slices/storage';
+} from '../../drive/types/file-types';
+import { Downloadable } from '../../network/download';
+import { uploadFile as uploadToBucket } from '../../network/upload';
+import { AppDispatch } from '../../store';
+import { storageActions } from '../../store/slices/storage';
 import Resizer from 'react-image-file-resizer';
 import { pdfjs } from 'react-pdf';
 import { SdkFactory } from '../../core/factory/sdk';

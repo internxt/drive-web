@@ -1,15 +1,15 @@
-import errorService from 'app/core/services/error.service';
-import { uiActions } from 'app/store/slices/ui';
+import errorService from '../../../core/services/error.service';
+import { uiActions } from '../../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { RootState } from 'app/store';
+import { RootState } from '../../../store';
 import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../types';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
-import { backupsThunks } from 'app/store/slices/backups';
+import { backupsThunks } from '../../../store/slices/backups';
 import { SdkFactory } from '../../../core/factory/sdk';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import Dialog from '../../../shared/components/Dialog/Dialog';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 
 interface DeleteBackupDialogProps {
   backupsAsFoldersPath: DriveFolderData[];

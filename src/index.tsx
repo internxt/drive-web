@@ -11,7 +11,7 @@ import { planThunks } from './app/store/slices/plan';
 import storageThunks from './app/store/slices/storage/storage.thunks';
 import { taskManagerThunks } from './app/store/slices/taskManager';
 import { sessionActions } from './app/store/slices/session';
-import { referralsThunks } from 'app/store/slices/referrals';
+import { referralsThunks } from './app/store/slices/referrals';
 
 import 'react-tooltip/dist/react-tooltip.css';
 import './index.scss';
@@ -20,9 +20,9 @@ import localStorageService from './app/core/services/local-storage.service';
 import './app/i18n/services/i18n.service';
 import { TranslationProvider } from 'app/i18n/provider/TranslationProvider';
 import { HelmetProvider } from 'react-helmet-async';
-import { ThemeProvider } from 'app/theme/ThemeProvider';
+import { ThemeProvider } from './app/theme/ThemeProvider';
 import { LiveChatLoaderProvider } from 'react-live-chat-loader';
-import { DialogManagerProvider } from 'app/contexts/dialog-manager/ActionDialogManager.context';
+import { DialogManagerProvider } from './app/contexts/dialog-manager/ActionDialogManager.context';
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));

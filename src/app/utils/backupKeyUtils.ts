@@ -1,6 +1,6 @@
 import { saveAs } from 'file-saver';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import notificationsService, { ToastType } from '../notifications/services/notifications.service';
+import localStorageService from '../core/services/local-storage.service';
 
 /**
  * Downloads the backup key of the user and shows a notification

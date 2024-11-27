@@ -3,9 +3,9 @@ import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { DriveFileData, DriveItemData } from '../../types';
 
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import { getAppConfig } from 'app/core/services/config.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
+import { getAppConfig } from '../../../core/services/config.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import { ListItemMenu } from '../../../shared/components/List/ListItem';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import errorService from '../../../core/services/error.service';
 import { OrderDirection } from '../../../core/types';

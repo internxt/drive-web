@@ -3,15 +3,15 @@ import shareService, {
   getSharedFolderInvitationsAsInvitedUser,
   getSharingRoles,
   inviteUserToSharedFolder,
-} from 'app/share/services/share.service';
+} from '../../../share/services/share.service';
 import { RootState } from '../..';
 
 import { Role, SharedFoldersInvitationsAsInvitedUserResponse } from '@internxt/sdk/dist/drive/share/types';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { UserRoles } from 'app/share/types';
+import errorService from '../../../core/services/error.service';
+import navigationService from '../../../core/services/navigation.service';
+import { AppView } from '../../../core/types';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { UserRoles } from '../../../share/types';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
 import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';

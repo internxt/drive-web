@@ -1,6 +1,6 @@
 import { Menu } from '@headlessui/react';
 import { DotsThree } from '@phosphor-icons/react';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
 
 interface ItemProps {
   item: Record<string, unknown>;

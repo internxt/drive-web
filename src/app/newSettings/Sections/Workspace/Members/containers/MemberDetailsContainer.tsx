@@ -1,12 +1,12 @@
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { DotsThreeVertical } from '@phosphor-icons/react';
-import errorService from 'app/core/services/error.service';
-import workspacesService from 'app/core/services/workspace.service';
-import Usage from 'app/newSettings/components/Usage/Usage';
-import { getMemberRole } from 'app/newSettings/utils/membersUtils';
-import { useAppSelector } from 'app/store/hooks';
+import errorService from '../../../../../core/services/error.service';
+import workspacesService from '../../../../../core/services/workspace.service';
+import Usage from '../../../../../newSettings/components/Usage/Usage';
+import { getMemberRole } from '../../../../../newSettings/utils/membersUtils';
+import { useAppSelector } from '../../../../../store/hooks';
 import { PlanState, planThunks } from 'app/store/slices/plan';
-import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { workspaceThunks } from '../../../../../store/slices/workspaces/workspacesStore';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
@@ -25,7 +25,7 @@ import { RootState } from '../../../../../store';
 import { ActionDialog } from '../../../../../contexts/dialog-manager/ActionDialogManager.context';
 import { useActionDialog } from '../../../../../contexts/dialog-manager/useActionDialog';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import AppError from 'app/core/types';
+import AppError from '../../../../../core/types';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;

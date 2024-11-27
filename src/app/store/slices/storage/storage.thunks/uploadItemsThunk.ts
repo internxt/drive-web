@@ -4,10 +4,10 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { renameFile } from 'app/crypto/services/utils';
-import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
-import { DriveFileData, DriveItemData } from 'app/drive/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { renameFile } from '../../../../crypto/services/utils';
+import { MAX_ALLOWED_UPLOAD_SIZE } from '../../../../drive/services/network.service';
+import { DriveFileData, DriveItemData } from '../../../../drive/types';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 
 import { t } from 'i18next';
 
@@ -22,9 +22,9 @@ import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
+import { FileToUpload } from '../../../../drive/services/file.service/types';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
-import { FileToUpload } from '../../../../drive/services/file.service/types';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;

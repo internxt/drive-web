@@ -1,5 +1,5 @@
 import { LinkBreak } from '@phosphor-icons/react';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 
 function ExpiredLink(): JSX.Element {
