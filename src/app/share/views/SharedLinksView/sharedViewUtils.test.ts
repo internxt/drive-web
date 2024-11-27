@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { getDraggedItemsWithoutFolders } from './sharedViewUtils';
-import { vi, describe, it, expect } from 'vitest';
+import { vi, describe, it, expect} from 'vitest';
 
 vi.mock('../../../share/services/share.service', () => ({
   default: {

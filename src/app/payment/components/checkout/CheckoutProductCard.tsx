@@ -88,8 +88,8 @@ export const CheckoutProductCard = ({
   );
   const renewalPeriodLabel = `${translate('checkout.productCard.renewalPeriod.renewsAt')}
           ${currencySymbol}${normalPriceAmount}/${translate(
-            `checkout.productCard.renewalPeriod.${selectedPlan.interval}`,
-          )}`;
+    `checkout.productCard.renewalPeriod.${selectedPlan.interval}`,
+  )}`;
 
   const planAmount = getProductAmount(selectedPlan.decimalAmount, 1, couponCodeData);
   const totalAmount = getProductAmount(selectedPlan.decimalAmount, seatsForBusinessSubscription, couponCodeData);

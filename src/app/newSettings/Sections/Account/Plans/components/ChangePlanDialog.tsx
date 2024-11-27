@@ -50,7 +50,7 @@ const ChangePlanDialog = ({
   const selectedPlanAmount = selectedPlan?.amount;
   const selectedPlanInterval = selectedPlan?.interval;
   const currentPlanSizeString = bytesToString(
-    isIndividualSubscription ? planLimit : (businessPlan?.storageLimit ?? businessPlanLimit),
+    isIndividualSubscription ? planLimit : businessPlan?.storageLimit ?? businessPlanLimit,
   );
   const currentPlanUsage = isIndividualSubscription ? planUsage : businessPlanUsage;
   let amountMonthly: number | null = null;

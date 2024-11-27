@@ -88,14 +88,14 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
           const items = selectedWorkspace ? itemsUnparsed.result : itemsUnparsed.folders;
 
           parsedItems = items.map(
-            (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName }) as DriveItemData,
+            (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName } as DriveItemData),
           );
           itemslength = items.length;
         } else if (!hasMoreDriveFolders) {
           const items = selectedWorkspace ? itemsUnparsed.result : itemsUnparsed.files;
 
           parsedItems = items.map(
-            (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName }) as DriveItemData,
+            (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName } as DriveItemData),
           );
           itemslength = items.length;
         }
