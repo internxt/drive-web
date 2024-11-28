@@ -89,7 +89,7 @@
     "build": "craco build",
     "vercel:install": "yarn run add:npmrc && yarn install",
     "test:unit": "vitest run test/unit && vitest run src/ ",
-    "test:coverage": "vitest run --coverage src/ test/unit",
+    "test:coverage": "vitest run --coverage",
     "test:playwright": "yarn playwright test",
     "test:chromium": "yarn playwright test --project=chromium",
     "test:firefox": "yarn playwright test --project=firefox",
