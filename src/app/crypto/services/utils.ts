@@ -3,10 +3,21 @@ import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
 import { getAesInitFromEnv } from '../services/keys.service';
 import { AdvancedSharedItem } from '../../share/types';
+import { blake3 } from 'hash-wasm';
 
 interface PassObjectInterface {
   salt?: string | null;
   password: string;
+}
+
+/**
+ * Extends the given secret to the required number of bits
+ * @param {string} secret - The original secret
+ * @param {number} length - The desired bitlength
+ * @returns {Promise<string>} The extended secret of the desired bitlength
+ */
+function extendSecret(secret: Uint8Array, length: number): Promise<string> {
+  return blake3(secret, length);
 }
 
 // Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
@@ -95,4 +106,5 @@ export {
   excludeHiddenItems,
   renameFile,
   getItemPlainName,
+  extendSecret
 };

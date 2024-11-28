@@ -106,13 +106,16 @@ export const is2FANeeded = async (email: string): Promise<boolean> => {
 };
 
 const generateNewKeysWithEncrypted = async (password: string) => {
-  const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
+  const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
+  await generateNewKeys();
 
   return {
     privateKeyArmored,
     privateKeyArmoredEncrypted: aes.encrypt(privateKeyArmored, password, getAesInitFromEnv()),
     publicKeyArmored,
     revocationCertificate,
+    publicKyberKeyBase64,
+    encPrivateKyberKey: aes.encrypt(privateKyberKeyBase64, password, getAesInitFromEnv()),
   };
 };
 
@@ -144,12 +147,25 @@ export const doLogin = async (
       return encryptText(hashObj.hash);
     },
     async generateKeys(password: Password): Promise<Keys> {
-      const { privateKeyArmoredEncrypted, publicKeyArmored, revocationCertificate } =
-        await generateNewKeysWithEncrypted(password);
+      const {
+        privateKeyArmoredEncrypted,
+        publicKeyArmored,
+        revocationCertificate,
+        publicKyberKeyBase64,
+        encPrivateKyberKey,
+      } = await generateNewKeysWithEncrypted(password);
       const keys: Keys = {
         privateKeyEncrypted: privateKeyArmoredEncrypted,
         publicKey: publicKeyArmored,
         revocationCertificate: revocationCertificate,
+        ecc: {
+          privateKeyEncrypted: privateKeyArmoredEncrypted,
+          publicKey: publicKeyArmored,
+        },
+        kyber: {
+          publicKey: publicKyberKeyBase64,
+          privateKeyEncrypted: encPrivateKyberKey,
+        },
       };
       return keys;
     },
