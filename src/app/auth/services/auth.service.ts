@@ -107,7 +107,7 @@ export const is2FANeeded = async (email: string): Promise<boolean> => {
 
 const generateNewKeysWithEncrypted = async (password: string) => {
   const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
-  await generateNewKeys();
+    await generateNewKeys();
 
   return {
     privateKeyArmored,
@@ -141,7 +141,7 @@ export const doLogin = async (
     tfaCode: twoFactorCode,
   };
   const cryptoProvider: CryptoProvider = {
-    encryptPasswordHash(password: Password, encryptedSalt: string): string {
+    async encryptPasswordHash(password: Password, encryptedSalt: string): Promise<string> {
       const salt = decryptText(encryptedSalt);
       const hashObj = passToHash({ password, salt });
       return encryptText(hashObj.hash);

@@ -21,6 +21,7 @@ const initialState: ShareViewState = {
   clickedShareItemUser: undefined,
   clickedShareItemEncryptionKey: '',
   currentFolderId: '',
+  clickedShareItemHybridModeEnabled: false,
   currentParentFolderId: undefined,
   currentShareOwnerAvatar: '',
   filesOwnerCredentials: {
@@ -29,6 +30,7 @@ const initialState: ShareViewState = {
   },
   ownerBucket: null,
   ownerEncryptionKey: null,
+  ownerHybridModeEnabled: false,
 };
 
 const reducer = (state: ShareViewState, action: Action): ShareViewState => {
