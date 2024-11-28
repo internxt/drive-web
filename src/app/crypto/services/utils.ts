@@ -2,7 +2,7 @@ import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
 import { AdvancedSharedItem } from '../../share/types';
-import { createSHA512, createHMAC } from 'hash-wasm';
+import { createSHA512, createHMAC, sha256, createSHA256, sha512, ripemd160 } from 'hash-wasm';
 import { Buffer } from 'buffer';
 /**
  * Computes hmac-sha512

@@ -78,7 +78,7 @@ describe('Test crypto.ts functions', () => {
       size: 0,
       tree: [],
     };
-    const result = generateHMAC([shardMeta], encryptionKey).toString('hex');
+    const result = await generateHMAC([shardMeta], encryptionKey);
     expect(result).toBe(
       '85cb55bde42af491c544866d35e2b1fd7a6999d83181782a91c63484a5ff93e0ab1e07d0e09cfa057c0481fc68012cc300de95512f4fcbe9466ee8ca85134b7c',
     );
