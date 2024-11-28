@@ -1,13 +1,10 @@
 import { ShardMeta } from '@internxt/inxt-js/build/lib/models';
-import {
-  Aes256gcmEncrypter,
-  sha512HmacBuffer,
-  sha512HmacBufferFromHex,
-} from '@internxt/inxt-js/build/lib/utils/crypto';
-import { streamFileIntoChunks } from 'app/core/services/stream.service';
+import { Aes256gcmEncrypter } from '@internxt/inxt-js/build/lib/utils/crypto';
+import { streamFileIntoChunks } from '../core/services/stream.service';
 import { Sha256 } from 'asmcrypto.js';
 import { mnemonicToSeed } from 'bip39';
 import { Cipher, CipherCCM, createCipheriv, createHash } from 'crypto';
+import { getHmacSha512FromHexKey, getHmacSha512 } from '../crypto/services/utils';
 
 const BUCKET_META_MAGIC = [
   66, 150, 71, 16, 50, 114, 88, 160, 163, 35, 154, 65, 162, 213, 226, 215, 70, 138, 57, 61, 52, 19, 210, 170, 38, 164,
@@ -21,15 +18,14 @@ export function createAES256Cipher(key: Buffer, iv: Buffer): Cipher {
 export function generateHMAC(
   shardMetas: Omit<ShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
   encryptionKey: Buffer,
-): Buffer {
+): Promise<string> {
   const shardHashesSorted = [...shardMetas].sort((sA, sB) => sA.index - sB.index);
-  const hmac = sha512HmacBuffer(encryptionKey);
-
+  const hashArray: string[] = [];
   for (const shardMeta of shardHashesSorted) {
-    hmac.update(Buffer.from(shardMeta.hash, 'hex'));
+    hashArray.push(shardMeta.hash);
   }
 
-  return hmac.digest();
+  return getHmacSha512(encryptionKey, hashArray);
 }
 
 function getDeterministicKey(key: string, data: string): Buffer {
@@ -54,9 +50,10 @@ export function encryptMeta(fileMeta: string, key: Buffer, iv: Buffer): string {
 
 export async function encryptFilename(mnemonic: string, bucketId: string, filename: string): Promise<string> {
   const bucketKey = await getBucketKey(mnemonic, bucketId);
-  const encryptionKey = sha512HmacBufferFromHex(bucketKey).update(Buffer.from(BUCKET_META_MAGIC)).digest().slice(0, 32);
-  const encryptionIv = sha512HmacBufferFromHex(bucketKey).update(bucketId).update(filename).digest().slice(0, 32);
-
+  const encryptionKeyHex = await getHmacSha512FromHexKey(bucketKey, [Buffer.from(BUCKET_META_MAGIC)]);
+  const encryptionKey = Buffer.from(encryptionKeyHex, 'hex').subarray(0, 32);
+  const encryptionIvHex = await getHmacSha512FromHexKey(bucketKey, [bucketId, filename]);
+  const encryptionIv = Buffer.from(encryptionIvHex, 'hex').subarray(0, 32);
   return encryptMeta(filename, encryptionKey, encryptionIv);
 }
 
