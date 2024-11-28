@@ -9,39 +9,39 @@ import {
 } from '@internxt/sdk/dist/auth';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
-import { getCookie, setCookie } from '../../analytics/utils';
-import { RegisterFunction, UpdateInfoFunction } from '../../auth/components/SignUp/useSignUp';
-import localStorageService from '../../core/services/local-storage.service';
-import navigationService from '../../core/services/navigation.service';
-import RealtimeService from '../../core/services/socket.service';
-import AppError, { AppView } from '../../core/types';
+import { getCookie, setCookie } from 'app/analytics/utils';
+import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
+import localStorageService from 'app/core/services/local-storage.service';
+import navigationService from 'app/core/services/navigation.service';
+import RealtimeService from 'app/core/services/socket.service';
+import AppError, { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
   decryptPrivateKey,
   getAesInitFromEnv,
-} from '../../crypto/services/keys.service';
-import { generateNewKeys } from '../../crypto/services/pgp.service';
+} from 'app/crypto/services/keys.service';
+import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import {
   decryptText,
   decryptTextWithKey,
   encryptText,
   encryptTextWithKey,
   passToHash,
-} from '../../crypto/services/utils';
-import databaseService from '../../database/services/database.service';
-import { AuthMethodTypes } from '../../payment/types';
-import { AppDispatch } from '../../store';
-import { planThunks } from '../../store/slices/plan';
-import { productsThunks } from '../../store/slices/products';
-import { referralsThunks } from '../../store/slices/referrals';
-import { initializeUserThunk, userActions, userThunks } from '../../store/slices/user';
-import { workspaceThunks } from '../../store/slices/workspaces/workspacesStore';
+} from 'app/crypto/services/utils';
+import databaseService from 'app/database/services/database.service';
+import { AuthMethodTypes } from 'app/payment/types';
+import { AppDispatch } from 'app/store';
+import { planThunks } from 'app/store/slices/plan';
+import { productsThunks } from 'app/store/slices/products';
+import { referralsThunks } from 'app/store/slices/referrals';
+import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
 import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
-import { trackSignUp } from '../../analytics/impact.service';
+import { trackSignUp } from 'app/analytics/impact.service';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 
 type ProfileInfo = {
