@@ -3,13 +3,77 @@ import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
 import { getAesInitFromEnv } from '../services/keys.service';
 import { AdvancedSharedItem } from '../../share/types';
+import { argon2id, pbkdf2, createSHA256 } from 'hash-wasm';
 import crypto from 'crypto';
+
+const ARGON2ID_PARALLELISM = 4;
+const ARGON2ID_ITERATIONS = 2;
+const ARGON2ID_MEMORY = 65536;
+const ARGON2ID_TAG_LEN = 32;
+const ARGON2ID_SALT_LEN = 16;
+
+const PBKDF2_ITERATIONS = 10000;
+const PBKDF2_TAG_LEN = 32;
 
 interface PassObjectInterface {
   salt?: string | null;
   password: string;
 }
 
+/**
+ * Computes PBKDF2 and outputs the result in HEX format
+ * @param {string} password - The password
+ * @param {number} salt - The salt
+ * @param {number}[iterations=PBKDF2_ITERATIONS] - The number of iterations to perform
+ * @param {number} [hashLength=PBKDF2_TAG_LEN] - The desired output length
+ * @returns {Promise<string>} The result of PBKDF2 in HEX format
+ */
+function getPBKDF2(
+  password: string,
+  salt: string | Uint8Array,
+  iterations = PBKDF2_ITERATIONS,
+  hashLength = PBKDF2_TAG_LEN,
+): Promise<string> {
+  return pbkdf2({
+    password,
+    salt,
+    iterations,
+    hashLength,
+    hashFunction: createSHA256(),
+    outputType: 'hex',
+  });
+}
+
+/**
+ * Computes Argon2 and outputs the result in HEX format
+ * @param {string} password - The password
+ * @param {number} salt - The salt
+ * @param {number} [parallelism=ARGON2ID_PARALLELISM] - The parallelism degree
+ * @param {number}[iterations=ARGON2ID_ITERATIONS] - The number of iterations to perform
+ * @param {number}[memorySize=ARGON2ID_MEMORY] - The number of KB of memeory to use
+ * @param {number} [hashLength=ARGON2ID_TAG_LEN] - The desired output length
+ * @param {'hex'|'binary'|'encoded'} [outputType="encoded"] - The output type
+ * @returns {Promise<string>} The result of Argon2
+ */
+function getArgon2(
+  password: string,
+  salt: string,
+  parallelism: number = ARGON2ID_PARALLELISM,
+  iterations: number = ARGON2ID_ITERATIONS,
+  memorySize: number = ARGON2ID_MEMORY,
+  hashLength: number = ARGON2ID_TAG_LEN,
+  outputType: 'hex' | 'binary' | 'encoded' = 'encoded',
+): Promise<string> {
+  return argon2id({
+    password,
+    salt,
+    parallelism,
+    iterations,
+    memorySize,
+    hashLength,
+    outputType,
+  });
+}
 /**
  * Converts HEX string to Uint8Array the same way CryptoJS did it (for compatibility)
  * @param {string} hex - The input string in HEX
@@ -29,39 +93,29 @@ function hex2oldEncoding(hex: string): Uint8Array {
 
   return uint8Array;
 }
-function uint8ArrayToBase64(uint8Array) {
-  let binaryString = '';
-  for (const byte of uint8Array) {
-    binaryString += String.fromCharCode(byte);
+/**
+ * Password hash computation. If no salt or salt starts with 'argon2id$'  - uses Argon2, else - PBKDF2
+ * @param {PassObjectInterface} passObject - The input object containing password and salt (optional)
+ * @returns {Promise<{salt: string; hash: string }>} The resulting hash and salt
+ */
+async function passToHash(passObject: PassObjectInterface): Promise<{ salt: string; hash: string }> {
+  let salt;
+  let hash;
+
+  if (!passObject.salt) {
+    const argonSalt = crypto.randomBytes(ARGON2ID_SALT_LEN).toString('hex');
+    hash = await getArgon2(passObject.password, argonSalt);
+    salt = 'argon2id$' + argonSalt;
+  } else if (passObject.salt.startsWith('argon2id$')) {
+    const argonSalt = passObject.salt.replace('argon2id$', '');
+    hash = await getArgon2(passObject.password, argonSalt);
+    salt = passObject.salt;
+  } else {
+    salt = passObject.salt;
+    const encoded = hex2oldEncoding(salt);
+    hash = await getPBKDF2(passObject.password, encoded);
   }
-  return btoa(binaryString);
-}
-
-function base64ToHex(base64String) {
-  // Decode Base64 to a binary string
-  const binaryString = atob(base64String);
-
-  // Convert binary string to Uint8Array
-  const length = binaryString.length;
-  const bytes = new Uint8Array(length);
-  for (let i = 0; i < length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return Array.from(bytes)
-    .map((byte) => byte.toString(16).padStart(2, '0')) // Convert to hex and pad with leading zero if necessary
-    .join(''); // Combine all hex values into a single string
-}
-
-// Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
-function passToHash(passObject: PassObjectInterface): { salt: string; hash: string } {
-  const salt = passObject.salt ? CryptoJS.enc.Hex.parse(passObject.salt) : CryptoJS.lib.WordArray.random(128 / 8);
-  const hash = CryptoJS.PBKDF2(passObject.password, salt, { keySize: 256 / 32, iterations: 10000 });
-  const hashedObjetc = {
-    salt: salt.toString(),
-    hash: hash.toString(),
-  };
-
-  return hashedObjetc;
+  return { salt, hash };
 }
 
 // AES Plain text encryption method
@@ -77,8 +131,9 @@ function decryptText(encryptedText: string): string {
 // AES Plain text encryption method with enc. key
 function encryptTextWithKey(textToEncrypt: string, keyToEncrypt: string): string {
   const bytes = CryptoJS.AES.encrypt(textToEncrypt, keyToEncrypt).toString();
-  const result = base64ToHex(bytes);
-  return result;
+  const text64 = CryptoJS.enc.Base64.parse(bytes);
+
+  return text64.toString(CryptoJS.enc.Hex);
 }
 
 // AES Plain text decryption method with enc. key
@@ -87,8 +142,8 @@ function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string
     throw new Error('No key defined. Check .env file');
   }
 
-  const reb = uint8ArrayToBase64(hex2oldEncoding(encryptedText));
-  const bytes = CryptoJS.AES.decrypt(reb, keyToDecrypt);
+  const reb = CryptoJS.enc.Hex.parse(encryptedText);
+  const bytes = CryptoJS.AES.decrypt(reb.toString(CryptoJS.enc.Base64), keyToDecrypt);
 
   return bytes.toString(CryptoJS.enc.Utf8);
 }
@@ -137,7 +192,7 @@ export {
   excludeHiddenItems,
   renameFile,
   getItemPlainName,
+  getArgon2,
+  getPBKDF2,
   hex2oldEncoding,
-  uint8ArrayToBase64,
-  base64ToHex,
 };
