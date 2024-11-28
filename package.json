@@ -20,7 +20,6 @@
     "@typeform/embed-react": "^1.19.0",
     "@types/uuid": "^8.3.4",
     "@vitest/browser": "^2.1.5",
-    "asmcrypto.js": "git+https://github.com/asmcrypto/asmcrypto.js.git",
     "assert": "^2.1.0",
     "axios": "^0.21.1",
     "bip39": "^3.0.3",
@@ -120,6 +119,7 @@
     ]
   },
   "devDependencies": {
+    "asmcrypto.js": "git+https://github.com/asmcrypto/asmcrypto.js.git",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@craco/craco": "^7.1.0",
     "@internxt/eslint-config-internxt": "^1.0.3",
@@ -130,6 +130,7 @@
     "@testing-library/react": "^16.0.1",
     "@types/async": "^3.2.7",
     "@types/file-saver": "^2.0.3",
+    "hash-wasm": "^4.11.0",
     "@types/filesystem": "^0.0.36",
     "@types/lodash": "^4.14.172",
     "@types/node": "^22.9.0",
