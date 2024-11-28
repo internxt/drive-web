@@ -1,21 +1,17 @@
+@import url('./assets/fonts/InstrumentSans/font.css');
+
 // @tailwind base;
 @tailwind components;
 // @tailwind utilities;
 
-@import url('./assets/fonts/InstrumentSans/font.css');
-
-// COLORS
+/* COLORS */
 
 :root,
 #root {
   background: rgb(var(--color-surface));
   font-family: 'Instrument Sans', sans-serif;
   height: 100%;
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
+  -webkit-touch-callout: none; /* iOS Safari */ /* Safari */ /* Konqueror HTML */ /* Old versions of Firefox */ /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 
   --footer-height: 1rem;
@@ -157,7 +153,7 @@
   }
 }
 
-// COMPONENTS
+/* COMPONENTS */
 
 iframe#webpack-dev-server-client-overlay {
   display: none !important;
@@ -209,7 +205,7 @@ code {
     @apply h-4 w-4 rounded border-2 border-gray-70 text-xs text-gray-70;
   }
 
-  input:not([type]):not(.inxt-input),
+  input:not([type], .inxt-input),
   input[type='text']:not(.inxt-input),
   input[type='email']:not(.inxt-input),
   input[type='password']:not(.inxt-input) {
@@ -220,7 +216,7 @@ code {
     }
 
     &.error {
-      @apply bg-white ring-1 ring-1 ring-red; //border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;
+      @apply bg-white ring-1 ring-1 ring-red;
     }
 
     &.warning {
@@ -263,12 +259,12 @@ code {
   .input-number {
     @apply appearance-none border-gray-30 text-center outline-none;
 
-    -moz-appearance: textfield;
+    appearance: textfield;
   }
 
   input[type='number']::-webkit-inner-spin-button,
   ::-webkit-outer-spin-button {
-    -webkit-appearance: none;
+    appearance: none;
     margin: 0;
   }
 
