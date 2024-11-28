@@ -1,4 +1,4 @@
-import errorService from 'app/core/services/error.service';
+import errorService from '../core/services/error.service';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
 import { encryptFilename, generateHMAC } from './crypto';
 import { getSha256 } from '../crypto/services/utils';
@@ -77,7 +77,11 @@ export function getFileInfoWithToken(bucketId: string, fileId: string, token: st
   return getFileInfo(bucketId, fileId, { headers: { 'x-token': token } });
 }
 
-export async function getFileInfoWithAuth(bucketId: string, fileId: string, creds: NetworkCredentials): Promise<FileInfo> {
+export async function getFileInfoWithAuth(
+  bucketId: string,
+  fileId: string,
+  creds: NetworkCredentials,
+): Promise<FileInfo> {
   return getFileInfo(bucketId, fileId, { auth: await getAuthFromCredentials(creds) });
 }
 
@@ -273,7 +277,11 @@ export async function createFrame(creds: NetworkCredentials): Promise<Frame> {
   });
 }
 
-export async function addShardToFrame(frameId: string, body: LegacyShardMeta, creds: NetworkCredentials): Promise<Contract> {
+export async function addShardToFrame(
+  frameId: string,
+  body: LegacyShardMeta,
+  creds: NetworkCredentials,
+): Promise<Contract> {
   const options: AxiosRequestConfig = {
     method: 'PUT',
     auth: await getAuthFromCredentials(creds),
@@ -365,7 +373,7 @@ export async function finishUpload(
     index: index.toString('hex'),
     hmac: {
       type: 'sha512',
-      value: generateHMAC([shardMeta], encryptionKey).toString('hex'),
+      value: await generateHMAC([shardMeta], encryptionKey),
     },
   };
 
