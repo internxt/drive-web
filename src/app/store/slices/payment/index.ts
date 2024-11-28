@@ -1,12 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { t } from 'i18next';
 import { RootState } from '../..';
-import { ProductData, ProductPriceType, StripeSessionMode } from '../../../payment/types';
 import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import paymentService, { CreatePaymentSessionPayload } from '../../../payment/services/payment.service';
-import { t } from 'i18next';
+import { ProductData, ProductPriceType, StripeSessionMode } from '../../../payment/types';
 
 interface PaymentState {
   isBuying: boolean;
@@ -20,11 +20,6 @@ const initialState: PaymentState = {
 
 export interface CheckoutThunkPayload {
   product: ProductData;
-}
-
-export interface TeamsCheckoutThunkPayload {
-  product: ProductData;
-  teamMembersCount: number;
 }
 
 export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { state: RootState }>(
@@ -61,29 +56,6 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
   },
 );
 
-export const teamsCheckoutThunk = createAsyncThunk<void, TeamsCheckoutThunkPayload, { state: RootState }>(
-  'payment/teamsCheckout',
-  async (payload: TeamsCheckoutThunkPayload) => {
-    const mode =
-      payload.product.price.type === ProductPriceType.OneTime
-        ? StripeSessionMode.Payment
-        : StripeSessionMode.Subscription;
-
-    try {
-      await paymentService.handlePaymentTeams(payload.product.price.id, payload.teamMembersCount, mode);
-    } catch (err: unknown) {
-      const castedError = errorService.castError(err);
-
-      notificationsService.show({
-        text: t('error.redirectToStripe', {
-          reason: castedError.message,
-        }),
-        type: ToastType.Error,
-      });
-    }
-  },
-);
-
 export const paymentSlice = createSlice({
   name: 'payment',
   initialState,
@@ -101,19 +73,6 @@ export const paymentSlice = createSlice({
         state.isBuying = false;
         state.currentPriceId = '';
       });
-
-    builder
-      .addCase(teamsCheckoutThunk.pending, (state, action) => {
-        state.isBuying = true;
-        state.currentPriceId = action.meta.arg.product.price.id;
-      })
-      .addCase(teamsCheckoutThunk.fulfilled, (state) => {
-        state.isBuying = false;
-      })
-      .addCase(teamsCheckoutThunk.rejected, (state) => {
-        state.isBuying = false;
-        state.currentPriceId = '';
-      });
   },
 });
 
@@ -123,7 +82,6 @@ export const paymentActions = paymentSlice.actions;
 
 export const paymentThunks = {
   checkoutThunk,
-  teamsCheckoutThunk,
 };
 
 export default paymentSlice.reducer;

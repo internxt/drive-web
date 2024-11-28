@@ -1,14 +1,19 @@
 /**
  * @jest-environment jsdom
  */
+import { describe, expect, it, vi } from 'vitest';
 import { getDraggedItemsWithoutFolders } from './sharedViewUtils';
 
-jest.mock('../../../share/services/share.service', () => ({}));
+vi.mock('../../../share/services/share.service', () => ({
+  default: {
+    shareService: vi.fn(),
+  },
+}));
 
 const MOCK_FILE_ENTRY = {
   isFile: true,
   isDirectory: false,
-  file: jest.fn((successCallback, errorCallback) =>
+  file: vi.fn((successCallback, errorCallback) =>
     successCallback(new File(['file content'], 'mockFile.txt', { type: 'text/plain' })),
   ),
 };
@@ -19,11 +24,11 @@ const MOCK_FOLDER_ENTRY = {
 };
 
 const MOCK_DATA_TRANSFER_FILE_ITEM = {
-  webkitGetAsEntry: jest.fn(() => MOCK_FILE_ENTRY),
+  webkitGetAsEntry: vi.fn(() => MOCK_FILE_ENTRY),
 };
 
 const MOCK_DATA_TRANSFER_FOLDER_ITEM = {
-  webkitGetAsEntry: jest.fn(() => MOCK_FOLDER_ENTRY),
+  webkitGetAsEntry: vi.fn(() => MOCK_FOLDER_ENTRY),
 };
 
 describe('getDraggedItemsWithoutFolders function - filters out directories and processes files from dragged items', () => {
@@ -61,7 +66,7 @@ describe('getDraggedItemsWithoutFolders function - filters out directories and p
   });
 
   it('should handle file loading errors gracefully', async () => {
-    MOCK_FILE_ENTRY.file = jest.fn((successCallback, errorCallback) => errorCallback(new Error('Error loading files')));
+    MOCK_FILE_ENTRY.file = vi.fn((successCallback, errorCallback) => errorCallback(new Error('Error loading files')));
 
     const fileWithErrorDragged = [MOCK_DATA_TRANSFER_FILE_ITEM] as unknown as DataTransferItem[];
 

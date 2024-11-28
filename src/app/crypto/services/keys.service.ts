@@ -1,7 +1,6 @@
 import { aes } from '@internxt/lib';
-import { isValid } from './utilspgp';
 import { getOpenpgp } from './pgp.service';
-
+import { isValid } from './utilspgp';
 export class Base64EncodedPrivateKeyError extends Error {
   constructor() {
     super('Key is encoded in base64');

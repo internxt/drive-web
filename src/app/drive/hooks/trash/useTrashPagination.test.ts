@@ -1,30 +1,37 @@
 /**
  * @jest-environment jsdom
  */
-import { renderHook, act, waitFor } from '@testing-library/react';
-import { useTrashPagination } from './useTrashPagination';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import errorService from 'app/core/services/error.service';
 import { OrderDirection } from 'app/core/types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { useTrashPagination } from './useTrashPagination';
 
-jest.mock('app/core/services/error.service', () => ({
-  castError: jest.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
-  reportError: jest.fn(),
+vi.mock('app/core/services/error.service', () => ({
+  castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
+  reportError: vi.fn(),
+}));
+
+vi.mock('app/core/services/error.service', () => ({
+  default: {
+    reportError: vi.fn(),
+  },
 }));
 
 describe('useTrashPagination', () => {
-  const mockGetTrashPaginated = jest.fn();
+  const mockGetTrashPaginated = vi.fn();
 
   const defaultProps = {
     getTrashPaginated: mockGetTrashPaginated,
     folderOnTrashLength: 10,
     filesOnTrashLength: 5,
-    setHasMoreItems: jest.fn(),
+    setHasMoreItems: vi.fn(),
     isTrash: true,
     order: { by: 'name', direction: OrderDirection.Asc },
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should call getMoreTrashItems when isTrash is true on mount', async () => {
