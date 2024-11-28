@@ -1,7 +1,6 @@
 import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
-import { getAesInitFromEnv } from '../services/keys.service';
 import { AdvancedSharedItem } from '../../share/types';
 import { createSHA512, createHMAC } from 'hash-wasm';
 import { Buffer } from 'buffer';
@@ -35,6 +34,43 @@ async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer
 interface PassObjectInterface {
   salt?: string | null;
   password: string;
+}
+
+/**
+ * Computes sha256
+ * @param {string} data - The input data
+ * @returns {Promise<string>} The result of applying sha256 to the data.
+ */
+function getSha256(data: string): Promise<string> {
+  return sha256(data);
+}
+
+/**
+ * Creates sha256 hasher
+ * @returns {Promise<IHasher>} The sha256 hasher
+ */
+function getSha256Hasher() {
+  return createSHA256();
+}
+
+/**
+ * Computes sha512
+ * @param {string} dataHex - The input data in HEX format
+ * @returns {Promise<string>} The result of applying sha512 to the data.
+ */
+function getSha512FromHex(dataHex: string): Promise<string> {
+  const data = Buffer.from(dataHex, 'hex');
+  return sha512(data);
+}
+
+/**
+ * Computes ripmd160
+ * @param {string} dataHex - The input data in HEX format
+ * @returns {Promise<string>} The result of applying ripmd160 to the data.
+ */
+function getRipemd160FromHex(dataHex: string): Promise<string> {
+  const data = Buffer.from(dataHex, 'hex');
+  return ripemd160(data);
 }
 
 // Method to hash password. If salt is passed, use it, in other case use crypto lib for generate salt
@@ -79,16 +115,6 @@ function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string
   return bytes.toString(CryptoJS.enc.Utf8);
 }
 
-function encryptFilename(filename: string, folderId: number): string {
-  const { REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY } = process.env;
-
-  if (!CRYPTO_KEY) {
-    throw new Error('Cannot encrypt filename due to missing encryption key');
-  }
-
-  return aes.encrypt(filename, `${CRYPTO_KEY}-${folderId}`, getAesInitFromEnv());
-}
-
 function excludeHiddenItems(items: DriveItemData[]): DriveItemData[] {
   return items.filter((item) => !itemUtils.isHiddenItem(item));
 }
@@ -117,7 +143,6 @@ export {
   passToHash,
   encryptText,
   decryptText,
-  encryptFilename,
   encryptTextWithKey,
   decryptTextWithKey,
   excludeHiddenItems,
@@ -125,4 +150,8 @@ export {
   getItemPlainName,
   getHmacSha512FromHexKey,
   getHmacSha512,
+  getSha256,
+  getSha256Hasher,
+  getSha512FromHex,
+  getRipemd160FromHex,
 };
