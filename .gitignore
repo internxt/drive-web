@@ -36,3 +36,5 @@ debug.log
 /playwright/.cache/
 
 **/__screenshots__/**
+
+.vscode/settings.json
