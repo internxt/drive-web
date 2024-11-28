@@ -1,4 +1,4 @@
-import errorService from 'app/core/services/error.service';
+import errorService from '../core/services/error.service';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
 import { encryptFilename, generateHMAC } from './crypto';
 import { getSha256 } from '../crypto/services/utils';
@@ -373,7 +373,7 @@ export async function finishUpload(
     index: index.toString('hex'),
     hmac: {
       type: 'sha512',
-      value: generateHMAC([shardMeta], encryptionKey).toString('hex'),
+      value: await generateHMAC([shardMeta], encryptionKey),
     },
   };
 
