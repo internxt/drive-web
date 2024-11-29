@@ -150,6 +150,14 @@ export const doLogin = async (
         privateKeyEncrypted: privateKeyArmoredEncrypted,
         publicKey: publicKeyArmored,
         revocationCertificate: revocationCertificate,
+        ecc: {
+          privateKeyEncrypted: privateKeyArmoredEncrypted,
+          publicKey: publicKeyArmored,
+        },
+        kyber: {
+          publicKey: '',
+          privateKeyEncrypted: '',
+        },
       };
       return keys;
     },
@@ -333,7 +341,7 @@ export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
   return authClient.generateTwoFactorAuthQR();
 };
 
-export const deactivate2FA = async(
+export const deactivate2FA = async (
   passwordSalt: string,
   deactivationPassword: string,
   deactivationCode: string,
