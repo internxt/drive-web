@@ -279,7 +279,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
             currentFolderId,
             page,
             offset,
-            isDeepFolder ? ownerUserAuthenticationData?.token ?? '' : '',
+            isDeepFolder ? (ownerUserAuthenticationData?.token ?? '') : '',
           );
           const response = await promise;
           parentFolderContent = response;
@@ -287,7 +287,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
           parentFolderContent = await shareService.getSharedFolderContent(
             currentFolderId,
             'files',
-            isDeepFolder ? ownerUserAuthenticationData?.token ?? '' : '',
+            isDeepFolder ? (ownerUserAuthenticationData?.token ?? '') : '',
             page,
             offset,
           );
