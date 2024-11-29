@@ -64,6 +64,7 @@ const SharedItemListContainer = ({
     currentShareOwnerAvatar,
     clickedShareItemUser: sharedItemUser,
     clickedShareItemEncryptionKey: sharedItemEncryptionKey,
+    clickedShareItemHybridModeEnabled: sharedItemPqEbnabled,
     orderBy,
   } = state;
   const shareItems = [...shareFolders, ...shareFiles];
@@ -97,7 +98,9 @@ const SharedItemListContainer = ({
   const downloadItem = async (shareItem: AdvancedSharedItem): Promise<void> => {
     try {
       if (shareItem.isRootLink) {
-        const encryptionKey = selectedWorkspace?.workspaceUser?.key ?? (await decryptMnemonic(shareItem.encryptionKey));
+        const encryptionKey =
+          selectedWorkspace?.workspaceUser?.key ??
+          (await decryptMnemonic(shareItem.encryptionKey, shareItem.hybridModeEnabled));
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
@@ -134,7 +137,9 @@ const SharedItemListContainer = ({
           );
           sharedToken = token;
         }
-        const encryptionKey = selectedWorkspace?.workspaceUser?.key ?? (await decryptMnemonic(sharedItemEncryptionKey));
+        const encryptionKey =
+          selectedWorkspace?.workspaceUser?.key ??
+          (await decryptMnemonic(sharedItemEncryptionKey, sharedItemPqEbnabled));
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
@@ -176,7 +181,10 @@ const SharedItemListContainer = ({
     try {
       const mnemonic =
         selectedWorkspace?.workspaceUser.key ??
-        (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey));
+        (await decryptMnemonic(
+          shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey,
+          shareItem.hybridModeEnabled,
+        ));
       onOpenItemPreview({ ...previewItem, mnemonic });
     } catch (err) {
       const error = errorService.castError(err);
@@ -186,7 +194,7 @@ const SharedItemListContainer = ({
 
   const copyLink = useCallback(
     (item: AdvancedSharedItem) => {
-      shareService.getPublicShareLink(item.uuid, item.isFolder ? 'folder' : 'file');
+      shareService.getPublicShareLink(item.uuid, item.isFolder ? 'folder' : 'file', false);
     },
     [dispatch, sharedThunks],
   );

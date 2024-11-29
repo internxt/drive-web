@@ -332,9 +332,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
     if (itemToShare?.item.uuid) {
       const encryptionKey = isAdvancedShareItem(itemToShare.item) ? itemToShare?.item?.encryptionKey : undefined;
+      const hybridModeEnabled = isAdvancedShareItem(itemToShare.item) ? itemToShare?.item?.hybridModeEnabled : false;
       const sharingInfo = await shareService.getPublicShareLink(
         itemToShare?.item.uuid,
         itemToShare.item.isFolder ? 'folder' : 'file',
+        hybridModeEnabled,
         encryptionKey,
       );
       if (sharingInfo) {
