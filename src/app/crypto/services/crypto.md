@@ -11,3 +11,9 @@ We test all hash functions against test vectors from RFC, NIST, or provided by t
 # Testing hmac
 
 We test hmac-sha512 with test vectors from [RFC4231](https://datatracker.ietf.org/doc/html/rfc4231).
+
+# Testing key derivation
+
+We test Argon2id with test vectors from the [reference implementation](https://github.com/P-H-C/phc-winner-argon2/blob/master/src/test.c) that won Password Hashing Competition.
+
+For checking PBKDF2-HMAC-SHA1 we use test vectors from [RFC6070](https://www.rfc-editor.org/rfc/rfc6070.html).

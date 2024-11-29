@@ -2,8 +2,40 @@ import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
 import { AdvancedSharedItem } from '../../share/types';
-import { createSHA512, createHMAC, sha256, sha512, ripemd160 } from 'hash-wasm';
+import {
+  createSHA512,
+  createSHA256,
+  argon2id,
+  pbkdf2,
+  createHMAC,
+  sha256,
+  sha512,
+  ripemd160,
+  createSHA1,
+} from 'hash-wasm';
 import { Buffer } from 'buffer';
+import crypto from 'crypto';
+
+/**
+ * Argon2id parameters taken from RFC9106 (variant for memory-constrained environments)
+ * @constant
+ * @type {number}
+ * @default
+ */
+const ARGON2ID_PARALLELISM = 4;
+const ARGON2ID_ITERATIONS = 3;
+const ARGON2ID_MEMORY = 65536;
+const ARGON2ID_TAG_LEN = 32;
+const ARGON2ID_SALT_LEN = 16;
+
+const PBKDF2_ITERATIONS = 10000;
+const PBKDF2_TAG_LEN = 32;
+
+interface PassObjectInterface {
+  salt?: string | null;
+  password: string;
+}
+
 /**
  * Computes hmac-sha512
  * @param {string} encryptionKeyHex - The hmac key in HEX format
@@ -29,22 +61,6 @@ async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer
     hmac.update(data);
   }
   return hmac.digest();
-}
-import { argon2id, pbkdf2, createSHA256 } from 'hash-wasm';
-import crypto from 'crypto';
-
-const ARGON2ID_PARALLELISM = 4;
-const ARGON2ID_ITERATIONS = 2;
-const ARGON2ID_MEMORY = 65536;
-const ARGON2ID_TAG_LEN = 32;
-const ARGON2ID_SALT_LEN = 16;
-
-const PBKDF2_ITERATIONS = 10000;
-const PBKDF2_TAG_LEN = 32;
-
-interface PassObjectInterface {
-  salt?: string | null;
-  password: string;
 }
 
 /**
@@ -103,7 +119,7 @@ function getPBKDF2(
     salt,
     iterations,
     hashLength,
-    hashFunction: createSHA256(),
+    hashFunction: createSHA1(),
     outputType: 'hex',
   });
 }
