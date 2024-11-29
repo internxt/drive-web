@@ -4,19 +4,19 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": "Ahorra hasta un 80%",
-    "title": "¡Protege tu mundo digital!",
+    "label": "¡Ahorra un 85%!",
+    "title": "Las mejores ofertas de Black Friday",
     "subtitle": "Gana nuestra mochila premium con nuestros planes de por vida.",
-    "cta": "Elegir plan",
+    "cta": "Elige tu plan",
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
     "features": [
-      "Ahorra en planes de por vida",
-      "Almacenamiento en la nube seguro y protegido",
-      "Código abierto y transparente",
+      "Ahorra a lo grande en todos los planes premium",
+      "Almacenamiento en la nube privado y encriptado",
+      "Código abierto y auditado",
       "Transferencias encriptadas de extremo a extremo",
       "Sin acceso no autorizado",
-      "La oferta termina el 10 de noviembre"
+      "La oferta termina el 3 de Diciembre"
     ]
   },
   "valentinesBanner": {
@@ -61,7 +61,8 @@
       "dontHaveAccount": "¿No tienes cuenta?",
       "createAccount": "Crear cuenta",
       "2FA": "Código de dos factores",
-      "twoFactorAuthenticationCode": "Código de autenticación de dos factores"
+      "twoFactorAuthenticationCode": "Código de autenticación de dos factores",
+      "wrongLogin": "Nombre de usuario o contraseña no válidos"
     },
     "signup": {
       "title": "Crear cuenta",
@@ -1275,7 +1276,13 @@
     "errorApplyingCoupon": "Ocurrió un error al aplicar el cupón",
     "invalidTaxIdIsProvided": "El ID fiscal proporcionado es inválido",
     "errorWhileFetchingMoreItems": "Algo salió mal al obtener más elementos",
-    "errorDeletingItems": "Algo salió mal al eliminar este elemento"
+    "errorDeletingItems": "Algo salió mal al eliminar este elemento",
+    "errorFetchingWorkspace": "Error al obtener el espacio de trabajo {{error}}",
+    "errorSettingUpWorkspace": "Error al configurar el espacio de trabajo {{error}}",
+    "errorWhileLoadingWorkspace": "Error al cargar el espacio de trabajo {{error}}",
+    "errorFetchingWorkspaceCredentials": "Error al obtener las credenciales del espacio de trabajo {{error}}",
+    "invalidWorkspaceInvitationError": "Espacio de trabajo lleno. Contacta al propietario.",
+    "errorAcceptingWorkspaceInvitation": "Ocurrió un error al aceptar la invitación"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",

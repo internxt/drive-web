@@ -31,7 +31,6 @@ export async function trackSignUp(uuid, email) {
     }
   } catch (e) {
     const castedError = errorService.castError(e);
-    console.error(castedError);
     errorService.reportError(castedError);
   }
 }
@@ -42,7 +41,6 @@ export async function trackPaymentConversion() {
 
     const { username, uuid } = localStorageService.getUser() as UserSettings;
     let metadata, amount_total, currency, customer, subscription, paymentIntent;
-    // TODO: REVIEW IN ORDER TO MAKE WORK CORRECTLY WITH THE NEW INTEGRATED CHECKOUT
     try {
       const {
         metadata: metadataRetrived,
@@ -64,7 +62,7 @@ export async function trackPaymentConversion() {
       paymentIntent = paymentIntentRetrieved;
       subscription = subscriptionId;
     } catch (error) {
-      console.log(error);
+      //
     }
 
     subscription = subscription ?? localStorageService.get('subscriptionId');
@@ -113,7 +111,7 @@ export async function trackPaymentConversion() {
         ],
       });
     } catch (error) {
-      console.log(error);
+      //
     }
 
     if (source && source !== 'direct') {

@@ -1,6 +1,6 @@
-import { CheckCircle, Ghost, X } from '@phosphor-icons/react';
+import { CheckCircle, SealPercent, X } from '@phosphor-icons/react';
+import styles from 'app/banners/FeaturesBanner.module.scss';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import webBanner from 'assets/images/banner/web.svg';
 
 interface FeaturesBannerProps {
   showBanner: boolean;
@@ -25,17 +25,14 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
     >
       {/* Banner */}
       <div
-        style={{
-          backgroundImage: `url(${webBanner})`,
-        }}
-        className={
-          'fixed left-1/2 top-1/2 flex h-auto -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden rounded-[32px] bg-orange px-10'
-        }
+        className={`${styles['linear-gradient']} fixed left-1/2 top-1/2 flex h-max -translate-x-[50%] -translate-y-[50%] flex-col
+        overflow-hidden
+      rounded-2xl px-10`}
       >
-        <button className="absolute  right-0 m-7 flex text-black hover:bg-white/5" onClick={onClose}>
+        <button className="absolute  right-0 m-7 flex text-white hover:bg-white/5" onClick={onClose}>
           <X size={32} />
         </button>
-        <div className="flex w-max max-w-[900px] flex-col space-x-10 py-14 text-black lg:flex-row">
+        <div className="flex w-max max-w-[900px] flex-col space-x-10 py-14 text-white lg:flex-row">
           <div className="flex w-full flex-col  items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
             <div className="flex rounded-lg border border-yellow bg-black px-3 py-1.5">
               <p className="text-2xl font-bold text-white">{translate('featuresBanner.label')}</p>
@@ -57,7 +54,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
                 <CheckCircle size={24} className="" />
                 <p className="whitespace-nowrap font-medium lg:text-lg">{translate('featuresBanner.guarantee')}</p>
               </div>
-              <p className="text-sm font-medium text-gray-80 dark:text-gray-20">
+              <p className="text-sm font-medium text-gray-50 dark:text-gray-20">
                 {translate('featuresBanner.lastCta')}
               </p>
             </div>
@@ -67,7 +64,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
               <div className="flex flex-col space-y-8">
                 {features.map((card) => (
                   <div className="flex flex-row space-x-4" key={card}>
-                    <Ghost size={32} className="" weight="fill" />
+                    <SealPercent size={32} className="text-primary" weight="fill" />
                     <p className="text-lg font-semibold ">{card}</p>
                   </div>
                 ))}

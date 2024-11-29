@@ -2,31 +2,41 @@
  * @jest-environment jsdom
  */
 
-import { renderHook, waitFor } from '@testing-library/react';
-import { useBackupsPagination } from './useBackupsPagination';
-import newStorageService from '../../drive/services/new-storage.service';
-import { act } from 'react-dom/test-utils';
-import _ from 'lodash';
 import { FetchFolderContentResponse } from '@internxt/sdk/dist/drive/storage/types';
+import { renderHook, waitFor } from '@testing-library/react';
+import _ from 'lodash';
+
+// ESTO ESTA DIFERENTE, MIAR PR POR SI NO SIRVE ESTO---------------------
+import { act } from 'react-dom/test-utils';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import newStorageService from '../../drive/services/new-storage.service';
 import { DriveItemData } from '../../drive/types';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
+import { useBackupsPagination } from './useBackupsPagination';
 
-jest.mock('../../notifications/services/notifications.service', () => ({
-  show: jest.fn(),
+vi.mock('../../notifications/services/notifications.service', () => ({
+  default: {
+    show: vi.fn(),
+  },
   ToastType: {
     Error: 'ERROR',
   },
 }));
-jest.mock('../../drive/services/new-storage.service', () => ({
-  getFolderContentByUuid: jest.fn(),
+
+vi.mock('../../drive/services/new-storage.service', () => ({
+  default: {
+    getFolderContentByUuid: vi.fn(),
+  },
 }));
 
-jest.mock('../../core/services/error.service', () => ({
-  reportError: jest.fn(),
+vi.mock('../../core/services/error.service', () => ({
+  default: {
+    reportError: vi.fn(),
+  },
 }));
 
 describe('useBackupsPagination', () => {
-  const clearSelectedItems = jest.fn();
+  const clearSelectedItems = vi.fn();
 
   const FOLDER_CONTENT_1 = {
     files: Array.from({ length: 30 }, (_, i) => ({ plainName: `file-${i + 1}.txt` })),
@@ -35,7 +45,7 @@ describe('useBackupsPagination', () => {
 
   const FOLDER_CONTENT_2 = {
     files: Array.from({ length: 20 }, (_, i) => ({ plainName: `file-${i + 31}.txt` })),
-    children: Array.from({ length: 0 }, (_, i) => []),
+    children: Array.from({ length: 0 }, () => []),
   } as unknown as FetchFolderContentResponse;
 
   const LIMIT_OF_ITEMS_FETCHED = 50;
@@ -48,15 +58,13 @@ describe('useBackupsPagination', () => {
   const TOTAL_LENGTH = FOLDER_CONTENT_1_LENGTH + FOLDER_CONTENT_2_LENGTH;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('Should not fetch more items as there are less than 50 items in total', async () => {
-    jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValue([
+    (newStorageService.getFolderContentByUuid as Mock).mockReturnValue([
       Promise.resolve(FOLDER_CONTENT_2),
-      {
-        cancel: jest.fn(),
-      },
+      { cancel: vi.fn() },
     ]);
 
     const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));
@@ -67,11 +75,9 @@ describe('useBackupsPagination', () => {
   });
 
   it('Should load the first items and contains more items to fetch paginated', async () => {
-    jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValue([
+    (newStorageService.getFolderContentByUuid as Mock).mockReturnValue([
       Promise.resolve(FOLDER_CONTENT_1),
-      {
-        cancel: jest.fn(),
-      },
+      { cancel: vi.fn() },
     ]);
 
     const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));
@@ -80,7 +86,7 @@ describe('useBackupsPagination', () => {
       expect(result.current.areFetchingItems).toBe(true);
     });
 
-    expect(newStorageService.getFolderContentByUuid as jest.Mock).toHaveBeenCalledWith({
+    expect(newStorageService.getFolderContentByUuid as Mock).toHaveBeenCalledWith({
       folderUuid: 'some-folder-uuid',
       limit: 50,
       offset: 0,
@@ -97,11 +103,9 @@ describe('useBackupsPagination', () => {
   });
 
   it('Should fetch more items if there are more than 50 items', async () => {
-    jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValueOnce([
+    (newStorageService.getFolderContentByUuid as Mock).mockReturnValueOnce([
       Promise.resolve(FOLDER_CONTENT_1),
-      {
-        cancel: jest.fn(),
-      },
+      { cancel: vi.fn() },
     ]);
 
     const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));
@@ -114,11 +118,9 @@ describe('useBackupsPagination', () => {
       expect(result.current.currentItems.length > LIMIT_OF_ITEMS_FETCHED).toBeTruthy();
     });
 
-    jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValueOnce([
+    (newStorageService.getFolderContentByUuid as Mock).mockReturnValueOnce([
       Promise.resolve(FOLDER_CONTENT_2),
-      {
-        cancel: jest.fn(),
-      },
+      { cancel: vi.fn() },
     ]);
 
     await act(async () => {
@@ -145,11 +147,9 @@ describe('useBackupsPagination', () => {
   });
 
   it('should update current items list by removing an item', async () => {
-    jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValueOnce([
+    (newStorageService.getFolderContentByUuid as Mock).mockReturnValueOnce([
       Promise.resolve(FOLDER_CONTENT_1),
-      {
-        cancel: jest.fn(),
-      },
+      { cancel: vi.fn() },
     ]);
 
     const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));
@@ -167,11 +167,9 @@ describe('useBackupsPagination', () => {
   });
 
   it('should show a notification when there is an error fetching items', async () => {
-    jest.spyOn(newStorageService, 'getFolderContentByUuid').mockReturnValueOnce([
+    (newStorageService.getFolderContentByUuid as Mock).mockReturnValueOnce([
       Promise.reject(new Error('Error fetching items')),
-      {
-        cancel: jest.fn(),
-      },
+      { cancel: vi.fn() },
     ]);
 
     const { result } = renderHook(() => useBackupsPagination('some-folder-uuid', clearSelectedItems));

@@ -4,19 +4,19 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 80%",
-    "title": "Boo ! Venez économiser avec nous...",
-    "subtitle": "Gagnez notre sac à dos premium avec nos plans à vie.",
-    "cta": "Choisissez un plan",
+    "label": "Économisez 85% !",
+    "title": "Les meilleures offres du Black Friday",
+    "subtitle": "Recevez notre sac à dos premium avec nos plans à vie.",
+    "cta": "Choisissez votre plan",
     "guarantee": "Garantie de remboursement de 30 jours",
-    "lastCta": "*Offre réservée aux comptes gratuits ou nouveaux clients",
+    "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
     "features": [
-      "Économisez sur tous les plans à vie",
+      "Économisez gros sur tous les plans premium",
       "Stockage cloud privé et crypté",
-      "Code source ouvert et audité",
+      "Open source et audité",
       "Transferts cryptés de bout en bout",
       "Aucun accès non autorisé",
-      "Offre valable jusqu’au 10 novembre"
+      "L'offre se termine le 3 décembre"
     ]
   },
   "valentinesBanner": {
@@ -61,7 +61,8 @@
       "dontHaveAccount": "Vous n'avez pas de compte ?",
       "createAccount": "Créer un compte",
       "2FA": "Code à deux facteurs",
-      "twoFactorAuthenticationCode": "Code d'authentification à deux facteurs"
+      "twoFactorAuthenticationCode": "Code d'authentification à deux facteurs",
+      "wrongLogin": "Nom d'utilisateur ou mot de passe invalide"
     },
     "signup": {
       "title": "Créer un compte",
@@ -1239,7 +1240,13 @@
     "errorApplyingCoupon": "Une erreur s'est produite lors de l'application du coupon",
     "invalidTaxIdIsProvided": "Le numéro d'identification fiscale fourni est invalide",
     "errorWhileFetchingMoreItems": "Une erreur est survenue lors de la récupération d'éléments supplémentaires",
-    "errorDeletingItems": "Une erreur est survenue lors de la suppression de cet élément"
+    "errorDeletingItems": "Une erreur est survenue lors de la suppression de cet élément",
+    "errorFetchingWorkspace": "Erreur lors de la récupération de l'espace de travail {{error}}",
+    "errorSettingUpWorkspace": "Erreur lors de la configuration de l'espace de travail {{error}}",
+    "errorWhileLoadingWorkspace": "Erreur lors du chargement de l'espace de travail {{error}}",
+    "errorFetchingWorkspaceCredentials": "Erreur lors de la récupération des identifiants de l'espace de travail {{error}}",
+    "invalidWorkspaceInvitationError": "Espace de travail plein. Contactez le propriétaire.",
+    "errorAcceptingWorkspaceInvitation": "Une erreur s'est produite lors de l'acceptation de l'invitation"
   },
   "actions": {
     "undo": "Annuler",

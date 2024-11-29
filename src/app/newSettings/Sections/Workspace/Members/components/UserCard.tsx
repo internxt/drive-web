@@ -31,9 +31,7 @@ const UserCard = ({ name, lastName, role, email, avatarSrc, styleOptions }: User
         <div className="flex flex-col gap-0">
           <div className="flex flex-row justify-between space-x-2">
             <span
-              className={
-                styleOptions?.nameStyle ?? 'max-w-[120px] truncate break-all text-base font-medium text-gray-100'
-              }
+              className={styleOptions?.nameStyle ?? 'max-w-60 truncate break-all text-base font-medium text-gray-100'}
             >
               {name} {lastName}
             </span>
@@ -45,7 +43,11 @@ const UserCard = ({ name, lastName, role, email, avatarSrc, styleOptions }: User
               />
             )}
           </div>
-          <span className={styleOptions?.emailStyle ?? 'truncate break-all text-left text-sm font-normal text-gray-50'}>
+          <span
+            className={
+              styleOptions?.emailStyle ?? 'max-w-60 truncate break-all text-left text-sm font-normal text-gray-50'
+            }
+          >
             {email}
           </span>
         </div>

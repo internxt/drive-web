@@ -31,6 +31,11 @@ export interface SignUpProps {
   isNewUser: boolean;
 }
 
+type PasswordState = {
+  tag: 'error' | 'warning' | 'success';
+  label: string;
+};
+
 export type Views = 'signUp' | 'downloadBackupKey';
 
 function SignUp(props: SignUpProps): JSX.Element {
@@ -77,10 +82,7 @@ function SignUp(props: SignUpProps): JSX.Element {
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [passwordState, setPasswordState] = useState<{
-    tag: 'error' | 'warning' | 'success';
-    label: string;
-  } | null>(null);
+  const [passwordState, setPasswordState] = useState<PasswordState | null>(null);
   const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
   const showPreparingWorkspaceAnimation = useMemo(() => autoSubmit.enabled && !showError, [autoSubmit, showError]);
 
@@ -104,30 +106,34 @@ function SignUp(props: SignUpProps): JSX.Element {
     if (password.length > 0) onChangeHandler(password);
   }, [password]);
 
-  function onChangeHandler(input: string) {
+  const getPasswordState = (result: { valid: boolean; strength?: string; reason?: string }): PasswordState => {
+    if (result.valid) {
+      if (result.strength === 'medium') {
+        return { tag: 'warning', label: 'Password is weak' };
+      }
+      return { tag: 'success', label: 'Password is strong' };
+    } else {
+      return {
+        tag: 'error',
+        label:
+          result.reason === 'NOT_COMPLEX_ENOUGH'
+            ? 'Password is not complex enough'
+            : 'Password has to be at least 8 characters long',
+      };
+    }
+  };
+
+  const onChangeHandler = (input: string) => {
     setIsValidPassword(false);
     if (input.length > MAX_PASSWORD_LENGTH) {
       setPasswordState({ tag: 'error', label: translate('modals.changePasswordModal.errors.longPassword') });
       return;
     }
 
-    const result = testPasswordStrength(input, (qs.email as string) === undefined ? '' : (qs.email as string));
-
+    const result = testPasswordStrength(input, String(qs.email || ''));
     setIsValidPassword(result.valid);
-    if (!result.valid) {
-      setPasswordState({
-        tag: 'error',
-        label:
-          result.reason === 'NOT_COMPLEX_ENOUGH'
-            ? 'Password is not complex enough'
-            : 'Password has to be at least 8 characters long',
-      });
-    } else if (result.strength === 'medium') {
-      setPasswordState({ tag: 'warning', label: 'Password is weak' });
-    } else {
-      setPasswordState({ tag: 'success', label: 'Password is strong' });
-    }
-  }
+    setPasswordState(getPasswordState(result));
+  };
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     const redeemCodeObject = autoSubmit.credentials && autoSubmit.credentials.redeemCodeObject;
@@ -152,27 +158,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
       const { token: xToken, user: xUser } = await authenticateUser(authParams);
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
-
-      const redirectUrl = authService.getRedirectUrl(urlParams, xToken);
-
-      if (redirectUrl) {
-        window.location.replace(redirectUrl);
-        return;
-      } else if (redeemCodeObject) {
-        await paymentService.redeemCode(redeemCodeObject);
-        dispatch(planThunks.initializeThunk());
-        navigationService.push(AppView.Drive);
-      } else {
-        if (isUniversalLinkMode) {
-          return navigationService.push(AppView.UniversalLinkSuccess);
-        } else {
-          //TODO: Use this setState when we have to implement the download of the backup key
-          // setView('downloadBackupKey');
-          return navigationService.push(AppView.Drive);
-        }
-      }
+      await redirectTheUserAfterRegistration(xToken, redeemCodeObject);
     } catch (err: unknown) {
       setIsLoading(false);
       errorService.reportError(err);
@@ -180,6 +166,29 @@ function SignUp(props: SignUpProps): JSX.Element {
       setSignupError(castedError.message);
     } finally {
       setShowError(true);
+    }
+  };
+
+  const redirectTheUserAfterRegistration = async (
+    xToken: string,
+    redeemCodeObject?: {
+      code: string;
+      provider: string;
+    },
+  ) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
+    const redirectUrl = authService.getRedirectUrl(urlParams, xToken);
+
+    if (redirectUrl) {
+      window.location.replace(redirectUrl);
+    } else if (redeemCodeObject) {
+      await paymentService.redeemCode(redeemCodeObject);
+      dispatch(planThunks.initializeThunk());
+      navigationService.push(AppView.Drive);
+    } else {
+      const redirectView = isUniversalLinkMode ? AppView.UniversalLinkSuccess : AppView.Drive;
+      return navigationService.push(redirectView);
     }
   };
 
@@ -214,7 +223,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
               <form className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
                 <TextInput
-                  placeholder={translate('auth.email') as string}
+                  placeholder={translate('auth.email')}
                   label="email"
                   type="email"
                   disabled={hasEmailParam}

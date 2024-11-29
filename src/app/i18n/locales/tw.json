@@ -4,19 +4,19 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "節省80%",
-    "title": "Boo！來和我們一起省錢...",
-    "subtitle": "贏取我們終身計劃的高級背包。",
-    "cta": "選擇計劃",
+    "label": "節省85%！",
+    "title": "黑色星期五最佳優惠",
+    "subtitle": "選擇我們的終身方案，獲得我們的高級背包。",
+    "cta": "選擇您的方案",
     "guarantee": "30天退款保證",
-    "lastCta": "*優惠僅適用於免費帳戶或新客戶",
+    "lastCta": "*此優惠僅適用於免費帳戶或新客戶",
     "features": [
-      "節省所有終身計劃",
-      "私人加密雲存儲",
-      "開源並經過審核",
+      "所有高級方案享有巨大的折扣",
+      "私人加密雲端存儲",
+      "開源且經過審查",
       "端到端加密傳輸",
       "無未經授權的訪問",
-      "優惠截止至11月10日"
+      "優惠截止至12月3日"
     ]
   },
   "valentinesBanner": {
@@ -82,7 +82,8 @@
       "dontHaveAccount": "沒有帳戶？",
       "createAccount": "創建帳戶",
       "2FA": "雙重身份驗證代碼",
-      "twoFactorAuthenticationCode": "雙重身份驗證代碼"
+      "twoFactorAuthenticationCode": "雙重身份驗證代碼",
+      "wrongLogin": "使用者名稱或密碼無效"
     },
     "signup": {
       "title": "創建帳戶",
@@ -1273,7 +1274,13 @@
     "errorApplyingCoupon": "應用優惠券時出錯",
     "errorWhileFetchingMoreItems": "獲取更多項目時出現錯誤",
     "errorDeletingItems": "刪除此項目時出現錯誤",
-    "invalidTaxIdIsProvided": "提供的稅號無效"
+    "invalidTaxIdIsProvided": "提供的稅號無效",
+    "errorFetchingWorkspace": "獲取工作區時出錯 {{error}}",
+    "errorSettingUpWorkspace": "設置工作區時出錯 {{error}}",
+    "errorWhileLoadingWorkspace": "加載工作區時出錯 {{error}}",
+    "errorFetchingWorkspaceCredentials": "獲取工作區憑證時出錯 {{error}}",
+    "invalidWorkspaceInvitationError": "工作區已滿。請聯絡擁有者。",
+    "errorAcceptingWorkspaceInvitation": "接受邀請時出錯"
   },
   "actions": {
     "undo": "撤銷",
@@ -1475,7 +1482,7 @@
       "members": {
         "title": "成員",
         "members": "成員",
-        "guests": "訪客",
+        "guests": "特邀",
         "search": "搜尋成員",
         "invite": "邀請",
         "inviteDialog": {
