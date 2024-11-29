@@ -36,7 +36,7 @@ const getTrashPaginated = async (
     const itemsInTrash = await trashClient.getTrashedItemsSorted(limit, offset, type, root, sort, order, folderId);
 
     const parsedTrashItems = itemsInTrash.result.map(
-      (item) => ({ ...item, isFolder: type === 'folders', name: item.plainName } as unknown as DriveItemData),
+      (item) => ({ ...item, isFolder: type === 'folders', name: item.plainName }) as unknown as DriveItemData,
     );
     const itemslength = itemsInTrash.result.length;
     const areLastItems = itemslength < limit;
@@ -73,7 +73,7 @@ const getWorkspaceTrashPaginated = async (
     const itemsInTrash = await workspacesService.getTrashItems(workspace?.workspace.id as string, trashType, offset);
 
     const parsedTrashItems = itemsInTrash.result.map(
-      (item) => ({ ...item, isFolder: type === 'folders', name: item.plainName } as unknown as DriveItemData),
+      (item) => ({ ...item, isFolder: type === 'folders', name: item.plainName }) as unknown as DriveItemData,
     );
     const itemslength = itemsInTrash.result.length;
     const areLastItems = itemslength < limit;

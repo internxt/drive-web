@@ -3,7 +3,13 @@ import { Aes256gcmEncrypter } from '@internxt/inxt-js/build/lib/utils/crypto';
 import { streamFileIntoChunks } from '../core/services/stream.service';
 import { mnemonicToSeed } from 'bip39';
 import { Cipher, CipherCCM, createCipheriv } from 'crypto';
-import { getHmacSha512FromHexKey, getHmacSha512, getSha256Hasher, getRipemd160FromHex, getSha512FromHex } from '../crypto/services/utils';
+import {
+  getHmacSha512FromHexKey,
+  getHmacSha512,
+  getSha256Hasher,
+  getRipemd160FromHex,
+  getSha512FromHex,
+} from '../crypto/services/utils';
 
 const BUCKET_META_MAGIC = [
   66, 150, 71, 16, 50, 114, 88, 160, 163, 35, 154, 65, 162, 213, 226, 215, 70, 138, 57, 61, 52, 19, 210, 170, 38, 164,
