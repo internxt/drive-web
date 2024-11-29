@@ -4,7 +4,6 @@ import { useTranslationContext } from '../../../../i18n/provider/TranslationProv
 import { downloadItemsThunk } from '../../../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { uiActions } from '../../../../store/slices/ui';
-import useDriveItemStoreProps from '../../../../drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
 import { getAppConfig } from '../../../../core/services/config.service';
 import { BreadcrumbsMenuProps } from '../types';
 import { DriveItemData } from '../../../../drive/types';
@@ -12,7 +11,6 @@ import { DriveItemData } from '../../../../drive/types';
 const BreadcrumbsMenuBackups = (props: BreadcrumbsMenuProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
-  const { breadcrumbDirtyName } = useDriveItemStoreProps();
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
   const currentFolder = useAppSelector((state) => state.backups.currentFolder);
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
@@ -39,8 +37,8 @@ const BreadcrumbsMenuBackups = (props: BreadcrumbsMenuProps): JSX.Element => {
         focus-visible:bg-gray-5"
       >
         <div className="flex max-w-fit flex-1 flex-row items-center truncate">
-          <span title={breadcrumbDirtyName || props.item.label} className="max-w-sm flex-1 truncate">
-            {breadcrumbDirtyName || props.item.label}
+          <span title={props.item.label} className="max-w-sm flex-1 truncate">
+            {props.item.label}
           </span>
           <CaretDown weight="fill" className={`ml-1 h-3 w-3 ${isSharedView && 'hidden'}`} />
         </div>

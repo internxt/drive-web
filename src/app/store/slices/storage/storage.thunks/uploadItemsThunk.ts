@@ -5,7 +5,6 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { renameFile } from 'app/crypto/services/utils';
-import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -14,7 +13,6 @@ import { t } from 'i18next';
 
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
 import workspacesService from '../../../../core/services/workspace.service';
 import { uploadFileWithManager } from '../../../../network/UploadManager';
@@ -23,7 +21,10 @@ import shareService from '../../../../share/services/share.service';
 import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
+
+import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
+import { FileToUpload } from '../../../../drive/services/file.service/types';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -98,60 +99,6 @@ const isUploadAllowed = ({
   return true;
 };
 
-const prepareFilesToUpload = async ({
-  files,
-  parentFolderId,
-  disableDuplicatedNamesCheck,
-  fileType,
-  workspaceToken,
-}: {
-  files: File[];
-  parentFolderId: string;
-  disableDuplicatedNamesCheck?: boolean;
-  fileType?: string;
-  workspaceToken?: string;
-}): Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }> => {
-  const filesToUpload: FileToUpload[] = [];
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-
-  let parentFolderContent;
-
-  if (!disableDuplicatedNamesCheck) {
-    const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(parentFolderId, false, workspaceToken);
-    parentFolderContent = await parentFolderContentPromise;
-  }
-
-  let zeroLengthFilesNumber = 0;
-
-  for (const file of files) {
-    if (file.size === 0) {
-      zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
-      continue;
-    }
-    const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
-    let fileContent;
-    let finalFilename = filename;
-
-    if (!disableDuplicatedNamesCheck) {
-      const [, , renamedFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
-      finalFilename = renamedFilename;
-      fileContent = renameFile(file, renamedFilename);
-    } else {
-      fileContent = renameFile(file, filename);
-    }
-
-    filesToUpload.push({
-      name: finalFilename,
-      size: file.size,
-      type: extension ?? fileType,
-      content: fileContent,
-      parentFolderId,
-    });
-  }
-
-  return { filesToUpload, zeroLengthFilesNumber };
-};
-
 /**
  * @description
  *  1. Prepare files to upload
@@ -199,7 +146,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       fileType,
-      workspaceToken: workspaceCredentials?.tokenHeader,
     });
 
     showEmptyFilesNotification(zeroLengthFilesNumber);
@@ -330,11 +276,10 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
         if (workspaceId && teamId) {
           const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(
             workspaceId,
-            teamId,
             currentFolderId,
             page,
             offset,
-            isDeepFolder ? ownerUserAuthenticationData?.token ?? '' : '',
+            isDeepFolder ? (ownerUserAuthenticationData?.token ?? '') : '',
           );
           const response = await promise;
           parentFolderContent = response;
@@ -342,7 +287,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
           parentFolderContent = await shareService.getSharedFolderContent(
             currentFolderId,
             'files',
-            isDeepFolder ? ownerUserAuthenticationData?.token ?? '' : '',
+            isDeepFolder ? (ownerUserAuthenticationData?.token ?? '') : '',
             page,
             offset,
           );
@@ -478,7 +423,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       files,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
-      workspaceToken: workspaceCredentials?.tokenHeader,
     });
 
     showEmptyFilesNotification(zeroLengthFilesNumber);

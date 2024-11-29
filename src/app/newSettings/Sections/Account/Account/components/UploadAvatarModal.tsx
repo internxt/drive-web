@@ -2,9 +2,8 @@ import { Image } from '@phosphor-icons/react';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import AvatarEditor from 'react-avatar-editor';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import Button from '../../../../../shared/components/Button/Button';
+import { Button, Spinner } from '@internxt/internxtui';
 import Modal from '../../../../../shared/components/Modal';
-import Spinner from '../../../../../shared/components/Spinner/Spinner';
 
 interface UploadAvatarModalProps {
   isOpen: boolean;

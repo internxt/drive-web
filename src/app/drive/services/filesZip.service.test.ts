@@ -1,10 +1,11 @@
+import { afterEach, describe, expect, test, vi } from 'vitest';
 import { FlatFolderZip } from '../../core/services/zip.service';
 import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
 
-const mockDownloadFile = jest.fn();
+const mockDownloadFile = vi.fn();
 
 class MockFlatFolderZip {
-  // zip variable public to spy with Jest
+  // zip variable public to spy with Vitest
   public zip: any;
   private passThrough: any;
   private folderName: string;
@@ -12,12 +13,12 @@ class MockFlatFolderZip {
   constructor(folderName: string) {
     this.folderName = folderName;
     this.zip = {
-      addFile: jest.fn(),
-      addFolder: jest.fn(),
-      end: jest.fn(),
+      addFile: vi.fn(),
+      addFolder: vi.fn(),
+      end: vi.fn(),
     };
     this.passThrough = {
-      pipeTo: jest.fn().mockReturnValue(Promise.resolve()),
+      pipeTo: vi.fn().mockReturnValue(Promise.resolve()),
     };
   }
 
@@ -57,7 +58,7 @@ describe('filesZip', () => {
   ];
 
   let iterator = {
-    next: jest
+    next: vi
       .fn()
       .mockReturnValueOnce({ value: filesPage1, done: false })
       .mockReturnValueOnce({ value: filesPage2, done: false })
@@ -65,7 +66,7 @@ describe('filesZip', () => {
   };
 
   let sharedIterator = {
-    next: jest
+    next: vi
       .fn()
       .mockReturnValueOnce({ value: filesPage1, done: false, token: 'token' })
       .mockReturnValueOnce({ value: filesPage2, done: false, token: 'token' })
@@ -75,16 +76,16 @@ describe('filesZip', () => {
   const zip = new MockFlatFolderZip('folderName') as unknown as MockFlatFolderZip;
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     iterator = {
-      next: jest
+      next: vi
         .fn()
         .mockReturnValueOnce({ value: filesPage1, done: false })
         .mockReturnValueOnce({ value: filesPage2, done: false })
         .mockReturnValueOnce({ value: filesPage3, done: true }),
     };
     sharedIterator = {
-      next: jest
+      next: vi
         .fn()
         .mockReturnValueOnce({ value: filesPage1, done: false, token: 'token' })
         .mockReturnValueOnce({ value: filesPage2, done: false, token: 'token' })
@@ -95,6 +96,7 @@ describe('filesZip', () => {
     test('should add all files to the zip correctly', async () => {
       mockDownloadFile.mockResolvedValue('Mocked file stream');
       const zip = new MockFlatFolderZip('folderName');
+      const addFile = vi.spyOn(zip.zip, 'addFile');
 
       const result = await addAllFilesToZip(
         '/path/to/files',
@@ -102,7 +104,6 @@ describe('filesZip', () => {
         iterator,
         zip as unknown as FlatFolderZip,
       );
-      const addFile = jest.spyOn(zip.zip, 'addFile');
 
       const allFilesLength = filesPage1.length + filesPage2.length + filesPage3.length;
       const allFiles = [...filesPage1, ...filesPage2, ...filesPage3];
@@ -112,14 +113,13 @@ describe('filesZip', () => {
     });
 
     test('should handle empty iterator correctly', async () => {
+      const addFile = vi.spyOn(zip.zip, 'addFile');
       const result = await addAllFilesToZip(
         '/path/to/files',
         mockDownloadFile,
-        { next: jest.fn().mockReturnValue({ value: [], done: true }) },
+        { next: vi.fn().mockReturnValue({ value: [], done: true }) },
         zip as unknown as FlatFolderZip,
       );
-      const addFile = jest.spyOn(zip.zip, 'addFile');
-
       expect(mockDownloadFile).not.toHaveBeenCalled();
       expect(addFile).not.toHaveBeenCalled();
       expect(result).toEqual([]);
@@ -127,7 +127,7 @@ describe('filesZip', () => {
 
     test('should handle errors during file download', async () => {
       mockDownloadFile.mockRejectedValueOnce(new Error('Download error'));
-      const addFile = jest.spyOn(zip.zip, 'addFile');
+      const addFile = vi.spyOn(zip.zip, 'addFile');
 
       await expect(
         addAllFilesToZip('/path/to/files', mockDownloadFile, iterator, zip as unknown as FlatFolderZip),
@@ -140,6 +140,7 @@ describe('filesZip', () => {
     test('should add all shared files to the zip correctly', async () => {
       mockDownloadFile.mockResolvedValue('Mocked file stream');
       const zip = new MockFlatFolderZip('folderName');
+      const addFile = vi.spyOn(zip.zip, 'addFile');
 
       const result = await addAllSharedFilesToZip(
         '/path/to/files',
@@ -147,7 +148,7 @@ describe('filesZip', () => {
         sharedIterator,
         zip as unknown as FlatFolderZip,
       );
-      const addFile = jest.spyOn(zip.zip, 'addFile');
+
       const allFilesLength = filesPage1.length + filesPage2.length + filesPage3.length;
       const allFiles = [...filesPage1, ...filesPage2, ...filesPage3];
       expect(mockDownloadFile).toHaveBeenCalledTimes(allFilesLength);
@@ -157,13 +158,13 @@ describe('filesZip', () => {
     });
 
     test('should handle empty shared iterator correctly', async () => {
+      const addFile = vi.spyOn(zip.zip, 'addFile');
       const result = await addAllSharedFilesToZip(
         '/path/to/files',
         mockDownloadFile,
-        { next: jest.fn().mockReturnValue({ value: [], done: true, token: 'token' }) },
+        { next: vi.fn().mockReturnValue({ value: [], done: true, token: 'token' }) },
         zip as unknown as FlatFolderZip,
       );
-      const addFile = jest.spyOn(zip.zip, 'addFile');
 
       expect(mockDownloadFile).not.toHaveBeenCalled();
       expect(addFile).not.toHaveBeenCalled();
@@ -172,8 +173,8 @@ describe('filesZip', () => {
     });
 
     test('should handle errors during shared file download', async () => {
+      const addFile = vi.spyOn(zip.zip, 'addFile');
       mockDownloadFile.mockRejectedValueOnce(new Error('Download error'));
-      const addFile = jest.spyOn(zip.zip, 'addFile');
 
       await expect(
         addAllSharedFilesToZip('/path/to/files', mockDownloadFile, sharedIterator, zip as unknown as FlatFolderZip),

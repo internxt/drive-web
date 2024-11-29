@@ -144,13 +144,6 @@
       "auth": false
     },
     {
-      "id": "checkout-plan",
-      "layout": "empty",
-      "path": "/checkout-plan/",
-      "exact": true,
-      "auth": true
-    },
-    {
       "id": "recovery-link",
       "layout": "empty",
       "path": "/recovery-link",

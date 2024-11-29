@@ -15,7 +15,6 @@
 .DS_Store
 .env*
 !.env.example
-.vscode/**
 
 npm-debug.log*
 yarn-debug.log*
@@ -35,3 +34,7 @@ debug.log
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+**/__screenshots__/**
+
+.vscode/settings.json

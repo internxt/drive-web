@@ -4,9 +4,9 @@ import { useState } from 'react';
 
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-import Avatar from '../../../../../shared/components/Avatar';
 import Dropdown from '../../../../../shared/components/Dropdown';
 import UploadAvatarModal from './UploadAvatarModal';
+import { Avatar } from '@internxt/internxtui';
 
 interface UserHeaderProps {
   className?: string;
@@ -29,7 +29,9 @@ export default function UserHeader({
 }: Readonly<UserHeaderProps>): JSX.Element {
   const { translate } = useTranslationContext();
   const [openModal, setOpenModal] = useState(false);
-  const fullName = `${user.name} ${user.lastname}`;
+  const name = user?.name ?? '';
+  const lastName = user?.lastname ?? '';
+  const fullName = name + ' ' + lastName;
 
   const dropdownOptions = [{ text: translate('views.account.avatar.updatePhoto'), onClick: () => setOpenModal(true) }];
 

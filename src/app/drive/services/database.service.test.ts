@@ -1,6 +1,6 @@
-import databaseService, { AppDatabase, DatabaseCollection } from '../../database/services/database.service';
+import { describe, it } from 'vitest';
+import { AppDatabase, DatabaseCollection } from '../../database/services/database.service';
 import { DriveItemData } from '../types';
-import { levels_blobs } from '../../database/services/database.service/mocks';
 
 describe('databaseService', () => {
   const get = (database) => (databaseKey: DatabaseCollection, itemKey: number | string) =>

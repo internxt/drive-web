@@ -4,6 +4,7 @@ import { uniqueId } from 'lodash';
 import { FunctionComponent, SVGProps } from 'react';
 
 import iconService from 'app/drive/services/icon.service';
+import { t } from 'i18next';
 import {
   BaseTask,
   DownloadFilesData,
@@ -107,7 +108,7 @@ class TaskManagerService {
     task: TaskData,
   ): DownloadFilesData | DownloadFolderData | UploadFileData | UploadFolderData {
     const parsedItem =
-      task.file ?? task.folder ?? task.action === TaskType.UploadFolder
+      (task.file ?? task.folder ?? task.action === TaskType.UploadFolder)
         ? { folder: task.item, parentFolderId: task.parentFolderId }
         : task.item;
 
@@ -203,7 +204,9 @@ class TaskManagerService {
         break;
       }
       case TaskType.RenameFolder: {
-        title = itemsLib.getItemDisplayName(task.folder);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { type, ...driveFolderWithoutType } = task.folder;
+        title = itemsLib.getItemDisplayName(driveFolderWithoutType);
         break;
       }
     }
@@ -212,9 +215,18 @@ class TaskManagerService {
   }
 
   private getTaskNotificationSubtitle(task: TaskData): string {
+    const isRenameOrMoveTask =
+      task.action === TaskType.RenameFolder ||
+      task.action === TaskType.RenameFile ||
+      task.action === TaskType.MoveFile ||
+      task.action === TaskType.MoveFolder;
+
     if (task.status === TaskStatus.Error && task.subtitle) {
       return task.subtitle;
     }
+
+    if (isRenameOrMoveTask) return t(`tasks.${task.action}.status.${task.status}`);
+
     return '';
   }
 

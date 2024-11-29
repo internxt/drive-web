@@ -1,7 +1,7 @@
 import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import dateService from 'app/core/services/date.service';
 import { t } from 'i18next';
-import moneyService from '../../payment/services/money.service';
+import moneyService from '../../payment/services/currency.service';
 import { RenewalPeriod } from '../../payment/types';
 import { PlanState } from '../../store/slices/plan';
 
@@ -43,7 +43,7 @@ const getSubscriptionData = ({
     const interval = userSubscription.interval === 'month' ? 'monthly' : 'yearly';
 
     const amountInterval = formatPlanPaymentInterval(
-      userType == UserType.Business ? plan.businessPlan : plan.individualPlan ?? plan.teamPlan,
+      userType == UserType.Business ? plan.businessPlan : (plan.individualPlan ?? plan.teamPlan),
     );
 
     return { amountInterval, interval, renewDate };

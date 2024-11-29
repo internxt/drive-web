@@ -6,12 +6,10 @@ import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
 import authService from 'app/auth/services/auth.service';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Input from 'app/shared/components/Input';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { CaretLeft, WarningCircle, CheckCircle } from '@phosphor-icons/react';
-import { TrackingPlan } from 'app/analytics/TrackingPlan';
-import { trackPasswordRecovered } from 'app/analytics/services/analytics.service';
 
 interface RestartAccount {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;
@@ -95,9 +93,6 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
     setIsLoading(true);
 
     const token = window.location.pathname.split('/').pop();
-    const trackPasswordRecoveredProperties: TrackingPlan.PasswordRecoveredProperties = {
-      method: 'reset',
-    };
 
     if (!token) {
       notificationsService.show({
@@ -109,7 +104,6 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
     try {
       await authService.resetAccountWithToken(token, newPassword);
       setIsEmailSent(true);
-      trackPasswordRecovered(trackPasswordRecoveredProperties);
     } catch (error) {
       notificationsService.show({
         text: translate('auth.restartAccount.error'),
@@ -185,7 +179,7 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
               <Button
                 disabled={!(newPassword === confirmNewPassword && isValidPassword)}
                 loading={isLoading}
-                variant="accent"
+                variant="destructive"
                 className="w-full"
                 type="submit"
                 onClick={(event) => onAccountReset(event)}

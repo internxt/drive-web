@@ -1,4 +1,5 @@
-
+/* TODO: REMOVE THIS SCSS AND COMPONENT IF IT IS NOT USED */
+/* stylelint-disable selector-class-pattern */
 .form-main {
   height: 100%;
   display: flex;
@@ -60,7 +61,7 @@
 
     &.on {
       color: white;
-      box-shadow: 0 2px 3px 0 rgba(174, 199, 242, 0.62);
+      box-shadow: 0 2px 3px 0 rgb(174 199 242 / 62%);
       border: solid 0 #eaeced;
     }
 

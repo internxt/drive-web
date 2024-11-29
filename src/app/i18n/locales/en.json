@@ -4,19 +4,19 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 78%",
-    "title": "Back to work deals for all lifetime plans!",
+    "label": "Save 85%!",
+    "title": "The best Black Friday deals",
     "subtitle": "Win our premium backpack with our lifetime plans.",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
-      "Choose your perfect lifetime plan",
-      "Safe and secure cloud storage",
-      "Open source and audited",
+      "Save big on all premium plans",
+      "Private, encrypted cloud storage",
+      "Open-source and audited",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends September 12th"
+      "Offer ends December 3rd"
     ]
   },
   "valentinesBanner": {
@@ -67,7 +67,8 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "Email",
@@ -81,7 +82,8 @@
       "dontHaveAccount": "Don't have an account?",
       "createAccount": "Create account",
       "2FA": "Two factor code",
-      "twoFactorAuthenticationCode": "Two factor authentication code"
+      "twoFactorAuthenticationCode": "Two factor authentication code",
+      "wrongLogin": "Invalid username or password"
     },
     "signup": {
       "title": "Create account",
@@ -183,15 +185,25 @@
       "emailMustNotBeEmpty": "Email must not be empty",
       "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
     },
+    "addressBillingTitle": "Address Billing",
+    "addressBilling": {
+      "optional": {
+        "cta": "Optional",
+        "companyName": "Company name",
+        "companyVatId": "Company Vat ID"
+      }
+    },
     "paymentTitle": "Select a payment method",
     "productCard": {
       "renewalPeriod": {
+        "renewsAt": "* Renews at",
         "month": "month",
         "year": "year",
         "lifetime": "lifetime"
       },
       "title": "Order summary",
       "selectedPlan": "Selected plan",
+      "numberOfUsers": "Number of users: {{seats}}",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}} plan",
         "year": "{{spaceToUpgrade}} - 1 {{interval}} plan",
@@ -202,28 +214,40 @@
         "year": "Billed annually",
         "lifetime": "One-time payment"
       },
+      "perUser": "/per user",
       "saving": "You're saving {{percent}}%",
       "planDetails": {
         "title": "Plan details:",
-        "features": [
-          "{{spaceToUpgrade}} encrypted storage",
-          "Encrypted file and folder sharing",
-          "Password-protected file sharing",
-          "Access your files from any device",
-          "Get access to all our services",
-          "Upload files up to 20GB",
-          "Two-factor authentication (2FA)",
-          "Premium customer support",
-          "30-day money-back guarantee"
-        ]
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} encrypted storage",
+            "Encrypted file and folder sharing",
+            "Password-protected file sharing",
+            "Access your files from any device",
+            "Get access to all our services",
+            "Two-factor authentication (2FA)",
+            "Premium customer support",
+            "30-day money-back guarantee"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} storage/user",
+            "Encrypted file and folder sharing",
+            "Create and manage users & teams",
+            "Starting at {{minimumSeats}} users and up to {{maximumSeats}}",
+            "GDPR compliant",
+            "Manage account billing & payments",
+            "Premium customer support"
+          ]
+        }
       },
       "total": "Total: ",
+      "totalForBusiness": "Total for {{N}} users: ",
       "addCoupon": {
         "buttonTitle": "Add coupon",
-        "inputText": "Coupon code",
-        "applyCodeButtonTitle": "Apply"
+        "inputText": "Coupon code"
       },
       "amountSaved": "Save ",
+      "apply": "Apply",
       "withAnnualBilling": "with annual billing"
     }
   },
@@ -950,7 +974,13 @@
       "primaryAction": "Confirm",
       "secondaryAction": "Cancel"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Share \"{{name}}\"",
+      "teams": "Teams",
+      "teamsWithAcces": "Teams with Access:",
+      "shareButton": "Share"
+    }
   },
   "form": {
     "fields": {
@@ -1264,6 +1294,9 @@
     "itemsMovedToTrash": "{{item}} moved to trash",
     "restoreItems": "{{itemsToRecover}} restored successfully",
     "moveItems": "{{itemsToMove}} moved successfully",
+    "storageModified": "Storage modified successfully",
+    "errorModifyingStorage": "The new storage is not valid for this member.",
+    "generalErrorWhileModifyingStorage": "Something went wrong while modifying storage",
     "itemDeleted": "{{item}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
@@ -1275,7 +1308,17 @@
     "errorApplyCoupon": "An error occurred while applying the discount",
     "alreadyAppliedCoupon": "The coupon has been already applied",
     "errorPurchaseBusinessPlan": "You already have a business plan.",
-    "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers"
+    "couponIsNotValidForUserError": "Coupon can only be redeemed by new customers",
+    "errorApplyingCoupon": "Something went wrong while applying the coupon",
+    "invalidTaxIdIsProvided": "The provided Tax ID is invalid",
+    "errorWhileFetchingMoreItems": "Something went wrong while fetching more items",
+    "errorDeletingItems": "Something went wrong while deleting this item",
+    "errorFetchingWorkspace": "Error while fetching workspace {{error}}",
+    "errorSettingUpWorkspace": "Error while setting up the workspace {{error}}",
+    "errorWhileLoadingWorkspace": "Error while loading the workspace {{error}}",
+    "errorFetchingWorkspaceCredentials": "Error while fetching workspace credentials {{error}}",
+    "invalidWorkspaceInvitationError": "Workspace full. Contact the owner.",
+    "errorAcceptingWorkspaceInvitation": "Something went wrong while accepting the invitation"
   },
   "actions": {
     "undo": "Undo",
@@ -1351,6 +1394,7 @@
       "details": "Details",
       "shareLink": "Share",
       "shareTeam": "Share with team",
+      "shareWithWorkspace": "Share with workspace",
       "manageLinkAccess": "Manage access",
       "getLink": "Get link",
       "rename": "Rename",
@@ -1476,7 +1520,7 @@
       "members": {
         "title": "Members",
         "members": "Members",
-        "guests": "Guests",
+        "guests": "Invited",
         "search": "Search members",
         "invite": "Invite",
         "inviteDialog": {
@@ -1508,6 +1552,14 @@
           "manager": "Manager",
           "member": "Member",
           "deactivated": "Deactivated"
+        },
+        "modifyStorageModal": {
+          "user": "User",
+          "storage": "Storage",
+          "spaceAssigned": "Space assigned",
+          "spaceLeft": "Total space left",
+          "cancel": "Cancel",
+          "saveChanges": "Save changes"
         },
         "deactivationModal": {
           "title": "Deactivate member",
@@ -1583,6 +1635,7 @@
         },
         "actions": {
           "deactivate": "Deactivate member",
+          "modifyStorage": "Modify storage",
           "reactivate": "Reactivate member",
           "remove": "Remove member",
           "passwordChange": "Request password change"
@@ -1696,7 +1749,7 @@
       "levelUpStorage": "Level up your storage space and get many other benefits",
       "upgradeNow": "Upgrade now",
       "emptyTrash": "Empty trash",
-      "emptryTrashDescription": "Items in trash will be deleted permanently after 15 days",
+      "emptyTrashDescription": "Items in trash will be deleted permanently",
       "plans": {
         "title": "Plans",
         "current": "Current",
@@ -1714,7 +1767,7 @@
           "featureOne": "Encrypted file and folder sharing.",
           "featureTwo": "Password-protected file sharing.",
           "featureThree": "Access your files from any device.",
-          "featureFour": "Upload files up to 20GB.",
+          "featureFour": "Upload files up to 40GB.",
           "featureFive": "Two-factor authentication (2FA).",
           "featureSix": "Premium customer support.",
           "featureSeven": "30-day money-back guarantee."
@@ -1726,7 +1779,7 @@
           "featureTwo": "Create and manage users & teams.",
           "featureThree": "Starting at 3 users and up to 100.",
           "featureFour": "GDPR compliant.",
-          "featureFive": "Upload files of up to 20GB.",
+          "featureFive": "Upload files of up to 40GB.",
           "featureSix": "Manage account billing & payments.",
           "featureSeven": "Premium customer support."
         },

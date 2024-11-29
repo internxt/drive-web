@@ -38,27 +38,6 @@ const fetchPlanPrices = async (userType: UserType) => {
   }
 };
 
-const createCheckoutSession = async ({
-  userEmail,
-  priceId,
-  mode,
-  currency,
-}: {
-  userEmail: string;
-  priceId: string;
-  mode: string;
-  currency: string;
-}) => {
-  return paymentService.createCheckoutSession({
-    price_id: priceId,
-    success_url: `${window.location.origin}/checkout/success`,
-    cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
-    customer_email: userEmail,
-    mode: mode,
-    currency: currency,
-  });
-};
-
 const getStripe = async (stripe): Promise<Stripe> => {
   if (!stripe) {
     stripe = (await loadStripe(
@@ -69,4 +48,4 @@ const getStripe = async (stripe): Promise<Stripe> => {
   return stripe;
 };
 
-export { createCheckoutSession, fetchPlanPrices, getStripe };
+export { fetchPlanPrices, getStripe };

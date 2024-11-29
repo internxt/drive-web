@@ -17,10 +17,8 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
 import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
 import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
-import Avatar from 'app/shared/components/Avatar';
-import Button from 'app/shared/components/Button/Button';
+import { Avatar, Button, Spinner } from '@internxt/internxtui';
 import Modal from 'app/shared/components/Modal';
-import Spinner from 'app/shared/components/Spinner/Spinner';
 import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { RootState } from 'app/store';
@@ -31,8 +29,6 @@ import copy from 'copy-to-clipboard';
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-tooltip';
-import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import { trackPublicShared } from '../../../analytics/services/analytics.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
@@ -95,10 +91,11 @@ type ShareDialogProps = {
   user: UserSettings;
   isDriveItem?: boolean;
   onShareItem?: () => void;
+  onStopSharingItem?: () => void;
   onCloseDialog?: () => void;
 };
 
-const isAdvanchedShareItem = (item: DriveItemData | AdvancedSharedItem): item is AdvancedSharedItem => {
+const isAdvancedShareItem = (item: DriveItemData | AdvancedSharedItem): item is AdvancedSharedItem => {
   return item['encryptionKey'];
 };
 
@@ -250,8 +247,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
     const itemId = itemToShare?.item.uuid ?? '';
 
-    const isItemNotSharedYet =
-      !isAdvanchedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length && !sharingMeta;
+    const isItemNotSharedYet = !isAdvancedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length;
 
     if (!isItemNotSharedYet) {
       try {
@@ -335,15 +331,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
 
     if (itemToShare?.item.uuid) {
-      const trackingPublicSharedProperties: TrackingPlan.PublicSharedProperties = {
-        is_folder: itemToShare.item.isFolder,
-        share_type: 'public',
-        user_id: itemToShare.item.userId,
-        item_id: itemToShare.item.id,
-      };
-
-      trackPublicShared(trackingPublicSharedProperties);
-      const encryptionKey = isAdvanchedShareItem(itemToShare.item) ? itemToShare?.item?.encryptionKey : undefined;
+      const encryptionKey = isAdvancedShareItem(itemToShare.item) ? itemToShare?.item?.encryptionKey : undefined;
       const sharingInfo = await shareService.getPublicShareLink(
         itemToShare?.item.uuid,
         itemToShare.item.isFolder ? 'folder' : 'file',
@@ -403,6 +391,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         }
 
         setIsPasswordProtected(true);
+        props.onShareItem?.();
       } catch (error) {
         errorService.castError(error);
       } finally {
@@ -463,6 +452,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       }),
     );
     props.onShareItem?.();
+    props.onStopSharingItem?.();
     setShowStopSharingConfirmation(false);
     onClose();
     setIsLoading(false);

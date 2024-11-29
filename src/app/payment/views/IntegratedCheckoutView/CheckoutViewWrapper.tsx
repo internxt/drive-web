@@ -1,17 +1,10 @@
+import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
-import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
-
-import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import {
-  Stripe,
-  StripeElements,
-  StripeElementsOptions,
-  StripeElementsOptionsMode,
-  loadStripe,
-} from '@stripe/stripe-js';
-import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSelector } from 'react-redux';
+import { Stripe, StripeElements, StripeElementsOptionsMode } from '@stripe/stripe-js';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+
+import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
 import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
@@ -30,13 +23,12 @@ import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { planThunks } from '../../../store/slices/plan';
 import { useThemeContext } from '../../../theme/ThemeProvider';
-import { getProductAmount } from '../../components/checkout/ProductCardComponent';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
-import { AuthMethodTypes, CurrentPlanSelected, PlanData } from '../../types';
+import { AuthMethodTypes, CouponCodeData, RequestedPlanData } from '../../types';
 import CheckoutView from './CheckoutView';
-import ChangePlanDialog from 'app/newSettings/Sections/Account/Plans/components/ChangePlanDialog';
-import { fetchPlanPrices, getStripe } from 'app/newSettings/Sections/Account/Plans/api/plansApi';
+import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
+import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
 export const THEME_STYLES = {
   dark: {
@@ -55,8 +47,6 @@ export const THEME_STYLES = {
   },
 };
 
-const BORDER_SHADOW = 'rgb(0 102 255)';
-
 export type UpsellManagerProps = {
   isUpsellSwitchActivated: boolean;
   showUpsellSwitch: boolean;
@@ -74,6 +64,7 @@ export interface UserInfoProps {
 export interface CheckoutViewManager {
   onCouponInputChange: (coupon: string) => void;
   onLogOut: () => Promise<void>;
+  onCountryChange: (country: string) => void;
   onCheckoutButtonClicked: (
     formData: IFormValues,
     event: BaseSyntheticEvent<object, any, any> | undefined,
@@ -83,20 +74,35 @@ export interface CheckoutViewManager {
   onRemoveAppliedCouponCode: () => void;
   handleAuthMethodChange: (method: AuthMethodTypes) => void;
   onUserNameFromAddressElementChange: (userName: string) => void;
+  onSeatsChange: (seat: number) => void;
 }
 
 const ONE_YEAR_IN_MONTHS = 12;
-
 const IS_PRODUCTION = envService.isProduction();
-
 const RETURN_URL_DOMAIN = IS_PRODUCTION ? process.env.REACT_APP_HOSTNAME : 'http://localhost:3000';
+const STATUS_CODE_ERROR = {
+  USER_EXISTS: 409,
+  COUPON_NOT_VALID: 422,
+  PROMO_CODE_BY_NAME_NOT_FOUND: 404,
+  BAD_REQUEST: 400,
+};
 
-let stripe;
+function savePaymentDataInLocalStorage(
+  subscriptionId: string | undefined,
+  paymentIntentId: string | undefined,
+  selectedPlan: RequestedPlanData | undefined,
+  users: number,
+  couponCodeData: CouponCodeData | undefined,
+) {
+  if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
+  if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
+  if (selectedPlan) {
+    const amountToPay = getProductAmount(selectedPlan.decimalAmount, users, couponCodeData);
+    localStorageService.set('amountPaid', amountToPay);
+  }
+}
 
-export const stripePromise = (async () => {
-  const stripeKey = IS_PRODUCTION ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK;
-  return await loadStripe(stripeKey);
-})();
+let stripeSdk: Stripe;
 
 const CheckoutViewWrapper = () => {
   const dispatch = useAppDispatch();
@@ -104,13 +110,15 @@ const CheckoutViewWrapper = () => {
   const { checkoutTheme } = useThemeContext();
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
-  const user = useSelector<RootState, UserSettings>((state) => state.user.user!);
+  const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const { doRegister } = useSignUp('activate');
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
 
-  const fullName = `${user?.name} ${user?.lastname}`;
+  const name = user?.name ?? '';
+  const lastName = user?.lastname ?? '';
+  const fullName = name + ' ' + lastName;
   const isUserAuthenticated = !!user;
-  const isAnyError = state.error?.coupon || state.error?.auth || state.error?.stripe;
+  const thereIsAnyError = state.error?.coupon || state.error?.auth || state.error?.stripe;
 
   const {
     onRemoveAppliedCouponCode,
@@ -124,12 +132,14 @@ const CheckoutViewWrapper = () => {
     setSelectedPlan,
     setStripeElementsOptions,
     setUserNameFromElementAddress,
+    setSeatsForBusinessSubscription,
+    setCountry,
+    setPrices,
+    setIsCheckoutReadyToRender,
+    setIsUpdateSubscriptionDialogOpen,
+    setIsUpdatingSubscription,
+    setIsUpsellSwitchActivated,
   } = useCheckout(dispatchReducer);
-  const [isUpsellSwitchActivated, setIsUpsellSwitchActivated] = useState<boolean>(false);
-  const [isCheckoutReadyToRender, setIsCheckoutReadyToRender] = useState<boolean>(false);
-  const [isUpdateSubscriptionDialogOpen, setIsUpdateSubscriptionDialogOpen] = useState<boolean>(false);
-  const [isUpdatingSubscription, setIsUpdatingSubscription] = useState<boolean>(false);
-  const [individualPrices, setIndividualPrices] = useState<DisplayPrice[]>();
 
   const {
     authMethod,
@@ -140,12 +150,20 @@ const CheckoutViewWrapper = () => {
     couponCodeData,
     elementsOptions,
     promoCodeName,
+    seatsForBusinessSubscription,
+    country,
+    isCheckoutReadyToRender,
+    isUpdateSubscriptionDialogOpen,
+    isUpdatingSubscription,
+    isUpsellSwitchActivated,
+    prices,
   } = state;
+  const canChangePlanDialogBeOpened = prices && currentSelectedPlan && isUpdateSubscriptionDialogOpen;
 
   const userInfo: UserInfoProps = {
     name: fullName,
     avatar: avatarBlob,
-    email: user?.email,
+    email: user?.email ?? '',
   };
 
   const upsellManager = {
@@ -180,26 +198,39 @@ const CheckoutViewWrapper = () => {
       return;
     }
 
-    fetchDataAndSetPrices();
+    paymentService
+      .getStripe()
+      .then((stripe) => (stripeSdk = stripe))
+      .catch((error) => {
+        errorService.reportError(error);
+        if (user) {
+          navigationService.push(AppView.Drive);
+        } else {
+          navigationService.push(AppView.Signup);
+        }
+      });
 
     handleFetchSelectedPlan(planId, currencyValue)
-      .then((plan) => {
+      .then(async (plan) => {
         if (checkoutTheme && plan) {
           if (promotionCode) {
-            handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch((err) => {
-              const showPromoCodeErrorNotification = true;
-              handlePromoCodeError(err, showPromoCodeErrorNotification);
-            });
+            handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
           }
 
-          const { backgroundColor, textColor, borderColor, borderInputColor, labelTextColor } =
-            THEME_STYLES[checkoutTheme as string];
-          loadStripeElements(textColor, backgroundColor, borderColor, borderInputColor, labelTextColor, plan);
+          checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, plan);
+          const prices = await checkoutService.fetchPrices(plan.selectedPlan.type, currencyValue);
+          setPrices(prices);
+          setIsCheckoutReadyToRender(true);
         }
       })
-      .catch(() => {});
-
-    setIsCheckoutReadyToRender(true);
+      .catch((error) => {
+        errorService.reportError(error);
+        if (user) {
+          navigationService.push(AppView.Drive);
+        } else {
+          navigationService.push(AppView.Signup);
+        }
+      });
   }, [checkoutTheme]);
 
   useEffect(() => {
@@ -220,7 +251,7 @@ const CheckoutViewWrapper = () => {
   }, [promoCodeName]);
 
   useEffect(() => {
-    if (isAnyError) {
+    if (thereIsAnyError) {
       setTimeout(() => {
         setError('auth', undefined);
         setError('stripe', undefined);
@@ -228,16 +259,6 @@ const CheckoutViewWrapper = () => {
       }, 8000);
     }
   }, [state.error]);
-
-  const fetchDataAndSetPrices = useCallback(async () => {
-    try {
-      const individualPrices = await fetchPlanPrices(UserType.Individual);
-      setIndividualPrices(individualPrices);
-    } catch (error) {
-      const errorCasted = errorService.castError(error);
-      errorService.reportError(errorCasted);
-    }
-  }, []);
 
   const onChangePlanClicked = async (priceId: string, currency: string) => {
     setIsUpdatingSubscription(true);
@@ -267,14 +288,15 @@ const CheckoutViewWrapper = () => {
   };
 
   const handleSubscriptionPayment = async (priceId: string) => {
+    if (!currentSelectedPlan) return;
+
     try {
-      stripe = await getStripe(stripe);
       const updatedSubscription = await paymentService.updateSubscriptionPrice({
         priceId,
-        userType: UserType.Individual,
+        userType: currentSelectedPlan.type,
       });
       if (updatedSubscription.request3DSecure) {
-        stripe
+        stripeSdk
           .confirmCardPayment(updatedSubscription.clientSecret)
           .then(async (result) => {
             if (result.error) {
@@ -311,12 +333,12 @@ const CheckoutViewWrapper = () => {
 
     setIsUserPaying(true);
 
-    const { email, password } = formData;
-
-    const userData = getUserInfo(user, email, userNameFromAddressElement, fullName);
+    const { email, password, companyName, companyVatId } = formData;
+    const isStripeNotLoaded = !stripeSDK || !elements;
+    const customerName = companyName ?? userNameFromAddressElement;
 
     try {
-      await authCheckoutService.authenticateUser(email, password, authMethod, dispatch, doRegister);
+      await authCheckoutService.authenticateUser({ email, password, authMethod, dispatch, doRegister });
     } catch (err) {
       const error = err as Error;
       setError('auth', error.message);
@@ -327,7 +349,7 @@ const CheckoutViewWrapper = () => {
     }
 
     try {
-      if (!stripeSDK || !elements) {
+      if (isStripeNotLoaded) {
         console.error('Stripe.js has not loaded yet. Please try again later.');
         return;
       }
@@ -338,26 +360,35 @@ const CheckoutViewWrapper = () => {
         throw new Error(elementsError.message);
       }
 
-      const { customerId, token } = await paymentService.getCustomerId(userData.name, userData.email);
+      const { customerId, token } = await paymentService.getCustomerId(
+        customerName,
+        email ?? user?.email,
+        country,
+        companyVatId,
+      );
 
       const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
-        await checkoutService.getClientSecret(
-          currentSelectedPlan as CurrentPlanSelected,
+        await checkoutService.getClientSecret({
+          selectedPlan: currentSelectedPlan as RequestedPlanData,
           token,
           customerId,
-          couponCodeData?.codeId,
-        );
+          promoCodeId: couponCodeData?.codeId,
+          seatsForBusinessSubscription,
+        });
 
       // TEMPORARY HOT FIX
       // Store subscriptionId, paymentIntendId, and amountPaid to send to IMPACT API
-      // need to check all rest of needed values to add it to analytics in trackPaymentConversion function
-      if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
-      if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
-      if (plan?.selectedPlan) {
-        const amountToPay = getProductAmount(plan?.selectedPlan.decimalAmount, couponCodeData)?.toFixed(2);
-        localStorageService.set('amountPaid', amountToPay);
-      }
+      savePaymentDataInLocalStorage(
+        subscriptionId,
+        paymentIntentId,
+        plan?.selectedPlan,
+        seatsForBusinessSubscription,
+        couponCodeData,
+      );
 
+      // !DO NOT REMOVE THIS
+      // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
+      // no client secret will be provided.
       if (invoiceStatus && invoiceStatus === 'paid') {
         navigationService.push(AppView.CheckoutSuccess);
         return;
@@ -377,113 +408,42 @@ const CheckoutViewWrapper = () => {
         throw new Error(confirmIntentError.message);
       }
     } catch (err) {
-      if ((err as any).status) {
-        if ((err as any).status === 409) {
-          setIsUpdateSubscriptionDialogOpen(true);
-          return;
-        } else if ((err as any).status === 422) {
-          notificationsService.show({
-            text: translate('notificationMessages.couponIsNotValidForUserError'),
-            type: ToastType.Error,
-          });
-          return;
-        }
+      const statusCode = (err as any).status;
+
+      if (statusCode === STATUS_CODE_ERROR.BAD_REQUEST) {
+        notificationsService.show({
+          text: translate('notificationMessages.invalidTaxIdIsProvided'),
+          type: ToastType.Error,
+        });
+      } else if (statusCode === STATUS_CODE_ERROR.USER_EXISTS) {
+        setIsUpdateSubscriptionDialogOpen(true);
+      } else if (statusCode === STATUS_CODE_ERROR.COUPON_NOT_VALID) {
+        notificationsService.show({
+          text: translate('notificationMessages.couponIsNotValidForUserError'),
+          type: ToastType.Error,
+        });
+      } else {
+        notificationsService.show({
+          text: translate('notificationMessages.errorCreatingSubscription'),
+          type: ToastType.Error,
+        });
       }
 
-      notificationsService.show({
-        text: translate('notificationMessages.errorCreatingSubscription'),
-        type: ToastType.Error,
-      });
       errorService.reportError(err);
     } finally {
       setIsUserPaying(false);
     }
   };
 
-  const loadStripeElements = async (
-    textColor: string,
-    backgroundColor: string,
-    borderColor: string,
-    borderInputColor: string,
-    labelTextColor: string,
-    plan: PlanData,
-  ) => {
-    const stripeElementsOptions: StripeElementsOptions = {
-      appearance: {
-        labels: 'above',
-        variables: {
-          spacingAccordionItem: '8px',
-          colorPrimary: textColor,
-        },
-        theme: 'flat',
-        rules: {
-          '.AccordionItem:hover': {
-            color: textColor,
-          },
-          '.Block': {
-            backgroundColor: backgroundColor,
-          },
-          '.TermsText': {
-            color: textColor,
-          },
-          '.AccordionItem': {
-            borderRadius: '16px',
-            borderColor: borderColor,
-            border: '1px solid',
-            backgroundColor: backgroundColor,
-          },
-          '.Input': {
-            backgroundColor: `${backgroundColor}`,
-            borderRadius: '0.375rem',
-            color: textColor,
-            border: `1px solid ${borderInputColor}`,
-          },
-          '.Input:focus': {
-            backgroundColor: `${backgroundColor}`,
-            // borderColor: borderInputColor,
-            boxShadow: `0px 0px 4px ${BORDER_SHADOW}`,
-            border: `0.5px solid ${BORDER_SHADOW}`,
-          },
-          '.Input::selection': {
-            backgroundColor: `${backgroundColor}`,
-            // borderColor: borderInputColor,
-            border: `0.5px solid ${BORDER_SHADOW}`,
-          },
-          '.Label': {
-            color: labelTextColor,
-            fontSize: '0.875rem',
-          },
-          '.RedirectText': {
-            color: textColor,
-          },
-        },
-      },
-      mode: plan?.selectedPlan.interval === 'lifetime' ? 'payment' : 'subscription',
-      amount: plan?.selectedPlan.amount,
-      currency: plan?.selectedPlan.currency,
-      payment_method_types: ['card', 'paypal'],
-    };
-
-    setStripeElementsOptions(stripeElementsOptions);
-
-    stripe = await stripePromise;
-  };
-
   const handleFetchSelectedPlan = async (planId: string, currency?: string) => {
-    try {
-      const plan = await checkoutService.fetchPlanById(planId, currency);
-      setPlan(plan);
-      setSelectedPlan(plan.selectedPlan);
-
-      return plan;
-    } catch (error) {
-      errorService.reportError(error);
-      if (user) {
-        navigationService.push(AppView.Drive);
-      } else {
-        navigationService.push(AppView.Signup);
-      }
+    const plan = await checkoutService.fetchPlanById(planId, currency);
+    setPlan(plan);
+    setSelectedPlan(plan.selectedPlan);
+    if (plan.selectedPlan.minimumSeats) {
+      setSeatsForBusinessSubscription(plan.selectedPlan.minimumSeats);
     }
+
+    return plan;
   };
 
   const handleFetchPromotionCode = async (priceId: string, promotionCode: string) => {
@@ -501,32 +461,21 @@ const CheckoutViewWrapper = () => {
     await databaseService.clear();
     localStorageService.clear();
     RealtimeService.getInstance().stop();
-    setAuthMethod('signIn');
-  };
-
-  const getUserInfo = (user: UserSettings, email: string, userNameFromAddressElement: string, fullName: string) => {
-    let userData;
-
-    if (user) {
-      userData = {
-        name: fullName,
-        email: user.email,
-      };
-    } else {
-      userData = {
-        name: userNameFromAddressElement,
-        email: email,
-      };
-    }
-
-    return userData;
+    setAuthMethod('signUp');
   };
 
   const handlePromoCodeError = (err: unknown, showNotification?: boolean) => {
     const error = err as Error;
-    const errorMessage = error.message.includes('Promotion code with an id')
-      ? error.message
-      : 'Something went wrong, try again later';
+    const statusCode = (err as any).status;
+    let errorMessage = translate('notificationMessages.errorApplyingCoupon');
+    if (statusCode) {
+      if (
+        statusCode === STATUS_CODE_ERROR.PROMO_CODE_BY_NAME_NOT_FOUND ||
+        statusCode === STATUS_CODE_ERROR.BAD_REQUEST
+      ) {
+        errorMessage = error.message;
+      }
+    }
     setError('coupon', errorMessage);
     errorService.reportError(error);
     setPromoCodeData(undefined);
@@ -539,37 +488,55 @@ const CheckoutViewWrapper = () => {
     }
   };
 
+  const onCountryChange = (country: string) => {
+    setCountry(country);
+  };
+
+  const onSeatsChange = (seats: number) => {
+    const minSeats = currentSelectedPlan?.minimumSeats;
+    const maxSeats = currentSelectedPlan?.maximumSeats;
+
+    if (maxSeats && seats > maxSeats) {
+      setSeatsForBusinessSubscription(maxSeats);
+    } else if (minSeats && seats < minSeats) {
+      setSeatsForBusinessSubscription(minSeats);
+    } else {
+      setSeatsForBusinessSubscription(seats);
+    }
+  };
+
   const checkoutViewManager: CheckoutViewManager = {
     onCouponInputChange: setCouponCodeName,
     onLogOut,
     onCheckoutButtonClicked,
     onRemoveAppliedCouponCode,
+    onCountryChange,
     handleAuthMethodChange: setAuthMethod,
     onUserNameFromAddressElementChange: setUserNameFromElementAddress,
+    onSeatsChange,
   };
 
   return (
     <>
-      {isCheckoutReadyToRender && elementsOptions && stripe ? (
-        <Elements stripe={stripe} options={elementsOptions}>
+      {isCheckoutReadyToRender && elementsOptions && stripeSdk ? (
+        <Elements stripe={stripeSdk} options={{ ...elementsOptions }}>
           <CheckoutView
             checkoutViewVariables={state}
             userAuthComponentRef={userAuthComponentRef}
             userInfo={userInfo}
             isUserAuthenticated={isUserAuthenticated}
             upsellManager={upsellManager}
-            authMethod={authMethod}
             checkoutViewManager={checkoutViewManager}
           />
-          {individualPrices && currentSelectedPlan && isUpdateSubscriptionDialogOpen ? (
+          {canChangePlanDialogBeOpened ? (
             <ChangePlanDialog
-              prices={individualPrices}
+              prices={prices}
               isDialogOpen={isUpdateSubscriptionDialogOpen}
               setIsDialogOpen={setIsUpdateSubscriptionDialogOpen}
               onPlanClick={onChangePlanClicked}
-              priceIdSelected={currentSelectedPlan!.id}
+              priceIdSelected={currentSelectedPlan.id}
               isUpdatingSubscription={isUpdatingSubscription}
-              subscriptionSelected={UserType.Individual}
+              subscriptionSelected={currentSelectedPlan.type}
             />
           ) : undefined}
         </Elements>

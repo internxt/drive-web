@@ -4,19 +4,19 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 78%",
-    "title": "Offres de retour au travail pour tous les plans à vie !",
-    "subtitle": "Gagnez notre sac à dos premium avec nos plans à vie.",
-    "cta": "Choisir un plan",
+    "label": "Économisez 85% !",
+    "title": "Les meilleures offres du Black Friday",
+    "subtitle": "Recevez notre sac à dos premium avec nos plans à vie.",
+    "cta": "Choisissez votre plan",
     "guarantee": "Garantie de remboursement de 30 jours",
-    "lastCta": "*Offre valable pour les comptes gratuits ou les nouveaux clients",
+    "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
     "features": [
-      "Choisissez votre plan à vie parfait",
-      "Stockage en nuage sûr et sécurisé",
-      "Open source et vérifié",
+      "Économisez gros sur tous les plans premium",
+      "Stockage cloud privé et crypté",
+      "Open source et audité",
       "Transferts cryptés de bout en bout",
       "Aucun accès non autorisé",
-      "L'offre se termine le 12 septembre"
+      "L'offre se termine le 3 décembre"
     ]
   },
   "valentinesBanner": {
@@ -46,7 +46,8 @@
     "light": "Clair",
     "dark": "Sombre",
     "system": "Système",
-    "starwars": "Star Wars"
+    "starwars": "Star Wars",
+    "halloween": "Halloween"
   },
   "auth": {
     "email": "Email",
@@ -60,7 +61,8 @@
       "dontHaveAccount": "Vous n'avez pas de compte ?",
       "createAccount": "Créer un compte",
       "2FA": "Code à deux facteurs",
-      "twoFactorAuthenticationCode": "Code d'authentification à deux facteurs"
+      "twoFactorAuthenticationCode": "Code d'authentification à deux facteurs",
+      "wrongLogin": "Nom d'utilisateur ou mot de passe invalide"
     },
     "signup": {
       "title": "Créer un compte",
@@ -166,11 +168,21 @@
       "emailMustNotBeEmpty": "L'email ne doit pas être vide",
       "privacyGuarantee": "Garantie de confidentialité : Nous ne partageons pas vos informations et ne vous contacterons que si nécessaire pour fournir notre service."
     },
+    "addressBillingTitle": "Facturation d'Adresse",
+    "addressBilling": {
+      "optional": {
+        "cta": "Optionnel",
+        "companyName": "Nom de l'entreprise",
+        "companyVatId": "Numéro de TVA de l'entreprise"
+      }
+    },
     "paymentTitle": "Sélectionnez un mode de paiement",
     "productCard": {
       "title": "Récapitulatif de la commande",
       "selectedPlan": "Plan sélectionné",
+      "numberOfUsers": "Nombre d'utilisateurs : {{seats}}",
       "renewalPeriod": {
+        "renewsAt": "* Se renouvelle le",
         "month": "mensuel",
         "year": "annuel",
         "lifetime": "à vie"
@@ -185,27 +197,39 @@
         "year": "Facturé annuellement",
         "lifetime": "Paiement unique"
       },
+      "perUser": "/par utilisateur",
       "saving": "Vous économisez {{percent}}%",
       "planDetails": {
         "title": "Détails du plan :",
-        "features": [
-          "{{spaceToUpgrade}} de stockage chiffré",
-          "Partage de fichiers et dossiers chiffrés",
-          "Partage de fichiers protégé par mot de passe",
-          "Accédez à vos fichiers depuis n'importe quel appareil",
-          "Accédez à tous nos services",
-          "Téléchargez des fichiers jusqu'à 20 Go",
-          "Authentification à deux facteurs (2FA)",
-          "Support client premium",
-          "Garantie de remboursement de 30 jours"
-        ]
+        "features": {
+          "individual": [
+            "{{spaceToUpgrade}} de stockage chiffré",
+            "Partage de fichiers et dossiers chiffrés",
+            "Partage de fichiers protégé par mot de passe",
+            "Accédez à vos fichiers depuis n'importe quel appareil",
+            "Accédez à tous nos services",
+            "Authentification à deux facteurs (2FA)",
+            "Support client premium",
+            "Garantie de remboursement de 30 jours"
+          ],
+          "business": [
+            "{{spaceToUpgrade}} stockage/utilisateur",
+            "Partage de fichiers et de dossiers chiffrés",
+            "Créer et gérer des utilisateurs et des équipes",
+            "À partir de {{minimumSeats}} utilisateurs et jusqu'à {{maximumSeats}}",
+            "Conforme au GDPR",
+            "Gérer la facturation et les paiements du compte",
+            "Support client premium"
+          ]
+        }
       },
       "total": "Total : ",
+      "totalForBusiness": "Total pour {{N}} utilisateurs : ",
       "addCoupon": {
         "buttonTitle": "Ajouter un coupon",
-        "inputText": "Code de coupon",
-        "applyCodeButtonTitle": "Appliquer"
+        "inputText": "Code de coupon"
       },
+      "apply": "Appliquer",
       "amountSaved": "Économisez ",
       "withAnnualBilling": "avec facturation annuelle"
     }
@@ -883,7 +907,13 @@
       "primaryAction": "Confirmer",
       "secondaryAction": "Annuler"
     },
-    "2FAAuthenticationModal": {}
+    "2FAAuthenticationModal": {},
+    "shareWithTeamModal": {
+      "title": "Partager \"{{name}}\"",
+      "teams": "Équipes",
+      "teamsWithAccess": "Équipes avec accès :",
+      "shareButton": "Partager"
+    }
   },
   "form": {
     "fields": {
@@ -1195,6 +1225,9 @@
     "linkUpdated": "Lien mis à jour",
     "itemsMovedToTrash": "{{item}} déplacé vers la corbeille",
     "restoreItems": "{{itemsToRecover}} restauré avec succès",
+    "storageModified": "Stockage modifié avec succès",
+    "errorModifyingStorage": "Le nouvel espace de stockage n'est pas valide pour ce membre.",
+    "generalErrorWhileModifyingStorage": "Une erreur s'est produite lors de la modification du stockage.",
     "itemDeleted": "{{itemsToDelete}} supprimé",
     "itemsDeleted": "Fichiers supprimés",
     "emailNotEmpty": "L'adresse électronique ne doit pas être vide",
@@ -1203,7 +1236,17 @@
     "successCancelSubscription": "Votre abonnement a été annulé",
     "errorCancelSubscription": "Quelque chose s'est mal passé lors de l'annulation de votre abonnement",
     "errorPurchaseBusinessPlan": "Vous avez déjà un plan d'affaires.",
-    "couponIsNotValidForUserError": "Le coupon ne peut être utilisé que par de nouveaux clients."
+    "couponIsNotValidForUserError": "Le coupon ne peut être utilisé que par de nouveaux clients.",
+    "errorApplyingCoupon": "Une erreur s'est produite lors de l'application du coupon",
+    "invalidTaxIdIsProvided": "Le numéro d'identification fiscale fourni est invalide",
+    "errorWhileFetchingMoreItems": "Une erreur est survenue lors de la récupération d'éléments supplémentaires",
+    "errorDeletingItems": "Une erreur est survenue lors de la suppression de cet élément",
+    "errorFetchingWorkspace": "Erreur lors de la récupération de l'espace de travail {{error}}",
+    "errorSettingUpWorkspace": "Erreur lors de la configuration de l'espace de travail {{error}}",
+    "errorWhileLoadingWorkspace": "Erreur lors du chargement de l'espace de travail {{error}}",
+    "errorFetchingWorkspaceCredentials": "Erreur lors de la récupération des identifiants de l'espace de travail {{error}}",
+    "invalidWorkspaceInvitationError": "Espace de travail plein. Contactez le propriétaire.",
+    "errorAcceptingWorkspaceInvitation": "Une erreur s'est produite lors de l'acceptation de l'invitation"
   },
   "actions": {
     "undo": "Annuler",
@@ -1280,6 +1323,7 @@
       "details": "Détails",
       "shareLink": "Partager",
       "shareTeam": "Partager avec l'équipe",
+      "shareWithWorkspace": "Partager avec l'espace de travail",
       "rename": "Renommer",
       "manageLinkAccess": "Gestion de l'accès",
       "manageAccess": "Gestion de l'accès",
@@ -1436,6 +1480,14 @@
           "member": "Membre",
           "deactivated": "Désactivé"
         },
+        "modifyStorageModal": {
+          "user": "Utilisateur",
+          "storage": "Stockage",
+          "spaceAssigned": "Espace assigné",
+          "spaceLeft": "Espace total restant",
+          "cancel": "Annuler",
+          "saveChanges": "Enregistrer les modifications"
+        },
         "deactivationModal": {
           "title": "Désactiver le membre",
           "description": "{{name}} perdra l'accès à l'espace de travail. Tous leurs fichiers et dossiers resteront inchangés.",
@@ -1452,7 +1504,7 @@
           "title": "Supprimer le membre",
           "description": "{{name}} perdra l'accès à l'espace de travail. Tous leurs fichiers et dossiers resteront inchangés.",
           "remove": "Supprimer",
-          "removing" : "Suppression"
+          "removing": "Suppression"
         },
         "changePasswordModal": {
           "title": "Demander un changement de mot de passe",
@@ -1623,7 +1675,7 @@
       "levelUpStorage": "Améliorez votre espace de stockage et bénéficiez de nombreux autres avantages",
       "upgradeNow": "Mettre à niveau maintenant",
       "emptyTrash": "Vider la corbeille",
-      "emptryTrashDescription": "Les éléments dans la corbeille seront supprimés définitivement après 15 jours",
+      "emptyTrashDescription": "Les éléments contenus dans la corbeille seront définitivement supprimés",
       "plans": {
         "title": "Plans",
         "current": "Actuel",

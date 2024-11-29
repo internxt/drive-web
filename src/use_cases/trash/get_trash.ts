@@ -27,14 +27,16 @@ const getTrashPaginated = async (
   offset: number | undefined,
   type: 'files' | 'folders',
   root: boolean,
+  sort: 'plainName' | 'updatedAt',
+  order: 'ASC' | 'DESC',
   folderId?: number | undefined,
 ): Promise<{ finished: boolean; itemsRetrieved: number }> => {
   try {
     const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
-    const itemsInTrash = await trashClient.getTrashedFilesPaginated(limit, offset, type, root, folderId);
+    const itemsInTrash = await trashClient.getTrashedItemsSorted(limit, offset, type, root, sort, order, folderId);
 
     const parsedTrashItems = itemsInTrash.result.map(
-      (item) => ({ ...item, isFolder: type === 'folders', name: item.plainName } as unknown as DriveItemData),
+      (item) => ({ ...item, isFolder: type === 'folders', name: item.plainName }) as unknown as DriveItemData,
     );
     const itemslength = itemsInTrash.result.length;
     const areLastItems = itemslength < limit;
@@ -71,7 +73,7 @@ const getWorkspaceTrashPaginated = async (
     const itemsInTrash = await workspacesService.getTrashItems(workspace?.workspace.id as string, trashType, offset);
 
     const parsedTrashItems = itemsInTrash.result.map(
-      (item) => ({ ...item, isFolder: type === 'folders', name: item.plainName } as unknown as DriveItemData),
+      (item) => ({ ...item, isFolder: type === 'folders', name: item.plainName }) as unknown as DriveItemData,
     );
     const itemslength = itemsInTrash.result.length;
     const areLastItems = itemslength < limit;

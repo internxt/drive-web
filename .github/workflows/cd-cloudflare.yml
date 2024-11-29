@@ -1,0 +1,101 @@
+name: Drive Web Cloudflare CD
+on:
+  push:
+    branches: [master, feature/IN-57-migrate-drive-web-to-cloudflare]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          registry-url: 'https://npm.pkg.github.com'
+      - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> ./.env
+      - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> ./.env
+      - run: echo REACT_APP_STRIPE_TEST_PK=${{ secrets.REACT_APP_STRIPE_TEST_PK }} >> ./.env
+      - run: echo REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}/api >> ./.env
+      - run: echo REACT_APP_SEGMENT_KEY=${{ secrets.REACT_APP_SEGMENT_KEY }} >> ./.env
+      - run: echo REACT_APP_MAGIC_IV=${{ secrets.REACT_APP_MAGIC_IV }} >> ./.env
+      - run: echo REACT_APP_MAGIC_SALT=${{ secrets.REACT_APP_MAGIC_SALT }} >> ./.env
+      - run: echo REACT_APP_CRYPTO_SECRET2=${{ secrets.REACT_APP_CRYPTO_SECRET2 }} >> ./.env
+      - run: echo GENERATE_SOURCEMAP=${{ secrets.GENERATE_SOURCEMAP }} >> ./.env
+      - run: echo REACT_APP_RECAPTCHA_V3=${{ secrets.REACT_APP_RECAPTCHA_V3 }} >> ./.env
+      - run: echo REACT_APP_STORJ_BRIDGE=${{ secrets.REACT_APP_STORJ_BRIDGE }} >> ./.env
+      - run: echo REACT_APP_HOSTNAME=${{ secrets.REACT_APP_HOSTNAME }} >> ./.env
+      - run: echo REACT_APP_PROXY=${{ secrets.REACT_APP_PROXY }} >> ./.env
+      - run: echo REACT_APP_DONT_USE_PROXY=${{ secrets.REACT_APP_DONT_USE_PROXY }} >> ./.env
+      - run: echo REACT_APP_PHOTOS_API_URL=${{ secrets.REACT_APP_PHOTOS_API_URL }} >> ./.env
+      - run: echo REACT_APP_SENTRY_DSN=${{ secrets.REACT_APP_SENTRY_DSN }} >> ./.env
+      - run: echo REACT_APP_PAYMENTS_API_URL=${{ secrets.REACT_APP_PAYMENTS_API_URL }} >> ./.env
+      - run: echo REACT_APP_DRIVE_NEW_API_URL=${{ secrets.REACT_APP_DRIVE_NEW_API_URL }} >> ./.env
+      - run: echo REACT_APP_NODE_ENV=production >> ./.env
+      - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
+      - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
+      # You cannot read packages from other private repos with GITHUB_TOKEN
+      # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
+      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
+      - run: echo "always-auth=true" >> .npmrc
+
+      # Setup node
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Setup dependencies
+      - run: yarn
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build
+      - run: yarn run build
+        env:
+          CI: false
+
+      # Upload build directory as an artifact
+      - name: Upload build directory
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    name: Publish to Cloudflare Pages
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # Download the build artifact
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: build
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: drive-web
+          directory: build
+          # Optional: Enable this if you want to have GitHub Deployments triggered
+          # gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: Switch what branch you are publishing to.
+          # By default this will be the branch which triggered this workflow
+          branch: feature/IN-57-migrate-drive-web-to-cloudflare
+          # Optional: Change the working directory
+          # workingDirectory: my-site
+          # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
+          wranglerVersion: '3'

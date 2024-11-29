@@ -22,6 +22,7 @@ import { TranslationProvider } from 'app/i18n/provider/TranslationProvider';
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from 'app/theme/ThemeProvider';
 import { LiveChatLoaderProvider } from 'react-live-chat-loader';
+import { DialogManagerProvider } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));
@@ -43,11 +44,13 @@ root.render(
     <HelmetProvider>
       <LiveChatLoaderProvider provider="intercom" providerKey={process.env.REACT_APP_INTERCOM_PROVIDER_KEY as string}>
         <Provider store={store}>
-          <ThemeProvider>
-            <TranslationProvider>
-              <App />
-            </TranslationProvider>
-          </ThemeProvider>
+          <DialogManagerProvider>
+            <ThemeProvider>
+              <TranslationProvider>
+                <App />
+              </TranslationProvider>
+            </ThemeProvider>
+          </DialogManagerProvider>
         </Provider>
       </LiveChatLoaderProvider>
     </HelmetProvider>

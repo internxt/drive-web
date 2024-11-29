@@ -13,7 +13,7 @@ export type ListItemMenu<T> = Array<
         keyboardShortcutIcon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
         keyboardShortcutText?: string;
       };
-      action: (target: T) => void;
+      action: (target: T) => void | Promise<void>;
       disabled?: (target: T) => boolean;
     }
   | undefined
@@ -37,16 +37,17 @@ interface ItemProps<T> {
 }
 
 const MENU_BUTTON_HEIGHT = 40;
+const TOP_MIN_HEIGHT = 500;
 
 // This is used to get the size of the menu item list and adjust its position depending on where you are trying to open it.
 // As the size of the list is not fixed we need to create an item equal to the list to be rendered
 // at the same time as the view to get the size and make the necessary positional adjustments.
-const MenuItemList = ({
+const MenuItemList = <T,>({
   menuItemsRef,
   menu,
 }: {
   menuItemsRef: React.MutableRefObject<HTMLDivElement | null>;
-  menu?: ListItemMenu<any>;
+  menu?: ListItemMenu<T>;
 }) => (
   <div
     className="z-20 mt-0 flex flex-col rounded-lg bg-surface py-1.5 shadow-subtle-hard outline-none dark:bg-gray-5"
@@ -140,7 +141,7 @@ export default function ListItem<T extends { id: string }>({
       x = x - childWidth;
     }
 
-    if (event.clientY + childHeight > innerHeight) {
+    if (event.clientY + childHeight > innerHeight && event.clientY > TOP_MIN_HEIGHT) {
       y = y - childHeight;
     }
     setPosX(x);
@@ -290,8 +291,8 @@ export default function ListItem<T extends { id: string }>({
                                         active
                                           ? 'bg-gray-5 text-gray-100 dark:bg-gray-10'
                                           : disabled
-                                          ? 'pointer-events-none font-medium text-gray-100'
-                                          : 'text-gray-80'
+                                            ? 'pointer-events-none font-medium text-gray-100'
+                                            : 'text-gray-80'
                                       }`}
                                     >
                                       <div className="flex flex-row items-center space-x-2">

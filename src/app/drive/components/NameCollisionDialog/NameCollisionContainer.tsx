@@ -8,9 +8,9 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageActions, storageSelectors } from '../../../store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
 import { uiActions } from '../../../store/slices/ui';
 import { DriveItemData } from '../../types';
+import { IRoot } from '../../../store/slices/storage/types';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
@@ -105,11 +105,17 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
   };
 
   const keepAndMoveItem = async (itemsToUpload: DriveItemData[]) => {
-    await dispatch(storageThunks.renameItemsThunk({ items: itemsToUpload, destinationFolderId: folderId }));
-    dispatch(
-      storageThunks.moveItemsThunk({
+    await dispatch(
+      storageThunks.renameItemsThunk({
         items: itemsToUpload,
-        destinationFolderId: moveDestinationFolderId as string,
+        destinationFolderId: folderId,
+        onRenameSuccess: (itemToUpload: DriveItemData) =>
+          dispatch(
+            storageThunks.moveItemsThunk({
+              items: [itemToUpload],
+              destinationFolderId: moveDestinationFolderId as string,
+            }),
+          ),
       }),
     );
   };

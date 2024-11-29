@@ -57,6 +57,7 @@ export interface TextInputProps {
   style?: CSSProperties;
   onFocus?: (e: any) => void | (() => void);
   onBlur?: (e: any) => void | (() => void);
+  onKeyDown?: (e: any) => void | (() => void);
   autoCompleteOnFocus?: boolean;
 }
 
@@ -86,6 +87,7 @@ const TextInput = (props: TextInputProps) => {
       }`}
       onChange={props.onChange}
       onKeyPress={() => props.onChangeText}
+      onKeyDown={props.onKeyDown}
       onFocus={(e) => {
         if (props.autoCompleteOnFocus) {
           e.target.removeAttribute('readonly');

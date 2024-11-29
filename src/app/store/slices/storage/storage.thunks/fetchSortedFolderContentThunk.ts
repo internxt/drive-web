@@ -27,6 +27,8 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
     const filesOffset = 0;
     const driveItemsSort = storageState.driveItemsSort;
     const driveItemsOrder = storageState.driveItemsOrder;
+    const driveItemsSortForFolders = driveItemsSort === 'size' ? 'name' : driveItemsSort;
+    const driveItemsOrderForFolders = driveItemsSort === 'size' ? 'ASC' : driveItemsOrder;
 
     try {
       dispatch(storageActions.setIsLoadingFolder({ folderId, value: true }));
@@ -44,16 +46,16 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
             folderId,
             foldersOffset,
             DEFAULT_LIMIT,
-            driveItemsSort,
-            driveItemsOrder,
+            driveItemsSortForFolders,
+            driveItemsOrderForFolders,
           );
         } else {
           [folderPromise] = await storageClient.getFolderFoldersByUuid(
             folderId,
             foldersOffset,
             DEFAULT_LIMIT,
-            driveItemsSort,
-            driveItemsOrder,
+            driveItemsSortForFolders,
+            driveItemsOrderForFolders,
           );
         }
       }
@@ -61,7 +63,7 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
       const itemsFolderUnparsed = await folderPromise;
       const itemsFolder = selectedWorkspace ? itemsFolderUnparsed.result : itemsFolderUnparsed.folders;
       const parsedItemsFolder = itemsFolder.map(
-        (item) => ({ ...item, isFolder: true, name: item.plainName } as DriveItemData),
+        (item) => ({ ...item, isFolder: true, name: item.plainName }) as DriveItemData,
       );
       const areLastFolders = itemsFolder.length < DEFAULT_LIMIT;
       dispatch(storageActions.setHasMoreDriveFolders({ folderId, status: !areLastFolders }));
@@ -92,7 +94,7 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
       const itemsFilesUnparsed = await filesPromise;
       const itemsFiles = selectedWorkspace ? itemsFilesUnparsed.result : itemsFilesUnparsed.files;
       const parsedItemsFiles = itemsFiles.map(
-        (item) => ({ ...item, isFolder: false, name: item.plainName } as DriveItemData),
+        (item) => ({ ...item, isFolder: false, name: item.plainName }) as DriveItemData,
       );
       const areLastFiles = itemsFiles.length < DEFAULT_LIMIT;
       dispatch(storageActions.setHasMoreDriveFiles({ folderId, status: !areLastFiles }));

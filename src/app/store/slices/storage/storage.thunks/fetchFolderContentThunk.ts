@@ -28,86 +28,89 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
     const filesOffset = (storageState.levels[folderId] ?? []).filter(filterFilesItems).length;
     const driveItemsSort = storageState.driveItemsSort;
     const driveItemsOrder = storageState.driveItemsOrder;
+    const driveItemsSortForFolders = driveItemsSort === 'size' ? 'name' : driveItemsSort;
 
     try {
-      let itemsPromise;
+      if (folderId) {
+        let itemsPromise;
 
-      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-      const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+        const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+        const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
 
-      if (hasMoreDriveFolders) {
-        if (selectedWorkspace) {
-          const workspaceId = selectedWorkspace.workspace.id;
-          [itemsPromise] = workspaceClient.getFolders(
-            workspaceId ?? '',
-            folderId,
-            foldersOffset,
-            DEFAULT_LIMIT,
-            driveItemsSort,
-            driveItemsOrder,
-          );
+        if (hasMoreDriveFolders) {
+          if (selectedWorkspace) {
+            const workspaceId = selectedWorkspace.workspace.id;
+            [itemsPromise] = workspaceClient.getFolders(
+              workspaceId ?? '',
+              folderId,
+              foldersOffset,
+              DEFAULT_LIMIT,
+              driveItemsSortForFolders,
+              driveItemsOrder,
+            );
+          } else {
+            [itemsPromise] = storageClient.getFolderFoldersByUuid(
+              folderId,
+              foldersOffset,
+              DEFAULT_LIMIT,
+              driveItemsSortForFolders,
+              driveItemsOrder,
+            );
+          }
+        } else if (hasMoreDriveFiles) {
+          if (selectedWorkspace) {
+            const workspaceId = selectedWorkspace.workspace.id;
+            [itemsPromise] = workspaceClient.getFiles(
+              workspaceId ?? '',
+              folderId,
+              filesOffset,
+              DEFAULT_LIMIT,
+              driveItemsSort,
+              driveItemsOrder,
+            );
+          } else {
+            [itemsPromise] = storageClient.getFolderFilesByUuid(
+              folderId,
+              filesOffset,
+              DEFAULT_LIMIT,
+              driveItemsSort,
+              driveItemsOrder,
+            );
+          }
         } else {
-          [itemsPromise] = storageClient.getFolderFoldersByUuid(
-            folderId,
-            foldersOffset,
-            DEFAULT_LIMIT,
-            driveItemsSort,
-            driveItemsOrder,
-          );
+          return;
         }
-      } else if (hasMoreDriveFiles) {
-        if (selectedWorkspace) {
-          const workspaceId = selectedWorkspace.workspace.id;
-          [itemsPromise] = workspaceClient.getFiles(
-            workspaceId ?? '',
-            folderId,
-            filesOffset,
-            DEFAULT_LIMIT,
-            driveItemsSort,
-            driveItemsOrder,
+        const itemsUnparsed = await itemsPromise;
+        let parsedItems;
+        let itemslength;
+
+        if (hasMoreDriveFolders) {
+          const items = selectedWorkspace ? itemsUnparsed.result : itemsUnparsed.folders;
+
+          parsedItems = items.map(
+            (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName }) as DriveItemData,
           );
+          itemslength = items.length;
+        } else if (!hasMoreDriveFolders) {
+          const items = selectedWorkspace ? itemsUnparsed.result : itemsUnparsed.files;
+
+          parsedItems = items.map(
+            (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName }) as DriveItemData,
+          );
+          itemslength = items.length;
+        }
+
+        const areLastItems = itemslength < DEFAULT_LIMIT;
+
+        dispatch(storageActions.addItems({ folderId, items: parsedItems }));
+
+        if (hasMoreDriveFolders) {
+          dispatch(storageActions.setHasMoreDriveFolders({ folderId, status: !areLastItems }));
+          dispatch(storageActions.addFolderFoldersLength({ folderId, foldersLength: itemslength }));
         } else {
-          [itemsPromise] = storageClient.getFolderFilesByUuid(
-            folderId,
-            filesOffset,
-            DEFAULT_LIMIT,
-            driveItemsSort,
-            driveItemsOrder,
-          );
+          dispatch(storageActions.setHasMoreDriveFiles({ folderId, status: !areLastItems }));
+          dispatch(storageActions.addFolderFilesLength({ folderId, filesLength: itemslength }));
         }
-      } else {
-        return;
-      }
-      const itemsUnparsed = await itemsPromise;
-      let parsedItems;
-      let itemslength;
-
-      if (hasMoreDriveFolders) {
-        const items = selectedWorkspace ? itemsUnparsed.result : itemsUnparsed.folders;
-
-        parsedItems = items.map(
-          (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName } as DriveItemData),
-        );
-        itemslength = items.length;
-      } else if (!hasMoreDriveFolders) {
-        const items = selectedWorkspace ? itemsUnparsed.result : itemsUnparsed.files;
-
-        parsedItems = items.map(
-          (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName } as DriveItemData),
-        );
-        itemslength = items.length;
-      }
-
-      const areLastItems = itemslength < DEFAULT_LIMIT;
-
-      dispatch(storageActions.addItems({ folderId, items: parsedItems }));
-
-      if (hasMoreDriveFolders) {
-        dispatch(storageActions.setHasMoreDriveFolders({ folderId, status: !areLastItems }));
-        dispatch(storageActions.addFolderFoldersLength({ folderId, foldersLength: itemslength }));
-      } else {
-        dispatch(storageActions.setHasMoreDriveFiles({ folderId, status: !areLastItems }));
-        dispatch(storageActions.addFolderFilesLength({ folderId, filesLength: itemslength }));
       }
     } catch (error) {
       errorService.reportError(error, { extra: { folderId, foldersOffset, filesOffset } });
@@ -115,42 +118,6 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
     }
   },
 );
-
-// export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
-//   'storage/fetchFolderContent',
-//   async (folderId, { dispatch }) => {
-//     const storageClient = SdkFactory.getInstance().createStorageClient();
-//     const [responsePromise] = storageClient.getFolderContent(folderId);
-//     const databaseContent = await databaseService.get<DatabaseCollection.Levels>(DatabaseCollection.Levels, folderId);
-
-//     dispatch(storageActions.resetOrder());
-
-//     if (databaseContent) {
-//       dispatch(
-//         storageActions.setItems({
-//           folderId,
-//           items: databaseContent,
-//         }),
-//       );
-//     } else {
-//       await responsePromise;
-//     }
-
-//     responsePromise.then((response) => {
-//       const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
-//       const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
-//       const parsedItems = items.map((item) => ({ ...item, plainName: item?.plain_name }));
-
-//       dispatch(
-//         storageActions.setItems({
-//           folderId,
-//           items: parsedItems,
-//         }),
-//       );
-//       databaseService.put(DatabaseCollection.Levels, folderId, parsedItems);
-//     });
-//   },
-// );
 
 export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder

@@ -1,4 +1,3 @@
-import analyticsService from 'app/analytics/services/analytics.service';
 import useEffectAsync from 'app/core/hooks/useEffectAsync';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
@@ -11,6 +10,8 @@ import localStorageService from '../../../core/services/local-storage.service';
 import { RootState } from '../../../store';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import { isStarWarsThemeAvailable } from '../../utils/checkStarWarsCode';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { trackPaymentConversion } from 'app/analytics/impact.service';
 
 const CheckoutSuccessView = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -21,10 +22,11 @@ const CheckoutSuccessView = (): JSX.Element => {
     setTimeout(async () => {
       await dispatch(userThunks.initializeUserThunk());
       await dispatch(planThunks.initializeThunk());
+      await dispatch(workspaceThunks.fetchWorkspaces());
     }, 3000);
 
     try {
-      await analyticsService.trackPaymentConversion();
+      await trackPaymentConversion();
       localStorageService.removeItem('subscriptionId');
       localStorageService.removeItem('paymentIntentId');
       localStorageService.removeItem('amountPaid');

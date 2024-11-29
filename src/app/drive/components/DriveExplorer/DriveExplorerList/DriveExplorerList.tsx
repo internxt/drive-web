@@ -1,16 +1,14 @@
 import { useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
 import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
-import workspacesService from '../../../../core/services/workspace.service';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import shareService from '../../../../share/services/share.service';
 import List from '../../../../shared/components/List';
 import { AppDispatch, RootState } from '../../../../store';
@@ -22,7 +20,6 @@ import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.
 import { DriveItemData, DriveItemDetails } from '../../../types';
 import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
-import { shareItemWithTeam } from '../utils';
 import {
   contextMenuDriveFolderNotSharedLink,
   contextMenuDriveFolderShared,
@@ -35,6 +32,8 @@ import {
   contextMenuWorkspaceFile,
   contextMenuWorkspaceFolder,
 } from './DriveItemContextMenu';
+import { skinSkeleton } from 'app/shared/Skeleton';
+import ShareWithTeamDialog from '../../ShareWithTeamDialog/ShareWithTeamDialog';
 
 interface DriveExplorerListProps {
   folderId: string;
@@ -53,6 +52,7 @@ interface DriveExplorerListProps {
   onOpenStopSharingAndMoveToTrashDialog: () => void;
   showStopSharingConfirmation: boolean;
   roles: Role[];
+  resetPaginationState: () => void;
 }
 
 type ObjectWithId = { id: string | number };
@@ -107,7 +107,6 @@ const resetDriveOrder = ({
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll, forceLoading, roles } = props;
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
-  const [isAllSelectedEnabled, setIsAllSelectedEnabled] = useState(false);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
@@ -122,27 +121,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     isSelectedSharedItem;
 
   const { translate } = useTranslationContext();
-
-  useEffect(() => {
-    setIsAllSelectedEnabled(false);
-  }, [props.folderId]);
-
-  useEffect(() => {
-    const isAllItemsSelected = props.selectedItems.length === props.items.length;
-    const itemsLengthIsNotZero = props.items.length !== 0;
-
-    if (isAllItemsSelected && itemsLengthIsNotZero) {
-      setIsAllSelectedEnabled(true);
-    } else {
-      setIsAllSelectedEnabled(false);
-    }
-  }, [props.selectedItems]);
-
-  useEffect(() => {
-    if (isAllSelectedEnabled) {
-      dispatch(storageActions.selectItems(props.items));
-    }
-  }, [props.items.length]);
 
   const onSelectedItemsChanged = (changes: { props: DriveItemData; value: boolean }[]) => {
     let updatedSelectedItems = props.selectedItems;
@@ -170,14 +148,27 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           ? OrderDirection.Asc
           : OrderDirection.Desc
         : OrderDirection.Asc;
+
     dispatch(storageActions.setOrder({ by: value.field, direction }));
 
     if (value.field === 'name') {
-      resetDriveOrder({ dispatch, orderType: 'plainName', direction, currentFolderId });
+      if (isTrash) {
+        props.resetPaginationState();
+      } else {
+        resetDriveOrder({ dispatch, orderType: 'plainName', direction, currentFolderId });
+      }
     }
 
     if (value.field === 'updatedAt') {
-      resetDriveOrder({ dispatch, orderType: 'updatedAt', direction, currentFolderId });
+      if (isTrash) {
+        props.resetPaginationState();
+      } else {
+        resetDriveOrder({ dispatch, orderType: 'updatedAt', direction, currentFolderId });
+      }
+    }
+
+    if (value.field === 'size') {
+      resetDriveOrder({ dispatch, orderType: 'size', direction, currentFolderId });
     }
   };
 
@@ -372,28 +363,9 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     moveToTrash: moveToTrash,
   });
 
-  const shareWithTeam = useCallback(
-    async (item: ContextMenuDriveItem) => {
-      const driveItem = item as DriveItemData;
-      const editorRole = roles.find((role) => role.name === 'EDITOR');
-      if (selectedWorkspace && editorRole) {
-        const isSharedSuccessfully = await shareItemWithTeam(driveItem, selectedWorkspace, editorRole);
-        if (isSharedSuccessfully) {
-          notificationsService.show({
-            text: translate('workspaces.messages.sharedSuccess'),
-            type: ToastType.Success,
-          });
-          return;
-        }
-      }
-
-      notificationsService.show({
-        text: translate('modals.shareModal.errors.copy-to-clipboard'),
-        type: ToastType.Error,
-      });
-    },
-    [dispatch, workspacesService, selectedWorkspace, roles, notificationsService],
-  );
+  const shareWithTeam = () => {
+    dispatch(uiActions.setIsShareWhithTeamDialogOpen(true));
+  };
 
   const workspaceItemMenu = contextMenuWorkspaceFile({
     shareLink: openLinkSettings,
@@ -435,7 +407,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       return fileSharedTrashMenu;
     }
 
-    if (isSelectedSharedItem) {
+    if (isSelectedSharedItem && !isWorkspaceSelected) {
       if (props.selectedItems[0]?.isFolder) {
         return selectedSharedFolderMenu;
       }
@@ -473,13 +445,14 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
             }}
           />
         )}
+        <ShareWithTeamDialog item={props.selectedItems[0]} roles={roles} />
         <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
           header={[
             {
               label: translate('drive.list.columns.name'),
               width: 'flex grow items-center min-w-driveNameHeader',
               name: 'name',
-              orderable: isRecents || isTrash ? false : true,
+              orderable: !isRecents,
               defaultDirection: 'ASC',
               buttonDataCy: 'driveListHeaderNameButton',
               textDataCy: 'driveListHeaderNameButtonText',
@@ -488,14 +461,15 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               label: translate('drive.list.columns.modified'),
               width: 'w-date',
               name: 'updatedAt',
-              orderable: isRecents || isTrash ? false : true,
+              orderable: !isRecents,
               defaultDirection: 'ASC',
             },
             {
               label: translate('drive.list.columns.size'),
+              orderable: !isRecents && !isTrash,
+              defaultDirection: 'ASC',
               width: 'w-size',
               name: 'size',
-              orderable: false,
             },
           ]}
           checkboxDataCy="driveListHeaderCheckbox"
@@ -562,13 +536,3 @@ export default connect((state: RootState) => ({
     state.ui.isItemDetailsDialogOpen ||
     state.ui.isPreferencesDialogOpen,
 }))(DriveExplorerList);
-
-const skinSkeleton = [
-  <div className="mr-3 flex w-full flex-row items-center space-x-4">
-    <div className="h-8 w-8 rounded-md bg-gray-5" />
-    <div className="h-4 w-full rounded bg-gray-5" />
-  </div>,
-  <div className="h-4 w-64 rounded bg-gray-5" />,
-  <div className="ml-3 h-4 w-24 rounded bg-gray-5" />,
-  <div className="ml-4 h-4 w-20 rounded bg-gray-5" />,
-];

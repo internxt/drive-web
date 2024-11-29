@@ -33,9 +33,9 @@ interface UISliceState {
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
-  currentEditingBreadcrumbNameDirty: string;
   isToastNotificationOpen: boolean;
   isGlobalSearch: boolean;
+  isShareWhithTeamDialogOpen: boolean;
 }
 
 const initialState: UISliceState = {
@@ -69,9 +69,9 @@ const initialState: UISliceState = {
   currentFileInfoMenuItem: null,
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
-  currentEditingBreadcrumbNameDirty: '',
   isToastNotificationOpen: false,
   isGlobalSearch: false,
+  isShareWhithTeamDialogOpen: false,
 };
 
 export const uiSlice = createSlice({
@@ -174,12 +174,6 @@ export const uiSlice = createSlice({
     ) => {
       state.currentEditingNameDirty = action.payload;
     },
-    setCurrentEditingBreadcrumbNameDirty: (
-      state: UISliceState,
-      action: PayloadAction<UISliceState['currentEditingBreadcrumbNameDirty']>,
-    ) => {
-      state.currentEditingBreadcrumbNameDirty = action.payload;
-    },
     resetState: (state: UISliceState) => {
       Object.assign(state, initialState);
     },
@@ -188,6 +182,9 @@ export const uiSlice = createSlice({
     },
     setIsGlobalSearch: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isGlobalSearch = action.payload;
+    },
+    setIsShareWhithTeamDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isShareWhithTeamDialogOpen = action.payload;
     },
   },
 });
@@ -218,6 +215,7 @@ export const {
   setIsToastNotificacionOpen,
   setIsGlobalSearch,
   setIsItemDetailsDialogOpen,
+  setIsShareWhithTeamDialogOpen,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;

@@ -1,5 +1,4 @@
 import {
-  CreateCheckoutSessionPayload,
   CreatedSubscriptionData,
   CustomerBillingInfo,
   DisplayPrice,
@@ -13,11 +12,8 @@ import {
 } from '@internxt/sdk/dist/drive/payments/types';
 import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js/pure';
-import { generateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import envService from '../../core/services/env.service';
-import httpService from '../../core/services/http.service';
-import { encryptPGP } from '../../crypto/services/utilspgp';
 import { LifetimeTier, StripeSessionMode } from '../types';
 
 export interface CreatePaymentSessionPayload {
@@ -52,9 +48,14 @@ const paymentService = {
     return stripe;
   },
 
-  async getCustomerId(name: string, email: string): Promise<{ customerId: string; token: string }> {
+  async getCustomerId(
+    name: string,
+    email: string,
+    country?: string,
+    companyVatId?: string,
+  ): Promise<{ customerId: string; token: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.createCustomer(name, email);
+    return paymentsClient.createCustomer(name, email, country, companyVatId);
   },
 
   async createSubscription(
@@ -162,50 +163,9 @@ const paymentService = {
     return paymentsClient.cancelSubscription(userType);
   },
 
-  async createCheckoutSession(
-    payload: CreateCheckoutSessionPayload & { mode?: string },
-  ): Promise<{ sessionId: string }> {
-    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-
-    return paymentsClient.createCheckoutSession(payload);
-  },
-
   async updateCustomerBillingInfo(payload: CustomerBillingInfo): Promise<void> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.updateCustomerBillingInfo(payload);
-  },
-
-  // TODO: refactor as individual
-  async handlePaymentTeams(priceId: string, quantity: number, mode: StripeSessionMode): Promise<void> {
-    const mnemonicTeam = generateMnemonic(256);
-    const encMnemonicTeam = await encryptPGP(mnemonicTeam);
-    const codMnemonicTeam = Buffer.from(encMnemonicTeam).toString('base64');
-    const payload: CreateTeamsPaymentSessionPayload = {
-      mode,
-      priceId,
-      quantity,
-      mnemonicTeam: codMnemonicTeam,
-      test: !envService.isProduction(),
-    };
-
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/stripe/teams/session`, {
-      method: 'POST',
-      headers: httpService.getHeaders(true, false),
-      body: JSON.stringify(payload),
-    })
-      .then((response) => response.json())
-      .catch((err) => {
-        console.error('Error starting Stripe session. Reason: %s', err);
-        throw err;
-      });
-
-    if (response.error) {
-      throw Error(response.error);
-    }
-
-    const stripe = await this.getStripe();
-
-    await stripe.redirectToCheckout({ sessionId: response.id });
   },
 };
 

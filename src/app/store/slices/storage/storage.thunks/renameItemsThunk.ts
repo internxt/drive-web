@@ -1,7 +1,7 @@
 import { ActionReducerMapBuilder, createAsyncThunk, Dispatch } from '@reduxjs/toolkit';
 
-import renameIfNeeded from '@internxt/lib/dist/src/items/renameIfNeeded';
-import { DriveItemData } from 'app/drive/types';
+import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFolderData, DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import tasksService from 'app/tasks/services/tasks.service';
 import { RenameFileTask, RenameFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
@@ -9,168 +9,131 @@ import { t } from 'i18next';
 import storageThunks from '.';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { SdkFactory } from '../../../../core/factory/sdk';
-import errorService from '../../../../core/services/error.service';
 import { uiActions } from '../../ui';
-import workspacesSelectors from '../../workspaces/workspaces.selectors';
+import { checkDuplicatedFiles } from '../fileUtils/checkDuplicatedFiles';
+import { getUniqueFilename } from '../fileUtils/getUniqueFilename';
+import { checkFolderDuplicated } from '../folderUtils/checkFolderDuplicated';
+import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
 import { StorageState } from '../storage.model';
-import storageSelectors from '../storage.selectors';
-import renameFolderIfNeeded, { IRoot } from './uploadFolderThunk';
+import { IRoot } from '../types';
 
-const checkRepeatedNameFiles = (destinationFolderFiles: DriveItemData[], files: (DriveItemData | File)[]) => {
-  const repeatedFilesInDrive: DriveItemData[] = [];
-  const unrepeatedFiles: (DriveItemData | File)[] = [];
-  const filesRepeated = files.reduce((acc, file) => {
-    const exists = destinationFolderFiles.some((folderFile) => {
-      const fullFolderFileName = folderFile.name + '.' + folderFile.type;
-
-      const fileName = (file as DriveItemData)?.fileId ? file.name + '.' + file.type : file.name;
-      if (fullFolderFileName === fileName) {
-        repeatedFilesInDrive.push(folderFile);
-        return true;
-      }
-      return false;
-    });
-
-    if (exists) {
-      return [...acc, file];
-    }
-    unrepeatedFiles.push(file);
-
-    return acc;
-  }, [] as (DriveItemData | File)[]);
-
-  return { filesRepeated, repeatedFilesInDrive, unrepeatedFiles };
-};
-
-const checkRepeatedNameFolders = (destinationFolderFolders: DriveItemData[], folders: (DriveItemData | IRoot)[]) => {
-  const repeatedFoldersInDrive: DriveItemData[] = [];
-  const unrepeatedFolders: (DriveItemData | IRoot)[] = [];
-  const foldersRepeated = folders.reduce((acc, file) => {
-    const exists = destinationFolderFolders.some((folderFile) => {
-      if (folderFile.name === file.name) {
-        repeatedFoldersInDrive.push(folderFile);
-        return true;
-      }
-      return false;
-    });
-
-    if (exists) {
-      return [...acc, file];
-    }
-    unrepeatedFolders.push(file);
-
-    return acc;
-  }, [] as (DriveItemData | IRoot)[]);
-
-  return { foldersRepeated, repeatedFoldersInDrive, unrepeatedFolders };
-};
-
-export const handleRepeatedUploadingFiles = (
-  files: (DriveItemData | File)[],
-  items: DriveItemData[],
+export const handleRepeatedUploadingFiles = async (
+  files: (DriveFileData | File)[],
   dispatch: Dispatch,
-): (DriveItemData | File)[] => {
-  const { filesRepeated, repeatedFilesInDrive, unrepeatedFiles } = checkRepeatedNameFiles(items, files);
+  destinationFolderUuid: string,
+): Promise<(DriveFileData | File)[]> => {
+  const {
+    filesWithDuplicates: filesRepeated,
+    duplicatedFilesResponse,
+    filesWithoutDuplicates: unrepeatedFiles,
+  } = await checkDuplicatedFiles(files as File[], destinationFolderUuid);
 
   const hasRepeatedNameFiles = !!filesRepeated.length;
   if (hasRepeatedNameFiles) {
-    dispatch(storageActions.setFilesToRename(filesRepeated));
-    dispatch(storageActions.setDriveFilesToRename(repeatedFilesInDrive));
+    dispatch(storageActions.setFilesToRename(filesRepeated as DriveItemData[]));
+    dispatch(storageActions.setDriveFilesToRename(duplicatedFilesResponse as DriveItemData[]));
     dispatch(uiActions.setIsNameCollisionDialogOpen(true));
   }
-  return unrepeatedFiles;
+  return unrepeatedFiles as DriveItemData[];
 };
 
-export const handleRepeatedUploadingFolders = (
-  folders: (DriveItemData | IRoot)[],
-  items: DriveItemData[],
+export const handleRepeatedUploadingFolders = async (
+  folders: (DriveFolderData | IRoot)[],
   dispatch: Dispatch,
-): (DriveItemData | IRoot)[] => {
-  const { foldersRepeated, repeatedFoldersInDrive, unrepeatedFolders } = checkRepeatedNameFolders(items, folders);
+  destinationFolderUuid: string,
+): Promise<(DriveFolderData | IRoot)[]> => {
+  const {
+    foldersWithDuplicates: foldersRepeated,
+    duplicatedFoldersResponse,
+    foldersWithoutDuplicates: unrepeatedFolders,
+  } = await checkFolderDuplicated(folders, destinationFolderUuid);
+
   const hasRepeatedNameFiles = !!foldersRepeated.length;
   if (hasRepeatedNameFiles) {
-    dispatch(storageActions.setFoldersToRename(foldersRepeated));
-    dispatch(storageActions.setDriveFoldersToRename(repeatedFoldersInDrive));
+    dispatch(storageActions.setFoldersToRename(foldersRepeated as DriveItemData[]));
+    dispatch(storageActions.setDriveFoldersToRename(duplicatedFoldersResponse as DriveItemData[]));
     dispatch(uiActions.setIsNameCollisionDialogOpen(true));
   }
-  return unrepeatedFolders;
+  return unrepeatedFolders as DriveItemData[];
 };
 
 export interface RenameItemsPayload {
   items: DriveItemData[];
   destinationFolderId: string;
+  onRenameSuccess?: (newItemName: DriveItemData) => void;
 }
 
 export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { state: RootState }>(
   'storage/renameItems',
-  async ({ items, destinationFolderId }: RenameItemsPayload, { getState, dispatch }) => {
+  async ({ items, destinationFolderId, onRenameSuccess }: RenameItemsPayload, { dispatch }) => {
     const promises: Promise<any>[] = [];
-    const state = getState();
-    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
 
     if (items.some((item) => item.isFolder && item.uuid === destinationFolderId)) {
       return void notificationsService.show({ text: t('error.movingItemInsideItself'), type: ToastType.Error });
     }
 
-    const currentFolderItems = storageSelectors.currentFolderItems(state);
-
     for (const [index, item] of items.entries()) {
-      let itemParsed;
-
-      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-
-      const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(
-        destinationFolderId,
-        false,
-        workspaceCredentials?.tokenHeader,
-      );
-      const parentFolderContent = await parentFolderContentPromise;
+      let itemParsed: DriveItemData;
 
       if (item.isFolder) {
-        const currentFolderFolders = currentFolderItems.filter((item) => item?.isFolder);
-        const allFolderToCheckNames = [...parentFolderContent.children, ...currentFolderFolders];
-        const [, , finalFilename] = renameFolderIfNeeded(allFolderToCheckNames, item.name);
-        itemParsed = { ...item, name: finalFilename, plain_name: finalFilename };
+        const { duplicatedFoldersResponse } = await checkFolderDuplicated([item], destinationFolderId);
+
+        const finalFolderName = await getUniqueFolderName(
+          item.plainName ?? item.name,
+          duplicatedFoldersResponse as DriveFolderData[],
+          destinationFolderId,
+        );
+        itemParsed = { ...item, name: finalFolderName, plain_name: finalFolderName };
       } else {
-        const currentFolderFiles = currentFolderItems.filter((item) => !item?.isFolder);
-        const allFilesToCheckNames = [...parentFolderContent.files, ...currentFolderFiles];
-        const [, , finalFilename] = renameIfNeeded(allFilesToCheckNames, item.name, item.type);
+        const { duplicatedFilesResponse } = await checkDuplicatedFiles([item], destinationFolderId);
+
+        const finalFilename = await getUniqueFilename(
+          item.name,
+          item.type,
+          duplicatedFilesResponse,
+          destinationFolderId,
+        );
         itemParsed = { ...item, name: finalFilename, plain_name: finalFilename };
       }
 
-      let taskId: string;
-      if (itemParsed.isFolder) {
-        taskId = tasksService.create<RenameFolderTask>({
-          action: TaskType.RenameFolder,
-          showNotification: true,
-          folder: itemParsed,
-          destinationFolderId,
-          cancellable: true,
-        });
-      } else {
-        taskId = tasksService.create<RenameFileTask>({
-          action: TaskType.RenameFile,
-          showNotification: true,
-          file: itemParsed,
-          destinationFolderId,
-          cancellable: true,
-        });
-      }
+      const taskId: string = itemParsed.isFolder
+        ? tasksService.create<RenameFolderTask>({
+            action: TaskType.RenameFolder,
+            showNotification: true,
+            folder: itemParsed,
+            destinationFolderId,
+            cancellable: true,
+          })
+        : tasksService.create<RenameFileTask>({
+            action: TaskType.RenameFile,
+            showNotification: true,
+            file: itemParsed,
+            destinationFolderId,
+            cancellable: true,
+          });
 
       promises.push(dispatch(storageThunks.updateItemMetadataThunk({ item, metadata: { itemName: itemParsed.name } })));
 
       promises[index]
-        .then(async () => {
-          tasksService.updateTask({
-            taskId,
-            merge: {
-              status: TaskStatus.Success,
-            },
-          });
+        .then(async (result) => {
+          if (!result.error) {
+            tasksService.updateTask({
+              taskId,
+              merge: {
+                status: TaskStatus.Success,
+              },
+            });
+            setTimeout(() => onRenameSuccess?.(itemParsed), 1000);
+          } else {
+            tasksService.updateTask({
+              taskId,
+              merge: {
+                status: TaskStatus.Error,
+              },
+            });
+          }
         })
-        .catch((e) => {
-          errorService.reportError(e);
+        .catch(() => {
           tasksService.updateTask({
             taskId,
             merge: {
