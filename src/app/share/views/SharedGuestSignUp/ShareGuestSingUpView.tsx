@@ -1,35 +1,35 @@
-import { useState, useEffect } from 'react';
-import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import queryString from 'query-string';
 import { auth } from '@internxt/lib';
-import { Info, WarningCircle } from '@phosphor-icons/react';
-import { Helmet } from 'react-helmet-async';
-import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
-import { useAppDispatch } from 'app/store/hooks';
-import { userActions, userThunks } from 'app/store/slices/user';
-import { planThunks } from 'app/store/slices/plan';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
-import { productsThunks } from 'app/store/slices/products';
-import { AppView, IFormValues } from 'app/core/types';
-import { referralsThunks } from 'app/store/slices/referrals';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { getNewToken } from 'app/auth/services/auth.service';
-import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
-import { decryptPrivateKey } from 'app/crypto/services/keys.service';
-import TextInput from 'app/auth/components/TextInput/TextInput';
+import { Info, WarningCircle } from '@phosphor-icons/react';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
-import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
-import shareService from 'app/share/services/share.service';
-import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
-import { useSelector } from 'react-redux';
-import { RootState } from 'app/store';
-import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
-import Button from 'app/shared/components/Button/Button';
 import { Views } from 'app/auth/components/SignUp/SignUp';
+import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
+import TextInput from 'app/auth/components/TextInput/TextInput';
+import { getNewToken } from 'app/auth/services/auth.service';
+import errorService from 'app/core/services/error.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView, IFormValues } from 'app/core/types';
+import { decryptPrivateKey } from 'app/crypto/services/keys.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import shareService from 'app/share/services/share.service';
+import { Button } from '@internxt/internxtui';
+import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
+import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
+import { RootState } from 'app/store';
+import { useAppDispatch } from 'app/store/hooks';
+import { planThunks } from 'app/store/slices/plan';
+import { productsThunks } from 'app/store/slices/products';
+import { referralsThunks } from 'app/store/slices/referrals';
+import { userActions, userThunks } from 'app/store/slices/user';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
+import queryString from 'query-string';
+import { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { useSelector } from 'react-redux';
+import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 
 function ShareGuestSingUpView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -182,9 +182,6 @@ function ShareGuestSingUpView(): JSX.Element {
 
       dispatch(referralsThunks.initializeThunk());
 
-      window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
-      window.rudderanalytics.track('User Signup', { email });
-
       //TODO: Use this setState when we have to implement the download of the backup key
       // setView('downloadBackupKey');
       return navigationService.push(AppView.Shared);
@@ -222,93 +219,91 @@ function ShareGuestSingUpView(): JSX.Element {
             // <DownloadBackupKey onRedirect={onRedirect} />
             <></>
           ) : (
-            <>
-              <div className="flex flex-col items-start space-y-5">
-                <form className="flex w-full flex-col space-y-5" onSubmit={handleSubmit(onSubmit)}>
-                  <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>
-                  <div className="flex flex-col space-y-3">
-                    <label className="space-y-0.5">
-                      <TextInput
-                        placeholder={translate('auth.email')}
-                        label="email"
-                        type="email"
-                        disabled={hasEmailParam}
-                        register={register}
-                        required={true}
-                        minLength={{ value: 1, message: translate('notificationMessages.emailNotEmpty') }}
-                        error={errors.email}
-                      />
-                    </label>
+            <div className="flex flex-col items-start space-y-5">
+              <form className="flex w-full flex-col space-y-5" onSubmit={handleSubmit(onSubmit)}>
+                <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>
+                <div className="flex flex-col space-y-3">
+                  <label className="space-y-0.5">
+                    <TextInput
+                      placeholder={translate('auth.email')}
+                      label="email"
+                      type="email"
+                      disabled={hasEmailParam}
+                      register={register}
+                      required={true}
+                      minLength={{ value: 1, message: translate('notificationMessages.emailNotEmpty') }}
+                      error={errors.email}
+                    />
+                  </label>
 
-                    <label className="space-y-0.5">
-                      <PasswordInput
-                        className={passwordState ? passwordState.tag : ''}
-                        placeholder={translate('auth.password')}
-                        label="password"
-                        maxLength={MAX_PASSWORD_LENGTH}
-                        register={register}
-                        onFocus={() => setShowPasswordIndicator(true)}
-                        required={true}
-                        error={errors.password}
+                  <label className="space-y-0.5">
+                    <PasswordInput
+                      className={passwordState ? passwordState.tag : ''}
+                      placeholder={translate('auth.password')}
+                      label="password"
+                      maxLength={MAX_PASSWORD_LENGTH}
+                      register={register}
+                      onFocus={() => setShowPasswordIndicator(true)}
+                      required={true}
+                      error={errors.password}
+                    />
+                    {showPasswordIndicator && passwordState && (
+                      <PasswordStrengthIndicator
+                        className="pt-1"
+                        strength={passwordState.tag}
+                        label={passwordState.label}
                       />
-                      {showPasswordIndicator && passwordState && (
-                        <PasswordStrengthIndicator
-                          className="pt-1"
-                          strength={passwordState.tag}
-                          label={passwordState.label}
-                        />
-                      )}
-                      {bottomInfoError && (
-                        <div className="flex flex-row items-start pt-1">
-                          <div className="flex h-5 flex-row items-center">
-                            <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
-                          </div>
-                          <span className="font-base w-56 text-sm text-red">{bottomInfoError}</span>
+                    )}
+                    {bottomInfoError && (
+                      <div className="flex flex-row items-start pt-1">
+                        <div className="flex h-5 flex-row items-center">
+                          <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
                         </div>
-                      )}
-                    </label>
+                        <span className="font-base w-56 text-sm text-red">{bottomInfoError}</span>
+                      </div>
+                    )}
+                  </label>
 
-                    <div className="flex space-x-2.5 rounded-lg bg-primary/10 p-3 pr-4 dark:bg-primary/20">
-                      <Info size={20} className="shrink-0 text-primary" />
-                      <p className="text-xs">
-                        {translate('auth.signup.info.normalText')}{' '}
-                        <span className="font-semibold">{translate('auth.signup.info.boldText')}</span>{' '}
-                        <span className="font-semibold text-primary underline">
-                          <a
-                            href="https://help.internxt.com/en/articles/8450457-how-do-i-create-a-backup-key"
-                            target="_blank"
-                          >
-                            {translate('auth.signup.info.cta')}
-                          </a>
-                        </span>
-                      </p>
-                    </div>
-
-                    <Button
-                      disabled={isLoading || !isValidPassword}
-                      loading={isLoading}
-                      variant="primary"
-                      className="w-full"
-                      type="submit"
-                    >
-                      {isLoading && isValid && isValidPassword
-                        ? `${translate('auth.signup.encrypting')}...`
-                        : translate('auth.signup.title')}
-                    </Button>
+                  <div className="flex space-x-2.5 rounded-lg bg-primary/10 p-3 pr-4 dark:bg-primary/20">
+                    <Info size={20} className="shrink-0 text-primary" />
+                    <p className="text-xs">
+                      {translate('auth.signup.info.normalText')}{' '}
+                      <span className="font-semibold">{translate('auth.signup.info.boldText')}</span>{' '}
+                      <span className="font-semibold text-primary underline">
+                        <a
+                          href="https://help.internxt.com/en/articles/8450457-how-do-i-create-a-backup-key"
+                          target="_blank"
+                        >
+                          {translate('auth.signup.info.cta')}
+                        </a>
+                      </span>
+                    </p>
                   </div>
-                  <span className="mt-2 w-full text-xs text-gray-50">
-                    {translate('auth.terms1')}{' '}
-                    <a
-                      href="https://internxt.com/legal"
-                      target="_blank"
-                      className="text-xs text-gray-50 hover:text-gray-60"
-                    >
-                      {translate('auth.terms2')}
-                    </a>
-                  </span>
-                </form>
-              </div>
-            </>
+
+                  <Button
+                    disabled={isLoading || !isValidPassword}
+                    loading={isLoading}
+                    variant="primary"
+                    className="w-full"
+                    type="submit"
+                  >
+                    {isLoading && isValid && isValidPassword
+                      ? `${translate('auth.signup.encrypting')}...`
+                      : translate('auth.signup.title')}
+                  </Button>
+                </div>
+                <span className="mt-2 w-full text-xs text-gray-50">
+                  {translate('auth.terms1')}{' '}
+                  <a
+                    href="https://internxt.com/legal"
+                    target="_blank"
+                    className="text-xs text-gray-50 hover:text-gray-60"
+                  >
+                    {translate('auth.terms2')}
+                  </a>
+                </span>
+              </form>
+            </div>
           )}
         </div>
       </div>

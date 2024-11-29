@@ -1,5 +1,3 @@
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { SdkFactory } from '../../core/factory/sdk';
 import {
   CheckChangeEmailExpirationResponse,
   FriendInvite,
@@ -9,6 +7,11 @@ import {
   UserPublicKeyResponse,
   VerifyEmailChangeResponse,
 } from '@internxt/sdk/dist/drive/users/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { SdkFactory } from '../../core/factory/sdk';
+import envService from 'app/core/services/env.service';
+
+const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? process.env.REACT_APP_AVATAR_URL : undefined;
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
   const usersClient = SdkFactory.getInstance().createUsersClient();
@@ -18,11 +21,6 @@ export async function initializeUser(email: string, mnemonic: string): Promise<I
 export const sendDeactivationEmail = (email: string): Promise<void> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   return authClient.sendDeactivationEmail(email);
-};
-
-const inviteAFriend = (email: string): Promise<void> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
-  return usersClient.sendInvitation(email);
 };
 
 const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
@@ -38,6 +36,11 @@ const refreshUser = async (): Promise<{ user: UserSettings; token: string }> => 
   return usersClient.refreshUser();
 };
 
+const refreshUserData = async (userUUID: string): Promise<{ user: UserSettings }> => {
+  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  return usersClient.getUserData({ userUuid: userUUID });
+};
+
 const updateUserProfile = (payload: Required<UpdateProfilePayload>): Promise<void> => {
   const usersClient = SdkFactory.getInstance().createUsersClient();
   return usersClient.updateProfile(payload);
@@ -49,7 +52,7 @@ const getFriendInvites = (): Promise<FriendInvite[]> => {
 };
 
 const updateUserAvatar = (payload: { avatar: Blob }): Promise<{ avatar: string }> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
+  const usersClient = SdkFactory.getInstance().createUsersClient(TEMPORAL_AVATAR_API_URL);
   return usersClient.updateAvatar(payload);
 };
 
@@ -87,7 +90,6 @@ const userService = {
   initializeUser,
   refreshUser,
   sendDeactivationEmail,
-  inviteAFriend,
   updateUserProfile,
   getFriendInvites,
   updateUserAvatar,
@@ -98,6 +100,7 @@ const userService = {
   verifyEmailChange,
   checkChangeEmailLinkExpiration,
   preCreateUser,
+  refreshUserData,
 };
 
 export default userService;

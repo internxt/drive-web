@@ -1,19 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import BreadcrumbsBackupsView from '../../../shared/components/Breadcrumbs/Containers/BreadcrumbsBackupsView';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { Helmet } from 'react-helmet-async';
-import DeviceList from '../../components/DeviceList/DeviceList';
-import { Device } from '../../types';
-import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
-import { backupsActions, backupsThunks } from 'app/store/slices/backups';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
-import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
-import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
-import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
-import Dialog from '../../../shared/components/Dialog/Dialog';
 import DeleteBackupDialog from '../../../drive/components/DeleteBackupDialog/DeleteBackupDialog';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
+import Dialog from '../../../shared/components/Dialog/Dialog';
+import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
+import DeviceList from '../../components/DeviceList/DeviceList';
+import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
+import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
+import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
+import { deleteFile } from '../../../drive/services/file.service';
+import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
+import { ListItemMenu } from '../../../shared/components/List/ListItem';
+import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
+import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import { useBackupListActions } from 'app/backups/hooks/useBackupListActions';
+import { useBackupDeviceActions } from 'app/backups/hooks/useBackupDeviceActions';
+import { useBackupsPagination } from 'app/backups/hooks/useBackupsPagination';
+import errorService from 'app/core/services/error.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 export default function BackupsView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -21,110 +29,91 @@ export default function BackupsView(): JSX.Element {
   const isLoadingDevices = useAppSelector((state) => state.backups.isLoadingDevices);
   const devices = useAppSelector((state) => state.backups.devices);
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
+  const [foldersInBreadcrumbs, setFoldersInBreadcrumbs] = useState<DriveFolderData[]>([]);
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedDevices, setSelectedDevices] = useState<(Device | DriveFolderData)[]>([]);
-  const [backupsAsFoldersPath, setBackupsAsFoldersPath] = useState<DriveFolderData[]>([]);
+  const {
+    folderUuid,
+    isFileViewerOpen,
+    itemToPreview,
+    selectedItems,
+    onFolderUuidChanges,
+    clearSelectedItems,
+    onCloseFileViewer,
+    onItemSelected,
+    onItemClicked,
+    onSelectedItemsChanged,
+  } = useBackupListActions(setFoldersInBreadcrumbs, dispatch);
 
-  const onDeviceClicked = (target: Device | DriveFolderData) => {
-    setSelectedDevices([]);
-    dispatch(backupsActions.setCurrentDevice(target));
-    if ('mac' in target) {
-      dispatch(backupsThunks.fetchDeviceBackupsThunk(target.mac));
-    }
+  const {
+    selectedDevices,
+    isDeleteModalOpen,
+    goToFolder,
+    goToFolderRoot,
+    onConfirmDelete,
+    onDeviceClicked,
+    onDevicesSelected,
+    onOpenDeleteModal,
+    onCloseDeleteModal,
+  } = useBackupDeviceActions(onFolderUuidChanges, setFoldersInBreadcrumbs, dispatch);
+
+  const { currentItems, areFetchingItems, hasMoreItems, getMorePaginatedItems, updateCurrentItemsList } =
+    useBackupsPagination(folderUuid, clearSelectedItems);
+
+  const onDownloadSelectedItems = () => {
+    dispatch(downloadItemsThunk(selectedItems));
   };
 
-  const goBack = () => {
-    setSelectedDevices([]);
-    dispatch(backupsActions.setCurrentDevice(null));
+  const onDownloadFileFormFileViewer = () => {
+    if (itemToPreview && isFileViewerOpen) dispatch(downloadItemsThunk([itemToPreview as DriveItemData]));
   };
 
-  const onOpenDeleteModal = (targets: (Device | DriveFolderData)[]) => {
-    setSelectedDevices((values) => [...values, ...targets]);
-    setIsDeleteModalOpen(true);
-  };
-
-  const onDevicesSelected = (changes: { device: Device | DriveFolderData; isSelected: boolean }[]) => {
-    let updatedSelectedItems = selectedDevices;
-    for (const change of changes) {
-      updatedSelectedItems = updatedSelectedItems.filter((item) => item.id !== change.device.id);
-      if (change.isSelected) {
-        updatedSelectedItems = [...updatedSelectedItems, change.device];
-      }
-    }
-    setSelectedDevices(updatedSelectedItems);
-  };
-
-  const onConfirmDelete = async () => {
-    for (const selectedDevice of selectedDevices) {
-      if (selectedDevice && 'mac' in selectedDevice) {
-        dispatch(backupsThunks.deleteDeviceThunk(selectedDevice));
-      } else {
-        await dispatch(deleteItemsThunk([selectedDevice as DriveItemData])).unwrap();
-        await deleteBackupDeviceAsFolder(selectedDevice as DriveWebFolderData);
-        dispatch(backupsThunks.fetchDevicesThunk());
-      }
-    }
-    onCloseDeleteModal();
-  };
-
-  const onCloseDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-    setSelectedDevices([]);
-  };
-
-  useEffect(() => {
-    dispatch(backupsActions.setCurrentDevice(null));
-    setBackupsAsFoldersPath([]);
-    dispatch(backupsThunks.fetchDevicesThunk());
-  }, []);
-
-  useEffect(() => {
-    if (currentDevice && !('mac' in currentDevice)) setBackupsAsFoldersPath([currentDevice]);
-  }, [currentDevice]);
-
-  function goToFolder(folderId: number) {
-    setBackupsAsFoldersPath((current) => {
-      const index = current.findIndex((i) => i.id === folderId);
-      return current.slice(0, index + 1);
-    });
-  }
-
-  const breadcrumbsItems: BreadcrumbItemData[] = [
-    {
-      id: -1,
-      label: `${translate('backups.your-devices')}`,
-      icon: null,
-      isFirstPath: true,
-      active: true,
-      onClick: () => goBack(),
-    },
-  ];
-  if (currentDevice && 'mac' in currentDevice) {
-    breadcrumbsItems.push({
-      id: currentDevice.id,
-      label: currentDevice.name,
-      icon: null,
-      active: false,
-      isBackup: true,
-    });
-  } else if (currentDevice) {
-    backupsAsFoldersPath.forEach((item, i) => {
-      const clickableOptions = {
-        active: true,
-        onClick: () => goToFolder(item.id),
-      };
-      breadcrumbsItems.push({
-        id: item.id,
-        label: item.name,
-        icon: null,
-        isBackup: true,
-        ...(i === backupsAsFoldersPath.length - 1 ? { active: false } : clickableOptions),
+  const onDeleteSelectedItems = async () => {
+    const selectedItemsIDs = new Set(selectedItems.map((item) => item.id));
+    const filteredCurrentItems = currentItems.filter((item) => !selectedItemsIDs.has(item.id));
+    try {
+      const deletePromises = selectedItems.map((item) =>
+        item.isFolder ? deleteBackupDeviceAsFolder(item as DriveWebFolderData) : deleteFile(item),
+      );
+      await Promise.all(deletePromises);
+      dispatch(deleteItemsThunk(selectedItems));
+      clearSelectedItems();
+      updateCurrentItemsList(filteredCurrentItems);
+    } catch (error) {
+      errorService.reportError(error);
+      notificationsService.show({
+        text: translate('notificationMessages.errorDeletingItems'),
+        type: ToastType.Error,
       });
-    });
-  }
+    }
+  };
 
-  const backupsBreadcrumbs = <Breadcrumbs items={breadcrumbsItems} />;
+  const onDeleteFileItemFromFilePreview = async () => {
+    try {
+      if (isFileViewerOpen && itemToPreview) {
+        await deleteFile(itemToPreview as DriveItemData);
+        dispatch(deleteItemsThunk([itemToPreview as DriveItemData]));
+      }
+      clearSelectedItems();
+      updateCurrentItemsList([itemToPreview] as DriveItemData[]);
+      onCloseFileViewer();
+    } catch (error) {
+      errorService.reportError(error);
+      notificationsService.show({
+        text: translate('notificationMessages.errorDeletingItems'),
+        type: ToastType.Error,
+      });
+    }
+  };
+
+  const contextMenu: ListItemMenu<DriveItemData> = contextMenuSelectedBackupItems({
+    onDownloadSelectedItems,
+    onDeleteSelectedItems: onDeleteSelectedItems,
+  });
+
+  const contextMenuForFileViewer: ListItemMenu<DriveItemData> = contextMenuSelectedBackupItems({
+    onDownloadSelectedItems: onDownloadFileFormFileViewer,
+    onDeleteSelectedItems: onDeleteFileItemFromFilePreview,
+  });
 
   let body;
 
@@ -139,11 +128,18 @@ export default function BackupsView(): JSX.Element {
         selectedItems={selectedDevices}
       />
     );
-  } else if (backupsAsFoldersPath.length) {
+  } else if (foldersInBreadcrumbs.length) {
     body = (
       <BackupsAsFoldersList
-        onFolderPush={(folder) => setBackupsAsFoldersPath((current) => [...current, folder])}
-        folderId={backupsAsFoldersPath[backupsAsFoldersPath.length - 1].id}
+        contextMenu={contextMenu}
+        currentItems={currentItems}
+        selectedItems={selectedItems}
+        hasMoreItems={hasMoreItems}
+        isLoading={areFetchingItems}
+        getPaginatedBackupList={getMorePaginatedItems}
+        onItemClicked={onItemClicked}
+        onItemSelected={onItemSelected}
+        onSelectedItemsChanged={onSelectedItemsChanged}
       />
     );
   }
@@ -158,7 +154,7 @@ export default function BackupsView(): JSX.Element {
       <Helmet>
         <title>{translate('sideNav.backups')} - Internxt Drive</title>
       </Helmet>
-      <DeleteBackupDialog items={breadcrumbsItems} goToFolder={goToFolder} />
+      <DeleteBackupDialog backupsAsFoldersPath={foldersInBreadcrumbs} goToFolder={goToFolder} />
       <Dialog
         isOpen={isDeleteModalOpen}
         onClose={onCloseDeleteModal}
@@ -170,8 +166,25 @@ export default function BackupsView(): JSX.Element {
         secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
         primaryActionColor="danger"
       />
+      {itemToPreview && (
+        <FileViewerWrapper
+          file={itemToPreview}
+          onClose={onCloseFileViewer}
+          showPreview={isFileViewerOpen}
+          folderItems={currentItems}
+          contextMenu={contextMenuForFileViewer}
+        />
+      )}
       <div className="z-50 flex h-14 shrink-0 items-center px-5">
-        {currentDevice ? backupsBreadcrumbs : <p className="text-lg"> {translate('backups.your-devices')}</p>}
+        {currentDevice ? (
+          <BreadcrumbsBackupsView
+            backupsAsFoldersPath={foldersInBreadcrumbs}
+            goToFolder={goToFolder}
+            goToFolderRoot={goToFolderRoot}
+          />
+        ) : (
+          <p className="text-lg">{translate('backups.your-devices')}</p>
+        )}
       </div>
       <WarningMessageWrapper />
       {body}

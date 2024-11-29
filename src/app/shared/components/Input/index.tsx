@@ -1,5 +1,5 @@
-import { Eye, EyeSlash, MagnifyingGlass, X, WarningOctagon, Warning, CheckCircle } from '@phosphor-icons/react';
-import { useEffect, useRef, useState } from 'react';
+import { CheckCircle, Eye, EyeSlash, MagnifyingGlass, Warning, WarningOctagon, X } from '@phosphor-icons/react';
+import { KeyboardEvent, useEffect, useRef, useState } from 'react';
 
 export default function Input({
   className = '',
@@ -9,6 +9,7 @@ export default function Input({
   disabled,
   placeholder,
   value,
+  maxLength,
   onChange,
   onClear,
   message,
@@ -21,6 +22,7 @@ export default function Input({
   required = false,
   labelDataCy,
   inputDataCy,
+  onKeyDown,
 }: {
   className?: string;
   label?: string;
@@ -29,6 +31,7 @@ export default function Input({
   disabled?: boolean;
   placeholder?: string;
   value?: string;
+  maxLength?: number;
   onChange?: (v: string) => void;
   onClear?: () => void;
   onFocus?: () => void;
@@ -41,6 +44,7 @@ export default function Input({
   required?: boolean;
   labelDataCy?: string;
   inputDataCy?: string;
+  onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
 }): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -92,7 +96,7 @@ export default function Input({
       <input
         ref={inputRef}
         disabled={disabled}
-        className={`inxt-input h-11 w-full rounded-md border bg-transparent text-lg font-normal text-gray-80 outline-none ring-opacity-10 focus:ring-3 disabled:text-gray-40 disabled:placeholder-gray-20 dark:ring-opacity-20 
+        className={`inxt-input h-10 w-full rounded-md border bg-transparent text-lg font-normal text-gray-80 outline-none ring-opacity-10 focus:ring-3 disabled:text-gray-40 disabled:placeholder-gray-20 dark:ring-opacity-20 
           ${borderColor} ${focusColor} ${placeholderColor} ${padding}`}
         type={variant === 'password' && !showPassword ? 'password' : variant === 'email' ? 'email' : 'text'}
         placeholder={placeholder}
@@ -107,10 +111,12 @@ export default function Input({
         }}
         autoComplete={autoComplete}
         value={value}
+        maxLength={maxLength}
         data-test={dataTest}
         data-cy={inputDataCy}
         name={name}
         required={required}
+        onKeyDown={onKeyDown ?? undefined}
       />
       {variant === 'password' && isFocused && (
         <div
@@ -179,6 +185,9 @@ export default function Input({
         </label>
       ) : (
         input
+      )}
+      {maxLength && (
+        <p className="font-regular mt-1 text-right text-sm text-gray-50">{`${value?.length ?? 0}/${maxLength}`}</p>
       )}
       {message && (
         <div className={`mt-0.5 flex items-center ${messageColor}`}>

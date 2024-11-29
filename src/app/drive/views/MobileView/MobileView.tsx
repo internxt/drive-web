@@ -6,10 +6,9 @@ import { userThunks } from '../../../store/slices/user';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import devices from 'assets/images/mobile-app/devices.png';
-import Avatar from 'app/shared/components/Avatar';
 import appStore from 'assets/images/mobile-app/app-store.jpg';
 import googlePlay from 'assets/images/mobile-app/google-play.jpg';
-import Button from 'app/shared/components/Button/Button';
+import { Button, Avatar } from '@internxt/internxtui';
 
 interface MobileProps {
   user: UserSettings | undefined;
@@ -20,7 +19,9 @@ const Mobile = (props: MobileProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [osMobile, setOsMobile] = useState('');
   const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
-  const fullName = `${props.user?.name} ${props.user?.lastname}`;
+  const name = props.user?.name ?? '';
+  const lastName = props.user?.lastname ?? '';
+  const fullName = name + ' ' + lastName;
 
   useEffect(() => {
     getDatabaseProfileAvatar().then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null));

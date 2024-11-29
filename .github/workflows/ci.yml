@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
@@ -42,7 +42,6 @@ jobs:
       - run: echo REACT_APP_HOSTNAME=${{ secrets.REACT_APP_HOSTNAME }} >> ./.env
       - run: echo REACT_APP_PROXY=${{ secrets.REACT_APP_PROXY }} >> ./.env
       - run: echo REACT_APP_DONT_USE_PROXY=${{ secrets.REACT_APP_DONT_USE_PROXY }} >> ./.env
-      - run: echo REACT_APP_PHOTOS_API_URL=${{ secrets.REACT_APP_PHOTOS_API_URL }} >> ./.env
       - run: echo REACT_APP_SENTRY_DSN=${{ secrets.REACT_APP_SENTRY_DSN }} >> ./.env
       - run: echo REACT_APP_PAYMENTS_API_URL=${{ secrets.REACT_APP_PAYMENTS_API_URL }} >> ./.env
       - run: echo REACT_APP_DRIVE_NEW_API_URL=${{ secrets.REACT_APP_DRIVE_NEW_API_URL }} >> ./.env
@@ -55,27 +54,15 @@ jobs:
       - run: echo "always-auth=true" >> .npmrc
       - name: Install
         run: yarn
+      - name: Install Playwright Browsers
+        run: yarn playwright install
       - name: Unit test run
         run: yarn test:unit
-      - name: Cypress run
-        uses: cypress-io/github-action@v5
-        with:
-          browser: chrome
-          start: yarn start
-          command: yarn test:e2e
-          wait-on: http://localhost:3000
-          wait-on-timeout: 18000
-      - name: Upload screenshots
-        uses: actions/upload-artifact@v3.1.2
-        if: failure() || cancelled()
-        with:
-          name: cypress-snapshots
-          path: test/e2e/cypress/screenshots
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}

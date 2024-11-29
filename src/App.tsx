@@ -1,42 +1,50 @@
-import { createElement, useEffect } from 'react';
-import { Switch, Route, Redirect, Router, RouteProps, useParams, useHistory } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { Toaster } from 'react-hot-toast';
+import { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
+import { Toaster } from 'react-hot-toast';
+import { connect } from 'react-redux';
+import { Redirect, Route, Router, Switch } from 'react-router-dom';
 
-import configService from './app/core/services/config.service';
-import errorService from './app/core/services/error.service';
-import envService from './app/core/services/env.service';
-import { AppViewConfig } from './app/core/types';
-import navigationService from './app/core/services/navigation.service';
-import layouts from './app/core/layouts';
-import { PATH_NAMES, serverPage } from './app/analytics/services/analytics.service';
-import { sessionActions } from './app/store/slices/session';
-import { AppDispatch, RootState } from './app/store';
-import { initializeUserThunk } from './app/store/slices/user';
-import { uiActions } from './app/store/slices/ui';
+import { Portal } from '@headlessui/react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import views from './app/core/config/views';
-import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
-import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
-import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
-import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
+import { AppView } from 'app/core/types';
+import { FolderPath } from 'app/drive/types';
+import { useAppSelector } from 'app/store/hooks';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import i18next, { t } from 'i18next';
 import { pdfjs } from 'react-pdf';
+import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
+import authService from './app/auth/services/auth.service';
+import configService from './app/core/services/config.service';
+import envService from './app/core/services/env.service';
+import errorService from './app/core/services/error.service';
+import localStorageService from './app/core/services/local-storage.service';
+import navigationService from './app/core/services/navigation.service';
+import RealtimeService from './app/core/services/socket.service';
+import { AppViewConfig } from './app/core/types';
 import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
-import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
-import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-import { t } from 'i18next';
-import authService from './app/auth/services/auth.service';
-import localStorageService from './app/core/services/local-storage.service';
+import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import Mobile from './app/drive/views/MobileView/MobileView';
-import RealtimeService from './app/core/services/socket.service';
+import PreferencesDialog from './app/newSettings/PreferencesDialog';
+import { usePreferencesParamsChange } from './app/newSettings/hooks/usePreferencesParamsChange';
+import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
+import SharingRedirect from './app/routes/Share/ShareRedirection';
+import WorkspacesRedirect from './app/routes/Workspaces/WorkspacesRedirection';
+import { getRoutes } from './app/routes/routes';
 import { domainManager } from './app/share/services/DomainManager';
 import { PreviewFileItem } from './app/share/types';
-import { FolderPath } from 'app/drive/types';
+import { AppDispatch, RootState } from './app/store';
+import { sessionActions } from './app/store/slices/session';
+import { uiActions } from './app/store/slices/ui';
+import { initializeUserThunk } from './app/store/slices/user';
+import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
+import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
-import { AppView } from 'app/core/types';
+import useBeforeUnload from './hooks/useBeforeUnload';
+import { ModifyStorageModal } from 'app/newSettings/Sections/Workspace/Members/components/ModifyStorageModal';
+import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
+import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -44,6 +52,7 @@ interface AppProps {
   isFileViewerOpen: boolean;
   isNewsletterDialogOpen: boolean;
   isSurveyDialogOpen: boolean;
+  isPreferencesDialogOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
   user: UserSettings | undefined;
   namePath: FolderPath[];
@@ -51,14 +60,44 @@ interface AppProps {
 }
 
 const App = (props: AppProps): JSX.Element => {
+  const {
+    isInitialized,
+    isAuthenticated,
+    isFileViewerOpen,
+    isNewsletterDialogOpen,
+    isSurveyDialogOpen,
+    isPreferencesDialogOpen,
+    fileViewerItem,
+    dispatch,
+  } = props;
+
+  const { isDialogOpen } = useActionDialog();
+  const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
   const token = localStorageService.get('xToken');
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
   const queryParameters = navigationService.history.location.search;
+  const havePreferencesParamsChanged = usePreferencesParamsChange();
+  const routes = getRoutes();
+  const isDev = !envService.isProduction();
+  const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
+    path: navigationService.history.location.pathname,
+  });
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspaceIdParam = params.get('workspaceid');
+
+  useBeforeUnload();
 
   useEffect(() => {
-    initialState();
+    initializeInitialAppState();
+    i18next.changeLanguage();
   }, []);
+
+  useEffect(() => {
+    if (!isWorkspaceIdParam) {
+      navigationService.resetB2BWorkspaceCredentials(dispatch);
+    }
+  }, [params]);
 
   if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
     /**
@@ -71,12 +110,6 @@ const App = (props: AppProps): JSX.Element => {
     }
   }
 
-  const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
-    path: navigationService.history.location.pathname,
-  });
-
-  const dispatch: AppDispatch = props.dispatch;
-
   window.addEventListener('offline', () => {
     dispatch(sessionActions.setHasConnection(false));
   });
@@ -84,16 +117,17 @@ const App = (props: AppProps): JSX.Element => {
     dispatch(sessionActions.setHasConnection(true));
   });
 
-  const initialState = async () => {
+  const initializeInitialAppState = async () => {
     try {
       await LRUFilesCacheManager.getInstance();
       await LRUFilesPreviewCacheManager.getInstance();
-      await LRUPhotosCacheManager.getInstance();
-      await LRUPhotosPreviewsCacheManager.getInstance();
 
       await domainManager.fetchDomains();
 
       RealtimeService.getInstance().init();
+
+      dispatch(workspaceThunks.fetchWorkspaces());
+      navigationService.setWorkspaceFromParams(workspaceThunks, dispatch, false);
 
       await props.dispatch(
         initializeUserThunk({
@@ -106,64 +140,33 @@ const App = (props: AppProps): JSX.Element => {
     }
   };
 
-  const routes = (): JSX.Element[] => {
-    const routes: JSX.Element[] = views.map((v) => {
-      const viewConfig: AppViewConfig | undefined = configService.getViewConfig({ id: v.id });
-      const layoutConfig = layouts.find((l) => l.id === viewConfig?.layout) || layouts[0];
-      const componentProps: RouteProps = {
-        exact: !!viewConfig?.exact,
-        path: viewConfig?.path || '',
-        render: (props) =>
-          createElement(layoutConfig.component, {
-            children: createElement(v.component, { ...props, ...v.componentProps }),
-          }),
-      };
-
-      return <Route key={v.id} {...componentProps} />;
-    });
-
-    return routes;
-  };
-
-  const isDev = !envService.isProduction();
-  const {
-    isInitialized,
-    isAuthenticated,
-    isFileViewerOpen,
-    isNewsletterDialogOpen,
-    isSurveyDialogOpen,
-    fileViewerItem,
-  } = props;
   const pathName = window.location.pathname.split('/')[1];
   let template = <PreparingWorkspaceAnimation />;
   let isMobile = false;
 
-  if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/Android/i)) {
-    isMobile = true;
-  }
+  const isIphone = /iPhone/i.exec(navigator.userAgent);
+  const isAndroid = /Android/i.exec(navigator.userAgent);
 
-  if (window.location.pathname) {
-    if ((pathName === 'new' || pathName === 'appsumo') && window.location.search !== '') {
-      window.rudderanalytics.page(PATH_NAMES[window.location.pathname]);
-      serverPage(PATH_NAMES[window.location.pathname]).catch(() => {
-        // NO OP
-      });
-    }
+  if (isIphone || isAndroid) {
+    isMobile = true;
   }
 
   const onCloseFileViewer = () => {
     const isRecentsView = navigationService.isCurrentPath('recents');
     const isSharedView = navigationService.isCurrentPath('shared');
+    const isBackups = navigationService.isCurrentPath('backups');
     const isRootDrive = props.namePath.length === 1;
 
-    if (isRecentsView || isSharedView) {
+    if (isRecentsView || isSharedView || isBackups) {
       dispatch(uiActions.setIsFileViewerOpen(false));
     } else if (isRootDrive) {
       dispatch(uiActions.setIsFileViewerOpen(false));
-      navigationService.push(AppView.Drive);
+      navigationService.push(AppView.Drive, {}, selectedWorkspace?.workspaceUser.workspaceId);
     } else {
-      navigationService.pushFolder(fileViewerItem?.folderUuid);
+      navigationService.pushFolder(fileViewerItem?.folderUuid, selectedWorkspace?.workspaceUser.workspaceId);
     }
+
+    dispatch(uiActions.setFileViewerItem(null));
   };
 
   if (!isAuthenticated || isInitialized) {
@@ -179,33 +182,45 @@ const App = (props: AppProps): JSX.Element => {
               {t('general.stage.development')}
             </span>
           )}
-
           <Switch>
+            <Route path="/workspaces/:invitationId/:action" component={WorkspacesRedirect} />
             <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
             <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
             <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
             <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
-            <Redirect from="/account" to="/preferences" />
+            <Redirect from="/account" to="/?preferences=open&section=account&subsection=account" />
+            <Redirect
+              from="/preferences"
+              to={`/?preferences=open&section=account&subsection=${params.get('tab') ?? 'account'}`}
+            />
             <Redirect from="/app/:section?" to={{ pathname: '/:section?', search: `${queryParameters}` }} />
-            {pathName !== 'checkout-plan' && isMobile && isAuthenticated ? (
+            {pathName !== 'checkout' && isMobile && isAuthenticated ? (
               <Route path="*">
                 <Mobile user={props.user} />
               </Route>
             ) : (
-              routes()
+              routes
             )}
           </Switch>
 
-          <Toaster
-            position="bottom-center"
-            containerStyle={{
-              filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
-            }}
+          <Portal>
+            <Toaster
+              position="bottom-center"
+              containerStyle={{
+                filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
+              }}
+            />
+          </Portal>
+
+          <PreferencesDialog
+            haveParamsChanged={havePreferencesParamsChanged}
+            isPreferencesDialogOpen={isPreferencesDialogOpen}
           />
+
+          {isOpen && <ModifyStorageModal />}
 
           <NewsletterDialog isOpen={isNewsletterDialogOpen} />
           {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
-
           {isFileViewerOpen && fileViewerItem && (
             <FileViewerWrapper file={fileViewerItem} onClose={onCloseFileViewer} showPreview={isFileViewerOpen} />
           )}
@@ -217,28 +232,13 @@ const App = (props: AppProps): JSX.Element => {
   return template;
 };
 
-const SharingRedirect = () => {
-  const params = useParams();
-  const history = useHistory();
-
-  useEffect(() => {
-    const token = new URLSearchParams(window.location.search).get('token');
-    const sharingId = (params as any).sharingId;
-    const action = (params as any).action;
-    const redirectURL = `/login?sharingId=${sharingId}&action=${action}&token=${token}`;
-
-    history.push(redirectURL);
-  }, [params, history]);
-
-  return null;
-};
-
 export default connect((state: RootState) => ({
   isAuthenticated: state.user.isAuthenticated,
   isInitialized: state.user.isInitialized,
   isFileViewerOpen: state.ui.isFileViewerOpen,
   isNewsletterDialogOpen: state.ui.isNewsletterDialogOpen,
   isSurveyDialogOpen: state.ui.isSurveyDialogOpen,
+  isPreferencesDialogOpen: state.ui.isPreferencesDialogOpen,
   fileViewerItem: state.ui.fileViewerItem,
   user: state.user.user,
   namePath: state.storage.namePath,

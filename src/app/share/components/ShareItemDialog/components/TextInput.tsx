@@ -1,6 +1,8 @@
 /*eslint-disable @typescript-eslint/no-explicit-any */
 /*eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
+import { CSSProperties } from 'react';
+
 export interface TextInputProps {
   className?: string;
   type?: 'text' | 'email' | 'number' | 'password';
@@ -52,8 +54,10 @@ export interface TextInputProps {
   passwordError?: boolean;
   onChange?: (e: any) => void | (() => void);
   onChangeText?: (text: string) => void;
+  style?: CSSProperties;
   onFocus?: (e: any) => void | (() => void);
   onBlur?: (e: any) => void | (() => void);
+  onKeyDown?: (e: any) => void | (() => void);
   autoCompleteOnFocus?: boolean;
 }
 
@@ -64,6 +68,7 @@ const TextInput = (props: TextInputProps) => {
       placeholder={props.placeholder}
       value={props.value}
       required={props.required}
+      style={props.style}
       id={props.id}
       name={props.name}
       min={props.min}
@@ -82,6 +87,7 @@ const TextInput = (props: TextInputProps) => {
       }`}
       onChange={props.onChange}
       onKeyPress={() => props.onChangeText}
+      onKeyDown={props.onKeyDown}
       onFocus={(e) => {
         if (props.autoCompleteOnFocus) {
           e.target.removeAttribute('readonly');

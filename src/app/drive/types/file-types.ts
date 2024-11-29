@@ -168,7 +168,7 @@ const imageExtensions: FileExtensionMap = {
   raw: ['raw', 'cr2', 'nef', 'orf', 'sr2'],
   webp: ['webp'],
 };
-const previewableImageExtensionGroups: string[] = ['jpg', 'png', 'bmp', 'gif', 'webp'];
+const previewableImageExtensionGroups: string[] = ['jpg', 'png', 'bmp', 'gif', 'webp', 'heic'];
 
 const pdfExtensions: FileExtensionMap = {
   pdf: ['pdf'],

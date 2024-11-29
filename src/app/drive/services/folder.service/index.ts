@@ -1,19 +1,15 @@
-import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData, FolderTree } from '../../types';
 import errorService from '../../../core/services/error.service';
-import { aes } from '@internxt/lib';
 import httpService from '../../../core/services/http.service';
-import { DevicePlatform } from '../../../core/types';
-import analyticsService from '../../../analytics/services/analytics.service';
+import { DriveFileData, DriveFolderData, DriveItemData } from '../../types';
 
-import localStorageService from '../../../core/services/local-storage.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
-import { SdkFactory } from '../../../core/factory/sdk';
 import { Iterator } from 'app/core/collections';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import { downloadFile } from 'app/network/download';
 import { t } from 'i18next';
+import { SdkFactory } from '../../../core/factory/sdk';
+import localStorageService from '../../../core/services/local-storage.service';
 
 export interface IFolders {
   bucket: string;
@@ -80,11 +76,6 @@ export function createFolder(
 
   const finalPromise = createdFolderPromise
     .then((response) => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackFolderCreated({
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
       return response;
     })
     .catch((error) => {
@@ -94,31 +85,9 @@ export function createFolder(
   return [finalPromise, requestCanceler];
 }
 
-export async function updateMetaData(folderId: number, metadata: DriveFolderMetadataPayload): Promise<void> {
+export async function deleteFolder(folderData: DriveFolderData): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
-  const payload: StorageTypes.UpdateFolderMetadataPayload = {
-    folderId: folderId,
-    changes: metadata,
-  };
-  return storageClient.updateFolder(payload).then(() => {
-    const user: UserSettings = localStorageService.getUser() as UserSettings;
-    analyticsService.trackFolderRename({
-      email: user.email,
-      fileId: folderId,
-      platform: DevicePlatform.Web,
-    });
-  });
-}
-
-export function deleteFolder(folderData: DriveFolderData): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  return storageClient.deleteFolder(folderData.id).then(() => {
-    const user = localStorageService.getUser() as UserSettings;
-    analyticsService.trackDeleteItem(folderData as DriveItemData, {
-      email: user.email,
-      platform: DevicePlatform.Web,
-    });
-  });
+  await storageClient.deleteFolder(folderData.id);
 }
 
 interface GetDirectoryFoldersResponse {
@@ -139,7 +108,7 @@ class DirectoryFolderIterator implements Iterator<DriveFolderData> {
   async next() {
     const { directoryId } = this.queryValues;
     const { folders, last } = await httpService.get<GetDirectoryFoldersResponse>(
-      `/api/storage/v2/folders/${directoryId}/folders?limit=${this.limit}&offset=${this.offset}`,
+      `/storage/v2/folders/${directoryId}/folders?limit=${this.limit}&offset=${this.offset}`,
     );
 
     this.offset += this.limit;
@@ -166,7 +135,7 @@ class DirectoryFilesIterator implements Iterator<DriveFileData> {
   async next() {
     const { directoryId } = this.queryValues;
     const { files, last } = await httpService.get<GetDirectoryFilesResponse>(
-      `/api/storage/v2/folders/${directoryId}/files?limit=${this.limit}&offset=${this.offset}`,
+      `/storage/v2/folders/${directoryId}/files?limit=${this.limit}&offset=${this.offset}`,
     );
 
     this.offset += this.limit;
@@ -251,12 +220,13 @@ async function downloadFolderAsZip(
   let totalSizeIsReady = false;
 
   const zip = new FlatFolderZip(rootFolder.name, {
-    progress(loadedBytes) {
-      if (!totalSizeIsReady) {
-        return;
-      }
-      updateProgress(Math.min(loadedBytes / totalSize, 1));
-    },
+    // TODO: check why opts.progress is causing zip corruption
+    // progress(loadedBytes) {
+    //   if (!totalSizeIsReady) {
+    //     return;
+    //   }
+    //   updateProgress(Math.min(loadedBytes / totalSize, 1));
+    // },
   });
 
   const user = localStorageService.getUser();
@@ -320,43 +290,6 @@ async function downloadFolderAsZip(
   }
 }
 
-async function fetchFolderTree(folderId: number): Promise<{
-  tree: FolderTree;
-  folderDecryptedNames: Record<number, string>;
-  fileDecryptedNames: Record<number, string>;
-  size: number;
-}> {
-  const { tree, size } = await httpService.get<{ tree: FolderTree; size: number }>(`/api/storage/tree/${folderId}`);
-  const folderDecryptedNames: Record<number, string> = {};
-  const fileDecryptedNames: Record<number, string> = {};
-
-  // ! Decrypts folders and files names
-  const pendingFolders: FolderTree[] = [tree];
-  while (pendingFolders.length > 0) {
-    const currentTree = pendingFolders[0];
-    const { folders, files } = {
-      folders: currentTree.children,
-      files: currentTree.files,
-    };
-
-    folderDecryptedNames[currentTree.id] = aes.decrypt(
-      currentTree.name,
-      `${process.env.REACT_APP_CRYPTO_SECRET2}-${currentTree.parentId}`,
-    );
-
-    for (const file of files) {
-      fileDecryptedNames[file.id] = aes.decrypt(file.name, `${process.env.REACT_APP_CRYPTO_SECRET2}-${file.folderId}`);
-    }
-
-    pendingFolders.shift();
-
-    // * Adds current folder folders to pending
-    pendingFolders.push(...folders);
-  }
-
-  return { tree, folderDecryptedNames, fileDecryptedNames, size };
-}
-
 export async function moveFolder(folderId: number, destination: number): Promise<StorageTypes.MoveFolderResponse> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.MoveFolderPayload = {
@@ -364,32 +297,19 @@ export async function moveFolder(folderId: number, destination: number): Promise
     destinationFolderId: destination,
   };
 
-  return storageClient
-    .moveFolder(payload)
-    .then((response) => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackMoveItem('folder', {
-        file_id: response.item.id,
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
-      return response;
-    })
-    .catch((err) => {
-      const castedError = errorService.castError(err);
-      if (castedError.status) {
-        castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
-      }
-      throw castedError;
-    });
+  return storageClient.moveFolder(payload).catch((err) => {
+    const castedError = errorService.castError(err);
+    if (castedError.status) {
+      castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
+    }
+    throw castedError;
+  });
 }
 
 const folderService = {
   createFolder,
-  updateMetaData,
   deleteFolder,
   moveFolder,
-  fetchFolderTree,
   downloadFolderAsZip,
 };
 

@@ -1,3 +1,4 @@
+import { Role } from '@internxt/sdk/dist/drive/share/types';
 import {
   ClockCounterClockwise,
   DotsThreeVertical,
@@ -9,25 +10,30 @@ import {
   Users,
 } from '@phosphor-icons/react';
 import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
-import Button from '../../../../shared/components/Button/Button';
+import { useSelector } from 'react-redux';
+import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import errorService from '../../../../core/services/error.service';
+import navigationService from '../../../../core/services/navigation.service';
+import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';
+import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
+import shareService from '../../../../share/services/share.service';
+import { Button } from '@internxt/internxtui';
 import Dropdown from '../../../../shared/components/Dropdown';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../../shared/components/Tooltip/Tooltip';
-import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { storageActions } from '../../../../store/slices/storage';
+import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../store/slices/ui';
+import useDriveItemStoreProps from '../DriveExplorerItem/hooks/useDriveStoreProps';
 import {
   contextMenuDriveFolderNotSharedLink,
   contextMenuDriveFolderShared,
   contextMenuDriveItemShared,
   contextMenuDriveNotSharedLink,
+  contextMenuWorkspaceFile,
+  contextMenuWorkspaceFolder,
 } from '../DriveExplorerList/DriveItemContextMenu';
-import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
-import errorService from '../../../../core/services/error.service';
-import storageThunks from '../../../../store/slices/storage/storage.thunks';
-import shareService from '../../../../share/services/share.service';
-import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';
-import useDriveItemStoreProps from '../DriveExplorerItem/hooks/useDriveStoreProps';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 const DriveTopBarActions = ({
   selectedItems,
@@ -36,15 +42,20 @@ const DriveTopBarActions = ({
   hasAnyItemSelected,
   isTrash,
   hasItems,
+  driveActionsRef,
 }: {
   selectedItems: DriveItemData[];
-  currentFolderId: number;
+  currentFolderId: string;
   setEditNameItem: (item: DriveItemData) => void;
   hasAnyItemSelected: boolean;
   isTrash: boolean;
   hasItems: boolean;
+  driveActionsRef?: React.MutableRefObject<HTMLDivElement | null>;
+  roles: Role[];
 }) => {
   const dispatch = useAppDispatch();
+  const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspaceSelected = !!selectedWorkspace;
 
   const { translate } = useTranslationContext();
   const { dirtyName } = useDriveItemStoreProps();
@@ -142,8 +153,7 @@ const DriveTopBarActions = ({
   };
 
   const onOpenPreviewButtonClicked = (): void => {
-    dispatch(uiActions.setIsFileViewerOpen(true));
-    dispatch(uiActions.setFileViewerItem(selectedItems[0]));
+    navigationService.pushFile(selectedItems[0].uuid, selectedWorkspace?.workspaceUser.workspaceId);
   };
 
   const onRecoverButtonClicked = (): void => {
@@ -160,7 +170,42 @@ const DriveTopBarActions = ({
     }
   };
 
+  const shareWithTeam = (): void => {
+    dispatch(uiActions.setIsShareWhithTeamDialogOpen(true));
+  };
+
+  const workspaceItemMenu = contextMenuWorkspaceFile({
+    shareLink: onOpenShareSettingsButtonClicked,
+    shareWithTeam,
+    openPreview: onOpenPreviewButtonClicked,
+    showDetails: onShowDetailsButtonClicked,
+    getLink: onSelectedOneItemShare,
+    renameItem: onSelectedOneItemRename,
+    moveItem: onMoveItemButtonClicked,
+    downloadItem: onDownloadButtonClicked,
+    moveToTrash: onBulkDeleteButtonClicked,
+  });
+
+  const workspaceFolderMenu = contextMenuWorkspaceFolder({
+    shareLink: onOpenShareSettingsButtonClicked,
+    shareWithTeam,
+    showDetails: onShowDetailsButtonClicked,
+    getLink: onSelectedOneItemShare,
+    renameItem: onSelectedOneItemRename,
+    moveItem: onMoveItemButtonClicked,
+    downloadItem: onDownloadButtonClicked,
+    moveToTrash: onBulkDeleteButtonClicked,
+  });
+
   const dropdownActions = () => {
+    if (isWorkspaceSelected) {
+      if (selectedItems[0].isFolder) {
+        return workspaceFolderMenu;
+      } else {
+        return workspaceItemMenu;
+      }
+    }
+
     if (selectedItems[0].sharings && selectedItems[0].sharings?.length > 0) {
       return selectedItems[0].isFolder
         ? contextMenuDriveFolderShared({
@@ -211,7 +256,7 @@ const DriveTopBarActions = ({
       {hasItemsAndIsNotTrash && (
         <>
           {separatorV}
-          <div className="flex items-center justify-center">
+          <div ref={driveActionsRef} className="flex items-center justify-center">
             {selectedItems.length === 1 && (
               <>
                 <div
@@ -221,7 +266,7 @@ const DriveTopBarActions = ({
                   data-tooltip-place="bottom"
                 >
                   <Button
-                    variant="tertiary"
+                    variant="ghost"
                     className="aspect-square"
                     onClick={() => {
                       dispatch(storageActions.setItemToShare({ item: selectedItems[0] }));
@@ -239,7 +284,7 @@ const DriveTopBarActions = ({
                   data-tooltip-content={translate('drive.dropdown.copyLink')}
                   data-tooltip-place="bottom"
                 >
-                  <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
+                  <Button variant="ghost" className="aspect-square" onClick={onSelectedOneItemShare}>
                     <Link className="h-6 w-6" />
                   </Button>
                   <TooltipElement id="copyLink-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -253,7 +298,7 @@ const DriveTopBarActions = ({
                 data-tooltip-content={translate('drive.dropdown.move')}
                 data-tooltip-place="bottom"
               >
-                <Button variant="tertiary" className="aspect-square" onClick={onMoveItemButtonClicked}>
+                <Button variant="ghost" className="aspect-square" onClick={onMoveItemButtonClicked}>
                   <MoveActionIcon className="h-6 w-6" />
                 </Button>
                 <TooltipElement id="move-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -265,7 +310,7 @@ const DriveTopBarActions = ({
               data-tooltip-content={translate('drive.dropdown.download')}
               data-tooltip-place="bottom"
             >
-              <Button variant="tertiary" className="aspect-square" onClick={onDownloadButtonClicked}>
+              <Button variant="ghost" className="aspect-square" onClick={onDownloadButtonClicked}>
                 <DownloadSimple className="h-6 w-6" />
               </Button>
               <TooltipElement id="download-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -276,7 +321,7 @@ const DriveTopBarActions = ({
               data-tooltip-content={translate('drive.dropdown.moveToTrash')}
               data-tooltip-place="bottom"
             >
-              <Button variant="tertiary" className="aspect-square" onClick={onBulkDeleteButtonClicked}>
+              <Button variant="ghost" className="aspect-square" onClick={onBulkDeleteButtonClicked}>
                 <Trash className="h-6 w-6" />
               </Button>
               <TooltipElement id="trash-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -295,7 +340,7 @@ const DriveTopBarActions = ({
                   data-tooltip-content={translate('actions.more')}
                   data-tooltip-place="bottom"
                 >
-                  <Button variant="tertiary" className="aspect-square">
+                  <Button variant="ghost" className="aspect-square">
                     <DotsThreeVertical size={24} />
                   </Button>
                   <TooltipElement id="more-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -309,7 +354,7 @@ const DriveTopBarActions = ({
         <>
           {separatorV}
           <div className="flex items-center justify-center">
-            <Button variant="tertiary" className="aspect-square" onClick={onViewModeButtonClicked}>
+            <Button variant="ghost" className="aspect-square" onClick={onViewModeButtonClicked}>
               {viewModesIcons[viewMode]}
             </Button>
             <TooltipElement id="viewMode-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -323,7 +368,7 @@ const DriveTopBarActions = ({
           data-tooltip-content={translate('trash.item-menu.restore')}
           data-tooltip-place="bottom"
         >
-          <Button variant="tertiary" className="aspect-square" onClick={onRecoverButtonClicked}>
+          <Button variant="ghost" className="aspect-square" onClick={onRecoverButtonClicked}>
             <ClockCounterClockwise className="h-6 w-6" />
           </Button>
           <TooltipElement id="restore-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -337,7 +382,7 @@ const DriveTopBarActions = ({
           data-tooltip-place="bottom"
         >
           <Button
-            variant="tertiary"
+            variant="ghost"
             className="aspect-square"
             disabled={!hasItems}
             onClick={onDeletePermanentlyButtonClicked}

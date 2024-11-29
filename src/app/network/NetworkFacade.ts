@@ -11,10 +11,17 @@ import { uploadFileBlob, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
+import { TaskStatus } from '../tasks/types';
+import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
+import { WORKER_MESSAGE_STATES } from '../../WebWorker';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
   abortController?: AbortController;
+  continueUploadOptions?: {
+    taskId: string;
+    isPaused: boolean;
+  };
 }
 
 interface UploadMultipartOptions extends UploadOptions {
@@ -39,8 +46,11 @@ interface UploadTask {
  */
 export class NetworkFacade {
   private readonly cryptoLib: NetworkModule.Crypto;
+  private isPaused: boolean;
 
   constructor(private readonly network: NetworkModule.Network) {
+    this.isPaused = false;
+
     this.cryptoLib = {
       algorithm: NetworkModule.ALGORITHMS.AES256CTR,
       validateMnemonic: (mnemonic) => {
@@ -52,6 +62,16 @@ export class NetworkFacade {
       randomBytes,
     };
   }
+
+  destroy() {
+    removeEventListener('message', this.handleWorkerMessage);
+  }
+
+  private handleWorkerMessage = (msg) => {
+    if (msg.data.result === WORKER_MESSAGE_STATES.UPLOAD_STATUS) {
+      this.isPaused = msg.data.uploadStatus.status === TaskStatus.Paused;
+    }
+  };
 
   upload(bucketId: string, mnemonic: string, file: File, options: UploadOptions): Promise<string> {
     let fileToUpload: Blob;
@@ -73,6 +93,11 @@ export class NetworkFacade {
       async (url: string) => {
         const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
         const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
+        const isPaused = options.continueUploadOptions?.isPaused;
+
+        postMessage({ result: WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS });
+        if (isPaused && options?.continueUploadOptions?.taskId)
+          await waitForContinueUploadSignal(options?.continueUploadOptions?.taskId);
 
         await uploadFileBlob(fileToUpload, fetchUrl, {
           progressCallback: options.uploadingCallback,
@@ -114,11 +139,18 @@ export class NetworkFacade {
       fileReadable = encryptStreamInParts(file, cipher, options.parts);
     };
 
+    addEventListener('message', this.handleWorkerMessage);
+
     const uploadFileMultipart: UploadFileMultipartFunction = async (urls: string[]) => {
       let partIndex = 0;
       const limitConcurrency = 6;
 
       const worker = async (upload: UploadTask) => {
+        postMessage({ result: WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS });
+        if (this.isPaused && options?.continueUploadOptions?.taskId) {
+          await waitForContinueUploadSignal(options.continueUploadOptions.taskId);
+        }
+
         const { etag } = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
           progressCallback: (_, uploadedBytes) => {
             notifyProgress(upload.index, uploadedBytes);

@@ -1,19 +1,19 @@
 import { createRef, useMemo } from 'react';
 
-import { DriveItemData, DriveItemDetails } from '../../../../../drive/types';
-import shareService from '../../../../../share/services/share.service';
-import { storageActions } from '../../../../../store/slices/storage';
-import storageThunks from '../../../../../store/slices/storage/storage.thunks';
-import { uiActions } from '../../../../../store/slices/ui';
+import navigationService from 'app/core/services/navigation.service';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
-import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
 import {
   getDatabaseFilePreviewData,
   updateDatabaseFilePreviewData,
 } from '../../../../../drive/services/database.service';
 import { downloadThumbnail, setCurrentThumbnail } from '../../../../../drive/services/thumbnail.service';
-import { sessionSelectors } from '../../../../../store/slices/session/session.selectors';
-import navigationService from 'app/core/services/navigation.service';
+import { DriveItemData, DriveItemDetails } from '../../../../../drive/types';
+import shareService from '../../../../../share/services/share.service';
+import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
+import { storageActions } from '../../../../../store/slices/storage';
+import storageThunks from '../../../../../store/slices/storage/storage.thunks';
+import { uiActions } from '../../../../../store/slices/ui';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 export interface DriveItemActions {
   nameInputRef: React.RefObject<HTMLInputElement>;
@@ -37,7 +37,8 @@ export interface DriveItemActions {
 const useDriveItemActions = (item): DriveItemActions => {
   const dispatch = useAppDispatch();
   const nameInputRef = useMemo(() => createRef<HTMLInputElement>(), []);
-  const isTeam = useAppSelector(sessionSelectors.isTeam);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspace = !!selectedWorkspace;
 
   const onRenameItemButtonClicked = () => {
     dispatch(storageActions.setItemToRename(item as DriveItemData));
@@ -60,8 +61,7 @@ const useDriveItemActions = (item): DriveItemActions => {
   };
 
   const onOpenPreviewButtonClicked = () => {
-    dispatch(uiActions.setIsFileViewerOpen(true));
-    dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+    navigationService.pushFile(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
   };
 
   const onGetLinkButtonClicked = () => {
@@ -111,13 +111,14 @@ const useDriveItemActions = (item): DriveItemActions => {
     const isRecentsView = navigationService.isCurrentPath('recents');
 
     if (item.isFolder) {
-      navigationService.pushFolder(item.uuid);
+      dispatch(storageActions.setForceLoading(true));
+      navigationService.pushFolder(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
     } else {
       if (isRecentsView) {
         dispatch(uiActions.setIsFileViewerOpen(true));
         dispatch(uiActions.setFileViewerItem(item));
       } else {
-        navigationService.pushFile(item.uuid);
+        navigationService.pushFile(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
       }
     }
   };
@@ -134,7 +135,7 @@ const useDriveItemActions = (item): DriveItemActions => {
       const newThumbnail = item.thumbnails[0];
 
       if (!thumbnailBlob) {
-        thumbnailBlob = await downloadThumbnail(newThumbnail, isTeam);
+        thumbnailBlob = await downloadThumbnail(newThumbnail, isWorkspace);
         updateDatabaseFilePreviewData({
           fileId: item.id,
           folderId: item.folderId,

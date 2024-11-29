@@ -1,75 +1,79 @@
-import { createRef, useState, RefObject, useEffect, useRef, LegacyRef, useCallback } from 'react';
+import { ArrowFatUp, CaretDown, FileArrowUp, FolderSimplePlus, Plus, Trash, UploadSimple } from '@phosphor-icons/react';
+import { LegacyRef, RefObject, createRef, useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
-import { Trash, UploadSimple, FolderSimplePlus, FileArrowUp, Plus, CaretDown, ArrowFatUp } from '@phosphor-icons/react';
 
-import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
+import { NativeTypes } from 'react-dnd-html5-backend';
 
-import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
-import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
-import Empty from '../../../shared/components/Empty/Empty';
 import { transformDraggedItems } from '../../../core/services/drag-and-drop.service';
-import { StorageFilters } from '../../../store/slices/storage/storage.model';
-import { AppDispatch, RootState } from '../../../store';
 import { Workspace } from '../../../core/types';
+import Empty from '../../../shared/components/Empty/Empty';
+import { AppDispatch, RootState } from '../../../store';
+import { StorageFilters } from '../../../store/slices/storage/storage.model';
+import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
+import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 
-import './DriveExplorer.scss';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
+import { Menu, Transition } from '@headlessui/react';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { useHotkeys } from 'react-hotkeys-hook';
+import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+
+import { Role } from '@internxt/sdk/dist/drive/share/types';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { t } from 'i18next';
+import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
-import { storageActions } from '../../../store/slices/storage';
-import { uiActions } from '../../../store/slices/ui';
+import errorService from '../../../core/services/error.service';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
+import navigationService from '../../../core/services/navigation.service';
+import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.service';
+import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/CreateFolderDialog';
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
-import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
-import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
-import Button from '../../../shared/components/Button/Button';
-import storageSelectors from '../../../store/slices/storage/storage.selectors';
-import { planSelectors } from '../../../store/slices/plan';
-import { DriveItemData, FileViewMode, FolderPath } from '../../types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import iconService from '../../services/icon.service';
-import MoveItemsDialog from '../MoveItemsDialog/MoveItemsDialog';
-import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
 import {
   transformInputFilesToJSON,
   transformJsonFilesToItems,
 } from '../../../drive/services/folder.service/uploadFolderInput.service';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { AdvancedSharedItem } from '../../../share/types';
+import { Button } from '@internxt/internxtui';
+import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
+import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { planSelectors } from '../../../store/slices/plan';
+import { storageActions } from '../../../store/slices/storage';
+import storageSelectors from '../../../store/slices/storage/storage.selectors';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
+import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
+import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
-import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { Menu, Transition } from '@headlessui/react';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
-import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
+import { uiActions } from '../../../store/slices/ui';
 import { userSelectors } from '../../../store/slices/user';
-import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
-import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
 import { TaskStatus } from '../../../tasks/types';
-import SkinSkeletonItem from '../../../shared/components/List/SkinSketelonItem';
-import errorService from '../../../core/services/error.service';
-import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
-import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.service';
-import ShareDialog from '../ShareDialog/ShareDialog';
-import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
+import iconService from '../../services/icon.service';
+import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
-import { DriveTopBarItems } from './DriveTopBarItems';
 import ItemDetailsDialog from '../ItemDetailsDialog/ItemDetailsDialog';
-import DriveTopBarActions from './components/DriveTopBarActions';
-import { AdvancedSharedItem } from '../../../share/types';
-import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import MoveItemsDialog from '../MoveItemsDialog/MoveItemsDialog';
+import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
+import ShareDialog from '../ShareDialog/ShareDialog';
 import StopSharingAndMoveToTrashDialogWrapper from '../StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
-import BannerWrapper from '../../../banners/BannerWrapper';
+import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
+import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
+import './DriveExplorer.scss';
+import { DriveTopBarItems } from './DriveTopBarItems';
+import DriveTopBarActions from './components/DriveTopBarActions';
+import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
+import { IRoot } from '../../../store/slices/storage/types';
+import { useTrashPagination } from 'app/drive/hooks/trash/useTrashPagination';
 
-const TRASH_PAGINATION_OFFSET = 50;
-const UPLOAD_ITEMS_LIMIT = 1000;
+export const UPLOAD_ITEMS_LIMIT = 3000;
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -80,10 +84,11 @@ interface DriveExplorerProps {
   onItemsMoved?: () => void;
   onFileUploaded?: () => void;
   onFolderUploaded?: () => void;
+  fetchFolderContent?: () => void;
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
   user: UserSettings | undefined;
-  currentFolderId: number;
+  currentFolderId: string;
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
   isAuthenticated: boolean;
@@ -103,6 +108,16 @@ interface DriveExplorerProps {
   filesOnTrashLength: number;
   hasMoreFolders: boolean;
   hasMoreFiles: boolean;
+  getTrashPaginated?: (
+    limit: number,
+    offset: number | undefined,
+    type: 'files' | 'folders',
+    root: boolean,
+    sort: 'plainName' | 'updatedAt',
+    order: 'ASC' | 'DESC',
+    folderId?: number | undefined,
+  ) => Promise<{ finished: boolean; itemsRetrieved: number }>;
+  roles: Role[];
 }
 
 const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
@@ -115,6 +130,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     items,
     onItemsDeleted,
     onFolderCreated,
+    fetchFolderContent,
     isOver,
     connectDropTarget,
     storageFilters,
@@ -126,9 +142,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     hasMoreFolders,
     hasMoreFiles,
     user,
+    getTrashPaginated,
+    roles,
   } = props;
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -143,8 +162,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
-  const itemsWithSharing = props.selectedItems.filter((item) => item.sharings && item.sharings.length > 0);
-  const totalItemsWithSharing = itemsWithSharing.length;
+  const order = useAppSelector((state: RootState) => state.storage.order);
 
   // UPLOAD ITEMS STATES
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
@@ -154,8 +172,24 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   // PAGINATION STATES
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
-  const [hasMoreTrashFolders, setHasMoreTrashFolders] = useState<boolean>(true);
-  const [isLoadingTrashItems, setIsLoadingTrashItems] = useState(false);
+  const hasMoreItemsToLoad = isTrash ? hasMoreItems : hasMoreFiles || hasMoreFolders;
+  const isEmptyFolder = !isLoading && !hasMoreItemsToLoad;
+
+  // TRASH PAGINATION
+  const {
+    isLoadingTrashItems,
+    hasMoreTrashFolders,
+    setHasMoreTrashFolders,
+    setIsLoadingTrashItems,
+    getMoreTrashItems,
+  } = useTrashPagination({
+    getTrashPaginated,
+    folderOnTrashLength,
+    isTrash: isTrash,
+    filesOnTrashLength,
+    setHasMoreItems,
+    order,
+  });
 
   // RIGHT CLICK MENU STATES
   const [isListElementsHovered, setIsListElementsHovered] = useState<boolean>(false);
@@ -166,20 +200,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [openedWithRightClick, setOpenedWithRightClick] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  // LISTEN NOTIFICATION STATES
-  const [folderListenerList, setFolderListenerList] = useState<number[]>([]);
-  const inProcessNotifications = useTaskManagerGetNotifications({
-    status: [TaskStatus.InProcess, TaskStatus.Encrypting],
-  });
-
   // ONBOARDING TUTORIAL STATES
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
   const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
-  const stepOneTutorialRef = useRef(null);
+  const uploadFileButtonRef = useRef(null);
   const isSignUpTutorialCompleted = localStorageService.hasCompletedTutorial(user?.userId);
   const successNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Success],
   });
+  const divRef = useRef<HTMLDivElement | null>(null);
 
   const showTutorial =
     useAppSelector(userSelectors.hasSignedToday) &&
@@ -193,7 +222,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         }, 0);
         passToNextStep();
       },
-      stepOneTutorialRef,
+      stepOneTutorialRef: uploadFileButtonRef,
+      offset: hasAnyItemSelected ? { x: divRef?.current?.offsetWidth ?? 0, y: 0 } : { x: 0, y: 0 },
     },
     {
       onNextStepClicked: () => {
@@ -207,8 +237,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const handleFileCreatedEvent = (data) => {
     if (data.event === SOCKET_EVENTS.FILE_CREATED) {
       const folderId = data.payload.folderId;
-
-      if (folderId === currentFolderId && inProcessNotifications.length === 0) {
+      if (folderId === currentFolderId) {
         dispatch(
           storageActions.pushItems({
             updateRecents: true,
@@ -219,11 +248,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       }
     }
   };
-  const handleOnEventCreation = () => {
-    const isEventCreated = realtimeService.onEvent(handleFileCreatedEvent);
-    if (isEventCreated) setFolderListenerList([...folderListenerList, currentFolderId]);
-    else setTimeout(handleOnEventCreation, 10000);
-  };
 
   useEffect(() => {
     if (itemToRename) {
@@ -233,9 +257,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   useEffect(() => {
     try {
-      if (!folderListenerList.includes(currentFolderId)) {
-        handleOnEventCreation();
-      }
+      realtimeService.removeAllListeners();
+      realtimeService.onEvent(handleFileCreatedEvent);
     } catch (err) {
       errorService.reportError(err);
     }
@@ -249,13 +272,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   useEffect(() => {
     deviceService.redirectForMobile();
-  }, []);
-
-  useEffect(() => {
-    const isTrashAndNotHasItems = isTrash;
-    if (isTrashAndNotHasItems) {
-      getMoreTrashFolders().catch((error) => errorService.reportError(error));
-    }
   }, []);
 
   useEffect(() => {
@@ -279,7 +295,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   useEffect(() => {
     resetPaginationState();
     fetchItems();
-  }, [currentFolderId]);
+  }, [currentFolderId, order]);
 
   useEffect(() => {
     if (
@@ -311,35 +327,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const onDetailsButtonClicked = useCallback(
     (item: DriveItemData | AdvancedSharedItem) => {
       if (item.isFolder) {
-        dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
+        navigationService.pushFolder(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
       } else {
-        dispatch(uiActions.setIsFileViewerOpen(true));
-        dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+        navigationService.pushFile(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
       }
     },
     [dispatch],
   );
-
-  //TODO: MOVE PAGINATED TRASH LOGIC OUT OF VIEW
-  const getMoreTrashFolders = async () => {
-    setIsLoadingTrashItems(true);
-    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, folderOnTrashLength, 'folders', true);
-    const existsMoreFolders = !result.finished;
-
-    setHasMoreTrashFolders(existsMoreFolders);
-    setIsLoadingTrashItems(false);
-  };
-
-  const getMoreTrashFiles = async () => {
-    setIsLoadingTrashItems(true);
-    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, filesOnTrashLength, 'files', true);
-
-    const existsMoreItems = !result.finished;
-    setHasMoreItems(existsMoreItems);
-    setIsLoadingTrashItems(false);
-  };
-
-  const getMoreTrashItems = hasMoreTrashFolders ? getMoreTrashFolders : getMoreTrashFiles;
 
   const onUploadFileButtonClicked = useCallback((): void => {
     errorService.addBreadcrumb({
@@ -365,11 +359,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     folderInputRef.current?.click();
   }, [currentFolderId]);
 
-  const onUploadFileInputChanged = (e) => {
+  const onUploadFileInputChanged = async (e) => {
     const files = e.target.files;
 
-    if (files.length < UPLOAD_ITEMS_LIMIT) {
-      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(Array.from(files), items, dispatch) as File[];
+    if (files.length <= UPLOAD_ITEMS_LIMIT) {
+      const unrepeatedUploadedFiles = (await handleRepeatedUploadingFiles(
+        Array.from(files),
+        dispatch,
+        currentFolderId,
+      )) as File[];
       dispatch(
         storageThunks.uploadItemsThunk({
           files: Array.from(unrepeatedUploadedFiles),
@@ -383,7 +381,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     } else {
       dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
       notificationsService.show({
-        text: 'The maximum is 1000 files per upload.',
+        text: translate('drive.uploadItems.advice'),
         type: ToastType.Warning,
       });
     }
@@ -425,7 +423,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       if (isFileViewerOpen) {
         dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
       } else if (itemToRename && editNameItem.isFolder) {
-        dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(newItem.plainName ?? newItem.name));
+        getAncestorsAndSetNamePath(newItem.uuid, dispatch);
       }
     }
     dispatch(storageActions.setItemToRename(null));
@@ -518,56 +516,16 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  const skinSkeleton = [
-    <div className="flex flex-row items-center space-x-4">
-      <div className="h-8 w-8 rounded-md bg-gray-5" />
-    </div>,
-    <div className="h-4 w-64 rounded bg-gray-5" />,
-    <div className="ml-3 h-4 w-24 rounded bg-gray-5" />,
-    <div className="ml-4 h-4 w-20 rounded bg-gray-5" />,
-  ];
-
-  const loader = new Array(25).fill(0).map((col, i) => (
-    <SkinSkeletonItem
-      key={`skinSkeletonRow${i}`}
-      skinSkeleton={skinSkeleton}
-      columns={[
-        {
-          label: translate('drive.list.columns.type'),
-          width: 'flex w-1/12 cursor-pointer items-center px-6',
-          name: 'type',
-          orderable: true,
-          defaultDirection: 'ASC',
-        },
-        {
-          label: translate('drive.list.columns.name'),
-          width: 'flex grow cursor-pointer items-center pl-6',
-          name: 'name',
-          orderable: true,
-          defaultDirection: 'ASC',
-        },
-        {
-          label: translate('drive.list.columns.modified'),
-          width: 'hidden w-3/12 lg:flex pl-4',
-          name: 'updatedAt',
-          orderable: true,
-          defaultDirection: 'ASC',
-        },
-        {
-          label: translate('drive.list.columns.size'),
-          width: 'flex w-1/12 cursor-pointer items-center',
-          name: 'size',
-          orderable: true,
-          defaultDirection: 'ASC',
-        },
-      ].map((column) => column.width)}
-    />
-  ));
-
-  const handleOnShareItem = useCallback(() => {
+  const resetPaginationStateAndFetchDriveFolderContent = (currentFolderId: string) => {
     resetPaginationState();
     dispatch(fetchSortedFolderContentThunk(currentFolderId));
-  }, [currentFolderId]);
+  };
+
+  const handleOnShareItem = useCallback(() => {
+    setTimeout(() => {
+      fetchFolderContent?.() ?? resetPaginationStateAndFetchDriveFolderContent(currentFolderId);
+    }, 500);
+  }, [currentFolderId, fetchFolderContent]);
 
   const onSuccessEditingName = useCallback(() => {
     setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
@@ -631,8 +589,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           showStopSharingConfirmation={showStopSharingConfirmation}
           onClose={onCloseStopSharingAndMoveToTrashDialog}
           moveItemsToTrash={moveItemsToTrashOnStopSharing}
-          isMultipleItems={totalItemsWithSharing > 1}
-          itemToShareName={itemsWithSharing[0].plainName ?? itemsWithSharing[0]?.name}
         />
       )}
       <BannerWrapper />
@@ -756,7 +712,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   }}
                 </Menu>
                 <DriveTopBarItems
-                  stepOneTutorialRef={stepOneTutorialRef}
+                  stepOneTutorialRef={uploadFileButtonRef}
                   onCreateFolderButtonClicked={onCreateFolderButtonClicked}
                   onUploadFileButtonClicked={onUploadFileButtonClicked}
                   onUploadFolderButtonClicked={onUploadFolderButtonClicked}
@@ -770,6 +726,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               currentFolderId={currentFolderId}
               setEditNameItem={setEditNameItem}
               hasItems={hasItems}
+              driveActionsRef={divRef}
+              roles={roles}
             />
           </div>
           {isTrash && (
@@ -828,29 +786,28 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
           <div className="z-0 flex h-full grow flex-col justify-between overflow-y-hidden">
             <WarningMessageWrapper />
-            {hasItems && (
-              <div className="flex grow flex-col justify-between overflow-hidden">
-                <ViewModeComponent
-                  folderId={currentFolderId}
-                  items={items}
-                  isLoading={isTrash ? isLoadingTrashItems : isLoading}
-                  onEndOfScroll={fetchItems}
-                  hasMoreItems={hasMoreItems}
-                  isTrash={isTrash}
-                  onHoverListItems={(areHovered) => {
-                    setIsListElementsHovered(areHovered);
-                  }}
-                  title={title}
-                  onOpenStopSharingAndMoveToTrashDialog={onOpenStopSharingAndMoveToTrashDialog}
-                  showStopSharingConfirmation={showStopSharingConfirmation}
-                />
-              </div>
-            )}
-            {!hasItems && isLoading && loader}
+
+            <div className="flex grow flex-col justify-between overflow-hidden">
+              <ViewModeComponent
+                folderId={currentFolderId}
+                items={items}
+                isLoading={isTrash ? isLoadingTrashItems : isLoading}
+                onEndOfScroll={fetchItems}
+                hasMoreItems={hasMoreItemsToLoad}
+                isTrash={isTrash}
+                onHoverListItems={(areHovered) => {
+                  setIsListElementsHovered(areHovered);
+                }}
+                title={title}
+                onOpenStopSharingAndMoveToTrashDialog={onOpenStopSharingAndMoveToTrashDialog}
+                showStopSharingConfirmation={showStopSharingConfirmation}
+                resetPaginationState={resetPaginationState}
+              />
+            </div>
             {
               /* EMPTY FOLDER */
               !hasItems &&
-                !isLoading &&
+                isEmptyFolder &&
                 !isLoadingTrashItems &&
                 (hasFilters ? (
                   <Empty
@@ -949,24 +906,10 @@ declare module 'react' {
   }
 }
 
-const countTotalItemsInIRoot = (rootList: IRoot[]) => {
-  let totalFilesToUpload = 0;
-
-  rootList.forEach((n) => {
-    totalFilesToUpload += n.childrenFiles.length;
-    if (n.childrenFolders.length >= 1) {
-      countTotalItemsInIRoot(n.childrenFolders);
-    }
-  });
-
-  return totalFilesToUpload;
-};
-
 const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
   const { dispatch, currentFolderId, onDragAndDropEnd, items } = props;
-  const countTotalItemsToUpload: number = files.length + countTotalItemsInIRoot(rootList);
 
-  if (countTotalItemsToUpload < UPLOAD_ITEMS_LIMIT) {
+  if (files.length <= UPLOAD_ITEMS_LIMIT) {
     if (files.length) {
       errorService.addBreadcrumb({
         level: 'info',
@@ -977,14 +920,15 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
           itemsDragged: items,
         },
       });
-      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch) as File[];
+      const unrepeatedUploadedFiles = (await handleRepeatedUploadingFiles(files, dispatch, currentFolderId)) as File[];
       // files where dragged directly
       await dispatch(
-        storageThunks.uploadItemsThunkNoCheck({
+        storageThunks.uploadItemsThunk({
           files: unrepeatedUploadedFiles,
           parentFolderId: currentFolderId,
           options: {
             onSuccess: onDragAndDropEnd,
+            disableDuplicatedNamesCheck: true,
           },
         }),
       ).then(() => {
@@ -1001,24 +945,29 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
           itemsDragged: items,
         },
       });
-      const unrepeatedUploadedFolders = handleRepeatedUploadingFolders(rootList, items, dispatch) as IRoot[];
-      if (unrepeatedUploadedFolders.length > 0)
-        await dispatch(
-          storageThunks.uploadFolderThunkNoCheck({
-            root: unrepeatedUploadedFolders[0],
-            currentFolderId,
-            options: {
-              onSuccess: onDragAndDropEnd,
-            },
-          }),
-        ).then(() => {
+      const unrepeatedUploadedFolders = (await handleRepeatedUploadingFolders(
+        rootList,
+        dispatch,
+        currentFolderId,
+      )) as IRoot[];
+
+      if (unrepeatedUploadedFolders.length > 0) {
+        const folderDataToUpload = unrepeatedUploadedFolders.map((root) => ({
+          root,
+          currentFolderId,
+          options: {
+            onSuccess: onDragAndDropEnd,
+          },
+        }));
+        dispatch(storageThunks.uploadMultipleFolderThunkNoCheck(folderDataToUpload)).then(() => {
           dispatch(fetchSortedFolderContentThunk(currentFolderId));
         });
+      }
     }
   } else {
     dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
     notificationsService.show({
-      text: 'The maximum is 1000 files per upload.',
+      text: t('drive.uploadItems.advice'),
       type: ToastType.Warning,
     });
   }
@@ -1057,7 +1006,9 @@ const dropTargetCollect: DropTargetCollector<
 };
 
 export default connect((state: RootState) => {
-  const currentFolderId: number = storageSelectors.currentFolderId(state);
+  const currentFolderId: string = storageSelectors.currentFolderId(state);
+  const hasMoreFolders = state.storage.hasMoreDriveFolders[currentFolderId] ?? true;
+  const hasMoreFiles = state.storage.hasMoreDriveFiles[currentFolderId] ?? true;
 
   return {
     isAuthenticated: state.user.isAuthenticated,
@@ -1073,10 +1024,11 @@ export default connect((state: RootState) => {
     namePath: state.storage.namePath,
     workspace: state.session.workspace,
     planLimit: planSelectors.planLimitToShow(state),
-    planUsage: state.plan.planUsage,
+    planUsage: planSelectors.planUsageToShow(state),
     folderOnTrashLength: state.storage.folderOnTrashLength,
     filesOnTrashLength: state.storage.filesOnTrashLength,
-    hasMoreFolders: state.storage.hasMoreDriveFolders,
-    hasMoreFiles: state.storage.hasMoreDriveFiles,
+    hasMoreFolders,
+    hasMoreFiles,
+    roles: state.shared.roles,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));

@@ -1,8 +1,9 @@
 import { DBSchema } from 'idb';
 import configService from '../../../core/services/config.service';
 import { DriveItemData } from '../../../drive/types';
-import indexedDBService from './indexed-db.service';
+import { TaskStatus } from '../../../tasks/types';
 import { LRUCacheStruture } from './LRUCache';
+import indexedDBService from './indexed-db.service';
 
 export enum DatabaseProvider {
   IndexedDB = 'indexed-db',
@@ -11,17 +12,16 @@ export enum DatabaseProvider {
 export enum DatabaseCollection {
   Levels = 'levels',
   MoveDialogLevels = 'move_levels',
-  Photos = 'photos',
   LevelsBlobs = 'levels_blobs',
   LRU_cache = 'lru_cache',
   Account_settings = 'account_settings',
+  UploadItemStatus = 'upload_item_status',
+  WorkspacesAvatarBlobs = 'workspaces_avatar_blobs',
 }
 
 export enum LRUCacheTypes {
   LevelsBlobs = 'levels_blobs',
   LevelsBlobsPreview = 'levels_blobs_preview',
-  PhotosPreview = 'photos_preview',
-  PhotosSource = 'photos_source',
 }
 
 export type DriveItemBlobData = {
@@ -32,11 +32,6 @@ export type DriveItemBlobData = {
   updatedAt?: string;
 };
 
-export type PhotosData = {
-  preview?: Blob;
-  source?: Blob;
-};
-
 export type AvatarBlobData = {
   srcURL: string;
   avatarBlob: Blob;
@@ -45,17 +40,17 @@ export type AvatarBlobData = {
 
 export interface AppDatabase extends DBSchema {
   levels: {
-    key: number;
+    key: string;
     value: DriveItemData[];
     indexes?: Record<string, IDBValidKey>;
   };
   move_levels: {
-    key: number;
+    key: string;
     value: DriveItemData[];
     indexes?: Record<string, IDBValidKey>;
   };
   levels_blobs: {
-    key: number;
+    key: string;
     value: DriveItemBlobData;
     indexes?: Record<string, IDBValidKey>;
   };
@@ -63,41 +58,45 @@ export interface AppDatabase extends DBSchema {
     key: LRUCacheTypes;
     value: LRUCacheStruture;
   };
-  photos: {
-    key: string;
-    value: PhotosData;
-    indexes?: Record<string, IDBValidKey>;
-  };
   account_settings: {
+    key: string;
+    value: AvatarBlobData;
+  };
+  upload_item_status: {
+    key: string;
+    value: TaskStatus;
+  };
+  workspaces_avatar_blobs: {
     key: string;
     value: AvatarBlobData;
   };
 }
 
-export interface DatabaseService {
-  (databaseName: string, databaseVersion: number): {
-    put: <Name extends DatabaseCollection>(
-      collectionName: Name,
-      key: AppDatabase[Name]['key'],
-      value: AppDatabase[Name]['value'],
-    ) => Promise<void>;
-    get: <Name extends DatabaseCollection>(
-      collectionName: Name,
-      key: AppDatabase[Name]['key'],
-    ) => Promise<AppDatabase[Name]['value'] | undefined>;
-    clear: () => Promise<void>;
-    delete: <Name extends DatabaseCollection>(collectionName: Name, key: AppDatabase[Name]['key']) => Promise<void>;
-    getAll: <Name extends keyof AppDatabase>(
-      collectionName: DatabaseCollection,
-    ) => Promise<AppDatabase[Name]['value'][] | undefined>;
-    getAllFromIndex: <Name extends keyof AppDatabase, Index extends keyof AppDatabase[Name]['indexes']>(
-      collectionName: DatabaseCollection,
-      index: Index,
-      key: number,
-    ) => Promise<AppDatabase[Name]['value'][] | undefined>;
-    isAvailable: () => Promise<boolean>;
-  };
-}
+export type DatabaseService = (
+  databaseName: string,
+  databaseVersion: number,
+) => {
+  put: <Name extends DatabaseCollection>(
+    collectionName: Name,
+    key: AppDatabase[Name]['key'],
+    value: AppDatabase[Name]['value'],
+  ) => Promise<void>;
+  get: <Name extends DatabaseCollection>(
+    collectionName: Name,
+    key: AppDatabase[Name]['key'],
+  ) => Promise<AppDatabase[Name]['value'] | undefined>;
+  clear: () => Promise<void>;
+  delete: <Name extends DatabaseCollection>(collectionName: Name, key: AppDatabase[Name]['key']) => Promise<void>;
+  getAll: <Name extends keyof AppDatabase>(
+    collectionName: DatabaseCollection,
+  ) => Promise<AppDatabase[Name]['value'][] | undefined>;
+  getAllFromIndex: <Name extends keyof AppDatabase, Index extends keyof AppDatabase[Name]['indexes']>(
+    collectionName: DatabaseCollection,
+    index: Index,
+    key: number,
+  ) => Promise<AppDatabase[Name]['value'][] | undefined>;
+  isAvailable: () => Promise<boolean>;
+};
 
 const providers: { [key in DatabaseProvider]: DatabaseService } = {
   [DatabaseProvider.IndexedDB]: indexedDBService,

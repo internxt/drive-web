@@ -1,4 +1,3 @@
-//TODO: MOVE THIS TO SDK WHEN FINISH THE EPIC
 export interface ICacheStorage<T> {
   get(key: string): Promise<T | undefined>;
   set(key: string, value: T, size: number): void;
@@ -11,9 +10,9 @@ export interface ICacheStorage<T> {
 export type LRUCacheStruture = { lruKeyList: string[]; itemsListSize: number };
 
 export class LRUCache<T> {
-  private cache: ICacheStorage<T>;
-  private lruList: string[];
-  private size: number;
+  private readonly cache: ICacheStorage<T>;
+  private readonly lruList: string[];
+  private readonly size: number;
   private currentSize: number;
 
   constructor(cache: ICacheStorage<T>, size: number, lRUCacheStruture?: LRUCacheStruture) {

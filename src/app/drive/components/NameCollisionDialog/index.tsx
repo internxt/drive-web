@@ -1,11 +1,11 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { RadioGroup } from '@headlessui/react';
 
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import Modal from 'app/shared/components/Modal';
 import { DriveItemData } from '../../types';
-import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { IRoot } from '../../../store/slices/storage/types';
 
 export const OPERATION_TYPE = {
   UPLOAD: 'upload',
@@ -104,11 +104,7 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
           <RadioGroup.Label className="sr-only">Select an option</RadioGroup.Label>
           <div className="flex flex-col items-start space-y-3">
             {options.map((option) => (
-              <RadioGroup.Option
-                value={option}
-                className="rounded-md outline-none ring-2 ring-primary/0 ring-offset-2 focus-visible:ring-primary/50"
-                key={option.operation}
-              >
+              <RadioGroup.Option value={option} className="rounded-md outline-none" key={option.operation}>
                 <div className="group flex cursor-pointer flex-row items-center space-x-1.5">
                   <div
                     className={`flex h-5 w-5 flex-col items-center justify-center rounded-full ${

@@ -1,12 +1,26 @@
 import { CheckCircle, WarningCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
-import Spinner from '../../../shared/components/Spinner/Spinner';
+import { useDispatch } from 'react-redux';
 import { SdkFactory } from '../../factory/sdk';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { uiActions } from '../../../store/slices/ui';
+import { Spinner } from '@internxt/internxtui';
+
+const State = ({ icon, title, subtitle }: { icon: JSX.Element; title: string; subtitle: string }) => (
+  <div className="flex w-full max-w-xs flex-col items-center space-y-5">
+    {icon}
+
+    <div className="flex flex-col items-center space-y-1 text-center">
+      <h1 className="text-2xl font-medium text-gray-100">{title}</h1>
+      <p className="text-base leading-tight text-gray-80">{subtitle}</p>
+    </div>
+  </div>
+);
 
 export default function VerifyEmailView(): JSX.Element {
   const { translate } = useTranslationContext();
+  const dispatch = useDispatch();
   const { params } = useRouteMatch<{ token: string }>();
   const { token } = params;
 
@@ -49,20 +63,9 @@ export default function VerifyEmailView(): JSX.Element {
     },
     error: {
       label: translate('views.emailVerification.error.cta'),
-      path: '/preferences?tab=account',
+      path: '/?preferences=open&section=account&subsection=account',
     },
   };
-
-  const State = ({ icon, title, subtitle }: { icon: JSX.Element; title: string; subtitle: string }) => (
-    <div className="flex w-full max-w-xs flex-col items-center space-y-5">
-      {icon}
-
-      <div className="flex flex-col items-center space-y-1 text-center">
-        <h1 className="text-2xl font-medium text-gray-100">{title}</h1>
-        <p className="text-base leading-tight text-gray-80">{subtitle}</p>
-      </div>
-    </div>
-  );
 
   return (
     <div className="flex min-h-screen items-center justify-center">
@@ -71,8 +74,11 @@ export default function VerifyEmailView(): JSX.Element {
 
         {status !== 'loading' && (
           <Link
-            className="flex h-10 items-center justify-center rounded-lg bg-primary px-5 font-medium text-white no-underline hover:text-white"
+            className="flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 font-medium text-white no-underline hover:text-white"
             to={cta[status].path}
+            onClick={() => {
+              if (status === 'error') dispatch(uiActions.setIsPreferencesDialogOpen(true));
+            }}
           >
             {cta[status].label}
           </Link>

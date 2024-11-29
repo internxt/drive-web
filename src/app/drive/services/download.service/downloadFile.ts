@@ -1,13 +1,11 @@
 import streamSaver from 'streamsaver';
 
-import analyticsService from 'app/analytics/services/analytics.service';
-import { TrackingPlan } from 'app/analytics/TrackingPlan';
-import { DriveFileData } from '../../types';
-import downloadFileFromBlob from './downloadFileFromBlob';
-import fetchFileStream from './fetchFileStream';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
+import { DriveFileData } from '../../types';
+import downloadFileFromBlob from './downloadFileFromBlob';
+import fetchFileStream from './fetchFileStream';
 import fetchFileStreamWithCreds from './fetchFileStreamWithCreds';
 
 interface BlobWritable {
@@ -80,12 +78,11 @@ async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<v
 
 export default async function downloadFile(
   itemData: DriveFileData,
-  isTeam: boolean,
+  isWorkspace: boolean,
   updateProgressCallback: (progress: number) => void,
   abortController?: AbortController,
   sharingOptions?: { credentials: { user: string; pass: string }; mnemonic: string },
 ): Promise<void> {
-  const fileId = itemData.fileId;
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
   const isCypress = window['Cypress'] !== undefined;
@@ -107,22 +104,11 @@ export default async function downloadFile(
     support = DownloadSupport.PatchedStreamApi;
   }
 
-  const trackingDownloadProperties: TrackingPlan.DownloadProperties = {
-    process_identifier: analyticsService.getTrackingActionId(),
-    file_id: typeof fileId === 'string' ? parseInt(fileId) : fileId,
-    file_size: itemData.size,
-    file_extension: itemData.type,
-    file_name: completeFilename,
-    parent_folder_id: itemData.folderId,
-    file_download_method_supported: support,
-    bandwidth: 0,
-    band_utilization: 0,
-    is_multiple: 0,
-  };
-  analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
-
   const fileStreamPromise = !sharingOptions
-    ? fetchFileStream({ ...itemData, bucketId: itemData.bucket }, { isTeam, updateProgressCallback, abortController })
+    ? fetchFileStream(
+        { ...itemData, bucketId: itemData.bucket },
+        { isWorkspace, updateProgressCallback, abortController },
+      )
     : fetchFileStreamWithCreds(
         { ...itemData, bucketId: itemData.bucket },
         {
@@ -146,29 +132,9 @@ export default async function downloadFile(
 
     await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController);
   } catch (err) {
-    const errMessage = err instanceof Error ? err.message : (err as string);
-
-    if (abortController?.signal.aborted && !connectionLost) {
-      analyticsService.trackFileDownloadAborted(trackingDownloadProperties);
-    } else {
-      const error_message_user = connectionLost ? 'Internet connection lost' : 'Error downloading file';
-      analyticsService.trackFileDownloadError({
-        ...trackingDownloadProperties,
-        error_message: errMessage,
-        error_message_user: error_message_user,
-        stack_trace: err instanceof Error ? err?.stack ?? '' : '',
-        bandwidth: 0,
-        band_utilization: 0,
-        process_identifier: '',
-        is_multiple: 0,
-      });
-    }
-
     if (connectionLost) throw new ConnectionLostError();
     else throw err;
   }
-
-  analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 }
 
 async function downloadFileAsBlob(filename: string, source: ReadableStream): Promise<void> {

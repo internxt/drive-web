@@ -1,5 +1,5 @@
 import { SignupComponent } from './AuthView';
-import InternxtDevices from '../../../../assets/images/banner/Internxt-secure-cloud-storage.webp';
+import InternxtDevices from '../../../../assets/images/banner/internxt_secure_cloud_storage.webp';
 import { Helmet } from 'react-helmet-async';
 import { useEffect, useState } from 'react';
 
@@ -14,7 +14,7 @@ const textContent = {
     passwordLabel: 'Password',
     emailEmpty: 'Email cannot be empty',
     passwordLabelEmpty: 'Password cannot be empty',
-    buttonText: 'Get up to 10GB - For free!',
+    buttonText: 'Get up to 1GB - For free!',
     legal: {
       line1: 'By creating an account you accept the',
       line2: 'terms of service, and privacy policy',
@@ -30,7 +30,7 @@ const textContent = {
     passwordLabel: 'Contraseña',
     emailEmpty: 'El correo electrónico no puede estar vacío',
     passwordLabelEmpty: 'La contraseña no puede estar vacía',
-    buttonText: 'Consigue 10GB - ¡Gratis!',
+    buttonText: 'Consigue 1GB - ¡Gratis!',
     legal: {
       line1: 'Al crear una cuenta aceptas los',
       line2: 'términos de servicio y la política de privacidad',
@@ -68,7 +68,9 @@ export default function SignupBlog(): JSX.Element {
     <>
       <Helmet>
         <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/signup-blog`} />
+        <script src={`https://www.googletagmanager.com/gtag/js?id=${process.env.REACT_APP_GA_BLOG_ID}`}></script>
       </Helmet>
+
       <div className="flex flex-col items-center justify-center overflow-hidden bg-white">
         <div className="flex w-full flex-row overflow-hidden bg-gradient-to-br from-primary/20 to-white">
           <div className="mb-10 mt-5 flex w-full flex-col items-center justify-center px-5 text-center text-gray-100 dark:text-gray-1 sm:ml-11 sm:w-full sm:max-w-xs sm:items-start sm:px-0 sm:text-left">

@@ -1,15 +1,15 @@
-import { useEffect } from 'react';
 import { items } from '@internxt/lib';
-import sizeService from '../../../../../drive/services/size.service';
-import dateService from '../../../../../core/services/date.service';
-import iconService from '../../../../services/icon.service';
-import transformItemService from '../../../../../drive/services/item-transform.service';
+import usersIcon from 'assets/icons/users.svg';
+import { useEffect } from 'react';
 import { DriveExplorerItemProps } from '..';
+import dateService from '../../../../../core/services/date.service';
+import transformItemService from '../../../../../drive/services/item-transform.service';
+import sizeService from '../../../../../drive/services/size.service';
+import iconService from '../../../../services/icon.service';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import './DriveExplorerListItem.scss';
-import usersIcon from 'assets/icons/users.svg';
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
   const { isItemSelected, isEditingName } = useDriveItemStoreProps();
@@ -55,7 +55,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       <div className="flex min-w-activity grow items-center pr-3">
         {/* ICON */}
         <div className="box-content flex items-center pr-4">
-          <div className="flex h-10 w-10 justify-center drop-shadow-soft">
+          <div className="relative flex h-10 w-10 justify-center drop-shadow-soft">
             {item.currentThumbnail ? (
               <div className="h-full w-full">
                 <img

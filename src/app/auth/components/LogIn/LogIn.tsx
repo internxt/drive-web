@@ -1,51 +1,107 @@
-import { useEffect, useMemo, useState } from 'react';
-import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { auth } from '@internxt/lib';
+import QueryString from 'qs';
+import { useEffect, useMemo, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
-import QueryString from 'qs';
 
-import { initializeUserThunk, userActions } from 'app/store/slices/user';
+import localStorageService from 'app/core/services/local-storage.service';
+import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
-import { twoFactorRegexPattern } from 'app/core/services/validation.service';
-import authService, { is2FANeeded, doLogin } from '../../services/auth.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import { userActions } from 'app/store/slices/user';
+import authService, { authenticateUser, is2FANeeded } from '../../services/auth.service';
 
-import { WarningCircle } from '@phosphor-icons/react';
-import { planThunks } from 'app/store/slices/plan';
-import { productsThunks } from 'app/store/slices/products';
-import errorService from 'app/core/services/error.service';
-import AppError, { AppView, IFormValues } from 'app/core/types';
-import navigationService from 'app/core/services/navigation.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import TextInput from '../TextInput/TextInput';
-import PasswordInput from '../PasswordInput/PasswordInput';
-import { referralsThunks } from 'app/store/slices/referrals';
+import { WarningCircle } from '@phosphor-icons/react';
+import errorService from 'app/core/services/error.service';
+import navigationService from 'app/core/services/navigation.service';
+import AppError, { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import shareService from '../../../share/services/share.service';
+import { Button } from '@internxt/internxtui';
+import workspacesService from '../../../core/services/workspace.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import Button from 'app/shared/components/Button/Button';
-import { trackAccountUnblockEmailSent } from '../../../analytics/services/analytics.service';
+import useLoginRedirections from '../../../routes/hooks/Login/useLoginRedirections';
+import shareService from '../../../share/services/share.service';
+import PasswordInput from '../PasswordInput/PasswordInput';
+import TextInput from '../TextInput/TextInput';
+import { AuthMethodTypes } from 'app/payment/types';
+
+const UNAUTHORIZED_STATUS_CODE = 401;
+
+const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
+  notificationsService.show({
+    text,
+    type: isError ? ToastType.Error : ToastType.Success,
+  });
+};
 
 export default function LogIn(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const urlParams = new URLSearchParams(window.location.search);
 
-  const sharingId = urlParams.get('sharingId');
-  const folderuuidToRedirect = urlParams.get('folderuuid');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [showTwoFactor, setShowTwoFactor] = useState(false);
+  const [loginError, setLoginError] = useState<string[]>([]);
+  const [showErrors, setShowErrors] = useState(false);
 
-  const sharingToken = urlParams.get('token');
-  const sharingAction = urlParams.get('action');
-  const isSharingInvitation = !!sharingId;
-  const isUniversalLinkMode = urlParams.get('universalLink') === 'true';
+  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
+  const mnemonic = localStorageService.get('xMnemonic');
+
+  const {
+    isUniversalLinkMode,
+    isSharingInvitation,
+    redirectWithCredentials,
+    handleShareInvitation,
+    handleWorkspaceInvitation,
+  } = useLoginRedirections({
+    navigateTo(viewId, queryMap) {
+      navigationService.push(viewId, queryMap);
+    },
+    processInvitation: shareService.processInvitation,
+    processWorkspaceInvitation: workspacesService.processInvitation,
+    showNotification,
+  });
+
+  useEffect(() => {
+    handleShareInvitation();
+    handleWorkspaceInvitation();
+  }, []);
+
+  useEffect(() => {
+    if (autoSubmit.enabled && autoSubmit.credentials) {
+      onSubmit(getValues());
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user && mnemonic) {
+      dispatch(userActions.setUser(user));
+      redirectWithCredentials(
+        user,
+        mnemonic,
+        isUniversalLinkMode || isSharingInvitation
+          ? { universalLinkMode: isUniversalLinkMode, isSharingInvitation }
+          : undefined,
+      );
+    }
+  }, []);
 
   const autoSubmit = useMemo(
     () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
     [],
   );
+
+  const getLoginErrorMessage = (err: unknown): string => {
+    const appError = err as AppError;
+    if (appError?.status === UNAUTHORIZED_STATUS_CODE) {
+      return translate('auth.login.wrongLogin');
+    }
+    return appError?.message || 'An unexpected error occurred';
+  };
+
   const {
     register,
     formState: { errors, isValid },
@@ -61,76 +117,12 @@ export default function LogIn(): JSX.Element {
         }
       : undefined,
   });
-  const email = useWatch({ control, name: 'email', defaultValue: '' });
+
   const twoFactorCode = useWatch({
     control,
     name: 'twoFactorCode',
     defaultValue: '',
   });
-  const mnemonic = localStorageService.get('xMnemonic');
-
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [showTwoFactor, setShowTwoFactor] = useState(false);
-  const [loginError, setLoginError] = useState<string[]>([]);
-  const [showErrors, setShowErrors] = useState(false);
-  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
-
-  useEffect(() => {
-    if (autoSubmit.enabled && autoSubmit.credentials) {
-      onSubmit(getValues());
-    }
-
-    if (isSharingInvitation && sharingId && sharingToken) {
-      const isDeclineAction = sharingAction === 'decline';
-
-      shareService
-        .processInvitation(isDeclineAction, sharingId, sharingToken)
-        .then(() => {
-          navigationService.push(AppView.Login);
-          notificationsService.show({
-            text: isDeclineAction
-              ? translate('modals.shareModal.invite.declinedSuccessfully')
-              : translate('modals.shareModal.invite.acceptedSuccessfully'),
-            type: ToastType.Success,
-          });
-        })
-        .catch(() =>
-          notificationsService.show({
-            text: isDeclineAction
-              ? translate('modals.shareModal.invite.error.declinedError')
-              : translate('modals.shareModal.invite.error.acceptedError'),
-            type: ToastType.Error,
-          }),
-        );
-    }
-  }, []);
-
-  const redirectWithCredentials = (
-    user: UserSettings,
-    mnemonic: string,
-    options?: { universalLinkMode: boolean; isSharingInvitation: boolean },
-  ) => {
-    if (folderuuidToRedirect) {
-      return navigationService.push(AppView.Shared, { folderuuid: folderuuidToRedirect });
-    }
-
-    if (user.registerCompleted === false) {
-      return navigationService.history.push('/appsumo/' + user.email);
-    }
-
-    if (user?.registerCompleted && mnemonic && options?.isSharingInvitation) {
-      return navigationService.push(AppView.Shared);
-    }
-
-    if (user?.registerCompleted && mnemonic && !options?.universalLinkMode) {
-      return navigationService.push(AppView.Drive);
-    }
-
-    // This is a redirect for universal link for Desktop MacOS
-    if (user?.registerCompleted && mnemonic && options?.universalLinkMode) {
-      return navigationService.push(AppView.UniversalLinkSuccess);
-    }
-  };
 
   const sendUnblockAccountEmail = async (email: string) => {
     try {
@@ -149,24 +141,17 @@ export default function LogIn(): JSX.Element {
       const isTfaEnabled = await is2FANeeded(email);
 
       if (!isTfaEnabled || showTwoFactor) {
-        const loginType = isUniversalLinkMode ? 'desktop' : 'web';
-        const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
-        dispatch(userActions.setUser(user));
+        const loginType: 'desktop' | 'web' = isUniversalLinkMode ? 'desktop' : 'web';
+        const authParams = {
+          email,
+          password,
+          authMethod: 'signIn' as AuthMethodTypes,
+          twoFactorCode,
+          dispatch,
+          loginType,
+        };
 
-        window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
-        window.rudderanalytics.track('User Signin', { email: user.email });
-        window.gtag('event', 'User Signin', { method: 'email' });
-
-        try {
-          dispatch(productsThunks.initializeThunk());
-          dispatch(planThunks.initializeThunk());
-          dispatch(referralsThunks.initializeThunk());
-          await dispatch(initializeUserThunk()).unwrap();
-        } catch (e: unknown) {
-          // PASS
-        }
-
-        userActions.setUser(user);
+        const { token, user, mnemonic } = await authenticateUser(authParams);
 
         const redirectUrl = authService.getRedirectUrl(urlParams, token);
 
@@ -184,11 +169,10 @@ export default function LogIn(): JSX.Element {
         navigationService.history.push(`/activate/${email}`);
       }
 
-      setLoginError([castedError.message]);
+      setLoginError([getLoginErrorMessage(err)]);
       setShowErrors(true);
       if ((err as AppError)?.status === 403) {
         await sendUnblockAccountEmail(email);
-        trackAccountUnblockEmailSent({ email });
         navigationService.history.push({
           pathname: AppView.BlockedAccount,
           search: QueryString.stringify({ email: email }),
@@ -198,19 +182,6 @@ export default function LogIn(): JSX.Element {
       setIsLoggingIn(false);
     }
   };
-
-  useEffect(() => {
-    if (user && mnemonic) {
-      dispatch(userActions.setUser(user));
-      redirectWithCredentials(
-        user,
-        mnemonic,
-        isUniversalLinkMode || isSharingInvitation
-          ? { universalLinkMode: isUniversalLinkMode, isSharingInvitation }
-          : undefined,
-      );
-    }
-  }, []);
 
   const getSignupLink = () => {
     const currentParams = new URLSearchParams(window.location.search);

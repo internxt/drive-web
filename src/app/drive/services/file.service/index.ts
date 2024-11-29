@@ -1,38 +1,21 @@
-import { DriveFileData, DriveFileMetadataPayload, DriveItemData } from '../../types';
-import analyticsService from '../../../analytics/services/analytics.service';
-import errorService from '../../../core/services/error.service';
-import localStorageService from '../../../core/services/local-storage.service';
-import { DevicePlatform } from '../../../core/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import uploadFile from './uploadFile';
-import * as uuid from 'uuid';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { SdkFactory } from '../../../core/factory/sdk';
-import { t } from 'i18next';
 import { FileMeta } from '@internxt/sdk/dist/drive/storage/types';
+import { t } from 'i18next';
+import * as uuid from 'uuid';
+import { SdkFactory } from '../../../core/factory/sdk';
+import errorService from '../../../core/services/error.service';
+import { DriveFileData, DriveFileMetadataPayload } from '../../types';
+import uploadFile from './uploadFile';
 
 export function updateMetaData(
   fileId: string,
   metadata: DriveFileMetadataPayload,
-  bucketId: string,
   resourcesToken?: string,
 ): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const payload: StorageTypes.UpdateFilePayload = {
-    fileId: fileId,
-    metadata: metadata,
-    bucketId: bucketId,
-    destinationPath: uuid.v4(),
-  };
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const payload = { fileUuid: fileId, name: metadata.itemName };
 
-  return storageClient.updateFile(payload, resourcesToken).then(() => {
-    const user = localStorageService.getUser() as UserSettings;
-    analyticsService.trackFileRename({
-      file_id: fileId,
-      email: user.email,
-      platform: DevicePlatform.Web,
-    });
-  });
+  return storageClient.updateFileNameWithUUID(payload, resourcesToken);
 }
 
 export async function moveFile(
@@ -50,12 +33,6 @@ export async function moveFile(
   return storageClient
     .moveFile(payload)
     .then((response) => {
-      const user = localStorageService.getUser() as UserSettings;
-      analyticsService.trackMoveItem('file', {
-        file_id: response.item.id,
-        email: user.email,
-        platform: DevicePlatform.Web,
-      });
       return response;
     })
     .catch((error) => {
@@ -67,21 +44,34 @@ export async function moveFile(
     });
 }
 
-export function deleteFile(fileData: DriveFileData): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-
-  return storageClient.deleteFile({ fileId: fileData.id, folderId: fileData.folderId }).then(() => {
-    const user = localStorageService.getUser() as UserSettings;
-    analyticsService.trackDeleteItem(fileData as DriveItemData, {
-      email: user.email,
-      platform: DevicePlatform.Web,
+export async function moveFileByUuid(fileUuid: string, destinationFolderUuid: string): Promise<StorageTypes.FileMeta> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const payload: StorageTypes.MoveFileUuidPayload = {
+    fileUuid: fileUuid,
+    destinationFolderUuid: destinationFolderUuid,
+  };
+  return storageClient
+    .moveFileByUuid(payload)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      const castedError = errorService.castError(error);
+      if (castedError.status) {
+        castedError.message = t(`tasks.move-file.errors.${castedError.status}`);
+      }
+      throw castedError;
     });
-  });
 }
 
-async function fetchRecents(limit: number): Promise<DriveFileData[]> {
+export async function deleteFile(fileData: DriveFileData): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
-  return storageClient.getRecentFiles(limit);
+  await storageClient.deleteFile({ fileId: fileData.id, folderId: fileData.folderId });
+}
+
+async function fetchRecents(limit: number): Promise<StorageTypes.DriveFileData[]> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  return storageClient.getRecentFilesV2(limit);
 }
 
 async function fetchDeleted(): Promise<DriveFileData[]> {
@@ -95,9 +85,9 @@ async function fetchDeleted(): Promise<DriveFileData[]> {
   });
 }
 
-export function getFile(uuid: string): Promise<FileMeta> {
+export function getFile(uuid: string, workspacesToken?: string): Promise<FileMeta> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  const [responsePromise] = storageClient.getFile(uuid);
+  const [responsePromise] = storageClient.getFile(uuid, workspacesToken);
 
   return responsePromise;
 }
@@ -105,6 +95,7 @@ export function getFile(uuid: string): Promise<FileMeta> {
 const fileService = {
   updateMetaData,
   moveFile,
+  moveFileByUuid,
   fetchRecents,
   uploadFile,
   fetchDeleted,

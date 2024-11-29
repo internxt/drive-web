@@ -1,8 +1,8 @@
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { AdvancedSharedItem, SharedNamePath } from 'app/share/types';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, FileViewMode, FolderPath, FolderPathDialog } from '../../../drive/types';
-import { AdvancedSharedItem, SharedNamePath } from 'app/share/types';
-import { IRoot } from './storage.thunks/uploadFolderThunk';
+import { IRoot } from './types';
 
 export interface StorageFilters {
   text: string;
@@ -10,13 +10,14 @@ export interface StorageFilters {
 
 export interface StorageState {
   loadingFolders: Record<number, boolean>;
+  forceLoading: boolean;
   isDeletingItems: boolean;
-  levels: Record<number, DriveItemData[]>;
+  levels: Record<string, DriveItemData[]>;
   moveDialogLevels: Record<number, DriveItemData[]>;
   levelsFoldersLength: Record<number, number>;
   levelsFilesLength: Record<number, number>;
-  hasMoreDriveFolders: boolean;
-  hasMoreDriveFiles: boolean;
+  hasMoreDriveFolders: Record<number, boolean>;
+  hasMoreDriveFiles: Record<number, boolean>;
   recents: DriveItemData[];
   isLoadingRecents: boolean;
   isLoadingDeleted: boolean;
@@ -38,7 +39,7 @@ export interface StorageState {
   driveFilesToRename: DriveItemData[];
   foldersToRename: (DriveItemData | IRoot)[];
   driveFoldersToRename: DriveItemData[];
-  moveDestinationFolderId: number | null;
+  moveDestinationFolderId: string | null;
   viewMode: FileViewMode;
   namePath: FolderPath[];
   folderPathDialog: FolderPathDialog[];

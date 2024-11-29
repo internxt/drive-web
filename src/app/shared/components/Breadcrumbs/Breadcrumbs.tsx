@@ -2,24 +2,15 @@ import { CaretRight, DotsThree } from '@phosphor-icons/react';
 import { forwardRef, ReactNode } from 'react';
 import Dropdown from '../Dropdown';
 import BreadcrumbsItem from './BreadcrumbsItem/BreadcrumbsItem';
-
-export interface BreadcrumbItemData {
-  id: number;
-  label: string;
-  icon: JSX.Element | null;
-  active: boolean;
-  isFirstPath?: boolean;
-  dialog?: boolean;
-  isBackup?: boolean;
-  onClick?: () => void;
-}
+import { BreadcrumbItemData, BreadcrumbsMenuProps } from './types';
 
 interface BreadcrumbsProps {
   items: BreadcrumbItemData[];
   rootBreadcrumbItemDataCy?: string;
+  menu?: (props: BreadcrumbsMenuProps) => JSX.Element;
 }
 
-export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
+export default function Breadcrumbs(props: Readonly<BreadcrumbsProps>): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const MenuItem = forwardRef(({ children }: { children: ReactNode }, ref) => {
     return (
@@ -42,8 +33,8 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
     };
 
     for (let i = 0; i < items.length; i++) {
-      const separatorKey = 'breadcrumbSeparator-' + items[i].id + i.toString();
-      const itemKey = 'breadcrumbItem-' + items[i].id + i.toString();
+      const separatorKey = 'breadcrumbSeparator-' + items[i].uuid + i.toString();
+      const itemKey = 'breadcrumbItem-' + items[i].uuid + i.toString();
 
       if (items.length > 3 && i !== 0 && i < items.length - 2) {
         if (i === 1) {
@@ -68,6 +59,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
             item={items[i]}
             totalBreadcrumbsLength={items.length}
             items={items}
+            menu={props.menu}
           />,
         );
         if (i < items.length - 1) {

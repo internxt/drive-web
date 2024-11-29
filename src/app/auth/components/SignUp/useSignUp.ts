@@ -1,7 +1,7 @@
 import { aes } from '@internxt/lib';
-import * as bip39 from 'bip39';
 import { Keys, RegisterDetails } from '@internxt/sdk';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import * as bip39 from 'bip39';
 
 import { readReferalCookie } from 'app/auth/services/auth.service';
 import { SdkFactory } from 'app/core/factory/sdk';
@@ -10,7 +10,7 @@ import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 
-type UpdateInfoFunction = (
+export type UpdateInfoFunction = (
   email: string,
   password: string,
 ) => Promise<{
@@ -18,7 +18,7 @@ type UpdateInfoFunction = (
   xToken: string;
   mnemonic: string;
 }>;
-type RegisterFunction = (
+export type RegisterFunction = (
   email: string,
   password: string,
   captcha: string,
@@ -75,7 +75,7 @@ export function useSignUp(
       }
     };
 
-    const raw = await fetch(`${process.env.REACT_APP_API_URL}/api/${registerSource}/update`, {
+    const raw = await fetch(`${process.env.REACT_APP_API_URL}/${registerSource}/update`, {
       method: 'POST',
       headers: httpService.getHeaders(true, false),
       body: JSON.stringify(registerUserPayload),
@@ -143,7 +143,14 @@ export function useSignUp(
 
     user.mnemonic = decryptTextWithKey(user.mnemonic, password);
 
-    return { xUser: user, xToken: token, mnemonic: user.mnemonic };
+    return {
+      xUser: {
+        ...user,
+        rootFolderId: user.rootFolderUuid ?? user.rootFolderId,
+      },
+      xToken: token,
+      mnemonic: user.mnemonic,
+    };
   };
 
   const generateRegisterDetails = async (

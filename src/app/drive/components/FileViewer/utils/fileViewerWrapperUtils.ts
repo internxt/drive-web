@@ -1,21 +1,26 @@
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { getAppConfig } from 'app/core/services/config.service';
+import dateService from 'app/core/services/date.service';
+import {
+  canFileBeCached,
+  getDatabaseFileSourceData,
+  updateDatabaseFileSourceData,
+} from 'app/drive/services/database.service';
+import { DriveItemData } from 'app/drive/types';
+import { AdvancedSharedItem, PreviewFileItem } from 'app/share/types';
+import { ListItemMenu } from 'app/shared/components/List/ListItem';
+import { DriveItemActions } from '../../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import {
   contextMenuDriveItemShared,
   contextMenuDriveItemSharedAFS,
   contextMenuDriveNotSharedLink,
   contextMenuTrashItems,
 } from '../../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
-import { AdvancedSharedItem, PreviewFileItem } from 'app/share/types';
-import { DriveItemData } from 'app/drive/types';
-import { getAppConfig } from 'app/core/services/config.service';
-import {
-  canFileBeCached,
-  getDatabaseFileSourceData,
-  updateDatabaseFileSourceData,
-} from 'app/drive/services/database.service';
-import dateService from 'app/core/services/date.service';
-import { DriveItemActions } from '../../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+
+interface DownloadedBlobData {
+  blob: Blob;
+  shouldHandleFileThumbnail: boolean;
+}
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem>;
 
@@ -47,7 +52,7 @@ const topDropdownBarActionsMenu = ({
   const isSharedView = pathId === 'shared';
   const isTrashView = pathId === 'trash';
 
-  const isSharedItem = (currentFile.sharings && currentFile.sharings?.length > 0) ?? false;
+  const isSharedItem = (currentFile?.sharings && currentFile.sharings?.length > 0) ?? false;
 
   // TODO: QUICK FIX TO THE RELEASE
   // Check why the user field is networkUser in some cases instead of user
@@ -146,24 +151,27 @@ const topDropdownBarActionsMenu = ({
   return contextMenuActions();
 };
 
-function getFileContentManager(currentFile, downloadFile, handleFileThumbnail) {
+function getFileContentManager(currentFile, downloadFile) {
   const abortController = new AbortController();
 
   return {
-    download: async (): Promise<Blob> => {
-      const shouldFileBeCached = canFileBeCached(currentFile);
-
-      const fileSource = await getDatabaseFileSourceData({ fileId: currentFile.id });
-      const isCached = !!fileSource;
+    download: async (): Promise<DownloadedBlobData> => {
       let fileContent: Blob;
 
+      const fileSource = await getDatabaseFileSourceData({ fileId: currentFile.id });
+
+      const shouldFileBeCached = canFileBeCached(currentFile);
+      const isCached = !!fileSource;
+      const isCacheExpired = !fileSource?.updatedAt
+        ? true
+        : dateService.isDateOneBefore({
+            dateOne: fileSource?.updatedAt,
+            dateTwo: currentFile?.updatedAt,
+          });
+
+      const shouldHandleFileThumbnail = !isCached || isCacheExpired;
+
       if (isCached) {
-        const isCacheExpired = !fileSource?.updatedAt
-          ? true
-          : dateService.isDateOneBefore({
-              dateOne: fileSource?.updatedAt,
-              dateTwo: currentFile?.updatedAt,
-            });
         if (isCacheExpired) {
           fileContent = await downloadFile(currentFile, abortController);
           await updateDatabaseFileSourceData({
@@ -174,7 +182,6 @@ function getFileContentManager(currentFile, downloadFile, handleFileThumbnail) {
           });
         } else {
           fileContent = fileSource.source as Blob;
-          await handleFileThumbnail(currentFile, fileSource.source as File);
         }
       } else {
         fileContent = await downloadFile(currentFile, abortController);
@@ -188,7 +195,7 @@ function getFileContentManager(currentFile, downloadFile, handleFileThumbnail) {
         }
       }
 
-      return fileContent;
+      return { blob: fileContent, shouldHandleFileThumbnail };
     },
     abort: () => {
       abortController.abort();
@@ -224,4 +231,4 @@ const useFileViewerKeyboardShortcuts = ({
   };
 };
 
-export { topDropdownBarActionsMenu, getFileContentManager, useFileViewerKeyboardShortcuts };
+export { getFileContentManager, topDropdownBarActionsMenu, useFileViewerKeyboardShortcuts };

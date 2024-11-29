@@ -1,32 +1,34 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { useState, useEffect } from 'react';
-import { match } from 'react-router';
-import shareService from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
-import { TaskProgress } from 'app/tasks/types';
 import network from 'app/network';
+import shareService from 'app/share/services/share.service';
+import { TaskProgress } from 'app/tasks/types';
+import { useEffect, useState } from 'react';
+import { match } from 'react-router';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../../../app/store/hooks';
 import FileViewer from '../../../../app/drive/components/FileViewer/FileViewer';
+import { useAppSelector } from '../../../../app/store/hooks';
 import fileExtensionService from '../../../drive/services/file-extension.service';
 import { fileExtensionPreviewableGroups } from '../../../drive/types/file-types';
 
-import { Check, DownloadSimple, Eye } from '@phosphor-icons/react';
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
+import { Check, DownloadSimple, Eye } from '@phosphor-icons/react';
 
-import './ShareView.scss';
 import downloadService from 'app/drive/services/download.service';
+import './ShareView.scss';
 
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
-import ShareItemPwdView from './ShareItemPwdView';
-import SendBanner from './SendBanner';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
-import errorService from 'app/core/services/error.service';
 import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
-import Button from '../../../shared/components/Button/Button';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import errorService from 'app/core/services/error.service';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { HTTP_CODES } from '../../../core/services/http.service';
+import AppError from '../../../core/types';
+import { Button } from '@internxt/internxtui';
+import SendBanner from './SendBanner';
+import ShareItemPwdView from './ShareItemPwdView';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -73,7 +75,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
   useEffect(() => {
     loadInfo().catch((err) => {
-      if (err.message !== 'Forbidden') {
+      if (err.status !== HTTP_CODES.FORBIDDEN) {
         setIsLoaded(true);
         setIsError(true);
         throw new Error(translate('error.linkExpired') as string);
@@ -133,12 +135,12 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         });
       })
       .catch(async (err) => {
-        if (err.message === 'Forbidden') {
+        if (err.status === HTTP_CODES.FORBIDDEN) {
           await getSharedItemInfo(sharingId);
           setRequiresPassword(true);
           setIsLoaded(true);
         }
-        throw err;
+        throw new AppError(err.message, err.status);
       });
   }
 

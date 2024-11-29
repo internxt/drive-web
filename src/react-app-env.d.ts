@@ -7,7 +7,6 @@ declare namespace NodeJS {
     REACT_APP_NODE_ENV: string;
     REACT_APP_API_URL: string;
     REACT_APP_DRIVE_NEW_API_URL: string;
-    REACT_APP_PHOTOS_API_URL: string;
     REACT_APP_PAYMENTS_API_URL: string;
     REACT_APP_CRYPTO_SECRET: string;
     REACT_APP_CRYPTO_SECRET2: string;
@@ -26,18 +25,23 @@ declare namespace NodeJS {
 
 interface Window {
   Stripe: stripe.StripeStatic;
-  analytics: SegmentAnalytics.AnalyticsJS;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  rudderanalytics: any;
   gtag: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _adftrack: any;
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  rudderanalytics: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rdt: any;
   grecaptcha: {
     ready: (cb: () => void) => void;
     execute: (siteKey: string, { action: string }) => Promise<string>;
+  };
+  performance: {
+    memory?: {
+      jsHeapSizeLimit: number;
+      totalJSHeapSize: number;
+      usedJSHeapSize: number;
+    };
   };
 }
 

@@ -1,25 +1,23 @@
-import { useEffect, useState } from 'react';
-import { IFormValues } from '../../../core/types';
 import { Listbox } from '@headlessui/react';
-import { CaretDown, Check } from '@phosphor-icons/react';
 import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
-import { useForm } from 'react-hook-form';
-import Button from '../../../shared/components/Button/Button';
-import Avatar from '../../../shared/components/Avatar';
-import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
-import Input from '../../../shared/components/Input';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import './ShareInviteDialog.scss';
-import { useDispatch } from 'react-redux';
-import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sharedLinks';
+import { CaretDown, Check } from '@phosphor-icons/react';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
-import { RootState } from '../../../store';
-import { Role } from '../../../store/slices/sharedLinks/types';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import userService from '../../../auth/services/user.service';
+import errorService from '../../../core/services/error.service';
+import { HTTP_CODES } from '../../../core/services/http.service';
+import AppError, { IFormValues } from '../../../core/types';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { Button, Avatar } from '@internxt/internxtui';
+import Input from '../../../shared/components/Input';
+import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
+import { RootState } from '../../../store';
+import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sharedLinks';
+import { Role } from '../../../store/slices/sharedLinks/types';
 import ShareUserNotRegistered from '../ShareUserNotRegistered/ShareUserNotRegistered';
-import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import { trackRestrictedShared } from '../../../analytics/services/analytics.service';
-import errorService from 'app/core/services/error.service';
+import './ShareInviteDialog.scss';
 
 interface ShareInviteDialogProps {
   onInviteUser: () => void;
@@ -107,11 +105,8 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
       const publicKeyResponse = await userService.getPublicKeyByEmail(email);
       publicKey = publicKeyResponse.publicKey;
     } catch (error) {
-      if (error instanceof Error) {
-        const errorBody = JSON.parse(error.message);
-        if (errorBody.statusCode !== 404) {
-          errorService.reportError(error);
-        }
+      if ((error as AppError)?.status !== HTTP_CODES.NOT_FOUND) {
+        errorService.reportError(error);
       }
     }
     return publicKey;
@@ -140,16 +135,8 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
         ),
       );
     });
-    const trackingRestrictedSharedProperties: TrackingPlan.RestrictedSharedProperties = {
-      is_folder: props.itemToShare?.isFolder,
-      share_type: 'private',
-      user_id: props.itemToShare?.userId,
-      item_id: props.itemToShare?.id,
-      invitations_send: 1,
-    };
 
     await Promise.all(sharingPromises);
-    trackRestrictedShared(trackingRestrictedSharedProperties);
   };
 
   //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG
@@ -235,7 +222,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                 >
                   <div className="flex items-center">
                     <Avatar src="" fullName={`${user.email}`} diameter={40} />
-                    <p className="ml-2.5">{user.email}</p>
+                    <p className="ml-2.5 break-all">{user.email}</p>
                   </div>
                   <Listbox value={user.userRole} onChange={(selectedValue) => onEditRole(selectedValue, user)}>
                     <div className="relative">
@@ -293,7 +280,14 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
               <BaseCheckbox checked={notifyUser} />
               <p className="ml-2 text-base font-medium">{translate('modals.shareModal.invite.notifyUsers')}</p>
             </div>
-            <Button variant="primary" onClick={onInvite} disabled={isInviteButtonDisabled} loading={isAnyInviteLoading}>
+            <Button
+              variant="primary"
+              onClick={() => {
+                onInvite({ preCreateUsers: false });
+              }}
+              disabled={isInviteButtonDisabled}
+              loading={isAnyInviteLoading}
+            >
               <span>{translate('modals.shareModal.invite.invite')}</span>
             </Button>
           </div>

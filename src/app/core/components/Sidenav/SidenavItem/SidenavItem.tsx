@@ -1,6 +1,6 @@
 import { IconProps } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
-import { matchPath, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface SidenavItemProps {
@@ -11,6 +11,8 @@ interface SidenavItemProps {
   Icon: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>>;
   onClick?: () => void;
   iconDataCy?: string;
+  isB2BWorkspace?: boolean;
+  isActive?: boolean;
 }
 
 const SidenavItem = ({
@@ -21,9 +23,9 @@ const SidenavItem = ({
   showNew,
   notifications,
   iconDataCy,
+  isB2BWorkspace,
+  isActive,
 }: SidenavItemProps): JSX.Element => {
-  const isActive = !!matchPath(window.location.pathname, { path: to, exact: true });
-
   const { translate } = useTranslationContext();
 
   const content: ReactNode = (
@@ -44,7 +46,7 @@ const SidenavItem = ({
           <p className="leading-5">{translate('general.new')}</p>
         </div>
       )}
-      {!!notifications && (
+      {!isB2BWorkspace && !!notifications && (
         <div className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-xs text-white">
           <span>{notifications}</span>
         </div>
@@ -55,7 +57,7 @@ const SidenavItem = ({
   onClick = onClick || (() => undefined);
 
   return (
-    <div
+    <button
       onClick={onClick}
       className={`cursor-pointer rounded-lg pl-6 pr-3 font-medium ${
         isActive ? 'bg-primary/10 dark:bg-primary/20' : 'hover:bg-gray-1 active:bg-gray-5'
@@ -68,7 +70,7 @@ const SidenavItem = ({
       ) : (
         content
       )}
-    </div>
+    </button>
   );
 };
 

@@ -4,9 +4,8 @@ import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Button from 'app/shared/components/Button/Button';
+import { Button } from '@internxt/internxtui';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
-import squareLogo from 'assets/icons/square-logo-64.svg';
 import { useEffect, useMemo } from 'react';
 
 const DEEPLINK_SUCCESS_REDIRECT_BASE = 'internxt://login-success';
@@ -35,15 +34,16 @@ export default function UniversalLinkSuccessView(): JSX.Element {
   const handleGoToLogin = () => {
     authService.logOut();
   };
+
   return (
-    <main className="flex h-full w-full flex-col bg-gray-5">
+    <main className="flex h-full w-full flex-col bg-gray-5 dark:bg-surface">
       <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
         <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
-      <div className="flex flex-1 items-center justify-center">
-        <div className="w-96 rounded-lg bg-white px-8 py-10 shadow-soft">
+      <div className="flex flex-1 items-center justify-center bg-gray-5 dark:bg-surface">
+        <div className="w-96 rounded-lg px-8 py-10 shadow-soft dark:bg-gray-5">
           <div className="mb-6 flex justify-center">
-            <img src={squareLogo} alt="" className="shadow-soft" height={64} />
+            <InternxtLogo className="h-auto w-52 text-gray-100" />
           </div>
           <h2 className="text-center text-xl font-medium text-gray-100">
             {translate('auth.universalLinkSuccess.loginAs')}
@@ -61,9 +61,9 @@ export default function UniversalLinkSuccessView(): JSX.Element {
           <div className="separator my-6"></div>
           <div className="flex flex-row justify-center">
             <h4 className="text-base font-medium">{translate('auth.universalLinkSuccess.anotherAccount')}</h4>
-            <a onClick={handleGoToLogin} className="ml-2.5 text-base font-medium no-underline">
+            <button onClick={handleGoToLogin} className="ml-2.5 text-base font-medium no-underline">
               {translate('auth.universalLinkSuccess.login')}
-            </a>
+            </button>
           </div>
         </div>
       </div>

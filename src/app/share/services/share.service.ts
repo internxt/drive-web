@@ -1,43 +1,42 @@
-import errorService from '../../core/services/error.service';
-import { ShareTypes } from '@internxt/sdk/dist/drive';
-import { SdkFactory } from '../../core/factory/sdk';
-import httpService from '../../core/services/http.service';
 import { aes } from '@internxt/lib';
+import { ShareTypes } from '@internxt/sdk/dist/drive';
 import {
+  AcceptInvitationToSharedFolderPayload,
+  CreateSharingPayload,
   ListAllSharedFoldersResponse,
   ListPrivateSharedFoldersResponse,
-  ListShareLinksItem,
+  ListSharedItemsResponse,
+  PublicSharedItemInfo,
+  Role,
   ShareDomainsResponse,
   ShareFolderWithUserPayload,
-  UpdateUserRolePayload,
-  ListSharedItemsResponse,
-  AcceptInvitationToSharedFolderPayload,
-  SharingInvite,
-  UpdateUserRoleResponse,
-  SharedFolders,
   SharedFiles,
-  SharedFoldersInvitationsAsInvitedUserResponse,
-  CreateSharingPayload,
-  SharingMeta,
-  PublicSharedItemInfo,
   SharedFolderSize,
+  SharedFolders,
+  SharedFoldersInvitationsAsInvitedUserResponse,
+  SharingInvite,
+  SharingMeta,
+  UpdateUserRolePayload,
+  UpdateUserRoleResponse,
 } from '@internxt/sdk/dist/drive/share/types';
-import { domainManager } from './DomainManager';
-import _ from 'lodash';
-import { decryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import folderService from 'app/drive/services/folder.service';
+import copy from 'copy-to-clipboard';
+import crypto from 'crypto';
+import { t } from 'i18next';
+import { Iterator } from '../../core/collections';
+import { SdkFactory } from '../../core/factory/sdk';
+import errorService from '../../core/services/error.service';
+import httpService from '../../core/services/http.service';
 import localStorageService from '../../core/services/local-storage.service';
+import workspacesService from '../../core/services/workspace.service';
+import { decryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
+import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import {
   downloadItemsAsZipThunk,
   downloadItemsThunk,
 } from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
-import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
-import { t } from 'i18next';
-import { Iterator } from '../../core/collections';
-import { Role } from 'app/store/slices/sharedLinks/types';
-import folderService from 'app/drive/services/folder.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import crypto from 'crypto';
-import copy from 'copy-to-clipboard';
+import { domainManager } from './DomainManager';
 
 interface CreateShareResponse {
   created: boolean;
@@ -46,49 +45,6 @@ interface CreateShareResponse {
 
 export async function createShare(params: ShareTypes.GenerateShareLinkPayload): Promise<CreateShareResponse> {
   return await SdkFactory.getNewApiInstance().createShareClient().createShareLink(params);
-}
-
-export async function createShareLink(
-  plainCode: string,
-  mnemonic: string,
-  params: ShareTypes.GenerateShareLinkPayload,
-): Promise<string> {
-  const share = await createShare(params);
-
-  return getLinkFromShare(share, plainCode, mnemonic, params.type);
-}
-
-export function getLinkFromShare(
-  share: CreateShareResponse,
-  plainCode: string,
-  mnemonic: string,
-  type: string,
-): string {
-  const domainList =
-    domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
-  const shareDomain = _.sample(domainList);
-
-  if (share.created) {
-    return `${shareDomain}/sh/${type}/${share.token}/${plainCode}`;
-  } else {
-    return `${shareDomain}/sh/${type}/${share.token}/${aes.decrypt((share as any).encryptedCode, mnemonic)}`;
-  }
-}
-
-export function buildLinkFromShare(mnemonic: string, share: ListShareLinksItem & { code: string }): string {
-  const domainList =
-    domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
-  const shareDomain = _.sample(domainList);
-  const plainCode = aes.decrypt(share.code, mnemonic);
-
-  return `${shareDomain}/sh/${share.isFolder ? 'folder' : 'file'}/${share.token}/${plainCode}`;
-}
-
-export function incrementShareView(token: string): Promise<{ incremented: boolean; token: string }> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.incrementShareViewByToken(token).catch((error) => {
-    throw errorService.castError(error);
-  });
 }
 
 export function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Promise<ShareTypes.ShareLink> {
@@ -253,19 +209,6 @@ export function inviteUserToSharedFolder(props: ShareFolderWithUserPayload): Pro
   });
 }
 
-export function getSharedFolderInvitations({
-  itemType,
-  itemId,
-}: {
-  itemType: 'folder';
-  itemId: string;
-}): Promise<any[]> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getSharedFolderInvitations({ itemType, itemId }).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
 export function getUsersOfSharedFolder({
   itemType,
   folderId,
@@ -320,7 +263,7 @@ export function acceptSharedFolderInvite({
   });
 }
 
-export function getUserRoleOfSharedRolder(sharingId: string): Promise<Role> {
+export function getUserRoleOfSharedFolder(sharingId: string): Promise<Role> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getUserRole(sharingId).catch((error) => {
     throw errorService.castError(error);
@@ -400,6 +343,16 @@ export const decryptPublicSharingCodeWithOwner = (encryptedCode: string) => {
   return aes.decrypt(encryptedCode, mnemonic);
 };
 
+const getRandomElement = (list: string[]) => {
+  if (list.length === 0) {
+    return null;
+  }
+
+  const randomIndex = Math.floor(Math.random() * list.length);
+
+  return list[randomIndex];
+};
+
 export const getPublicShareLink = async (
   uuid: string,
   itemType: 'folder' | 'file',
@@ -421,7 +374,10 @@ export const getPublicShareLink = async (
     const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
 
     window.focus();
-    const publicShareLink = `${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${plainCode}`;
+    const domains = domainManager.getDomainsList();
+    const selectedDomain = getRandomElement(domains);
+
+    const publicShareLink = `${selectedDomain}/d/sh/${itemType}/${sharingId}/${plainCode}`;
     // workaround to enable copy after login, because first copy always fails
     copy(publicShareLink);
     const isCopied = copy(publicShareLink);
@@ -488,44 +444,37 @@ export function getSharedDirectoryFiles(
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function getAllShareLinks(
-  page: number,
-  perPage: number,
-  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
-) {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getShareLinks(page, perPage, orderBy).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
-const getFormatFileName = (info): string => {
-  const hasType = info?.type !== null;
-  const extension = hasType ? `.${info?.type}` : '';
-  return `${info.name}${extension}`;
-};
-
 class DirectorySharedFolderIterator implements Iterator<SharedFolders> {
   private page: number;
   private itemsPerPage: number;
-  private readonly queryValues: { directoryId: string; resourcesToken?: string };
+  private readonly queryValues: { directoryId: string; resourcesToken?: string; workspaceId?: string; teamId?: string };
 
-  constructor(queryValues: { directoryId: string; resourcesToken?: string }, page?: number, itemsPerPage?: number) {
-    this.page = page || 0;
-    this.itemsPerPage = itemsPerPage || 5;
+  constructor(
+    queryValues: { directoryId: string; resourcesToken?: string; workspaceId?: string; teamId?: string },
+    page?: number,
+    itemsPerPage?: number,
+  ) {
+    this.page = page ?? 0;
+    this.itemsPerPage = itemsPerPage ?? 5;
     this.queryValues = queryValues;
   }
 
   async next() {
-    const { directoryId, resourcesToken } = this.queryValues;
-    const items = await getSharedFolderContent(
-      directoryId,
-      'folders',
-      resourcesToken ?? '',
-      this.page,
-      this.itemsPerPage,
-    );
+    const { directoryId, resourcesToken, workspaceId } = this.queryValues;
+    let items;
+    if (workspaceId) {
+      const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFolders(
+        workspaceId,
+        directoryId,
+        this.page,
+        this.itemsPerPage,
+        resourcesToken,
+      );
+      const response = await promise;
+      items = response;
+    } else {
+      items = await getSharedFolderContent(directoryId, 'folders', resourcesToken ?? '', this.page, this.itemsPerPage);
+    }
     const folders = items.items.map((folder) => ({ ...folder, name: folder?.plainName ?? folder.name }));
     this.page += 1;
 
@@ -538,24 +487,34 @@ class DirectorySharedFolderIterator implements Iterator<SharedFolders> {
 class DirectorySharedFilesIterator implements Iterator<SharedFiles> {
   private page: number;
   private itemsPerPage: number;
-  private readonly queryValues: { directoryId: string; resourcesToken?: string };
+  private readonly queryValues: { directoryId: string; resourcesToken?: string; workspaceId?: string; teamId?: string };
 
-  constructor(queryValues: { directoryId: string; resourcesToken?: string }, page?: number, itemsPerPage?: number) {
-    this.page = page || 0;
-    this.itemsPerPage = itemsPerPage || 15;
+  constructor(
+    queryValues: { directoryId: string; resourcesToken?: string; workspaceId?: string; teamId?: string },
+    page?: number,
+    itemsPerPage?: number,
+  ) {
+    this.page = page ?? 0;
+    this.itemsPerPage = itemsPerPage ?? 15;
     this.queryValues = queryValues;
   }
 
   async next() {
-    const { directoryId, resourcesToken } = this.queryValues;
-
-    const items = await getSharedFolderContent(
-      directoryId,
-      'files',
-      resourcesToken ?? '',
-      this.page,
-      this.itemsPerPage,
-    );
+    const { directoryId, resourcesToken, workspaceId } = this.queryValues;
+    let items;
+    if (workspaceId) {
+      const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(
+        workspaceId,
+        directoryId,
+        this.page,
+        this.itemsPerPage,
+        resourcesToken,
+      );
+      const response = await promise;
+      items = response;
+    } else {
+      items = await getSharedFolderContent(directoryId, 'files', resourcesToken ?? '', this.page, this.itemsPerPage);
+    }
     const files = items.items.map((file) => ({ ...file, name: file?.plainName ?? file.name }));
     this.page += 1;
     const done = files.length < this.itemsPerPage;
@@ -570,8 +529,8 @@ class DirectoryPublicSharedFolderIterator implements Iterator<SharedFolders> {
   private readonly queryValues: { directoryId: string; resourcesToken?: string };
 
   constructor(queryValues: { directoryId: string; resourcesToken?: string }, page?: number, itemsPerPage?: number) {
-    this.page = page || 0;
-    this.itemsPerPage = itemsPerPage || 5;
+    this.page = page ?? 0;
+    this.itemsPerPage = itemsPerPage ?? 5;
     this.queryValues = queryValues;
   }
 
@@ -603,8 +562,8 @@ class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
     page?: number,
     itemsPerPage?: number,
   ) {
-    this.page = page || 0;
-    this.itemsPerPage = itemsPerPage || 15;
+    this.page = page ?? 0;
+    this.itemsPerPage = itemsPerPage ?? 15;
     this.queryValues = queryValues;
   }
 
@@ -653,19 +612,22 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
 
 export async function downloadSharedFiles({
   creds,
-  encryptionKey,
+  decryptedEncryptionKey,
   selectedItems,
   dispatch,
   token,
+  workspaceId,
+  teamId,
 }: {
   creds: { user: string; pass: string };
-  encryptionKey: string;
+  decryptedEncryptionKey: string;
   selectedItems: any[];
   dispatch: any;
   token?: string;
+  workspaceId?: string;
+  teamId?: string;
 }): Promise<void> {
-  const decryptedKey = await decryptMnemonic(encryptionKey);
-
+  const decryptedKey = decryptedEncryptionKey;
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
     try {
       const sharingOptions = {
@@ -694,7 +656,7 @@ export async function downloadSharedFiles({
 
     const createFoldersIterator = (directoryUuid: string, resourcesToken?: string) => {
       return new DirectorySharedFolderIterator(
-        { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token },
+        { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token, workspaceId, teamId },
         initPage,
         itemsPerPage,
       );
@@ -702,16 +664,17 @@ export async function downloadSharedFiles({
 
     const createFilesIterator = (directoryUuid: string, resourcesToken?: string) => {
       return new DirectorySharedFilesIterator(
-        { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token },
+        { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token, workspaceId, teamId },
         initPage,
         itemsPerPage,
       );
     };
+
     dispatch(
       downloadItemsAsZipThunk({
         items: selectedItems,
         credentials: creds,
-        mnemonic: decryptedKey as string,
+        mnemonic: decryptedKey,
         fileIterator: createFilesIterator,
         folderIterator: createFoldersIterator,
         areSharedItems: true,
@@ -820,7 +783,7 @@ export function validateSharingInvitation(sharingId: string): Promise<{ uuid: st
 export function getPublicSharingMeta(sharingId: string, code: string, password?: string): Promise<SharingMeta> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharingMeta(sharingId, code, password).catch((error) => {
-    throw errorService.castError(error);
+    throw error;
   });
 }
 
@@ -868,22 +831,15 @@ export async function getSharedFolderSize(id: string): Promise<SharedFolderSize>
 
 const shareService = {
   createShare,
-  createShareLink,
   updateShareLink,
   deleteShareLink,
   getSharedFileInfo,
-  getSharedFolderInvitations,
   getSharedDirectoryFiles,
   getSharedDirectoryFolders,
   getSentSharedFolders,
-  getReceivedSharedFolders,
   getAllSharedFolders,
   getAllSharedFiles,
-  getLinkFromShare,
-  getAllShareLinks,
   getSharingType,
-  buildLinkFromShare,
-  incrementShareView,
   getShareDomains,
   stopSharingItem,
   removeUserRole,
@@ -891,7 +847,7 @@ const shareService = {
   downloadSharedFiles,
   getUsersOfSharedFolder,
   updateUserRoleOfSharedFolder,
-  getUserRoleOfSharedRolder,
+  getUserRoleOfSharedFolder,
   acceptSharedFolderInvite,
   declineSharedFolderInvite,
   processInvitation,

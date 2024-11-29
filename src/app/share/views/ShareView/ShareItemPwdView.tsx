@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
 import { WarningCircle } from '@phosphor-icons/react';
-import PasswordInput from 'app/share/components/ShareItemDialog/components/PasswordInput';
-import { ReactComponent as LockLogo } from 'assets/icons/Lock.svg';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import errorService from 'app/core/services/error.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import iconService from 'app/drive/services/icon.service';
-import sizeService from 'app/drive/services/size.service';
-import transformItemService from 'app/drive/services/item-transform.service';
-import { DriveItemData } from 'app/drive/types';
-import AppError from 'app/core/types';
-import Button from 'app/shared/components/Button/Button';
 import validationService from 'app/core/services/validation.service';
+import AppError from 'app/core/types';
+import iconService from 'app/drive/services/icon.service';
+import transformItemService from 'app/drive/services/item-transform.service';
+import sizeService from 'app/drive/services/size.service';
+import { DriveItemData } from 'app/drive/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import PasswordInput from 'app/share/components/ShareItemDialog/components/PasswordInput';
+import { Button } from '@internxt/internxtui';
+import { ReactComponent as LockLogo } from 'assets/icons/Lock.svg';
+import { useState } from 'react';
 
 export interface ShareItemPwdViewProps {
   onPasswordSubmitted: (password: string) => Promise<void>;
@@ -41,8 +41,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
       await onPasswordSubmitted(encodedPassword);
     } catch (error) {
       if (error instanceof AppError) {
-        const { statusCode } = JSON.parse(error.message);
-        if (statusCode === 403) {
+        if (error.status === 403) {
           setOnPasswordError(true);
         } else {
           errorService.reportError(error);
@@ -105,7 +104,8 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
         <Button
           type="submit"
           loading={isSubmitting}
-          onClick={(evt) => {
+          onClick={(e) => {
+            const evt = e as React.MouseEvent<HTMLButtonElement>;
             evt.preventDefault();
             handlePasswordSubmit();
           }}

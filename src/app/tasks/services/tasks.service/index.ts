@@ -1,23 +1,25 @@
 import { items as itemsLib } from '@internxt/lib';
-import { FunctionComponent, SVGProps } from 'react';
-import { uniqueId } from 'lodash';
 import EventEmitter from 'events';
+import { uniqueId } from 'lodash';
+import { FunctionComponent, SVGProps } from 'react';
 
+import iconService from 'app/drive/services/icon.service';
+import { t } from 'i18next';
 import {
+  BaseTask,
+  DownloadFilesData,
+  DownloadFolderData,
+  TaskData,
   TaskEvent,
+  TaskFilter,
+  TaskNotification,
   TaskProgress,
   TaskStatus,
   TaskType,
-  TaskNotification,
-  TaskData,
-  TaskFilter,
   UpdateTaskPayload,
-  BaseTask,
-  DownloadPhotosTask,
+  UploadFileData,
+  UploadFolderData,
 } from '../../types';
-import iconService from 'app/drive/services/icon.service';
-import { t } from 'i18next';
-import { isFirefox } from 'react-device-detect';
 
 class TaskManagerService {
   private tasks: TaskData[];
@@ -48,6 +50,11 @@ class TaskManagerService {
 
   public clearTasks() {
     this.tasks = [];
+  }
+
+  public removeTask(taskId: string) {
+    this.tasks = this.tasks.filter((task) => task.id !== taskId);
+    this.eventEmitter.emit(TaskEvent.TaskRemoved);
   }
 
   public getTasks(filter: TaskFilter = {}) {
@@ -83,14 +90,29 @@ class TaskManagerService {
   public findNotification(task: TaskData): TaskNotification {
     return {
       taskId: task.id,
+      action: task.action,
       status: task.status,
-      item: task.file || task.folder,
+      item: this.parseNotifcationItem(task),
+      sharedItemAuthenticationData: task.sharedItemAuthenticationData,
+      fileType: task?.fileType,
       title: this.getTaskNotificationTitle(task),
       subtitle: this.getTaskNotificationSubtitle(task),
       icon: this.getTaskNotificationIcon(task),
       progress: task.progress,
       isTaskCancellable: task.cancellable,
+      itemUUID: task?.itemUUID,
     };
+  }
+
+  private parseNotifcationItem(
+    task: TaskData,
+  ): DownloadFilesData | DownloadFolderData | UploadFileData | UploadFolderData {
+    const parsedItem =
+      (task.file ?? task.folder ?? task.action === TaskType.UploadFolder)
+        ? { folder: task.item, parentFolderId: task.parentFolderId }
+        : task.item;
+
+    return parsedItem as DownloadFilesData | DownloadFolderData | UploadFileData | UploadFolderData;
   }
 
   public async cancelTask(taskId: string) {
@@ -103,7 +125,7 @@ class TaskManagerService {
       },
     });
 
-    await (task?.stop || (() => undefined))();
+    await (task?.stop ?? (() => undefined))();
 
     this.eventEmitter.emit(TaskEvent.TaskCancelled, task);
     this.eventEmitter.emit(`${TaskEvent.TaskCancelled}-${taskId}`, task);
@@ -177,17 +199,14 @@ class TaskManagerService {
         title = itemsLib.getItemDisplayName({ name: task.folder.name });
         break;
       }
-      case TaskType.DownloadPhotos: {
-        const { numberOfPhotos } = task as DownloadPhotosTask;
-        title = `${numberOfPhotos} ${numberOfPhotos > 1 ? 'Photos' : 'Photo'}`;
-        break;
-      }
       case TaskType.RenameFile: {
         title = itemsLib.getItemDisplayName(task.file);
         break;
       }
       case TaskType.RenameFolder: {
-        title = itemsLib.getItemDisplayName(task.folder);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { type, ...driveFolderWithoutType } = task.folder;
+        title = itemsLib.getItemDisplayName(driveFolderWithoutType);
         break;
       }
     }
@@ -196,22 +215,19 @@ class TaskManagerService {
   }
 
   private getTaskNotificationSubtitle(task: TaskData): string {
+    const isRenameOrMoveTask =
+      task.action === TaskType.RenameFolder ||
+      task.action === TaskType.RenameFile ||
+      task.action === TaskType.MoveFile ||
+      task.action === TaskType.MoveFolder;
+
     if (task.status === TaskStatus.Error && task.subtitle) {
       return task.subtitle;
     }
 
-    const notExistProgress = task.progress && task.progress === Infinity;
-    if (
-      isFirefox &&
-      task.action === TaskType.DownloadFolder &&
-      task.status === TaskStatus.InProcess &&
-      notExistProgress
-    )
-      return t(`tasks.${task.action}.status.in-process-without-progress`);
+    if (isRenameOrMoveTask) return t(`tasks.${task.action}.status.${task.status}`);
 
-    return t(`tasks.${task.action}.status.${task.status}`, {
-      progress: task.progress ? (task.progress * 100).toFixed(0) : 0,
-    });
+    return '';
   }
 
   private getTaskNotificationIcon(task: TaskData): FunctionComponent<SVGProps<SVGSVGElement>> {
@@ -248,10 +264,6 @@ class TaskManagerService {
       }
       case TaskType.MoveFolder: {
         icon = iconService.getItemIcon(true, '');
-        break;
-      }
-      case TaskType.DownloadPhotos: {
-        icon = iconService.getItemIcon(false, 'jpeg');
         break;
       }
       case TaskType.RenameFile: {
