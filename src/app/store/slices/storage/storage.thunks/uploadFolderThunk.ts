@@ -153,7 +153,10 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         //Added wait in order to allow enough time for the server to create the folder
         await wait(500);
 
-        rootFolderItem = createdFolder;
+        if (!rootFolderItem) {
+          rootFolderItem = createdFolder;
+        }
+
         if (!rootFolderData) {
           rootFolderData = createdFolder;
           tasksService.updateTask({
@@ -305,7 +308,10 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
         // Added wait in order to allow enough time for the server to create the folder
         await wait(500);
 
-        rootFolderItem = createdFolder;
+        if (!rootFolderItem) {
+          rootFolderItem = createdFolder;
+        }
+
         tasksService.updateTask({
           taskId,
           merge: {
