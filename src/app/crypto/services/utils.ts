@@ -4,65 +4,7 @@ import { aes, items as itemUtils } from '@internxt/lib';
 import { AdvancedSharedItem } from '../../share/types';
 import { createSHA512, createHMAC, sha256, createSHA256, sha512, ripemd160 } from 'hash-wasm';
 import { Buffer } from 'buffer';
-
-/**
- * Converts HEX string to Uint8Array the same way CryptoJS did it (for compatibility)
- * @param {string} hex - The input string in HEX
- * @returns {Uint8Array} The resulting Uint8Array identical to what CryptoJS previously did
- */
-function hex2oldEncoding(hex: string): Uint8Array {
-  const words: number[] = [];
-  for (let i = 0; i < hex.length; i += 8) {
-    words.push(parseInt(hex.slice(i, i + 8), 16) | 0);
-  }
-  const sigBytes = hex.length / 2;
-  const uint8Array = new Uint8Array(sigBytes);
-
-  for (let i = 0; i < sigBytes; i++) {
-    uint8Array[i] = (words[i >>> 2] >>> ((3 - (i % 4)) * 8)) & 0xff;
-  }
-
-  return uint8Array;
-}
-
-/**
- * Converts Uint8Array to Base64 the same way CryptoJS did it (for compatibility)
- * @param {Uint8Array} uint8Array - The input Uint8Array array
- * @returns {string} The resulting Base64 string identical to what CryptoJS previously did
- */
-function uint8ArrayToBase64(uint8Array: Uint8Array) {
-  let result = '';
-  for (const byte of uint8Array) {
-    result += String.fromCharCode(byte);
-  }
-  return btoa(result);
-}
-
-/**
- * Converts Base64 to HEX the same way CryptoJS did it (for compatibility)
- * @param {string} base64String - The input Base64 string
- * @returns {string} The resulting HEX string identical to what CryptoJS previously did
- */
-function base64ToHex(base64String: string) {
-  const binaryString = atob(base64String);
-  const length = binaryString.length;
-  const bytes = new Uint8Array(length);
-  for (let i = 0; i < length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return Array.from(bytes)
-    .map((byte) => byte.toString(16).padStart(2, '0')) // Convert to hex and pad with leading zero if necessary
-    .join(''); // Combine all hex values into a single string
-}
-
-function wordArrayToUtf8String(wordArray) {
-  const byteArray = new Uint8Array(wordArray.sigBytes);
-  for (let i = 0; i < wordArray.sigBytes; i++) {
-    byteArray[i] = (wordArray.words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
-  }
-  const decoder = new TextDecoder('utf-8');
-  return decoder.decode(byteArray);
-}
+import crypto from 'crypto';
 
 /**
  * Computes hmac-sha512
@@ -145,41 +87,83 @@ function passToHash(passObject: PassObjectInterface): { salt: string; hash: stri
   return hashedObjetc;
 }
 
-// AES Plain text encryption method
+/**
+ * AES plain text encryption
+ * @param {string} textToEncrypt - The plain text
+ * @returns {string} The ciphertext
+ */
 function encryptText(textToEncrypt: string): string {
   return encryptTextWithKey(textToEncrypt, process.env.REACT_APP_CRYPTO_SECRET);
 }
 
-// AES Plain text decryption method
+/**
+ * AES plain text decryption
+ * @param {string} encryptedText - The ciphertext
+ * @returns {string} The plain text
+ */
 function decryptText(encryptedText: string): string {
   return decryptTextWithKey(encryptedText, process.env.REACT_APP_CRYPTO_SECRET);
 }
 
-// AES Plain text encryption method with enc. key
+/**
+ * AES plain text encryption with the given password (identical to what CryptoJS does)
+ * @param {string} textToEncrypt - The plain text
+ * @param {string} keyToEncrypt - The password
+ * @returns {string} The ciphertext
+ */
 function encryptTextWithKey(textToEncrypt: string, keyToEncrypt: string): string {
-  const salt = CryptoJS.lib.WordArray.random(8);
-  const kdf = CryptoJS.algo.EvpKDF.create({ keySize: 12 });
-  const derived = kdf.compute(keyToEncrypt, salt);
-  const key = CryptoJS.lib.WordArray.create(derived.words.slice(0, 12), 8 * 4);
-  const iv = CryptoJS.lib.WordArray.create(derived.words.slice(8, 12), 4 * 4);
-  const bytes = CryptoJS.AES.encrypt(textToEncrypt, key, {
-    iv: iv,
-  });
-  const saltedPrefix = CryptoJS.enc.Utf8.parse('Salted__');
-  const result = saltedPrefix + salt.toString(CryptoJS.enc.Hex) + base64ToHex(bytes.toString());
+  const salt = crypto.randomBytes(8);
+  const password = Buffer.concat([Buffer.from(keyToEncrypt, 'binary'), salt]);
+  const hash: Buffer[] = [];
+  let digest = password;
+  for (let i = 0; i < 3; i++) {
+    hash[i] = crypto.createHash('md5').update(digest).digest();
+    digest = Buffer.concat([hash[i], password]);
+  }
+  const keyDerivation = Buffer.concat(hash);
+  const key = keyDerivation.subarray(0, 32);
+  const iv = keyDerivation.subarray(32);
+  const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+  const result = Buffer.concat([
+    Buffer.from('Salted__', 'utf8'),
+    salt,
+    cipher.update(textToEncrypt),
+    cipher.final(),
+  ]).toString('hex');
+
   return result;
 }
 
-// AES Plain text decryption method with enc. key
+/**
+ * AES plain text decryption with the given password (identical to what CryptoJS does)
+ * @param {string} encryptedText - The ciphertext
+ * @param {string} keyToEncrypt - The password
+ * @returns {string} The plain text
+ */
 function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string {
   if (!keyToDecrypt) {
     throw new Error('No key defined. Check .env file');
   }
 
-  const reb = uint8ArrayToBase64(hex2oldEncoding(encryptedText));
-  const bytes = CryptoJS.AES.decrypt(reb, keyToDecrypt);
+  const cypher = Buffer.from(encryptedText, 'hex');
 
-  return wordArrayToUtf8String(bytes);
+  const salt = cypher.subarray(8, 16);
+  const password = Buffer.concat([Buffer.from(keyToDecrypt, 'binary'), salt]);
+  const md5Hashes: Buffer[] = [];
+  let digest = password;
+  for (let i = 0; i < 3; i++) {
+    md5Hashes[i] = crypto.createHash('md5').update(digest).digest();
+    digest = Buffer.concat([md5Hashes[i], password]);
+  }
+  const key = Buffer.concat([md5Hashes[0], md5Hashes[1]]);
+  const iv = md5Hashes[2];
+  const contents = cypher.subarray(16);
+  const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+
+  let result = decipher.update(contents);
+  result = Buffer.concat([result, decipher.final()]);
+
+  return result.toString('utf8');
 }
 
 function excludeHiddenItems(items: DriveItemData[]): DriveItemData[] {
@@ -221,8 +205,4 @@ export {
   getSha256Hasher,
   getSha512FromHex,
   getRipemd160FromHex,
-  hex2oldEncoding,
-  uint8ArrayToBase64,
-  base64ToHex,
-  wordArrayToUtf8String,
 };
