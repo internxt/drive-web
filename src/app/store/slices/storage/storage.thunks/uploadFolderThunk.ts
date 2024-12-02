@@ -17,15 +17,7 @@ import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
 import { StorageState } from '../storage.model';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
-
-// TODO: REMOVE IROOT from this file, it is in types.ts
-export interface IRoot {
-  name: string;
-  folderId: string | null;
-  childrenFiles: File[];
-  childrenFolders: IRoot[];
-  fullPathEdited: string;
-}
+import { IRoot } from '../types';
 
 interface UploadFolderThunkPayload {
   root: IRoot;
