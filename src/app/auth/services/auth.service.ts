@@ -201,7 +201,7 @@ export const doLogin = async (
       const newHash = await passToHash({ password });
       const encryptedHashedNewPassword = encryptText(newHash.hash);
       const encryptedHashedNewPasswordSalt = encryptText(newHash.salt);
-      const encryptedMnemonic = encryptTextWithKey(user.mnemonic, password);
+      const encryptedMnemonic = user.mnemonic;
 
       await authClient.changePasswordWithLink(
         token,
