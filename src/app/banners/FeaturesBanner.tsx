@@ -1,6 +1,6 @@
 import { CheckCircle, SealPercent, X } from '@phosphor-icons/react';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import styles from 'app/banners/FeaturesBanner.module.scss';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface FeaturesBannerProps {
   showBanner: boolean;
@@ -25,7 +25,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
     >
       {/* Banner */}
       <div
-        className={`${styles.linearGradient} fixed left-1/2 top-1/2 flex h-max -translate-x-[50%] -translate-y-[50%] flex-col
+        className={`${styles['linear-gradient']} fixed left-1/2 top-1/2 flex h-max -translate-x-[50%] -translate-y-[50%] flex-col
         overflow-hidden
       rounded-2xl px-10`}
       >

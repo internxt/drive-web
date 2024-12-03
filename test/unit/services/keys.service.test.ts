@@ -1,15 +1,14 @@
 /**
- * @jest-environment node
+ * @jest-environment jsdom
  */
 
-import { isValid } from '../../../src/app/crypto/services/utilspgp';
 import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
+import { isValid } from '../../../src/app/crypto/services/utilspgp';
 
-import { config } from 'dotenv';
-config();
+import { describe, expect, it } from 'vitest';
 
 describe('# keys service tests', () => {
-  xit('Should not update private key if encryption & encoding is fine', async () => {
+  it('Should not update private key if encryption & encoding is fine', async () => {
     const keys = await generateNewKeys();
     const plainPrivateKey = keys.privateKeyArmored;
 

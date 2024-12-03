@@ -84,8 +84,8 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
           itemsToTrash.length > 1
             ? t('general.files')
             : isFolder(itemsToTrash[0])
-            ? t('general.folder')
-            : t('general.file'),
+              ? t('general.folder')
+              : t('general.file'),
         s: itemsToTrash.length > 1 ? 'os' : isFolder(itemsToTrash[0]) ? 'a' : 'o',
       }),
 
