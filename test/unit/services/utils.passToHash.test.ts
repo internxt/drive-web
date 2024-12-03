@@ -268,7 +268,7 @@ describe('Test passToHash', () => {
     expect(result.hash).toBe(oldResult.hash);
   });
 
-  it('passToHash should return sucessfully verify old function hash', async () => {
+  it('passToHash should sucessfully verify old function hash', async () => {
     const password = 'Test password';
     const oldResult = oldPassToHash({ password });
     const result = await passToHash({ password, salt: oldResult.salt });
@@ -277,19 +277,19 @@ describe('Test passToHash', () => {
     expect(result.hash).toBe(oldResult.hash);
   });
 
-  it('passToHash should throw an error if salt is empty', async () => {
+  it('passToHash in argon2 mode should throw an error if salt is given but the actual value is empty', async () => {
     const password = 'Test password';
     const salt = 'argon2id$';
     await expect(passToHash({ password, salt })).rejects.toThrow('Salt must be specified');
   });
 
-  it('passToHash should throw an error if password is empty', async () => {
+  it('passToHash in argon2 mode should throw an error if password is empty', async () => {
     const password = '';
     const salt = 'argon2id$6c7c6b9938cb8bd0baf1c2d2171b96a0';
     await expect(passToHash({ password, salt })).rejects.toThrow('Password must be specified');
   });
 
-  it('passToHash should throw an error if salt is less than 8 bytes', async () => {
+  it('passToHash in argon2 mode should throw an error if salt is less than 8 bytes', async () => {
     const password = 'Test password';
     const salt = 'argon2id$6c';
     await expect(passToHash({ password, salt })).rejects.toThrow('Salt should be at least 8 bytes long');
