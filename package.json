@@ -9,7 +9,7 @@
     "@internxt/internxtui": "^0.0.6",
     "@internxt/inxt-js": "=1.2.21",
     "@internxt/lib": "^1.2.0",
-    "@internxt/sdk": "^1.6.3",
+    "@internxt/sdk": "=1.6.3",
     "@phosphor-icons/react": "^2.1.7",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.6.0",
@@ -77,7 +77,7 @@
     "streamsaver": "^2.0.5",
     "url": "^0.11.3",
     "util": "^0.12.5",
-    "uuid": "^11.0.3",
+    "uuid": "=8.3.2",
     "web-vitals": "^0.2.4",
     "xlsx-preview": "^1.0.4"
   },
@@ -120,7 +120,6 @@
     ]
   },
   "devDependencies": {
-    "asmcrypto.js": "git+https://github.com/asmcrypto/asmcrypto.js.git",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@craco/craco": "^7.1.0",
     "@internxt/eslint-config-internxt": "^1.0.3",
@@ -144,6 +143,7 @@
     "@types/wicg-file-system-access": "^2020.9.4",
     "@vitejs/plugin-react": "^4.3.3",
     "@vitest/coverage-istanbul": "^2.1.5",
+    "asmcrypto.js": "git+https://github.com/asmcrypto/asmcrypto.js.git",
     "autoprefixer": "^10.4.16",
     "buffer": "^6.0.3",
     "cross-env": "^7.0.3",
