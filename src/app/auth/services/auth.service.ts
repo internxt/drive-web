@@ -198,17 +198,21 @@ export const doLogin = async (
       localStorageService.set('xMnemonic', clearMnemonic);
       localStorageService.set('xNewToken', newToken);
 
-      const newHash = await passToHash({ password });
-      const encryptedHashedNewPassword = encryptText(newHash.hash);
-      const encryptedHashedNewPasswordSalt = encryptText(newHash.salt);
-      const encryptedMnemonic = user.mnemonic;
+      const salt = await getSalt();
 
-      await authClient.changePasswordWithLink(
-        token,
-        encryptedHashedNewPassword,
-        encryptedHashedNewPasswordSalt,
-        encryptedMnemonic,
-      );
+      if (!salt.startsWith('argon2id$')) {
+        const newHash = await passToHash({ password });
+        const encryptedHashedNewPassword = encryptText(newHash.hash);
+        const encryptedHashedNewPasswordSalt = encryptText(newHash.salt);
+        const encryptedMnemonic = user.mnemonic;
+
+        await authClient.changePasswordWithLink(
+          token,
+          encryptedHashedNewPassword,
+          encryptedHashedNewPasswordSalt,
+          encryptedMnemonic,
+        );
+      }
 
       return {
         user: clearUser,
