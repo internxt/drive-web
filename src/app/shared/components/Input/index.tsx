@@ -27,7 +27,7 @@ export default function Input({
   className?: string;
   label?: string;
   variant?: 'default' | 'search' | 'password' | 'email';
-  accent?: 'error' | 'warning' | 'success';
+  accent?: 'default' | 'error' | 'warning' | 'success';
   disabled?: boolean;
   placeholder?: string;
   value?: string;

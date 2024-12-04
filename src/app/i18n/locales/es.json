@@ -719,6 +719,8 @@
           "edit": "Editar perfil",
           "address": "Dirección",
           "phone": "Teléfono",
+          "email": "Correo",
+          "name": "Nombre",
           "owner": "Propietario",
           "workspaceOverview": "Resumen del espacio de trabajo",
           "members": "Miembros",

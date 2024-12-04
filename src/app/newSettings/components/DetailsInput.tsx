@@ -7,6 +7,9 @@ const DetailsInput = ({
   maxLength,
   disabled,
   hideMaxLength,
+  variant,
+  accent,
+  placeholder,
 }: {
   label: string;
   textValue: string;
@@ -14,17 +17,22 @@ const DetailsInput = ({
   maxLength?: number;
   hideMaxLength?: boolean;
   disabled?: boolean;
+  variant?: 'default' | 'search' | 'password' | 'email';
+  accent?: 'default' | 'error' | 'warning' | 'success';
+  placeholder?: string;
 }) => {
   return (
     <div className="space-y-1">
       <Input
         label={label}
-        placeholder={textValue}
+        placeholder={placeholder}
         value={textValue}
         disabled={disabled}
         className="w-full"
         onChange={onChangeTextValue}
         maxLength={maxLength}
+        variant={variant}
+        accent={accent}
       />
       {!hideMaxLength && maxLength && (
         <span className="flex w-full justify-end text-sm font-normal leading-4 text-gray-50">

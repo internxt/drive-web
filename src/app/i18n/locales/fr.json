@@ -670,6 +670,8 @@
           "edit": "Modifier le profil",
           "address": "Adresse",
           "phone": "Téléphone",
+          "email": "Email",
+          "name": "Nom",
           "owner": "Propriétaire",
           "workspaceOverview": "Vue d'ensemble de l'espace de travail",
           "members": "Membres",

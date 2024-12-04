@@ -736,6 +736,8 @@
           "edit": "编辑个人资料",
           "address": "地址",
           "phone": "电话",
+          "email":"电子邮件",
+          "name": "名字",
           "owner": "所有者",
           "workspaceOverview": "工作区概览",
           "members": "成员",
