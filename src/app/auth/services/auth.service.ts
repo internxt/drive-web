@@ -206,7 +206,7 @@ export const doLogin = async (
 
       return {
         user: clearUser,
-        token: localStorageService.get('xToken'),
+        token: localStorageService.get('xToken') ?? '',
         mnemonic: clearMnemonic,
       };
     })
