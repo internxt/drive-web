@@ -202,16 +202,21 @@ export const doLogin = async (
 
       if (!salt.startsWith('argon2id$')) {
         const newHash = await passToHash({ password });
-        const encryptedHashedNewPassword = encryptText(newHash.hash);
-        const encryptedHashedNewPasswordSalt = encryptText(newHash.salt);
+        const encryptedNewPassword = encryptText(newHash.hash);
+        const encryptedNewSalt = encryptText(newHash.salt);
         const encryptedMnemonic = user.mnemonic;
+        const { encryptedCurrentPassword } = await getPasswordDetails(password, user.email);
 
-        await authClient.changePasswordWithLink(
-          token,
-          encryptedHashedNewPassword,
-          encryptedHashedNewPasswordSalt,
-          encryptedMnemonic,
-        );
+        const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+
+        await usersClient.changePassword(<ChangePasswordPayloadNew>{
+          currentEncryptedPassword: encryptedCurrentPassword,
+          newEncryptedPassword: encryptedNewPassword,
+          newEncryptedSalt: encryptedNewSalt,
+          encryptedMnemonic: encryptedMnemonic,
+          encryptedPrivateKey: privateKey,
+          encryptVersion: StorageTypes.EncryptionVersion.Aes03,
+        });
       }
 
       return {
@@ -240,8 +245,10 @@ export const getSalt = async (userEmail?: string): Promise<string> => {
 
 export const getPasswordDetails = async (
   currentPassword: string,
+  givenSalt?: string,
 ): Promise<{ salt: string; hashedCurrentPassword: string; encryptedCurrentPassword: string }> => {
-  const salt = await getSalt();
+  let salt = givenSalt;
+  if (!givenSalt) salt = await getSalt();
   if (!salt) {
     throw new Error('Internal server error. Please reload.');
   }
