@@ -2009,14 +2009,14 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@=1.5.24":
-  version "1.5.24"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.5.24/0ce073c43be74fc41615d68678ff8c39a111d515#0ce073c43be74fc41615d68678ff8c39a111d515"
-  integrity sha512-UbStncZsm+xY6RBOdfHwoIATQS8bKAaw0d2ZUAhDZZ3l4WMy1CSV5GFbWeYAuSFzhjOMncEKD5K58nwZd4mZvw==
+"@internxt/sdk@=1.7.0":
+  version "1.7.0"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.7.0/8a277934c8065f39d43d0adb9c8751510d8820a9#8a277934c8065f39d43d0adb9c8751510d8820a9"
+  integrity sha512-6ysUQZu8JrEz/jN4JdzUmYL3tOOcYqWXigGPuCU2BDEPa652AsSQt80OG2pFAJzuj7+1CMUCqiqZJulmwL8dBg==
   dependencies:
-    axios "^0.24.0"
+    axios "^0.28.0"
     query-string "^7.1.0"
-    uuid "^8.3.2"
+    uuid "^11.0.2"
 
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
@@ -4877,13 +4877,6 @@ axios@^0.23.0:
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.23.0.tgz#b0fa5d0948a8d1d75e3d5635238b6c4625b05149"
   integrity sha512-NmvAE4i0YAv5cKq8zlDoPd1VLKAqX5oLuZKs8xkJa4qi6RGn0uhCYFjWtHHC9EM/MwOwYWOs53W+V0aqEXq1sg==
-  dependencies:
-    follow-redirects "^1.14.4"
-
-axios@^0.24.0:
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.24.0.tgz#804e6fa1e4b9c5288501dd9dff56a7a0940d20d6"
-  integrity sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA==
   dependencies:
     follow-redirects "^1.14.4"
 
@@ -14130,6 +14123,11 @@ utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==
+
+uuid@^11.0.2:
+  version "11.0.3"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-11.0.3.tgz#248451cac9d1a4a4128033e765d137e2b2c49a3d"
+  integrity sha512-d0z310fCWv5dJwnX1Y/MncBAqGMKEzlBb1AOf7z9K8ALnd0utBX/msg/fA0+sbyN1ihbMsLhrBlnl1ak7Wa0rg==
 
 uuid@^8.3.0, uuid@^8.3.2:
   version "8.3.2"
