@@ -206,14 +206,8 @@ export const doLogin = async (
         const encryptedHashedNewPasswordSalt = encryptText(newHash.salt);
         const encryptedMnemonic = user.mnemonic;
 
-        /*await authClient.changePasswordWithLink(
+        await authClient.changePasswordWithLink(
           token,
-          encryptedHashedNewPassword,
-          encryptedHashedNewPasswordSalt,
-          encryptedMnemonic,
-        );*/
-        console.log(
-          'We need to change hash',
           encryptedHashedNewPassword,
           encryptedHashedNewPasswordSalt,
           encryptedMnemonic,
