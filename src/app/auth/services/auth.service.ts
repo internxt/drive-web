@@ -373,8 +373,11 @@ export const deactivate2FA = async (
 };
 
 export const getNewToken = async (): Promise<string> => {
+  const serviceHeaders = httpService.getHeaders(true, false);
+  const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
+
   const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
-    headers: httpService.getHeaders(true, false),
+    headers: headers,
   });
   if (!res.ok) {
     throw new Error('Bad response while getting new token');
