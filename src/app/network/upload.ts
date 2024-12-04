@@ -1,10 +1,10 @@
-import * as Sentry from '@sentry/react';
 import { Network } from '@internxt/sdk/dist/network';
 import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
+import * as Sentry from '@sentry/react';
 
+import axios, { AxiosError } from 'axios';
 import { getSha256 } from '../crypto/services/utils';
 import { NetworkFacade } from './NetworkFacade';
-import axios, { AxiosError } from 'axios';
 import { ConnectionLostError } from './requests';
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
@@ -34,7 +34,7 @@ export async function uploadFileBlob(
     progressCallback: UploadProgressCallback;
     abortController?: AbortController;
   },
-): Promise<{ etag: string }> {
+): Promise<{ etag: string | undefined }> {
   try {
     const res = await axios.create()({
       url,
@@ -59,9 +59,9 @@ export async function uploadFileBlob(
 
     if (axios.isCancel(error)) {
       throw new Error('Upload aborted');
-    } else if (error.response && error.response.status === 403) {
+    } else if ((error as AxiosError).response && (error as AxiosError)?.response?.status === 403) {
       throw new Error('Request has expired');
-    } else if (error.message === 'Network Error') {
+    } else if ((error as AxiosError).message === 'Network Error') {
       throw error;
     } else {
       throw new Error('Unknown error');

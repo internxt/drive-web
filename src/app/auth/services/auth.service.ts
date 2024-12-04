@@ -7,8 +7,11 @@ import {
   SecurityDetails,
   TwoFactorAuthQR,
 } from '@internxt/sdk/dist/auth';
+import { StorageTypes } from '@internxt/sdk/dist/drive';
+import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
+import { trackSignUp } from 'app/analytics/impact.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -40,9 +43,6 @@ import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
-import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
-import { trackSignUp } from 'app/analytics/impact.service';
-import { StorageTypes } from '@internxt/sdk/dist/drive';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -342,8 +342,11 @@ export const deactivate2FA = (
 };
 
 export const getNewToken = async (): Promise<string> => {
+  const serviceHeaders = httpService.getHeaders(true, false);
+  const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
+
   const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
-    headers: httpService.getHeaders(true, false),
+    headers: headers,
   });
   if (!res.ok) {
     throw new Error('Bad response while getting new token');

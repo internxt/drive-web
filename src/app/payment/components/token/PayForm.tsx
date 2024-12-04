@@ -107,9 +107,12 @@ class PayToken extends React.Component<PayTokenProps, PayTokenState> {
 
     const json = JSON.stringify(object);
 
+    const serviceHeaders = httpService.getHeaders(true, false);
+    const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
+
     return fetch(`${process.env.REACT_APP_API_URL}/token/buy`, {
       method: 'post',
-      headers: httpService.getHeaders(true, false),
+      headers: headers,
       body: json,
     })
       .then((res) => {
