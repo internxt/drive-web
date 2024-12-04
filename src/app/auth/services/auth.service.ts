@@ -201,27 +201,12 @@ export const doLogin = async (
       const salt = await getSalt(user.email);
 
       if (!salt.startsWith('argon2id$')) {
-        const newHash = await passToHash({ password });
-        const encryptedNewPassword = encryptText(newHash.hash);
-        const encryptedNewSalt = encryptText(newHash.salt);
-        const encryptedMnemonic = user.mnemonic;
-        const { encryptedCurrentPassword } = await getPasswordDetails(password, salt);
-
-        const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
-
-        await usersClient.changePassword(<ChangePasswordPayloadNew>{
-          currentEncryptedPassword: encryptedCurrentPassword,
-          newEncryptedPassword: encryptedNewPassword,
-          newEncryptedSalt: encryptedNewSalt,
-          encryptedMnemonic: encryptedMnemonic,
-          encryptedPrivateKey: privateKey,
-          encryptVersion: StorageTypes.EncryptionVersion.Aes03,
-        });
+        await changePassword(password, password, user.email);
       }
 
       return {
         user: clearUser,
-        token: token,
+        token: localStorageService.get('xToken'),
         mnemonic: clearMnemonic,
       };
     })
