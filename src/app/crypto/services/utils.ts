@@ -4,6 +4,8 @@ import { aes, items as itemUtils } from '@internxt/lib';
 import { AdvancedSharedItem } from '../../share/types';
 import { createSHA512, createHMAC, sha256, createSHA256, sha512, ripemd160 } from 'hash-wasm';
 import { Buffer } from 'buffer';
+import crypto from 'crypto';
+
 /**
  * Computes hmac-sha512
  * @param {string} encryptionKeyHex - The hmac key in HEX format
@@ -85,34 +87,83 @@ function passToHash(passObject: PassObjectInterface): { salt: string; hash: stri
   return hashedObjetc;
 }
 
-// AES Plain text encryption method
+/**
+ * AES plain text encryption
+ * @param {string} textToEncrypt - The plain text
+ * @returns {string} The ciphertext
+ */
 function encryptText(textToEncrypt: string): string {
   return encryptTextWithKey(textToEncrypt, process.env.REACT_APP_CRYPTO_SECRET);
 }
 
-// AES Plain text decryption method
+/**
+ * AES plain text decryption
+ * @param {string} encryptedText - The ciphertext
+ * @returns {string} The plain text
+ */
 function decryptText(encryptedText: string): string {
   return decryptTextWithKey(encryptedText, process.env.REACT_APP_CRYPTO_SECRET);
 }
 
-// AES Plain text encryption method with enc. key
+/**
+ * AES plain text encryption with the given password (identical to what CryptoJS does)
+ * @param {string} textToEncrypt - The plain text
+ * @param {string} keyToEncrypt - The password
+ * @returns {string} The ciphertext
+ */
 function encryptTextWithKey(textToEncrypt: string, keyToEncrypt: string): string {
-  const bytes = CryptoJS.AES.encrypt(textToEncrypt, keyToEncrypt).toString();
-  const text64 = CryptoJS.enc.Base64.parse(bytes);
+  const salt = crypto.randomBytes(8);
+  const password = Buffer.concat([Buffer.from(keyToEncrypt, 'binary'), salt]);
+  const hash: Buffer[] = [];
+  let digest = password;
+  for (let i = 0; i < 3; i++) {
+    hash[i] = crypto.createHash('md5').update(digest).digest();
+    digest = Buffer.concat([hash[i], password]);
+  }
+  const keyDerivation = Buffer.concat(hash);
+  const key = keyDerivation.subarray(0, 32);
+  const iv = keyDerivation.subarray(32);
+  const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+  const result = Buffer.concat([
+    Buffer.from('Salted__', 'utf8'),
+    salt,
+    cipher.update(textToEncrypt),
+    cipher.final(),
+  ]).toString('hex');
 
-  return text64.toString(CryptoJS.enc.Hex);
+  return result;
 }
 
-// AES Plain text decryption method with enc. key
+/**
+ * AES plain text decryption with the given password (identical to what CryptoJS does)
+ * @param {string} encryptedText - The ciphertext
+ * @param {string} keyToEncrypt - The password
+ * @returns {string} The plain text
+ */
 function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string {
   if (!keyToDecrypt) {
     throw new Error('No key defined. Check .env file');
   }
 
-  const reb = CryptoJS.enc.Hex.parse(encryptedText);
-  const bytes = CryptoJS.AES.decrypt(reb.toString(CryptoJS.enc.Base64), keyToDecrypt);
+  const cypher = Buffer.from(encryptedText, 'hex');
 
-  return bytes.toString(CryptoJS.enc.Utf8);
+  const salt = cypher.subarray(8, 16);
+  const password = Buffer.concat([Buffer.from(keyToDecrypt, 'binary'), salt]);
+  const md5Hashes: Buffer[] = [];
+  let digest = password;
+  for (let i = 0; i < 3; i++) {
+    md5Hashes[i] = crypto.createHash('md5').update(digest).digest();
+    digest = Buffer.concat([md5Hashes[i], password]);
+  }
+  const key = Buffer.concat([md5Hashes[0], md5Hashes[1]]);
+  const iv = md5Hashes[2];
+  const contents = cypher.subarray(16);
+  const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+
+  let result = decipher.update(contents);
+  result = Buffer.concat([result, decipher.final()]);
+
+  return result.toString('utf8');
 }
 
 function excludeHiddenItems(items: DriveItemData[]): DriveItemData[] {
