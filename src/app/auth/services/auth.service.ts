@@ -7,8 +7,11 @@ import {
   SecurityDetails,
   TwoFactorAuthQR,
 } from '@internxt/sdk/dist/auth';
+import { StorageTypes } from '@internxt/sdk/dist/drive';
+import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
+import { trackSignUp } from 'app/analytics/impact.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -40,9 +43,6 @@ import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
-import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
-import { trackSignUp } from 'app/analytics/impact.service';
-import { StorageTypes } from '@internxt/sdk/dist/drive';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -198,7 +198,7 @@ export const doLogin = async (
       localStorageService.set('xMnemonic', clearMnemonic);
       localStorageService.set('xNewToken', newToken);
 
-      /*const salt = await getSalt();
+      const salt = await getSalt(user.email);
 
       if (!salt.startsWith('argon2id$')) {
         const newHash = await passToHash({ password });
@@ -212,7 +212,7 @@ export const doLogin = async (
           encryptedHashedNewPasswordSalt,
           encryptedMnemonic,
         );
-      }*/
+      }
 
       return {
         user: clearUser,
@@ -231,8 +231,8 @@ export const readReferalCookie = (): string | undefined => {
   return cookie ? cookie[2] : undefined;
 };
 
-export const getSalt = async (): Promise<string> => {
-  const email = localStorageService.getUser()?.email;
+export const getSalt = async (userEmail?: string): Promise<string> => {
+  const email = userEmail ?? localStorageService.getUser()?.email;
   const authClient = SdkFactory.getInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(String(email));
   return decryptText(securityDetails.encryptedSalt);
