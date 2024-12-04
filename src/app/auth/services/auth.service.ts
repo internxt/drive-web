@@ -198,7 +198,7 @@ export const doLogin = async (
       localStorageService.set('xMnemonic', clearMnemonic);
       localStorageService.set('xNewToken', newToken);
 
-      const salt = await getSalt();
+      /*const salt = await getSalt();
 
       if (!salt.startsWith('argon2id$')) {
         const newHash = await passToHash({ password });
@@ -212,7 +212,7 @@ export const doLogin = async (
           encryptedHashedNewPasswordSalt,
           encryptedMnemonic,
         );
-      }
+      }*/
 
       return {
         user: clearUser,
