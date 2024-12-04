@@ -205,7 +205,7 @@ export const doLogin = async (
         const encryptedNewPassword = encryptText(newHash.hash);
         const encryptedNewSalt = encryptText(newHash.salt);
         const encryptedMnemonic = user.mnemonic;
-        const { encryptedCurrentPassword } = await getPasswordDetails(password, user.email);
+        const { encryptedCurrentPassword } = await getPasswordDetails(password, salt);
 
         const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
 
