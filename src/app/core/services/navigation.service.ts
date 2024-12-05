@@ -58,9 +58,10 @@ const navigationService = {
       : instance.push(`?preferences=open&section=${section}&subsection=${subsection}`);
   },
   closePreferencesDialog({ workspaceUuid }: { workspaceUuid: string | undefined }) {
+    const sanitizedPathname = encodeURI(navigationService.history.location.pathname);
     workspaceUuid
-      ? instance.push(`${navigationService.history.location.pathname}?workspaceid=${workspaceUuid}`)
-      : instance.push(navigationService.history.location.pathname);
+      ? instance.push(`${sanitizedPathname}?workspaceid=${workspaceUuid}`)
+      : instance.push(sanitizedPathname);
   },
   replaceState(uuid: string | undefined): void {
     try {
