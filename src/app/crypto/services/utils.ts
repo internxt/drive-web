@@ -138,11 +138,11 @@ function getPBKDF2(
 function getArgon2(
   password: string,
   salt: string,
+  outputType: 'hex' | 'binary' | 'encoded' = 'encoded',
   parallelism: number = ARGON2ID_PARALLELISM,
   iterations: number = ARGON2ID_ITERATIONS,
   memorySize: number = ARGON2ID_MEMORY,
   hashLength: number = ARGON2ID_TAG_LEN,
-  outputType: 'hex' | 'binary' | 'encoded' = 'encoded',
 ): Promise<string> {
   return argon2id({
     password,
@@ -184,11 +184,11 @@ async function passToHash(passObject: PassObjectInterface): Promise<{ salt: stri
 
   if (!passObject.salt) {
     const argonSalt = crypto.randomBytes(ARGON2ID_SALT_LEN).toString('hex');
-    hash = await getArgon2(passObject.password, argonSalt);
+    hash = await getArgon2(passObject.password, argonSalt, 'hex');
     salt = 'argon2id$' + argonSalt;
   } else if (passObject.salt.startsWith('argon2id$')) {
     const argonSalt = passObject.salt.replace('argon2id$', '');
-    hash = await getArgon2(passObject.password, argonSalt);
+    hash = await getArgon2(passObject.password, argonSalt, 'hex');
     salt = passObject.salt;
   } else {
     salt = passObject.salt;

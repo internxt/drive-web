@@ -77,7 +77,7 @@ describe('Test getArgon2 with test vectors from the reference implementation tha
     const iterations = 2;
     const memorySize = 65536;
     const hashLength = 32;
-    const result = await getArgon2(password, salt, parallelism, iterations, memorySize, hashLength, 'hex');
+    const result = await getArgon2(password, salt, 'hex', parallelism, iterations, memorySize, hashLength);
     const testResult = '09316115d5cf24ed5a15a31a3ba326e5cf32edc24702987c02b6566f61913cf7';
     expect(result).toBe(testResult);
   });
@@ -89,7 +89,7 @@ describe('Test getArgon2 with test vectors from the reference implementation tha
     const iterations = 2;
     const memorySize = 262144;
     const hashLength = 32;
-    const result = await getArgon2(password, salt, parallelism, iterations, memorySize, hashLength, 'hex');
+    const result = await getArgon2(password, salt, 'hex', parallelism, iterations, memorySize, hashLength);
     const testResult = '78fe1ec91fb3aa5657d72e710854e4c3d9b9198c742f9616c2f085bed95b2e8c';
     expect(result).toBe(testResult);
   });
@@ -101,7 +101,7 @@ describe('Test getArgon2 with test vectors from the reference implementation tha
     const iterations = 2;
     const memorySize = 256;
     const hashLength = 32;
-    const result = await getArgon2(password, salt, parallelism, iterations, memorySize, hashLength, 'hex');
+    const result = await getArgon2(password, salt, 'hex', parallelism, iterations, memorySize, hashLength);
     const testResult = '9dfeb910e80bad0311fee20f9c0e2b12c17987b4cac90c2ef54d5b3021c68bfe';
     expect(result).toBe(testResult);
   });
@@ -113,7 +113,7 @@ describe('Test getArgon2 with test vectors from the reference implementation tha
     const iterations = 2;
     const memorySize = 256;
     const hashLength = 32;
-    const result = await getArgon2(password, salt, parallelism, iterations, memorySize, hashLength, 'hex');
+    const result = await getArgon2(password, salt, 'hex', parallelism, iterations, memorySize, hashLength);
     const testResult = '6d093c501fd5999645e0ea3bf620d7b8be7fd2db59c20d9fff9539da2bf57037';
     expect(result).toBe(testResult);
   });
@@ -125,7 +125,7 @@ describe('Test getArgon2 with test vectors from the reference implementation tha
     const iterations = 1;
     const memorySize = 65536;
     const hashLength = 32;
-    const result = await getArgon2(password, salt, parallelism, iterations, memorySize, hashLength, 'hex');
+    const result = await getArgon2(password, salt, 'hex', parallelism, iterations, memorySize, hashLength);
     const testResult = 'f6a5adc1ba723dddef9b5ac1d464e180fcd9dffc9d1cbf76cca2fed795d9ca98';
     expect(result).toBe(testResult);
   });
@@ -137,7 +137,7 @@ describe('Test getArgon2 with test vectors from the reference implementation tha
     const iterations = 4;
     const memorySize = 65536;
     const hashLength = 32;
-    const result = await getArgon2(password, salt, parallelism, iterations, memorySize, hashLength, 'hex');
+    const result = await getArgon2(password, salt, 'hex', parallelism, iterations, memorySize, hashLength);
     const testResult = '9025d48e68ef7395cca9079da4c4ec3affb3c8911fe4f86d1a2520856f63172c';
     expect(result).toBe(testResult);
   });
@@ -149,7 +149,7 @@ describe('Test getArgon2 with test vectors from the reference implementation tha
     const iterations = 2;
     const memorySize = 65536;
     const hashLength = 32;
-    const result = await getArgon2(password, salt, parallelism, iterations, memorySize, hashLength, 'hex');
+    const result = await getArgon2(password, salt, 'hex', parallelism, iterations, memorySize, hashLength);
     const testResult = '0b84d652cf6b0c4beaef0dfe278ba6a80df6696281d7e0d2891b817d8c458fde';
     expect(result).toBe(testResult);
   });
@@ -161,7 +161,7 @@ describe('Test getArgon2 with test vectors from the reference implementation tha
     const iterations = 2;
     const memorySize = 65536;
     const hashLength = 32;
-    const result = await getArgon2(password, salt, parallelism, iterations, memorySize, hashLength, 'hex');
+    const result = await getArgon2(password, salt, 'hex', parallelism, iterations, memorySize, hashLength);
     const testResult = 'bdf32b05ccc42eb15d58fd19b1f856b113da1e9a5874fdcc544308565aa8141c';
     expect(result).toBe(testResult);
   });
@@ -194,7 +194,7 @@ describe('Test passToHash', () => {
     const password = 'Test password';
     const result = await passToHash({ password });
     const salt: string = result.salt.split('$').pop() ?? '';
-    const argon2Result = await getArgon2(password, salt);
+    const argon2Result = await getArgon2(password, salt, 'hex');
     expect(result.hash).toBe(argon2Result);
   });
 
@@ -202,7 +202,7 @@ describe('Test passToHash', () => {
     const password = 'Test password';
     const salt = 'argon2id$6c7c6b9938cb8bd0baf1c2d2171b96a0';
     const result = await passToHash({ password, salt });
-    const argon2Result = await getArgon2(password, '6c7c6b9938cb8bd0baf1c2d2171b96a0');
+    const argon2Result = await getArgon2(password, '6c7c6b9938cb8bd0baf1c2d2171b96a0', 'hex');
     expect(result.hash).toBe(argon2Result);
   });
 
