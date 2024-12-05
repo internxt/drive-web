@@ -200,13 +200,17 @@ export const doLogin = async (
 
       const salt = await getSalt(user.email);
 
+      let xToken = token;
       if (!salt.startsWith('argon2id$')) {
-        await changePassword(password, password, user.email);
+        await changePassword(password, password, user.email, {
+          userPrivateKey: plainPrivateKeyInBase64,
+          mnemonic: clearMnemonic,
+        });
+        xToken = localStorageService.get('xToken') as string;
       }
-
       return {
         user: clearUser,
-        token: localStorageService.get('xToken') ?? '',
+        token: xToken,
         mnemonic: clearMnemonic,
       };
     })
@@ -295,10 +299,16 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
   );
 };
 
-export const changePassword = async (newPassword: string, currentPassword: string, email: string): Promise<void> => {
+export const changePassword = async (
+  newPassword: string,
+  currentPassword: string,
+  email: string,
+  userData?: { mnemonic: string; userPrivateKey: string },
+): Promise<void> => {
   const user = localStorageService.getUser() as UserSettings;
 
-  const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword);
+  const salt = await getSalt(email);
+  const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword, salt);
 
   // Encrypt the new password
   const hashedNewPassword = await passToHash({ password: newPassword });
@@ -306,8 +316,10 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const encryptedNewSalt = encryptText(hashedNewPassword.salt);
 
   // Encrypt the mnemonic
-  const encryptedMnemonic = encryptTextWithKey(user.mnemonic, newPassword);
-  const privateKey = Buffer.from(user.privateKey, 'base64').toString();
+  const userPrivateKey = userData?.userPrivateKey ?? user.privateKey;
+  const userMnemonic = userData?.mnemonic ?? user.mnemonic;
+  const encryptedMnemonic = encryptTextWithKey(userMnemonic, newPassword);
+  const privateKey = Buffer.from(userPrivateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
   const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
