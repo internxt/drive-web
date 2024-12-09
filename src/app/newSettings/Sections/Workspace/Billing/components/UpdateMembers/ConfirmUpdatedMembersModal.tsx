@@ -45,12 +45,14 @@ export const ConfirmUpdatedMembersModal = ({
         </p>
         <div className="gap-5º flex w-full flex-row items-center justify-center">
           <MembersCard
+            label={translate('preferences.workspace.billing.members.confirmUpdateModal.current')}
             members={currentAmountOfSeats as number}
             price={(monthlyPrice * currentAmountOfSeats).toFixed(2)}
             translate={translate}
           />
           <ArrowRight size={32} className="mx-5 font-semibold text-gray-20" />
           <MembersCard
+            label={translate('preferences.workspace.billing.members.confirmUpdateModal.new')}
             members={updatedAmountOfSeats as number}
             price={(monthlyPrice * updatedAmountOfSeats).toFixed(2)}
             translate={translate}
@@ -82,16 +84,18 @@ export const ConfirmUpdatedMembersModal = ({
 const MembersCard = ({
   members,
   price,
+  label,
   translate,
 }: {
   members: number;
   price: string;
+  label: string;
   translate: Translate;
 }): JSX.Element => {
   return (
     <div className="flex w-max flex-col items-center gap-2.5 rounded-xl border border-gray-10 bg-surface p-4 drop-shadow">
       <div className="w-max items-center rounded-full bg-gray-5 px-2 py-1">
-        <p>{translate('preferences.workspace.billing.members.confirmUpdateModal.current')}</p>
+        <p>{label}</p>
       </div>
       <p className="text-2xl font-semibold text-gray-100">
         {members} {translate('preferences.workspace.billing.membersLabel')}
