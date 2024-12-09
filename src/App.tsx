@@ -6,8 +6,11 @@ import { Redirect, Route, Router, Switch } from 'react-router-dom';
 
 import { Portal } from '@headlessui/react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
+import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { AppView } from 'app/core/types';
 import { FolderPath } from 'app/drive/types';
+import { ModifyStorageModal } from 'app/newSettings/Sections/Workspace/Members/components/ModifyStorageModal';
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import i18next, { t } from 'i18next';
@@ -38,12 +41,8 @@ import { sessionActions } from './app/store/slices/session';
 import { uiActions } from './app/store/slices/ui';
 import { initializeUserThunk } from './app/store/slices/user';
 import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
-import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
-import { ModifyStorageModal } from 'app/newSettings/Sections/Workspace/Members/components/ModifyStorageModal';
-import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
-import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -51,7 +50,6 @@ interface AppProps {
   isInitialized: boolean;
   isFileViewerOpen: boolean;
   isNewsletterDialogOpen: boolean;
-  isSurveyDialogOpen: boolean;
   isPreferencesDialogOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
   user: UserSettings | undefined;
@@ -65,7 +63,6 @@ const App = (props: AppProps): JSX.Element => {
     isAuthenticated,
     isFileViewerOpen,
     isNewsletterDialogOpen,
-    isSurveyDialogOpen,
     isPreferencesDialogOpen,
     fileViewerItem,
     dispatch,
@@ -220,7 +217,6 @@ const App = (props: AppProps): JSX.Element => {
           {isOpen && <ModifyStorageModal />}
 
           <NewsletterDialog isOpen={isNewsletterDialogOpen} />
-          {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
           {isFileViewerOpen && fileViewerItem && (
             <FileViewerWrapper file={fileViewerItem} onClose={onCloseFileViewer} showPreview={isFileViewerOpen} />
           )}
@@ -237,7 +233,6 @@ export default connect((state: RootState) => ({
   isInitialized: state.user.isInitialized,
   isFileViewerOpen: state.ui.isFileViewerOpen,
   isNewsletterDialogOpen: state.ui.isNewsletterDialogOpen,
-  isSurveyDialogOpen: state.ui.isSurveyDialogOpen,
   isPreferencesDialogOpen: state.ui.isPreferencesDialogOpen,
   fileViewerItem: state.ui.fileViewerItem,
   user: state.user.user,

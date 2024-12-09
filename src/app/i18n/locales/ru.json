@@ -1432,8 +1432,7 @@
       "subscribe-to-newsletter": "Подписаться на рассылку",
       "install-desktop-app": "Установить приложение для рабочего стола и загрузить файл",
       "invite-friends": "Пригласить {{completedSteps}}/{{steps}} друзей",
-      "invite-2-friends": "Пригласить {{completedSteps}}/{{steps}} друзей",
-      "complete-survey": "Полный опрос"
+      "invite-2-friends": "Пригласить {{completedSteps}}/{{steps}} друзей"
     },
     "rewards": {
       "title": "Получить {{creditSum}} бесплатно",

@@ -49,7 +49,7 @@ export default class RealtimeService {
     });
   }
 
-  getClientId(): string {
+  getClientId(): string | undefined {
     if (!this.socket) {
       throw new Error('Realtime service is not connected');
     }
