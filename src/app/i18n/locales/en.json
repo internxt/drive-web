@@ -1465,8 +1465,7 @@
       "subscribe-to-newsletter": "Subscribe to newsletter",
       "install-desktop-app": "Install desktop app and upload a file",
       "invite-friends": "Invite {{completedSteps}}/{{steps}} friends",
-      "invite-2-friends": "Invite {{completedSteps}}/{{steps}} friends",
-      "complete-survey": "Complete survey"
+      "invite-2-friends": "Invite {{completedSteps}}/{{steps}} friends"
     },
     "rewards": {
       "title": "Get {{creditSum}} for free",

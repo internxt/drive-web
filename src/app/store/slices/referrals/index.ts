@@ -93,10 +93,6 @@ const executeUserReferralActionThunk = createAsyncThunk<void, { referralKey: Ref
         dispatch(uiActions.setIsPreferencesDialogOpen(true));
         break;
       }
-      case ReferralKey.CompleteSurvey: {
-        dispatch(uiActions.setIsSurveyDialogOpen(true));
-        break;
-      }
     }
   },
 );

@@ -1465,8 +1465,7 @@
       "subscribe-to-newsletter": "订阅新闻",
       "install-desktop-app": "安装桌面应用程序，并上传一个文件",
       "invite-friends": "邀请{{completedSteps}}/{{steps}}个朋友 ",
-      "invite-2-friends": "邀请{{completedSteps}}/{{steps}}个朋友 ",
-      "complete-survey": "完成调查"
+      "invite-2-friends": "邀请{{completedSteps}}/{{steps}}个朋友 "
     },
     "rewards": {
       "title": "免费获得 {{creditSum}}的容量!",
