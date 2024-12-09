@@ -10,7 +10,7 @@ import errorService from '../../../core/services/error.service';
 import { HTTP_CODES } from '../../../core/services/http.service';
 import AppError, { IFormValues } from '../../../core/types';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { Button, Avatar } from '@internxt/internxtui';
+import { Button, Avatar } from '@internxt/ui';
 import Input from '../../../shared/components/Input';
 import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { RootState } from '../../../store';

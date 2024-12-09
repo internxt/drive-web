@@ -6,7 +6,7 @@ import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
 import authService from 'app/auth/services/auth.service';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import Input from 'app/shared/components/Input';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { CaretLeft, WarningCircle, CheckCircle } from '@phosphor-icons/react';

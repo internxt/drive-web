@@ -3,35 +3,10 @@ import { DotsThree, Link } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { DriveItemData } from 'app/drive/types';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
-import { Button } from '@internxt/internxtui';
+import { Button, Dropdown, MenuItemType } from '@internxt/ui';
 import { t } from 'i18next';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import Dropdown from 'app/shared/components/Dropdown';
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../../shared/components/Tooltip/Tooltip';
-
-const MenuItem = ({
-  onClick,
-  active,
-  text,
-  icon,
-}: {
-  onClick: () => void;
-  active: boolean;
-  text: string;
-  icon: React.ReactNode;
-}) => (
-  <div
-    onClick={onClick}
-    onKeyDown={() => {}}
-    className={`${
-      active && 'bg-gray-5 dark:bg-gray-10'
-    } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
-  >
-    {icon}
-    <p className="ml-3">{text}</p>
-  </div>
-);
 
 interface TopBarActionsProps {
   background?: string;
@@ -39,7 +14,7 @@ interface TopBarActionsProps {
   file: DriveItemData;
   isAuthenticated: boolean;
   isShareView?: boolean;
-  dropdownItems: ListItemMenu<DriveItemData>;
+  dropdownItems: Array<MenuItemType<DriveItemData>>;
 }
 
 const TopBarActions: FC<TopBarActionsProps> = ({
@@ -84,7 +59,6 @@ const TopBarActions: FC<TopBarActionsProps> = ({
           classButton="flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white/0 font-medium outline-none transition duration-50 ease-in-out hover:bg-white/10"
           openDirection="right"
           classMenuItems="z-20 right-0 mt-0 flex flex-col rounded-lg bg-surface dark:bg-gray-5 py-1.5 shadow-subtle-hard min-w-[180px]"
-          item={file}
           dropdownActionsContext={dropdownItems}
         >
           <div

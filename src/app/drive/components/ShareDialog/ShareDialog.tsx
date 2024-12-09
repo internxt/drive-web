@@ -17,7 +17,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
 import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
 import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
-import { Avatar, Button, Spinner } from '@internxt/internxtui';
+import { Avatar, Button, Loader } from '@internxt/ui';
 import Modal from 'app/shared/components/Modal';
 import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
@@ -653,7 +653,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                         </span>
                         {isLoading ? (
                           <div className="flex h-6 w-6 items-center justify-center">
-                            <Spinner className="h-5 w-5" />
+                            <Loader classNameLoader="h-5 w-5" />
                           </div>
                         ) : (
                           <CaretDown size={24} />
@@ -686,7 +686,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                             <div className="flex h-full w-5 items-center justify-center">
                               {accessMode === 'public' ? (
                                 isLoading ? (
-                                  <Spinner className="h-5 w-5" />
+                                  <Loader classNameLoader="h-5 w-5" />
                                 ) : (
                                   <Check size={20} />
                                 )
@@ -711,7 +711,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                               <div className="flex h-full w-5 items-center justify-center">
                                 {accessMode === 'restricted' ? (
                                   isLoading ? (
-                                    <Spinner className="h-5 w-5" />
+                                    <Loader classNameLoader="h-5 w-5" />
                                   ) : (
                                     <Check size={20} />
                                   )

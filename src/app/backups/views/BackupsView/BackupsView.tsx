@@ -13,7 +13,6 @@ import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import { deleteFile } from '../../../drive/services/file.service';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
-import { ListItemMenu } from '../../../shared/components/List/ListItem';
 import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
@@ -22,6 +21,7 @@ import { useBackupDeviceActions } from 'app/backups/hooks/useBackupDeviceActions
 import { useBackupsPagination } from 'app/backups/hooks/useBackupsPagination';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { MenuItemType } from '@internxt/ui';
 
 export default function BackupsView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -105,12 +105,12 @@ export default function BackupsView(): JSX.Element {
     }
   };
 
-  const contextMenu: ListItemMenu<DriveItemData> = contextMenuSelectedBackupItems({
+  const contextMenu: Array<MenuItemType<DriveItemData>> = contextMenuSelectedBackupItems({
     onDownloadSelectedItems,
     onDeleteSelectedItems: onDeleteSelectedItems,
   });
 
-  const contextMenuForFileViewer: ListItemMenu<DriveItemData> = contextMenuSelectedBackupItems({
+  const contextMenuForFileViewer: Array<MenuItemType<DriveItemData>> = contextMenuSelectedBackupItems({
     onDownloadSelectedItems: onDownloadFileFormFileViewer,
     onDeleteSelectedItems: onDeleteFileItemFromFilePreview,
   });

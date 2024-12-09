@@ -1,8 +1,8 @@
 import { CaretRight, DotsThree } from '@phosphor-icons/react';
 import { forwardRef, ReactNode } from 'react';
-import Dropdown from '../Dropdown';
 import BreadcrumbsItem from './BreadcrumbsItem/BreadcrumbsItem';
 import { BreadcrumbItemData, BreadcrumbsMenuProps } from './types';
+import { Dropdown } from '@internxt/ui';
 
 interface BreadcrumbsProps {
   items: BreadcrumbItemData[];

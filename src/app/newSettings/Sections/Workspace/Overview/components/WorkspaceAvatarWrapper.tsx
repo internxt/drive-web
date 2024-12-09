@@ -6,7 +6,7 @@ import {
 } from '../../../../../drive/services/database.service';
 import * as Sentry from '@sentry/react';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
-import { Avatar } from '@internxt/internxtui';
+import { Avatar } from '@internxt/ui';
 
 const showUpdateWorkspaceAvatarErrorToast = () =>
   notificationsService.show({
