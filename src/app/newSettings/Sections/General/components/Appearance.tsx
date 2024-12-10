@@ -88,7 +88,7 @@ const Appearance = () => {
           !appearances.some((appearance) => appearance.theme === 'christmas' && appearance.img === appearance_dark) &&
           isChristmasThemeAvailable
         ) {
-          // TODO: add img of halloween
+          // TODO: add img of christmas
           setAppearances([...appearances, { theme: 'christmas', img: appearance_dark }]);
         }
       })
