@@ -4,9 +4,9 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 85%!",
-    "title": "The best Black Friday deals",
-    "subtitle": "Win our premium backpack with our lifetime plans.",
+    "label": "Save 80%!",
+    "title": "Secret Santa surprise! ",
+    "subtitle": "Christmas Web App Theme + Chance to win up to 10TB of storage!",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
@@ -16,7 +16,8 @@
       "Open-source and audited",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends December 3rd"
+      "Offer ends",
+      "January 7th"
     ]
   },
   "valentinesBanner": {
@@ -68,7 +69,8 @@
     "dark": "Dark",
     "system": "System",
     "starwars": "Star Wars",
-    "halloween": "Halloween"
+    "halloween": "Halloween",
+    "christmas": "Christmas"
   },
   "auth": {
     "email": "Email",
