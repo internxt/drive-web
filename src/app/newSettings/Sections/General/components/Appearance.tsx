@@ -59,7 +59,6 @@ const Appearance = () => {
           !appearances.some((appearance) => appearance.theme === 'starwars' && appearance.img === appearance_dark) &&
           isStarWarsThemeAvailable
         ) {
-          // TODO: add img of starwars
           setAppearances([...appearances, { theme: 'starwars', img: appearance_dark }]);
         }
       })
@@ -74,7 +73,6 @@ const Appearance = () => {
           !appearances.some((appearance) => appearance.theme === 'halloween' && appearance.img === appearance_dark) &&
           isHalloweenThemeAvailable
         ) {
-          // TODO: add img of halloween
           setAppearances([...appearances, { theme: 'halloween', img: appearance_dark }]);
         }
       })
@@ -88,7 +86,6 @@ const Appearance = () => {
           !appearances.some((appearance) => appearance.theme === 'christmas' && appearance.img === appearance_dark) &&
           isChristmasThemeAvailable
         ) {
-          // TODO: add img of christmas
           setAppearances([...appearances, { theme: 'christmas', img: appearance_dark }]);
         }
       })
