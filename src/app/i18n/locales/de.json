@@ -4,9 +4,9 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Spare 85%!",
-    "title": "Die besten Black Friday Angebote",
-    "subtitle": "Erhalte unseren Premium-Rucksack mit unseren Lifetime-Plänen.",
+    "label": "Spare 80%!",
+    "title": "Geheime Weihnachtsmann-Überraschung!",
+    "subtitle": "Weihnachts-Web-App-Thema + Chance, bis zu 10 TB Speicher zu gewinnen!",
     "cta": "Wähle deinen Plan",
     "guarantee": "30 Tage Geld-zurück-Garantie",
     "lastCta": "*Das Angebot gilt für kostenlose Konten oder Neukunden",
@@ -16,7 +16,8 @@
       "Open Source und geprüft",
       "Verschlüsselte Ende-zu-Ende-Übertragungen",
       "Kein unautorisierter Zugriff",
-      "Das Angebot endet am 3. Dezember"
+      "Das Angebot endet am",
+      "7. Januar"
     ]
   },
   "valentinesBanner": {
@@ -47,7 +48,8 @@
     "dark": "Dunkel",
     "system": "System",
     "starwars": "Star Wars",
-    "halloween": "Halloween"
+    "halloween": "Halloween",
+    "christmas": "Weihnachten"
   },
   "auth": {
     "email": "E-Mail",

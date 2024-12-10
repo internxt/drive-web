@@ -4,9 +4,9 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 85% !",
-    "title": "Les meilleures offres du Black Friday",
-    "subtitle": "Recevez notre sac à dos premium avec nos plans à vie.",
+    "label": "Économisez 80% !",
+    "title": "Surprise du Père Noël !",
+    "subtitle": "Thème de l'application Web de Noël + Chance de gagner jusqu'à 10 To de stockage !",
     "cta": "Choisissez votre plan",
     "guarantee": "Garantie de remboursement de 30 jours",
     "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
@@ -16,7 +16,8 @@
       "Open source et audité",
       "Transferts cryptés de bout en bout",
       "Aucun accès non autorisé",
-      "L'offre se termine le 3 décembre"
+      "L'offre se termine ",
+      "le 7 janvier"
     ]
   },
   "valentinesBanner": {
@@ -47,7 +48,8 @@
     "dark": "Sombre",
     "system": "Système",
     "starwars": "Star Wars",
-    "halloween": "Halloween"
+    "halloween": "Halloween",
+    "christmas": "Noël"
   },
   "auth": {
     "email": "Email",
