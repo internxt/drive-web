@@ -1434,8 +1434,7 @@
       "subscribe-to-newsletter": "訂閱通訊",
       "install-desktop-app": "安裝桌面應用程序並上傳文件",
       "invite-friends": "邀請 {{completedSteps}}/{{steps}} 位朋友",
-      "invite-2-friends": "邀請 {{completedSteps}}/{{steps}} 位朋友",
-      "complete-survey": "完成調查"
+      "invite-2-friends": "邀請 {{completedSteps}}/{{steps}} 位朋友"
     },
     "rewards": {
       "title": "免費獲得 {{creditSum}}",

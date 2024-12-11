@@ -1399,8 +1399,7 @@
       "subscribe-to-newsletter": "S'abonner à la lettre d'information",
       "install-desktop-app": "Installer l'app de bureau et télécharger un fichier",
       "invite-friends": "Inviter {{completedSteps}}/{{steps}} amis",
-      "invite-2-friends": "Inviter {{completedSteps}}/{{steps}} amis",
-      "complete-survey": "Répondre à une enquête"
+      "invite-2-friends": "Inviter {{completedSteps}}/{{steps}} amis"
     },
     "rewards": {
       "title": "Obtenez {{creditSum}} gratuitement !",

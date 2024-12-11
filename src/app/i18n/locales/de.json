@@ -1414,8 +1414,7 @@
       "subscribe-to-newsletter": "Abonniere unseren Newsletter",
       "install-desktop-app": "Installiere die Desktop-App und lade eine Datei hoch",
       "invite-friends": "Lade {{completedSteps}}/{{steps}} Freunde ein",
-      "invite-2-friends": "Lade {{completedSteps}}/{{steps}} Freunde ein",
-      "complete-survey": "Komplettiere Umfrage"
+      "invite-2-friends": "Lade {{completedSteps}}/{{steps}} Freunde ein"
     },
     "rewards": {
       "title": "Erhalte {{creditSum}} kostenlos",

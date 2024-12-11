@@ -633,7 +633,6 @@ export default connect((state: RootState) => ({
   currentUserRole: state.shared.currentSharingRole,
   disableKeyboardShortcuts:
     state.ui.isShareDialogOpen ||
-    state.ui.isSurveyDialogOpen ||
     state.ui.isEditFolderNameDialog ||
     state.ui.isFileViewerOpen ||
     state.ui.isMoveItemsDialogOpen ||

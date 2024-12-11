@@ -1459,8 +1459,7 @@
       "subscribe-to-newsletter": "Iscriviti alla newsletter",
       "install-desktop-app": "Installa l’app desktop e carica un file",
       "invite-friends": "Invita {{completedSteps}}/{{steps}} amici",
-      "invite-2-friends": "Invita {{completedSteps}}/{{steps}} amici",
-      "complete-survey": "Completa il sondaggio"
+      "invite-2-friends": "Invita {{completedSteps}}/{{steps}} amici"
     },
     "rewards": {
       "title": "Ottieni {{creditSum}} gratis",
