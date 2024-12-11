@@ -25,7 +25,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node_version }}
-          cache: yarn
           registry-url: 'https://npm.pkg.github.com'
       - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> .env
       - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> .env

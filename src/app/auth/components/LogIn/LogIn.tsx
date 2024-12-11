@@ -166,7 +166,8 @@ export default function LogIn(): JSX.Element {
       const castedError = errorService.castError(err);
 
       if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
-        navigationService.history.push(`/activate/${email}`);
+        const emailEncoded = encodeURIComponent(email);
+        navigationService.history.push(`/activate/${emailEncoded}`);
       }
 
       setLoginError([getLoginErrorMessage(err)]);
