@@ -229,6 +229,16 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
       });
     };
 
+    const updateNumItemsCallback = () => {
+      const task = tasksService.findTask(taskId);
+      tasksService.updateTask({
+        taskId,
+        merge: {
+          nItems: (task?.nItems || 0) + 1,
+        },
+      });
+    };
+
     items.forEach((_, index) => {
       downloadProgress[index] = 0;
     });
@@ -260,6 +270,9 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
               updateProgress: (progress) => {
                 downloadProgress[index] = progress;
                 updateProgressCallback(calculateProgress());
+              },
+              updateNumItems: () => {
+                updateNumItemsCallback();
               },
               options: {
                 destination: folder,

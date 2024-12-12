@@ -382,6 +382,7 @@ async function downloadFolderAsZip({
   foldersIterator,
   filesIterator,
   updateProgress,
+  updateNumItems,
   options,
   abortController,
 }: {
@@ -391,6 +392,7 @@ async function downloadFolderAsZip({
   foldersIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFolderData>;
   filesIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFileData>;
   updateProgress: (progress: number) => void;
+  updateNumItems: () => void;
   options?: DownloadFolderAsZipOptions;
   abortController?: AbortController;
 }): Promise<void> {
@@ -412,6 +414,7 @@ async function downloadFolderAsZip({
       const files = await addAllFilesToZip(
         folderToDownload.name,
         async (file) => {
+          updateNumItems();
           const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
           const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
