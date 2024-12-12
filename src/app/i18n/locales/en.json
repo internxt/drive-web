@@ -1332,6 +1332,7 @@
     "delete": "Delete",
     "download": "Download",
     "downloading": "Downloading",
+    "downloadingItems": "Downloading {{nItems}} items...",
     "downloaded": "Downloaded",
     "view": "Preview",
     "accessFile": "Access File",

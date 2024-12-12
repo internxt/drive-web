@@ -231,6 +231,7 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
 
     const updateNumItemsCallback = () => {
       const task = tasksService.findTask(taskId);
+      console.log('countFiles', task?.nItems);
       tasksService.updateTask({
         taskId,
         merge: {
@@ -256,6 +257,9 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
               (progress) => {
                 downloadProgress[index] = progress;
                 updateProgressCallback(calculateProgress());
+              },
+              () => {
+                updateNumItemsCallback();
               },
               driveItem.uuid,
               { destination: folder, closeWhenFinished: false, ...moreOptions },

@@ -272,6 +272,7 @@ async function downloadSharedFolderAsZip(
   foldersIterator: (directoryId: any, token: string) => Iterator<SharedFolders>,
   filesIterator: (directoryId: any, token: string) => Iterator<SharedFiles>,
   updateProgress: (progress: number) => void,
+  updateNumItems: () => void,
   folderUuid?: string,
   options?: DownloadFolderAsZipOptions,
 ): Promise<void> {
@@ -308,6 +309,8 @@ async function downloadSharedFolderAsZip(
           const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
           const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
+
+          updateNumItems();
 
           if (cachedFile?.source && !isCachedFileOlder) {
             updateProgress(1);

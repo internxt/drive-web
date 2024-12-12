@@ -1311,6 +1311,7 @@
     "delete": "Eliminar",
     "download": "Descargar",
     "downloading": "Descargando",
+    "downloadingItems": "Descargando {{nItems}} elementos...",
     "downloaded": "Descargado",
     "view": "Previsualizar",
     "accessFile": "Acceder al archivo",
