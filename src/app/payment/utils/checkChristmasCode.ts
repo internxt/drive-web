@@ -10,7 +10,6 @@ export const isChristmasThemeAvailable = async (plan: PlanState, onSuccess?: () 
 
   if (christmasInLocalStorage === 'true') return true;
   try {
-    // Check if user used the coupon code 'SECRETSANTA80'
     const couponUsedResult = await paymentService.isCouponUsedByUser('SECRETSANTA80');
 
     if (couponUsedResult.couponUsed) {

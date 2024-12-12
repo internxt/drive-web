@@ -65,34 +65,24 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
           <div className="hidden w-full items-center lg:flex">
             <div className="flex flex-col">
               <div className="flex flex-col space-y-8">
-                {features.map((card, index) => {
-                  if (index === features.length - 2) {
-                    return (
-                      <div className="flex flex-row space-x-1 font-bold text-red" key={index}>
-                        <div className="flex">
-                          <Snowflake size={32} className="mr-4 text-red" />
-                          <p className="text-lg font-semibold text-gray-10">{card}</p>
-                        </div>
-                        <div className="flex flex-row">
-                          <p className="text-lg font-semibold text-red">{features[index + 1]}</p>
-                        </div>
+                {features.map((card, index) =>
+                  index === features.length - 2 ? (
+                    <div className="flex flex-row space-x-1 font-bold text-red" key={index}>
+                      <div className="flex">
+                        <Snowflake size={32} className="mr-4 text-red" />
+                        <p className="text-lg font-semibold text-gray-80">{card}</p>
                       </div>
-                    );
-                  }
-
-                  if (index === features.length - 1) {
-                    return null;
-                  }
-                  return (
-                    <div
-                      className={`flex flex-row space-x-4 ${index === features.length - 1 ? 'font-bold text-red' : ''}`}
-                      key={index}
-                    >
-                      <Snowflake size={32} className="text-red" />
-                      <p className="text-lg font-semibold text-gray-10">{card}</p>
+                      <div className="flex flex-row">
+                        <p className="text-lg font-semibold text-red">{features[index + 1]}</p>
+                      </div>
                     </div>
-                  );
-                })}
+                  ) : index === features.length - 1 ? null : (
+                    <div className="flex flex-row space-x-4" key={index}>
+                      <Snowflake size={32} className="text-red" />
+                      <p className="text-lg font-semibold text-gray-80">{card}</p>
+                    </div>
+                  ),
+                )}
               </div>
             </div>
           </div>
