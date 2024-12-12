@@ -1368,7 +1368,8 @@
     "report": "Report abuse",
     "yes": "Yes",
     "no": "No",
-    "more": "More"
+    "more": "More",
+    "logOut": "Log out"
   },
   "drive": {
     "usage": "Usage",

@@ -1311,7 +1311,8 @@
     "report": "Missbrauch melden",
     "yes": "Ja",
     "no": "Nein",
-    "more": "Mehr"
+    "more": "Mehr",
+    "logOut": "Abmelden"
   },
   "drive": {
     "usage": "Verwendung",

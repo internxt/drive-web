@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 
 import packageJson from '../../../../package.json';
 import localStorageService from './local-storage.service';
@@ -26,7 +26,7 @@ const httpService = {
     return axios.delete<ResponseType>(url, config).then((response) => response.data);
   },
 
-  getHeaders(withAuth: boolean, withMnemonic: boolean, isTeam = false): AxiosRequestHeaders {
+  getHeaders(withAuth: boolean, withMnemonic: boolean, isTeam = false) {
     const headers = new Headers();
 
     headers.append('content-type', 'application/json; charset=utf-8');
@@ -40,9 +40,9 @@ const httpService = {
     }
 
     const headersObject = Object.fromEntries(headers);
-    return headersObject as AxiosRequestHeaders;
+    return headersObject;
   },
-  convertHeadersToNativeHeaders(serviceHeaders: AxiosRequestHeaders): Headers {
+  convertHeadersToNativeHeaders(serviceHeaders): Headers {
     const headers = new Headers();
 
     for (const [key, value] of Object.entries(serviceHeaders)) {

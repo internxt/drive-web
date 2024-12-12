@@ -1296,7 +1296,8 @@
     "report": "Signaler un abus",
     "yes": "Oui",
     "no": "Non",
-    "more": "Plus"
+    "more": "Plus",
+    "logOut": "Se déconnecter"
   },
   "drive": {
     "usage": "Usage",

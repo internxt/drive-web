@@ -1347,7 +1347,8 @@
     "report": "Reportar abuso",
     "yes": "Si",
     "no": "No",
-    "more": "Más"
+    "more": "Más",
+    "logOut": "Cerrar sesión"
   },
   "drive": {
     "usage": "Uso",

@@ -29,6 +29,7 @@ import { AuthMethodTypes, CouponCodeData, RequestedPlanData } from '../../types'
 import CheckoutView from './CheckoutView';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
+import { bytesToString } from 'app/drive/services/size.service';
 
 export const THEME_STYLES = {
   dark: {
@@ -97,8 +98,13 @@ function savePaymentDataInLocalStorage(
   if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
   if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
   if (selectedPlan) {
+    const planName = bytesToString(selectedPlan.bytes) + selectedPlan.interval;
     const amountToPay = getProductAmount(selectedPlan.decimalAmount, users, couponCodeData);
+
+    localStorageService.set('productName', planName);
     localStorageService.set('amountPaid', amountToPay);
+    localStorageService.set('priceId', selectedPlan.id);
+    localStorageService.set('currency', selectedPlan.currency);
   }
 }
 
@@ -158,6 +164,7 @@ const CheckoutViewWrapper = () => {
     isUpsellSwitchActivated,
     prices,
   } = state;
+
   const canChangePlanDialogBeOpened = prices && currentSelectedPlan && isUpdateSubscriptionDialogOpen;
 
   const userInfo: UserInfoProps = {
@@ -376,7 +383,6 @@ const CheckoutViewWrapper = () => {
           seatsForBusinessSubscription,
         });
 
-      // TEMPORARY HOT FIX
       // Store subscriptionId, paymentIntendId, and amountPaid to send to IMPACT API
       savePaymentDataInLocalStorage(
         subscriptionId,
