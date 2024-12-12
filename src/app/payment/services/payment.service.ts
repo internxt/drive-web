@@ -157,6 +157,11 @@ const paymentService = {
     return paymentsClient.updateSubscriptionPrice({ priceId, couponCode: coupon, userType });
   },
 
+  async updateWorkspaceMembers(workspaceId: string, subscriptionId: string, updatedMembers: number) {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.updateWorkspaceMembers(workspaceId, subscriptionId, updatedMembers);
+  },
+
   async cancelSubscription(userType?: UserType): Promise<void> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 

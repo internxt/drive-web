@@ -7,9 +7,9 @@ import { PlanState } from '../../store/slices/plan';
 
 const formatPlanPaymentInterval = (storagePlan: StoragePlan | null) => {
   if (storagePlan) {
-    const isAnuallyPaymentInterval = storagePlan.paymentInterval === RenewalPeriod.Annually;
-    const price = isAnuallyPaymentInterval ? storagePlan.price : storagePlan.monthlyPrice;
-    const renewalPeriod = isAnuallyPaymentInterval ? 'year' : 'month';
+    const isAnnuallyPaymentInterval = storagePlan.paymentInterval === RenewalPeriod.Annually;
+    const price = isAnnuallyPaymentInterval ? storagePlan.price : storagePlan.monthlyPrice;
+    const renewalPeriod = isAnnuallyPaymentInterval ? 'year' : 'month';
     const priceTruncated = Math.trunc(price * 100) / 100;
 
     return (

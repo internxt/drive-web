@@ -1,10 +1,13 @@
+export type Translate = (key: string, props?: Record<string, unknown>) => string;
+export type TranslateArray = (key: string, props?: Record<string, unknown>) => string[];
+
 export enum Locale {
+  German = 'de',
   English = 'en',
   Spanish = 'es',
   French = 'fr',
   Italian = 'it',
-  Chinese = 'zh',
   Russian = 'ru',
-  German = 'de',
+  Chinese = 'zh',
   Taiwanese = 'zh-tw',
 }

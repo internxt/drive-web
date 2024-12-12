@@ -20,11 +20,20 @@ import BillingDetailsCard from './BillingDetailsCard';
 import EditBillingDetailsModal from './components/EditBillingDetailsModal';
 import BillingWorkspaceOverview from './containers/BillingWorkspaceOverview';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { UpdateMembersCard } from './UpdateMembersCard';
+import { SelectNewMembersModal } from './components/UpdateMembers/SelectNewMembersModal';
+import { ConfirmUpdatedMembersModal } from './components/UpdateMembers/ConfirmUpdatedMembersModal';
+import AppError from 'app/core/types';
+import errorService from 'app/core/services/error.service';
+import workspacesService from 'app/core/services/workspace.service';
+import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 
 interface BillingWorkspaceSectionProps {
   changeSection: ({ section, subsection }) => void;
   onClosePreferences: () => void;
 }
+
+const UPDATE_MEMBERS_BAD_RESPONSE = 400;
 
 const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSectionProps) => {
   const dispatch = useAppDispatch();
@@ -34,6 +43,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const { selectedWorkspace } = useSelector<RootState, WorkspacesState>((state) => state.workspaces);
   const workspaceId = selectedWorkspace?.workspace.id;
   const isOwner = user.uuid === selectedWorkspace?.workspace.ownerId;
+  const subscriptionId = plan.businessSubscription?.type === 'subscription' && plan.businessSubscription.subscriptionId;
 
   const [isSubscription, setIsSubscription] = useState<boolean>(false);
   const [cancellingSubscription, setCancellingSubscription] = useState<boolean>(false);
@@ -41,9 +51,14 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const [planName, setPlanName] = useState<string>('');
   const [planInfo, setPlanInfo] = useState<string>('');
   const [currentUsage, setCurrentUsage] = useState<number>(-1);
+  const [newAmountOfSeats, setNewAmountOfSeats] = useState<number | undefined>(plan.businessPlan?.amountOfSeats);
+  const [currentWorkspaceMembers, setCurrentWorkspaceMembers] = useState<WorkspaceUser[]>();
 
+  const [isEditingMembersWorkspace, setIsEditingMembersWorkspace] = useState(false);
+  const [isConfirmingMembersWorkspace, setIsConfirmingMembersWorkspace] = useState(false);
   const [isEditingBillingDetails, setIsEditingBillingDetails] = useState(false);
   const [isSavingBillingDetails, setIsSavingBillingDetails] = useState(false);
+  const [areFetchingCurrentMembers, setAreFetchingCurrentMembers] = useState<boolean>(false);
   const [billingDetails, setBillingDetails] = useState<CustomerBillingInfo>({
     address: selectedWorkspace?.workspace.address || '',
     phoneNumber: selectedWorkspace?.workspace.phoneNumber || '',
@@ -51,12 +66,30 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
 
   useEffect(() => {
     plan.businessSubscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
+    getJoinedMembers();
     setPlanName(getPlanName(plan.businessPlan, plan.businessPlanLimit));
     setPlanInfo(getPlanInfo(plan.businessPlan));
     setCurrentUsage(plan.businessPlanUsageDetails?.total ?? -1);
   }, [plan.businessSubscription]);
 
-  async function cancelSubscription(feedback: string) {
+  const getJoinedMembers = async () => {
+    if (!workspaceId) return;
+    try {
+      setAreFetchingCurrentMembers(true);
+      const members = await workspacesService.getWorkspacesMembers(workspaceId);
+      setCurrentWorkspaceMembers([...members.activatedUsers, ...members.disabledUsers]);
+    } catch (error) {
+      errorService.reportError(error);
+      notificationsService.show({
+        text: translate('notificationMessages.errorWhileFetchingCurrentWorkspaceMembers'),
+        type: ToastType.Error,
+      });
+    } finally {
+      setAreFetchingCurrentMembers(false);
+    }
+  };
+
+  const cancelSubscription = async (feedback: string) => {
     setCancellingSubscription(true);
     try {
       await paymentService.cancelSubscription(UserType.Business);
@@ -75,7 +108,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
         type: ToastType.Error,
       });
     }
-  }
+  };
 
   const onSaveBillingDetails = (newBillingDetails: CustomerBillingInfo) => {
     if (workspaceId) {
@@ -91,9 +124,106 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
     }
   };
 
+  const onChangeWorkspaceMembers = (updatedMembers: number) => {
+    setNewAmountOfSeats(updatedMembers);
+  };
+
+  const onCloseChangeMembersModal = () => {
+    setIsEditingMembersWorkspace(false);
+    setNewAmountOfSeats(plan.businessPlan?.amountOfSeats);
+  };
+
+  const onCloseConfirmUpdatedMembersModal = () => {
+    setIsEditingMembersWorkspace(false);
+    setIsConfirmingMembersWorkspace(false);
+    setNewAmountOfSeats(plan.businessPlan?.amountOfSeats);
+  };
+
+  const onSaveChanges = () => {
+    setIsEditingMembersWorkspace(false);
+    if (plan.businessPlan?.amountOfSeats === newAmountOfSeats) return;
+    setIsConfirmingMembersWorkspace(true);
+  };
+
+  const onConfirmUpdatedMembers = async () => {
+    if (!subscriptionId || !newAmountOfSeats || !workspaceId) {
+      notificationsService.show({
+        text: translate('notificationMessages.errorWhileUpdatingWorkspaceMembers'),
+        type: ToastType.Error,
+      });
+      return;
+    } else if (currentWorkspaceMembers && newAmountOfSeats < currentWorkspaceMembers?.length) {
+      notificationsService.show({
+        text: translate('notificationMessages.newMembersCannotBeLessThanTheExistentOnesError'),
+        type: ToastType.Error,
+      });
+      return;
+    }
+    try {
+      await paymentService.updateWorkspaceMembers(workspaceId as string, subscriptionId, newAmountOfSeats);
+
+      await dispatch(planThunks.fetchBusinessLimitUsageThunk());
+      setTimeout(async () => {
+        await dispatch(
+          planThunks.fetchSubscriptionThunk({
+            userType: UserType.Business,
+          }),
+        );
+      }, 500);
+      notificationsService.show({
+        text: translate('notificationMessages.membersUpdatedSuccessfully'),
+        type: ToastType.Success,
+      });
+      setIsConfirmingMembersWorkspace(false);
+    } catch (err) {
+      const error = err as AppError;
+      if (error.status === UPDATE_MEMBERS_BAD_RESPONSE) {
+        notificationsService.show({
+          text: error.message,
+          type: ToastType.Error,
+        });
+      } else {
+        notificationsService.show({
+          text: translate('notificationMessages.errorWhileUpdatingWorkspaceMembers'),
+          type: ToastType.Error,
+        });
+      }
+
+      errorService.reportError(error);
+    }
+  };
+
   return (
     <Section title={t('preferences.workspace.billing.title')} onClosePreferences={onClosePreferences}>
       <BillingWorkspaceOverview plan={plan} />
+      {plan.businessPlan && (
+        <>
+          <UpdateMembersCard
+            totalWorkspaceSeats={plan.businessPlan.amountOfSeats}
+            translate={translate}
+            areFetchingCurrentMembers={areFetchingCurrentMembers}
+            onChangeMembersButtonClicked={() => setIsEditingMembersWorkspace(true)}
+          />
+          <SelectNewMembersModal
+            isOpen={isEditingMembersWorkspace}
+            plan={plan.businessPlan}
+            joinedUsers={currentWorkspaceMembers?.length}
+            updatedAmountOfSeats={newAmountOfSeats}
+            onSaveChanges={onSaveChanges}
+            handleUpdateMembers={onChangeWorkspaceMembers}
+            onClose={onCloseChangeMembersModal}
+            translate={translate}
+          />
+          <ConfirmUpdatedMembersModal
+            isOpen={isConfirmingMembersWorkspace}
+            plan={plan.businessPlan}
+            updatedAmountOfSeats={newAmountOfSeats as number}
+            translate={translate}
+            onConfirmUpdate={onConfirmUpdatedMembers}
+            onClose={onCloseConfirmUpdatedMembersModal}
+          />
+        </>
+      )}
       <BillingDetailsCard
         address={billingDetails.address || ''}
         phone={billingDetails.phoneNumber || ''}

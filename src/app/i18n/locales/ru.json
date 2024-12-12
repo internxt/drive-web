@@ -1265,6 +1265,7 @@
     "linkUpdated": "Ссылка обновлена",
     "itemsMovedToTrash": "{{item}} перемещен в корзину",
     "storageModified": "Хранилище успешно изменено",
+    "membersUpdatedSuccessfully": "Участники успешно обновлены",
     "errorModifyingStorage": "Новый объём хранения недоступен для этого участника.",
     "generalErrorWhileModifyingStorage": "Произошла ошибка при изменении объёма хранения.",
     "restoreItems": "{{itemsToRecover}} успешно восстановлено",
@@ -1286,7 +1287,10 @@
     "errorWhileLoadingWorkspace": "Ошибка при загрузке рабочего пространства {{error}}",
     "errorFetchingWorkspaceCredentials": "Ошибка при получении учетных данных рабочего пространства {{error}}",
     "invalidWorkspaceInvitationError": "Рабочее пространство заполнено. Свяжитесь с владельцем.",
-    "errorAcceptingWorkspaceInvitation": "Произошла ошибка при принятии приглашения"
+    "errorAcceptingWorkspaceInvitation": "Произошла ошибка при принятии приглашения",
+    "errorWhileUpdatingWorkspaceMembers": "Произошла ошибка при обновлении участников",
+    "errorWhileFetchingCurrentWorkspaceMembers": "Произошла ошибка при получении участников рабочего пространства",
+    "newMembersCannotBeLessThanTheExistentOnesError": "Выбранных участников не может быть меньше, чем текущих участников рабочего пространства"
   },
   "actions": {
     "undo": "Отменить",
@@ -1318,6 +1322,7 @@
     "moreInfo": "Больше информации",
     "dismiss": "Пропустить",
     "save": "Сохранить",
+    "saveChanges": "Сохранить изменения",
     "saving": "Экономия",
     "back": "Назад",
     "edit": "Редактировать",
@@ -1337,6 +1342,8 @@
     "yes": "Да",
     "no": "Нет",
     "more": "Больше",
+    "continue": "Продолжить",
+    "keepCurrent": "Сохранить текущее",
     "logOut": "Выйти"
   },
   "drive": {
@@ -1433,8 +1440,7 @@
       "subscribe-to-newsletter": "Подписаться на рассылку",
       "install-desktop-app": "Установить приложение для рабочего стола и загрузить файл",
       "invite-friends": "Пригласить {{completedSteps}}/{{steps}} друзей",
-      "invite-2-friends": "Пригласить {{completedSteps}}/{{steps}} друзей",
-      "complete-survey": "Полный опрос"
+      "invite-2-friends": "Пригласить {{completedSteps}}/{{steps}} друзей"
     },
     "rewards": {
       "title": "Получить {{creditSum}} бесплатно",
@@ -1670,6 +1676,14 @@
         "nextBillingDate": "Следующая дата выставления счета",
         "planLimit": "Выставлен счет за план {{planLimit}}",
         "subscription": "Подписка",
+        "membersLabel": "участники",
+        "perUser": "на пользователя",
+        "members": {
+          "title": "Участники",
+          "editMembers": "Редактировать участников",
+          "numberOfMembers": "Количество участников",
+          "expandNumber": "Увеличить количество участников."
+        },
         "lifetimeSubscription": {
           "planType": "Пожизненная",
           "text": "Никаких предстоящих счетов"

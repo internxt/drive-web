@@ -1292,6 +1292,7 @@
     "linkUpdated": "链接已更新",
     "itemsMovedToTrash": "{{item}} 已被移至回收站",
     "storageModified": "存储修改成功",
+    "membersUpdatedSuccessfully": "成员更新成功",
     "errorModifyingStorage": "新存储空间对该成员无效。",
     "generalErrorWhileModifyingStorage": "修改存储时出错。",
     "moveItems": "{{itemsToMove}} 成功移动",
@@ -1317,7 +1318,10 @@
     "errorWhileLoadingWorkspace": "加载工作区时出错 {{error}}",
     "errorFetchingWorkspaceCredentials": "获取工作区凭据时出错 {{error}}",
     "invalidWorkspaceInvitationError": "工作区已满。请联系所有者。",
-    "errorAcceptingWorkspaceInvitation": "接受邀请时出错"
+    "errorAcceptingWorkspaceInvitation": "接受邀请时出错",
+    "errorWhileUpdatingWorkspaceMembers": "更新成员时出了点问题",
+    "errorWhileFetchingCurrentWorkspaceMembers": "获取工作区成员时出了点问题",
+    "newMembersCannotBeLessThanTheExistentOnesError": "选择的成员数量不能少于当前工作区的成员数量。"
   },
   "actions": {
     "undo": "撤销",
@@ -1349,6 +1353,7 @@
     "moreInfo": "更多信息",
     "dismiss": "解散",
     "save": "保存",
+    "saveChanges": "保存更改",
     "saving": "保存",
     "back": "返回",
     "edit": "编辑",
@@ -1368,6 +1373,8 @@
     "yes": "是",
     "no": "否",
     "more": "更多信息",
+    "continue": "继续",
+    "keepCurrent": "保持当前",
     "logOut": "登出"
   },
   "drive": {
@@ -1466,8 +1473,7 @@
       "subscribe-to-newsletter": "订阅新闻",
       "install-desktop-app": "安装桌面应用程序，并上传一个文件",
       "invite-friends": "邀请{{completedSteps}}/{{steps}}个朋友 ",
-      "invite-2-friends": "邀请{{completedSteps}}/{{steps}}个朋友 ",
-      "complete-survey": "完成调查"
+      "invite-2-friends": "邀请{{completedSteps}}/{{steps}}个朋友 "
     },
     "rewards": {
       "title": "免费获得 {{creditSum}}的容量!",
@@ -1703,6 +1709,14 @@
         "nextBillingDate": "下一次账单日期",
         "planLimit": "以 {{planLimit}} 计划计费",
         "subscription": "订阅",
+        "membersLabel": "成员",
+        "perUser": "每位用户",
+        "members": {
+          "title": "成员",
+          "editMembers": "编辑成员",
+          "numberOfMembers": "成员数量",
+          "expandNumber": "扩大成员数量。"
+        },
         "lifetimeSubscription": {
           "planType": "终生",
           "text": "无预定账单"

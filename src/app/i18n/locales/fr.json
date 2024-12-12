@@ -1226,6 +1226,7 @@
     "itemsMovedToTrash": "{{item}} déplacé vers la corbeille",
     "restoreItems": "{{itemsToRecover}} restauré avec succès",
     "storageModified": "Stockage modifié avec succès",
+    "membersUpdatedSuccessfully": "Membres mis à jour avec succès",
     "errorModifyingStorage": "Le nouvel espace de stockage n'est pas valide pour ce membre.",
     "generalErrorWhileModifyingStorage": "Une erreur s'est produite lors de la modification du stockage.",
     "itemDeleted": "{{itemsToDelete}} supprimé",
@@ -1246,7 +1247,10 @@
     "errorWhileLoadingWorkspace": "Erreur lors du chargement de l'espace de travail {{error}}",
     "errorFetchingWorkspaceCredentials": "Erreur lors de la récupération des identifiants de l'espace de travail {{error}}",
     "invalidWorkspaceInvitationError": "Espace de travail plein. Contactez le propriétaire.",
-    "errorAcceptingWorkspaceInvitation": "Une erreur s'est produite lors de l'acceptation de l'invitation"
+    "errorAcceptingWorkspaceInvitation": "Une erreur s'est produite lors de l'acceptation de l'invitation",
+    "errorWhileUpdatingWorkspaceMembers": "Une erreur s'est produite lors de la mise à jour des membres",
+    "errorWhileFetchingCurrentWorkspaceMembers": "Une erreur s'est produite lors de la récupération des membres de l'espace de travail",
+    "newMembersCannotBeLessThanTheExistentOnesError": "Les membres sélectionnés ne peuvent pas être inférieurs au nombre de membres actuels de l'espace de travail"
   },
   "actions": {
     "undo": "Annuler",
@@ -1278,6 +1282,7 @@
     "moreInfo": "Plus d'informations",
     "dismiss": "Rejeter",
     "save": "Enregistrer",
+    "saveChanges": "Enregistrer les modifications",
     "saving": "Sauvagarde en cours",
     "back": "Retourner",
     "edit": "Éditer",
@@ -1297,6 +1302,8 @@
     "yes": "Oui",
     "no": "Non",
     "more": "Plus",
+    "continue": "Continuer",
+    "keepCurrent": "Garder actuel",
     "logOut": "Se déconnecter"
   },
   "drive": {
@@ -1393,8 +1400,7 @@
       "subscribe-to-newsletter": "S'abonner à la lettre d'information",
       "install-desktop-app": "Installer l'app de bureau et télécharger un fichier",
       "invite-friends": "Inviter {{completedSteps}}/{{steps}} amis",
-      "invite-2-friends": "Inviter {{completedSteps}}/{{steps}} amis",
-      "complete-survey": "Répondre à une enquête"
+      "invite-2-friends": "Inviter {{completedSteps}}/{{steps}} amis"
     },
     "rewards": {
       "title": "Obtenez {{creditSum}} gratuitement !",
@@ -1630,6 +1636,14 @@
         "nextBillingDate": "Prochaine date de facturation",
         "planLimit": "Facturé pour un forfait de {{planLimit}}",
         "subscription": "Abonnement",
+        "membersLabel": "membres",
+        "perUser": "par utilisateur",
+        "members": {
+          "title": "Membres",
+          "editMembers": "Modifier les membres",
+          "numberOfMembers": "Nombre de membres",
+          "expandNumber": "Augmenter le nombre de membres."
+        },
         "lifetimeSubscription": {
           "planType": "Durée de vie",
           "text": "Pas de facturation à venir"
