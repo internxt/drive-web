@@ -85,7 +85,7 @@ const useLoginRedirections = ({
     }
 
     if (user.registerCompleted === false) {
-      return history.push('/appsumo/' + user.email);
+      return navigateTo(AppView.Login);
     }
 
     if (user?.registerCompleted && mnemonic && options?.isSharingInvitation) {
