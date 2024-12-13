@@ -139,7 +139,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     setProgress(Number((progress * 100).toFixed(2)));
   };
 
-  const updateNumItemsCallback = () => {
+  const incrementItemCount = () => {
     setNItems((prevNItems) => prevNItems + 1);
   };
 
@@ -154,7 +154,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           encryptionKey: folderInfo.encryptionKey,
           item: folderInfo.item,
           code,
-          updateNumItemsCallback,
+          incrementItemCount,
         })
           .then(() => {
             updateProgress(1);

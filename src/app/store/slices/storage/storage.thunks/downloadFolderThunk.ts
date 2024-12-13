@@ -57,7 +57,7 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       }
     };
 
-    const updateNumItemsCallback = () => {
+    const incrementItemCount = () => {
       if (task?.status !== TaskStatus.Cancelled) {
         tasksService.updateTask({
           taskId: options.taskId,
@@ -101,7 +101,7 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
         await downloadFolderUsingBlobs({
           folder,
           updateProgressCallback,
-          updateNumItemsCallback,
+          incrementItemCount,
           isWorkspace: !!selectedWorkspace,
         });
       } else {
@@ -135,7 +135,7 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
             updateProgressCallback(progress);
           },
           updateNumItems: () => {
-            updateNumItemsCallback();
+            incrementItemCount();
           },
           options: {
             ...credentials,

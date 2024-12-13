@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useOpenItem } from '../../hooks/useOpen';
 import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
@@ -72,7 +72,6 @@ const TaskLoggerItem = ({ notification, task }: TaskLoggerItemProps): JSX.Elemen
   const [isHovered, setIsHovered] = useState(false);
   const [isRetryActionDisabled, setIsRetryActionDisabled] = useState(false);
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
-  const [nItems, setNItems] = useState(0);
 
   const { openItem } = useOpenItem({
     notification,
@@ -115,13 +114,6 @@ const TaskLoggerItem = ({ notification, task }: TaskLoggerItemProps): JSX.Elemen
   const progressInPercentage = notification.progress ? (notification.progress * 100).toFixed(0) : 0;
   const notExistProgress = notification.progress && notification.progress === Infinity;
   const progress = notExistProgress ? '-' : progressInPercentage;
-
-  useEffect(() => {
-    if (notification.nItems) {
-      setNItems(notification.nItems);
-    }
-  }, [notification.nItems]);
-
   const showProgressBar = notification.status === TaskStatus.InProcess || notification.status === TaskStatus.Paused;
   const isUploadTask = notification.action.includes('upload');
 
@@ -188,7 +180,7 @@ const TaskLoggerItem = ({ notification, task }: TaskLoggerItemProps): JSX.Elemen
           isHovered={isHovered}
           status={notification.status}
           progress={progress.toString()}
-          nItems={nItems.toString()}
+          nItems={notification.nItems?.toString() ?? '0'}
           cancelAction={onCancelButtonClicked}
           retryAction={handleRetryClick}
           isUploadTask={isUploadTask}

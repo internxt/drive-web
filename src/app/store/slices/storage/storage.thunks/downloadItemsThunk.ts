@@ -229,9 +229,8 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
       });
     };
 
-    const updateNumItemsCallback = () => {
+    const incrementItemCount = () => {
       const task = tasksService.findTask(taskId);
-      console.log('countFiles', task?.nItems);
       tasksService.updateTask({
         taskId,
         merge: {
@@ -259,7 +258,7 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
                 updateProgressCallback(calculateProgress());
               },
               () => {
-                updateNumItemsCallback();
+                incrementItemCount();
               },
               driveItem.uuid,
               { destination: folder, closeWhenFinished: false, ...moreOptions },
@@ -276,7 +275,7 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
                 updateProgressCallback(calculateProgress());
               },
               updateNumItems: () => {
-                updateNumItemsCallback();
+                incrementItemCount();
               },
               options: {
                 destination: folder,
