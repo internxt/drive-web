@@ -1303,7 +1303,8 @@
     "no": "Non",
     "more": "Plus",
     "continue": "Continuer",
-    "keepCurrent": "Garder actuel"
+    "keepCurrent": "Garder actuel",
+    "logOut": "Se déconnecter"
   },
   "drive": {
     "usage": "Usage",

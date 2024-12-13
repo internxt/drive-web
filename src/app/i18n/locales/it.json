@@ -1363,7 +1363,8 @@
     "no": "No",
     "more": "Di più",
     "continue": "Continua",
-    "keepCurrent": "Mantieni attuale"
+    "keepCurrent": "Mantieni attuale",
+    "logOut": "Disconnettersi"
   },
   "drive": {
     "usage": "Utilizzo",

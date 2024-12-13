@@ -50,7 +50,8 @@ const CheckoutView = ({
   checkoutViewManager,
 }: CheckoutViewProps) => {
   const { translate } = useTranslationContext();
-  // Those custom hooks should be here. They cannot be moved to the Parent, because it must be wrapped by <Elements> component.
+  // Those custom hooks should be here.
+  // They cannot be moved to the Parent, because it must be wrapped by <Elements> component.
   const stripeSDK = useStripe();
   const elements = useElements();
 

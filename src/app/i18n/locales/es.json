@@ -1354,7 +1354,8 @@
     "no": "No",
     "more": "Más",
     "continue": "Continuar",
-    "keepCurrent": "Mantener actual"
+    "keepCurrent": "Mantener actual",
+    "logOut": "Cerrar sesión"
   },
   "drive": {
     "usage": "Uso",

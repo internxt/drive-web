@@ -1374,7 +1374,8 @@
     "no": "否",
     "more": "更多信息",
     "continue": "继续",
-    "keepCurrent": "保持当前"
+    "keepCurrent": "保持当前",
+    "logOut": "登出"
   },
   "drive": {
     "usage": "使用情况",

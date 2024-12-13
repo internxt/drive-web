@@ -1337,7 +1337,8 @@
     "no": "否",
     "more": "更多",
     "continue": "繼續",
-    "keepCurrent": "保持目前"
+    "keepCurrent": "保持目前",
+    "logOut": "登出"
   },
   "drive": {
     "usage": "使用量",

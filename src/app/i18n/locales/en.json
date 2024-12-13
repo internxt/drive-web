@@ -1375,7 +1375,8 @@
     "no": "No",
     "more": "More",
     "continue": "Continue",
-    "keepCurrent": "Keep current"
+    "keepCurrent": "Keep current",
+    "logOut": "Log out"
   },
   "drive": {
     "usage": "Usage",
