@@ -49,10 +49,7 @@ function SignUp(props: SignUpProps): JSX.Element {
     [],
   );
   const hasReferrer = !!qs.ref;
-  const { doRegister } = useSignUp(
-    qs.register === 'activate' ? 'activate' : 'appsumo',
-    hasReferrer ? String(qs.ref) : undefined,
-  );
+  const { doRegister } = useSignUp(hasReferrer ? String(qs.ref) : undefined);
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
 
   const getInitialEmailValue = () => {

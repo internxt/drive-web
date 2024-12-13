@@ -30,10 +30,7 @@ type RegisterPreCreatedUser = (
   mnemonic: string;
 }>;
 
-export function useSignUp(
-  registerSource: 'activate' | 'appsumo',
-  referrer?: string,
-): {
+export function useSignUp(referrer?: string): {
   doRegister: RegisterFunction;
   doRegisterPreCreatedUser: RegisterPreCreatedUser;
 } {
