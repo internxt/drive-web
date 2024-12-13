@@ -4,9 +4,9 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "节省85%！",
-    "title": "黑色星期五最佳优惠",
-    "subtitle": "通过我们的终身计划获得我们的高级背包。",
+    "label": "节省80%！",
+    "title": "圣诞老人惊喜",
+    "subtitle": "圣诞老人惊喜！",
     "cta": "选择您的计划",
     "guarantee": "30天退款保证",
     "lastCta": "*该优惠适用于免费账户或新客户",
@@ -16,7 +16,8 @@
       "开源并已审核",
       "端到端加密传输",
       "无未授权访问",
-      "优惠截止至12月3日"
+      "优惠截止至12月3日",
+      "01月07日"
     ]
   },
   "valentinesBanner": {
@@ -68,7 +69,8 @@
     "dark": "暗",
     "system": "系统",
     "starwars": "Star Wars",
-    "halloween": "Halloween"
+    "halloween": "Halloween",
+    "christmas": "圣诞节"
   },
   "auth": {
     "email": "电子邮件",
