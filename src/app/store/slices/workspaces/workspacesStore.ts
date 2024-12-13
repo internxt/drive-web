@@ -6,7 +6,7 @@ import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-
 import navigationService from '../../../core/services/navigation.service';
 import workspacesService from '../../../core/services/workspace.service';
 import { AppView } from '../../../core/types';
-import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import { hybridEncryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import {
   deleteWorkspaceAvatarFromDatabase,
   saveWorkspaceAvatarToDatabase,
@@ -149,13 +149,13 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         return;
       }
       const { mnemonic, publicKey } = user;
+      const publicKyberKey = user.keys.kyber.publicKyberKey;
 
-      const encryptedMnemonic = await encryptMessageWithPublicKey({
+      const encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
         message: mnemonic,
         publicKeyInBase64: publicKey,
+        publicKyberKeyBase64: publicKyberKey,
       });
-
-      const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
 
       await workspacesService.setupWorkspace({
         workspaceId: pendingWorkspace.id,
@@ -163,6 +163,7 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         address: pendingWorkspace?.address ?? '',
         description: pendingWorkspace?.description ?? '',
         encryptedMnemonic: encryptedMnemonicInBase64,
+        hybridModeEnabled: false,
       });
 
       // to avoid backend update delay
