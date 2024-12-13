@@ -1,6 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { t } from 'i18next';
-import { useHistory } from 'react-router-dom';
 import { AppView } from '../../../core/types';
 import workspacesService from 'app/core/services/workspace.service';
 
@@ -16,7 +15,7 @@ const useLoginRedirections = ({
   showNotification: ({ text, isError }: { text: string; isError: boolean }) => void;
 }) => {
   const urlParams = new URLSearchParams(window.location.search);
-  const history = useHistory();
+
   const sharingId = urlParams.get('sharingId');
   const folderuuidToRedirect = urlParams.get('folderuuid');
   const workspaceInvitationId = urlParams.get('invitationId');
