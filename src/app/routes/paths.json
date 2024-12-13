@@ -7,12 +7,6 @@
       "exact": true
     },
     {
-      "id": "appsumo",
-      "layout": "empty",
-      "path": "/appsumo",
-      "exact": true
-    },
-    {
       "id": "blocked-account",
       "layout": "empty",
       "path": "/blocked-account/:token?",

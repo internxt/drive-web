@@ -13,7 +13,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
-import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
+import { RegisterFunction } from 'app/auth/components/SignUp/useSignUp';
 import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import RealtimeService from 'app/core/services/socket.service';
@@ -51,7 +51,7 @@ type ProfileInfo = {
 };
 
 type SignUpParams = {
-  doSignUp: RegisterFunction | UpdateInfoFunction;
+  doSignUp: RegisterFunction;
   email: string;
   password: string;
   token: string;
@@ -78,7 +78,7 @@ export type AuthenticateUserParams = {
   token?: string;
   isNewUser?: boolean;
   redeemCodeObject?: boolean;
-  doSignUp?: RegisterFunction | UpdateInfoFunction;
+  doSignUp?: RegisterFunction;
 };
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
@@ -451,9 +451,7 @@ export const unblockAccount = (token: string): Promise<void> => {
 
 export const signUp = async (params: SignUpParams) => {
   const { doSignUp, email, password, token, isNewUser, redeemCodeObject, dispatch } = params;
-  const { xUser, xToken, mnemonic } = isNewUser
-    ? await (doSignUp as RegisterFunction)(email, password, token)
-    : await (doSignUp as UpdateInfoFunction)(email, password);
+  const { xUser, xToken, mnemonic } = await (doSignUp as RegisterFunction)(email, password, token);
 
   localStorageService.clear();
 

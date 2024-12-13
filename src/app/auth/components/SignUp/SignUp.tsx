@@ -49,7 +49,7 @@ function SignUp(props: SignUpProps): JSX.Element {
     [],
   );
   const hasReferrer = !!qs.ref;
-  const { updateInfo, doRegister } = useSignUp(
+  const { doRegister } = useSignUp(
     qs.register === 'activate' ? 'activate' : 'appsumo',
     hasReferrer ? String(qs.ref) : undefined,
   );
@@ -153,7 +153,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         token,
         isNewUser,
         redeemCodeObject: redeemCodeObject !== undefined,
-        doSignUp: isNewUser ? doRegister : updateInfo,
+        doSignUp: doRegister,
       };
 
       const { token: xToken, user: xUser } = await authenticateUser(authParams);
