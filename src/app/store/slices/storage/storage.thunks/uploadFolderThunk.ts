@@ -17,15 +17,7 @@ import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
 import { StorageState } from '../storage.model';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
-
-// TODO: REMOVE IROOT from this file, it is in types.ts
-export interface IRoot {
-  name: string;
-  folderId: string | null;
-  childrenFiles: File[];
-  childrenFolders: IRoot[];
-  fullPathEdited: string;
-}
+import { IRoot } from '../types';
 
 interface UploadFolderThunkPayload {
   root: IRoot;
@@ -153,7 +145,10 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         //Added wait in order to allow enough time for the server to create the folder
         await wait(500);
 
-        rootFolderItem = createdFolder;
+        if (!rootFolderItem) {
+          rootFolderItem = createdFolder;
+        }
+
         if (!rootFolderData) {
           rootFolderData = createdFolder;
           tasksService.updateTask({
@@ -305,7 +300,10 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
         // Added wait in order to allow enough time for the server to create the folder
         await wait(500);
 
-        rootFolderItem = createdFolder;
+        if (!rootFolderItem) {
+          rootFolderItem = createdFolder;
+        }
+
         tasksService.updateTask({
           taskId,
           merge: {
