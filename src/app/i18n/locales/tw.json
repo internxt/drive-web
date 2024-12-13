@@ -4,9 +4,9 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "節省85%！",
-    "title": "黑色星期五最佳優惠",
-    "subtitle": "選擇我們的終身方案，獲得我們的高級背包。",
+    "label": "節省80%！",
+    "title": "聖誕老人驚喜！",
+    "subtitle": "聖誕網頁應用主題 + 有機會贏取多達 10TB 的儲存空間！",
     "cta": "選擇您的方案",
     "guarantee": "30天退款保證",
     "lastCta": "*此優惠僅適用於免費帳戶或新客戶",
@@ -16,7 +16,8 @@
       "開源且經過審查",
       "端到端加密傳輸",
       "無未經授權的訪問",
-      "優惠截止至12月3日"
+      "優惠截止至",
+      "01月07日"
     ]
   },
   "valentinesBanner": {
@@ -68,7 +69,8 @@
     "dark": "深色",
     "system": "系統",
     "starwars": "星際大戰",
-    "halloween": "Halloween"
+    "halloween": "Halloween",
+    "christmas": "聖誕節"
   },
   "auth": {
     "email": "電子郵件",
