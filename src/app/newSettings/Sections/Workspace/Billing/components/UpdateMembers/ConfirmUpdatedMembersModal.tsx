@@ -9,6 +9,7 @@ interface ConfirmUpdateMembersModalProps {
   isOpen: boolean;
   plan: StoragePlan;
   updatedAmountOfSeats: number;
+  isConfirmingMembersWorkspace: boolean;
   translate: Translate;
   onConfirmUpdate: () => void;
   onClose: () => void;
@@ -18,6 +19,7 @@ export const ConfirmUpdatedMembersModal = ({
   isOpen,
   plan,
   updatedAmountOfSeats,
+  isConfirmingMembersWorkspace,
   translate,
   onConfirmUpdate,
   onClose,
@@ -69,10 +71,10 @@ export const ConfirmUpdatedMembersModal = ({
           }
         </div>
         <div className="flex flex-row justify-end gap-3">
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose} disabled={isConfirmingMembersWorkspace}>
             {translate('actions.keepCurrent')}
           </Button>
-          <Button variant="primary" onClick={onConfirmUpdate}>
+          <Button variant="primary" disabled={isConfirmingMembersWorkspace} onClick={onConfirmUpdate}>
             {translate('actions.continue')}
           </Button>
         </div>

@@ -53,9 +53,10 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const [currentUsage, setCurrentUsage] = useState<number>(-1);
   const [newAmountOfSeats, setNewAmountOfSeats] = useState<number | undefined>(plan.businessPlan?.amountOfSeats);
   const [currentWorkspaceMembers, setCurrentWorkspaceMembers] = useState<WorkspaceUser[]>();
+  const [isConfirmingMembersWorkspace, setIsConfirmingMembersWorkspace] = useState<boolean>(false);
 
   const [isEditingMembersWorkspace, setIsEditingMembersWorkspace] = useState(false);
-  const [isConfirmingMembersWorkspace, setIsConfirmingMembersWorkspace] = useState(false);
+  const [isConfirmingMembersWorkspaceModalOpen, setIsConfirmingMembersWorkspaceModalOpen] = useState(false);
   const [isEditingBillingDetails, setIsEditingBillingDetails] = useState(false);
   const [isSavingBillingDetails, setIsSavingBillingDetails] = useState(false);
   const [areFetchingCurrentMembers, setAreFetchingCurrentMembers] = useState<boolean>(false);
@@ -135,14 +136,14 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
 
   const onCloseConfirmUpdatedMembersModal = () => {
     setIsEditingMembersWorkspace(false);
-    setIsConfirmingMembersWorkspace(false);
+    setIsConfirmingMembersWorkspaceModalOpen(false);
     setNewAmountOfSeats(plan.businessPlan?.amountOfSeats);
   };
 
   const onSaveChanges = () => {
     setIsEditingMembersWorkspace(false);
     if (plan.businessPlan?.amountOfSeats === newAmountOfSeats) return;
-    setIsConfirmingMembersWorkspace(true);
+    setIsConfirmingMembersWorkspaceModalOpen(true);
   };
 
   const onConfirmUpdatedMembers = async () => {
@@ -159,7 +160,9 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
       });
       return;
     }
+
     try {
+      setIsConfirmingMembersWorkspace(true);
       await paymentService.updateWorkspaceMembers(workspaceId as string, subscriptionId, newAmountOfSeats);
 
       await dispatch(planThunks.fetchBusinessLimitUsageThunk());
@@ -175,6 +178,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
         type: ToastType.Success,
       });
       setIsConfirmingMembersWorkspace(false);
+      setIsConfirmingMembersWorkspaceModalOpen(false);
     } catch (err) {
       const error = err as AppError;
       if (error.status === UPDATE_MEMBERS_BAD_RESPONSE) {
@@ -215,8 +219,9 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
             translate={translate}
           />
           <ConfirmUpdatedMembersModal
-            isOpen={isConfirmingMembersWorkspace}
+            isOpen={isConfirmingMembersWorkspaceModalOpen}
             plan={plan.businessPlan}
+            isConfirmingMembersWorkspace={isConfirmingMembersWorkspace}
             updatedAmountOfSeats={newAmountOfSeats as number}
             translate={translate}
             onConfirmUpdate={onConfirmUpdatedMembers}
