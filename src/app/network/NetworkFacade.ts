@@ -14,6 +14,7 @@ import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/
 import { TaskStatus } from '../tasks/types';
 import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
 import { WORKER_MESSAGE_STATES } from '../../WebWorker';
+import { runDownload } from './download/strategies/IDownloadFileStrategy';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -31,6 +32,7 @@ interface UploadMultipartOptions extends UploadOptions {
 interface DownloadOptions {
   key?: Buffer;
   token?: string;
+  size?: number;
   abortController?: AbortController;
   downloadingCallback?: DownloadProgressCallback;
 }
@@ -237,7 +239,7 @@ export class NetworkFacade {
     );
   }
 
-  async download(
+  async _download(
     bucketId: string,
     fileId: string,
     mnemonic: string,
@@ -258,6 +260,8 @@ export class NetworkFacade {
     }
 
     // TODO: Check hash when downloaded
+    console.log('download method called');
+
     await downloadFile(
       fileId,
       bucketId,
@@ -266,10 +270,39 @@ export class NetworkFacade {
       this.cryptoLib,
       Buffer.from,
       async (downloadables) => {
-        for (const downloadable of downloadables) {
-          const stream = await getDownloadStream(downloadable.url);
+        const minSizeForMultipartDownload = 500 * 1024 * 1024; // 500MB
+        if (options && options.size && parseInt(options.size as unknown as string) >= minSizeForMultipartDownload) {
+          const fileSize = parseInt(options.size as unknown as string);
+          const [{ url }] = downloadables;
+          const downloadChunkSize = 20 * 1024 * 1024;
 
-          encryptedContentStreams.push(stream);
+          const ranges: { start: number, end: number }[] = [];
+
+          for (let start = 0; start < fileSize; start += downloadChunkSize) {
+            const end = Math.min(start + downloadChunkSize - 1, fileSize - 1);
+            ranges.push({ start, end });
+          }
+
+          for (const range of ranges) {
+            const { body: stream } = await fetch(url, {
+              signal: abortSignal,
+              headers: {
+                Range: `bytes=${range.start}-${range.end}`,
+              }
+            });
+
+            if (!stream) {
+              throw new Error('stream body null');
+            }
+
+            encryptedContentStreams.push(stream);
+          }
+        } else {
+          for (const downloadable of downloadables) {
+            const stream = await getDownloadStream(downloadable.url);
+
+            encryptedContentStreams.push(stream);
+          }
         }
       },
       async (_, key, iv, fileSize) => {
@@ -281,6 +314,57 @@ export class NetworkFacade {
         });
       },
       (options?.token && { token: options.token }) || undefined,
+    );
+
+    return unifiedDecryptedFileStream;
+  }
+
+  async download(
+    bucketId: string,
+    fileId: string,
+    mnemonic: string,
+    options?: DownloadOptions,
+  ): Promise<ReadableStream> {
+    const abortSignal = options?.abortController?.signal;
+    let unifiedDecryptedFileStream = new ReadableStream<Uint8Array>();
+
+    // TODO: Check hash when downloaded
+    console.log('download method called');
+
+    if (parseInt(options?.size as unknown as string) < 500 * 1024 * 1024) {
+      return this._download(bucketId, fileId, mnemonic, options);
+    }
+
+    console.log('using cool download method');
+
+    let urls: string[] = [];
+
+    await downloadFile(
+      fileId,
+      bucketId,
+      mnemonic,
+      this.network,
+      this.cryptoLib,
+      Buffer.from,
+      async (downloadables) => {
+        urls = downloadables.map(({ url }) => url);
+      },
+      async (_, key, iv, fileSize) => {
+        const stream = await runDownload(
+          async () => urls,
+          parseInt(options?.size as unknown as string),
+          20 * 1024 * 1024
+        );
+        const decipher = createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), iv as Buffer);
+        const decryptedStream = getDecryptedStream([stream], decipher);
+
+        unifiedDecryptedFileStream = buildProgressStream(decryptedStream, (readBytes) => {
+          options && options.downloadingCallback && options.downloadingCallback(fileSize, readBytes);
+        });
+      },
+      {
+        partSize: 20 * 1024 * 1024
+      }
     );
 
     return unifiedDecryptedFileStream;
