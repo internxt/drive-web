@@ -66,7 +66,6 @@ const processInvitation = async (
       encryptedMnemonicInBase64: encryptedMnemonicInBase64,
       encryptionAlgorithm: 'aes-256-gcm',
       message: messageText,
-      hybridModeEnabled: false,
     });
 
     notificationsService.show({

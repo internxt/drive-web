@@ -163,7 +163,6 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         address: pendingWorkspace?.address ?? '',
         description: pendingWorkspace?.description ?? '',
         encryptedMnemonic: encryptedMnemonicInBase64,
-        hybridModeEnabled: false,
       });
 
       // to avoid backend update delay
