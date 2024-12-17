@@ -1728,24 +1728,18 @@
           "clear": "清除",
           "activity": {
             "title": "活动",
-            "signedIn": "登录",
-            "changed": "更改",
-            "signedOut": "登出"
+            "LOGIN": "登录",
+            "CHANGED_PASSWORD": "更改密码",
+            "LOGOUT": "登出",
+            "SHARE_FILE": "分享文件",
+            "SHARE_FOLDER": "分享文件夹",
+            "DELETE_FILE": "删除文件",
+            "DELETE_FOLDER": "删除文件夹"
           },
-          "platform": {
-            "title": "平台",
-            "web": "网页",
-            "mobile": "移动端",
-            "desktop": "桌面端"
-          },
-          "dateRange": {
-            "title": "日期范围",
-            "7days": "最近7天",
-            "30days": "最近30天",
-            "90days": "最近90天"
-          }
+          "platform": { "title": "平台", "WEB": "网页", "MOBILE": "移动端", "DESKTOP": "桌面端" },
+          "dateRange": { "title": "日期范围", "days": "最近 {{days}} 天" }
         },
-        "headerTable": ["日期", "成员", "活动", "访问"]
+        "headerTable": { "date": "日期", "member": "成员", "activity": "活动", "access": "访问" }
       }
     },
     "account": {

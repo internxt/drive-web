@@ -9,9 +9,17 @@ import { useAccessLogs } from './hooks/useAccessLogs';
 import { WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
 import dateService from 'app/core/services/date.service';
 import { useDebounce } from 'hooks/useDebounce';
+import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
 
 interface LogsViewProps {
   onClosePreferences: () => void;
+}
+
+interface HeaderItemsProps {
+  title: string;
+  isSortByAvailable: boolean;
+  sortKey?: 'updatedAt' | 'platform' | 'type';
+  defaultSort?: 'ASC' | 'DESC';
 }
 
 export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.Element => {
@@ -19,14 +27,17 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
   const [searchMembersInputValue, setSearchMembersInputValue] = useState<string>('');
   const [daysFilter, setDaysFilter] = useState<number | undefined>();
   const [activityFilter, setActivityFilter] = useState<WorkspaceLogType[]>([]);
+  const [orderBy, setOrderBy] = useState<{ key: 'updatedAt' | 'type' | 'platform'; direction: 'ASC' | 'DESC' }>({
+    key: 'updatedAt',
+    direction: 'DESC',
+  });
   const debouncedSearchMemberValue = useDebounce(searchMembersInputValue, 500);
   const { accessLogs, workspaceLogTypes, isLoading, hasMoreItems, loadMoreItems } = useAccessLogs({
     activity: activityFilter,
     lastDays: daysFilter,
     member: debouncedSearchMemberValue,
+    orderBy: [orderBy.key, orderBy.direction].join(':'),
   });
-
-  const headerList = translateList('preferences.workspace.accessLogs.headerTable');
 
   function getActivityDetails(type: WorkspaceLogType) {
     return translate(`preferences.workspace.accessLogs.filterActions.activity.${type}`) || 'Unknown action';
@@ -49,6 +60,10 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
     setSearchMembersInputValue('');
     setDaysFilter(undefined);
     setActivityFilter([]);
+    setOrderBy({
+      key: 'updatedAt',
+      direction: 'DESC',
+    });
   };
 
   const formatDate = (createdAt: Date) => {
@@ -58,13 +73,63 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
 
   const formatTime = (createdAt: Date) => dateService.format(createdAt, 'hh:mm A');
 
-  const renderHeader = (headers: string[]) => (
+  const headerList: HeaderItemsProps[] = [
+    {
+      title: translate('preferences.workspace.accessLogs.headerTable.date'),
+      isSortByAvailable: true,
+      sortKey: 'updatedAt',
+      defaultSort: 'ASC',
+    },
+    {
+      title: translate('preferences.workspace.accessLogs.headerTable.member'),
+      isSortByAvailable: false,
+    },
+    {
+      title: translate('preferences.workspace.accessLogs.headerTable.activity'),
+      isSortByAvailable: true,
+      sortKey: 'type',
+      defaultSort: 'ASC',
+    },
+    {
+      title: translate('preferences.workspace.accessLogs.headerTable.access'),
+      isSortByAvailable: true,
+      sortKey: 'platform',
+      defaultSort: 'ASC',
+    },
+  ];
+
+  const onSortByChange = (item: HeaderItemsProps) => {
+    if (!item.isSortByAvailable) return;
+
+    const newSortBy = {
+      key: item.sortKey,
+      direction: orderBy.key === item.sortKey ? (orderBy.direction === 'ASC' ? 'DESC' : 'ASC') : item.defaultSort,
+    };
+
+    setOrderBy(newSortBy as any);
+  };
+
+  const renderHeader = () => (
     <TableRow>
-      {headers.map((header, index) => (
-        <TableCell key={header} isHeader className="py-3 text-left font-medium">
+      {headerList.map((header, index) => (
+        <TableCell
+          key={header.title}
+          onClick={() => header.isSortByAvailable && onSortByChange(header)}
+          isHeader
+          className={`py-3 text-left font-medium ${header.isSortByAvailable && 'cursor-pointer'}`}
+        >
           <div className="flex h-full flex-row justify-between pl-4">
-            {header}
-            {index === headers.length - 1 ? undefined : <div className="border border-gray-10" />}
+            <div className="flex w-full flex-row items-center gap-2">
+              {header.title}
+              {header.isSortByAvailable &&
+                orderBy.key === header.sortKey &&
+                (orderBy?.direction === 'ASC' ? (
+                  <ArrowUp size={12} weight="bold" />
+                ) : (
+                  <ArrowDown size={12} weight="bold" />
+                ))}
+            </div>
+            {index === headerList.length - 1 ? undefined : <div className="border border-gray-10" />}
           </div>
         </TableCell>
       ))}
@@ -95,7 +160,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
             }}
             className="py-2 pl-4"
           >
-            <div className="flex w-full max-w-[150px] flex-col gap-1 truncate">
+            <div className="flex w-screen max-w-[150px] flex-col gap-1 truncate">
               <p className={'font-medium'}>{userName}</p>
               <p title={userEmail} className="truncate text-gray-50">
                 {userEmail}
@@ -108,7 +173,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
             }}
             className="py-2 pl-4"
           >
-            <div className="flex w-full max-w-[150px] flex-col gap-1 truncate">
+            <div className="flex w-screen max-w-[150px] flex-col gap-1 truncate">
               <p className={'font-medium'}>{getActivityDetails(item.type)}</p>
               <p title={itemName} className="truncate text-gray-50">
                 {itemName}
@@ -149,7 +214,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
             tableHeaderClassName="sticky top-0 z-10 border-b border-gray-10 bg-gray-5 font-semibold text-gray-100"
             tableClassName="min-w-full rounded-lg border border-gray-10"
             tableBodyClassName="bg-surface dark:bg-gray-1"
-            renderHeader={() => renderHeader(headerList)}
+            renderHeader={renderHeader}
             renderBody={renderBody}
             numOfColumnsForSkeleton={headerList.length ?? 4}
             scrollable

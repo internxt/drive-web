@@ -1655,24 +1655,18 @@
           "clear": "Effacer",
           "activity": {
             "title": "Activité",
-            "signedIn": "Connecté",
-            "changed": "Modifié",
-            "signedOut": "Déconnecté"
+            "LOGIN": "Connecté",
+            "CHANGED_PASSWORD": "Mot de passe modifié",
+            "LOGOUT": "Déconnecté",
+            "SHARE_FILE": "Partager un fichier",
+            "SHARE_FOLDER": "Partager un dossier",
+            "DELETE_FILE": "Supprimer un fichier",
+            "DELETE_FOLDER": "Supprimer un dossier"
           },
-          "platform": {
-            "title": "Plateforme",
-            "web": "Web",
-            "mobile": "Mobile",
-            "desktop": "Bureau"
-          },
-          "dateRange": {
-            "title": "Plage de dates",
-            "7days": "7 derniers jours",
-            "30days": "30 derniers jours",
-            "90days": "90 derniers jours"
-          }
+          "platform": { "title": "Plateforme", "WEB": "Web", "MOBILE": "Mobile", "DESKTOP": "Bureau" },
+          "dateRange": { "title": "Plage de dates", "days": "7 derniers jours" }
         },
-        "headerTable": ["Date", "Membre", "Activité", "Accès"]
+        "headerTable": { "date": "Date", "member": "Membre", "activity": "Activité", "access": "Accès" }
       }
     },
     "account": {

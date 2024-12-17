@@ -1746,7 +1746,12 @@
             "days": "Last {{days}} days"
           }
         },
-        "headerTable": ["Date", "Member", "Activity", "Access"]
+        "headerTable": {
+          "date": "Date",
+          "member": "Member",
+          "activity": "Activity",
+          "access": "Access"
+        }
       }
     },
     "account": {

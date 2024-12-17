@@ -1706,24 +1706,18 @@
           "clear": "Borrar",
           "activity": {
             "title": "Actividad",
-            "signedIn": "Conectado",
-            "changed": "Cambiado",
-            "signedOut": "Desconectado"
+            "LOGIN": "Conectado",
+            "CHANGED_PASSWORD": "Contraseña cambiada",
+            "LOGOUT": "Desconectado",
+            "SHARE_FILE": "Compartir archivo",
+            "SHARE_FOLDER": "Compartir carpeta",
+            "DELETE_FILE": "Eliminar archivo",
+            "DELETE_FOLDER": "Eliminar carpeta"
           },
-          "platform": {
-            "title": "Plataforma",
-            "web": "Web",
-            "mobile": "Móvil",
-            "desktop": "Escritorio"
-          },
-          "dateRange": {
-            "title": "Rango de fechas",
-            "7days": "Últimos 7 días",
-            "30days": "Últimos 30 días",
-            "90days": "Últimos 90 días"
-          }
+          "platform": { "title": "Plataforma", "WEB": "Web", "MOBILE": "Móvil", "DESKTOP": "Escritorio" },
+          "dateRange": { "title": "Rango de fechas", "days": "Últimos {{days}} días" }
         },
-        "headerTable": ["Fecha", "Miembro", "Actividad", "Acceso"]
+        "headerTable": { "date": "Fecha", "member": "Miembro", "activity": "Actividad", "access": "Acceso" }
       }
     },
     "account": {

@@ -442,11 +442,6 @@ export const getWorkspaceLogs = ({
     });
 };
 
-export const getWorkspaceLogsTypes = (): WorkspaceLogType[] => {
-  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.getWorkspaceLogTypes();
-};
-
 const workspacesService = {
   getWorkspaces,
   getWorkspacesMembers,
@@ -492,7 +487,6 @@ const workspacesService = {
   getWorkspace,
   leaveWorkspace,
   getWorkspaceLogs,
-  getWorkspaceLogsTypes,
 };
 
 export default workspacesService;

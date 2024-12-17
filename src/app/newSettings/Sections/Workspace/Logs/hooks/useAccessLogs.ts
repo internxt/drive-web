@@ -1,4 +1,4 @@
-import { WorkspaceLogResponse, WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
+import { WorkspaceLogOrderBy, WorkspaceLogResponse, WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
 import errorService from 'app/core/services/error.service';
 import workspacesService from 'app/core/services/workspace.service';
 import { RootState } from 'app/store';
@@ -11,34 +11,31 @@ interface UseAccessLogsProps {
   lastDays?: number;
   member?: string;
   activity?: WorkspaceLogType[];
+  orderBy?: string;
 }
 
-export const useAccessLogs = ({ activity, lastDays, member }: UseAccessLogsProps) => {
+export const useAccessLogs = ({ activity, lastDays, member, orderBy }: UseAccessLogsProps) => {
   const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const workspaceId = selectedWorkspace?.workspace?.id;
+  const workspaceLogTypes = [
+    WorkspaceLogType.Login,
+    WorkspaceLogType.ChangedPassword,
+    WorkspaceLogType.Logout,
+    WorkspaceLogType.DeleteFile,
+    WorkspaceLogType.DeleteFolder,
+    WorkspaceLogType.ShareFile,
+    WorkspaceLogType.ShareFolder,
+  ];
 
   const [accessLogs, setAccessLogs] = useState<WorkspaceLogResponse[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [offset, setOffset] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [workspaceLogTypes, setWorkspaceLogTypes] = useState<WorkspaceLogType[]>();
 
   useEffect(() => {
-    getWorkspaceLogTypes();
-  }, []);
-
-  useEffect(() => {
+    resetStates();
     fetchWorkspaceLogs(true);
-  }, [workspaceId, activity, lastDays, member]);
-
-  const getWorkspaceLogTypes = async () => {
-    try {
-      const workspaceLogTypes = workspacesService.getWorkspaceLogsTypes();
-      setWorkspaceLogTypes(workspaceLogTypes);
-    } catch (error) {
-      errorService.reportError(error);
-    }
-  };
+  }, [workspaceId, activity, lastDays, member, orderBy]);
 
   const fetchWorkspaceLogs = async (reset = false) => {
     if (isLoading || !workspaceId) return;
@@ -54,6 +51,7 @@ export const useAccessLogs = ({ activity, lastDays, member }: UseAccessLogsProps
         activity,
         lastDays,
         member,
+        orderBy: orderBy as WorkspaceLogOrderBy,
       });
 
       setAccessLogs((prevItems) => (reset ? workspaceLogs : [...prevItems, ...workspaceLogs]));
@@ -70,6 +68,12 @@ export const useAccessLogs = ({ activity, lastDays, member }: UseAccessLogsProps
     if (!isLoading && hasMoreItems) {
       fetchWorkspaceLogs();
     }
+  };
+
+  const resetStates = () => {
+    setAccessLogs([]);
+    setOffset(0);
+    setHasMoreItems(true);
   };
 
   return {

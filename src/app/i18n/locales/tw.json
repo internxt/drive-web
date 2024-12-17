@@ -1687,24 +1687,18 @@
           "clear": "清除",
           "activity": {
             "title": "活動",
-            "signedIn": "登入",
-            "changed": "更改",
-            "signedOut": "登出"
+            "LOGIN": "登入",
+            "CHANGED_PASSWORD": "更改密碼",
+            "LOGOUT": "登出",
+            "SHARE_FILE": "分享檔案",
+            "SHARE_FOLDER": "分享資料夾",
+            "DELETE_FILE": "刪除檔案",
+            "DELETE_FOLDER": "刪除資料夾"
           },
-          "platform": {
-            "title": "平台",
-            "web": "網頁",
-            "mobile": "行動端",
-            "desktop": "桌面端"
-          },
-          "dateRange": {
-            "title": "日期範圍",
-            "7days": "最近7天",
-            "30days": "最近30天",
-            "90days": "最近90天"
-          }
+          "platform": { "title": "平台", "WEB": "網頁", "MOBILE": "行動端", "DESKTOP": "桌面端" },
+          "dateRange": { "title": "日期範圍", "days": "最近 {{days}} 天" }
         },
-        "headerTable": ["日期", "成員", "活動", "訪問"]
+        "headerTable": { "date": "日期", "member": "成員", "activity": "活動", "access": "訪問" }
       }
     },
     "account": {
