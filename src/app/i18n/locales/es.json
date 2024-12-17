@@ -1260,6 +1260,7 @@
     "itemsMovedToTrash": "{{item}} movid{{s}} a la papelera",
     "restoreItems": "{{itemsToRecover}} restaurad{{s}} con éxito",
     "storageModified": "Almacenamiento modificado con éxito",
+    "membersUpdatedSuccessfully": "Miembros actualizados con éxito",
     "errorModifyingStorage": "El nuevo almacenamiento no es válido para este miembro.",
     "generalErrorWhileModifyingStorage": "Algo salió mal al modificar el almacenamiento.",
     "moveItems": "{{itemsToMove}} movid{{s}} con éxito",
@@ -1284,7 +1285,10 @@
     "errorWhileLoadingWorkspace": "Error al cargar el espacio de trabajo {{error}}",
     "errorFetchingWorkspaceCredentials": "Error al obtener las credenciales del espacio de trabajo {{error}}",
     "invalidWorkspaceInvitationError": "Espacio de trabajo lleno. Contacta al propietario.",
-    "errorAcceptingWorkspaceInvitation": "Ocurrió un error al aceptar la invitación"
+    "errorAcceptingWorkspaceInvitation": "Ocurrió un error al aceptar la invitación",
+    "errorWhileUpdatingWorkspaceMembers": "Ocurrió un error al actualizar los miembros",
+    "errorWhileFetchingCurrentWorkspaceMembers": "Ocurrió un error al obtener los miembros del espacio de trabajo",
+    "newMembersCannotBeLessThanTheExistentOnesError": "Los miembros seleccionados no pueden ser menos que los miembros actuales del espacio de trabajo"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",
@@ -1330,6 +1334,7 @@
     "moreInfo": "Más info",
     "dismiss": "Dismiss",
     "save": "Guardar",
+    "saveChanges": "Guardar cambios",
     "saving": "Guardando",
     "share": "Compartir",
     "back": "Atrás",
@@ -1349,7 +1354,10 @@
     "report": "Reportar abuso",
     "yes": "Si",
     "no": "No",
-    "more": "Más"
+    "more": "Más",
+    "continue": "Continuar",
+    "keepCurrent": "Mantener actual",
+    "logOut": "Cerrar sesión"
   },
   "drive": {
     "usage": "Uso",
@@ -1445,8 +1453,7 @@
       "subscribe-to-newsletter": "Subscríbete al newsletter",
       "install-desktop-app": "Instala la app de escritorio y sube un archivo",
       "invite-friends": "Invita {{completedSteps}}/{{steps}} amigos",
-      "invite-2-friends": "Invita {{completedSteps}}/{{steps}} amigos",
-      "complete-survey": "Completar encuesta"
+      "invite-2-friends": "Invita {{completedSteps}}/{{steps}} amigos"
     },
     "rewards": {
       "title": "¡Obtén {{creditSum}} gratis!",
@@ -1682,6 +1689,32 @@
         "nextBillingDate": "Próxima fecha de facturación",
         "planLimit": "Facturado por plan de {{planLimit}}",
         "subscription": "Suscripción",
+        "membersLabel": "miembros",
+        "perUser": "por usuario",
+        "members": {
+          "title": "Miembros",
+          "editMembers": "Editar miembros",
+          "numberOfMembers": "Número de miembros",
+          "expandNumber": "Ampliar el número de miembros.",
+          "confirmUpdateModal": {
+            "title": "Cambiar plan",
+            "confirmToProceed": {
+              "text1": "Está a punto de cambiar su plan de miembros de Internxt de ",
+              "to": "a ",
+              "text2": ". Confirme su elección para continuar, por favor."
+            },
+            "current": "Actual",
+            "new": "Nuevo",
+            "decreaseStorage": {
+              "text": "Esto también reducirá su almacenamiento total para negocios de ",
+              "to": " a "
+            },
+            "increaseStorage": {
+              "text": "Esto también aumentará su almacenamiento total para negocios de ",
+              "to": " a "
+            }
+          }
+        },
         "lifetimeSubscription": {
           "planType": "De por vida",
           "text": "Sin facturas pendientes"

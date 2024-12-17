@@ -423,7 +423,7 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
       </div>
 
       <div className={'mx-5 flex grow flex-col'}>
-        <span className={'font-semiboldleading-5 max-w-xs truncate text-center text-lg text-gray-100'}>
+        <span className={'max-w-xs truncate text-center text-lg font-semibold leading-5 text-gray-100'}>
           {companyName}
         </span>
         <span className={'line-clamp-3 max-w-xs text-center text-sm font-normal leading-4 text-gray-60'}>
