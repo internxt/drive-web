@@ -1258,6 +1258,7 @@
     "itemsMovedToTrash": "{{item}} 已移到垃圾桶",
     "restoreItems": "{{itemsToRecover}} 成功還原",
     "storageModified": "儲存空間修改成功",
+    "membersUpdatedSuccessfully": "成員更新成功",
     "errorModifyingStorage": "新存儲空間對此成員無效。",
     "generalErrorWhileModifyingStorage": "修改存儲時出錯。",
     "moveItems": "{{itemsToMove}} 成功移動",
@@ -1282,7 +1283,10 @@
     "errorWhileLoadingWorkspace": "加載工作區時出錯 {{error}}",
     "errorFetchingWorkspaceCredentials": "獲取工作區憑證時出錯 {{error}}",
     "invalidWorkspaceInvitationError": "工作區已滿。請聯絡擁有者。",
-    "errorAcceptingWorkspaceInvitation": "接受邀請時出錯"
+    "errorAcceptingWorkspaceInvitation": "接受邀請時出錯",
+    "errorWhileUpdatingWorkspaceMembers": "更新成員時出了點問題",
+    "errorWhileFetchingCurrentWorkspaceMembers": "獲取工作區成員時出了點問題",
+    "newMembersCannotBeLessThanTheExistentOnesError": "選擇的成員數量不能少於當前工作區的成員數量。"
   },
   "actions": {
     "undo": "撤銷",
@@ -1313,6 +1317,7 @@
     "moreInfo": "更多信息",
     "dismiss": "忽略",
     "save": "保存",
+    "saveChanges": "儲存更改",
     "saving": "正在保存",
     "share": "分享",
     "back": "返回",
@@ -1332,7 +1337,10 @@
     "report": "檢舉濫用",
     "yes": "是",
     "no": "否",
-    "more": "更多"
+    "more": "更多",
+    "continue": "繼續",
+    "keepCurrent": "保持目前",
+    "logOut": "登出"
   },
   "drive": {
     "usage": "使用量",
@@ -1429,8 +1437,7 @@
       "subscribe-to-newsletter": "訂閱通訊",
       "install-desktop-app": "安裝桌面應用程序並上傳文件",
       "invite-friends": "邀請 {{completedSteps}}/{{steps}} 位朋友",
-      "invite-2-friends": "邀請 {{completedSteps}}/{{steps}} 位朋友",
-      "complete-survey": "完成調查"
+      "invite-2-friends": "邀請 {{completedSteps}}/{{steps}} 位朋友"
     },
     "rewards": {
       "title": "免費獲得 {{creditSum}}",
@@ -1666,6 +1673,32 @@
         "nextBillingDate": "下次計費日期",
         "planLimit": "計費計劃：{{planLimit}}",
         "subscription": "訂閱",
+        "membersLabel": "成員",
+        "perUser": "每位使用者",
+        "members": {
+          "title": "成員",
+          "editMembers": "編輯成員",
+          "numberOfMembers": "成員數量",
+          "expandNumber": "擴大成員數量。",
+          "confirmUpdateModal": {
+            "title": "更改方案",
+            "confirmToProceed": {
+              "text1": "您即將把 Internxt 成員方案從 ",
+              "to": "更改為 ",
+              "text2": "。請確認您的選擇以繼續。"
+            },
+            "current": "目前",
+            "new": "新",
+            "decreaseStorage": {
+              "text": "這也會減少您的總商業儲存空間，從 ",
+              "to": " 到 "
+            },
+            "increaseStorage": {
+              "text": "這也會增加您的總商業儲存空間，從 ",
+              "to": " 到 "
+            }
+          }
+        },
         "lifetimeSubscription": {
           "planType": "終身",
           "text": "沒有即將到來的賬單"

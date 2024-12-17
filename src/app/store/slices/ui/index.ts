@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { PreviewFileItem } from '../../../share/types';
 import { DriveItemData, DriveItemDetails, FileInfoMenuItem } from '../../../drive/types';
+import { PreviewFileItem } from '../../../share/types';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -17,7 +17,6 @@ interface UISliceState {
   isClearTrashDialogOpen: boolean;
   isEditFolderNameDialog: boolean;
   isNewsletterDialogOpen: boolean;
-  isSurveyDialogOpen: boolean;
   isPreferencesDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
   isSharedFolderTooBigDialogOpen: boolean;
@@ -53,7 +52,6 @@ const initialState: UISliceState = {
   isClearTrashDialogOpen: false,
   isEditFolderNameDialog: false,
   isNewsletterDialogOpen: false,
-  isSurveyDialogOpen: false,
   isPreferencesDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
   isSharedFolderTooBigDialogOpen: false,
@@ -119,9 +117,6 @@ export const uiSlice = createSlice({
     },
     setIsNewsletterDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isNewsletterDialogOpen = action.payload;
-    },
-    setIsSurveyDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isSurveyDialogOpen = action.payload;
     },
     setIsPreferencesDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isPreferencesDialogOpen = action.payload;
@@ -195,7 +190,6 @@ export const {
   setIsDeleteItemsDialogOpen,
   setIsMoveItemsDialogOpen,
   setIsNewsletterDialogOpen,
-  setIsSurveyDialogOpen,
   setIsPreferencesDialogOpen,
   setIsFileLoggerOpen,
   setIsFileInfoMenuOpen,

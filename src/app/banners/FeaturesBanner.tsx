@@ -1,5 +1,4 @@
 import { CheckCircle, SealPercent, Snowflake, X } from '@phosphor-icons/react';
-import styles from 'app/banners/FeaturesBanner.module.scss';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface FeaturesBannerProps {
@@ -32,7 +31,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
         <button
           id="close-banner"
           aria-label="close-banner"
-          className="absolute right-0 m-7 flex rounded-md hover:bg-gray-1/10"
+          className="absolute right-0 m-7 flex rounded-md dark:text-gray-10 text-gray-90 hover:bg-gray-1/10"
           onClick={onClose}
         >
           <X size={32} />
@@ -42,24 +41,26 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
             <div className="flex rounded-lg border-2 border-pink bg-red px-3 py-1.5">
               <p className="text-2xl font-bold text-white">{translate('featuresBanner.label')}</p>
             </div>
-            <p className="w-full max-w-[400px] text-5xl font-bold leading-tight text-gray-10">
+            <p className="w-full max-w-[400px] text-5xl font-bold leading-tight dark:text-gray-10 text-gray-90">
               {translate('featuresBanner.title')}
             </p>
 
             <div className="flex flex-col items-center space-y-3 lg:items-start">
               <button
                 onClick={handleOnClick}
-                className="flex w-max items-center rounded-lg bg-gray-90 px-5 py-3 text-lg font-medium text-gray-10"
+                className="flex w-max items-center rounded-lg dark:bg-gray-90 bg-gray-10 px-5 py-3 text-lg font-medium dark:text-gray-10 text-gray-90"
               >
                 {translate('featuresBanner.cta')}
               </button>
               <div className="flex flex-row items-center space-x-3 pt-2">
-                <CheckCircle size={24} className="text-gray-10" />
-                <p className="whitespace-nowrap font-medium text-gray-10 lg:text-lg">
+                <CheckCircle size={24} className="dark:text-gray-10 text-gray-90" />
+                <p className="whitespace-nowrap font-medium dark:text-gray-10 text-gray-90 lg:text-lg">
                   {translate('featuresBanner.guarantee')}
                 </p>
               </div>
-              <p className="text-sm font-medium text-gray-10">{translate('featuresBanner.lastCta')}</p>
+              <p className="text-sm font-medium dark:text-gray-10 text-gray-90">
+                {translate('featuresBanner.lastCta')}
+              </p>
             </div>
           </div>
           <div className="hidden w-full items-center lg:flex">
@@ -70,7 +71,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
                     <div className="flex flex-row space-x-1 font-bold text-red" key={index}>
                       <div className="flex">
                         <Snowflake size={32} className="mr-4 text-red" />
-                        <p className="text-lg font-semibold text-gray-80">{card}</p>
+                        <p className="text-lg font-semibold dark:text-gray-10 text-gray-90">{card}</p>
                       </div>
                       <div className="flex flex-row">
                         <p className="text-lg font-semibold text-red">{features[index + 1]}</p>
@@ -79,7 +80,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
                   ) : index === features.length - 1 ? null : (
                     <div className="flex flex-row space-x-4" key={index}>
                       <Snowflake size={32} className="text-red" />
-                      <p className="text-lg font-semibold text-gray-80">{card}</p>
+                      <p className="text-lg font-semibold dark:text-gray-10 text-gray-90">{card}</p>
                     </div>
                   ),
                 )}

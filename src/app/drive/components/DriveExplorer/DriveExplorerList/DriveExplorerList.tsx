@@ -7,6 +7,7 @@ import { connect, useSelector } from 'react-redux';
 import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { skinSkeleton } from 'app/shared/Skeleton';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
 import shareService from '../../../../share/services/share.service';
@@ -19,6 +20,7 @@ import { uiActions } from '../../../../store/slices/ui';
 import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
 import { DriveItemData, DriveItemDetails } from '../../../types';
 import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
+import ShareWithTeamDialog from '../../ShareWithTeamDialog/ShareWithTeamDialog';
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
 import {
   contextMenuDriveFolderNotSharedLink,
@@ -32,8 +34,6 @@ import {
   contextMenuWorkspaceFile,
   contextMenuWorkspaceFolder,
 } from './DriveItemContextMenu';
-import { skinSkeleton } from 'app/shared/Skeleton';
-import ShareWithTeamDialog from '../../ShareWithTeamDialog/ShareWithTeamDialog';
 
 interface DriveExplorerListProps {
   folderId: string;
@@ -526,7 +526,6 @@ export default connect((state: RootState) => ({
   roles: state.shared.roles,
   disableKeyboardShortcuts:
     state.ui.isShareDialogOpen ||
-    state.ui.isSurveyDialogOpen ||
     state.ui.isEditFolderNameDialog ||
     state.ui.isFileViewerOpen ||
     state.ui.isMoveItemsDialogOpen ||
