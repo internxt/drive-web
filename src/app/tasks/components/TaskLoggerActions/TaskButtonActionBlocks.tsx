@@ -32,7 +32,9 @@ const DownloadingBlock = ({ progressPercentage, nItems }: UploadingBlockProps): 
   return (
     <div className="flex flex-row justify-between space-x-1.5">
       <div className="flex h-8 w-8 items-center justify-center">
-        <span className="text-sm font-medium text-primary">{nItems ? `${nItems}` : `${progressPercentage}%`}</span>
+        <span className="text-sm font-medium text-primary">
+          {nItems && +nItems > 0 ? `${nItems}` : `${progressPercentage}%`}
+        </span>
       </div>
       <div className="flex h-8 w-8 items-center justify-center">
         <DownloadIcon height={20} width={20} />
