@@ -1,12 +1,12 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Section from '../../../../newSettings/components/Section';
 import { useState } from 'react';
-import { ScrollableTable, SetLastItemRef } from 'app/shared/tables/ScrollableTable';
+import { ScrollableTable } from 'app/shared/tables/ScrollableTable';
 import 'react-calendar/dist/Calendar.css';
 import { TableCell, TableRow } from '@internxt/internxtui';
 import { AccessLogsFilterOptions } from './components/AccessLogsFilterOptions';
 import { useAccessLogs } from './hooks/useAccessLogs';
-import { WorkspaceLogResponse, WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
+import { WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
 import dateService from 'app/core/services/date.service';
 import { useDebounce } from 'hooks/useDebounce';
 
@@ -71,9 +71,12 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
     </TableRow>
   );
 
-  const renderBody = (logs: WorkspaceLogResponse[], setLastItemRef: SetLastItemRef) => (
-    <>
-      {logs.map((item, index) => (
+  const renderBody = () => {
+    return logs.map((item) => {
+      const userEmail = item.user.email;
+      const userName = item.user.name + ' ' + (item.user.lastname ?? null);
+      const itemName = item.file?.plainName ?? item.folder?.plainName ?? 'Unknown';
+      return (
         <TableRow key={item.id} className="border-b border-gray-10 text-sm last:border-none hover:bg-gray-5">
           <TableCell
             style={{
@@ -81,8 +84,8 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
             }}
             className="py-2 pl-4"
           >
-            <div ref={index === logs.length - 1 ? setLastItemRef : null} className="flex flex-col gap-1">
-              <p className="font-medium">{formatDate(item.createdAt)}</p>
+            <div className="flex flex-col gap-1">
+              <p className="font-medium text-gray-100">{formatDate(item.createdAt)}</p>
               <p className="text-gray-50">{formatTime(item.createdAt)}</p>
             </div>
           </TableCell>
@@ -92,10 +95,12 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
             }}
             className="py-2 pl-4"
           >
-            <div>
-              {item.user.name} {item.user.lastname}
+            <div className="flex w-full max-w-[150px] flex-col gap-1 truncate">
+              <p className={'font-medium'}>{userName}</p>
+              <p title={userEmail} className="truncate text-gray-50">
+                {userEmail}
+              </p>
             </div>
-            <div className="text-sm text-gray-50">{item.user.email}</div>
           </TableCell>
           <TableCell
             style={{
@@ -103,9 +108,11 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
             }}
             className="py-2 pl-4"
           >
-            <div className="flex flex-col gap-1 truncate">
+            <div className="flex w-full max-w-[150px] flex-col gap-1 truncate">
               <p className={'font-medium'}>{getActivityDetails(item.type)}</p>
-              {item.file && <p className="text-gray-50">{item.file?.plainName}</p>}
+              <p title={itemName} className="truncate text-gray-50">
+                {itemName}
+              </p>
             </div>
           </TableCell>
           <TableCell
@@ -117,9 +124,9 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
             {translate(`preferences.workspace.accessLogs.filterActions.platform.${item.platform}`)}
           </TableCell>
         </TableRow>
-      ))}
-    </>
-  );
+      );
+    });
+  };
 
   return (
     <Section title={translate('preferences.navBarSections.logs')} onClosePreferences={onClosePreferences}>
@@ -143,10 +150,10 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
             tableClassName="min-w-full rounded-lg border border-gray-10"
             tableBodyClassName="bg-surface dark:bg-gray-1"
             renderHeader={() => renderHeader(headerList)}
-            renderBody={(item) => renderBody(logs, item)}
+            renderBody={renderBody}
             numOfColumnsForSkeleton={headerList.length ?? 4}
             scrollable
-            loadMoreItems={() => {}}
+            loadMoreItems={loadMoreItems}
             hasMoreItems={hasMoreItems}
             isLoading={isLoading}
           />

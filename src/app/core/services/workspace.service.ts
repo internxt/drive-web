@@ -424,7 +424,7 @@ export const getWorkspaceLogs = ({
   member,
   activity,
   lastDays = 90,
-  orderBy = 'type:DESC',
+  orderBy,
 }: {
   workspaceId: string;
   limit: number;

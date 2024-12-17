@@ -3,8 +3,7 @@ import errorService from 'app/core/services/error.service';
 import workspacesService from 'app/core/services/workspace.service';
 import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
-import _ from 'lodash';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 const DEFAULT_LIMIT = 10;
 
@@ -17,8 +16,9 @@ interface UseAccessLogsProps {
 export const useAccessLogs = ({ activity, lastDays, member }: UseAccessLogsProps) => {
   const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const workspaceId = selectedWorkspace?.workspace?.id;
-  const [logs, setLogs] = useState<WorkspaceLogResponse[]>([]);
-  const [hasMoreItems, setHasMoreItems] = useState<boolean>(false);
+
+  const [accessLogs, setAccessLogs] = useState<WorkspaceLogResponse[]>([]);
+  const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [offset, setOffset] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [workspaceLogTypes, setWorkspaceLogTypes] = useState<WorkspaceLogType[]>();
@@ -40,53 +40,40 @@ export const useAccessLogs = ({ activity, lastDays, member }: UseAccessLogsProps
     }
   };
 
-  const fetchWorkspaceLogs = useCallback(
-    async (reset = false) => {
-      if (isLoading) return;
-      try {
-        setIsLoading(true);
-        const currentOffset = reset ? 0 : offset;
-        if (selectedWorkspace?.workspace.id && workspaceId) {
-          const workspaceLogs = await workspacesService.getWorkspaceLogs({
-            workspaceId,
-            limit: DEFAULT_LIMIT,
-            offset: currentOffset,
-            activity,
-            lastDays,
-            member,
-          });
+  const fetchWorkspaceLogs = async (reset = false) => {
+    if (isLoading || !workspaceId) return;
 
-          setLogs((prevItems) => {
-            const totalItems = _.concat(prevItems, workspaceLogs);
-            return totalItems;
-          });
+    setIsLoading(true);
+    const currentOffset = reset ? 0 : offset;
 
-          const thereAreMoreItems = workspaceLogs.length >= DEFAULT_LIMIT;
-          if (thereAreMoreItems) {
-            setOffset((prevOffset) => prevOffset + DEFAULT_LIMIT);
-            setHasMoreItems(true);
-          } else {
-            setHasMoreItems(false);
-          }
-        }
-      } catch (error) {
-        errorService.reportError(error);
-        setHasMoreItems(false);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [workspaceId, offset, activity, lastDays, member],
-  );
+    try {
+      const workspaceLogs = await workspacesService.getWorkspaceLogs({
+        workspaceId,
+        limit: DEFAULT_LIMIT,
+        offset: currentOffset,
+        activity,
+        lastDays,
+        member,
+      });
 
-  const loadMoreItems = useCallback(async () => {
-    if (isLoading || !hasMoreItems) return;
+      setAccessLogs((prevItems) => (reset ? workspaceLogs : [...prevItems, ...workspaceLogs]));
+      setOffset((prevOffset) => (reset ? DEFAULT_LIMIT : prevOffset + DEFAULT_LIMIT));
+      setHasMoreItems(workspaceLogs.length >= DEFAULT_LIMIT);
+    } catch (error) {
+      errorService.reportError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    await fetchWorkspaceLogs();
-  }, [isLoading, hasMoreItems, fetchWorkspaceLogs]);
+  const loadMoreItems = () => {
+    if (!isLoading && hasMoreItems) {
+      fetchWorkspaceLogs();
+    }
+  };
 
   return {
-    logs,
+    logs: accessLogs,
     workspaceLogTypes,
     isLoading,
     hasMoreItems,
