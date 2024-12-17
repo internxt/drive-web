@@ -1,86 +1,31 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Section from '../../../../newSettings/components/Section';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollableTable } from 'app/shared/tables/ScrollableTable';
 import 'react-calendar/dist/Calendar.css';
 import { TableCell, TableRow } from '@internxt/internxtui';
 import { AccessLogsFilterOptions } from './components/AccessLogsFilterOptions';
 import { useAccessLogs } from './hooks/useAccessLogs';
+import { WorkspaceLogResponse, WorkspaceLogOrderBy, WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
+import dateService from 'app/core/services/date.service';
+import { useAppSelector } from 'app/store/hooks';
+import { RootState } from 'app/store';
+import workspacesService from 'app/core/services/workspace.service';
+import errorService from 'app/core/services/error.service';
 
 interface LogsView {
   onClosePreferences: () => void;
 }
 
-interface ActivityRow {
-  id: string;
-  date: string;
-  time: string;
-  member: {
-    name: string;
-    email: string;
-  };
-  activity: { action: string; color: string };
-  access: string;
-}
-
-function generateMockData(numItems = 100): ActivityRow[] {
-  const members = [
-    { name: 'Daniel Dun', email: 'daniel@internxt.com' },
-    { name: 'Steven S', email: 'stevens@internxt.com' },
-    { name: 'Lewis L', email: 'lewis@internxt.com' },
-    { name: 'Alice A', email: 'alice@internxt.com' },
-    { name: 'Bob B', email: 'bob@internxt.com' },
-    { name: 'Charlie C', email: 'charlie@internxt.com' },
-  ];
-
-  const activities = [
-    { action: 'Signed in', color: 'text-green' },
-    { action: 'Signed out', color: 'text-gray' },
-    { action: 'Changed', color: 'text-orange' },
-  ];
-
-  const accessTypes = ['Web', 'Desktop', 'Mobile'];
-
-  const mockData: ActivityRow[] = [];
-
-  for (let i = 0; i < numItems; i++) {
-    const randomMember = members[Math.floor(Math.random() * members.length)];
-    const randomActivity = activities[Math.floor(Math.random() * activities.length)];
-    const randomAccess = accessTypes[Math.floor(Math.random() * accessTypes.length)];
-
-    const date = new Date();
-    date.setDate(date.getDate() - Math.floor(Math.random() * 365));
-    const formattedDate = date.toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    });
-    const formattedTime = date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
-    });
-
-    mockData.push({
-      id: `${i}`,
-      date: formattedDate,
-      time: formattedTime,
-      member: {
-        name: randomMember.name,
-        email: randomMember.email,
-      },
-      activity: {
-        action: randomActivity.action,
-        color: randomActivity.color,
-      },
-      access: randomAccess,
-    });
-  }
-
-  return mockData;
-}
-
-const mockTableData = generateMockData();
+const activities = {
+  [WorkspaceLogType.LOGIN]: { displayAction: 'Signed in', color: 'text-green' },
+  [WorkspaceLogType.LOGOUT]: { displayAction: 'Signed out', color: 'text-gray' },
+  [WorkspaceLogType.CHANGED_PASSWORD]: { displayAction: 'Changed Password', color: 'text-orange' },
+  [WorkspaceLogType.SHARE_FILE]: { displayAction: 'Share File', color: 'text-green' },
+  [WorkspaceLogType.SHARE_FOLDER]: { displayAction: 'Share Folder', color: 'text-green' },
+  [WorkspaceLogType.DELETE_FILE]: { displayAction: 'Delete File', color: 'text-red' },
+  [WorkspaceLogType.DELETE_FOLDER]: { displayAction: 'Delete Folder', color: 'text-red' },
+};
 
 export const AccessLogsSection = ({ onClosePreferences }: LogsView): JSX.Element => {
   const { translate, translateList } = useTranslationContext();
@@ -94,8 +39,58 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsView): JSX.Element
     selectedPlatform: selectedPlatform,
     toCalendarValue: toCalendarValue,
   });
+  const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
+  const workspaceId = selectedWorkspace?.workspace?.id;
+  const [logs, setLogs] = useState<WorkspaceLogResponse[]>([]);
+  const [displayedLogs, setDisplayedLogs] = useState<WorkspaceLogResponse[]>(logs);
+
+  useEffect(() => {
+    if (selectedWorkspace?.workspace.id && workspaceId) {
+      const mockLimit = 10;
+      const mockOffset = 0;
+      const mockMember = 'eder-test@shok.com'; // undefined; // user.name o email
+      const mockActivities = [WorkspaceLogType.SHARE_FILE, WorkspaceLogType.SHARE_FOLDER, WorkspaceLogType.DELETE_FILE]; // Array Empty or undefined === return all types
+      const mockLastDays = 30; // Undefined === All
+      const mockOrderBy: WorkspaceLogOrderBy = 'type:DESC'; // Undefined === Default: createdAt:DESC
+      workspacesService
+        .getWorkspaceLogs(workspaceId, mockLimit, mockOffset, mockMember, mockActivities, mockLastDays, mockOrderBy)
+        .then((data) => {
+          setLogs(data);
+          setDisplayedLogs(data);
+        })
+        .catch((err) => {
+          const error = errorService.castError(err);
+          errorService.reportError(error);
+        });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (logs && logs.length > 0) {
+      const newLogs = filterLogsByMemberAndEmail(searchMembersInputValue);
+      setDisplayedLogs(newLogs || []);
+    }
+  }, [searchMembersInputValue]);
 
   const headerList = translateList('preferences.workspace.accessLogs.headerTable');
+
+  function getActivityDetails(type: WorkspaceLogType) {
+    return activities[type] || { displayAction: 'Unknown action', color: 'text-default' };
+  }
+
+  const formatDate = (createdAt: Date) => {
+    const formatted = dateService.format(createdAt, 'MMM D, YYYY');
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  };
+
+  const formatTime = (createdAt: Date) => dateService.format(createdAt, 'hh:mm A');
+
+  const filterLogsByMemberAndEmail = (searchString: string) => {
+    const escapedSearchString = searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(escapedSearchString, 'i');
+
+    return logs?.filter((log) => regex.test(`${log.user.name} ${log.user.lastname}`) || regex.test(log.user.email));
+  };
 
   const renderHeader = (headers: string[]) => (
     <TableRow>
@@ -110,9 +105,9 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsView): JSX.Element
     </TableRow>
   );
 
-  const renderBody = (visibleData: ActivityRow[]) => (
+  const renderBody = (logs: WorkspaceLogResponse[]) => (
     <>
-      {visibleData.map((item) => (
+      {logs.map((item) => (
         <TableRow key={item.id} className="border-b border-gray-10 text-sm last:border-none hover:bg-gray-5">
           <TableCell
             style={{
@@ -121,8 +116,8 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsView): JSX.Element
             className="py-2 pl-4"
           >
             <div className="flex flex-col gap-1">
-              <p className="font-medium">{item.date}</p>
-              <p className="text-gray-50">{item.time}</p>
+              <p className="font-medium">{formatDate(item.createdAt)}</p>
+              <p className="text-gray-50">{formatTime(item.createdAt)}</p>
             </div>
           </TableCell>
           <TableCell
@@ -131,8 +126,10 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsView): JSX.Element
             }}
             className="py-2 pl-4"
           >
-            <div>{item.member.name}</div>
-            <div className="text-sm text-gray-50">{item.member.email}</div>
+            <div>
+              {item.user.name} {item.user.lastname}
+            </div>
+            <div className="text-sm text-gray-50">{item.user.email}</div>
           </TableCell>
           <TableCell
             style={{
@@ -140,7 +137,9 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsView): JSX.Element
             }}
             className="py-2 pl-4"
           >
-            <span className={`${item.activity.color} font-medium`}>{item.activity.action}</span>
+            <span className={`${getActivityDetails(item.type).color} font-medium`}>
+              {getActivityDetails(item.type).displayAction}
+            </span>
           </TableCell>
           <TableCell
             style={{
@@ -148,7 +147,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsView): JSX.Element
             }}
             className="py-2 pl-4"
           >
-            {item.access}
+            {item.platform}
           </TableCell>
         </TableRow>
       ))}
@@ -168,13 +167,13 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsView): JSX.Element
           toDate={toCalendarValue}
           translate={translate}
         />
-        {visibleData.length > 0 ? (
+        {displayedLogs.length > 0 ? (
           <ScrollableTable
             tableHeaderClassName="sticky top-0 z-10 border-b border-gray-10 bg-gray-5 font-semibold text-gray-100"
             tableClassName="min-w-full rounded-lg border border-gray-10"
             tableBodyClassName="bg-surface dark:bg-gray-1"
             renderHeader={() => renderHeader(headerList)}
-            renderBody={() => renderBody(visibleData)}
+            renderBody={() => renderBody(displayedLogs)}
             numOfColumnsForSkeleton={headerList.length ?? 4}
             scrollable
             loadMoreItems={loadMoreItems}
