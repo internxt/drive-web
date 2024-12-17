@@ -16,6 +16,8 @@ describe('Encryption and Decryption', () => {
     expect(keys).toHaveProperty('privateKeyArmored');
     expect(keys).toHaveProperty('publicKeyArmored');
     expect(keys).toHaveProperty('revocationCertificate');
+    expect(keys).toHaveProperty('publicKyberKeyBase64');
+    expect(keys).toHaveProperty('privateKyberKeyBase64');
   });
 
   it('should encrypt a message with the given public key', async () => {
