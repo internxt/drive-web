@@ -1,61 +1,93 @@
-import { WorkspaceLogResponse } from '@internxt/sdk/dist/workspaces';
+import { WorkspaceLogResponse, WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
+import errorService from 'app/core/services/error.service';
+import workspacesService from 'app/core/services/workspace.service';
+import { RootState } from 'app/store';
+import { useAppSelector } from 'app/store/hooks';
+import _ from 'lodash';
 import { useState, useEffect, useCallback } from 'react';
 
-const ITEMS_PER_PAGE = 20;
+const DEFAULT_LIMIT = 10;
 
-export const useAccessLogs = ({ searchMembersInputValue, fromCalendarValue, toCalendarValue, selectedPlatform }) => {
-  const [filteredData, setFilteredData] = useState<WorkspaceLogResponse[]>([]);
-  const [visibleData, setVisibleData] = useState<WorkspaceLogResponse[]>([]);
-  const [page, setPage] = useState(1);
+interface UseAccessLogsProps {
+  lastDays?: number;
+  member?: string;
+  activity?: WorkspaceLogType[];
+}
+
+export const useAccessLogs = ({ activity, lastDays, member }: UseAccessLogsProps) => {
+  const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
+  const workspaceId = selectedWorkspace?.workspace?.id;
+  const [logs, setLogs] = useState<WorkspaceLogResponse[]>([]);
+  const [hasMoreItems, setHasMoreItems] = useState<boolean>(false);
+  const [offset, setOffset] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
-
-  const filterData = useCallback(() => {
-    let result = visibleData;
-
-    if (searchMembersInputValue) {
-      result = result.filter(
-        (item) =>
-          item.user.name.toLowerCase().includes(searchMembersInputValue.toLowerCase()) ||
-          item.user.email.toLowerCase().includes(searchMembersInputValue.toLowerCase()),
-      );
-    }
-
-    if (fromCalendarValue) {
-      result = result.filter((item) => new Date(item.createdAt) >= fromCalendarValue);
-    }
-    if (toCalendarValue) {
-      result = result.filter((item) => new Date(item.createdAt) <= toCalendarValue);
-    }
-
-    if (selectedPlatform) {
-      result = result.filter((item) => item.platform === selectedPlatform);
-    }
-
-    setFilteredData(result);
-    setVisibleData(result.slice(0, ITEMS_PER_PAGE));
-    setPage(1);
-  }, [searchMembersInputValue, fromCalendarValue, toCalendarValue, selectedPlatform]);
-
-  const loadMoreItems = useCallback(() => {
-    if (isLoading || visibleData.length >= filteredData.length) return;
-
-    setIsLoading(true);
-    setTimeout(() => {
-      const nextPageData = filteredData.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
-      setVisibleData((prevData) => [...prevData, ...nextPageData]);
-      setPage((prevPage) => prevPage + 1);
-      setIsLoading(false);
-    }, 500);
-  }, [isLoading, page, filteredData, visibleData]);
+  const [workspaceLogTypes, setWorkspaceLogTypes] = useState<WorkspaceLogType[]>();
 
   useEffect(() => {
-    filterData();
-  }, [filterData]);
+    getWorkspaceLogTypes();
+  }, []);
 
-  const hasMoreItems = visibleData.length < filteredData.length;
+  useEffect(() => {
+    fetchWorkspaceLogs(true);
+  }, [workspaceId, activity, lastDays, member]);
+
+  const getWorkspaceLogTypes = async () => {
+    try {
+      const workspaceLogTypes = workspacesService.getWorkspaceLogsTypes();
+      setWorkspaceLogTypes(workspaceLogTypes);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
+
+  const fetchWorkspaceLogs = useCallback(
+    async (reset = false) => {
+      if (isLoading) return;
+      try {
+        setIsLoading(true);
+        const currentOffset = reset ? 0 : offset;
+        if (selectedWorkspace?.workspace.id && workspaceId) {
+          const workspaceLogs = await workspacesService.getWorkspaceLogs({
+            workspaceId,
+            limit: DEFAULT_LIMIT,
+            offset: currentOffset,
+            activity,
+            lastDays,
+            member,
+          });
+
+          setLogs((prevItems) => {
+            const totalItems = _.concat(prevItems, workspaceLogs);
+            return totalItems;
+          });
+
+          const thereAreMoreItems = workspaceLogs.length >= DEFAULT_LIMIT;
+          if (thereAreMoreItems) {
+            setOffset((prevOffset) => prevOffset + DEFAULT_LIMIT);
+            setHasMoreItems(true);
+          } else {
+            setHasMoreItems(false);
+          }
+        }
+      } catch (error) {
+        errorService.reportError(error);
+        setHasMoreItems(false);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [workspaceId, offset, activity, lastDays, member],
+  );
+
+  const loadMoreItems = useCallback(async () => {
+    if (isLoading || !hasMoreItems) return;
+
+    await fetchWorkspaceLogs();
+  }, [isLoading, hasMoreItems, fetchWorkspaceLogs]);
 
   return {
-    visibleData,
+    logs,
+    workspaceLogTypes,
     isLoading,
     hasMoreItems,
     loadMoreItems,

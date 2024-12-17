@@ -417,21 +417,34 @@ export function leaveWorkspace(workspaceId: string): Promise<void> {
   });
 }
 
-export const getWorkspaceLogs = (
-  workspaceId: string,
+export const getWorkspaceLogs = ({
+  workspaceId,
   limit = 50,
   offset = 0,
-  member?: string,
-  activity?: WorkspaceLogType[],
-  lastDays?: number,
-  orderBy?: WorkspaceLogOrderBy,
-): Promise<WorkspaceLogResponse[]> => {
+  member,
+  activity,
+  lastDays = 90,
+  orderBy = 'type:DESC',
+}: {
+  workspaceId: string;
+  limit: number;
+  offset?: number;
+  member?: string;
+  activity?: WorkspaceLogType[];
+  lastDays?: number;
+  orderBy?: WorkspaceLogOrderBy;
+}): Promise<WorkspaceLogResponse[]> => {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient
     .getWorkspaceLogs(workspaceId, limit, offset, member, activity, lastDays, orderBy)
     .catch((error) => {
       throw errorService.castError(error);
     });
+};
+
+export const getWorkspaceLogsTypes = (): WorkspaceLogType[] => {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspaceLogTypes();
 };
 
 const workspacesService = {
@@ -479,6 +492,7 @@ const workspacesService = {
   getWorkspace,
   leaveWorkspace,
   getWorkspaceLogs,
+  getWorkspaceLogsTypes,
 };
 
 export default workspacesService;

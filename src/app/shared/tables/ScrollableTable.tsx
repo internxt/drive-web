@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useRef } from 'react';
+import React, { ReactNode, useCallback, useRef } from 'react';
 import { Table, TableBody, TableHeader } from '@internxt/internxtui';
 import { LoadingRowSkeleton } from './LoadingSkeleton';
 
@@ -13,8 +13,10 @@ interface ScrollableTableProps {
   tableBodyClassName?: string;
   loadMoreItems?: () => void;
   renderHeader: () => ReactNode;
-  renderBody: () => ReactNode;
+  renderBody: (setLastItemRef: SetLastItemRef) => ReactNode;
 }
+
+export type SetLastItemRef = (node: HTMLElement | null) => void;
 
 export const ScrollableTable: React.FC<ScrollableTableProps> = ({
   numOfColumnsForSkeleton,
@@ -29,36 +31,43 @@ export const ScrollableTable: React.FC<ScrollableTableProps> = ({
   renderBody,
   loadMoreItems,
 }) => {
-  const observerRef = useRef<HTMLDivElement | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
-  useEffect(() => {
-    if (!scrollable || !hasMoreItems || !loadMoreItems) return;
+  const setLastItemRef = useCallback<SetLastItemRef>(
+    (node) => {
+      if (isLoading || !hasMoreItems) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadMoreItems();
-        }
-      },
-      { threshold: 1 },
-    );
+      // Define el observerRef con un tipo específico
 
-    if (observerRef.current) observer.observe(observerRef.current);
+      // Desconecta el observer anterior si existe
+      if (observerRef.current) observerRef.current.disconnect();
 
-    return () => observer.disconnect();
-  }, [scrollable, hasMoreItems, loadMoreItems]);
+      // Crea un nuevo IntersectionObserver
+      observerRef.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            loadMoreItems?.(); // Llama a loadMoreItems si el último ítem es visible
+          }
+        },
+        { root: null, threshold: 0.5 }, // Configuración del observer
+      );
 
+      // Observa el nodo si existe
+      if (node) observerRef.current.observe(node);
+    },
+    [isLoading, hasMoreItems, loadMoreItems],
+  );
   return (
     <div className={`${containerClassName} ${scrollable ? 'max-h-[80vh] overflow-y-auto' : ''}`}>
       <Table className={tableClassName}>
         <TableHeader className={tableHeaderClassName}>{renderHeader()}</TableHeader>
         <TableBody className={tableBodyClassName}>
-          {renderBody()}
+          {renderBody(setLastItemRef)}
           {isLoading && <LoadingRowSkeleton numberOfColumns={numOfColumnsForSkeleton} />}
         </TableBody>
       </Table>
       {/* Invisible div to observe and trigger load more */}
-      {scrollable && hasMoreItems && <div ref={observerRef} className="h-2" />}
+      {/* {scrollable && hasMoreItems && <div ref={observerRef} className="h-2" />} */}
     </div>
   );
 };

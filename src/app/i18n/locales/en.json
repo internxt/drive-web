@@ -1730,13 +1730,20 @@
           "searchMembers": "Search members",
           "filters": "Filters",
           "clear": "Clear",
-          "activity": { "title": "Activity", "signedIn": "Signed in", "changed": "Changed", "signedOut": "Signed out" },
-          "platform": { "title": "Platform", "web": "Web", "mobile": "Mobile", "desktop": "Desktop" },
+          "activity": {
+            "title": "Activity",
+            "LOGIN": "Signed in",
+            "CHANGED_PASSWORD": "Changed password",
+            "LOGOUT": "Signed out",
+            "SHARE_FILE": "Share file",
+            "SHARE_FOLDER": "Share folder",
+            "DELETE_FILE": "Delete file",
+            "DELETE_FOLDER": "Delete folder"
+          },
+          "platform": { "title": "Platform", "WEB": "Web", "MOBILE": "Mobile", "DESKTOP": "Desktop" },
           "dateRange": {
             "title": "Date range",
-            "7days": "Last 7 days",
-            "30days": "Last 30 days",
-            "90days": "Last 90 days"
+            "days": "Last {{days}} days"
           }
         },
         "headerTable": ["Date", "Member", "Activity", "Access"]
