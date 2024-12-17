@@ -58,7 +58,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
         <Dropdown
           classButton="flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white/0 font-medium outline-none transition duration-50 ease-in-out hover:bg-white/10"
           openDirection="right"
-          classMenuItems="z-20 right-0 mt-0 flex flex-col rounded-lg bg-surface dark:bg-gray-5 py-1.5 shadow-subtle-hard min-w-[180px]"
+          classMenuItems="z-20 right-0 mt-0 flex flex-col rounded-lg bg-surface dark:bg-gray-5 shadow-subtle-hard min-w-[180px]"
           dropdownActionsContext={dropdownItems}
         >
           <div

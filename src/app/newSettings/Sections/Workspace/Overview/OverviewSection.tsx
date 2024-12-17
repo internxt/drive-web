@@ -384,7 +384,7 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
           <>
             <Dropdown
               options={isOwner ? dropdownOptions : undefined}
-              classMenuItems={'-left-6 mt-1 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5 py-1.5'}
+              classMenuItems={'-left-6 mt-1 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5'}
               openDirection={'right'}
             >
               <div className="relative">

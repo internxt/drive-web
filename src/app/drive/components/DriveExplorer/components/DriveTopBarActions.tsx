@@ -329,7 +329,7 @@ const DriveTopBarActions = ({
               <Dropdown
                 classButton="flex items-center justify-center"
                 openDirection="right"
-                classMenuItems="z-20 right-0 mt-0 flex flex-col rounded-lg bg-surface dark:bg-gray-5 border border-gray-10 py-1.5 shadow-subtle-hard min-w-[180px]"
+                classMenuItems="z-20 right-0 mt-0 flex flex-col rounded-lg bg-surface dark:bg-gray-5 border border-gray-10 shadow-subtle-hard min-w-[180px]"
                 item={selectedItems[0]}
                 dropdownActionsContext={dropdownActions()}
               >

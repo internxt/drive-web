@@ -1,5 +1,5 @@
-import { ArrowFatUp, CaretDown, FileArrowUp, FolderSimplePlus, Plus, Trash, UploadSimple } from '@phosphor-icons/react';
-import { LegacyRef, RefObject, createRef, useCallback, useEffect, useRef, useState } from 'react';
+import { ArrowFatUp, FileArrowUp, FolderSimplePlus, Trash, UploadSimple } from '@phosphor-icons/react';
+import { RefObject, createRef, useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
@@ -14,7 +14,6 @@ import { StorageFilters } from '../../../store/slices/storage/storage.model';
 import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 
-import { Menu, Transition } from '@headlessui/react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useHotkeys } from 'react-hotkeys-hook';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
@@ -38,7 +37,7 @@ import {
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { AdvancedSharedItem } from '../../../share/types';
-import { Button, ContextMenu } from '@internxt/ui';
+import { ContextMenu } from '@internxt/ui';
 import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';

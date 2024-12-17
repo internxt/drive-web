@@ -91,7 +91,7 @@ const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   return (
     <Dropdown
       classButton="flex max-w-fit flex-1 cursor-pointer flex-row items-center truncate rounded-md p-1 px-1.5 font-medium text-gray-100 outline-none hover:bg-gray-5 focus-visible:bg-gray-5"
-      classMenuItems={`absolute z-10 mt-1 w-56 rounded-md border border-gray-10 bg-surface py-1.5 text-base shadow-subtle-hard outline-none dark:bg-gray-5 ${
+      classMenuItems={`absolute z-10 mt-1 w-56 rounded-md border border-gray-10 bg-surface text-base shadow-subtle-hard outline-none dark:bg-gray-5 ${
         isSharedView && 'hidden'
       }`}
       openDirection="left"

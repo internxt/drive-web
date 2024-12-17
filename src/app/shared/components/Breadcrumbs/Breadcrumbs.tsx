@@ -73,7 +73,7 @@ export default function Breadcrumbs(props: Readonly<BreadcrumbsProps>): JSX.Elem
         <Dropdown
           key="breadcrumbDropdownItems"
           openDirection="left"
-          classMenuItems="left-0 top-1 w-max max-h-80 overflow-y-auto rounded-md border border-gray-10 bg-surface dark:bg-gray-5 shadow-subtle-hard z-10"
+          classMenuItems="left-0 top-1 w-max max-h-80 overflow-y-auto rounded-md border border-gray-10 bg-surface dark:bg-gray-5 shadow-subtle-hard z-10 px-0 py-0"
           menuItems={hiddenItemsList}
         >
           {({ open }) => {
