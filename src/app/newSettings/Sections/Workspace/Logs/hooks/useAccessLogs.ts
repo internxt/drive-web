@@ -73,7 +73,7 @@ export const useAccessLogs = ({ activity, lastDays, member }: UseAccessLogsProps
   };
 
   return {
-    logs: accessLogs,
+    accessLogs,
     workspaceLogTypes,
     isLoading,
     hasMoreItems,

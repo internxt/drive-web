@@ -20,7 +20,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
   const [daysFilter, setDaysFilter] = useState<number | undefined>();
   const [activityFilter, setActivityFilter] = useState<WorkspaceLogType[]>([]);
   const debouncedSearchMemberValue = useDebounce(searchMembersInputValue, 500);
-  const { logs, workspaceLogTypes, isLoading, hasMoreItems, loadMoreItems } = useAccessLogs({
+  const { accessLogs, workspaceLogTypes, isLoading, hasMoreItems, loadMoreItems } = useAccessLogs({
     activity: activityFilter,
     lastDays: daysFilter,
     member: debouncedSearchMemberValue,
@@ -72,7 +72,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
   );
 
   const renderBody = () => {
-    return logs.map((item) => {
+    return accessLogs.map((item) => {
       const userEmail = item.user.email;
       const userName = item.user.name + ' ' + (item.user.lastname ?? null);
       const itemName = item.file?.plainName ?? item.folder?.plainName ?? 'Unknown';
@@ -144,7 +144,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
           onSearchMembersInputValueChange={setSearchMembersInputValue}
           translate={translate}
         />
-        {logs.length > 0 ? (
+        {accessLogs.length > 0 ? (
           <ScrollableTable
             tableHeaderClassName="sticky top-0 z-10 border-b border-gray-10 bg-gray-5 font-semibold text-gray-100"
             tableClassName="min-w-full rounded-lg border border-gray-10"
