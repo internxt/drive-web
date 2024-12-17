@@ -689,11 +689,13 @@ export async function downloadPublicSharedFolder({
   item,
   token,
   code,
+  incrementItemCount,
 }: {
   encryptionKey: string;
   item;
   token?: string;
   code: string;
+  incrementItemCount: () => void;
 }): Promise<void> {
   const initPage = 0;
   const itemsPerPage = 15;
@@ -745,6 +747,7 @@ export async function downloadPublicSharedFolder({
     createFoldersIterator,
     createFilesIterator,
     (progress) => ({}),
+    incrementItemCount,
     item.uuid,
     options,
   );

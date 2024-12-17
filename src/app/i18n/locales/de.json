@@ -1281,6 +1281,7 @@
     "change": "Ändern",
     "download": "Download",
     "downloading": "Runterladen",
+    "downloadingItems": "{{nItems}} elemente werden heruntergeladen...",
     "downloaded": "Runtergeladen",
     "delete": "Löschen",
     "share": "Teilen",

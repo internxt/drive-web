@@ -1300,6 +1300,7 @@
     "delete": "刪除",
     "download": "下載",
     "downloading": "下載中",
+    "downloadingItems": "正在下載 {{Items}} 項目...",
     "downloaded": "已下載",
     "view": "預覽",
     "accessFile": "訪問檔案",

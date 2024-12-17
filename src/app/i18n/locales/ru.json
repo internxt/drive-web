@@ -1305,6 +1305,7 @@
     "change": "Изменить",
     "download": "Загрузить",
     "downloading": "Загрузка",
+    "downloadingItems": "Загрузка элементов {{Items}}...",
     "downloaded": "Загружено",
     "delete": "Удалить",
     "share": "Поделиться",
