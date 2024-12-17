@@ -1717,7 +1717,25 @@
           "title": "成员",
           "editMembers": "编辑成员",
           "numberOfMembers": "成员数量",
-          "expandNumber": "扩大成员数量。"
+          "expandNumber": "扩大成员数量。",
+          "confirmUpdateModal": {
+            "title": "更改计划",
+            "confirmToProceed": {
+              "text1": "您即将把 Internxt 成员计划从 ",
+              "to": "更改为 ",
+              "text2": "。请确认您的选择以继续。"
+            },
+            "current": "当前",
+            "new": "新",
+            "decreaseStorage": {
+              "text": "这也将减少您的业务总存储空间，从 ",
+              "to": " 到 "
+            },
+            "increaseStorage": {
+              "text": "这也将增加您的业务总存储空间，从 ",
+              "to": " 到 "
+            }
+          }
         },
         "lifetimeSubscription": {
           "planType": "终生",

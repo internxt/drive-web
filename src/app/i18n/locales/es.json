@@ -1695,7 +1695,25 @@
           "title": "Miembros",
           "editMembers": "Editar miembros",
           "numberOfMembers": "Número de miembros",
-          "expandNumber": "Ampliar el número de miembros."
+          "expandNumber": "Ampliar el número de miembros.",
+          "confirmUpdateModal": {
+            "title": "Cambiar plan",
+            "confirmToProceed": {
+              "text1": "Está a punto de cambiar su plan de miembros de Internxt de ",
+              "to": "a ",
+              "text2": ". Confirme su elección para continuar, por favor."
+            },
+            "current": "Actual",
+            "new": "Nuevo",
+            "decreaseStorage": {
+              "text": "Esto también reducirá su almacenamiento total para negocios de ",
+              "to": " a "
+            },
+            "increaseStorage": {
+              "text": "Esto también aumentará su almacenamiento total para negocios de ",
+              "to": " a "
+            }
+          }
         },
         "lifetimeSubscription": {
           "planType": "De por vida",

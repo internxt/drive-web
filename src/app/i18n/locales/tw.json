@@ -1679,7 +1679,25 @@
           "title": "成員",
           "editMembers": "編輯成員",
           "numberOfMembers": "成員數量",
-          "expandNumber": "擴大成員數量。"
+          "expandNumber": "擴大成員數量。",
+          "confirmUpdateModal": {
+            "title": "更改方案",
+            "confirmToProceed": {
+              "text1": "您即將把 Internxt 成員方案從 ",
+              "to": "更改為 ",
+              "text2": "。請確認您的選擇以繼續。"
+            },
+            "current": "目前",
+            "new": "新",
+            "decreaseStorage": {
+              "text": "這也會減少您的總商業儲存空間，從 ",
+              "to": " 到 "
+            },
+            "increaseStorage": {
+              "text": "這也會增加您的總商業儲存空間，從 ",
+              "to": " 到 "
+            }
+          }
         },
         "lifetimeSubscription": {
           "planType": "終身",

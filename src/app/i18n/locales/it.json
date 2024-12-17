@@ -1704,7 +1704,25 @@
           "title": "Membri",
           "editMembers": "Modifica membri",
           "numberOfMembers": "Numero di membri",
-          "expandNumber": "Espandi il numero di membri."
+          "expandNumber": "Espandi il numero di membri.",
+          "confirmUpdateModal": {
+            "title": "Cambia piano",
+            "confirmToProceed": {
+              "text1": "Stai per cambiare il tuo piano membri Internxt da ",
+              "to": "a ",
+              "text2": ". Conferma la tua scelta per procedere, per favore."
+            },
+            "current": "Attuale",
+            "new": "Nuovo",
+            "decreaseStorage": {
+              "text": "Questo ridurrà anche lo spazio di archiviazione totale aziendale da ",
+              "to": " a "
+            },
+            "increaseStorage": {
+              "text": "Questo aumenterà anche lo spazio di archiviazione totale aziendale da ",
+              "to": " a "
+            }
+          }
         },
         "lifetimeSubscription": {
           "planType": "Durata della vita",

@@ -1659,7 +1659,25 @@
           "title": "Mitglieder",
           "editMembers": "Mitglieder bearbeiten",
           "numberOfMembers": "Anzahl der Mitglieder",
-          "expandNumber": "Die Anzahl der Mitglieder erweitern."
+          "expandNumber": "Die Anzahl der Mitglieder erweitern.",
+          "confirmUpdateModal": {
+            "title": "Plan ändern",
+            "confirmToProceed": {
+              "text1": "Sie sind dabei, Ihren Internxt-Mitgliederplan von ",
+              "to": "auf ",
+              "text2": " zu ändern. Bitte bestätigen Sie Ihre Auswahl, um fortzufahren."
+            },
+            "current": "Aktuell",
+            "new": "Neu",
+            "decreaseStorage": {
+              "text": "Dadurch wird auch Ihr gesamter Geschäftsspeicher von ",
+              "to": " auf "
+            },
+            "increaseStorage": {
+              "text": "Dadurch wird auch Ihr gesamter Geschäftsspeicher von ",
+              "to": " auf "
+            }
+          }
         },
         "lifetimeSubscription": {
           "planType": "Lebenslang",

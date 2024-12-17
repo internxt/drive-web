@@ -63,17 +63,6 @@ const mockUser: UserSettings = {
   createdAt: new Date(),
   avatar: null,
   emailVerified: false,
-  keys: {
-    ecc: {
-      privateKey: '',
-      revocationKey: '',
-      publicKey: '',
-    },
-    kyber: {
-      privateKyberKey: '',
-      publicKyberKey: '',
-    },
-  },
 };
 const mockSignUpFunction = vi.fn();
 
