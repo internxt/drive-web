@@ -1749,7 +1749,8 @@
           "platform": { "title": "Платформа", "Web": "Веб", "Mobile": "Мобильный", "Desktop": "Настольный" },
           "dateRange": { "title": "Диапазон дат", "days": "Последние {{days}} дней" }
         },
-        "headerTable": { "date": "Дата", "member": "Участник", "activity": "Деятельность", "access": "Доступ" }
+        "headerTable": { "date": "Дата", "member": "Участник", "activity": "Деятельность", "access": "Доступ" },
+        "noResults": "Нет результатов для отображения"
       }
     },
     "account": {

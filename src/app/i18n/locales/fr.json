@@ -1709,7 +1709,8 @@
           "platform": { "title": "Plateforme", "Web": "Web", "Mobile": "Mobile", "Desktop": "Bureau" },
           "dateRange": { "title": "Plage de dates", "days": "7 derniers jours" }
         },
-        "headerTable": { "date": "Date", "member": "Membre", "activity": "Activité", "access": "Accès" }
+        "headerTable": { "date": "Date", "member": "Membre", "activity": "Activité", "access": "Accès" },
+        "noResults": "Il n'y a aucun résultat à afficher"
       }
     },
     "account": {

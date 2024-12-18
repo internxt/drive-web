@@ -1791,7 +1791,8 @@
           "member": "Member",
           "activity": "Activity",
           "access": "Access"
-        }
+        },
+        "noResults": "There are no results to show"
       }
     },
     "account": {

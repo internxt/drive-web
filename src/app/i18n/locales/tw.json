@@ -1741,7 +1741,8 @@
           "platform": { "title": "平台", "Web": "網頁", "Mobile": "行動端", "Desktop": "桌面端" },
           "dateRange": { "title": "日期範圍", "days": "最近 {{days}} 天" }
         },
-        "headerTable": { "date": "日期", "member": "成員", "activity": "活動", "access": "訪問" }
+        "headerTable": { "date": "日期", "member": "成員", "activity": "活動", "access": "訪問" },
+        "noResults": "沒有可顯示的結果"
       }
     },
     "account": {

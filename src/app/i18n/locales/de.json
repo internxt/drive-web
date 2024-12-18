@@ -1724,7 +1724,8 @@
           "platform": { "title": "Plattform", "Web": "Web", "Mobile": "Mobil", "Desktop": "Desktop" },
           "dateRange": { "title": "Datumsbereich", "days": "Letzte {{days}} Tage" }
         },
-        "headerTable": { "date": "Datum", "member": "Mitglied", "activity": "Aktivität", "access": "Zugang" }
+        "headerTable": { "date": "Datum", "member": "Mitglied", "activity": "Aktivität", "access": "Zugang" },
+        "noResults": "Es gibt keine Ergebnisse anzuzeigen"
       }
     },
     "account": {

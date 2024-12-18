@@ -1760,7 +1760,8 @@
           "platform": { "title": "Plataforma", "Web": "Web", "Mobile": "Móvil", "Desktop": "Escritorio" },
           "dateRange": { "title": "Rango de fechas", "days": "Últimos {{days}} días" }
         },
-        "headerTable": { "date": "Fecha", "member": "Miembro", "activity": "Actividad", "access": "Acceso" }
+        "headerTable": { "date": "Fecha", "member": "Miembro", "activity": "Actividad", "access": "Acceso" },
+        "noResults": "No hay resultados para mostrar"
       }
     },
     "account": {

@@ -221,7 +221,9 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
           <ScrollableTable scrollable loadMoreItems={loadMoreItems} hasMoreItems={hasMoreItems} isLoading={isLoading}>
             <Table className={'min-w-full rounded-lg border border-gray-10'}>
               <TableHeader
-                className={'sticky top-0 z-10 border-b border-gray-10 bg-gray-5 font-semibold text-gray-100'}
+                className={
+                  'sticky -top-0.5 z-10 border-b border-t border-gray-10 bg-gray-5 font-semibold text-gray-100'
+                }
               >
                 {renderHeader()}
               </TableHeader>
@@ -233,7 +235,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
           </ScrollableTable>
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center">
-            <p>There are not results</p>
+            <p>{translate('preferences.workspace.accessLogs.noResults')}</p>
           </div>
         )}
       </div>
