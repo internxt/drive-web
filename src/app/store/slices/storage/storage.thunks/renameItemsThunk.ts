@@ -79,13 +79,11 @@ export const handleRepeatedUploadingFolders = async (
   dispatch: Dispatch,
   destinationFolderUuid: string,
 ): Promise<(DriveFolderData | IRoot)[]> => {
-  // Divide las carpetas en lotes utilizando getDuplicatedFilesBySlots
   const slots = getDuplicatedFilesBySlots(folders);
   const promises = slots.map((slot) =>
     checkFolderDuplicated(slot as (DriveFolderData | IRoot)[], destinationFolderUuid),
   );
 
-  // Ejecuta todas las promesas y combina los resultados
   const duplicatedFolders = await Promise.all(promises);
 
   const combinedResults = duplicatedFolders.reduce<{
@@ -106,14 +104,12 @@ export const handleRepeatedUploadingFolders = async (
     },
   );
 
-  // Extrae los resultados combinados
   const {
     foldersWithDuplicates: foldersRepeated,
     duplicatedFoldersResponse,
     foldersWithoutDuplicates: unrepeatedFolders,
   } = combinedResults;
 
-  // Maneja las carpetas duplicadas
   const hasRepeatedNameFolders = !!foldersRepeated.length;
   if (hasRepeatedNameFolders) {
     dispatch(storageActions.setFoldersToRename(foldersRepeated as DriveItemData[]));
@@ -121,7 +117,6 @@ export const handleRepeatedUploadingFolders = async (
     dispatch(uiActions.setIsNameCollisionDialogOpen(true));
   }
 
-  // Retorna las carpetas no duplicadas
   return unrepeatedFolders as DriveItemData[];
 };
 
