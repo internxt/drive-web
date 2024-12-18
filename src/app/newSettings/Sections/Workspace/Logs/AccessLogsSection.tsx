@@ -1,16 +1,18 @@
+import { useState } from 'react';
+import { TableBody, TableCell, TableHeader, TableRow } from '@internxt/ui';
+import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
+
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Section from '../../../../newSettings/components/Section';
-import { useState } from 'react';
 import { ScrollableTable } from 'app/shared/tables/ScrollableTable';
-import 'react-calendar/dist/Calendar.css';
-import { TableCell, TableRow } from '@internxt/ui';
 import { AccessLogsFilterOptions } from './components/AccessLogsFilterOptions';
 import { useAccessLogs } from './hooks/useAccessLogs';
 import { WorkspaceLogPlatform, WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
 import dateService from 'app/core/services/date.service';
 import { useDebounce } from 'hooks/useDebounce';
-import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
 import { getEnumKey } from '../../../utils/LogsUtils';
+import { Table } from 'react-bootstrap';
+import { LoadingRowSkeleton } from 'app/shared/tables/LoadingSkeleton';
 
 interface LogsViewProps {
   onClosePreferences: () => void;
@@ -216,18 +218,19 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
           translate={translate}
         />
         {accessLogs.length > 0 ? (
-          <ScrollableTable
-            tableHeaderClassName="sticky top-0 z-10 border-b border-gray-10 bg-gray-5 font-semibold text-gray-100"
-            tableClassName="min-w-full rounded-lg border border-gray-10"
-            tableBodyClassName="bg-surface dark:bg-gray-1"
-            renderHeader={renderHeader}
-            renderBody={renderBody}
-            numOfColumnsForSkeleton={headerList.length ?? 4}
-            scrollable
-            loadMoreItems={loadMoreItems}
-            hasMoreItems={hasMoreItems}
-            isLoading={isLoading}
-          />
+          <ScrollableTable scrollable loadMoreItems={loadMoreItems} hasMoreItems={hasMoreItems} isLoading={isLoading}>
+            <Table className={'min-w-full rounded-lg border border-gray-10'}>
+              <TableHeader
+                className={'sticky top-0 z-10 border-b border-gray-10 bg-gray-5 font-semibold text-gray-100'}
+              >
+                {renderHeader()}
+              </TableHeader>
+              <TableBody className={'bg-surface dark:bg-gray-1'}>
+                {renderBody()}
+                {isLoading && <LoadingRowSkeleton numberOfColumns={headerList.length ?? 4} />}
+              </TableBody>
+            </Table>
+          </ScrollableTable>
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center">
             <p>There are not results</p>
