@@ -1,24 +1,12 @@
 import { items as itemUtils } from '@internxt/lib';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import newStorageService from '../../../../drive/services/new-storage.service';
-import { BATCH_SIZE } from './prepareFilesToUpload';
 
 export interface DuplicatedFilesResult {
   duplicatedFilesResponse: DriveFileData[];
   filesWithDuplicates: (File | DriveFileData)[];
   filesWithoutDuplicates: (File | DriveFileData)[];
 }
-
-const getDuplicatedFilesBySlots = (files: ParsedFile[]): ParsedFile[][] => {
-  const slots: ParsedFile[][] = [];
-
-  for (let i = 0; i < files.length; i += BATCH_SIZE) {
-    const batch = files.slice(i, i + BATCH_SIZE);
-    slots.push(batch);
-  }
-
-  return slots;
-};
 
 export const checkDuplicatedFiles = async (
   files: (File | DriveFileData)[],
@@ -33,16 +21,9 @@ export const checkDuplicatedFiles = async (
   }
 
   const parsedFiles = files.map(parseFile);
-  const slots = getDuplicatedFilesBySlots(parsedFiles);
+  const checkDuplicatedFileResponse = await newStorageService.checkDuplicatedFiles(parentFolderId, parsedFiles);
 
-  const promises = slots.map((slot) => newStorageService.checkDuplicatedFiles(parentFolderId, slot));
-
-  const checkDuplicatedFiles = await Promise.all(promises);
-
-  const duplicatedFilesResponse = checkDuplicatedFiles.reduce<DriveFileData[]>(
-    (allFiles, cur) => [...allFiles, ...cur.existentFiles],
-    [],
-  );
+  const duplicatedFilesResponse = checkDuplicatedFileResponse.existentFiles;
 
   const { filesWithDuplicates, filesWithoutDuplicates } = parsedFiles.reduce(
     (acc, parsedFile) => {

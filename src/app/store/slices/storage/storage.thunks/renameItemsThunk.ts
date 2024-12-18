@@ -16,17 +16,54 @@ import { checkFolderDuplicated } from '../folderUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
 import { StorageState } from '../storage.model';
 import { IRoot } from '../types';
+import { BATCH_SIZE } from '../fileUtils/prepareFilesToUpload';
+
+const getDuplicatedFilesBySlots = (
+  items: (DriveFileData | File)[] | (IRoot | DriveFolderData)[],
+): ((DriveFileData | File)[] | (IRoot | DriveFolderData)[])[] => {
+  const slots: ((DriveFileData | File)[] | (IRoot | DriveFolderData)[])[] = [];
+
+  for (let i = 0; i < items.length; i += BATCH_SIZE) {
+    const batch = items.slice(i, i + BATCH_SIZE);
+    slots.push(batch);
+  }
+
+  return slots;
+};
 
 export const handleRepeatedUploadingFiles = async (
   files: (DriveFileData | File)[],
   dispatch: Dispatch,
   destinationFolderUuid: string,
 ): Promise<(DriveFileData | File)[]> => {
+  const slots = getDuplicatedFilesBySlots(files);
+  const promises = slots.map((slot) => checkDuplicatedFiles(slot as (DriveFileData | File)[], destinationFolderUuid));
+
+  const duplicatedFiles = await Promise.all(promises);
+
+  const combinedResults = duplicatedFiles.reduce<{
+    filesWithDuplicates: (DriveFileData | File)[];
+    duplicatedFilesResponse: DriveFileData[];
+    filesWithoutDuplicates: (DriveFileData | File)[];
+  }>(
+    (acc, cur) => {
+      acc.filesWithDuplicates = [...acc.filesWithDuplicates, ...cur.filesWithDuplicates];
+      acc.duplicatedFilesResponse = [...acc.duplicatedFilesResponse, ...cur.duplicatedFilesResponse];
+      acc.filesWithoutDuplicates = [...acc.filesWithoutDuplicates, ...cur.filesWithoutDuplicates];
+      return acc;
+    },
+    {
+      filesWithDuplicates: [],
+      duplicatedFilesResponse: [],
+      filesWithoutDuplicates: [],
+    },
+  );
+
   const {
     filesWithDuplicates: filesRepeated,
     duplicatedFilesResponse,
     filesWithoutDuplicates: unrepeatedFiles,
-  } = await checkDuplicatedFiles(files as File[], destinationFolderUuid);
+  } = combinedResults;
 
   const hasRepeatedNameFiles = !!filesRepeated.length;
   if (hasRepeatedNameFiles) {
