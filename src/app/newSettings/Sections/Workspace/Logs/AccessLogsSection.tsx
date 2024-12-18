@@ -6,10 +6,11 @@ import 'react-calendar/dist/Calendar.css';
 import { TableCell, TableRow } from '@internxt/internxtui';
 import { AccessLogsFilterOptions } from './components/AccessLogsFilterOptions';
 import { useAccessLogs } from './hooks/useAccessLogs';
-import { WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
+import { WorkspaceLogPlatform, WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
 import dateService from 'app/core/services/date.service';
 import { useDebounce } from 'hooks/useDebounce';
 import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
+import { getEnumKey } from '../../../utils/LogsUtils';
 
 interface LogsViewProps {
   onClosePreferences: () => void;
@@ -32,15 +33,21 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
     direction: 'DESC',
   });
   const debouncedSearchMemberValue = useDebounce(searchMembersInputValue, 500);
-  const { accessLogs, workspaceLogTypes, isLoading, hasMoreItems, loadMoreItems } = useAccessLogs({
+  const { accessLogs, isLoading, hasMoreItems, loadMoreItems } = useAccessLogs({
     activity: activityFilter,
     lastDays: daysFilter,
     member: debouncedSearchMemberValue,
     orderBy: [orderBy.key, orderBy.direction].join(':'),
   });
 
-  function getActivityDetails(type: WorkspaceLogType) {
-    return translate(`preferences.workspace.accessLogs.filterActions.activity.${type}`) || 'Unknown action';
+  function getActivityType(type: WorkspaceLogType) {
+    const getLogKey = getEnumKey(WorkspaceLogType, type);
+    return translate(`preferences.workspace.accessLogs.filterActions.activity.${getLogKey}`) || 'Unknown action';
+  }
+
+  function getPlatformType(platform: WorkspaceLogPlatform) {
+    const getPlatformKey = getEnumKey(WorkspaceLogPlatform, platform);
+    return translate(`preferences.workspace.accessLogs.filterActions.platform.${getPlatformKey}`) || 'Unknown';
   }
 
   const handleActivityFilters = (actionType: WorkspaceLogType) => {
@@ -66,12 +73,12 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
     });
   };
 
-  const formatDate = (createdAt: Date) => {
-    const formatted = dateService.format(createdAt, 'MMM D, YYYY');
+  const formatDate = (updatedAt: Date) => {
+    const formatted = dateService.format(updatedAt, 'MMM D, YYYY');
     return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   };
 
-  const formatTime = (createdAt: Date) => dateService.format(createdAt, 'hh:mm A');
+  const formatTime = (updatedAt: Date) => dateService.format(updatedAt, 'hh:mm A');
 
   const headerList: HeaderItemsProps[] = [
     {
@@ -150,8 +157,8 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
             className="py-2 pl-4"
           >
             <div className="flex flex-col gap-1">
-              <p className="font-medium text-gray-100">{formatDate(item.createdAt)}</p>
-              <p className="text-gray-50">{formatTime(item.createdAt)}</p>
+              <p className="font-medium text-gray-100">{formatDate(item.updatedAt)}</p>
+              <p className="text-gray-50">{formatTime(item.updatedAt)}</p>
             </div>
           </TableCell>
           <TableCell
@@ -174,7 +181,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
             className="py-2 pl-4"
           >
             <div className="flex w-screen max-w-[150px] flex-col gap-1 truncate">
-              <p className={'font-medium'}>{getActivityDetails(item.type)}</p>
+              <p className={'font-medium'}>{getActivityType(item.type)}</p>
               <p title={itemName} className="truncate text-gray-50">
                 {itemName}
               </p>
@@ -186,7 +193,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
             }}
             className="py-2 pl-4"
           >
-            {translate(`preferences.workspace.accessLogs.filterActions.platform.${item.platform}`)}
+            {getPlatformType(item.platform)}
           </TableCell>
         </TableRow>
       );
@@ -198,7 +205,6 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
       <div className="flex h-screen w-full flex-col gap-6 overflow-hidden">
         <AccessLogsFilterOptions
           searchMembersInputValue={searchMembersInputValue}
-          workspaceLogTypes={workspaceLogTypes}
           selectedFilters={{
             activity: activityFilter,
             days: daysFilter,

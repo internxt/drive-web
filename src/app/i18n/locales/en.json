@@ -1732,15 +1732,15 @@
           "clear": "Clear",
           "activity": {
             "title": "Activity",
-            "LOGIN": "Signed in",
-            "CHANGED_PASSWORD": "Changed password",
-            "LOGOUT": "Signed out",
-            "SHARE_FILE": "Share file",
-            "SHARE_FOLDER": "Share folder",
-            "DELETE_FILE": "Delete file",
-            "DELETE_FOLDER": "Delete folder"
+            "Login": "Signed in",
+            "ChangedPassword": "Changed password",
+            "Logout": "Signed out",
+            "ShareFile": "Share file",
+            "ShareFolder": "Share folder",
+            "DeleteFile": "Delete file",
+            "DeleteFolder": "Delete folder"
           },
-          "platform": { "title": "Platform", "WEB": "Web", "MOBILE": "Mobile", "DESKTOP": "Desktop" },
+          "platform": { "title": "Platform", "Web": "Web", "Mobile": "Mobile", "Desktop": "Desktop" },
           "dateRange": {
             "title": "Date range",
             "days": "Last {{days}} days"

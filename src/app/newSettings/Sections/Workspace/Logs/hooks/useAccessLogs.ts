@@ -17,15 +17,6 @@ interface UseAccessLogsProps {
 export const useAccessLogs = ({ activity, lastDays, member, orderBy }: UseAccessLogsProps) => {
   const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const workspaceId = selectedWorkspace?.workspace?.id;
-  const workspaceLogTypes = [
-    WorkspaceLogType.Login,
-    WorkspaceLogType.ChangedPassword,
-    WorkspaceLogType.Logout,
-    WorkspaceLogType.DeleteFile,
-    WorkspaceLogType.DeleteFolder,
-    WorkspaceLogType.ShareFile,
-    WorkspaceLogType.ShareFolder,
-  ];
 
   const [accessLogs, setAccessLogs] = useState<WorkspaceLogResponse[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
@@ -78,7 +69,6 @@ export const useAccessLogs = ({ activity, lastDays, member, orderBy }: UseAccess
 
   return {
     accessLogs,
-    workspaceLogTypes,
     isLoading,
     hasMoreItems,
     loadMoreItems,

@@ -1670,15 +1670,15 @@
           "clear": "Löschen",
           "activity": {
             "title": "Aktivität",
-            "LOGIN": "Angemeldet",
-            "CHANGED_PASSWORD": "Passwort geändert",
-            "LOGOUT": "Abgemeldet",
-            "SHARE_FILE": "Datei freigeben",
-            "SHARE_FOLDER": "Ordner freigeben",
-            "DELETE_FILE": "Datei löschen",
-            "DELETE_FOLDER": "Ordner löschen"
+            "Login": "Angemeldet",
+            "ChangedPassword": "Passwort geändert",
+            "Logout": "Abgemeldet",
+            "ShareFile": "Datei freigeben",
+            "ShareFolder": "Ordner freigeben",
+            "DeleteFile": "Datei löschen",
+            "DeleteFolder": "Ordner löschen"
           },
-          "platform": { "title": "Plattform", "WEB": "Web", "MOBILE": "Mobil", "DESKTOP": "Desktop" },
+          "platform": { "title": "Plattform", "Web": "Web", "Mobile": "Mobil", "Desktop": "Desktop" },
           "dateRange": { "title": "Datumsbereich", "days": "Letzte {{days}} Tage" }
         },
         "headerTable": { "date": "Datum", "member": "Mitglied", "activity": "Aktivität", "access": "Zugang" }

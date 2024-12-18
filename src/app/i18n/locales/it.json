@@ -1715,15 +1715,15 @@
           "clear": "Cancella",
           "activity": {
             "title": "Attività",
-            "LOGIN": "Accesso effettuato",
-            "CHANGED_PASSWORD": "Password cambiata",
-            "LOGOUT": "Disconnesso",
-            "SHARE_FILE": "Condividi file",
-            "SHARE_FOLDER": "Condividi cartella",
-            "DELETE_FILE": "Elimina file",
-            "DELETE_FOLDER": "Elimina cartella"
+            "Login": "Accesso effettuato",
+            "ChangedPassword": "Password cambiata",
+            "Logout": "Disconnesso",
+            "ShareFile": "Condividi file",
+            "ShareFolder": "Condividi cartella",
+            "DeleteFile": "Elimina file",
+            "DeleteFolder": "Elimina cartella"
           },
-          "platform": { "title": "Piattaforma", "WEB": "Web", "MOBILE": "Mobile", "DESKTOP": "Desktop" },
+          "platform": { "title": "Piattaforma", "Web": "Web", "Mobile": "Mobile", "Desktop": "Desktop" },
           "dateRange": { "title": "Intervallo di date", "days": "Ultimi {{days}} giorni" }
         },
         "headerTable": { "date": "Data", "member": "Membro", "activity": "Attività", "access": "Accesso" }

@@ -6,7 +6,6 @@ import Input from 'app/shared/components/Input';
 
 interface FilterOptionsProps {
   searchMembersInputValue: string;
-  workspaceLogTypes?: WorkspaceLogType[];
   selectedFilters: {
     activity: WorkspaceLogType[];
     days?: number;
@@ -25,7 +24,6 @@ const FilterActivatedIndicator = () => <div className="flex h-2 w-2 rounded-full
 export const AccessLogsFilterOptions = ({
   selectedFilters,
   searchMembersInputValue,
-  workspaceLogTypes,
   translate,
   handleDaysFilter,
   onClearAllFilters,
@@ -99,14 +97,14 @@ export const AccessLogsFilterOptions = ({
                     {isFilteredByActivity && <FilterActivatedIndicator />}
                   </div>
                   <div className="flex flex-col gap-3">
-                    {workspaceLogTypes?.map((activityFilter) => (
-                      <div className="flex flex-row items-center gap-2" key={activityFilter}>
+                    {Object.entries(WorkspaceLogType)?.map(([key, value]) => (
+                      <div className="flex flex-row items-center gap-2" key={value}>
                         <Checkbox
-                          checked={selectedFilters.activity.some((activity) => activity === activityFilter)}
-                          onClick={() => onChangeActivityFilters(activityFilter)}
+                          checked={selectedFilters.activity.some((activity) => activity === value)}
+                          onClick={() => onChangeActivityFilters(value)}
                         />
                         <p className="text-gray-100">
-                          {translate(`preferences.workspace.accessLogs.filterActions.activity.${activityFilter}`)}
+                          {translate(`preferences.workspace.accessLogs.filterActions.activity.${key}`)}
                         </p>
                       </div>
                     ))}

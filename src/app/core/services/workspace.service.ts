@@ -423,7 +423,8 @@ export const getWorkspaceLogs = ({
   offset = 0,
   member,
   activity,
-  lastDays = 90,
+  lastDays,
+  summary,
   orderBy = 'createdAt:DESC',
 }: {
   workspaceId: string;
@@ -432,11 +433,12 @@ export const getWorkspaceLogs = ({
   member?: string;
   activity?: WorkspaceLogType[];
   lastDays?: number;
+  summary?: boolean;
   orderBy?: WorkspaceLogOrderBy;
 }): Promise<WorkspaceLogResponse[]> => {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient
-    .getWorkspaceLogs(workspaceId, limit, offset, member, activity, lastDays, orderBy)
+    .getWorkspaceLogs(workspaceId, limit, offset, member, activity, lastDays, summary, orderBy)
     .catch((error) => {
       throw errorService.castError(error);
     });

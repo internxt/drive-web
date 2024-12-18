@@ -1706,15 +1706,15 @@
           "clear": "Borrar",
           "activity": {
             "title": "Actividad",
-            "LOGIN": "Conectado",
-            "CHANGED_PASSWORD": "Contraseña cambiada",
-            "LOGOUT": "Desconectado",
-            "SHARE_FILE": "Compartir archivo",
-            "SHARE_FOLDER": "Compartir carpeta",
-            "DELETE_FILE": "Eliminar archivo",
-            "DELETE_FOLDER": "Eliminar carpeta"
+            "Login": "Conectado",
+            "ChangedPassword": "Contraseña cambiada",
+            "Logout": "Desconectado",
+            "ShareFile": "Compartir archivo",
+            "ShareFolder": "Compartir carpeta",
+            "DeleteFile": "Eliminar archivo",
+            "DeleteFolder": "Eliminar carpeta"
           },
-          "platform": { "title": "Plataforma", "WEB": "Web", "MOBILE": "Móvil", "DESKTOP": "Escritorio" },
+          "platform": { "title": "Plataforma", "Web": "Web", "Mobile": "Móvil", "Desktop": "Escritorio" },
           "dateRange": { "title": "Rango de fechas", "days": "Últimos {{days}} días" }
         },
         "headerTable": { "date": "Fecha", "member": "Miembro", "activity": "Actividad", "access": "Acceso" }

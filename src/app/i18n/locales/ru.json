@@ -1695,15 +1695,15 @@
           "clear": "Очистить",
           "activity": {
             "title": "Деятельность",
-            "LOGIN": "Вход в систему",
-            "CHANGED_PASSWORD": "Пароль изменен",
-            "LOGOUT": "Выход из системы",
-            "SHARE_FILE": "Поделиться файлом",
-            "SHARE_FOLDER": "Поделиться папкой",
-            "DELETE_FILE": "Удалить файл",
-            "DELETE_FOLDER": "Удалить папку"
+            "Login": "Вход в систему",
+            "ChangedPassword": "Пароль изменен",
+            "Logout": "Выход из системы",
+            "ShareFile": "Поделиться файлом",
+            "ShareFolder": "Поделиться папкой",
+            "DeleteFile": "Удалить файл",
+            "DeleteFolder": "Удалить папку"
           },
-          "platform": { "title": "Платформа", "WEB": "Веб", "MOBILE": "Мобильный", "DESKTOP": "Настольный" },
+          "platform": { "title": "Платформа", "Web": "Веб", "Mobile": "Мобильный", "Desktop": "Настольный" },
           "dateRange": { "title": "Диапазон дат", "days": "Последние {{days}} дней" }
         },
         "headerTable": { "date": "Дата", "member": "Участник", "activity": "Деятельность", "access": "Доступ" }
