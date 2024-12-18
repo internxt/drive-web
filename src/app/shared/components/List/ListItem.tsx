@@ -291,8 +291,8 @@ export default function ListItem<T extends { id: string }>({
                                         active
                                           ? 'bg-gray-5 text-gray-100 dark:bg-gray-10'
                                           : disabled
-                                          ? 'pointer-events-none font-medium text-gray-100'
-                                          : 'text-gray-80'
+                                            ? 'pointer-events-none font-medium text-gray-100'
+                                            : 'text-gray-80'
                                       }`}
                                     >
                                       <div className="flex flex-row items-center space-x-2">

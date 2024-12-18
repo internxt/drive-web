@@ -19,8 +19,8 @@ import { AppView } from '../../core/types';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { DriveItemData, ThumbnailConfig } from '../types';
 import fetchFileBlob from './download.service/fetchFileBlob';
-import { FileToUpload } from './file.service/uploadFile';
 import { getEnvironmentConfig } from './network.service';
+import { FileToUpload } from './file.service/types';
 
 export interface ThumbnailToUpload {
   fileId: number;

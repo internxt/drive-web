@@ -1,13 +1,18 @@
-import { AxiosError } from 'axios';
 import * as Sentry from '@sentry/react';
 import { CaptureContext } from '@sentry/types';
+import { AxiosError } from 'axios';
 import AppError from '../types';
+
+interface AxiosErrorResponse {
+  error?: string;
+  message?: string;
+}
 
 const errorService = {
   /**
    * Reports an error to Sentry
    *
-   * @param exception Excetion to report
+   * @param exception Exception to report
    * @param context Context to attach to the exception
    */
   reportError(exception: unknown, context?: CaptureContext): void {
@@ -16,19 +21,22 @@ const errorService = {
     }
     Sentry.captureException(exception, context);
   },
+
   addBreadcrumb(breadcrumbProps: Sentry.Breadcrumb): void {
     Sentry.addBreadcrumb(breadcrumbProps);
   },
+
   castError(err: unknown): AppError {
     let castedError: AppError = new AppError('Unknown error');
 
-    if ((err as AxiosError).isAxiosError !== undefined) {
-      const axiosError = err as AxiosError;
-      castedError =
-        new AppError(
-          axiosError.response?.data.error || axiosError.response?.data.message,
-          axiosError.response?.status,
-        ) || castedError;
+    if (err instanceof AxiosError) {
+      const axiosError = err as AxiosError<AxiosErrorResponse>;
+      const responseData = axiosError.response?.data;
+
+      castedError = new AppError(
+        responseData?.error || responseData?.message || 'Unknown error',
+        axiosError.response?.status,
+      );
     } else if (typeof err === 'string') {
       castedError = new AppError(err);
     } else if (err instanceof Error) {

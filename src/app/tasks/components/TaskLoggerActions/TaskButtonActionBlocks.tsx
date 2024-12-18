@@ -12,6 +12,7 @@ import { t } from 'i18next';
 
 interface UploadingBlockProps {
   progressPercentage: string;
+  nItems: string;
 }
 
 const UploadingBlock = ({ progressPercentage }: UploadingBlockProps): JSX.Element => {
@@ -27,11 +28,13 @@ const UploadingBlock = ({ progressPercentage }: UploadingBlockProps): JSX.Elemen
   );
 };
 
-const DownloadingBlock = ({ progressPercentage }: UploadingBlockProps): JSX.Element => {
+const DownloadingBlock = ({ progressPercentage, nItems }: UploadingBlockProps): JSX.Element => {
   return (
     <div className="flex flex-row justify-between space-x-1.5">
       <div className="flex h-8 w-8 items-center justify-center">
-        <span className="text-sm font-medium text-primary">{progressPercentage}%</span>
+        <span className="text-sm font-medium text-primary">
+          {nItems && +nItems > 0 ? `${nItems}` : `${progressPercentage}%`}
+        </span>
       </div>
       <div className="flex h-8 w-8 items-center justify-center">
         <DownloadIcon height={20} width={20} />
@@ -40,7 +43,15 @@ const DownloadingBlock = ({ progressPercentage }: UploadingBlockProps): JSX.Elem
   );
 };
 
-const PauseBlock = ({ isHovered, progress, cancelAction, isUploadTask, pauseAction, showPauseButton }): JSX.Element => {
+const PauseBlock = ({
+  isHovered,
+  progress,
+  nItems,
+  cancelAction,
+  isUploadTask,
+  pauseAction,
+  showPauseButton,
+}): JSX.Element => {
   const InProgressItem = isUploadTask ? UploadingBlock : DownloadingBlock;
 
   return isHovered ? (
@@ -49,7 +60,7 @@ const PauseBlock = ({ isHovered, progress, cancelAction, isUploadTask, pauseActi
       {isUploadTask && showPauseButton && <TaskLoggerButton onClick={pauseAction} Icon={Pause} />}
     </div>
   ) : (
-    <InProgressItem progressPercentage={progress} />
+    <InProgressItem progressPercentage={progress} nItems={nItems} />
   );
 };
 

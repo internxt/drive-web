@@ -69,7 +69,7 @@ export const CheckoutUserAuth = ({
               />
               <p className="text-lg font-semibold">{userData.name}</p>
               <p>{userData?.email}</p>
-              <Button onClick={onLogOut}>Log out</Button>
+              <Button onClick={onLogOut}>{translate('actions.logOut')}</Button>
             </div>
           </div>
         ) : (

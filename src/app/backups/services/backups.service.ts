@@ -12,8 +12,10 @@ const backupsService = {
   },
 
   async getAllDevicesAsFolders(): Promise<DriveFolderData[]> {
+    const serviceHeaders = httpService.getHeaders(true, false);
+    const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
     const res = await fetch(`${process.env.REACT_APP_API_URL}/backup/deviceAsFolder`, {
-      headers: httpService.getHeaders(true, false),
+      headers: headers,
     });
     if (res.ok) {
       const encryptedFolders = await res.json();

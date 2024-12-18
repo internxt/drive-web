@@ -8,9 +8,9 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageActions, storageSelectors } from '../../../store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
 import { uiActions } from '../../../store/slices/ui';
 import { DriveItemData } from '../../types';
+import { IRoot } from '../../../store/slices/storage/types';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;

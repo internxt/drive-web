@@ -7,6 +7,8 @@ import configService from './config.service';
 import errorService from './error.service';
 import { AppDispatch } from 'app/store';
 import localStorageService from './local-storage.service';
+import { STORAGE_KEYS } from 'app/core/services/local-storage.service';
+import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
@@ -56,9 +58,10 @@ const navigationService = {
       : instance.push(`?preferences=open&section=${section}&subsection=${subsection}`);
   },
   closePreferencesDialog({ workspaceUuid }: { workspaceUuid: string | undefined }) {
+    const sanitizedPathname = encodeURI(navigationService.history.location.pathname);
     workspaceUuid
-      ? instance.push(`${navigationService.history.location.pathname}?workspaceid=${workspaceUuid}`)
-      : instance.push(navigationService.history.location.pathname);
+      ? instance.push(`${sanitizedPathname}?workspaceid=${workspaceUuid}`)
+      : instance.push(sanitizedPathname);
   },
   replaceState(uuid: string | undefined): void {
     try {
@@ -78,6 +81,12 @@ const navigationService = {
       !window.location.pathname.includes('file') &&
       !window.location.pathname.includes('folder') &&
       dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid || null, updateUrl }));
+  },
+  resetB2BWorkspaceCredentials(dispatch): void {
+    localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
+    localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
+    dispatch(workspacesActions.setSelectedWorkspace(null));
+    dispatch(workspacesActions.setCredentials(null));
   },
 };
 

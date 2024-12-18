@@ -63,7 +63,7 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
       const itemsFolderUnparsed = await folderPromise;
       const itemsFolder = selectedWorkspace ? itemsFolderUnparsed.result : itemsFolderUnparsed.folders;
       const parsedItemsFolder = itemsFolder.map(
-        (item) => ({ ...item, isFolder: true, name: item.plainName } as DriveItemData),
+        (item) => ({ ...item, isFolder: true, name: item.plainName }) as DriveItemData,
       );
       const areLastFolders = itemsFolder.length < DEFAULT_LIMIT;
       dispatch(storageActions.setHasMoreDriveFolders({ folderId, status: !areLastFolders }));
@@ -94,7 +94,7 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
       const itemsFilesUnparsed = await filesPromise;
       const itemsFiles = selectedWorkspace ? itemsFilesUnparsed.result : itemsFilesUnparsed.files;
       const parsedItemsFiles = itemsFiles.map(
-        (item) => ({ ...item, isFolder: false, name: item.plainName } as DriveItemData),
+        (item) => ({ ...item, isFolder: false, name: item.plainName }) as DriveItemData,
       );
       const areLastFiles = itemsFiles.length < DEFAULT_LIMIT;
       dispatch(storageActions.setHasMoreDriveFiles({ folderId, status: !areLastFiles }));

@@ -4,19 +4,20 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "节省80%",
-    "title": "Boo！来和我们一起省钱...",
-    "subtitle": "赢取我们终身计划的高级背包。",
-    "cta": "选择计划",
+    "label": "节省80%！",
+    "title": "圣诞老人惊喜",
+    "subtitle": "圣诞老人惊喜！",
+    "cta": "选择您的计划",
     "guarantee": "30天退款保证",
-    "lastCta": "*优惠仅适用于免费账户或新客户",
+    "lastCta": "*该优惠适用于免费账户或新客户",
     "features": [
-      "节省所有终身计划",
+      "所有高级计划都享受大幅折扣",
       "私人加密云存储",
-      "开源并经过审核",
+      "开源并已审核",
       "端到端加密传输",
-      "无未经授权的访问",
-      "优惠截止至11月10日"
+      "无未授权访问",
+      "优惠截止至12月3日",
+      "01月07日"
     ]
   },
   "valentinesBanner": {
@@ -68,7 +69,8 @@
     "dark": "暗",
     "system": "系统",
     "starwars": "Star Wars",
-    "halloween": "Halloween"
+    "halloween": "Halloween",
+    "christmas": "圣诞节"
   },
   "auth": {
     "email": "电子邮件",
@@ -82,7 +84,8 @@
       "dontHaveAccount": "没有账户？",
       "createAccount": "创建账户",
       "2FA": "双因素代码",
-      "twoFactorAuthenticationCode": "双因素验证码"
+      "twoFactorAuthenticationCode": "双因素验证码",
+      "wrongLogin": "用户名或密码无效"
     },
     "signup": {
       "title": "创建账户",
@@ -1291,6 +1294,7 @@
     "linkUpdated": "链接已更新",
     "itemsMovedToTrash": "{{item}} 已被移至回收站",
     "storageModified": "存储修改成功",
+    "membersUpdatedSuccessfully": "成员更新成功",
     "errorModifyingStorage": "新存储空间对该成员无效。",
     "generalErrorWhileModifyingStorage": "修改存储时出错。",
     "moveItems": "{{itemsToMove}} 成功移动",
@@ -1310,7 +1314,16 @@
     "errorApplyingCoupon": "应用优惠券时出错",
     "errorWhileFetchingMoreItems": "获取更多项目时出现错误",
     "errorDeletingItems": "删除此项目时出现错误",
-    "invalidTaxIdIsProvided": "提供的税号无效"
+    "invalidTaxIdIsProvided": "提供的税号无效",
+    "errorFetchingWorkspace": "获取工作区时出错 {{error}}",
+    "errorSettingUpWorkspace": "设置工作区时出错 {{error}}",
+    "errorWhileLoadingWorkspace": "加载工作区时出错 {{error}}",
+    "errorFetchingWorkspaceCredentials": "获取工作区凭据时出错 {{error}}",
+    "invalidWorkspaceInvitationError": "工作区已满。请联系所有者。",
+    "errorAcceptingWorkspaceInvitation": "接受邀请时出错",
+    "errorWhileUpdatingWorkspaceMembers": "更新成员时出了点问题",
+    "errorWhileFetchingCurrentWorkspaceMembers": "获取工作区成员时出了点问题",
+    "newMembersCannotBeLessThanTheExistentOnesError": "选择的成员数量不能少于当前工作区的成员数量。"
   },
   "actions": {
     "undo": "撤销",
@@ -1325,6 +1338,7 @@
     "change": "更改",
     "download": "下载",
     "downloading": "正在下载",
+    "downloadingItems": "正在下载 {{Items}} 项...",
     "downloaded": "已下载",
     "view": "预览",
     "accessFile": "访问文件",
@@ -1342,6 +1356,7 @@
     "moreInfo": "更多信息",
     "dismiss": "解散",
     "save": "保存",
+    "saveChanges": "保存更改",
     "saving": "保存",
     "back": "返回",
     "edit": "编辑",
@@ -1360,7 +1375,10 @@
     "report": "举报滥用",
     "yes": "是",
     "no": "否",
-    "more": "更多信息"
+    "more": "更多信息",
+    "continue": "继续",
+    "keepCurrent": "保持当前",
+    "logOut": "登出"
   },
   "drive": {
     "usage": "使用情况",
@@ -1458,8 +1476,7 @@
       "subscribe-to-newsletter": "订阅新闻",
       "install-desktop-app": "安装桌面应用程序，并上传一个文件",
       "invite-friends": "邀请{{completedSteps}}/{{steps}}个朋友 ",
-      "invite-2-friends": "邀请{{completedSteps}}/{{steps}}个朋友 ",
-      "complete-survey": "完成调查"
+      "invite-2-friends": "邀请{{completedSteps}}/{{steps}}个朋友 "
     },
     "rewards": {
       "title": "免费获得 {{creditSum}}的容量!",
@@ -1513,7 +1530,7 @@
       "members": {
         "title": "成员",
         "members": "成员",
-        "guests": "访客",
+        "guests": "受邀",
         "search": "搜索成员",
         "invite": "邀请",
         "inviteDialog": {
@@ -1695,6 +1712,32 @@
         "nextBillingDate": "下一次账单日期",
         "planLimit": "以 {{planLimit}} 计划计费",
         "subscription": "订阅",
+        "membersLabel": "成员",
+        "perUser": "每位用户",
+        "members": {
+          "title": "成员",
+          "editMembers": "编辑成员",
+          "numberOfMembers": "成员数量",
+          "expandNumber": "扩大成员数量。",
+          "confirmUpdateModal": {
+            "title": "更改计划",
+            "confirmToProceed": {
+              "text1": "您即将把 Internxt 成员计划从 ",
+              "to": "更改为 ",
+              "text2": "。请确认您的选择以继续。"
+            },
+            "current": "当前",
+            "new": "新",
+            "decreaseStorage": {
+              "text": "这也将减少您的业务总存储空间，从 ",
+              "to": " 到 "
+            },
+            "increaseStorage": {
+              "text": "这也将增加您的业务总存储空间，从 ",
+              "to": " 到 "
+            }
+          }
+        },
         "lifetimeSubscription": {
           "planType": "终生",
           "text": "无预定账单"

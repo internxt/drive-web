@@ -42,8 +42,14 @@ const GuestInviteDialog = () => {
         { headers },
       )
       .catch((err: AxiosError) => {
-        if (err.isAxiosError) {
-          throw Error(err.response?.data.error);
+        if (err.isAxiosError && err.response?.data) {
+          const isErrorResponse = (data: unknown): data is { error: string } => {
+            return typeof data === 'object' && data !== null && 'error' in data;
+          };
+
+          if (isErrorResponse(err.response.data)) {
+            throw new Error(err.response.data.error);
+          }
         }
         throw err;
       });

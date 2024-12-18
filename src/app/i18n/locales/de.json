@@ -4,19 +4,20 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Spare 80%",
-    "title": "Boo! Sparen Sie mit uns...",
-    "subtitle": "Gewinne unseren Premium-Rucksack mit unseren lebenslangen Plänen.",
-    "cta": "Plan wählen",
-    "guarantee": "30-Tage-Geld-zurück-Garantie",
-    "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
+    "label": "Spare 80%!",
+    "title": "Geheime Weihnachtsmann-Überraschung!",
+    "subtitle": "Weihnachts-Web-App-Thema + Chance, bis zu 10 TB Speicher zu gewinnen!",
+    "cta": "Wähle deinen Plan",
+    "guarantee": "30 Tage Geld-zurück-Garantie",
+    "lastCta": "*Das Angebot gilt für kostenlose Konten oder Neukunden",
     "features": [
-      "Spare bei allen lebenslangen Plänen",
-      "Privater, verschlüsselter Cloud-Speicher",
-      "Quelloffen und geprüft",
-      "End-to-End-verschlüsselte Übertragungen",
-      "Kein unbefugter Zugriff",
-      "Angebot endet am 10. November"
+      "Spare groß bei allen Premium-Plänen",
+      "Privater und verschlüsselter Cloud-Speicher",
+      "Open Source und geprüft",
+      "Verschlüsselte Ende-zu-Ende-Übertragungen",
+      "Kein unautorisierter Zugriff",
+      "Das Angebot endet am",
+      "7. Januar"
     ]
   },
   "valentinesBanner": {
@@ -47,7 +48,8 @@
     "dark": "Dunkel",
     "system": "System",
     "starwars": "Star Wars",
-    "halloween": "Halloween"
+    "halloween": "Halloween",
+    "christmas": "Weihnachten"
   },
   "auth": {
     "email": "E-Mail",
@@ -61,7 +63,8 @@
       "dontHaveAccount": "Sie haben kein Konto?",
       "createAccount": "Konto erstellen",
       "2FA": "Zwei-Faktor-Code",
-      "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode"
+      "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode",
+      "wrongLogin": "Ungültiger Benutzername oder Passwort"
     },
     "signup": {
       "title": "Konto erstellen",
@@ -1240,6 +1243,7 @@
     "linkUpdated": "Link aktualisiert",
     "itemsMovedToTrash": "{{item}} in den Papierkorb verschoben",
     "storageModified": "Speicher erfolgreich geändert",
+    "membersUpdatedSuccessfully": "Mitglieder erfolgreich aktualisiert",
     "errorModifyingStorage": "Der neue Speicherplatz ist für dieses Mitglied ungültig.",
     "generalErrorWhileModifyingStorage": "Beim Ändern des Speicherplatzes ist ein Fehler aufgetreten.",
     "restoreItems": "{{itemsToRecover}} verschoben nach {{destination}}",
@@ -1255,7 +1259,16 @@
     "errorApplyingCoupon": "Beim Anwenden des Coupons ist ein Fehler aufgetreten",
     "invalidTaxIdIsProvided": "Die angegebene Steuernummer ist ungültig",
     "errorWhileFetchingMoreItems": "Beim Abrufen weiterer Elemente ist ein Fehler aufgetreten",
-    "errorDeletingItems": "Beim Löschen dieses Elements ist ein Fehler aufgetreten"
+    "errorDeletingItems": "Beim Löschen dieses Elements ist ein Fehler aufgetreten",
+    "errorFetchingWorkspace": "Fehler beim Abrufen des Arbeitsbereichs {{error}}",
+    "errorSettingUpWorkspace": "Fehler beim Einrichten des Arbeitsbereichs {{error}}",
+    "errorWhileLoadingWorkspace": "Fehler beim Laden des Arbeitsbereichs {{error}}",
+    "errorFetchingWorkspaceCredentials": "Fehler beim Abrufen der Anmeldeinformationen für den Arbeitsbereich {{error}}",
+    "invalidWorkspaceInvitationError": "Arbeitsbereich voll. Kontaktieren Sie den Eigentümer.",
+    "errorAcceptingWorkspaceInvitation": "Beim Annehmen der Einladung ist ein Fehler aufgetreten",
+    "errorWhileUpdatingWorkspaceMembers": "Beim Aktualisieren der Mitglieder ist ein Fehler aufgetreten",
+    "errorWhileFetchingCurrentWorkspaceMembers": "Beim Abrufen der Mitglieder des Arbeitsbereichs ist ein Fehler aufgetreten",
+    "newMembersCannotBeLessThanTheExistentOnesError": "Die ausgewählten Mitglieder dürfen nicht weniger sein als die aktuellen Mitglieder des Arbeitsbereichs"
   },
   "actions": {
     "undo": "Rückgängig machen",
@@ -1268,6 +1281,7 @@
     "change": "Ändern",
     "download": "Download",
     "downloading": "Runterladen",
+    "downloadingItems": "{{nItems}} elemente werden heruntergeladen...",
     "downloaded": "Runtergeladen",
     "delete": "Löschen",
     "share": "Teilen",
@@ -1287,6 +1301,7 @@
     "moreInfo": "Mehr Info",
     "dismiss": "Zurückweisen",
     "save": "Sichern",
+    "saveChanges": "Änderungen speichern",
     "back": "Zurück",
     "edit": "Bearbeite",
     "submit": "Einreichen",
@@ -1304,7 +1319,10 @@
     "report": "Missbrauch melden",
     "yes": "Ja",
     "no": "Nein",
-    "more": "Mehr"
+    "more": "Mehr",
+    "continue": "Fortsetzen",
+    "keepCurrent": "Aktuell behalten",
+    "logOut": "Abmelden"
   },
   "drive": {
     "usage": "Verwendung",
@@ -1400,8 +1418,7 @@
       "subscribe-to-newsletter": "Abonniere unseren Newsletter",
       "install-desktop-app": "Installiere die Desktop-App und lade eine Datei hoch",
       "invite-friends": "Lade {{completedSteps}}/{{steps}} Freunde ein",
-      "invite-2-friends": "Lade {{completedSteps}}/{{steps}} Freunde ein",
-      "complete-survey": "Komplettiere Umfrage"
+      "invite-2-friends": "Lade {{completedSteps}}/{{steps}} Freunde ein"
     },
     "rewards": {
       "title": "Erhalte {{creditSum}} kostenlos",
@@ -1455,7 +1472,7 @@
       "members": {
         "title": "Mitglieder",
         "members": "Mitglieder",
-        "guests": "Gäste",
+        "guests": "Eingeladen",
         "search": "Mitglieder suchen",
         "invite": "Einladen",
         "inviteDialog": {
@@ -1637,6 +1654,32 @@
         "nextBillingDate": "Nächstes Abrechnungsdatum",
         "planLimit": "Abgerechnet für {{planLimit}} plan",
         "subscription": "Abonnement",
+        "membersLabel": "Mitglieder",
+        "perUser": "pro Benutzer",
+        "members": {
+          "title": "Mitglieder",
+          "editMembers": "Mitglieder bearbeiten",
+          "numberOfMembers": "Anzahl der Mitglieder",
+          "expandNumber": "Die Anzahl der Mitglieder erweitern.",
+          "confirmUpdateModal": {
+            "title": "Plan ändern",
+            "confirmToProceed": {
+              "text1": "Sie sind dabei, Ihren Internxt-Mitgliederplan von ",
+              "to": "auf ",
+              "text2": " zu ändern. Bitte bestätigen Sie Ihre Auswahl, um fortzufahren."
+            },
+            "current": "Aktuell",
+            "new": "Neu",
+            "decreaseStorage": {
+              "text": "Dadurch wird auch Ihr gesamter Geschäftsspeicher von ",
+              "to": " auf "
+            },
+            "increaseStorage": {
+              "text": "Dadurch wird auch Ihr gesamter Geschäftsspeicher von ",
+              "to": " auf "
+            }
+          }
+        },
         "lifetimeSubscription": {
           "planType": "Lebenslang",
           "text": "Keine kommenden Rechnungen"

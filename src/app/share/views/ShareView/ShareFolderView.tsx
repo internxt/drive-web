@@ -46,6 +46,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const sharingId = props.match.params.token;
   const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
+  const [nItems, setNItems] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
   const [info, setInfo] = useState<SharingMeta | Record<string, any>>({});
   const [itemData, setItemData] = useState<PublicSharedItemInfo>();
@@ -138,6 +139,10 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     setProgress(Number((progress * 100).toFixed(2)));
   };
 
+  const incrementItemCount = () => {
+    setNItems((prevNItems) => prevNItems + 1);
+  };
+
   const download = async (password?: string): Promise<void> => {
     if (!isDownloading) {
       const folderInfo = info as unknown as ShareTypes.ShareLink | null;
@@ -149,6 +154,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           encryptionKey: folderInfo.encryptionKey,
           item: folderInfo.item,
           code,
+          incrementItemCount,
         })
           .then(() => {
             updateProgress(1);
@@ -210,7 +216,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           <div className="mr-1 h-5 w-5 text-white">
             <Spinner />
           </div>
-          <span>{translate('actions.downloading')}</span>
+          <span>{translate('actions.downloadingItems', { nItems })}</span>
           {!!size && size > 0 && <span className="font-normal text-primary/20">{progress}%</span>}
         </>
       ) : (

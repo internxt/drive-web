@@ -7,8 +7,11 @@ import {
   SecurityDetails,
   TwoFactorAuthQR,
 } from '@internxt/sdk/dist/auth';
+import { StorageTypes } from '@internxt/sdk/dist/drive';
+import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
+import { trackSignUp } from 'app/analytics/impact.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -40,8 +43,6 @@ import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
-import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
-import { trackSignUp } from 'app/analytics/impact.service';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -296,22 +297,20 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
 
   return usersClient
-    .changePasswordLegacy(<ChangePasswordPayload>{
+    .changePassword(<ChangePasswordPayloadNew>{
       currentEncryptedPassword: encryptedCurrentPassword,
       newEncryptedPassword: encryptedNewPassword,
       newEncryptedSalt: encryptedNewSalt,
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
-      encryptVersion: '', // !TODO: Add the version used
+      encryptVersion: StorageTypes.EncryptionVersion.Aes03,
     })
     .then((res) => {
-      // !TODO: Add the correct analytics event  when change password is completed
-      const { token, newToken } = res as any;
+      const { token, newToken } = res;
       if (token) localStorageService.set('xToken', token);
       if (newToken) localStorageService.set('xNewToken', newToken);
     })
     .catch((error) => {
-      // !TODO: Add the correct analytics event when change password fails
       if (error.status === 500) {
         throw new Error('The password you introduced does not match your current password');
       }
@@ -343,8 +342,11 @@ export const deactivate2FA = (
 };
 
 export const getNewToken = async (): Promise<string> => {
+  const serviceHeaders = httpService.getHeaders(true, false);
+  const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
+
   const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
-    headers: httpService.getHeaders(true, false),
+    headers: headers,
   });
   if (!res.ok) {
     throw new Error('Bad response while getting new token');

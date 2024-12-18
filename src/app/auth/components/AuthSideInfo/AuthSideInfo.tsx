@@ -1,4 +1,3 @@
-//import sideInfoBackground from '../../../../assets/images/sideinfo-background.jpg';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 
 import './AuthSideInfo.scss';

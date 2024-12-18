@@ -4,6 +4,7 @@ import { getEnvironmentConfig } from '../network.service';
 
 type FetchFileBlobOptions = {
   updateProgressCallback: (progress: number) => void;
+  incrementItemCount?: () => void;
   isWorkspace: boolean;
   abortController?: AbortController;
 };
@@ -26,6 +27,7 @@ export default async function fetchFileBlob(
     options: {
       notifyProgress: (totalBytes, downloadedBytes) => {
         options.updateProgressCallback(downloadedBytes / totalBytes);
+        options.incrementItemCount && options.incrementItemCount();
       },
       abortController: options.abortController,
     },
