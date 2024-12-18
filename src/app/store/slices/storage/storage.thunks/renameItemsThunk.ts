@@ -1,7 +1,7 @@
 import { ActionReducerMapBuilder, createAsyncThunk, Dispatch } from '@reduxjs/toolkit';
 
-import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-import { DriveFolderData, DriveItemData } from 'app/drive/types';
+import { DriveFileData, DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFolderData as DriveFolderDataItem, DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import tasksService from 'app/tasks/services/tasks.service';
 import { RenameFileTask, RenameFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
@@ -79,18 +79,49 @@ export const handleRepeatedUploadingFolders = async (
   dispatch: Dispatch,
   destinationFolderUuid: string,
 ): Promise<(DriveFolderData | IRoot)[]> => {
+  // Divide las carpetas en lotes utilizando getDuplicatedFilesBySlots
+  const slots = getDuplicatedFilesBySlots(folders);
+  const promises = slots.map((slot) =>
+    checkFolderDuplicated(slot as (DriveFolderData | IRoot)[], destinationFolderUuid),
+  );
+
+  // Ejecuta todas las promesas y combina los resultados
+  const duplicatedFolders = await Promise.all(promises);
+
+  const combinedResults = duplicatedFolders.reduce<{
+    foldersWithDuplicates: (DriveFolderData | IRoot)[];
+    duplicatedFoldersResponse: DriveFolderData[];
+    foldersWithoutDuplicates: (DriveFolderData | IRoot)[];
+  }>(
+    (acc, cur) => {
+      acc.foldersWithDuplicates = [...acc.foldersWithDuplicates, ...cur.foldersWithDuplicates];
+      acc.duplicatedFoldersResponse = [...acc.duplicatedFoldersResponse, ...cur.duplicatedFoldersResponse];
+      acc.foldersWithoutDuplicates = [...acc.foldersWithoutDuplicates, ...cur.foldersWithoutDuplicates];
+      return acc;
+    },
+    {
+      foldersWithDuplicates: [],
+      duplicatedFoldersResponse: [],
+      foldersWithoutDuplicates: [],
+    },
+  );
+
+  // Extrae los resultados combinados
   const {
     foldersWithDuplicates: foldersRepeated,
     duplicatedFoldersResponse,
     foldersWithoutDuplicates: unrepeatedFolders,
-  } = await checkFolderDuplicated(folders, destinationFolderUuid);
+  } = combinedResults;
 
-  const hasRepeatedNameFiles = !!foldersRepeated.length;
-  if (hasRepeatedNameFiles) {
+  // Maneja las carpetas duplicadas
+  const hasRepeatedNameFolders = !!foldersRepeated.length;
+  if (hasRepeatedNameFolders) {
     dispatch(storageActions.setFoldersToRename(foldersRepeated as DriveItemData[]));
     dispatch(storageActions.setDriveFoldersToRename(duplicatedFoldersResponse as DriveItemData[]));
     dispatch(uiActions.setIsNameCollisionDialogOpen(true));
   }
+
+  // Retorna las carpetas no duplicadas
   return unrepeatedFolders as DriveItemData[];
 };
 
@@ -117,7 +148,7 @@ export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { sta
 
         const finalFolderName = await getUniqueFolderName(
           item.plainName ?? item.name,
-          duplicatedFoldersResponse as DriveFolderData[],
+          duplicatedFoldersResponse as DriveFolderDataItem[],
           destinationFolderId,
         );
         itemParsed = { ...item, name: finalFolderName, plain_name: finalFolderName };
