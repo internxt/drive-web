@@ -37,7 +37,7 @@ export const useAccessLogs = ({ activity, lastDays, member, orderBy }: UseAccess
     try {
       const workspaceLogs = await workspacesService.getWorkspaceLogs({
         workspaceId,
-        limit: DEFAULT_LIMIT,
+        limit: ACCESS_LOGS_DEFAULT_LIMIT,
         offset: currentOffset,
         activity,
         lastDays,
@@ -46,8 +46,8 @@ export const useAccessLogs = ({ activity, lastDays, member, orderBy }: UseAccess
       });
 
       setAccessLogs((prevItems) => (reset ? workspaceLogs : [...prevItems, ...workspaceLogs]));
-      setOffset((prevOffset) => (reset ? DEFAULT_LIMIT : prevOffset + DEFAULT_LIMIT));
-      setHasMoreItems(workspaceLogs.length >= DEFAULT_LIMIT);
+      setOffset((prevOffset) => (reset ? ACCESS_LOGS_DEFAULT_LIMIT : prevOffset + ACCESS_LOGS_DEFAULT_LIMIT));
+      setHasMoreItems(workspaceLogs.length >= ACCESS_LOGS_DEFAULT_LIMIT);
     } catch (error) {
       errorService.reportError(error);
     } finally {
