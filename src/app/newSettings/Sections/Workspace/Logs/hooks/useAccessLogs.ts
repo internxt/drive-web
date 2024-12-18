@@ -5,7 +5,7 @@ import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 import { useState, useEffect } from 'react';
 
-const DEFAULT_LIMIT = 10;
+export const ACCESS_LOGS_DEFAULT_LIMIT = 20;
 
 interface UseAccessLogsProps {
   lastDays?: number;
