@@ -32,7 +32,6 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
   const isCurrentUserWorkspaceOwner = useAppSelector(workspacesSelectors.isWorkspaceOwner);
   const dispatch = useAppDispatch();
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
-  // const isCurrentMemberTheWorkspaceOwner = selectedWorkspace?.workspaceUser.isOwner;
 
   const params = new URLSearchParams(window.location.search);
   const currentSectionParams = params.getAll('section');
