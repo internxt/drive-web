@@ -163,7 +163,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
 
     try {
       setIsConfirmingMembersWorkspace(true);
-      await paymentService.updateWorkspaceMembers(workspaceId as string, subscriptionId, newAmountOfSeats);
+      await paymentService.updateWorkspaceMembers(workspaceId, subscriptionId, newAmountOfSeats);
 
       await dispatch(planThunks.fetchBusinessLimitUsageThunk());
       setTimeout(async () => {
@@ -242,7 +242,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
         onSave={onSaveBillingDetails}
         isLoading={isSavingBillingDetails}
       />
-      <BillingPaymentMethodCard userType={UserType.Business} />
+      <BillingPaymentMethodCard subscription={plan.businessSubscription?.type} userType={UserType.Business} />
       {plan.businessSubscription?.type == 'subscription' && (
         <Invoices subscriptionId={plan.businessSubscription.subscriptionId} />
       )}
