@@ -1,5 +1,5 @@
 import React, { ReactNode, useEffect, useRef } from 'react';
-import { Table, TableBody, TableHeader } from '@internxt/internxtui';
+import { Table, TableBody, TableHeader } from '@internxt/ui';
 import { LoadingRowSkeleton } from './LoadingSkeleton';
 
 interface ScrollableTableProps {

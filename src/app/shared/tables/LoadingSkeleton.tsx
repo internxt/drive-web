@@ -1,4 +1,4 @@
-import { TableCell, TableRow } from '@internxt/internxtui';
+import { TableCell, TableRow } from '@internxt/ui';
 
 export const LoadingRowSkeleton = ({ numberOfColumns }: { numberOfColumns: number }) => {
   const totalRowsArray = new Array(10).fill(null);

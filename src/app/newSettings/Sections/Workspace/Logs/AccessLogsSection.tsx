@@ -3,7 +3,7 @@ import Section from '../../../../newSettings/components/Section';
 import { useState } from 'react';
 import { ScrollableTable } from 'app/shared/tables/ScrollableTable';
 import 'react-calendar/dist/Calendar.css';
-import { TableCell, TableRow } from '@internxt/internxtui';
+import { TableCell, TableRow } from '@internxt/ui';
 import { AccessLogsFilterOptions } from './components/AccessLogsFilterOptions';
 import { useAccessLogs } from './hooks/useAccessLogs';
 import { WorkspaceLogPlatform, WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
@@ -24,7 +24,7 @@ interface HeaderItemsProps {
 }
 
 export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.Element => {
-  const { translate, translateList } = useTranslationContext();
+  const { translate } = useTranslationContext();
   const [searchMembersInputValue, setSearchMembersInputValue] = useState<string>('');
   const [daysFilter, setDaysFilter] = useState<number | undefined>();
   const [activityFilter, setActivityFilter] = useState<WorkspaceLogType[]>([]);

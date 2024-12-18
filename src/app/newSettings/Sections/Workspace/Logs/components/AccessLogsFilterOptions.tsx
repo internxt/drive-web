@@ -1,5 +1,5 @@
 import { Menu, Transition } from '@headlessui/react';
-import { Button, Checkbox, RadioButton } from '@internxt/internxtui';
+import { Button, Checkbox, RadioButton } from '@internxt/ui';
 import { WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
 import { FunnelSimple } from '@phosphor-icons/react/dist/ssr';
 import Input from 'app/shared/components/Input';
