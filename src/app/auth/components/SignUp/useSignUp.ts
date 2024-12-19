@@ -1,13 +1,11 @@
-import { aes } from '@internxt/lib';
-import { Keys, RegisterDetails } from '@internxt/sdk';
+import { RegisterDetails } from '@internxt/sdk';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as bip39 from 'bip39';
 
 import { readReferalCookie } from 'app/auth/services/auth.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import httpService from 'app/core/services/http.service';
-import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
+import { getKeys } from 'app/crypto/services/keys.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 
 export type UpdateInfoFunction = (
@@ -93,28 +91,6 @@ export function useSignUp(
     xUser.mnemonic = mnemonic;
 
     return { xUser, xToken, mnemonic };
-  };
-
-  const getKeys = async (password: string) => {
-    const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
-      await generateNewKeys();
-    const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
-    const encPrivateKyberKey = aes.encrypt(privateKyberKeyBase64, password, getAesInitFromEnv());
-
-    const keys: Keys = {
-      privateKeyEncrypted: encPrivateKey,
-      publicKey: publicKeyArmored,
-      revocationCertificate: revocationCertificate,
-      ecc: {
-        privateKeyEncrypted: encPrivateKey,
-        publicKey: publicKeyArmored,
-      },
-      kyber: {
-        publicKey: publicKyberKeyBase64,
-        privateKeyEncrypted: encPrivateKyberKey,
-      },
-    };
-    return keys;
   };
 
   const doRegister = async (email: string, password: string, captcha: string) => {

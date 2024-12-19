@@ -23,8 +23,8 @@ import {
   assertValidateKeys,
   decryptPrivateKey,
   getAesInitFromEnv,
+  getKeys,
 } from 'app/crypto/services/keys.service';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import {
   decryptText,
   decryptTextWithKey,
@@ -105,20 +105,6 @@ export const is2FANeeded = async (email: string): Promise<boolean> => {
   return securityDetails.tfaEnabled;
 };
 
-const generateNewKeysWithEncrypted = async (password: string) => {
-  const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
-    await generateNewKeys();
-
-  return {
-    privateKeyArmored,
-    privateKeyArmoredEncrypted: aes.encrypt(privateKeyArmored, password, getAesInitFromEnv()),
-    publicKeyArmored,
-    revocationCertificate,
-    publicKyberKeyBase64,
-    privateKyberKeyEncrypted: aes.encrypt(privateKyberKeyBase64, password, getAesInitFromEnv()),
-  };
-};
-
 const getAuthClient = (authType: 'web' | 'desktop') => {
   const AUTH_CLIENT = {
     web: SdkFactory.getInstance().createAuthClient(),
@@ -147,27 +133,7 @@ export const doLogin = async (
       return encryptText(hashObj.hash);
     },
     async generateKeys(password: Password): Promise<Keys> {
-      const {
-        privateKeyArmoredEncrypted,
-        publicKeyArmored,
-        revocationCertificate,
-        publicKyberKeyBase64,
-        privateKyberKeyEncrypted,
-      } = await generateNewKeysWithEncrypted(password);
-      const keys: Keys = {
-        privateKeyEncrypted: privateKeyArmoredEncrypted,
-        publicKey: publicKeyArmored,
-        revocationCertificate: revocationCertificate,
-        ecc: {
-          privateKeyEncrypted: privateKeyArmoredEncrypted,
-          publicKey: publicKeyArmored,
-        },
-        kyber: {
-          publicKey: publicKyberKeyBase64,
-          privateKeyEncrypted: privateKyberKeyEncrypted,
-        },
-      };
-      return keys;
+      return getKeys(password);
     },
   };
 
