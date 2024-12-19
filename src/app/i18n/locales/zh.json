@@ -1771,13 +1771,13 @@
           "clear": "清除",
           "activity": {
             "title": "活动",
-            "Login": "登录",
-            "ChangedPassword": "更改密码",
-            "Logout": "登出",
-            "ShareFile": "分享文件",
-            "ShareFolder": "分享文件夹",
-            "DeleteFile": "删除文件",
-            "DeleteFolder": "删除文件夹"
+            "Login": "已登录",
+            "ChangedPassword": "已更改密码",
+            "Logout": "已登出",
+            "ShareFile": "已分享文件",
+            "ShareFolder": "已分享文件夹",
+            "DeleteFile": "已删除文件",
+            "DeleteFolder": "已删除文件夹"
           },
           "platform": { "title": "平台", "Web": "网页", "Mobile": "移动端", "Desktop": "桌面端" },
           "dateRange": { "title": "日期范围", "days": "最近 {{days}} 天" }

@@ -1749,13 +1749,13 @@
           "clear": "Borrar",
           "activity": {
             "title": "Actividad",
-            "Login": "Conectado",
-            "ChangedPassword": "Contraseña cambiada",
-            "Logout": "Desconectado",
-            "ShareFile": "Compartir archivo",
-            "ShareFolder": "Compartir carpeta",
-            "DeleteFile": "Eliminar archivo",
-            "DeleteFolder": "Eliminar carpeta"
+            "Login": "Inicio de sesión",
+            "ChangedPassword": "Cierre de sesión",
+            "Logout": "Cambio de contraseña",
+            "ShareFile": "Archivo compartido",
+            "ShareFolder": "Carpeta compartida",
+            "DeleteFile": "Archivo eliminado",
+            "DeleteFolder": "Carpeta eliminada"
           },
           "platform": { "title": "Plataforma", "Web": "Web", "Mobile": "Móvil", "Desktop": "Escritorio" },
           "dateRange": { "title": "Rango de fechas", "days": "Últimos {{days}} días" }

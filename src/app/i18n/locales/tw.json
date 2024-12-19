@@ -1730,13 +1730,13 @@
           "clear": "清除",
           "activity": {
             "title": "活動",
-            "Login": "登入",
-            "ChangedPassword": "更改密碼",
-            "Logout": "登出",
-            "ShareFile": "分享檔案",
-            "ShareFolder": "分享資料夾",
-            "DeleteFile": "刪除檔案",
-            "DeleteFolder": "刪除資料夾"
+            "Login": "已登入",
+            "ChangedPassword": "已更改密碼",
+            "Logout": "已登出",
+            "ShareFile": "已分享檔案",
+            "ShareFolder": "已分享資料夾",
+            "DeleteFile": "已刪除檔案",
+            "DeleteFolder": "已刪除資料夾"
           },
           "platform": { "title": "平台", "Web": "網頁", "Mobile": "行動端", "Desktop": "桌面端" },
           "dateRange": { "title": "日期範圍", "days": "最近 {{days}} 天" }

@@ -1699,12 +1699,12 @@
           "activity": {
             "title": "Activité",
             "Login": "Connecté",
-            "ChangedPassword": "Mot de passe modifié",
+            "ChangedPassword": "Mot de passe changé",
             "Logout": "Déconnecté",
-            "ShareFile": "Partager un fichier",
-            "ShareFolder": "Partager un dossier",
-            "DeleteFile": "Supprimer un fichier",
-            "DeleteFolder": "Supprimer un dossier"
+            "ShareFile": "Fichier partagé",
+            "ShareFolder": "Dossier partagé",
+            "DeleteFile": "Fichier supprimé",
+            "DeleteFolder": "Dossier supprimé"
           },
           "platform": { "title": "Plateforme", "Web": "Web", "Mobile": "Mobile", "Desktop": "Bureau" },
           "dateRange": { "title": "Plage de dates", "days": "7 derniers jours" }

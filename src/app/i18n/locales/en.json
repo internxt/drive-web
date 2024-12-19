@@ -1775,10 +1775,10 @@
             "Login": "Signed in",
             "ChangedPassword": "Changed password",
             "Logout": "Signed out",
-            "ShareFile": "Share file",
-            "ShareFolder": "Share folder",
-            "DeleteFile": "Delete file",
-            "DeleteFolder": "Delete folder"
+            "ShareFile": "Shared file",
+            "ShareFolder": "Shared folder",
+            "DeleteFile": "Deleted file",
+            "DeleteFolder": "Deleted folder"
           },
           "platform": { "title": "Platform", "Web": "Web", "Mobile": "Mobile", "Desktop": "Desktop" },
           "dateRange": {

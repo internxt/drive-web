@@ -149,7 +149,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
     return accessLogs.map((item) => {
       const userEmail = item.user.email;
       const userName = item.user.name + ' ' + (item.user.lastname ?? null);
-      const itemName = item.file?.plainName ?? item.folder?.plainName ?? 'Unknown';
+      const itemName = item.file?.plainName ?? item.folder?.plainName ?? '';
       return (
         <TableRow key={item.id} className="border-b border-gray-10 text-sm last:border-none hover:bg-gray-5">
           <TableCell

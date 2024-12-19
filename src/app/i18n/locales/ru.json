@@ -1738,13 +1738,13 @@
           "clear": "Очистить",
           "activity": {
             "title": "Деятельность",
-            "Login": "Вход в систему",
+            "Login": "Вошел в систему",
             "ChangedPassword": "Пароль изменен",
-            "Logout": "Выход из системы",
-            "ShareFile": "Поделиться файлом",
-            "ShareFolder": "Поделиться папкой",
-            "DeleteFile": "Удалить файл",
-            "DeleteFolder": "Удалить папку"
+            "Logout": "Вышел из системы",
+            "ShareFile": "Файл поделён",
+            "ShareFolder": "Папка поделена",
+            "DeleteFile": "Файл удалён",
+            "DeleteFolder": "Папка удалена"
           },
           "platform": { "title": "Платформа", "Web": "Веб", "Mobile": "Мобильный", "Desktop": "Настольный" },
           "dateRange": { "title": "Диапазон дат", "days": "Последние {{days}} дней" }
