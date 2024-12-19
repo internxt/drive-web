@@ -17,8 +17,7 @@ import navigationService from '../../../../core/services/navigation.service';
 import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import shareService from '../../../../share/services/share.service';
-import { Button } from '@internxt/internxtui';
-import Dropdown from '../../../../shared/components/Dropdown';
+import { Button, Dropdown } from '@internxt/ui';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../../shared/components/Tooltip/Tooltip';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { storageActions } from '../../../../store/slices/storage';
@@ -330,7 +329,7 @@ const DriveTopBarActions = ({
               <Dropdown
                 classButton="flex items-center justify-center"
                 openDirection="right"
-                classMenuItems="z-20 right-0 mt-0 flex flex-col rounded-lg bg-surface dark:bg-gray-5 border border-gray-10 py-1.5 shadow-subtle-hard min-w-[180px]"
+                classMenuItems="z-20 right-0 mt-0 flex flex-col rounded-lg bg-surface dark:bg-gray-5 border border-gray-10 shadow-subtle-hard min-w-[180px]"
                 item={selectedItems[0]}
                 dropdownActionsContext={dropdownActions()}
               >

@@ -4,7 +4,7 @@ import { useTranslationContext } from '../../../../../i18n/provider/TranslationP
 import ChangePasswordModal from './ChangePasswordModal';
 import Section from '../../../../../newSettings/Sections/General/components/Section';
 import Card from '../../../../../shared/components/Card';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 
 const ChangePassword = ({
   currentPassword,

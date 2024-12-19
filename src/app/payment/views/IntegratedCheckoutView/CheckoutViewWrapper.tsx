@@ -18,7 +18,6 @@ import { useTranslationContext } from '../../../i18n/provider/TranslationProvide
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import checkoutService from '../../../payment/services/checkout.service';
 import paymentService from '../../../payment/services/payment.service';
-import LoadingPulse from '../../../shared/components/LoadingPulse/LoadingPulse';
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { planThunks } from '../../../store/slices/plan';
@@ -30,6 +29,7 @@ import CheckoutView from './CheckoutView';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { bytesToString } from 'app/drive/services/size.service';
+import { Loader } from '@internxt/ui';
 
 export const THEME_STYLES = {
   dark: {
@@ -547,7 +547,7 @@ const CheckoutViewWrapper = () => {
           ) : undefined}
         </Elements>
       ) : (
-        <LoadingPulse />
+        <Loader type="pulse" />
       )}
     </>
   );

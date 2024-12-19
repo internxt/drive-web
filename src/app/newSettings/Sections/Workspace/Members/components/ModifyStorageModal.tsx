@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X } from '@phosphor-icons/react';
-import { Button, RangeSlider } from '@internxt/internxtui';
+import { Button, RangeSlider } from '@internxt/ui';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Modal from '../../../../../shared/components/Modal';
 import UserCard from './UserCard';

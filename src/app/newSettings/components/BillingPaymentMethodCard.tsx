@@ -1,5 +1,5 @@
 import { PaymentMethod, UserType } from '@internxt/sdk/dist/drive/payments/types';
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import Card from 'app/shared/components/Card';
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
@@ -106,7 +106,7 @@ const BillingPaymentMethodCard = ({
           </div>
         ) : defaultPaymentMethod.tag === 'loading' ? (
           <div className="flex h-10 items-center justify-center">
-            <Spinner className="h-5 w-5" />
+            <Loader classNameLoader="h-5 w-5" />
           </div>
         ) : (
           <div className="flex h-full items-center justify-center text-center">

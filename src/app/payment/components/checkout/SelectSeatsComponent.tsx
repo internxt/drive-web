@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface SelectUsersComponentProps {

@@ -1,11 +1,9 @@
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { DriveFileData, DriveItemData } from '../../types';
-
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { getAppConfig } from 'app/core/services/config.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import errorService from '../../../core/services/error.service';
 import { OrderDirection } from '../../../core/types';
@@ -31,8 +29,12 @@ import {
   useFileViewerKeyboardShortcuts,
 } from './utils/fileViewerWrapperUtils';
 import { FileToUpload } from '../../../drive/services/file.service/types';
+import { MenuItemType } from '@internxt/ui';
 
-export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
+export type TopBarActionsMenu =
+  | Array<MenuItemType<DriveItemData>>
+  | Array<MenuItemType<AdvancedSharedItem>>
+  | undefined;
 
 type pathProps = 'drive' | 'trash' | 'shared' | 'recents';
 
@@ -43,7 +45,7 @@ interface FileViewerWrapperProps {
   showPreview: boolean;
   onClose: () => void;
   folderItems?: DriveItemData[];
-  contextMenu?: ListItemMenu<DriveItemData>;
+  contextMenu?: Array<MenuItemType<DriveItemData>>;
   onShowStopSharingDialog?: () => void;
   sharedKeyboardShortcuts?: {
     removeItemFromKeyboard?: (item: DriveItemData) => void;
