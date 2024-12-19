@@ -59,7 +59,7 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
   return (
     <Section title={t('preferences.workspace.billing.title')} onClosePreferences={onClosePreferences}>
       <BillingAccountOverview plan={plan} changeSection={changeSection} />
-      <BillingPaymentMethodCard userType={UserType.Individual} />
+      <BillingPaymentMethodCard subscription={plan.individualSubscription?.type} userType={UserType.Individual} />
       {plan.individualSubscription?.type == 'subscription' && (
         <Invoices subscriptionId={plan.individualSubscription.subscriptionId} />
       )}
