@@ -27,6 +27,9 @@ import {
   WorkspaceUser,
   WorkspacesResponse,
   UsersAndTeamsAnItemIsShareWidthResponse,
+  WorkspaceLogOrderBy,
+  WorkspaceLogType,
+  WorkspaceLogResponse,
 } from '@internxt/sdk/dist/workspaces';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
@@ -414,6 +417,33 @@ export function leaveWorkspace(workspaceId: string): Promise<void> {
   });
 }
 
+export const getWorkspaceLogs = ({
+  workspaceId,
+  limit = 50,
+  offset = 0,
+  member,
+  activity,
+  lastDays,
+  summary,
+  orderBy = 'createdAt:DESC',
+}: {
+  workspaceId: string;
+  limit: number;
+  offset?: number;
+  member?: string;
+  activity?: WorkspaceLogType[];
+  lastDays?: number;
+  summary?: boolean;
+  orderBy?: WorkspaceLogOrderBy;
+}): Promise<WorkspaceLogResponse[]> => {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient
+    .getWorkspaceLogs(workspaceId, limit, offset, member, activity, lastDays, summary, orderBy)
+    .catch((error) => {
+      throw errorService.castError(error);
+    });
+};
+
 const workspacesService = {
   getWorkspaces,
   getWorkspacesMembers,
@@ -458,6 +488,7 @@ const workspacesService = {
   modifyMemberUsage,
   getWorkspace,
   leaveWorkspace,
+  getWorkspaceLogs,
 };
 
 export default workspacesService;

@@ -1749,6 +1749,28 @@
         "empty": {
           "text": "Nessuna fattura precedente"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "title": "Filtra",
+          "searchMembers": "Cerca membri",
+          "filters": "Filtri",
+          "clear": "Cancella",
+          "activity": {
+            "title": "Attività",
+            "Login": "Accesso effettuato",
+            "ChangedPassword": "Password cambiata",
+            "Logout": "Disconnesso",
+            "ShareFile": "File condiviso",
+            "ShareFolder": "Cartella condivisa",
+            "DeleteFile": "File eliminato",
+            "DeleteFolder": "Cartella eliminata"
+          },
+          "platform": { "title": "Piattaforma", "Web": "Web", "Mobile": "Mobile", "Desktop": "Desktop" },
+          "dateRange": { "title": "Intervallo di date", "days": "Ultimi {{days}} giorni" }
+        },
+        "headerTable": { "date": "Data", "member": "Membro", "activity": "Attività", "access": "Accesso" },
+        "noResults": "Non ci sono risultati da mostrare"
       }
     },
     "account": {
@@ -1823,7 +1845,8 @@
       "billing": "Fatturazione",
       "account": "Account",
       "plans": "Piani",
-      "security": "Sicurezza"
+      "security": "Sicurezza",
+      "logs": "Registri"
     }
   },
   "workspaces": {

@@ -2009,14 +2009,24 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@=1.8.0":
-  version "1.8.0"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.8.0/a35e4d4b882b1fc003bf14a3779296d021d2e8d8#a35e4d4b882b1fc003bf14a3779296d021d2e8d8"
-  integrity sha512-8pJTLqk6hubGex1sdGfVuarQ6NtLwXs2zRgEFk2isrPddUf8c64+FGrYAipGm/RdRnlkZMPpkt2yRXUbwOnHtg==
+"@internxt/sdk@=1.8.1":
+  version "1.8.1"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.8.1/fc4be77bed5b1b69b2a161d76dd6748aa3aa8256#fc4be77bed5b1b69b2a161d76dd6748aa3aa8256"
+  integrity sha512-bxrNwjEojesu+MkOoY4P6kN07PWVUwJCUndp3Ns/+v2L4FwKUXqvGdit0MksFL5itAC8/6dRdbwwd2EPYh5D/w==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
     uuid "^8.3.2"
+
+"@internxt/ui@0.0.10":
+  version "0.0.10"
+  resolved "https://npm.pkg.github.com/download/@internxt/ui/0.0.10/1f72d743c6285259d36f3a1ba7163dadb0b9e1d1#1f72d743c6285259d36f3a1ba7163dadb0b9e1d1"
+  integrity sha512-WIMHW3U/3fLybjcT4MLgJja9VvaaMRqhLPZj2iO6zNg6c+QGyYT64jVnMABzOgfgenJHXum7MAFFLcMlIzdkMA==
+  dependencies:
+    "@internxt/css-config" "^1.0.2"
+    "@phosphor-icons/react" "^2.1.5"
+    "@radix-ui/react-switch" "^1.1.0"
+    "@radix-ui/themes" "^3.0.0"
 
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
