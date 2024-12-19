@@ -436,6 +436,10 @@
               "sucessSendingVerification": "Email verification sent to {{email}}",
               "errorSendingVerification": "Error sending verification",
               "confirm": "Confirm"
+            },
+            "errorMsg" : {
+              "nameError": "The name must be between one and twenty characters",
+              "lastnameError": "The last name must be between one and twenty characters"
             }
           },
           "support": {
@@ -889,7 +893,8 @@
         "title": "Invite people",
         "textarea": "Enter your message text (optional)",
         "notifyUsers": "Notify users",
-        "instructions": "Press enter or space to separate emails",
+        "instructions": "Press enter or comma to separate emails",
+        "duplicatedEmail": "The email address already exists",
         "email": "Type email",
         "invite": "Invite",
         "editor": "Editor",
@@ -999,6 +1004,7 @@
     "changingName": "Error during name change",
     "fileAlreadyExists": "File with the same name already exists",
     "folderAlreadyExists": "A folder with the same name already exists",
+    "folderInvalidName": "The folder name is not valid",
     "folderCannotBeEmpty": "Folder name cannot be empty",
     "creatingFolder": "Error during folder creation",
     "sendReferralInvitation": "Could not send invitation email",

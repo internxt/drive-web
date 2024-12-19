@@ -419,6 +419,10 @@
               "sucessSendingVerification": "Vérification par courriel envoyée",
               "errorSendingVerification": "Erreur d'envoi de la vérification",
               "confirm": "Confirmer"
+            },
+            "errorMsg" : {
+              "nameError": "Le prénom doit contenir entre un et vingt caractères",
+              "lastnameError": "Le nom de famille doit contenir entre un et vingt caractères"
             }
           },
           "support": {
@@ -822,7 +826,8 @@
         "title": "Inviter des personnes",
         "textarea": "Entrez le texte de votre message (facultatif)",
         "notifyUsers": "Notifier les utilisateurs",
-        "instructions": "Appuyez sur la touche Entrée ou sur l'espace pour séparer les courriels",
+        "instructions": "Appuyez sur Entrée ou sur une virgule pour entrer plus d'adresses e-mail",
+        "duplicatedEmail": "L'adresse e-mail existe déjà",
         "email": "Type d'email",
         "invite": "Inviter",
         "editor": "Éditeur",
@@ -932,6 +937,7 @@
     "changingName": "Erreur lors du changement de nom",
     "fileAlreadyExists": "Un fichier portant le même nom existe déjà",
     "folderAlreadyExists": "Un dossier portant le même nom existe déjà",
+    "folderInvalidName": "Le nom du dossier n'est pas valide",
     "folderCannotBeEmpty": "Le nom du dossier ne peut pas être vide",
     "creatingFolder": "Erreur lors de la création d'un dossier",
     "sendReferralInvitation": "Impossible d'envoyer le courriel d'invitation",

@@ -79,7 +79,9 @@ const AccountDetailsModal = ({
               value={nameValue}
               onChange={setNameValue}
               accent={nameIsInvalid ? 'error' : undefined}
-              message={nameIsInvalid ? 'This name is invalid' : undefined}
+              message={
+                nameIsInvalid ? translate('views.account.tabs.account.accountDetails.errorMsg.nameError') : undefined
+              }
               name="firstName"
             />
             <Input
@@ -88,7 +90,11 @@ const AccountDetailsModal = ({
               value={lastnameValue}
               onChange={setLastnameValue}
               accent={lastnameIsInvalid ? 'error' : undefined}
-              message={lastnameIsInvalid ? 'This lastname is invalid' : undefined}
+              message={
+                lastnameIsInvalid
+                  ? translate('views.account.tabs.account.accountDetails.errorMsg.lastnameError')
+                  : undefined
+              }
               name="lastName"
             />
           </div>

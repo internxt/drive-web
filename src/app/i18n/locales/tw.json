@@ -436,6 +436,10 @@
               "sucessSendingVerification": "驗證郵件已發送至 {{email}}",
               "errorSendingVerification": "發送驗證時出錯",
               "confirm": "確認"
+            },
+            "errorMsg" : {
+              "nameError": "姓名必須在1到20個字符之間",
+              "lastnameError": "姓氏必須在1到20個字符之間"
             }
           },
           "support": {
@@ -851,7 +855,8 @@
         "title": "邀請人員",
         "textarea": "輸入您的消息文字（選填）",
         "notifyUsers": "通知用戶",
-        "instructions": "按 Enter 或空格鍵分隔郵件地址",
+        "instructions": "按回車或逗號輸入更多電子郵件地址",
+        "duplicatedEmail": "電子郵件地址已存在",
         "email": "輸入電子郵件",
         "invite": "邀請",
         "editor": "編輯者",
@@ -961,6 +966,7 @@
     "changingName": "更改名稱時出錯",
     "fileAlreadyExists": "具有相同名稱的文件已存在",
     "folderAlreadyExists": "已存在具有相同名稱的文件夾",
+    "folderInvalidName": "文件夾名稱無效",
     "folderCannotBeEmpty": "文件夾名稱不能為空",
     "creatingFolder": "創建文件夾時出錯",
     "sendReferralInvitation": "無法發送邀請電子郵件",

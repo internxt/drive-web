@@ -419,6 +419,10 @@
               "sucessSendingVerification": "Verificación enviada a {{email}}",
               "errorSendingVerification": "Error enviando verificación",
               "confirm": "Confirmar"
+            },
+            "errorMsg" : {
+              "nameError": "El nombre debe tener de uno a veinte caracteres",
+              "lastnameError": "El apellido debe tener de uno a veinte caracteres"
             }
           },
           "support": {
@@ -867,7 +871,8 @@
         "title": "Invitar a otros",
         "textarea": "Escribe un mensaje (opcional)",
         "notifyUsers": "Notificar a los usuarios",
-        "instructions": "Pulsa intro o espacio para introducir más correos electronicos",
+        "instructions": "Pulsa intro o coma para introducir más correos electronicos",
+        "duplicatedEmail": "La dirección de correo ya existe",
         "email": "Correo electrónico",
         "invite": "Invitar",
         "editor": "Editor",
@@ -977,6 +982,7 @@
     "changingName": "Error durante el cambio de nombre",
     "fileAlreadyExists": "Ya existe un archivo con el mismo nombre",
     "folderAlreadyExists": "Ya existe una carpeta con el mismo nombre",
+    "folderInvalidName": "El nombre de la carpeta no es válido",
     "folderCannotBeEmpty": "El nombre de la carpeta no puede estar vacío",
     "creatingFolder": "Error durante la creación de la carpeta",
     "sendReferralInvitation": "No se ha podido enviar el correo electrónico de invitación",

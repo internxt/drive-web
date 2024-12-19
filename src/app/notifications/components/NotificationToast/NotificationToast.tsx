@@ -19,9 +19,9 @@ const NotificationToast = ({
   let Icon: typeof CheckCircle | undefined;
   let IconColor: string | undefined;
 
-  useEffect(() => {
+  /*useEffect(() => {
     visible && dispatch(uiActions.setIsToastNotificacionOpen(visible));
-  }, [visible]);
+  }, [visible]);*/
 
   switch (type) {
     case ToastType.Success:

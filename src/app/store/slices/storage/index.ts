@@ -373,7 +373,7 @@ export const storageSlice = createSlice({
         let items = [...folderItems];
 
         items = items.filter(
-          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && i.isFolder === item.isFolder),
+          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && !!i.isFolder === !!item.isFolder),
         );
 
         state.levels[folderId] = items;
@@ -383,7 +383,7 @@ export const storageSlice = createSlice({
 
       if (action.payload.updateRecents) {
         state.recents = state.recents.filter(
-          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && i.isFolder === item.isFolder),
+          (item: DriveItemData) => !itemsToDelete.find((i) => i.id === item.id && !!i.isFolder === !!item.isFolder),
         );
       }
     },

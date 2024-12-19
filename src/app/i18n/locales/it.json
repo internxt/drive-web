@@ -436,6 +436,10 @@
               "sucessSendingVerification": "Verifica e-mail inviata a {{email}}",
               "errorSendingVerification": "Errore nell'invio della verifica",
               "confirm": "Confermare"
+            },
+            "errorMsg" : {
+              "nameError": "Il nome deve essere tra uno e venti caratteri",
+              "lastnameError": "Il cognome deve essere tra uno e venti caratteri"
             }
           },
           "support": {
@@ -881,7 +885,8 @@
         "title": "Invita le persone",
         "textarea": "Inserire il testo del messaggio (opzionale)",
         "notifyUsers": "Notifica agli utenti",
-        "instructions": "Premere invio o spazio per separare le e-mail",
+        "instructions": "Premi Invio o virgola per inserire altri indirizzi email",
+        "duplicatedEmail": "L'indirizzo email esiste già",
         "email": "Tipo e-mail",
         "invite": "Invitare",
         "editor": "Editore",
@@ -991,6 +996,7 @@
     "changingName": "Errore durante la modifica del nome",
     "fileAlreadyExists": "Il file con lo stesso nome esiste già",
     "folderAlreadyExists": "Esiste già una cartella con lo stesso nome",
+    "folderInvalidName": "Il nome della cartella non è valido",
     "folderCannotBeEmpty": "Il nome della cartella non può essere vuoto",
     "creatingFolder": "Errore durante la creazione della cartella",
     "sendReferralInvitation": "Impossibile inviare l'e-mail di invito",
