@@ -1338,6 +1338,7 @@
     "change": "更改",
     "download": "下载",
     "downloading": "正在下载",
+    "downloadingItems": "正在下载 {{Items}} 项...",
     "downloaded": "已下载",
     "view": "预览",
     "accessFile": "访问文件",

@@ -1265,6 +1265,7 @@
     "change": "Changer",
     "download": "Télécharger",
     "downloading": "Téléchargement",
+    "downloadingItems": "Téléchargement de {{Items}} éléments...",
     "downloaded": "Téléchargé",
     "delete": "Supprimer",
     "share": "Partager",

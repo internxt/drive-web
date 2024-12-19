@@ -17,11 +17,13 @@ export default async function downloadFolderUsingBlobs({
   folder,
   decryptedCallback,
   updateProgressCallback,
+  incrementItemCount,
   isWorkspace,
 }: {
   folder: DriveFolderData;
   decryptedCallback?: () => void;
   updateProgressCallback?: (progress: number) => void;
+  incrementItemCount?: () => void;
   isWorkspace: boolean;
 }): Promise<void> {
   const zip = new JSZip();
@@ -57,6 +59,7 @@ export default async function downloadFolderUsingBlobs({
 
             (updateProgressCallback || (() => undefined))(totalProgress);
           },
+          incrementItemCount,
           isWorkspace,
         },
       );

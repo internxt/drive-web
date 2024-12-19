@@ -17,6 +17,7 @@ type TaskLoggerActionsProps = {
   isHovered: boolean;
   status: string;
   progress: string;
+  nItems: string;
   cancelAction: () => void;
   retryAction: () => void;
   isUploadTask: boolean;
@@ -54,6 +55,7 @@ export const TaskLoggerActions = ({
   isHovered,
   status,
   progress,
+  nItems,
   cancelAction,
   retryAction,
   isUploadTask,
@@ -66,6 +68,7 @@ export const TaskLoggerActions = ({
     <Action
       isHovered={isHovered}
       progress={progress}
+      nItems={nItems}
       cancelAction={() => {
         cancelAction();
         removeUpload(taskId);
