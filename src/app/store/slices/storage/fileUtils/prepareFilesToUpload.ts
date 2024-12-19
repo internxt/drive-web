@@ -3,7 +3,7 @@ import { checkDuplicatedFiles } from './checkDuplicatedFiles';
 import { processDuplicateFiles } from './processDuplicateFiles';
 import { FileToUpload } from '../../../../drive/services/file.service/types';
 
-export const BATCH_SIZE = 200;
+const BATCH_SIZE = 200;
 
 export const prepareFilesToUpload = async ({
   files,
