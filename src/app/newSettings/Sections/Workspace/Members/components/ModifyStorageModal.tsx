@@ -53,7 +53,8 @@ export const ModifyStorageModal = (): JSX.Element => {
 
   const handleSliderChange = (newUserStorage: number) => {
     const roundedSpace = Math.round(newUserStorage);
-    setNewStorage(roundedSpace);
+    const validatedSpace = Math.min(roundedSpace, maxStorageForWorkspaceMember);
+    setNewStorage(validatedSpace);
   };
 
   const onClose = () => {
