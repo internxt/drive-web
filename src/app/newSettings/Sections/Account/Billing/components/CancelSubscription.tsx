@@ -1,5 +1,5 @@
 import { t } from 'i18next';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import CancelSubscriptionModal from '../../../Workspace/Billing/CancelSubscriptionModal';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 

@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { SdkFactory } from '../../factory/sdk';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { uiActions } from '../../../store/slices/ui';
-import { Spinner } from '@internxt/internxtui';
+import { Loader } from '@internxt/ui';
 
 const State = ({ icon, title, subtitle }: { icon: JSX.Element; title: string; subtitle: string }) => (
   <div className="flex w-full max-w-xs flex-col items-center space-y-5">
@@ -70,7 +70,7 @@ export default function VerifyEmailView(): JSX.Element {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex w-full max-w-xl flex-col items-center space-y-5">
-        {status === 'loading' ? <Spinner size={24} /> : <State {...layout[status]} />}
+        {status === 'loading' ? <Loader size={24} /> : <State {...layout[status]} />}
 
         {status !== 'loading' && (
           <Link

@@ -1,5 +1,5 @@
 import { UploadSimple } from '@phosphor-icons/react';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { ChangeEvent, LegacyRef } from 'react';
 import { t } from 'i18next';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';

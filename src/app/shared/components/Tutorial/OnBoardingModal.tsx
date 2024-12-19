@@ -3,7 +3,7 @@ import WindowsLogo from 'assets/windows_logo.svg';
 import LinuxLogo from 'assets/linux_logo.svg';
 import DevicesSVG from 'assets/devices.svg';
 import XSVG from 'assets/close_x.svg';
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import desktopService from '../../../core/services/desktop.service';
@@ -68,7 +68,7 @@ export const OnboardingModal: FC<OnBoardingModalProps> = ({ onCloseModalPressed 
     <>
       {isImageLoading ? (
         <div className="flex w-72 items-center justify-center">
-          <Spinner className="h-6 w-6" />
+          <Loader classNameLoader="h-6 w-6" />
           <div className="hidden">{DevicesImg}</div>
         </div>
       ) : (

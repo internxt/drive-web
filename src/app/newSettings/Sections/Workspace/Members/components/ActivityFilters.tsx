@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { t } from 'i18next';
 import { FunnelSimple } from '@phosphor-icons/react';
 
-import { Button, RadioButton } from '@internxt/internxtui';
+import { Button, RadioButton } from '@internxt/ui';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 
 interface ActivityFiltersProps {

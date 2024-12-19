@@ -8,7 +8,6 @@ import {
 } from 'app/drive/services/database.service';
 import { DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem, PreviewFileItem } from 'app/share/types';
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { DriveItemActions } from '../../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import {
   contextMenuDriveItemShared,
@@ -16,13 +15,14 @@ import {
   contextMenuDriveNotSharedLink,
   contextMenuTrashItems,
 } from '../../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import { MenuItemType } from '@internxt/ui';
 
 interface DownloadedBlobData {
   blob: Blob;
   shouldHandleFileThumbnail: boolean;
 }
 
-export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem>;
+export type TopBarActionsMenu = Array<MenuItemType<DriveItemData>> | Array<MenuItemType<AdvancedSharedItem>>;
 
 type PathProps = 'drive' | 'trash' | 'shared' | 'recents';
 
@@ -72,7 +72,7 @@ const topDropdownBarActionsMenu = ({
     onDeletePermanentlyButtonClicked,
   } = driveItemActions;
 
-  const driveActionsMenu = (): ListItemMenu<DriveItemData> => {
+  const driveActionsMenu = (): Array<MenuItemType<DriveItemData>> => {
     if (isSharedItem) {
       return contextMenuDriveItemShared({
         copyLink: onCopyLinkButtonClicked,
@@ -102,7 +102,7 @@ const topDropdownBarActionsMenu = ({
     }
   };
 
-  const recentsActionsMenu = (): ListItemMenu<DriveItemData> => {
+  const recentsActionsMenu = (): Array<MenuItemType<DriveItemData>> => {
     return contextMenuDriveNotSharedLink({
       shareLink: onLinkSettingsButtonClicked,
       getLink: onCopyLinkButtonClicked,
@@ -117,7 +117,7 @@ const topDropdownBarActionsMenu = ({
     });
   };
 
-  const sharedActionsMenu = (): ListItemMenu<AdvancedSharedItem> => {
+  const sharedActionsMenu = (): Array<MenuItemType<AdvancedSharedItem>> => {
     return contextMenuDriveItemSharedAFS({
       openShareAccessSettings: isOwner ? onLinkSettingsButtonClicked : undefined,
       copyLink: onCopyLinkButtonClicked,
@@ -129,7 +129,7 @@ const topDropdownBarActionsMenu = ({
     });
   };
 
-  const trashActionsMenu = (): ListItemMenu<DriveItemData> => {
+  const trashActionsMenu = (): Array<MenuItemType<DriveItemData>> => {
     return contextMenuTrashItems({
       restoreItem: onRestoreItemButtonClicked,
       deletePermanently: onDeletePermanentlyButtonClicked,

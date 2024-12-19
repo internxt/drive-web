@@ -1,8 +1,7 @@
 import { CheckoutProductCard } from '../../components/checkout/CheckoutProductCard';
 import { HeaderComponent } from '../../components/checkout/Header';
-import LoadingPulse from 'app/shared/components/LoadingPulse/LoadingPulse';
 import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { Button } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import { useForm } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
 import { AuthMethodTypes } from '../../types';
@@ -152,7 +151,7 @@ const CheckoutView = ({
               </div>
             </div>
           ) : (
-            <LoadingPulse />
+            <Loader type="pulse" />
           )}
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import Modal from '../../../../../shared/components/Modal';
 
 // TODO: MOVE TO COMPONENTS LIBRARY

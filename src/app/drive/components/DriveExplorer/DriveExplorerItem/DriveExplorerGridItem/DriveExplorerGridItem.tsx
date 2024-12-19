@@ -2,7 +2,6 @@ import { createRef, useEffect, useRef, useState } from 'react';
 import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
 import { items } from '@internxt/lib';
 
-import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
 import iconService from '../../../../services/icon.service';
 import useForceUpdate from '../../../../../core/hooks/useForceUpdate';
 import { DriveExplorerItemProps } from '..';
@@ -11,14 +10,15 @@ import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 
 import './DriveExplorerGridItem.scss';
-import { Menu } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import transformItemService from 'app/drive/services/item-transform.service';
+import { Dropdown } from '@internxt/ui';
+import { fileDropdownActions } from './utils/fileDropdownActions';
 
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const [itemRef] = useState(createRef<HTMLDivElement>());
-  const itemButton = useRef<HTMLButtonElement | null>(null);
+  const itemButton = useRef<HTMLDivElement | null>(null);
   const [lastRowItem, setLastRowItem] = useState(false);
   const { item } = props;
   const { isItemSelected, isEditingName } = useDriveItemStoreProps();
@@ -94,13 +94,20 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const handleRightClick = (e) => {
     e.preventDefault();
     if (isItemSelected(item)) {
-      itemButton.current?.click();
+      setTimeout(() => {
+        itemButton.current?.parentElement?.click();
+      }, 100);
     } else {
       onItemClicked();
       setTimeout(() => {
-        itemButton.current?.click();
+        itemButton.current?.parentElement?.click();
       }, 100);
     }
+  };
+
+  const getActions = (item) => {
+    const actions = fileDropdownActions(item);
+    return actions;
   };
 
   const template = connectDropTarget(
@@ -117,29 +124,20 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       draggable={false}
       onKeyDown={(e) => {}}
     >
-      <Menu as="div" className="absolute right-2 top-2 z-10">
-        {({ open, close }) => (
-          <div className="relative">
-            <Menu.Button
-              id="dropdown-basic"
-              ref={itemButton}
-              className="h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-primary opacity-0 transition group-hover:opacity-100"
-            >
-              <UilEllipsisH className="h-full w-full" />
-            </Menu.Button>
-            <Menu.Items
-              data-tooltip-place="top"
-              style={{
-                position: 'absolute',
-                zIndex: 999,
-                right: lastRowItem ? 5 : 'auto',
-              }}
-            >
-              <DriveItemDropdownActions openDropdown={open} item={item} />
-            </Menu.Items>
+      <div className="absolute right-2 top-2 z-10">
+        <Dropdown
+          classButton="h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-primary opacity-0 transition group-hover:opacity-100"
+          classMenuItems={`absolute ${lastRowItem ? 'right-5' : 'right-auto'}`}
+          openDirection={`${lastRowItem ? 'right' : 'left'}`}
+          dropdownActionsContext={getActions(item)}
+          item={item}
+        >
+          <div ref={itemButton}>
+            <UilEllipsisH className="h-full w-full" />
           </div>
-        )}
-      </Menu>
+        </Dropdown>
+      </div>
+
       <div className="flex h-4/6 w-full items-center justify-center drop-shadow-soft">
         {item.currentThumbnail ? (
           <div className="h-full w-full">

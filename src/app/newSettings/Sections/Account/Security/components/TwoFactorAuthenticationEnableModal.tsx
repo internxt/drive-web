@@ -1,7 +1,7 @@
 import { Warning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import authService, { generateNew2FA } from 'app/auth/services/auth.service';
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import Modal from 'app/shared/components/Modal';
 import appStoreIcon from 'app/../assets/icons/app-store.svg';
 import playStoreIcon from 'app/../assets/icons/play-store.svg';
@@ -78,7 +78,7 @@ const TwoFactorAuthenticationEnableModal = ({
           </div>
         </>
       ) : (
-        <Spinner className="h-7 w-7 text-gray-50" />
+        <Loader classNameLoader="h-7 w-7 text-gray-50" />
       )}
     </div>
   );
