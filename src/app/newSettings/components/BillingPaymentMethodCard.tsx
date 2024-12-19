@@ -28,14 +28,14 @@ const BillingPaymentMethodCard = ({
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const userFullName = user.name && user.lastname ? `${user.name} ${user.lastname}` : user.name || user.lastname;
   const [isEditPaymentMethodModalOpen, setIsEditPaymentMethodModalOpen] = useState<boolean>(false);
-  const [isPaymentMethod, setIsPaymentMethod] = useState<boolean>(false);
+  const [existsPaymentMethod, setExistsPaymentMethod] = useState<boolean>(false);
   const defaultPaymentMethod = useDefaultPaymentMethod(userFullName, userType);
 
   useEffect(() => {
     (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.card) ||
     (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.type)
-      ? setIsPaymentMethod(true)
-      : setIsPaymentMethod(false);
+      ? setExistsPaymentMethod(true)
+      : setExistsPaymentMethod(false);
   }, [defaultPaymentMethod]);
 
   const cardBrands: Record<PaymentMethod['card']['brand'], string> = {
@@ -64,7 +64,7 @@ const BillingPaymentMethodCard = ({
         <span className="text-xl font-medium">{t('preferences.workspace.billing.paymentMethod.title')}</span>
         {subscription && subscription !== 'free' && (
           <Button variant="secondary" onClick={onEditPaymentMethodButtonClicked}>
-            {isPaymentMethod ? (
+            {existsPaymentMethod ? (
               <span>{t('preferences.workspace.billing.paymentMethod.editButton')}</span>
             ) : (
               <span>{t('preferences.workspace.billing.paymentMethod.addButton')}</span>
@@ -73,7 +73,7 @@ const BillingPaymentMethodCard = ({
         )}
       </div>
       <Card className={`${defaultPaymentMethod.tag === 'empty' && 'h-20'}`}>
-        {isPaymentMethod ? (
+        {existsPaymentMethod ? (
           <div className="flex">
             {defaultPaymentMethod.card ? (
               <>
