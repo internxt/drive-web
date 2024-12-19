@@ -16,27 +16,14 @@ import { checkFolderDuplicated } from '../folderUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from '../folderUtils/getUniqueFolderName';
 import { StorageState } from '../storage.model';
 import { IRoot } from '../types';
-import { BATCH_SIZE } from '../fileUtils/prepareFilesToUpload';
-
-const getDuplicatedFilesBySlots = (
-  items: (DriveFileData | File)[] | (IRoot | DriveFolderData)[],
-): ((DriveFileData | File)[] | (IRoot | DriveFolderData)[])[] => {
-  const slots: ((DriveFileData | File)[] | (IRoot | DriveFolderData)[])[] = [];
-
-  for (let i = 0; i < items.length; i += BATCH_SIZE) {
-    const batch = items.slice(i, i + BATCH_SIZE);
-    slots.push(batch);
-  }
-
-  return slots;
-};
+import { getFilesBySlots } from '../fileUtils/getFilesBySlots';
 
 export const handleRepeatedUploadingFiles = async (
   files: (DriveFileData | File)[],
   dispatch: Dispatch,
   destinationFolderUuid: string,
 ): Promise<(DriveFileData | File)[]> => {
-  const slots = getDuplicatedFilesBySlots(files);
+  const slots = getFilesBySlots(files);
   const promises = slots.map((slot) => checkDuplicatedFiles(slot as (DriveFileData | File)[], destinationFolderUuid));
 
   const duplicatedFiles = await Promise.all(promises);
@@ -79,7 +66,7 @@ export const handleRepeatedUploadingFolders = async (
   dispatch: Dispatch,
   destinationFolderUuid: string,
 ): Promise<(DriveFolderData | IRoot)[]> => {
-  const slots = getDuplicatedFilesBySlots(folders);
+  const slots = getFilesBySlots(folders as (IRoot | DriveFolderData)[]);
   const promises = slots.map((slot) =>
     checkFolderDuplicated(slot as (DriveFolderData | IRoot)[], destinationFolderUuid),
   );
