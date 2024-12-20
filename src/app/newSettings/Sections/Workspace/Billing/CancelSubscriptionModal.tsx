@@ -103,7 +103,6 @@ const CancelSubscriptionModal = ({
           onClose={onClose}
           cancelSubscription={cancelSubscription}
           cancellingSubscription={cancellingSubscription}
-          setStep={setStep}
           currentPlanInfo={currentPlanInfo}
           currentUsage={currentUsage}
         />
@@ -172,7 +171,6 @@ const Step2 = ({
   currentUsage: number;
   cancellingSubscription: boolean;
   cancelSubscription: () => void;
-  setStep: Dispatch<SetStateAction<2 | 1>>;
   onClose: () => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
