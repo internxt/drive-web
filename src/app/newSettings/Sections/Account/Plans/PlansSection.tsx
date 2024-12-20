@@ -219,7 +219,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     setIsUpdatingSubscription(false);
   };
 
-  async function cancelSubscription(feedback: string) {
+  async function cancelSubscription() {
     setCancellingSubscription(true);
     try {
       await paymentService.cancelSubscription(selectedSubscriptionType);
