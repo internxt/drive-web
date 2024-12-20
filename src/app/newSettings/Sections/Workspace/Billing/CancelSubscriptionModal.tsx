@@ -85,14 +85,6 @@ const CancelSubscriptionModal = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      {step === 2 && (
-        <>
-          <h1 className="text-2xl font-medium text-gray-80">
-            {translate('views.account.tabs.billing.cancelSubscriptionModal.title')}
-          </h1>
-          {isIndividual && <h2 className="text-base font-light text-gray-50">{step - 1} of 2</h2>}
-        </>
-      )}
       {isIndividual && step === 1 && (
         <Step1 currentPlanName={currentPlanName} applyCoupon={applyCoupon} setStep={setStep} />
       )}
