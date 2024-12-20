@@ -32,7 +32,7 @@ const CancelSubscriptionModal = ({
 }): JSX.Element => {
   const isIndividual = userType === UserType.Individual;
   const { translate } = useTranslationContext();
-  const [step, setStep] = useState<1 | 2 | 3>(!isIndividual ? 3 : 2);
+  const [step, setStep] = useState<1 | 2>(2);
   const [couponAvailable, setCouponAvailable] = useState(false);
   const dispatch = useAppDispatch();
 
@@ -85,7 +85,7 @@ const CancelSubscriptionModal = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      {(step === 2 || step === 3) && (
+      {step === 2 && (
         <>
           <h1 className="text-2xl font-medium text-gray-80">
             {translate('views.account.tabs.billing.cancelSubscriptionModal.title')}
@@ -118,7 +118,7 @@ const Step1 = ({
   applyCoupon,
 }: {
   currentPlanName: string;
-  setStep: Dispatch<SetStateAction<3 | 2 | 1>>;
+  setStep: Dispatch<SetStateAction<2 | 1>>;
   applyCoupon: () => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -172,7 +172,7 @@ const Step2 = ({
   currentUsage: number;
   cancellingSubscription: boolean;
   cancelSubscription: () => void;
-  setStep: Dispatch<SetStateAction<3 | 2 | 1>>;
+  setStep: Dispatch<SetStateAction<2 | 1>>;
   onClose: () => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -248,9 +248,7 @@ const Step2 = ({
           className={'shadow-subtle-hard'}
           variant="secondary"
           disabled={cancellingSubscription}
-          onClick={() => {
-            cancelSubscription();
-          }}
+          onClick={cancelSubscription}
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.cancelSubscription')}
         </Button>
