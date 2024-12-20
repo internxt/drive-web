@@ -25,7 +25,7 @@ export default function UniversalLinkSuccessView(): JSX.Element {
     if (!newToken) return AppView.Login;
     return `${DEEPLINK_SUCCESS_REDIRECT_BASE}?mnemonic=${btoa(user.mnemonic)}&token=${btoa(token)}&newToken=${btoa(
       newToken,
-    )}`;
+    )}&privateKey=${btoa(user.privateKey)}`;
   };
 
   // Should redirect to login in the useEffect
