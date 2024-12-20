@@ -252,13 +252,7 @@ const Step2 = ({
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.cancelSubscription')}
         </Button>
-        <Button
-          className="ml-2 shadow-subtle-hard"
-          disabled={cancellingSubscription}
-          onClick={() => {
-            onClose();
-          }}
-        >
+        <Button className="ml-2 shadow-subtle-hard" disabled={cancellingSubscription} onClick={onClose}>
           {translate('views.account.tabs.billing.cancelSubscriptionModal.keepSubscription')}
         </Button>
       </div>
