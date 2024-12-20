@@ -20,6 +20,7 @@ interface LogsViewProps {
 interface HeaderItemsProps {
   title: string;
   isSortByAvailable: boolean;
+  width: string;
   sortKey?: 'updatedAt' | 'platform' | 'type';
   defaultSort?: 'ASC' | 'DESC';
 }
@@ -85,23 +86,27 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
     {
       title: translate('preferences.workspace.accessLogs.headerTable.date'),
       isSortByAvailable: true,
+      width: '165px',
       sortKey: 'updatedAt',
       defaultSort: 'ASC',
     },
     {
       title: translate('preferences.workspace.accessLogs.headerTable.member'),
       isSortByAvailable: false,
+      width: '191px',
     },
     {
       title: translate('preferences.workspace.accessLogs.headerTable.activity'),
       isSortByAvailable: true,
       sortKey: 'type',
+      width: '161px',
       defaultSort: 'ASC',
     },
     {
       title: translate('preferences.workspace.accessLogs.headerTable.access'),
       isSortByAvailable: true,
       sortKey: 'platform',
+      width: '120px',
       defaultSort: 'ASC',
     },
   ];
@@ -126,9 +131,10 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
             key={header.title}
             onClick={() => canPerformAction && onSortByChange(header)}
             isHeader
-            className={`py-3 text-left font-medium ${canPerformAction && 'cursor-pointer'}`}
+            className={`py-3 text-left font-medium ${canPerformAction ? 'cursor-pointer' : ''}`}
+            style={{ width: header.width }}
           >
-            <div className="flex h-full flex-row justify-between pl-4">
+            <div className="flex h-full w-full flex-row justify-between pl-4">
               <div className="flex w-full flex-row items-center gap-2">
                 {header.title}
                 {canPerformAction &&
