@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TableBody, TableCell, TableHeader, TableRow } from '@internxt/ui';
+import { Table, TableBody, TableCell, TableHeader, TableRow } from '@internxt/ui';
 import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
 
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -11,7 +11,6 @@ import { WorkspaceLogPlatform, WorkspaceLogType } from '@internxt/sdk/dist/works
 import dateService from 'app/core/services/date.service';
 import { useDebounce } from 'hooks/useDebounce';
 import { getEnumKey } from '../../../utils/LogsUtils';
-import { Table } from 'react-bootstrap';
 import { LoadingRowSkeleton } from 'app/shared/tables/LoadingSkeleton';
 
 interface LogsViewProps {
@@ -120,28 +119,31 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
 
   const renderHeader = () => (
     <TableRow>
-      {headerList.map((header, index) => (
-        <TableCell
-          key={header.title}
-          onClick={() => header.isSortByAvailable && onSortByChange(header)}
-          isHeader
-          className={`py-3 text-left font-medium ${header.isSortByAvailable && 'cursor-pointer'}`}
-        >
-          <div className="flex h-full flex-row justify-between pl-4">
-            <div className="flex w-full flex-row items-center gap-2">
-              {header.title}
-              {header.isSortByAvailable &&
-                orderBy.key === header.sortKey &&
-                (orderBy?.direction === 'ASC' ? (
-                  <ArrowUp size={12} weight="bold" />
-                ) : (
-                  <ArrowDown size={12} weight="bold" />
-                ))}
+      {headerList.map((header, index) => {
+        const canPerformAction = header.isSortByAvailable && !isLoading && accessLogs.length > 0;
+        return (
+          <TableCell
+            key={header.title}
+            onClick={() => canPerformAction && onSortByChange(header)}
+            isHeader
+            className={`py-3 text-left font-medium ${canPerformAction && 'cursor-pointer'}`}
+          >
+            <div className="flex h-full flex-row justify-between pl-4">
+              <div className="flex w-full flex-row items-center gap-2">
+                {header.title}
+                {canPerformAction &&
+                  orderBy.key === header.sortKey &&
+                  (orderBy?.direction === 'ASC' ? (
+                    <ArrowUp size={12} weight="bold" />
+                  ) : (
+                    <ArrowDown size={12} weight="bold" />
+                  ))}
+              </div>
+              {index === headerList.length - 1 ? undefined : <div className="border border-gray-10" />}
             </div>
-            {index === headerList.length - 1 ? undefined : <div className="border border-gray-10" />}
-          </div>
-        </TableCell>
-      ))}
+          </TableCell>
+        );
+      })}
     </TableRow>
   );
 
@@ -217,27 +219,30 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
           onSearchMembersInputValueChange={setSearchMembersInputValue}
           translate={translate}
         />
-        {accessLogs.length > 0 ? (
-          <ScrollableTable scrollable loadMoreItems={loadMoreItems} hasMoreItems={hasMoreItems} isLoading={isLoading}>
-            <Table className={'min-w-full rounded-lg border border-gray-10'}>
-              <TableHeader
-                className={
-                  'sticky -top-0.5 z-10 border-b border-t border-gray-10 bg-gray-5 font-semibold text-gray-100'
-                }
-              >
-                {renderHeader()}
-              </TableHeader>
-              <TableBody className={'bg-surface dark:bg-gray-1'}>
-                {renderBody()}
-                {isLoading && <LoadingRowSkeleton numberOfColumns={headerList.length ?? 4} />}
-              </TableBody>
-            </Table>
-          </ScrollableTable>
-        ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center">
-            <p>{translate('preferences.workspace.accessLogs.noResults')}</p>
-          </div>
-        )}
+
+        <ScrollableTable
+          scrollable={!isLoading && accessLogs.length > 0}
+          loadMoreItems={loadMoreItems}
+          hasMoreItems={hasMoreItems}
+          isLoading={isLoading}
+        >
+          <Table className={'min-w-full rounded-t-lg border border-gray-10'}>
+            <TableHeader
+              className={'sticky -top-0.5 z-10 border-b border-t border-gray-10 bg-gray-5 font-semibold text-gray-100'}
+            >
+              {renderHeader()}
+            </TableHeader>
+            <TableBody className={'bg-surface dark:bg-gray-1'}>
+              {isLoading && <LoadingRowSkeleton numberOfColumns={headerList.length ?? 4} />}
+              {!isLoading && accessLogs.length > 0 && renderBody()}
+            </TableBody>
+          </Table>
+          {!isLoading && accessLogs.length === 0 && (
+            <div className="flex h-full w-full flex-col items-center justify-center">
+              <p>{translate('preferences.workspace.accessLogs.noResults')}</p>
+            </div>
+          )}
+        </ScrollableTable>
       </div>
     </Section>
   );
