@@ -6,7 +6,7 @@ import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-
 import navigationService from '../../../core/services/navigation.service';
 import workspacesService from '../../../core/services/workspace.service';
 import { AppView } from '../../../core/types';
-import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import { hybridEncryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import {
   deleteWorkspaceAvatarFromDatabase,
   saveWorkspaceAvatarToDatabase,
@@ -148,11 +148,12 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         navigationService.push(AppView.Login);
         return;
       }
-      const { mnemonic, publicKey } = user;
+      const { mnemonic } = user;
 
-      const encryptedMnemonic = await encryptMessageWithPublicKey({
+      const encryptedMnemonic = await hybridEncryptMessageWithPublicKey({
         message: mnemonic,
-        publicKeyInBase64: publicKey,
+        publicKeyInBase64: user.keys.ecc.publicKey,
+        publicKyberKeyBase64: user.keys.kyber.publicKey,
       });
 
       const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
