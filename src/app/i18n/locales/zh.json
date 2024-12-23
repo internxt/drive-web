@@ -908,6 +908,7 @@
         "cancel": "取消",
         "error": {
           "errorInviting": "傳送邀請至 {{email}} 時出錯",
+          "userAlreadyInvited": "用户 {{email}} 已被邀请",
           "acceptedError": "接受共享文件夹邀请时出错",
           "declinedError": "拒绝共享文件夹邀请时出错"
         }
@@ -1005,6 +1006,7 @@
     "folderAlreadyExists": "已存在同名文件夹",
     "folderInvalidName": "文件夹名称无效",
     "folderCannotBeEmpty": "文件夹名称不能为空",
+    "fileCannotBeEmpty": "文件名不能为空",
     "creatingFolder": "创建文件夹时出错",
     "sendReferralInvitation": "无法发送邀请电子邮件",
     "sendClaimEmail": "无法发送索赔电子邮件",

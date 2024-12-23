@@ -836,6 +836,7 @@
         "cancel": "Abbrechen",
         "error": {
           "errorInviting": "Fehler beim Senden der Einladung an {{email}}",
+          "userAlreadyInvited": "Der Benutzer {{email}} wurde bereits eingeladen",
           "acceptedError": "Fehler beim Akzeptieren der Einladung zum gemeinsamen Ordner",
           "declinedError": "Fehler beim Ablehnen der Einladung zu einem gemeinsamen Ordner"
         }
@@ -957,6 +958,7 @@
     "folderAlreadyExists": "Ein Ordner mit demselben Namen existiert bereits",
     "folderInvalidName": "Der Ordnername ist ungültig",
     "folderCannotBeEmpty": "Der Ordnername darf nicht leer sein",
+    "fileCannotBeEmpty": "Der Dateiname darf nicht leer sein",
     "creatingFolder": "Fehler beim Erstellen des Ordners",
     "sendReferralInvitation": "Einladungs-E-Mail konnte nicht gesendet werden",
     "sendClaimEmail": "Anspruchs-E-Mail konnte nicht gesendet werden",

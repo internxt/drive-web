@@ -901,6 +901,7 @@
         "cancel": "Annulla",
         "error": {
           "errorInviting": "Errore durante l'invio dell'invito a {{email}}",
+          "userAlreadyInvited": "L'utente {{email}} è già stato invitato",
           "acceptedError": "Errore nell'accettazione dell'invito alla cartella condivisa",
           "declinedError": "Errore nel rifiuto dell'invito alla cartella condivisa"
         }
@@ -998,6 +999,7 @@
     "folderAlreadyExists": "Esiste già una cartella con lo stesso nome",
     "folderInvalidName": "Il nome della cartella non è valido",
     "folderCannotBeEmpty": "Il nome della cartella non può essere vuoto",
+    "fileCannotBeEmpty": "Il nome del file non può essere vuoto",
     "creatingFolder": "Errore durante la creazione della cartella",
     "sendReferralInvitation": "Impossibile inviare l'e-mail di invito",
     "sendClaimEmail": "Impossibile inviare l'e-mail di richiesta di risarcimento",

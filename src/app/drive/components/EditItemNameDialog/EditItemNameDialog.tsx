@@ -57,7 +57,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
           setIsLoading(false);
         });
     } else {
-      setError(translate('error.folderCannotBeEmpty'));
+      setError(item?.isFolder ? translate('error.folderCannotBeEmpty') : translate('error.fileCannotBeEmpty'));
     }
   };
 

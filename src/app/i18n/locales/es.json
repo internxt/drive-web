@@ -887,6 +887,7 @@
         "cancel": "Cancelar",
         "error": {
           "errorInviting": "Error al enviar la invitación a {{email}}",
+          "userAlreadyInvited": "El usuario {{email}} ya ha sido invitado",
           "acceptedError": "Error al aceptar la invitación a la carpeta compartida",
           "declinedError": "Error al rechazar la invitación a la carpeta compartida"
         }
@@ -984,6 +985,7 @@
     "folderAlreadyExists": "Ya existe una carpeta con el mismo nombre",
     "folderInvalidName": "El nombre de la carpeta no es válido",
     "folderCannotBeEmpty": "El nombre de la carpeta no puede estar vacío",
+    "fileCannotBeEmpty": "El nombre del archivo no puede estar vacío",
     "creatingFolder": "Error durante la creación de la carpeta",
     "sendReferralInvitation": "No se ha podido enviar el correo electrónico de invitación",
     "sendClaimEmail": "No se pudo enviar correo electrónico de reclamación",

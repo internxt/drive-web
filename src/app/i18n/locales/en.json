@@ -909,6 +909,7 @@
         "cancel": "Cancel",
         "error": {
           "errorInviting": "Error sending invitation to {{email}}",
+          "userAlreadyInvited": "The user {{email}} has already been invited",
           "acceptedError": "Error accepting invitation to shared folder",
           "declinedError": "Error declining invitation to shared folder"
         }
@@ -1006,6 +1007,7 @@
     "folderAlreadyExists": "A folder with the same name already exists",
     "folderInvalidName": "The folder name is not valid",
     "folderCannotBeEmpty": "Folder name cannot be empty",
+    "fileCannotBeEmpty": "File name cannot be empty",
     "creatingFolder": "Error during folder creation",
     "sendReferralInvitation": "Could not send invitation email",
     "sendClaimEmail": "Could not send claim email",

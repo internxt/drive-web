@@ -842,6 +842,7 @@
         "cancel": "Annuler",
         "error": {
           "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}",
+          "userAlreadyInvited": "L'utilisateur {{email}} a déjà été invité",
           "acceptedError": "Erreur lors de l'acceptation de l'invitation au dossier partagé",
           "declinedError": "Erreur lors du refus de l'invitation au dossier partagé"
         }
@@ -939,6 +940,7 @@
     "folderAlreadyExists": "Un dossier portant le même nom existe déjà",
     "folderInvalidName": "Le nom du dossier n'est pas valide",
     "folderCannotBeEmpty": "Le nom du dossier ne peut pas être vide",
+    "fileCannotBeEmpty": "Le nom du fichier ne peut pas être vide",
     "creatingFolder": "Erreur lors de la création d'un dossier",
     "sendReferralInvitation": "Impossible d'envoyer le courriel d'invitation",
     "sendClaimEmail": "Impossible d'envoyer un courriel de réclamation",

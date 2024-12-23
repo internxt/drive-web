@@ -871,6 +871,7 @@
         "cancel": "取消",
         "error": {
           "errorInviting": "向{{email}}發送邀請時出錯",
+          "userAlreadyInvited": "使用者 {{email}} 已被邀請",
           "acceptedError": "接受共享文件夾邀請時出錯",
           "declinedError": "拒絕共享文件夾邀請時出錯"
         }
@@ -968,6 +969,7 @@
     "folderAlreadyExists": "已存在具有相同名稱的文件夾",
     "folderInvalidName": "文件夾名稱無效",
     "folderCannotBeEmpty": "文件夾名稱不能為空",
+    "fileCannotBeEmpty": "檔案名稱不能為空",
     "creatingFolder": "創建文件夾時出錯",
     "sendReferralInvitation": "無法發送邀請電子郵件",
     "sendClaimEmail": "無法發送索賠郵件",

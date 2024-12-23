@@ -128,7 +128,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
-  const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
   const { onCloseDialog } = props;
 
@@ -885,7 +884,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   return (
-    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading || isToastNotificationOpen}>
+    <Modal className="p-0 overflow-y-auto" isOpen={isOpen} onClose={onClose} preventClosing={isLoading}>
       <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
         <Header view={view} />
       </div>
