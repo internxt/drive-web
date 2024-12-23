@@ -61,24 +61,6 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     setEmailAccent('');
   }, [email]);
 
-  const showDuplicateError = () => {
-    const splitEmail = email.split(',');
-    const emailToAdd = splitEmail[0];
-    const userInvitedEmail = emailToAdd;
-    const userInvitedRole = userRole;
-    const userInvited = { email: userInvitedEmail, userRole: userInvitedRole, isNewUser: false };
-    const isDuplicated = usersToInvite.find((user) => user.email === userInvited.email);
-    if (isDuplicated) {
-      setEmailAccent('error');
-      if (isDuplicated) {
-        notificationsService.show({
-          text: translate('modals.shareModal.invite.duplicatedEmail'),
-          type: ToastType.Error,
-        });
-      }
-    }
-  };
-
   const onAddInviteUser = async () => {
     setIsAnyInviteLoading(true);
     const splitEmail = email.split(',');
@@ -104,14 +86,13 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
       setEmail('');
     } else {
       setEmailAccent('error');
-      /*if (isDuplicated) {
+      if (isDuplicated) {
         notificationsService.show({
           text: translate('modals.shareModal.invite.duplicatedEmail'),
           type: ToastType.Error,
         });
-      }*/
+      }
     }
-    showDuplicateError();
     setIsAnyInviteLoading(false);
   };
 
@@ -202,10 +183,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
             className="mr-2 w-full"
             required
             variant="email"
-            onChange={(e) => {
-              console.log('email changed');
-              setEmail(e);
-            }}
+            onChange={(e) => setEmail(e)}
             accent={emailAccent === 'error' ? 'error' : undefined}
             name="email"
             value={email}
