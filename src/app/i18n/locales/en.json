@@ -1763,6 +1763,36 @@
         "empty": {
           "text": "No previous invoices"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "title": "Filter",
+          "searchMembers": "Search members",
+          "filters": "Filters",
+          "clear": "Clear",
+          "activity": {
+            "title": "Activity",
+            "Login": "Signed in",
+            "ChangedPassword": "Changed password",
+            "Logout": "Signed out",
+            "ShareFile": "Shared file",
+            "ShareFolder": "Shared folder",
+            "DeleteFile": "Deleted file",
+            "DeleteFolder": "Deleted folder"
+          },
+          "platform": { "title": "Platform", "Web": "Web", "Mobile": "Mobile", "Desktop": "Desktop" },
+          "dateRange": {
+            "title": "Date range",
+            "days": "Last {{days}} days"
+          }
+        },
+        "headerTable": {
+          "date": "Date",
+          "member": "Member",
+          "activity": "Activity",
+          "access": "Access"
+        },
+        "noResults": "There are no results to show"
       }
     },
     "account": {
@@ -1837,7 +1867,8 @@
       "billing": "Billing",
       "account": "Account",
       "plans": "Plans",
-      "security": "Security"
+      "security": "Security",
+      "logs": "Logs"
     }
   },
   "workspaces": {
