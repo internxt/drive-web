@@ -5,7 +5,7 @@ import { Link, useRouteMatch } from 'react-router-dom';
 import { areCredentialsCorrect } from '../../../auth/services/auth.service';
 import userService from '../../../auth/services/user.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import Input from '../../../shared/components/Input';
 import { uiActions } from '../../../store/slices/ui';
 import { userThunks } from '../../../store/slices/user';
@@ -143,7 +143,7 @@ export default function ChangeEmailView(): JSX.Element {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex w-full max-w-xs flex-col items-center space-y-5">
-        {status === STATUS.LOADING && expired === null && <Spinner size={24} />}
+        {status === STATUS.LOADING && expired === null && <Loader size={24} />}
         {!expired && !auth ? (
           <>
             <State {...layout[STATUS.AUTH]} />

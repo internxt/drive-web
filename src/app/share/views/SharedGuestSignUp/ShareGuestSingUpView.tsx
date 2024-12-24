@@ -14,7 +14,7 @@ import { AppView, IFormValues } from 'app/core/types';
 import { decryptPrivateKey } from 'app/crypto/services/keys.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import shareService from 'app/share/services/share.service';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
 import { RootState } from 'app/store';

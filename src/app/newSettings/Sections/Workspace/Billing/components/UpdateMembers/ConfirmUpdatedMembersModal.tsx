@@ -1,4 +1,4 @@
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { StoragePlan } from '@internxt/sdk/dist/drive/payments/types';
 import { ArrowRight } from '@phosphor-icons/react';
 import { bytesToString } from 'app/drive/services/size.service';

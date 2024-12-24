@@ -3,7 +3,7 @@ import { useTranslationContext } from '../../../../../i18n/provider/TranslationP
 import { userHas2FAStored } from '../../../../../auth/services/auth.service';
 import Section from '../../../../../newSettings/Sections/General/components/Section';
 import Card from '../../../../../shared/components/Card';
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import TwoFactorAuthenticationEnableModal from './TwoFactorAuthenticationEnableModal';
 import TwoFactorAuthenticationDisableModal from './TwoFactorAuthenticationDisableModal';
 
@@ -57,7 +57,7 @@ const TwoFactorAuthentication = ({ password }: { password: string }): JSX.Elemen
             </div>
           ) : (
             <div className="flex h-10 items-center">
-              <Spinner className="block h-5 w-5 text-primary" />
+              <Loader classNameLoader="block h-5 w-5 text-primary" />
             </div>
           )}
         </div>

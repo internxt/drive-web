@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 import { DriveItemData } from '../../types';
 import deleteItems from '../../../../use_cases/trash/delete-items';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import Modal from 'app/shared/components/Modal';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { planThunks } from 'app/store/slices/plan';

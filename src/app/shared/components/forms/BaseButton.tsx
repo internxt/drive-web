@@ -1,4 +1,4 @@
-import { Spinner } from '@internxt/internxtui';
+import { Loader } from '@internxt/ui';
 interface ButtonProps {
   className?: string;
   children: JSX.Element | JSX.Element[] | string;
@@ -17,7 +17,7 @@ const BaseButton = ({ className, children, disabled, isLoading, onClick }: Butto
       onClick={onClick}
     >
       {children}
-      {isLoading && <Spinner />}
+      {isLoading && <Loader />}
     </button>
   );
 };

@@ -12,7 +12,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ReportButton from '../../../share/views/ShareView/ReportButon';
 import { ShieldCheck, Password, Key, Eye } from '@phosphor-icons/react';
 import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
-import { Avatar, Button } from '@internxt/internxtui';
+import { Avatar, Button } from '@internxt/ui';
 
 interface ShareLayoutProps {
   children: JSX.Element;

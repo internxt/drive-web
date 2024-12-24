@@ -15,7 +15,7 @@ import errorService from 'app/core/services/error.service';
 
 import Modal from 'app/shared/components/Modal';
 import { X } from '@phosphor-icons/react';
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 
 interface ShareWithTeamDialogProps {
   item: DriveItemData;
@@ -125,7 +125,7 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
             <div className="flex max-h-60 flex-col overflow-scroll">
               {isLoading ? (
                 <div className="flex h-full items-center justify-center">
-                  <Spinner className="h-7 w-7" />
+                  <Loader classNameLoader="h-7 w-7" />
                 </div>
               ) : (
                 <>
@@ -155,7 +155,7 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
               </h5>
               {isLoading ? (
                 <div className="flex h-full items-center justify-center">
-                  <Spinner className="h-7 w-7" />
+                  <Loader classNameLoader="h-7 w-7" />
                 </div>
               ) : (
                 <div className="flex max-h-60 flex-col overflow-scroll">

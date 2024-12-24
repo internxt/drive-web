@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { Question } from '@phosphor-icons/react';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import ChangePassword from 'app/auth/components/ChangePassword/ChangePassword';

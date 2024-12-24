@@ -7,7 +7,7 @@ import Modal from '../../../shared/components/Modal';
 import { X } from '@phosphor-icons/react';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import iconService from '../../../drive/services/icon.service';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { bytesToString } from '../../../drive/services/size.service';
 import date from '../../../core/services/date.service';
 import localStorageService from '../../../core/services/local-storage.service';

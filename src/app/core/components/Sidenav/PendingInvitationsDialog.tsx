@@ -4,7 +4,7 @@ import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import workspacesService from 'app/core/services/workspace.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import Modal from 'app/shared/components/Modal';
 import { useAppDispatch } from 'app/store/hooks';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';

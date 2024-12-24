@@ -26,7 +26,7 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { HTTP_CODES } from '../../../core/services/http.service';
 import AppError from '../../../core/types';
-import { Button } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import SendBanner from './SendBanner';
 import ShareItemPwdView from './ShareItemPwdView';
 
@@ -82,20 +82,6 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       }
     });
   }, []);
-
-  const Spinner = (
-    <>
-      <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-        <path
-          className="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824
-              3 7.938l3-2.647z"
-        ></path>
-      </svg>
-    </>
-  );
 
   const closePreview = () => {
     setOpenPreview(false);
@@ -320,7 +306,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
             ) : isDownloading ? (
               <>
                 {/* Download in progress */}
-                <div className="h-5 w-5 text-white">{Spinner}</div>
+                <Loader classNameContainer="h-5 w-5 text-white" />
                 <span>{translate('actions.downloading')}</span>
                 <span className="text-white/50">{progress}%</span>
               </>
@@ -336,7 +322,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       </>
     );
   } else {
-    body = <div className="h-8 w-8 text-gray-30">{Spinner}</div>;
+    body = <Loader classNameContainer="h-8 w-8 text-gray-30" />;
   }
 
   return (

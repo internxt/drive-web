@@ -1,6 +1,6 @@
 import { Transition } from '@headlessui/react';
 import { useEffect } from 'react';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 
 export default function Dialog({
   isOpen,
