@@ -130,7 +130,10 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   };
 
   const setDriveBreadcrumb = async (itemsToMove) => {
-    const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestors(itemsToMove[0].uuid);
+    const item = itemsToMove[0];
+    const itemUuid = item.uuid;
+    const itemType = item.isFolder ? 'folder' : 'file';
+    const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestorsV2(itemUuid, itemType);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore:next-line
     const fullPath = breadcrumbsList.toReversed();
@@ -143,14 +146,14 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     dispatch(storageActions.setNamePath(fullPathParsedNamesList));
 
     const currentItemUuid = navigationService.getUuid();
-    const shouldUpdateBreadcrumb = itemsToMove[0].isFolder && currentItemUuid === itemsToMove[0].uuid;
+    const shouldUpdateBreadcrumb = item.isFolder && currentItemUuid === itemUuid;
 
     if (itemsToMove.length > 1) {
       return;
     }
 
     if (shouldUpdateBreadcrumb) {
-      await getAncestorsAndSetNamePath(itemsToMove[0].uuid as string, dispatch);
+      await getAncestorsAndSetNamePath(itemUuid as string, dispatch);
     }
   };
 

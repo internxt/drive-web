@@ -87,7 +87,8 @@ const SharedItemListContainer = ({
     const itemDetails: DriveItemDetails = {
       ...shareItem,
       isShared: true,
-      userEmail: shareItem.user?.email ?? shareItem.credentials.networkUser,
+      userEmail:
+        shareItem.workspaceItemUser?.creator?.email ?? shareItem.user?.email ?? shareItem.credentials.networkUser,
       view: isOwner ? 'Drive' : 'Shared',
     };
     dispatch(uiActions.setItemDetailsItem(itemDetails));

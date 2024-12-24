@@ -126,22 +126,27 @@ const ItemDetailsDialog = ({
     modified: string,
     email: string,
   ) {
-    const uuid = item.isFolder ? item.uuid : item.folderUuid;
+    const itemType = item.isFolder ? 'folder' : 'file';
+    const itemUuid = item.uuid;
     const rootPathName = item.view;
 
-    const ancestors = await newStorageService.getFolderAncestors(uuid as string);
+    const ancestors = await newStorageService.getFolderAncestorsV2(itemUuid, itemType);
 
     const getPathName = ancestors.map((ancestor) => getItemPlainName(ancestor as unknown as DriveItemData)).reverse();
+    getPathName.shift();
 
-    if (item.isFolder) {
-      getPathName.pop();
+    let location = '/';
+    if (item.view === 'Shared') {
+      location += translate('sideNav.shared');
+      if (item.isFolder) {
+        location += getPathName.length > 0 ? '/' + getPathName.shift() : '';
+      }
+    } else {
+      if (item.isFolder) {
+        getPathName.pop();
+      }
+      location += rootPathName + (getPathName.length > 0 ? '/' + getPathName.join('/') : '');
     }
-
-    if (item.view === 'Drive') {
-      getPathName.shift();
-    }
-
-    const path = '/' + rootPathName + (getPathName.length > 0 ? '/' + getPathName.join('/') : '');
 
     const details: ItemDetailsProps = {
       name: item.name,
@@ -150,8 +155,8 @@ const ItemDetailsDialog = ({
       size: item.isFolder ? undefined : bytesToString(item.size),
       uploaded: uploaded,
       modified: modified,
-      uploadedBy: item.userEmail ?? email,
-      location: path,
+      uploadedBy: item.workspaceItemUser?.creator?.email ?? item.userEmail ?? email,
+      location,
     };
 
     return details;

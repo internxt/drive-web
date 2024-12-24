@@ -10,6 +10,7 @@ import {
 } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from '../../core/factory/sdk';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
+import { ItemType } from '@internxt/sdk/dist/workspaces/types';
 
 export async function searchItemsByName(name: string): Promise<DriveFileData[]> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
@@ -21,6 +22,15 @@ export async function searchItemsByName(name: string): Promise<DriveFileData[]> 
 export async function getFolderAncestors(uuid: string): Promise<FolderAncestor[]> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   return storageClient.getFolderAncestors(uuid);
+}
+
+export async function getFolderAncestorsV2(
+  uuid: string,
+  itemType: ItemType,
+  resourcesToken?: string,
+): Promise<FolderAncestor[]> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  return storageClient.getFolderAncestorsV2(uuid, itemType, resourcesToken);
 }
 
 export async function getFolderMeta(uuid: string, workspaceId?: string, resourcesToken?: string): Promise<FolderMeta> {
@@ -75,6 +85,7 @@ export function getFolderContentByUuid({
 const newStorageService = {
   searchItemsByName,
   getFolderAncestors,
+  getFolderAncestorsV2,
   getFolderMeta,
   getFolderTree,
   checkDuplicatedFiles,
