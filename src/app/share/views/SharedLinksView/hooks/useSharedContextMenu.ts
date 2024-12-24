@@ -53,10 +53,12 @@ const useSharedContextMenu = ({
 
     const getFolderContextMenu = (folder: AdvancedSharedItem) => {
       const userUUID = folder?.user?.uuid;
+      const isEditorUser = !isCurrentUserViewer;
+      const canHandleShareAccessSettings = isRootFolder && (isItemOwnedByCurrentUser(userUUID) || !isCurrentUserViewer);
 
       const ownerCurrentUserOptions = isItemOwnedByCurrentUser(userUUID)
         ? {
-            openShareAccessSettings: openShareAccessSettings,
+            openShareAccessSettings: canHandleShareAccessSettings ? openShareAccessSettings : undefined,
             renameItem: renameItem,
             moveItem: moveItem,
             moveToTrash: onOpenStopSharingDialog,
@@ -67,18 +69,20 @@ const useSharedContextMenu = ({
         copyLink,
         showDetails,
         downloadItem,
+        renameItem: isEditorUser ? renameItem : undefined,
         ...ownerCurrentUserOptions,
       });
     };
 
     const getItemContextMenu = (item: AdvancedSharedItem) => {
       const userUUID = item?.user?.uuid;
-      const isSubFolderAndEditorUser = !isCurrentUserViewer && !isRootFolder;
-      const isRootFolderAndIsOwner = isRootFolder && isItemOwnedByCurrentUser(userUUID);
+      const isEditorUser = !isCurrentUserViewer;
+      const canHandleShareAccessSettings = isRootFolder && (isItemOwnedByCurrentUser(userUUID) || !isCurrentUserViewer);
 
       const ownerCurrentUserOptions = isItemOwnedByCurrentUser(userUUID)
         ? {
-            openShareAccessSettings: openShareAccessSettings,
+            openShareAccessSettings: canHandleShareAccessSettings ? openShareAccessSettings : undefined,
+            renameItem: renameItem,
             moveItem: moveItem,
             moveToTrash: onOpenStopSharingDialog,
           }
@@ -93,7 +97,7 @@ const useSharedContextMenu = ({
         showDetails,
         copyLink,
         downloadItem: handleDownload,
-        renameItem: isSubFolderAndEditorUser || isRootFolderAndIsOwner ? renameItem : undefined,
+        renameItem: isEditorUser ? renameItem : undefined,
         ...ownerCurrentUserOptions,
       });
     };

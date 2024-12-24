@@ -20,7 +20,7 @@ const parsePathNames = (breadcrumbsList: FolderAncestor[]) => {
 };
 
 export const getAncestorsAndSetNamePath = async (uuid: string, dispatch) => {
-  const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestors(uuid);
+  const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestorsV2(uuid, 'folder');
   const fullPathParsedNames = parsePathNames(breadcrumbsList);
   dispatch(storageActions.setNamePath(fullPathParsedNames));
 };

@@ -171,9 +171,11 @@ const ShareItemNameField = ({ shareItem, onItemDoubleClicked, onNameClicked }) =
     <div className={'flex h-full w-full flex-row items-center space-x-4 overflow-hidden'}>
       <div className="relative flex h-10 w-10 shrink items-center justify-center">
         <Icon className="flex h-full justify-center drop-shadow-soft" />
-        <div className="absolute -bottom-0.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-surface">
-          <img src={usersIcon} width={13} alt="shared users" />
-        </div>
+        {shareItem.dateShared && (
+          <div className="absolute -bottom-0.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-surface">
+            <img src={usersIcon} width={13} alt="shared users" />
+          </div>
+        )}
       </div>
       <button
         className="w-full max-w-full truncate pr-16 text-left"
