@@ -32,7 +32,6 @@ interface UISliceState {
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
-  isToastNotificationOpen: boolean;
   isGlobalSearch: boolean;
   isShareWhithTeamDialogOpen: boolean;
 }
@@ -67,7 +66,6 @@ const initialState: UISliceState = {
   currentFileInfoMenuItem: null,
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
-  isToastNotificationOpen: false,
   isGlobalSearch: false,
   isShareWhithTeamDialogOpen: false,
 };
@@ -172,9 +170,6 @@ export const uiSlice = createSlice({
     resetState: (state: UISliceState) => {
       Object.assign(state, initialState);
     },
-    setIsToastNotificacionOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isToastNotificationOpen = action.payload;
-    },
     setIsGlobalSearch: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isGlobalSearch = action.payload;
     },
@@ -206,7 +201,6 @@ export const {
   setCurrentEditingNameDriveItem,
   setCurrentEditingNameDirty,
   setIsEditFolderNameDialog,
-  setIsToastNotificacionOpen,
   setIsGlobalSearch,
   setIsItemDetailsDialogOpen,
   setIsShareWhithTeamDialogOpen,

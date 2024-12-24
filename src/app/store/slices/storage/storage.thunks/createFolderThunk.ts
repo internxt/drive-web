@@ -106,7 +106,9 @@ export const createFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<
       if (requestOptions?.showErrors) {
         const errorMessage = action.error.message?.includes('already exists')
           ? t('error.folderAlreadyExists')
-          : t('error.creatingFolder');
+          : action.error.message?.includes('Invalid folder name')
+            ? t('error.folderInvalidName')
+            : t('error.creatingFolder');
 
         notificationsService.show({ text: errorMessage, type: ToastType.Error });
       }
