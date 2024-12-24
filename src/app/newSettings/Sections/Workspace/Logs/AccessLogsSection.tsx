@@ -1,17 +1,17 @@
-import { useState } from 'react';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@internxt/ui';
 import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
+import { useCallback, useMemo, useState } from 'react';
 
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Section from '../../../../newSettings/components/Section';
-import { ScrollableTable } from 'app/shared/tables/ScrollableTable';
-import { AccessLogsFilterOptions } from './components/AccessLogsFilterOptions';
-import { useAccessLogs } from './hooks/useAccessLogs';
 import { WorkspaceLogPlatform, WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
 import dateService from 'app/core/services/date.service';
-import { useDebounce } from 'hooks/useDebounce';
-import { getEnumKey } from '../../../utils/LogsUtils';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { LoadingRowSkeleton } from 'app/shared/tables/LoadingSkeleton';
+import { ScrollableTable } from 'app/shared/tables/ScrollableTable';
+import { useDebounce } from 'hooks/useDebounce';
+import Section from '../../../../newSettings/components/Section';
+import { getEnumKey } from '../../../utils/LogsUtils';
+import { AccessLogsFilterOptions } from './components/AccessLogsFilterOptions';
+import { useAccessLogs } from './hooks/useAccessLogs';
 
 interface LogsViewProps {
   onClosePreferences: () => void;
@@ -21,7 +21,7 @@ interface HeaderItemsProps {
   title: string;
   isSortByAvailable: boolean;
   width: string;
-  sortKey?: 'updatedAt' | 'platform' | 'type';
+  sortKey?: 'updatedAt' | 'type' | 'platform';
   defaultSort?: 'ASC' | 'DESC';
 }
 
@@ -42,15 +42,21 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
     orderBy: [orderBy.key, orderBy.direction].join(':'),
   });
 
-  function getActivityType(type: WorkspaceLogType) {
-    const getLogKey = getEnumKey(WorkspaceLogType, type);
-    return translate(`preferences.workspace.accessLogs.filterActions.activity.${getLogKey}`) || 'Unknown action';
-  }
+  const getActivityType = useCallback(
+    (type: WorkspaceLogType) => {
+      const getLogKey = getEnumKey(WorkspaceLogType, type);
+      return translate(`preferences.workspace.accessLogs.filterActions.activity.${getLogKey}`) || 'Unknown action';
+    },
+    [translate, getEnumKey],
+  );
 
-  function getPlatformType(platform: WorkspaceLogPlatform) {
-    const getPlatformKey = getEnumKey(WorkspaceLogPlatform, platform);
-    return translate(`preferences.workspace.accessLogs.filterActions.platform.${getPlatformKey}`) || 'Unknown';
-  }
+  const getPlatformType = useCallback(
+    (platform: WorkspaceLogPlatform) => {
+      const getPlatformKey = getEnumKey(WorkspaceLogPlatform, platform);
+      return translate(`preferences.workspace.accessLogs.filterActions.platform.${getPlatformKey}`) || 'Unknown';
+    },
+    [translate, getEnumKey],
+  );
 
   const handleActivityFilters = (actionType: WorkspaceLogType) => {
     const isFilterActivated = activityFilter?.some((activity) => activity === actionType);
@@ -82,44 +88,48 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
 
   const formatTime = (updatedAt: Date) => dateService.format(updatedAt, 'hh:mm A');
 
-  const headerList: HeaderItemsProps[] = [
-    {
-      title: translate('preferences.workspace.accessLogs.headerTable.date'),
-      isSortByAvailable: true,
-      width: '165px',
-      sortKey: 'updatedAt',
-      defaultSort: 'ASC',
-    },
-    {
-      title: translate('preferences.workspace.accessLogs.headerTable.member'),
-      isSortByAvailable: false,
-      width: '191px',
-    },
-    {
-      title: translate('preferences.workspace.accessLogs.headerTable.activity'),
-      isSortByAvailable: true,
-      sortKey: 'type',
-      width: '161px',
-      defaultSort: 'ASC',
-    },
-    {
-      title: translate('preferences.workspace.accessLogs.headerTable.access'),
-      isSortByAvailable: true,
-      sortKey: 'platform',
-      width: '120px',
-      defaultSort: 'ASC',
-    },
-  ];
+  const headerList = useMemo(
+    () => [
+      {
+        title: translate('preferences.workspace.accessLogs.headerTable.date'),
+        isSortByAvailable: true,
+        width: '165px',
+        sortKey: 'updatedAt' as const,
+        defaultSort: 'ASC' as const,
+      },
+      {
+        title: translate('preferences.workspace.accessLogs.headerTable.member'),
+        isSortByAvailable: false,
+        width: '191px',
+      },
+      {
+        title: translate('preferences.workspace.accessLogs.headerTable.activity'),
+        isSortByAvailable: true,
+        sortKey: 'type' as const,
+        width: '161px',
+        defaultSort: 'ASC' as const,
+      },
+      {
+        title: translate('preferences.workspace.accessLogs.headerTable.access'),
+        isSortByAvailable: true,
+        sortKey: 'platform' as const,
+        width: '120px',
+        defaultSort: 'ASC' as const,
+      },
+    ],
+    [translate],
+  );
 
   const onSortByChange = (item: HeaderItemsProps) => {
-    if (!item.isSortByAvailable) return;
+    if (!item.isSortByAvailable || !item.sortKey) return;
 
     const newSortBy = {
       key: item.sortKey,
-      direction: orderBy.key === item.sortKey ? (orderBy.direction === 'ASC' ? 'DESC' : 'ASC') : item.defaultSort,
-    };
+      direction:
+        orderBy.key === item.sortKey ? (orderBy.direction === 'ASC' ? 'DESC' : 'ASC') : (item.defaultSort ?? 'ASC'),
+    } as const;
 
-    setOrderBy(newSortBy as any);
+    setOrderBy(newSortBy);
   };
 
   const renderHeader = () => (
