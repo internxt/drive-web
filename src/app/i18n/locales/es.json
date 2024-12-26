@@ -1750,8 +1750,8 @@
           "activity": {
             "title": "Actividad",
             "Login": "Inicio de sesión",
-            "ChangedPassword": "Cierre de sesión",
-            "Logout": "Cambio de contraseña",
+            "ChangedPassword": "Cambio de contraseña",
+            "Logout": "Cierre de sesión",
             "ShareFile": "Archivo compartido",
             "ShareFolder": "Carpeta compartida",
             "DeleteFile": "Archivo eliminado",
