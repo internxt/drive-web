@@ -82,6 +82,11 @@ export type AuthenticateUserParams = {
 };
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
+  const token = localStorageService.get('xNewToken') || undefined;
+  if (token) {
+    const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+    await authClient.logout(token);
+  }
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
@@ -97,7 +102,7 @@ export function cancelAccount(): Promise<void> {
 }
 
 export const is2FANeeded = async (email: string): Promise<boolean> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
     throw new AppError(error.message ?? 'Login error', error.status ?? 500);
   });
@@ -118,7 +123,7 @@ const generateNewKeysWithEncrypted = async (password: string) => {
 
 const getAuthClient = (authType: 'web' | 'desktop') => {
   const AUTH_CLIENT = {
-    web: SdkFactory.getInstance().createAuthClient(),
+    web: SdkFactory.getNewApiInstance().createAuthClient(),
     desktop: SdkFactory.getInstance().createDesktopAuthClient(),
   };
 
@@ -209,7 +214,7 @@ export const readReferalCookie = (): string | undefined => {
 
 export const getSalt = async (): Promise<string> => {
   const email = localStorageService.getUser()?.email;
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(String(email));
   return decryptText(securityDetails.encryptedSalt);
 };
@@ -320,13 +325,14 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 
 export const userHas2FAStored = (): Promise<SecurityDetails> => {
   const email = localStorageService.getUser()?.email;
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.securityDetails(<string>email);
 };
 
 export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.generateTwoFactorAuthQR();
+  const token = localStorageService.get('xNewToken') || undefined;
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.generateTwoFactorAuthQR(token);
 };
 
 export const deactivate2FA = (
@@ -337,8 +343,9 @@ export const deactivate2FA = (
   const salt = decryptText(passwordSalt);
   const hashObj = passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.disableTwoFactorAuth(encPass, deactivationCode);
+  const token = localStorageService.get('xNewToken') || undefined;
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.disableTwoFactorAuth(encPass, deactivationCode, token);
 };
 
 export const getNewToken = async (): Promise<string> => {
@@ -386,8 +393,9 @@ export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string):
 };
 
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.storeTwoFactorAuthKey(code, twoFactorCode);
+  const token = localStorageService.get('xNewToken') || undefined;
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.storeTwoFactorAuthKey(code, twoFactorCode, token);
 };
 
 /**

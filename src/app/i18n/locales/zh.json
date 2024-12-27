@@ -1762,6 +1762,28 @@
         "empty": {
           "text": "以前没有发票"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "title": "筛选",
+          "searchMembers": "搜索成员",
+          "filters": "筛选器",
+          "clear": "清除",
+          "activity": {
+            "title": "活动",
+            "Login": "已登录",
+            "ChangedPassword": "已更改密码",
+            "Logout": "已登出",
+            "ShareFile": "已分享文件",
+            "ShareFolder": "已分享文件夹",
+            "DeleteFile": "已删除文件",
+            "DeleteFolder": "已删除文件夹"
+          },
+          "platform": { "title": "平台", "Web": "网页", "Mobile": "移动端", "Desktop": "桌面端" },
+          "dateRange": { "title": "日期范围", "days": "最近 {{days}} 天" }
+        },
+        "headerTable": { "date": "日期", "member": "成员", "activity": "活动", "access": "访问" },
+        "noResults": "没有可显示的结果"
       }
     },
     "account": {
@@ -1836,7 +1858,8 @@
       "billing": "账单",
       "account": "账户",
       "plans": "计划",
-      "security": "安全"
+      "security": "安全",
+      "logs": "日志"
     }
   },
   "workspaces": {

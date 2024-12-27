@@ -1729,6 +1729,28 @@
         "empty": {
           "text": "Отсутствие предыдущих счетов-фактур"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "title": "Фильтр",
+          "searchMembers": "Поиск участников",
+          "filters": "Фильтры",
+          "clear": "Очистить",
+          "activity": {
+            "title": "Деятельность",
+            "Login": "Вошел в систему",
+            "ChangedPassword": "Пароль изменен",
+            "Logout": "Вышел из системы",
+            "ShareFile": "Файл поделён",
+            "ShareFolder": "Папка поделена",
+            "DeleteFile": "Файл удалён",
+            "DeleteFolder": "Папка удалена"
+          },
+          "platform": { "title": "Платформа", "Web": "Веб", "Mobile": "Мобильный", "Desktop": "Настольный" },
+          "dateRange": { "title": "Диапазон дат", "days": "Последние {{days}} дней" }
+        },
+        "headerTable": { "date": "Дата", "member": "Участник", "activity": "Деятельность", "access": "Доступ" },
+        "noResults": "Нет результатов для отображения"
       }
     },
     "account": {
@@ -1803,7 +1825,8 @@
       "billing": "Оплата",
       "account": "Аккаунт",
       "plans": "Планы",
-      "security": "Безопасность"
+      "security": "Безопасность",
+      "logs": "Логи"
     }
   },
   "workspaces": {
