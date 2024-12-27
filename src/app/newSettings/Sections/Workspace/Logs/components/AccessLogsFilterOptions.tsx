@@ -5,6 +5,7 @@ import { FunnelSimple } from '@phosphor-icons/react/dist/ssr';
 import Input from 'app/shared/components/Input';
 
 interface FilterOptionsProps {
+  isLoading: boolean;
   searchMembersInputValue: string;
   selectedFilters: {
     activity: WorkspaceLogType[];
@@ -22,6 +23,7 @@ const ALLOWED_LAST_DAYS_FILTERS = [7, 30, 90];
 const FilterActivatedIndicator = () => <div className="flex h-2 w-2 rounded-full bg-primary" />;
 
 export const AccessLogsFilterOptions = ({
+  isLoading = false,
   selectedFilters,
   searchMembersInputValue,
   translate,
@@ -34,6 +36,8 @@ export const AccessLogsFilterOptions = ({
   const isFilteredByDays = selectedFilters.days;
   const thereAreAnyFilterActivated = isFilteredByActivity || isFilteredByDays;
 
+  const isChecked = (activity: WorkspaceLogType) => (selectedFilters.activity.some((a) => a === activity));
+
   return (
     <div className="flex flex-row justify-between">
       <Input
@@ -43,6 +47,7 @@ export const AccessLogsFilterOptions = ({
         onChange={onSearchMembersInputValueChange}
         value={searchMembersInputValue}
         name="memberName"
+        disabled={isLoading}
       />
       <Menu as="div" className="relative z-20 outline-none">
         <Menu.Button>
@@ -97,14 +102,17 @@ export const AccessLogsFilterOptions = ({
                     {isFilteredByActivity && <FilterActivatedIndicator />}
                   </div>
                   <div className="flex flex-col gap-3">
-                    {Object.entries(WorkspaceLogType)?.map(([key, value]) => (
-                      <div className="flex flex-row items-center gap-2" key={value}>
+                    {Object.entries(WorkspaceLogType)?.map(([keyType, activity]) => (
+                      <div className="flex flex-row items-center gap-2" key={activity}>
                         <Checkbox
-                          checked={selectedFilters.activity.some((activity) => activity === value)}
-                          onClick={() => onChangeActivityFilters(value)}
+                          checked={isChecked(activity) || false}
+                          onClick={() => onChangeActivityFilters(activity)}
+                          disabled={isLoading}
+                          className={`${isLoading ? 'bg-gray-5 cursor-not-allowed' : ''}
+                            ${isLoading && isChecked(activity) ? 'bg-primary opacity-50' : ''}`}
                         />
                         <p className="text-gray-100">
-                          {translate(`preferences.workspace.accessLogs.filterActions.activity.${key}`)}
+                          {translate(`preferences.workspace.accessLogs.filterActions.activity.${keyType}`)}
                         </p>
                       </div>
                     ))}
@@ -120,7 +128,7 @@ export const AccessLogsFilterOptions = ({
                   <div className="flex flex-col gap-3">
                     {ALLOWED_LAST_DAYS_FILTERS.map((days) => (
                       <div className="flex flex-row items-center gap-2" key={days}>
-                        <RadioButton checked={selectedFilters.days === days} onClick={() => handleDaysFilter(days)} />
+                        <RadioButton checked={selectedFilters.days === days} onClick={() => handleDaysFilter(days)} disabled={isLoading}/>
                         <p className="text-gray-100">
                           {translate('preferences.workspace.accessLogs.filterActions.dateRange.days', {
                             days,

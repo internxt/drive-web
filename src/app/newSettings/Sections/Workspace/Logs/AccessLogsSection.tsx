@@ -34,9 +34,10 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
     key: 'updatedAt',
     direction: 'DESC',
   });
-  const debouncedSearchMemberValue = useDebounce(searchMembersInputValue, 500);
+  const debouncedSearchMemberValue = useDebounce(searchMembersInputValue, 800);
+  const debouncedActivity = useDebounce(activityFilter, 800);
   const { accessLogs, isLoading, hasMoreItems, loadMoreItems } = useAccessLogs({
-    activity: activityFilter,
+    activity: debouncedActivity,
     lastDays: daysFilter,
     member: debouncedSearchMemberValue,
     orderBy: [orderBy.key, orderBy.direction].join(':'),
@@ -224,6 +225,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
     <Section title={translate('preferences.navBarSections.logs')} onClosePreferences={onClosePreferences}>
       <div className="flex h-screen w-full flex-col gap-6 overflow-hidden">
         <AccessLogsFilterOptions
+          isLoading={isLoading}
           searchMembersInputValue={searchMembersInputValue}
           selectedFilters={{
             activity: activityFilter,
