@@ -1,8 +1,11 @@
 import { Menu, Transition } from '@headlessui/react';
-import { Button, Checkbox, RadioButton } from '@internxt/ui';
 import { WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
+import { Button, Checkbox, RadioButton } from '@internxt/ui';
 import { FunnelSimple } from '@phosphor-icons/react/dist/ssr';
 import Input from 'app/shared/components/Input';
+
+const ALLOWED_LAST_DAYS_FILTERS = [7, 30, 90];
+const MAX_SEARCH_CHARACTERS = 50;
 
 interface FilterOptionsProps {
   isLoading: boolean;
@@ -17,8 +20,6 @@ interface FilterOptionsProps {
   handleDaysFilter: (days: number) => void;
   onSearchMembersInputValueChange: (value: string) => void;
 }
-
-const ALLOWED_LAST_DAYS_FILTERS = [7, 30, 90];
 
 const FilterActivatedIndicator = () => <div className="flex h-2 w-2 rounded-full bg-primary" />;
 
@@ -36,7 +37,13 @@ export const AccessLogsFilterOptions = ({
   const isFilteredByDays = selectedFilters.days;
   const thereAreAnyFilterActivated = isFilteredByActivity || isFilteredByDays;
 
-  const isChecked = (activity: WorkspaceLogType) => (selectedFilters.activity.some((a) => a === activity));
+  const isChecked = (activity: WorkspaceLogType) => selectedFilters.activity.some((a) => a === activity);
+
+  const handleInputChange = (value: string) => {
+    if (value.length <= MAX_SEARCH_CHARACTERS) {
+      onSearchMembersInputValueChange(value);
+    }
+  };
 
   return (
     <div className="flex flex-row justify-between">
@@ -44,10 +51,11 @@ export const AccessLogsFilterOptions = ({
         placeholder={translate('preferences.workspace.members.search')}
         variant="email"
         autoComplete="off"
-        onChange={onSearchMembersInputValueChange}
+        onChange={handleInputChange}
         value={searchMembersInputValue}
         name="memberName"
         disabled={isLoading}
+        maxLength={MAX_SEARCH_CHARACTERS}
       />
       <Menu as="div" className="relative z-20 outline-none">
         <Menu.Button>
@@ -128,7 +136,11 @@ export const AccessLogsFilterOptions = ({
                   <div className="flex flex-col gap-3">
                     {ALLOWED_LAST_DAYS_FILTERS.map((days) => (
                       <div className="flex flex-row items-center gap-2" key={days}>
-                        <RadioButton checked={selectedFilters.days === days} onClick={() => handleDaysFilter(days)} disabled={isLoading}/>
+                        <RadioButton
+                          checked={selectedFilters.days === days}
+                          onClick={() => handleDaysFilter(days)}
+                          disabled={isLoading}
+                        />
                         <p className="text-gray-100">
                           {translate('preferences.workspace.accessLogs.filterActions.dateRange.days', {
                             days,
