@@ -24,13 +24,13 @@ export async function getFolderAncestors(uuid: string): Promise<FolderAncestor[]
   return storageClient.getFolderAncestors(uuid);
 }
 
-export async function getFolderAncestorsV2(
-  uuid: string,
+export async function getFolderAncestorsInWorkspace(
+  workspaceId: string,
   itemType: ItemType,
-  resourcesToken?: string,
+  uuid: string,
 ): Promise<FolderAncestor[]> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  return storageClient.getFolderAncestorsV2(uuid, itemType, resourcesToken);
+  return storageClient.getFolderAncestorsInWorkspace(workspaceId, itemType, uuid);
 }
 
 export async function getFolderMeta(uuid: string, workspaceId?: string, resourcesToken?: string): Promise<FolderMeta> {
@@ -85,7 +85,7 @@ export function getFolderContentByUuid({
 const newStorageService = {
   searchItemsByName,
   getFolderAncestors,
-  getFolderAncestorsV2,
+  getFolderAncestorsInWorkspace,
   getFolderMeta,
   getFolderTree,
   checkDuplicatedFiles,

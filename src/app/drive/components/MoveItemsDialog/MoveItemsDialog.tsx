@@ -26,6 +26,7 @@ import {
 import { IRoot } from '../../../store/slices/storage/types';
 import { DriveFileData, DriveFolderData, DriveItemData, FolderPathDialog } from '../../types';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -50,6 +51,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const rootFolderID: string = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
   const itemParentId = itemsToMove[0]?.folderUuid ?? itemsToMove[0]?.folderUuid;
   const isDriveAndCurrentFolder = !props.isTrash && itemParentId === destinationId;
+  const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspaceSelected = !!workspaceSelected;
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
@@ -129,11 +132,14 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     dispatch(setItemsToMove([]));
   };
 
-  const setDriveBreadcrumb = async (itemsToMove) => {
+  const setDriveBreadcrumb = async (itemsToMove: DriveItemData[]) => {
     const item = itemsToMove[0];
     const itemUuid = item.uuid;
+    const itemFolderUuid = item.folderUuid;
     const itemType = item.isFolder ? 'folder' : 'file';
-    const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestorsV2(itemUuid, itemType);
+    const breadcrumbsList: FolderAncestor[] = isWorkspaceSelected
+      ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, itemType, itemUuid)
+      : await newStorageService.getFolderAncestors(itemFolderUuid);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore:next-line
     const fullPath = breadcrumbsList.toReversed();
@@ -153,7 +159,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     }
 
     if (shouldUpdateBreadcrumb) {
-      await getAncestorsAndSetNamePath(itemUuid as string, dispatch);
+      await getAncestorsAndSetNamePath(item.isFolder ? itemUuid : itemFolderUuid, dispatch);
     }
   };
 

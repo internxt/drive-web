@@ -8,6 +8,8 @@ import { FolderPath } from '../../../../drive/types';
 import { uiActions } from '../../ui';
 import { StorageState } from '../storage.model';
 import storageSelectors from '../storage.selectors';
+import { useSelector } from 'react-redux';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
 const parsePathNames = (breadcrumbsList: FolderAncestor[]) => {
   // ADDED UNTIL WE UPDATE TYPESCRIPT VERSION
@@ -20,7 +22,11 @@ const parsePathNames = (breadcrumbsList: FolderAncestor[]) => {
 };
 
 export const getAncestorsAndSetNamePath = async (uuid: string, dispatch) => {
-  const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestorsV2(uuid, 'folder');
+  const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspaceSelected = !!workspaceSelected;
+  const breadcrumbsList: FolderAncestor[] = isWorkspaceSelected
+    ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, 'folder', uuid)
+    : await newStorageService.getFolderAncestors(uuid);
   const fullPathParsedNames = parsePathNames(breadcrumbsList);
   dispatch(storageActions.setNamePath(fullPathParsedNames));
 };
