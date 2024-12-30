@@ -42,6 +42,7 @@ import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/u
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
+import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
 
 type ProfileInfo = {
@@ -82,11 +83,16 @@ export type AuthenticateUserParams = {
 };
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
-  const token = localStorageService.get('xNewToken') || undefined;
-  if (token) {
-    const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-    await authClient.logout(token);
+  try {
+    const token = localStorageService.get('xNewToken') || undefined;
+    if (token) {
+      const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+      await authClient.logout(token);
+    }
+  } catch (error) {
+    errorService.reportError(error);
   }
+
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
