@@ -128,7 +128,11 @@ export function createFolderByUuid(
   return [finalPromise, requestCanceler];
 }
 
-export async function updateMetaData(folderUuid: string, metadata: DriveFolderMetadataPayload): Promise<void> {
+export async function updateMetaData(
+  folderUuid: string,
+  metadata: DriveFolderMetadataPayload,
+  resourcesToken?: string,
+): Promise<void> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
   const payload = {
@@ -136,7 +140,7 @@ export async function updateMetaData(folderUuid: string, metadata: DriveFolderMe
     name: metadata.itemName,
   };
 
-  return storageClient.updateFolderNameWithUUID(payload);
+  return storageClient.updateFolderNameWithUUID(payload, resourcesToken);
 }
 
 export async function deleteFolder(folderData: DriveFolderData): Promise<void> {

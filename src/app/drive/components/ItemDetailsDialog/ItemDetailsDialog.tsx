@@ -17,6 +17,8 @@ import errorService from 'app/core/services/error.service';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
 import { AdvancedSharedItem } from 'app/share/types';
+import { useSelector } from 'react-redux';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -83,6 +85,8 @@ const ItemDetailsDialog = ({
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
   const user = localStorageService.getUser();
   const isFolder = item?.isFolder;
+  const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspaceSelected = !!workspaceSelected;
 
   useEffect(() => {
     if (isOpen && item && user) {
@@ -119,6 +123,37 @@ const ItemDetailsDialog = ({
     onClose();
   }
 
+  function getSharedLocation(item: DriveItemDetails, ancestorPathNames: string[]): string {
+    let location = translate('sideNav.shared');
+    if (item.isFolder && ancestorPathNames.length > 0) {
+      location += '/' + ancestorPathNames.shift();
+    }
+    return location;
+  }
+
+  function getRegularLocation(item: DriveItemDetails, ancestorPathNames: string[]): string {
+    if (item.isFolder) {
+      ancestorPathNames.pop();
+    }
+    return item.view + (ancestorPathNames.length > 0 ? '/' + ancestorPathNames.join('/') : '');
+  }
+
+  function getLocation(item: DriveItemDetails, ancestors: DriveItemData[]): string {
+    const itemViewName = item.view;
+    const ancestorPathNames = ancestors.map((ancestor) => getItemPlainName(ancestor)).reverse();
+    ancestorPathNames.shift(); // Remove root parent
+
+    let location = '/';
+
+    if (itemViewName === 'Shared') {
+      location += getSharedLocation(item, ancestorPathNames);
+      return location;
+    }
+
+    location += getRegularLocation(item, ancestorPathNames);
+    return location;
+  }
+
   async function getDetailsData(
     item: DriveItemDetails,
     isShared: string,
@@ -126,22 +161,15 @@ const ItemDetailsDialog = ({
     modified: string,
     email: string,
   ) {
-    const uuid = item.isFolder ? item.uuid : item.folderUuid;
-    const rootPathName = item.view;
+    const itemType = item.isFolder ? 'folder' : 'file';
+    const itemUuid = item.uuid;
+    const itemFolderUuid = item.folderUuid;
 
-    const ancestors = await newStorageService.getFolderAncestors(uuid as string);
+    const ancestors = isWorkspaceSelected
+      ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, itemType, itemUuid)
+      : await newStorageService.getFolderAncestors(itemFolderUuid);
 
-    const getPathName = ancestors.map((ancestor) => getItemPlainName(ancestor as unknown as DriveItemData)).reverse();
-
-    if (item.isFolder) {
-      getPathName.pop();
-    }
-
-    if (item.view === 'Drive') {
-      getPathName.shift();
-    }
-
-    const path = '/' + rootPathName + (getPathName.length > 0 ? '/' + getPathName.join('/') : '');
+    const location = getLocation(item, ancestors as unknown as DriveItemData[]);
 
     const details: ItemDetailsProps = {
       name: item.name,
@@ -150,8 +178,8 @@ const ItemDetailsDialog = ({
       size: item.isFolder ? undefined : bytesToString(item.size),
       uploaded: uploaded,
       modified: modified,
-      uploadedBy: item.userEmail ?? email,
-      location: path,
+      uploadedBy: item.workspaceItemUser?.creator?.email ?? item.userEmail ?? email,
+      location,
     };
 
     return details;
