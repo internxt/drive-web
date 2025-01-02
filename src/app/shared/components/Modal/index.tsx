@@ -32,7 +32,8 @@ export default function Modal({
         >
           <div className="fixed inset-0 z-50 bg-highlight/40" />
         </Transition.Child>
-        <div className="fixed inset-0 z-50">
+        {/*TODO: When integrate new Modal from UI, add overflow-y-auto in the new component from UI*/}
+        <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center">
             <Transition.Child
               as={Fragment}

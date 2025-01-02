@@ -1,7 +1,4 @@
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-import { uiActions } from 'app/store/slices/ui';
 import { Transition } from '@headlessui/react';
 import { CheckCircle, Info, Warning, WarningOctagon, X } from '@phosphor-icons/react';
 import { ToastShowProps, ToastType } from '../../services/notifications.service';
@@ -15,13 +12,8 @@ const NotificationToast = ({
   closable,
   onClose,
 }: Omit<ToastShowProps, 'duration'> & { visible: boolean; onClose: () => void }): JSX.Element => {
-  const dispatch = useDispatch();
   let Icon: typeof CheckCircle | undefined;
   let IconColor: string | undefined;
-
-  useEffect(() => {
-    visible && dispatch(uiActions.setIsToastNotificacionOpen(visible));
-  }, [visible]);
 
   switch (type) {
     case ToastType.Success:
