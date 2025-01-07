@@ -111,7 +111,7 @@ export const refreshUserDataThunk = createAsyncThunk<void, void, { state: RootSt
 export const logoutThunk = createAsyncThunk<void, void, { state: RootState }>(
   'user/logout',
   async (payload: void, { dispatch }) => {
-    authService.logOut();
+    await authService.logOut();
 
     dispatch(sessionActions.resetState());
     dispatch(userActions.resetState());
