@@ -1,4 +1,4 @@
-import { Invoice } from '@internxt/sdk/dist/drive/payments/types';
+import { Invoice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { useTranslationContext } from '../../i18n/provider/TranslationProvider';
 import { useEffect, useState } from 'react';
 import Section from '../Sections/General/components/Section';
@@ -6,7 +6,7 @@ import paymentService from '../../payment/services/payment.service';
 import Card from '../../shared/components/Card';
 import InvoicesList from '../components/Invoices/InvoicesList';
 
-const Invoices = ({ className = '', subscriptionId }: { className?: string; subscriptionId: string }): JSX.Element => {
+const Invoices = ({ className = '', userType }: { className?: string; userType: UserType }): JSX.Element => {
   const { translate } = useTranslationContext();
   const [state, setState] = useState<{ tag: 'ready'; invoices: Invoice[] } | { tag: 'loading' | 'empty' }>({
     tag: 'loading',
@@ -15,7 +15,7 @@ const Invoices = ({ className = '', subscriptionId }: { className?: string; subs
 
   useEffect(() => {
     paymentService
-      .getInvoices({ subscriptionId })
+      .getInvoices({ userType })
       .then((invoices) => setState({ tag: 'ready', invoices }))
       .catch(() => setState({ tag: 'empty' }));
   }, []);
