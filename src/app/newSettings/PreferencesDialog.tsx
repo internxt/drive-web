@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Modal from 'app/shared/components/Modal';
-import { useAppDispatch } from 'app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import AccountSection from './Sections/Account/Account/AccountSection';
 import BillingAccountSection from './Sections/Account/Billing/BillingAccountSection';
@@ -19,6 +19,8 @@ import OverviewSection from './Sections/Workspace/Overview/OverviewSection';
 import SectionListContainer, { sectionItems } from './containers/SectionListContainer';
 import { PreferencesDialogProps, Section, SelectSectionProps } from './types/types';
 import TeamsSection from './Sections/Workspace/Teams/TeamsSection';
+import { AccessLogsSection } from './Sections/Workspace/Logs/AccessLogsSection';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 const findSectionItemsBySectionAndSubsection = ({ section, subsection }: SelectSectionProps) => {
   return sectionItems.find((item) => item.section === section && item.subsection === subsection);
@@ -27,6 +29,7 @@ const findSectionItemsBySectionAndSubsection = ({ section, subsection }: SelectS
 const PreferencesDialog = (props: PreferencesDialogProps) => {
   const { haveParamsChanged, isPreferencesDialogOpen } = props;
   const { translate } = useTranslationContext();
+  const isCurrentUserWorkspaceOwner = useAppSelector(workspacesSelectors.isWorkspaceOwner);
   const dispatch = useAppDispatch();
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
 
@@ -87,6 +90,9 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'overview' && (
           <OverviewSection changeSection={changeSection} onClosePreferences={onClosePreferences} />
         )}
+        {activeSection?.section === 'workspace' &&
+          activeSection?.subsection === 'logs' &&
+          isCurrentUserWorkspaceOwner && <AccessLogsSection onClosePreferences={onClosePreferences} />}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'members' && (
           <MembersSection onClosePreferences={onClosePreferences} />
         )}

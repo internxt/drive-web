@@ -28,11 +28,11 @@ const CancelSubscriptionModal = ({
   currentUsage: number;
   cancellingSubscription: boolean;
   userType: UserType;
-  cancelSubscription: (feedback: string) => void;
+  cancelSubscription: () => void;
 }): JSX.Element => {
   const isIndividual = userType === UserType.Individual;
   const { translate } = useTranslationContext();
-  const [step, setStep] = useState<1 | 2 | 3>(!isIndividual ? 3 : 2);
+  const [step, setStep] = useState<1 | 2>(2);
   const [couponAvailable, setCouponAvailable] = useState(false);
   const dispatch = useAppDispatch();
 
@@ -85,7 +85,7 @@ const CancelSubscriptionModal = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      {(step === 2 || step === 3) && (
+      {step === 2 && (
         <>
           <h1 className="text-2xl font-medium text-gray-80">
             {translate('views.account.tabs.billing.cancelSubscriptionModal.title')}
@@ -101,18 +101,11 @@ const CancelSubscriptionModal = ({
         <Step2
           currentPlanName={currentPlanName}
           onClose={onClose}
+          cancelSubscription={cancelSubscription}
+          cancellingSubscription={cancellingSubscription}
           setStep={setStep}
           currentPlanInfo={currentPlanInfo}
           currentUsage={currentUsage}
-        />
-      )}
-
-      {step === 3 && (
-        <Step3
-          currentPlanName={currentPlanName}
-          onClose={onClose}
-          cancellingSubscription={cancellingSubscription}
-          cancelSubscription={cancelSubscription}
         />
       )}
     </Modal>
@@ -125,7 +118,7 @@ const Step1 = ({
   applyCoupon,
 }: {
   currentPlanName: string;
-  setStep: Dispatch<SetStateAction<3 | 2 | 1>>;
+  setStep: Dispatch<SetStateAction<2 | 1>>;
   applyCoupon: () => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -170,13 +163,16 @@ const Step2 = ({
   currentPlanName,
   currentPlanInfo,
   currentUsage,
-  setStep,
+  cancellingSubscription,
+  cancelSubscription,
   onClose,
 }: {
   currentPlanName: string;
   currentPlanInfo: string;
   currentUsage: number;
-  setStep: Dispatch<SetStateAction<3 | 2 | 1>>;
+  cancellingSubscription: boolean;
+  cancelSubscription: () => void;
+  setStep: Dispatch<SetStateAction<2 | 1>>;
   onClose: () => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -251,77 +247,12 @@ const Step2 = ({
         <Button
           className={'shadow-subtle-hard'}
           variant="secondary"
-          onClick={() => {
-            setStep(3);
-          }}
-        >
-          {translate('views.account.tabs.billing.cancelSubscriptionModal.continue')}
-        </Button>
-        <Button
-          className="ml-2 shadow-subtle-hard"
-          onClick={() => {
-            onClose();
-          }}
-        >
-          {translate('views.account.tabs.billing.cancelSubscriptionModal.keepSubscription')}
-        </Button>
-      </div>
-    </>
-  );
-};
-
-const Step3 = ({
-  currentPlanName,
-  onClose,
-  cancellingSubscription,
-  cancelSubscription,
-}: {
-  currentPlanName: string;
-  onClose: () => void;
-  cancellingSubscription: boolean;
-  cancelSubscription: (feedback: string) => void;
-}): JSX.Element => {
-  const { translate } = useTranslationContext();
-  const [otherFeedback, setOtherFeedback] = useState<string>('');
-
-  const MAX_OTHERFEEDBACK_LENGTH = 1000;
-
-  return (
-    <>
-      <p className="mt-4 text-gray-100">
-        {translate('views.account.tabs.billing.cancelSubscriptionModal.giveUsFeedback', {
-          currentPlanName,
-        })}
-      </p>
-      <div>
-        <textarea
           disabled={cancellingSubscription}
-          value={otherFeedback}
-          placeholder={translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.placeholder')}
-          rows={4}
-          className="mt-4 w-full max-w-lg resize-none rounded-md border border-gray-20 bg-transparent p-3 pl-4 outline-none"
-          onChange={(e) => setOtherFeedback(String(e.target.value))}
-        />
-        <div className="flex w-full max-w-lg justify-end">
-          <span className={`text-sm ${(otherFeedback.length > MAX_OTHERFEEDBACK_LENGTH && 'text-red') || ''}`}>
-            {otherFeedback.length}/{MAX_OTHERFEEDBACK_LENGTH}
-          </span>
-        </div>
-      </div>
-
-      <div className="mt-4 flex justify-end">
-        <Button
-          loading={cancellingSubscription}
-          disabled={otherFeedback.length > MAX_OTHERFEEDBACK_LENGTH || otherFeedback.length <= 0}
-          variant="secondary"
-          className="shadow-subtle-hard"
-          onClick={() => {
-            cancelSubscription(otherFeedback.trim());
-          }}
+          onClick={cancelSubscription}
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.cancelSubscription')}
         </Button>
-        <Button disabled={cancellingSubscription} className="ml-2 shadow-subtle-hard" onClick={onClose}>
+        <Button className="ml-2 shadow-subtle-hard" disabled={cancellingSubscription} onClick={onClose}>
           {translate('views.account.tabs.billing.cancelSubscriptionModal.keepSubscription')}
         </Button>
       </div>

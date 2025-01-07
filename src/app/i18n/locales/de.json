@@ -1704,6 +1704,28 @@
         "empty": {
           "text": "Keine früheren Rechnungen"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "title": "Filter",
+          "searchMembers": "Mitglieder suchen",
+          "filters": "Filter",
+          "clear": "Löschen",
+          "activity": {
+            "title": "Aktivität",
+            "Login": "Angemeldet",
+            "ChangedPassword": "Passwort geändert",
+            "Logout": "Abgemeldet",
+            "ShareFile": "Datei freigeben",
+            "ShareFolder": "Ordner freigeben",
+            "DeleteFile": "Datei löschen",
+            "DeleteFolder": "Ordner löschen"
+          },
+          "platform": { "title": "Plattform", "Web": "Web", "Mobile": "Mobil", "Desktop": "Desktop" },
+          "dateRange": { "title": "Datumsbereich", "days": "Letzte {{days}} Tage" }
+        },
+        "headerTable": { "date": "Datum", "member": "Mitglied", "activity": "Aktivität", "access": "Zugang" },
+        "noResults": "Es gibt keine Ergebnisse anzuzeigen"
       }
     },
     "account": {
@@ -1778,7 +1800,8 @@
       "billing": "Abrechnung",
       "account": "Konto",
       "plans": "Pläne",
-      "security": "Sicherheit"
+      "security": "Sicherheit",
+      "logs": "Protokolle"
     }
   },
   "workspaces": {
