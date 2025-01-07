@@ -90,7 +90,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
     }
   };
 
-  const cancelSubscription = async (feedback: string) => {
+  const cancelSubscription = async () => {
     setCancellingSubscription(true);
     try {
       await paymentService.cancelSubscription(UserType.Business);

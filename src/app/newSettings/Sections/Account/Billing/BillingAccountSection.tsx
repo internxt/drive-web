@@ -36,7 +36,7 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
     setCurrentUsage(getCurrentUsage(plan.usageDetails));
   }, [plan.individualSubscription]);
 
-  async function cancelSubscription(feedback: string) {
+  async function cancelSubscription() {
     setCancellingSubscription(true);
     try {
       await paymentService.cancelSubscription();
