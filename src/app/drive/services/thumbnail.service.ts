@@ -50,7 +50,6 @@ const isValidImage = (file: File): Promise<boolean> => {
 const getImageThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> => {
   const isValid = await isValidImage(file);
   if (!isValid) {
-    console.log('Invalid image file');
     return null;
   }
 
@@ -63,7 +62,6 @@ const getImageThumbnail = async (file: File): Promise<ThumbnailGenerated['file']
       ThumbnailConfig.Quality,
       0,
       (uri) => {
-        console.log('URI:', uri);
         if (uri && uri instanceof File) resolve(uri);
         else resolve(null);
       },
@@ -185,7 +183,6 @@ export const generateThumbnailFromFile = async (
   const fileType = fileToUpload.type ? String(fileToUpload.type).toLowerCase() : '';
   if (thumbnailableExtension.includes(fileType)) {
     try {
-      console.log('THUMBNAIL AVAILABLE ', fileType);
       const thumbnail = await getThumbnailFrom(fileToUpload);
 
       if (thumbnail.file) {
@@ -202,7 +199,6 @@ export const generateThumbnailFromFile = async (
         };
         const abortController = new AbortController();
 
-        console.log('UPLOADING THUMBNAIL');
         const thumbnailUploaded = await uploadThumbnail(
           userEmail,
           thumbnailToUpload,
@@ -210,8 +206,6 @@ export const generateThumbnailFromFile = async (
           updateProgressCallback,
           abortController,
         );
-
-        console.log('THUMBNAIL UPLOADED ACTUALLY');
 
         return {
           thumbnail: thumbnailUploaded,
