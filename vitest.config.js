@@ -37,15 +37,7 @@ export default defineConfig({
       reporter: ['text', 'lcov'],
       reportsDirectory: './coverage',
       include: ['src/**/*.{ts}', 'test/unit/**/*.{ts}'],
-      exclude: [
-        'src/**/*.d.ts',
-        'src/**/*.tsx',
-        'src/**/*.js',
-        '**/node_modules/**',
-        '**/test/**',
-        '**/dist/**',
-        'src/app/drive/components/FileViewer/viewers/FileDocumentViewer/**',
-      ],
+      exclude: ['src/app/drive/components/FileViewer/viewers/FileDocumentViewer/**'],
     },
   },
   optimizeDeps: {
