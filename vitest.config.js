@@ -14,7 +14,6 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      dedupe: ['vue'],
       // eslint-disable-next-line no-undef
       app: path.resolve(__dirname, './src/app'),
       crypto: 'crypto-browserify', // Resolve `crypto` to `crypto-browserify`

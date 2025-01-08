@@ -108,11 +108,12 @@ export const hybridDecryptMessageWithPrivateKey = async ({
   privateKyberKeyInBase64?: string;
 }): Promise<string> => {
   let eccCiphertextStr = encryptedMessageInBase64;
-  let kyberSecret = new Uint8Array();
+  let kyberSecret;
   const ciphertexts = encryptedMessageInBase64.split('$');
   const prefix = ciphertexts[0];
+  const hybrid = prefix == '4879627269644d6f6465';
 
-  if (prefix == '4879627269644d6f6465') {
+  if (hybrid) {
     if (!privateKyberKeyInBase64) {
       return Promise.reject(new Error('Attempted to decrypt hybrid ciphertex without Kyber key'));
     }
@@ -131,7 +132,7 @@ export const hybridDecryptMessageWithPrivateKey = async ({
     privateKeyInBase64,
   });
   let result = decryptedMessage as string;
-  if (privateKyberKeyInBase64) {
+  if (hybrid) {
     const bits = result.length * 4;
     const secretHex = await extendSecret(kyberSecret, bits);
     const xored = XORhex(result, secretHex);
