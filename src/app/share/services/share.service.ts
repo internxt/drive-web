@@ -30,7 +30,7 @@ import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
 import localStorageService from '../../core/services/local-storage.service';
 import workspacesService from '../../core/services/workspace.service';
-import { decryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
+import { hybridDecryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import {
   downloadItemsAsZipThunk,
@@ -591,22 +591,24 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
   if (user) {
     let decryptedKey;
     try {
-      decryptedKey = await decryptMessageWithPrivateKey({
-        encryptedMessage: atob(encryptionKey),
-        privateKeyInBase64: user.privateKey,
+      decryptedKey = await hybridDecryptMessageWithPrivateKey({
+        encryptedMessageInBase64: encryptionKey,
+        privateKeyInBase64: user.keys.ecc.privateKeyEncrypted,
+        privateKyberKeyInBase64: user.keys.kyber.privateKeyEncrypted,
       });
     } catch (err) {
       decryptedKey = user.mnemonic;
     }
     return decryptedKey;
   } else {
-    const error = errorService.castError('User Not Found');
+    throw new Error('AAAAAAA');
+    /*const error = errorService.castError('User Not Found');
     errorService.reportError(error);
 
     notificationsService.show({
       text: t('error.decryptMnemonic', { message: error.message }),
       type: ToastType.Error,
-    });
+    });*/
   }
 };
 
