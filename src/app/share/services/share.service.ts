@@ -601,14 +601,13 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
     }
     return decryptedKey;
   } else {
-    throw new Error('AAAAAAA');
-    /*const error = errorService.castError('User Not Found');
+    const error = errorService.castError('User Not Found');
     errorService.reportError(error);
 
     notificationsService.show({
       text: t('error.decryptMnemonic', { message: error.message }),
       type: ToastType.Error,
-    });*/
+    });
   }
 };
 
