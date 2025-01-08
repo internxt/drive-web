@@ -36,8 +36,16 @@ export default defineConfig({
       provider: 'istanbul',
       reporter: ['text', 'lcov'],
       reportsDirectory: './coverage',
-      include: ['src/**/*.{js,ts,jsx,tsx}', 'test/unit/**/*.{js,ts,jsx,tsx}'],
-      exclude: ['src/app/drive/components/FileViewer/viewers/FileDocumentViewer/**'],
+      include: ['src/**/*.{ts}', 'test/unit/**/*.{ts}'],
+      exclude: [
+        'src/**/*.d.ts',
+        'src/**/*.tsx',
+        'src/**/*.js',
+        '**/node_modules/**',
+        '**/test/**',
+        '**/dist/**',
+        'src/app/drive/components/FileViewer/viewers/FileDocumentViewer/**',
+      ],
     },
   },
   optimizeDeps: {
