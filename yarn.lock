@@ -1581,6 +1581,11 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
+"@dashlane/pqc-kem-kyber512-browser@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@dashlane/pqc-kem-kyber512-browser/-/pqc-kem-kyber512-browser-1.0.0.tgz#10a1b07e396616e574b9acad78d53076f271ac1d"
+  integrity sha512-lGWwF/5qkcnlZNZ5n2KkqjzC4q6EUre85ZotxOUQii9pCcZpeJBjK+naZoKAQz1pQZjGIZNHxIfzX5UxWsaouA==
+
 "@discoveryjs/json-ext@0.5.7":
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
@@ -2009,10 +2014,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@=1.8.1":
-  version "1.8.1"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.8.1/fc4be77bed5b1b69b2a161d76dd6748aa3aa8256#fc4be77bed5b1b69b2a161d76dd6748aa3aa8256"
-  integrity sha512-bxrNwjEojesu+MkOoY4P6kN07PWVUwJCUndp3Ns/+v2L4FwKUXqvGdit0MksFL5itAC8/6dRdbwwd2EPYh5D/w==
+"@internxt/sdk@=1.9.1":
+  version "1.9.1"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.9.1/f78fe79c261782bb2ff181977558ba25fd546aca#f78fe79c261782bb2ff181977558ba25fd546aca"
+  integrity sha512-4FgFjlLqcPy5btZ3BNsLjFSkot0giTA6UgbFzIS7mtvpNAD12ce3l7Ok7uhAvcs9ujy9TMr0cW/aj5HyrY70rg==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"

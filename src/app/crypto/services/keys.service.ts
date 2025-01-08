@@ -1,6 +1,30 @@
 import { aes } from '@internxt/lib';
-import { getOpenpgp } from './pgp.service';
+import { Keys } from '@internxt/sdk';
+import { getOpenpgp, generateNewKeys } from './pgp.service';
 import { isValid } from './utilspgp';
+
+export async function getKeys(password: string): Promise<Keys> {
+  const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
+    await generateNewKeys();
+  const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
+  const encPrivateKyberKey = aes.encrypt(privateKyberKeyBase64, password, getAesInitFromEnv());
+
+  const keys: Keys = {
+    privateKeyEncrypted: encPrivateKey,
+    publicKey: publicKeyArmored,
+    revocationCertificate: revocationCertificate,
+    ecc: {
+      privateKeyEncrypted: encPrivateKey,
+      publicKey: publicKeyArmored,
+    },
+    kyber: {
+      publicKey: publicKyberKeyBase64,
+      privateKeyEncrypted: encPrivateKyberKey,
+    },
+  };
+  return keys;
+}
+
 export class Base64EncodedPrivateKeyError extends Error {
   constructor() {
     super('Key is encoded in base64');

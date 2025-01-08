@@ -1,13 +1,11 @@
-import { aes } from '@internxt/lib';
-import { Keys, RegisterDetails } from '@internxt/sdk';
+import { RegisterDetails } from '@internxt/sdk';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as bip39 from 'bip39';
 
 import { readReferalCookie } from 'app/auth/services/auth.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import httpService from 'app/core/services/http.service';
-import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
+import { getKeys } from 'app/crypto/services/keys.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 
 export type UpdateInfoFunction = (
@@ -102,16 +100,10 @@ export function useSignUp(
     const mnemonic = bip39.generateMnemonic(256);
     const encMnemonic = encryptTextWithKey(mnemonic, password);
 
-    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
-    const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
-
     const authClient = SdkFactory.getNewApiInstance().createAuthClient();
 
-    const keys: Keys = {
-      privateKeyEncrypted: encPrivateKey,
-      publicKey: publicKeyArmored,
-      revocationCertificate: revocationCertificate,
-    };
+    const keys = await getKeys(password);
+
     const registerDetails: RegisterDetails = {
       name: 'My',
       lastname: 'Internxt',
@@ -129,7 +121,6 @@ export function useSignUp(
     const { token } = data;
     const user: UserSettings = data.user as unknown as UserSettings;
 
-    // user.privateKey = Buffer.from(aes.decrypt(user.privateKey, password)).toString('base64');
     user.mnemonic = decryptTextWithKey(user.mnemonic, password);
 
     return { xUser: user, xToken: token, mnemonic: user.mnemonic };
@@ -167,14 +158,7 @@ export function useSignUp(
     const mnemonic = bip39.generateMnemonic(256);
     const encMnemonic = encryptTextWithKey(mnemonic, password);
 
-    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
-    const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
-
-    const keys: Keys = {
-      privateKeyEncrypted: encPrivateKey,
-      publicKey: publicKeyArmored,
-      revocationCertificate: revocationCertificate,
-    };
+    const keys = await getKeys(password);
     const registerDetails: RegisterDetails = {
       name: 'My',
       lastname: 'Internxt',

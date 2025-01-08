@@ -23,8 +23,8 @@ import {
   assertValidateKeys,
   decryptPrivateKey,
   getAesInitFromEnv,
+  getKeys,
 } from 'app/crypto/services/keys.service';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import {
   decryptText,
   decryptTextWithKey,
@@ -116,17 +116,6 @@ export const is2FANeeded = async (email: string): Promise<boolean> => {
   return securityDetails.tfaEnabled;
 };
 
-const generateNewKeysWithEncrypted = async (password: string) => {
-  const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
-
-  return {
-    privateKeyArmored,
-    privateKeyArmoredEncrypted: aes.encrypt(privateKeyArmored, password, getAesInitFromEnv()),
-    publicKeyArmored,
-    revocationCertificate,
-  };
-};
-
 const getAuthClient = (authType: 'web' | 'desktop') => {
   const AUTH_CLIENT = {
     web: SdkFactory.getNewApiInstance().createAuthClient(),
@@ -155,14 +144,7 @@ export const doLogin = async (
       return encryptText(hashObj.hash);
     },
     async generateKeys(password: Password): Promise<Keys> {
-      const { privateKeyArmoredEncrypted, publicKeyArmored, revocationCertificate } =
-        await generateNewKeysWithEncrypted(password);
-      const keys: Keys = {
-        privateKeyEncrypted: privateKeyArmoredEncrypted,
-        publicKey: publicKeyArmored,
-        revocationCertificate: revocationCertificate,
-      };
-      return keys;
+      return getKeys(password);
     },
   };
 
