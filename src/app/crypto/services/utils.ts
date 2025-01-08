@@ -2,7 +2,7 @@ import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
 import { AdvancedSharedItem } from '../../share/types';
-import { createSHA512, createHMAC, sha256, createSHA256, sha512, ripemd160 } from 'hash-wasm';
+import { createSHA512, createHMAC, sha256, createSHA256, sha512, ripemd160, blake3 } from 'hash-wasm';
 import { Buffer } from 'buffer';
 /**
  * Computes hmac-sha512
@@ -34,6 +34,16 @@ async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer
 interface PassObjectInterface {
   salt?: string | null;
   password: string;
+}
+
+/**
+ * Extends the given secret to the required number of bits
+ * @param {string} secret - The original secret
+ * @param {number} length - The desired bitlength
+ * @returns {Promise<string>} The extended secret of the desired bitlength
+ */
+function extendSecret(secret: Uint8Array, length: number): Promise<string> {
+  return blake3(secret, length);
 }
 
 /**
@@ -154,4 +164,5 @@ export {
   getSha256Hasher,
   getSha512FromHex,
   getRipemd160FromHex,
+  extendSecret,
 };
