@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
 import { PlanState, planThunks } from 'app/store/slices/plan';
 
-import { CustomerBillingInfo, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { CustomerBillingInfo, Invoice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Section from 'app/newSettings/components/Section';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -64,9 +64,17 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
     address: selectedWorkspace?.workspace.address || '',
     phoneNumber: selectedWorkspace?.workspace.phoneNumber || '',
   });
+  const [state, setState] = useState<{ tag: 'ready'; invoices: Invoice[] } | { tag: 'loading' | 'empty' }>({
+    tag: 'loading',
+  });
+  const invoices = state.tag === 'ready' ? state.invoices : [];
 
   useEffect(() => {
     plan.businessSubscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
+    paymentService
+      .getInvoices({ userType: UserType.Business })
+      .then((invoices) => setState({ tag: 'ready', invoices }))
+      .catch(() => setState({ tag: 'empty' }));
     getJoinedMembers();
     setPlanName(getPlanName(plan.businessPlan, plan.businessPlanLimit));
     setPlanInfo(getPlanInfo(plan.businessPlan));
@@ -243,7 +251,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
         isLoading={isSavingBillingDetails}
       />
       <BillingPaymentMethodCard subscription={plan.businessSubscription?.type} userType={UserType.Business} />
-      <Invoices userType={UserType.Business} />
+      {invoices.length > 0 && <Invoices invoices={invoices} state={state.tag} />}
       {isSubscription && (
         <CancelSubscription
           isCancelSubscriptionModalOpen={isCancelSubscriptionModalOpen}
