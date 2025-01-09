@@ -111,7 +111,7 @@ const ItemDetailsDialog = ({
   };
 
   function formateDate(dateString: string) {
-    return date.format(dateString, 'D MMMM, YYYY [at] HH:mm');
+    return date.format(dateString, `D MMM, YYYY [${translate('general.at')}] HH:mm`);
   }
 
   function handleButtonItemClick() {

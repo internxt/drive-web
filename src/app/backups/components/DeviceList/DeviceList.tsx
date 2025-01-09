@@ -97,7 +97,9 @@ const DeviceList = (props: Props): JSX.Element => {
                 </div>
               );
             },
-            (device) => <div>{dateService.format(device.updatedAt, 'DD MMMM YYYY. HH:mm')}</div>,
+            (device) => (
+              <div>{dateService.format(device.updatedAt, `D MMM, YYYY [${translate('general.at')}] HH:mm`)}</div>
+            ),
             (device) => {
               const size = 'size' in device ? sizeService.bytesToString(device.size) : '';
               return <div>{size}</div>;
