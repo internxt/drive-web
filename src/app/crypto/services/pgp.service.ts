@@ -3,7 +3,7 @@ import { Data, MaybeStream, WebStream } from 'openpgp';
 import kemBuilder from '@dashlane/pqc-kem-kyber512-browser';
 import { extendSecret } from './utils';
 
-const WORDS_HYBRID_MODE_IN_HEX = '4879627269644d6f6465'; // 'HybridMode' in HEX format
+const WORDS_HYBRID_MODE_IN_BASE64 = 'SHlicmlkTW9kZQ=='; // 'HybridMode' in BASE64 format
 
 export async function getOpenpgp(): Promise<typeof import('openpgp')> {
   return import('openpgp');
@@ -81,7 +81,7 @@ export const hybridEncryptMessageWithPublicKey = async ({
     const messageHex = Buffer.from(message).toString('hex');
 
     plaintext = XORhex(messageHex, secretHex);
-    result = WORDS_HYBRID_MODE_IN_HEX.concat('$', kyberCiphertextStr, '$');
+    result = WORDS_HYBRID_MODE_IN_BASE64.concat('$', kyberCiphertextStr, '$');
   }
 
   const encryptedMessage = await encryptMessageWithPublicKey({ message: plaintext, publicKeyInBase64 });
@@ -112,7 +112,7 @@ export const hybridDecryptMessageWithPrivateKey = async ({
   let kyberSecret;
   const ciphertexts = encryptedMessageInBase64.split('$');
   const prefix = ciphertexts[0];
-  const isHybridMode = prefix === WORDS_HYBRID_MODE_IN_HEX;
+  const isHybridMode = prefix === WORDS_HYBRID_MODE_IN_BASE64;
 
   if (isHybridMode) {
     if (!privateKyberKeyInBase64) {
