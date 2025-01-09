@@ -68,7 +68,7 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
     <Section title={t('preferences.workspace.billing.title')} onClosePreferences={onClosePreferences}>
       <BillingAccountOverview plan={plan} changeSection={changeSection} />
       <BillingPaymentMethodCard subscription={plan.individualSubscription?.type} userType={UserType.Individual} />
-      {invoices.length > 0 && <Invoices invoices={invoices} state={state.tag} />}
+      <Invoices invoices={invoices} state={state.tag} />
       {isSubscription && (
         <CancelSubscription
           isCancelSubscriptionModalOpen={isCancelSubscriptionModalOpen}
