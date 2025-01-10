@@ -14,7 +14,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { UserRoles } from 'app/share/types';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
-import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import { hybridEncryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 
 export interface ShareLinksState {
   isLoadingRoles: boolean;
@@ -41,6 +41,7 @@ export interface ShareFileWithUserPayload {
   encryptionAlgorithm: string;
   roleId: string;
   publicKey?: string;
+  publicKyberKey?: string;
   isNewUser?: boolean;
 }
 
@@ -57,23 +58,25 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       const { mnemonic } = user;
 
       let publicKey = payload.publicKey;
+      let publicKyberKey = payload.publicKyberKey;
 
       if (payload.isNewUser && !publicKey) {
         const prCreatedUserResponse = await userService.preCreateUser(payload.sharedWith);
         publicKey = prCreatedUserResponse.publicKey;
+        publicKyberKey = prCreatedUserResponse.publicKyberKey;
       }
 
       if ((!publicKey && !payload.isNewUser) || !publicKey) {
         const publicKeyResponse = await userService.getPublicKeyByEmail(payload.sharedWith);
         publicKey = publicKeyResponse.publicKey;
+        publicKyberKey = publicKeyResponse.publicKyberKey;
       }
 
-      const encryptedMnemonic = await encryptMessageWithPublicKey({
+      const encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
         message: mnemonic,
         publicKeyInBase64: publicKey,
+        publicKyberKeyBase64: publicKyberKey,
       });
-
-      const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
 
       await inviteUserToSharedFolder({
         itemId: payload.itemId,

@@ -6,7 +6,7 @@ import errorService from '../../../../../core/services/error.service';
 import navigationService from '../../../../../core/services/navigation.service';
 import workspacesService from '../../../../../core/services/workspace.service';
 import { AppView } from '../../../../../core/types';
-import { encryptMessageWithPublicKey } from '../../../../../crypto/services/pgp.service';
+import { hybridEncryptMessageWithPublicKey } from '../../../../../crypto/services/pgp.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import { RootState } from '../../../../../store';
 import UserInviteDialog from '../InviteDialog';
@@ -40,10 +40,11 @@ const processInvitation = async (
       return;
     }
     const { mnemonic } = user;
-    let publicKey;
+    let publicKey, publicKyberKey;
     try {
       const publicKeyResponse = await userService.getPublicKeyByEmail(email);
       publicKey = publicKeyResponse.publicKey;
+      publicKyberKey = publicKeyResponse.publicKyberKey;
     } catch (err) {
       console.log(err);
     }
@@ -52,14 +53,15 @@ const processInvitation = async (
     if (isNewUser) {
       const preCreatedUserResponse = await userService.preCreateUser(email);
       publicKey = preCreatedUserResponse.publicKey;
+      publicKyberKey = preCreatedUserResponse.publicKyberKey;
     }
 
-    const encryptedMnemonic = await encryptMessageWithPublicKey({
+    const encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
       message: mnemonic,
       publicKeyInBase64: publicKey,
+      publicKyberKeyBase64: publicKyberKey,
     });
 
-    const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
     await workspacesService.inviteUserToTeam({
       workspaceId: workspaceId,
       invitedUserEmail: email,
