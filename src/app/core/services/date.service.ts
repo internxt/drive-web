@@ -23,12 +23,18 @@ function getExpirationDate(expiresValue: number): Dayjs {
   return dayjs.unix(expiresValue);
 }
 
+export const formatDefaultDate = (date: Date | string | number, translate: (key: string) => string): string => {
+  const translatedAt = translate('general.at');
+  return dayjs(date).format(`D MMM, YYYY [${translatedAt}] HH:mm`);
+};
+
 const dateService = {
   format,
   fromNow,
   isDateOneBefore,
   getCurrentDate,
   getExpirationDate,
+  formatDefaultDate,
 };
 
 export default dateService;
