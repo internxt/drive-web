@@ -11,7 +11,7 @@ import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCa
 import Invoices from '../../../containers/InvoicesContainer';
 import CancelSubscription from './components/CancelSubscription';
 import BillingAccountOverview from './containers/BillingAccountOverview';
-import { Invoice, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { getCurrentUsage, getPlanInfo, getPlanName } from '../Plans/utils/planUtils';
 
 interface BillingAccountSectionProps {
@@ -28,17 +28,10 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
   const [planName, setPlanName] = useState<string>('');
   const [planInfo, setPlanInfo] = useState<string>('');
   const [currentUsage, setCurrentUsage] = useState<number>(-1);
-  const [state, setState] = useState<{ tag: 'ready'; invoices: Invoice[] } | { tag: 'loading' | 'empty' }>({
-    tag: 'loading',
-  });
-  const invoices = state.tag === 'ready' ? state.invoices : [];
 
   useEffect(() => {
     plan.individualSubscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
-    paymentService
-      .getInvoices({ userType: UserType.Individual })
-      .then((invoices) => setState({ tag: 'ready', invoices }))
-      .catch(() => setState({ tag: 'empty' }));
+
     setPlanName(getPlanName(plan.individualPlan || plan.teamPlan, plan.planLimit));
     setPlanInfo(getPlanInfo(plan.individualPlan || plan.teamPlan));
     setCurrentUsage(getCurrentUsage(plan.usageDetails));
@@ -68,7 +61,7 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
     <Section title={t('preferences.workspace.billing.title')} onClosePreferences={onClosePreferences}>
       <BillingAccountOverview plan={plan} changeSection={changeSection} />
       <BillingPaymentMethodCard subscription={plan.individualSubscription?.type} userType={UserType.Individual} />
-      <Invoices invoices={invoices} state={state.tag} />
+      <Invoices userType={UserType.Individual} />
       {isSubscription && (
         <CancelSubscription
           isCancelSubscriptionModalOpen={isCancelSubscriptionModalOpen}

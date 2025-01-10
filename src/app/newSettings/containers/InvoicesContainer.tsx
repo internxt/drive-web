@@ -1,39 +1,36 @@
-import { Invoice } from '@internxt/sdk/dist/drive/payments/types';
+import { Invoice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { useTranslationContext } from '../../i18n/provider/TranslationProvider';
 import Section from '../Sections/General/components/Section';
 import Card from '../../shared/components/Card';
 import InvoicesList from '../components/Invoices/InvoicesList';
-import { Spinner } from '@internxt/internxtui';
+import { useEffect, useState } from 'react';
+import paymentService from 'app/payment/services/payment.service';
 
-const Invoices = ({
-  className = '',
-  invoices,
-  state,
-}: {
-  className?: string;
-  invoices: Invoice[];
-  state: 'ready' | 'loading' | 'empty';
-}): JSX.Element => {
+const Invoices = ({ userType, className = '' }: { className?: string; userType: UserType }): JSX.Element => {
   const { translate } = useTranslationContext();
+  const [state, setState] = useState<{ tag: 'ready'; invoices: Invoice[] } | { tag: 'loading' | 'empty' }>({
+    tag: 'loading',
+  });
 
-  const isEmpty = state === 'empty';
+  useEffect(() => {
+    paymentService
+      .getInvoices({ userType })
+      .then((invoices) => {
+        if (invoices.length === 0) {
+          setState({ tag: 'empty' });
+        } else {
+          setState({ tag: 'ready', invoices });
+        }
+      })
+      .catch(() => setState({ tag: 'empty' }));
+  }, []);
+
+  const isEmpty = state.tag === 'empty';
 
   return (
     <Section className={className} title={translate('views.account.tabs.billing.invoices.head')}>
-      <Card className={`${isEmpty && 'h-20'}`}>
-        {state === 'ready' ? (
-          <InvoicesList invoices={invoices} state={state} />
-        ) : state === 'loading' ? (
-          <div className="flex h-10 items-center justify-center">
-            <Spinner className="h-5 w-5" />
-          </div>
-        ) : state === 'empty' ? (
-          <div className="flex h-full items-center justify-center text-center">
-            <p className="font-regular text-base text-gray-60">
-              {translate('views.account.tabs.billing.invoices.empty')}
-            </p>
-          </div>
-        ) : null}
+      <Card className={`${isEmpty ? 'h-40' : 'pb-0'}`}>
+        <InvoicesList invoices={state.tag === 'ready' ? state.invoices : []} state={state.tag} />
       </Card>
     </Section>
   );
