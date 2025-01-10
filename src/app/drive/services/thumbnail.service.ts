@@ -38,7 +38,21 @@ interface ThumbnailGenerated {
   type: string;
 }
 
-const getImageThumbnail = (file: File): Promise<ThumbnailGenerated['file']> => {
+const isValidImage = (file: File): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = URL.createObjectURL(file);
+  });
+};
+
+const getImageThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> => {
+  const isValid = await isValidImage(file);
+  if (!isValid) {
+    return null;
+  }
+
   return new Promise((resolve) => {
     Resizer.imageFileResizer(
       file,
