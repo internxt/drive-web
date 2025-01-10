@@ -111,7 +111,7 @@ const ItemDetailsDialog = ({
   };
 
   function formateDate(dateString: string) {
-    return dateService.formatItemDisplayDate(dateString, translate);
+    return dateService.formatDefaultDate(dateString, translate);
   }
 
   function handleButtonItemClick() {

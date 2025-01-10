@@ -88,7 +88,7 @@ export default function BackupsAsFoldersList({
               );
             },
             (item) => {
-              return <div>{dateService.formatItemDisplayDate(item.createdAt, translate)}</div>;
+              return <div>{dateService.formatDefaultDate(item.createdAt, translate)}</div>;
             },
             (item) => {
               const size = 'size' in item ? sizeService.bytesToString(item.size) : '';

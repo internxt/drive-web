@@ -113,7 +113,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
       {/* DATE */}
       <div className="block w-date items-center whitespace-nowrap">
-        {dateService.formatItemDisplayDate(item.updatedAt, t)}
+        {dateService.formatDefaultDate(item.updatedAt, t)}
       </div>
 
       {/* SIZE */}
