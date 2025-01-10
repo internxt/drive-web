@@ -143,7 +143,7 @@ describe('Encryption and Decryption', () => {
     expect(decryptedMessage).toEqual(originalMessage);
   });
 
-  it('hybrid decryption should decrypt without kyber keys as before', async () => {
+  it('hybrid decryption should decrypt old ciphertexts without kyber keys as before', async () => {
     const keys = await generateNewKeys();
 
     const originalMessage =
@@ -157,6 +157,32 @@ describe('Encryption and Decryption', () => {
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+    });
+
+    const oldDecryptedMessage = await decryptMessageWithPrivateKey({
+      encryptedMessage: atob(encryptedMessageInBase64),
+      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+    });
+
+    expect(decryptedMessage).toEqual(oldDecryptedMessage);
+    expect(decryptedMessage).toEqual(originalMessage);
+  });
+
+  it('hybrid decryption should decrypt old ciphertexts with kyber keys as before', async () => {
+    const keys = await generateNewKeys();
+
+    const originalMessage =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+
+    const encryptedMessageInBase64 = await hybridEncryptMessageWithPublicKey({
+      message: originalMessage,
+      publicKeyInBase64: keys.publicKeyArmored,
+    });
+
+    const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
+      encryptedMessageInBase64,
+      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKyberKeyInBase64: keys.privateKyberKeyBase64,
     });
 
     const oldDecryptedMessage = await decryptMessageWithPrivateKey({
