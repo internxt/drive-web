@@ -16,10 +16,10 @@ const Invoices = ({ userType, className = '' }: { className?: string; userType: 
     paymentService
       .getInvoices({ userType })
       .then((invoices) => {
-        if (invoices.length === 0) {
-          setState({ tag: 'empty' });
-        } else {
+        if (invoices.length > 0) {
           setState({ tag: 'ready', invoices });
+        } else {
+          setState({ tag: 'empty' });
         }
       })
       .catch(() => setState({ tag: 'empty' }));
