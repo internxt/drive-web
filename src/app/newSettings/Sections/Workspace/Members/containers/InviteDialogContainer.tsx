@@ -28,7 +28,7 @@ const InviteDialogContainer = ({ isOpen, onClose }) => {
   return <UserInviteDialog isOpen={isOpen} onClose={onClose} processInvitation={processWorkspaceInvitation} />;
 };
 
-const processInvitation = async (
+export const processInvitation = async (
   user: UserSettings | null,
   email: string,
   workspaceId: string,
