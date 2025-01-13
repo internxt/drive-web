@@ -9,12 +9,12 @@ const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';
 const BANNER_NAME_FOR_FREE_USERS = 'show_free_users_banner';
 
 export class BannerManager {
-  private plan: PlanState;
-  private offerEndDay: Date;
-  private isTutorialCompleted: boolean;
-  private isNewAccount: boolean;
-  private bannerItemInLocalStorage: string | null;
-  private todayDate: string;
+  private readonly plan: PlanState;
+  private readonly offerEndDay: Date;
+  private readonly isTutorialCompleted: boolean;
+  private readonly isNewAccount: boolean;
+  private readonly bannerItemInLocalStorage: string | null;
+  private readonly todayDate: string;
 
   constructor(user: UserSettings, plan: PlanState, offerEndDay: Date) {
     this.plan = plan;

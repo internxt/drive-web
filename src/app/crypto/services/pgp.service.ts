@@ -1,4 +1,5 @@
-import { WebStream, MaybeStream, Data } from 'openpgp';
+import { Buffer } from 'buffer';
+import { Data, MaybeStream, WebStream } from 'openpgp';
 
 export async function getOpenpgp(): Promise<typeof import('openpgp')> {
   return import('openpgp');

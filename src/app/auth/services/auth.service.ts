@@ -7,8 +7,11 @@ import {
   SecurityDetails,
   TwoFactorAuthQR,
 } from '@internxt/sdk/dist/auth';
+import { StorageTypes } from '@internxt/sdk/dist/drive';
+import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
+import { trackSignUp } from 'app/analytics/impact.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -39,10 +42,8 @@ import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/u
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
+import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
-import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
-import { trackSignUp } from 'app/analytics/impact.service';
-import { StorageTypes } from '@internxt/sdk/dist/drive';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -82,6 +83,16 @@ export type AuthenticateUserParams = {
 };
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
+  try {
+    const token = localStorageService.get('xNewToken') || undefined;
+    if (token) {
+      const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+      await authClient.logout(token);
+    }
+  } catch (error) {
+    errorService.reportError(error);
+  }
+
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
@@ -97,7 +108,7 @@ export function cancelAccount(): Promise<void> {
 }
 
 export const is2FANeeded = async (email: string): Promise<boolean> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
     throw new AppError(error.message ?? 'Login error', error.status ?? 500);
   });
@@ -118,7 +129,7 @@ const generateNewKeysWithEncrypted = async (password: string) => {
 
 const getAuthClient = (authType: 'web' | 'desktop') => {
   const AUTH_CLIENT = {
-    web: SdkFactory.getInstance().createAuthClient(),
+    web: SdkFactory.getNewApiInstance().createAuthClient(),
     desktop: SdkFactory.getInstance().createDesktopAuthClient(),
   };
 
@@ -150,6 +161,14 @@ export const doLogin = async (
         privateKeyEncrypted: privateKeyArmoredEncrypted,
         publicKey: publicKeyArmored,
         revocationCertificate: revocationCertificate,
+        ecc: {
+          privateKeyEncrypted: privateKeyArmoredEncrypted,
+          publicKey: publicKeyArmored,
+        },
+        kyber: {
+          publicKey: null,
+          privateKeyEncrypted: null,
+        },
       };
       return keys;
     },
@@ -209,7 +228,7 @@ export const readReferalCookie = (): string | undefined => {
 
 export const getSalt = async (): Promise<string> => {
   const email = localStorageService.getUser()?.email;
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(String(email));
   return decryptText(securityDetails.encryptedSalt);
 };
@@ -306,13 +325,11 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       encryptVersion: StorageTypes.EncryptionVersion.Aes03,
     })
     .then((res) => {
-      // !TODO: Add the correct analytics event  when change password is completed
-      const { token, newToken } = res as any;
+      const { token, newToken } = res;
       if (token) localStorageService.set('xToken', token);
       if (newToken) localStorageService.set('xNewToken', newToken);
     })
     .catch((error) => {
-      // !TODO: Add the correct analytics event when change password fails
       if (error.status === 500) {
         throw new Error('The password you introduced does not match your current password');
       }
@@ -322,13 +339,14 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 
 export const userHas2FAStored = (): Promise<SecurityDetails> => {
   const email = localStorageService.getUser()?.email;
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.securityDetails(<string>email);
 };
 
 export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.generateTwoFactorAuthQR();
+  const token = localStorageService.get('xNewToken') || undefined;
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.generateTwoFactorAuthQR(token);
 };
 
 export const deactivate2FA = (
@@ -339,13 +357,17 @@ export const deactivate2FA = (
   const salt = decryptText(passwordSalt);
   const hashObj = passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.disableTwoFactorAuth(encPass, deactivationCode);
+  const token = localStorageService.get('xNewToken') || undefined;
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.disableTwoFactorAuth(encPass, deactivationCode, token);
 };
 
 export const getNewToken = async (): Promise<string> => {
+  const serviceHeaders = httpService.getHeaders(true, false);
+  const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
+
   const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
-    headers: httpService.getHeaders(true, false),
+    headers: headers,
   });
   if (!res.ok) {
     throw new Error('Bad response while getting new token');
@@ -385,8 +407,9 @@ export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string):
 };
 
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.storeTwoFactorAuthKey(code, twoFactorCode);
+  const token = localStorageService.get('xNewToken') || undefined;
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.storeTwoFactorAuthKey(code, twoFactorCode, token);
 };
 
 /**

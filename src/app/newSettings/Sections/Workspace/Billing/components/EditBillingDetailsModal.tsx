@@ -22,7 +22,7 @@ const EditBillingDetailsModal = ({
   onSave: (billinDetails: CustomerBillingInfo) => void;
   isLoading?: boolean;
 }) => {
-  const MAX_INPUT_LENGHT = 50;
+  const MAX_INPUT_LENGTH = 50;
   const { address, phoneNumber } = billingDetails;
   const [editedAddress, setEditedAddress] = useState(address || '');
 
@@ -37,9 +37,8 @@ const EditBillingDetailsModal = ({
             label="Address"
             textValue={editedAddress}
             onChangeTextValue={setEditedAddress}
-            maxLength={MAX_INPUT_LENGHT}
+            maxLength={MAX_INPUT_LENGTH}
             disabled={isLoading}
-            hideMaxLength
           />
           <div>
             <span className={'text-sm text-gray-80'}>Phone</span>

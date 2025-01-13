@@ -78,7 +78,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const currentChangePlanType = determineSubscriptionChangeType({
     priceSelected,
     currentUserSubscription: isIndividualSubscriptionSelected ? individualSubscription : businessSubscription,
-    planLimit: isIndividualSubscriptionSelected ? plan.planLimit : plan.businessPlan?.storageLimit ?? 0,
+    planLimit: isIndividualSubscriptionSelected ? plan.planLimit : (plan.businessPlan?.storageLimit ?? 0),
     isFreePriceSelected: priceSelected?.id === 'free',
     currentPlanRenewalInterval: getRenewalPeriod(currentRenewalInterval),
   });
@@ -219,7 +219,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     setIsUpdatingSubscription(false);
   };
 
-  async function cancelSubscription(feedback: string) {
+  async function cancelSubscription() {
     setCancellingSubscription(true);
     try {
       await paymentService.cancelSubscription(selectedSubscriptionType);

@@ -8,7 +8,7 @@ import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from '../../.
 import { storageExtraReducers } from '../storage/storage.thunks';
 import { filtersFactory, orderFactory, StorageSetFiltersPayload, StorageState } from './storage.model';
 import selectors from './storage.selectors';
-import { IRoot } from './storage.thunks/uploadFolderThunk';
+import { IRoot } from './types';
 
 const initialState: StorageState = {
   loadingFolders: {},

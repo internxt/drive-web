@@ -90,14 +90,14 @@ const DeviceList = (props: Props): JSX.Element => {
                     <Icon className="h-8 w-8" />
                   </div>
                   <div className="grow cursor-default truncate pr-3">
-                    <span className="z-10 shrink cursor-pointer truncate" onClick={() => onDeviceClicked(device)}>
+                    <button className="z-10 shrink cursor-pointer truncate" onClick={() => onDeviceClicked(device)}>
                       {device.name}
-                    </span>
+                    </button>
                   </div>
                 </div>
               );
             },
-            (device) => <div>{dateService.format(device.updatedAt, 'DD MMMM YYYY. HH:mm')}</div>,
+            (device) => <div>{dateService.formatDefaultDate(device.updatedAt, translate)}</div>,
             (device) => {
               const size = 'size' in device ? sizeService.bytesToString(device.size) : '';
               return <div>{size}</div>;

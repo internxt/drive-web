@@ -19,8 +19,8 @@ import { AppView } from '../../core/types';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { DriveItemData, ThumbnailConfig } from '../types';
 import fetchFileBlob from './download.service/fetchFileBlob';
-import { FileToUpload } from './file.service/uploadFile';
 import { getEnvironmentConfig } from './network.service';
+import { FileToUpload } from './file.service/types';
 
 export interface ThumbnailToUpload {
   fileId: number;
@@ -38,7 +38,21 @@ interface ThumbnailGenerated {
   type: string;
 }
 
-const getImageThumbnail = (file: File): Promise<ThumbnailGenerated['file']> => {
+const isValidImage = (file: File): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = URL.createObjectURL(file);
+  });
+};
+
+const getImageThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> => {
+  const isValid = await isValidImage(file);
+  if (!isValid) {
+    return null;
+  }
+
   return new Promise((resolve) => {
     Resizer.imageFileResizer(
       file,

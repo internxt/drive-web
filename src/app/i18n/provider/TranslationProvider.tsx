@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Translate, TranslateArray } from '../types';
 
 interface TranslationContextProps {
-  translate: (key: string, props?: Record<string, unknown>) => string;
-  translateList: (key: string, props?: Record<string, unknown>) => string[];
+  translate: Translate;
+  translateList: TranslateArray;
 }
 
 const TranslationContext = createContext<TranslationContextProps>({ translate: () => '', translateList: () => [] });

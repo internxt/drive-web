@@ -57,6 +57,18 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       }
     };
 
+    const incrementItemCount = () => {
+      if (task?.status !== TaskStatus.Cancelled) {
+        tasksService.updateTask({
+          taskId: options.taskId,
+          merge: {
+            status: TaskStatus.InProcess,
+            nItems: (task?.nItems || 0) + 1,
+          },
+        });
+      }
+    };
+
     // ! Prevents the folder download to start if the task is already cancelled
     if (task?.status === TaskStatus.Cancelled) {
       return;
@@ -86,13 +98,19 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       });
 
       if (isFirefox) {
-        await downloadFolderUsingBlobs({ folder, updateProgressCallback, isWorkspace: !!selectedWorkspace });
+        await downloadFolderUsingBlobs({
+          folder,
+          updateProgressCallback,
+          incrementItemCount,
+          isWorkspace: !!selectedWorkspace,
+        });
       } else {
         tasksService.updateTask({
           taskId: options.taskId,
           merge: {
             status: TaskStatus.InProcess,
             progress: Infinity,
+            nItems: 0,
           },
         });
         const isWorkspaceSelected = !!selectedWorkspace;
@@ -115,6 +133,9 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
           filesIterator: payload.fileIterator,
           updateProgress: (progress) => {
             updateProgressCallback(progress);
+          },
+          updateNumItems: () => {
+            incrementItemCount();
           },
           options: {
             ...credentials,

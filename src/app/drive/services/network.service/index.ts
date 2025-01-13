@@ -80,10 +80,6 @@ export class Network {
     continueUploadOptions: {
       taskId: string;
     },
-    analyticsServiceCallbacks?: {
-      pauseUploadCallback: () => void;
-      resumeUploadCallback: () => void;
-    },
   ): [Promise<string>, Abortable | undefined] {
     if (!bucketId) {
       throw new Error('Bucket id not provided');
@@ -95,7 +91,7 @@ export class Network {
 
     const worker: Worker = createUploadWebWorker();
     const payload: Omit<IUploadParams, 'progressCallback'> & {
-      creds: any;
+      creds: Network['creds'];
       mnemonic: string;
       continueUploadOptions: {
         taskId: string;

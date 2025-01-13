@@ -125,7 +125,7 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
             <div className="flex w-52 flex-col items-start">
               <p className="text-base font-medium">{translate('shareItemDialog.dateCreated')}</p>
               <p className="text-base font-normal">
-                {dateService.format(dateShareLink as string, 'dddd, D MMM YYYY, hh:mm')}
+                {dateService.formatDefaultDate(dateShareLink as string, translate)}
               </p>
             </div>
           </div>

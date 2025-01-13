@@ -54,7 +54,6 @@ import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
-import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
 import { uiActions } from '../../../store/slices/ui';
 import { userSelectors } from '../../../store/slices/user';
 import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
@@ -73,7 +72,9 @@ import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
 
-const TRASH_PAGINATION_OFFSET = 50;
+import { useTrashPagination } from 'app/drive/hooks/trash/useTrashPagination';
+import { IRoot } from '../../../store/slices/storage/types';
+
 export const UPLOAD_ITEMS_LIMIT = 3000;
 
 interface DriveExplorerProps {
@@ -173,10 +174,24 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   // PAGINATION STATES
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
-  const [hasMoreTrashFolders, setHasMoreTrashFolders] = useState<boolean>(true);
-  const [isLoadingTrashItems, setIsLoadingTrashItems] = useState(false);
   const hasMoreItemsToLoad = isTrash ? hasMoreItems : hasMoreFiles || hasMoreFolders;
   const isEmptyFolder = !isLoading && !hasMoreItemsToLoad;
+
+  // TRASH PAGINATION
+  const {
+    isLoadingTrashItems,
+    hasMoreTrashFolders,
+    setHasMoreTrashFolders,
+    setIsLoadingTrashItems,
+    getMoreTrashItems,
+  } = useTrashPagination({
+    getTrashPaginated,
+    folderOnTrashLength,
+    isTrash: isTrash,
+    filesOnTrashLength,
+    setHasMoreItems,
+    order,
+  });
 
   // RIGHT CLICK MENU STATES
   const [isListElementsHovered, setIsListElementsHovered] = useState<boolean>(false);
@@ -263,13 +278,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    const isTrashAndNotHasItems = isTrash;
-    if (isTrashAndNotHasItems) {
-      getMoreTrashFolders().catch((error) => errorService.reportError(error));
-    }
-  }, []);
-
-  useEffect(() => {
     if ((!isTrash && !hasMoreFolders) || (isTrash && !hasMoreTrashFolders)) {
       fetchItems();
     }
@@ -329,43 +337,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     },
     [dispatch],
   );
-
-  //TODO: MOVE PAGINATED TRASH LOGIC OUT OF VIEW
-  const getMoreTrashFolders = async () => {
-    setIsLoadingTrashItems(true);
-    if (getTrashPaginated) {
-      const result = await getTrashPaginated(
-        TRASH_PAGINATION_OFFSET,
-        folderOnTrashLength,
-        'folders',
-        true,
-        order.by === 'name' ? 'plainName' : 'updatedAt',
-        order.direction,
-      );
-      const existsMoreFolders = !result.finished;
-      setHasMoreTrashFolders(existsMoreFolders);
-    }
-    setIsLoadingTrashItems(false);
-  };
-
-  const getMoreTrashFiles = async () => {
-    setIsLoadingTrashItems(true);
-    if (getTrashPaginated) {
-      const result = await getTrashPaginated(
-        TRASH_PAGINATION_OFFSET,
-        filesOnTrashLength,
-        'files',
-        true,
-        order.by === 'name' ? 'plainName' : 'updatedAt',
-        order.direction,
-      );
-      const existsMoreItems = !result.finished;
-      setHasMoreItems(existsMoreItems);
-    }
-    setIsLoadingTrashItems(false);
-  };
-
-  const getMoreTrashItems = hasMoreTrashFolders ? getMoreTrashFolders : getMoreTrashFiles;
 
   const onUploadFileButtonClicked = useCallback((): void => {
     errorService.addBreadcrumb({

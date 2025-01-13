@@ -1,9 +1,11 @@
+import { vi } from 'vitest';
+
 export const createUploadWebWorker = (): Worker => {
   return {
-    postMessage: jest.fn(),
-    terminate: jest.fn(),
-    onmessage: jest.fn(),
-    onerror: jest.fn(),
+    postMessage: vi.fn(),
+    terminate: vi.fn(),
+    onmessage: vi.fn(),
+    onerror: vi.fn(),
   } as unknown as Worker;
 };
 

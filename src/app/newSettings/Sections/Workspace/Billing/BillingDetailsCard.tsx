@@ -10,7 +10,7 @@ const BillingDetailsCard = ({ address, phone, isOwner, onEditButtonClick }: Bill
 
   return (
     <div className="space-y-3">
-      <div className="flex w-full flex-row items-center justify-between ">
+      <div className="flex w-full flex-row items-center justify-between">
         <span className="text-xl font-medium">{t('views.preferences.workspace.billing.billingDetails')}</span>
         <Button variant="secondary" onClick={onEditButtonClick}>
           <span>{t('views.preferences.workspace.billing.editBilling')}</span>

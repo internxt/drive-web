@@ -77,7 +77,7 @@ const InvoiceDateColumn = ({ invoices, isLastInvoice, translate, setHoverItemInd
         onMouseEnter={() => setHoverItemIndex(id)}
         onMouseLeave={() => setHoverItemIndex(null)}
       >
-        {displayDate(created)}
+        <p className="overflow-hidden truncate text-ellipsis whitespace-nowrap">{displayDate(created)}</p>
       </div>
     ))}
   </div>
@@ -120,14 +120,14 @@ const InvoiceAmountColumn = ({
 }: ColumnProps) => (
   <div className="-mr-5 -mt-5 flex flex-col rounded-tr-xl">
     <h1
-      className={`flex h-12 w-56 flex-row items-center justify-between rounded-tr-xl border-b border-gray-10 bg-gray-1 p-2 pl-5 dark:bg-gray-5 ${headerTextClass}`}
+      className={`flex h-12 w-40 flex-row items-center justify-between rounded-tr-xl border-b border-gray-10 bg-gray-1 p-2 pl-5 dark:bg-gray-5 lg:w-56 ${headerTextClass}`}
     >
       {translate('views.account.tabs.billing.invoices.plan')}
     </h1>
     {invoices.map(({ pdf, id, total, currency }, i) => (
       <div
         key={id}
-        className={`flex h-12 w-56 flex-row items-center justify-between border-gray-10 pl-5 text-base font-normal text-gray-60 ${
+        className={`flex h-12 w-40 flex-row items-center justify-between border-gray-10 pl-5 text-base font-normal text-gray-60 lg:w-56 ${
           isLastInvoice(i) ? 'rounded-br-xl' : 'border-b'
         } ${hoverItemIndex === id ? 'bg-gray-1 dark:bg-gray-5' : 'bg-surface'}`}
         onMouseEnter={() => setHoverItemIndex(id)}
@@ -135,7 +135,7 @@ const InvoiceAmountColumn = ({
       >
         {`${total / 100} ` + currencyService.getCurrencySymbol(currency.toUpperCase())}
         <a className="px-2 text-gray-100" href={pdf} target="_blank" rel="noopener noreferrer">
-          <DownloadSimple colorRendering={'bg-gray-100'} size={20} />
+          <DownloadSimple className="text-gray-100" colorRendering={'bg-gray-100'} size={20} />
         </a>
       </div>
     ))}

@@ -4,9 +4,9 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 85% !",
-    "title": "Les meilleures offres du Black Friday",
-    "subtitle": "Recevez notre sac à dos premium avec nos plans à vie.",
+    "label": "Économisez 80% !",
+    "title": "Surprise du Père Noël !",
+    "subtitle": "Thème de l'application Web de Noël + Chance de gagner jusqu'à 10 To de stockage !",
     "cta": "Choisissez votre plan",
     "guarantee": "Garantie de remboursement de 30 jours",
     "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
@@ -16,7 +16,8 @@
       "Open source et audité",
       "Transferts cryptés de bout en bout",
       "Aucun accès non autorisé",
-      "L'offre se termine le 3 décembre"
+      "L'offre se termine ",
+      "le 7 janvier"
     ]
   },
   "valentinesBanner": {
@@ -47,7 +48,8 @@
     "dark": "Sombre",
     "system": "Système",
     "starwars": "Star Wars",
-    "halloween": "Halloween"
+    "halloween": "Halloween",
+    "christmas": "Noël"
   },
   "auth": {
     "email": "Email",
@@ -237,6 +239,7 @@
   "general": {
     "new": "Nouveau",
     "of": "de",
+    "at": "à",
     "terms": "Termes et conditions",
     "contactSupport": "Contacter le support",
     "help": "Besoin d'aide ?",
@@ -455,10 +458,7 @@
             "storage": "Stockage",
             "ammount": "Montant",
             "plan": "Plan",
-            "empty": {
-              "title": "Vous êtes sur le plan gratuit",
-              "subtitle": "Les factures émises apparaîtront automatiquement ici lorsqu'un paiement est effectué."
-            },
+            "empty": "Aucune facture disponible",
             "download": "Download invoice"
           }
         },
@@ -1226,6 +1226,7 @@
     "itemsMovedToTrash": "{{item}} déplacé vers la corbeille",
     "restoreItems": "{{itemsToRecover}} restauré avec succès",
     "storageModified": "Stockage modifié avec succès",
+    "membersUpdatedSuccessfully": "Membres mis à jour avec succès",
     "errorModifyingStorage": "Le nouvel espace de stockage n'est pas valide pour ce membre.",
     "generalErrorWhileModifyingStorage": "Une erreur s'est produite lors de la modification du stockage.",
     "itemDeleted": "{{itemsToDelete}} supprimé",
@@ -1240,7 +1241,16 @@
     "errorApplyingCoupon": "Une erreur s'est produite lors de l'application du coupon",
     "invalidTaxIdIsProvided": "Le numéro d'identification fiscale fourni est invalide",
     "errorWhileFetchingMoreItems": "Une erreur est survenue lors de la récupération d'éléments supplémentaires",
-    "errorDeletingItems": "Une erreur est survenue lors de la suppression de cet élément"
+    "errorDeletingItems": "Une erreur est survenue lors de la suppression de cet élément",
+    "errorFetchingWorkspace": "Erreur lors de la récupération de l'espace de travail {{error}}",
+    "errorSettingUpWorkspace": "Erreur lors de la configuration de l'espace de travail {{error}}",
+    "errorWhileLoadingWorkspace": "Erreur lors du chargement de l'espace de travail {{error}}",
+    "errorFetchingWorkspaceCredentials": "Erreur lors de la récupération des identifiants de l'espace de travail {{error}}",
+    "invalidWorkspaceInvitationError": "Espace de travail plein. Contactez le propriétaire.",
+    "errorAcceptingWorkspaceInvitation": "Une erreur s'est produite lors de l'acceptation de l'invitation",
+    "errorWhileUpdatingWorkspaceMembers": "Une erreur s'est produite lors de la mise à jour des membres",
+    "errorWhileFetchingCurrentWorkspaceMembers": "Une erreur s'est produite lors de la récupération des membres de l'espace de travail",
+    "newMembersCannotBeLessThanTheExistentOnesError": "Les membres sélectionnés ne peuvent pas être inférieurs au nombre de membres actuels de l'espace de travail"
   },
   "actions": {
     "undo": "Annuler",
@@ -1253,6 +1263,7 @@
     "change": "Changer",
     "download": "Télécharger",
     "downloading": "Téléchargement",
+    "downloadingItems": "Téléchargement de {{Items}} éléments...",
     "downloaded": "Téléchargé",
     "delete": "Supprimer",
     "share": "Partager",
@@ -1272,6 +1283,7 @@
     "moreInfo": "Plus d'informations",
     "dismiss": "Rejeter",
     "save": "Enregistrer",
+    "saveChanges": "Enregistrer les modifications",
     "saving": "Sauvagarde en cours",
     "back": "Retourner",
     "edit": "Éditer",
@@ -1290,7 +1302,10 @@
     "report": "Signaler un abus",
     "yes": "Oui",
     "no": "Non",
-    "more": "Plus"
+    "more": "Plus",
+    "continue": "Continuer",
+    "keepCurrent": "Garder actuel",
+    "logOut": "Se déconnecter"
   },
   "drive": {
     "usage": "Usage",
@@ -1386,8 +1401,7 @@
       "subscribe-to-newsletter": "S'abonner à la lettre d'information",
       "install-desktop-app": "Installer l'app de bureau et télécharger un fichier",
       "invite-friends": "Inviter {{completedSteps}}/{{steps}} amis",
-      "invite-2-friends": "Inviter {{completedSteps}}/{{steps}} amis",
-      "complete-survey": "Répondre à une enquête"
+      "invite-2-friends": "Inviter {{completedSteps}}/{{steps}} amis"
     },
     "rewards": {
       "title": "Obtenez {{creditSum}} gratuitement !",
@@ -1623,6 +1637,32 @@
         "nextBillingDate": "Prochaine date de facturation",
         "planLimit": "Facturé pour un forfait de {{planLimit}}",
         "subscription": "Abonnement",
+        "membersLabel": "membres",
+        "perUser": "par utilisateur",
+        "members": {
+          "title": "Membres",
+          "editMembers": "Modifier les membres",
+          "numberOfMembers": "Nombre de membres",
+          "expandNumber": "Augmenter le nombre de membres.",
+          "confirmUpdateModal": {
+            "title": "Changer de plan",
+            "confirmToProceed": {
+              "text1": "Vous êtes sur le point de changer votre plan de membres Internxt de ",
+              "to": "à ",
+              "text2": ". Veuillez confirmer votre choix pour continuer."
+            },
+            "current": "Actuel",
+            "new": "Nouveau",
+            "decreaseStorage": {
+              "text": "Cela réduira également votre stockage total pour entreprise de ",
+              "to": " à "
+            },
+            "increaseStorage": {
+              "text": "Cela augmentera également votre stockage total pour entreprise de ",
+              "to": " à "
+            }
+          }
+        },
         "lifetimeSubscription": {
           "planType": "Durée de vie",
           "text": "Pas de facturation à venir"
@@ -1647,6 +1687,28 @@
         "empty": {
           "text": "Pas de factures antérieures"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "title": "Filtrer",
+          "searchMembers": "Rechercher des membres",
+          "filters": "Filtres",
+          "clear": "Effacer",
+          "activity": {
+            "title": "Activité",
+            "Login": "Connecté",
+            "ChangedPassword": "Mot de passe changé",
+            "Logout": "Déconnecté",
+            "ShareFile": "Fichier partagé",
+            "ShareFolder": "Dossier partagé",
+            "DeleteFile": "Fichier supprimé",
+            "DeleteFolder": "Dossier supprimé"
+          },
+          "platform": { "title": "Plateforme", "Web": "Web", "Mobile": "Mobile", "Desktop": "Bureau" },
+          "dateRange": { "title": "Plage de dates", "days": "7 derniers jours" }
+        },
+        "headerTable": { "date": "Date", "member": "Membre", "activity": "Activité", "access": "Accès" },
+        "noResults": "Il n'y a aucun résultat à afficher"
       }
     },
     "account": {
@@ -1721,7 +1783,8 @@
       "billing": "Facturation",
       "account": "Compte",
       "plans": "Plans",
-      "security": "Sécurité"
+      "security": "Sécurité",
+      "logs": "Journaux"
     }
   },
   "workspaces": {

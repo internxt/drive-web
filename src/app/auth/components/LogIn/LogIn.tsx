@@ -161,15 +161,18 @@ export default function LogIn(): JSX.Element {
         redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode, isSharingInvitation });
       } else {
         setShowTwoFactor(true);
+        setLoginError([]);
+        setShowErrors(false);
       }
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
       if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
-        navigationService.history.push(`/activate/${email}`);
+        const emailEncoded = encodeURIComponent(email);
+        navigationService.history.push(`/activate/${emailEncoded}`);
       }
 
-      setLoginError([getLoginErrorMessage(err)]);
+      setLoginError([castedError.message]);
       setShowErrors(true);
       if ((err as AppError)?.status === 403) {
         await sendUnblockAccountEmail(email);

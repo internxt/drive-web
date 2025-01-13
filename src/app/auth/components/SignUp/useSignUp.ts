@@ -75,9 +75,12 @@ export function useSignUp(
       }
     };
 
+    const serviceHeaders = httpService.getHeaders(true, false);
+    const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
+
     const raw = await fetch(`${process.env.REACT_APP_API_URL}/${registerSource}/update`, {
       method: 'POST',
-      headers: httpService.getHeaders(true, false),
+      headers: headers,
       body: JSON.stringify(registerUserPayload),
     });
     const { res, body } = await fetchHandler(raw);
@@ -108,6 +111,14 @@ export function useSignUp(
       privateKeyEncrypted: encPrivateKey,
       publicKey: publicKeyArmored,
       revocationCertificate: revocationCertificate,
+      ecc: {
+        privateKeyEncrypted: encPrivateKey,
+        publicKey: publicKeyArmored,
+      },
+      kyber: {
+        publicKey: null,
+        privateKeyEncrypted: null,
+      },
     };
     const registerDetails: RegisterDetails = {
       name: 'My',
@@ -171,6 +182,14 @@ export function useSignUp(
       privateKeyEncrypted: encPrivateKey,
       publicKey: publicKeyArmored,
       revocationCertificate: revocationCertificate,
+      ecc: {
+        privateKeyEncrypted: encPrivateKey,
+        publicKey: publicKeyArmored,
+      },
+      kyber: {
+        publicKey: null,
+        privateKeyEncrypted: null,
+      },
     };
     const registerDetails: RegisterDetails = {
       name: 'My',

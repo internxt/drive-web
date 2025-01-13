@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
 
 import packageJson from '../../../../package.json';
 import localStorageService from './local-storage.service';
@@ -26,7 +26,7 @@ const httpService = {
     return axios.delete<ResponseType>(url, config).then((response) => response.data);
   },
 
-  getHeaders(withAuth: boolean, withMnemonic: boolean, isTeam = false): Headers {
+  getHeaders(withAuth: boolean, withMnemonic: boolean, isTeam = false): AxiosRequestHeaders {
     const headers = new Headers();
 
     headers.append('content-type', 'application/json; charset=utf-8');
@@ -37,6 +37,16 @@ const httpService = {
       isTeam
         ? headers.append('Authorization', `Bearer ${localStorageService.get('xTokenTeam')}`)
         : headers.append('Authorization', `Bearer ${localStorageService.get('xToken')}`);
+    }
+
+    const headersObject = Object.fromEntries(headers);
+    return headersObject as AxiosRequestHeaders;
+  },
+  convertHeadersToNativeHeaders(serviceHeaders: AxiosRequestHeaders): Headers {
+    const headers = new Headers();
+
+    for (const [key, value] of Object.entries(serviceHeaders)) {
+      if (value) headers.append(key, value.toString());
     }
 
     return headers;

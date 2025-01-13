@@ -229,6 +229,16 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
       });
     };
 
+    const incrementItemCount = () => {
+      const task = tasksService.findTask(taskId);
+      tasksService.updateTask({
+        taskId,
+        merge: {
+          nItems: (task?.nItems || 0) + 1,
+        },
+      });
+    };
+
     items.forEach((_, index) => {
       downloadProgress[index] = 0;
     });
@@ -247,6 +257,9 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
                 downloadProgress[index] = progress;
                 updateProgressCallback(calculateProgress());
               },
+              () => {
+                incrementItemCount();
+              },
               driveItem.uuid,
               { destination: folder, closeWhenFinished: false, ...moreOptions },
             );
@@ -260,6 +273,9 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
               updateProgress: (progress) => {
                 downloadProgress[index] = progress;
                 updateProgressCallback(calculateProgress());
+              },
+              updateNumItems: () => {
+                incrementItemCount();
               },
               options: {
                 destination: folder,

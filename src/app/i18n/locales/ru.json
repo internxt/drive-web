@@ -9,9 +9,9 @@
     "cta": "Получить скидку"
   },
   "featuresBanner": {
-    "label": "Сэкономьте 85%!",
-    "title": "Лучшие предложения на Черную Пятницу",
-    "subtitle": "Получите наш премиум-рюкзак с нашими пожизненными планами.",
+    "label": "Сэкономьте 80%!",
+    "title": "Секретный Санта-сюрприз!",
+    "subtitle": "Рождественская тема веб-приложения + Шанс выиграть до 10 ТБ хранения!",
     "cta": "Выберите свой план",
     "guarantee": "30-дневная гарантия возврата денег",
     "lastCta": "*Предложение действительно для бесплатных аккаунтов или новых клиентов",
@@ -21,7 +21,8 @@
       "Открытый исходный код и проверка",
       "Зашифрованные передачи от конца до конца",
       "Без несанкционированного доступа",
-      "Предложение заканчивается 3 декабря"
+      "Предложение заканчивается",
+      "7 января"
     ]
   },
   "banner": {
@@ -47,7 +48,8 @@
     "dark": "Темный",
     "system": "Система",
     "starwars": "Star Wars",
-    "halloween": "Halloween"
+    "halloween": "Halloween",
+    "christmas": "Christmas"
   },
   "auth": {
     "email": "Email",
@@ -237,6 +239,7 @@
   "general": {
     "new": "новый",
     "of": "из",
+    "at": "в",
     "terms": "Условия и положения",
     "contactSupport": "Свяжитесь с поддержкой",
     "help": "Нужна помощь?",
@@ -473,10 +476,7 @@
             "billingDate": "Дата",
             "storage": "Хранение",
             "ammount": "Сумма",
-            "empty": {
-              "title": "Вы используете бесплатный тарифный план",
-              "subtitle": "Выставленные счета будут появляться здесь автоматически, если у вас платный план."
-            },
+            "empty": "Нет доступных счетов",
             "download": "Скачать счет-фактуру"
           }
         },
@@ -1265,6 +1265,7 @@
     "linkUpdated": "Ссылка обновлена",
     "itemsMovedToTrash": "{{item}} перемещен в корзину",
     "storageModified": "Хранилище успешно изменено",
+    "membersUpdatedSuccessfully": "Участники успешно обновлены",
     "errorModifyingStorage": "Новый объём хранения недоступен для этого участника.",
     "generalErrorWhileModifyingStorage": "Произошла ошибка при изменении объёма хранения.",
     "restoreItems": "{{itemsToRecover}} успешно восстановлено",
@@ -1280,7 +1281,16 @@
     "errorApplyingCoupon": "Произошла ошибка при применении купона",
     "invalidTaxIdIsProvided": "Предоставленный ИНН недействителен",
     "errorWhileFetchingMoreItems": "Произошла ошибка при получении дополнительных элементов",
-    "errorDeletingItems": "Произошла ошибка при удалении этого элемента"
+    "errorDeletingItems": "Произошла ошибка при удалении этого элемента",
+    "errorFetchingWorkspace": "Ошибка при получении рабочего пространства {{error}}",
+    "errorSettingUpWorkspace": "Ошибка при настройке рабочего пространства {{error}}",
+    "errorWhileLoadingWorkspace": "Ошибка при загрузке рабочего пространства {{error}}",
+    "errorFetchingWorkspaceCredentials": "Ошибка при получении учетных данных рабочего пространства {{error}}",
+    "invalidWorkspaceInvitationError": "Рабочее пространство заполнено. Свяжитесь с владельцем.",
+    "errorAcceptingWorkspaceInvitation": "Произошла ошибка при принятии приглашения",
+    "errorWhileUpdatingWorkspaceMembers": "Произошла ошибка при обновлении участников",
+    "errorWhileFetchingCurrentWorkspaceMembers": "Произошла ошибка при получении участников рабочего пространства",
+    "newMembersCannotBeLessThanTheExistentOnesError": "Выбранных участников не может быть меньше, чем текущих участников рабочего пространства"
   },
   "actions": {
     "undo": "Отменить",
@@ -1293,6 +1303,7 @@
     "change": "Изменить",
     "download": "Загрузить",
     "downloading": "Загрузка",
+    "downloadingItems": "Загрузка элементов {{Items}}...",
     "downloaded": "Загружено",
     "delete": "Удалить",
     "share": "Поделиться",
@@ -1312,6 +1323,7 @@
     "moreInfo": "Больше информации",
     "dismiss": "Пропустить",
     "save": "Сохранить",
+    "saveChanges": "Сохранить изменения",
     "saving": "Экономия",
     "back": "Назад",
     "edit": "Редактировать",
@@ -1330,7 +1342,10 @@
     "report": "Сообщить о нарушении",
     "yes": "Да",
     "no": "Нет",
-    "more": "Больше"
+    "more": "Больше",
+    "continue": "Продолжить",
+    "keepCurrent": "Сохранить текущее",
+    "logOut": "Выйти"
   },
   "drive": {
     "usage": "Использование",
@@ -1426,8 +1441,7 @@
       "subscribe-to-newsletter": "Подписаться на рассылку",
       "install-desktop-app": "Установить приложение для рабочего стола и загрузить файл",
       "invite-friends": "Пригласить {{completedSteps}}/{{steps}} друзей",
-      "invite-2-friends": "Пригласить {{completedSteps}}/{{steps}} друзей",
-      "complete-survey": "Полный опрос"
+      "invite-2-friends": "Пригласить {{completedSteps}}/{{steps}} друзей"
     },
     "rewards": {
       "title": "Получить {{creditSum}} бесплатно",
@@ -1481,7 +1495,7 @@
       "members": {
         "title": "Участники",
         "members": "Участники",
-        "guests": "Гости",
+        "guests": "Приглашенный",
         "search": "Поиск участников",
         "invite": "Пригласить",
         "inviteDialog": {
@@ -1663,6 +1677,32 @@
         "nextBillingDate": "Следующая дата выставления счета",
         "planLimit": "Выставлен счет за план {{planLimit}}",
         "subscription": "Подписка",
+        "membersLabel": "участники",
+        "perUser": "на пользователя",
+        "members": {
+          "title": "Участники",
+          "editMembers": "Редактировать участников",
+          "numberOfMembers": "Количество участников",
+          "expandNumber": "Увеличить количество участников.",
+          "confirmUpdateModal": {
+            "title": "Изменить план",
+            "confirmToProceed": {
+              "text1": "Вы собираетесь изменить ваш план участников Internxt с ",
+              "to": "на ",
+              "text2": ". Подтвердите свой выбор, чтобы продолжить."
+            },
+            "current": "Текущий",
+            "new": "Новый",
+            "decreaseStorage": {
+              "text": "Это также уменьшит общий объем хранилища для бизнеса с ",
+              "to": " до "
+            },
+            "increaseStorage": {
+              "text": "Это также увеличит общий объем хранилища для бизнеса с ",
+              "to": " до "
+            }
+          }
+        },
         "lifetimeSubscription": {
           "planType": "Пожизненная",
           "text": "Никаких предстоящих счетов"
@@ -1687,6 +1727,28 @@
         "empty": {
           "text": "Отсутствие предыдущих счетов-фактур"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "title": "Фильтр",
+          "searchMembers": "Поиск участников",
+          "filters": "Фильтры",
+          "clear": "Очистить",
+          "activity": {
+            "title": "Деятельность",
+            "Login": "Вошел в систему",
+            "ChangedPassword": "Пароль изменен",
+            "Logout": "Вышел из системы",
+            "ShareFile": "Файл поделён",
+            "ShareFolder": "Папка поделена",
+            "DeleteFile": "Файл удалён",
+            "DeleteFolder": "Папка удалена"
+          },
+          "platform": { "title": "Платформа", "Web": "Веб", "Mobile": "Мобильный", "Desktop": "Настольный" },
+          "dateRange": { "title": "Диапазон дат", "days": "Последние {{days}} дней" }
+        },
+        "headerTable": { "date": "Дата", "member": "Участник", "activity": "Деятельность", "access": "Доступ" },
+        "noResults": "Нет результатов для отображения"
       }
     },
     "account": {
@@ -1761,7 +1823,8 @@
       "billing": "Оплата",
       "account": "Аккаунт",
       "plans": "Планы",
-      "security": "Безопасность"
+      "security": "Безопасность",
+      "logs": "Логи"
     }
   },
   "workspaces": {

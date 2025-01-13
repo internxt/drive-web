@@ -4,9 +4,9 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "節省85%！",
-    "title": "黑色星期五最佳優惠",
-    "subtitle": "選擇我們的終身方案，獲得我們的高級背包。",
+    "label": "節省80%！",
+    "title": "聖誕老人驚喜！",
+    "subtitle": "聖誕網頁應用主題 + 有機會贏取多達 10TB 的儲存空間！",
     "cta": "選擇您的方案",
     "guarantee": "30天退款保證",
     "lastCta": "*此優惠僅適用於免費帳戶或新客戶",
@@ -16,7 +16,8 @@
       "開源且經過審查",
       "端到端加密傳輸",
       "無未經授權的訪問",
-      "優惠截止至12月3日"
+      "優惠截止至",
+      "01月07日"
     ]
   },
   "valentinesBanner": {
@@ -68,7 +69,8 @@
     "dark": "深色",
     "system": "系統",
     "starwars": "星際大戰",
-    "halloween": "Halloween"
+    "halloween": "Halloween",
+    "christmas": "聖誕節"
   },
   "auth": {
     "email": "電子郵件",
@@ -254,6 +256,7 @@
   "general": {
     "new": "新的",
     "of": "的",
+    "at": "在",
     "terms": "條款和條件",
     "contactSupport": "聯絡支持",
     "help": "需要幫助嗎？",
@@ -496,10 +499,7 @@
             "head": "發票",
             "billingDate": "賬單日期",
             "plan": "計劃",
-            "empty": {
-              "title": "您目前使用的是免費計劃",
-              "subtitle": "當您擁有付費訂閱計劃時，已開具的發票將自動顯示在這裡。"
-            },
+            "empty": "沒有可用的發票",
             "download": "下載發票"
           }
         },
@@ -1256,6 +1256,7 @@
     "itemsMovedToTrash": "{{item}} 已移到垃圾桶",
     "restoreItems": "{{itemsToRecover}} 成功還原",
     "storageModified": "儲存空間修改成功",
+    "membersUpdatedSuccessfully": "成員更新成功",
     "errorModifyingStorage": "新存儲空間對此成員無效。",
     "generalErrorWhileModifyingStorage": "修改存儲時出錯。",
     "moveItems": "{{itemsToMove}} 成功移動",
@@ -1274,7 +1275,16 @@
     "errorApplyingCoupon": "應用優惠券時出錯",
     "errorWhileFetchingMoreItems": "獲取更多項目時出現錯誤",
     "errorDeletingItems": "刪除此項目時出現錯誤",
-    "invalidTaxIdIsProvided": "提供的稅號無效"
+    "invalidTaxIdIsProvided": "提供的稅號無效",
+    "errorFetchingWorkspace": "獲取工作區時出錯 {{error}}",
+    "errorSettingUpWorkspace": "設置工作區時出錯 {{error}}",
+    "errorWhileLoadingWorkspace": "加載工作區時出錯 {{error}}",
+    "errorFetchingWorkspaceCredentials": "獲取工作區憑證時出錯 {{error}}",
+    "invalidWorkspaceInvitationError": "工作區已滿。請聯絡擁有者。",
+    "errorAcceptingWorkspaceInvitation": "接受邀請時出錯",
+    "errorWhileUpdatingWorkspaceMembers": "更新成員時出了點問題",
+    "errorWhileFetchingCurrentWorkspaceMembers": "獲取工作區成員時出了點問題",
+    "newMembersCannotBeLessThanTheExistentOnesError": "選擇的成員數量不能少於當前工作區的成員數量。"
   },
   "actions": {
     "undo": "撤銷",
@@ -1288,6 +1298,7 @@
     "delete": "刪除",
     "download": "下載",
     "downloading": "下載中",
+    "downloadingItems": "正在下載 {{Items}} 項目...",
     "downloaded": "已下載",
     "view": "預覽",
     "accessFile": "訪問檔案",
@@ -1305,6 +1316,7 @@
     "moreInfo": "更多信息",
     "dismiss": "忽略",
     "save": "保存",
+    "saveChanges": "儲存更改",
     "saving": "正在保存",
     "share": "分享",
     "back": "返回",
@@ -1324,7 +1336,10 @@
     "report": "檢舉濫用",
     "yes": "是",
     "no": "否",
-    "more": "更多"
+    "more": "更多",
+    "continue": "繼續",
+    "keepCurrent": "保持目前",
+    "logOut": "登出"
   },
   "drive": {
     "usage": "使用量",
@@ -1421,8 +1436,7 @@
       "subscribe-to-newsletter": "訂閱通訊",
       "install-desktop-app": "安裝桌面應用程序並上傳文件",
       "invite-friends": "邀請 {{completedSteps}}/{{steps}} 位朋友",
-      "invite-2-friends": "邀請 {{completedSteps}}/{{steps}} 位朋友",
-      "complete-survey": "完成調查"
+      "invite-2-friends": "邀請 {{completedSteps}}/{{steps}} 位朋友"
     },
     "rewards": {
       "title": "免費獲得 {{creditSum}}",
@@ -1476,7 +1490,7 @@
       "members": {
         "title": "成員",
         "members": "成員",
-        "guests": "訪客",
+        "guests": "特邀",
         "search": "搜尋成員",
         "invite": "邀請",
         "inviteDialog": {
@@ -1658,6 +1672,32 @@
         "nextBillingDate": "下次計費日期",
         "planLimit": "計費計劃：{{planLimit}}",
         "subscription": "訂閱",
+        "membersLabel": "成員",
+        "perUser": "每位使用者",
+        "members": {
+          "title": "成員",
+          "editMembers": "編輯成員",
+          "numberOfMembers": "成員數量",
+          "expandNumber": "擴大成員數量。",
+          "confirmUpdateModal": {
+            "title": "更改方案",
+            "confirmToProceed": {
+              "text1": "您即將把 Internxt 成員方案從 ",
+              "to": "更改為 ",
+              "text2": "。請確認您的選擇以繼續。"
+            },
+            "current": "目前",
+            "new": "新",
+            "decreaseStorage": {
+              "text": "這也會減少您的總商業儲存空間，從 ",
+              "to": " 到 "
+            },
+            "increaseStorage": {
+              "text": "這也會增加您的總商業儲存空間，從 ",
+              "to": " 到 "
+            }
+          }
+        },
         "lifetimeSubscription": {
           "planType": "終身",
           "text": "沒有即將到來的賬單"
@@ -1679,6 +1719,28 @@
           "text": "您的計劃將降級到免費等級。",
           "button": "取消訂閱"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "title": "篩選",
+          "searchMembers": "搜尋成員",
+          "filters": "篩選器",
+          "clear": "清除",
+          "activity": {
+            "title": "活動",
+            "Login": "已登入",
+            "ChangedPassword": "已更改密碼",
+            "Logout": "已登出",
+            "ShareFile": "已分享檔案",
+            "ShareFolder": "已分享資料夾",
+            "DeleteFile": "已刪除檔案",
+            "DeleteFolder": "已刪除資料夾"
+          },
+          "platform": { "title": "平台", "Web": "網頁", "Mobile": "行動端", "Desktop": "桌面端" },
+          "dateRange": { "title": "日期範圍", "days": "最近 {{days}} 天" }
+        },
+        "headerTable": { "date": "日期", "member": "成員", "activity": "活動", "access": "訪問" },
+        "noResults": "沒有可顯示的結果"
       }
     },
     "account": {
@@ -1753,7 +1815,8 @@
       "billing": "計費",
       "account": "帳戶",
       "plans": "計劃",
-      "security": "安全"
+      "security": "安全",
+      "logs": "日誌"
     }
   },
   "workspaces": {

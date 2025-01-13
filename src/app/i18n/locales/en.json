@@ -4,9 +4,9 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 85%!",
-    "title": "The best Black Friday deals",
-    "subtitle": "Win our premium backpack with our lifetime plans.",
+    "label": "Save 80%!",
+    "title": "Secret Santa surprise! ",
+    "subtitle": "Christmas Web App Theme + Chance to win up to 10TB of storage!",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
@@ -16,7 +16,8 @@
       "Open-source and audited",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends December 3rd"
+      "Offer ends",
+      "January 7th"
     ]
   },
   "valentinesBanner": {
@@ -68,7 +69,8 @@
     "dark": "Dark",
     "system": "System",
     "starwars": "Star Wars",
-    "halloween": "Halloween"
+    "halloween": "Halloween",
+    "christmas": "Christmas"
   },
   "auth": {
     "email": "Email",
@@ -254,6 +256,7 @@
   "general": {
     "new": "new",
     "of": "of",
+    "at": "at",
     "terms": "Terms and conditions",
     "contactSupport": "Contact Support",
     "help": "Need help?",
@@ -498,10 +501,7 @@
             "storage": "Storage",
             "ammount": "Ammount",
             "plan": "Plan",
-            "empty": {
-              "title": "You are in free plan",
-              "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."
-            },
+            "empty": "There is no invoice available",
             "download": "Download invoice"
           }
         },
@@ -1295,6 +1295,7 @@
     "restoreItems": "{{itemsToRecover}} restored successfully",
     "moveItems": "{{itemsToMove}} moved successfully",
     "storageModified": "Storage modified successfully",
+    "membersUpdatedSuccessfully": "Members updated successfully",
     "errorModifyingStorage": "The new storage is not valid for this member.",
     "generalErrorWhileModifyingStorage": "Something went wrong while modifying storage",
     "itemDeleted": "{{item}} deleted",
@@ -1312,7 +1313,16 @@
     "errorApplyingCoupon": "Something went wrong while applying the coupon",
     "invalidTaxIdIsProvided": "The provided Tax ID is invalid",
     "errorWhileFetchingMoreItems": "Something went wrong while fetching more items",
-    "errorDeletingItems": "Something went wrong while deleting this item"
+    "errorDeletingItems": "Something went wrong while deleting this item",
+    "errorFetchingWorkspace": "Error while fetching workspace {{error}}",
+    "errorSettingUpWorkspace": "Error while setting up the workspace {{error}}",
+    "errorWhileLoadingWorkspace": "Error while loading the workspace {{error}}",
+    "errorFetchingWorkspaceCredentials": "Error while fetching workspace credentials {{error}}",
+    "invalidWorkspaceInvitationError": "Workspace full. Contact the owner.",
+    "errorAcceptingWorkspaceInvitation": "Something went wrong while accepting the invitation",
+    "errorWhileUpdatingWorkspaceMembers": "Something went wrong while updating the members",
+    "errorWhileFetchingCurrentWorkspaceMembers": "Something went wrong while fetching workspace members",
+    "newMembersCannotBeLessThanTheExistentOnesError": "Selected members cannot be fewer than current workspace members"
   },
   "actions": {
     "undo": "Undo",
@@ -1326,6 +1336,7 @@
     "delete": "Delete",
     "download": "Download",
     "downloading": "Downloading",
+    "downloadingItems": "Downloading {{nItems}} items...",
     "downloaded": "Downloaded",
     "view": "Preview",
     "accessFile": "Access File",
@@ -1343,6 +1354,7 @@
     "moreInfo": "More info",
     "dismiss": "Dismiss",
     "save": "Save",
+    "saveChanges": "Save changes",
     "saving": "Saving",
     "share": "Share",
     "back": "Back",
@@ -1362,7 +1374,10 @@
     "report": "Report abuse",
     "yes": "Yes",
     "no": "No",
-    "more": "More"
+    "more": "More",
+    "continue": "Continue",
+    "keepCurrent": "Keep current",
+    "logOut": "Log out"
   },
   "drive": {
     "usage": "Usage",
@@ -1459,8 +1474,7 @@
       "subscribe-to-newsletter": "Subscribe to newsletter",
       "install-desktop-app": "Install desktop app and upload a file",
       "invite-friends": "Invite {{completedSteps}}/{{steps}} friends",
-      "invite-2-friends": "Invite {{completedSteps}}/{{steps}} friends",
-      "complete-survey": "Complete survey"
+      "invite-2-friends": "Invite {{completedSteps}}/{{steps}} friends"
     },
     "rewards": {
       "title": "Get {{creditSum}} for free",
@@ -1514,7 +1528,7 @@
       "members": {
         "title": "Members",
         "members": "Members",
-        "guests": "Guests",
+        "guests": "Invited",
         "search": "Search members",
         "invite": "Invite",
         "inviteDialog": {
@@ -1696,7 +1710,9 @@
         "title": "Billing",
         "nextBillingDate": "Next billing date",
         "planLimit": "Billed for {{planLimit}} plan",
+        "membersLabel": "members",
         "subscription": "Subscription",
+        "perUser": "per user",
         "lifetimeSubscription": {
           "planType": "Lifetime",
           "text": "No upcoming billings"
@@ -1705,6 +1721,30 @@
           "planType": "Free",
           "action": "Upgrade",
           "actionDescription": "Increase your storage space and get more features"
+        },
+        "members": {
+          "title": "Members",
+          "editMembers": "Edit members",
+          "numberOfMembers": "Number of members",
+          "expandNumber": "Expand the number of members.",
+          "confirmUpdateModal": {
+            "title": "Change plan",
+            "confirmToProceed": {
+              "text1": "You are about to change your Internxt member plan from ",
+              "to": "to ",
+              "text2": ". Confirm your choice to proceed, please."
+            },
+            "current": "Current",
+            "new": "New",
+            "decreaseStorage": {
+              "text": "This will also decrease your total business storage from ",
+              "to": " to "
+            },
+            "increaseStorage": {
+              "text": "This will also increase your total business storage from ",
+              "to": " to "
+            }
+          }
         },
         "paymentMethod": {
           "title": "Payment Method",
@@ -1721,6 +1761,36 @@
         "empty": {
           "text": "No previous invoices"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "title": "Filter",
+          "searchMembers": "Search members",
+          "filters": "Filters",
+          "clear": "Clear",
+          "activity": {
+            "title": "Activity",
+            "Login": "Signed in",
+            "ChangedPassword": "Changed password",
+            "Logout": "Signed out",
+            "ShareFile": "Shared file",
+            "ShareFolder": "Shared folder",
+            "DeleteFile": "Deleted file",
+            "DeleteFolder": "Deleted folder"
+          },
+          "platform": { "title": "Platform", "Web": "Web", "Mobile": "Mobile", "Desktop": "Desktop" },
+          "dateRange": {
+            "title": "Date range",
+            "days": "Last {{days}} days"
+          }
+        },
+        "headerTable": {
+          "date": "Date",
+          "member": "Member",
+          "activity": "Activity",
+          "access": "Access"
+        },
+        "noResults": "There are no results to show"
       }
     },
     "account": {
@@ -1795,7 +1865,8 @@
       "billing": "Billing",
       "account": "Account",
       "plans": "Plans",
-      "security": "Security"
+      "security": "Security",
+      "logs": "Logs"
     }
   },
   "workspaces": {

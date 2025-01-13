@@ -5,9 +5,9 @@ import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 interface CancelSubscriptionProps {
   isCancelSubscriptionModalOpen: boolean;
-  setIsCancelSubscriptionModalOpen: (isCancelSubscriptionModalOpen) => void;
+  setIsCancelSubscriptionModalOpen: (isCancelSubscriptionModalOpen: boolean) => void;
   cancellingSubscription: boolean;
-  cancelSubscription: (string) => void;
+  cancelSubscription: () => void;
   planName: string;
   planInfo: string;
   currentUsage: number;

@@ -1,6 +1,6 @@
 import { FunctionComponent, SVGProps } from 'react';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../drive/types';
-import { IRoot } from '../store/slices/storage/storage.thunks/uploadFolderThunk';
+import { IRoot } from '../store/slices/storage/types';
 
 export enum TaskStatus {
   Pending = 'pending',
@@ -46,6 +46,7 @@ export interface BaseTask {
   action: TaskType;
   status: TaskStatus;
   progress: number;
+  nItems?: number;
   cancellable: boolean;
   showNotification: boolean;
   subtitle?: string;
@@ -181,6 +182,7 @@ export interface TaskNotification {
   subtitle: string;
   icon: FunctionComponent<SVGProps<SVGSVGElement>>;
   progress: number;
+  nItems?: number;
   isTaskCancellable: boolean;
 }
 

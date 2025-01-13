@@ -26,9 +26,12 @@ export default function GuestAcceptInvitationView(): JSX.Element {
       password: details.encryptedCurrentPassword,
     });
 
+    const serviceHeaders = httpService.getHeaders(false, false);
+    const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
+
     return fetch(`${process.env.REACT_APP_API_URL}/access`, {
       method: 'post',
-      headers: httpService.getHeaders(false, false),
+      headers: headers,
       body,
     }).then((res) => {
       if (res.status !== 200) {

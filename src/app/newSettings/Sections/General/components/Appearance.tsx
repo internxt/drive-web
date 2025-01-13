@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import errorService from '../../../../core/services/error.service';
 import { isStarWarsThemeAvailable } from '../../../../payment/utils/checkStarWarsCode';
 import { isHalloweenThemeAvailable } from '../../../../payment/utils/checkHalloweenCode';
+import { isChristmasThemeAvailable } from '../../../../payment/utils/checkChristmasCode';
 import { RootState } from '../../../../store';
 
 function ThemeButton({ theme, toggleTheme, isSelected, img }) {
@@ -58,7 +59,6 @@ const Appearance = () => {
           !appearances.some((appearance) => appearance.theme === 'starwars' && appearance.img === appearance_dark) &&
           isStarWarsThemeAvailable
         ) {
-          // TODO: add img of starwars
           setAppearances([...appearances, { theme: 'starwars', img: appearance_dark }]);
         }
       })
@@ -73,8 +73,20 @@ const Appearance = () => {
           !appearances.some((appearance) => appearance.theme === 'halloween' && appearance.img === appearance_dark) &&
           isHalloweenThemeAvailable
         ) {
-          // TODO: add img of halloween
           setAppearances([...appearances, { theme: 'halloween', img: appearance_dark }]);
+        }
+      })
+      .catch((err) => {
+        const error = err as Error;
+        errorService.reportError(error);
+      });
+    isChristmasThemeAvailable(plan)
+      .then((isChristmasThemeAvailable) => {
+        if (
+          !appearances.some((appearance) => appearance.theme === 'christmas' && appearance.img === appearance_dark) &&
+          isChristmasThemeAvailable
+        ) {
+          setAppearances([...appearances, { theme: 'christmas', img: appearance_dark }]);
         }
       })
       .catch((err) => {

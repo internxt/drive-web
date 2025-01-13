@@ -99,6 +99,7 @@ class TaskManagerService {
       subtitle: this.getTaskNotificationSubtitle(task),
       icon: this.getTaskNotificationIcon(task),
       progress: task.progress,
+      nItems: task.nItems,
       isTaskCancellable: task.cancellable,
       itemUUID: task?.itemUUID,
     };
@@ -108,7 +109,7 @@ class TaskManagerService {
     task: TaskData,
   ): DownloadFilesData | DownloadFolderData | UploadFileData | UploadFolderData {
     const parsedItem =
-      task.file ?? task.folder ?? task.action === TaskType.UploadFolder
+      (task.file ?? task.folder ?? task.action === TaskType.UploadFolder)
         ? { folder: task.item, parentFolderId: task.parentFolderId }
         : task.item;
 
