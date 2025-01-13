@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-require('dotenv').config();
+import 'dotenv/config';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -14,7 +14,7 @@ export default defineConfig({
   },
   timeout: 70000,
 
-  testDir: './test/e2e',
+  testDir: './test/e2e/tests/specs',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -39,26 +39,26 @@ export default defineConfig({
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
-      testDir: './tests/specs',
+      testDir: './test/e2e/tests/specs',
     },
     {
       name: 'Internxt E2E tests on chromium',
-      testDir: './tests/specs',
-      use: { ...devices['Desktop Chrome'], storageState: './tests/specs/playwright/.auth/user.json' },
+      testDir: './test/e2e/tests/specs',
+      use: { ...devices['Desktop Chrome'], storageState: './test/e2e/tests/specs/playwright/auth/user.json' },
       dependencies: ['setup'],
     },
 
     {
       name: 'Internxt E2E tests on firefox',
-      testDir: './tests/specs',
-      use: { ...devices['Desktop Firefox'], storageState: './tests/specs/playwright/.auth/user.json' },
+      testDir: './test/e2e/tests/specs',
+      use: { ...devices['Desktop Firefox'], storageState: './test/e2e/tests/specs/playwright/auth/user.json' },
       dependencies: ['setup'],
     },
 
     {
       name: 'Internxt E2E tests on webkit',
-      testDir: './tests/specs',
-      use: { ...devices['Desktop Safari'], storageState: './tests/specs/playwright/.auth/user.json' },
+      testDir: './test/e2e/tests/specs',
+      use: { ...devices['Desktop Safari'], storageState: './test/e2e/tests/specs/playwright/auth/user.json' },
       dependencies: ['setup'],
     },
 
@@ -75,8 +75,12 @@ export default defineConfig({
     /* Test against branded browsers. */
     {
       name: 'Internxt E2E tests on Edge',
-      testDir: './tests/specs',
-      use: { ...devices['Desktop Edge'], channel: 'msedge', storageState: './tests/specs/playwright/.auth/user.json' },
+      testDir: './test/e2e/tests/specs',
+      use: {
+        ...devices['Desktop Edge'],
+        channel: 'msedge',
+        storageState: './test/e2e/tests/specs/playwright/auth/user.json',
+      },
       dependencies: ['setup'],
     },
     // {

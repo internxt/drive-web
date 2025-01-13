@@ -1,9 +1,9 @@
-import { test, expect } from '@playwright/test';
-import { signUpPage } from '../pages/signUpPage';
-import { staticData } from '../helper/staticData';
 import { faker } from '@faker-js/faker';
-const fs = require('fs');
-const credentialsFile = './tests/specs/playwright/.auth/credentials.json';
+import { expect, test } from '@playwright/test';
+import fs from 'fs';
+import { staticData } from '../helper/staticData';
+import { signUpPage } from '../pages/signUpPage';
+const credentialsFile = './test/e2e/tests/specs/playwright/auth/credentials.json';
 
 test.describe('Internxt SignUp', async () => {
   const credentialsData = JSON.parse(fs.readFileSync(credentialsFile, 'utf-8'));

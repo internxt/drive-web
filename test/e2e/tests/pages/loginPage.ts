@@ -1,5 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
-import { create } from 'lodash';
+import { Locator, Page, expect } from '@playwright/test';
 import { Context } from 'vm';
 
 export class loginPage {

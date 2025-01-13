@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { expect, test as setup } from '@playwright/test';
+import fs from 'fs';
 import { loginPage } from '../pages/loginPage';
 import { signUpPage } from '../pages/signUpPage';
-const fs = require('fs');
 
-const authFile = './tests/specs/playwright/.auth/user.json';
-const credentialsFile = './tests/specs/playwright/.auth/credentials.json';
+const authFile = './test/e2e/tests/specs/playwright/auth/user.json';
+const credentialsFile = './test/e2e/tests/specs/playwright/auth/credentials.json';
 
 //UI LOGIN
 
@@ -25,6 +25,7 @@ setup('Creating new user and logging in', async ({ browser }) => {
 
   await SignupPage.typeInEmail(email);
   await SignupPage.typeInPassword(password);
+
   await SignupPage.clickOnCreateAccountButton();
   await SignupPage.userWelcome();
   await page.waitForTimeout(2000);
@@ -39,10 +40,11 @@ setup('Creating new user and logging in', async ({ browser }) => {
   await newPage.goto('http://localhost:3000/login');
   await expect(newPage).toHaveURL(/.*login/);
 
-  //const endpointPromise = newPage.waitForResponse('https://drive.internxt.com/api/access');
-  const endpointPromise = newPage.waitForResponse('https://drive.internxt.com/api/access');
+  // CHANGE THIS, IT IS HARDCODED AND WILL FAIL WHEN THE URL CHANGE
+  const endpointPromise = newPage.waitForResponse('https://gateway.internxt.com/drive/auth/login/access');
   await loginpage.typeEmail(email);
   await loginpage.typePassword(password);
+
   await loginpage.clickLogIn();
 
   const response = await endpointPromise;

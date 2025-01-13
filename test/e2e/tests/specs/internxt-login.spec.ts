@@ -1,8 +1,8 @@
-import { test, expect } from '@playwright/test';
-import { loginPage } from '../pages/loginPage';
+import { expect, test } from '@playwright/test';
+import fs from 'fs';
 import { staticData } from '../helper/staticData';
-const fs = require('fs');
-const credentialsFile = './tests/specs/playwright/.auth/credentials.json';
+import { loginPage } from '../pages/loginPage';
+const credentialsFile = './test/e2e/tests/specs/playwright/auth/credentials.json';
 
 test.describe('internxt login', async () => {
   const credentialsData = JSON.parse(fs.readFileSync(credentialsFile, 'utf-8'));
@@ -18,6 +18,7 @@ test.describe('internxt login', async () => {
 
     await loginpage.typeEmail(credentialsData.email);
     await loginpage.typePassword(credentialsData.password);
+
     const driveTitle = await loginpage.clickLogIn();
     expect(driveTitle).toEqual(staticData.driveTitle);
   });
