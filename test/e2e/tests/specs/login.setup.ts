@@ -1,25 +1,24 @@
 import { faker } from '@faker-js/faker';
 import { expect, test as setup } from '@playwright/test';
 import fs from 'fs';
-import { loginPage } from '../pages/loginPage';
-import { signUpPage } from '../pages/signUpPage';
+import { LoginPage } from '../pages/loginPage';
+import { SignUpPage } from '../pages/SignUpPage';
 
 const authFile = './test/e2e/tests/specs/playwright/auth/user.json';
 const credentialsFile = './test/e2e/tests/specs/playwright/auth/credentials.json';
+const BASE_API_URL = process.env.REACT_APP_DRIVE_NEW_API_URL;
 
 //UI LOGIN
 
 setup('Creating new user and logging in', async ({ browser }) => {
   const context = await browser.newContext();
   const page = await context.newPage();
-  const SignupPage = new signUpPage(page);
+  const SignupPage = new SignUpPage(page);
 
-  const email = faker.internet.email();
+  const email = faker.internet.email().toLocaleLowerCase();
   const password = faker.internet.password();
-  const userCredentials = { email, password };
+  const userCredentials = { email: email.toLowerCase(), password };
   fs.writeFileSync(credentialsFile, JSON.stringify(userCredentials));
-
-  console.log(`User data, new user: ${email}, password: ${password}`);
 
   await page.goto('http://localhost:3000/new');
 
@@ -35,13 +34,13 @@ setup('Creating new user and logging in', async ({ browser }) => {
   const newContext = await browser.newContext();
   const newPage = await newContext.newPage();
 
-  const loginpage = new loginPage(newPage);
+  const loginpage = new LoginPage(newPage);
 
   await newPage.goto('http://localhost:3000/login');
   await expect(newPage).toHaveURL(/.*login/);
 
   // CHANGE THIS, IT IS HARDCODED AND WILL FAIL WHEN THE URL CHANGE
-  const endpointPromise = newPage.waitForResponse('https://gateway.internxt.com/drive/auth/login/access');
+  const endpointPromise = newPage.waitForResponse(`${BASE_API_URL}/auth/login/access`);
   await loginpage.typeEmail(email);
   await loginpage.typePassword(password);
 

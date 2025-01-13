@@ -1,7 +1,7 @@
-import { Page, expect, Locator } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { Context } from 'vm';
 
-export class signUpPage {
+export class SignUpPage {
   page: Page;
   private createAccountTitle: Locator;
   private emailInput: Locator;
