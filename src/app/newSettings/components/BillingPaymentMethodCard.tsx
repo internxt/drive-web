@@ -77,7 +77,11 @@ const BillingPaymentMethodCard = ({
           <div className="flex">
             {defaultPaymentMethod.card ? (
               <>
-                <img className="h-11 rounded-md" src={cardBrands[defaultPaymentMethod.card.brand]} />
+                <img
+                  className="h-11 rounded-md"
+                  src={cardBrands[defaultPaymentMethod.card.brand]}
+                  alt={cardBrands[defaultPaymentMethod.card.brand]}
+                />
                 <div className="ml-4 flex-1">
                   <div className="flex flex-col">
                     <p className="text-base font-medium text-gray-100">{defaultPaymentMethod.name}</p>
@@ -91,16 +95,14 @@ const BillingPaymentMethodCard = ({
               </>
             ) : (
               defaultPaymentMethod.type && (
-                <>
-                  <div className="ml-4 flex-1">
-                    <div className="flex items-center text-gray-100">
-                      <p className="text-base font-medium leading-tight">{paymentsTypes[defaultPaymentMethod.type]}</p>
-                    </div>
-                    <p className="text-sm text-gray-50">
-                      {t('views.account.tabs.billing.paymentMethod.contactUs.description')}
-                    </p>
+                <div className="ml-4 flex-1">
+                  <div className="flex items-center text-gray-100">
+                    <p className="text-base font-medium leading-tight">{paymentsTypes[defaultPaymentMethod.type]}</p>
                   </div>
-                </>
+                  <p className="text-sm text-gray-50">
+                    {t('views.account.tabs.billing.paymentMethod.contactUs.description')}
+                  </p>
+                </div>
               )
             )}
           </div>

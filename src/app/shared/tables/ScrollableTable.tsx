@@ -37,7 +37,7 @@ export const ScrollableTable: React.FC<ScrollableTableProps> = ({
   }, [scrollable, hasMoreItems, loadMoreItems]);
 
   return (
-    <div className={`${containerClassName} ${scrollable ? 'max-h-[80vh] overflow-y-auto' : ''}`}>
+    <div className={`${containerClassName} ${scrollable ? 'max-h-[70vh] overflow-y-auto' : ''}`}>
       {children}
       {/* Invisible div to observe and trigger load more */}
       {scrollable && hasMoreItems && <div ref={observerRef} className="h-2" />}
