@@ -23,6 +23,7 @@ jobs:
       - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
       - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
       - run: echo "always-auth=true" >> .npmrc
+      - run: echo REACT_APP_NODE_ENV=staging >> ./.env
       - name: Install dependencies
         run: npm install -g yarn && yarn
       - name: Install Playwright Browsers
