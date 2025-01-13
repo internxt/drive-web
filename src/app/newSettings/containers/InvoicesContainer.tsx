@@ -1,31 +1,36 @@
-import { Invoice } from '@internxt/sdk/dist/drive/payments/types';
+import { Invoice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { useTranslationContext } from '../../i18n/provider/TranslationProvider';
-import { useEffect, useState } from 'react';
 import Section from '../Sections/General/components/Section';
-import paymentService from '../../payment/services/payment.service';
 import Card from '../../shared/components/Card';
 import InvoicesList from '../components/Invoices/InvoicesList';
+import { useEffect, useState } from 'react';
+import paymentService from 'app/payment/services/payment.service';
 
-const Invoices = ({ className = '', subscriptionId }: { className?: string; subscriptionId: string }): JSX.Element => {
+const Invoices = ({ userType, className = '' }: { className?: string; userType: UserType }): JSX.Element => {
   const { translate } = useTranslationContext();
   const [state, setState] = useState<{ tag: 'ready'; invoices: Invoice[] } | { tag: 'loading' | 'empty' }>({
     tag: 'loading',
   });
-  const isEmpty = state.tag === 'empty';
 
   useEffect(() => {
     paymentService
-      .getInvoices({ subscriptionId })
-      .then((invoices) => setState({ tag: 'ready', invoices }))
+      .getInvoices({ userType })
+      .then((invoices) => {
+        if (invoices.length > 0) {
+          setState({ tag: 'ready', invoices });
+        } else {
+          setState({ tag: 'empty' });
+        }
+      })
       .catch(() => setState({ tag: 'empty' }));
   }, []);
 
-  const invoices = state.tag === 'ready' ? state.invoices : [];
+  const isEmpty = state.tag === 'empty';
 
   return (
     <Section className={className} title={translate('views.account.tabs.billing.invoices.head')}>
       <Card className={`${isEmpty ? 'h-40' : 'pb-0'}`}>
-        <InvoicesList invoices={invoices} state={state.tag} />
+        <InvoicesList invoices={state.tag === 'ready' ? state.invoices : []} state={state.tag} />
       </Card>
     </Section>
   );
