@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { expect, test as setup } from '@playwright/test';
 import fs from 'fs';
 import { LoginPage } from '../pages/loginPage';
-import { SignUpPage } from '../pages/SignUpPage';
+import { SignUpPage } from '../pages/signUpPage';
 
 const authFile = './test/e2e/tests/specs/playwright/auth/user.json';
 const credentialsFile = './test/e2e/tests/specs/playwright/auth/credentials.json';

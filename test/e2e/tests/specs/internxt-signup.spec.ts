@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { expect, test } from '@playwright/test';
 import fs from 'fs';
 import { staticData } from '../helper/staticData';
-import { SignUpPage } from '../pages/SignUpPage';
+import { SignUpPage } from '../pages/signUpPage';
 const credentialsFile = './test/e2e/tests/specs/playwright/auth/credentials.json';
 
 test.describe('Internxt SignUp', async () => {
