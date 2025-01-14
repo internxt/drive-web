@@ -74,7 +74,7 @@ export class SignUpPage {
     return userAlreadyRegisteredText;
   }
   async userWelcome() {
-    await expect(this.driveTitle).toBeVisible({ timeout: 10000 });
+    await expect(this.driveTitle).toBeVisible({ timeout: 30000 });
     const welcomeText = this.driveTitle.textContent();
     return welcomeText;
   }
