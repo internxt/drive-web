@@ -1,4 +1,5 @@
 import { ActionReducerMapBuilder, AnyAction, ThunkDispatch, createAsyncThunk } from '@reduxjs/toolkit';
+import async from 'async';
 
 import { t } from 'i18next';
 import storageThunks from '.';
@@ -18,6 +19,7 @@ import { StorageState } from '../storage.model';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
 import { IRoot } from '../types';
+import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
 interface UploadFolderThunkPayload {
   root: IRoot;
@@ -283,44 +285,74 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
     const itemsUnderRoot = countItemsUnderRoot(root);
     const uploadFolderAbortController = abortController;
 
-    try {
-      root.folderId = currentFolderId;
+    const filesQueue = async.queue(async (level: { files: File[]; parentFolderId: string; options; filesProgress }) => {
+      try {
+        if (uploadFolderAbortController.signal.aborted) return;
 
-      while (levels.length > 0) {
-        if (uploadFolderAbortController.signal.aborted) break;
-        const level: IRoot = levels.shift() as IRoot;
-        const createdFolder = await dispatch(
-          storageThunks.createFolderThunk({
-            parentFolderId: level.folderId as string,
-            folderName: level.name,
-            options: { relatedTaskId: taskId, showErrors: false },
+        await dispatch(
+          uploadItemsParallelThunk({
+            files: level.files,
+            parentFolderId: level.parentFolderId,
+            options: {
+              relatedTaskId: taskId,
+              showNotifications: false,
+              showErrors: false,
+              abortController: uploadFolderAbortController,
+              disableDuplicatedNamesCheck: true,
+            },
+            filesProgress: { filesUploaded: alreadyUploaded, totalFilesToUpload: itemsUnderRoot },
           }),
-        ).unwrap();
+        )
+          .unwrap()
+          .then(() => {
+            alreadyUploaded += level.files.length;
+            alreadyUploaded += 1;
+          });
 
-        // Added wait in order to allow enough time for the server to create the folder
-        await wait(500);
+        if (uploadFolderAbortController.signal.aborted) return;
+      } catch (err) {
+        handleGlobalError(err);
+      }
+    });
 
-        if (!rootFolderItem) {
-          rootFolderItem = createdFolder;
-        }
+    const folderQueue = async.queue(async () => {
+      try {
+        root.folderId = currentFolderId;
 
-        tasksService.updateTask({
-          taskId,
-          merge: {
-            stop: () => stopUploadTask(uploadFolderAbortController, dispatch, taskId, rootFolderItem),
-          },
-        });
-        if (!rootFolderData) {
-          rootFolderData = createdFolder;
-        }
-
-        if (level.childrenFiles) {
+        while (levels.length > 0) {
           if (uploadFolderAbortController.signal.aborted) break;
+          const level: IRoot = levels.shift() as IRoot;
+          const createdFolder = await dispatch(
+            storageThunks.createFolderThunk({
+              parentFolderId: level.folderId as string,
+              folderName: level.name,
+              options: { relatedTaskId: taskId, showErrors: false },
+            }),
+          ).unwrap();
 
-          await dispatch(
-            uploadItemsParallelThunk({
+          // Added wait in order to allow enough time for the server to create the folder
+          await wait(500);
+
+          if (!rootFolderItem) {
+            rootFolderItem = createdFolder;
+          }
+
+          tasksService.updateTask({
+            taskId,
+            merge: {
+              stop: () => stopUploadTask(uploadFolderAbortController, dispatch, taskId, rootFolderItem),
+            },
+          });
+          if (!rootFolderData) {
+            rootFolderData = createdFolder;
+          }
+
+          if (level.childrenFiles) {
+            const parentFolderId = createdFolder.uuid;
+
+            filesQueue.push({
               files: level.childrenFiles,
-              parentFolderId: createdFolder.uuid,
+              parentFolderId: parentFolderId,
               options: {
                 relatedTaskId: taskId,
                 showNotifications: false,
@@ -329,41 +361,28 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
                 disableDuplicatedNamesCheck: true,
               },
               filesProgress: { filesUploaded: alreadyUploaded, totalFilesToUpload: itemsUnderRoot },
-            }),
-          )
-            .unwrap()
-            .then(() => {
-              alreadyUploaded += level.childrenFiles.length;
-              alreadyUploaded += 1;
             });
+          }
 
-          if (uploadFolderAbortController.signal.aborted) break;
+          const childrenFolders = [] as IRoot[];
+          for (const child of level.childrenFolders) {
+            childrenFolders.push({ ...child, folderId: createdFolder.uuid });
+          }
+
+          levels.push(...childrenFolders);
         }
-
-        const childrenFolders = [] as IRoot[];
-        for (const child of level.childrenFolders) {
-          childrenFolders.push({ ...child, folderId: createdFolder.uuid });
-        }
-
-        levels.push(...childrenFolders);
+      } catch (err) {
+        handleGlobalError(err);
       }
+    });
 
-      tasksService.updateTask({
-        taskId: taskId,
-        merge: {
-          itemUUID: { rootFolderUUID: rootFolderData?.uuid },
-          status: TaskStatus.Success,
-        },
-      });
+    const handleGlobalError = (error) => {
+      console.log('Error en la subida de archivos', error);
 
-      options.onSuccess?.();
+      folderQueue.kill();
+      filesQueue.kill();
 
-      setTimeout(() => {
-        dispatch(planThunks.fetchUsageThunk());
-        if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
-      }, 1000);
-    } catch (err: unknown) {
-      const castedError = errorService.castError(err);
+      const castedError = errorService.castError(error);
       const updatedTask = tasksService.findTask(taskId);
 
       if (updatedTask?.status !== TaskStatus.Cancelled && taskId === updatedTask?.id) {
@@ -374,11 +393,36 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
             subtitle: t('tasks.subtitles.upload-failed') as string,
           },
         });
-        // Log the error or report it but don't re-throw it to allow the next folder to be processed
         errorService.reportError(castedError);
-        continue;
       }
-    }
+    };
+
+    const checkCompletion = async () => {
+      if (folderQueue.idle() && filesQueue.idle()) {
+        tasksService.updateTask({
+          taskId: taskId,
+          merge: {
+            itemUUID: { rootFolderUUID: rootFolderData?.uuid },
+            status: TaskStatus.Success,
+          },
+        });
+        options.onSuccess?.();
+
+        setTimeout(() => {
+          dispatch(planThunks.fetchUsageThunk());
+          if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
+        }, 1000);
+
+        dispatch(fetchSortedFolderContentThunk(currentFolderId));
+      }
+    };
+
+    folderQueue.drain(checkCompletion);
+    filesQueue.drain(checkCompletion);
+
+    levels.forEach(async (level) => {
+      folderQueue.push(level);
+    });
   }
 });
 

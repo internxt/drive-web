@@ -959,9 +959,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
             onSuccess: onDragAndDropEnd,
           },
         }));
-        dispatch(storageThunks.uploadMultipleFolderThunkNoCheck(folderDataToUpload)).then(() => {
-          dispatch(fetchSortedFolderContentThunk(currentFolderId));
-        });
+        dispatch(storageThunks.uploadMultipleFolderThunkNoCheck(folderDataToUpload));
       }
     }
   } else {
