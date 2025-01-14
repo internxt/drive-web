@@ -1,9 +1,10 @@
-import { afterAll, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import newStorageService from '../../../../drive/services/new-storage.service';
 import { checkDuplicatedFiles } from './checkDuplicatedFiles';
 import { prepareFilesToUpload } from './prepareFilesToUpload';
 import { processDuplicateFiles } from './processDuplicateFiles';
+import { waitFor } from '@testing-library/dom';
 
 vi.mock('../../../../drive/services/new-storage.service', () => ({
   default: {
@@ -41,7 +42,9 @@ describe('prepareFilesToUpload', () => {
     vi.clearAllMocks();
   });
 
-  afterAll(() => {
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.resetAllMocks();
     vi.restoreAllMocks();
   });
 
@@ -61,10 +64,12 @@ describe('prepareFilesToUpload', () => {
 
     const result = await prepareFilesToUpload({ files: mockFiles, parentFolderId });
 
-    expect(checkDuplicatedFiles).toHaveBeenCalledTimes(4);
-    expect(processDuplicateFiles).toHaveBeenCalledTimes(8);
-    expect(result.zeroLengthFilesNumber).toBe(0);
-    expect(result.filesToUpload.length).toBe(TOTAL_FILES);
+    await waitFor(() => {
+      expect(checkDuplicatedFiles).toHaveBeenCalledTimes(4);
+      expect(processDuplicateFiles).toHaveBeenCalledTimes(8);
+      expect(result.zeroLengthFilesNumber).toBe(0);
+      expect(result.filesToUpload.length).toBe(TOTAL_FILES);
+    });
   });
 
   it('should handle duplicates and non-duplicates', async () => {
@@ -83,10 +88,11 @@ describe('prepareFilesToUpload', () => {
     vi.mock('./processDuplicateFiles', { spy: true });
 
     const result = await prepareFilesToUpload({ files, parentFolderId });
-
-    expect(checkDuplicatedFiles).toHaveBeenCalledTimes(1);
-    expect(processDuplicateFiles).toHaveBeenCalledTimes(2);
-    expect(result.zeroLengthFilesNumber).toBe(1);
+    await waitFor(() => {
+      expect(checkDuplicatedFiles).toHaveBeenCalledTimes(1);
+      expect(processDuplicateFiles).toHaveBeenCalledTimes(2);
+      expect(result.zeroLengthFilesNumber).toBe(1);
+    });
   });
 
   it('should respect the disableDuplicatedNamesCheck flag', async () => {
@@ -103,11 +109,13 @@ describe('prepareFilesToUpload', () => {
 
     await prepareFilesToUpload({ files, parentFolderId, disableDuplicatedNamesCheck: true });
 
-    expect(processDuplicateFiles).toHaveBeenCalledWith(
-      expect.objectContaining({
-        disableDuplicatedNamesCheck: true,
-      }),
-    );
+    await waitFor(() => {
+      expect(processDuplicateFiles).toHaveBeenCalledWith(
+        expect.objectContaining({
+          disableDuplicatedNamesCheck: true,
+        }),
+      );
+    });
   });
 
   it('should handle fileType parameter', async () => {
@@ -125,10 +133,12 @@ describe('prepareFilesToUpload', () => {
 
     await prepareFilesToUpload({ files, parentFolderId, fileType });
 
-    expect(processDuplicateFiles).toHaveBeenCalledWith(
-      expect.objectContaining({
-        fileType: 'text/plain',
-      }),
-    );
+    await waitFor(() => {
+      expect(processDuplicateFiles).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fileType: 'text/plain',
+        }),
+      );
+    });
   });
 });
