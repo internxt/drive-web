@@ -12,6 +12,7 @@ import workspacesService from '../../../core/services/workspace.service';
 import { RootState } from '../..';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Buffer } from 'buffer';
+import notificationsService from 'app/notifications/services/notifications.service';
 
 describe('Encryption and Decryption', () => {
   beforeAll(() => {
@@ -76,22 +77,21 @@ describe('Encryption and Decryption', () => {
     vi.clearAllMocks();
   });
 
- function getMockPendingWorkspace(){
-    
+  function getMockPendingWorkspace() {
     const mockPendingWorkspace: PendingWorkspace = {
-        id: 'mock-id',
-        name: 'mock-name',
-        address: 'mock-adress',
-        description: 'mock-description',
-        createdAt: 'mock-createdAt',
-        defaultTeamId: 'mock-defaultTeamId',
-        ownerId: 'mock-ownerId',
-        setupCompleted: false,
-        updatedAt: 'mock-updatedAt',
-        workspaceUserId: 'mock-workspaceUserId',
-      };
+      id: 'mock-id',
+      name: 'mock-name',
+      address: 'mock-adress',
+      description: 'mock-description',
+      createdAt: 'mock-createdAt',
+      defaultTeamId: 'mock-defaultTeamId',
+      ownerId: 'mock-ownerId',
+      setupCompleted: false,
+      updatedAt: 'mock-updatedAt',
+      workspaceUserId: 'mock-workspaceUserId',
+    };
 
-      return mockPendingWorkspace;
+    return mockPendingWorkspace;
   }
 
   it('should setup workspace and encrypt mnemonic with kyber', async () => {
@@ -102,11 +102,11 @@ describe('Encryption and Decryption', () => {
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
-          privateKeyEncrypted: Buffer.from(keys.privateKeyArmored).toString('base64'),
+          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
         },
         kyber: {
           publicKey: keys.publicKyberKeyBase64,
-          privateKeyEncrypted: keys.privateKyberKeyBase64,
+          privateKey: keys.privateKyberKeyBase64,
         },
       },
     };
@@ -152,7 +152,6 @@ describe('Encryption and Decryption', () => {
     );
   });
 
-
   it('should setup workspace and encrypt mnemonic with empty kyber key', async () => {
     const keys = await generateNewKeys();
     const mockUser: Partial<UserSettings> = {
@@ -161,11 +160,11 @@ describe('Encryption and Decryption', () => {
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
-          privateKeyEncrypted: Buffer.from(keys.privateKeyArmored).toString('base64'),
+          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
         },
         kyber: {
           publicKey: '',
-          privateKeyEncrypted: '',
+          privateKey: '',
         },
       },
     };
@@ -209,5 +208,48 @@ describe('Encryption and Decryption', () => {
         description: mockPendingWorkspace.description,
       }),
     );
+  });
+
+  it('should throw setup workspace error if keys are empty', async () => {
+    const mockUser: Partial<UserSettings> = {
+      mnemonic:
+        'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state',
+      keys: {
+        ecc: {
+          publicKey: '',
+          privateKey: '',
+        },
+        kyber: {
+          publicKey: '',
+          privateKey: '',
+        },
+      },
+    };
+
+    const mockRootState: Partial<RootState> = {
+      user: { user: mockUser as UserSettings, isInitializing: false, isAuthenticated: false, isInitialized: false },
+    };
+    const dispatchMock = vi.fn();
+    const getStateMock = vi.fn(() => mockRootState as RootState);
+
+    const mockPendingWorkspace = getMockPendingWorkspace();
+
+    const mockWorkspaceService = {
+      setupWorkspace: vi.fn(),
+      getWorkspaces: vi.fn(),
+    };
+    vi.spyOn(navigationService, 'push').mockImplementation(() => {});
+    vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+    vi.spyOn(workspacesService, 'setupWorkspace').mockImplementation(mockWorkspaceService.setupWorkspace);
+    vi.spyOn(workspacesService, 'getWorkspaces').mockImplementation(mockWorkspaceService.getWorkspaces);
+
+    await setupWorkspace({ pendingWorkspace: mockPendingWorkspace })(dispatchMock, getStateMock, undefined);
+
+    expect(mockWorkspaceService.setupWorkspace).not.toHaveBeenCalled();
+
+    expect(notificationsService.show).toHaveBeenCalledWith({
+      text: 'Error setting up workspace',
+      type: 'ERROR',
+    });
   });
 });

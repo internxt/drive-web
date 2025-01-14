@@ -189,7 +189,7 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         }
       }, 1000);
     } catch (error) {
-      notificationsService.show({ text: 'Error seting up workspace', type: ToastType.Error });
+      notificationsService.show({ text: 'Error setting up workspace', type: ToastType.Error });
     }
   },
 );
