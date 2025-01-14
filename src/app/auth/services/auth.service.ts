@@ -284,11 +284,8 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 
   // Encrypt the mnemonic
   const encryptedMnemonic = encryptTextWithKey(user.mnemonic, newPassword);
-  const privateKey = Buffer.from(user.keys.ecc.privateKey, 'base64').toString();
+  const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
-
-  const privateKyberKey = Buffer.from(user.keys.kyber.privateKey, 'base64').toString();
-  const privateKyberKeyEncrypted = aes.encrypt(privateKyberKey, newPassword, getAesInitFromEnv());
 
   const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
 
@@ -299,10 +296,6 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       newEncryptedSalt: encryptedNewSalt,
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
-      keys:{
-        encryptedPrivateKey: privateKeyEncrypted,
-        encryptedPrivateKyberKey: privateKyberKeyEncrypted,
-      },
       encryptVersion: StorageTypes.EncryptionVersion.Aes03,
     })
     .then((res) => {

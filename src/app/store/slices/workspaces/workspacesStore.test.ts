@@ -102,11 +102,11 @@ describe('Encryption and Decryption', () => {
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
-          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+          privateKeyEncrypted: Buffer.from(keys.privateKeyArmored).toString('base64'),
         },
         kyber: {
           publicKey: keys.publicKyberKeyBase64,
-          privateKey: keys.privateKyberKeyBase64,
+          privateKeyEncrypted: keys.privateKyberKeyBase64,
         },
       },
     };
@@ -160,11 +160,11 @@ describe('Encryption and Decryption', () => {
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
-          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+          privateKeyEncrypted: Buffer.from(keys.privateKeyArmored).toString('base64'),
         },
         kyber: {
           publicKey: '',
-          privateKey: '',
+          privateKeyEncrypted: '',
         },
       },
     };
@@ -217,11 +217,11 @@ describe('Encryption and Decryption', () => {
       keys: {
         ecc: {
           publicKey: '',
-          privateKey: '',
+          privateKeyEncrypted: '',
         },
         kyber: {
           publicKey: '',
-          privateKey: '',
+          privateKeyEncrypted: '',
         },
       },
     };

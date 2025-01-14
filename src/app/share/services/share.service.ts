@@ -593,8 +593,8 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
     try {
       decryptedKey = await hybridDecryptMessageWithPrivateKey({
         encryptedMessageInBase64: encryptionKey,
-        privateKeyInBase64: user.keys.ecc.privateKey,
-        privateKyberKeyInBase64: user.keys.kyber.privateKey,
+        privateKeyInBase64: user.keys.ecc.privateKeyEncrypted,
+        privateKyberKeyInBase64: user.keys.kyber.privateKeyEncrypted,
       });
     } catch (err) {
       decryptedKey = user.mnemonic;
