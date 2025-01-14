@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import * as shareService from 'app/share/services/share.service';
+import shareService from 'app/share/services/share.service';
 import { RootState } from '../..';
 
 import { Role, SharedFoldersInvitationsAsInvitedUserResponse } from '@internxt/sdk/dist/drive/share/types';
@@ -103,7 +103,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
     }
   },
 );
-/*
+
 interface StopSharingItemPayload {
   itemType: string;
   itemId: string;
@@ -169,7 +169,7 @@ const getSharedFolderRoles = createAsyncThunk<string | void, void, { state: Root
   'shareds/getRoles',
   async (_, { dispatch }): Promise<string | void> => {
     try {
-      const newRoles = await getSharingRoles();
+      const newRoles = await shareService.getSharingRoles();
 
       if (newRoles.length > 0) {
         dispatch(sharedActions.setSharedFolderUserRoles(newRoles));
@@ -185,7 +185,7 @@ const getPendingInvitations = createAsyncThunk<string | void, void, { state: Roo
   'shareds/getPendingInvitations',
   async (_, { dispatch }): Promise<string | void> => {
     try {
-      const pendingInvitations = await getSharedFolderInvitationsAsInvitedUser({});
+      const pendingInvitations = await shareService.getSharedFolderInvitationsAsInvitedUser({});
 
       dispatch(sharedActions.setPendingInvitations(pendingInvitations.invites));
     } catch (err: unknown) {
@@ -241,14 +241,14 @@ export const sharedSelectors = {
   },
 };
 
-export const sharedActions = sharedSlice.actions; */
+export const sharedActions = sharedSlice.actions;
 
 export const sharedThunks = {
   shareItemWithUser,
-  //stopSharingItem,
-  //removeUserFromSharedFolder,
-  //getSharedFolderRoles,
-  //getPendingInvitations,
+  stopSharingItem,
+  removeUserFromSharedFolder,
+  getSharedFolderRoles,
+  getPendingInvitations,
 };
 
-//export default sharedSlice.reducer; 
+export default sharedSlice.reducer;

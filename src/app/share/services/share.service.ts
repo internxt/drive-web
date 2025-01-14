@@ -867,6 +867,9 @@ const shareService = {
   validateSharingInvitation,
   getPublicSharedItemInfo,
   getSharedFolderSize,
+  inviteUserToSharedFolder,
+  getSharedFolderInvitationsAsInvitedUser,
+  getSharingRoles,
 };
 
 export default shareService;
