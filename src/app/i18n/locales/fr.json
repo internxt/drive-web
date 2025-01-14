@@ -239,6 +239,7 @@
   "general": {
     "new": "Nouveau",
     "of": "de",
+    "at": "à",
     "terms": "Termes et conditions",
     "contactSupport": "Contacter le support",
     "help": "Besoin d'aide ?",
@@ -457,10 +458,7 @@
             "storage": "Stockage",
             "ammount": "Montant",
             "plan": "Plan",
-            "empty": {
-              "title": "Vous êtes sur le plan gratuit",
-              "subtitle": "Les factures émises apparaîtront automatiquement ici lorsqu'un paiement est effectué."
-            },
+            "empty": "Aucune facture disponible",
             "download": "Download invoice"
           }
         },
@@ -1689,6 +1687,28 @@
         "empty": {
           "text": "Pas de factures antérieures"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "title": "Filtrer",
+          "searchMembers": "Rechercher des membres",
+          "filters": "Filtres",
+          "clear": "Effacer",
+          "activity": {
+            "title": "Activité",
+            "Login": "Connecté",
+            "ChangedPassword": "Mot de passe changé",
+            "Logout": "Déconnecté",
+            "ShareFile": "Fichier partagé",
+            "ShareFolder": "Dossier partagé",
+            "DeleteFile": "Fichier supprimé",
+            "DeleteFolder": "Dossier supprimé"
+          },
+          "platform": { "title": "Plateforme", "Web": "Web", "Mobile": "Mobile", "Desktop": "Bureau" },
+          "dateRange": { "title": "Plage de dates", "days": "7 derniers jours" }
+        },
+        "headerTable": { "date": "Date", "member": "Membre", "activity": "Activité", "access": "Accès" },
+        "noResults": "Il n'y a aucun résultat à afficher"
       }
     },
     "account": {
@@ -1763,7 +1783,8 @@
       "billing": "Facturation",
       "account": "Compte",
       "plans": "Plans",
-      "security": "Sécurité"
+      "security": "Sécurité",
+      "logs": "Journaux"
     }
   },
   "workspaces": {

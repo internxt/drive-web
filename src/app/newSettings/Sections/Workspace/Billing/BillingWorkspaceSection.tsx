@@ -243,9 +243,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
         isLoading={isSavingBillingDetails}
       />
       <BillingPaymentMethodCard subscription={plan.businessSubscription?.type} userType={UserType.Business} />
-      {plan.businessSubscription?.type == 'subscription' && (
-        <Invoices subscriptionId={plan.businessSubscription.subscriptionId} />
-      )}
+      <Invoices userType={UserType.Business} />
       {isSubscription && (
         <CancelSubscription
           isCancelSubscriptionModalOpen={isCancelSubscriptionModalOpen}

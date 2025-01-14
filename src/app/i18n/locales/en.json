@@ -256,6 +256,7 @@
   "general": {
     "new": "new",
     "of": "of",
+    "at": "at",
     "terms": "Terms and conditions",
     "contactSupport": "Contact Support",
     "help": "Need help?",
@@ -500,10 +501,7 @@
             "storage": "Storage",
             "ammount": "Ammount",
             "plan": "Plan",
-            "empty": {
-              "title": "You are in free plan",
-              "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."
-            },
+            "empty": "There is no invoice available",
             "download": "Download invoice"
           }
         },
@@ -1763,6 +1761,36 @@
         "empty": {
           "text": "No previous invoices"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "title": "Filter",
+          "searchMembers": "Search members",
+          "filters": "Filters",
+          "clear": "Clear",
+          "activity": {
+            "title": "Activity",
+            "Login": "Signed in",
+            "ChangedPassword": "Changed password",
+            "Logout": "Signed out",
+            "ShareFile": "Shared file",
+            "ShareFolder": "Shared folder",
+            "DeleteFile": "Deleted file",
+            "DeleteFolder": "Deleted folder"
+          },
+          "platform": { "title": "Platform", "Web": "Web", "Mobile": "Mobile", "Desktop": "Desktop" },
+          "dateRange": {
+            "title": "Date range",
+            "days": "Last {{days}} days"
+          }
+        },
+        "headerTable": {
+          "date": "Date",
+          "member": "Member",
+          "activity": "Activity",
+          "access": "Access"
+        },
+        "noResults": "There are no results to show"
       }
     },
     "account": {
@@ -1837,7 +1865,8 @@
       "billing": "Billing",
       "account": "Account",
       "plans": "Plans",
-      "security": "Security"
+      "security": "Security",
+      "logs": "Logs"
     }
   },
   "workspaces": {

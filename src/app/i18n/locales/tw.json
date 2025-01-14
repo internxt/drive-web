@@ -256,6 +256,7 @@
   "general": {
     "new": "新的",
     "of": "的",
+    "at": "在",
     "terms": "條款和條件",
     "contactSupport": "聯絡支持",
     "help": "需要幫助嗎？",
@@ -498,10 +499,7 @@
             "head": "發票",
             "billingDate": "賬單日期",
             "plan": "計劃",
-            "empty": {
-              "title": "您目前使用的是免費計劃",
-              "subtitle": "當您擁有付費訂閱計劃時，已開具的發票將自動顯示在這裡。"
-            },
+            "empty": "沒有可用的發票",
             "download": "下載發票"
           }
         },
@@ -1721,6 +1719,28 @@
           "text": "您的計劃將降級到免費等級。",
           "button": "取消訂閱"
         }
+      },
+      "accessLogs": {
+        "filterActions": {
+          "title": "篩選",
+          "searchMembers": "搜尋成員",
+          "filters": "篩選器",
+          "clear": "清除",
+          "activity": {
+            "title": "活動",
+            "Login": "已登入",
+            "ChangedPassword": "已更改密碼",
+            "Logout": "已登出",
+            "ShareFile": "已分享檔案",
+            "ShareFolder": "已分享資料夾",
+            "DeleteFile": "已刪除檔案",
+            "DeleteFolder": "已刪除資料夾"
+          },
+          "platform": { "title": "平台", "Web": "網頁", "Mobile": "行動端", "Desktop": "桌面端" },
+          "dateRange": { "title": "日期範圍", "days": "最近 {{days}} 天" }
+        },
+        "headerTable": { "date": "日期", "member": "成員", "activity": "活動", "access": "訪問" },
+        "noResults": "沒有可顯示的結果"
       }
     },
     "account": {
@@ -1795,7 +1815,8 @@
       "billing": "計費",
       "account": "帳戶",
       "plans": "計劃",
-      "security": "安全"
+      "security": "安全",
+      "logs": "日誌"
     }
   },
   "workspaces": {

@@ -9,7 +9,6 @@ import { useTranslationContext } from '../../../i18n/provider/TranslationProvide
 import iconService from '../../../drive/services/icon.service';
 import { Button } from '@internxt/internxtui';
 import { bytesToString } from '../../../drive/services/size.service';
-import date from '../../../core/services/date.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { DriveItemData, DriveItemDetails, ItemDetailsProps } from '../../../drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
@@ -19,6 +18,7 @@ import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
 import { AdvancedSharedItem } from 'app/share/types';
 import { useSelector } from 'react-redux';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import dateService from '../../../core/services/date.service';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -115,7 +115,7 @@ const ItemDetailsDialog = ({
   };
 
   function formateDate(dateString: string) {
-    return date.format(dateString, 'D MMMM, YYYY [at] HH:mm');
+    return dateService.formatDefaultDate(dateString, translate);
   }
 
   function handleButtonItemClick() {

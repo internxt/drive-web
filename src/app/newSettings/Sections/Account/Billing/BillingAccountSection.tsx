@@ -31,6 +31,7 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
 
   useEffect(() => {
     plan.individualSubscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
+
     setPlanName(getPlanName(plan.individualPlan || plan.teamPlan, plan.planLimit));
     setPlanInfo(getPlanInfo(plan.individualPlan || plan.teamPlan));
     setCurrentUsage(getCurrentUsage(plan.usageDetails));
@@ -60,9 +61,7 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
     <Section title={t('preferences.workspace.billing.title')} onClosePreferences={onClosePreferences}>
       <BillingAccountOverview plan={plan} changeSection={changeSection} />
       <BillingPaymentMethodCard subscription={plan.individualSubscription?.type} userType={UserType.Individual} />
-      {plan.individualSubscription?.type == 'subscription' && (
-        <Invoices subscriptionId={plan.individualSubscription.subscriptionId} />
-      )}
+      <Invoices userType={UserType.Individual} />
       {isSubscription && (
         <CancelSubscription
           isCancelSubscriptionModalOpen={isCancelSubscriptionModalOpen}

@@ -11,6 +11,22 @@ vi.mock('../../../../drive/services/new-storage.service', () => ({
   },
 }));
 
+vi.mock('./checkDuplicatedFiles', async () => {
+  const actual = await vi.importActual<typeof import('./checkDuplicatedFiles')>('./checkDuplicatedFiles');
+  return {
+    ...actual,
+    checkDuplicatedFiles: vi.fn(actual.checkDuplicatedFiles),
+  };
+});
+
+vi.mock('./processDuplicateFiles', async () => {
+  const actual = await vi.importActual<typeof import('./processDuplicateFiles')>('./processDuplicateFiles');
+  return {
+    ...actual,
+    processDuplicateFiles: vi.fn(actual.processDuplicateFiles),
+  };
+});
+
 function createMockFile(name: string, size = 0, type = ''): File {
   return {
     name,
