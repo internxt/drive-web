@@ -40,6 +40,8 @@ function createMockFile(name: string, size = 0, type = ''): File {
 describe('prepareFilesToUpload', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetAllMocks();
+    vi.restoreAllMocks();
   });
 
   afterEach(() => {
