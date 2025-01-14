@@ -1,9 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import shareService, {
-  getSharedFolderInvitationsAsInvitedUser,
-  getSharingRoles,
-  inviteUserToSharedFolder,
-} from 'app/share/services/share.service';
+import * as shareService from 'app/share/services/share.service';
 import { RootState } from '../..';
 
 import { Role, SharedFoldersInvitationsAsInvitedUserResponse } from '@internxt/sdk/dist/drive/share/types';
@@ -78,7 +74,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         publicKyberKeyBase64: publicKyberKey,
       });
 
-      await inviteUserToSharedFolder({
+      await shareService.inviteUserToSharedFolder({
         itemId: payload.itemId,
         itemType: payload.itemType,
         sharedWith: payload.sharedWith,
@@ -107,7 +103,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
     }
   },
 );
-
+/*
 interface StopSharingItemPayload {
   itemType: string;
   itemId: string;
@@ -245,14 +241,14 @@ export const sharedSelectors = {
   },
 };
 
-export const sharedActions = sharedSlice.actions;
+export const sharedActions = sharedSlice.actions; */
 
 export const sharedThunks = {
   shareItemWithUser,
-  stopSharingItem,
-  removeUserFromSharedFolder,
-  getSharedFolderRoles,
-  getPendingInvitations,
+  //stopSharingItem,
+  //removeUserFromSharedFolder,
+  //getSharedFolderRoles,
+  //getPendingInvitations,
 };
 
-export default sharedSlice.reducer;
+//export default sharedSlice.reducer; 
