@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from '@internxt/ui';
 
 export const LoadingRowSkeleton = ({ numberOfColumns }: { numberOfColumns: number }) => {
-  const totalRowsArray = new Array(10).fill(null);
+  const totalRowsArray = new Array(5).fill(null);
   return (
     <>
       {totalRowsArray.map((_, rowIndex) => (

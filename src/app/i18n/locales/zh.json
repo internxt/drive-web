@@ -256,6 +256,7 @@
   "general": {
     "new": "新建",
     "of": "/",
+    "at": "在",
     "terms": "条款和条件",
     "contactSupport": "联系支持",
     "help": "需要帮助吗？",
@@ -500,10 +501,7 @@
             "storage": "存储",
             "ammount": "金额",
             "plan": "计划",
-            "empty": {
-              "title": "您目前在免费计划中",
-              "subtitle": "已发行的发票在付款时将自动出现在这里。"
-            },
+            "empty": "没有可用的发票",
             "download": "下载发票"
           }
         },

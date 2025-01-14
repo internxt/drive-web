@@ -3,6 +3,8 @@ import { Data, MaybeStream, WebStream } from 'openpgp';
 import kemBuilder from '@dashlane/pqc-kem-kyber512-browser';
 import { extendSecret } from './utils';
 
+const WORDS_HYBRID_MODE_IN_BASE64 = 'SHlicmlkTW9kZQ=='; // 'HybridMode' in BASE64 format
+
 export async function getOpenpgp(): Promise<typeof import('openpgp')> {
   return import('openpgp');
 }
@@ -79,8 +81,7 @@ export const hybridEncryptMessageWithPublicKey = async ({
     const messageHex = Buffer.from(message).toString('hex');
 
     plaintext = XORhex(messageHex, secretHex);
-    const prefixBase64 = '4879627269644d6f6465';
-    result = prefixBase64.concat('$', kyberCiphertextStr, '$');
+    result = WORDS_HYBRID_MODE_IN_BASE64.concat('$', kyberCiphertextStr, '$');
   }
 
   const encryptedMessage = await encryptMessageWithPublicKey({ message: plaintext, publicKeyInBase64 });
@@ -108,11 +109,12 @@ export const hybridDecryptMessageWithPrivateKey = async ({
   privateKyberKeyInBase64?: string;
 }): Promise<string> => {
   let eccCiphertextStr = encryptedMessageInBase64;
-  let kyberSecret = new Uint8Array();
+  let kyberSecret;
   const ciphertexts = encryptedMessageInBase64.split('$');
   const prefix = ciphertexts[0];
+  const isHybridMode = prefix === WORDS_HYBRID_MODE_IN_BASE64;
 
-  if (prefix == '4879627269644d6f6465') {
+  if (isHybridMode) {
     if (!privateKyberKeyInBase64) {
       return Promise.reject(new Error('Attempted to decrypt hybrid ciphertex without Kyber key'));
     }
@@ -131,7 +133,7 @@ export const hybridDecryptMessageWithPrivateKey = async ({
     privateKeyInBase64,
   });
   let result = decryptedMessage as string;
-  if (privateKyberKeyInBase64) {
+  if (isHybridMode) {
     const bits = result.length * 4;
     const secretHex = await extendSecret(kyberSecret, bits);
     const xored = XORhex(result, secretHex);

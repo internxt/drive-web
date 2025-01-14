@@ -239,7 +239,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
         />
 
         <ScrollableTable
-          scrollable={!isLoading && accessLogs.length > 0}
+          scrollable={accessLogs.length > 0}
           loadMoreItems={loadMoreItems}
           hasMoreItems={hasMoreItems}
           isLoading={isLoading}
@@ -251,8 +251,8 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
               {renderHeader()}
             </TableHeader>
             <TableBody className={'bg-surface dark:bg-gray-1'}>
+              {accessLogs.length > 0 && renderBody()}
               {isLoading && <LoadingRowSkeleton numberOfColumns={headerList.length ?? 4} />}
-              {!isLoading && accessLogs.length > 0 && renderBody()}
             </TableBody>
           </Table>
           {!isLoading && accessLogs.length === 0 && (

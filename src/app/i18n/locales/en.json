@@ -256,6 +256,7 @@
   "general": {
     "new": "new",
     "of": "of",
+    "at": "at",
     "terms": "Terms and conditions",
     "contactSupport": "Contact Support",
     "help": "Need help?",
@@ -500,10 +501,7 @@
             "storage": "Storage",
             "ammount": "Ammount",
             "plan": "Plan",
-            "empty": {
-              "title": "You are in free plan",
-              "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."
-            },
+            "empty": "There is no invoice available",
             "download": "Download invoice"
           }
         },

@@ -239,6 +239,7 @@
   "general": {
     "new": "Nouveau",
     "of": "de",
+    "at": "à",
     "terms": "Termes et conditions",
     "contactSupport": "Contacter le support",
     "help": "Besoin d'aide ?",
@@ -457,10 +458,7 @@
             "storage": "Stockage",
             "ammount": "Montant",
             "plan": "Plan",
-            "empty": {
-              "title": "Vous êtes sur le plan gratuit",
-              "subtitle": "Les factures émises apparaîtront automatiquement ici lorsqu'un paiement est effectué."
-            },
+            "empty": "Aucune facture disponible",
             "download": "Download invoice"
           }
         },

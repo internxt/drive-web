@@ -236,6 +236,7 @@
   "general": {
     "new": "nuevo",
     "of": "de",
+    "at": "a las",
     "terms": "Términos y condiciones",
     "contactSupport": "Contactar con soporte",
     "help": "¿Necesitas ayuda?",
@@ -483,10 +484,7 @@
             "storage": "Almacenamiento",
             "ammount": "Cantidad",
             "plan": "Plan",
-            "empty": {
-              "title": "Estás en el plan gratuito",
-              "subtitle": "Las facturas emitidas aparecerán aquí automáticamente cuando se realice un pago."
-            },
+            "empty": "No hay ninguna factura disponible",
             "download": "Descargar factura"
           }
         },

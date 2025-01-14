@@ -10,6 +10,7 @@ import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import './DriveExplorerListItem.scss';
+import { t } from 'i18next';
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
   const { isItemSelected, isEditingName } = useDriveItemStoreProps();
@@ -112,7 +113,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
       {/* DATE */}
       <div className="block w-date items-center whitespace-nowrap">
-        {dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}
+        {dateService.formatDefaultDate(item.updatedAt, t)}
       </div>
 
       {/* SIZE */}

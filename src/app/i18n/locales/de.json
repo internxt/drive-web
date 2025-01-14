@@ -233,6 +233,7 @@
   "general": {
     "new": "Neu",
     "of": "von",
+    "at": "um",
     "terms": "Geschäftsbedingungen",
     "contactSupport": "Kundensupport kontaktieren",
     "help": "Brauchst du Hilfe?",
@@ -453,10 +454,7 @@
             "billingDate": "Datum",
             "storage": "Speicher",
             "ammount": "Betrag",
-            "empty": {
-              "title": "Du hast einen kostenlosen Plan",
-              "subtitle": "Ausgestellte Rechnungen werden hier automatisch angezeigt, wenn du ein kostenpflichtiges Abonnement hast."
-            },
+            "empty": "Es liegt keine Rechnung vor",
             "download": "Download Rechnung"
           }
         },

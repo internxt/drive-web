@@ -256,6 +256,7 @@
   "general": {
     "new": "new",
     "of": "di",
+    "at": "alle",
     "terms": "Termini e condizioni",
     "contactSupport": "Contatta il supporto",
     "help": "Hai bisogno di aiuto?",
@@ -493,10 +494,7 @@
             "billingDate": "Data",
             "storage": "Archiviazione",
             "ammount": "Importo",
-            "empty": {
-              "title": "Hai un piano gratuito",
-              "subtitle": "Qui appariranno automaticamente le fatture emesse quando viene effettuato un pagamento."
-            },
+            "empty": "Non ci sono fatture disponibili",
             "download": "Scarica la fattura"
           }
         },
