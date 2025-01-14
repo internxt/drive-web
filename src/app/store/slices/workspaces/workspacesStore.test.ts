@@ -143,7 +143,7 @@ describe('Encryption and Decryption', () => {
     expect(decryptedMessage).toEqual(mockUser.mnemonic);
     expect(mockWorkspaceService.setupWorkspace).toHaveBeenCalledWith(
       expect.objectContaining({
-        encryptedMnemonic: expect.any(String),
+        encryptedMnemonic: encryptedMnemonic,
         name: mockPendingWorkspace.name,
         workspaceId: mockPendingWorkspace.id,
         address: mockPendingWorkspace.address,
@@ -202,7 +202,7 @@ describe('Encryption and Decryption', () => {
     expect(decryptedMessage).toEqual(mockUser.mnemonic);
     expect(mockWorkspaceService.setupWorkspace).toHaveBeenCalledWith(
       expect.objectContaining({
-        encryptedMnemonic: expect.any(String),
+        encryptedMnemonic: encryptedMnemonic,
         name: mockPendingWorkspace.name,
         workspaceId: mockPendingWorkspace.id,
         address: mockPendingWorkspace.address,
