@@ -76,11 +76,11 @@ describe('Encryption and Decryption', () => {
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
-          privateKeyEncrypted: Buffer.from(keys.privateKeyArmored).toString('base64'),
+          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
         },
         kyber: {
           publicKey: keys.publicKyberKeyBase64,
-          privateKeyEncrypted: keys.privateKyberKeyBase64,
+          privateKey: keys.privateKyberKeyBase64,
         },
       },
     };
