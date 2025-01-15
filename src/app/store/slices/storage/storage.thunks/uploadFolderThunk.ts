@@ -395,7 +395,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
       }
     };
 
-    const checkCompletion = async () => {
+    const checkCompletion = () => {
       if (folderQueue.idle() && filesQueue.idle()) {
         tasksService.updateTask({
           taskId: taskId,
