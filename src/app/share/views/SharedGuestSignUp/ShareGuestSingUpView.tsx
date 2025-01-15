@@ -167,12 +167,17 @@ function ShareGuestSingUpView(): JSX.Element {
       localStorageService.set('xNewToken', xNewToken);
 
       const decryptedPrivateKey = decryptPrivateKey(xUser.privateKey, password);
+      const decryptedPrivateKyberKey = decryptPrivateKey(xUser.keys.kyber.privateKey, password);
 
       const privateKey = xUser.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : undefined;
+      const privateKyberKey = xUser.keys.kyber.privateKey
+        ? Buffer.from(decryptedPrivateKyberKey).toString('base64')
+        : undefined;
 
       const user = {
         ...xUser,
         privateKey,
+        privateKyberKey,
       } as UserSettings;
 
       dispatch(userActions.setUser(user));

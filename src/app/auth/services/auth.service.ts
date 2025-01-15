@@ -152,7 +152,9 @@ export const doLogin = async (
     .login(loginDetails, cryptoProvider)
     .then(async (data) => {
       const { user, token, newToken } = data;
-      const { privateKey, publicKey } = user;
+      const { privateKey, publicKey, keys } = user;
+      const publicKyberKey = keys.kyber.publicKey;
+      const privateKyberKey = keys.kyber.privateKey;
 
       Sentry.setUser({
         id: user.uuid,
@@ -172,11 +174,24 @@ export const doLogin = async (
         );
       }
 
+      const plainPrivateKyberKeyInBase64 = privateKyberKey
+        ? Buffer.from(decryptPrivateKey(privateKyberKey, password)).toString('base64')
+        : '';
+
+      if (privateKey) {
+        await assertPrivateKeyIsValid(plainPrivateKyberKeyInBase64, password);
+        await assertValidateKeys(
+          Buffer.from(plainPrivateKyberKeyInBase64, 'base64').toString(),
+          Buffer.from(publicKyberKey, 'base64').toString(),
+        );
+      }
+
       const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
       const clearUser = {
         ...user,
         mnemonic: clearMnemonic,
         privateKey: plainPrivateKeyInBase64,
+        privateKyberKey: plainPrivateKyberKeyInBase64,
       };
 
       localStorageService.set('xToken', token);
