@@ -377,8 +377,6 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
     });
 
     const handleGlobalError = (error) => {
-      console.log('Error en la subida de archivos', error);
-
       folderQueue.kill();
       filesQueue.kill();
 
@@ -420,7 +418,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
     folderQueue.drain(checkCompletion);
     filesQueue.drain(checkCompletion);
 
-    levels.forEach(async (level) => {
+    levels.forEach((level) => {
       folderQueue.push(level);
     });
   }
