@@ -1,14 +1,320 @@
 /**
- * @vitest-environment jsdom
+ * @jest-environment jsdom
  */
+import * as authService from './auth.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import * as keysService from 'app/crypto/services/keys.service';
+import { vi, describe, it, beforeAll, beforeEach, expect, afterAll } from 'vitest';
+import { Buffer } from 'buffer';
+import { encryptTextWithKey } from 'app/crypto/services/utils';
+import { SdkFactory } from '../../core/factory/sdk';
 
-import { describe, expect, it } from 'vitest';
+if (typeof globalThis.process === 'undefined') {
+  globalThis.process = { env: {} } as any;
+}
 
-describe('Empty test suite', () => {
-  it('should do nothing', () => {
-    expect(true).toBe(true);
+const originalEnv = process.env.REACT_APP_CRYPTO_SECRET;
+const originalSalt = process.env.REACT_APP_MAGIC_SALT;
+const originalIV = process.env.REACT_APP_MAGIC_IV;
+const originalURL = process.env.REACT_APP_API_URL;
+
+beforeAll(() => {
+  process.env.REACT_APP_CRYPTO_SECRET = '123456789QWERTY';
+  process.env.REACT_APP_MAGIC_IV = '12345678912345678912345678912345';
+  process.env.REACT_APP_MAGIC_SALT =
+    '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+  process.env.REACT_APP_API_URL = 'https://mock';
+  globalThis.Buffer = Buffer;
+
+  window.gtag = vi.fn();
+  vi.mock('app/core/services/navigation.service', () => ({
+    default: {
+      isCurrentPath: vi.fn(),
+      push: vi.fn(),
+    },
+  }));
+  vi.mock('app/analytics/impact.service', () => ({
+    trackSignUp: vi.fn(),
+  }));
+  vi.mock('app/core/types', () => ({
+    default: {
+      AppError: vi.fn(),
+    },
+    AppView: vi.fn(),
+  }));
+  vi.mock('app/database/services/database.service', () => ({
+    default: {
+      clear: vi.fn(),
+    },
+  }));
+  vi.mock('../../core/factory/sdk', () => ({
+    SdkFactory: {
+      getNewApiInstance: vi.fn(() => ({
+        createAuthClient: vi.fn(() => ({
+          login: vi.fn(),
+        })),
+      })),
+      getInstance: vi.fn(() => ({
+        createDesktopAuthClient: vi.fn(() => ({
+          login: vi.fn(),
+        })),
+      })),
+    },
+  }));
+  vi.mock('app/payment/types', () => ({
+    AuthMethodTypes: vi.fn(),
+  }));
+  vi.mock('app/store', () => ({
+    AppDispatch: vi.fn(),
+  }));
+  vi.mock('app/store/slices/plan', () => ({
+    planThunks: vi.fn(),
+  }));
+  vi.mock('app/store/slices/products', () => ({
+    productsThunks: vi.fn(),
+  }));
+
+  vi.mock('app/store/slices/referrals', () => ({
+    referralsThunks: vi.fn(),
+  }));
+
+  vi.mock('app/store/slices/user', async () => ({
+    userActions: {
+      setUser: vi.fn(),
+    },
+    initializeUserThunk: vi.fn(),
+    userThunks: vi.fn(),
+  }));
+
+  vi.mock('app/store/slices/workspaces/workspacesStore', () => ({
+    workspaceThunks: vi.fn(),
+  }));
+
+  vi.mock('../../core/services/http.service', () => ({
+    default: {
+      getHeaders: vi.fn(),
+      convertHeadersToNativeHeaders: vi.fn(),
+    },
+  }));
+
+  vi.mock('app/core/services/socket.service', () => ({
+    default: {
+      getInstance: vi.fn(),
+    },
+  }));
+
+  vi.mock('app/analytics/utils', () => ({
+    getCookie: vi.fn(),
+    setCookie: vi.fn(),
+  }));
+  vi.mock('app/store/slices/user', () => ({
+    initializeUserThunk: vi.fn(),
+    userActions: vi.fn(),
+    userThunks: vi.fn(),
+  }));
+  vi.mock('app/core/services/local-storage.service', () => ({
+    default: {
+      get: vi.fn(),
+      clear: vi.fn(),
+      getUser: vi.fn(),
+      set: vi.fn(),
+    },
+  }));
+  vi.mock('app/core/services/error.service', () => ({
+    default: {
+      castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
+      reportError: vi.fn(),
+    },
+  }));
+  vi.mock('@sentry/react', () => ({
+    setUser: vi.fn(),
+  }));
+});
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
+afterAll(() => {
+  process.env.REACT_APP_CRYPTO_SECRET = originalEnv;
+  process.env.REACT_APP_MAGIC_SALT = originalSalt;
+  process.env.REACT_APP_MAGIC_IV = originalIV;
+  process.env.REACT_APP_API_URL = originalURL;
+});
+
+async function getMockUser(password: string, mnemonic: string) {
+  const keys = await keysService.getKeys(password);
+  const encryptedMnemonic = encryptTextWithKey(mnemonic, password);
+
+  const mockUser: UserSettings = {
+    uuid: 'mock-uuid',
+    email: 'mock@email.com',
+    privateKey: keys.ecc.privateKeyEncrypted,
+    mnemonic: encryptedMnemonic,
+    userId: 'mock-userId',
+    name: 'mock-name',
+    lastname: 'mock-lastname',
+    username: 'mock-username',
+    bridgeUser: 'mock-bridgeUser',
+    bucket: 'mock-bucket',
+    backupsBucket: null,
+    root_folder_id: 0,
+    rootFolderId: 'mock-rootFolderId',
+    rootFolderUuid: undefined,
+    sharedWorkspace: false,
+    credit: 0,
+    publicKey: keys.ecc.publicKey,
+    revocationKey: keys.revocationCertificate,
+    keys: {
+      ecc: {
+        publicKey: keys.ecc.publicKey,
+        privateKeyEncrypted: keys.ecc.privateKeyEncrypted,
+      },
+      kyber: {
+        publicKey: keys.kyber.publicKey ?? '',
+        privateKeyEncrypted: keys.kyber.privateKeyEncrypted ?? '',
+      },
+    },
+    appSumoDetails: null,
+    registerCompleted: false,
+    hasReferralsProgram: false,
+    createdAt: new Date(),
+    avatar: null,
+    emailVerified: false,
+  };
+
+  return mockUser;
+}
+
+describe('logIn', () => {
+  it('log in should correctly decrypt keys', async () => {
+    const mockToken = 'test-token';
+    const mockNewToken = 'test-new-token';
+    const mockLoginType = 'web';
+
+    const mockPassword = 'password123';
+    const mockMnemonic = 'mock-clearMnemonic';
+    const mockUser = await getMockUser(mockPassword, mockMnemonic);
+    const mockTwoFactorCode = '123456';
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        login: vi.fn().mockResolvedValue({
+          user: mockUser,
+          token: mockToken,
+          newToken: mockNewToken,
+        }),
+      }),
+    } as any);
+
+    const result = await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockLoginType);
+
+    const plainPrivateKeyInBase64 = Buffer.from(
+      keysService.decryptPrivateKey(mockUser.keys.ecc.privateKeyEncrypted, mockPassword),
+    ).toString('base64');
+    const plainPrivateKyberKeyInBase64 = Buffer.from(
+      keysService.decryptPrivateKey(mockUser.keys.kyber.privateKeyEncrypted, mockPassword),
+    ).toString('base64');
+
+    const mockClearUser = {
+      ...mockUser,
+      mnemonic: mockMnemonic,
+      privateKey: plainPrivateKeyInBase64,
+      keys: {
+        ecc: {
+          publicKey: mockUser.keys.ecc.publicKey,
+          privateKeyEncrypted: plainPrivateKeyInBase64,
+        },
+        kyber: {
+          publicKey: mockUser.keys.kyber.publicKey,
+          privateKeyEncrypted: plainPrivateKyberKeyInBase64,
+        },
+      },
+    };
+
+    expect(result).toEqual({
+      token: mockToken,
+      user: mockClearUser,
+      mnemonic: mockMnemonic,
+    });
   });
 });
+
+/*
+describe('signUp', () => {
+  it('signUp should correctly decrypt keys', async () => {
+    const mockToken = 'test-token';
+    const mockNewToken = 'test-new-token';
+    const mockEmail = 'test@example.com';
+
+    const mockPassword = 'password123';
+    const mockMnemonic = 'mock-clearMnemonic';
+    const mockUser = await getMockUser(mockPassword, mockMnemonic);
+
+    const mockSignUpResponse = {
+      xUser: mockUser,
+      xToken: mockToken,
+      mnemonic: mockUser.mnemonic,
+    };
+
+    const params = {
+      doSignUp: vi.fn().mockResolvedValue(mockSignUpResponse),
+      email: mockEmail,
+      password: mockPassword,
+      token: mockToken,
+      isNewUser: true,
+      redeemCodeObject: false,
+      dispatch: vi.fn(),
+    };
+
+    const mockRes = new Response(mockNewToken, {
+      status: 200,
+      statusText: 'OK',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log('TOKEN TEST:', await mockRes.json());
+
+    vi.spyOn(globalThis, 'fetch').mockReturnValue(Promise.resolve(mockRes));
+
+    vi.spyOn(authService, 'getNewToken').mockReturnValue(Promise.resolve(mockNewToken));
+    //const spy = vi.spyOn(, 'userActions').mockImplementation(vi.fn());
+
+    const result = await authService.signUp(params);
+
+    const plainPrivateKeyInBase64 = Buffer.from(
+      keysService.decryptPrivateKey(mockUser.keys.ecc.privateKeyEncrypted, mockPassword),
+    ).toString('base64');
+    const plainPrivateKyberKeyInBase64 = Buffer.from(
+      keysService.decryptPrivateKey(mockUser.keys.kyber.privateKeyEncrypted, mockPassword),
+    ).toString('base64');
+
+    const mockClearUser = {
+      ...mockUser,
+      mnemonic: mockMnemonic,
+      privateKey: plainPrivateKeyInBase64,
+      keys: {
+        ecc: {
+          publicKey: mockUser.keys.ecc.publicKey,
+          privateKeyEncrypted: plainPrivateKeyInBase64,
+        },
+        kyber: {
+          publicKey: mockUser.keys.kyber.publicKey,
+          privateKeyEncrypted: plainPrivateKyberKeyInBase64,
+        },
+      },
+    };
+    // expect(spy).toBeCalledWith(mockClearUser);
+
+    expect(result).toEqual({
+      token: mockToken, //mockNewToken,
+      user: mockUser,
+      mnemonic: mockUser.mnemonic,
+    });
+  });
+}); */
 
 /*
 import * as authService from './auth.service';

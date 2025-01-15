@@ -154,7 +154,7 @@ export const doLogin = async (
       const { user, token, newToken } = data;
       const { privateKey, publicKey, keys } = user;
       const publicKyberKey = keys.kyber.publicKey;
-      const privateKyberKey = keys.kyber.privateKey;
+      const privateKyberKey = keys.kyber.privateKeyEncrypted;
 
       Sentry.setUser({
         id: user.uuid,
@@ -183,7 +183,16 @@ export const doLogin = async (
         ...user,
         mnemonic: clearMnemonic,
         privateKey: plainPrivateKeyInBase64,
-        privateKyberKey: plainPrivateKyberKeyInBase64,
+        keys: {
+          ecc: {
+            publicKey: publicKey,
+            privateKeyEncrypted: plainPrivateKeyInBase64,
+          },
+          kyber: {
+            publicKey: publicKyberKey,
+            privateKeyEncrypted: plainPrivateKyberKeyInBase64,
+          },
+        },
       };
 
       localStorageService.set('xToken', token);
@@ -353,7 +362,6 @@ export const getNewToken = async (): Promise<string> => {
   if (!res.ok) {
     throw new Error('Bad response while getting new token');
   }
-
   const { newToken } = await res.json();
 
   return newToken;
@@ -463,16 +471,28 @@ export const signUp = async (params: SignUpParams) => {
   localStorageService.set('xToken', xToken);
   localStorageService.set('xMnemonic', mnemonic);
 
-  const xNewToken = await getNewToken();
+  const xNewToken = await authService.getNewToken();
   localStorageService.set('xNewToken', xNewToken);
 
   const privateKey = xUser.privateKey
     ? Buffer.from(decryptPrivateKey(xUser.privateKey, password)).toString('base64')
     : undefined;
 
+  const privateKyberKey = xUser.keys.kyber.privateKeyEncrypted
+    ? Buffer.from(decryptPrivateKey(xUser.keys.kyber.privateKeyEncrypted, password)).toString('base64')
+    : undefined;
+
   const user = {
     ...xUser,
     privateKey,
+    keys: {
+      ecc: {
+        privateKeyEncrypted: privateKey,
+      },
+      kyber: {
+        privateKeyEncrypted: privateKyberKey,
+      },
+    },
   } as UserSettings;
 
   dispatch(userActions.setUser(user));
@@ -482,6 +502,7 @@ export const signUp = async (params: SignUpParams) => {
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
   if (isNewUser) dispatch(referralsThunks.initializeThunk());
   await trackSignUp(xUser.uuid, email);
+
   return { token: xToken, user: xUser, mnemonic };
 };
 
