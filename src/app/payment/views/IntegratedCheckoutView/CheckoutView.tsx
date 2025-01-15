@@ -15,6 +15,8 @@ import { LegacyRef } from 'react';
 import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
+const SEND_TO = process.env.SEND_TO || 'AW-728922855/-RgbCLv9z4caEOf1yds';
+
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
     applePay: 'auto',
@@ -50,8 +52,6 @@ const CheckoutView = ({
   checkoutViewManager,
 }: CheckoutViewProps) => {
   const { translate } = useTranslationContext();
-  // Those custom hooks should be here.
-  // They cannot be moved to the Parent, because it must be wrapped by <Elements> component.
   const stripeSDK = useStripe();
   const elements = useElements();
 
@@ -75,6 +75,40 @@ const CheckoutView = ({
       password: '',
     });
     checkoutViewManager.handleAuthMethodChange(authMethod);
+  }
+
+  function gtag_report_conversion_step2(url?: string) {
+    const callback = () => {
+      if (typeof url !== 'undefined') {
+        window.location.href = url;
+      }
+    };
+    if (window.gtag) {
+      window.gtag('event', 'conversion', {
+        send_to: SEND_TO,
+        value: currentSelectedPlan?.amount ?? 1.0,
+        currency: currentSelectedPlan?.currency ?? 'EUR',
+        event_callback: callback,
+      });
+    }
+    return false;
+  }
+
+  function gtag_report_conversion_create_account(url?: string) {
+    const callback = () => {
+      if (typeof url !== 'undefined') {
+        window.location.href = url;
+      }
+    };
+    if (window.gtag) {
+      window.gtag('event', 'conversion', {
+        send_to: SEND_TO,
+        value: currentSelectedPlan?.amount ?? 1.0,
+        currency: currentSelectedPlan?.currency ?? 'EUR',
+        event_callback: callback,
+      });
+    }
+    return false;
   }
 
   return (
@@ -130,7 +164,22 @@ const CheckoutView = ({
                       {error.stripe}
                     </div>
                   )}
-                  <Button type="submit" id="submit" className="hidden lg:flex" disabled={isButtonDisabled}>
+                  <Button
+                    type="submit"
+                    id="submit-step2"
+                    className="hidden lg:flex"
+                    disabled={isButtonDisabled}
+                    onClick={() => gtag_report_conversion_step2('/checkout/success')}
+                  >
+                    {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
+                  </Button>
+                  <Button
+                    type="submit"
+                    id="submit-create-account"
+                    className="hidden lg:flex"
+                    disabled={isButtonDisabled}
+                    onClick={() => gtag_report_conversion_create_account('/checkout/success')}
+                  >
                     {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
                   </Button>
                 </div>
@@ -146,9 +195,6 @@ const CheckoutView = ({
                   onCouponInputChange={checkoutViewManager.onCouponInputChange}
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
                 />
-                <Button type="submit" id="submit" className="flex lg:hidden" disabled={isButtonDisabled}>
-                  {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
-                </Button>
               </div>
             </div>
           ) : (

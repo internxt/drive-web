@@ -31,6 +31,8 @@ import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/compon
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { bytesToString } from 'app/drive/services/size.service';
 
+const SEND_TO = process.env.GOOGLE_ANALYTICS_SENDTO;
+
 export const THEME_STYLES = {
   dark: {
     backgroundColor: 'rgb(17 17 17)',
@@ -224,6 +226,24 @@ const CheckoutViewWrapper = () => {
             handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
           }
 
+          if (window && window.gtag) {
+            if (plan.selectedPlan.type === 'business') {
+              window.gtag('event', 'conversion', {
+                send_to: SEND_TO,
+                value: plan.selectedPlan.amount,
+                currency: currencyValue,
+                transaction_id: '',
+              });
+            } else {
+              window.gtag('event', 'conversion', {
+                send_to: SEND_TO,
+                value: plan.selectedPlan.amount,
+                currency: currencyValue,
+                transaction_id: '',
+              });
+            }
+          }
+
           checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, plan);
           const prices = await checkoutService.fetchPrices(plan.selectedPlan.type, currencyValue);
           setPrices(prices);
@@ -290,6 +310,15 @@ const CheckoutViewWrapper = () => {
   );
 
   const handlePaymentSuccess = () => {
+    if (window && window.gtag) {
+      window.gtag('event', 'conversion', {
+        send_to: 'AW-728922855/qLXECNiH2YcaEOf1ydsC',
+        value: 1.0,
+        currency: 'EUR',
+        transaction_id: localStorageService.get('subscriptionId') || '',
+      });
+    }
+
     showSuccessSubscriptionNotification();
     dispatch(planThunks.initializeThunk()).unwrap();
   };
