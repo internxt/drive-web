@@ -4,6 +4,8 @@ import { checkDuplicatedFiles } from './checkDuplicatedFiles';
 import { processDuplicateFiles } from './processDuplicateFiles';
 import { DriveFileData } from 'app/drive/types';
 
+const BATCH_SIZE = 200;
+
 vi.mock('./checkDuplicatedFiles', () => ({
   checkDuplicatedFiles: vi.fn(),
 }));
@@ -140,13 +142,13 @@ describe('prepareFilesToUpload', () => {
 
     vi.mocked(checkDuplicatedFiles).mockResolvedValue({
       duplicatedFilesResponse: [],
-      filesWithoutDuplicates: largeFileBatch.slice(0, 200),
+      filesWithoutDuplicates: largeFileBatch.slice(0, BATCH_SIZE),
       filesWithDuplicates: [],
     });
 
     vi.mocked(processDuplicateFiles).mockResolvedValue({
       zeroLengthFiles: 0,
-      newFilesToUpload: largeFileBatch.slice(0, 200).map((file) => ({
+      newFilesToUpload: largeFileBatch.slice(0, BATCH_SIZE).map((file) => ({
         name: file.name,
         size: file.size,
         type: file.type,
@@ -165,6 +167,43 @@ describe('prepareFilesToUpload', () => {
     expect(result.zeroLengthFilesNumber).toBe(0);
     expect(checkDuplicatedFiles).toHaveBeenCalledTimes(2);
     expect(processDuplicateFiles).toHaveBeenCalledTimes(4);
+  });
+
+  it('should process files in multiple batches correctly', async () => {
+    const TOTAL_FILES = 800;
+    const mockFiles = Array.from(
+      { length: TOTAL_FILES },
+      (_, index) => new File([], `file${index}.txt`, { type: 'text/plain' }),
+    );
+
+    const mockProcessedFiles = mockFiles.map((file) => ({
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      content: file,
+      parentFolderId: 'parentFolderId',
+    }));
+
+    vi.mocked(checkDuplicatedFiles).mockResolvedValue({
+      duplicatedFilesResponse: [],
+      filesWithoutDuplicates: mockFiles.slice(0, BATCH_SIZE),
+      filesWithDuplicates: mockFiles.slice(BATCH_SIZE),
+    });
+
+    vi.mocked(processDuplicateFiles).mockResolvedValue({
+      zeroLengthFiles: 0,
+      newFilesToUpload: mockProcessedFiles,
+    });
+
+    const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
+      files: mockFiles,
+      parentFolderId: 'parentFolderId',
+    });
+
+    expect(checkDuplicatedFiles).toHaveBeenCalledTimes(4);
+    expect(processDuplicateFiles).toHaveBeenCalledTimes(8);
+    expect(filesToUpload).toHaveLength(TOTAL_FILES);
+    expect(zeroLengthFilesNumber).toBe(0);
   });
 
   it('should handle fileType parameter', async () => {
