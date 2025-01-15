@@ -15,7 +15,7 @@ import { LegacyRef } from 'react';
 import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
-const SEND_TO = process.env.SEND_TO || 'AW-728922855/-RgbCLv9z4caEOf1yds';
+const SEND_TO = process.env.SEND_TO;
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
