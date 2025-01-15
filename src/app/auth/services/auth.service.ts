@@ -178,14 +178,6 @@ export const doLogin = async (
         ? Buffer.from(decryptPrivateKey(privateKyberKey, password)).toString('base64')
         : '';
 
-      if (privateKey) {
-        await assertPrivateKeyIsValid(plainPrivateKyberKeyInBase64, password);
-        await assertValidateKeys(
-          Buffer.from(plainPrivateKyberKeyInBase64, 'base64').toString(),
-          Buffer.from(publicKyberKey, 'base64').toString(),
-        );
-      }
-
       const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
       const clearUser = {
         ...user,
