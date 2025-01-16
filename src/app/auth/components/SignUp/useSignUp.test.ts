@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
-import { useSignUp } from './useSignUp';
-import * as bip39 from 'bip39';
 import { SdkFactory } from 'app/core/factory/sdk';
+import * as bip39 from 'bip39';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { useSignUp } from './useSignUp';
 
 vi.mock('@internxt/lib', () => ({
   aes: {
@@ -34,11 +34,41 @@ vi.mock('app/core/factory/sdk', () => ({
       createAuthClient: vi.fn().mockReturnValue({
         register: vi.fn().mockResolvedValue({
           token: 'mock-token',
-          user: { id: 'mock-user-id', mnemonic: 'mock-encrypted-mnemonic' },
+          user: {
+            id: 'mock-user-id',
+            mnemonic: 'mock-encrypted-mnemonic',
+            privateKey: 'mock-private-key',
+            publicKey: 'mock-public-key',
+            keys: {
+              ecc: {
+                privateKeyEncrypted: 'mock-private-key',
+                publicKey: 'mock-public-key',
+              },
+              kyber: {
+                publicKey: '',
+                privateKeyEncrypted: '',
+              },
+            },
+          },
         }),
         registerPreCreatedUser: vi.fn().mockResolvedValue({
           token: 'mock-token',
-          user: { id: 'mock-user-id', mnemonic: 'mock-encrypted-mnemonic' },
+          user: {
+            id: 'mock-user-id',
+            mnemonic: 'mock-encrypted-mnemonic',
+            privateKey: 'mock-private-key',
+            publicKey: 'mock-public-key',
+            keys: {
+              ecc: {
+                privateKeyEncrypted: 'mock-private-key',
+                publicKey: 'mock-public-key',
+              },
+              kyber: {
+                publicKey: '',
+                privateKeyEncrypted: '',
+              },
+            },
+          },
         }),
       }),
     }),
@@ -100,7 +130,22 @@ describe('useSignUp', () => {
     const response = await doRegister('test@example.com', 'mockPassword', 'mockCaptcha');
 
     expect(response).toEqual({
-      xUser: { id: 'mock-user-id', mnemonic: 'mock-decrypted-mnemonic' },
+      xUser: {
+        id: 'mock-user-id',
+        mnemonic: 'mock-decrypted-mnemonic',
+        privateKey: 'mock-private-key',
+        publicKey: 'mock-public-key',
+        keys: {
+          ecc: {
+            privateKeyEncrypted: 'mock-private-key',
+            publicKey: 'mock-public-key',
+          },
+          kyber: {
+            publicKey: '',
+            privateKeyEncrypted: '',
+          },
+        },
+      },
       xToken: 'mock-token',
       mnemonic: 'mock-decrypted-mnemonic',
     });
@@ -121,7 +166,23 @@ describe('useSignUp', () => {
     );
 
     expect(response).toEqual({
-      xUser: { id: 'mock-user-id', mnemonic: 'mock-decrypted-mnemonic', rootFolderId: undefined },
+      xUser: {
+        id: 'mock-user-id',
+        mnemonic: 'mock-decrypted-mnemonic',
+        rootFolderId: undefined,
+        privateKey: 'mock-private-key',
+        publicKey: 'mock-public-key',
+        keys: {
+          ecc: {
+            privateKeyEncrypted: 'mock-private-key',
+            publicKey: 'mock-public-key',
+          },
+          kyber: {
+            publicKey: '',
+            privateKeyEncrypted: '',
+          },
+        },
+      },
       xToken: 'mock-token',
       mnemonic: 'mock-decrypted-mnemonic',
     });

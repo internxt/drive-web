@@ -93,6 +93,23 @@ export function useSignUp(
     return { xUser, xToken, mnemonic };
   };
 
+  const parseUserSettings = (user: UserSettings, password: string): UserSettings => {
+    return {
+      ...user,
+      keys: {
+        ecc: {
+          publicKey: user.publicKey,
+          privateKeyEncrypted: user.privateKey,
+        },
+        kyber: {
+          publicKey: '',
+          privateKeyEncrypted: '',
+        },
+      },
+      mnemonic: decryptTextWithKey(user.mnemonic, password),
+    };
+  };
+
   const doRegister = async (email: string, password: string, captcha: string) => {
     const hashObj = passToHash({ password });
     const encPass = encryptText(hashObj.hash);
@@ -119,11 +136,13 @@ export function useSignUp(
 
     const data = await authClient.register(registerDetails);
     const { token } = data;
-    const user: UserSettings = data.user as unknown as UserSettings;
-
+    // TODO: need to update user type of register to include bucket field
+    const user = data.user as unknown as UserSettings;
+    // TODO: Remove or modify this when the backend is updated to add kyber keys
+    const parsedUser = parseUserSettings(user, password);
     user.mnemonic = decryptTextWithKey(user.mnemonic, password);
 
-    return { xUser: user, xToken: token, mnemonic: user.mnemonic };
+    return { xUser: parsedUser, xToken: token, mnemonic: user.mnemonic };
   };
 
   const doRegisterPreCreatedUser = async (email: string, password: string, invitationId: string, captcha: string) => {
