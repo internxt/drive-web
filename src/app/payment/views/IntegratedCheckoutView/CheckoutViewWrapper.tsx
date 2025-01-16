@@ -232,7 +232,7 @@ const CheckoutViewWrapper = () => {
               send_to: SEND_TO,
               value: plan.selectedPlan.amount,
               currency: currencyValue,
-              transaction_id: '',
+              transaction_id: plan.selectedPlan.id,
             });
           }
 
@@ -363,6 +363,7 @@ const CheckoutViewWrapper = () => {
         send_to: GA_SEND_TO_KEY,
         value: currentSelectedPlan?.amount,
         currency: currentSelectedPlan?.currency,
+        transaction_id: currentSelectedPlan?.id,
       });
     } catch (err) {
       const error = err as Error;
