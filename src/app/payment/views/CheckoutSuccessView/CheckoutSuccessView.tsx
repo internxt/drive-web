@@ -36,7 +36,7 @@ const CheckoutSuccessView = (): JSX.Element => {
         send_to: GA_SEND_TO_KEY,
         value: parseFloat(localStorageService.get('amountPaid') ?? '0'),
         currency: localStorageService.get('currency'),
-        transaction_id: localStorageService.get('paymentIntentId'),
+        transaction_id: localStorageService.get('productName'),
       });
     } catch (err) {
       console.log('Analytics error: ', err);
