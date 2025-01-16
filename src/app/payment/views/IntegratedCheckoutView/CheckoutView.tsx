@@ -15,7 +15,7 @@ import { LegacyRef } from 'react';
 import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
-const SEND_TO = process.env.SEND_TO;
+const SEND_TO = process.env.REACT_APP_GOOGLE_ANALYTICS_SENDTO;
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -52,6 +52,8 @@ const CheckoutView = ({
   checkoutViewManager,
 }: CheckoutViewProps) => {
   const { translate } = useTranslationContext();
+  // Those custom hooks should be here.
+  // They cannot be moved to the Parent, because it must be wrapped by <Elements> component.
   const stripeSDK = useStripe();
   const elements = useElements();
 
@@ -111,12 +113,21 @@ const CheckoutView = ({
     return false;
   }
 
+  const handleFormSubmit = (formData: IFormValues, event: any) => {
+    event.preventDefault();
+    checkoutViewManager.onCheckoutButtonClicked(formData, event, stripeSDK, elements);
+
+    if (authMethod === AUTH_METHOD_VALUES.IS_SIGNED_IN) {
+      gtag_report_conversion_step2('/checkout/success');
+    } else {
+      gtag_report_conversion_create_account('/checkout/success');
+    }
+  };
+
   return (
     <form
       className="flex h-full overflow-y-scroll bg-gray-1 lg:w-screen xl:px-16"
-      onSubmit={handleSubmit((formData, event) =>
-        checkoutViewManager.onCheckoutButtonClicked(formData, event, stripeSDK, elements),
-      )}
+      onSubmit={handleSubmit(handleFormSubmit)}
     >
       <div className="mx-auto flex w-full max-w-screen-xl px-5 py-10">
         <div className="flex w-full flex-col space-y-8 lg:space-y-16">
@@ -164,13 +175,7 @@ const CheckoutView = ({
                       {error.stripe}
                     </div>
                   )}
-                  <Button
-                    type="submit"
-                    id="submit-step2"
-                    className="hidden lg:flex"
-                    disabled={isButtonDisabled}
-                    onClick={() => gtag_report_conversion_step2('/checkout/success')}
-                  >
+                  <Button type="submit" id="submit-step2" className="hidden lg:flex" disabled={isButtonDisabled}>
                     {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
                   </Button>
                   <Button
@@ -178,7 +183,6 @@ const CheckoutView = ({
                     id="submit-create-account"
                     className="hidden lg:flex"
                     disabled={isButtonDisabled}
-                    onClick={() => gtag_report_conversion_create_account('/checkout/success')}
                   >
                     {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
                   </Button>
