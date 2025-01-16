@@ -440,7 +440,10 @@
           "subsRenew": "La suscripción se renueva en {{daysUntilRenewal}} días",
           "cancelSubscriptionModal": {
             "title": "Cancelar suscripción",
-            "description": "Está a punto de cancelar su plan Internxt de {{currentPlanName}}. Al cancelar su plan, será degradado al plan gratuito Internxt {{freePlanName}}. Confirme su elección para continuar, por favor.",
+            "description": {
+              "individual": "Estás a punto de cancelar tu plan de Internxt {{currentPlanName}}. Al cancelar tu plan, pasarás al plan gratuito de Internxt {{freePlanName}}. Por favor, confirma tu elección para continuar.",
+              "business": "Al cancelar tu plan, el espacio de trabajo se eliminará junto con todos los datos. Por favor, confirma tu elección para continuar."
+            },
             "keepSubscription": "Mantener suscripción",
             "continue": "Continuar",
             "cancelSubscription": "Cancelar suscripción",

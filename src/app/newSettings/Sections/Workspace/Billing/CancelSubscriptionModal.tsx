@@ -11,6 +11,17 @@ import Modal from '../../../../shared/components/Modal';
 import { useAppDispatch } from '../../../../store/hooks';
 import { planThunks } from '../../../../store/slices/plan';
 
+interface CancelSubscriptionModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  currentPlanName: string;
+  currentPlanInfo: string;
+  currentUsage: number;
+  cancellingSubscription: boolean;
+  userType: UserType;
+  cancelSubscription: (userType?: UserType) => void;
+}
+
 const CancelSubscriptionModal = ({
   isOpen,
   onClose,
@@ -20,16 +31,7 @@ const CancelSubscriptionModal = ({
   cancellingSubscription,
   cancelSubscription,
   userType = UserType.Individual,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  currentPlanName: string;
-  currentPlanInfo: string;
-  currentUsage: number;
-  cancellingSubscription: boolean;
-  userType: UserType;
-  cancelSubscription: () => void;
-}): JSX.Element => {
+}: CancelSubscriptionModalProps): JSX.Element => {
   const isIndividual = userType === UserType.Individual;
   const { translate } = useTranslationContext();
   const [step, setStep] = useState<1 | 2>(2);
@@ -53,7 +55,7 @@ const CancelSubscriptionModal = ({
   }, [isOpen]);
 
   useEffect(() => {
-    if (couponAvailable && isOpen) {
+    if (isIndividual && couponAvailable && isOpen) {
       setStep(1);
     }
   }, [couponAvailable]);
@@ -89,9 +91,10 @@ const CancelSubscriptionModal = ({
         <Step1 currentPlanName={currentPlanName} applyCoupon={applyCoupon} setStep={setStep} />
       )}
 
-      {isIndividual && step === 2 && (
+      {step === 2 && (
         <Step2
           currentPlanName={currentPlanName}
+          userType={userType}
           onClose={onClose}
           cancelSubscription={cancelSubscription}
           cancellingSubscription={cancellingSubscription}
@@ -155,12 +158,14 @@ const Step2 = ({
   currentPlanInfo,
   currentUsage,
   cancellingSubscription,
+  userType,
   cancelSubscription,
   onClose,
 }: {
   currentPlanName: string;
   currentPlanInfo: string;
   currentUsage: number;
+  userType: UserType;
   cancellingSubscription: boolean;
   cancelSubscription: () => void;
   onClose: () => void;
@@ -172,48 +177,52 @@ const Step2 = ({
   return (
     <>
       <p className="mt-4 text-gray-100">
-        {translate('views.account.tabs.billing.cancelSubscriptionModal.description', {
+        {translate(`views.account.tabs.billing.cancelSubscriptionModal.description.${userType.toLowerCase()}`, {
           currentPlanName,
           freePlanName: FreeStoragePlan.simpleName,
         })}
       </p>
-      <div className="mt-5 flex w-full max-w-lg flex-row items-center justify-center pb-3">
-        <div className="flex w-40 flex-col items-center justify-center rounded-xl border border-gray-10 p-3 shadow-subtle-hard">
-          <div className="mt-3 rounded-xl border border-gray-10 bg-gray-1">
-            <span className="p-2 pb-1.5 pt-1.5">
-              {translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.titleCurrent')}
-            </span>
+      {userType !== UserType.Business && (
+        <div className="mt-5 flex w-full max-w-lg flex-row items-center justify-center pb-3">
+          <div className="flex w-40 flex-col items-center justify-center rounded-xl border border-gray-10 p-3 shadow-subtle-hard">
+            <div className="mt-3 rounded-xl border border-gray-10 bg-gray-1">
+              <span className="p-2 pb-1.5 pt-1.5">
+                {translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.titleCurrent')}
+              </span>
+            </div>
+            <div className="mt-3">
+              <span className="text-2xl font-bold text-primary">{currentPlanName}</span>
+            </div>
+            <div>
+              <span className="font-medium">{currentPlanInfo}</span>
+            </div>
           </div>
-          <div className="mt-3">
-            <span className="text-2xl font-bold text-primary">{currentPlanName}</span>
+          <div className="flex w-20 flex-col items-center justify-center p-3">
+            <div className="">
+              <ArrowRight height="20" width="20" />
+            </div>
           </div>
-          <div>
-            <span className="font-medium">{currentPlanInfo}</span>
+          <div className="flex w-40 flex-col items-center justify-center rounded-xl border border-gray-10 p-3 shadow-subtle-hard">
+            <div className="mt-3 rounded-xl border border-gray-10 bg-gray-1">
+              <span className="p-2 pb-1.5 pt-1.5">
+                {translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.titleNew')}
+              </span>
+            </div>
+            <div className="mt-3">
+              <span
+                className={`text-2xl font-bold text-primary ${isCurrentUsageGreaterThanFreePlan ? 'text-red' : ''}`}
+              >
+                {FreeStoragePlan.simpleName}
+              </span>
+            </div>
+            <div>
+              <span className="font-medium">
+                {translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.free')}
+              </span>
+            </div>
           </div>
         </div>
-        <div className="flex w-20 flex-col items-center justify-center p-3">
-          <div className="">
-            <ArrowRight height="20" width="20" />
-          </div>
-        </div>
-        <div className="flex w-40 flex-col items-center justify-center rounded-xl border border-gray-10 p-3 shadow-subtle-hard">
-          <div className="mt-3 rounded-xl border border-gray-10 bg-gray-1">
-            <span className="p-2 pb-1.5 pt-1.5">
-              {translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.titleNew')}
-            </span>
-          </div>
-          <div className="mt-3">
-            <span className={`text-2xl font-bold text-primary ${isCurrentUsageGreaterThanFreePlan ? 'text-red' : ''}`}>
-              {FreeStoragePlan.simpleName}
-            </span>
-          </div>
-          <div>
-            <span className="font-medium">
-              {translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.free')}
-            </span>
-          </div>
-        </div>
-      </div>
+      )}
 
       {isCurrentUsageGreaterThanFreePlan && (
         <div className="mt-5 flex w-full max-w-lg flex-col rounded-xl border border-red/30 bg-red/10 pb-3 pt-3">
