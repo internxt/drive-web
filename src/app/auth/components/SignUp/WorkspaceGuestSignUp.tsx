@@ -142,7 +142,16 @@ function WorkspaceGuestSingUpView(): JSX.Element {
       const user = {
         ...xUser,
         privateKey,
-        privateKyberKey,
+        keys: {
+          ecc: {
+            publicKey: xUser.keys.ecc.publicKey,
+            privateKeyEncrypted: privateKey,
+          },
+          kyber: {
+            publicKey: xUser.keys.kyber.publicKey,
+            privateKeyEncrypted: privateKyberKey,
+          },
+        },
       } as UserSettings;
 
       dispatch(userActions.setUser(user));
