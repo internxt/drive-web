@@ -487,9 +487,11 @@ export const signUp = async (params: SignUpParams) => {
     privateKey,
     keys: {
       ecc: {
+        publicKey: xUser.keys.ecc.publicKey,
         privateKeyEncrypted: privateKey,
       },
       kyber: {
+        publicKey: xUser.keys.kyber.publicKey,
         privateKeyEncrypted: privateKyberKey,
       },
     },

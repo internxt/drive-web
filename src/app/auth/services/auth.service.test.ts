@@ -8,6 +8,8 @@ import { vi, describe, it, beforeAll, beforeEach, expect, afterAll } from 'vites
 import { Buffer } from 'buffer';
 import { encryptTextWithKey } from 'app/crypto/services/utils';
 import { SdkFactory } from '../../core/factory/sdk';
+import localStorageService from 'app/core/services/local-storage.service';
+import { userActions } from 'app/store/slices/user';
 
 if (typeof globalThis.process === 'undefined') {
   globalThis.process = { env: {} } as any;
@@ -68,22 +70,30 @@ beforeAll(() => {
     AppDispatch: vi.fn(),
   }));
   vi.mock('app/store/slices/plan', () => ({
-    planThunks: vi.fn(),
+    planThunks: {
+      initializeThunk: vi.fn(),
+    },
   }));
   vi.mock('app/store/slices/products', () => ({
-    productsThunks: vi.fn(),
+    productsThunks: {
+      initializeThunk: vi.fn(),
+    },
   }));
 
   vi.mock('app/store/slices/referrals', () => ({
-    referralsThunks: vi.fn(),
+    referralsThunks: {
+      initializeThunk: vi.fn(),
+    },
   }));
 
-  vi.mock('app/store/slices/user', async () => ({
+  vi.mock('app/store/slices/user', () => ({
+    initializeUserThunk: vi.fn(),
     userActions: {
       setUser: vi.fn(),
     },
-    initializeUserThunk: vi.fn(),
-    userThunks: vi.fn(),
+    userThunks: {
+      initializeUserThunk: vi.fn(),
+    },
   }));
 
   vi.mock('app/store/slices/workspaces/workspacesStore', () => ({
@@ -107,11 +117,7 @@ beforeAll(() => {
     getCookie: vi.fn(),
     setCookie: vi.fn(),
   }));
-  vi.mock('app/store/slices/user', () => ({
-    initializeUserThunk: vi.fn(),
-    userActions: vi.fn(),
-    userThunks: vi.fn(),
-  }));
+
   vi.mock('app/core/services/local-storage.service', () => ({
     default: {
       get: vi.fn(),
@@ -240,7 +246,6 @@ describe('logIn', () => {
   });
 });
 
-/*
 describe('signUp', () => {
   it('signUp should correctly decrypt keys', async () => {
     const mockToken = 'test-token';
@@ -248,13 +253,16 @@ describe('signUp', () => {
     const mockEmail = 'test@example.com';
 
     const mockPassword = 'password123';
-    const mockMnemonic = 'mock-clearMnemonic';
-    const mockUser = await getMockUser(mockPassword, mockMnemonic);
+    const mockMnemonicNotEnc = 'mock-clearMnemonic';
+    const mockUser = await getMockUser(mockPassword, mockMnemonicNotEnc);
 
     const mockSignUpResponse = {
-      xUser: mockUser,
+      xUser: {
+        ...mockUser,
+        mnemonic: mockMnemonicNotEnc,
+      },
       xToken: mockToken,
-      mnemonic: mockUser.mnemonic,
+      mnemonic: mockMnemonicNotEnc,
     };
 
     const params = {
@@ -267,22 +275,25 @@ describe('signUp', () => {
       dispatch: vi.fn(),
     };
 
-    const mockRes = new Response(mockNewToken, {
-      status: 200,
-      statusText: 'OK',
-      headers: {
-        'Content-Type': 'application/json',
+    const mockRes = new Response(
+      JSON.stringify({
+        newToken: mockNewToken,
+      }),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
-    });
-
-    console.log('TOKEN TEST:', await mockRes.json());
+    );
 
     vi.spyOn(globalThis, 'fetch').mockReturnValue(Promise.resolve(mockRes));
 
-    vi.spyOn(authService, 'getNewToken').mockReturnValue(Promise.resolve(mockNewToken));
-    //const spy = vi.spyOn(, 'userActions').mockImplementation(vi.fn());
+    const spy = vi.spyOn(userActions, 'setUser');
 
     const result = await authService.signUp(params);
+
+    expect(localStorageService.set).toHaveBeenCalledWith('xNewToken', mockNewToken);
 
     const plainPrivateKeyInBase64 = Buffer.from(
       keysService.decryptPrivateKey(mockUser.keys.ecc.privateKeyEncrypted, mockPassword),
@@ -293,7 +304,7 @@ describe('signUp', () => {
 
     const mockClearUser = {
       ...mockUser,
-      mnemonic: mockMnemonic,
+      mnemonic: mockMnemonicNotEnc,
       privateKey: plainPrivateKeyInBase64,
       keys: {
         ecc: {
@@ -306,15 +317,18 @@ describe('signUp', () => {
         },
       },
     };
-    // expect(spy).toBeCalledWith(mockClearUser);
+    expect(spy).toBeCalledWith(mockClearUser);
 
     expect(result).toEqual({
-      token: mockToken, //mockNewToken,
-      user: mockUser,
-      mnemonic: mockUser.mnemonic,
+      token: mockToken,
+      user: {
+        ...mockUser,
+        mnemonic: mockMnemonicNotEnc,
+      },
+      mnemonic: mockMnemonicNotEnc,
     });
   });
-}); */
+});
 
 /*
 import * as authService from './auth.service';
