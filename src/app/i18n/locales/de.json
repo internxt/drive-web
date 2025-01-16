@@ -422,7 +422,10 @@
           "subsRenew": "Das Abonnement verlängert sich in {{daysUntilRenewal}} Tagen",
           "cancelSubscriptionModal": {
             "title": "Abonnement beenden",
-            "description": "Du bist dabei, deinen {{currentPlanName}} Internxt-Plan zu kündigen. Wenn du deinen Plan kündigst, wirst du auf den kostenlosen Internxt {{freePlanName}}-Plan herabgestuft. Bitte bestätige Ihre Auswahl, um fortzufahren.",
+            "description": {
+              "individual": "Sie sind dabei, Ihren Internxt-Tarif {{currentPlanName}} zu kündigen. Durch die Kündigung Ihres Tarifs werden Sie auf den kostenlosen Internxt-Tarif {{freePlanName}} herabgestuft. Bitte bestätigen Sie Ihre Wahl, um fortzufahren.",
+              "business": "Durch die Kündigung Ihres Tarifs wird der Workspace zusammen mit allen Daten gelöscht. Bitte bestätigen Sie Ihre Wahl, um fortzufahren."
+            },
             "keepSubscription": "Abonnement behalten",
             "continue": "Weiter",
             "cancelSubscription": "Abonnement beenden",

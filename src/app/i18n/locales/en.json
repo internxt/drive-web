@@ -457,7 +457,10 @@
           "subsRenew": "Subscription renews in {{daysUntilRenewal}} days",
           "cancelSubscriptionModal": {
             "title": "Cancel subscription",
-            "description": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
+            "description": {
+              "individual": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
+              "business": "By cancelling your plan, the workspace will be deleted along with all data. Confirm your choice to proceed, please."
+            },
             "keepSubscription": "Keep subscription",
             "continue": "Continue",
             "cancelSubscription": "Cancel subscription",
