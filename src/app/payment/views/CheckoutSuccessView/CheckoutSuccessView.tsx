@@ -7,7 +7,8 @@ import { userThunks } from 'app/store/slices/user';
 import { useCallback } from 'react';
 import localStorageService from '../../../core/services/local-storage.service';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import { analyticsService, trackPaymentConversion } from 'app/analytics/impact.service';
+import { trackPaymentConversion } from 'app/analytics/impact.service';
+import gaService, { GA_SEND_TO_KEY } from 'app/analytics/ga.service';
 
 function removePaymentsStorage() {
   localStorageService.removeItem('subscriptionId');
@@ -31,8 +32,9 @@ const CheckoutSuccessView = (): JSX.Element => {
     try {
       await trackPaymentConversion();
       removePaymentsStorage();
-      analyticsService({
-        amount: parseFloat(localStorageService.get('amountPaid') ?? '0'),
+      gaService.track('conversion', {
+        send_to: GA_SEND_TO_KEY,
+        value: parseFloat(localStorageService.get('amountPaid') ?? '0'),
         currency: localStorageService.get('currency'),
       });
     } catch (err) {

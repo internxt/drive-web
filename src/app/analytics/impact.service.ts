@@ -86,16 +86,3 @@ export async function trackPaymentConversion() {
     //
   }
 }
-
-export async function analyticsService(currentSelectedPlan) {
-  try {
-    window.gtag('event', 'conversion', {
-      send_to: SEND_TO,
-      value: currentSelectedPlan?.amount ?? 1.0,
-      currency: currentSelectedPlan?.currency ?? 'EUR',
-    });
-  } catch (e) {
-    const error = errorService.castError(e);
-    errorService.reportError(error);
-  }
-}

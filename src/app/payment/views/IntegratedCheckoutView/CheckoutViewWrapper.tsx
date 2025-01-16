@@ -30,7 +30,7 @@ import CheckoutView from './CheckoutView';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { bytesToString } from 'app/drive/services/size.service';
-import { analyticsService } from 'app/analytics/impact.service';
+import gaService, { GA_SEND_TO_KEY } from 'app/analytics/ga.service';
 
 const SEND_TO = process.env.REACT_APP_GOOGLE_ANALYTICS_SENDTO;
 
@@ -228,21 +228,12 @@ const CheckoutViewWrapper = () => {
           }
 
           if (window && window.gtag) {
-            if (plan.selectedPlan.type === 'business') {
-              window.gtag('event', 'conversion', {
-                send_to: SEND_TO,
-                value: plan.selectedPlan.amount,
-                currency: currencyValue,
-                transaction_id: '',
-              });
-            } else {
-              window.gtag('event', 'conversion', {
-                send_to: SEND_TO,
-                value: plan.selectedPlan.amount,
-                currency: currencyValue,
-                transaction_id: '',
-              });
-            }
+            gaService.track('conversion', {
+              send_to: SEND_TO,
+              value: plan.selectedPlan.amount,
+              currency: currencyValue,
+              transaction_id: '',
+            });
           }
 
           checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, plan);
@@ -368,8 +359,9 @@ const CheckoutViewWrapper = () => {
     try {
       await authCheckoutService.authenticateUser({ email, password, authMethod, dispatch, doRegister });
 
-      analyticsService({
-        amount: currentSelectedPlan?.amount,
+      gaService.track('conversion', {
+        send_to: GA_SEND_TO_KEY,
+        value: currentSelectedPlan?.amount,
         currency: currentSelectedPlan?.currency,
       });
     } catch (err) {
