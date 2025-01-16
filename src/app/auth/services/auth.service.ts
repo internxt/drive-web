@@ -368,12 +368,12 @@ export const getNewToken = async (): Promise<string> => {
   return newToken;
 };
 
-export async function areCredentialsCorrect(email: string, password: string): Promise<boolean> {
+export async function areCredentialsCorrect(password: string): Promise<boolean> {
   const salt = await getSalt();
   const { hash: hashedPassword } = passToHash({ password, salt });
-  const authClient = SdkFactory.getInstance().createAuthClient();
-
-  return authClient.areCredentialsCorrect(email, hashedPassword);
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const token = localStorageService.get('xNewToken') || undefined;
+  return authClient.areCredentialsCorrect(hashedPassword, token);
 }
 
 export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string): string | null => {

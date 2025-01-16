@@ -10,6 +10,7 @@ import {
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from '../../core/factory/sdk';
 import envService from 'app/core/services/env.service';
+import localStorageService from 'app/core/services/local-storage.service';
 
 const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? process.env.REACT_APP_AVATAR_URL : undefined;
 
@@ -62,8 +63,9 @@ const deleteUserAvatar = (): Promise<void> => {
 };
 
 const sendVerificationEmail = (): Promise<void> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
-  return usersClient.sendVerificationEmail();
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+  const token = localStorageService.get('xNewToken') || undefined;
+  return usersClient.sendVerificationEmail(token);
 };
 
 const getPublicKeyByEmail = (email: string): Promise<UserPublicKeyResponse> => {

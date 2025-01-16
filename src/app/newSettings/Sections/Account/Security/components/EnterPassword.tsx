@@ -7,6 +7,7 @@ import errorService from 'app/core/services/error.service';
 import { Button } from '@internxt/ui';
 import Card from 'app/shared/components/Card';
 import Input from 'app/shared/components/Input';
+import localStorageService from 'app/core/services/local-storage.service';
 
 const EnterPassword = ({
   onUnlock,
@@ -29,7 +30,7 @@ const EnterPassword = ({
 
       if (!user) throw new Error('User is not defined');
 
-      const correctCredentials = await areCredentialsCorrect(user.email, password);
+      const correctCredentials = await areCredentialsCorrect(password);
 
       if (correctCredentials) {
         onUnlock(password);

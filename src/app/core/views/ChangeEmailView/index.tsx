@@ -78,7 +78,7 @@ export default function ChangeEmailView(): JSX.Element {
     setStatus(STATUS.LOADING);
 
     try {
-      const isCorrectPassword = await areCredentialsCorrect(email, password);
+      const isCorrectPassword = await areCredentialsCorrect(password);
       if (isCorrectPassword) {
         setAuth(true);
 
