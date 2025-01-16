@@ -7,6 +7,7 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const IMPACT_API = process.env.REACT_APP_IMPACT_API as string;
+const SEND_TO = process.env.REACT_APP_GOOGLE_ANALYTICS_SENDTO;
 
 const anonymousID = getCookie('impactAnonymousId');
 const source = getCookie('impactSource');
@@ -83,5 +84,18 @@ export async function trackPaymentConversion() {
     }
   } catch (err) {
     //
+  }
+}
+
+export async function analyticsService(currentSelectedPlan) {
+  try {
+    window.gtag('event', 'conversion', {
+      send_to: SEND_TO,
+      value: currentSelectedPlan?.amount ?? 1.0,
+      currency: currentSelectedPlan?.currency ?? 'EUR',
+    });
+  } catch (e) {
+    const error = errorService.castError(e);
+    errorService.reportError(error);
   }
 }

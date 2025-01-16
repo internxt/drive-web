@@ -15,8 +15,6 @@ import { LegacyRef } from 'react';
 import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
-const SEND_TO = process.env.REACT_APP_GOOGLE_ANALYTICS_SENDTO;
-
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
     applePay: 'auto',
@@ -79,49 +77,9 @@ const CheckoutView = ({
     checkoutViewManager.handleAuthMethodChange(authMethod);
   }
 
-  function gtag_report_conversion_step2(url?: string) {
-    const callback = () => {
-      if (typeof url !== 'undefined') {
-        window.location.href = url;
-      }
-    };
-    if (window.gtag) {
-      window.gtag('event', 'conversion', {
-        send_to: SEND_TO,
-        value: currentSelectedPlan?.amount ?? 1.0,
-        currency: currentSelectedPlan?.currency ?? 'EUR',
-        event_callback: callback,
-      });
-    }
-    return false;
-  }
-
-  function gtag_report_conversion_create_account(url?: string) {
-    const callback = () => {
-      if (typeof url !== 'undefined') {
-        window.location.href = url;
-      }
-    };
-    if (window.gtag) {
-      window.gtag('event', 'conversion', {
-        send_to: SEND_TO,
-        value: currentSelectedPlan?.amount ?? 1.0,
-        currency: currentSelectedPlan?.currency ?? 'EUR',
-        event_callback: callback,
-      });
-    }
-    return false;
-  }
-
   const handleFormSubmit = (formData: IFormValues, event: any) => {
     event.preventDefault();
     checkoutViewManager.onCheckoutButtonClicked(formData, event, stripeSDK, elements);
-
-    if (authMethod === AUTH_METHOD_VALUES.IS_SIGNED_IN) {
-      gtag_report_conversion_step2('/checkout/success');
-    } else {
-      gtag_report_conversion_create_account('/checkout/success');
-    }
   };
 
   return (

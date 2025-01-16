@@ -30,6 +30,7 @@ import CheckoutView from './CheckoutView';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { bytesToString } from 'app/drive/services/size.service';
+import { analyticsService } from 'app/analytics/impact.service';
 
 const SEND_TO = process.env.REACT_APP_GOOGLE_ANALYTICS_SENDTO;
 
@@ -310,15 +311,6 @@ const CheckoutViewWrapper = () => {
   );
 
   const handlePaymentSuccess = () => {
-    if (window && window.gtag) {
-      window.gtag('event', 'conversion', {
-        send_to: SEND_TO,
-        value: 1.0,
-        currency: 'EUR',
-        transaction_id: localStorageService.get('subscriptionId') || '',
-      });
-    }
-
     showSuccessSubscriptionNotification();
     dispatch(planThunks.initializeThunk()).unwrap();
   };
@@ -375,6 +367,11 @@ const CheckoutViewWrapper = () => {
 
     try {
       await authCheckoutService.authenticateUser({ email, password, authMethod, dispatch, doRegister });
+
+      analyticsService({
+        amount: currentSelectedPlan?.amount,
+        currency: currentSelectedPlan?.currency,
+      });
     } catch (err) {
       const error = err as Error;
       setError('auth', error.message);

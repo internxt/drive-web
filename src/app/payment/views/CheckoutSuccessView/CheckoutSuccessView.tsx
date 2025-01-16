@@ -7,7 +7,7 @@ import { userThunks } from 'app/store/slices/user';
 import { useCallback } from 'react';
 import localStorageService from '../../../core/services/local-storage.service';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import { trackPaymentConversion } from 'app/analytics/impact.service';
+import { analyticsService, trackPaymentConversion } from 'app/analytics/impact.service';
 
 function removePaymentsStorage() {
   localStorageService.removeItem('subscriptionId');
@@ -31,6 +31,10 @@ const CheckoutSuccessView = (): JSX.Element => {
     try {
       await trackPaymentConversion();
       removePaymentsStorage();
+      analyticsService({
+        amount: parseFloat(localStorageService.get('amountPaid') ?? '0'),
+        currency: localStorageService.get('currency'),
+      });
     } catch (err) {
       console.log('Analytics error: ', err);
     }
