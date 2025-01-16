@@ -31,7 +31,7 @@ import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/compon
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { bytesToString } from 'app/drive/services/size.service';
 
-const SEND_TO = process.env.REACT_APP_GOOGLE_ANALYTICS_SENDTO;
+const SEND_TO = process.env.GOOGLE_ANALYTICS_SENDTO;
 
 export const THEME_STYLES = {
   dark: {
@@ -312,7 +312,7 @@ const CheckoutViewWrapper = () => {
   const handlePaymentSuccess = () => {
     if (window && window.gtag) {
       window.gtag('event', 'conversion', {
-        send_to: SEND_TO,
+        send_to: 'AW-728922855/qLXECNiH2YcaEOf1ydsC',
         value: 1.0,
         currency: 'EUR',
         transaction_id: localStorageService.get('subscriptionId') || '',
