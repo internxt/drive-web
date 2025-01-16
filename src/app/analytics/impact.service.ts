@@ -7,7 +7,6 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const IMPACT_API = process.env.REACT_APP_IMPACT_API as string;
-const SEND_TO = process.env.REACT_APP_GOOGLE_ANALYTICS_SENDTO;
 
 const anonymousID = getCookie('impactAnonymousId');
 const source = getCookie('impactSource');
