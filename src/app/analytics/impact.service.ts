@@ -64,7 +64,7 @@ export async function trackPaymentConversion() {
         send_to: GA_SEND_TO_KEY,
         value: amount,
         currency: currency?.toUpperCase() ?? '€',
-        items: [
+        transaction_id: [
           {
             item_id: priceId,
             item_name: productName,
