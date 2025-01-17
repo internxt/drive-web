@@ -31,8 +31,10 @@ import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/compon
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { bytesToString } from 'app/drive/services/size.service';
 import gaService, { GA_SEND_TO_KEY } from 'app/analytics/ga.service';
+import { getCookie } from 'app/analytics/utils';
 
 const SEND_TO = process.env.REACT_APP_GOOGLE_ANALYTICS_SENDTO;
+const PLAN_TO_TRACK = getCookie('gaPlan');
 
 export const THEME_STYLES = {
   dark: {
@@ -232,7 +234,7 @@ const CheckoutViewWrapper = () => {
               send_to: SEND_TO,
               value: plan.selectedPlan.amount,
               currency: currencyValue,
-              transaction_id: plan.selectedPlan.id,
+              transaction_id: PLAN_TO_TRACK,
             });
           }
 
@@ -363,7 +365,7 @@ const CheckoutViewWrapper = () => {
         send_to: GA_SEND_TO_KEY,
         value: currentSelectedPlan?.amount,
         currency: currentSelectedPlan?.currency,
-        transaction_id: currentSelectedPlan?.id,
+        transaction_id: PLAN_TO_TRACK,
       });
     } catch (err) {
       const error = err as Error;
