@@ -34,7 +34,7 @@ import gaService, { GA_SEND_TO_KEY } from 'app/analytics/ga.service';
 import { getCookie } from 'app/analytics/utils';
 
 const SEND_TO = process.env.REACT_APP_GOOGLE_ANALYTICS_SENDTO;
-const PLAN_TO_TRACK = getCookie('gaPlan');
+const PLAN_TO_TRACK = getCookie('gaPlanId');
 
 export const THEME_STYLES = {
   dark: {
