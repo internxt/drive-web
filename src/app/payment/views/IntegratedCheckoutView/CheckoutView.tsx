@@ -77,12 +77,15 @@ const CheckoutView = ({
     checkoutViewManager.handleAuthMethodChange(authMethod);
   }
 
+  const handleFormSubmit = (formData: IFormValues, event: any) => {
+    event.preventDefault();
+    checkoutViewManager.onCheckoutButtonClicked(formData, event, stripeSDK, elements);
+  };
+
   return (
     <form
       className="flex h-full overflow-y-scroll bg-gray-1 lg:w-screen xl:px-16"
-      onSubmit={handleSubmit((formData, event) =>
-        checkoutViewManager.onCheckoutButtonClicked(formData, event, stripeSDK, elements),
-      )}
+      onSubmit={handleSubmit(handleFormSubmit)}
     >
       <div className="mx-auto flex w-full max-w-screen-xl px-5 py-10">
         <div className="flex w-full flex-col space-y-8 lg:space-y-16">
@@ -130,7 +133,15 @@ const CheckoutView = ({
                       {error.stripe}
                     </div>
                   )}
-                  <Button type="submit" id="submit" className="hidden lg:flex" disabled={isButtonDisabled}>
+                  <Button type="submit" id="submit-step2" className="hidden lg:flex" disabled={isButtonDisabled}>
+                    {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
+                  </Button>
+                  <Button
+                    type="submit"
+                    id="submit-create-account"
+                    className="hidden lg:flex"
+                    disabled={isButtonDisabled}
+                  >
                     {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
                   </Button>
                 </div>
@@ -146,9 +157,6 @@ const CheckoutView = ({
                   onCouponInputChange={checkoutViewManager.onCouponInputChange}
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
                 />
-                <Button type="submit" id="submit" className="flex lg:hidden" disabled={isButtonDisabled}>
-                  {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
-                </Button>
               </div>
             </div>
           ) : (
