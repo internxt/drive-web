@@ -11,6 +11,7 @@ const IMPACT_API = process.env.REACT_APP_IMPACT_API as string;
 
 const anonymousID = getCookie('impactAnonymousId');
 const source = getCookie('impactSource');
+const plan = getCookie('impactPlan');
 
 export async function trackSignUp(uuid, email) {
   try {
@@ -50,7 +51,7 @@ export async function trackPaymentConversion() {
         send_to: GA_SEND_TO_KEY,
         value: amount,
         currency: currency?.toUpperCase() ?? '€',
-        transaction_id: uuidV4(),
+        transaction_id: plan,
       });
     } catch (error) {
       //
