@@ -41,12 +41,12 @@ vi.mock('app/core/factory/sdk', () => ({
             publicKey: 'mock-public-key',
             keys: {
               ecc: {
-                privateKeyEncrypted: 'mock-private-key',
+                privateKey: 'mock-private-key',
                 publicKey: 'mock-public-key',
               },
               kyber: {
                 publicKey: '',
-                privateKeyEncrypted: '',
+                privateKey: '',
               },
             },
           },
@@ -60,12 +60,12 @@ vi.mock('app/core/factory/sdk', () => ({
             publicKey: 'mock-public-key',
             keys: {
               ecc: {
-                privateKeyEncrypted: 'mock-private-key',
+                privateKey: 'mock-private-key',
                 publicKey: 'mock-public-key',
               },
               kyber: {
                 publicKey: '',
-                privateKeyEncrypted: '',
+                privateKey: '',
               },
             },
           },
@@ -94,12 +94,12 @@ vi.mock('app/crypto/services/keys.service', () => ({
     publicKeyArmored: 'mock-public-key',
     revocationCertificate: 'mock-revocation-cert',
     ecc: {
-      privateKeyEncrypted: 'mock-private-key',
+      privateKey: 'mock-private-key',
       publicKey: 'mock-public-key',
     },
     kyber: {
       publicKey: 'mock-private-kyber-key',
-      privateKeyEncrypted: 'mock-public-kyber-key',
+      privateKey: 'mock-public-kyber-key',
     },
   }),
 }));
@@ -137,12 +137,12 @@ describe('useSignUp', () => {
         publicKey: 'mock-public-key',
         keys: {
           ecc: {
-            privateKeyEncrypted: 'mock-private-key',
+            privateKey: 'mock-private-key',
             publicKey: 'mock-public-key',
           },
           kyber: {
             publicKey: '',
-            privateKeyEncrypted: '',
+            privateKey: '',
           },
         },
       },
@@ -174,12 +174,12 @@ describe('useSignUp', () => {
         publicKey: 'mock-public-key',
         keys: {
           ecc: {
-            privateKeyEncrypted: 'mock-private-key',
+            privateKey: 'mock-private-key',
             publicKey: 'mock-public-key',
           },
           kyber: {
             publicKey: '',
-            privateKeyEncrypted: '',
+            privateKey: '',
           },
         },
       },

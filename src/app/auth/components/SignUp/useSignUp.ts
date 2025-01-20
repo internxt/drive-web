@@ -99,11 +99,11 @@ export function useSignUp(
       keys: {
         ecc: {
           publicKey: user.publicKey,
-          privateKeyEncrypted: user.privateKey,
+          privateKey: user.privateKey,
         },
         kyber: {
           publicKey: '',
-          privateKeyEncrypted: '',
+          privateKey: '',
         },
       },
       mnemonic: decryptTextWithKey(user.mnemonic, password),

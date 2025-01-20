@@ -174,11 +174,11 @@ async function getMockUser(password: string, mnemonic: string) {
     keys: {
       ecc: {
         publicKey: keys.ecc.publicKey,
-        privateKeyEncrypted: keys.ecc.privateKeyEncrypted,
+        privateKey: keys.ecc.privateKeyEncrypted,
       },
       kyber: {
         publicKey: keys.kyber.publicKey ?? '',
-        privateKeyEncrypted: keys.kyber.privateKeyEncrypted ?? '',
+        privateKey: keys.kyber.privateKeyEncrypted ?? '',
       },
     },
     appSumoDetails: null,
@@ -217,10 +217,10 @@ describe('logIn', () => {
     const result = await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockLoginType);
 
     const plainPrivateKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.keys.ecc.privateKeyEncrypted, mockPassword),
+      keysService.decryptPrivateKey(mockUser.keys.ecc.privateKey, mockPassword),
     ).toString('base64');
     const plainPrivateKyberKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.keys.kyber.privateKeyEncrypted, mockPassword),
+      keysService.decryptPrivateKey(mockUser.keys.kyber.privateKey, mockPassword),
     ).toString('base64');
 
     const mockClearUser = {
@@ -230,11 +230,11 @@ describe('logIn', () => {
       keys: {
         ecc: {
           publicKey: mockUser.keys.ecc.publicKey,
-          privateKeyEncrypted: plainPrivateKeyInBase64,
+          privateKey: plainPrivateKeyInBase64,
         },
         kyber: {
           publicKey: mockUser.keys.kyber.publicKey,
-          privateKeyEncrypted: plainPrivateKyberKeyInBase64,
+          privateKey: plainPrivateKyberKeyInBase64,
         },
       },
     };
@@ -298,10 +298,10 @@ describe('signUp', () => {
     expect(localStorageService.set).toHaveBeenCalledWith('xNewToken', mockNewToken);
 
     const plainPrivateKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.keys.ecc.privateKeyEncrypted, mockPassword),
+      keysService.decryptPrivateKey(mockUser.keys.ecc.privateKey, mockPassword),
     ).toString('base64');
     const plainPrivateKyberKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.keys.kyber.privateKeyEncrypted, mockPassword),
+      keysService.decryptPrivateKey(mockUser.keys.kyber.privateKey, mockPassword),
     ).toString('base64');
 
     const mockClearUser = {
@@ -311,11 +311,11 @@ describe('signUp', () => {
       keys: {
         ecc: {
           publicKey: mockUser.keys.ecc.publicKey,
-          privateKeyEncrypted: plainPrivateKeyInBase64,
+          privateKey: plainPrivateKeyInBase64,
         },
         kyber: {
           publicKey: mockUser.keys.kyber.publicKey,
-          privateKeyEncrypted: plainPrivateKyberKeyInBase64,
+          privateKey: plainPrivateKyberKeyInBase64,
         },
       },
     };

@@ -154,7 +154,7 @@ export const doLogin = async (
       const { user, token, newToken } = data;
       const { privateKey, publicKey, keys } = user;
       const publicKyberKey = keys.kyber.publicKey;
-      const privateKyberKey = keys.kyber.privateKeyEncrypted;
+      const privateKyberKey = keys.kyber.privateKey;
 
       Sentry.setUser({
         id: user.uuid,
@@ -186,11 +186,11 @@ export const doLogin = async (
         keys: {
           ecc: {
             publicKey: publicKey,
-            privateKeyEncrypted: plainPrivateKeyInBase64,
+            privateKey: plainPrivateKeyInBase64,
           },
           kyber: {
             publicKey: publicKyberKey,
-            privateKeyEncrypted: plainPrivateKyberKeyInBase64,
+            privateKey: plainPrivateKyberKeyInBase64,
           },
         },
       };
@@ -478,8 +478,8 @@ export const signUp = async (params: SignUpParams) => {
     ? Buffer.from(decryptPrivateKey(xUser.privateKey, password)).toString('base64')
     : undefined;
 
-  const privateKyberKey = xUser.keys.kyber.privateKeyEncrypted
-    ? Buffer.from(decryptPrivateKey(xUser.keys.kyber.privateKeyEncrypted, password)).toString('base64')
+  const privateKyberKey = xUser.keys.kyber.privateKey
+    ? Buffer.from(decryptPrivateKey(xUser.keys.kyber.privateKey, password)).toString('base64')
     : undefined;
 
   const user = {
@@ -488,11 +488,11 @@ export const signUp = async (params: SignUpParams) => {
     keys: {
       ecc: {
         publicKey: xUser.keys.ecc.publicKey,
-        privateKeyEncrypted: privateKey,
+        privateKey: privateKey,
       },
       kyber: {
         publicKey: xUser.keys.kyber.publicKey,
-        privateKeyEncrypted: privateKyberKey,
+        privateKey: privateKyberKey,
       },
     },
   } as UserSettings;
