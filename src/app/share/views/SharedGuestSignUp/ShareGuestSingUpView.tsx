@@ -172,7 +172,7 @@ function ShareGuestSingUpView(): JSX.Element {
       const privateKey = xUser.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : undefined;
       const privateKyberKey = xUser.keys.kyber.privateKey
         ? Buffer.from(decryptedPrivateKyberKey).toString('base64')
-        : undefined;
+        : '';
 
       const user = {
         ...xUser,

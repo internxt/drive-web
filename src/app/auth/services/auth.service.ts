@@ -480,7 +480,7 @@ export const signUp = async (params: SignUpParams) => {
 
   const privateKyberKey = xUser.keys.kyber.privateKey
     ? Buffer.from(decryptPrivateKey(xUser.keys.kyber.privateKey, password)).toString('base64')
-    : undefined;
+    : '';
 
   const user = {
     ...xUser,
@@ -497,6 +497,7 @@ export const signUp = async (params: SignUpParams) => {
     },
   } as UserSettings;
 
+  console.log('setUser', user);
   dispatch(userActions.setUser(user));
   await dispatch(userThunks.initializeUserThunk());
   dispatch(productsThunks.initializeThunk());

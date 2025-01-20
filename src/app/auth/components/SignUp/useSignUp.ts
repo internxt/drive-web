@@ -95,17 +95,41 @@ export function useSignUp(
 
   const parseUserSettings = (user: UserSettings, password: string): UserSettings => {
     return {
-      ...user,
+      userId: user.userId,
+      uuid: user.uuid,
+      email: user.email,
+      name: user.name,
+      lastname: user.lastname,
+      username: user.username,
+      bridgeUser: user.bridgeUser,
+      bucket: user.bucket,
+      backupsBucket: user.backupsBucket,
+      root_folder_id: user.root_folder_id,
+      rootFolderId: user.rootFolderId,
+      rootFolderUuid: user.rootFolderUuid,
+      sharedWorkspace: user.sharedWorkspace,
+      credit: user.credit,
+      privateKey: user.privateKey,
+      publicKey: user.publicKey,
+      revocationKey: user.revocationKey,
       keys: {
         ecc: {
-          publicKey: user.publicKey,
-          privateKey: user.privateKey,
+          publicKey: '',
+          privateKey: '',
         },
         kyber: {
           publicKey: '',
           privateKey: '',
         },
       },
+      teams: user.teams,
+      appSumoDetails: user.appSumoDetails,
+      registerCompleted: user.registerCompleted,
+      hasReferralsProgram: user.hasReferralsProgram,
+      createdAt: user.createdAt,
+      avatar: user.avatar,
+      emailVerified: user.emailVerified,
+
       mnemonic: decryptTextWithKey(user.mnemonic, password),
     };
   };

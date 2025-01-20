@@ -35,14 +35,14 @@ vi.mock('app/core/factory/sdk', () => ({
         register: vi.fn().mockResolvedValue({
           token: 'mock-token',
           user: {
-            id: 'mock-user-id',
+            userId: 'mock-user-id',
             mnemonic: 'mock-encrypted-mnemonic',
             privateKey: 'mock-private-key',
             publicKey: 'mock-public-key',
             keys: {
               ecc: {
-                privateKey: 'mock-private-key',
-                publicKey: 'mock-public-key',
+                privateKey: '',
+                publicKey: '',
               },
               kyber: {
                 publicKey: '',
@@ -54,14 +54,14 @@ vi.mock('app/core/factory/sdk', () => ({
         registerPreCreatedUser: vi.fn().mockResolvedValue({
           token: 'mock-token',
           user: {
-            id: 'mock-user-id',
+            userId: 'mock-user-id',
             mnemonic: 'mock-encrypted-mnemonic',
             privateKey: 'mock-private-key',
             publicKey: 'mock-public-key',
             keys: {
               ecc: {
-                privateKey: 'mock-private-key',
-                publicKey: 'mock-public-key',
+                privateKey: '',
+                publicKey: '',
               },
               kyber: {
                 publicKey: '',
@@ -131,14 +131,14 @@ describe('useSignUp', () => {
 
     expect(response).toEqual({
       xUser: {
-        id: 'mock-user-id',
+        userId: 'mock-user-id',
         mnemonic: 'mock-decrypted-mnemonic',
         privateKey: 'mock-private-key',
         publicKey: 'mock-public-key',
         keys: {
           ecc: {
-            privateKey: 'mock-private-key',
-            publicKey: 'mock-public-key',
+            privateKey: '',
+            publicKey: '',
           },
           kyber: {
             publicKey: '',
@@ -167,15 +167,15 @@ describe('useSignUp', () => {
 
     expect(response).toEqual({
       xUser: {
-        id: 'mock-user-id',
+        userId: 'mock-user-id',
         mnemonic: 'mock-decrypted-mnemonic',
         rootFolderId: undefined,
         privateKey: 'mock-private-key',
         publicKey: 'mock-public-key',
         keys: {
           ecc: {
-            privateKey: 'mock-private-key',
-            publicKey: 'mock-public-key',
+            privateKey: '',
+            publicKey: '',
           },
           kyber: {
             publicKey: '',
