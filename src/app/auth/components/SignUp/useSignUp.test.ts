@@ -95,11 +95,11 @@ vi.mock('app/crypto/services/keys.service', () => ({
     revocationCertificate: 'mock-revocation-cert',
     ecc: {
       privateKey: 'mock-private-key',
-      publicKey: 'mock-public-key',
+      publicKeyEncrypted: 'mock-public-key',
     },
     kyber: {
       publicKey: 'mock-private-kyber-key',
-      privateKey: 'mock-public-kyber-key',
+      privateKeyEncrypted: 'mock-public-kyber-key',
     },
   }),
 }));
