@@ -21,7 +21,7 @@ import authService, { authenticateUser } from '../../../auth/services/auth.servi
 import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import paymentService from '../../../payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { AuthMethodTypes } from 'app/payment/types';
 
 export interface SignUpProps {

@@ -4,7 +4,7 @@ import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import { useEffect, useMemo } from 'react';
 

@@ -5,11 +5,13 @@ import { getCookie } from './utils';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import gaService, { GA_SEND_TO_KEY } from 'app/analytics/ga.service';
 
 const IMPACT_API = process.env.REACT_APP_IMPACT_API as string;
 
 const anonymousID = getCookie('impactAnonymousId');
 const source = getCookie('impactSource');
+const gaPlanId = getCookie('gaPlanId');
 
 export async function trackSignUp(uuid, email) {
   try {
@@ -45,18 +47,11 @@ export async function trackPaymentConversion() {
     const amount = parseFloat(localStorageService.get('amountPaid') ?? '0');
 
     try {
-      window.gtag('event', 'purchase', {
-        transaction_id: uuidV4(),
+      gaService.track('conversion', {
+        send_to: GA_SEND_TO_KEY,
         value: amount,
         currency: currency?.toUpperCase() ?? '€',
-        items: [
-          {
-            item_id: priceId,
-            item_name: productName,
-            quantity: 1,
-            price: amount,
-          },
-        ],
+        transaction_id: gaPlanId,
       });
     } catch (error) {
       //

@@ -11,7 +11,6 @@ import { skinSkeleton } from 'app/shared/Skeleton';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
 import shareService from '../../../../share/services/share.service';
-import List from '../../../../shared/components/List';
 import { AppDispatch, RootState } from '../../../../store';
 import { sharedThunks } from '../../../../store/slices/sharedLinks';
 import { storageActions } from '../../../../store/slices/storage';
@@ -34,6 +33,7 @@ import {
   contextMenuWorkspaceFile,
   contextMenuWorkspaceFolder,
 } from './DriveItemContextMenu';
+import { List } from '@internxt/ui';
 
 interface DriveExplorerListProps {
   folderId: string;
@@ -446,6 +446,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           />
         )}
         <ShareWithTeamDialog item={props.selectedItems[0]} roles={roles} />
+        {/* TODO: Remove this div when styles works fine from internxt/ui */}
+        <div className={'left-5 border-primary/5 '} />
         <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
           header={[
             {

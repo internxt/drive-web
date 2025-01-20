@@ -457,7 +457,10 @@
           "subsRenew": "訂閱將在 {{daysUntilRenewal}} 天後續訂",
           "cancelSubscriptionModal": {
             "title": "取消訂閱",
-            "description": "您即將取消您的 {{currentPlanName}} Internxt 計劃。取消後，您將降級為免費 Internxt {{freePlanName}} 計劃。請確認以繼續。",
+            "description": {
+              "individual": "您即將取消您的 Internxt {{currentPlanName}} 方案。取消方案後，您將降級為免費的 Internxt {{freePlanName}} 方案。請確認您的選擇以繼續。",
+              "business": "取消方案後，工作區以及所有資料將被刪除。請確認您的選擇以繼續。"
+            },
             "keepSubscription": "保留訂閱",
             "continue": "繼續",
             "cancelSubscription": "取消訂閱",

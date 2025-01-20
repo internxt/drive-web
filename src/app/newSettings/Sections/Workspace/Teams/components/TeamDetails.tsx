@@ -3,7 +3,7 @@ import { t } from 'i18next';
 import { DotsThreeVertical } from '@phosphor-icons/react';
 
 import RoleBadge from 'app/newSettings/Sections/Workspace/Members/components/RoleBadge';
-import { Button, Avatar, Spinner } from '@internxt/internxtui';
+import { Button, Avatar, Loader } from '@internxt/ui';
 
 interface TeamDetailsProps {
   team: WorkspaceTeam;
@@ -117,7 +117,7 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
       </div>
       {isGetTeamMembersLoading ? (
         <div className="!mt-10 flex h-full w-full justify-center">
-          <Spinner className="h-8 w-8" />
+          <Loader classNameLoader="h-8 w-8" />
         </div>
       ) : (
         <div className="pb-5">

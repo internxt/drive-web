@@ -4,7 +4,7 @@ import { RootState } from 'app/store';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { LockSimple, CheckCircle } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import './RequestAccess.scss';
 import { logOut } from '../../../auth/services/auth.service';
