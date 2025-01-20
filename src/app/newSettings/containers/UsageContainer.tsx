@@ -2,7 +2,7 @@ import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 import { DriveProduct } from '../types/types';
 import Usage from '../components/Usage/Usage';
-import { Spinner } from '@internxt/internxtui';
+import { Loader } from '@internxt/ui';
 
 const UsageContainer = ({
   className = '',
@@ -31,7 +31,7 @@ const UsageContainer = ({
         />
       ) : (
         <div className="flex h-36 w-full items-center justify-center">
-          <Spinner className="h-7 w-7 text-primary" />
+          <Loader classNameLoader="h-7 w-7 text-primary" />
         </div>
       )}
     </div>

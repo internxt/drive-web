@@ -1,6 +1,6 @@
 import { WarningCircle } from '@phosphor-icons/react';
 import { t } from 'i18next';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 
 export const WarningMessage = ({ onUpgradeButtonClicked }: { onUpgradeButtonClicked: () => void }): JSX.Element => {
   return (

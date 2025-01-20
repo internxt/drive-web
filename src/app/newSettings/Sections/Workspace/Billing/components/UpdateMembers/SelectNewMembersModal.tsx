@@ -1,4 +1,4 @@
-import { Button, RangeSlider } from '@internxt/internxtui';
+import { Button, RangeSlider } from '@internxt/ui';
 import { X } from '@phosphor-icons/react';
 import { Translate } from '../../../../../../i18n/types';
 import Modal from '../../../../../../shared/components/Modal';

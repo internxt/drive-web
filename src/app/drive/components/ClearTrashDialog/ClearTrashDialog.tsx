@@ -1,6 +1,6 @@
 import errorService from 'app/core/services/error.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import Modal from 'app/shared/components/Modal';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';

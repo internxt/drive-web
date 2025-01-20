@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { changePassword } from 'app/auth/services/auth.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 import ValidPassword from 'app/shared/components/ValidPassword';

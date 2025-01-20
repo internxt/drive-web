@@ -6,7 +6,7 @@ import { FreeStoragePlan } from '../../../../drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import paymentService from '../../../../payment/services/payment.service';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import Modal from '../../../../shared/components/Modal';
 import { useAppDispatch } from '../../../../store/hooks';
 import { planThunks } from '../../../../store/slices/plan';

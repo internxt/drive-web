@@ -7,7 +7,6 @@ import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { FileExtensionGroup } from 'app/drive/types/file-types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
@@ -20,6 +19,7 @@ import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailable
 import TopBarActions from './components/TopBarActions';
 import { checkIfExtensionIsAllowed, getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
 import viewers from './viewers';
+import { MenuItemType } from '@internxt/ui';
 
 const ESC_KEY_KEYBOARD_CODE = 27;
 interface FileViewerProps {
@@ -318,7 +318,7 @@ const FileViewer = ({
               file={file as DriveItemData}
               isAuthenticated={isAuthenticated}
               isShareView={isShareView}
-              dropdownItems={dropdownItems as ListItemMenu<DriveItemData>}
+              dropdownItems={dropdownItems as Array<MenuItemType<DriveItemData>>}
             />
           </div>
         </div>

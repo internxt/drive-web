@@ -7,7 +7,7 @@ import errorService from '../../../../../core/services/error.service';
 import navigationService from '../../../../../core/services/navigation.service';
 import usageService, { UsageDetailsProps } from '../../../../../drive/services/usage.service';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import Card from '../../../../../shared/components/Card';
 import { PlanState } from '../../../../../store/slices/plan';
 import { uiActions } from '../../../../../store/slices/ui';
@@ -73,7 +73,7 @@ const AccountUsageContainer = ({
           </>
         ) : (
           <div className="flex h-36 w-full items-center justify-center">
-            <Spinner className="h-7 w-7 text-primary" />
+            <Loader classNameLoader="h-7 w-7 text-primary" />
           </div>
         )}
       </div>

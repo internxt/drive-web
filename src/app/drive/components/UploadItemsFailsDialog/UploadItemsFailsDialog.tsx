@@ -1,6 +1,6 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';

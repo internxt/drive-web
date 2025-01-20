@@ -7,7 +7,7 @@ import { bytesToString } from '../../../../drive/services/size.service';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import UsageBar from '../../../../newSettings/components/Usage/UsageBar';
 import { getMemberRole, searchMembers } from '../../../../newSettings/utils/membersUtils';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import Card from '../../../../shared/components/Card';
 import Input from '../../../../shared/components/Input';
 import { RootState } from '../../../../store';

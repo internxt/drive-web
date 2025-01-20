@@ -8,7 +8,7 @@ import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import devices from 'assets/images/mobile-app/devices.png';
 import appStore from 'assets/images/mobile-app/app-store.jpg';
 import googlePlay from 'assets/images/mobile-app/google-play.jpg';
-import { Button, Avatar } from '@internxt/internxtui';
+import { Button, Avatar } from '@internxt/ui';
 
 interface MobileProps {
   user: UserSettings | undefined;
