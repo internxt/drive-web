@@ -497,7 +497,6 @@ export const signUp = async (params: SignUpParams) => {
     },
   } as UserSettings;
 
-  console.log('setUser', user);
   dispatch(userActions.setUser(user));
   await dispatch(userThunks.initializeUserThunk());
   dispatch(productsThunks.initializeThunk());
