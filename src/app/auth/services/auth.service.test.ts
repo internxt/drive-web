@@ -199,7 +199,8 @@ describe('logIn', () => {
     const mockLoginType = 'web';
 
     const mockPassword = 'password123';
-    const mockMnemonic = 'mock-clearMnemonic';
+    const mockMnemonic =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
     const mockUser = await getMockUser(mockPassword, mockMnemonic);
     const mockTwoFactorCode = '123456';
 
@@ -253,7 +254,8 @@ describe('signUp', () => {
     const mockEmail = 'test@example.com';
 
     const mockPassword = 'password123';
-    const mockMnemonicNotEnc = 'mock-clearMnemonic';
+    const mockMnemonicNotEnc =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
     const mockUser = await getMockUser(mockPassword, mockMnemonicNotEnc);
 
     const mockSignUpResponse = {
