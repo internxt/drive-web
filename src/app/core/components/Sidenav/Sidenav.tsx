@@ -20,7 +20,7 @@ import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import { t } from 'i18next';
-import { Spinner } from '@internxt/internxtui';
+import { Loader } from '@internxt/ui';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -60,7 +60,7 @@ const handleDownloadApp = async (): Promise<void> => {
 
 const LoadingSpinner = ({ text }: { text: string }) => (
   <div className="absolute z-50 flex h-full w-full flex-col items-center justify-center bg-highlight/40">
-    <Spinner className="h-10 w-10" />
+    <Loader classNameLoader="h-10 w-10" />
     <p className="mt-5 text-2xl font-medium text-gray-100">{text}</p>
   </div>
 );

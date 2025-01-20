@@ -21,7 +21,7 @@ import { useAppSelector } from '../../../store/hooks';
 import SendBanner from './SendBanner';
 import ShareItemPwdView from './ShareItemPwdView';
 import './ShareView.scss';
-import { Spinner } from '@internxt/internxtui';
+import { Loader } from '@internxt/ui';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -214,7 +214,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       progress < 100 ? (
         <>
           <div className="mr-1 h-5 w-5 text-white">
-            <Spinner />
+            <Loader />
           </div>
           <span>{translate('actions.downloadingItems', { nItems })}</span>
           {!!size && size > 0 && <span className="font-normal text-primary/20">{progress}%</span>}
@@ -282,7 +282,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
               </abbr>
               {!isGetFolderSizeError &&
                 (folderSize === null ? (
-                  <Spinner size={24} />
+                  <Loader size={24} />
                 ) : (
                   <span className="text-gray-60"> {folderSize || '0MB'}</span>
                 ))}
@@ -305,11 +305,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       </>
     );
   } else {
-    body = (
-      <div className="h-8 w-8 text-gray-30">
-        <Spinner />
-      </div>
-    );
+    body = <Loader classNameContainer="h-8 w-8 text-gray-30" />;
   }
   return body;
 }

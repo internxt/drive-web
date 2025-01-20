@@ -2,7 +2,7 @@ import { Image } from '@phosphor-icons/react';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import AvatarEditor from 'react-avatar-editor';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import Modal from '../../../../../shared/components/Modal';
 
 interface UploadAvatarModalProps {
@@ -83,7 +83,7 @@ const UploadWorkspaceAvatarModal = ({
       <div className="mt-4">
         {state.tag !== 'empty' ? (
           <div>
-            <Suspense fallback={<Spinner className="mx-auto mt-4 h-10 w-10" />}>
+            <Suspense fallback={<Loader classNameLoader="mx-auto mt-4 h-10 w-10" />}>
               <AvatarEditor
                 ref={editorRef}
                 scale={state.zoom}

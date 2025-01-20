@@ -4,7 +4,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import Modal from 'app/shared/components/Modal';
 import Input from 'app/shared/components/Input';
-import { Button, Avatar, Spinner } from '@internxt/internxtui';
+import { Button, Avatar, Loader } from '@internxt/ui';
 
 interface AddMemberDialogProps {
   isOpen: boolean;
@@ -52,7 +52,7 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
         />
         {isGetWorkspacesMembersLoading ? (
           <div className="!mt-10 flex flex h-full w-full justify-center">
-            <Spinner className="h-8 w-8" />
+            <Loader classNameLoader="h-8 w-8" />
           </div>
         ) : (
           <div className="max-h-72 overflow-y-auto">

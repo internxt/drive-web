@@ -1,6 +1,6 @@
 import { WorkspaceTeam } from '@internxt/sdk/dist/workspaces/types';
 import Modal from 'app/shared/components/Modal';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface DeleteTeamDialogProps {

@@ -1,4 +1,4 @@
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import Modal from 'app/shared/components/Modal';
 import { useState } from 'react';
 import Input from 'app/shared/components/Input';

@@ -1,7 +1,7 @@
 import { t } from 'i18next';
 import { WorkspaceTeam, WorkspaceTeamResponse } from '@internxt/sdk/dist/workspaces/types';
 
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import EmptyTab from 'app/newSettings/components/EmptyTab';
 
 import membersTeams from 'assets/icons/empty/members-teams.svg';
@@ -39,7 +39,7 @@ const TeamsList: React.FC<TeamsListProps> = ({
       </div>
       {isGetTeamsLoading && (
         <div className="!mt-10 flex flex h-full w-full justify-center">
-          <Spinner className="h-8 w-8" />
+          <Loader classNameLoader="h-8 w-8" />
         </div>
       )}
 

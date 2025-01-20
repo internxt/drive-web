@@ -18,7 +18,6 @@ import { useTranslationContext } from '../../../i18n/provider/TranslationProvide
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import checkoutService from '../../../payment/services/checkout.service';
 import paymentService from '../../../payment/services/payment.service';
-import LoadingPulse from '../../../shared/components/LoadingPulse/LoadingPulse';
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { planThunks } from '../../../store/slices/plan';
@@ -30,6 +29,12 @@ import CheckoutView from './CheckoutView';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { bytesToString } from 'app/drive/services/size.service';
+import { Loader } from '@internxt/ui';
+import gaService, { GA_SEND_TO_KEY } from 'app/analytics/ga.service';
+import { getCookie } from 'app/analytics/utils';
+
+const SEND_TO = process.env.REACT_APP_GOOGLE_ANALYTICS_SENDTO;
+const PLAN_TO_TRACK = getCookie('gaPlanId');
 
 export const THEME_STYLES = {
   dark: {
@@ -224,6 +229,15 @@ const CheckoutViewWrapper = () => {
             handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
           }
 
+          if (window && window.gtag) {
+            gaService.track('conversion', {
+              send_to: SEND_TO,
+              value: plan.selectedPlan.amount,
+              currency: currencyValue,
+              transaction_id: PLAN_TO_TRACK,
+            });
+          }
+
           checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, plan);
           const prices = await checkoutService.fetchPrices(plan.selectedPlan.type, currencyValue);
           setPrices(prices);
@@ -346,6 +360,13 @@ const CheckoutViewWrapper = () => {
 
     try {
       await authCheckoutService.authenticateUser({ email, password, authMethod, dispatch, doRegister });
+
+      gaService.track('conversion', {
+        send_to: GA_SEND_TO_KEY,
+        value: currentSelectedPlan?.amount,
+        currency: currentSelectedPlan?.currency,
+        transaction_id: PLAN_TO_TRACK,
+      });
     } catch (err) {
       const error = err as Error;
       setError('auth', error.message);
@@ -547,7 +568,7 @@ const CheckoutViewWrapper = () => {
           ) : undefined}
         </Elements>
       ) : (
-        <LoadingPulse />
+        <Loader type="pulse" />
       )}
     </>
   );

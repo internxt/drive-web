@@ -1,5 +1,5 @@
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import Modal from '../../../shared/components/Modal';
 
 const StopSharingItemDialog = ({
@@ -33,7 +33,7 @@ const StopSharingItemDialog = ({
           {translate('modals.shareModal.stopSharing.cancel')}
         </Button>
         <Button variant="destructive" onClick={onStopSharing} disabled={isLoading}>
-          {isLoading && <Spinner className="h-4 w-4" />}
+          {isLoading && <Loader classNameLoader="h-4 w-4" />}
           <span>{translate('modals.shareModal.stopSharing.confirm')}</span>
         </Button>
       </div>

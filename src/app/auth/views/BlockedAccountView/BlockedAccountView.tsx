@@ -2,7 +2,7 @@ import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import { ShieldWarning } from '@phosphor-icons/react';
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import { AppView } from 'app/core/types';
 import { useCallback, useEffect, useState } from 'react';
 import queryString from 'query-string';
@@ -83,7 +83,7 @@ export default function BlockedAccountView(): JSX.Element {
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <Spinner className="h-7 w-7" />
+        <Loader classNameLoader="h-7 w-7" />
       </div>
     );
   }
@@ -117,7 +117,7 @@ export default function BlockedAccountView(): JSX.Element {
           <p className="font-regular flex flex-row items-center justify-center text-base text-gray-80">
             {translate('blockedAccount.text3')}
             {sendingEmail === true ? (
-              <Spinner className="ml-2 h-5 w-5 text-primary" />
+              <Loader classNameLoader="ml-2 h-5 w-5 text-primary" />
             ) : (
               <ResendButton
                 enableButton={enableResendButton}
