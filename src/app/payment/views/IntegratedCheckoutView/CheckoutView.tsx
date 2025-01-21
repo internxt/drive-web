@@ -132,7 +132,6 @@ const CheckoutView = ({
                       {error.stripe}
                     </div>
                   )}
-
                   <Button
                     type="submit"
                     id="submit-create-account"
@@ -154,6 +153,9 @@ const CheckoutView = ({
                   onCouponInputChange={checkoutViewManager.onCouponInputChange}
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
                 />
+                <Button type="submit" id="submit" className="flex lg:hidden" disabled={isButtonDisabled}>
+                  {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
+                </Button>
               </div>
             </div>
           ) : (

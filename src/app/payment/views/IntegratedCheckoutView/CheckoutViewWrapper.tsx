@@ -32,6 +32,8 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { Loader } from '@internxt/ui';
 import gaService, { GA_SEND_TO_KEY } from 'app/analytics/ga.service';
 import { getCookie } from 'app/analytics/utils';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { User } from '@phosphor-icons/react';
 
 const SEND_TO = process.env.REACT_APP_GOOGLE_ANALYTICS_SENDTO;
 const PLAN_TO_TRACK = getCookie('gaPlanId');
@@ -205,7 +207,7 @@ const CheckoutViewWrapper = () => {
     const promotionCode = params.get('couponCode');
     const currency = params.get('currency');
 
-    const currencyValue = currency ?? 'EUR';
+    const currencyValue = currency?.toLocaleUpperCase() ?? 'eur';
 
     if (!planId) {
       navigationService.push(AppView.Drive);
@@ -363,12 +365,13 @@ const CheckoutViewWrapper = () => {
     try {
       await authCheckoutService.authenticateUser({ email, password, authMethod, dispatch, doRegister });
 
-      const tag =
-        currentSelectedPlan?.amount != 0
-          ? '3EQ2CILIzYcaEOf1ydsC'
-          : currentSelectedPlan?.type === 'business'
-            ? '1CTxCP_HzYcaEOf1ydsC'
-            : 'O6oUCPzHzYcaEOf1ydsC';
+      let tag;
+
+      if (currentSelectedPlan?.userType === UserType.Individual) {
+        tag = 'O6oUCPzHzYcaEOf1ydsC';
+      } else if (currentSelectedPlan?.userType === UserType.Business) {
+        tag = '1CTxCP_HzYcaEOf1ydsC';
+      }
 
       gaService.track('conversion', {
         send_to: `${GA_SEND_TO_KEY}/${tag}`,
