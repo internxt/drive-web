@@ -132,9 +132,7 @@ const CheckoutView = ({
                       {error.stripe}
                     </div>
                   )}
-                  <Button type="submit" id="submit-step2" className="hidden lg:flex" disabled={isButtonDisabled}>
-                    {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
-                  </Button>
+
                   <Button
                     type="submit"
                     id="submit-create-account"

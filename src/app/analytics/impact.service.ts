@@ -41,15 +41,20 @@ export async function trackPaymentConversion() {
 
     const subscription = localStorageService.get('subscriptionId');
     const paymentIntent = localStorageService.get('paymentIntentId');
-    const productName = localStorageService.get('productName');
-    const priceId = localStorageService.get('priceId');
     const currency = localStorageService.get('currency');
     const amount = parseFloat(localStorageService.get('amountPaid') ?? '0');
+    const lastElement = gaPlanId.split('-').pop();
 
+    const tag =
+      amount != 0
+        ? '3EQ2CILIzYcaEOf1ydsC'
+        : lastElement === 'business'
+          ? '1CTxCP_HzYcaEOf1ydsC'
+          : 'O6oUCPzHzYcaEOf1ydsC';
     try {
       gaService.track('conversion', {
-        send_to: GA_SEND_TO_KEY,
-        value: amount,
+        send_to: `${GA_SEND_TO_KEY}/${tag}`,
+        value: amount / 100,
         currency: currency?.toUpperCase() ?? '€',
         transaction_id: gaPlanId,
       });

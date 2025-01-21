@@ -203,7 +203,7 @@ const CheckoutViewWrapper = () => {
     const promotionCode = params.get('couponCode');
     const currency = params.get('currency');
 
-    const currencyValue = currency ?? 'eur';
+    const currencyValue = currency ?? 'EUR';
 
     if (!planId) {
       navigationService.push(AppView.Drive);
@@ -228,10 +228,10 @@ const CheckoutViewWrapper = () => {
           if (promotionCode) {
             handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
           }
-
+          const tag = currentSelectedPlan?.type === 'business' ? '1CTxCP_HzYcaEOf1ydsC' : 'O6oUCPzHzYcaEOf1ydsC';
           if (window && window.gtag) {
             gaService.track('conversion', {
-              send_to: SEND_TO,
+              send_to: `${GA_SEND_TO_KEY}/${tag}`,
               value: plan.selectedPlan.amount,
               currency: currencyValue,
               transaction_id: PLAN_TO_TRACK,
@@ -361,10 +361,17 @@ const CheckoutViewWrapper = () => {
     try {
       await authCheckoutService.authenticateUser({ email, password, authMethod, dispatch, doRegister });
 
+      const tag =
+        currentSelectedPlan?.amount != 0
+          ? '3EQ2CILIzYcaEOf1ydsC'
+          : currentSelectedPlan?.type === 'business'
+            ? '1CTxCP_HzYcaEOf1ydsC'
+            : 'O6oUCPzHzYcaEOf1ydsC';
+
       gaService.track('conversion', {
-        send_to: GA_SEND_TO_KEY,
-        value: currentSelectedPlan?.amount,
-        currency: currentSelectedPlan?.currency,
+        send_to: `${GA_SEND_TO_KEY}/${tag}`,
+        value: (currentSelectedPlan?.amount ?? 0) / 100,
+        currency: currentSelectedPlan?.currency.toUpperCase() ?? 'EUR',
         transaction_id: PLAN_TO_TRACK,
       });
     } catch (err) {
