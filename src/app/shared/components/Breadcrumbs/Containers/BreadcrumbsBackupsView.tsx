@@ -1,10 +1,15 @@
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { backupsActions } from 'app/store/slices/backups';
 import { t } from 'i18next';
 import BreadcrumbsMenuBackups from '../BreadcrumbsMenu/BreadcrumbsMenuBackups';
-import { BreadcrumbItemData } from '../types';
+import { storageSelectors } from 'app/store/slices/storage';
+import { canItemDrop, onItemDropped } from '../helper';
+import iconService from 'app/drive/services/icon.service';
+import { DragAndDropType } from 'app/core/types';
+import { NativeTypes } from 'react-dnd-html5-backend';
+import { BreadcrumbItemData, Breadcrumbs } from '@internxt/ui';
+import { useDrop } from 'react-dnd';
 
 interface BreadcrumbsBackupsViewProps {
   backupsAsFoldersPath: DriveFolderData[];
@@ -15,6 +20,9 @@ interface BreadcrumbsBackupsViewProps {
 const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToFolderRoot }: BreadcrumbsBackupsViewProps) => {
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
   const dispatch = useAppDispatch();
+  const namePath = useAppSelector((state) => state.storage.namePath);
+  const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
+  const selectedItems = useAppSelector((state) => state.storage.selectedItems);
 
   const breadcrumbBackupsViewItems = (): BreadcrumbItemData[] => {
     const items: BreadcrumbItemData[] = [];
@@ -57,7 +65,21 @@ const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToFolderRo
 
     return items;
   };
-  return <Breadcrumbs items={breadcrumbBackupsViewItems()} menu={BreadcrumbsMenuBackups} />;
+  return (
+    <Breadcrumbs
+      items={breadcrumbBackupsViewItems()}
+      menu={BreadcrumbsMenuBackups}
+      namePath={namePath}
+      isSomeItemSelected={isSomeItemSelected}
+      selectedItems={selectedItems as any}
+      onItemDropped={onItemDropped as any}
+      canItemDrop={canItemDrop}
+      dispatch={dispatch}
+      acceptedTypes={[NativeTypes.FILE, DragAndDropType.DriveItem]}
+      itemComponent={iconService.getItemIcon(true) as any}
+      useDrop={useDrop}
+    />
+  );
 };
 
 export default BreadcrumbsBackupsView;

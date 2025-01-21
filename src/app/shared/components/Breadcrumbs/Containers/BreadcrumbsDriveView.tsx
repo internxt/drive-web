@@ -1,14 +1,18 @@
 import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
+import { AppView, DragAndDropType } from 'app/core/types';
 import { FolderPath } from 'app/drive/types';
-import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
 import { t } from 'i18next';
 import BreadcrumbsMenuDrive from '../BreadcrumbsMenu/BreadcrumbsMenuDrive';
-import { BreadcrumbItemData } from '../types';
+import { storageSelectors } from 'app/store/slices/storage';
+import iconService from 'app/drive/services/icon.service';
+import { NativeTypes } from 'react-dnd-html5-backend';
+import { BreadcrumbItemData, Breadcrumbs } from '@internxt/ui';
+import { useDrop } from 'react-dnd';
+import { canItemDrop, onItemDropped } from '../helper';
 
 interface BreadcrumbsDriveViewProps {
   namePath: FolderPath[];
@@ -18,6 +22,8 @@ const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
   const { namePath } = props;
   const dispatch = useAppDispatch();
   const { selectedWorkspace } = useAppSelector((state: RootState) => state.workspaces);
+  const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
+  const selectedItems = useAppSelector((state) => state.storage.selectedItems);
 
   const breadcrumbDriveViewItems = (): BreadcrumbItemData[] => {
     const items: BreadcrumbItemData[] = [];
@@ -57,6 +63,15 @@ const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
       items={breadcrumbDriveViewItems()}
       rootBreadcrumbItemDataCy="driveViewRootBreadcrumb"
       menu={BreadcrumbsMenuDrive}
+      namePath={props.namePath}
+      isSomeItemSelected={isSomeItemSelected}
+      selectedItems={selectedItems as any}
+      onItemDropped={onItemDropped as any}
+      canItemDrop={canItemDrop}
+      dispatch={dispatch}
+      acceptedTypes={[NativeTypes.FILE, DragAndDropType.DriveItem]}
+      itemComponent={iconService.getItemIcon(true) as any}
+      useDrop={useDrop}
     />
   );
 };

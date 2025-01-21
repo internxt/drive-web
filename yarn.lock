@@ -2014,10 +2014,10 @@
     query-string "^7.1.0"
     uuid "^8.3.2"
 
-"@internxt/ui@^0.0.12":
-  version "0.0.12"
-  resolved "https://npm.pkg.github.com/download/@internxt/ui/0.0.12/0ed85af13a324a2bf627824f2e3fcff6075c5c52#0ed85af13a324a2bf627824f2e3fcff6075c5c52"
-  integrity sha512-7hrixFnYFNB0aVQXEQvrumsMhIzIPdKwX4GMywBxyvr4qfbemLbTRZAFXlHIJLzhJ4K5hZR4N0wM8sADdaCqiw==
+"@internxt/ui@^0.0.13":
+  version "0.0.13"
+  resolved "https://npm.pkg.github.com/download/@internxt/ui/0.0.13/65b565076933a96d24893a1ec350fdaf48a6256a#65b565076933a96d24893a1ec350fdaf48a6256a"
+  integrity sha512-Um5L3iJf58dnfShjJda0Frr9oACsP58Rk3mTco3S0T0Tqytfv07pvYFeyYaxbv1/9l77QjHts0OjyAJopJKIKw==
   dependencies:
     "@internxt/css-config" "^1.0.2"
     "@phosphor-icons/react" "^2.1.5"

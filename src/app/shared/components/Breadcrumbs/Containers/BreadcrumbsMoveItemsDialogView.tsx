@@ -1,8 +1,13 @@
-import { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/types';
 import { FolderPathDialog } from 'app/drive/types';
-import { useAppSelector } from 'app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
-import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
+import { storageSelectors } from 'app/store/slices/storage';
+import { canItemDrop, onItemDropped } from '../helper';
+import iconService from 'app/drive/services/icon.service';
+import { DragAndDropType } from 'app/core/types';
+import { NativeTypes } from 'react-dnd-html5-backend';
+import { BreadcrumbItemData, Breadcrumbs } from '@internxt/ui';
+import { useDrop } from 'react-dnd';
 
 interface BreadcrumbsMoveItemsDialogViewProps {
   onShowFolderContentClicked: (folderId: string, name: string) => void;
@@ -12,6 +17,9 @@ interface BreadcrumbsMoveItemsDialogViewProps {
 const BreadcrumbsMoveItemsDialogView = (props: BreadcrumbsMoveItemsDialogViewProps) => {
   const { onShowFolderContentClicked, currentNamePaths } = props;
   const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
+  const dispatch = useAppDispatch();
+  const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
+  const selectedItems = useAppSelector((state) => state.storage.selectedItems);
 
   const breadcrumbItems = (currentFolderPaths): BreadcrumbItemData[] => {
     const items: BreadcrumbItemData[] = [];
@@ -31,7 +39,20 @@ const BreadcrumbsMoveItemsDialogView = (props: BreadcrumbsMoveItemsDialogViewPro
     return items;
   };
 
-  return <Breadcrumbs items={breadcrumbItems(currentNamePaths)} />;
+  return (
+    <Breadcrumbs
+      items={breadcrumbItems(currentNamePaths)}
+      namePath={currentNamePaths}
+      isSomeItemSelected={isSomeItemSelected}
+      selectedItems={selectedItems as any}
+      onItemDropped={onItemDropped as any}
+      canItemDrop={canItemDrop}
+      dispatch={dispatch}
+      acceptedTypes={[NativeTypes.FILE, DragAndDropType.DriveItem]}
+      itemComponent={iconService.getItemIcon(true) as any}
+      useDrop={useDrop}
+    />
+  );
 };
 
 export default BreadcrumbsMoveItemsDialogView;
