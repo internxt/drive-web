@@ -110,6 +110,8 @@ function savePaymentDataInLocalStorage(
     localStorageService.set('amountPaid', amountToPay);
     localStorageService.set('priceId', selectedPlan.id);
     localStorageService.set('currency', selectedPlan.currency);
+    localStorageService.set('userType', selectedPlan.userType);
+    localStorageService.set('type', selectedPlan.type);
   }
 }
 

@@ -41,9 +41,11 @@ export async function trackPaymentConversion() {
 
     const subscription = localStorageService.get('subscriptionId');
     const paymentIntent = localStorageService.get('paymentIntentId');
+    const productName = localStorageService.get('productName');
+    const priceId = localStorageService.get('priceId');
     const currency = localStorageService.get('currency');
-    const amount = parseFloat(localStorageService.get('amountAfterCoupon') ?? '0');
-    const UserType = localStorageService.get('UserType');
+    const amount = parseFloat(localStorageService.get('amountPaid') ?? '0');
+    const UserType = localStorageService.get('userType');
     const type = localStorageService.get('type');
 
     let tag;
