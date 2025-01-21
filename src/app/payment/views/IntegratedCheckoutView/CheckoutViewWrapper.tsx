@@ -367,7 +367,9 @@ const CheckoutViewWrapper = () => {
 
       let tag;
 
-      if (currentSelectedPlan?.userType === UserType.Individual) {
+      if (currentSelectedPlan?.amount === 0) {
+        tag = '1CTxCP_HzYcaEOf1ydsC';
+      } else if (currentSelectedPlan?.userType === UserType.Individual) {
         tag = 'O6oUCPzHzYcaEOf1ydsC';
       } else if (currentSelectedPlan?.userType === UserType.Business) {
         tag = '1CTxCP_HzYcaEOf1ydsC';
