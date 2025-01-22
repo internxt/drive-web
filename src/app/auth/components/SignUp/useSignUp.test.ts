@@ -184,6 +184,16 @@ describe('useSignUp', () => {
         rootFolderId: undefined,
         privateKey: 'mock-private-key',
         publicKey: 'mock-public-key',
+        appSumoDetails: null,
+        avatar: undefined,
+        backupsBucket: undefined,
+        bridgeUser: undefined,
+        bucket: undefined,
+        createdAt: undefined,
+        credit: undefined,
+        email: undefined,
+        emailVerified: undefined,
+        hasReferralsProgram: undefined,
         keys: {
           ecc: {
             privateKey: 'mock-private-key',
@@ -197,6 +207,16 @@ describe('useSignUp', () => {
       },
       xToken: 'mock-token',
       mnemonic: 'mock-decrypted-mnemonic',
+      lastname: undefined,
+      name: undefined,
+      registerCompleted: undefined,
+      revocationKey: undefined,
+      rootFolderUuid: undefined,
+      root_folder_id: undefined,
+      sharedWorkspace: undefined,
+      teams: undefined,
+      username: undefined,
+      uuid: undefined,
     });
 
     expect(bip39.generateMnemonic).toHaveBeenCalledWith(256);

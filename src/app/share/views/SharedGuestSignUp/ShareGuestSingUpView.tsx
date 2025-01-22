@@ -4,7 +4,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Info, WarningCircle } from '@phosphor-icons/react';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { Views } from 'app/auth/components/SignUp/SignUp';
-import { useSignUp, parseUserSettingsAddEmptyKyberKeys } from 'app/auth/components/SignUp/useSignUp';
+import { useSignUp, parseUserSettingsEnsureKyberKeysAdded } from 'app/auth/components/SignUp/useSignUp';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import { getNewToken } from 'app/auth/services/auth.service';
 import errorService from 'app/core/services/error.service';
@@ -159,7 +159,7 @@ function ShareGuestSingUpView(): JSX.Element {
       const { xUser, xToken, mnemonic } = await doRegisterPreCreatedUser(email, password, invitationId ?? '', token);
 
       // TODO: Remove or modify this when the backend is updated to add kyber keys
-      const parsedUser = parseUserSettingsAddEmptyKyberKeys(xUser);
+      const parsedUser = parseUserSettingsEnsureKyberKeysAdded(xUser);
 
       localStorageService.clear();
 

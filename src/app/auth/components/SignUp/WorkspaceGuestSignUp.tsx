@@ -1,6 +1,6 @@
 import { auth } from '@internxt/lib';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useSignUp, parseUserSettingsAddEmptyKyberKeys } from 'app/auth/components/SignUp/useSignUp';
+import { useSignUp, parseUserSettingsEnsureKyberKeysAdded } from 'app/auth/components/SignUp/useSignUp';
 import { getNewToken } from 'app/auth/services/auth.service';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -124,7 +124,7 @@ function WorkspaceGuestSingUpView(): JSX.Element {
       const { xUser, xToken, mnemonic } = await doRegisterPreCreatedUser(email, password, invitationId ?? '', token);
 
       // TODO: Remove or modify this when the backend is updated to add kyber keys
-      const parsedUser = parseUserSettingsAddEmptyKyberKeys(xUser);
+      const parsedUser = parseUserSettingsEnsureKyberKeysAdded(xUser);
 
       localStorageService.clear();
 

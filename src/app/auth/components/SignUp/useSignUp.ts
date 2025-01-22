@@ -37,7 +37,7 @@ type RegisterPreCreatedUser = (
   mnemonic: string;
 }>;
 
-export function parseUserSettingsAddEmptyKyberKeys(user: UserSettings): UserSettings {
+export function parseUserSettingsEnsureKyberKeysAdded(user: UserSettings): UserSettings {
   return {
     userId: user.userId,
     uuid: user.uuid,
@@ -58,12 +58,12 @@ export function parseUserSettingsAddEmptyKyberKeys(user: UserSettings): UserSett
     revocationKey: user.revocationKey,
     keys: {
       ecc: {
-        publicKey: user.publicKey ?? '',
-        privateKey: user.privateKey ?? '',
+        publicKey: user.keys?.ecc?.publicKey ?? user.publicKey,
+        privateKey: user.keys?.ecc?.privateKey ?? user.privateKey,
       },
       kyber: {
-        publicKey: '',
-        privateKey: '',
+        publicKey: user.keys?.kyber?.publicKey ?? '',
+        privateKey: user.keys?.kyber?.privateKey ?? '',
       },
     },
     teams: user.teams,
@@ -163,7 +163,7 @@ export function useSignUp(
     // TODO: need to update user type of register to include bucket field
     const user = data.user as unknown as UserSettings;
     // TODO: Remove or modify this when the backend is updated to add kyber keys
-    const parsedUser = parseUserSettingsAddEmptyKyberKeys(user);
+    const parsedUser = parseUserSettingsEnsureKyberKeysAdded(user);
     parsedUser.mnemonic = decryptTextWithKey(parsedUser.mnemonic, password);
 
     return { xUser: parsedUser, xToken: token, mnemonic: user.mnemonic };
@@ -178,15 +178,18 @@ export function useSignUp(
     const { token } = data;
     const user = data.user as UserSettings;
 
-    user.mnemonic = decryptTextWithKey(user.mnemonic, password);
+    // TODO: Remove or modify this when the backend is updated to add kyber keys
+    const parsedUser = parseUserSettingsEnsureKyberKeysAdded(user);
+
+    parsedUser.mnemonic = decryptTextWithKey(parsedUser.mnemonic, password);
 
     return {
       xUser: {
-        ...user,
-        rootFolderId: user.rootFolderUuid ?? user.rootFolderId,
+        ...parsedUser,
+        rootFolderId: parsedUser.rootFolderUuid ?? parsedUser.rootFolderId,
       },
       xToken: token,
-      mnemonic: user.mnemonic,
+      mnemonic: parsedUser.mnemonic,
     };
   };
 
