@@ -13,11 +13,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
-import {
-  RegisterFunction,
-  UpdateInfoFunction,
-  parseUserSettingsEnsureKyberKeysAdded,
-} from 'app/auth/components/SignUp/useSignUp';
+import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
 import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import RealtimeService from 'app/core/services/socket.service';
@@ -157,17 +153,14 @@ export const doLogin = async (
     .then(async (data) => {
       const { user, token, newToken } = data;
 
-      // TODO: Remove or modify this when the backend is updated to add kyber keys
-      const parsedUser = parseUserSettingsEnsureKyberKeysAdded(user);
-
-      const { privateKey, publicKey, keys } = parsedUser;
+      const { privateKey, publicKey, keys } = user;
       const publicKyberKey = keys.kyber.publicKey;
       const privateKyberKey = keys.kyber.privateKey;
 
       Sentry.setUser({
-        id: parsedUser.uuid,
-        email: parsedUser.email,
-        sharedWorkspace: parsedUser.sharedWorkspace,
+        id: user.uuid,
+        email: user.email,
+        sharedWorkspace: user.sharedWorkspace,
       });
 
       const plainPrivateKeyInBase64 = privateKey
@@ -186,9 +179,9 @@ export const doLogin = async (
         ? Buffer.from(decryptPrivateKey(privateKyberKey, password)).toString('base64')
         : '';
 
-      const clearMnemonic = decryptTextWithKey(parsedUser.mnemonic, password);
+      const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
       const clearUser = {
-        ...parsedUser,
+        ...user,
         mnemonic: clearMnemonic,
         privateKey: plainPrivateKeyInBase64,
         keys: {
