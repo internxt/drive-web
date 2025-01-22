@@ -97,7 +97,11 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
       {isLoading && isFirstLoad.current ? (
         <div className="files-grid grow">{loadingSkeleton()}</div>
       ) : (
-        <div id="scrollableList" className="h-full w-full overflow-y-auto overflow-x-hidden py-6">
+        <div
+          id="scrollableList"
+          className="h-full w-full overflow-x-hidden py-6"
+          style={{ overflowY: 'auto', scrollbarGutter: 'stable' }}
+        >
           {editNameItem && (
             <EditItemNameDialog
               item={editNameItem}
