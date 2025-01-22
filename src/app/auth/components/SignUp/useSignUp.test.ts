@@ -36,13 +36,15 @@ vi.mock('app/core/factory/sdk', () => ({
           token: 'mock-token',
           user: {
             userId: 'mock-user-id',
-            mnemonic: 'mock-encrypted-mnemonic',
+            mnemonic: 'mock-decrypted-mnemonic',
             privateKey: 'mock-private-key',
             publicKey: 'mock-public-key',
+            appSumoDetails: 'mock-appSumoDetails',
+            avatar: 'mock-avatar',
             keys: {
               ecc: {
-                privateKey: '',
-                publicKey: '',
+                privateKey: 'mock-private-key',
+                publicKey: 'mock-public-key',
               },
               kyber: {
                 publicKey: '',
@@ -60,8 +62,8 @@ vi.mock('app/core/factory/sdk', () => ({
             publicKey: 'mock-public-key',
             keys: {
               ecc: {
-                privateKey: '',
-                publicKey: '',
+                privateKey: 'mock-private-key',
+                publicKey: 'mock-public-key',
               },
               kyber: {
                 publicKey: '',
@@ -135,10 +137,20 @@ describe('useSignUp', () => {
         mnemonic: 'mock-decrypted-mnemonic',
         privateKey: 'mock-private-key',
         publicKey: 'mock-public-key',
+        appSumoDetails: 'mock-appSumoDetails',
+        avatar: 'mock-avatar',
+        backupsBucket: undefined,
+        bridgeUser: undefined,
+        bucket: undefined,
+        createdAt: undefined,
+        credit: undefined,
+        email: undefined,
+        emailVerified: undefined,
+        hasReferralsProgram: undefined,
         keys: {
           ecc: {
-            privateKey: '',
-            publicKey: '',
+            privateKey: 'mock-private-key',
+            publicKey: 'mock-public-key',
           },
           kyber: {
             publicKey: '',
@@ -174,8 +186,8 @@ describe('useSignUp', () => {
         publicKey: 'mock-public-key',
         keys: {
           ecc: {
-            privateKey: '',
-            publicKey: '',
+            privateKey: 'mock-private-key',
+            publicKey: 'mock-public-key',
           },
           kyber: {
             publicKey: '',

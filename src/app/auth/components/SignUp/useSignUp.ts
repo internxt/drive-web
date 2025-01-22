@@ -37,6 +37,47 @@ type RegisterPreCreatedUser = (
   mnemonic: string;
 }>;
 
+export function parseUserSettingsAddEmptyKyberKeys(user: UserSettings): UserSettings {
+  return {
+    userId: user.userId,
+    uuid: user.uuid,
+    email: user.email,
+    name: user.name,
+    lastname: user.lastname,
+    username: user.username,
+    bridgeUser: user.bridgeUser,
+    bucket: user.bucket,
+    backupsBucket: user.backupsBucket,
+    root_folder_id: user.root_folder_id,
+    rootFolderId: user.rootFolderId,
+    rootFolderUuid: user.rootFolderUuid,
+    sharedWorkspace: user.sharedWorkspace,
+    credit: user.credit,
+    privateKey: user.privateKey,
+    publicKey: user.publicKey,
+    revocationKey: user.revocationKey,
+    keys: {
+      ecc: {
+        publicKey: user.publicKey ?? '',
+        privateKey: user.privateKey ?? '',
+      },
+      kyber: {
+        publicKey: '',
+        privateKey: '',
+      },
+    },
+    teams: user.teams,
+    appSumoDetails: user.appSumoDetails ?? null,
+    registerCompleted: user.registerCompleted,
+    hasReferralsProgram: user.hasReferralsProgram,
+    createdAt: user.createdAt,
+    avatar: user.avatar,
+    emailVerified: user.emailVerified,
+
+    mnemonic: user.mnemonic,
+  };
+}
+
 export function useSignUp(
   registerSource: 'activate' | 'appsumo',
   referrer?: string,
@@ -93,47 +134,6 @@ export function useSignUp(
     return { xUser, xToken, mnemonic };
   };
 
-  const parseUserSettings = (user: UserSettings, password: string): UserSettings => {
-    return {
-      userId: user.userId,
-      uuid: user.uuid,
-      email: user.email,
-      name: user.name,
-      lastname: user.lastname,
-      username: user.username,
-      bridgeUser: user.bridgeUser,
-      bucket: user.bucket,
-      backupsBucket: user.backupsBucket,
-      root_folder_id: user.root_folder_id,
-      rootFolderId: user.rootFolderId,
-      rootFolderUuid: user.rootFolderUuid,
-      sharedWorkspace: user.sharedWorkspace,
-      credit: user.credit,
-      privateKey: user.privateKey,
-      publicKey: user.publicKey,
-      revocationKey: user.revocationKey,
-      keys: {
-        ecc: {
-          publicKey: '',
-          privateKey: '',
-        },
-        kyber: {
-          publicKey: '',
-          privateKey: '',
-        },
-      },
-      teams: user.teams,
-      appSumoDetails: user.appSumoDetails,
-      registerCompleted: user.registerCompleted,
-      hasReferralsProgram: user.hasReferralsProgram,
-      createdAt: user.createdAt,
-      avatar: user.avatar,
-      emailVerified: user.emailVerified,
-
-      mnemonic: decryptTextWithKey(user.mnemonic, password),
-    };
-  };
-
   const doRegister = async (email: string, password: string, captcha: string) => {
     const hashObj = passToHash({ password });
     const encPass = encryptText(hashObj.hash);
@@ -163,8 +163,8 @@ export function useSignUp(
     // TODO: need to update user type of register to include bucket field
     const user = data.user as unknown as UserSettings;
     // TODO: Remove or modify this when the backend is updated to add kyber keys
-    const parsedUser = parseUserSettings(user, password);
-    user.mnemonic = decryptTextWithKey(user.mnemonic, password);
+    const parsedUser = parseUserSettingsAddEmptyKyberKeys(user);
+    parsedUser.mnemonic = decryptTextWithKey(parsedUser.mnemonic, password);
 
     return { xUser: parsedUser, xToken: token, mnemonic: user.mnemonic };
   };
