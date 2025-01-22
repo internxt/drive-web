@@ -86,9 +86,9 @@ export class NetworkFacade {
       async (algorithm, key, iv) => {
         const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
         const [encryptedFile, hash] = await getEncryptedFile(file, cipher);
-
+        const uuid = randomBytes(16).toString('hex');
         fileToUpload = encryptedFile;
-        fileHash = hash;
+        fileHash = uuid.concat('$', hash);
       },
       async (url: string) => {
         const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
@@ -212,9 +212,6 @@ export class NetworkFacade {
               }
             }
           });
-
-        // TODO: Remove
-        blob = new Blob([]);
       });
 
       while (uploadQueue.running() > 0 || uploadQueue.length() > 0) {
