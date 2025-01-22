@@ -130,7 +130,7 @@ const generateNewKeysWithEncrypted = async (password: string) => {
 const getAuthClient = (authType: 'web' | 'desktop') => {
   const AUTH_CLIENT = {
     web: SdkFactory.getNewApiInstance().createAuthClient(),
-    desktop: SdkFactory.getInstance().createDesktopAuthClient(),
+    desktop: SdkFactory.getNewApiInstance().createDesktopAuthClient(),
   };
 
   return AUTH_CLIENT[authType];
