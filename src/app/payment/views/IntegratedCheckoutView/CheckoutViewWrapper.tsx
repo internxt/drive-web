@@ -207,7 +207,7 @@ const CheckoutViewWrapper = () => {
     const promotionCode = params.get('couponCode');
     const currency = params.get('currency');
 
-    const currencyValue = currency?.toLocaleUpperCase() ?? 'eur';
+    const currencyValue = currency ?? 'eur';
 
     if (!planId) {
       navigationService.push(AppView.Drive);
@@ -237,7 +237,7 @@ const CheckoutViewWrapper = () => {
             gaService.track('conversion', {
               send_to: `${GA_SEND_TO_KEY}/${tag}`,
               value: plan.selectedPlan.amount,
-              currency: currencyValue,
+              currency: currencyValue.toLocaleUpperCase(),
               transaction_id: PLAN_TO_TRACK,
             });
           }
