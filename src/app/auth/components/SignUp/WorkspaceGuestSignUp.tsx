@@ -1,6 +1,6 @@
 import { auth } from '@internxt/lib';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useSignUp, parseUserSettingsEnsureKyberKeysAdded } from 'app/auth/components/SignUp/useSignUp';
+import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
 import { getNewToken } from 'app/auth/services/auth.service';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -123,9 +123,6 @@ function WorkspaceGuestSingUpView(): JSX.Element {
       const { email, password, token } = formData;
       const { xUser, xToken, mnemonic } = await doRegisterPreCreatedUser(email, password, invitationId ?? '', token);
 
-      // TODO: Remove or modify this when the backend is updated to add kyber keys
-      const parsedUser = parseUserSettingsEnsureKyberKeysAdded(xUser);
-
       localStorageService.clear();
 
       localStorageService.set('xToken', xToken);
@@ -134,24 +131,24 @@ function WorkspaceGuestSingUpView(): JSX.Element {
       const xNewToken = await getNewToken();
       localStorageService.set('xNewToken', xNewToken);
 
-      const decryptedPrivateKey = decryptPrivateKey(parsedUser.privateKey, password);
-      const decryptedPrivateKyberKey = decryptPrivateKey(parsedUser.keys.kyber.privateKey, password);
+      const decryptedPrivateKey = decryptPrivateKey(xUser.privateKey, password);
+      const decryptedPrivateKyberKey = decryptPrivateKey(xUser.keys.kyber.privateKey, password);
 
-      const privateKey = parsedUser.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : undefined;
-      const privateKyberKey = parsedUser.keys.kyber.privateKey
+      const privateKey = xUser.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : undefined;
+      const privateKyberKey = xUser.keys.kyber.privateKey
         ? Buffer.from(decryptedPrivateKyberKey).toString('base64')
         : '';
 
       const user = {
-        ...parsedUser,
+        ...xUser,
         privateKey,
         keys: {
           ecc: {
-            publicKey: parsedUser.keys.ecc.publicKey,
+            publicKey: xUser.keys.ecc.publicKey,
             privateKey: privateKey,
           },
           kyber: {
-            publicKey: parsedUser.keys.kyber.publicKey,
+            publicKey: xUser.keys.kyber.publicKey,
             privateKey: privateKyberKey,
           },
         },
