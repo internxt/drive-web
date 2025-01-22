@@ -32,6 +32,8 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { Loader } from '@internxt/ui';
 import gaService, { GA_SEND_TO_KEY } from 'app/analytics/ga.service';
 import { getCookie } from 'app/analytics/utils';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { User } from '@phosphor-icons/react';
 
 const SEND_TO = process.env.REACT_APP_GOOGLE_ANALYTICS_SENDTO;
 const PLAN_TO_TRACK = getCookie('gaPlanId');
@@ -110,6 +112,8 @@ function savePaymentDataInLocalStorage(
     localStorageService.set('amountPaid', amountToPay);
     localStorageService.set('priceId', selectedPlan.id);
     localStorageService.set('currency', selectedPlan.currency);
+    localStorageService.set('userType', selectedPlan.userType);
+    localStorageService.set('type', selectedPlan.type);
   }
 }
 
@@ -228,12 +232,12 @@ const CheckoutViewWrapper = () => {
           if (promotionCode) {
             handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
           }
-
+          const tag = currentSelectedPlan?.type === 'business' ? '1CTxCP_HzYcaEOf1ydsC' : 'O6oUCPzHzYcaEOf1ydsC';
           if (window && window.gtag) {
             gaService.track('conversion', {
-              send_to: SEND_TO,
+              send_to: `${GA_SEND_TO_KEY}/${tag}`,
               value: plan.selectedPlan.amount,
-              currency: currencyValue,
+              currency: currencyValue.toLocaleUpperCase(),
               transaction_id: PLAN_TO_TRACK,
             });
           }
@@ -361,10 +365,20 @@ const CheckoutViewWrapper = () => {
     try {
       await authCheckoutService.authenticateUser({ email, password, authMethod, dispatch, doRegister });
 
+      let tag;
+
+      if (currentSelectedPlan?.amount === 0) {
+        tag = '1CTxCP_HzYcaEOf1ydsC';
+      } else if (currentSelectedPlan?.userType === UserType.Individual) {
+        tag = 'O6oUCPzHzYcaEOf1ydsC';
+      } else if (currentSelectedPlan?.userType === UserType.Business) {
+        tag = '1CTxCP_HzYcaEOf1ydsC';
+      }
+
       gaService.track('conversion', {
-        send_to: GA_SEND_TO_KEY,
-        value: currentSelectedPlan?.amount,
-        currency: currentSelectedPlan?.currency,
+        send_to: `${GA_SEND_TO_KEY}/${tag}`,
+        value: (currentSelectedPlan?.amount ?? 0) / 100,
+        currency: currentSelectedPlan?.currency.toUpperCase() ?? 'EUR',
         transaction_id: PLAN_TO_TRACK,
       });
     } catch (err) {
