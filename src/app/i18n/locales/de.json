@@ -1596,9 +1596,16 @@
         },
         "actions": {
           "deactivate": "Mitglied deaktivieren",
+          "leave": "Verlassen",
           "reactivate": "Mitglied reaktivieren",
           "remove": "Mitglied entfernen",
           "passwordChange": "Passwortänderung anfordern"
+        },
+        "leaveModal": {
+          "title": "Verlassen",
+          "description": "Sie verlieren den Zugriff auf den Arbeitsbereich und Ihre Inhalte werden an den Eigentümer übertragen",
+          "leave": "Verlassen",
+          "leaving": "Verlassen"
         }
       },
       "teams": {

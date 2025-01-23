@@ -1641,9 +1641,16 @@
         },
         "actions": {
           "deactivate": "Disattiva membro",
+          "leave": "Lascia",
           "reactivate": "Riattiva membro",
           "remove": "Rimuovi membro",
           "passwordChange": "Richiedi la modifica della password"
+        },
+        "leaveModal": {
+          "title": "Lascia",
+          "description": "Perderai l'accesso al Workspace e i tuoi contenuti saranno trasferiti al proprietario",
+          "leave": "Lascia",
+          "leaving": "Lasciando"
         }
       },
       "teams": {

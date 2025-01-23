@@ -1608,9 +1608,16 @@
         },
         "actions": {
           "deactivate": "Désactiver le membre",
+          "leave": "Quitter",
           "reactivate": "Réactiver le membre",
           "remove": "Supprimer le membre",
           "passwordChange": "Demande de changement de mot de passe"
+        },
+        "leaveModal": {
+          "title": "Quitter",
+          "description": "Vous perdrez l'accès à l'espace de travail et votre contenu sera transféré au propriétaire",
+          "leave": "Quitter",
+          "leaving": "Départ"
         }
       },
       "teams": {
