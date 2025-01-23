@@ -11,7 +11,6 @@ import { SdkFactory } from '../../core/factory/sdk';
 import localStorageService from 'app/core/services/local-storage.service';
 import { userActions } from 'app/store/slices/user';
 import * as pgpService from 'app/crypto/services/pgp.service';
-import { aes } from '@internxt/lib';
 
 if (typeof globalThis.process === 'undefined') {
   globalThis.process = { env: {} } as any;
