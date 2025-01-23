@@ -232,7 +232,7 @@ const CheckoutViewWrapper = () => {
           if (promotionCode) {
             handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
           }
-          const tag = 'NyyXCLj9z4caEOf1ydsC';
+          const tag = 'qLXECNiH2YcaEOf1ydsC';
           if (window && window.gtag) {
             gaService.track('conversion', {
               send_to: `${GA_SEND_TO_KEY}/${tag}`,
@@ -368,7 +368,7 @@ const CheckoutViewWrapper = () => {
       let tag;
 
       if (currentSelectedPlan?.amount === 0) {
-        tag = '1CTxCP_HzYcaEOf1ydsC';
+        tag = '3EQ2CILIzYcaEOf1ydsC';
       } else if (currentSelectedPlan?.userType === UserType.Individual) {
         tag = 'O6oUCPzHzYcaEOf1ydsC';
       } else if (currentSelectedPlan?.userType === UserType.Business) {
