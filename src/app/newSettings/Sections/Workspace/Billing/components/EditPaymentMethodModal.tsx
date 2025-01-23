@@ -9,7 +9,7 @@ import useEffectAsync from 'app/core/hooks/useEffectAsync';
 import Modal from 'app/shared/components/Modal';
 import EditPaymentMethodForm from './EditPaymentMethodForm';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
-import { Spinner } from '@internxt/internxtui';
+import { Loader } from '@internxt/ui';
 
 interface EditPaymentMethodModalProps {
   isEditPaymentMethodModalOpen: boolean;
@@ -42,7 +42,7 @@ const EditPaymentMethodModal = ({
           <EditPaymentMethodForm setIsEditPaymentMethodModalOpen={setIsEditPaymentMethodModalOpen} />
         </Elements>
       ) : (
-        <Spinner className="h-8 w-8 text-gray-80" />
+        <Loader classNameLoader="h-8 w-8 text-gray-80" />
       )}
     </Modal>
   );

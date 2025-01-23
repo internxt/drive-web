@@ -96,8 +96,11 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       if (castedError.message === 'unauthenticated') {
         return navigationService.push(AppView.Login);
       }
+      const userInvited = castedError.message.includes('User already has a role');
       notificationsService.show({
-        text: t('modals.shareModal.invite.error.errorInviting', { email: payload.sharedWith }),
+        text: userInvited
+          ? t('modals.shareModal.invite.error.userAlreadyInvited', { email: payload.sharedWith })
+          : t('modals.shareModal.invite.error.errorInviting', { email: payload.sharedWith }),
         type: ToastType.Error,
       });
     }

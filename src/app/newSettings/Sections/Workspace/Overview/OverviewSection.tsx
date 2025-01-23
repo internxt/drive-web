@@ -10,9 +10,8 @@ import workspacesService from '../../../../core/services/workspace.service';
 import { UsageDetailsProps } from '../../../../drive/services/usage.service';
 import Section from '../../../../newSettings/components/Section';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Dropdown, Loader } from '@internxt/ui';
 import Card from '../../../../shared/components/Card';
-import Dropdown from '../../../../shared/components/Dropdown';
 import Modal from '../../../../shared/components/Modal';
 import { RootState } from '../../../../store';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
@@ -338,7 +337,7 @@ const WorkspaceOverviewDetails = ({
               <UsageContainer planLimitInBytes={planLimit} products={products} />
             ) : (
               <div className="flex h-36 w-full items-center justify-center">
-                <Spinner className="h-7 w-7 text-primary" />
+                <Loader classNameLoader="h-7 w-7 text-primary" />
               </div>
             )}
           </Card>
@@ -385,7 +384,7 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
           <>
             <Dropdown
               options={isOwner ? dropdownOptions : undefined}
-              classMenuItems={'-left-6 mt-1 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5 py-1.5'}
+              classMenuItems={'-left-6 mt-1 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5'}
               openDirection={'right'}
             >
               <div className="relative">

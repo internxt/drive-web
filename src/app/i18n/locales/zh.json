@@ -437,6 +437,10 @@
               "sucessSendingVerification": "发送电子邮件到 {{email}}",
               "errorSendingVerification": "错误发送验证",
               "confirm": "确认"
+            },
+            "errorMsg" : {
+              "nameError": "姓名必须在1到20个字符之间",
+              "lastnameError": "姓氏必须在1到20个字符之间"
             }
           },
           "support": {
@@ -457,7 +461,10 @@
           "subsRenew": "{{daysUntilRenewal}}天后续订",
           "cancelSubscriptionModal": {
             "title": "取消订阅",
-            "description": "您即将取消您的 {{currentPlanName}} Internxt 计划。 通过取消您的计划，您将被降级为免费的 Internxt {{freePlanName}} 计划。 请确认您的选择以继续。",
+            "description": {
+              "individual": "您即将取消您的 Internxt {{currentPlanName}} 计划。取消计划后，您将降级为免费的 Internxt {{freePlanName}} 计划。请确认您的选择以继续。",
+              "business": "取消计划后，工作区以及所有数据将被删除。请确认您的选择以继续。"
+            },
             "keepSubscription": "继续订阅",
             "continue": "继续",
             "cancelSubscription": "取消订阅",
@@ -886,7 +893,8 @@
         "title": "邀请人们",
         "textarea": "输入你的信息文本（可选）",
         "notifyUsers": "通知用户",
-        "instructions": "按回车键或空格来分隔电子邮件",
+        "instructions": "按回车或逗号输入更多电子邮件地址",
+        "duplicatedEmail": "电子邮件地址已存在",
         "email": "类型：电子邮件",
         "invite": "邀请",
         "editor": "编辑",
@@ -901,6 +909,7 @@
         "cancel": "取消",
         "error": {
           "errorInviting": "傳送邀請至 {{email}} 時出錯",
+          "userAlreadyInvited": "用户 {{email}} 已被邀请",
           "acceptedError": "接受共享文件夹邀请时出错",
           "declinedError": "拒绝共享文件夹邀请时出错"
         }
@@ -996,7 +1005,9 @@
     "changingName": "更改名称时出错",
     "fileAlreadyExists": "已存在同名文件",
     "folderAlreadyExists": "已存在同名文件夹",
+    "folderInvalidName": "文件夹名称无效",
     "folderCannotBeEmpty": "文件夹名称不能为空",
+    "fileCannotBeEmpty": "文件名不能为空",
     "creatingFolder": "创建文件夹时出错",
     "sendReferralInvitation": "无法发送邀请电子邮件",
     "sendClaimEmail": "无法发送索赔电子邮件",

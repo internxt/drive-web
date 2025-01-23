@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
-import { useSignUp } from './useSignUp';
-import * as bip39 from 'bip39';
 import { SdkFactory } from 'app/core/factory/sdk';
+import * as bip39 from 'bip39';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { useSignUp } from './useSignUp';
 
 vi.mock('@internxt/lib', () => ({
   aes: {
@@ -34,11 +34,43 @@ vi.mock('app/core/factory/sdk', () => ({
       createAuthClient: vi.fn().mockReturnValue({
         register: vi.fn().mockResolvedValue({
           token: 'mock-token',
-          user: { id: 'mock-user-id', mnemonic: 'mock-encrypted-mnemonic' },
+          user: {
+            userId: 'mock-user-id',
+            mnemonic: 'mock-decrypted-mnemonic',
+            privateKey: 'mock-private-key',
+            publicKey: 'mock-public-key',
+            appSumoDetails: 'mock-appSumoDetails',
+            avatar: 'mock-avatar',
+            keys: {
+              ecc: {
+                privateKey: 'mock-private-key',
+                publicKey: 'mock-public-key',
+              },
+              kyber: {
+                publicKey: '',
+                privateKey: '',
+              },
+            },
+          },
         }),
         registerPreCreatedUser: vi.fn().mockResolvedValue({
           token: 'mock-token',
-          user: { id: 'mock-user-id', mnemonic: 'mock-encrypted-mnemonic' },
+          user: {
+            userId: 'mock-user-id',
+            mnemonic: 'mock-encrypted-mnemonic',
+            privateKey: 'mock-private-key',
+            publicKey: 'mock-public-key',
+            keys: {
+              ecc: {
+                privateKey: 'mock-private-key',
+                publicKey: 'mock-public-key',
+              },
+              kyber: {
+                publicKey: '',
+                privateKey: '',
+              },
+            },
+          },
         }),
       }),
     }),
@@ -64,8 +96,8 @@ vi.mock('app/crypto/services/keys.service', () => ({
     publicKeyArmored: 'mock-public-key',
     revocationCertificate: 'mock-revocation-cert',
     ecc: {
-      privateKeyEncrypted: 'mock-private-key',
-      publicKey: 'mock-public-key',
+      privateKey: 'mock-private-key',
+      publicKeyEncrypted: 'mock-public-key',
     },
     kyber: {
       publicKey: 'mock-private-kyber-key',
@@ -100,7 +132,32 @@ describe('useSignUp', () => {
     const response = await doRegister('test@example.com', 'mockPassword', 'mockCaptcha');
 
     expect(response).toEqual({
-      xUser: { id: 'mock-user-id', mnemonic: 'mock-decrypted-mnemonic' },
+      xUser: {
+        userId: 'mock-user-id',
+        mnemonic: 'mock-decrypted-mnemonic',
+        privateKey: 'mock-private-key',
+        publicKey: 'mock-public-key',
+        appSumoDetails: 'mock-appSumoDetails',
+        avatar: 'mock-avatar',
+        backupsBucket: undefined,
+        bridgeUser: undefined,
+        bucket: undefined,
+        createdAt: undefined,
+        credit: undefined,
+        email: undefined,
+        emailVerified: undefined,
+        hasReferralsProgram: undefined,
+        keys: {
+          ecc: {
+            privateKey: 'mock-private-key',
+            publicKey: 'mock-public-key',
+          },
+          kyber: {
+            publicKey: '',
+            privateKey: '',
+          },
+        },
+      },
       xToken: 'mock-token',
       mnemonic: 'mock-decrypted-mnemonic',
     });
@@ -121,9 +178,45 @@ describe('useSignUp', () => {
     );
 
     expect(response).toEqual({
-      xUser: { id: 'mock-user-id', mnemonic: 'mock-decrypted-mnemonic', rootFolderId: undefined },
+      xUser: {
+        userId: 'mock-user-id',
+        mnemonic: 'mock-decrypted-mnemonic',
+        rootFolderId: undefined,
+        privateKey: 'mock-private-key',
+        publicKey: 'mock-public-key',
+        appSumoDetails: null,
+        avatar: undefined,
+        backupsBucket: undefined,
+        bridgeUser: undefined,
+        bucket: undefined,
+        createdAt: undefined,
+        credit: undefined,
+        email: undefined,
+        emailVerified: undefined,
+        hasReferralsProgram: undefined,
+        keys: {
+          ecc: {
+            privateKey: 'mock-private-key',
+            publicKey: 'mock-public-key',
+          },
+          kyber: {
+            publicKey: '',
+            privateKey: '',
+          },
+        },
+      },
       xToken: 'mock-token',
       mnemonic: 'mock-decrypted-mnemonic',
+      lastname: undefined,
+      name: undefined,
+      registerCompleted: undefined,
+      revocationKey: undefined,
+      rootFolderUuid: undefined,
+      root_folder_id: undefined,
+      sharedWorkspace: undefined,
+      teams: undefined,
+      username: undefined,
+      uuid: undefined,
     });
 
     expect(bip39.generateMnemonic).toHaveBeenCalledWith(256);

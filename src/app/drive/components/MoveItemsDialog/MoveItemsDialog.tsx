@@ -6,7 +6,7 @@ import databaseService, { DatabaseCollection } from 'app/database/services/datab
 import newStorageService from 'app/drive/services/new-storage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import BreadcrumbsMoveItemsDialogView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsMoveItemsDialogView';
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import Modal from 'app/shared/components/Modal';
 import { RootState, store } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -220,7 +220,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         <div className="flex flex-col">
           <div className="flex h-10 items-center">
             {isLoading ? (
-              <Spinner className="h-5 w-5" />
+              <Loader classNameLoader="h-5 w-5" />
             ) : (
               <BreadcrumbsMoveItemsDialogView
                 onShowFolderContentClicked={onShowFolderContentClicked}
@@ -232,7 +232,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           <div className="h-60 divide-y divide-gray-5 overflow-scroll rounded-md border border-gray-10">
             {isLoading ? (
               <div className="flex h-full items-center justify-center">
-                <Spinner className="h-5 w-5" />
+                <Loader classNameLoader="h-5 w-5" />
               </div>
             ) : (
               shownFolders

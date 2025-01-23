@@ -420,6 +420,10 @@
               "sucessSendingVerification": "Vérification par courriel envoyée",
               "errorSendingVerification": "Erreur d'envoi de la vérification",
               "confirm": "Confirmer"
+            },
+            "errorMsg" : {
+              "nameError": "Le prénom doit contenir entre un et vingt caractères",
+              "lastnameError": "Le nom de famille doit contenir entre un et vingt caractères"
             }
           },
           "support": {
@@ -438,6 +442,36 @@
           "label": "Facturation",
           "currentPlan": "Current plan",
           "subsRenew": "L'abonnement est renouvelé dans {{daysUntilRenewal}} jours",
+          "cancelSubscriptionModal": {
+            "title": "Annuler l’abonnement",
+            "description": {
+              "individual": "Vous êtes sur le point d’annuler votre abonnement Internxt {{currentPlanName}}. En annulant votre abonnement, vous serez rétrogradé(e) à l’abonnement gratuit Internxt {{freePlanName}}. Veuillez confirmer votre choix pour continuer.",
+              "business": "En annulant votre abonnement, l’espace de travail sera supprimé ainsi que toutes les données. Veuillez confirmer votre choix pour continuer."
+            },
+            "keepSubscription": "Conserver l’abonnement",
+            "continue": "Continuer",
+            "cancelSubscription": "Annuler l’abonnement",
+            "infoBox": {
+              "titleCurrent": "Actuel",
+              "titleNew": "Nouveau",
+              "year": "année",
+              "month": "mois",
+              "free": "Gratuit",
+              "reachedFreeLimit": "Vous dépassez {{freePlanName}}",
+              "reachedFreeLimitDescription": "Comme vous utilisez actuellement {{currentUsage}}, votre Internxt Drive cessera de synchroniser vos fichiers et vous ne pourrez plus en ajouter de nouveaux."
+            },
+            "giveUsFeedback": "Dites-nous pourquoi vous souhaitez annuler votre abonnement Internxt {{currentPlanName}} et passer au plan gratuit ?",
+            "feedback": {
+              "placeholder": "Donnez-nous votre avis"
+            },
+            "coupon": {
+              "title": "3 MOIS",
+              "subtitle": "GRATUITS",
+              "text1": "En conservant votre",
+              "text2": "abonnement, vous bénéficierez des 3 prochains mois gratuitement. Il s’agit d’une offre unique.",
+              "continue": "Obtenir 3 mois GRATUITS"
+            }
+          },
           "cancelSubscription": "Annuler l'abonnement",
           "billed": "Facturation {{interval}} {{renewDate}}",
           "paymentMethod": {
@@ -820,7 +854,8 @@
         "title": "Inviter des personnes",
         "textarea": "Entrez le texte de votre message (facultatif)",
         "notifyUsers": "Notifier les utilisateurs",
-        "instructions": "Appuyez sur la touche Entrée ou sur l'espace pour séparer les courriels",
+        "instructions": "Appuyez sur Entrée ou sur une virgule pour entrer plus d'adresses e-mail",
+        "duplicatedEmail": "L'adresse e-mail existe déjà",
         "email": "Type d'email",
         "invite": "Inviter",
         "editor": "Éditeur",
@@ -835,6 +870,7 @@
         "cancel": "Annuler",
         "error": {
           "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}",
+          "userAlreadyInvited": "L'utilisateur {{email}} a déjà été invité",
           "acceptedError": "Erreur lors de l'acceptation de l'invitation au dossier partagé",
           "declinedError": "Erreur lors du refus de l'invitation au dossier partagé"
         }
@@ -930,7 +966,9 @@
     "changingName": "Erreur lors du changement de nom",
     "fileAlreadyExists": "Un fichier portant le même nom existe déjà",
     "folderAlreadyExists": "Un dossier portant le même nom existe déjà",
+    "folderInvalidName": "Le nom du dossier n'est pas valide",
     "folderCannotBeEmpty": "Le nom du dossier ne peut pas être vide",
+    "fileCannotBeEmpty": "Le nom du fichier ne peut pas être vide",
     "creatingFolder": "Erreur lors de la création d'un dossier",
     "sendReferralInvitation": "Impossible d'envoyer le courriel d'invitation",
     "sendClaimEmail": "Impossible d'envoyer un courriel de réclamation",

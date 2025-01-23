@@ -1984,15 +1984,6 @@
     "@typescript-eslint/parser" "^5.4.0"
     eslint-config-prettier "^8.3.0"
 
-"@internxt/internxtui@^0.0.6":
-  version "0.0.6"
-  resolved "https://npm.pkg.github.com/download/@internxt/internxtui/0.0.6/871a1798d2e20d5efe102886cb67c1ecd807dd96#871a1798d2e20d5efe102886cb67c1ecd807dd96"
-  integrity sha512-OP/h1W2PuvYQTO/QvZ9pZ+cneMj4odrXPpP8xWNXk8iQ91ryCZLtxo1m1tBQ+dRtE2gLwpxQRBkdkp+/C06XiA==
-  dependencies:
-    "@phosphor-icons/react" "^2.1.5"
-    "@radix-ui/react-switch" "^1.1.0"
-    "@radix-ui/themes" "^3.0.0"
-
 "@internxt/inxt-js@=1.2.21":
   version "1.2.21"
   resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/1.2.21/bc9bbc18fbedaf030254856de7da283fb03a46b5#bc9bbc18fbedaf030254856de7da283fb03a46b5"
@@ -2023,10 +2014,10 @@
     query-string "^7.1.0"
     uuid "^8.3.2"
 
-"@internxt/ui@0.0.10":
-  version "0.0.10"
-  resolved "https://npm.pkg.github.com/download/@internxt/ui/0.0.10/1f72d743c6285259d36f3a1ba7163dadb0b9e1d1#1f72d743c6285259d36f3a1ba7163dadb0b9e1d1"
-  integrity sha512-WIMHW3U/3fLybjcT4MLgJja9VvaaMRqhLPZj2iO6zNg6c+QGyYT64jVnMABzOgfgenJHXum7MAFFLcMlIzdkMA==
+"@internxt/ui@^0.0.12":
+  version "0.0.12"
+  resolved "https://npm.pkg.github.com/download/@internxt/ui/0.0.12/0ed85af13a324a2bf627824f2e3fcff6075c5c52#0ed85af13a324a2bf627824f2e3fcff6075c5c52"
+  integrity sha512-7hrixFnYFNB0aVQXEQvrumsMhIzIPdKwX4GMywBxyvr4qfbemLbTRZAFXlHIJLzhJ4K5hZR4N0wM8sADdaCqiw==
   dependencies:
     "@internxt/css-config" "^1.0.2"
     "@phosphor-icons/react" "^2.1.5"
@@ -11893,7 +11884,7 @@ react-dnd-html5-backend@^14.0.0:
   dependencies:
     dnd-core "14.0.1"
 
-react-dnd@^14.0.4:
+react-dnd@14.0.5:
   version "14.0.5"
   resolved "https://registry.yarnpkg.com/react-dnd/-/react-dnd-14.0.5.tgz#ecf264e220ae62e35634d9b941502f3fca0185ed"
   integrity sha512-9i1jSgbyVw0ELlEVt/NkCUkxy1hmhJOkePoCH713u75vzHGyXhPDm28oLfc2NMSBjZRM1Y+wRjHXJT3sPrTy+A==

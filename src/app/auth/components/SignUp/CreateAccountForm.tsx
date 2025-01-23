@@ -1,7 +1,7 @@
 import { Info, WarningCircle } from '@phosphor-icons/react';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import TextInput from 'app/auth/components/TextInput/TextInput';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import { Helmet } from 'react-helmet-async';

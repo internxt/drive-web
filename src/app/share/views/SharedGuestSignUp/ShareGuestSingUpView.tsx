@@ -4,7 +4,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Info, WarningCircle } from '@phosphor-icons/react';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { Views } from 'app/auth/components/SignUp/SignUp';
-import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
+import { useSignUp, parseUserSettingsEnsureKyberKeysAdded } from 'app/auth/components/SignUp/useSignUp';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import { getNewToken } from 'app/auth/services/auth.service';
 import errorService from 'app/core/services/error.service';
@@ -14,7 +14,7 @@ import { AppView, IFormValues } from 'app/core/types';
 import { decryptPrivateKey } from 'app/crypto/services/keys.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import shareService from 'app/share/services/share.service';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
 import { RootState } from 'app/store';
@@ -158,6 +158,9 @@ function ShareGuestSingUpView(): JSX.Element {
       const { email, password, token } = formData;
       const { xUser, xToken, mnemonic } = await doRegisterPreCreatedUser(email, password, invitationId ?? '', token);
 
+      // TODO: Remove or modify this when the backend is updated to add kyber keys
+      const parsedUser = parseUserSettingsEnsureKyberKeysAdded(xUser);
+
       localStorageService.clear();
 
       localStorageService.set('xToken', xToken);
@@ -166,13 +169,27 @@ function ShareGuestSingUpView(): JSX.Element {
       const xNewToken = await getNewToken();
       localStorageService.set('xNewToken', xNewToken);
 
-      const decryptedPrivateKey = decryptPrivateKey(xUser.privateKey, password);
+      const decryptedPrivateKey = decryptPrivateKey(parsedUser.privateKey, password);
+      const decryptedPrivateKyberKey = decryptPrivateKey(parsedUser.keys.kyber.privateKey, password);
 
-      const privateKey = xUser.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : undefined;
+      const privateKey = parsedUser.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : undefined;
+      const privateKyberKey = parsedUser.keys.kyber.privateKey
+        ? Buffer.from(decryptedPrivateKyberKey).toString('base64')
+        : '';
 
       const user = {
-        ...xUser,
+        ...parsedUser,
         privateKey,
+        keys: {
+          ecc: {
+            publicKey: parsedUser.keys.ecc.publicKey,
+            privateKey: privateKey,
+          },
+          kyber: {
+            publicKey: parsedUser.keys.kyber.publicKey,
+            privateKey: privateKyberKey,
+          },
+        },
       } as UserSettings;
 
       dispatch(userActions.setUser(user));
