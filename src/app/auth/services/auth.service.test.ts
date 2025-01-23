@@ -6,10 +6,12 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as keysService from 'app/crypto/services/keys.service';
 import { vi, describe, it, beforeAll, beforeEach, expect, afterAll } from 'vitest';
 import { Buffer } from 'buffer';
-import { encryptTextWithKey } from 'app/crypto/services/utils';
+import { encryptTextWithKey, encryptText } from 'app/crypto/services/utils';
 import { SdkFactory } from '../../core/factory/sdk';
 import localStorageService from 'app/core/services/local-storage.service';
 import { userActions } from 'app/store/slices/user';
+import * as pgpService from 'app/crypto/services/pgp.service';
+import { aes } from '@internxt/lib';
 
 if (typeof globalThis.process === 'undefined') {
   globalThis.process = { env: {} } as any;
@@ -339,6 +341,122 @@ describe('signUp', () => {
       },
       mnemonic: mockMnemonicNotEnc,
     });
+  });
+});
+
+describe('Change password', () => {
+  it('changePassword should correctly re-encrypt keys', async () => {
+    const mockOldPassword = 'password123';
+    const mockNewPassword = 'newPassword123';
+    const mockEmail = 'test@example.com';
+
+    const mockMnemonicNotEnc =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const keys = await pgpService.generateNewKeys();
+    const mockClearUser: Partial<UserSettings> = {
+      mnemonic: mockMnemonicNotEnc,
+      publicKey: keys.publicKeyArmored,
+      revocationKey: keys.revocationCertificate,
+      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      keys: {
+        ecc: {
+          publicKey: keys.publicKeyArmored,
+          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+        },
+        kyber: {
+          publicKey: keys.publicKyberKeyBase64,
+          privateKey: Buffer.from(keys.privateKyberKeyBase64).toString('base64'),
+        },
+      },
+    };
+
+    const mockUser = mockClearUser as UserSettings;
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+
+    const mockSalt = 'mockSalt';
+    const encryptedSalt = encryptText(mockSalt);
+
+    const changePasswordMock = vi
+      .fn()
+      .mockReturnValue(Promise.resolve({ newToken: 'newMockToken', token: 'mockToken' }));
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        changePassword: changePasswordMock,
+        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
+      }),
+      createDesktopAuthClient: vi.fn().mockReturnValue({
+        changePassword: changePasswordMock,
+        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
+      }),
+      createNewUsersClient: vi.fn().mockReturnValue({
+        changePassword: changePasswordMock,
+      }),
+    } as any);
+
+    await authService.changePassword(mockNewPassword, mockOldPassword, mockEmail);
+    expect(changePasswordMock).toBeCalled();
+    const [inputs] = changePasswordMock.mock.calls[0];
+
+    const privateKeyEncrypted = inputs.encryptedPrivateKey;
+    const privateKey = keysService.decryptPrivateKey(privateKeyEncrypted, mockNewPassword);
+    const privateKeyBase64 = Buffer.from(privateKey).toString('base64');
+    expect(privateKeyBase64).toBe(mockUser.privateKey);
+
+    const privateKyberKeyEncrypted = inputs.keys.encryptedPrivateKyberKey;
+    const privateKyberKey = keysService.decryptPrivateKey(privateKyberKeyEncrypted, mockNewPassword);
+    const privateKyberKeyBase64 = Buffer.from(privateKyberKey).toString('base64');
+    expect(privateKyberKeyBase64).toBe(mockUser.keys.kyber.privateKey);
+  });
+
+  it('changePassword should correctly re-encrypt keys for old users', async () => {
+    const mockOldPassword = 'password123';
+    const mockNewPassword = 'newPassword123';
+    const mockEmail = 'test@example.com';
+
+    const mockMnemonicNotEnc =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const keys = await pgpService.generateNewKeys();
+    const mockClearUser: Partial<UserSettings> = {
+      mnemonic: mockMnemonicNotEnc,
+      publicKey: keys.publicKeyArmored,
+      revocationKey: keys.revocationCertificate,
+      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+    };
+
+    const mockUser = mockClearUser as UserSettings;
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+
+    const mockSalt = 'mockSalt';
+    const encryptedSalt = encryptText(mockSalt);
+
+    const changePasswordMock = vi
+      .fn()
+      .mockReturnValue(Promise.resolve({ newToken: 'newMockToken', token: 'mockToken' }));
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        changePassword: changePasswordMock,
+        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
+      }),
+      createDesktopAuthClient: vi.fn().mockReturnValue({
+        changePassword: changePasswordMock,
+        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
+      }),
+      createNewUsersClient: vi.fn().mockReturnValue({
+        changePassword: changePasswordMock,
+      }),
+    } as any);
+
+    await authService.changePassword(mockNewPassword, mockOldPassword, mockEmail);
+    expect(changePasswordMock).toBeCalled();
+    const [inputs] = changePasswordMock.mock.calls[0];
+
+    const privateKeyEncrypted = inputs.encryptedPrivateKey;
+    const privateKey = keysService.decryptPrivateKey(privateKeyEncrypted, mockNewPassword);
+    const privateKeyBase64 = Buffer.from(privateKey).toString('base64');
+    expect(privateKeyBase64).toBe(mockUser.privateKey);
+
+    const privateKyberKeyEncrypted = inputs.keys.encryptedPrivateKyberKey;
+    expect(privateKyberKeyEncrypted).toBe('');
   });
 });
 
