@@ -10,7 +10,6 @@ import Input from '../../../shared/components/Input';
 import { uiActions } from '../../../store/slices/ui';
 import { userThunks } from '../../../store/slices/user';
 import errorService from '../../services/error.service';
-import localStorageService from '../../services/local-storage.service';
 
 type StatusType = 'loading' | 'auth' | 'error' | 'success' | 'expired';
 
