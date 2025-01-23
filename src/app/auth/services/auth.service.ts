@@ -23,8 +23,8 @@ import {
   assertValidateKeys,
   decryptPrivateKey,
   getAesInitFromEnv,
+  getKeys,
 } from 'app/crypto/services/keys.service';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import {
   decryptText,
   decryptTextWithKey,
@@ -116,17 +116,6 @@ export const is2FANeeded = async (email: string): Promise<boolean> => {
   return securityDetails.tfaEnabled;
 };
 
-const generateNewKeysWithEncrypted = async (password: string) => {
-  const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
-
-  return {
-    privateKeyArmored,
-    privateKeyArmoredEncrypted: aes.encrypt(privateKeyArmored, password, getAesInitFromEnv()),
-    publicKeyArmored,
-    revocationCertificate,
-  };
-};
-
 const getAuthClient = (authType: 'web' | 'desktop') => {
   const AUTH_CLIENT = {
     web: SdkFactory.getNewApiInstance().createAuthClient(),
@@ -155,22 +144,7 @@ export const doLogin = async (
       return encryptText(hashObj.hash);
     },
     async generateKeys(password: Password): Promise<Keys> {
-      const { privateKeyArmoredEncrypted, publicKeyArmored, revocationCertificate } =
-        await generateNewKeysWithEncrypted(password);
-      const keys: Keys = {
-        privateKeyEncrypted: privateKeyArmoredEncrypted,
-        publicKey: publicKeyArmored,
-        revocationCertificate: revocationCertificate,
-        ecc: {
-          privateKeyEncrypted: privateKeyArmoredEncrypted,
-          publicKey: publicKeyArmored,
-        },
-        kyber: {
-          publicKey: null,
-          privateKeyEncrypted: null,
-        },
-      };
-      return keys;
+      return getKeys(password);
     },
   };
 
@@ -178,7 +152,10 @@ export const doLogin = async (
     .login(loginDetails, cryptoProvider)
     .then(async (data) => {
       const { user, token, newToken } = data;
-      const { privateKey, publicKey } = user;
+
+      const { privateKey, publicKey, keys } = user;
+      const publicKyberKey = keys.kyber.publicKey;
+      const privateKyberKey = keys.kyber.privateKey;
 
       Sentry.setUser({
         id: user.uuid,
@@ -198,11 +175,25 @@ export const doLogin = async (
         );
       }
 
+      const plainPrivateKyberKeyInBase64 = privateKyberKey
+        ? Buffer.from(decryptPrivateKey(privateKyberKey, password)).toString('base64')
+        : '';
+
       const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
       const clearUser = {
         ...user,
         mnemonic: clearMnemonic,
         privateKey: plainPrivateKeyInBase64,
+        keys: {
+          ecc: {
+            publicKey: publicKey,
+            privateKey: plainPrivateKeyInBase64,
+          },
+          kyber: {
+            publicKey: publicKyberKey,
+            privateKey: plainPrivateKyberKeyInBase64,
+          },
+        },
       };
 
       localStorageService.set('xToken', token);
@@ -372,7 +363,6 @@ export const getNewToken = async (): Promise<string> => {
   if (!res.ok) {
     throw new Error('Bad response while getting new token');
   }
-
   const { newToken } = await res.json();
 
   return newToken;
@@ -482,16 +472,30 @@ export const signUp = async (params: SignUpParams) => {
   localStorageService.set('xToken', xToken);
   localStorageService.set('xMnemonic', mnemonic);
 
-  const xNewToken = await getNewToken();
+  const xNewToken = await authService.getNewToken();
   localStorageService.set('xNewToken', xNewToken);
 
   const privateKey = xUser.privateKey
     ? Buffer.from(decryptPrivateKey(xUser.privateKey, password)).toString('base64')
     : undefined;
 
+  const privateKyberKey = xUser.keys.kyber.privateKey
+    ? Buffer.from(decryptPrivateKey(xUser.keys.kyber.privateKey, password)).toString('base64')
+    : '';
+
   const user = {
     ...xUser,
     privateKey,
+    keys: {
+      ecc: {
+        publicKey: xUser.keys.ecc.publicKey,
+        privateKey: privateKey,
+      },
+      kyber: {
+        publicKey: xUser.keys.kyber.publicKey,
+        privateKey: privateKyberKey,
+      },
+    },
   } as UserSettings;
 
   dispatch(userActions.setUser(user));
@@ -501,6 +505,7 @@ export const signUp = async (params: SignUpParams) => {
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
   if (isNewUser) dispatch(referralsThunks.initializeThunk());
   await trackSignUp(xUser.uuid, email);
+
   return { token: xToken, user: xUser, mnemonic };
 };
 
