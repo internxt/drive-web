@@ -255,6 +255,93 @@ describe('logIn', () => {
       mnemonic: mockMnemonic,
     });
   });
+
+  it('log in should correctly decrypt keys for old user structure', async () => {
+    const mockToken = 'test-token';
+    const mockNewToken = 'test-new-token';
+    const mockLoginType = 'web';
+
+    const mockPassword = 'password123';
+    const mockMnemonic =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const keys = await keysService.getKeys(mockPassword);
+    const encryptedMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
+
+    const mockOlsUser: Partial<UserSettings> = {
+      uuid: 'mock-uuid',
+      email: 'mock@email.com',
+      privateKey: keys.ecc.privateKeyEncrypted,
+      mnemonic: encryptedMnemonic,
+      userId: 'mock-userId',
+      name: 'mock-name',
+      lastname: 'mock-lastname',
+      username: 'mock-username',
+      bridgeUser: 'mock-bridgeUser',
+      bucket: 'mock-bucket',
+      backupsBucket: null,
+      root_folder_id: 0,
+      rootFolderId: 'mock-rootFolderId',
+      rootFolderUuid: undefined,
+      sharedWorkspace: false,
+      credit: 0,
+      publicKey: keys.ecc.publicKey,
+      revocationKey: keys.revocationCertificate,
+      appSumoDetails: null,
+      registerCompleted: false,
+      hasReferralsProgram: false,
+      createdAt: new Date(),
+      avatar: null,
+      emailVerified: false,
+    };
+    const mockTwoFactorCode = '123456';
+
+    const mockUser = mockOlsUser as UserSettings;
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        login: vi.fn().mockResolvedValue({
+          user: mockUser,
+          token: mockToken,
+          newToken: mockNewToken,
+        }),
+      }),
+      createDesktopAuthClient: vi.fn().mockReturnValue({
+        login: vi.fn().mockResolvedValue({
+          user: mockUser,
+          token: mockToken,
+          newToken: mockNewToken,
+        }),
+      }),
+    } as any);
+
+    const result = await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockLoginType);
+
+    const plainPrivateKeyInBase64 = Buffer.from(
+      keysService.decryptPrivateKey(mockUser.privateKey, mockPassword),
+    ).toString('base64');
+
+    const mockClearUser = {
+      ...mockUser,
+      mnemonic: mockMnemonic,
+      privateKey: plainPrivateKeyInBase64,
+      keys: {
+        ecc: {
+          publicKey: mockUser.publicKey,
+          privateKey: plainPrivateKeyInBase64,
+        },
+        kyber: {
+          publicKey: '',
+          privateKey: '',
+        },
+      },
+    };
+
+    expect(result).toEqual({
+      token: mockToken,
+      user: mockClearUser,
+      mnemonic: mockMnemonic,
+    });
+  });
 });
 
 describe('signUp', () => {

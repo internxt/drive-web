@@ -154,8 +154,8 @@ export const doLogin = async (
       const { user, token, newToken } = data;
 
       const { privateKey, publicKey, keys } = user;
-      const publicKyberKey = keys.kyber.publicKey;
-      const privateKyberKey = keys.kyber.privateKey;
+      const publicKyberKey = keys?.kyber?.publicKey ?? '';
+      const privateKyberKey = keys?.kyber?.privateKey ?? '';
 
       Sentry.setUser({
         id: user.uuid,
