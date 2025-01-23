@@ -132,23 +132,27 @@ function WorkspaceGuestSingUpView(): JSX.Element {
       localStorageService.set('xNewToken', xNewToken);
 
       const decryptedPrivateKey = decryptPrivateKey(xUser.privateKey, password);
-      const decryptedPrivateKyberKey = decryptPrivateKey(xUser.keys.kyber.privateKey, password);
-
       const privateKey = xUser.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : undefined;
-      const privateKyberKey = xUser.keys.kyber.privateKey
-        ? Buffer.from(decryptedPrivateKyberKey).toString('base64')
-        : '';
+
+      let privateKyberKey = '';
+      if (xUser.keys.kyber.privateKey) {
+        const decryptedPrivateKyberKey = decryptPrivateKey(xUser.keys.kyber.privateKey, password);
+        privateKyberKey = Buffer.from(decryptedPrivateKyberKey).toString('base64');
+      }
+
+      const publicKey = xUser.keys.ecc.publicKey ?? xUser.publicKey;
+      const publicKyberKey = xUser.keys.kyber.publicKey ?? '';
 
       const user = {
         ...xUser,
         privateKey,
         keys: {
           ecc: {
-            publicKey: xUser.keys.ecc.publicKey,
+            publicKey: publicKey,
             privateKey: privateKey,
           },
           kyber: {
-            publicKey: xUser.keys.kyber.publicKey,
+            publicKey: publicKyberKey,
             privateKey: privateKyberKey,
           },
         },

@@ -483,16 +483,19 @@ export const signUp = async (params: SignUpParams) => {
     ? Buffer.from(decryptPrivateKey(xUser.keys.kyber.privateKey, password)).toString('base64')
     : '';
 
+  const publicKey = xUser.keys.ecc.publicKey ?? xUser.publicKey;
+  const publicKyberKey = xUser.keys.kyber.publicKey ?? '';
+
   const user = {
     ...xUser,
     privateKey,
     keys: {
       ecc: {
-        publicKey: xUser.keys.ecc.publicKey,
+        publicKey: publicKey,
         privateKey: privateKey,
       },
       kyber: {
-        publicKey: xUser.keys.kyber.publicKey,
+        publicKey: publicKyberKey,
         privateKey: privateKyberKey,
       },
     },
