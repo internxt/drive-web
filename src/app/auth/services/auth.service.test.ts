@@ -55,6 +55,9 @@ beforeAll(() => {
         createAuthClient: vi.fn(() => ({
           login: vi.fn(),
         })),
+        createDesktopAuthClient: vi.fn(() => ({
+          login: vi.fn(),
+        })),
       })),
       getInstance: vi.fn(() => ({
         createDesktopAuthClient: vi.fn(() => ({
@@ -206,6 +209,13 @@ describe('logIn', () => {
 
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: vi.fn().mockReturnValue({
+        login: vi.fn().mockResolvedValue({
+          user: mockUser,
+          token: mockToken,
+          newToken: mockNewToken,
+        }),
+      }),
+      createDesktopAuthClient: vi.fn().mockReturnValue({
         login: vi.fn().mockResolvedValue({
           user: mockUser,
           token: mockToken,
