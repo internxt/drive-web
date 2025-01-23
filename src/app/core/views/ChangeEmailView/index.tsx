@@ -42,7 +42,6 @@ export default function ChangeEmailView(): JSX.Element {
   const newEmailParam = urlParams.get('n');
 
   const [status, setStatus] = useState<StatusType>(STATUS.LOADING);
-  const [email, setEmail] = useState<string>('');
   const [newEmail, setNewEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [expired, setExpired] = useState<boolean | null>(null);
@@ -59,8 +58,6 @@ export default function ChangeEmailView(): JSX.Element {
         setStatus(STATUS.AUTH);
         setExpired(false);
 
-        const user = localStorageService.getUser();
-        if (user) setEmail(user.email);
         if (newEmailParam) setNewEmail(newEmailParam);
       }
     } catch (error) {

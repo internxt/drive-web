@@ -64,7 +64,7 @@ const deleteUserAvatar = (): Promise<void> => {
 
 const sendVerificationEmail = (): Promise<void> => {
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
-  const token = localStorageService.get('xNewToken') || undefined;
+  const token = localStorageService.get('xNewToken') ?? undefined;
   return usersClient.sendVerificationEmail(token);
 };
 
