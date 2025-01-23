@@ -232,7 +232,7 @@ const CheckoutViewWrapper = () => {
           if (promotionCode) {
             handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
           }
-          const tag = currentSelectedPlan?.type === 'business' ? '1CTxCP_HzYcaEOf1ydsC' : 'O6oUCPzHzYcaEOf1ydsC';
+          const tag = 'NyyXCLj9z4caEOf1ydsC';
           if (window && window.gtag) {
             gaService.track('conversion', {
               send_to: `${GA_SEND_TO_KEY}/${tag}`,
