@@ -135,13 +135,13 @@ function WorkspaceGuestSingUpView(): JSX.Element {
       const privateKey = xUser.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : undefined;
 
       let privateKyberKey = '';
-      if (xUser.keys.kyber.privateKey) {
+      if (xUser.keys?.kyber?.privateKey) {
         const decryptedPrivateKyberKey = decryptPrivateKey(xUser.keys.kyber.privateKey, password);
         privateKyberKey = Buffer.from(decryptedPrivateKyberKey).toString('base64');
       }
 
-      const publicKey = xUser.keys.ecc.publicKey ?? xUser.publicKey;
-      const publicKyberKey = xUser.keys.kyber.publicKey ?? '';
+      const publicKey = xUser.keys?.ecc?.publicKey ?? xUser.publicKey;
+      const publicKyberKey = xUser.keys?.kyber?.publicKey ?? '';
 
       const user = {
         ...xUser,

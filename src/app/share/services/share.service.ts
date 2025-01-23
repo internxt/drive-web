@@ -590,8 +590,8 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
   const user = localStorageService.getUser();
   if (user) {
     let decryptedKey;
-    const privateKey = user.keys.ecc.privateKey ?? user.privateKey;
-    const privateKyberKey = user.keys.kyber.privateKey ?? '';
+    const privateKey = user.keys?.ecc?.privateKey ?? user.privateKey;
+    const privateKyberKey = user.keys?.kyber?.privateKey ?? '';
     try {
       decryptedKey = await hybridDecryptMessageWithPrivateKey({
         encryptedMessageInBase64: encryptionKey,

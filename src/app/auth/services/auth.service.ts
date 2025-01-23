@@ -479,12 +479,12 @@ export const signUp = async (params: SignUpParams) => {
     ? Buffer.from(decryptPrivateKey(xUser.privateKey, password)).toString('base64')
     : undefined;
 
-  const privateKyberKey = xUser.keys.kyber.privateKey
+  const privateKyberKey = xUser.keys?.kyber?.privateKey
     ? Buffer.from(decryptPrivateKey(xUser.keys.kyber.privateKey, password)).toString('base64')
     : '';
 
-  const publicKey = xUser.keys.ecc.publicKey ?? xUser.publicKey;
-  const publicKyberKey = xUser.keys.kyber.publicKey ?? '';
+  const publicKey = xUser.keys?.ecc?.publicKey ?? xUser.publicKey;
+  const publicKyberKey = xUser.keys?.kyber?.publicKey ?? '';
 
   const user = {
     ...xUser,

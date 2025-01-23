@@ -173,12 +173,13 @@ function ShareGuestSingUpView(): JSX.Element {
       const privateKey = parsedUser.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : undefined;
 
       let privateKyberKey = '';
-      if (parsedUser.keys.kyber.privateKey) {
+      if (parsedUser.keys?.kyber?.privateKey) {
         const decryptedPrivateKyberKey = decryptPrivateKey(parsedUser.keys.kyber.privateKey, password);
         privateKyberKey = Buffer.from(decryptedPrivateKyberKey).toString('base64');
       }
 
-      const publicKey = parsedUser.keys.ecc.publicKey ?? parsedUser.publicKey;
+      const publicKey = parsedUser.keys?.ecc?.publicKey ?? parsedUser.publicKey;
+      const publicKyberKey = parsedUser.keys?.kyber?.publicKey ?? '';
 
       const user = {
         ...parsedUser,
@@ -189,7 +190,7 @@ function ShareGuestSingUpView(): JSX.Element {
             privateKey: privateKey,
           },
           kyber: {
-            publicKey: parsedUser.keys.kyber.publicKey,
+            publicKey: publicKyberKey,
             privateKey: privateKyberKey,
           },
         },
