@@ -1654,10 +1654,17 @@
         },
         "actions": {
           "deactivate": "Deactivate member",
+          "leave": "Leave",
           "modifyStorage": "Modify storage",
           "reactivate": "Reactivate member",
           "remove": "Remove member",
           "passwordChange": "Request password change"
+        },
+        "leaveModal":{
+          "title": "Leave",
+          "description": "You will lose access to the Workspace and your content will be transferred to the owner",
+          "leave": "Leave",
+          "leaving": "Leaving"
         }
       },
       "teams": {

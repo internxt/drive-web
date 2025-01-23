@@ -1654,9 +1654,16 @@
         },
         "actions": {
           "deactivate": "停用会员",
+          "leave": "离开",
           "reactivate": "重新激活成员",
           "remove": "移除成員",
           "passwordChange": "请求更改密码"
+        },
+        "leaveModal": {
+          "title": "离开",
+          "description": "您将失去对工作区的访问权限，您的内容将转移给所有者",
+          "leave": "离开",
+          "leaving": "正在离开"
         }
       },
       "teams": {

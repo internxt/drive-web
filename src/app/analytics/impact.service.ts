@@ -51,7 +51,7 @@ export async function trackPaymentConversion() {
     let tag;
 
     if (type === 'free') {
-      tag = '1CTxCP_HzYcaEOf1ydsC';
+      tag = '3EQ2CILIzYcaEOf1ydsC';
     } else if (UserType === 'Individual') {
       tag = 'O6oUCPzHzYcaEOf1ydsC';
     } else if (UserType === 'Business') {
