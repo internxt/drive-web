@@ -71,12 +71,12 @@ const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToFolderRo
       menu={BreadcrumbsMenuBackups}
       namePath={namePath}
       isSomeItemSelected={isSomeItemSelected}
-      selectedItems={selectedItems as any}
-      onItemDropped={onItemDropped as any}
+      selectedItems={selectedItems}
+      onItemDropped={onItemDropped}
       canItemDrop={canItemDrop}
       dispatch={dispatch}
       acceptedTypes={[NativeTypes.FILE, DragAndDropType.DriveItem]}
-      itemComponent={iconService.getItemIcon(true) as any}
+      itemComponent={iconService.getItemIcon(true)}
       useDrop={useDrop}
     />
   );

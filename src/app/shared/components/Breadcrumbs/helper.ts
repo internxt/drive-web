@@ -12,6 +12,80 @@ import {
 import { DropTargetMonitor } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 
+export const getFolderPath = (item: BreadcrumbItemData, namePath: FolderPath[]): string => {
+  const breadcrumbIndex = namePath.findIndex((level) => level.uuid === item.uuid);
+  const namePathDestinationArray = namePath.slice(0, breadcrumbIndex + 1).map((level) => level.name);
+  namePathDestinationArray[0] = '';
+  return namePathDestinationArray.join('/');
+};
+
+export const getItemsToMove = (
+  droppedData: DriveItemData,
+  isSomeItemSelected: boolean,
+  selectedItems: DriveItemData[],
+): DriveItemData[] => {
+  return isSomeItemSelected
+    ? [...selectedItems, droppedData as DriveItemData].filter(
+        (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
+      )
+    : [droppedData];
+};
+
+export const handleDriveItemDrop = async (
+  droppedData: DriveItemData,
+  isSomeItemSelected: boolean,
+  selectedItems: DriveItemData[],
+  item: BreadcrumbItemData,
+  dispatch: AppDispatch,
+) => {
+  const itemsToMove = getItemsToMove(droppedData, isSomeItemSelected, selectedItems);
+
+  const filesToMove: DriveItemData[] = [];
+  const foldersToMove = itemsToMove.filter((i) => {
+    if (!i.isFolder) filesToMove.push(i);
+    return i.isFolder;
+  });
+
+  dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
+
+  const unrepeatedFiles = await handleRepeatedUploadingFiles(filesToMove, dispatch, item.uuid);
+  const unrepeatedFolders = await handleRepeatedUploadingFolders(foldersToMove, dispatch, item.uuid);
+  const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
+
+  if (unrepeatedItems.length === itemsToMove.length) {
+    dispatch(storageActions.setMoveDestinationFolderId(null));
+  }
+
+  dispatch(
+    storageThunks.moveItemsThunk({
+      items: unrepeatedItems,
+      destinationFolderId: item.uuid,
+    }),
+  );
+};
+
+export const handleFileDrop = async (
+  droppedData: unknown,
+  folderPath: string,
+  item: BreadcrumbItemData,
+  dispatch: AppDispatch,
+) => {
+  const { rootList, files } = await transformDraggedItems(
+    (droppedData as { files: File[]; items: DataTransferItemList }).items,
+    folderPath,
+  );
+
+  if (files.length) {
+    await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.uuid }));
+  }
+
+  if (rootList.length) {
+    for (const root of rootList) {
+      await dispatch(storageThunks.uploadFolderThunk({ root, currentFolderId: item.uuid }));
+    }
+  }
+};
+
 export const onItemDropped = (
   item: BreadcrumbItemData,
   namePath: FolderPath[],
@@ -19,62 +93,21 @@ export const onItemDropped = (
   selectedItems: DriveItemData[],
   dispatch: AppDispatch,
 ) => {
-  return async (draggedItem: any, monitor: DropTargetMonitor) => {
+  return async (draggedItem: unknown, monitor: DropTargetMonitor) => {
     const droppedType = monitor.getItemType();
     const droppedData = monitor.getItem();
-    const breadcrumbIndex = namePath.findIndex((level) => level.uuid === item.uuid);
-    const namePathDestinationArray = namePath.slice(0, breadcrumbIndex + 1).map((level) => level.name);
-    namePathDestinationArray[0] = '';
-    const folderPath = namePathDestinationArray.join('/');
+    const folderPath = getFolderPath(item, namePath);
 
     if (droppedType === DragAndDropType.DriveItem) {
-      const itemsToMove = isSomeItemSelected
-        ? [...selectedItems, droppedData as DriveItemData].filter(
-            (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
-          )
-        : [droppedData];
-
-      const filesToMove: DriveItemData[] = [];
-      const foldersToMove = (itemsToMove as DriveItemData[])?.filter((i) => {
-        if (!i.isFolder) filesToMove.push(i);
-        return i.isFolder;
-      });
-
-      dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
-
-      const unrepeatedFiles = await handleRepeatedUploadingFiles(filesToMove, dispatch, item.uuid);
-      const unrepeatedFolders = await handleRepeatedUploadingFolders(foldersToMove, dispatch, item.uuid);
-      const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
-
-      if (unrepeatedItems.length === itemsToMove.length) dispatch(storageActions.setMoveDestinationFolderId(null));
-
-      dispatch(
-        storageThunks.moveItemsThunk({
-          items: unrepeatedItems,
-          destinationFolderId: item.uuid,
-        }),
-      );
+      await handleDriveItemDrop(droppedData as DriveItemData, isSomeItemSelected, selectedItems, item, dispatch);
     } else if (droppedType === NativeTypes.FILE) {
-      transformDraggedItems((droppedData as { files: File[]; items: DataTransferItemList }).items, folderPath).then(
-        async ({ rootList, files }) => {
-          if (files.length) {
-            // Only files
-            await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.uuid }));
-          }
-          if (rootList.length) {
-            // Directory tree
-            for (const root of rootList) {
-              await dispatch(storageThunks.uploadFolderThunk({ root, currentFolderId: item.uuid }));
-            }
-          }
-        },
-      );
+      await handleFileDrop(droppedData, folderPath, item, dispatch);
     }
   };
 };
 
 export const canItemDrop = (item) => {
-  return (draggedItem: any, monitor: any): boolean => {
+  return (draggedItem: DriveItemData, monitor: DropTargetMonitor): boolean => {
     const droppedType = monitor.getItemType();
     const droppedDataParentId = draggedItem.parentId || draggedItem.folderId || -1;
 
