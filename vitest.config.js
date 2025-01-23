@@ -41,6 +41,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
+    include: ['@internxt/sdk/dist/shared/types/userSettings'],
     esbuildOptions: {
       // Node.js global to browser globalThis
       define: {

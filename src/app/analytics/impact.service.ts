@@ -45,11 +45,23 @@ export async function trackPaymentConversion() {
     const priceId = localStorageService.get('priceId');
     const currency = localStorageService.get('currency');
     const amount = parseFloat(localStorageService.get('amountPaid') ?? '0');
+    const UserType = localStorageService.get('userType');
+    const type = localStorageService.get('type');
+
+    let tag;
+
+    if (type === 'free') {
+      tag = '3EQ2CILIzYcaEOf1ydsC';
+    } else if (UserType === 'Individual') {
+      tag = 'O6oUCPzHzYcaEOf1ydsC';
+    } else if (UserType === 'Business') {
+      tag = '1CTxCP_HzYcaEOf1ydsC';
+    }
 
     try {
       gaService.track('conversion', {
-        send_to: GA_SEND_TO_KEY,
-        value: amount,
+        send_to: `${GA_SEND_TO_KEY}/${tag}`,
+        value: amount / 100,
         currency: currency?.toUpperCase() ?? '€',
         transaction_id: gaPlanId,
       });

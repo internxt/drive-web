@@ -401,6 +401,10 @@
               "errorSendingVerification": "Fehler beim Senden der Verifikation",
               "confirm": "Bestätigen"
             },
+            "errorMsg" : {
+              "nameError": "Der Name muss zwischen einem und zwanzig Zeichen lang sein",
+              "lastnameError": "Der Nachname muss zwischen einem und zwanzig Zeichen lang sein"
+            },
             "updateProfile": "Profil erfolgreich aktualisiert",
             "errorUpdatingProfile": "Wir konnten dein Profil nicht aktualisieren"
           },
@@ -817,7 +821,8 @@
         "title": "Leute einladen",
         "textarea": "Geben Sie Ihren Nachrichtentext ein (optional)",
         "notifyUsers": "Benutzer benachrichtigen",
-        "instructions": "Drücken Sie die Eingabetaste oder ein Leerzeichen, um E-Mails zu trennen",
+        "instructions": "Drücken Sie Enter oder Komma, um weitere E-Mail-Adressen einzugeben",
+        "duplicatedEmail": "Die E-Mail-Adresse existiert bereits",
         "email": "E-Mail eingeben",
         "invite": "Einladen",
         "editor": "Redakteur",
@@ -832,6 +837,7 @@
         "cancel": "Abbrechen",
         "error": {
           "errorInviting": "Fehler beim Senden der Einladung an {{email}}",
+          "userAlreadyInvited": "Der Benutzer {{email}} wurde bereits eingeladen",
           "acceptedError": "Fehler beim Akzeptieren der Einladung zum gemeinsamen Ordner",
           "declinedError": "Fehler beim Ablehnen der Einladung zu einem gemeinsamen Ordner"
         }
@@ -951,7 +957,9 @@
     "changingName": "Fehler bei der Namensänderung",
     "fileAlreadyExists": "Datei mit demselben Namen existiert bereits",
     "folderAlreadyExists": "Ein Ordner mit demselben Namen existiert bereits",
+    "folderInvalidName": "Der Ordnername ist ungültig",
     "folderCannotBeEmpty": "Der Ordnername darf nicht leer sein",
+    "fileCannotBeEmpty": "Der Dateiname darf nicht leer sein",
     "creatingFolder": "Fehler beim Erstellen des Ordners",
     "sendReferralInvitation": "Einladungs-E-Mail konnte nicht gesendet werden",
     "sendClaimEmail": "Anspruchs-E-Mail konnte nicht gesendet werden",
@@ -1588,9 +1596,16 @@
         },
         "actions": {
           "deactivate": "Mitglied deaktivieren",
+          "leave": "Verlassen",
           "reactivate": "Mitglied reaktivieren",
           "remove": "Mitglied entfernen",
           "passwordChange": "Passwortänderung anfordern"
+        },
+        "leaveModal": {
+          "title": "Verlassen",
+          "description": "Sie verlieren den Zugriff auf den Arbeitsbereich und Ihre Inhalte werden an den Eigentümer übertragen",
+          "leave": "Verlassen",
+          "leaving": "Verlassen"
         }
       },
       "teams": {
