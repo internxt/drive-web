@@ -54,18 +54,18 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       const { mnemonic } = user;
 
       let publicKey = payload.publicKey;
-      let publicKyberKey = payload.publicKyberKey;
+      let publicKyberKey = payload.publicKyberKey ?? '';
 
       if (payload.isNewUser && !publicKey) {
         const prCreatedUserResponse = await userService.preCreateUser(payload.sharedWith);
         publicKey = prCreatedUserResponse.publicKey;
-        publicKyberKey = prCreatedUserResponse.publicKyberKey;
+        publicKyberKey = prCreatedUserResponse.publicKyberKey ?? '';
       }
 
       if ((!publicKey && !payload.isNewUser) || !publicKey) {
         const publicKeyResponse = await userService.getPublicKeyByEmail(payload.sharedWith);
         publicKey = publicKeyResponse.publicKey;
-        publicKyberKey = publicKeyResponse.publicKyberKey;
+        publicKyberKey = publicKeyResponse.publicKyberKey ?? '';
       }
 
       const encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({

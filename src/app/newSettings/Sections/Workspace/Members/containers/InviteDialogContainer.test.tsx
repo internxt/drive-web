@@ -91,6 +91,22 @@ describe('Encryption and Decryption', () => {
     };
   }
 
+  async function getMockOldUser() {
+    const keys = await generateNewKeys();
+    const mockUser: Partial<UserSettings> = {
+      uuid: 'mock-uuid',
+      email: 'mockemail@test.com',
+      mnemonic:
+        'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state',
+      publicKey: keys.publicKeyArmored,
+      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+    };
+    return {
+      user: mockUser as UserSettings,
+      privateKey: keys.privateKeyArmored,
+    };
+  }
+
   it('should process invitation and encrypt mnemonic with kyber for existing user', async () => {
     const { user, privateKey, privateKyberKey } = await getMockUser();
     const mockEmail = user.email;
@@ -105,16 +121,6 @@ describe('Encryption and Decryption', () => {
     vi.spyOn(workspacesService, 'inviteUserToTeam').mockImplementation(mockWorkspacesService.inviteUserToTeam);
     vi.spyOn(userService, 'getPublicKeyByEmail').mockReturnValue(
       Promise.resolve({ publicKey: user.keys.ecc.publicKey, publicKyberKey: user.keys?.kyber.publicKey }),
-    );
-    vi.spyOn(userService, 'preCreateUser').mockReturnValue(
-      Promise.resolve({
-        publicKey: user.keys.ecc.publicKey,
-        publicKyberKey: user.keys?.kyber.publicKey,
-        user: {
-          uuid: user.userId,
-          email: user.email,
-        },
-      }),
     );
 
     await processInvitation(user, mockEmail, mockWorkspaceId, mockMessageText);
@@ -133,7 +139,7 @@ describe('Encryption and Decryption', () => {
   });
 
   it('should process invitation and encrypt mnemonic without kyber for existing user', async () => {
-    const { user, privateKey } = await getMockUser();
+    const { user, privateKey } = await getMockOldUser();
     const mockEmail = user.email;
     const mockWorkspaceId = 'mock-workspaceId';
     const mockMessageText = 'mock-messageText';
@@ -144,19 +150,7 @@ describe('Encryption and Decryption', () => {
 
     vi.spyOn(navigationService, 'push').mockImplementation(() => {});
     vi.spyOn(workspacesService, 'inviteUserToTeam').mockImplementation(mockWorkspacesService.inviteUserToTeam);
-    vi.spyOn(userService, 'getPublicKeyByEmail').mockReturnValue(
-      Promise.resolve({ publicKey: user.keys.ecc.publicKey, publicKyberKey: '' }),
-    );
-    vi.spyOn(userService, 'preCreateUser').mockReturnValue(
-      Promise.resolve({
-        publicKey: user.keys.ecc.publicKey,
-        publicKyberKey: user.keys?.kyber.publicKey,
-        user: {
-          uuid: user.userId,
-          email: user.email,
-        },
-      }),
-    );
+    vi.spyOn(userService, 'getPublicKeyByEmail').mockReturnValue(Promise.resolve({ publicKey: user.publicKey }));
 
     await processInvitation(user, mockEmail, mockWorkspaceId, mockMessageText);
 
@@ -208,6 +202,44 @@ describe('Encryption and Decryption', () => {
       encryptedMessageInBase64: encryptedMnemonicInBase64,
       privateKeyInBase64: Buffer.from(privateKey).toString('base64'),
       privateKyberKeyInBase64: privateKyberKey,
+    });
+
+    expect(decryptedMessage).toEqual(user.mnemonic);
+  });
+
+  it('should process invitation and encrypt mnemonic for new user without Kyber', async () => {
+    const { user, privateKey } = await getMockOldUser();
+    const mockEmail = user.email;
+    const mockWorkspaceId = 'mock-workspaceId';
+    const mockMessageText = 'mock-messageText';
+
+    const mockWorkspacesService = {
+      inviteUserToTeam: vi.fn(),
+    };
+
+    vi.spyOn(navigationService, 'push').mockImplementation(() => {});
+    vi.spyOn(workspacesService, 'inviteUserToTeam').mockImplementation(mockWorkspacesService.inviteUserToTeam);
+    vi.spyOn(userService, 'getPublicKeyByEmail').mockReturnValue(Promise.resolve({ publicKey: '' }));
+    vi.spyOn(userService, 'preCreateUser').mockReturnValue(
+      Promise.resolve({
+        publicKey: user.publicKey,
+        user: {
+          uuid: user.userId,
+          email: user.email,
+        },
+      }),
+    );
+
+    await processInvitation(user, mockEmail, mockWorkspaceId, mockMessageText);
+
+    const [workspacesServiceInfo] = mockWorkspacesService.inviteUserToTeam.mock.calls[0];
+    expect(workspacesServiceInfo.encryptedMnemonicInBase64).toBeDefined();
+
+    const { encryptedMnemonicInBase64 } = workspacesServiceInfo;
+    const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
+      encryptedMessageInBase64: encryptedMnemonicInBase64,
+      privateKeyInBase64: Buffer.from(privateKey).toString('base64'),
+      privateKyberKeyInBase64: '',
     });
 
     expect(decryptedMessage).toEqual(user.mnemonic);

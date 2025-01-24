@@ -44,7 +44,7 @@ export const processInvitation = async (
     try {
       const publicKeyResponse = await userService.getPublicKeyByEmail(email);
       publicKey = publicKeyResponse.publicKey;
-      publicKyberKey = publicKeyResponse.publicKyberKey;
+      publicKyberKey = publicKeyResponse.publicKyberKey ?? '';
     } catch (err) {
       console.log(err);
     }
@@ -53,7 +53,7 @@ export const processInvitation = async (
     if (isNewUser) {
       const preCreatedUserResponse = await userService.preCreateUser(email);
       publicKey = preCreatedUserResponse.publicKey;
-      publicKyberKey = preCreatedUserResponse.publicKyberKey;
+      publicKyberKey = preCreatedUserResponse.publicKyberKey ?? '';
     }
 
     const encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
