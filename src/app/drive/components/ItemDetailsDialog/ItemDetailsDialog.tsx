@@ -156,8 +156,6 @@ const ItemDetailsDialog = ({
       location = getLocation(item, ancestors as unknown as DriveItemData[]);
     }
 
-    console.log({ item, email });
-
     const details: ItemDetailsProps = {
       name: item.name,
       shared: isShared,
