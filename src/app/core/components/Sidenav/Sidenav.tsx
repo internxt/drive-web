@@ -39,14 +39,20 @@ interface SideNavItemsProps {
   to?: string;
   isActive?: boolean;
   notifications?: number;
-  onClick?: () => Promise<void>;
+  onClick?: () => void;
 }
+
+const resetAccessTokenFileFolder = () => {
+  localStorage.setItem('folderAccessToken', '');
+  localStorage.setItem('fileAccessToken', '');
+};
 
 const isActiveButton = (path: string) => {
   return !!matchPath(window.location.pathname, { path, exact: true });
 };
 
 const handleDownloadApp = async (): Promise<void> => {
+  resetAccessTokenFileFolder();
   try {
     const download = await desktopService.getDownloadAppUrl();
     window.open(download, '_self');
@@ -111,6 +117,7 @@ const Sidenav = ({
       icon: FolderSimple,
       iconDataCy: 'sideNavDriveIcon',
       isVisible: true,
+      onClick: resetAccessTokenFileFolder,
     },
     {
       to: getItemNavigationPath('/backups'),
@@ -128,6 +135,7 @@ const Sidenav = ({
       notifications: pendingInvitations.length,
       iconDataCy: 'sideNavSharedIcon',
       isVisible: true,
+      onClick: resetAccessTokenFileFolder,
     },
     {
       to: getItemNavigationPath('/recents'),
@@ -144,6 +152,7 @@ const Sidenav = ({
       icon: Trash,
       iconDataCy: 'sideNavTrashIcon',
       isVisible: true,
+      onClick: resetAccessTokenFileFolder,
     },
     {
       label: translate('sideNav.desktop'),

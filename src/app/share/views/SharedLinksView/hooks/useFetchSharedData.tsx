@@ -113,6 +113,7 @@ const useFetchSharedData = () => {
   };
 
   const fetchRootFolders = async (workspaceId?: string) => {
+    localStorage.setItem('folderAccessToken', '');
     dispatch(sharedActions.setCurrentShareId(null));
     dispatch(sharedActions.setCurrentSharingRole(null));
     actionDispatch(setIsLoading(true));
@@ -145,6 +146,7 @@ const useFetchSharedData = () => {
         actionDispatch(setPage(0));
         actionDispatch(setHasMoreFolders(false));
       }
+      localStorage.setItem('folderAccessToken', response.token);
     } catch (error) {
       errorService.reportError(error);
     } finally {
@@ -153,6 +155,7 @@ const useFetchSharedData = () => {
   };
 
   const fetchRootFiles = async (workspaceId?: string) => {
+    localStorage.setItem('fileAccessToken', '');
     actionDispatch(setIsLoading(true));
 
     try {
@@ -179,6 +182,8 @@ const useFetchSharedData = () => {
       if (files.length < ITEMS_PER_PAGE) {
         actionDispatch(setHasMoreFiles(false));
       }
+
+      localStorage.setItem('fileAccessToken', response.token);
     } catch (error) {
       errorService.reportError(error);
     } finally {
@@ -213,6 +218,7 @@ const useFetchSharedData = () => {
 
         const token = response.token;
         actionDispatch(setNextFolderLevelResourcesToken(token));
+        localStorage.setItem('folderAccessToken', token);
 
         if (response.role) dispatch(sharedActions.setCurrentSharingRole(response.role.toLowerCase()));
 
@@ -265,6 +271,7 @@ const useFetchSharedData = () => {
 
         const token = response.token;
         actionDispatch(setNextFolderLevelResourcesToken(token));
+        localStorage.setItem('fileAccessToken', token);
 
         const networkPass = response.credentials?.networkPass ?? workspaceCredentials?.credentials.networkPass;
         const networkUser = response.credentials?.networkUser ?? workspaceCredentials?.credentials.networkUser;

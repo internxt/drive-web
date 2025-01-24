@@ -7,6 +7,7 @@ import {
   FolderAncestor,
   FolderMeta,
   FolderTreeResponse,
+  FolderAncestorWorkspace,
 } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from '../../core/factory/sdk';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
@@ -28,9 +29,10 @@ export async function getFolderAncestorsInWorkspace(
   workspaceId: string,
   itemType: ItemType,
   uuid: string,
-): Promise<FolderAncestor[]> {
+  resourcesToken?: string,
+): Promise<FolderAncestorWorkspace[]> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  return storageClient.getFolderAncestorsInWorkspace(workspaceId, itemType, uuid);
+  return storageClient.getFolderAncestorsInWorkspace(workspaceId, itemType, uuid, resourcesToken);
 }
 
 export async function getFolderMeta(uuid: string, workspaceId?: string, resourcesToken?: string): Promise<FolderMeta> {

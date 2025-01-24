@@ -13,12 +13,12 @@ import localStorageService from '../../../core/services/local-storage.service';
 import { DriveItemData, DriveItemDetails, ItemDetailsProps } from '../../../drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
-import { getItemPlainName } from 'app/crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
 import { AdvancedSharedItem } from 'app/share/types';
 import { useSelector } from 'react-redux';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import dateService from '../../../core/services/date.service';
+import { getLocation } from 'app/utils/locationUtils';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -123,37 +123,6 @@ const ItemDetailsDialog = ({
     onClose();
   }
 
-  function getSharedLocation(item: DriveItemDetails, ancestorPathNames: string[]): string {
-    let location = translate('sideNav.shared');
-    if (item.isFolder && ancestorPathNames.length > 0) {
-      location += '/' + ancestorPathNames.shift();
-    }
-    return location;
-  }
-
-  function getRegularLocation(item: DriveItemDetails, ancestorPathNames: string[]): string {
-    if (item.isFolder) {
-      ancestorPathNames.pop();
-    }
-    return item.view + (ancestorPathNames.length > 0 ? '/' + ancestorPathNames.join('/') : '');
-  }
-
-  function getLocation(item: DriveItemDetails, ancestors: DriveItemData[]): string {
-    const itemViewName = item.view;
-    const ancestorPathNames = ancestors.map((ancestor) => getItemPlainName(ancestor)).reverse();
-    ancestorPathNames.shift(); // Remove root parent
-
-    let location = '/';
-
-    if (itemViewName === 'Shared') {
-      location += getSharedLocation(item, ancestorPathNames);
-      return location;
-    }
-
-    location += getRegularLocation(item, ancestorPathNames);
-    return location;
-  }
-
   async function getDetailsData(
     item: DriveItemDetails,
     isShared: string,
@@ -163,13 +132,31 @@ const ItemDetailsDialog = ({
   ) {
     const itemType = item.isFolder ? 'folder' : 'file';
     const itemUuid = item.uuid;
-    const itemFolderUuid = item.folderUuid;
+    const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
+    const itemCreatorUuid = item.user?.uuid;
+    const isUserOwner = (itemCreatorUuid && user && user.uuid === itemCreatorUuid) || false;
+    const token = localStorage.getItem(`${itemType}AccessToken`) || undefined;
 
-    const ancestors = isWorkspaceSelected
-      ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, itemType, itemUuid)
-      : await newStorageService.getFolderAncestors(itemFolderUuid);
+    let location = '';
 
-    const location = getLocation(item, ancestors as unknown as DriveItemData[]);
+    if (isWorkspaceSelected) {
+      if (item.view === 'Drive' || (item.view === 'Shared' && isUserOwner)) {
+        const ancestors = await newStorageService.getFolderAncestorsInWorkspace(
+          workspaceSelected.workspace.id,
+          itemType,
+          itemUuid,
+          token,
+        );
+        location = getLocation(item, ancestors as unknown as DriveItemData[]);
+      } else {
+        location = '/Shared';
+      }
+    } else {
+      const ancestors = await newStorageService.getFolderAncestors(itemFolderUuid);
+      location = getLocation(item, ancestors as unknown as DriveItemData[]);
+    }
+
+    console.log({ item, email });
 
     const details: ItemDetailsProps = {
       name: item.name,
@@ -178,7 +165,7 @@ const ItemDetailsDialog = ({
       size: item.isFolder ? undefined : bytesToString(item.size),
       uploaded: uploaded,
       modified: modified,
-      uploadedBy: item.workspaceItemUser?.creator?.email ?? item.userEmail ?? email,
+      uploadedBy: item.user?.email ?? item.userEmail ?? email,
       location,
     };
 

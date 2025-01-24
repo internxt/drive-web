@@ -1,6 +1,6 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
+import { FolderAncestor, FolderAncestorWorkspace } from '@internxt/sdk/dist/drive/storage/types';
 import { storageActions } from '..';
 import { RootState } from '../../..';
 import newStorageService from '../../../../drive/services/new-storage.service';
@@ -11,7 +11,7 @@ import storageSelectors from '../storage.selectors';
 import { useSelector } from 'react-redux';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
-const parsePathNames = (breadcrumbsList: FolderAncestor[]) => {
+const parsePathNames = (breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[]) => {
   // ADDED UNTIL WE UPDATE TYPESCRIPT VERSION
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore:next-line
@@ -24,8 +24,9 @@ const parsePathNames = (breadcrumbsList: FolderAncestor[]) => {
 export const getAncestorsAndSetNamePath = async (uuid: string, dispatch) => {
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
   const isWorkspaceSelected = !!workspaceSelected;
-  const breadcrumbsList: FolderAncestor[] = isWorkspaceSelected
-    ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, 'folder', uuid)
+  const token = localStorage.getItem('folderAccessToken') || undefined;
+  const breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[] = isWorkspaceSelected
+    ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, 'folder', uuid, token)
     : await newStorageService.getFolderAncestors(uuid);
   const fullPathParsedNames = parsePathNames(breadcrumbsList);
   dispatch(storageActions.setNamePath(fullPathParsedNames));

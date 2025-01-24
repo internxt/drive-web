@@ -1,4 +1,4 @@
-import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
+import { FolderAncestor, FolderAncestorWorkspace } from '@internxt/sdk/dist/drive/storage/types';
 import { CaretRight, FolderSimplePlus } from '@phosphor-icons/react';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
@@ -135,10 +135,11 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const setDriveBreadcrumb = async (itemsToMove: DriveItemData[]) => {
     const item = itemsToMove[0];
     const itemUuid = item.uuid;
-    const itemFolderUuid = item.folderUuid;
+    const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
     const itemType = item.isFolder ? 'folder' : 'file';
-    const breadcrumbsList: FolderAncestor[] = isWorkspaceSelected
-      ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, itemType, itemUuid)
+    const token = localStorage.getItem(`${itemType}AccessToken`) || undefined;
+    const breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[] = isWorkspaceSelected
+      ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, itemType, itemUuid, token)
       : await newStorageService.getFolderAncestors(itemFolderUuid);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore:next-line

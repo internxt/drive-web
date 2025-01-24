@@ -48,6 +48,8 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }
     }
     dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId }));
     dispatch(planThunks.fetchBusinessLimitUsageThunk());
+    localStorage.setItem('folderAccessToken', '');
+    localStorage.setItem('fileAccessToken', '');
   };
 
   if (!user) return null;
