@@ -19,16 +19,24 @@ export const getFolderPath = (item: BreadcrumbItemData, namePath: FolderPath[]):
   return namePathDestinationArray.join('/');
 };
 
+const getItemsToMoveWhenSelected = (droppedData: DriveItemData, selectedItems: DriveItemData[]): DriveItemData[] => {
+  return [...selectedItems, droppedData].filter(
+    (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
+  );
+};
+
+const getItemsToMoveWhenNotSelected = (droppedData: DriveItemData): DriveItemData[] => {
+  return [droppedData];
+};
+
 export const getItemsToMove = (
   droppedData: DriveItemData,
   isSomeItemSelected: boolean,
   selectedItems: DriveItemData[],
 ): DriveItemData[] => {
   return isSomeItemSelected
-    ? [...selectedItems, droppedData as DriveItemData].filter(
-        (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
-      )
-    : [droppedData];
+    ? getItemsToMoveWhenSelected(droppedData, selectedItems)
+    : getItemsToMoveWhenNotSelected(droppedData);
 };
 
 export const handleDriveItemDrop = async (
