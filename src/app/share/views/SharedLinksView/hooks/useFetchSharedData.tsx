@@ -90,9 +90,9 @@ const useFetchSharedData = () => {
   }, [page, currentFolderId, hasMoreFolders]);
 
   const fetchData = async () => {
-    actionDispatch(setIsLoading(true));
-
     if (!isLoading) {
+      actionDispatch(setIsLoading(true));
+
       const isRootFolder = !currentFolderId;
       try {
         if (isRootFolder && hasMoreFolders) {
