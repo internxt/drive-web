@@ -295,6 +295,13 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
+  let privateKyberKeyEncrypted = '';
+
+  if (user.keys?.kyber?.privateKey) {
+    const privateKyberKey = Buffer.from(user.keys.kyber.privateKey, 'base64').toString();
+    privateKyberKeyEncrypted = aes.encrypt(privateKyberKey, newPassword, getAesInitFromEnv());
+  }
+
   const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
 
   return usersClient
@@ -304,6 +311,10 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       newEncryptedSalt: encryptedNewSalt,
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
+      keys: {
+        encryptedPrivateKey: privateKeyEncrypted,
+        encryptedPrivateKyberKey: privateKyberKeyEncrypted,
+      },
       encryptVersion: StorageTypes.EncryptionVersion.Aes03,
     })
     .then((res) => {
