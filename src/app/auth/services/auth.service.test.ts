@@ -255,6 +255,93 @@ describe('logIn', () => {
       mnemonic: mockMnemonic,
     });
   });
+
+  it('log in should correctly decrypt keys for old user structure', async () => {
+    const mockToken = 'test-token';
+    const mockNewToken = 'test-new-token';
+    const mockLoginType = 'web';
+
+    const mockPassword = 'password123';
+    const mockMnemonic =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const keys = await keysService.getKeys(mockPassword);
+    const encryptedMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
+
+    const mockOlsUser: Partial<UserSettings> = {
+      uuid: 'mock-uuid',
+      email: 'mock@email.com',
+      privateKey: keys.ecc.privateKeyEncrypted,
+      mnemonic: encryptedMnemonic,
+      userId: 'mock-userId',
+      name: 'mock-name',
+      lastname: 'mock-lastname',
+      username: 'mock-username',
+      bridgeUser: 'mock-bridgeUser',
+      bucket: 'mock-bucket',
+      backupsBucket: null,
+      root_folder_id: 0,
+      rootFolderId: 'mock-rootFolderId',
+      rootFolderUuid: undefined,
+      sharedWorkspace: false,
+      credit: 0,
+      publicKey: keys.ecc.publicKey,
+      revocationKey: keys.revocationCertificate,
+      appSumoDetails: null,
+      registerCompleted: false,
+      hasReferralsProgram: false,
+      createdAt: new Date(),
+      avatar: null,
+      emailVerified: false,
+    };
+    const mockTwoFactorCode = '123456';
+
+    const mockUser = mockOlsUser as UserSettings;
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        login: vi.fn().mockResolvedValue({
+          user: mockUser,
+          token: mockToken,
+          newToken: mockNewToken,
+        }),
+      }),
+      createDesktopAuthClient: vi.fn().mockReturnValue({
+        login: vi.fn().mockResolvedValue({
+          user: mockUser,
+          token: mockToken,
+          newToken: mockNewToken,
+        }),
+      }),
+    } as any);
+
+    const result = await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockLoginType);
+
+    const plainPrivateKeyInBase64 = Buffer.from(
+      keysService.decryptPrivateKey(mockUser.privateKey, mockPassword),
+    ).toString('base64');
+
+    const mockClearUser = {
+      ...mockUser,
+      mnemonic: mockMnemonic,
+      privateKey: plainPrivateKeyInBase64,
+      keys: {
+        ecc: {
+          publicKey: mockUser.publicKey,
+          privateKey: plainPrivateKeyInBase64,
+        },
+        kyber: {
+          publicKey: '',
+          privateKey: '',
+        },
+      },
+    };
+
+    expect(result).toEqual({
+      token: mockToken,
+      user: mockClearUser,
+      mnemonic: mockMnemonic,
+    });
+  });
 });
 
 describe('signUp', () => {
@@ -326,6 +413,115 @@ describe('signUp', () => {
         kyber: {
           publicKey: mockUser.keys.kyber.publicKey,
           privateKey: plainPrivateKyberKeyInBase64,
+        },
+      },
+    };
+    expect(spy).toBeCalledWith(mockClearUser);
+
+    expect(result).toEqual({
+      token: mockToken,
+      user: {
+        ...mockUser,
+        mnemonic: mockMnemonicNotEnc,
+      },
+      mnemonic: mockMnemonicNotEnc,
+    });
+  });
+
+  it('signUp should work for old user structure', async () => {
+    const mockToken = 'test-token';
+    const mockNewToken = 'test-new-token';
+    const mockEmail = 'test@example.com';
+
+    const mockPassword = 'password123';
+    const mockMnemonicNotEnc =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const keys = await keysService.getKeys(mockPassword);
+    const encryptedMnemonic = encryptTextWithKey(mockMnemonicNotEnc, mockPassword);
+    const mockOldUser: Partial<UserSettings> = {
+      uuid: 'mock-uuid',
+      email: 'mock@email.com',
+      privateKey: keys.ecc.privateKeyEncrypted,
+      mnemonic: encryptedMnemonic,
+      userId: 'mock-userId',
+      name: 'mock-name',
+      lastname: 'mock-lastname',
+      username: 'mock-username',
+      bridgeUser: 'mock-bridgeUser',
+      bucket: 'mock-bucket',
+      backupsBucket: null,
+      root_folder_id: 0,
+      rootFolderId: 'mock-rootFolderId',
+      rootFolderUuid: undefined,
+      sharedWorkspace: false,
+      credit: 0,
+      publicKey: keys.ecc.publicKey,
+      revocationKey: keys.revocationCertificate,
+      appSumoDetails: null,
+      registerCompleted: false,
+      hasReferralsProgram: false,
+      createdAt: new Date(),
+      avatar: null,
+      emailVerified: false,
+    };
+
+    const mockUser = mockOldUser as UserSettings;
+
+    const mockSignUpResponse = {
+      xUser: {
+        ...mockUser,
+        mnemonic: mockMnemonicNotEnc,
+      },
+      xToken: mockToken,
+      mnemonic: mockMnemonicNotEnc,
+    };
+
+    const params = {
+      doSignUp: vi.fn().mockResolvedValue(mockSignUpResponse),
+      email: mockEmail,
+      password: mockPassword,
+      token: mockToken,
+      isNewUser: true,
+      redeemCodeObject: false,
+      dispatch: vi.fn(),
+    };
+
+    const mockRes = new Response(
+      JSON.stringify({
+        newToken: mockNewToken,
+      }),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    vi.spyOn(globalThis, 'fetch').mockReturnValue(Promise.resolve(mockRes));
+
+    const spy = vi.spyOn(userActions, 'setUser');
+
+    const result = await authService.signUp(params);
+
+    expect(localStorageService.set).toHaveBeenCalledWith('xNewToken', mockNewToken);
+
+    const plainPrivateKeyInBase64 = Buffer.from(
+      keysService.decryptPrivateKey(mockUser.privateKey, mockPassword),
+    ).toString('base64');
+
+    const mockClearUser = {
+      ...mockUser,
+      mnemonic: mockMnemonicNotEnc,
+      privateKey: plainPrivateKeyInBase64,
+      keys: {
+        ecc: {
+          publicKey: mockUser.publicKey,
+          privateKey: plainPrivateKeyInBase64,
+        },
+        kyber: {
+          publicKey: '',
+          privateKey: '',
         },
       },
     };
