@@ -19,24 +19,17 @@ export const getFolderPath = (item: BreadcrumbItemData, namePath: FolderPath[]):
   return namePathDestinationArray.join('/');
 };
 
-const getItemsToMoveWhenSelected = (droppedData: DriveItemData, selectedItems: DriveItemData[]): DriveItemData[] => {
+export const getItemsToMoveWhenSelected = (
+  droppedData: DriveItemData,
+  selectedItems: DriveItemData[],
+): DriveItemData[] => {
   return [...selectedItems, droppedData].filter(
     (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
   );
 };
 
-const getItemsToMoveWhenNotSelected = (droppedData: DriveItemData): DriveItemData[] => {
+export const getItemsToMoveWhenNotSelected = (droppedData: DriveItemData): DriveItemData[] => {
   return [droppedData];
-};
-
-export const getItemsToMove = (
-  droppedData: DriveItemData,
-  isSomeItemSelected: boolean,
-  selectedItems: DriveItemData[],
-): DriveItemData[] => {
-  return isSomeItemSelected
-    ? getItemsToMoveWhenSelected(droppedData, selectedItems)
-    : getItemsToMoveWhenNotSelected(droppedData);
 };
 
 export const handleDriveItemDrop = async (
@@ -46,7 +39,12 @@ export const handleDriveItemDrop = async (
   item: BreadcrumbItemData,
   dispatch: AppDispatch,
 ) => {
-  const itemsToMove = getItemsToMove(droppedData, isSomeItemSelected, selectedItems);
+  let itemsToMove: DriveItemData[];
+  if (isSomeItemSelected) {
+    itemsToMove = getItemsToMoveWhenSelected(droppedData, selectedItems);
+  } else {
+    itemsToMove = getItemsToMoveWhenNotSelected(droppedData);
+  }
 
   const filesToMove: DriveItemData[] = [];
   const foldersToMove = itemsToMove.filter((i) => {

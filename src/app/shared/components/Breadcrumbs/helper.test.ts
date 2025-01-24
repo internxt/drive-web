@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { canItemDrop, getFolderPath, getItemsToMove, onItemDropped } from './helper';
+import {
+  canItemDrop,
+  getFolderPath,
+  getItemsToMoveWhenNotSelected,
+  getItemsToMoveWhenSelected,
+  onItemDropped,
+} from './helper';
 import { BreadcrumbItemData } from '@internxt/ui';
 import { DriveItemData } from 'app/drive/types';
 import { AppDispatch } from 'app/store';
@@ -123,14 +129,15 @@ describe('getItemsToMove', () => {
     const item3 = createMockDriveItem({ id: 1 });
     const droppedData = item1;
     const selectedItems = [item2, item3];
-    const result = getItemsToMove(droppedData, true, selectedItems);
+
+    const result = getItemsToMoveWhenSelected(droppedData, selectedItems);
     expect(result).toEqual([item2, droppedData]);
   });
 
   it('should return only the dropped data when no items are selected', () => {
     const droppedData = createMockDriveItem();
 
-    const result = getItemsToMove(droppedData, false, []);
+    const result = getItemsToMoveWhenNotSelected(droppedData);
     expect(result).toEqual([droppedData]);
   });
 
@@ -141,7 +148,7 @@ describe('getItemsToMove', () => {
       createMockDriveItem({ id: 3, name: 'file3.txt', uuid: 'file-uuid-789' }),
     ];
 
-    const result = getItemsToMove(droppedData, true, selectedItems);
+    const result = getItemsToMoveWhenSelected(droppedData, selectedItems);
     expect(result).toEqual([createMockDriveItem({ id: 1, isFolder: true }), droppedData]);
   });
 });
