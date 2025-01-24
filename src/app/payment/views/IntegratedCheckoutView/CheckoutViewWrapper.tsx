@@ -236,7 +236,7 @@ const CheckoutViewWrapper = () => {
           if (window && window.gtag) {
             gaService.track('conversion', {
               send_to: `${GA_SEND_TO_KEY}/${tag}`,
-              value: plan.selectedPlan.amount,
+              value: (currentSelectedPlan?.amount ?? 0) / 100,
               currency: currencyValue.toLocaleUpperCase(),
               transaction_id: PLAN_TO_TRACK,
             });
@@ -369,9 +369,9 @@ const CheckoutViewWrapper = () => {
 
       if (currentSelectedPlan?.amount === 0) {
         tag = '3EQ2CILIzYcaEOf1ydsC';
-      } else if (currentSelectedPlan?.userType === UserType.Individual) {
+      } else if (currentSelectedPlan?.type === 'individual') {
         tag = 'O6oUCPzHzYcaEOf1ydsC';
-      } else if (currentSelectedPlan?.userType === UserType.Business) {
+      } else if (currentSelectedPlan?.type === 'business') {
         tag = '1CTxCP_HzYcaEOf1ydsC';
       }
 
