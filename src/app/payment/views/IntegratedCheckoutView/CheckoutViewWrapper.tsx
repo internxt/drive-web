@@ -369,9 +369,9 @@ const CheckoutViewWrapper = () => {
 
       if (currentSelectedPlan?.amount === 0) {
         tag = '3EQ2CILIzYcaEOf1ydsC';
-      } else if (currentSelectedPlan?.userType === UserType.Individual) {
+      } else if (currentSelectedPlan?.type === 'individual') {
         tag = 'O6oUCPzHzYcaEOf1ydsC';
-      } else if (currentSelectedPlan?.userType === UserType.Business) {
+      } else if (currentSelectedPlan?.type === 'business') {
         tag = '1CTxCP_HzYcaEOf1ydsC';
       }
 
