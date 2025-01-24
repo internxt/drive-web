@@ -11,7 +11,7 @@ import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView, IFormValues } from 'app/core/types';
-import { decryptPrivateKey } from 'app/crypto/services/keys.service';
+import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import shareService from 'app/share/services/share.service';
 import { Button } from '@internxt/ui';
@@ -169,17 +169,7 @@ function ShareGuestSingUpView(): JSX.Element {
       const xNewToken = await getNewToken();
       localStorageService.set('xNewToken', xNewToken);
 
-      const decryptedPrivateKey = decryptPrivateKey(parsedUser.privateKey, password);
-      const privateKey = parsedUser.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : undefined;
-
-      let privateKyberKey = '';
-      if (parsedUser.keys?.kyber?.privateKey) {
-        const decryptedPrivateKyberKey = decryptPrivateKey(parsedUser.keys.kyber.privateKey, password);
-        privateKyberKey = Buffer.from(decryptedPrivateKyberKey).toString('base64');
-      }
-
-      const publicKey = parsedUser.keys?.ecc?.publicKey ?? parsedUser.publicKey;
-      const publicKyberKey = parsedUser.keys?.kyber?.publicKey ?? '';
+      const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
       const user = {
         ...parsedUser,
