@@ -6,10 +6,8 @@ import { OrderDirection } from '../../../../core/types';
 import iconService from '../../../../drive/services/icon.service';
 import sizeService from '../../../../drive/services/size.service';
 import { DriveFileData } from '../../../../drive/types';
-import List from '../../../../shared/components/List';
-import { ListItemMenu } from '../../../../shared/components/List/ListItem';
 import { AdvancedSharedItem } from '../../../types';
-import { Avatar } from '@internxt/internxtui';
+import { Avatar, List, MenuItemType } from '@internxt/ui';
 
 const skinSkeleton = [
   <div key="1" className="flex flex-row items-center space-x-4">
@@ -39,7 +37,7 @@ type SharedListItem = {
   onNameClicked: (shareItem: AdvancedSharedItem) => void;
   onNextPage: () => void;
   hasMoreItems: boolean;
-  contextMenu: ListItemMenu<AdvancedSharedItem> | undefined;
+  contextMenu: Array<MenuItemType<AdvancedSharedItem>> | undefined;
   currentShareOwnerAvatar: string;
   user?: AdvancedSharedItem['user'];
   orderBy?: { field: OrderField; direction: OrderDirection };

@@ -1,4 +1,4 @@
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { DriveFolderMetadataPayload } from 'app/drive/types/index';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Input from 'app/shared/components/Input';
@@ -57,7 +57,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
           setIsLoading(false);
         });
     } else {
-      setError(translate('error.folderCannotBeEmpty'));
+      setError(item?.isFolder ? translate('error.folderCannotBeEmpty') : translate('error.fileCannotBeEmpty'));
     }
   };
 

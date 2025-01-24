@@ -18,7 +18,6 @@ import { useTranslationContext } from '../../../i18n/provider/TranslationProvide
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import checkoutService from '../../../payment/services/checkout.service';
 import paymentService from '../../../payment/services/payment.service';
-import LoadingPulse from '../../../shared/components/LoadingPulse/LoadingPulse';
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { planThunks } from '../../../store/slices/plan';
@@ -30,6 +29,14 @@ import CheckoutView from './CheckoutView';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { bytesToString } from 'app/drive/services/size.service';
+import { Loader } from '@internxt/ui';
+import gaService, { GA_SEND_TO_KEY } from 'app/analytics/ga.service';
+import { getCookie } from 'app/analytics/utils';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { User } from '@phosphor-icons/react';
+
+const SEND_TO = process.env.REACT_APP_GOOGLE_ANALYTICS_SENDTO;
+const PLAN_TO_TRACK = getCookie('gaPlanId');
 
 export const THEME_STYLES = {
   dark: {
@@ -105,6 +112,8 @@ function savePaymentDataInLocalStorage(
     localStorageService.set('amountPaid', amountToPay);
     localStorageService.set('priceId', selectedPlan.id);
     localStorageService.set('currency', selectedPlan.currency);
+    localStorageService.set('userType', selectedPlan.userType);
+    localStorageService.set('type', selectedPlan.type);
   }
 }
 
@@ -222,6 +231,15 @@ const CheckoutViewWrapper = () => {
         if (checkoutTheme && plan) {
           if (promotionCode) {
             handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
+          }
+          const tag = 'qLXECNiH2YcaEOf1ydsC';
+          if (window && window.gtag) {
+            gaService.track('conversion', {
+              send_to: `${GA_SEND_TO_KEY}/${tag}`,
+              value: (currentSelectedPlan?.amount ?? 0) / 100,
+              currency: currencyValue.toLocaleUpperCase(),
+              transaction_id: PLAN_TO_TRACK,
+            });
           }
 
           checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, plan);
@@ -346,6 +364,23 @@ const CheckoutViewWrapper = () => {
 
     try {
       await authCheckoutService.authenticateUser({ email, password, authMethod, dispatch, doRegister });
+
+      let tag;
+
+      if (currentSelectedPlan?.amount === 0) {
+        tag = '3EQ2CILIzYcaEOf1ydsC';
+      } else if (currentSelectedPlan?.type === 'individual') {
+        tag = 'O6oUCPzHzYcaEOf1ydsC';
+      } else if (currentSelectedPlan?.type === 'business') {
+        tag = '1CTxCP_HzYcaEOf1ydsC';
+      }
+
+      gaService.track('conversion', {
+        send_to: `${GA_SEND_TO_KEY}/${tag}`,
+        value: (currentSelectedPlan?.amount ?? 0) / 100,
+        currency: currentSelectedPlan?.currency.toUpperCase() ?? 'EUR',
+        transaction_id: PLAN_TO_TRACK,
+      });
     } catch (err) {
       const error = err as Error;
       setError('auth', error.message);
@@ -547,7 +582,7 @@ const CheckoutViewWrapper = () => {
           ) : undefined}
         </Elements>
       ) : (
-        <LoadingPulse />
+        <Loader type="pulse" />
       )}
     </>
   );

@@ -5,7 +5,7 @@ import dateService from '../../../core/services/date.service';
 import { bytesToString } from '../../../drive/services/size.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import currencyService from 'app/payment/services/currency.service';
-import { Spinner } from '@internxt/internxtui';
+import { Loader } from '@internxt/ui';
 
 const InvoicesList = ({ invoices, state }: { invoices: Invoice[]; state: 'loading' | 'empty' | 'ready' }) => {
   const [hoverItemIndex, setHoverItemIndex] = useState<string | null>(null);
@@ -17,7 +17,7 @@ const InvoicesList = ({ invoices, state }: { invoices: Invoice[]; state: 'loadin
   if (state === 'loading') {
     return (
       <div className="mb-5 flex h-10 items-center justify-center">
-        <Spinner className="h-6 w-6" />
+        <Loader classNameLoader="h-6 w-6" />
       </div>
     );
   }

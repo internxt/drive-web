@@ -1,4 +1,4 @@
-import { Button, Spinner } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import { Translate } from '../../../../i18n/types';
 import Card from '../../../../shared/components/Card';
 
@@ -24,7 +24,7 @@ export const UpdateMembersCard = ({
         </Button>
       </div>
       {areFetchingCurrentMembers ? (
-        <Spinner size={32} />
+        <Loader size={32} />
       ) : (
         <Card className="flex w-full flex-col gap-1 rounded-xl border border-gray-10 p-5 drop-shadow">
           <p className="text-medium text-sm text-gray-100">

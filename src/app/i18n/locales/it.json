@@ -437,6 +437,10 @@
               "sucessSendingVerification": "Verifica e-mail inviata a {{email}}",
               "errorSendingVerification": "Errore nell'invio della verifica",
               "confirm": "Confermare"
+            },
+            "errorMsg" : {
+              "nameError": "Il nome deve essere tra uno e venti caratteri",
+              "lastnameError": "Il cognome deve essere tra uno e venti caratteri"
             }
           },
           "support": {
@@ -457,7 +461,10 @@
           "subsRenew": "L'abbonamento si rinnova tra {{daysUntilRenewal}} giorni",
           "cancelSubscriptionModal": {
             "title": "Annulla abbonamento",
-            "description": "Stai per cancellare il tuo {{currentPlanName}} Internxt. Annullando il tuo piano, verrai declassato al piano gratuito Internxt {{freePlanName}}. Confermare la scelta per procedere, grazie.",
+            "description": {
+              "individual": "Stai per annullare il tuo piano Internxt {{currentPlanName}}. Annullando il tuo piano, verrai retrocesso al piano gratuito di Internxt {{freePlanName}}. Conferma la tua scelta per procedere, per favore.",
+              "business": "Annullando il tuo piano, lo spazio di lavoro verrà eliminato insieme a tutti i dati. Per favore, conferma la tua scelta per procedere."
+            },
             "keepSubscription": "Mantieni l'abbonamento",
             "continua": "Continua",
             "cancelSubscription": "Annulla abbonamento",
@@ -879,7 +886,8 @@
         "title": "Invita le persone",
         "textarea": "Inserire il testo del messaggio (opzionale)",
         "notifyUsers": "Notifica agli utenti",
-        "instructions": "Premere invio o spazio per separare le e-mail",
+        "instructions": "Premi Invio o virgola per inserire altri indirizzi email",
+        "duplicatedEmail": "L'indirizzo email esiste già",
         "email": "Tipo e-mail",
         "invite": "Invitare",
         "editor": "Editore",
@@ -894,6 +902,7 @@
         "cancel": "Annulla",
         "error": {
           "errorInviting": "Errore durante l'invio dell'invito a {{email}}",
+          "userAlreadyInvited": "L'utente {{email}} è già stato invitato",
           "acceptedError": "Errore nell'accettazione dell'invito alla cartella condivisa",
           "declinedError": "Errore nel rifiuto dell'invito alla cartella condivisa"
         }
@@ -989,7 +998,9 @@
     "changingName": "Errore durante la modifica del nome",
     "fileAlreadyExists": "Il file con lo stesso nome esiste già",
     "folderAlreadyExists": "Esiste già una cartella con lo stesso nome",
+    "folderInvalidName": "Il nome della cartella non è valido",
     "folderCannotBeEmpty": "Il nome della cartella non può essere vuoto",
+    "fileCannotBeEmpty": "Il nome del file non può essere vuoto",
     "creatingFolder": "Errore durante la creazione della cartella",
     "sendReferralInvitation": "Impossibile inviare l'e-mail di invito",
     "sendClaimEmail": "Impossibile inviare l'e-mail di richiesta di risarcimento",
@@ -1630,9 +1641,16 @@
         },
         "actions": {
           "deactivate": "Disattiva membro",
+          "leave": "Lascia",
           "reactivate": "Riattiva membro",
           "remove": "Rimuovi membro",
           "passwordChange": "Richiedi la modifica della password"
+        },
+        "leaveModal": {
+          "title": "Lascia",
+          "description": "Perderai l'accesso al Workspace e i tuoi contenuti saranno trasferiti al proprietario",
+          "leave": "Lascia",
+          "leaving": "Lasciando"
         }
       },
       "teams": {

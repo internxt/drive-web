@@ -1,7 +1,7 @@
 *       @CandelR
 
-/src/app/network/ @sg-gs
-/src/app/crypto/ @sg-gs
-/src/app/core/services/stream.service.ts @sg-gs
-/src/app/crypto/services/pgp.service.ts @sg-gs
-/src/upload.worker.ts @sg-gs
+/src/app/network/ @internxt/cryptography
+/src/app/crypto/ @internxt/cryptography
+/src/app/core/services/stream.service.ts @internxt/cryptography
+/src/app/crypto/services/pgp.service.ts @internxt/cryptography
+/src/upload.worker.ts @internxt/cryptography

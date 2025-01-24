@@ -1581,6 +1581,11 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
+"@dashlane/pqc-kem-kyber512-browser@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@dashlane/pqc-kem-kyber512-browser/-/pqc-kem-kyber512-browser-1.0.0.tgz#10a1b07e396616e574b9acad78d53076f271ac1d"
+  integrity sha512-lGWwF/5qkcnlZNZ5n2KkqjzC4q6EUre85ZotxOUQii9pCcZpeJBjK+naZoKAQz1pQZjGIZNHxIfzX5UxWsaouA==
+
 "@discoveryjs/json-ext@0.5.7":
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
@@ -1979,15 +1984,6 @@
     "@typescript-eslint/parser" "^5.4.0"
     eslint-config-prettier "^8.3.0"
 
-"@internxt/internxtui@^0.0.6":
-  version "0.0.6"
-  resolved "https://npm.pkg.github.com/download/@internxt/internxtui/0.0.6/871a1798d2e20d5efe102886cb67c1ecd807dd96#871a1798d2e20d5efe102886cb67c1ecd807dd96"
-  integrity sha512-OP/h1W2PuvYQTO/QvZ9pZ+cneMj4odrXPpP8xWNXk8iQ91ryCZLtxo1m1tBQ+dRtE2gLwpxQRBkdkp+/C06XiA==
-  dependencies:
-    "@phosphor-icons/react" "^2.1.5"
-    "@radix-ui/react-switch" "^1.1.0"
-    "@radix-ui/themes" "^3.0.0"
-
 "@internxt/inxt-js@=1.2.21":
   version "1.2.21"
   resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/1.2.21/bc9bbc18fbedaf030254856de7da283fb03a46b5#bc9bbc18fbedaf030254856de7da283fb03a46b5"
@@ -2009,19 +2005,19 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@=1.9.1":
-  version "1.9.1"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.9.1/f78fe79c261782bb2ff181977558ba25fd546aca#f78fe79c261782bb2ff181977558ba25fd546aca"
-  integrity sha512-4FgFjlLqcPy5btZ3BNsLjFSkot0giTA6UgbFzIS7mtvpNAD12ce3l7Ok7uhAvcs9ujy9TMr0cW/aj5HyrY70rg==
+"@internxt/sdk@=1.9.4":
+  version "1.9.4"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.9.4/afdb5fefddb56db9c87be397d3e1e966a321c921#afdb5fefddb56db9c87be397d3e1e966a321c921"
+  integrity sha512-y4RIM9WBTBL52a1yOAbadeGwfYaq5hs8QuSRYxHlZ7jiAk8s5btRuC6vBYSJaiDfhjPB8tPtK+AI5aKD/kAvVA==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
     uuid "^8.3.2"
 
-"@internxt/ui@0.0.10":
-  version "0.0.10"
-  resolved "https://npm.pkg.github.com/download/@internxt/ui/0.0.10/1f72d743c6285259d36f3a1ba7163dadb0b9e1d1#1f72d743c6285259d36f3a1ba7163dadb0b9e1d1"
-  integrity sha512-WIMHW3U/3fLybjcT4MLgJja9VvaaMRqhLPZj2iO6zNg6c+QGyYT64jVnMABzOgfgenJHXum7MAFFLcMlIzdkMA==
+"@internxt/ui@^0.0.12":
+  version "0.0.12"
+  resolved "https://npm.pkg.github.com/download/@internxt/ui/0.0.12/0ed85af13a324a2bf627824f2e3fcff6075c5c52#0ed85af13a324a2bf627824f2e3fcff6075c5c52"
+  integrity sha512-7hrixFnYFNB0aVQXEQvrumsMhIzIPdKwX4GMywBxyvr4qfbemLbTRZAFXlHIJLzhJ4K5hZR4N0wM8sADdaCqiw==
   dependencies:
     "@internxt/css-config" "^1.0.2"
     "@phosphor-icons/react" "^2.1.5"
@@ -6038,7 +6034,7 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.1, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
-crypto-browserify@^3.12.0:
+crypto-browserify@^3.12.0, "crypto@npm:crypto-browserify":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/crypto-browserify/-/crypto-browserify-3.12.0.tgz#396cf9f3137f03e4b8e532c58f698254e00f80ec"
   integrity sha512-fz4spIh+znjO2VjL+IdhEpRJ3YN6sMzITSBijk6FK2UvTqruSQW+/cCZTSNsMiZNvUeq0CqurF+dAbyiGOY6Wg==
@@ -6064,23 +6060,6 @@ crypto-random-string@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-2.0.0.tgz#ef2a7a966ec11083388369baa02ebead229b30d5"
   integrity sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==
-
-"crypto@npm:crypto-browserify":
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/crypto-browserify/-/crypto-browserify-3.12.0.tgz#396cf9f3137f03e4b8e532c58f698254e00f80ec"
-  integrity sha512-fz4spIh+znjO2VjL+IdhEpRJ3YN6sMzITSBijk6FK2UvTqruSQW+/cCZTSNsMiZNvUeq0CqurF+dAbyiGOY6Wg==
-  dependencies:
-    browserify-cipher "^1.0.0"
-    browserify-sign "^4.0.0"
-    create-ecdh "^4.0.0"
-    create-hash "^1.1.0"
-    create-hmac "^1.1.0"
-    diffie-hellman "^5.0.0"
-    inherits "^2.0.1"
-    pbkdf2 "^3.0.3"
-    public-encrypt "^4.0.0"
-    randombytes "^2.0.0"
-    randomfill "^1.0.3"
 
 css-blank-pseudo@^3.0.3:
   version "3.0.3"
@@ -11888,7 +11867,7 @@ react-dnd-html5-backend@^14.0.0:
   dependencies:
     dnd-core "14.0.1"
 
-react-dnd@^14.0.4:
+react-dnd@14.0.5:
   version "14.0.5"
   resolved "https://registry.yarnpkg.com/react-dnd/-/react-dnd-14.0.5.tgz#ecf264e220ae62e35634d9b941502f3fca0185ed"
   integrity sha512-9i1jSgbyVw0ELlEVt/NkCUkxy1hmhJOkePoCH713u75vzHGyXhPDm28oLfc2NMSBjZRM1Y+wRjHXJT3sPrTy+A==
@@ -13164,16 +13143,7 @@ string-natural-compare@^3.0.1:
   resolved "https://registry.yarnpkg.com/string-natural-compare/-/string-natural-compare-3.0.1.tgz#7a42d58474454963759e8e8b7ae63d71c1e7fdf4"
   integrity sha512-n3sPwynL1nwKi3WJ6AIsClwBMa0zTi54fn2oLU6ndfTSIO05xaznjSf15PcBZU6FNWbmN5Q6cxT4V5hGvB4taw==
 
-"string-width-cjs@npm:string-width@^4.2.0":
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
-  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
-  dependencies:
-    emoji-regex "^8.0.0"
-    is-fullwidth-code-point "^3.0.0"
-    strip-ansi "^6.0.1"
-
-"string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0", "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -13256,14 +13226,7 @@ stringify-object@^3.3.0:
     is-obj "^1.0.1"
     is-regexp "^1.0.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
-  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
-  dependencies:
-    ansi-regex "^5.0.1"
-
-strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -14903,7 +14866,7 @@ workbox-window@6.6.1:
     "@types/trusted-types" "^2.0.2"
     workbox-core "6.6.1"
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -14916,15 +14879,6 @@ wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
-  dependencies:
-    ansi-styles "^4.0.0"
-    string-width "^4.1.0"
-    strip-ansi "^6.0.0"
-
-wrap-ansi@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
-  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"

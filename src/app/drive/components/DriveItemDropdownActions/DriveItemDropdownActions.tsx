@@ -1,6 +1,5 @@
 import { Menu } from '@headlessui/react';
 import { DriveItemData } from 'app/drive/types';
-import { ListItemMenu } from '../../../shared/components/List/ListItem';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import {
   contextMenuDriveFolderNotSharedLink,
@@ -8,6 +7,7 @@ import {
   contextMenuDriveItemShared,
   contextMenuDriveNotSharedLink,
 } from '../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import { MenuItemType } from '@internxt/ui';
 
 interface FileDropdownActionsProps {
   title?: string;
@@ -40,7 +40,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
     return style;
   };
 
-  const menuItems = (): ListItemMenu<DriveItemData> => {
+  const menuItems = (): Array<MenuItemType<DriveItemData>> => {
     if (isSharedItem) {
       if (item?.isFolder) {
         return contextMenuDriveFolderShared({
@@ -96,7 +96,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       {openDropdown && item && (
         <>
           {menuItems()?.map((option, i) => (
-            <div key={option?.name}>
+            <div key={i}>
               {option?.separator ? (
                 <div className="my-0.5 flex w-full flex-row px-4">
                   <div className="h-px w-full bg-gray-10" />
