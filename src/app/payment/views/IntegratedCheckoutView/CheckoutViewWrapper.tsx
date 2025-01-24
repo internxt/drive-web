@@ -236,7 +236,7 @@ const CheckoutViewWrapper = () => {
           if (window && window.gtag) {
             gaService.track('conversion', {
               send_to: `${GA_SEND_TO_KEY}/${tag}`,
-              value: plan.selectedPlan.amount,
+              value: (currentSelectedPlan?.amount ?? 0) / 100,
               currency: currencyValue.toLocaleUpperCase(),
               transaction_id: PLAN_TO_TRACK,
             });
