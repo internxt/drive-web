@@ -146,7 +146,6 @@ const useFetchSharedData = () => {
         actionDispatch(setPage(0));
         actionDispatch(setHasMoreFolders(false));
       }
-      localStorage.setItem('folderAccessToken', response.token);
     } catch (error) {
       errorService.reportError(error);
     } finally {
@@ -182,8 +181,6 @@ const useFetchSharedData = () => {
       if (files.length < ITEMS_PER_PAGE) {
         actionDispatch(setHasMoreFiles(false));
       }
-
-      localStorage.setItem('fileAccessToken', response.token);
     } catch (error) {
       errorService.reportError(error);
     } finally {
