@@ -24,7 +24,6 @@ const CreateAccountForm = ({
 }) => {
   return (
     <div className={'flex h-full w-full flex-col overflow-auto bg-surface dark:bg-gray-1'}>
-      <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20"></div>
       <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
         <div className="h-auto w-28 text-gray-100" />
       </div>
@@ -35,7 +34,7 @@ const CreateAccountForm = ({
         <div className={'flex h-fit w-96 flex-col items-center justify-center rounded-2xl px-8 py-10'}>
           <div className="flex flex-col items-start space-y-5">
             <form className="flex w-full flex-col space-y-5" onSubmit={handleSubmit(onSubmit)}>
-              <h1 className="text-3xl font-medium">{'auth.signup.title'}</h1>
+              <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>
               <div className="flex flex-col space-y-3">
                 <label className="space-y-0.5">
                   <TextInput
