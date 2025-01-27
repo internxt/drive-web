@@ -15,11 +15,10 @@ import { DriveItemData, DriveItemDetails, FolderPath } from '../../../../drive/t
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { uiActions } from '../../../../store/slices/ui';
 import { getAppConfig } from '../../../../core/services/config.service';
-import { BreadcrumbsMenuProps } from '../types';
 import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { storageActions } from '../../../../store/slices/storage';
 import shareService from '../../../../share/services/share.service';
-import { Dropdown } from '@internxt/ui';
+import { BreadcrumbsMenuProps, Dropdown } from '@internxt/ui';
 
 const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   const { onItemClicked } = props;
