@@ -10,6 +10,7 @@ import { StorageState } from '../storage.model';
 import storageSelectors from '../storage.selectors';
 import { useSelector } from 'react-redux';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
+import localStorageService from '../../../../core/services/local-storage.service';
 
 const parsePathNames = (breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[]) => {
   // ADDED UNTIL WE UPDATE TYPESCRIPT VERSION
@@ -24,7 +25,7 @@ const parsePathNames = (breadcrumbsList: FolderAncestor[] | FolderAncestorWorksp
 export const getAncestorsAndSetNamePath = async (uuid: string, dispatch) => {
   const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
   const isWorkspaceSelected = !!workspaceSelected;
-  const token = localStorage.getItem('folderAccessToken') || undefined;
+  const token = localStorageService.get('folderAccessToken') || undefined;
   const breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[] = isWorkspaceSelected
     ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, 'folder', uuid, token)
     : await newStorageService.getFolderAncestors(uuid);

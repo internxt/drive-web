@@ -21,6 +21,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import { t } from 'i18next';
 import { Loader } from '@internxt/ui';
+import localStorageService from '../../../core/services/local-storage.service';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -43,25 +44,27 @@ interface SideNavItemsProps {
 }
 
 const resetAccessTokenFileFolder = () => {
-  localStorage.setItem('folderAccessToken', '');
-  localStorage.setItem('fileAccessToken', '');
+  localStorageService.set('folderAccessToken', '');
+  localStorageService.set('fileAccessToken', '');
 };
 
 const isActiveButton = (path: string) => {
   return !!matchPath(window.location.pathname, { path, exact: true });
 };
 
-const handleDownloadApp = async (): Promise<void> => {
+const handleDownloadApp = (): void => {
   resetAccessTokenFileFolder();
-  try {
-    const download = await desktopService.getDownloadAppUrl();
-    window.open(download, '_self');
-  } catch {
-    notificationsService.show({
-      text: t('notificationMessages.errorDownloadingDesktopApp'),
-      type: ToastType.Error,
+  desktopService
+    .getDownloadAppUrl()
+    .then((download) => {
+      window.open(download, '_self');
+    })
+    .catch(() => {
+      notificationsService.show({
+        text: t('notificationMessages.errorDownloadingDesktopApp'),
+        type: ToastType.Error,
+      });
     });
-  }
 };
 
 const LoadingSpinner = ({ text }: { text: string }) => (
