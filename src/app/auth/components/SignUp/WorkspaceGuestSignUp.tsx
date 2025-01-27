@@ -151,7 +151,6 @@ function WorkspaceGuestSingUpView(): JSX.Element {
       } as UserSettings;
 
       dispatch(userActions.setUser(user));
-      console.log('WE set user', user, userActions);
       await dispatch(userThunks.initializeUserThunk());
       dispatch(productsThunks.initializeThunk());
       dispatch(planThunks.initializeThunk());
