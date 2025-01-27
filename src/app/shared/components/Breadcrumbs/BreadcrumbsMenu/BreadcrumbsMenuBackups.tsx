@@ -5,8 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { uiActions } from '../../../../store/slices/ui';
 import { getAppConfig } from '../../../../core/services/config.service';
 import { DriveItemData } from '../../../../drive/types';
-import { BreadcrumbsMenuProps } from '@internxt/ui/dist/components/breadcrumbs/BreadcrumbsItem';
-import { Dropdown } from '@internxt/ui';
+import { BreadcrumbsMenuProps, Dropdown } from '@internxt/ui';
 
 const BreadcrumbsMenuBackups = (props: BreadcrumbsMenuProps): JSX.Element => {
   const { translate } = useTranslationContext();
