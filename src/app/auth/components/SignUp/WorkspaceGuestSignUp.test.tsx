@@ -49,20 +49,20 @@ beforeAll(() => {
   }));
 
   vi.mock('app/auth/components/PasswordInput/PasswordInput', () => {
-      return {
-        __esModule: true,
-        default: vi.fn((props) => (
-          <input
-            data-testid="password-input"
-            type="password"
-            placeholder={props.placeholder}
-            className={props.className}
-            onFocus={props.onFocus}
-            maxLength={props.maxLength}
-          />
-        )),
-      };
-    });
+    return {
+      __esModule: true,
+      default: vi.fn((props) => (
+        <input
+          data-testid="password-input"
+          type="password"
+          placeholder={props.placeholder}
+          className={props.className}
+          onFocus={props.onFocus}
+          maxLength={props.maxLength}
+        />
+      )),
+    };
+  });
 
   vi.mock('app/auth/components/SignUp/useSignUp', () => ({
     useSignUp: vi.fn().mockReturnValue({ doRegisterPreCreatedUser: vi.fn() }),
@@ -133,31 +133,38 @@ beforeAll(() => {
 
   vi.mock('react', () => ({
     useEffect: vi.fn(),
-    useState: vi.fn().mockImplementation((initial) => {
-      if (
-        initial &&
-        typeof initial === 'object' &&
-        'isLoading' in initial &&
-        'isValid' in initial &&
-        initial.isLoading === true &&
-        initial.isValid === false
-      ) {
-        initial = { isLoading: false, isValid: true };
-      }
-      
-      const setState = vi.fn().mockImplementation((newState) => {
-        return { ...initial, ...newState }; 
-      });
-  
-      return [initial, setState];
-    }),
+    useState: vi
+      .fn()
+      .mockReturnValueOnce([true, vi.fn()])
+      .mockImplementation((initial) => {
+        if (
+          initial &&
+          typeof initial === 'object' &&
+          'isLoading' in initial &&
+          'isValid' in initial &&
+          initial.isLoading === true &&
+          initial.isValid === false
+        ) {
+          initial = { isLoading: false, isValid: true };
+        }
+        const setState = vi.fn().mockImplementation((newState) => {
+          return { ...initial, ...newState };
+        });
+
+        return [initial, setState];
+      }),
   }));
 
   vi.mock('react-hook-form', () => ({
     SubmitHandler: vi.fn(),
     useForm: () => ({
       register: vi.fn(),
-      handleSubmit: vi.importActual,
+      handleSubmit: vi.fn().mockImplementation((fn) => {
+        return (event) => {
+          event?.preventDefault();
+          fn(event);
+        };
+      }),
       formState: { errors: {}, isValid: true },
       control: vi.fn(),
     }),
@@ -166,6 +173,7 @@ beforeAll(() => {
 
   vi.mock('react-redux', () => ({
     useSelector: vi.fn(),
+    useDispatch: vi.fn(() => vi.fn()),
   }));
 
   vi.mock('../../utils', () => ({
@@ -204,7 +212,9 @@ beforeAll(() => {
   vi.mock('app/store/slices/user', () => ({
     initializeUserThunk: vi.fn(),
     userActions: {
-      setUser: vi.fn(),
+      setUser: vi.fn().mockImplementation(() => {
+        console.log('Mocked setUser called');
+      }),
     },
     userThunks: {
       initializeUserThunk: vi.fn(),
@@ -234,6 +244,7 @@ describe('onSubmit', () => {
     const mockMnemonic = bip39.generateMnemonic(256);
     const keys = await keysService.getKeys(mockPassword);
     const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
+    const creationDate = new Date();
 
     const mockUser: UserSettings = {
       uuid: 'mock-uuid',
@@ -267,7 +278,7 @@ describe('onSubmit', () => {
       appSumoDetails: null,
       registerCompleted: false,
       hasReferralsProgram: false,
-      createdAt: new Date(),
+      createdAt: creationDate,
       avatar: null,
       emailVerified: false,
     };
@@ -281,13 +292,21 @@ describe('onSubmit', () => {
       }),
     }));
 
-    const spy = vi.spyOn(userActions, 'setUser');
+    const spy = vi.spyOn(userActions, 'setUser').mockImplementation((user) => {
+      console.log('Mocked spy setUser called');
+      return {
+        payload: user,
+        type: 'user/setUser',
+      };
+    });
     render(<WorkspaceGuestSingUpView />);
     const passwordInput = screen.getByTestId('password-input');
-    fireEvent.change(passwordInput, { target: { value: mockPassword} });
+    fireEvent.change(passwordInput, { target: { value: mockPassword } });
     const submitButton = screen.getByRole('button');
     fireEvent.click(submitButton);
-    expect(spy).toBeCalled();
+    await vi.waitFor(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
 
     const decryptedPrivateKey = keysService.decryptPrivateKey(keys.ecc.privateKeyEncrypted, mockPassword);
 
@@ -327,7 +346,7 @@ describe('onSubmit', () => {
       appSumoDetails: null,
       registerCompleted: false,
       hasReferralsProgram: false,
-      createdAt: new Date(),
+      createdAt: creationDate,
       avatar: null,
       emailVerified: false,
     };
