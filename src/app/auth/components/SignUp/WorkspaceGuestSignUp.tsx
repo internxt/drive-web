@@ -121,6 +121,7 @@ function WorkspaceGuestSingUpView(): JSX.Element {
 
     try {
       const { email, password, token } = formData;
+      console.log('WE GOT PASSWORD', password);
       const { xUser, xToken, mnemonic } = await doRegisterPreCreatedUser(email, password, invitationId ?? '', token);
 
       localStorageService.clear();
@@ -131,7 +132,11 @@ function WorkspaceGuestSingUpView(): JSX.Element {
       const xNewToken = await getNewToken();
       localStorageService.set('xNewToken', xNewToken);
 
+      console.log('WE passed localStorageService', xUser, password);
+
       const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
+
+      console.log('WE passed parseAndDecryptUserKeys');
 
       const user = {
         ...xUser,
@@ -148,6 +153,8 @@ function WorkspaceGuestSingUpView(): JSX.Element {
         },
       } as UserSettings;
 
+
+      console.log('WE got user', user, userActions);
       dispatch(userActions.setUser(user));
       await dispatch(userThunks.initializeUserThunk());
       dispatch(productsThunks.initializeThunk());

@@ -282,16 +282,11 @@ describe('onSubmit', () => {
     }));
 
     const spy = vi.spyOn(userActions, 'setUser');
-    try {
-      render(<WorkspaceGuestSingUpView />);
-      console.log('Rendered content: ', screen.debug());
-    } catch (error) {
-      console.error('Error during render:', error);
-    }
-    //const submitButton = screen.getByRole('button');
-    //console.log('Button', submitButton);
-    //fireEvent.click(submitButton);
-    fireEvent.submit(screen.getByRole('form'));
+    render(<WorkspaceGuestSingUpView />);
+    const passwordInput = screen.getByTestId('password-input');
+    fireEvent.change(passwordInput, { target: { value: mockPassword} });
+    const submitButton = screen.getByRole('button');
+    fireEvent.click(submitButton);
     expect(spy).toBeCalled();
 
     const decryptedPrivateKey = keysService.decryptPrivateKey(keys.ecc.privateKeyEncrypted, mockPassword);
