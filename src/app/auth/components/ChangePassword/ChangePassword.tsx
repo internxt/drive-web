@@ -124,7 +124,7 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
     }
 
     try {
-      await authService.updateCredentialsWithToken(token, password, mnemonic, '');
+      await authService.updateCredentialsWithToken(token, password, mnemonic);
       localStorageService.clear();
       setIsEmailSent(true);
     } catch (error) {

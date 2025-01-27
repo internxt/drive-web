@@ -6,7 +6,7 @@ import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView, IFormValues } from 'app/core/types';
-import { decryptPrivateKey } from 'app/crypto/services/keys.service';
+import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
 import { RootState } from 'app/store';
@@ -131,24 +131,18 @@ function WorkspaceGuestSingUpView(): JSX.Element {
       const xNewToken = await getNewToken();
       localStorageService.set('xNewToken', xNewToken);
 
-      const decryptedPrivateKey = decryptPrivateKey(xUser.privateKey, password);
-      const decryptedPrivateKyberKey = decryptPrivateKey(xUser.keys.kyber.privateKey, password);
-
-      const privateKey = xUser.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : undefined;
-      const privateKyberKey = xUser.keys.kyber.privateKey
-        ? Buffer.from(decryptedPrivateKyberKey).toString('base64')
-        : '';
+      const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
       const user = {
         ...xUser,
         privateKey,
         keys: {
           ecc: {
-            publicKey: xUser.keys.ecc.publicKey,
+            publicKey: publicKey,
             privateKey: privateKey,
           },
           kyber: {
-            publicKey: xUser.keys.kyber.publicKey,
+            publicKey: publicKyberKey,
             privateKey: privateKyberKey,
           },
         },

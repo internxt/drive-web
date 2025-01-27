@@ -21,9 +21,9 @@ import AppError, { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
-  decryptPrivateKey,
   getAesInitFromEnv,
   getKeys,
+  parseAndDecryptUserKeys,
 } from 'app/crypto/services/keys.service';
 import {
   decryptText,
@@ -84,7 +84,7 @@ export type AuthenticateUserParams = {
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   try {
-    const token = localStorageService.get('xNewToken') || undefined;
+    const token = localStorageService.get('xNewToken') ?? undefined;
     if (token) {
       const authClient = SdkFactory.getNewApiInstance().createAuthClient();
       await authClient.logout(token);
@@ -153,9 +153,9 @@ export const doLogin = async (
     .then(async (data) => {
       const { user, token, newToken } = data;
 
-      const { privateKey, publicKey, keys } = user;
-      const publicKyberKey = keys.kyber.publicKey;
-      const privateKyberKey = keys.kyber.privateKey;
+      const { privateKey: encryptedPrivateKey } = user;
+
+      const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(user, password);
 
       Sentry.setUser({
         id: user.uuid,
@@ -163,35 +163,27 @@ export const doLogin = async (
         sharedWorkspace: user.sharedWorkspace,
       });
 
-      const plainPrivateKeyInBase64 = privateKey
-        ? Buffer.from(decryptPrivateKey(privateKey, password)).toString('base64')
-        : '';
-
-      if (privateKey) {
-        await assertPrivateKeyIsValid(privateKey, password);
+      if (encryptedPrivateKey) {
+        await assertPrivateKeyIsValid(encryptedPrivateKey, password);
         await assertValidateKeys(
-          Buffer.from(plainPrivateKeyInBase64, 'base64').toString(),
+          Buffer.from(privateKey, 'base64').toString(),
           Buffer.from(publicKey, 'base64').toString(),
         );
       }
-
-      const plainPrivateKyberKeyInBase64 = privateKyberKey
-        ? Buffer.from(decryptPrivateKey(privateKyberKey, password)).toString('base64')
-        : '';
 
       const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
       const clearUser = {
         ...user,
         mnemonic: clearMnemonic,
-        privateKey: plainPrivateKeyInBase64,
+        privateKey: privateKey,
         keys: {
           ecc: {
             publicKey: publicKey,
-            privateKey: plainPrivateKeyInBase64,
+            privateKey: privateKey,
           },
           kyber: {
             publicKey: publicKyberKey,
-            privateKey: plainPrivateKyberKeyInBase64,
+            privateKey: privateKyberKey,
           },
         },
       };
@@ -243,7 +235,6 @@ const updateCredentialsWithToken = async (
   token: string | undefined,
   newPassword: string,
   mnemonicInPlain: string,
-  privateKeyInPlain: string,
 ): Promise<void> => {
   const mnemonicIsInvalid = !validateMnemonic(mnemonicInPlain);
   if (mnemonicIsInvalid) {
@@ -304,6 +295,13 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
+  let privateKyberKeyEncrypted = '';
+
+  if (user.keys?.kyber?.privateKey) {
+    const privateKyberKey = Buffer.from(user.keys.kyber.privateKey, 'base64').toString();
+    privateKyberKeyEncrypted = aes.encrypt(privateKyberKey, newPassword, getAesInitFromEnv());
+  }
+
   const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
 
   return usersClient
@@ -313,6 +311,10 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       newEncryptedSalt: encryptedNewSalt,
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
+      keys: {
+        encryptedPrivateKey: privateKeyEncrypted,
+        encryptedPrivateKyberKey: privateKyberKeyEncrypted,
+      },
       encryptVersion: StorageTypes.EncryptionVersion.Aes03,
     })
     .then((res) => {
@@ -475,24 +477,18 @@ export const signUp = async (params: SignUpParams) => {
   const xNewToken = await authService.getNewToken();
   localStorageService.set('xNewToken', xNewToken);
 
-  const privateKey = xUser.privateKey
-    ? Buffer.from(decryptPrivateKey(xUser.privateKey, password)).toString('base64')
-    : undefined;
-
-  const privateKyberKey = xUser.keys.kyber.privateKey
-    ? Buffer.from(decryptPrivateKey(xUser.keys.kyber.privateKey, password)).toString('base64')
-    : '';
+  const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
   const user = {
     ...xUser,
     privateKey,
     keys: {
       ecc: {
-        publicKey: xUser.keys.ecc.publicKey,
+        publicKey: publicKey,
         privateKey: privateKey,
       },
       kyber: {
-        publicKey: xUser.keys.kyber.publicKey,
+        publicKey: publicKyberKey,
         privateKey: privateKyberKey,
       },
     },

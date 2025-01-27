@@ -2,6 +2,7 @@ import { aes } from '@internxt/lib';
 import { Keys } from '@internxt/sdk';
 import { getOpenpgp, generateNewKeys } from './pgp.service';
 import { isValid } from './utilspgp';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 const MINIMAL_ENCRYPTED_KEY_LEN = 129;
 
 export async function getKeys(password: string): Promise<Keys> {
@@ -97,6 +98,25 @@ export function decryptPrivateKey(privateKey: string, password: string): string 
       throw new CorruptedEncryptedPrivateKeyError();
     }
   }
+}
+
+export function parseAndDecryptUserKeys(
+  user: UserSettings,
+  password: string,
+): { publicKey: string; privateKey: string; publicKyberKey: string; privateKyberKey: string } {
+  const decryptedPrivateKey = decryptPrivateKey(user.privateKey, password);
+  const privateKey = user.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : '';
+
+  let privateKyberKey = '';
+  if (user.keys?.kyber?.privateKey) {
+    const decryptedPrivateKyberKey = decryptPrivateKey(user.keys.kyber.privateKey, password);
+    privateKyberKey = Buffer.from(decryptedPrivateKyberKey).toString('base64');
+  }
+
+  const publicKey = user.keys?.ecc?.publicKey ?? user.publicKey;
+  const publicKyberKey = user.keys?.kyber?.publicKey ?? '';
+
+  return { publicKey, privateKey, publicKyberKey, privateKyberKey };
 }
 
 export async function assertValidateKeys(privateKey: string, publicKey: string): Promise<void> {
