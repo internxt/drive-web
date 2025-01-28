@@ -19,6 +19,10 @@ const originalIV = process.env.REACT_APP_MAGIC_IV;
 const originalURL = process.env.REACT_APP_API_URL;
 const originalHostName = process.env.REACT_APP_HOSTNAME;
 
+const mockPassword = 'mock-password';
+const mockEmal = 'mock@email.com';
+const mockToken = 'mock-token';
+
 beforeAll(() => {
   process.env.REACT_APP_CRYPTO_SECRET = '123456789QWERTY';
   process.env.REACT_APP_MAGIC_IV = '12345678912345678912345678912345';
@@ -51,7 +55,7 @@ beforeAll(() => {
   vi.mock('app/auth/components/PasswordInput/PasswordInput', () => {
     return {
       __esModule: true,
-      default: vi.fn((props) => (
+      default: vi.fn(({ register, ...props }) => (
         <input
           data-testid="password-input"
           type="password"
@@ -59,6 +63,7 @@ beforeAll(() => {
           className={props.className}
           onFocus={props.onFocus}
           maxLength={props.maxLength}
+          ref={register}
         />
       )),
     };
@@ -157,17 +162,22 @@ beforeAll(() => {
 
   vi.mock('react-hook-form', () => ({
     SubmitHandler: vi.fn(),
-    useForm: () => ({
-      register: vi.fn(),
-      handleSubmit: vi.fn().mockImplementation((fn) => {
-        return (event) => {
-          event?.preventDefault();
-          fn(event);
-        };
-      }),
-      formState: { errors: {}, isValid: true },
-      control: vi.fn(),
-    }),
+    useForm: () => {
+      const mockValues = { email: mockEmal, token: mockToken, password: mockPassword };
+
+      return {
+        register: vi.fn(),
+        handleSubmit: vi.fn().mockImplementation((fn) => {
+          return (event) => {
+            event?.preventDefault();
+            fn(mockValues);
+          };
+        }),
+        formState: { errors: {}, isValid: true },
+        control: vi.fn(),
+        watch: vi.fn((name) => mockValues[name]),
+      };
+    },
     useWatch: vi.fn(),
   }));
 
@@ -240,7 +250,6 @@ describe('onSubmit', () => {
   });
 
   it('when called with valid data, then it encrypts data, generates keys, and returns the expected user and token', async () => {
-    const mockPassword = 'mock-password';
     const mockMnemonic = bip39.generateMnemonic(256);
     const keys = await keysService.getKeys(mockPassword);
     const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
@@ -248,7 +257,7 @@ describe('onSubmit', () => {
 
     const mockUser: UserSettings = {
       uuid: 'mock-uuid',
-      email: 'mock@email.com',
+      email: mockEmal,
       privateKey: keys.ecc.privateKeyEncrypted,
       mnemonic: encryptedMockMnemonic,
       userId: 'mock-userId',
@@ -282,7 +291,6 @@ describe('onSubmit', () => {
       avatar: null,
       emailVerified: false,
     };
-    const mockToken = 'mock-token';
 
     (useSignUp as Mock).mockImplementation(() => ({
       doRegisterPreCreatedUser: vi.fn().mockResolvedValue({
@@ -300,8 +308,15 @@ describe('onSubmit', () => {
       };
     });
     render(<WorkspaceGuestSingUpView />);
-    const passwordInput = screen.getByTestId('password-input');
+
+    const passwordInput = screen.getByPlaceholderText('auth.password');
     fireEvent.change(passwordInput, { target: { value: mockPassword } });
+    expect((passwordInput as HTMLInputElement).value).toBe(mockPassword);
+
+    const emailInput = screen.getByPlaceholderText('auth.email');
+    fireEvent.change(emailInput, { target: { value: mockEmal } });
+    expect((emailInput as HTMLInputElement).value).toBe(mockEmal);
+
     const submitButton = screen.getByRole('button');
     fireEvent.click(submitButton);
     await vi.waitFor(() => {

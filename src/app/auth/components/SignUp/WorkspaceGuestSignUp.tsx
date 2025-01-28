@@ -120,9 +120,7 @@ function WorkspaceGuestSingUpView(): JSX.Element {
     setIsLoading(true);
 
     try {
-      const { email, token } = formData;
-      const password = 'mock-password';
-      console.log('WE parsed formData', email, token, password);
+      const { email, password, token } = formData;
       const { xUser, xToken, mnemonic } = await doRegisterPreCreatedUser(email, password, invitationId ?? '', token);
 
       localStorageService.clear();
