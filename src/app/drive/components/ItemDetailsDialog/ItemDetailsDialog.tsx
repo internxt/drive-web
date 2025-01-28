@@ -135,8 +135,7 @@ const ItemDetailsDialog = ({
     const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
     const itemCreatorUuid = item.user?.uuid;
     const isUserOwner = (itemCreatorUuid && user && user.uuid === itemCreatorUuid) || false;
-    const itemToken = (item as AdvancedSharedItem).token || undefined;
-    const token = localStorageService.get(`${itemType}AccessToken`) || itemToken;
+    const token = localStorageService.get(`${itemType}AccessToken`) || undefined;
 
     let location = '';
 
