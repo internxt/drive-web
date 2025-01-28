@@ -102,7 +102,7 @@ const Appearance = () => {
           !appearances.some((appearance) => appearance.theme === 'superbowl' && appearance.img === appearance_dark) &&
           isSuperbowlThemeAvailable
         ) {
-          setAppearances([...appearances, { theme: 'AAA', img: appearance_dark }]);
+          setAppearances([...appearances, { theme: 'superbowl', img: appearance_dark }]);
         }
       })
       .catch((err) => {
