@@ -29,7 +29,7 @@ const EnterPassword = ({
 
       if (!user) throw new Error('User is not defined');
 
-      const correctCredentials = await areCredentialsCorrect(user.email, password);
+      const correctCredentials = await areCredentialsCorrect(password);
 
       if (correctCredentials) {
         onUnlock(password);

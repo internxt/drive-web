@@ -10,7 +10,6 @@ import Input from '../../../shared/components/Input';
 import { uiActions } from '../../../store/slices/ui';
 import { userThunks } from '../../../store/slices/user';
 import errorService from '../../services/error.service';
-import localStorageService from '../../services/local-storage.service';
 
 type StatusType = 'loading' | 'auth' | 'error' | 'success' | 'expired';
 
@@ -42,7 +41,6 @@ export default function ChangeEmailView(): JSX.Element {
   const newEmailParam = urlParams.get('n');
 
   const [status, setStatus] = useState<StatusType>(STATUS.LOADING);
-  const [email, setEmail] = useState<string>('');
   const [newEmail, setNewEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [expired, setExpired] = useState<boolean | null>(null);
@@ -59,8 +57,6 @@ export default function ChangeEmailView(): JSX.Element {
         setStatus(STATUS.AUTH);
         setExpired(false);
 
-        const user = localStorageService.getUser();
-        if (user) setEmail(user.email);
         if (newEmailParam) setNewEmail(newEmailParam);
       }
     } catch (error) {
@@ -78,7 +74,7 @@ export default function ChangeEmailView(): JSX.Element {
     setStatus(STATUS.LOADING);
 
     try {
-      const isCorrectPassword = await areCredentialsCorrect(email, password);
+      const isCorrectPassword = await areCredentialsCorrect(password);
       if (isCorrectPassword) {
         setAuth(true);
 

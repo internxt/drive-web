@@ -6,10 +6,11 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as keysService from 'app/crypto/services/keys.service';
 import { vi, describe, it, beforeAll, beforeEach, expect, afterAll } from 'vitest';
 import { Buffer } from 'buffer';
-import { encryptTextWithKey } from 'app/crypto/services/utils';
+import { encryptTextWithKey, encryptText } from 'app/crypto/services/utils';
 import { SdkFactory } from '../../core/factory/sdk';
 import localStorageService from 'app/core/services/local-storage.service';
 import { userActions } from 'app/store/slices/user';
+import * as pgpService from 'app/crypto/services/pgp.service';
 
 if (typeof globalThis.process === 'undefined') {
   globalThis.process = { env: {} } as any;
@@ -255,6 +256,93 @@ describe('logIn', () => {
       mnemonic: mockMnemonic,
     });
   });
+
+  it('log in should correctly decrypt keys for old user structure', async () => {
+    const mockToken = 'test-token';
+    const mockNewToken = 'test-new-token';
+    const mockLoginType = 'web';
+
+    const mockPassword = 'password123';
+    const mockMnemonic =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const keys = await keysService.getKeys(mockPassword);
+    const encryptedMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
+
+    const mockOlsUser: Partial<UserSettings> = {
+      uuid: 'mock-uuid',
+      email: 'mock@email.com',
+      privateKey: keys.ecc.privateKeyEncrypted,
+      mnemonic: encryptedMnemonic,
+      userId: 'mock-userId',
+      name: 'mock-name',
+      lastname: 'mock-lastname',
+      username: 'mock-username',
+      bridgeUser: 'mock-bridgeUser',
+      bucket: 'mock-bucket',
+      backupsBucket: null,
+      root_folder_id: 0,
+      rootFolderId: 'mock-rootFolderId',
+      rootFolderUuid: undefined,
+      sharedWorkspace: false,
+      credit: 0,
+      publicKey: keys.ecc.publicKey,
+      revocationKey: keys.revocationCertificate,
+      appSumoDetails: null,
+      registerCompleted: false,
+      hasReferralsProgram: false,
+      createdAt: new Date(),
+      avatar: null,
+      emailVerified: false,
+    };
+    const mockTwoFactorCode = '123456';
+
+    const mockUser = mockOlsUser as UserSettings;
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        login: vi.fn().mockResolvedValue({
+          user: mockUser,
+          token: mockToken,
+          newToken: mockNewToken,
+        }),
+      }),
+      createDesktopAuthClient: vi.fn().mockReturnValue({
+        login: vi.fn().mockResolvedValue({
+          user: mockUser,
+          token: mockToken,
+          newToken: mockNewToken,
+        }),
+      }),
+    } as any);
+
+    const result = await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockLoginType);
+
+    const plainPrivateKeyInBase64 = Buffer.from(
+      keysService.decryptPrivateKey(mockUser.privateKey, mockPassword),
+    ).toString('base64');
+
+    const mockClearUser = {
+      ...mockUser,
+      mnemonic: mockMnemonic,
+      privateKey: plainPrivateKeyInBase64,
+      keys: {
+        ecc: {
+          publicKey: mockUser.publicKey,
+          privateKey: plainPrivateKeyInBase64,
+        },
+        kyber: {
+          publicKey: '',
+          privateKey: '',
+        },
+      },
+    };
+
+    expect(result).toEqual({
+      token: mockToken,
+      user: mockClearUser,
+      mnemonic: mockMnemonic,
+    });
+  });
 });
 
 describe('signUp', () => {
@@ -339,6 +427,231 @@ describe('signUp', () => {
       },
       mnemonic: mockMnemonicNotEnc,
     });
+  });
+
+  it('signUp should work for old user structure', async () => {
+    const mockToken = 'test-token';
+    const mockNewToken = 'test-new-token';
+    const mockEmail = 'test@example.com';
+
+    const mockPassword = 'password123';
+    const mockMnemonicNotEnc =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const keys = await keysService.getKeys(mockPassword);
+    const encryptedMnemonic = encryptTextWithKey(mockMnemonicNotEnc, mockPassword);
+    const mockOldUser: Partial<UserSettings> = {
+      uuid: 'mock-uuid',
+      email: 'mock@email.com',
+      privateKey: keys.ecc.privateKeyEncrypted,
+      mnemonic: encryptedMnemonic,
+      userId: 'mock-userId',
+      name: 'mock-name',
+      lastname: 'mock-lastname',
+      username: 'mock-username',
+      bridgeUser: 'mock-bridgeUser',
+      bucket: 'mock-bucket',
+      backupsBucket: null,
+      root_folder_id: 0,
+      rootFolderId: 'mock-rootFolderId',
+      rootFolderUuid: undefined,
+      sharedWorkspace: false,
+      credit: 0,
+      publicKey: keys.ecc.publicKey,
+      revocationKey: keys.revocationCertificate,
+      appSumoDetails: null,
+      registerCompleted: false,
+      hasReferralsProgram: false,
+      createdAt: new Date(),
+      avatar: null,
+      emailVerified: false,
+    };
+
+    const mockUser = mockOldUser as UserSettings;
+
+    const mockSignUpResponse = {
+      xUser: {
+        ...mockUser,
+        mnemonic: mockMnemonicNotEnc,
+      },
+      xToken: mockToken,
+      mnemonic: mockMnemonicNotEnc,
+    };
+
+    const params = {
+      doSignUp: vi.fn().mockResolvedValue(mockSignUpResponse),
+      email: mockEmail,
+      password: mockPassword,
+      token: mockToken,
+      isNewUser: true,
+      redeemCodeObject: false,
+      dispatch: vi.fn(),
+    };
+
+    const mockRes = new Response(
+      JSON.stringify({
+        newToken: mockNewToken,
+      }),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    vi.spyOn(globalThis, 'fetch').mockReturnValue(Promise.resolve(mockRes));
+
+    const spy = vi.spyOn(userActions, 'setUser');
+
+    const result = await authService.signUp(params);
+
+    expect(localStorageService.set).toHaveBeenCalledWith('xNewToken', mockNewToken);
+
+    const plainPrivateKeyInBase64 = Buffer.from(
+      keysService.decryptPrivateKey(mockUser.privateKey, mockPassword),
+    ).toString('base64');
+
+    const mockClearUser = {
+      ...mockUser,
+      mnemonic: mockMnemonicNotEnc,
+      privateKey: plainPrivateKeyInBase64,
+      keys: {
+        ecc: {
+          publicKey: mockUser.publicKey,
+          privateKey: plainPrivateKeyInBase64,
+        },
+        kyber: {
+          publicKey: '',
+          privateKey: '',
+        },
+      },
+    };
+    expect(spy).toBeCalledWith(mockClearUser);
+
+    expect(result).toEqual({
+      token: mockToken,
+      user: {
+        ...mockUser,
+        mnemonic: mockMnemonicNotEnc,
+      },
+      mnemonic: mockMnemonicNotEnc,
+    });
+  });
+});
+
+describe('Change password', () => {
+  it('changePassword should correctly re-encrypt keys', async () => {
+    const mockOldPassword = 'password123';
+    const mockNewPassword = 'newPassword123';
+    const mockEmail = 'test@example.com';
+
+    const mockMnemonicNotEnc =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const keys = await pgpService.generateNewKeys();
+    const mockClearUser: Partial<UserSettings> = {
+      mnemonic: mockMnemonicNotEnc,
+      publicKey: keys.publicKeyArmored,
+      revocationKey: keys.revocationCertificate,
+      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      keys: {
+        ecc: {
+          publicKey: keys.publicKeyArmored,
+          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+        },
+        kyber: {
+          publicKey: keys.publicKyberKeyBase64,
+          privateKey: Buffer.from(keys.privateKyberKeyBase64).toString('base64'),
+        },
+      },
+    };
+
+    const mockUser = mockClearUser as UserSettings;
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+
+    const mockSalt = 'mockSalt';
+    const encryptedSalt = encryptText(mockSalt);
+
+    const changePasswordMock = vi
+      .fn()
+      .mockReturnValue(Promise.resolve({ newToken: 'newMockToken', token: 'mockToken' }));
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        changePassword: changePasswordMock,
+        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
+      }),
+      createDesktopAuthClient: vi.fn().mockReturnValue({
+        changePassword: changePasswordMock,
+        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
+      }),
+      createNewUsersClient: vi.fn().mockReturnValue({
+        changePassword: changePasswordMock,
+      }),
+    } as any);
+
+    await authService.changePassword(mockNewPassword, mockOldPassword, mockEmail);
+    expect(changePasswordMock).toBeCalled();
+    const [inputs] = changePasswordMock.mock.calls[0];
+
+    const privateKeyEncrypted = inputs.encryptedPrivateKey;
+    const privateKey = keysService.decryptPrivateKey(privateKeyEncrypted, mockNewPassword);
+    const privateKeyBase64 = Buffer.from(privateKey).toString('base64');
+    expect(privateKeyBase64).toBe(mockUser.privateKey);
+
+    const privateKyberKeyEncrypted = inputs.keys.encryptedPrivateKyberKey;
+    const privateKyberKey = keysService.decryptPrivateKey(privateKyberKeyEncrypted, mockNewPassword);
+    const privateKyberKeyBase64 = Buffer.from(privateKyberKey).toString('base64');
+    expect(privateKyberKeyBase64).toBe(mockUser.keys.kyber.privateKey);
+  });
+
+  it('changePassword should correctly re-encrypt keys for old users', async () => {
+    const mockOldPassword = 'password123';
+    const mockNewPassword = 'newPassword123';
+    const mockEmail = 'test@example.com';
+
+    const mockMnemonicNotEnc =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const keys = await pgpService.generateNewKeys();
+    const mockClearUser: Partial<UserSettings> = {
+      mnemonic: mockMnemonicNotEnc,
+      publicKey: keys.publicKeyArmored,
+      revocationKey: keys.revocationCertificate,
+      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+    };
+
+    const mockUser = mockClearUser as UserSettings;
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
+
+    const mockSalt = 'mockSalt';
+    const encryptedSalt = encryptText(mockSalt);
+
+    const changePasswordMock = vi
+      .fn()
+      .mockReturnValue(Promise.resolve({ newToken: 'newMockToken', token: 'mockToken' }));
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        changePassword: changePasswordMock,
+        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
+      }),
+      createDesktopAuthClient: vi.fn().mockReturnValue({
+        changePassword: changePasswordMock,
+        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
+      }),
+      createNewUsersClient: vi.fn().mockReturnValue({
+        changePassword: changePasswordMock,
+      }),
+    } as any);
+
+    await authService.changePassword(mockNewPassword, mockOldPassword, mockEmail);
+    expect(changePasswordMock).toBeCalled();
+    const [inputs] = changePasswordMock.mock.calls[0];
+
+    const privateKeyEncrypted = inputs.encryptedPrivateKey;
+    const privateKey = keysService.decryptPrivateKey(privateKeyEncrypted, mockNewPassword);
+    const privateKeyBase64 = Buffer.from(privateKey).toString('base64');
+    expect(privateKeyBase64).toBe(mockUser.privateKey);
+
+    const privateKyberKeyEncrypted = inputs.keys.encryptedPrivateKyberKey;
+    expect(privateKyberKeyEncrypted).toBe('');
   });
 });
 
