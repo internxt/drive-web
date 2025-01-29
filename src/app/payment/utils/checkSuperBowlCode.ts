@@ -10,8 +10,9 @@ export const isSuperbowlThemeAvailable = async (plan: PlanState, onSuccess?: () 
 
   if (superbowlInLocalStorage === 'true') return true;
   try {
-    // Check if user used the coupon code ' SUPERBOWL80'
-    const couponUsedResult = await paymentService.isCouponUsedByUser(' SUPERBOWL80');
+    // Check if user used the coupon code ' SUPERBOWL80' | 'SPECIALX80' | 'REDDIT80' | 'IGSPECIAL80'
+    const coupons = ['SUPERBOWL80', 'SPECIALX80', 'REDDIT80', 'IGSPECIAL80'];
+    const couponUsedResults = await Promise.all(coupons.map((code) => paymentService.isCouponUsedByUser(code)));
 
     if (couponUsedResult.couponUsed) {
       onSuccess?.();
