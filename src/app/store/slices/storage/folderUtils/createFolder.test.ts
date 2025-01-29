@@ -16,6 +16,29 @@ vi.mock('..', () => ({
   storageSelectors: vi.fn(),
 }));
 
+vi.mock('../storage.thunks', () => ({
+  default: {
+    initializeThunk: vi.fn(),
+    resetNamePathThunk: vi.fn(),
+    uploadItemsThunk: vi.fn(),
+    downloadItemsThunk: vi.fn(),
+    downloadFileThunk: vi.fn(),
+    downloadFolderThunk: vi.fn(),
+    fetchPaginatedFolderContentThunk: vi.fn(),
+    deleteItemsThunk: vi.fn(),
+    goToFolderThunk: vi.fn(),
+    uploadFolderThunk: vi.fn(),
+    uploadMultipleFolderThunkNoCheck: vi.fn(),
+    updateItemMetadataThunk: vi.fn(),
+    fetchRecentsThunk: vi.fn(),
+    createFolderThunk: vi.fn(),
+    moveItemsThunk: vi.fn(),
+    fetchDeletedThunk: vi.fn(),
+    renameItemsThunk: vi.fn(),
+    uploadSharedItemsThunk: vi.fn(),
+  },
+}));
+
 describe('checkCreateFolder', () => {
   const parentFolderId = 'parent-folder-id';
   const mockDispatch = vi.fn();
