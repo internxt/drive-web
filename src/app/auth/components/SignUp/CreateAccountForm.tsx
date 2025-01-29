@@ -1,11 +1,11 @@
 import { Info, WarningCircle } from '@phosphor-icons/react';
-import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
-import TextInput from 'app/auth/components/TextInput/TextInput';
+import PasswordInput from '../../../auth/components/PasswordInput/PasswordInput';
+import TextInput from '../../../auth/components/TextInput/TextInput';
 import { Button } from '@internxt/ui';
-import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
-import InternxtLogo from 'assets/icons/bigLogo';
+import PasswordStrengthIndicator from '../../../shared/components/PasswordStrengthIndicator';
+import { ReactComponent as InternxtLogo } from '../../../../assets/icons/big-logo.svg';
 import { Helmet } from 'react-helmet-async';
-import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
+import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 
 const CreateAccountForm = ({
   handleSubmit,
@@ -25,7 +25,7 @@ const CreateAccountForm = ({
   return (
     <div className={'flex h-full w-full flex-col overflow-auto bg-surface dark:bg-gray-1'}>
       <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
-        <InternxtLogo />
+        <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
 
       <div className={'flex h-full flex-col items-center justify-center'}>

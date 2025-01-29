@@ -34,10 +34,6 @@ describe('onSubmit', () => {
       return value;
     });
 
-    vi.mock('assets/icons/bigLogo', () => ({
-      default: () => <div>Mocked Internxt Logo</div>,
-    }));
-
     vi.mock('react-helmet-async', () => ({
       Helmet: vi.fn(),
     }));
