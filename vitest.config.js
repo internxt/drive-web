@@ -3,6 +3,7 @@ import replace from '@rollup/plugin-replace';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vitest/config';
+import svgr from '@svgr/rollup';
 
 export default defineConfig({
   plugins: [
@@ -11,6 +12,10 @@ export default defineConfig({
       preventAssignment: true,
       'process.browser': true,
     }),
+    svgr({
+      svgrOptions: { native: true },
+      include: '**/*.svg',
+    }),
   ],
   resolve: {
     alias: {
@@ -18,6 +23,7 @@ export default defineConfig({
       app: path.resolve(__dirname, './src/app'),
       crypto: 'crypto-browserify', // Resolve `crypto` to `crypto-browserify`
       stream: 'stream-browserify',
+      path: 'path-browserify',
     },
   },
   test: {
