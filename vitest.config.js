@@ -14,9 +14,9 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      // eslint-disable-next-line no-undef
       app: path.resolve(__dirname, './src/app'),
-      crypto: 'crypto-browserify', // Resolve `crypto` to `crypto-browserify`
+      assets: path.resolve(__dirname, './src/assets'),
+      crypto: 'crypto-browserify',
       stream: 'stream-browserify',
     },
   },
@@ -43,7 +43,6 @@ export default defineConfig({
   optimizeDeps: {
     include: ['@internxt/sdk/dist/shared/types/userSettings'],
     esbuildOptions: {
-      // Node.js global to browser globalThis
       define: {
         global: 'globalThis',
       },
