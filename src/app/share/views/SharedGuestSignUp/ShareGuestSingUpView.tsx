@@ -4,7 +4,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Info, WarningCircle } from '@phosphor-icons/react';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { Views } from 'app/auth/components/SignUp/SignUp';
-import { useSignUp, parseUserSettingsEnsureKyberKeysAdded } from 'app/auth/components/SignUp/useSignUp';
+import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import { getNewToken } from 'app/auth/services/auth.service';
 import errorService from 'app/core/services/error.service';
@@ -158,9 +158,6 @@ function ShareGuestSingUpView(): JSX.Element {
       const { email, password, token } = formData;
       const { xUser, xToken, mnemonic } = await doRegisterPreCreatedUser(email, password, invitationId ?? '', token);
 
-      // TODO: Remove or modify this when the backend is updated to add kyber keys
-      const parsedUser = parseUserSettingsEnsureKyberKeysAdded(xUser);
-
       localStorageService.clear();
 
       localStorageService.set('xToken', xToken);
@@ -172,7 +169,7 @@ function ShareGuestSingUpView(): JSX.Element {
       const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
       const user = {
-        ...parsedUser,
+        ...xUser,
         privateKey,
         keys: {
           ecc: {
@@ -217,7 +214,7 @@ function ShareGuestSingUpView(): JSX.Element {
   return (
     <div className={'flex h-full w-full flex-col overflow-auto bg-surface dark:bg-gray-1'}>
       <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
-        <InternxtLogo className="h-auto w-28 text-gray-100" />
+        <InternxtLogo />
       </div>
 
       <div className={'flex h-full flex-col items-center justify-center'}>
