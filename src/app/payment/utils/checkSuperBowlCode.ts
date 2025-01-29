@@ -9,14 +9,17 @@ export const isSuperbowlThemeAvailable = async (plan: PlanState, onSuccess?: () 
   const superbowlInLocalStorage = localStorageService.get(SUPERBOWL_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
 
   if (superbowlInLocalStorage === 'true') return true;
-  try {
-    // Check if user used the coupon code ' SUPERBOWL80' | 'SPECIALX80' | 'REDDIT80' | 'IGSPECIAL80'
-    const coupons = ['SUPERBOWL80', 'SPECIALX80', 'REDDIT80', 'IGSPECIAL80'];
-    const couponUsedResults = await Promise.all(coupons.map((code) => paymentService.isCouponUsedByUser(code)));
 
-    if (couponUsedResult.couponUsed) {
+  try {
+    const coupons = ['SUPERBOWL80', 'SPECIALX80', 'REDDIT80', 'IGSPECIAL80'];
+
+    // Esperamos todas las promesas antes de verificar si alguna es `true`
+    const couponUsedResults = await Promise.all(coupons.map((code) => paymentService.isCouponUsedByUser(code)));
+    const couponUsed = couponUsedResults.some((result) => result);
+
+    if (couponUsed) {
       onSuccess?.();
-      localStorageService.set(SUPERBOWL_THEME_AVAILABLE_LOCAL_STORAGE_KEY, `${couponUsedResult.couponUsed}`);
+      localStorageService.set(SUPERBOWL_THEME_AVAILABLE_LOCAL_STORAGE_KEY, 'true');
       return true;
     }
 
