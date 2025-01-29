@@ -9,10 +9,6 @@ import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
 import { Buffer } from 'buffer';
 import { generateMnemonic } from 'bip39';
 
-if (typeof globalThis.process === 'undefined') {
-  globalThis.process = { env: {} } as any;
-}
-
 const originalEnv = process.env.REACT_APP_CRYPTO_SECRET;
 const originalSalt = process.env.REACT_APP_MAGIC_SALT;
 const originalIV = process.env.REACT_APP_MAGIC_IV;
