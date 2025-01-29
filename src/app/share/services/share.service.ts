@@ -590,13 +590,13 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
   const user = localStorageService.getUser();
   if (user) {
     let decryptedKey;
-    const privateKey = user.keys?.ecc?.privateKey ?? user.privateKey;
-    const privateKyberKey = user.keys?.kyber?.privateKey ?? '';
+    const privateKeyInBase64 = user.keys?.ecc?.privateKey ?? user.privateKey;
+    const privateKyberKeyInBase64 = user.keys?.kyber?.privateKey ?? '';
     try {
       decryptedKey = await hybridDecryptMessageWithPrivateKey({
         encryptedMessageInBase64: encryptionKey,
-        privateKeyInBase64: privateKey,
-        privateKyberKeyInBase64: privateKyberKey,
+        privateKeyInBase64,
+        privateKyberKeyInBase64,
       });
     } catch (err) {
       decryptedKey = user.mnemonic;
@@ -869,6 +869,9 @@ const shareService = {
   validateSharingInvitation,
   getPublicSharedItemInfo,
   getSharedFolderSize,
+  inviteUserToSharedFolder,
+  getSharedFolderInvitationsAsInvitedUser,
+  getSharingRoles,
 };
 
 export default shareService;
