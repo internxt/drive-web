@@ -157,6 +157,7 @@ describe('onSubmit', () => {
 
           return [initial, setState];
         }),
+        createElement: vi.fn(),
       };
     });
 
