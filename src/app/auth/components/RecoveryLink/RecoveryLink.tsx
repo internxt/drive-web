@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import authService from 'app/auth/services/auth.service';
 import Input from 'app/shared/components/Input';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { WarningCircle, Envelope } from '@phosphor-icons/react';
 import errorService from 'app/core/services/error.service';

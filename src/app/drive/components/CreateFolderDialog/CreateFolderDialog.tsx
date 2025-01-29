@@ -5,7 +5,7 @@ import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -22,14 +22,14 @@ interface CreateFolderDialogProps {
 const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }: CreateFolderDialogProps) => {
   const { translate } = useTranslationContext();
   const [folderName, setFolderName] = useState(translate('modals.newFolderModal.untitled'));
-  const [error, setError] = useState('');
+  const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
 
   useEffect(() => {
     if (isOpen) {
-      setError('');
+      setHasError(false);
       setTimeout(() => {
         setFolderName(translate('modals.newFolderModal.untitled'));
       }, 0);
@@ -65,22 +65,19 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
         })
         .catch((e) => {
           errorService.reportError(e, { extra: { folderName, parentFolderId: currentFolderId } });
-          const errorMessage = e?.message?.includes('already exists')
-            ? translate('error.folderAlreadyExists')
-            : translate('error.creatingFolder');
-          setError(errorMessage);
+          setHasError(true);
           setIsLoading(false);
           return e;
         });
     } else {
-      setError(translate('error.folderCannotBeEmpty'));
+      setHasError(true);
     }
   };
 
   const onCreateButtonClicked = (e) => {
     e.preventDefault();
     if (!isLoading) {
-      setError('');
+      setHasError(false);
       createFolder();
     }
   };
@@ -92,16 +89,15 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
 
         <Input
           disabled={isLoading}
-          className={`${error !== '' ? 'error' : ''}`}
+          className={hasError ? 'error' : ''}
           label={translate('modals.newFolderModal.label')}
           value={folderName}
           placeholder={translate('modals.newFolderModal.placeholder')}
           onChange={(name) => {
             setFolderName(name);
-            setError('');
+            setHasError(false);
           }}
-          accent={error ? 'error' : undefined}
-          message={error}
+          accent={hasError ? 'error' : undefined}
           autofocus
         />
 

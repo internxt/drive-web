@@ -1,6 +1,6 @@
 import { Check } from '@phosphor-icons/react';
 import { t } from 'i18next';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import RoleBadge from '../../../Workspace/Members/components/RoleBadge';
 
 export type ChangePlanType = 'upgrade' | 'downgrade' | 'free' | 'manageBilling';

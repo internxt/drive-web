@@ -4,7 +4,7 @@ import authService from 'app/auth/services/auth.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import Input from 'app/shared/components/Input';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
@@ -124,7 +124,7 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
     }
 
     try {
-      await authService.updateCredentialsWithToken(token, password, mnemonic, '');
+      await authService.updateCredentialsWithToken(token, password, mnemonic);
       localStorageService.clear();
       setIsEmailSent(true);
     } catch (error) {

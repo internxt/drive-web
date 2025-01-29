@@ -17,7 +17,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
 import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
 import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
-import { Avatar, Button, Spinner } from '@internxt/internxtui';
+import { Avatar, Button, Loader } from '@internxt/ui';
 import Modal from 'app/shared/components/Modal';
 import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
@@ -128,7 +128,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
-  const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
   const { onCloseDialog } = props;
 
@@ -653,7 +652,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                         </span>
                         {isLoading ? (
                           <div className="flex h-6 w-6 items-center justify-center">
-                            <Spinner className="h-5 w-5" />
+                            <Loader classNameLoader="h-5 w-5" />
                           </div>
                         ) : (
                           <CaretDown size={24} />
@@ -686,7 +685,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                             <div className="flex h-full w-5 items-center justify-center">
                               {accessMode === 'public' ? (
                                 isLoading ? (
-                                  <Spinner className="h-5 w-5" />
+                                  <Loader classNameLoader="h-5 w-5" />
                                 ) : (
                                   <Check size={20} />
                                 )
@@ -711,7 +710,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                               <div className="flex h-full w-5 items-center justify-center">
                                 {accessMode === 'restricted' ? (
                                   isLoading ? (
-                                    <Spinner className="h-5 w-5" />
+                                    <Loader classNameLoader="h-5 w-5" />
                                   ) : (
                                     <Check size={20} />
                                   )
@@ -885,7 +884,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   return (
-    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading || isToastNotificationOpen}>
+    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading}>
       <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
         <Header view={view} />
       </div>

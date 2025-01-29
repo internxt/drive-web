@@ -1984,15 +1984,6 @@
     "@typescript-eslint/parser" "^5.4.0"
     eslint-config-prettier "^8.3.0"
 
-"@internxt/internxtui@^0.0.6":
-  version "0.0.6"
-  resolved "https://npm.pkg.github.com/download/@internxt/internxtui/0.0.6/871a1798d2e20d5efe102886cb67c1ecd807dd96#871a1798d2e20d5efe102886cb67c1ecd807dd96"
-  integrity sha512-OP/h1W2PuvYQTO/QvZ9pZ+cneMj4odrXPpP8xWNXk8iQ91ryCZLtxo1m1tBQ+dRtE2gLwpxQRBkdkp+/C06XiA==
-  dependencies:
-    "@phosphor-icons/react" "^2.1.5"
-    "@radix-ui/react-switch" "^1.1.0"
-    "@radix-ui/themes" "^3.0.0"
-
 "@internxt/inxt-js@=1.2.21":
   version "1.2.21"
   resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/1.2.21/bc9bbc18fbedaf030254856de7da283fb03a46b5#bc9bbc18fbedaf030254856de7da283fb03a46b5"
@@ -2014,19 +2005,19 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@=1.9.1":
-  version "1.9.1"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.9.1/f78fe79c261782bb2ff181977558ba25fd546aca#f78fe79c261782bb2ff181977558ba25fd546aca"
-  integrity sha512-4FgFjlLqcPy5btZ3BNsLjFSkot0giTA6UgbFzIS7mtvpNAD12ce3l7Ok7uhAvcs9ujy9TMr0cW/aj5HyrY70rg==
+"@internxt/sdk@=1.9.5":
+  version "1.9.5"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.9.5/4bf53fa57bab622711ca6c820287dc7375262a7a#4bf53fa57bab622711ca6c820287dc7375262a7a"
+  integrity sha512-mIpeDqsepZoqR6g4PBiKnzPoEUfHQmVlTLbB5JJAu0Ndh/SPLMArtsXOBLVI5PWld1irzePpwVmBf4TNtZZC0w==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
     uuid "^8.3.2"
 
-"@internxt/ui@0.0.10":
-  version "0.0.10"
-  resolved "https://npm.pkg.github.com/download/@internxt/ui/0.0.10/1f72d743c6285259d36f3a1ba7163dadb0b9e1d1#1f72d743c6285259d36f3a1ba7163dadb0b9e1d1"
-  integrity sha512-WIMHW3U/3fLybjcT4MLgJja9VvaaMRqhLPZj2iO6zNg6c+QGyYT64jVnMABzOgfgenJHXum7MAFFLcMlIzdkMA==
+"@internxt/ui@^0.0.14":
+  version "0.0.14"
+  resolved "https://npm.pkg.github.com/download/@internxt/ui/0.0.14/f52d0f0578d09023c19f8533fd1a44ac4c9fcea2#f52d0f0578d09023c19f8533fd1a44ac4c9fcea2"
+  integrity sha512-ousqVLekZmVV5ESYZDHEM3pwzXhaBbVUBvgOw/mm0baXlU4jhh9ZwxjFQDPnYgcKJYbX5qBafK6+2N+W4/O/FA==
   dependencies:
     "@internxt/css-config" "^1.0.2"
     "@phosphor-icons/react" "^2.1.5"
@@ -3940,7 +3931,16 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@>=16.9.11", "@types/react@^18.2.28":
+"@types/react@*", "@types/react@>=16.9.11":
+  version "18.2.67"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.67.tgz#96b7af0b5e79c756f4bdd981de2ca28472c858e5"
+  integrity sha512-vkIE2vTIMHQ/xL0rgmuoECBCkZFZeHr49HeWSc24AptMbNRo7pwSBvj73rlJJs9fGKj0koS+V7kQB1jHS0uCgw==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/scheduler" "*"
+    csstype "^3.0.2"
+
+"@types/react@^18.2.28":
   version "18.2.28"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.28.tgz#86877465c0fcf751659a36c769ecedfcfacee332"
   integrity sha512-ad4aa/RaaJS3hyGz0BGegdnSRXQBkd1CCYDCdNjBPg90UUpLgo+WlJqb9fMYUxtehmzF3PJaTWqRZjko6BRzBg==
@@ -6296,9 +6296,9 @@ csstype@^2.5.7:
   integrity sha512-Z1PhmomIfypOpoMjRQB70jfvy/wxT50qW08YXO5lMIJkrdq4yOTR+AW7FqutScmB9NkLwxo+jU+kZLbofZZq/w==
 
 csstype@^3.0.2:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.2.tgz#1d4bf9d572f11c14031f0436e1c10bc1f571f50b"
-  integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.3.tgz#d80ff294d114fb0e6ac500fbf85b60137d7eff81"
+  integrity sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==
 
 damerau-levenshtein@^1.0.8:
   version "1.0.8"
@@ -11893,7 +11893,7 @@ react-dnd-html5-backend@^14.0.0:
   dependencies:
     dnd-core "14.0.1"
 
-react-dnd@^14.0.4:
+react-dnd@14.0.5:
   version "14.0.5"
   resolved "https://registry.yarnpkg.com/react-dnd/-/react-dnd-14.0.5.tgz#ecf264e220ae62e35634d9b941502f3fca0185ed"
   integrity sha512-9i1jSgbyVw0ELlEVt/NkCUkxy1hmhJOkePoCH713u75vzHGyXhPDm28oLfc2NMSBjZRM1Y+wRjHXJT3sPrTy+A==

@@ -3,7 +3,7 @@
  */
 
 import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
-import { getKeys } from '../../../src/app/crypto/services/keys.service';
+import { getKeys, decryptPrivateKey } from '../../../src/app/crypto/services/keys.service';
 import { isValid } from '../../../src/app/crypto/services/utilspgp';
 
 import { describe, expect, it, afterAll, beforeAll } from 'vitest';
@@ -49,4 +49,29 @@ describe('# keys service tests', () => {
 
     expect(isValid(plainPrivateKey)).toBeTruthy();
   });
+});
+
+it('Should not decrypt null, empry, underfined or short private key', async () => {
+  const password = 'pwd';
+
+  const emptyResult = decryptPrivateKey('', password);
+  expect(emptyResult).toBe('');
+
+  const nullKey = null;
+  const nullResult = decryptPrivateKey(nullKey as unknown as string, password);
+  expect(nullResult).toBe('');
+
+  const underfinedResult = decryptPrivateKey(undefined as unknown as string, password);
+  expect(underfinedResult).toBe('');
+
+  const shortKey = 'MISSING_KEY';
+  const shortResult = decryptPrivateKey(shortKey, password);
+  expect(shortResult).toBe('');
+
+  const shortKey2 = 'a'.repeat(129);
+  const shortResult2 = decryptPrivateKey(shortKey2, password);
+  expect(shortResult2).toBe('');
+
+  const randomKey = 'a'.repeat(130);
+  expect(() => decryptPrivateKey(randomKey, password)).toThrowError('Key is corrupted');
 });
