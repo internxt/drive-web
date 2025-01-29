@@ -1,5 +1,9 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import shareService from 'app/share/services/share.service';
+import shareService, {
+  getSharedFolderInvitationsAsInvitedUser,
+  getSharingRoles,
+  inviteUserToSharedFolder,
+} from 'app/share/services/share.service';
 import { RootState } from '../..';
 
 import { Role, SharedFoldersInvitationsAsInvitedUserResponse } from '@internxt/sdk/dist/drive/share/types';
@@ -10,7 +14,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { UserRoles } from 'app/share/types';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
-import { hybridEncryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 
 export interface ShareLinksState {
   isLoadingRoles: boolean;
@@ -37,7 +41,6 @@ export interface ShareFileWithUserPayload {
   encryptionAlgorithm: string;
   roleId: string;
   publicKey?: string;
-  publicKyberKey?: string;
   isNewUser?: boolean;
 }
 
@@ -54,27 +57,25 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       const { mnemonic } = user;
 
       let publicKey = payload.publicKey;
-      let publicKyberKey = payload.publicKyberKey ?? '';
 
       if (payload.isNewUser && !publicKey) {
         const prCreatedUserResponse = await userService.preCreateUser(payload.sharedWith);
         publicKey = prCreatedUserResponse.publicKey;
-        publicKyberKey = prCreatedUserResponse.publicKyberKey ?? '';
       }
 
       if ((!publicKey && !payload.isNewUser) || !publicKey) {
         const publicKeyResponse = await userService.getPublicKeyByEmail(payload.sharedWith);
         publicKey = publicKeyResponse.publicKey;
-        publicKyberKey = publicKeyResponse.publicKyberKey ?? '';
       }
 
-      const encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
+      const encryptedMnemonic = await encryptMessageWithPublicKey({
         message: mnemonic,
         publicKeyInBase64: publicKey,
-        publicKyberKeyBase64: publicKyberKey,
       });
 
-      await shareService.inviteUserToSharedFolder({
+      const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
+
+      await inviteUserToSharedFolder({
         itemId: payload.itemId,
         itemType: payload.itemType,
         sharedWith: payload.sharedWith,
@@ -172,7 +173,7 @@ const getSharedFolderRoles = createAsyncThunk<string | void, void, { state: Root
   'shareds/getRoles',
   async (_, { dispatch }): Promise<string | void> => {
     try {
-      const newRoles = await shareService.getSharingRoles();
+      const newRoles = await getSharingRoles();
 
       if (newRoles.length > 0) {
         dispatch(sharedActions.setSharedFolderUserRoles(newRoles));
@@ -188,7 +189,7 @@ const getPendingInvitations = createAsyncThunk<string | void, void, { state: Roo
   'shareds/getPendingInvitations',
   async (_, { dispatch }): Promise<string | void> => {
     try {
-      const pendingInvitations = await shareService.getSharedFolderInvitationsAsInvitedUser({});
+      const pendingInvitations = await getSharedFolderInvitationsAsInvitedUser({});
 
       dispatch(sharedActions.setPendingInvitations(pendingInvitations.invites));
     } catch (err: unknown) {
