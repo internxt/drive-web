@@ -7,7 +7,7 @@ import { encryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
 import { Buffer } from 'buffer';
-import * as bip39 from 'bip39';
+import { generateMnemonic } from 'bip39';
 
 if (typeof globalThis.process === 'undefined') {
   globalThis.process = { env: {} } as any;
@@ -247,7 +247,7 @@ describe('onSubmit', () => {
   });
 
   it('when called with new valid data, then user with decypted keys is saved in local storage', async () => {
-    const mockMnemonic = bip39.generateMnemonic(256);
+    const mockMnemonic = generateMnemonic(256);
     const keys = await keysService.getKeys(mockPassword);
     const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
     const creationDate = new Date();
@@ -358,7 +358,7 @@ describe('onSubmit', () => {
   });
 
   it('when called with old valid data, then user with decypted keys is saved in local storage', async () => {
-    const mockMnemonic = bip39.generateMnemonic(256);
+    const mockMnemonic = generateMnemonic(256);
     const keys = await keysService.getKeys(mockPassword);
     const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
     const creationDate = new Date();
