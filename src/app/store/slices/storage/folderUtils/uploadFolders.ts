@@ -152,7 +152,7 @@ export const uploadMultipleFolder = async (
         await wait(500);
       }
 
-      if (level.childrenFiles) {
+      if (level.childrenFiles.length > 0) {
         if (uploadFolderAbortController.signal.aborted) return;
         await dispatch(
           uploadItemsParallelThunk({
