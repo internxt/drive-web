@@ -25,7 +25,7 @@ import { removeDuplicates } from '../../../../utils/driveItemsUtils';
 import shareService from '../../../services/share.service';
 import { AdvancedSharedItem, SharedNetworkCredentials } from '../../../types';
 import { useShareViewContext } from '../context/SharedViewContextProvider';
-import localStorageService from '../../../../core/services/local-storage.service';
+import localStorageService, { STORAGE_KEYS } from '../../../../core/services/local-storage.service';
 
 const ITEMS_PER_PAGE = 30;
 
@@ -114,7 +114,7 @@ const useFetchSharedData = () => {
   };
 
   const fetchRootFolders = async (workspaceId?: string) => {
-    localStorageService.set('folderAccessToken', '');
+    localStorageService.set(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, '');
     dispatch(sharedActions.setCurrentShareId(null));
     dispatch(sharedActions.setCurrentSharingRole(null));
     actionDispatch(setIsLoading(true));
@@ -147,7 +147,7 @@ const useFetchSharedData = () => {
         actionDispatch(setPage(0));
         actionDispatch(setHasMoreFolders(false));
       }
-      localStorageService.set('folderAccessToken', response.token);
+      localStorageService.set(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, response.token);
     } catch (error) {
       errorService.reportError(error);
     } finally {
@@ -156,7 +156,7 @@ const useFetchSharedData = () => {
   };
 
   const fetchRootFiles = async (workspaceId?: string) => {
-    localStorageService.set('fileAccessToken', '');
+    localStorageService.set(STORAGE_KEYS.FILE_ACCESS_TOKEN, '');
     actionDispatch(setIsLoading(true));
 
     try {
@@ -183,7 +183,7 @@ const useFetchSharedData = () => {
       if (files.length < ITEMS_PER_PAGE) {
         actionDispatch(setHasMoreFiles(false));
       }
-      localStorageService.set('fileAccessToken', response.token);
+      localStorageService.set(STORAGE_KEYS.FILE_ACCESS_TOKEN, response.token);
     } catch (error) {
       errorService.reportError(error);
     } finally {
@@ -218,7 +218,7 @@ const useFetchSharedData = () => {
 
         const token = response.token;
         actionDispatch(setNextFolderLevelResourcesToken(token));
-        localStorageService.set('folderAccessToken', token);
+        localStorageService.set(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, token);
 
         if (response.role) dispatch(sharedActions.setCurrentSharingRole(response.role.toLowerCase()));
 
@@ -271,7 +271,7 @@ const useFetchSharedData = () => {
 
         const token = response.token;
         actionDispatch(setNextFolderLevelResourcesToken(token));
-        localStorageService.set('fileAccessToken', token);
+        localStorageService.set(STORAGE_KEYS.FILE_ACCESS_TOKEN, token);
 
         const networkPass = response.credentials?.networkPass ?? workspaceCredentials?.credentials.networkPass;
         const networkUser = response.credentials?.networkUser ?? workspaceCredentials?.credentials.networkUser;

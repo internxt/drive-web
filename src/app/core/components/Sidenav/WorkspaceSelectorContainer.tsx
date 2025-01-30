@@ -9,7 +9,7 @@ import workspacesService from '../../../core/services/workspace.service';
 import { RootState } from '../../../store';
 import { workspaceThunks } from '../../../store/slices/workspaces/workspacesStore';
 import WorkspaceSelector, { Workspace } from './WorkspaceSelector';
-import localStorageService from '../../../core/services/local-storage.service';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 
 const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }) => {
   const dispatch = useDispatch();
@@ -49,8 +49,8 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }
     }
     dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId }));
     dispatch(planThunks.fetchBusinessLimitUsageThunk());
-    localStorageService.set('folderAccessToken', '');
-    localStorageService.set('fileAccessToken', '');
+    localStorageService.set(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, '');
+    localStorageService.set(STORAGE_KEYS.FILE_ACCESS_TOKEN, '');
   };
 
   if (!user) return null;

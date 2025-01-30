@@ -21,7 +21,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import { t } from 'i18next';
 import { Loader } from '@internxt/ui';
-import localStorageService from '../../../core/services/local-storage.service';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -44,8 +44,8 @@ interface SideNavItemsProps {
 }
 
 const resetAccessTokenFileFolder = () => {
-  localStorageService.set('folderAccessToken', '');
-  localStorageService.set('fileAccessToken', '');
+  localStorageService.set(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, '');
+  localStorageService.set(STORAGE_KEYS.FILE_ACCESS_TOKEN, '');
 };
 
 const isActiveButton = (path: string) => {

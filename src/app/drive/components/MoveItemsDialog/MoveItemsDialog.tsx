@@ -27,7 +27,7 @@ import { IRoot } from '../../../store/slices/storage/types';
 import { DriveFileData, DriveFolderData, DriveItemData, FolderPathDialog } from '../../types';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
-import localStorageService from '../../../core/services/local-storage.service';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -138,7 +138,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     const itemUuid = item.uuid;
     const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
     const itemType = item.isFolder ? 'folder' : 'file';
-    const token = localStorageService.get(`${itemType}AccessToken`) || undefined;
+    const storageKey = item.isFolder ? STORAGE_KEYS.FOLDER_ACCESS_TOKEN : STORAGE_KEYS.FILE_ACCESS_TOKEN;
+    const token = localStorageService.get(storageKey) || undefined;
 
     const breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[] = isWorkspaceSelected
       ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, itemType, itemUuid, token)
