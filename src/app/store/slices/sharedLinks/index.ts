@@ -77,7 +77,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         publicKyberKeyBase64: publicKyberKey,
       });
 
-      const encryptionAlgorithm = publicKyberKey !== '' ? 'hybrid' : payload.encryptionAlgorithm;
+      const encryptionAlgorithm = publicKyberKey !== '' ? 'hybrid' : 'ed25519';
 
       await shareService.inviteUserToSharedFolder({
         itemId: payload.itemId,
