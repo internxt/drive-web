@@ -62,7 +62,10 @@ describe('Encryption and Decryption', () => {
     const keys = await generateNewKeys();
     const mockPayload: ShareFileWithUserPayload = {
       publicKey: keys.publicKeyArmored,
-      publicKyberKey: keys.publicKyberKeyBase64,
+      keys: {
+        ecc: keys.publicKeyArmored,
+        kyber: keys.publicKyberKeyBase64,
+      },
       isNewUser: false,
       itemId: 'mock-itemId',
       itemType: 'file',
@@ -200,7 +203,10 @@ describe('Encryption and Decryption', () => {
     const keys = await generateNewKeys();
     const mockPayload: ShareFileWithUserPayload = {
       publicKey: '',
-      publicKyberKey: '',
+      keys: {
+        ecc: '',
+        kyber: '',
+      },
       isNewUser: true,
       itemId: 'mock-itemId',
       itemType: 'file',
@@ -362,7 +368,10 @@ describe('Encryption and Decryption', () => {
     const keys = await generateNewKeys();
     const mockPayload: ShareFileWithUserPayload = {
       publicKey: '',
-      publicKyberKey: '',
+      keys: {
+        ecc: '',
+        kyber: '',
+      },
       isNewUser: false,
       itemId: 'mock-itemId',
       itemType: 'file',

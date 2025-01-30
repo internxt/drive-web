@@ -37,7 +37,10 @@ export interface ShareFileWithUserPayload {
   encryptionAlgorithm: string;
   roleId: string;
   publicKey?: string;
-  publicKyberKey?: string;
+  keys?: {
+    ecc: string;
+    kyber: string;
+  };
   isNewUser?: boolean;
 }
 
@@ -53,19 +56,19 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       }
       const { mnemonic } = user;
 
-      let publicKey = payload.publicKey;
-      let publicKyberKey = payload.publicKyberKey ?? '';
+      let publicKey = payload.keys?.ecc ?? payload.publicKey;
+      let publicKyberKey = payload.keys?.kyber ?? '';
 
       if (payload.isNewUser && !publicKey) {
         const prCreatedUserResponse = await userService.preCreateUser(payload.sharedWith);
-        publicKey = prCreatedUserResponse.publicKey;
-        publicKyberKey = prCreatedUserResponse.publicKyberKey ?? '';
+        publicKey = prCreatedUserResponse.keys?.ecc ?? prCreatedUserResponse.publicKey;
+        publicKyberKey = prCreatedUserResponse.keys?.kyber ?? '';
       }
 
       if ((!publicKey && !payload.isNewUser) || !publicKey) {
         const publicKeyResponse = await userService.getPublicKeyByEmail(payload.sharedWith);
-        publicKey = publicKeyResponse.publicKey;
-        publicKyberKey = publicKeyResponse.publicKyberKey ?? '';
+        publicKey = publicKeyResponse.keys?.ecc ?? publicKeyResponse.publicKey;
+        publicKyberKey = publicKeyResponse.keys?.kyber ?? '';
       }
 
       const encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
