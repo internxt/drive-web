@@ -1,11 +1,11 @@
 import { beforeEach, afterAll, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
 import { screen, fireEvent, render } from '@testing-library/react';
 import WorkspaceGuestSingUpView from './WorkspaceGuestSignUp';
-import { userActions } from '../../../store/slices/user';
-import * as keysService from '../../../crypto/services/keys.service';
-import { encryptTextWithKey } from '../../../crypto/services/utils';
+import { userActions } from 'app/store/slices/user';
+import * as keysService from 'app/crypto/services/keys.service';
+import { encryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
+import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
 import { Buffer } from 'buffer';
 import { generateMnemonic } from 'bip39';
 
@@ -50,7 +50,7 @@ describe('onSubmit', () => {
       X: () => <div>Mocked X Icon</div>,
     }));
 
-    vi.mock('../../../auth/components/PasswordInput/PasswordInput', () => {
+    vi.mock('app/auth/components/PasswordInput/PasswordInput', () => {
       return {
         __esModule: true,
         default: vi.fn(({ register, ...props }) => (
@@ -67,29 +67,29 @@ describe('onSubmit', () => {
       };
     });
 
-    vi.mock('../../../auth/components/SignUp/useSignUp', () => ({
+    vi.mock('app/auth/components/SignUp/useSignUp', () => ({
       useSignUp: vi.fn().mockReturnValue({ doRegisterPreCreatedUser: vi.fn() }),
       parseUserSettingsEnsureKyberKeysAdded: vi.importActual,
     }));
 
-    vi.mock('../../../shared/components/PasswordStrengthIndicator', () => ({
+    vi.mock('app/shared/components/PasswordStrengthIndicator', () => ({
       default: {
         PasswordStrengthIndicator: () => <div>Mocked Password Strength Indicator</div>,
       },
     }));
 
-    vi.mock('../../../auth/services/auth.service', () => ({
+    vi.mock('app/auth/services/auth.service', () => ({
       getNewToken: vi.fn(),
     }));
 
-    vi.mock('../../../core/services/error.service', () => ({
+    vi.mock('app/core/services/error.service', () => ({
       default: {
         castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
         reportError: vi.fn(),
       },
     }));
 
-    vi.mock('../../../core/services/local-storage.service', () => ({
+    vi.mock('app/core/services/local-storage.service', () => ({
       default: {
         get: vi.fn(),
         clear: vi.fn(),
@@ -98,7 +98,7 @@ describe('onSubmit', () => {
       },
     }));
 
-    vi.mock('../../../core/services/navigation.service', () => ({
+    vi.mock('app/core/services/navigation.service', () => ({
       default: {
         push: vi.fn(),
         history: {
@@ -109,14 +109,14 @@ describe('onSubmit', () => {
       },
     }));
 
-    vi.mock('../../../core/types', () => ({
+    vi.mock('app/core/types', () => ({
       AppView: {
         Drive: vi.fn(),
         Signup: vi.fn(),
       },
     }));
 
-    vi.mock('../../../i18n/provider/TranslationProvider', () => ({
+    vi.mock('app/i18n/provider/TranslationProvider', () => ({
       useTranslationContext: vi.fn().mockReturnValue({
         translate: vi.fn().mockImplementation((value: string) => {
           return value;
@@ -124,7 +124,7 @@ describe('onSubmit', () => {
       }),
     }));
 
-    vi.mock('../../../shared/views/ExpiredLink/ExpiredLinkView', () => ({
+    vi.mock('app/shared/views/ExpiredLink/ExpiredLinkView', () => ({
       default: {
         ExpiredLink: vi.fn(),
       },
@@ -191,7 +191,7 @@ describe('onSubmit', () => {
       onChangePasswordHandler: vi.fn(),
     }));
 
-    vi.mock('../../../core/services/workspace.service', () => ({
+    vi.mock('app/core/services/workspace.service', () => ({
       default: {
         validateWorkspaceInvitation: vi.fn().mockImplementation(() => {
           return true;
@@ -199,29 +199,29 @@ describe('onSubmit', () => {
       },
     }));
 
-    vi.mock('../../../store/hooks', () => ({
+    vi.mock('app/store/hooks', () => ({
       useAppDispatch: vi.fn().mockReturnValue(vi.fn()),
     }));
 
-    vi.mock('../../../store/slices/plan', () => ({
+    vi.mock('app/store/slices/plan', () => ({
       planThunks: {
         initializeThunk: vi.fn(),
       },
     }));
 
-    vi.mock('../../../store/slices/products', () => ({
+    vi.mock('app/store/slices/products', () => ({
       productsThunks: {
         initializeThunk: vi.fn(),
       },
     }));
 
-    vi.mock('../../../store/slices/referrals', () => ({
+    vi.mock('app/store/slices/referrals', () => ({
       referralsThunks: {
         initializeThunk: vi.fn(),
       },
     }));
 
-    vi.mock('../../../store/slices/user', () => ({
+    vi.mock('app/store/slices/user', () => ({
       initializeUserThunk: vi.fn(),
       userActions: {
         setUser: vi.fn(),
