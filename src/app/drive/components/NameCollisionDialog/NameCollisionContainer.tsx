@@ -11,6 +11,8 @@ import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/sto
 import { uiActions } from '../../../store/slices/ui';
 import { DriveItemData } from '../../types';
 import { IRoot } from '../../../store/slices/storage/types';
+import { uploadMultipleFolder } from '../../../store/slices/storage/folderUtils/uploadFolders';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
@@ -36,6 +38,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
   const [driveRepeatedFolder, setDriveRepeatedFolder] = useState<DriveItemData[]>([]);
 
   const isOpen = useAppSelector((state: RootState) => state.ui.isNameCollisionDialogOpen);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const isMoveDialog = useMemo(() => !!moveDestinationFolderId, [moveDestinationFolderId]);
   const folderId = useMemo(
     () => moveDestinationFolderId ?? currentFolderId,
@@ -131,13 +134,15 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
 
     itemsToUpload.forEach((itemToUpload) => {
       if ((itemToUpload as IRoot).fullPathEdited) {
-        dispatch(
-          storageThunks.uploadMultipleFolderThunkNoCheck([
+        uploadMultipleFolder(
+          [
             {
               root: { ...(itemToUpload as IRoot) },
               currentFolderId: folderId,
             },
-          ]),
+          ],
+          selectedWorkspace,
+          { dispatch },
         ).then(() => {
           dispatch(fetchSortedFolderContentThunk(folderId));
         });
