@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.377",
+  "version": "v1.0.378",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -126,6 +126,7 @@
     "@internxt/eslint-config-internxt": "^1.0.3",
     "@internxt/prettier-config": "^1.0.1",
     "@playwright/test": "^1.44.1",
+    "@svgr/rollup": "^8.1.0",
     "@testing-library/dom": "^7.26.0",
     "@testing-library/jest-dom": "^6.6.2",
     "@testing-library/react": "^16.0.1",

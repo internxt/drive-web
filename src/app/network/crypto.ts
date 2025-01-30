@@ -135,7 +135,7 @@ export async function getEncryptedFile(
   const readable = encryptReadable(plainFile.stream(), cipher).getReader();
   const hasher = await getSha256Hasher();
   hasher.init();
-  const blobParts: ArrayBuffer[] = [];
+  const blobParts: Uint8Array[] = [];
 
   let done = false;
 
