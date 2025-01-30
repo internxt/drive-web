@@ -6,7 +6,7 @@ const sentryPlugin: AppPlugin = {
   install(): void {
     Sentry.init({
       dsn: process.env.REACT_APP_SENTRY_DSN,
-      integrations: [new Sentry.BrowserTracing()],
+      integrations: [Sentry.browserTracingIntegration()],
       tracesSampleRate: 0.3,
       debug: process.env.NODE_ENV !== 'production' && process.env.REACT_APP_DEBUG === 'true',
       environment: process.env.NODE_ENV,

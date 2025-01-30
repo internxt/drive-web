@@ -12,10 +12,6 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { userActions } from 'app/store/slices/user';
 import * as pgpService from 'app/crypto/services/pgp.service';
 
-if (typeof globalThis.process === 'undefined') {
-  globalThis.process = { env: {} } as any;
-}
-
 const originalEnv = process.env.REACT_APP_CRYPTO_SECRET;
 const originalSalt = process.env.REACT_APP_MAGIC_SALT;
 const originalIV = process.env.REACT_APP_MAGIC_IV;

@@ -15,11 +15,6 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { storageActions } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 
-if (typeof globalThis.process === 'undefined') {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  globalThis.process = { env: {} } as any;
-}
-
 vi.mock('app/store/slices/storage', () => ({
   storageActions: {
     setMoveDestinationFolderId: vi.fn(),
