@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Alert, Container } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { isMobile } from 'react-device-detect';

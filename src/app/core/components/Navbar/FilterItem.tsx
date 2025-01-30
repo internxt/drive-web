@@ -9,6 +9,7 @@ const FilterItem = ({ id, Icon, name, filters, setFilters }): JSX.Element => {
 
   return (
     <button
+      type="button"
       className={`${
         filters.includes(id)
           ? 'bg-primary/10 text-primary ring-primary/20 dark:bg-primary/20 dark:text-white dark:ring-primary/75'
