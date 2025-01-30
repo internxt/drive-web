@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { createFolder } from './createFolder';
 import { CreateFolderResponse, EncryptionVersion } from '@internxt/sdk/dist/drive/storage/types';
 import folderService from '../../../../drive/services/folder.service';
@@ -28,7 +28,6 @@ vi.mock('../storage.thunks', () => ({
     deleteItemsThunk: vi.fn(),
     goToFolderThunk: vi.fn(),
     uploadFolderThunk: vi.fn(),
-    uploadMultipleFolderThunkNoCheck: vi.fn(),
     updateItemMetadataThunk: vi.fn(),
     fetchRecentsThunk: vi.fn(),
     createFolderThunk: vi.fn(),
@@ -37,6 +36,23 @@ vi.mock('../storage.thunks', () => ({
     renameItemsThunk: vi.fn(),
     uploadSharedItemsThunk: vi.fn(),
   },
+}));
+
+vi.mock('../../../../drive/services/folder.service', () => ({
+  default: {
+    createFolder: vi.fn(),
+    createFolderByUuid: vi.fn(),
+    updateMetaData: vi.fn(),
+    moveFolder: vi.fn(),
+    moveFolderByUuid: vi.fn(),
+    fetchFolderTree: vi.fn(),
+    downloadFolderAsZip: vi.fn(),
+    addAllFoldersToZip: vi.fn(),
+    addAllFilesToZip: vi.fn(),
+    downloadSharedFolderAsZip: vi.fn(),
+  },
+  createFilesIterator: vi.fn(),
+  createFoldersIterator: vi.fn(),
 }));
 
 describe('checkCreateFolder', () => {
@@ -69,7 +85,7 @@ describe('checkCreateFolder', () => {
       uuid: 'uuid',
     };
 
-    vi.spyOn(folderService, 'createFolderByUuid').mockReturnValue([Promise.resolve(mockFolder), { cancel: vi.fn() }]);
+    (folderService.createFolderByUuid as Mock).mockReturnValue([Promise.resolve(mockFolder), { cancel: vi.fn() }]);
     vi.spyOn(tasksService, 'create').mockReturnValue('task-id');
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));

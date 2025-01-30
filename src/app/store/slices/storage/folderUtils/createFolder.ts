@@ -28,7 +28,7 @@ export const createFolder = async (
   currentFolderId: string,
   selectedWorkspace: WorkspaceData | null,
   { dispatch }: { dispatch: ThunkDispatch<RootState, unknown, AnyAction> },
-) => {
+): Promise<DriveFolderData> => {
   options = Object.assign({ showErrors: true }, options || {});
   const workspaceId = selectedWorkspace?.workspace?.id;
   let createdFolderPromise: Promise<CreateFolderResponse>;
