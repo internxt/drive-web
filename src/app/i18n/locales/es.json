@@ -1633,8 +1633,15 @@
         "actions": {
           "deactivate": "Desactivar miembro",
           "reactivate": "Reactivar miembro",
+          "leave": "Abandonar",
           "remove": "Eliminar miembro",
           "passwordChange": "Solicitar cambio de contraseña"
+        },
+        "leaveModal":{
+          "title": "Abandonar",
+          "description": "Perderás el acceso al Workspace y tu contenido será transferido al propietario",
+          "leave": "Abandonar",
+          "leaving": "Abandonando"
         }
       },
       "teams": {

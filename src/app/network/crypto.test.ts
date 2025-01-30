@@ -125,7 +125,7 @@ describe('Test crypto.ts functions', () => {
     ): Promise<[Blob, string]> {
       const readable = encryptReadable(plainFile.stream(), cipher).getReader();
       const hasher = new Sha256();
-      const blobParts: ArrayBuffer[] = [];
+      const blobParts: Uint8Array[] = [];
 
       let done = false;
 

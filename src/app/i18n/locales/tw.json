@@ -1616,9 +1616,16 @@
         },
         "actions": {
           "deactivate": "停用成員",
+          "leave": "離開",
           "reactivate": "重新啟用成員",
           "remove": "移除成員",
           "passwordChange": "要求更改密碼"
+        },
+        "leaveModal": {
+          "title": "離開",
+          "description": "您將失去對工作區的訪問權限，您的內容將轉移給擁有者",
+          "leave": "離開",
+          "leaving": "正在離開"
         }
       },
       "teams": {

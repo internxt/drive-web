@@ -446,8 +446,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           />
         )}
         <ShareWithTeamDialog item={props.selectedItems[0]} roles={roles} />
-        {/* TODO: Remove this div when styles works fine from internxt/ui */}
-        <div className={'left-5 border-primary/5 '} />
         <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
           header={[
             {
