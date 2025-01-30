@@ -72,7 +72,7 @@ describe('Encryption and Decryption', () => {
       notifyUser: false,
       notificationMessage: 'mock-notificationMessage',
       sharedWith: 'mock-sharedWith',
-      encryptionAlgorithm: 'mock-encryptionAlgorithm',
+      encryptionAlgorithm: 'mock-ecc',
       roleId: 'mock-roleId',
     };
 
@@ -124,7 +124,7 @@ describe('Encryption and Decryption', () => {
         notifyUser: mockPayload.notifyUser,
         notificationMessage: mockPayload.notificationMessage,
         encryptionKey: encryptionKey,
-        encryptionAlgorithm: mockPayload.encryptionAlgorithm,
+        encryptionAlgorithm: 'hybrid',
         roleId: mockPayload.roleId,
         persistPreviousSharing: true,
       }),
@@ -141,7 +141,7 @@ describe('Encryption and Decryption', () => {
       notifyUser: false,
       notificationMessage: 'mock-notificationMessage',
       sharedWith: 'mock-sharedWith',
-      encryptionAlgorithm: 'mock-encryptionAlgorithm',
+      encryptionAlgorithm: 'mock-ecc',
       roleId: 'mock-roleId',
     };
 
@@ -213,7 +213,7 @@ describe('Encryption and Decryption', () => {
       notifyUser: false,
       notificationMessage: 'mock-notificationMessage',
       sharedWith: 'mock-sharedWith',
-      encryptionAlgorithm: 'mock-encryptionAlgorithm',
+      encryptionAlgorithm: 'mock-ecc',
       roleId: 'mock-roleId',
     };
 
@@ -244,7 +244,10 @@ describe('Encryption and Decryption', () => {
     vi.spyOn(userService, 'preCreateUser').mockReturnValue(
       Promise.resolve({
         publicKey: keys.publicKeyArmored,
-        publicKyberKey: keys.publicKyberKeyBase64,
+        keys: {
+          kyber: keys.publicKyberKeyBase64,
+          ecc: keys.publicKeyArmored,
+        },
         user: {
           uuid: user.userId,
           email: user.email,
@@ -277,7 +280,7 @@ describe('Encryption and Decryption', () => {
         notifyUser: mockPayload.notifyUser,
         notificationMessage: mockPayload.notificationMessage,
         encryptionKey: encryptionKey,
-        encryptionAlgorithm: mockPayload.encryptionAlgorithm,
+        encryptionAlgorithm: 'hybrid',
         roleId: mockPayload.roleId,
         persistPreviousSharing: true,
       }),
@@ -294,7 +297,7 @@ describe('Encryption and Decryption', () => {
       notifyUser: false,
       notificationMessage: 'mock-notificationMessage',
       sharedWith: 'mock-sharedWith',
-      encryptionAlgorithm: 'mock-encryptionAlgorithm',
+      encryptionAlgorithm: 'mock-ecc',
       roleId: 'mock-roleId',
     };
 
@@ -378,7 +381,7 @@ describe('Encryption and Decryption', () => {
       notifyUser: false,
       notificationMessage: 'mock-notificationMessage',
       sharedWith: 'mock-sharedWith',
-      encryptionAlgorithm: 'mock-encryptionAlgorithm',
+      encryptionAlgorithm: 'mock-ecc',
       roleId: 'mock-roleId',
     };
 
@@ -406,7 +409,10 @@ describe('Encryption and Decryption', () => {
     vi.spyOn(shareService, 'inviteUserToSharedFolder').mockImplementation(mockShareService.inviteUserToSharedFolder);
 
     vi.spyOn(userService, 'getPublicKeyByEmail').mockReturnValue(
-      Promise.resolve({ publicKey: keys.publicKeyArmored, publicKyberKey: keys.publicKyberKeyBase64 }),
+      Promise.resolve({
+        publicKey: keys.publicKeyArmored,
+        keys: { kyber: keys.publicKyberKeyBase64, ecc: keys.publicKeyArmored },
+      }),
     );
 
     const getStateMock = vi.fn(() => mockRootState as RootState);
@@ -434,7 +440,7 @@ describe('Encryption and Decryption', () => {
         notifyUser: mockPayload.notifyUser,
         notificationMessage: mockPayload.notificationMessage,
         encryptionKey: encryptionKey,
-        encryptionAlgorithm: mockPayload.encryptionAlgorithm,
+        encryptionAlgorithm: 'hybrid',
         roleId: mockPayload.roleId,
         persistPreviousSharing: true,
       }),
@@ -451,7 +457,7 @@ describe('Encryption and Decryption', () => {
       notifyUser: false,
       notificationMessage: 'mock-notificationMessage',
       sharedWith: 'mock-sharedWith',
-      encryptionAlgorithm: 'mock-encryptionAlgorithm',
+      encryptionAlgorithm: 'mock-ecc',
       roleId: 'mock-roleId',
     };
 
