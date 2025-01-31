@@ -3,7 +3,6 @@
  */
 import { describe, expect, it, vi, Mock, beforeEach, beforeAll } from 'vitest';
 import localStorageService from '../../core/services/local-storage.service';
-import { Buffer } from 'buffer';
 import {
   generateNewKeys,
   encryptMessageWithPublicKey,
@@ -70,7 +69,7 @@ describe('Encryption and Decryption', () => {
     const mockUser: UserSettings = {
       uuid: 'mock-uuid',
       email: 'mock@test.com',
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKey: keys.privateKeyArmored,
       mnemonic: encryptedMnemonicInBase64,
       userId: 'mock-user-id',
       name: 'mock-name',
@@ -89,7 +88,7 @@ describe('Encryption and Decryption', () => {
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
-          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+          privateKey: keys.privateKeyArmored,
         },
         kyber: {
           publicKey: keys.publicKyberKeyBase64,
@@ -158,7 +157,7 @@ describe('Encryption and Decryption', () => {
     const mockOldUser: Partial<UserSettings> = {
       uuid: 'mock-uuid',
       email: 'mock@test.com',
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKey: keys.privateKeyArmored,
       mnemonic: encryptedMnemonicInBase64,
       userId: 'mock-user-id',
       name: 'mock-name',

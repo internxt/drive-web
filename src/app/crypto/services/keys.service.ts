@@ -105,7 +105,7 @@ export function parseAndDecryptUserKeys(
   password: string,
 ): { publicKey: string; privateKey: string; publicKyberKey: string; privateKyberKey: string } {
   const decryptedPrivateKey = decryptPrivateKey(user.privateKey, password);
-  const privateKey = user.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : '';
+  const privateKey = user.privateKey ? decryptedPrivateKey : '';
 
   let privateKyberKey = '';
   if (user.keys?.kyber?.privateKey) {

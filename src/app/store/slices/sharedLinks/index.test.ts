@@ -11,7 +11,6 @@ import {
 } from '../../../crypto/services/pgp.service';
 import navigationService from 'app/core/services/navigation.service';
 import { RootState } from '../..';
-import { Buffer } from 'buffer';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import userService from '../../../auth/services/user.service';
 import shareService from 'app/share/services/share.service';
@@ -111,7 +110,7 @@ describe('Encryption and Decryption', () => {
     const { encryptionKey = '' } = inviteUserToSharedFolderInput;
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64: encryptionKey,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
       privateKyberKeyInBase64: keys.privateKyberKeyBase64,
     });
 
@@ -180,7 +179,7 @@ describe('Encryption and Decryption', () => {
     const { encryptionKey = '' } = inviteUserToSharedFolderInput;
     const decryptedMessage = await decryptMessageWithPrivateKey({
       encryptedMessage: atob(encryptionKey),
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
     });
 
     expect(decryptedMessage).toEqual(mockUser.mnemonic);
@@ -267,7 +266,7 @@ describe('Encryption and Decryption', () => {
     const { encryptionKey = '' } = inviteUserToSharedFolderInput;
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64: encryptionKey,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
       privateKyberKeyInBase64: keys.privateKyberKeyBase64,
     });
 
@@ -347,7 +346,7 @@ describe('Encryption and Decryption', () => {
     const { encryptionKey = '' } = inviteUserToSharedFolderInput;
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64: encryptionKey,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
       privateKyberKeyInBase64: '',
     });
 
@@ -427,7 +426,7 @@ describe('Encryption and Decryption', () => {
     const { encryptionKey = '' } = inviteUserToSharedFolderInput;
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64: encryptionKey,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
       privateKyberKeyInBase64: keys.privateKyberKeyBase64,
     });
 
@@ -498,7 +497,7 @@ describe('Encryption and Decryption', () => {
     const { encryptionKey = '' } = inviteUserToSharedFolderInput;
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64: encryptionKey,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
       privateKyberKeyInBase64: '',
     });
 
