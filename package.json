@@ -14,7 +14,8 @@
     "@phosphor-icons/react": "^2.1.7",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.6.0",
-    "@sentry/react": "^7.100.0",
+    "@sentry/react": "^7.1.0",
+    "@sentry/tracing": "^7.1.0",
     "@stripe/react-stripe-js": "^2.7.1",
     "@stripe/stripe-js": "^3.5.0",
     "@typeform/embed-react": "^1.19.0",
@@ -41,7 +42,7 @@
     "idb": "^6.1.5",
     "js-file-download": "^0.4.12",
     "jszip": "=3.2.2",
-    "lint-staged": "^15.2.10",
+    "lint-staged": "^13.1.0",
     "lodash": "^4.17.21",
     "openpgp": "^5.9.0",
     "os-browserify": "^0.3.0",
@@ -65,7 +66,7 @@
     "react-international-phone": "^4.3.0",
     "react-live-chat-loader": "^2.8.2",
     "react-loading-skeleton": "^2.2.0",
-    "react-pdf": "^9.0.0",
+    "react-pdf": "^7.7.3",
     "react-popper": "^2.3.0",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.3.4",
@@ -106,17 +107,6 @@
     "lint:fix": "yarn run lint:ts:fix && yarn run lint:scss:fix",
     "analyze": "cross-env ANALYZE=true yarn build",
     "add:npmrc": "echo \"registry=https://registry.yarnpkg.com/\" >> .npmrc && echo \"@internxt:registry=https://npm.pkg.github.com\" >> .npmrc && echo \"//npm.pkg.github.com/:_authToken=$NPM_TOKEN\" >> .npmrc && echo \"always-auth=true\" >> .npmrc"
-  },
-  "resolutions": {
-    "react-scripts/webpack-dev-server/express/path-to-regexp": ">=0.1.12",
-    "react-scripts/workbox-webpack-plugin/workbox-build/rollup": ">=2.79.2",
-    "react-scripts/**/nth-check": ">=2.0.1",
-    "react-scripts/**/micromatch": ">=4.0.8",
-    "react-scripts/**/@babel/traverse": ">=7.23.2",
-    "react-scripts/**/follow-redirects": ">=1.15.6",      
-    "@internxt/sdk/axios": ">=0.28.0",
-    "@internxt/inxt-js/axios": ">=0.28.0",
-    "@internxt/inxt-js/axios/follow-redirects": ">=1.15.6"
   },
   "browserslist": {
     "production": [
