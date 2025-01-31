@@ -93,7 +93,7 @@ describe('Encryption and Decryption', () => {
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
-      privateKyberKeyInBase64: keys.privateKyberKeyBase64,
+      privateKyberKeyInBase64: Buffer.from(keys.privateKyberKeyBase64).toString('base64'),
     });
 
     expect(keys).toHaveProperty('privateKeyArmored');
@@ -182,7 +182,7 @@ describe('Encryption and Decryption', () => {
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
-      privateKyberKeyInBase64: keys.privateKyberKeyBase64,
+      privateKyberKeyInBase64: Buffer.from(keys.privateKyberKeyBase64).toString('base64'),
     });
 
     const oldDecryptedMessage = await decryptMessageWithPrivateKey({

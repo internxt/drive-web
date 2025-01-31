@@ -93,7 +93,7 @@ describe('Encryption and Decryption', () => {
         },
         kyber: {
           publicKey: keys.publicKyberKeyBase64,
-          privateKey: keys.privateKyberKeyBase64,
+          privateKey: Buffer.from(keys.privateKyberKeyBase64).toString('base64'),
         },
       },
       appSumoDetails: null,

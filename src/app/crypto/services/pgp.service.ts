@@ -123,7 +123,10 @@ export const hybridDecryptMessageWithPrivateKey = async ({
     const kyberCiphertextBase64 = ciphertexts[1];
     eccCiphertextStr = ciphertexts[2];
 
-    const privateKyberKey = Buffer.from(privateKyberKeyInBase64, 'base64');
+    //TODO: remove once figuring out why there is double Base64
+    const privateKyberKeyStillInBase64 = Buffer.from(privateKyberKeyInBase64, 'base64').toString();
+
+    const privateKyberKey = Buffer.from(privateKyberKeyStillInBase64, 'base64');
     const kyberCiphertext = Buffer.from(kyberCiphertextBase64, 'base64');
     const decapsulate = await kem.decapsulate(new Uint8Array(kyberCiphertext), new Uint8Array(privateKyberKey));
     kyberSecret = decapsulate.sharedSecret;

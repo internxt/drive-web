@@ -112,7 +112,7 @@ describe('Encryption and Decryption', () => {
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64: encryptionKey,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
-      privateKyberKeyInBase64: keys.privateKyberKeyBase64,
+      privateKyberKeyInBase64: Buffer.from(keys.privateKyberKeyBase64).toString('base64'),
     });
 
     expect(decryptedMessage).toEqual(mockUser.mnemonic);
@@ -268,7 +268,7 @@ describe('Encryption and Decryption', () => {
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64: encryptionKey,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
-      privateKyberKeyInBase64: keys.privateKyberKeyBase64,
+      privateKyberKeyInBase64: Buffer.from(keys.privateKyberKeyBase64).toString('base64'),
     });
 
     expect(decryptedMessage).toEqual(mockUser.mnemonic);
@@ -428,7 +428,7 @@ describe('Encryption and Decryption', () => {
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64: encryptionKey,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
-      privateKyberKeyInBase64: keys.privateKyberKeyBase64,
+      privateKyberKeyInBase64: Buffer.from(keys.privateKyberKeyBase64).toString('base64'),
     });
 
     expect(decryptedMessage).toEqual(mockUser.mnemonic);
