@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { describe, expect, it, vi, beforeEach, beforeAll } from 'vitest';
-import { sharedThunks, ShareFileWithUserPayload } from './index';
+import { sharedThunks, ShareFileWithUserPayload, HYBRID_ALGORITHM, STANDARD_ALGORITHM } from './index';
 const { shareItemWithUser } = sharedThunks;
 import {
   generateNewKeys,
@@ -124,7 +124,7 @@ describe('Encryption and Decryption', () => {
         notifyUser: mockPayload.notifyUser,
         notificationMessage: mockPayload.notificationMessage,
         encryptionKey: encryptionKey,
-        encryptionAlgorithm: 'hybrid',
+        encryptionAlgorithm: HYBRID_ALGORITHM,
         roleId: mockPayload.roleId,
         persistPreviousSharing: true,
       }),
@@ -192,7 +192,7 @@ describe('Encryption and Decryption', () => {
         notifyUser: mockPayload.notifyUser,
         notificationMessage: mockPayload.notificationMessage,
         encryptionKey: encryptionKey,
-        encryptionAlgorithm: 'ed25519',
+        encryptionAlgorithm: STANDARD_ALGORITHM,
         roleId: mockPayload.roleId,
         persistPreviousSharing: true,
       }),
@@ -280,7 +280,7 @@ describe('Encryption and Decryption', () => {
         notifyUser: mockPayload.notifyUser,
         notificationMessage: mockPayload.notificationMessage,
         encryptionKey: encryptionKey,
-        encryptionAlgorithm: 'hybrid',
+        encryptionAlgorithm: HYBRID_ALGORITHM,
         roleId: mockPayload.roleId,
         persistPreviousSharing: true,
       }),
@@ -360,7 +360,7 @@ describe('Encryption and Decryption', () => {
         notifyUser: mockPayload.notifyUser,
         notificationMessage: mockPayload.notificationMessage,
         encryptionKey: encryptionKey,
-        encryptionAlgorithm: 'ed25519',
+        encryptionAlgorithm: STANDARD_ALGORITHM,
         roleId: mockPayload.roleId,
         persistPreviousSharing: true,
       }),
@@ -440,7 +440,7 @@ describe('Encryption and Decryption', () => {
         notifyUser: mockPayload.notifyUser,
         notificationMessage: mockPayload.notificationMessage,
         encryptionKey: encryptionKey,
-        encryptionAlgorithm: 'hybrid',
+        encryptionAlgorithm: HYBRID_ALGORITHM,
         roleId: mockPayload.roleId,
         persistPreviousSharing: true,
       }),
@@ -511,7 +511,7 @@ describe('Encryption and Decryption', () => {
         notifyUser: mockPayload.notifyUser,
         notificationMessage: mockPayload.notificationMessage,
         encryptionKey: encryptionKey,
-        encryptionAlgorithm: 'ed25519',
+        encryptionAlgorithm: STANDARD_ALGORITHM,
         roleId: mockPayload.roleId,
         persistPreviousSharing: true,
       }),

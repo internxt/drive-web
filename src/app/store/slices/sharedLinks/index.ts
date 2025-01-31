@@ -12,6 +12,9 @@ import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
 import { hybridEncryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 
+export const HYBRID_ALGORITHM = 'hybrid';
+export const STANDARD_ALGORITHM = 'ed25519';
+
 export interface ShareLinksState {
   isLoadingRoles: boolean;
   roles: Role[];
@@ -77,7 +80,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         publicKyberKeyBase64: publicKyberKey,
       });
 
-      const encryptionAlgorithm = publicKyberKey !== '' ? 'hybrid' : 'ed25519';
+      const encryptionAlgorithm = publicKyberKey !== '' ? HYBRID_ALGORITHM : STANDARD_ALGORITHM;
 
       await shareService.inviteUserToSharedFolder({
         itemId: payload.itemId,
