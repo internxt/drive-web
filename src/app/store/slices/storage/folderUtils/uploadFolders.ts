@@ -113,7 +113,6 @@ export const uploadMultipleFolder = async (
   const memberId = selectedWorkspace?.workspaceUser?.memberId;
 
   for (const { root, currentFolderId, options: payloadOptions, taskId, abortController } of payloadWithTaskId) {
-    console.time('multiFolder-upload');
     const options = { withNotification: true, ...payloadOptions };
 
     let alreadyUploaded = 0;
@@ -197,8 +196,6 @@ export const uploadMultipleFolder = async (
       while (uploadFolderQueue.running() > 0 || uploadFolderQueue.length() > 0) {
         await uploadFolderQueue.drain();
       }
-
-      console.timeEnd('multiFolder-upload');
 
       tasksService.updateTask({
         taskId: taskId,
