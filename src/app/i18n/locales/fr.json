@@ -5,7 +5,7 @@
   },
   "featuresBanner": {
     "label": "Économisez 80% !",
-    "title": "Surprise du Père Noël !",
+    "title": "Faites votre jeu pour la confidentialité !",
     "subtitle": "Thème de l'application Web de Noël + Chance de gagner jusqu'à 10 To de stockage !",
     "cta": "Choisissez votre plan",
     "guarantee": "Garantie de remboursement de 30 jours",
@@ -16,8 +16,8 @@
       "Open source et audité",
       "Transferts cryptés de bout en bout",
       "Aucun accès non autorisé",
-      "L'offre se termine ",
-      "le 7 janvier"
+      "Thème Super Bowl gratuit pour votre application web",
+      "Offre se termine le 9 février"
     ]
   },
   "valentinesBanner": {
@@ -49,7 +49,8 @@
     "system": "Système",
     "starwars": "Star Wars",
     "halloween": "Halloween",
-    "christmas": "Noël"
+    "christmas": "Noël",
+    "superBowl": "Super Bowl"
   },
   "auth": {
     "email": "Email",

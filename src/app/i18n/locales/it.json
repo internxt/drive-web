@@ -10,7 +10,7 @@
   },
   "featuresBanner": {
     "label": "Risparmia l'80%!",
-    "title": "Sorpresa di Babbo Natale!",
+    "title": "Fai la tua mossa per la privacy!",
     "subtitle": "Tema Web App di Natale + Possibilità di vincere fino a 10TB di spazio di archiviazione!",
     "cta": "Scegli il tuo piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
@@ -21,8 +21,8 @@
       "Open source e verificato",
       "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
-      "L'offerta termina il",
-      "7 gennaio"
+     "Tema Super Bowl gratuito per la tua Web App",
+      "Offerta termina il 9 febbraio"
     ]
   },
   "banner": {
@@ -70,7 +70,8 @@
     "system": "Sistema",
     "starwars": "Star Wars",
     "halloween": "Halloween",
-    "christmas": "Natale"
+    "christmas": "Natale",
+    "superBowl": "Super Bowl"
   },
   "auth": {
     "email": "Email",
