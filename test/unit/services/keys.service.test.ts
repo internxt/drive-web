@@ -97,6 +97,7 @@ describe('Generate keys', () => {
     expect(decryptedKeys.privateKey).toBe(privateKey);
     expect(decryptedKeys.privateKyberKey).toBe(privateKyberKeyBase64);
   });
+
   it('should correctly decrypt private keys without kyber', async () => {
     const password = 'test pwd';
     const keys = await getKeys(password);
@@ -112,6 +113,17 @@ describe('Generate keys', () => {
     expect(decryptedKeys.publicKey).toBe(keys.ecc.publicKey);
     expect(decryptedKeys.publicKyberKey).toBe('');
     expect(decryptedKeys.privateKey).toBe(privateKey);
+    expect(decryptedKeys.privateKyberKey).toBe('');
+  });
+
+  it('should return empty strings when no keys', async () => {
+    const password = 'test pwd';
+    const user: Partial<UserSettings> = {};
+    const decryptedKeys = parseAndDecryptUserKeys(user as UserSettings, password);
+
+    expect(decryptedKeys.publicKey).toBe('');
+    expect(decryptedKeys.publicKyberKey).toBe('');
+    expect(decryptedKeys.privateKey).toBe('');
     expect(decryptedKeys.privateKyberKey).toBe('');
   });
 });
