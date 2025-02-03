@@ -1,12 +1,12 @@
+import errorService from 'app/core/services/error.service';
+import AppError from 'app/core/types';
+import { DriveFolderData } from 'app/drive/types';
+import { createFolder } from 'app/store/slices/storage/folderUtils/createFolder';
+import tasksService from 'app/tasks/services/tasks.service';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import tasksService from '../../../../tasks/services/tasks.service';
-import errorService from '../../../../core/services/error.service';
-import AppError from '../../../../core/types';
-import { DriveFolderData } from '../../../../drive/types';
-import { uploadMultipleFolder } from './uploadFolders';
-import { createFolder } from './createFolder';
+import { uploadFoldersWithManager } from './UploadFolderManager';
 
-vi.mock('../storage.thunks', () => ({
+vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
     initializeThunk: vi.fn(),
     resetNamePathThunk: vi.fn(),
@@ -29,7 +29,7 @@ vi.mock('../storage.thunks', () => ({
   storageExtraReducers: vi.fn(),
 }));
 
-vi.mock('../../plan', () => ({
+vi.mock('app/store/slices/plan', () => ({
   default: {
     initializeThunk: vi.fn(),
     fetchLimitThunk: vi.fn(),
@@ -50,7 +50,7 @@ vi.mock('app/drive/services/download.service/downloadFolder', () => ({
   },
 }));
 
-vi.mock('./createFolder', () => ({
+vi.mock('app/store/slices/storage/folderUtils/createFolder', () => ({
   createFolder: vi.fn(),
 }));
 
@@ -90,8 +90,8 @@ describe('checkUploadFolders', () => {
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
 
-    await uploadMultipleFolder(
-      [
+    await uploadFoldersWithManager({
+      payload: [
         {
           currentFolderId: 'currentFolderId',
           root: {
@@ -106,9 +106,9 @@ describe('checkUploadFolders', () => {
           },
         },
       ],
-      null,
-      { dispatch: mockDispatch },
-    );
+      selectedWorkspace: null,
+      dispatch: mockDispatch,
+    });
 
     expect(createFolderSpy).toHaveBeenCalledOnce();
   });
@@ -165,8 +165,8 @@ describe('checkUploadFolders', () => {
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
 
-    await uploadMultipleFolder(
-      [
+    await uploadFoldersWithManager({
+      payload: [
         {
           currentFolderId: 'currentFolderId',
           root: {
@@ -189,9 +189,9 @@ describe('checkUploadFolders', () => {
           },
         },
       ],
-      null,
-      { dispatch: mockDispatch },
-    );
+      selectedWorkspace: null,
+      dispatch: mockDispatch,
+    });
 
     expect(createFolderSpy).toHaveBeenCalledTimes(2);
   });
