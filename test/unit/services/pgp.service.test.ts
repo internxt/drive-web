@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-import { Buffer } from 'buffer';
 import { describe, expect, it } from 'vitest';
 import {
   decryptMessageWithPrivateKey,
@@ -92,7 +91,7 @@ describe('Encryption and Decryption', () => {
 
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
       privateKyberKeyInBase64: keys.privateKyberKeyBase64,
     });
 
@@ -117,7 +116,7 @@ describe('Encryption and Decryption', () => {
     await expect(
       hybridDecryptMessageWithPrivateKey({
         encryptedMessageInBase64,
-        privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+        privateKeyInBase64: keys.privateKeyArmored,
       }),
     ).rejects.toThrowError('Attempted to decrypt hybrid ciphertex without Kyber key');
   });
@@ -137,7 +136,7 @@ describe('Encryption and Decryption', () => {
 
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64: encryptedMessageStr,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
     });
 
     expect(decryptedMessage).toEqual(originalMessage);
@@ -156,12 +155,12 @@ describe('Encryption and Decryption', () => {
 
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
     });
 
     const oldDecryptedMessage = await decryptMessageWithPrivateKey({
       encryptedMessage: atob(encryptedMessageInBase64),
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
     });
 
     expect(decryptedMessage).toEqual(oldDecryptedMessage);
@@ -181,13 +180,13 @@ describe('Encryption and Decryption', () => {
 
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
       privateKyberKeyInBase64: keys.privateKyberKeyBase64,
     });
 
     const oldDecryptedMessage = await decryptMessageWithPrivateKey({
       encryptedMessage: atob(encryptedMessageInBase64),
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
     });
 
     expect(decryptedMessage).toEqual(oldDecryptedMessage);
@@ -223,7 +222,7 @@ describe('Encryption and Decryption', () => {
     // Step 4: Decrypt the message using the private key
     const decryptedMessage = await decryptMessageWithPrivateKey({
       encryptedMessage,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
     });
 
     // Step 5: Assert that the decrypted message matches the original message

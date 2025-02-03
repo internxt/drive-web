@@ -172,8 +172,7 @@ export const decryptMessageWithPrivateKey = async ({
 }): Promise<MaybeStream<Data> & WebStream<Uint8Array>> => {
   const openpgp = await getOpenpgp();
 
-  const privateKeyArmored = Buffer.from(privateKeyInBase64, 'base64').toString();
-  const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyArmored });
+  const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyInBase64 });
 
   const message = await openpgp.readMessage({
     armoredMessage: encryptedMessage,
