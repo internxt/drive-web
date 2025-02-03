@@ -88,7 +88,7 @@ export function useSignUp(
 } {
   const updateInfo: UpdateInfoFunction = async (email: string, password: string) => {
     // Setup hash and salt
-    const hashObj = passToHash({ password });
+    const hashObj = await passToHash({ password });
     const encPass = encryptText(hashObj.hash);
     const encSalt = encryptText(hashObj.salt);
 
@@ -135,7 +135,7 @@ export function useSignUp(
   };
 
   const doRegister = async (email: string, password: string, captcha: string) => {
-    const hashObj = passToHash({ password });
+    const hashObj = await passToHash({ password });
     const encPass = encryptText(hashObj.hash);
     const encSalt = encryptText(hashObj.salt);
     const mnemonic = bip39.generateMnemonic(256);
@@ -198,7 +198,7 @@ export function useSignUp(
     password: string,
     captcha: string,
   ): Promise<RegisterDetails> => {
-    const hashObj = passToHash({ password });
+    const hashObj = await passToHash({ password });
     const encPass = encryptText(hashObj.hash);
     const encSalt = encryptText(hashObj.salt);
     const mnemonic = bip39.generateMnemonic(256);

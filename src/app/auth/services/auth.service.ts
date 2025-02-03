@@ -138,9 +138,9 @@ export const doLogin = async (
     tfaCode: twoFactorCode,
   };
   const cryptoProvider: CryptoProvider = {
-    encryptPasswordHash(password: Password, encryptedSalt: string): string {
+    async encryptPasswordHash(password: Password, encryptedSalt: string): Promise<string> {
       const salt = decryptText(encryptedSalt);
-      const hashObj = passToHash({ password, salt });
+      const hashObj = await passToHash({ password, salt });
       return encryptText(hashObj.hash);
     },
     async generateKeys(password: Password): Promise<Keys> {
@@ -225,7 +225,7 @@ export const getPasswordDetails = async (
   }
 
   // Encrypt  the password
-  const hashedCurrentPassword = passToHash({ password: currentPassword, salt }).hash;
+  const hashedCurrentPassword = (await passToHash({ password: currentPassword, salt })).hash;
   const encryptedCurrentPassword = encryptText(hashedCurrentPassword);
 
   return { salt, hashedCurrentPassword, encryptedCurrentPassword };
@@ -241,7 +241,7 @@ const updateCredentialsWithToken = async (
     throw new Error('Invalid mnemonic');
   }
 
-  const hashedNewPassword = passToHash({ password: newPassword });
+  const hashedNewPassword = await passToHash({ password: newPassword });
   const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
   const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
 
@@ -266,7 +266,7 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
 
   const encryptedNewMnemonic = encryptTextWithKey(newMnemonic, newPassword);
 
-  const hashedNewPassword = passToHash({ password: newPassword });
+  const hashedNewPassword = await passToHash({ password: newPassword });
   const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
   const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
 
@@ -286,7 +286,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const { encryptedCurrentPassword } = await getPasswordDetails(currentPassword);
 
   // Encrypt the new password
-  const hashedNewPassword = passToHash({ password: newPassword });
+  const hashedNewPassword = await passToHash({ password: newPassword });
   const encryptedNewPassword = encryptText(hashedNewPassword.hash);
   const encryptedNewSalt = encryptText(hashedNewPassword.salt);
 
@@ -342,13 +342,13 @@ export const generateNew2FA = (): Promise<TwoFactorAuthQR> => {
   return authClient.generateTwoFactorAuthQR(token);
 };
 
-export const deactivate2FA = (
+export const deactivate2FA = async (
   passwordSalt: string,
   deactivationPassword: string,
   deactivationCode: string,
 ): Promise<void> => {
   const salt = decryptText(passwordSalt);
-  const hashObj = passToHash({ password: deactivationPassword, salt });
+  const hashObj = await passToHash({ password: deactivationPassword, salt });
   const encPass = encryptText(hashObj.hash);
   const token = localStorageService.get('xNewToken') || undefined;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
@@ -372,7 +372,7 @@ export const getNewToken = async (): Promise<string> => {
 
 export async function areCredentialsCorrect(password: string): Promise<boolean> {
   const salt = await getSalt();
-  const { hash: hashedPassword } = passToHash({ password, salt });
+  const { hash: hashedPassword } = await passToHash({ password, salt });
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const token = localStorageService.get('xNewToken') ?? undefined;
   return authClient.areCredentialsCorrect(hashedPassword, token);
