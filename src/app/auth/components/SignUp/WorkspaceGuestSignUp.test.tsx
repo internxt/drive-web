@@ -342,7 +342,7 @@ describe('onSubmit', () => {
         },
         kyber: {
           publicKey: keys.kyber.publicKey ?? '',
-          privateKey: Buffer.from(decryptedPrivateKyberKey).toString('base64'),
+          privateKey: decryptedPrivateKyberKey,
         },
       },
       appSumoDetails: null,
