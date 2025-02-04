@@ -102,7 +102,7 @@ const stopUploadTask = async (
   await Promise.all(promises);
 };
 
-function countItemsUnderRoot(root: IRoot): number {
+const countItemsUnderRoot = (root: IRoot): number => {
   let count = 1;
 
   const queueOfFolders: Array<IRoot> = [root];
@@ -118,7 +118,7 @@ function countItemsUnderRoot(root: IRoot): number {
   }
 
   return count;
-}
+};
 
 const wait = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
