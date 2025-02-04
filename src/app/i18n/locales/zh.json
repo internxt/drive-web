@@ -5,7 +5,7 @@
   },
   "featuresBanner": {
     "label": "节省80%！",
-    "title": "圣诞老人惊喜",
+    "title": "为隐私行动起来！",
     "subtitle": "圣诞老人惊喜！",
     "cta": "选择您的计划",
     "guarantee": "30天退款保证",
@@ -16,8 +16,8 @@
       "开源并已审核",
       "端到端加密传输",
       "无未授权访问",
-      "优惠截止至12月3日",
-      "01月07日"
+      "免費超級盃主題適用於您的Web應用",
+      "優惠截止至2月9日"
     ]
   },
   "valentinesBanner": {
@@ -70,7 +70,8 @@
     "system": "系统",
     "starwars": "Star Wars",
     "halloween": "Halloween",
-    "christmas": "圣诞节"
+    "christmas": "圣诞节",
+    "superBowl": "Super Bowl"
   },
   "auth": {
     "email": "电子邮件",

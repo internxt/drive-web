@@ -5,7 +5,7 @@
   },
   "featuresBanner": {
     "label": "Save 80%!",
-    "title": "Secret Santa surprise! ",
+    "title": "Make your privacy play! ",
     "subtitle": "Christmas Web App Theme + Chance to win up to 10TB of storage!",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
@@ -16,8 +16,8 @@
       "Open-source and audited",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends",
-      "January 7th"
+      "Free Super Bowl Wep App theme",
+      "Offer ends February 9th"
     ]
   },
   "valentinesBanner": {
@@ -70,7 +70,8 @@
     "system": "System",
     "starwars": "Star Wars",
     "halloween": "Halloween",
-    "christmas": "Christmas"
+    "christmas": "Christmas",
+    "superBowl": "Super Bowl"
   },
   "auth": {
     "email": "Email",
