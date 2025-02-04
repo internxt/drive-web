@@ -230,9 +230,7 @@ describe('logIn', () => {
     const plainPrivateKeyInBase64 = Buffer.from(
       keysService.decryptPrivateKey(mockUser.keys.ecc.privateKey, mockPassword),
     ).toString('base64');
-    const plainPrivateKyberKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.keys.kyber.privateKey, mockPassword),
-    ).toString('base64');
+    const plainPrivateKyberKeyInBase64 = keysService.decryptPrivateKey(mockUser.keys.kyber.privateKey, mockPassword);
 
     const mockClearUser = {
       ...mockUser,
@@ -398,9 +396,7 @@ describe('signUp', () => {
     const plainPrivateKeyInBase64 = Buffer.from(
       keysService.decryptPrivateKey(mockUser.keys.ecc.privateKey, mockPassword),
     ).toString('base64');
-    const plainPrivateKyberKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.keys.kyber.privateKey, mockPassword),
-    ).toString('base64');
+    const plainPrivateKyberKeyInBase64 = keysService.decryptPrivateKey(mockUser.keys.kyber.privateKey, mockPassword);
 
     const mockClearUser = {
       ...mockUser,
@@ -599,8 +595,7 @@ describe('Change password', () => {
 
     const privateKyberKeyEncrypted = inputs.keys.encryptedPrivateKyberKey;
     const privateKyberKey = keysService.decryptPrivateKey(privateKyberKeyEncrypted, mockNewPassword);
-    const privateKyberKeyBase64 = Buffer.from(privateKyberKey).toString('base64');
-    expect(privateKyberKeyBase64).toBe(mockUser.keys.kyber.privateKey);
+    expect(privateKyberKey).toBe(mockUser.keys.kyber.privateKey);
   });
 
   it('changePassword should correctly re-encrypt keys for old users', async () => {
