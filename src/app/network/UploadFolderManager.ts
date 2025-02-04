@@ -1,4 +1,4 @@
-import { TaskStatus, TaskType, UploadFolderTask } from '../tasks/types';
+import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFolderTask } from '../tasks/types';
 import { DriveFolderData, DriveItemData } from '../drive/types';
 import { IRoot } from '../store/slices/storage/types';
 import tasksService from '../tasks/services/tasks.service';
@@ -151,16 +151,24 @@ class UploadFoldersManager {
 
     if (abortController.signal.aborted) return;
 
-    const createdFolder = await createFolder(
-      {
-        parentFolderId: level.folderId as string,
-        folderName: level.name,
-        options: { relatedTaskId: taskId, showErrors: false },
-      },
-      currentFolderId,
-      this.selectedWorkspace,
-      { dispatch: this.dispatch },
-    );
+    let createdFolder: DriveFolderData;
+
+    try {
+      createdFolder = await createFolder(
+        {
+          parentFolderId: level.folderId as string,
+          folderName: level.name,
+          options: { relatedTaskId: taskId, showErrors: false },
+        },
+        currentFolderId,
+        this.selectedWorkspace,
+        { dispatch: this.dispatch },
+      );
+    } catch (error) {
+      this.stopUploadTask(taskId, abortController);
+      this.killQueueAndNotifyError(taskId);
+      return;
+    }
 
     if (!this.tasksInfo[taskId].rootFolderItem) {
       this.tasksInfo[taskId].rootFolderItem = createdFolder;
@@ -172,7 +180,7 @@ class UploadFoldersManager {
       taskId,
       merge: {
         progress: this.tasksInfo[taskId].progress.itemsUploaded / this.tasksInfo[taskId].progress.totalItems,
-        stop: () => stopUploadTask(abortController, this.dispatch, taskId, this.tasksInfo[taskId].rootFolderItem),
+        stop: () => this.stopUploadTask(taskId, abortController),
       },
     });
 
@@ -199,6 +207,11 @@ class UploadFoldersManager {
         .unwrap()
         .then(() => {
           this.tasksInfo[taskId].progress.itemsUploaded += level.childrenFiles.length;
+        })
+        .catch(() => {
+          this.stopUploadTask(taskId, abortController);
+          this.killQueueAndNotifyError(taskId);
+          return;
         });
     }
 
@@ -297,9 +310,28 @@ class UploadFoldersManager {
         },
       });
 
+      const cancelQueueListener = (task?: TaskData) => {
+        const isCurrentTask = task && task.id === taskId;
+        if (isCurrentTask && task.status === TaskStatus.Cancelled) {
+          this.uploadFoldersQueue.kill();
+        }
+      };
+
+      const updateQueueListener = (task?: TaskData) => {
+        const isCurrentTask = task && task.id === taskId;
+        if (isCurrentTask && task.status === TaskStatus.InProcess) {
+          this.uploadFoldersQueue.resume();
+        } else if (isCurrentTask && task.status === TaskStatus.Paused) {
+          this.uploadFoldersQueue.pause();
+        }
+      };
+
       try {
         root.folderId = currentFolderId;
         this.uploadFoldersQueue.push(taskFolder);
+
+        tasksService.addListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
+        tasksService.addListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
 
         while (this.uploadFoldersQueue.running() > 0 || this.uploadFoldersQueue.length() > 0) {
           await this.uploadFoldersQueue.drain();
@@ -335,6 +367,9 @@ class UploadFoldersManager {
           errorService.reportError(castedError);
           continue;
         }
+      } finally {
+        tasksService.removeListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
+        tasksService.removeListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
       }
     }
   };
