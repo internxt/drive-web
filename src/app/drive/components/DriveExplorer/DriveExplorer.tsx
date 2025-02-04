@@ -378,7 +378,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, [currentFolderId]);
 
   const onUploadFolderButtonClicked = useCallback((): void => {
-    console.log('llamada');
     errorService.addBreadcrumb({
       level: 'info',
       category: 'button',
