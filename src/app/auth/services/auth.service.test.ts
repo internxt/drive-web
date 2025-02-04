@@ -252,6 +252,7 @@ describe('logIn', () => {
 
     expect(result).toEqual({
       token: mockToken,
+      newToken: mockNewToken,
       user: mockClearUser,
       mnemonic: mockMnemonic,
     });
@@ -339,6 +340,7 @@ describe('logIn', () => {
 
     expect(result).toEqual({
       token: mockToken,
+      newToken: mockNewToken,
       user: mockClearUser,
       mnemonic: mockMnemonic,
     });
@@ -421,6 +423,7 @@ describe('signUp', () => {
 
     expect(result).toEqual({
       token: mockToken,
+      newToken: mockNewToken,
       user: {
         ...mockUser,
         mnemonic: mockMnemonicNotEnc,
@@ -530,6 +533,7 @@ describe('signUp', () => {
 
     expect(result).toEqual({
       token: mockToken,
+      newToken: mockNewToken,
       user: {
         ...mockUser,
         mnemonic: mockMnemonicNotEnc,
