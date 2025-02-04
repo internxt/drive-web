@@ -373,7 +373,7 @@ class UploadManager {
   }
 
   private manageMemoryUsage() {
-    if (window.performance && (window.performance as any).memory) {
+    if (window?.performance?.memory) {
       const memory = window.performance.memory;
 
       if (memory && memory?.jsHeapSizeLimit !== null && memory.usedJSHeapSize !== null) {
@@ -386,8 +386,10 @@ class UploadManager {
             this.uploadQueue.concurrency + 1,
             this.filesGroups[FileSizeType.Small].concurrency,
           );
-          console.warn(`Memory usage under 70%. Increasing upload concurrency to ${newConcurrency}`);
-          this.uploadQueue.concurrency = newConcurrency;
+          if (newConcurrency !== this.uploadQueue.concurrency) {
+            console.warn(`Memory usage under 70%. Increasing upload concurrency to ${newConcurrency}`);
+            this.uploadQueue.concurrency = newConcurrency;
+          }
         }
 
         const shouldReduceConcurrency = memoryUsagePercentage >= 0.8 && this.uploadQueue.concurrency > 1;

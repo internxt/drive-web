@@ -71,8 +71,8 @@ import DriveTopBarActions from './components/DriveTopBarActions';
 import { getAncestorsAndSetNamePath } from '../../../store/slices/storage/storage.thunks/goToFolderThunk';
 import { IRoot } from '../../../store/slices/storage/types';
 import { useTrashPagination } from '../../../drive/hooks/trash/useTrashPagination';
-import { uploadMultipleFolder } from '../../../store/slices/storage/folderUtils/uploadFolders';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { uploadFoldersWithManager } from '../../../network/UploadFolderManager';
 
 export const UPLOAD_ITEMS_LIMIT = 3000;
 
@@ -907,7 +907,11 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
           },
         }));
 
-        await uploadMultipleFolder(folderDataToUpload, props.selectedWorkspace, { dispatch });
+        await uploadFoldersWithManager({
+          payload: folderDataToUpload,
+          selectedWorkspace: props.selectedWorkspace,
+          dispatch,
+        });
         dispatch(fetchSortedFolderContentThunk(currentFolderId));
       }
     }

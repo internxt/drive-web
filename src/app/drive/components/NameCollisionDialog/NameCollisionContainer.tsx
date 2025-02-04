@@ -11,8 +11,8 @@ import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/sto
 import { uiActions } from '../../../store/slices/ui';
 import { DriveItemData } from '../../types';
 import { IRoot } from '../../../store/slices/storage/types';
-import { uploadMultipleFolder } from '../../../store/slices/storage/folderUtils/uploadFolders';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import { uploadFoldersWithManager } from '../../../network/UploadFolderManager';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
@@ -134,16 +134,16 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
 
     itemsToUpload.forEach((itemToUpload) => {
       if ((itemToUpload as IRoot).fullPathEdited) {
-        uploadMultipleFolder(
-          [
+        uploadFoldersWithManager({
+          payload: [
             {
               root: { ...(itemToUpload as IRoot) },
               currentFolderId: folderId,
             },
           ],
           selectedWorkspace,
-          { dispatch },
-        ).then(() => {
+          dispatch,
+        }).then(() => {
           dispatch(fetchSortedFolderContentThunk(folderId));
         });
       } else {
