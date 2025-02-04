@@ -217,10 +217,6 @@ class UploadFoldersManager {
             abortController: abortController,
             disableDuplicatedNamesCheck: true,
           },
-          filesProgress: {
-            filesUploaded: this.tasksInfo[taskId].progress.itemsUploaded,
-            totalFilesToUpload: this.tasksInfo[taskId].progress.totalItems,
-          },
         }),
       )
         .unwrap()
@@ -231,7 +227,8 @@ class UploadFoldersManager {
 
     for (const child of level.childrenFolders) {
       if (abortController.signal.aborted) return;
-      await this.uploadFoldersQueue.pushAsync({
+
+      this.uploadFoldersQueue.push({
         root: { ...child, folderId: createdFolder.uuid },
         currentFolderId: taskFolder.currentFolderId,
         options: taskFolder.options,
@@ -286,9 +283,17 @@ class UploadFoldersManager {
         },
       };
 
+      tasksService.updateTask({
+        taskId,
+        merge: {
+          status: TaskStatus.InProcess,
+          progress: 0,
+        },
+      });
+
       try {
         root.folderId = currentFolderId;
-        await this.uploadFoldersQueue.pushAsync(taskFolder);
+        this.uploadFoldersQueue.push(taskFolder);
 
         while (this.uploadFoldersQueue.running() > 0 || this.uploadFoldersQueue.length() > 0) {
           await this.uploadFoldersQueue.drain();
