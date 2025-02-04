@@ -29,13 +29,10 @@ interface UploadFolderThunkPayload {
 interface TaskFolder {
   root: IRoot;
   currentFolderId: string;
-  options:
-    | {
-        taskId?: string;
-        withNotification?: boolean;
-        onSuccess?: () => void;
-      }
-    | undefined;
+  options?: {
+    withNotification?: boolean;
+    onSuccess?: () => void;
+  };
   taskId: string;
   abortController: AbortController;
 }
