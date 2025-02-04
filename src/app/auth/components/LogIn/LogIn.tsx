@@ -76,6 +76,10 @@ export default function LogIn(): JSX.Element {
     }
   }, []);
 
+  function sendMessageToExtension({ newToken }: { newToken: string }) {
+    window.postMessage({ source: 'drive-web', payload: newToken }, '*');
+  }
+
   useEffect(() => {
     if (user && mnemonic) {
       dispatch(userActions.setUser(user));
@@ -93,14 +97,6 @@ export default function LogIn(): JSX.Element {
     () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
     [],
   );
-
-  const getLoginErrorMessage = (err: unknown): string => {
-    const appError = err as AppError;
-    if (appError?.status === UNAUTHORIZED_STATUS_CODE) {
-      return translate('auth.login.wrongLogin');
-    }
-    return appError?.message || 'An unexpected error occurred';
-  };
 
   const {
     register,
@@ -158,6 +154,13 @@ export default function LogIn(): JSX.Element {
         if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
           window.location.replace(redirectUrl);
         }
+
+        const isVPNAuth = urlParams.get('vpnAuth');
+        const newToken = localStorageService.get('xNewToken');
+        if (isVPNAuth && newToken) {
+          sendMessageToExtension({ newToken });
+        }
+
         redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode, isSharingInvitation });
       } else {
         setShowTwoFactor(true);

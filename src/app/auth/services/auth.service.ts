@@ -48,6 +48,7 @@ import httpService from '../../core/services/http.service';
 type ProfileInfo = {
   user: UserSettings;
   token: string;
+  newToken: string;
   mnemonic: string;
 };
 
@@ -195,6 +196,7 @@ export const doLogin = async (
       return {
         user: clearUser,
         token: token,
+        newToken,
         mnemonic: clearMnemonic,
       };
     })
@@ -502,12 +504,12 @@ export const signUp = async (params: SignUpParams) => {
   if (isNewUser) dispatch(referralsThunks.initializeThunk());
   await trackSignUp(xUser.uuid, email);
 
-  return { token: xToken, user: xUser, mnemonic };
+  return { token: xToken, user: xUser, mnemonic, newToken: xNewToken };
 };
 
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
-  const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
+  const { token, newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
   dispatch(userActions.setUser(user));
 
   try {
@@ -525,7 +527,7 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
 
   userActions.setUser(user);
 
-  return { token, user, mnemonic };
+  return { token, user, mnemonic, newToken };
 };
 
 export const authenticateUser = async (params: AuthenticateUserParams): Promise<ProfileInfo> => {
