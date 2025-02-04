@@ -30,7 +30,7 @@ export default function VerifyEmailView(): JSX.Element {
     setStatus('loading');
 
     try {
-      const usersClient = SdkFactory.getInstance().createUsersClient();
+      const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
       await usersClient.verifyEmail({ verificationToken: decodeURIComponent(token) });
       setStatus('success');
     } catch (err) {

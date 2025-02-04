@@ -5,19 +5,19 @@
   },
   "featuresBanner": {
     "label": "¡Ahorra un 80%!",
-    "title": "Tu regalo de Navidad ya está aquí!",
+    "title": "¡Touchdown para tu seguridad!",
     "subtitle": "Entra en nuestro sorteo y consigue hasta 10TB extra",
     "cta": "Elige tu plan",
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
     "features": [
-      "Ahorra a lo grande en todos los planes premium",
-      "Almacenamiento en la nube privado y encriptado",
-      "Código abierto y auditado",
-      "Transferencias encriptadas de extremo a extremo",
-      "Sin acceso no autorizado",
-      "La oferta termina el",
-      "7 de enero"
+      "Seguridad de por vida",
+      "Almacenamiento 100% privado y cifrado",
+      "Conocimiento cero y auditado",
+      "Cifrado de extremo a extremo",
+      "Cumple con RGPD",
+      "Tema de Super Bowl gratis",
+      "Oferta finaliza el 9 de febrero"
     ]
   },
   "valentinesBanner": {
@@ -49,7 +49,8 @@
     "system": "Sistema",
     "starwars": "Star Wars",
     "halloween": "Halloween",
-    "christmas": "Navidad"
+    "christmas": "Navidad",
+    "superBowl": "Super Bowl"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -1633,8 +1634,15 @@
         "actions": {
           "deactivate": "Desactivar miembro",
           "reactivate": "Reactivar miembro",
+          "leave": "Abandonar",
           "remove": "Eliminar miembro",
           "passwordChange": "Solicitar cambio de contraseña"
+        },
+        "leaveModal":{
+          "title": "Abandonar",
+          "description": "Perderás el acceso al Workspace y tu contenido será transferido al propietario",
+          "leave": "Abandonar",
+          "leaving": "Abandonando"
         }
       },
       "teams": {

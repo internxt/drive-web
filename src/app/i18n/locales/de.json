@@ -5,7 +5,7 @@
   },
   "featuresBanner": {
     "label": "Spare 80%!",
-    "title": "Geheime Weihnachtsmann-Überraschung!",
+    "title": "Machen Sie Ihr Spiel für den Datenschutz!",
     "subtitle": "Weihnachts-Web-App-Thema + Chance, bis zu 10 TB Speicher zu gewinnen!",
     "cta": "Wähle deinen Plan",
     "guarantee": "30 Tage Geld-zurück-Garantie",
@@ -16,8 +16,8 @@
       "Open Source und geprüft",
       "Verschlüsselte Ende-zu-Ende-Übertragungen",
       "Kein unautorisierter Zugriff",
-      "Das Angebot endet am",
-      "7. Januar"
+      "Kostenloses Super Bowl-Thema für deine Web-App",
+      "Angebot endet am 9. Februar"
     ]
   },
   "valentinesBanner": {
@@ -49,7 +49,8 @@
     "system": "System",
     "starwars": "Star Wars",
     "halloween": "Halloween",
-    "christmas": "Weihnachten"
+    "christmas": "Weihnachten",
+    "superBowl": "Super Bowl"
   },
   "auth": {
     "email": "E-Mail",
@@ -1596,9 +1597,16 @@
         },
         "actions": {
           "deactivate": "Mitglied deaktivieren",
+          "leave": "Verlassen",
           "reactivate": "Mitglied reaktivieren",
           "remove": "Mitglied entfernen",
           "passwordChange": "Passwortänderung anfordern"
+        },
+        "leaveModal": {
+          "title": "Verlassen",
+          "description": "Sie verlieren den Zugriff auf den Arbeitsbereich und Ihre Inhalte werden an den Eigentümer übertragen",
+          "leave": "Verlassen",
+          "leaving": "Verlassen"
         }
       },
       "teams": {

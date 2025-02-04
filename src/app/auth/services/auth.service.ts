@@ -21,10 +21,10 @@ import AppError, { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
-  decryptPrivateKey,
   getAesInitFromEnv,
+  getKeys,
+  parseAndDecryptUserKeys,
 } from 'app/crypto/services/keys.service';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import {
   decryptText,
   decryptTextWithKey,
@@ -84,7 +84,7 @@ export type AuthenticateUserParams = {
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   try {
-    const token = localStorageService.get('xNewToken') || undefined;
+    const token = localStorageService.get('xNewToken') ?? undefined;
     if (token) {
       const authClient = SdkFactory.getNewApiInstance().createAuthClient();
       await authClient.logout(token);
@@ -116,21 +116,10 @@ export const is2FANeeded = async (email: string): Promise<boolean> => {
   return securityDetails.tfaEnabled;
 };
 
-const generateNewKeysWithEncrypted = async (password: string) => {
-  const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
-
-  return {
-    privateKeyArmored,
-    privateKeyArmoredEncrypted: aes.encrypt(privateKeyArmored, password, getAesInitFromEnv()),
-    publicKeyArmored,
-    revocationCertificate,
-  };
-};
-
 const getAuthClient = (authType: 'web' | 'desktop') => {
   const AUTH_CLIENT = {
     web: SdkFactory.getNewApiInstance().createAuthClient(),
-    desktop: SdkFactory.getInstance().createDesktopAuthClient(),
+    desktop: SdkFactory.getNewApiInstance().createDesktopAuthClient(),
   };
 
   return AUTH_CLIENT[authType];
@@ -155,22 +144,7 @@ export const doLogin = async (
       return encryptText(hashObj.hash);
     },
     async generateKeys(password: Password): Promise<Keys> {
-      const { privateKeyArmoredEncrypted, publicKeyArmored, revocationCertificate } =
-        await generateNewKeysWithEncrypted(password);
-      const keys: Keys = {
-        privateKeyEncrypted: privateKeyArmoredEncrypted,
-        publicKey: publicKeyArmored,
-        revocationCertificate: revocationCertificate,
-        ecc: {
-          privateKeyEncrypted: privateKeyArmoredEncrypted,
-          publicKey: publicKeyArmored,
-        },
-        kyber: {
-          publicKey: null,
-          privateKeyEncrypted: null,
-        },
-      };
-      return keys;
+      return getKeys(password);
     },
   };
 
@@ -178,7 +152,10 @@ export const doLogin = async (
     .login(loginDetails, cryptoProvider)
     .then(async (data) => {
       const { user, token, newToken } = data;
-      const { privateKey, publicKey } = user;
+
+      const { privateKey: encryptedPrivateKey } = user;
+
+      const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(user, password);
 
       Sentry.setUser({
         id: user.uuid,
@@ -186,14 +163,10 @@ export const doLogin = async (
         sharedWorkspace: user.sharedWorkspace,
       });
 
-      const plainPrivateKeyInBase64 = privateKey
-        ? Buffer.from(decryptPrivateKey(privateKey, password)).toString('base64')
-        : '';
-
-      if (privateKey) {
-        await assertPrivateKeyIsValid(privateKey, password);
+      if (encryptedPrivateKey) {
+        await assertPrivateKeyIsValid(encryptedPrivateKey, password);
         await assertValidateKeys(
-          Buffer.from(plainPrivateKeyInBase64, 'base64').toString(),
+          Buffer.from(privateKey, 'base64').toString(),
           Buffer.from(publicKey, 'base64').toString(),
         );
       }
@@ -202,7 +175,17 @@ export const doLogin = async (
       const clearUser = {
         ...user,
         mnemonic: clearMnemonic,
-        privateKey: plainPrivateKeyInBase64,
+        privateKey: privateKey,
+        keys: {
+          ecc: {
+            publicKey: publicKey,
+            privateKey: privateKey,
+          },
+          kyber: {
+            publicKey: publicKyberKey,
+            privateKey: privateKyberKey,
+          },
+        },
       };
 
       localStorageService.set('xToken', token);
@@ -252,7 +235,6 @@ const updateCredentialsWithToken = async (
   token: string | undefined,
   newPassword: string,
   mnemonicInPlain: string,
-  privateKeyInPlain: string,
 ): Promise<void> => {
   const mnemonicIsInvalid = !validateMnemonic(mnemonicInPlain);
   if (mnemonicIsInvalid) {
@@ -313,6 +295,13 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
+  let privateKyberKeyEncrypted = '';
+
+  if (user.keys?.kyber?.privateKey) {
+    const privateKyberKey = Buffer.from(user.keys.kyber.privateKey, 'base64').toString();
+    privateKyberKeyEncrypted = aes.encrypt(privateKyberKey, newPassword, getAesInitFromEnv());
+  }
+
   const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
 
   return usersClient
@@ -322,6 +311,10 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       newEncryptedSalt: encryptedNewSalt,
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
+      keys: {
+        encryptedPrivateKey: privateKeyEncrypted,
+        encryptedPrivateKyberKey: privateKyberKeyEncrypted,
+      },
       encryptVersion: StorageTypes.EncryptionVersion.Aes03,
     })
     .then((res) => {
@@ -372,18 +365,17 @@ export const getNewToken = async (): Promise<string> => {
   if (!res.ok) {
     throw new Error('Bad response while getting new token');
   }
-
   const { newToken } = await res.json();
 
   return newToken;
 };
 
-export async function areCredentialsCorrect(email: string, password: string): Promise<boolean> {
+export async function areCredentialsCorrect(password: string): Promise<boolean> {
   const salt = await getSalt();
   const { hash: hashedPassword } = passToHash({ password, salt });
-  const authClient = SdkFactory.getInstance().createAuthClient();
-
-  return authClient.areCredentialsCorrect(email, hashedPassword);
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const token = localStorageService.get('xNewToken') ?? undefined;
+  return authClient.areCredentialsCorrect(hashedPassword, token);
 }
 
 export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string): string | null => {
@@ -482,16 +474,24 @@ export const signUp = async (params: SignUpParams) => {
   localStorageService.set('xToken', xToken);
   localStorageService.set('xMnemonic', mnemonic);
 
-  const xNewToken = await getNewToken();
+  const xNewToken = await authService.getNewToken();
   localStorageService.set('xNewToken', xNewToken);
 
-  const privateKey = xUser.privateKey
-    ? Buffer.from(decryptPrivateKey(xUser.privateKey, password)).toString('base64')
-    : undefined;
+  const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
 
   const user = {
     ...xUser,
     privateKey,
+    keys: {
+      ecc: {
+        publicKey: publicKey,
+        privateKey: privateKey,
+      },
+      kyber: {
+        publicKey: publicKyberKey,
+        privateKey: privateKyberKey,
+      },
+    },
   } as UserSettings;
 
   dispatch(userActions.setUser(user));
@@ -501,6 +501,7 @@ export const signUp = async (params: SignUpParams) => {
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
   if (isNewUser) dispatch(referralsThunks.initializeThunk());
   await trackSignUp(xUser.uuid, email);
+
   return { token: xToken, user: xUser, mnemonic };
 };
 
