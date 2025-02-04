@@ -135,10 +135,10 @@ export const uploadFoldersWithManager = ({
 };
 
 class UploadFoldersManager {
-  private payload: UploadFolderThunkPayload[];
-  private selectedWorkspace: WorkspaceData | null;
-  private dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
-  private abortController?: AbortController;
+  private readonly payload: UploadFolderThunkPayload[];
+  private readonly selectedWorkspace: WorkspaceData | null;
+  private readonly dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
+  private readonly abortController?: AbortController;
 
   private tasksInfo: Record<string, TaskInfo> = {};
 
@@ -152,7 +152,7 @@ class UploadFoldersManager {
     this.dispatch = dispatch;
   }
 
-  private uploadFoldersQueue: QueueObject<TaskFolder> = queue<TaskFolder>(
+  private readonly uploadFoldersQueue: QueueObject<TaskFolder> = queue<TaskFolder>(
     (task, next: (err: Error | null, res?: DriveFolderData) => void) => {
       if (this.abortController?.signal.aborted) return;
 
@@ -169,7 +169,7 @@ class UploadFoldersManager {
     MAX_CONCURRENT_UPLOADS,
   );
 
-  private uploadFolderAsync = async (taskFolder: TaskFolder) => {
+  private readonly uploadFolderAsync = async (taskFolder: TaskFolder) => {
     const { root: level, currentFolderId, taskId, abortController } = taskFolder;
 
     if (abortController.signal.aborted) return;
@@ -243,7 +243,7 @@ class UploadFoldersManager {
     return createdFolder;
   };
 
-  private manageMemoryUsage() {
+  private readonly manageMemoryUsage = () => {
     if (window?.performance?.memory) {
       const memory = window.performance.memory;
 
@@ -268,9 +268,9 @@ class UploadFoldersManager {
     } else {
       console.warn('Memory usage control is not available');
     }
-  }
+  };
 
-  async run(): Promise<void> {
+  public readonly run = async (): Promise<void> => {
     const payloadWithTaskId = generateTaskIdForFolders(this.payload);
 
     const memberId = this.selectedWorkspace?.workspaceUser?.memberId;
@@ -326,5 +326,5 @@ class UploadFoldersManager {
         }
       }
     }
-  }
+  };
 }
