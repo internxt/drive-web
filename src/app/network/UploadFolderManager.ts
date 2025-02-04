@@ -76,29 +76,6 @@ const generateTaskIdForFolders = (foldersPayload: UploadFolderThunkPayload[]): T
   });
 };
 
-const stopUploadTask = async (
-  uploadFolderAbortController: AbortController,
-  dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
-  relatedTaskId?: string,
-  rootFolderItem?: DriveFolderData,
-) => {
-  uploadFolderAbortController.abort();
-  const relatedTasks = tasksService.getTasks({ relatedTaskId });
-  const promises: Promise<void>[] = [];
-
-  // Cancels related tasks
-  promises.push(
-    ...(relatedTasks.map((task) => task.stop?.()).filter((promise) => promise !== undefined) as Promise<void>[]),
-  );
-  // Deletes the root folder
-  if (rootFolderItem) {
-    promises.push(dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
-    const storageClient = SdkFactory.getInstance().createStorageClient();
-    promises.push(storageClient.deleteFolder(rootFolderItem.id) as Promise<void>);
-  }
-  await Promise.all(promises);
-};
-
 const countItemsUnderRoot = (root: IRoot): number => {
   let count = 1;
 
@@ -265,6 +242,35 @@ class UploadFoldersManager {
     } else {
       console.warn('Memory usage control is not available');
     }
+  };
+
+  private readonly stopUploadTask = async (taskId: string, uploadFolderAbortController: AbortController) => {
+    uploadFolderAbortController.abort();
+    const relatedTasks = tasksService.getTasks({ relatedTaskId: taskId });
+    const promises: Promise<void>[] = [];
+
+    // Cancels related tasks
+    promises.push(
+      ...(relatedTasks.map((task) => task.stop?.()).filter((promise) => promise !== undefined) as Promise<void>[]),
+    );
+    // Deletes the root folder
+    const rootFolderItem = this.tasksInfo[taskId].rootFolderItem;
+    if (rootFolderItem) {
+      promises.push(this.dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
+      const storageClient = SdkFactory.getInstance().createStorageClient();
+      promises.push(storageClient.deleteFolder(rootFolderItem.id) as Promise<void>);
+    }
+    await Promise.allSettled(promises);
+  };
+
+  private readonly killQueueAndNotifyError = (taskId: string) => {
+    this.uploadFoldersQueue.kill();
+    tasksService.updateTask({
+      taskId: taskId,
+      merge: {
+        status: TaskStatus.Error,
+      },
+    });
   };
 
   public readonly run = async (): Promise<void> => {
