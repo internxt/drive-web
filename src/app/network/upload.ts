@@ -159,8 +159,10 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
         console.warn(`Attempt ${attempt} of ${MAX_TRIES} failed:`, err);
         Sentry.captureException(err, { extra: (err as ErrorWithContext).context });
 
-        if (attempt === MAX_TRIES) {
-          throw err; // ❌ Last try failed
+        const lastTryFailed = attempt === MAX_TRIES;
+
+        if (lastTryFailed) {
+          throw err;
         }
 
         await new Promise((res) => setTimeout(res, RETRY_DELAY));

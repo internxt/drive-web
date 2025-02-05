@@ -29,6 +29,7 @@ describe('uploadFile', () => {
 
     const result = await uploadFile('bucket123', uploadParams);
 
+    expect(uploadMock).toBeCalledTimes(1);
     expect(result).toBe('upload-success');
   });
 
@@ -37,6 +38,7 @@ describe('uploadFile', () => {
 
     const result = await uploadFile('bucket123', uploadParams);
 
+    expect(uploadMock).toBeCalledTimes(2);
     expect(result).toBe('upload-success');
   });
 
@@ -53,5 +55,6 @@ describe('uploadFile', () => {
       .mockRejectedValueOnce(new Error('Temporary error'));
 
     await expect(uploadFile('bucket123', uploadParams)).rejects.toThrow('Temporary error');
+    expect(uploadMock).toBeCalledTimes(3);
   });
 });
