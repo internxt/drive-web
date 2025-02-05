@@ -28,8 +28,6 @@ import PasswordInput from '../PasswordInput/PasswordInput';
 import TextInput from '../TextInput/TextInput';
 import { AuthMethodTypes } from 'app/payment/types';
 
-const UNAUTHORIZED_STATUS_CODE = 401;
-
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
     text,
