@@ -163,6 +163,7 @@ export const encryptMessageWithPublicKey = async ({
   return encryptedMessage;
 };
 
+// TODO: once all users start storing private key without Base64, remove decoding part
 export async function smartKeyDecode(key: string): Promise<PrivateKey> {
   const openpgp = await getOpenpgp();
 
