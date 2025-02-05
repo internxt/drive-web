@@ -11,9 +11,7 @@ import { Buffer } from 'buffer';
 
 describe('Generate keys', () => {
   globalThis.Buffer = Buffer;
-  if (typeof globalThis.process === 'undefined') {
-    globalThis.process = { env: {} } as any;
-  }
+
   const originalIV = process.env.REACT_APP_MAGIC_IV;
   const originalSalt = process.env.REACT_APP_MAGIC_SALT;
 
