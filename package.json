@@ -20,7 +20,7 @@
     "@stripe/stripe-js": "^3.5.0",
     "@typeform/embed-react": "^1.19.0",
     "@types/uuid": "^8.3.4",
-    "@vitest/browser": "^2.1.5",
+    "@vitest/browser": "^2.1.9",
     "assert": "^2.1.0",
     "axios": "^0.28.0",
     "bip39": "^3.0.3",
