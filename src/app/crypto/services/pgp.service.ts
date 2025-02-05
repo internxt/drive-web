@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { Data, MaybeStream, WebStream } from 'openpgp';
+import { Data, MaybeStream, WebStream, PrivateKey } from 'openpgp';
 import kemBuilder from '@dashlane/pqc-kem-kyber512-browser';
 import { extendSecret } from './utils';
 
@@ -163,6 +163,24 @@ export const encryptMessageWithPublicKey = async ({
   return encryptedMessage;
 };
 
+export async function smartKeyDecode(key: string): Promise<PrivateKey> {
+  const openpgp = await getOpenpgp();
+
+  try {
+    return await openpgp.readPrivateKey({ armoredKey: key });
+  } catch (error) {
+    console.warn('Direct key parsing failed, trying base64 decoding...', error);
+
+    try {
+      const decodedKey = Buffer.from(key, 'base64').toString();
+      return await openpgp.readPrivateKey({ armoredKey: decodedKey });
+    } catch (base64Error) {
+      console.error('Both direct and base64 decoding failed.', base64Error);
+      throw new Error('Invalid private key format');
+    }
+  }
+}
+
 export const decryptMessageWithPrivateKey = async ({
   encryptedMessage,
   privateKeyInBase64,
@@ -172,7 +190,7 @@ export const decryptMessageWithPrivateKey = async ({
 }): Promise<MaybeStream<Data> & WebStream<Uint8Array>> => {
   const openpgp = await getOpenpgp();
 
-  const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyInBase64 });
+  const privateKey = await smartKeyDecode(privateKeyInBase64);
 
   const message = await openpgp.readMessage({
     armoredMessage: encryptedMessage,

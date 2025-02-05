@@ -9,7 +9,23 @@ import {
   XORhex,
   hybridEncryptMessageWithPublicKey,
   hybridDecryptMessageWithPrivateKey,
+  smartKeyDecode,
 } from '../../../src/app/crypto/services/pgp.service';
+import { Buffer } from 'buffer';
+
+describe('Smart decoding should work', () => {
+  it('should not decode if key is not encoded', async () => {
+    const keys = await generateNewKeys();
+
+    const privateKey = keys.privateKeyArmored;
+    const privateKeyBase64 = Buffer.from(privateKey).toString('base64');
+
+    const resultEncoded = await smartKeyDecode(privateKeyBase64);
+    const resultNotEncoded = await smartKeyDecode(privateKey);
+
+    expect(resultEncoded).toStrictEqual(resultNotEncoded);
+  });
+});
 
 describe('Encryption and Decryption', () => {
   it('should generate new keys', async () => {
