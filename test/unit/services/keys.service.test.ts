@@ -12,9 +12,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 describe('Generate keys', () => {
   globalThis.Buffer = Buffer;
-  if (typeof globalThis.process === 'undefined') {
-    globalThis.process = { env: {} } as any;
-  }
+
   const originalIV = process.env.REACT_APP_MAGIC_IV;
   const originalSalt = process.env.REACT_APP_MAGIC_SALT;
 
@@ -90,12 +88,11 @@ describe('Generate keys', () => {
     const decryptedKeys = parseAndDecryptUserKeys(user as UserSettings, password);
     const privateKey = aes.decrypt(keys.ecc.privateKeyEncrypted, password);
     const privateKyberKey = keys.kyber.privateKeyEncrypted ? aes.decrypt(keys.kyber.privateKeyEncrypted, password) : '';
-    const privateKyberKeyBase64 = Buffer.from(privateKyberKey).toString('base64');
 
     expect(decryptedKeys.publicKey).toBe(keys.ecc.publicKey);
     expect(decryptedKeys.publicKyberKey).toBe(keys.kyber.publicKey);
     expect(decryptedKeys.privateKey).toBe(privateKey);
-    expect(decryptedKeys.privateKyberKey).toBe(privateKyberKeyBase64);
+    expect(decryptedKeys.privateKyberKey).toBe(privateKyberKey);
   });
 
   it('should correctly decrypt private keys without kyber', async () => {

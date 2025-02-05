@@ -70,7 +70,7 @@ describe('Encryption and Decryption', () => {
     const mockUser: UserSettings = {
       uuid: 'mock-uuid',
       email: 'mock@test.com',
-      privateKey: keys.privateKeyArmored,
+      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
       mnemonic: encryptedMnemonicInBase64,
       userId: 'mock-user-id',
       name: 'mock-name',
@@ -89,7 +89,7 @@ describe('Encryption and Decryption', () => {
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
-          privateKey: keys.privateKeyArmored,
+          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
         },
         kyber: {
           publicKey: keys.publicKyberKeyBase64,
@@ -158,7 +158,7 @@ describe('Encryption and Decryption', () => {
     const mockOldUser: Partial<UserSettings> = {
       uuid: 'mock-uuid',
       email: 'mock@test.com',
-      privateKey: keys.privateKeyArmored,
+      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
       mnemonic: encryptedMnemonicInBase64,
       userId: 'mock-user-id',
       name: 'mock-name',
