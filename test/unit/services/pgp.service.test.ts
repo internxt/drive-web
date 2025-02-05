@@ -24,6 +24,9 @@ describe('Smart decoding should work', () => {
     const resultNotEncoded = await smartKeyDecode(privateKey);
 
     expect(resultEncoded).toStrictEqual(resultNotEncoded);
+
+    const privateKeyDoubleBase64 = Buffer.from(privateKeyBase64).toString('base64');
+    await expect(smartKeyDecode(privateKeyDoubleBase64)).rejects.toThrowError('Invalid private key format');
   });
 });
 
