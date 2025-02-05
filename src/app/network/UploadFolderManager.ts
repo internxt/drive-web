@@ -3,7 +3,7 @@ import { DriveFolderData, DriveItemData } from '../drive/types';
 import { IRoot } from '../store/slices/storage/types';
 import tasksService from '../tasks/services/tasks.service';
 import errorService from '../core/services/error.service';
-import { queue, QueueObject } from 'async';
+import { queue, QueueObject, retry } from 'async';
 import { t } from 'i18next';
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState } from '../store';
@@ -15,6 +15,7 @@ import { createFolder } from '../store/slices/storage/folderUtils/createFolder';
 import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
 
 const MAX_CONCURRENT_UPLOADS = 6;
+const MAX_UPLOAD_ATTEMPTS = 2;
 
 interface UploadFolderThunkPayload {
   root: IRoot;
@@ -151,20 +152,31 @@ export class UploadFoldersManager {
 
     if (abortController.signal.aborted) return;
 
-    let createdFolder: DriveFolderData;
+    let createdFolder: DriveFolderData | undefined;
 
     try {
-      createdFolder = await createFolder(
-        {
-          parentFolderId: level.folderId as string,
-          folderName: level.name,
-          options: { relatedTaskId: taskId, showErrors: false },
-        },
-        currentFolderId,
-        this.selectedWorkspace,
-        { dispatch: this.dispatch },
-      );
+      let uploadAttempts = 0;
+      const createFolderFunction = async () => {
+        uploadAttempts++;
+        createdFolder = await createFolder(
+          {
+            parentFolderId: level.folderId as string,
+            folderName: level.name,
+            options: { relatedTaskId: taskId, showErrors: false },
+          },
+          currentFolderId,
+          this.selectedWorkspace,
+          { dispatch: this.dispatch },
+        );
+      };
+      await retry({ times: MAX_UPLOAD_ATTEMPTS, interval: 600 }, createFolderFunction);
     } catch (error) {
+      this.stopUploadTask(taskId, abortController);
+      this.killQueueAndNotifyError(taskId);
+      return;
+    }
+
+    if (!createdFolder) {
       this.stopUploadTask(taskId, abortController);
       this.killQueueAndNotifyError(taskId);
       return;
@@ -186,7 +198,7 @@ export class UploadFoldersManager {
 
     if (level.childrenFiles.length > 0 || level.childrenFolders.length > 0) {
       // Added wait in order to allow enough time for the server to create the folder
-      await wait(500);
+      await wait(600);
     }
 
     if (level.childrenFiles.length > 0) {
