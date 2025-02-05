@@ -14,7 +14,7 @@ import { FileToUpload } from '../drive/services/file.service/types';
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
 
-const MAX_UPLOAD_ATTEMPTS = 1;
+const MAX_UPLOAD_ATTEMPTS = 2;
 
 enum FileSizeType {
   Big = 'big',
