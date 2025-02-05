@@ -26,7 +26,7 @@ interface UploadFolderThunkPayload {
   };
 }
 
-interface TaskFolder {
+export interface TaskFolder {
   root: IRoot;
   currentFolderId: string;
   options?: {
@@ -111,7 +111,7 @@ export const uploadFoldersWithManager = ({
   return uploadFoldersManager.run();
 };
 
-class UploadFoldersManager {
+export class UploadFoldersManager {
   private readonly payload: UploadFolderThunkPayload[];
   private readonly selectedWorkspace: WorkspaceData | null;
   private readonly dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
