@@ -3,7 +3,7 @@ import { DriveFolderData, DriveItemData } from '../drive/types';
 import { IRoot } from '../store/slices/storage/types';
 import tasksService from '../tasks/services/tasks.service';
 import errorService from '../core/services/error.service';
-import { queue, QueueObject, retry } from 'async';
+import { queue, QueueObject } from 'async';
 import { t } from 'i18next';
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState } from '../store';
@@ -13,9 +13,6 @@ import { planThunks } from '../store/slices/plan';
 import { uploadItemsParallelThunk } from '../store/slices/storage/storage.thunks/uploadItemsThunk';
 import { createFolder } from '../store/slices/storage/folderUtils/createFolder';
 import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
-
-const MAX_CONCURRENT_UPLOADS = 6;
-const MAX_UPLOAD_ATTEMPTS = 2;
 
 interface UploadFolderThunkPayload {
   root: IRoot;
@@ -113,6 +110,9 @@ export const uploadFoldersWithManager = ({
 };
 
 export class UploadFoldersManager {
+  private static readonly MAX_CONCURRENT_UPLOADS = 6;
+  private static readonly MAX_UPLOAD_ATTEMPTS = 2;
+
   private readonly payload: UploadFolderThunkPayload[];
   private readonly selectedWorkspace: WorkspaceData | null;
   private readonly dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
@@ -144,7 +144,7 @@ export class UploadFoldersManager {
           next(e);
         });
     },
-    MAX_CONCURRENT_UPLOADS,
+    UploadFoldersManager.MAX_CONCURRENT_UPLOADS,
   );
 
   private readonly uploadFolderAsync = async (taskFolder: TaskFolder) => {
@@ -154,8 +154,10 @@ export class UploadFoldersManager {
 
     let createdFolder: DriveFolderData | undefined;
 
-    try {
-      const createFolderFunction = async () => {
+    let uploadAttempts = 0;
+    while (!createdFolder && uploadAttempts < UploadFoldersManager.MAX_UPLOAD_ATTEMPTS) {
+      uploadAttempts++;
+      try {
         createdFolder = await createFolder(
           {
             parentFolderId: level.folderId as string,
@@ -166,12 +168,13 @@ export class UploadFoldersManager {
           this.selectedWorkspace,
           { dispatch: this.dispatch },
         );
-      };
-      await retry({ times: MAX_UPLOAD_ATTEMPTS, interval: 600 }, createFolderFunction);
-    } catch (error) {
-      this.stopUploadTask(taskId, abortController);
-      this.killQueueAndNotifyError(taskId);
-      return;
+      } catch {
+        if (uploadAttempts >= UploadFoldersManager.MAX_UPLOAD_ATTEMPTS) {
+          this.stopUploadTask(taskId, abortController);
+          this.killQueueAndNotifyError(taskId);
+          return;
+        }
+      }
     }
 
     if (!createdFolder) {
