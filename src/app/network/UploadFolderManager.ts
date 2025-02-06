@@ -155,9 +155,7 @@ export class UploadFoldersManager {
     let createdFolder: DriveFolderData | undefined;
 
     try {
-      let uploadAttempts = 0;
       const createFolderFunction = async () => {
-        uploadAttempts++;
         createdFolder = await createFolder(
           {
             parentFolderId: level.folderId as string,
@@ -213,13 +211,21 @@ export class UploadFoldersManager {
             showErrors: false,
             abortController: abortController,
             disableDuplicatedNamesCheck: true,
+            disableExistenceCheck: true,
+          },
+          onFileUploadCallback: () => {
+            this.tasksInfo[taskId].progress.itemsUploaded += 1;
+            tasksService.updateTask({
+              taskId,
+              merge: {
+                progress: this.tasksInfo[taskId].progress.itemsUploaded / this.tasksInfo[taskId].progress.totalItems,
+                stop: () => this.stopUploadTask(taskId, abortController),
+              },
+            });
           },
         }),
       )
         .unwrap()
-        .then(() => {
-          this.tasksInfo[taskId].progress.itemsUploaded += level.childrenFiles.length;
-        })
         .catch(() => {
           this.stopUploadTask(taskId, abortController);
           this.killQueueAndNotifyError(taskId);

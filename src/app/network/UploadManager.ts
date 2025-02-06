@@ -63,6 +63,7 @@ export const uploadFileWithManager = (
   abortController?: AbortController,
   options?: Options,
   relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
+  onFileUploadCallback?: (driveFileData: DriveFileData) => void,
 ): Promise<DriveFileData[]> => {
   const uploadManager = new UploadManager(
     files,
@@ -71,6 +72,7 @@ export const uploadFileWithManager = (
     abortController,
     options,
     relatedTaskProgress,
+    onFileUploadCallback,
   );
   return uploadManager.run();
 };
@@ -84,6 +86,7 @@ class UploadManager {
   private options?: Options;
   private relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
   private maxSpaceOccupiedCallback: () => void;
+  private onFileUploadCallback?: (driveFileData: DriveFileData) => void;
   private uploadRepository?: PersistUploadRepository;
   private filesUploadedList: (DriveFileData & { taskId: string })[] = [];
   private filesGroups: Record<
@@ -110,6 +113,7 @@ class UploadManager {
       concurrency: 6,
     },
   };
+
   private uploadQueue: QueueObject<UploadManagerFileParams> = queue<UploadManagerFileParams & { taskId: string }>(
     (fileData, next: (err: Error | null, res?: DriveFileData) => void) => {
       if (this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted) return;
@@ -241,6 +245,10 @@ class UploadManager {
                 uploadProgress: this.uploadsProgress[uploadId] ?? 0,
               },
             });
+
+            if (this.onFileUploadCallback) {
+              this.onFileUploadCallback(driveFileDataWithNameParsed);
+            }
             next(null, driveFileDataWithNameParsed);
           })
           .catch((error) => {
@@ -277,6 +285,7 @@ class UploadManager {
     abortController?: AbortController,
     options?: Options,
     relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
+    onFileUploadCallback?: (driveFileData: DriveFileData) => void,
   ) {
     this.items = items;
     this.abortController = abortController;
@@ -284,6 +293,7 @@ class UploadManager {
     this.relatedTaskProgress = relatedTaskProgress;
     this.maxSpaceOccupiedCallback = maxSpaceOccupiedCallback;
     this.uploadRepository = uploadRepository;
+    this.onFileUploadCallback = onFileUploadCallback;
   }
 
   private handleUploadErrors({
