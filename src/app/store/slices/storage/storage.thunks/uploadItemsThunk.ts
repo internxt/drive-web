@@ -34,6 +34,7 @@ interface UploadItemsThunkOptions {
   onSuccess: () => void;
   isRetriedUpload?: boolean;
   disableDuplicatedNamesCheck?: boolean;
+  disableExistenceCheck?: boolean;
 }
 
 interface UploadItemsPayload {
