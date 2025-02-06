@@ -347,12 +347,12 @@ export class UploadFoldersManager {
         }
       };
 
+      tasksService.addListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
+      tasksService.addListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
+
       try {
         root.folderId = currentFolderId;
-        this.uploadFoldersQueue.push(taskFolder);
-
-        tasksService.addListener({ event: TaskEvent.TaskCancelled, listener: cancelQueueListener });
-        tasksService.addListener({ event: TaskEvent.TaskUpdated, listener: updateQueueListener });
+        await this.uploadFoldersQueue.pushAsync(taskFolder);
 
         while (this.uploadFoldersQueue.running() > 0 || this.uploadFoldersQueue.length() > 0) {
           await this.uploadFoldersQueue.drain();
