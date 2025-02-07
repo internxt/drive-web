@@ -4,7 +4,7 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "zh-tw": {
+    
       "label": "節省 85%！",
       "title": "永遠保護你所愛的一切！",
       "subtitle": "聖誕主題網頁應用 + 最高可贏取 10TB 儲存空間！",
@@ -21,7 +21,8 @@
         "無未經授權的訪問",
         "優惠截止日期：2 月 25 日"
       ]
-    },
+
+  },
   "valentinesBanner": {
     "title": "愛無極限！",
     "subtitle": "使用代碼 VDAY 獲得我們 2TB 方案九折優惠",
