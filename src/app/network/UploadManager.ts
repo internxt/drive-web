@@ -162,6 +162,8 @@ class UploadManager {
           isRetriedUpload: !!this.options?.isRetriedUpload,
         };
 
+        let abortListener: (task: TaskData) => void;
+
         uploadFile(
           fileData.userEmail,
           {
@@ -189,15 +191,17 @@ class UploadManager {
             isTeam: false,
             abortController: this.abortController ?? fileData.abortController,
             ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,
-            abortCallback: (abort?: () => void) =>
+            abortCallback: (abort?: () => void) => {
+              abortListener = (task) => {
+                if (task.id === taskId) {
+                  abort?.();
+                }
+              };
               tasksService.addListener({
                 event: TaskEvent.TaskCancelled,
-                listener: (task) => {
-                  if (task.id === taskId) {
-                    abort?.();
-                  }
-                },
-              }),
+                listener: abortListener,
+              });
+            },
           },
           continueUploadOptions,
         )
@@ -270,6 +274,12 @@ class UploadManager {
                 uploadId,
               });
             }
+          })
+          .finally(() => {
+            tasksService.removeListener({
+              event: TaskEvent.TaskCancelled,
+              listener: abortListener,
+            });
           });
       };
 

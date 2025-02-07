@@ -255,7 +255,7 @@ export class UploadFoldersManager {
     if (window?.performance?.memory) {
       const memory = window.performance.memory;
 
-      if (memory && memory?.jsHeapSizeLimit !== null && memory.usedJSHeapSize !== null) {
+      if (memory.jsHeapSizeLimit != null && memory.usedJSHeapSize != null) {
         const memoryUsagePercentage = memory.usedJSHeapSize / memory.jsHeapSizeLimit;
 
         const shouldIncreaseConcurrency = memoryUsagePercentage < 0.7;
@@ -303,6 +303,7 @@ export class UploadFoldersManager {
       taskId: taskId,
       merge: {
         status: TaskStatus.Error,
+        subtitle: t('tasks.subtitles.upload-failed') as string,
       },
     });
   };
