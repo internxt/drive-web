@@ -77,36 +77,22 @@ export default function LogIn(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    if (!newToken) return;
-
-    window.postMessage(
-      {
-        source: 'drive-web',
-        payload: newToken,
-      },
-      'https://staging.drive.internxt.com',
-    );
-
-    console.log('Mensaje enviado al content script con newToken:', newToken);
-  }, [newToken]);
-
-  useEffect(() => {
     if (user && mnemonic) {
       dispatch(userActions.setUser(user));
 
-      // /**
-      //  * This function handles the VPN extension authentication if the user is already logged in
-      //  * @param event - The event object we receive from the message event listener
-      //  */
-      // const handleVpnReady = (event: MessageEvent) => {
-      //   if (event.data && event.data.source === 'drive-extension' && event.data.payload === 'ready') {
-      //     if (isVpnAuth && newToken) {
-      //       authService.vpnExtensionAuth(newToken);
-      //     }
-      //   }
-      // };
+      /**
+       * This function handles the VPN extension authentication if the user is already logged in
+       * @param event - The event object we receive from the message event listener
+       */
+      const handleVpnReady = (event: MessageEvent) => {
+        if (event.data && event.data.source === 'drive-extension' && event.data.payload === 'ready') {
+          if (isVpnAuth && newToken) {
+            authService.vpnExtensionAuth(newToken);
+          }
+        }
+      };
 
-      // window.addEventListener('message', handleVpnReady);
+      window.addEventListener('message', handleVpnReady);
 
       redirectWithCredentials(
         user,
