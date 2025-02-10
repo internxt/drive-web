@@ -644,6 +644,19 @@ describe('Change password', () => {
     const privateKyberKeyEncrypted = inputs.keys.encryptedPrivateKyberKey;
     expect(privateKyberKeyEncrypted).toBe('');
   });
+
+  it('should cancel account', async () => {
+    const mockSendDeactivationEmail = vi.fn().mockReturnValue({ success: true });
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        sendUserDeactivationEmail: mockSendDeactivationEmail,
+      }),
+    } as any);
+    vi.spyOn(localStorageService, 'get').mockReturnValue('token');
+
+    await authService.cancelAccount();
+    expect(mockSendDeactivationEmail).toHaveBeenCalledWith('token');
+  });
 });
 
 /*
