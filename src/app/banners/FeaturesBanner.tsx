@@ -1,6 +1,5 @@
-import { CheckCircle, Football, Heart, SealPercent, Snowflake, X } from '@phosphor-icons/react';
+import { CheckCircle, Heart, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import GrassImage from '../../assets/images/banner/grass.webp';
 
 interface FeaturesBannerProps {
   showBanner: boolean;
