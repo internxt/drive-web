@@ -13,8 +13,10 @@ import { planThunks } from '../store/slices/plan';
 import { uploadItemsParallelThunk } from '../store/slices/storage/storage.thunks/uploadItemsThunk';
 import { createFolder } from '../store/slices/storage/folderUtils/createFolder';
 import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
+import { checkFolderDuplicated } from '../store/slices/storage/folderUtils/checkFolderDuplicated';
+import { getUniqueFolderName } from '../store/slices/storage/folderUtils/getUniqueFolderName';
 
-interface UploadFolderThunkPayload {
+interface UploadFolderPayload {
   root: IRoot;
   currentFolderId: string;
   options?: {
@@ -43,9 +45,13 @@ interface TaskInfo {
   };
 }
 
-const generateTaskIdForFolders = (foldersPayload: UploadFolderThunkPayload[]): TaskFolder[] => {
-  return foldersPayload.map(({ root, currentFolderId, options: payloadOptions }) => {
+const generateTaskIdForFolders = async (foldersPayload: UploadFolderPayload[]): Promise<TaskFolder[]> => {
+  const taskFolders: TaskFolder[] = [];
+
+  for (const folder of foldersPayload) {
+    const { root: originalRoot, currentFolderId, options: payloadOptions } = folder;
     const options = { withNotification: true, ...payloadOptions };
+    const root = await handleFoldersRename(originalRoot, currentFolderId);
 
     const uploadFolderAbortController = new AbortController();
 
@@ -55,6 +61,7 @@ const generateTaskIdForFolders = (foldersPayload: UploadFolderThunkPayload[]): T
       tasksService.updateTask({
         taskId,
         merge: {
+          folderName: root.name,
           status: TaskStatus.InProcess,
           progress: 0,
         },
@@ -70,8 +77,15 @@ const generateTaskIdForFolders = (foldersPayload: UploadFolderThunkPayload[]): T
       });
     }
 
-    return { root, currentFolderId, options: payloadOptions, taskId, abortController: uploadFolderAbortController };
-  });
+    taskFolders.push({
+      root,
+      currentFolderId,
+      options: payloadOptions,
+      taskId,
+      abortController: uploadFolderAbortController,
+    });
+  }
+  return taskFolders;
 };
 
 const countItemsUnderRoot = (root: IRoot): number => {
@@ -92,6 +106,22 @@ const countItemsUnderRoot = (root: IRoot): number => {
   return count;
 };
 
+const handleFoldersRename = async (root: IRoot, currentFolderId: string) => {
+  const { duplicatedFoldersResponse } = await checkFolderDuplicated([root], currentFolderId);
+
+  let finalFilename = root.name;
+  if (duplicatedFoldersResponse.length > 0) {
+    finalFilename = await getUniqueFolderName(
+      root.name,
+      duplicatedFoldersResponse as DriveFolderData[],
+      currentFolderId,
+    );
+  }
+
+  const folder: IRoot = { ...root, name: finalFilename };
+  return folder;
+};
+
 const wait = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
@@ -101,7 +131,7 @@ export const uploadFoldersWithManager = ({
   selectedWorkspace,
   dispatch,
 }: {
-  payload: UploadFolderThunkPayload[];
+  payload: UploadFolderPayload[];
   selectedWorkspace: WorkspaceData | null;
   dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
 }): Promise<void> => {
@@ -113,7 +143,7 @@ export class UploadFoldersManager {
   private static readonly MAX_CONCURRENT_UPLOADS = 6;
   private static readonly MAX_UPLOAD_ATTEMPTS = 2;
 
-  private readonly payload: UploadFolderThunkPayload[];
+  private readonly payload: UploadFolderPayload[];
   private readonly selectedWorkspace: WorkspaceData | null;
   private readonly dispatch: ThunkDispatch<RootState, unknown, AnyAction>;
   private readonly abortController?: AbortController;
@@ -121,7 +151,7 @@ export class UploadFoldersManager {
   private tasksInfo: Record<string, TaskInfo> = {};
 
   constructor(
-    payload: UploadFolderThunkPayload[],
+    payload: UploadFolderPayload[],
     selectedWorkspace: WorkspaceData | null,
     dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
   ) {
@@ -309,7 +339,7 @@ export class UploadFoldersManager {
   };
 
   public readonly run = async (): Promise<void> => {
-    const payloadWithTaskId = generateTaskIdForFolders(this.payload);
+    const payloadWithTaskId = await generateTaskIdForFolders(this.payload);
 
     const memberId = this.selectedWorkspace?.workspaceUser?.memberId;
 

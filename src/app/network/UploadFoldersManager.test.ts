@@ -2,6 +2,8 @@ import errorService from 'app/core/services/error.service';
 import AppError from 'app/core/types';
 import { DriveFolderData } from 'app/drive/types';
 import { createFolder } from 'app/store/slices/storage/folderUtils/createFolder';
+import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/checkFolderDuplicated';
+import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUniqueFolderName';
 import tasksService from 'app/tasks/services/tasks.service';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { TaskFolder, UploadFoldersManager, uploadFoldersWithManager } from './UploadFolderManager';
@@ -60,6 +62,14 @@ vi.mock('app/store/slices/storage/folderUtils/createFolder', () => ({
   createFolder: vi.fn(),
 }));
 
+vi.mock('app/store/slices/storage/folderUtils/checkFolderDuplicated', () => ({
+  checkFolderDuplicated: vi.fn(),
+}));
+
+vi.mock('app/store/slices/storage/folderUtils/getUniqueFolderName', () => ({
+  getUniqueFolderName: vi.fn(),
+}));
+
 describe('checkUploadFolders', () => {
   const mockDispatch = vi.fn();
 
@@ -93,8 +103,15 @@ describe('checkUploadFolders', () => {
 
     const createFolderSpy = (createFolder as Mock).mockResolvedValueOnce(mockFolder);
 
+    (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+      duplicatedFoldersResponse: [] as DriveFolderData[],
+      foldersWithDuplicates: [] as DriveFolderData[],
+      foldersWithoutDuplicates: [mockFolder],
+    });
     vi.spyOn(tasksService, 'create').mockReturnValue(taskId);
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
 
     await uploadFoldersWithManager({
@@ -118,6 +135,70 @@ describe('checkUploadFolders', () => {
     });
 
     expect(createFolderSpy).toHaveBeenCalledOnce();
+  });
+
+  it('should rename folder before upload using an async queue', async () => {
+    const mockFolder: DriveFolderData = {
+      id: 0,
+      uuid: 'uuid',
+      name: 'Folder1',
+      bucket: 'bucket',
+      parentId: 0,
+      parent_id: 0,
+      parentUuid: 'parentUuid',
+      userId: 0,
+      user_id: 0,
+      icon: null,
+      iconId: null,
+      icon_id: null,
+      isFolder: true,
+      color: null,
+      encrypt_version: null,
+      plain_name: 'Folder1',
+      deleted: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    const taskId = 'task-id';
+
+    const createFolderSpy = (createFolder as Mock).mockResolvedValueOnce(mockFolder);
+
+    (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+      duplicatedFoldersResponse: [mockFolder] as DriveFolderData[],
+      foldersWithDuplicates: [mockFolder] as DriveFolderData[],
+      foldersWithoutDuplicates: [],
+    });
+
+    const renameFolderSpy = (getUniqueFolderName as Mock).mockResolvedValueOnce('renamed-folder1');
+
+    vi.spyOn(tasksService, 'create').mockReturnValue(taskId);
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+
+    await uploadFoldersWithManager({
+      payload: [
+        {
+          currentFolderId: 'currentFolderId',
+          root: {
+            folderId: mockFolder.uuid,
+            childrenFiles: [],
+            childrenFolders: [],
+            name: mockFolder.name,
+            fullPathEdited: 'path1',
+          },
+          options: {
+            taskId,
+          },
+        },
+      ],
+      selectedWorkspace: null,
+      dispatch: mockDispatch,
+    });
+
+    expect(createFolderSpy).toHaveBeenCalledOnce();
+    expect(renameFolderSpy).toHaveBeenCalledOnce();
   });
 
   it('should upload multiple folders using an async queue', async () => {
@@ -169,6 +250,14 @@ describe('checkUploadFolders', () => {
       .mockResolvedValueOnce(mockParentFolder)
       .mockResolvedValueOnce(mockChildFolder);
 
+    (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+      duplicatedFoldersResponse: [] as DriveFolderData[],
+      foldersWithDuplicates: [] as DriveFolderData[],
+      foldersWithoutDuplicates: [mockParentFolder],
+    });
+
+    const renameFolderSpy = (getUniqueFolderName as Mock).mockResolvedValueOnce('');
+
     vi.spyOn(tasksService, 'create').mockReturnValue(taskId);
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
@@ -202,6 +291,7 @@ describe('checkUploadFolders', () => {
     });
 
     expect(createFolderSpy).toHaveBeenCalledTimes(2);
+    expect(renameFolderSpy).not.toHaveBeenCalled();
   });
 
   it('should abort the upload if abortController is called', async () => {
@@ -279,6 +369,14 @@ describe('checkUploadFolders', () => {
       .mockResolvedValueOnce(mockParentFolder)
       .mockResolvedValueOnce(mockChildFolder);
 
+    (checkFolderDuplicated as Mock).mockResolvedValueOnce({
+      duplicatedFoldersResponse: [] as DriveFolderData[],
+      foldersWithDuplicates: [] as DriveFolderData[],
+      foldersWithoutDuplicates: [mockParentFolder],
+    });
+
+    const renameFolderSpy = (getUniqueFolderName as Mock).mockResolvedValueOnce('');
+
     manager['tasksInfo'][taskId] = {
       progress: {
         itemsUploaded: 0,
@@ -294,5 +392,6 @@ describe('checkUploadFolders', () => {
     await expect(uploadPromise).resolves.toBeUndefined();
     expect(abortController.signal.aborted).toBe(true);
     expect(createFolderSpy).not.toHaveBeenCalled();
+    expect(renameFolderSpy).not.toHaveBeenCalled();
   });
 });
