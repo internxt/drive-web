@@ -4,20 +4,21 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 80% !",
-    "title": "Faites votre jeu pour la confidentialité !",
-    "subtitle": "Thème de l'application Web de Noël + Chance de gagner jusqu'à 10 To de stockage !",
-    "cta": "Choisissez votre plan",
+    "label": "Économisez 85%!",
+    "title": "Protège ce que tu aimes, pour toujours !",
+    "subtitle": "Thème Web de Noël + Chance de gagner jusqu'à 10 To de stockage !",
+    "cta": "Choisir un plan",
     "guarantee": "Garantie de remboursement de 30 jours",
-    "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
+    "lastCta": "*Offre réservée aux comptes gratuits ou nouveaux clients",
+    "boldBottomText": "Offre spéciale !",
+    "bottomText": "Gagne deux sacs à dos Internxt x Swiss Peak",
     "features": [
-      "Économisez gros sur tous les plans premium",
-      "Stockage cloud privé et crypté",
-      "Open source et audité",
-      "Transferts cryptés de bout en bout",
+      "Une vie privée à vie, un paiement unique",
+      "Stockage cloud chiffré de bout en bout",
+      "Open-source et audité",
+      "Transferts chiffrés de bout en bout",
       "Aucun accès non autorisé",
-      "Thème Super Bowl gratuit pour votre application web",
-      "Offre se termine le 9 février"
+      "L'offre se termine le 25 février"
     ]
   },
   "valentinesBanner": {

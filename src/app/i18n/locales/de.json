@@ -4,20 +4,21 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Spare 80%!",
-    "title": "Machen Sie Ihr Spiel für den Datenschutz!",
-    "subtitle": "Weihnachts-Web-App-Thema + Chance, bis zu 10 TB Speicher zu gewinnen!",
-    "cta": "Wähle deinen Plan",
+   "label": "Spare 85%!",
+    "title": "Schütze, was du liebst – für immer!",
+    "subtitle": "Weihnachtliches Web-App-Design + Chance auf bis zu 10 TB Speicher!",
+    "cta": "Plan wählen",
     "guarantee": "30 Tage Geld-zurück-Garantie",
-    "lastCta": "*Das Angebot gilt für kostenlose Konten oder Neukunden",
+    "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
+    "boldBottomText": "Sonderangebot!",
+    "bottomText": "Gewinne zwei Internxt x Swiss Peak Rucksäcke",
     "features": [
-      "Spare groß bei allen Premium-Plänen",
-      "Privater und verschlüsselter Cloud-Speicher",
-      "Open Source und geprüft",
-      "Verschlüsselte Ende-zu-Ende-Übertragungen",
+      "Ein Leben lang Privatsphäre, eine einmalige Zahlung",
+      "Ende-zu-Ende verschlüsselter Cloud-Speicher",
+      "Open-Source und geprüft",
+      "Ende-zu-Ende verschlüsselte Übertragungen",
       "Kein unautorisierter Zugriff",
-      "Kostenloses Super Bowl-Thema für deine Web-App",
-      "Angebot endet am 9. Februar"
+      "Angebot endet am 25. Februar"
     ]
   },
   "valentinesBanner": {
