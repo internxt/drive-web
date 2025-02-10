@@ -95,7 +95,7 @@ const App = (props: AppProps): JSX.Element => {
       if (event.data && event.data.source === 'drive-extension' && event.data.payload === 'ready') {
         if (isVpnAuth && newToken) {
           console.log('Sending token to extension');
-          window.postMessage({ source: 'drive-web', payload: newToken }, '*');
+          authService.vpnExtensionAuth(newToken);
         }
 
         window.removeEventListener('message', handleReady);

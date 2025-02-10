@@ -169,10 +169,6 @@ function SignUp(props: SignUpProps): JSX.Element {
     }
   };
 
-  function sendMessageToExtension({ newToken }: { newToken: string }) {
-    window.postMessage({ source: 'drive-web', payload: newToken }, '*');
-  }
-
   const redirectTheUserAfterRegistration = async (
     xToken: string,
     xNewToken: string,
@@ -187,7 +183,7 @@ function SignUp(props: SignUpProps): JSX.Element {
     const isVPNAuth = urlParams.get('vpnAuth');
 
     if (isVPNAuth && xNewToken) {
-      sendMessageToExtension({ newToken: xNewToken });
+      authService.vpnExtensionAuth(xNewToken);
     }
 
     if (redirectUrl) {

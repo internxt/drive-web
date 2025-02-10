@@ -74,10 +74,6 @@ export default function LogIn(): JSX.Element {
     }
   }, []);
 
-  function sendMessageToExtension({ newToken }: { newToken: string }) {
-    window.postMessage({ source: 'drive-web', payload: newToken }, '*');
-  }
-
   useEffect(() => {
     if (user && mnemonic) {
       dispatch(userActions.setUser(user));
@@ -156,7 +152,7 @@ export default function LogIn(): JSX.Element {
         const isVPNAuth = urlParams.get('vpnAuth');
         const newToken = localStorageService.get('xNewToken');
         if (isVPNAuth && newToken) {
-          sendMessageToExtension({ newToken });
+          authService.vpnExtensionAuth(newToken);
         }
 
         redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode, isSharingInvitation });
