@@ -91,23 +91,24 @@ const App = (props: AppProps): JSX.Element => {
     initializeInitialAppState();
     i18next.changeLanguage();
 
-    const handleReady = (event: MessageEvent) => {
+    /**
+     * This function handles the VPN extension authentication if the user is already logged in
+     * @param event - The event object we receive from the message event listener
+     */
+    const handleVpnReady = (event: MessageEvent) => {
       if (event.data && event.data.source === 'drive-extension' && event.data.payload === 'ready') {
         if (isVpnAuth && newToken) {
-          console.log('Sending token to extension');
           authService.vpnExtensionAuth(newToken);
         }
 
-        window.removeEventListener('message', handleReady);
+        window.removeEventListener('message', handleVpnReady);
       }
     };
 
-    if (isVpnAuth && newToken) {
-      window.addEventListener('message', handleReady);
-    }
+    window.addEventListener('message', handleVpnReady);
 
     return () => {
-      window.removeEventListener('message', handleReady);
+      window.removeEventListener('message', handleVpnReady);
     };
   }, []);
 

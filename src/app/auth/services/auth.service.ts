@@ -557,7 +557,7 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
 };
 
 export const vpnExtensionAuth = (newToken: string, source = 'drive-web') => {
-  const targetUrl = envService.isProduction() ? process.env.REACT_APP_HOSTNAME : 'http://localhost:3000';
+  const targetUrl = envService.isProduction() ? 'https://staging.drive.internxt.com' : 'http://localhost:3000';
   window.postMessage({ source: source, payload: newToken }, targetUrl);
 };
 
