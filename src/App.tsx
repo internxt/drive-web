@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Toaster } from 'react-hot-toast';
 import { connect } from 'react-redux';
@@ -43,6 +43,8 @@ import { initializeUserThunk } from './app/store/slices/user';
 import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
+import useVpnAuthIfUserIsLoggedIn from './hooks/useVpnAuth';
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -71,10 +73,8 @@ const App = (props: AppProps): JSX.Element => {
   const { isDialogOpen } = useActionDialog();
   const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
   const token = localStorageService.get('xToken');
-  const newToken = localStorageService.get('xNewToken');
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
-  const isVpnAuth = params.get('vpnAuth') === 'true';
   const queryParameters = navigationService.history.location.search;
   const havePreferencesParamsChanged = usePreferencesParamsChange();
   const routes = getRoutes();
@@ -84,34 +84,8 @@ const App = (props: AppProps): JSX.Element => {
   });
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const isWorkspaceIdParam = params.get('workspaceid');
-  const [extReady, setExtReady] = useState<boolean>(false);
 
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data?.event === 'wxt:content-script-started') {
-        console.log('THE EXTENSION IS AVAILABLE');
-        setExtReady(true);
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
-
-  useEffect(() => {
-    if (extReady) {
-      console.log('¡THE EXTENSION IS AVAILABLE! STORING THE USER TOKEN');
-      const handleVpnReady = (event: MessageEvent) => {
-        if (event.data && event.data.source === 'drive-extension' && event.data.payload === 'ready') {
-          if (isVpnAuth && newToken) {
-            authService.vpnExtensionAuth(newToken);
-          }
-        }
-      };
-
-      window.addEventListener('message', handleVpnReady);
-    }
-  }, [extReady]);
+  useVpnAuthIfUserIsLoggedIn();
 
   useBeforeUnload();
 
