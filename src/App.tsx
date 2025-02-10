@@ -71,8 +71,10 @@ const App = (props: AppProps): JSX.Element => {
   const { isDialogOpen } = useActionDialog();
   const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
   const token = localStorageService.get('xToken');
+  const newToken = localStorageService.get('xNewToken');
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
+  const isVpnAuth = params.get('vpnAuth') === 'true';
   const queryParameters = navigationService.history.location.search;
   const havePreferencesParamsChanged = usePreferencesParamsChange();
   const routes = getRoutes();
@@ -88,6 +90,25 @@ const App = (props: AppProps): JSX.Element => {
   useEffect(() => {
     initializeInitialAppState();
     i18next.changeLanguage();
+
+    const handleReady = (event: MessageEvent) => {
+      if (event.data && event.data.source === 'drive-extension' && event.data.payload === 'ready') {
+        if (isVpnAuth && newToken) {
+          console.log('Sending token to extension');
+          window.postMessage({ source: 'drive-web', payload: newToken }, '*');
+        }
+
+        window.removeEventListener('message', handleReady);
+      }
+    };
+
+    if (isVpnAuth && newToken) {
+      window.addEventListener('message', handleReady);
+    }
+
+    return () => {
+      window.removeEventListener('message', handleReady);
+    };
   }, []);
 
   useEffect(() => {
