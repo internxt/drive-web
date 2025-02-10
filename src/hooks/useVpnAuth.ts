@@ -33,6 +33,7 @@ const useVpnAuthIfUserIsLoggedIn = () => {
   const handleVpnAuth = () => {
     if (!newToken) return;
     authService.vpnExtensionAuth(newToken);
+    setIsVpnAuthNeeded(false);
   };
 };
 
