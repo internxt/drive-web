@@ -11,6 +11,8 @@ import {
   handleRepeatedUploadingFolders,
 } from '../../../../../store/slices/storage/storage.thunks/renameItemsThunk';
 import { DriveItemData } from '../../../../types';
+import { uploadFoldersWithManager } from '../../../../../network/UploadFolderManager';
+import workspacesSelectors from '../../../../../store/slices/workspaces/workspaces.selectors';
 
 interface DragSourceCollectorProps {
   isDraggingThisItem: boolean;
@@ -49,6 +51,7 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
   const { selectedItems } = useAppSelector((state) => state.storage);
   const namePath = useAppSelector((state) => state.storage.namePath);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const [{ isDraggingOverThisItem, canDrop }, connectDropTarget] = useDrop<
     DriveItemData | DriveItemData[],
     unknown,
@@ -111,11 +114,15 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
             }
             if (rootList.length) {
               // Directory tree
-              for (const root of rootList) {
-                const currentFolderId = item.uuid;
-
-                await dispatch(storageThunks.uploadFolderThunk({ root, currentFolderId }));
-              }
+              const folderDataToUpload = rootList.map((root) => ({
+                root,
+                currentFolderId: item.uuid,
+              }));
+              await uploadFoldersWithManager({
+                payload: folderDataToUpload,
+                selectedWorkspace,
+                dispatch,
+              });
             }
           });
         }

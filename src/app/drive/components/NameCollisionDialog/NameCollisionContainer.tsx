@@ -165,12 +165,16 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
   const keepAndUploadItem = async (itemsToUpload: (IRoot | File)[]) => {
     itemsToUpload.forEach((itemToUpload) => {
       if ((itemToUpload as IRoot).fullPathEdited) {
-        dispatch(
-          storageThunks.uploadFolderThunk({
-            root: { ...(itemToUpload as IRoot) },
-            currentFolderId: folderId,
-          }),
-        ).then(() => {
+        uploadFoldersWithManager({
+          payload: [
+            {
+              root: { ...(itemToUpload as IRoot) },
+              currentFolderId: folderId,
+            },
+          ],
+          selectedWorkspace,
+          dispatch,
+        }).then(() => {
           dispatch(fetchSortedFolderContentThunk(folderId));
         });
       } else {
