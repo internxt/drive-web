@@ -102,9 +102,9 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
 }
 
 export function cancelAccount(): Promise<void> {
-  const email = localStorageService.getUser()?.email;
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.sendDeactivationEmail(<string>email);
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const token = localStorageService.get('xNewToken') ?? undefined;
+  return authClient.sendUserDeactivationEmail(token);
 }
 
 export const is2FANeeded = async (email: string): Promise<boolean> => {
