@@ -39,6 +39,7 @@ export default function LogIn(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const urlParams = new URLSearchParams(window.location.search);
+  const isVpnAuth = urlParams.get('vpnAuth') === 'true';
 
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showTwoFactor, setShowTwoFactor] = useState(false);
@@ -47,6 +48,7 @@ export default function LogIn(): JSX.Element {
 
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const mnemonic = localStorageService.get('xMnemonic');
+  const newToken = localStorageService.get('xNewToken');
 
   const {
     isUniversalLinkMode,
@@ -77,6 +79,25 @@ export default function LogIn(): JSX.Element {
   useEffect(() => {
     if (user && mnemonic) {
       dispatch(userActions.setUser(user));
+
+      /**
+       * This function handles the VPN extension authentication if the user is already logged in
+       * @param event - The event object we receive from the message event listener
+       */
+      const handleVpnReady = (event: MessageEvent) => {
+        if (event.data && event.data.source === 'drive-extension' && event.data.payload === 'ready') {
+          setTimeout(() => {
+            if (isVpnAuth && newToken) {
+              authService.vpnExtensionAuth(newToken);
+            }
+
+            window.removeEventListener('message', handleVpnReady);
+          }, 1000);
+        }
+      };
+
+      window.addEventListener('message', handleVpnReady);
+
       redirectWithCredentials(
         user,
         mnemonic,
