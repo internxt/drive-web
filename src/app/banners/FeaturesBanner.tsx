@@ -30,7 +30,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
         <button
           id="close-banner"
           aria-label="close-banner"
-          className="absolute right-0 m-7 flex rounded-md text-gray-80 hover:bg-gray-1/10"
+          className="absolute right-0 m-7 flex rounded-md text-gray-80 dark:text-gray-20 hover:bg-gray-1/10"
           onClick={onClose}
         >
           <X size={32} />
@@ -40,20 +40,20 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
             <div className="flex rounded-lg border-2 border-pink bg-red-dark px-3 py-1.5">
               <p className="text-2xl font-bold text-white">{translate('featuresBanner.label')}</p>
             </div>
-            <p className="w-full max-w-[400px] text-5xl font-bold leading-tight text-gray-80">
+            <p className="w-full max-w-[400px] text-5xl font-bold leading-tight text-gray-80 dark:text-gray-20">
               {translate('featuresBanner.title')}
             </p>
 
             <div className="flex flex-col items-center space-y-3 lg:items-start">
               <button
                 onClick={handleOnClick}
-                className="flex w-max items-center rounded-lg bg-gray-5 px-5 py-3 text-lg font-medium text-gray-80"
+                className="flex w-max items-center rounded-lg bg-gray-5 dark:bg-gray-90 px-5 py-3 text-lg font-medium text-gray-80 dark:text-gray-20"
               >
                 {translate('featuresBanner.cta')}
               </button>
               <div className="flex flex-row items-center space-x-3 pt-2">
                 <CheckCircle size={24} className="text-green" weight="fill" />
-                <p className="whitespace-nowrap font-medium text-gray-80 lg:text-lg">
+                <p className="whitespace-nowrap font-medium text-gray-80 dark:text-gray-20 lg:text-lg">
                   {translate('featuresBanner.guarantee')}
                 </p>
               </div>
@@ -69,7 +69,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
                   <div className="flex flex-row space-x-1 font-bold " key={index}>
                     <div className="flex">
                       <Heart size={32} className="mr-4 text-red-dark" weight="fill" />
-                      <p className="text-lg font-semibold text-gray-80">{card}</p>
+                      <p className="text-lg font-semibold text-gray-80 dark:text-gray-20">{card}</p>
                     </div>
                   </div>
                 ))}
