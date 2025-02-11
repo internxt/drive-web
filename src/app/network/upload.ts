@@ -132,6 +132,7 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
     const MAX_TRIES = 3;
     const RETRY_DELAY = 1000;
     let uploadPromise: Promise<string>;
+    let lastTryError: unknown;
 
     for (let attempt = 1; attempt <= MAX_TRIES; attempt++) {
       try {
@@ -162,14 +163,12 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
         const lastTryFailed = attempt === MAX_TRIES;
 
         if (lastTryFailed) {
-          throw err;
-        }
-
-        await new Promise((res) => setTimeout(res, RETRY_DELAY));
+          lastTryError = err;
+        } else await new Promise((res) => setTimeout(res, RETRY_DELAY));
       }
     }
 
-    throw new Error('Unexpected error in retryUpload');
+    throw lastTryError;
   }
 
   return retryUpload().finally(() => console.timeEnd('multipart-upload'));
