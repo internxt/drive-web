@@ -44,7 +44,6 @@ import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
-import envService from 'app/core/services/env.service';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -557,7 +556,7 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
 };
 
 export const vpnExtensionAuth = (newToken: string, source = 'drive-web') => {
-  const targetUrl = envService.isProduction() ? 'https://staging.drive.internxt.com' : 'http://localhost:3000';
+  const targetUrl = process.env.REACT_APP_HOSTNAME;
   window.postMessage({ source: source, payload: newToken }, targetUrl);
 };
 
