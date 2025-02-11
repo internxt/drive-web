@@ -47,8 +47,6 @@ describe('userService', () => {
     vi.clearAllMocks();
   });
 
-  console.log('usersClientMock', usersClientMock);
-
   it('should initialize a user', async () => {
     usersClientMock.initialize.mockResolvedValue({ success: true });
     const result = await userService.initializeUser(testEmail, 'mnemonic');
