@@ -30,8 +30,7 @@ import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/compon
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { bytesToString } from 'app/drive/services/size.service';
 import { Loader } from '@internxt/ui';
-import gaService, { GA_SEND_TO_KEY } from 'app/analytics/ga.service';
-import { getCookie } from 'app/analytics/utils';
+import { useParams } from 'react-router-dom';
 
 export const THEME_STYLES = {
   dark: {
@@ -116,6 +115,7 @@ const CheckoutViewWrapper = () => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
+  const { sessionId } = useParams<{ sessionId: string }>();
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -193,6 +193,29 @@ const CheckoutViewWrapper = () => {
       : undefined,
     amount: plan?.upsellPlan?.decimalAmount,
   };
+
+  const checkSessionId = (sessionId: string): boolean => {
+    const pattern = /^cs_(test|live)_[a-zA-Z0-9]+$/;
+    return pattern.test(sessionId);
+  };
+
+  useEffect(() => {
+    if (sessionId) {
+      const isValid = checkSessionId(sessionId);
+
+      if (isValid) {
+        paymentService
+          .redirectToCheckout({ sessionId })
+          .then(() => {
+            console.log('Redirecting the user to Stripe...');
+          })
+          .catch((err) => {
+            console.error('Error while redirecting the user to Stripe:', err);
+            navigationService.push(AppView.CheckoutCancel);
+          });
+      }
+    }
+  }, [sessionId]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
