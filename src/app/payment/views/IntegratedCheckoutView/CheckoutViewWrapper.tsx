@@ -200,6 +200,13 @@ const CheckoutViewWrapper = () => {
   };
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const planId = params.get('planId');
+    const promotionCode = params.get('couponCode');
+    const currency = params.get('currency');
+
+    const currencyValue = currency ?? 'eur';
+
     if (sessionId) {
       const isValid = checkSessionId(sessionId);
 
@@ -208,17 +215,9 @@ const CheckoutViewWrapper = () => {
           errorService.reportError(err);
           navigationService.push(AppView.CheckoutCancel);
         });
+        return;
       }
     }
-  }, [sessionId]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const planId = params.get('planId');
-    const promotionCode = params.get('couponCode');
-    const currency = params.get('currency');
-
-    const currencyValue = currency ?? 'eur';
 
     if (!planId) {
       navigationService.push(AppView.Drive);
@@ -258,7 +257,7 @@ const CheckoutViewWrapper = () => {
           navigationService.push(AppView.Signup);
         }
       });
-  }, [checkoutTheme]);
+  }, [checkoutTheme, sessionId]);
 
   useEffect(() => {
     if (isAuthenticated && user) {
