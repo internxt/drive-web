@@ -677,7 +677,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           />
         )}
         <div className="flex w-1 grow flex-col">
-          <div className="z-10 flex flex-wrap min-h-14 max-w-full shrink-0 justify-between px-5">
+          <div className="z-10 flex flex-wrap min-h-14 max-w-full shrink-0 justify-between px-5 py-2 ">
             <div
               className={`mr-20 ${isTrash ? 'min-w-0' : 'min-w-[200px]'} flex w-full flex-1 flex-row flex-wrap items-center text-lg ${titleClassName ?? ''}`}
             >
