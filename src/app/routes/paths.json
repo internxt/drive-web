@@ -132,7 +132,14 @@
     {
       "id": "checkout",
       "layout": "empty",
-      "path": "/checkout/:sessionId?",
+      "path": "/checkout",
+      "exact": false,
+      "auth": false
+    },
+    {
+      "id": "checkout-session",
+      "layout": "empty",
+      "path": "/checkout/:sessionId",
       "exact": false,
       "auth": false
     },

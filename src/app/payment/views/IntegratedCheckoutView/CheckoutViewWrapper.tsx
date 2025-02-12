@@ -8,7 +8,6 @@ import { Loader } from '@internxt/ui';
 import { bytesToString } from 'app/drive/services/size.service';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { useCheckout } from 'hooks/checkout/useCheckout';
-import { useParams } from 'react-router-dom';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
 import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
@@ -115,7 +114,6 @@ const CheckoutViewWrapper = () => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
-  const { sessionId } = useParams<{ sessionId: string }>();
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -194,11 +192,6 @@ const CheckoutViewWrapper = () => {
     amount: plan?.upsellPlan?.decimalAmount,
   };
 
-  const checkSessionId = (sessionId: string): boolean => {
-    const pattern = /^cs_(test|live)_[a-zA-Z0-9]+$/;
-    return pattern.test(sessionId);
-  };
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const planId = params.get('planId');
@@ -206,18 +199,6 @@ const CheckoutViewWrapper = () => {
     const currency = params.get('currency');
 
     const currencyValue = currency ?? 'eur';
-
-    if (sessionId) {
-      const isValid = checkSessionId(sessionId);
-
-      if (isValid) {
-        paymentService.redirectToCheckout({ sessionId }).catch((err) => {
-          errorService.reportError(err);
-          navigationService.push(AppView.CheckoutCancel);
-        });
-        return;
-      }
-    }
 
     if (!planId) {
       navigationService.push(AppView.Drive);
@@ -257,7 +238,7 @@ const CheckoutViewWrapper = () => {
           navigationService.push(AppView.Signup);
         }
       });
-  }, [checkoutTheme, sessionId]);
+  }, [checkoutTheme]);
 
   useEffect(() => {
     if (isAuthenticated && user) {
