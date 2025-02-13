@@ -20,7 +20,6 @@ describe('VPN authentication management', () => {
     const isVpnAuth = true;
 
     test('When there is new token and the VPN does not have the user token, then we should listen to the events and trigger the token', async () => {
-      const isVpnAuth = true;
       renderHook(() => useVpnAuth(isVpnAuth, newToken));
 
       act(() => {
@@ -33,8 +32,6 @@ describe('VPN authentication management', () => {
     });
 
     test('When there is no new token, then we should not listen to events', async () => {
-      const isVpnAuth = true;
-
       const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
 
       renderHook(() => useVpnAuth(isVpnAuth, null));
@@ -51,7 +48,6 @@ describe('VPN authentication management', () => {
     });
 
     test('When the VPN has the user token, then we should not send it', async () => {
-      const isVpnAuth = true;
       renderHook(() => useVpnAuth(isVpnAuth, newToken));
 
       act(() => {
