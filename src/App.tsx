@@ -43,7 +43,7 @@ import { initializeUserThunk } from './app/store/slices/user';
 import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
-import useVpnAuthIfUserIsLoggedIn from './hooks/useVpnAuth';
+import useVpnAuth from './hooks/useVpnAuth';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -73,7 +73,9 @@ const App = (props: AppProps): JSX.Element => {
   const { isDialogOpen } = useActionDialog();
   const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
   const token = localStorageService.get('xToken');
+  const newToken = localStorageService.get('xNewToken');
   const params = new URLSearchParams(window.location.search);
+  const isVpnAuth = params.get('vpnAuth') === 'true';
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
   const queryParameters = navigationService.history.location.search;
   const havePreferencesParamsChanged = usePreferencesParamsChange();
@@ -85,7 +87,7 @@ const App = (props: AppProps): JSX.Element => {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const isWorkspaceIdParam = params.get('workspaceid');
 
-  useVpnAuthIfUserIsLoggedIn();
+  useVpnAuth(isVpnAuth, newToken);
 
   useBeforeUnload();
 

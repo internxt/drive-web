@@ -1,12 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import authService from 'app/auth/services/auth.service';
-import localStorageService from 'app/core/services/local-storage.service';
 
-const useVpnAuthIfUserIsLoggedIn = () => {
-  const params = new URLSearchParams(window.location.search);
-  const isVpnAuth = params.get('vpnAuth') === 'true';
-  const newToken = localStorageService.get('xNewToken');
-
+const useVpnAuth = (isVpnAuth: boolean, newToken: string | null) => {
   const [isVpnAuthNeeded, setIsVpnAuthNeeded] = useState<boolean>(false);
 
   useEffect(() => {
@@ -28,13 +23,13 @@ const useVpnAuthIfUserIsLoggedIn = () => {
     return () => {
       window.removeEventListener('message', handleVpnAuth);
     };
-  }, [isVpnAuthNeeded]);
+  }, [isVpnAuthNeeded, newToken]);
 
-  const handleVpnAuth = () => {
+  const handleVpnAuth = useCallback(() => {
     if (!newToken) return;
     authService.vpnExtensionAuth(newToken);
     setIsVpnAuthNeeded(false);
-  };
+  }, [newToken]);
 };
 
-export default useVpnAuthIfUserIsLoggedIn;
+export default useVpnAuth;
