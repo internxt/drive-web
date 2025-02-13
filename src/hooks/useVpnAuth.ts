@@ -2,34 +2,30 @@ import { useCallback, useEffect, useState } from 'react';
 import authService from 'app/auth/services/auth.service';
 
 const useVpnAuth = (isVpnAuth: boolean, newToken: string | null) => {
-  const [isVpnAuthNeeded, setIsVpnAuthNeeded] = useState<boolean>(false);
+  const [isVpnAuthNeeded, setIsVpnAuthNeeded] = useState(false);
 
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data?.source === 'drive-extension' && event.data?.tokenStatus === 'token-not-found' && isVpnAuth) {
+  const handleMessage = useCallback(
+    (event: MessageEvent) => {
+      if (event.data?.source === 'drive-extension' && event.data?.tokenStatus === 'token-not-found') {
         setIsVpnAuthNeeded(true);
       }
-    };
+    },
+    [isVpnAuth],
+  );
 
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  useEffect(() => {
+    if (isVpnAuth && newToken) {
+      window.addEventListener('message', handleMessage);
+      return () => window.removeEventListener('message', handleMessage);
+    }
+  }, [isVpnAuth, handleMessage]);
 
   useEffect(() => {
     if (isVpnAuthNeeded && newToken) {
-      window.addEventListener('message', handleVpnAuth);
+      authService.vpnExtensionAuth(newToken);
+      setIsVpnAuthNeeded(false);
     }
-
-    return () => {
-      window.removeEventListener('message', handleVpnAuth);
-    };
   }, [isVpnAuthNeeded, newToken]);
-
-  const handleVpnAuth = useCallback(() => {
-    if (!newToken) return;
-    authService.vpnExtensionAuth(newToken);
-    setIsVpnAuthNeeded(false);
-  }, [newToken]);
 };
 
 export default useVpnAuth;
