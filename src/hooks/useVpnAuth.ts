@@ -10,7 +10,7 @@ const useVpnAuth = (isVpnAuth: boolean, newToken: string | null) => {
         setIsVpnAuthNeeded(true);
       }
     },
-    [isVpnAuth],
+    [setIsVpnAuthNeeded],
   );
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const useVpnAuth = (isVpnAuth: boolean, newToken: string | null) => {
       window.addEventListener('message', handleMessage);
       return () => window.removeEventListener('message', handleMessage);
     }
-  }, [isVpnAuth, handleMessage]);
+  }, [isVpnAuth, newToken, handleMessage]);
 
   useEffect(() => {
     if (isVpnAuthNeeded && newToken) {
