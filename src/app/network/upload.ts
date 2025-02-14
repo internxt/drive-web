@@ -98,8 +98,6 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
     ),
   );
 
-  let uploadPromise: Promise<string>;
-
   const minimumMultipartThreshold = 100 * 1024 * 1024;
   const useMultipart = params.filesize > minimumMultipartThreshold;
   const partSize = 30 * 1024 * 1024;
@@ -130,34 +128,48 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
 
   params.abortController?.signal.addEventListener('abort', onAbort);
 
-  if (useMultipart) {
-    uploadPromise = facade.uploadMultipart(bucketId, params.mnemonic, file, {
-      uploadingCallback: params.progressCallback,
-      abortController: uploadAbortController,
-      parts: Math.ceil(params.filesize / partSize),
-      continueUploadOptions: params?.continueUploadOptions,
-    });
-  } else {
-    uploadPromise = facade.upload(bucketId, params.mnemonic, file, {
-      uploadingCallback: params.progressCallback,
-      abortController: uploadAbortController,
-      continueUploadOptions: params?.continueUploadOptions,
-    });
+  async function retryUpload(): Promise<string> {
+    const MAX_TRIES = 3;
+    const RETRY_DELAY = 1000;
+    let uploadPromise: Promise<string>;
+    let lastTryError: unknown;
+
+    for (let attempt = 1; attempt <= MAX_TRIES; attempt++) {
+      try {
+        if (useMultipart) {
+          uploadPromise = facade.uploadMultipart(bucketId, params.mnemonic, file, {
+            uploadingCallback: params.progressCallback,
+            abortController: uploadAbortController,
+            parts: Math.ceil(params.filesize / partSize),
+            continueUploadOptions: params?.continueUploadOptions,
+          });
+        } else {
+          uploadPromise = facade.upload(bucketId, params.mnemonic, file, {
+            uploadingCallback: params.progressCallback,
+            abortController: uploadAbortController,
+            continueUploadOptions: params?.continueUploadOptions,
+          });
+        }
+
+        return await uploadPromise;
+      } catch (err) {
+        if (connectionLost) {
+          throw new ConnectionLostError();
+        }
+
+        console.warn(`Attempt ${attempt} of ${MAX_TRIES} failed:`, err);
+        Sentry.captureException(err, { extra: (err as ErrorWithContext).context });
+
+        const lastTryFailed = attempt === MAX_TRIES;
+
+        if (lastTryFailed) {
+          lastTryError = err;
+        } else await new Promise((res) => setTimeout(res, RETRY_DELAY));
+      }
+    }
+
+    throw lastTryError;
   }
 
-  return uploadPromise
-    .catch((err: ErrorWithContext) => {
-      if (connectionLost) {
-        throw new ConnectionLostError();
-      }
-
-      Sentry.captureException(err, { extra: err.context });
-
-      Sentry.captureException(err, { extra: err.context });
-
-      throw err;
-    })
-    .finally(() => {
-      console.timeEnd('multipart-upload');
-    });
+  return retryUpload().finally(() => console.timeEnd('multipart-upload'));
 }

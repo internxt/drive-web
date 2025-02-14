@@ -4,20 +4,21 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": "¡Ahorra un 80%!",
-    "title": "Tu regalo de Navidad ya está aquí!",
+    "label": "¡Ahorra un 85%!",
+    "title": "¡Protege lo que quieres, para siempre!",
     "subtitle": "Entra en nuestro sorteo y consigue hasta 10TB extra",
     "cta": "Elige tu plan",
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
+    "boldBottomText": "Oferta especial!  ",
+    "bottomText":" Entra en el sorteo y gana 2 mochilas Swiss Peak x Internxt",
     "features": [
-      "Ahorra a lo grande en todos los planes premium",
-      "Almacenamiento en la nube privado y encriptado",
-      "Código abierto y auditado",
-      "Transferencias encriptadas de extremo a extremo",
-      "Sin acceso no autorizado",
-      "La oferta termina el",
-      "7 de enero"
+      "Seguridad de por vida",
+      "Almacenamiento 100% privado y cifrado",
+      "Conocimiento cero y auditado",
+      "Cifrado de extremo a extremo",
+      "Cumple con RGPD",
+      "Oferta finaliza el 25 de febrero"
     ]
   },
   "valentinesBanner": {
@@ -49,7 +50,8 @@
     "system": "Sistema",
     "starwars": "Star Wars",
     "halloween": "Halloween",
-    "christmas": "Navidad"
+    "christmas": "Navidad",
+    "superBowl": "Super Bowl"
   },
   "auth": {
     "email": "Correo electrónico",

@@ -4,20 +4,21 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 80%!",
-    "title": "Secret Santa surprise! ",
+    "label": "Save 85%!",
+    "title": "Protect what you love, forever!",
     "subtitle": "Christmas Web App Theme + Chance to win up to 10TB of storage!",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
+    "boldBottomText": "Special Offer! ",
+    "bottomText":" Win two Internxt x Swiss Peak backpacks",
     "features": [
-      "Save big on all premium plans",
-      "Private, encrypted cloud storage",
+      "A lifetime of privacy, one-time payment",
+      "End-to-end encrypted cloud storage",
       "Open-source and audited",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends",
-      "January 7th"
+      "Offer ends February 25th"
     ]
   },
   "valentinesBanner": {
@@ -70,7 +71,8 @@
     "system": "System",
     "starwars": "Star Wars",
     "halloween": "Halloween",
-    "christmas": "Christmas"
+    "christmas": "Christmas",
+    "superBowl": "Super Bowl"
   },
   "auth": {
     "email": "Email",

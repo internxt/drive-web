@@ -1,6 +1,6 @@
 import { beforeEach, afterAll, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
 import { screen, fireEvent, render } from '@testing-library/react';
-import WorkspaceGuestSingUpView from './WorkspaceGuestSignUp';
+import ShareGuestSingUpView from './ShareGuestSingUpView';
 import { userActions } from 'app/store/slices/user';
 import * as keysService from 'app/crypto/services/keys.service';
 import { encryptTextWithKey } from 'app/crypto/services/utils';
@@ -33,6 +33,19 @@ describe('onSubmit', () => {
     vi.spyOn(globalThis, 'decodeURIComponent').mockImplementation((value) => {
       return value;
     });
+
+    vi.mock('app/core/services/local-storage.service', () => ({
+      default: {
+        get: vi.fn(),
+        clear: vi.fn(),
+        getUser: vi.fn(),
+        set: vi.fn(),
+      },
+    }));
+
+    vi.mock('@internxt/lib/dist/src/auth/testPasswordStrength', () => ({
+      testPasswordStrength: vi.fn(),
+    }));
 
     vi.mock('react-helmet-async', () => ({
       Helmet: vi.fn(),
@@ -67,6 +80,10 @@ describe('onSubmit', () => {
       };
     });
 
+    vi.mock('app/auth/components/SignUp/SignUp', () => ({
+      Views: vi.fn(),
+    }));
+
     vi.mock('app/auth/components/SignUp/useSignUp', () => ({
       useSignUp: vi.fn().mockReturnValue({ doRegisterPreCreatedUser: vi.fn() }),
       parseUserSettingsEnsureKyberKeysAdded: vi.importActual,
@@ -89,12 +106,11 @@ describe('onSubmit', () => {
       },
     }));
 
-    vi.mock('app/core/services/local-storage.service', () => ({
+    vi.mock('app/share/services/share.service', () => ({
       default: {
-        get: vi.fn(),
-        clear: vi.fn(),
-        getUser: vi.fn(),
-        set: vi.fn(),
+        shareService: {
+          validateSharingInvitation: vi.fn(),
+        },
       },
     }));
 
@@ -114,6 +130,7 @@ describe('onSubmit', () => {
         Drive: vi.fn(),
         Signup: vi.fn(),
       },
+      IFormValues: vi.fn(),
     }));
 
     vi.mock('app/i18n/provider/TranslationProvider', () => ({
@@ -208,7 +225,6 @@ describe('onSubmit', () => {
         initializeThunk: vi.fn(),
       },
     }));
-
     vi.mock('app/store/slices/products', () => ({
       productsThunks: {
         initializeThunk: vi.fn(),
@@ -303,7 +319,7 @@ describe('onSubmit', () => {
         type: 'user/setUser',
       };
     });
-    render(<WorkspaceGuestSingUpView />);
+    render(<ShareGuestSingUpView />);
     const submitButton = screen.getByRole('button');
     fireEvent.click(submitButton);
     await vi.waitFor(() => {
@@ -389,6 +405,7 @@ describe('onSubmit', () => {
     };
 
     callCount = 0;
+
     (useSignUp as Mock).mockImplementation(() => ({
       doRegisterPreCreatedUser: vi.fn().mockResolvedValue({
         xUser: mockUser as UserSettings,
@@ -403,7 +420,7 @@ describe('onSubmit', () => {
         type: 'user/setUser',
       };
     });
-    render(<WorkspaceGuestSingUpView />);
+    render(<ShareGuestSingUpView />);
     const submitButton = screen.getByRole('button');
     fireEvent.click(submitButton);
     await vi.waitFor(() => {
