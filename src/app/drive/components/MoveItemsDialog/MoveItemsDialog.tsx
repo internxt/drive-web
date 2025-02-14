@@ -1,4 +1,4 @@
-import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
+import { FolderAncestor, FolderAncestorWorkspace } from '@internxt/sdk/dist/drive/storage/types';
 import { CaretRight, FolderSimplePlus } from '@phosphor-icons/react';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
@@ -26,6 +26,8 @@ import {
 import { IRoot } from '../../../store/slices/storage/types';
 import { DriveFileData, DriveFolderData, DriveItemData, FolderPathDialog } from '../../types';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -50,6 +52,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const rootFolderID: string = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
   const itemParentId = itemsToMove[0]?.folderUuid ?? itemsToMove[0]?.folderUuid;
   const isDriveAndCurrentFolder = !props.isTrash && itemParentId === destinationId;
+  const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspaceSelected = !!workspaceSelected;
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
@@ -129,8 +133,17 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     dispatch(setItemsToMove([]));
   };
 
-  const setDriveBreadcrumb = async (itemsToMove) => {
-    const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestors(itemsToMove[0].uuid);
+  const setDriveBreadcrumb = async (itemsToMove: DriveItemData[]) => {
+    const item = itemsToMove[0];
+    const itemUuid = item.uuid;
+    const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
+    const itemType = item.isFolder ? 'folder' : 'file';
+    const storageKey = item.isFolder ? STORAGE_KEYS.FOLDER_ACCESS_TOKEN : STORAGE_KEYS.FILE_ACCESS_TOKEN;
+    const token = localStorageService.get(storageKey) || undefined;
+
+    const breadcrumbsList: FolderAncestor[] | FolderAncestorWorkspace[] = isWorkspaceSelected
+      ? await newStorageService.getFolderAncestorsInWorkspace(workspaceSelected.workspace.id, itemType, itemUuid, token)
+      : await newStorageService.getFolderAncestors(itemFolderUuid);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore:next-line
     const fullPath = breadcrumbsList.toReversed();
@@ -143,14 +156,14 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     dispatch(storageActions.setNamePath(fullPathParsedNamesList));
 
     const currentItemUuid = navigationService.getUuid();
-    const shouldUpdateBreadcrumb = itemsToMove[0].isFolder && currentItemUuid === itemsToMove[0].uuid;
+    const shouldUpdateBreadcrumb = item.isFolder && currentItemUuid === itemUuid;
 
     if (itemsToMove.length > 1) {
       return;
     }
 
     if (shouldUpdateBreadcrumb) {
-      await getAncestorsAndSetNamePath(itemsToMove[0].uuid as string, dispatch);
+      await getAncestorsAndSetNamePath(item.isFolder ? itemUuid : itemFolderUuid, dispatch);
     }
   };
 
