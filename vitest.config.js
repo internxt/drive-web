@@ -24,6 +24,7 @@ export default defineConfig({
       assets: path.resolve(__dirname, './src/assets'),
       crypto: 'crypto-browserify',
       stream: 'stream-browserify',
+      path: 'path-browserify',
     },
   },
   test: {
