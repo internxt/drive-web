@@ -9,7 +9,10 @@ import {
 } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from '../../core/factory/sdk';
+import envService from 'app/core/services/env.service';
 import localStorageService from 'app/core/services/local-storage.service';
+
+const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? process.env.REACT_APP_AVATAR_URL : undefined;
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
   const usersClient = SdkFactory.getInstance().createUsersClient();
@@ -52,9 +55,8 @@ const getFriendInvites = (): Promise<FriendInvite[]> => {
 };
 
 const updateUserAvatar = (payload: { avatar: Blob }): Promise<{ avatar: string }> => {
-  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
-  const token = localStorageService.get('xNewToken') ?? undefined;
-  return usersClient.updateUserAvatar(payload, token);
+  const usersClient = SdkFactory.getInstance().createUsersClient(TEMPORAL_AVATAR_API_URL);
+  return usersClient.updateAvatar(payload);
 };
 
 const deleteUserAvatar = (): Promise<void> => {
