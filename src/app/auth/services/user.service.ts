@@ -19,9 +19,10 @@ export async function initializeUser(email: string, mnemonic: string): Promise<I
   return usersClient.initialize(email, mnemonic);
 }
 
-export const sendDeactivationEmail = (email: string): Promise<void> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.sendDeactivationEmail(email);
+export const sendDeactivationEmail = (): Promise<void> => {
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const token = localStorageService.get('xNewToken') ?? undefined;
+  return authClient.sendUserDeactivationEmail(token);
 };
 
 const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
@@ -43,8 +44,9 @@ const refreshUserData = async (userUUID: string): Promise<{ user: UserSettings }
 };
 
 const updateUserProfile = (payload: Required<UpdateProfilePayload>): Promise<void> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
-  return usersClient.updateProfile(payload);
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+  const token = localStorageService.get('xNewToken') ?? undefined;
+  return usersClient.updateUserProfile(payload, token);
 };
 
 const getFriendInvites = (): Promise<FriendInvite[]> => {
@@ -53,13 +55,15 @@ const getFriendInvites = (): Promise<FriendInvite[]> => {
 };
 
 const updateUserAvatar = (payload: { avatar: Blob }): Promise<{ avatar: string }> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient(TEMPORAL_AVATAR_API_URL);
-  return usersClient.updateAvatar(payload);
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient(TEMPORAL_AVATAR_API_URL);
+  const token = localStorageService.get('xNewToken') ?? undefined;
+  return usersClient.updateUserAvatar(payload, token);
 };
 
 const deleteUserAvatar = (): Promise<void> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
-  return usersClient.deleteAvatar();
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+  const token = localStorageService.get('xNewToken') ?? undefined;
+  return usersClient.deleteUserAvatar(token);
 };
 
 const sendVerificationEmail = (): Promise<void> => {
