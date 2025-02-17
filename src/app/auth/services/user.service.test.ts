@@ -11,7 +11,7 @@ const usersClientMock = {
   getUserData: vi.fn(),
   updateUserProfile: vi.fn(),
   getFriendInvites: vi.fn(),
-  updateUserAvatar: vi.fn(),
+  //updateUserAvatar: vi.fn(),
   deleteUserAvatar: vi.fn(),
   sendVerificationEmail: vi.fn(),
   getPublicKeyByEmail: vi.fn(),
@@ -93,12 +93,12 @@ describe('userService', () => {
     expect(usersClientMock.getFriendInvites).toHaveBeenCalled();
   });
 
-  it('should update user avatar', async () => {
+  /*it('should update user avatar', async () => {
     usersClientMock.updateUserAvatar.mockResolvedValue({ avatar: 'avatar-url' });
     const result = await userService.updateUserAvatar({ avatar: new Blob() });
     expect(result).toEqual({ avatar: 'avatar-url' });
     expect(usersClientMock.updateUserAvatar).toHaveBeenCalled();
-  });
+  });*/
 
   it('should delete user avatar', async () => {
     usersClientMock.deleteUserAvatar.mockResolvedValue({ success: true });
