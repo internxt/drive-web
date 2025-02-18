@@ -223,19 +223,17 @@ describe('logIn', () => {
 
     const result = await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockLoginType);
 
-    const plainPrivateKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.keys.ecc.privateKey, mockPassword),
-    ).toString('base64');
+    const plainPrivateKey = keysService.decryptPrivateKey(mockUser.keys.ecc.privateKey, mockPassword);
     const plainPrivateKyberKeyInBase64 = keysService.decryptPrivateKey(mockUser.keys.kyber.privateKey, mockPassword);
 
     const mockClearUser = {
       ...mockUser,
       mnemonic: mockMnemonic,
-      privateKey: plainPrivateKeyInBase64,
+      privateKey: plainPrivateKey,
       keys: {
         ecc: {
           publicKey: mockUser.keys.ecc.publicKey,
-          privateKey: plainPrivateKeyInBase64,
+          privateKey: plainPrivateKey,
         },
         kyber: {
           publicKey: mockUser.keys.kyber.publicKey,
@@ -311,18 +309,16 @@ describe('logIn', () => {
 
     const result = await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockLoginType);
 
-    const plainPrivateKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.privateKey, mockPassword),
-    ).toString('base64');
+    const plainPrivateKey = keysService.decryptPrivateKey(mockUser.privateKey, mockPassword);
 
     const mockClearUser = {
       ...mockUser,
       mnemonic: mockMnemonic,
-      privateKey: plainPrivateKeyInBase64,
+      privateKey: plainPrivateKey,
       keys: {
         ecc: {
           publicKey: mockUser.publicKey,
-          privateKey: plainPrivateKeyInBase64,
+          privateKey: plainPrivateKey,
         },
         kyber: {
           publicKey: '',
@@ -389,19 +385,17 @@ describe('signUp', () => {
 
     expect(localStorageService.set).toHaveBeenCalledWith('xNewToken', mockNewToken);
 
-    const plainPrivateKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.keys.ecc.privateKey, mockPassword),
-    ).toString('base64');
+    const plainPrivateKey = keysService.decryptPrivateKey(mockUser.keys.ecc.privateKey, mockPassword);
     const plainPrivateKyberKeyInBase64 = keysService.decryptPrivateKey(mockUser.keys.kyber.privateKey, mockPassword);
 
     const mockClearUser = {
       ...mockUser,
       mnemonic: mockMnemonicNotEnc,
-      privateKey: plainPrivateKeyInBase64,
+      privateKey: plainPrivateKey,
       keys: {
         ecc: {
           publicKey: mockUser.keys.ecc.publicKey,
-          privateKey: plainPrivateKeyInBase64,
+          privateKey: plainPrivateKey,
         },
         kyber: {
           publicKey: mockUser.keys.kyber.publicKey,
@@ -499,18 +493,16 @@ describe('signUp', () => {
 
     expect(localStorageService.set).toHaveBeenCalledWith('xNewToken', mockNewToken);
 
-    const plainPrivateKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.privateKey, mockPassword),
-    ).toString('base64');
+    const plainPrivateKey = keysService.decryptPrivateKey(mockUser.privateKey, mockPassword);
 
     const mockClearUser = {
       ...mockUser,
       mnemonic: mockMnemonicNotEnc,
-      privateKey: plainPrivateKeyInBase64,
+      privateKey: plainPrivateKey,
       keys: {
         ecc: {
           publicKey: mockUser.publicKey,
-          privateKey: plainPrivateKeyInBase64,
+          privateKey: plainPrivateKey,
         },
         kyber: {
           publicKey: '',
@@ -544,15 +536,15 @@ describe('Change password', () => {
       mnemonic: mockMnemonicNotEnc,
       publicKey: keys.publicKeyArmored,
       revocationKey: keys.revocationCertificate,
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKey: keys.privateKeyArmored,
       keys: {
         ecc: {
           publicKey: keys.publicKeyArmored,
-          privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+          privateKey: keys.privateKeyArmored,
         },
         kyber: {
           publicKey: keys.publicKyberKeyBase64,
-          privateKey: Buffer.from(keys.privateKyberKeyBase64).toString('base64'),
+          privateKey: keys.privateKyberKeyBase64,
         },
       },
     };
@@ -586,8 +578,7 @@ describe('Change password', () => {
 
     const privateKeyEncrypted = inputs.encryptedPrivateKey;
     const privateKey = keysService.decryptPrivateKey(privateKeyEncrypted, mockNewPassword);
-    const privateKeyBase64 = Buffer.from(privateKey).toString('base64');
-    expect(privateKeyBase64).toBe(mockUser.privateKey);
+    expect(privateKey).toBe(mockUser.privateKey);
 
     const privateKyberKeyEncrypted = inputs.keys.encryptedPrivateKyberKey;
     const privateKyberKey = keysService.decryptPrivateKey(privateKyberKeyEncrypted, mockNewPassword);
@@ -606,7 +597,7 @@ describe('Change password', () => {
       mnemonic: mockMnemonicNotEnc,
       publicKey: keys.publicKeyArmored,
       revocationKey: keys.revocationCertificate,
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKey: keys.privateKeyArmored,
     };
 
     const mockUser = mockClearUser as UserSettings;
@@ -638,8 +629,7 @@ describe('Change password', () => {
 
     const privateKeyEncrypted = inputs.encryptedPrivateKey;
     const privateKey = keysService.decryptPrivateKey(privateKeyEncrypted, mockNewPassword);
-    const privateKeyBase64 = Buffer.from(privateKey).toString('base64');
-    expect(privateKeyBase64).toBe(mockUser.privateKey);
+    expect(privateKey).toBe(mockUser.privateKey);
 
     const privateKyberKeyEncrypted = inputs.keys.encryptedPrivateKyberKey;
     expect(privateKyberKeyEncrypted).toBe('');

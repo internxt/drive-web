@@ -165,10 +165,7 @@ export const doLogin = async (
 
       if (encryptedPrivateKey) {
         await assertPrivateKeyIsValid(encryptedPrivateKey, password);
-        await assertValidateKeys(
-          Buffer.from(privateKey, 'base64').toString(),
-          Buffer.from(publicKey, 'base64').toString(),
-        );
+        await assertValidateKeys(privateKey, Buffer.from(publicKey, 'base64').toString());
       }
 
       const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
@@ -292,8 +289,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
 
   // Encrypt the mnemonic
   const encryptedMnemonic = encryptTextWithKey(user.mnemonic, newPassword);
-  const privateKey = Buffer.from(user.privateKey, 'base64').toString();
-  const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
+  const privateKeyEncrypted = aes.encrypt(user.privateKey, newPassword, getAesInitFromEnv());
 
   let privateKyberKeyEncrypted = '';
 
