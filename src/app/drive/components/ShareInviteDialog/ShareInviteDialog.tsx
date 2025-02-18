@@ -10,9 +10,8 @@ import errorService from '../../../core/services/error.service';
 import { HTTP_CODES } from '../../../core/services/http.service';
 import AppError, { IFormValues } from '../../../core/types';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { Button, Avatar } from '@internxt/ui';
+import { Button, Avatar, Checkbox } from '@internxt/ui';
 import Input from '../../../shared/components/Input';
-import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { RootState } from '../../../store';
 import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sharedLinks';
 import { Role } from '../../../store/slices/sharedLinks/types';
@@ -296,7 +295,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
           )}
           <div className="mt-2.5 flex w-full items-center justify-between">
             <div className="flex cursor-pointer items-center" onClick={() => setNotifyUser(!notifyUser)}>
-              <BaseCheckbox checked={notifyUser} />
+              <Checkbox checked={notifyUser} />
               <p className="ml-2 text-base font-medium">{translate('modals.shareModal.invite.notifyUsers')}</p>
             </div>
             <Button

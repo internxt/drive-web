@@ -1,6 +1,6 @@
 import { Menu } from '@headlessui/react';
+import { Checkbox } from '@internxt/ui';
 import { DotsThree } from '@phosphor-icons/react';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 
 interface ItemProps {
   item: Record<string, unknown>;
@@ -40,7 +40,7 @@ export default function GridItem({
           selected && 'opacity-100'
         }`}
       >
-        <BaseCheckbox checked={selected} />
+        <Checkbox checked={selected} />
       </div>
 
       {/* COMPOSITION */}
@@ -77,8 +77,8 @@ export default function GridItem({
                             active
                               ? 'bg-primary text-white'
                               : option.disabled?.(item, selected)
-                              ? 'text-gray-40'
-                              : 'text-gray-60'
+                                ? 'text-gray-40'
+                                : 'text-gray-60'
                           }`}
                         >
                           <div className="flex flex-row items-center space-x-2">
