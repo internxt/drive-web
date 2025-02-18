@@ -1,8 +1,7 @@
 import { TeamMember } from '@internxt/sdk/dist/workspaces/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-import Modal from 'app/shared/components/Modal';
-import { Button, Avatar } from '@internxt/ui';
+import { Button, Avatar, Modal } from '@internxt/ui';
 import RoleBadge from 'app/newSettings/Sections/Workspace/Members/components/RoleBadge';
 
 import { ArrowRight } from '@phosphor-icons/react';

@@ -1,6 +1,5 @@
-import Modal from 'app/shared/components/Modal';
 import Input from 'app/shared/components/Input';
-import { Button } from '@internxt/ui';
+import { Button, Modal } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface CreateTeamDialogProps {

@@ -1,6 +1,5 @@
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import { Button, Loader } from '@internxt/ui';
-import Modal from '../../../../../shared/components/Modal';
+import { Button, Loader, Modal } from '@internxt/ui';
 
 const StopSharingAndMoveToTrashDialog = ({
   showStopSharingConfirmation,
