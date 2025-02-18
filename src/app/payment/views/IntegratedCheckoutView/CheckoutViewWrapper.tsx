@@ -1,9 +1,12 @@
-import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef } from 'react';
-import { Elements } from '@stripe/react-stripe-js';
-import { useSelector } from 'react-redux';
-import { Stripe, StripeElements, StripeElementsOptionsMode } from '@stripe/stripe-js';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { Elements } from '@stripe/react-stripe-js';
+import { Stripe, StripeElements, StripeElementsOptionsMode } from '@stripe/stripe-js';
+import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef } from 'react';
+import { useSelector } from 'react-redux';
 
+import { Loader } from '@internxt/ui';
+import { bytesToString } from 'app/drive/services/size.service';
+import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
 import envService from '../../../core/services/env.service';
@@ -15,6 +18,7 @@ import { AppView, IFormValues } from '../../../core/types';
 import databaseService from '../../../database/services/database.service';
 import { getDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import checkoutService from '../../../payment/services/checkout.service';
 import paymentService from '../../../payment/services/payment.service';
@@ -26,12 +30,6 @@ import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
 import { AuthMethodTypes, CouponCodeData, RequestedPlanData } from '../../types';
 import CheckoutView from './CheckoutView';
-import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
-import { getProductAmount } from 'app/payment/utils/getProductAmount';
-import { bytesToString } from 'app/drive/services/size.service';
-import { Loader } from '@internxt/ui';
-import gaService, { GA_SEND_TO_KEY } from 'app/analytics/ga.service';
-import { getCookie } from 'app/analytics/utils';
 
 export const THEME_STYLES = {
   dark: {

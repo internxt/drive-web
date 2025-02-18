@@ -137,6 +137,13 @@
       "auth": false
     },
     {
+      "id": "checkout-session",
+      "layout": "empty",
+      "path": "/checkout/:sessionId",
+      "exact": false,
+      "auth": false
+    },
+    {
       "id": "checkout-status",
       "layout": "empty",
       "path": "/checkout/status",
