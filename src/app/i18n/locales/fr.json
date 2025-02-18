@@ -151,7 +151,7 @@
     }
   },
   "checkout": {
-    "title": "Vous y êtes presque ! Finalisez votre achat en toute sécurité :",
+    "title": "Vous y êtes presque ! Finalisez votre achat en toute sécurité",
     "pay": "Payer",
     "processing": "Traitement en cours...",
     "checkout": "Commander",
@@ -227,7 +227,7 @@
           ]
         }
       },
-      "total": "Total : ",
+      "total": "Total ",
       "totalForBusiness": "Total pour {{N}} utilisateurs : ",
       "addCoupon": {
         "buttonTitle": "Ajouter un coupon",

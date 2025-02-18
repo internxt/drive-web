@@ -145,7 +145,7 @@
     }
   },
   "checkout": {
-    "title": "Sie sind fast da! Sicher zur Kasse gehen:",
+    "title": "Sie sind fast da! Sicher zur Kasse gehen",
     "pay": "Bezahlen",
     "processing": "Verarbeitung läuft...",
     "checkout": "Zur Kasse",
@@ -221,7 +221,7 @@
           ]
         }
       },
-      "total": "Gesamt: ",
+      "total": "Gesamt ",
       "totalForBusiness": "Gesamtbetrag für {{N}} Benutzer: ",
       "addCoupon": {
         "buttonTitle": "Gutschein hinzufügen",
