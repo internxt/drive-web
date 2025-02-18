@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import { Button } from '@internxt/ui';
-import Input from '../../../../../shared/components/Input';
+import { Button, Input } from '@internxt/ui';
 import Modal from '../../../../../shared/components/Modal';
 
 interface ChangeEmailModalProps {

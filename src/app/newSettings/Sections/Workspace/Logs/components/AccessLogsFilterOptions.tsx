@@ -1,8 +1,7 @@
 import { Menu, Transition } from '@headlessui/react';
 import { WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
-import { Button, Checkbox, RadioButton } from '@internxt/ui';
+import { Button, Checkbox, Input, RadioButton } from '@internxt/ui';
 import { FunnelSimple } from '@phosphor-icons/react/dist/ssr';
-import Input from 'app/shared/components/Input';
 
 const ALLOWED_LAST_DAYS_FILTERS = [7, 30, 90];
 const MAX_SEARCH_CHARACTERS = 50;
