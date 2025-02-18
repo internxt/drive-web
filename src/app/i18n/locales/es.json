@@ -147,7 +147,7 @@
     }
   },
   "checkout": {
-    "title": "¡Ya casi está! Finaliza tu compra de forma segura:",
+    "title": "¡Ya casi está! Finaliza tu compra de forma segura",
     "pay": "Pagar",
     "processing": "Procesando...",
     "checkout": "Finalizar compra",
@@ -223,7 +223,7 @@
           ]
         }
       },
-      "total": "Total: ",
+      "total": "Total",
       "totalForBusiness": "Total para {{N}} usuarios: ",
       "addCoupon": {
         "buttonTitle": "Añadir cupón",

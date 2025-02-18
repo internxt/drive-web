@@ -168,7 +168,7 @@
     }
   },
   "checkout": {
-    "title": "您快完成了！请安全结账：",
+    "title": "您快完成了！请安全结账",
     "pay": "支付",
     "processing": "处理中...",
     "checkout": "结账",
@@ -244,7 +244,7 @@
           ]
         }
       },
-      "total": "总计：",
+      "total": "总计",
       "totalForBusiness": "总计 {{N}} 用户：",
       "addCoupon": {
         "buttonTitle": "添加优惠券",

@@ -168,7 +168,7 @@
     }
   },
   "checkout": {
-    "title": "Ci sei quasi! Completa il pagamento in modo sicuro:",
+    "title": "Ci sei quasi! Completa il pagamento in modo sicuro",
     "pay": "Paga",
     "processing": "Elaborazione in corso...",
     "checkout": "Pagamento",
@@ -244,7 +244,7 @@
           ]
         }
       },
-      "total": "Totale: ",
+      "total": "Totale ",
       "totalForBusiness": "Totale per {{N}} utenti: ",
       "addCoupon": {
         "buttonTitle": "Aggiungi coupon",

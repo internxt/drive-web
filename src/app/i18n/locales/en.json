@@ -168,7 +168,7 @@
     }
   },
   "checkout": {
-    "title": "You're almost there! Checkout securely:",
+    "title": "You're almost there! Checkout securely",
     "pay": "Pay",
     "processing": "Processing...",
     "checkout": "Checkout",
@@ -244,7 +244,7 @@
           ]
         }
       },
-      "total": "Total: ",
+      "total": "Total ",
       "totalForBusiness": "Total for {{N}} users: ",
       "addCoupon": {
         "buttonTitle": "Add coupon",
