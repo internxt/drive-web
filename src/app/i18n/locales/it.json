@@ -424,7 +424,7 @@
               "title": "Modifica dei dettagli dell'account",
               "name": "Nome",
               "lastname": "Cognome",
-              "updateProfile": "Profilo aggiornato con successo",
+              "updatedProfile": "Profilo aggiornato con successo",
               "errorUpdatingProfile": "Non è stato possibile aggiornare il profilo"
             },
             "changeEmail": {

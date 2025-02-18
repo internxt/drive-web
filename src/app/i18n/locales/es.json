@@ -407,7 +407,7 @@
             "editProfile": {
               "name": "Nombre",
               "lastname": "Apellido",
-              "updateProfile": "Perfil actualizado correctamente",
+              "updatedProfile": "Perfil actualizado correctamente",
               "errorUpdatingProfile": "No hemos podido actualizar su perfil"
             },
             "changeEmail": {
