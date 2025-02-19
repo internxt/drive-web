@@ -11,7 +11,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 
 import { t } from 'i18next';
 
-import { storageActions } from '..';
+import { addFilesToRetryUpload, storageActions } from '..';
 import { RootState } from '../../..';
 import errorService from '../../../../core/services/error.service';
 import workspacesService from '../../../../core/services/workspace.service';
@@ -177,7 +177,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
 
     try {
-      await uploadFileWithManager(
+      const { filesToRetry } = await uploadFileWithManager(
         filesToUploadData,
         openMaxSpaceOccupiedDialog,
         DatabaseUploadRepository.getInstance(),
@@ -450,7 +450,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
 
     try {
-      await uploadFileWithManager(
+      const { filesToRetry } = await uploadFileWithManager(
         filesToUploadData,
         openMaxSpaceOccupiedDialog,
         DatabaseUploadRepository.getInstance(),
@@ -466,6 +466,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         filesProgress,
         onFileUploadCallback,
       );
+      dispatch(addFilesToRetryUpload(filesToRetry));
     } catch (error) {
       errors.push(error as Error);
     }

@@ -25,8 +25,14 @@ self.addEventListener('message', async (event) => {
       postMessage({ result: 'success', fileId });
     } catch (err) {
       console.log('[WORKER] ERROR -->', err);
-      const errorCloned = JSON.parse(JSON.stringify(err));
-      postMessage({ result: 'error', error: errorCloned });
+
+      if (err instanceof Error && err.message === 'cannot upload') {
+        postMessage({ result: 'error_upload_file', filecontent: err.message });
+        console.log('FILE FAILED -->', event.data.params.filecontent);
+      } else {
+        const errorCloned = JSON.parse(JSON.stringify(err));
+        postMessage({ result: 'error', error: errorCloned });
+      }
     }
   } else {
     console.warn('[WORKER] Received unknown event');

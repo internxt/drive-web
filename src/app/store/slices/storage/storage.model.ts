@@ -3,6 +3,7 @@ import { AdvancedSharedItem, SharedNamePath } from 'app/share/types';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, FileViewMode, FolderPath, FolderPathDialog } from '../../../drive/types';
 import { IRoot } from './types';
+import { UploadManagerFileParams } from 'app/network/UploadManager';
 
 export interface StorageFilters {
   text: string;
@@ -36,6 +37,7 @@ export interface StorageState {
   folderOnTrashLength: number;
   filesOnTrashLength: number;
   filesToRename: (File | DriveItemData)[];
+  filesToRetryUpload: UploadManagerFileParams[];
   driveFilesToRename: DriveItemData[];
   foldersToRename: (DriveItemData | IRoot)[];
   driveFoldersToRename: DriveItemData[];

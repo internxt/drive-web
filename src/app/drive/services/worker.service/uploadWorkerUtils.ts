@@ -65,6 +65,11 @@ const handleError = ({ msgData, reject, worker }) => {
   worker.terminate();
 };
 
+const handleErrorUploadFile = ({ msgData, resolve, worker }) => {
+  resolve(msgData.filecontent);
+  worker.terminate();
+};
+
 const handleAbort = ({ msgData, reject, worker }) => {
   console.warn('[MAIN_THREAD]: ABORT SIGNAL', msgData.fileId);
   reject(msgData.result);
@@ -85,6 +90,7 @@ const handleCheckUploadStatus = async ({ continueUploadOptions, worker }) => {
 const messageResultHandlers = {
   [WORKER_MESSAGE_STATES.SUCCESS]: handleSuccess,
   [WORKER_MESSAGE_STATES.ERROR]: handleError,
+  [WORKER_MESSAGE_STATES.ERROR_UPLOAD_FILE]: handleErrorUploadFile,
   [WORKER_MESSAGE_STATES.ABORT]: handleAbort,
   [WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS]: handleCheckUploadStatus,
 };

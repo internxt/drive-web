@@ -45,7 +45,7 @@ type Options = {
   };
 };
 
-type UploadManagerFileParams = {
+export type UploadManagerFileParams = {
   filecontent: FileToUpload;
   taskId?: string;
   relatedTaskId?: string;
@@ -64,7 +64,7 @@ export const uploadFileWithManager = (
   options?: Options,
   relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
   onFileUploadCallback?: (driveFileData: DriveFileData) => void,
-): Promise<DriveFileData[]> => {
+): Promise<{ uploadedFiles: DriveFileData[]; filesToRetry: UploadManagerFileParams[] }> => {
   const uploadManager = new UploadManager(
     files,
     maxSpaceOccupiedCallback,
@@ -263,6 +263,10 @@ class UploadManager {
             if (uploadAttempts < MAX_UPLOAD_ATTEMPTS && !isUploadAborted && !isLostConnectionError) {
               upload();
             } else {
+              if (error.message === 'No fileId') {
+                next(null);
+                return fileData;
+              }
               this.handleUploadErrors({
                 error,
                 fileData,
@@ -339,6 +343,11 @@ class UploadManager {
       context: error?.context,
       errStatus: error?.status,
     };
+
+    if (error.message === 'No fileId') {
+      next(null);
+      return;
+    }
 
     // Handle lost connection error
     if (isLostConnectionError) {
@@ -516,7 +525,7 @@ class UploadManager {
     return filesWithTaskId;
   }
 
-  async run(): Promise<DriveFileData[]> {
+  async run(): Promise<{ uploadedFiles: DriveFileData[]; filesToRetry: UploadManagerFileParams[] }> {
     let filesWithTaskId = [] as (UploadManagerFileParams & { taskId: string })[];
 
     try {
@@ -524,6 +533,7 @@ class UploadManager {
 
       const [bigSizedFiles, mediumSizedFiles, smallSizedFiles] = this.classifyFilesBySize(filesWithTaskId);
       const uploadedFilesData: DriveFileData[] = [];
+      const filesToRetry: UploadManagerFileParams[] = [];
 
       const uploadFiles = async (files: UploadManagerFileParams[], concurrency: number) => {
         if (this.abortController?.signal.aborted) return [];
@@ -546,8 +556,10 @@ class UploadManager {
 
         const uploadedFiles = await Promise.all(uploadPromises);
 
-        for (const uploadedFile of uploadedFiles) {
-          uploadedFilesData.push(uploadedFile);
+        for (let i = 0; i < uploadedFiles.length; i++) {
+          const uploadedFile = uploadedFiles[i];
+          if (uploadedFile) uploadedFilesData.push(uploadedFile);
+          else filesToRetry.push(files[i]);
         }
       };
 
@@ -561,7 +573,7 @@ class UploadManager {
 
       if (bigSizedFiles.length > 0) await uploadFiles(bigSizedFiles, this.filesGroups.big.concurrency);
 
-      return uploadedFilesData;
+      return { uploadedFiles: uploadedFilesData, filesToRetry: filesToRetry };
     } catch (error) {
       this.handleFailedUploads(filesWithTaskId);
 
