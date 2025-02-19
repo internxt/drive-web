@@ -100,7 +100,7 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
 
   const minimumMultipartThreshold = 100 * 1024 * 1024;
   const useMultipart = params.filesize > minimumMultipartThreshold;
-  const partSize = 30 * 1024 * 1024;
+  const partSize = 10 * 1024 * 1024;
 
   console.time('multipart-upload');
 
