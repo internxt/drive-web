@@ -151,6 +151,8 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
           });
         }
 
+        if (file.name === 'LICENSE') throw new Error('test error');
+
         return await uploadPromise;
       } catch (err) {
         if (connectionLost) {
@@ -163,7 +165,7 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
         const lastTryFailed = attempt === MAX_TRIES;
 
         if (lastTryFailed) {
-          lastTryError = err;
+          lastTryError = new Error('cannot upload');
         } else await new Promise((res) => setTimeout(res, RETRY_DELAY));
       }
     }
