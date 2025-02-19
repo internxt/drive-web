@@ -9,6 +9,7 @@ import { CaretDown, CircleNotch, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
+import TaskToRetry from '../TaskToRetry/TaskToRetry';
 
 const TaskLogger = (): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -63,6 +64,7 @@ const TaskLogger = (): JSX.Element => {
         isMinimized ? 'h-11' : 'h-72'
       } overflow-hidden rounded-xl border border-gray-10 bg-surface dark:bg-gray-1 ${!isOpen ? 'hidden' : ''}`}
     >
+      <TaskToRetry />
       <div className="flex select-none justify-between border-b border-gray-10 bg-gray-5 px-3 py-2.5">
         <div className="flex w-max items-center text-sm font-medium text-gray-60">
           {hasFinished ? (
