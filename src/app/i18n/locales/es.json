@@ -173,7 +173,7 @@
       "optional": {
         "cta": "Opcional",
         "companyName": "Nombre de la empresa",
-        "companyVatId": "ID de IVA de la empresa"
+        "companyVatId": "VAT ID de la Empresa"
       }
     },
     "paymentTitle": "Seleccione un método de pago",
