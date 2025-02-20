@@ -1,19 +1,19 @@
 import { Environment } from '@internxt/inxt-js';
 import { Network as NetworkModule } from '@internxt/sdk';
-import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
-import { validateMnemonic } from 'bip39';
-import { uploadFile, uploadMultipartFile } from '@internxt/sdk/dist/network/upload';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
+import { uploadFile, uploadMultipartFile } from '@internxt/sdk/dist/network/upload';
+import { validateMnemonic } from 'bip39';
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
-import { getEncryptedFile, encryptStreamInParts, processEveryFileBlobReturnHash } from './crypto';
-import { DownloadProgressCallback, getDecryptedStream } from './download';
-import { uploadFileBlob, UploadProgressCallback } from './upload';
+import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
 import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
-import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
-import { TaskStatus } from '../tasks/types';
-import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
 import { WORKER_MESSAGE_STATES } from '../../WebWorker';
+import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
+import { TaskStatus } from '../tasks/types';
+import { encryptStreamInParts, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
+import { DownloadProgressCallback, getDecryptedStream } from './download';
+import { uploadFileBlob, UploadProgressCallback } from './upload';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -143,7 +143,7 @@ export class NetworkFacade {
 
     const uploadFileMultipart: UploadFileMultipartFunction = async (urls: string[]) => {
       let partIndex = 0;
-      const limitConcurrency = 6;
+      const limitConcurrency = 12;
 
       const worker = async (upload: UploadTask) => {
         postMessage({ result: WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS });
