@@ -37,7 +37,6 @@ export interface StorageState {
   folderOnTrashLength: number;
   filesOnTrashLength: number;
   filesToRename: (File | DriveItemData)[];
-  filesToRetryUpload: UploadManagerFileParams[];
   driveFilesToRename: DriveItemData[];
   foldersToRename: (DriveItemData | IRoot)[];
   driveFoldersToRename: DriveItemData[];

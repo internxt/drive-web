@@ -17,12 +17,19 @@ const TaskLogger = (): JSX.Element => {
   const isOpen = useAppSelector((state) => state.ui.isFileLoggerOpen);
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const allNotifications = useTaskManagerGetNotifications();
   const finishedNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled],
   });
   const items: JSX.Element[] = allNotifications.map((n) => (
-    <TaskLoggerItem notification={n} task={tasksService.findTask(n.taskId)} key={n.taskId} />
+    <TaskLoggerItem
+      notification={n}
+      task={tasksService.findTask(n.taskId)}
+      key={n.taskId}
+      onClick={() => setIsModalOpen(true)}
+    />
   ));
   const onCloseButtonClicked = () => {
     if (hasFinished) {
@@ -64,7 +71,7 @@ const TaskLogger = (): JSX.Element => {
         isMinimized ? 'h-11' : 'h-72'
       } overflow-hidden rounded-xl border border-gray-10 bg-surface dark:bg-gray-1 ${!isOpen ? 'hidden' : ''}`}
     >
-      <TaskToRetry />
+      <TaskToRetry isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <div className="flex select-none justify-between border-b border-gray-10 bg-gray-5 px-3 py-2.5">
         <div className="flex w-max items-center text-sm font-medium text-gray-60">
           {hasFinished ? (

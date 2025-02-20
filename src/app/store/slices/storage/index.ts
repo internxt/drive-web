@@ -9,7 +9,6 @@ import { storageExtraReducers } from '../storage/storage.thunks';
 import { filtersFactory, orderFactory, StorageSetFiltersPayload, StorageState } from './storage.model';
 import selectors from './storage.selectors';
 import { IRoot } from './types';
-import { UploadManagerFileParams } from 'app/network/UploadManager';
 
 const initialState: StorageState = {
   loadingFolders: {},
@@ -38,7 +37,6 @@ const initialState: StorageState = {
   namePath: [],
   currentPath: { uuid: '', name: '' },
   filesToRename: [],
-  filesToRetryUpload: [],
   driveFilesToRename: [],
   foldersToRename: [],
   driveFoldersToRename: [],
@@ -400,9 +398,6 @@ export const storageSlice = createSlice({
     setDriveItemsOrder: (state: StorageState, action: PayloadAction<string>) => {
       state.driveItemsOrder = action.payload;
     },
-    addFilesToRetryUpload(state, action: PayloadAction<UploadManagerFileParams[]>) {
-      state.filesToRetryUpload = state.filesToRetryUpload.concat(action.payload);
-    },
   },
   extraReducers: storageExtraReducers,
 });
@@ -434,7 +429,6 @@ export const {
   pushItems,
   clearCurrentThumbnailItems,
   resetSharedNamePath,
-  addFilesToRetryUpload,
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

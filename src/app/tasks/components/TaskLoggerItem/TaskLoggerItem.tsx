@@ -16,6 +16,7 @@ const THREE_HUNDRED_MB_IN_BYTES = 3 * 100 * 1024 * 1024;
 interface TaskLoggerItemProps {
   notification: TaskNotification;
   task?: TaskData;
+  onClick: () => void;
 }
 
 const taskStatusTextColors = {
@@ -68,7 +69,7 @@ const resetTaskProgress = (notification: TaskNotification) => {
   });
 };
 
-const TaskLoggerItem = ({ notification, task }: TaskLoggerItemProps): JSX.Element => {
+const TaskLoggerItem = ({ notification, task, onClick }: TaskLoggerItemProps): JSX.Element => {
   const [isHovered, setIsHovered] = useState(false);
   const [isRetryActionDisabled, setIsRetryActionDisabled] = useState(false);
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
@@ -167,6 +168,7 @@ const TaskLoggerItem = ({ notification, task }: TaskLoggerItemProps): JSX.Elemen
         role="none"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onClick={onClick}
       >
         <notification.icon className="h-8 w-8 drop-shadow-sm" />
         <div className="flex flex-1 flex-col overflow-hidden text-left">
