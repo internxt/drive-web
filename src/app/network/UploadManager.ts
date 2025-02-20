@@ -263,10 +263,6 @@ class UploadManager {
             if (uploadAttempts < MAX_UPLOAD_ATTEMPTS && !isUploadAborted && !isLostConnectionError) {
               upload();
             } else {
-              if (error.message === 'No fileId') {
-                next(null);
-                return fileData;
-              }
               this.handleUploadErrors({
                 error,
                 fileData,

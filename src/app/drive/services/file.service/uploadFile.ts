@@ -56,7 +56,7 @@ export async function uploadFile(
   options.abortCallback?.(abort?.abort);
 
   const fileId = await promise;
-  if (fileId === 'cannot upload') throw { message: 'No fileId', file };
+  if (fileId === undefined) throw { message: 'No fileId', file };
 
   const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
   const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;

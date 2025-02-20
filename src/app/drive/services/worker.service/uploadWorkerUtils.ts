@@ -65,7 +65,7 @@ const handleError = ({ msgData, reject, worker }) => {
   worker.terminate();
 };
 
-const handleErrorUploadFile = ({ msgData, resolve, worker }) => {
+const handleUploadFail = ({ msgData, resolve, worker }) => {
   resolve(msgData.filecontent);
   worker.terminate();
 };
@@ -90,9 +90,9 @@ const handleCheckUploadStatus = async ({ continueUploadOptions, worker }) => {
 const messageResultHandlers = {
   [WORKER_MESSAGE_STATES.SUCCESS]: handleSuccess,
   [WORKER_MESSAGE_STATES.ERROR]: handleError,
-  [WORKER_MESSAGE_STATES.ERROR_UPLOAD_FILE]: handleErrorUploadFile,
   [WORKER_MESSAGE_STATES.ABORT]: handleAbort,
   [WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS]: handleCheckUploadStatus,
+  [WORKER_MESSAGE_STATES.UPLOAD_FAIL]: handleUploadFail,
 };
 
 /**
