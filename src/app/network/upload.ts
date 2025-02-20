@@ -169,7 +169,7 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
         const lastTryFailed = attempt === MAX_TRIES;
 
         if (lastTryFailed) {
-          lastTryError = new Error('cannot upload');
+          lastTryError = new Error('Last attempt upload failed');
         } else await new Promise((res) => setTimeout(res, RETRY_DELAY));
       }
     }

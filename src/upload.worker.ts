@@ -26,9 +26,8 @@ self.addEventListener('message', async (event) => {
     } catch (err) {
       console.log('[WORKER] ERROR -->', err);
 
-      if (err instanceof Error && err.message === 'cannot upload') {
-        postMessage({ result: 'error_upload_file', filecontent: err.message });
-        console.log('FILE FAILED -->', event.data.params.filecontent);
+      if (err instanceof Error && err.message === 'Last attempt upload failed') {
+        postMessage({ result: 'uploadFail', fileId: 'noId' });
       } else {
         const errorCloned = JSON.parse(JSON.stringify(err));
         postMessage({ result: 'error', error: errorCloned });
