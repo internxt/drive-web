@@ -151,7 +151,11 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
           });
         }
 
-        if (file.name === 'LICENSE') throw new Error('test error');
+        const forceFail = true;
+
+        const test = 0;
+
+        if (forceFail && file.name === 'goku') throw new Error('test error');
 
         return await uploadPromise;
       } catch (err) {
