@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { X } from '@phosphor-icons/react';
-import { Button, RangeSlider } from '@internxt/ui';
+import { Button, RangeSlider, Modal } from '@internxt/ui';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import Modal from '../../../../../shared/components/Modal';
 import UserCard from './UserCard';
 import { MemberRole } from '../../../../../newSettings/types/types';
 import { bytesToString } from '../../../../../drive/services/size.service';

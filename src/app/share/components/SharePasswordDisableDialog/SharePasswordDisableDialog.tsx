@@ -1,6 +1,5 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Button } from '@internxt/ui';
-import Modal from 'app/shared/components/Modal';
+import { Button, Modal } from '@internxt/ui';
 import { useState } from 'react';
 
 type SharePasswordDisableWarningDialogProps = {
