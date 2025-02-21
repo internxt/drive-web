@@ -1,34 +1,28 @@
 import { X } from '@phosphor-icons/react';
 import { UploadManagerFileParams } from 'app/network/UploadManager';
 import Modal from 'app/shared/components/Modal';
-import fileRetryManager from 'app/store/slices/storage/fileRetrymanager';
 import { useReduxActions } from 'app/store/slices/storage/hooks/useReduxActions';
-import { useEffect, useState } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import TaskToRetryItem from '../TaskToRetryItem/TaskToRetryItem';
+import fileRetryManager, { FileToRetry } from 'app/store/slices/storage/fileRetrymanager';
 
 interface TaskToRetryProps {
   isOpen: boolean;
+  files: FileToRetry[];
   onClose: () => void;
 }
 
-const TaskToRetry = ({ isOpen, onClose }: TaskToRetryProps): JSX.Element => {
-  const [filesToRetry, setFilesToRetry] = useState(fileRetryManager.getFiles());
+const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element => {
   const { uploadRetryItem } = useReduxActions();
 
-  useEffect(() => {
-    const handleUpdate = () => setFilesToRetry([...fileRetryManager.getFiles()]);
-    fileRetryManager.subscribe(handleUpdate);
-    return () => fileRetryManager.unsubscribe(handleUpdate);
-  }, []);
-
-  const downloadItem = (fileParams: UploadManagerFileParams) => {
+  const downloadItem = (fileParams: FileToRetry) => {
     const data = {
-      uploadFile: fileParams.filecontent.content,
-      parentFolderId: fileParams.parentFolderId,
-      taskId: fileParams.taskId ?? '',
-      fileType: fileParams.filecontent.type ?? '',
+      uploadFile: fileParams.params.filecontent.content,
+      parentFolderId: fileParams.params.parentFolderId,
+      taskId: fileParams.params.taskId ?? '',
+      fileType: fileParams.params.filecontent.type ?? '',
     };
+    fileRetryManager.changeStatus(fileParams.params.taskId ?? '', 'uploading');
     uploadRetryItem(data);
   };
 
@@ -46,13 +40,7 @@ const TaskToRetry = ({ isOpen, onClose }: TaskToRetryProps): JSX.Element => {
       </div>
       <div className="absolute top-[72px] left-0 w-full border-b border-gray-10" />
 
-      <List
-        height={400}
-        itemCount={filesToRetry.length}
-        itemSize={72}
-        width={'100%'}
-        itemData={{ files: filesToRetry, downloadItem }}
-      >
+      <List height={400} itemCount={files.length} itemSize={72} width={'100%'} itemData={{ files, downloadItem }}>
         {TaskToRetryItem}
       </List>
     </Modal>

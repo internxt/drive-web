@@ -1,16 +1,35 @@
 import { UploadManagerFileParams } from 'app/network/UploadManager';
 
+export type FileToRetry = {
+  params: UploadManagerFileParams;
+  status: 'uploading' | 'failed' | 'success';
+};
+
 class FileRetryManager {
-  private filesToRetry: UploadManagerFileParams[] = [];
+  private filesToRetry: FileToRetry[] = [];
   private listeners: (() => void)[] = [];
 
   addFile(file: UploadManagerFileParams) {
-    this.filesToRetry.push(file);
+    this.filesToRetry.push({ params: file, status: 'failed' });
     this.notify();
   }
 
   addFiles(files: UploadManagerFileParams[]) {
-    this.filesToRetry.push(...files);
+    const filesWithStatus: FileToRetry[] = files.map((file) => ({
+      params: file,
+      status: 'failed',
+    }));
+    this.filesToRetry.push(...filesWithStatus);
+    this.notify();
+  }
+
+  changeStatus(taskId: string, status: 'uploading' | 'failed' | 'success') {
+    this.filesToRetry = this.filesToRetry.map((file) => (file.params.taskId === taskId ? { ...file, status } : file));
+    this.notify();
+  }
+
+  removeFile(taskId: string) {
+    this.filesToRetry = this.filesToRetry.filter((file) => file.params.taskId !== taskId);
     this.notify();
   }
 

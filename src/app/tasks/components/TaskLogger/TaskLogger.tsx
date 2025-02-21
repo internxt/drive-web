@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 
 import { useTaskManagerGetNotifications } from '../../hooks';
 import tasksService from '../../services/tasks.service';
@@ -9,7 +9,8 @@ import { CaretDown, CircleNotch, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
-import TaskToRetry from '../TaskToRetry/TaskToRetry';
+import fileRetryManager, { FileToRetry } from 'app/store/slices/storage/fileRetrymanager';
+import { UploadManagerFileParams } from 'app/network/UploadManager';
 
 const TaskLogger = (): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -17,18 +18,32 @@ const TaskLogger = (): JSX.Element => {
   const isOpen = useAppSelector((state) => state.ui.isFileLoggerOpen);
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filesToRetry, setFilesToRetry] = useState(fileRetryManager.getFiles());
 
   const allNotifications = useTaskManagerGetNotifications();
   const finishedNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled],
   });
+  const filesToRetryGroupedByTask = useMemo(
+    () =>
+      filesToRetry.reduce<Record<string, FileToRetry[]>>((acc, file) => {
+        const relatedTaskId = file.params.relatedTaskId;
+        if (relatedTaskId) {
+          if (!acc[relatedTaskId]) {
+            acc[relatedTaskId] = [];
+          }
+          acc[relatedTaskId].push(file);
+        }
+        return acc;
+      }, {}),
+    [filesToRetry],
+  );
   const items: JSX.Element[] = allNotifications.map((n) => (
     <TaskLoggerItem
       notification={n}
       task={tasksService.findTask(n.taskId)}
       key={n.taskId}
-      onClick={() => setIsModalOpen(true)}
+      filesToRetry={filesToRetryGroupedByTask[n.taskId]}
     />
   ));
   const onCloseButtonClicked = () => {
@@ -44,6 +59,12 @@ const TaskLogger = (): JSX.Element => {
     e.returnValue = confirmationMessage; //Trident, Chrome 34+
     return confirmationMessage; // WebKit, Chrome <34
   };
+
+  useEffect(() => {
+    const handleUpdate = () => setFilesToRetry([...fileRetryManager.getFiles()]);
+    fileRetryManager.subscribe(handleUpdate);
+    return () => fileRetryManager.unsubscribe(handleUpdate);
+  }, []);
 
   useEffect(() => {
     const processingItems = allNotifications.findIndex(
@@ -71,7 +92,6 @@ const TaskLogger = (): JSX.Element => {
         isMinimized ? 'h-11' : 'h-72'
       } overflow-hidden rounded-xl border border-gray-10 bg-surface dark:bg-gray-1 ${!isOpen ? 'hidden' : ''}`}
     >
-      <TaskToRetry isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <div className="flex select-none justify-between border-b border-gray-10 bg-gray-5 px-3 py-2.5">
         <div className="flex w-max items-center text-sm font-medium text-gray-60">
           {hasFinished ? (
