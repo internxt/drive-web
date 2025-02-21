@@ -580,7 +580,7 @@ export const uploadRetryItemThunk = createAsyncThunk<void, UploadItemRetryPayloa
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
 
     try {
-      await uploadFileWithManager(
+      const { filesToRetry } = await uploadFileWithManager(
         filesToUploadData,
         openMaxSpaceOccupiedDialog,
         DatabaseUploadRepository.getInstance(),
@@ -593,6 +593,9 @@ export const uploadRetryItemThunk = createAsyncThunk<void, UploadItemRetryPayloa
           },
         },
       );
+      //if (filesToRetry.length === 0 && taskId) fileRetryManager.removeFile(taskId);
+      if (filesToRetry.length === 0 && taskId) fileRetryManager.changeStatus(taskId, 'success');
+      else if (taskId) fileRetryManager.changeStatus(taskId, 'failed');
     } catch (error) {
       errors.push(error as Error);
     }

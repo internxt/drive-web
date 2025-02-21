@@ -11,12 +11,15 @@ import tasksService from '../../services/tasks.service';
 import { TaskData, TaskNotification, TaskStatus, TaskType, UploadFileData, UploadFolderData } from '../../types';
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { UploadManagerFileParams } from 'app/network/UploadManager';
+import TaskToRetry from '../TaskToRetry/TaskToRetry';
+import { FileToRetry } from 'app/store/slices/storage/fileRetrymanager';
 
 const THREE_HUNDRED_MB_IN_BYTES = 3 * 100 * 1024 * 1024;
 interface TaskLoggerItemProps {
   notification: TaskNotification;
   task?: TaskData;
-  onClick: () => void;
+  filesToRetry: FileToRetry[];
 }
 
 const taskStatusTextColors = {
@@ -69,10 +72,11 @@ const resetTaskProgress = (notification: TaskNotification) => {
   });
 };
 
-const TaskLoggerItem = ({ notification, task, onClick }: TaskLoggerItemProps): JSX.Element => {
+const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProps): JSX.Element => {
   const [isHovered, setIsHovered] = useState(false);
   const [isRetryActionDisabled, setIsRetryActionDisabled] = useState(false);
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { openItem } = useOpenItem({
     notification,
@@ -168,8 +172,8 @@ const TaskLoggerItem = ({ notification, task, onClick }: TaskLoggerItemProps): J
         role="none"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onClick={onClick}
       >
+        <TaskToRetry isOpen={isModalOpen} files={filesToRetry ?? []} onClose={() => setIsModalOpen(false)} />
         <notification.icon className="h-8 w-8 drop-shadow-sm" />
         <div className="flex flex-1 flex-col overflow-hidden text-left">
           <span className="truncate text-sm font-medium text-gray-80" title={notification.title}>
@@ -187,7 +191,9 @@ const TaskLoggerItem = ({ notification, task, onClick }: TaskLoggerItemProps): J
           retryAction={handleRetryClick}
           isUploadTask={isUploadTask}
           openItemAction={openItem}
+          openRetryItemsAction={() => setIsModalOpen(true)}
           showPauseButton={shouldDisplayPauseButton(notification)}
+          haveWarnings={filesToRetry?.length > 0}
         />
       </div>
       {showProgressBar && <ProgressBar progress={progress} isPaused={notification.status === TaskStatus.Paused} />}

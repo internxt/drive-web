@@ -151,10 +151,9 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
           });
         }
 
-        const forceFail = true;
+        const forceFail = Math.random();
 
-        const test = 0;
-
+        if (file.name.includes('test_fail_file') && forceFail > 0.25) throw new Error('test error');
         if (forceFail && file.name === 'goku') throw new Error('test error');
 
         return await uploadPromise;
