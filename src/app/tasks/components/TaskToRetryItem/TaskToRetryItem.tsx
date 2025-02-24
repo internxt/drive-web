@@ -1,6 +1,5 @@
 import { ListChildComponentProps } from 'react-window';
 import { ReactComponent as RestartIcon } from '../../../../assets/icons/tasklogger/circle-arrow.svg';
-import { ReactComponent as Success } from '../../../../assets/icons/tasklogger/success-check.svg';
 import iconService from 'app/drive/services/icon.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import { formatDefaultDate } from 'app/core/services/date.service';
@@ -33,7 +32,6 @@ const TaskToRetyItem = ({ index, style, data }: ListChildComponentProps) => {
       {file.status === 'uploading' && (
         <CircleNotch size={16} className="mr-2 animate-spin text-gray-60" weight="bold" />
       )}
-      {file.status === 'success' && <TaskLoggerButton onClick={() => downloadItem(file)} Icon={Success} />}
     </div>
   );
 };

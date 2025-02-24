@@ -10,6 +10,7 @@ import tasksService from '../tasks/services/tasks.service';
 import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 import { ConnectionLostError } from './requests';
 import { FileToUpload } from '../drive/services/file.service/types';
+import fileRetryManager from 'app/store/slices/storage/fileRetrymanager';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -43,6 +44,7 @@ type Options = {
     isDeepFolder?: boolean;
     currentFolderId?: string;
   };
+  isUploadedFromFolder?: boolean;
 };
 
 export type UploadManagerFileParams = {
@@ -64,7 +66,7 @@ export const uploadFileWithManager = (
   options?: Options,
   relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
   onFileUploadCallback?: (driveFileData: DriveFileData) => void,
-): Promise<{ uploadedFiles: DriveFileData[]; filesToRetry: UploadManagerFileParams[] }> => {
+): Promise<{ uploadedFiles: DriveFileData[] }> => {
   const uploadManager = new UploadManager(
     files,
     maxSpaceOccupiedCallback,
@@ -521,7 +523,7 @@ class UploadManager {
     return filesWithTaskId;
   }
 
-  async run(): Promise<{ uploadedFiles: DriveFileData[]; filesToRetry: UploadManagerFileParams[] }> {
+  async run(): Promise<{ uploadedFiles: DriveFileData[] }> {
     let filesWithTaskId = [] as (UploadManagerFileParams & { taskId: string })[];
 
     try {
@@ -529,7 +531,6 @@ class UploadManager {
 
       const [bigSizedFiles, mediumSizedFiles, smallSizedFiles] = this.classifyFilesBySize(filesWithTaskId);
       const uploadedFilesData: DriveFileData[] = [];
-      const filesToRetry: UploadManagerFileParams[] = [];
 
       const uploadFiles = async (files: UploadManagerFileParams[], concurrency: number) => {
         if (this.abortController?.signal.aborted) return [];
@@ -550,13 +551,25 @@ class UploadManager {
 
         const uploadPromises: Promise<DriveFileData>[] = await this.uploadQueue.pushAsync(files);
 
-        const uploadedFiles = await Promise.all(uploadPromises);
+        let uploadedFiles: DriveFileData[] = [];
+        const filesToRetry: UploadManagerFileParams[] = [];
+
+        uploadedFiles = await Promise.all(uploadPromises);
 
         for (let i = 0; i < uploadedFiles.length; i++) {
           const uploadedFile = uploadedFiles[i];
           if (uploadedFile) uploadedFilesData.push(uploadedFile);
           else filesToRetry.push(files[i]);
         }
+
+        if (this.options?.isUploadedFromFolder) {
+          fileRetryManager.addFiles(filesToRetry);
+
+          if (files.length === 1 && files[0].taskId) {
+            if (filesToRetry.length === 0) fileRetryManager.removeFile(files[0].taskId);
+            else fileRetryManager.changeStatus(files[0].taskId, 'failed');
+          }
+        } else if (filesToRetry.length > 0) throw new Error();
       };
 
       if (smallSizedFiles.length > 0) await uploadFiles(smallSizedFiles, this.filesGroups.small.concurrency);
@@ -569,7 +582,7 @@ class UploadManager {
 
       if (bigSizedFiles.length > 0) await uploadFiles(bigSizedFiles, this.filesGroups.big.concurrency);
 
-      return { uploadedFiles: uploadedFilesData, filesToRetry: filesToRetry };
+      return { uploadedFiles: uploadedFilesData };
     } catch (error) {
       this.handleFailedUploads(filesWithTaskId);
 

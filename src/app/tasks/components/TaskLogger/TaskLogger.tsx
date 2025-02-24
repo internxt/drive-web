@@ -10,7 +10,6 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
 import fileRetryManager, { FileToRetry } from 'app/store/slices/storage/fileRetrymanager';
-import { UploadManagerFileParams } from 'app/network/UploadManager';
 
 const TaskLogger = (): JSX.Element => {
   const { translate } = useTranslationContext();

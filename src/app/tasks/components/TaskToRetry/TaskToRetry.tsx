@@ -1,10 +1,10 @@
 import { X } from '@phosphor-icons/react';
-import { UploadManagerFileParams } from 'app/network/UploadManager';
 import Modal from 'app/shared/components/Modal';
 import { useReduxActions } from 'app/store/slices/storage/hooks/useReduxActions';
 import { FixedSizeList as List } from 'react-window';
 import TaskToRetryItem from '../TaskToRetryItem/TaskToRetryItem';
 import fileRetryManager, { FileToRetry } from 'app/store/slices/storage/fileRetrymanager';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface TaskToRetryProps {
   isOpen: boolean;
@@ -14,6 +14,7 @@ interface TaskToRetryProps {
 
 const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element => {
   const { uploadRetryItem } = useReduxActions();
+  const { translate } = useTranslationContext();
 
   const downloadItem = (fileParams: FileToRetry) => {
     const data = {
@@ -23,7 +24,11 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
       fileType: fileParams.params.filecontent.type ?? '',
     };
     fileRetryManager.changeStatus(fileParams.params.taskId ?? '', 'uploading');
-    uploadRetryItem(data);
+    try {
+      uploadRetryItem(data);
+    } catch {
+      fileRetryManager.changeStatus(fileParams.params.taskId ?? '', 'failed');
+    }
   };
 
   return (
@@ -40,9 +45,13 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
       </div>
       <div className="absolute top-[72px] left-0 w-full border-b border-gray-10" />
 
-      <List height={400} itemCount={files.length} itemSize={72} width={'100%'} itemData={{ files, downloadItem }}>
-        {TaskToRetryItem}
-      </List>
+      {files?.length > 0 ? (
+        <List height={400} itemCount={files.length} itemSize={72} width={'100%'} itemData={{ files, downloadItem }}>
+          {TaskToRetryItem}
+        </List>
+      ) : (
+        <span>{translate('tasks.messages.allProcessesHaveFinished')}</span>
+      )}
     </Modal>
   );
 };

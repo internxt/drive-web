@@ -2,7 +2,7 @@ import { UploadManagerFileParams } from 'app/network/UploadManager';
 
 export type FileToRetry = {
   params: UploadManagerFileParams;
-  status: 'uploading' | 'failed' | 'success';
+  status: 'uploading' | 'failed';
 };
 
 class FileRetryManager {
@@ -23,7 +23,7 @@ class FileRetryManager {
     this.notify();
   }
 
-  changeStatus(taskId: string, status: 'uploading' | 'failed' | 'success') {
+  changeStatus(taskId: string, status: 'uploading' | 'failed') {
     this.filesToRetry = this.filesToRetry.map((file) => (file.params.taskId === taskId ? { ...file, status } : file));
     this.notify();
   }
@@ -40,6 +40,10 @@ class FileRetryManager {
 
   getFiles() {
     return this.filesToRetry;
+  }
+
+  isRetryingFile(taskId: string): boolean {
+    return this.filesToRetry.some((file) => file.params.taskId === taskId);
   }
 
   subscribe(listener: () => void) {

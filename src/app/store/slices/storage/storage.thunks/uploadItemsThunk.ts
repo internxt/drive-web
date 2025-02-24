@@ -36,6 +36,7 @@ interface UploadItemsThunkOptions {
   isRetriedUpload?: boolean;
   disableDuplicatedNamesCheck?: boolean;
   disableExistenceCheck?: boolean;
+  isUploadedFromFolder?: boolean;
 }
 
 interface UploadItemsPayload {
@@ -188,7 +189,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
 
     try {
-      const { filesToRetry } = await uploadFileWithManager(
+      await uploadFileWithManager(
         filesToUploadData,
         openMaxSpaceOccupiedDialog,
         DatabaseUploadRepository.getInstance(),
@@ -461,7 +462,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
 
     try {
-      const { filesToRetry } = await uploadFileWithManager(
+      await uploadFileWithManager(
         filesToUploadData,
         openMaxSpaceOccupiedDialog,
         DatabaseUploadRepository.getInstance(),
@@ -477,7 +478,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         filesProgress,
         onFileUploadCallback,
       );
-      fileRetryManager.addFiles(filesToRetry);
     } catch (error) {
       errors.push(error as Error);
     }
@@ -500,6 +500,8 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(uploadItemsParallelThunk.fulfilled, () => undefined)
     .addCase(uploadItemsParallelThunk.rejected, (state, action) => {
       const requestOptions = Object.assign(DEFAULT_OPTIONS, action.meta.arg.options ?? {});
+      const taskId = action.meta.arg.taskId;
+      if (taskId && fileRetryManager.isRetryingFile(taskId)) fileRetryManager.changeStatus(taskId, 'failed');
       if (requestOptions?.showErrors) {
         notificationsService.show({
           text: t('error.uploadingFile', { reason: action.error.message ?? '' }),
@@ -580,7 +582,7 @@ export const uploadRetryItemThunk = createAsyncThunk<void, UploadItemRetryPayloa
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
 
     try {
-      const { filesToRetry } = await uploadFileWithManager(
+      await uploadFileWithManager(
         filesToUploadData,
         openMaxSpaceOccupiedDialog,
         DatabaseUploadRepository.getInstance(),
@@ -591,12 +593,11 @@ export const uploadRetryItemThunk = createAsyncThunk<void, UploadItemRetryPayloa
             isDeepFolder: false,
             currentFolderId: parentFolderId,
           },
+          isUploadedFromFolder: true,
         },
       );
-      //if (filesToRetry.length === 0 && taskId) fileRetryManager.removeFile(taskId);
-      if (filesToRetry.length === 0 && taskId) fileRetryManager.changeStatus(taskId, 'success');
-      else if (taskId) fileRetryManager.changeStatus(taskId, 'failed');
     } catch (error) {
+      if (taskId) fileRetryManager.changeStatus(taskId, 'failed');
       errors.push(error as Error);
     }
 

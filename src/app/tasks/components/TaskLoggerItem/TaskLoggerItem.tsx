@@ -11,7 +11,6 @@ import tasksService from '../../services/tasks.service';
 import { TaskData, TaskNotification, TaskStatus, TaskType, UploadFileData, UploadFolderData } from '../../types';
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import { UploadManagerFileParams } from 'app/network/UploadManager';
 import TaskToRetry from '../TaskToRetry/TaskToRetry';
 import { FileToRetry } from 'app/store/slices/storage/fileRetrymanager';
 
