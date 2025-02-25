@@ -61,13 +61,9 @@ const handleSuccess = ({ msgData, resolve, worker }) => {
   worker.terminate();
 };
 
-const handleError = ({ msgData, reject, worker }) => {
-  reject(msgData.error);
-  worker.terminate();
-};
-
-const handleUploadFail = ({ msgData, resolve, worker }) => {
-  resolve(msgData.filecontent);
+const handleError = ({ msgData, params, resolve, reject, worker }) => {
+  //if upload is from folder, resolve promise to continue uploading
+  params.isUploadedFromFolder ? resolve(msgData.fileId) : reject(msgData.error);
   worker.terminate();
 };
 
@@ -93,7 +89,6 @@ const messageResultHandlers = {
   [WORKER_MESSAGE_STATES.ERROR]: handleError,
   [WORKER_MESSAGE_STATES.ABORT]: handleAbort,
   [WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS]: handleCheckUploadStatus,
-  [WORKER_MESSAGE_STATES.UPLOAD_FAIL]: handleUploadFail,
 };
 
 /**
@@ -115,7 +110,7 @@ const handleMessage = (msgData, params, resolve, reject, worker, continueUploadO
   const messageHandler = messageResultHandlers[msgData.result];
 
   if (messageHandler) {
-    messageHandler({ msgData, resolve, reject, worker, continueUploadOptions });
+    messageHandler({ msgData, params, resolve, reject, worker, continueUploadOptions });
     return;
   }
 

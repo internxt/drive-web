@@ -56,6 +56,7 @@ export type UploadManagerFileParams = {
   parentFolderId: string;
   onFinishUploadFile?: (driveItemData: DriveFileData, taskId: string) => void;
   abortController?: AbortController;
+  isUploadedFromFolder?: boolean;
 };
 
 export const uploadFileWithManager = (
@@ -204,6 +205,7 @@ class UploadManager {
                 listener: abortListener,
               });
             },
+            isUploadedFromFolder: fileData.isUploadedFromFolder,
           },
           continueUploadOptions,
         )
@@ -529,6 +531,8 @@ class UploadManager {
     try {
       filesWithTaskId = this.getFilesWithTaskId(this.items, this.options, this.abortController);
 
+      filesWithTaskId.forEach((item) => (item.isUploadedFromFolder = this.options?.isUploadedFromFolder));
+
       const [bigSizedFiles, mediumSizedFiles, smallSizedFiles] = this.classifyFilesBySize(filesWithTaskId);
       const uploadedFilesData: DriveFileData[] = [];
 
@@ -562,14 +566,12 @@ class UploadManager {
           else filesToRetry.push(files[i]);
         }
 
-        if (this.options?.isUploadedFromFolder) {
-          fileRetryManager.addFiles(filesToRetry);
-
-          if (files.length === 1 && files[0].taskId) {
-            if (filesToRetry.length === 0) fileRetryManager.removeFile(files[0].taskId);
-            else fileRetryManager.changeStatus(files[0].taskId, 'failed');
-          }
-        } else if (filesToRetry.length > 0) throw new Error();
+        fileRetryManager.addFiles(filesToRetry);
+        const fileTaskId = files[0]?.taskId;
+        if (files.length === 1 && fileTaskId) {
+          if (filesToRetry.length === 0) fileRetryManager.removeFile(fileTaskId);
+          else fileRetryManager.changeStatus(fileTaskId, 'failed');
+        }
       };
 
       if (smallSizedFiles.length > 0) await uploadFiles(smallSizedFiles, this.filesGroups.small.concurrency);
