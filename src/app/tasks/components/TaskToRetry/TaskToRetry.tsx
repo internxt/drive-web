@@ -34,9 +34,12 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex pb-5 justify-between items-center">
-        <h4 className="text-xl font-medium text-gray-100 ">Failed to upload</h4>
+        <h4 data-testid="title-taskRetry" className="text-xl font-medium text-gray-100 ">
+          {translate('tasks.messages.failedToUpload')}
+        </h4>
 
         <button
+          data-testid="close-taskRetry-button"
           className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-highlight/4 active:bg-highlight/8"
           onClick={() => onClose()}
         >
@@ -50,7 +53,7 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
           {TaskToRetryItem}
         </List>
       ) : (
-        <span>{translate('tasks.messages.allProcessesHaveFinished')}</span>
+        <span data-testid="finish-msg-taskRetry">{translate('tasks.messages.allProcessesHaveFinished')}</span>
       )}
     </Modal>
   );

@@ -1130,7 +1130,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Tous les processus ont été complétés",
-      "processing": "Traitement {{pending}} de {{finished}}"
+      "processing": "Traitement {{pending}} de {{finished}}",
+      "failedToUpload": "Échec du téléchargement"
     },
     "waiting": "En attente",
     "paused": "En pause",
