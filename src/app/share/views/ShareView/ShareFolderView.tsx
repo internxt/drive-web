@@ -213,9 +213,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     downloadButton =
       progress < 100 ? (
         <>
-          <div className="mr-1 h-5 w-5 text-white">
-            <Loader />
-          </div>
+          <Loader classNameLoader="mr-1 h-5 w-5 text-white" size={24} />
           <span>{translate('actions.downloadingItems', { nItems })}</span>
           {!!size && size > 0 && <span className="font-normal text-primary/20">{progress}%</span>}
         </>
