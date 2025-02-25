@@ -52,7 +52,7 @@ const PlanSelectionCard = ({
             <RoleBadge roleText={t('preferences.account.plans.current')} role={'current'} size={'small'} />
           )}
         </div>
-        <span className=" text-base font-normal leading-5 text-gray-60">{displayText}</span>
+        <span className=" text-base font-normal leading-5 text-gray-60 text-left">{displayText}</span>
       </button>
     </div>
   );
