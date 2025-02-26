@@ -1787,37 +1787,105 @@
       "emptyTrash": "清空垃圾桶",
       "emptyTrashDescription": "垃圾桶中的項目將被永久刪除",
       "plans": {
-        "title": "計劃",
+        "title": "方案",
         "current": "當前",
         "upgrade": "升級",
         "downgrade": "降級",
-        "free": "免費獲得最多10 GB",
-        "manageBilling": "管理計費",
+        "free": "免費獲取最多 10GB",
+        "manageBilling": "管理帳單",
         "freeForever": "永久免費",
         "year": "年",
         "month": "月",
         "lifetime": "終身",
+        "types": {
+          "essential": "基礎版",
+          "premium": "高級版",
+          "ultimate": "終極版",
+          "standard": "標準版",
+          "pro": "專業版",
+          "free": "Internxt 免費版"
+        },
         "planFeaturesList": {
-          "title": "計劃詳情",
-          "storage": " 的儲存空間",
-          "featureOne": "加密文件和文件夾共享。",
-          "featureTwo": "密碼保護的文件共享。",
-          "featureThree": "從任何設備訪問您的文件。",
-          "featureFour": "上傳文件最大可達20GB。",
-          "featureFive": "雙重身份驗證 (2FA)。",
-          "featureSix": "高級客戶支持。",
-          "featureSeven": "30天退款保證。"
+          "title": "方案詳情",
+          "commingSoon": "即將推出",
+          "storage": " 儲存空間",
+          "essentialFeatures": {
+            "featureOne": "後量子加密",
+            "featureTwo": "無限高速 VPN（法國）",
+            "featureFour": "防毒軟體",
+            "featureThree": "檔案備份",
+            "featureFive": "密碼保護的檔案共享",
+            "featureSix": "符合 GDPR 規範",
+            "featureSeven": "雙重身份驗證（2FA）",
+            "featureEight": "CLI、WebDav 和 Rclone 支援"
+          },
+          "premiumFeatures": {
+            "featureOne": "後量子加密",
+            "featureTwo": "無限高速 VPN（法國、德國、波蘭）",
+            "featureFour": "防毒軟體",
+            "featureThree": "檔案備份",
+            "featureFive": "密碼保護的檔案共享",
+            "featureSix": "符合 GDPR 規範",
+            "featureSeven": "雙重身份驗證（2FA）",
+            "featureEight": "CLI、WebDav 和 Rclone 支援",
+            "commingSoonFeatures": {
+              "featureOne": "會議（最多 3 名參與者）",
+              "featureTwo": "電子郵件（最多 3 個帳戶）"
+            }
+          },
+          "ultimateFeatures": {
+            "featureOne": "後量子加密",
+            "featureTwo": "無限高速 VPN（法國、德國、波蘭、加拿大、英國）",
+            "featureFour": "防毒軟體",
+            "featureThree": "檔案備份",
+            "featureFive": "密碼保護的檔案共享",
+            "featureSix": "符合 GDPR 規範",
+            "featureSeven": "雙重身份驗證（2FA）",
+            "featureEight": "CLI、WebDav 和 Rclone 支援",
+            "commingSoonFeatures": {
+              "featureOne": "會議（最多 5 名參與者）",
+              "featureTwo": "電子郵件（最多 5 個帳戶）"
+            }
+          },
+          "freeFeatures": {
+            "featureOne": "零知識加密",
+            "featureTwo": "標準 VPN（法國）",
+            "featureThree": "CLI、WebDav 和 Rclone 支援"
+          }
         },
         "businessPlanFeaturesList": {
-          "title": "計劃詳情",
-          "storage": " 的儲存空間",
-          "featureOne": "加密文件和文件夾共享。",
-          "featureTwo": "創建和管理用戶及團隊。",
-          "featureThree": "從3名用戶起至多100名用戶。",
-          "featureFour": "符合GDPR規範。",
-          "featureFive": "上傳文件最大可達20GB。",
-          "featureSix": "管理帳戶帳單和付款。",
-          "featureSeven": "高級客戶支持。"
+          "title": "方案詳情",
+          "storage": " 儲存空間",
+          "standardFeatures": {
+            "featureOne": "後量子加密和零知識加密",
+            "featureTwo": "無限高速 VPN（法國、德國、波蘭）",
+            "featureFour": "防毒軟體",
+            "featureThree": "檔案備份",
+            "featureFive": "密碼保護的檔案共享",
+            "featureSix": "符合 GDPR 規範",
+            "featureSeven": "雙重身份驗證（2FA）",
+            "featureEight": "CLI、WebDav 和 Rclone 支援",
+            "featureNine": "管理帳戶帳單和支付",
+            "commingSoonFeatures": {
+              "featureOne": "會議最多 10 名用戶（最多 10 名參與者）",
+              "featureTwo": "每位用戶 1 個自訂電子郵件地址"
+            }
+          },
+          "proFeatures": {
+            "featureOne": "後量子加密和零知識加密",
+            "featureTwo": "無限高速 VPN（法國、德國、波蘭）",
+            "featureFour": "防毒軟體",
+            "featureThree": "檔案備份",
+            "featureFive": "密碼保護的檔案共享",
+            "featureSix": "符合 GDPR 規範",
+            "featureSeven": "雙重身份驗證（2FA）",
+            "featureEight": "CLI、WebDav 和 Rclone 支援",
+            "featureNine": "管理帳戶帳單和支付",
+            "commingSoonFeatures": {
+              "featureOne": "會議最多 10 名用戶（最多 10 名參與者）",
+              "featureTwo": "每位用戶 1 個自訂電子郵件地址"
+            }
+          }
         },
         "user": "用戶"
       },

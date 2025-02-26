@@ -1793,39 +1793,107 @@
       "emptyTrash": "Очистить корзину",
       "emptyTrashDescription": "Элементы в корзине будут удалены навсегда",
       "plans": {
-        "title": "Тарифы",
+        "title": "Тарифные планы",
         "current": "Текущий",
-        "upgrade": "Повысить",
+        "upgrade": "Улучшить",
         "downgrade": "Понизить",
-        "free": "Получите бесплатно до 10 ГБ",
+        "free": "Получите до 10 ГБ бесплатно",
         "manageBilling": "Управление платежами",
         "freeForever": "Бесплатно навсегда",
         "year": "Год",
         "month": "Месяц",
-        "lifetime": "Lifetime",
+        "lifetime": "Пожизненно",
+        "types": {
+          "essential": "Essential",
+          "premium": "Premium",
+          "ultimate": "Ultimate",
+          "standard": "Standard",
+          "pro": "Pro",
+          "free": "Internxt Free"
+        },
         "planFeaturesList": {
           "title": "Детали плана",
-          "storage": " хранилища",
-          "featureOne": "Шифрованное совместное использование файлов и папок.",
-          "featureTwo": "Совместное использование файлов с защитой паролем.",
-          "featureThree": "Доступ к файлам с любого устройства.",
-          "featureFour": "Загрузка файлов до 20 ГБ.",
-          "featureFive": "Двухфакторная аутентификация (2FA).",
-          "featureSix": "Премиум поддержка клиентов.",
-          "featureSeven": "30-дневная гарантия возврата денег."
+          "commingSoon": "Скоро",
+          "storage": " хранилища ",
+          "essentialFeatures": {
+            "featureOne": "Постквантовое шифрование",
+            "featureTwo": "Безлимитный высокоскоростной VPN (FR)",
+            "featureFour": "Антивирус",
+            "featureThree": "Резервное копирование",
+            "featureFive": "Совместное использование файлов с защитой паролем",
+            "featureSix": "Соответствие GDPR",
+            "featureSeven": "Двухфакторная аутентификация (2FA)",
+            "featureEight": "CLI, WebDav & Rclone"
+          },
+          "premiumFeatures": {
+            "featureOne": "Постквантовое шифрование",
+            "featureTwo": "Безлимитный высокоскоростной VPN (FR, DE, PL)",
+            "featureFour": "Антивирус",
+            "featureThree": "Резервное копирование",
+            "featureFive": "Совместное использование файлов с защитой паролем",
+            "featureSix": "Соответствие GDPR",
+            "featureSeven": "Двухфакторная аутентификация (2FA)",
+            "featureEight": "CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "featureOne": "Видеозвонки (до 3 участников)",
+              "featureTwo": "Почта (до 3 адресов)"
+            }
+          },
+          "ultimateFeatures": {
+            "featureOne": "Постквантовое шифрование",
+            "featureTwo": "Безлимитный высокоскоростной VPN (FR, DE, PL, CA, UK)",
+            "featureFour": "Антивирус",
+            "featureThree": "Резервное копирование",
+            "featureFive": "Совместное использование файлов с защитой паролем",
+            "featureSix": "Соответствие GDPR",
+            "featureSeven": "Двухфакторная аутентификация (2FA)",
+            "featureEight": "CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "featureOne": "Видеозвонки (до 5 участников)",
+              "featureTwo": "Почта (до 5 адресов)"
+            }
+          },
+          "freeFeatures": {
+            "featureOne": "Шифрование с нулевым разглашением (Zero-Knowledge)",
+            "featureTwo": "Стандартный VPN (FR)",
+            "featureThree": "Поддержка CLI, WebDav & Rclone"
+          }
         },
         "businessPlanFeaturesList": {
           "title": "Детали плана",
           "storage": " хранилища",
-          "featureOne": "Шифрованное совместное использование файлов и папок.",
-          "featureTwo": "Создание и управление пользователями и командами.",
-          "featureThree": "От 3 до 100 пользователей.",
-          "featureFour": "Соответствие GDPR.",
-          "featureFive": "Загрузка файлов до 20 ГБ.",
-          "featureSix": "Управление оплатой и счетами.",
-          "featureSeven": "Премиум поддержка клиентов."
+          "standardFeatures": {
+            "featureOne": "Постквантовое шифрование и Zero-Knowledge",
+            "featureTwo": "Безлимитный высокоскоростной VPN (FR, DE, PL)",
+            "featureFour": "Антивирус",
+            "featureThree": "Резервное копирование",
+            "featureFive": "Совместное использование файлов с защитой паролем",
+            "featureSix": "Соответствие GDPR",
+            "featureSeven": "Двухфакторная аутентификация (2FA)",
+            "featureEight": "CLI/WebDav/Rclone",
+            "featureNine": "Управление платежами и счетами",
+            "commingSoonFeatures": {
+              "featureOne": "Видеозвонки до 10 пользователей (макс. 10 участников)",
+              "featureTwo": "1 персональный email-адрес на пользователя"
+            }
+          },
+          "proFeatures": {
+            "featureOne": "Постквантовое шифрование и Zero-Knowledge",
+            "featureTwo": "Безлимитный высокоскоростной VPN (FR, DE, PL)",
+            "featureFour": "Антивирус",
+            "featureThree": "Резервное копирование",
+            "featureFive": "Совместное использование файлов с защитой паролем",
+            "featureSix": "Соответствие GDPR",
+            "featureSeven": "Двухфакторная аутентификация (2FA)",
+            "featureEight": "CLI/WebDav/Rclone",
+            "featureNine": "Управление платежами и счетами",
+            "commingSoonFeatures": {
+              "featureOne": "Видеозвонки до 10 пользователей (макс. 10 участников)",
+              "featureTwo": "1 персональный email-адрес на пользователя"
+            }
+          }
         },
-        "user": "пользователь"
+        "user": "Пользователь"
       },
       "billing": {
         "title": "Биллинг"

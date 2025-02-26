@@ -1814,27 +1814,95 @@
         "year": "Año",
         "month": "Mes",
         "lifetime": "Lifetime",
+        "types": {
+          "essential": "Essential",
+          "premium": "Premium",
+          "ultimate": "Ultimate",
+          "standard": "Standard",
+          "pro": "Pro",
+          "free":"Internxt Free"
+        },
         "planFeaturesList": {
           "title": "Detalles del plan",
-          "storage": " de almacenamiento",
-          "featureOne": "Compartir archivos y carpetas cifrados.",
-          "featureTwo": "Compartir archivos con contraseña.",
-          "featureThree": "Accede a tus archivos desde cualquier dispositivo.",
-          "featureFour": "Sube archivos de hasta 20 GB.",
-          "featureFive": "Autenticación de dos factores (2FA).",
-          "featureSix": "Soporte al cliente premium.",
-          "featureSeven": "Garantía de devolución de dinero de 30 días."
+          "commingSoon": "Muy Pronto",
+          "storage": " de almacenamiento ",
+          "essentialFeatures":{
+            "featureOne": "Criptografía postcuántica",
+            "featureTwo":"VPN de alta velocidad ilimitado (FR)",
+            "featureFour": "Antivirus" ,
+            "featureThree": "Copias de seguridad",
+            "featureFive": "Comparte archivos protegidos con contraseña",
+            "featureSix":"Cumple con RGPD" ,
+            "featureSeven": "Autenticación de dos factores (2FA)",
+            "featureEight":"CLI, WebDav & Rclone" 
+          },
+          "premiumFeatures":{
+            "featureOne": "Criptografía postcuántica",
+            "featureTwo":"VPN de alta velocidad ilimitado (FR, DE, PL)",
+            "featureFour": "Antivirus" ,
+            "featureThree": "Copias de seguridad",
+            "featureFive": "Comparte archivos protegidos con contraseña",
+            "featureSix":"Cumple con RGPD" ,
+            "featureSeven": "Autenticación de dos factores (2FA)",
+            "featureEight":"CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "featureOne": "Meet (3 participantes)",
+              "featureTwo": "Mail (3 correos)"
+            }
+          },
+          "ultimateFeatures":{
+            "featureOne": "Criptografía postcuántica",
+            "featureTwo":"VPN de alta velocidad ilimitado (FR, DE, PL, CA, UK)",
+            "featureFour": "Antivirus" ,
+            "featureThree": "Copias de seguridad",
+            "featureFive": "Comparte archivos protegidos con contraseña",
+            "featureSix":"Cumple con RGPD" ,
+            "featureSeven": "Autenticación de dos factores (2FA)",
+            "featureEight":"CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "featureOne": "Meet (5 participantes)",
+              "featureTwo": "Mail (5 correos)"
+            }
+          },
+          "freeFeatures": {
+            "featureOne": "Cifrado de conocimiento cero",
+            "featureTwo": "VPN estandard (FR)",
+            "featureThree": "CLI, WebDav & Rclone support"
+          }
         },
         "businessPlanFeaturesList": {
           "title": "Detalles del plan",
           "storage": " de almacenamiento",
-          "featureOne": "Compartir archivos y carpetas cifrados.",
-          "featureTwo": "Crear y gestionar usuarios y equipos.",
-          "featureThree": "Desde 3 usuarios y hasta 100.",
-          "featureFour": "Cumplimiento con el GDPR.",
-          "featureFive": "Sube archivos de hasta 20 GB.",
-          "featureSix": "Gestionar la facturación y los pagos de la cuenta.",
-          "featureSeven": "Soporte al cliente premium."
+          "standardFeatures":{
+            "featureOne": "Cifrado postcuántico y conocimiento cero",
+            "featureTwo": "VPN de alta velocidad ilimitado (FR, DE, PL)",
+            "featureFour": "Antivirus",
+            "featureThree":"Copias de seguridad" ,
+            "featureFive": "Comparte archivos protegidos con contraseña",
+            "featureSix":"Cumple con RGPD" ,
+            "featureSeven":"Autenticación de dos factores (2FA)" ,
+            "featureEight": "CLI/WebDav/Rclone",
+            "featureNine":"Gestiona la facturación y los pagos de la cuenta",
+            "commingSoonFeatures": {
+              "featureOne": "Reuniones de hasta 10 usuarios (máx. 10 participantes)",
+              "featureTwo": "1 correo electrónico personalizado/usuario "
+            }
+          },
+          "proFeatures":{
+            "featureOne": "Cifrado postcuántico y conocimiento cero",
+            "featureTwo": "VPN de alta velocidad ilimitado (FR, DE, PL)",
+            "featureFour": "Antivirus",
+            "featureThree":"Copias de seguridad" ,
+            "featureFive": "Comparte archivos protegidos con contraseña",
+            "featureSix":"Cumple con RGPD" ,
+            "featureSeven":"Autenticación de dos factores (2FA)" ,
+            "featureEight": "CLI/WebDav/Rclone",
+            "featureNine":"Gestiona la facturación y los pagos de la cuenta",
+            "commingSoonFeatures": {
+              "featureOne": "Reuniones de hasta 10 usuarios (máx. 10 participantes)",
+              "featureTwo": "1 correo electrónico personalizado/usuario "
+            }
+          }
         },
         "user": "usuario"
       },

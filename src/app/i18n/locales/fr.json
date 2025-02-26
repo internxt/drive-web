@@ -1782,37 +1782,105 @@
       "plans": {
         "title": "Plans",
         "current": "Actuel",
-        "upgrade": "Mettre à niveau",
+        "upgrade": "Améliorer",
         "downgrade": "Rétrograder",
         "free": "Obtenez jusqu'à 10 Go gratuitement",
         "manageBilling": "Gérer la facturation",
-        "freeForever": "Gratuit pour toujours",
-        "year": "An",
+        "freeForever": "Gratuit à vie",
+        "year": "Année",
         "month": "Mois",
-        "lifetime": "Lifetime",
+        "lifetime": "À vie",
+        "types": {
+          "essential": "Essential",
+          "premium": "Premium",
+          "ultimate": "Ultimate",
+          "standard": "Standard",
+          "pro": "Pro",
+          "free": "Internxt Free"
+        },
         "planFeaturesList": {
           "title": "Détails du plan",
-          "storage": " de stockage",
-          "featureOne": "Partage de fichiers et dossiers chiffrés.",
-          "featureTwo": "Partage de fichiers protégé par mot de passe.",
-          "featureThree": "Accédez à vos fichiers depuis n'importe quel appareil.",
-          "featureFour": "Téléchargez des fichiers jusqu'à 20 Go.",
-          "featureFive": "Authentification à deux facteurs (2FA).",
-          "featureSix": "Support client premium.",
-          "featureSeven": "Garantie de remboursement de 30 jours."
+          "commingSoon": "Bientôt disponible",
+          "storage": " de stockage ",
+          "essentialFeatures": {
+            "featureOne": "Chiffrement post-quantique",
+            "featureTwo": "VPN ultra-rapide et illimité (FR)",
+            "featureFour": "Antivirus",
+            "featureThree": "Sauvegardes",
+            "featureFive": "Partage de fichiers protégés par mot de passe",
+            "featureSix": "Conformité RGPD",
+            "featureSeven": "Authentification à deux facteurs (2FA)",
+            "featureEight": "CLI, WebDav & Rclone"
+          },
+          "premiumFeatures": {
+            "featureOne": "Chiffrement post-quantique",
+            "featureTwo": "VPN ultra-rapide et illimité (FR, DE, PL)",
+            "featureFour": "Antivirus",
+            "featureThree": "Sauvegardes",
+            "featureFive": "Partage de fichiers protégés par mot de passe",
+            "featureSix": "Conformité RGPD",
+            "featureSeven": "Authentification à deux facteurs (2FA)",
+            "featureEight": "CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "featureOne": "Meet (3 participants)",
+              "featureTwo": "Mail (3 adresses email)"
+            }
+          },
+          "ultimateFeatures": {
+            "featureOne": "Chiffrement post-quantique",
+            "featureTwo": "VPN ultra-rapide et illimité (FR, DE, PL, CA, UK)",
+            "featureFour": "Antivirus",
+            "featureThree": "Sauvegardes",
+            "featureFive": "Partage de fichiers protégés par mot de passe",
+            "featureSix": "Conformité RGPD",
+            "featureSeven": "Authentification à deux facteurs (2FA)",
+            "featureEight": "CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "featureOne": "Meet (5 participants)",
+              "featureTwo": "Mail (5 adresses email)"
+            }
+          },
+          "freeFeatures": {
+            "featureOne": "Chiffrement Zero-Knowledge",
+            "featureTwo": "VPN standard (FR)",
+            "featureThree": "Support CLI, WebDav & Rclone"
+          }
         },
         "businessPlanFeaturesList": {
           "title": "Détails du plan",
           "storage": " de stockage",
-          "featureOne": "Partage de fichiers et dossiers chiffrés.",
-          "featureTwo": "Créer et gérer des utilisateurs et des équipes.",
-          "featureThree": "À partir de 3 utilisateurs et jusqu'à 100.",
-          "featureFour": "Conformité au RGPD.",
-          "featureFive": "Téléchargez des fichiers jusqu'à 20 Go.",
-          "featureSix": "Gérer la facturation et les paiements du compte.",
-          "featureSeven": "Support client premium."
+          "standardFeatures": {
+            "featureOne": "Chiffrement post-quantique et Zero-Knowledge",
+            "featureTwo": "VPN ultra-rapide et illimité (FR, DE, PL)",
+            "featureFour": "Antivirus",
+            "featureThree": "Sauvegardes",
+            "featureFive": "Partage de fichiers protégés par mot de passe",
+            "featureSix": "Conformité RGPD",
+            "featureSeven": "Authentification à deux facteurs (2FA)",
+            "featureEight": "CLI/WebDav/Rclone",
+            "featureNine": "Gérez la facturation et les paiements de votre compte",
+            "commingSoonFeatures": {
+              "featureOne": "Réunions jusqu'à 10 utilisateurs (max. 10 participants)",
+              "featureTwo": "1 adresse email personnalisée/utilisateur"
+            }
+          },
+          "proFeatures": {
+            "featureOne": "Chiffrement post-quantique et Zero-Knowledge",
+            "featureTwo": "VPN ultra-rapide et illimité (FR, DE, PL)",
+            "featureFour": "Antivirus",
+            "featureThree": "Sauvegardes",
+            "featureFive": "Partage de fichiers protégés par mot de passe",
+            "featureSix": "Conformité RGPD",
+            "featureSeven": "Authentification à deux facteurs (2FA)",
+            "featureEight": "CLI/WebDav/Rclone",
+            "featureNine": "Gérez la facturation et les paiements de votre compte",
+            "commingSoonFeatures": {
+              "featureOne": "Réunions jusqu'à 10 utilisateurs (max. 10 participants)",
+              "featureTwo": "1 adresse email personnalisée/utilisateur"
+            }
+          }
         },
-        "user": "utilisateur"
+        "user": "Utilisateur"
       },
       "billing": {
         "title": "Billing"
