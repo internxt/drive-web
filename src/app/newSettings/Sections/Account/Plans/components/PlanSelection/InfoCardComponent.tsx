@@ -34,6 +34,42 @@ export const InfoCardComponent = ({
 }: InfoCardComponentProps) => {
   const isPriceData = priceSelected?.id === freePlanData.id;
 
+  const getPlanInterval = (priceSelected) => {
+    if (!priceSelected) return '';
+
+    const { interval } = priceSelected;
+    if (interval === 'year') return 'month';
+    if (interval === 'lifetime') return 'lifetime';
+
+    return '';
+  };
+
+  const getPriceAmount = (priceSelected) => {
+    if (!priceSelected) return 0;
+
+    const { interval, amount } = priceSelected;
+    if (interval === 'year') {
+      return amount / 12;
+    }
+    return amount;
+  };
+
+  const getCurrencySymbol = (priceSelected) => {
+    if (!priceSelected?.currency) {
+      return translate('preferences.account.plans.freeForever');
+    }
+
+    return currencyService.getCurrencySymbol(priceSelected.currency);
+  };
+
+  const billing = priceSelected
+    ? translate(`preferences.account.plans.${getPlanInterval(priceSelected)}`).toLowerCase()
+    : '';
+
+  const price = priceSelected ? displayAmount(getPriceAmount(priceSelected)).replace(/\.00$/, '') : '0';
+
+  const currency = getCurrencySymbol(priceSelected);
+
   return (
     <>
       {pricesToRender.length > 0 ? (
@@ -55,25 +91,9 @@ export const InfoCardComponent = ({
               onClick={() => handleOnPlanSelected(priceSelected)}
               isCurrentPlan={isCurrentPlan}
               capacity={bytesToString(priceSelected?.bytes ?? 0)}
-              currency={
-                priceSelected?.currency
-                  ? currencyService.getCurrencySymbol(priceSelected?.currency)
-                  : translate('preferences.account.plans.freeForever')
-              }
-              price={
-                priceSelected
-                  ? displayAmount(
-                      priceSelected.interval === 'year' ? priceSelected.amount / 12 : priceSelected.amount,
-                    ).replace(/\.00$/, '')
-                  : '0'
-              }
-              billing={
-                priceSelected
-                  ? translate(
-                      `preferences.account.plans.${priceSelected.interval === 'year' ? 'month' : 'lifetime'}`,
-                    ).toLowerCase()
-                  : ''
-              }
+              currency={currency}
+              price={price}
+              billing={billing}
               changePlanType={currentChangePlanType}
               isLoading={isLoadingCheckout}
               disableActionButton={false}
