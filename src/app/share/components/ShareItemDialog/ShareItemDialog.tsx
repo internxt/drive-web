@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import PasswordInput from './components/PasswordInput';
 import { Check, Copy } from '@phosphor-icons/react';
 import dateService from 'app/core/services/date.service';
-import shareService from 'app/share/services/share.service';
+import shareService, { copyTextToClipboard } from 'app/share/services/share.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { TFunction } from 'i18next';
@@ -32,7 +32,7 @@ async function copyShareLink(type: string, code: string, token: string, translat
     domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
   const shareDomain = _.sample(domainList);
 
-  copy(`${shareDomain}/sh/${type}/${token}/${code}`);
+  await copyTextToClipboard(`${shareDomain}/sh/${type}/${token}/${code}`);
   notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 

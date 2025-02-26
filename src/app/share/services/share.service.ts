@@ -373,15 +373,12 @@ export const getPublicShareLink = async (
     }
     const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
 
-    window.focus();
     const domains = domainManager.getDomainsList();
     const selectedDomain = getRandomElement(domains);
 
     const publicShareLink = `${selectedDomain}/d/sh/${itemType}/${sharingId}/${plainCode}`;
-    // workaround to enable copy after login, because first copy always fails
-    copy(publicShareLink);
-    const isCopied = copy(publicShareLink);
-    if (!isCopied) throw Error('Error copying shared public link');
+
+    await copyTextToClipboard(publicShareLink);
 
     notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
     return publicSharingItemData;
@@ -391,6 +388,14 @@ export const getPublicShareLink = async (
       type: ToastType.Error,
     });
     errorService.reportError(error);
+  }
+};
+
+export const copyTextToClipboard = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    copy(text);
   }
 };
 

@@ -25,14 +25,13 @@ import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { Role } from 'app/store/slices/sharedLinks/types';
 import { uiActions } from 'app/store/slices/ui';
-import copy from 'copy-to-clipboard';
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-tooltip';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import shareService, { getSharingRoles } from '../../../share/services/share.service';
+import shareService, { copyTextToClipboard, getSharingRoles } from '../../../share/services/share.service';
 import { AdvancedSharedItem } from '../../../share/types';
 import { isUserItemOwner } from '../../../share/views/SharedLinksView/sharedViewUtils';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
@@ -310,9 +309,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     dispatch(uiActions.setIsShareDialogOpen(false));
   };
 
-  const getPrivateShareLink = () => {
+  const getPrivateShareLink = async () => {
     try {
-      copy(`${process.env.REACT_APP_HOSTNAME}/shared/?folderuuid=${itemToShare?.item.uuid}`);
+      await copyTextToClipboard(`${process.env.REACT_APP_HOSTNAME}/shared/?folderuuid=${itemToShare?.item.uuid}`);
       notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
     } catch (error) {
       notificationsService.show({
@@ -324,7 +323,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const onCopyLink = async (): Promise<void> => {
     if (accessMode === 'restricted') {
-      getPrivateShareLink();
+      await getPrivateShareLink();
       closeSelectedUserPopover();
       return;
     }
