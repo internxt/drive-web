@@ -1,6 +1,4 @@
 import { useState } from 'react';
-
-import copy from 'copy-to-clipboard';
 import { DriveItemData } from 'app/drive/types';
 import { uiActions } from 'app/store/slices/ui';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
