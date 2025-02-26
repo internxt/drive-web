@@ -60,9 +60,19 @@ export const InfoCardComponent = ({
                   ? currencyService.getCurrencySymbol(priceSelected?.currency)
                   : translate('preferences.account.plans.freeForever')
               }
-              price={priceSelected ? displayAmount(priceSelected.amount) : '0'}
+              price={
+                priceSelected
+                  ? displayAmount(
+                      priceSelected.interval === 'year' ? priceSelected.amount / 12 : priceSelected.amount,
+                    ).replace(/\.00$/, '')
+                  : '0'
+              }
               billing={
-                priceSelected ? translate(`preferences.account.plans.${priceSelected.interval}`).toLowerCase() : ''
+                priceSelected
+                  ? translate(
+                      `preferences.account.plans.${priceSelected.interval === 'year' ? 'month' : 'lifetime'}`,
+                    ).toLowerCase()
+                  : ''
               }
               changePlanType={currentChangePlanType}
               isLoading={isLoadingCheckout}
