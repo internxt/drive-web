@@ -53,7 +53,9 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
           {TaskToRetryItem}
         </List>
       ) : (
-        <span data-testid="finish-msg-taskRetry">{translate('tasks.messages.allProcessesHaveFinished')}</span>
+        <span className="flex p-5 justify-between items-center" data-testid="finish-msg-taskRetry">
+          {translate('tasks.messages.allProcessesHaveFinished')}.
+        </span>
       )}
     </Modal>
   );

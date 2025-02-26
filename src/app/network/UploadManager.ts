@@ -566,10 +566,11 @@ class UploadManager {
           else filesToRetry.push(files[i]);
         }
 
-        RetryManager.addFiles(filesToRetry);
+        if (filesToRetry.length > 0) RetryManager.addFiles(filesToRetry);
         const fileTaskId = files[0]?.taskId;
         if (files.length === 1 && fileTaskId) {
-          if (filesToRetry.length === 0) RetryManager.removeFile(fileTaskId);
+          const noFilesToRetry = filesToRetry.length === 0;
+          if (noFilesToRetry) RetryManager.removeFile(fileTaskId);
           else RetryManager.changeStatus(fileTaskId, 'failed');
         }
       };
