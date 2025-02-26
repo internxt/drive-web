@@ -1,9 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { describe, it, vi, expect, beforeEach } from 'vitest';
 import * as reduxActionsHook from 'app/store/slices/storage/hooks/useReduxActions';
 import * as translationProvider from 'app/i18n/provider/TranslationProvider';
-import fileRetryManager, { FileToRetry } from 'app/store/slices/storage/fileRetrymanager';
 import TaskToRetry from './TaskToRetry';
+import RetryManager, { FileToRetry } from 'app/network/RetryManager';
 
 vi.mock('app/shared/components/Modal', () => ({
   default: ({ isOpen, children }: { isOpen: boolean; children: React.ReactNode }) =>
@@ -22,7 +22,7 @@ describe('TaskToRetry', () => {
   const mockOnClose = vi.fn();
   const mockUploadRetryItem = vi.fn();
   const mockTranslate = vi.fn();
-  const mockChangeStatus = vi.spyOn(fileRetryManager, 'changeStatus');
+  const mockChangeStatus = vi.spyOn(RetryManager, 'changeStatus');
 
   const files: FileToRetry[] = [
     {

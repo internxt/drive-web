@@ -4,7 +4,7 @@ import { DriveItemData } from '../../../../drive/types';
 import { SharedItemAuthenticationData, UploadFolderData } from '../../../../tasks/types';
 import { downloadItemsAsZipThunk, downloadItemsThunk } from '../storage.thunks/downloadItemsThunk';
 import { uploadFolderThunk } from '../storage.thunks/uploadFolderThunk';
-import { uploadItemsThunk, uploadSharedItemsThunk, uploadRetryItemThunk } from '../storage.thunks/uploadItemsThunk';
+import { uploadItemsThunk, uploadSharedItemsThunk } from '../storage.thunks/uploadItemsThunk';
 
 export const useReduxActions = () => {
   const dispatch = useDispatch();
@@ -67,11 +67,12 @@ export const useReduxActions = () => {
 
   const uploadRetryItem = (data: { uploadFile: File; parentFolderId: string; taskId: string; fileType: string }) => {
     dispatch(
-      uploadRetryItemThunk({
-        file: data.uploadFile,
+      uploadItemsThunk({
+        files: [data.uploadFile],
         parentFolderId: data.parentFolderId,
         taskId: data.taskId,
         fileType: data.fileType,
+        isRetry: true,
       }),
     );
   };

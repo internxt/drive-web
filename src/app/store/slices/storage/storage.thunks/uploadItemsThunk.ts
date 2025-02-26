@@ -25,7 +25,7 @@ import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
 import { FileToUpload } from '../../../../drive/services/file.service/types';
-import fileRetryManager from '../fileRetrymanager';
+import RetryManager from 'app/network/RetryManager';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -46,6 +46,7 @@ interface UploadItemsPayload {
   parentFolderId: string;
   options?: Partial<UploadItemsThunkOptions>;
   filesProgress?: { filesUploaded: number; totalFilesToUpload: number };
+  isRetry?: boolean;
   onFileUploadCallback?: (driveFileData: DriveFileData) => void;
 }
 
@@ -121,7 +122,7 @@ const isUploadAllowed = ({
 export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
   'storage/uploadItems',
   async (
-    { files, parentFolderId, options: payloadOptions, taskId, fileType }: UploadItemsPayload,
+    { files, parentFolderId, options: payloadOptions, taskId, fileType, isRetry = false }: UploadItemsPayload,
     { getState, dispatch },
   ) => {
     const user = getState().user.user as UserSettings;
@@ -200,9 +201,11 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
             isDeepFolder: false,
             currentFolderId: parentFolderId,
           },
+          isUploadedFromFolder: isRetry,
         },
       );
     } catch (error) {
+      if (taskId && isRetry) RetryManager.changeStatus(taskId, 'failed');
       errors.push(error as Error);
     }
 
@@ -501,7 +504,7 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(uploadItemsParallelThunk.rejected, (state, action) => {
       const requestOptions = Object.assign(DEFAULT_OPTIONS, action.meta.arg.options ?? {});
       const taskId = action.meta.arg.taskId;
-      if (taskId && fileRetryManager.isRetryingFile(taskId)) fileRetryManager.changeStatus(taskId, 'failed');
+      if (taskId && RetryManager.isRetryingFile(taskId)) RetryManager.changeStatus(taskId, 'failed');
       if (requestOptions?.showErrors) {
         notificationsService.show({
           text: t('error.uploadingFile', { reason: action.error.message ?? '' }),
@@ -510,111 +513,3 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
       }
     });
 };
-
-export const uploadRetryItemThunk = createAsyncThunk<void, UploadItemRetryPayload, { state: RootState }>(
-  'storage/uploadItems',
-  async (
-    { file, parentFolderId, options: payloadOptions, taskId, fileType }: UploadItemRetryPayload,
-    { getState, dispatch },
-  ) => {
-    const user = getState().user.user as UserSettings;
-    const errors: Error[] = [];
-
-    const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
-
-    const state = getState();
-    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
-    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
-    const memberId = selectedWorkspace?.workspaceUser?.memberId;
-
-    let ownerUserAuthenticationData: any = null;
-    const workspaceId = selectedWorkspace?.workspace?.id;
-    if (workspaceId) {
-      ownerUserAuthenticationData = {
-        bridgeUser: workspaceCredentials?.credentials.networkUser,
-        bridgePass: workspaceCredentials?.credentials.networkPass,
-        encryptionKey: selectedWorkspace?.workspaceUser?.key,
-        bucketId: workspaceCredentials?.bucket,
-        workspaceId: workspaceId,
-        workspacesToken: workspaceCredentials?.tokenHeader,
-      };
-    }
-
-    const continueWithUpload = isUploadAllowed({
-      state: getState(),
-      files: [file],
-      dispatch,
-      isWorkspaceSelected: !!workspaceId,
-    });
-    if (!continueWithUpload) return;
-
-    const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
-      files: [file],
-      parentFolderId,
-      disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
-      fileType,
-    });
-
-    showEmptyFilesNotification(zeroLengthFilesNumber);
-
-    const filesToUploadData = filesToUpload.map((file) => ({
-      filecontent: file,
-      fileType,
-      userEmail: user.email,
-      parentFolderId,
-      taskId,
-      relatedTaskId: options?.relatedTaskId,
-      onFinishUploadFile: (driveItemData: DriveFileData, taskId: string) => {
-        const uploadRespository = DatabaseUploadRepository.getInstance();
-        uploadRespository.removeUploadState(taskId);
-
-        dispatch(
-          storageActions.pushItems({
-            updateRecents: true,
-            folderIds: [parentFolderId],
-            items: [driveItemData as DriveItemData],
-          }),
-        );
-      },
-      abortController: new AbortController(),
-    }));
-
-    const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-
-    try {
-      await uploadFileWithManager(
-        filesToUploadData,
-        openMaxSpaceOccupiedDialog,
-        DatabaseUploadRepository.getInstance(),
-        undefined,
-        {
-          ownerUserAuthenticationData: ownerUserAuthenticationData ?? undefined,
-          sharedItemData: {
-            isDeepFolder: false,
-            currentFolderId: parentFolderId,
-          },
-          isUploadedFromFolder: true,
-        },
-      );
-    } catch (error) {
-      if (taskId) fileRetryManager.changeStatus(taskId, 'failed');
-      errors.push(error as Error);
-    }
-
-    options.onSuccess?.();
-
-    setTimeout(() => {
-      dispatch(planThunks.fetchUsageThunk());
-      if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
-    }, 1000);
-
-    if (errors.length > 0) {
-      for (const error of errors) {
-        if (error.message) {
-          console.error('message Error when upload', error.message);
-          notificationsService.show({ text: error.message, type: ToastType.Error });
-        }
-      }
-    }
-  },
-);

@@ -12,7 +12,7 @@ import { TaskData, TaskNotification, TaskStatus, TaskType, UploadFileData, Uploa
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import TaskToRetry from '../TaskToRetry/TaskToRetry';
-import { FileToRetry } from 'app/store/slices/storage/fileRetrymanager';
+import { FileToRetry } from 'app/network/RetryManager';
 
 const THREE_HUNDRED_MB_IN_BYTES = 3 * 100 * 1024 * 1024;
 interface TaskLoggerItemProps {

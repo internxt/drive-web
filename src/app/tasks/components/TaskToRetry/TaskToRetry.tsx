@@ -3,8 +3,8 @@ import Modal from 'app/shared/components/Modal';
 import { useReduxActions } from 'app/store/slices/storage/hooks/useReduxActions';
 import { FixedSizeList as List } from 'react-window';
 import TaskToRetryItem from '../TaskToRetryItem/TaskToRetryItem';
-import fileRetryManager, { FileToRetry } from 'app/store/slices/storage/fileRetrymanager';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import RetryManager, { FileToRetry } from 'app/network/RetryManager';
 
 interface TaskToRetryProps {
   isOpen: boolean;
@@ -23,11 +23,11 @@ const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element 
       taskId: fileParams.params.taskId ?? '',
       fileType: fileParams.params.filecontent.type ?? '',
     };
-    fileRetryManager.changeStatus(fileParams.params.taskId ?? '', 'uploading');
+    RetryManager.changeStatus(fileParams.params.taskId ?? '', 'uploading');
     try {
       uploadRetryItem(data);
     } catch {
-      fileRetryManager.changeStatus(fileParams.params.taskId ?? '', 'failed');
+      RetryManager.changeStatus(fileParams.params.taskId ?? '', 'failed');
     }
   };
 

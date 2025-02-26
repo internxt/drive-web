@@ -59,5 +59,5 @@ class FileRetryManager {
   }
 }
 
-const fileRetryManager = new FileRetryManager();
-export default fileRetryManager;
+const RetryManager = new FileRetryManager();
+export default RetryManager;

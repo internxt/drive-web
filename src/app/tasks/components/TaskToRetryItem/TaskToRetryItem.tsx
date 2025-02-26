@@ -5,8 +5,8 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { formatDefaultDate } from 'app/core/services/date.service';
 import { t } from 'i18next';
 import { TaskLoggerButton } from '../TaskLoggerButton/TaskLoggerButton';
-import { FileToRetry } from 'app/store/slices/storage/fileRetrymanager';
 import { CircleNotch } from '@phosphor-icons/react';
+import { FileToRetry } from 'app/network/RetryManager';
 
 const TaskToRetyItem = ({ index, style, data }: ListChildComponentProps) => {
   const file: FileToRetry = data.files[index];

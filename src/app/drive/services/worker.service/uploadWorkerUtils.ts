@@ -3,7 +3,6 @@ import { WORKER_MESSAGE_STATES } from '../../../../WebWorker';
 import DatabaseUploadRepository from '../../../repositories/DatabaseUploadRepository';
 import { TaskStatus } from '../../../tasks/types';
 import { IUploadParams } from '../network.service';
-import fileRetryManager from 'app/store/slices/storage/fileRetrymanager';
 
 /**
  * Checks the upload progress for the specified task.

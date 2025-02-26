@@ -9,7 +9,7 @@ import { CaretDown, CircleNotch, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
-import fileRetryManager, { FileToRetry } from 'app/store/slices/storage/fileRetrymanager';
+import RetryManager, { FileToRetry } from 'app/network/RetryManager';
 
 const TaskLogger = (): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -17,7 +17,7 @@ const TaskLogger = (): JSX.Element => {
   const isOpen = useAppSelector((state) => state.ui.isFileLoggerOpen);
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [filesToRetry, setFilesToRetry] = useState(fileRetryManager.getFiles());
+  const [filesToRetry, setFilesToRetry] = useState(RetryManager.getFiles());
 
   const allNotifications = useTaskManagerGetNotifications();
   const finishedNotifications = useTaskManagerGetNotifications({
@@ -60,9 +60,9 @@ const TaskLogger = (): JSX.Element => {
   };
 
   useEffect(() => {
-    const handleUpdate = () => setFilesToRetry([...fileRetryManager.getFiles()]);
-    fileRetryManager.subscribe(handleUpdate);
-    return () => fileRetryManager.unsubscribe(handleUpdate);
+    const handleUpdate = () => setFilesToRetry([...RetryManager.getFiles()]);
+    RetryManager.subscribe(handleUpdate);
+    return () => RetryManager.unsubscribe(handleUpdate);
   }, []);
 
   useEffect(() => {

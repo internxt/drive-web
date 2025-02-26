@@ -10,7 +10,7 @@ import tasksService from '../tasks/services/tasks.service';
 import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 import { ConnectionLostError } from './requests';
 import { FileToUpload } from '../drive/services/file.service/types';
-import fileRetryManager from 'app/store/slices/storage/fileRetrymanager';
+import RetryManager from './RetryManager';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -566,11 +566,11 @@ class UploadManager {
           else filesToRetry.push(files[i]);
         }
 
-        fileRetryManager.addFiles(filesToRetry);
+        RetryManager.addFiles(filesToRetry);
         const fileTaskId = files[0]?.taskId;
         if (files.length === 1 && fileTaskId) {
-          if (filesToRetry.length === 0) fileRetryManager.removeFile(fileTaskId);
-          else fileRetryManager.changeStatus(fileTaskId, 'failed');
+          if (filesToRetry.length === 0) RetryManager.removeFile(fileTaskId);
+          else RetryManager.changeStatus(fileTaskId, 'failed');
         }
       };
 
