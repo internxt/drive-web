@@ -180,7 +180,7 @@ describe('checkUploadFiles', () => {
 
   it('should not add files to RetryManager if upload is correct', async () => {
     (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
-    vi.spyOn(Promise, 'all').mockResolvedValue([mockFile1]);
+    vi.spyOn(Promise, 'all').mockResolvedValueOnce([mockFile1]);
     const RetryAddFilesSpy = vi.spyOn(RetryManager, 'addFiles');
     const RetryGetFilesSpy = vi.spyOn(RetryManager, 'getFiles');
 

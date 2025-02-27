@@ -280,10 +280,12 @@ class UploadManager {
             }
           })
           .finally(() => {
-            tasksService.removeListener({
-              event: TaskEvent.TaskCancelled,
-              listener: abortListener,
-            });
+            if (abortListener) {
+              tasksService.removeListener({
+                event: TaskEvent.TaskCancelled,
+                listener: abortListener,
+              });
+            }
           });
       };
 
