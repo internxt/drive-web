@@ -156,9 +156,9 @@ function SignUp(props: SignUpProps): JSX.Element {
         doSignUp: isNewUser ? doRegister : updateInfo,
       };
 
-      const { token: xToken, user: xUser } = await authenticateUser(authParams);
+      const { token: xToken, newToken: xNewToken } = await authenticateUser(authParams);
 
-      await redirectTheUserAfterRegistration(xToken, redeemCodeObject);
+      await redirectTheUserAfterRegistration(xToken, xNewToken, redeemCodeObject);
     } catch (err: unknown) {
       setIsLoading(false);
       errorService.reportError(err);
@@ -171,6 +171,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
   const redirectTheUserAfterRegistration = async (
     xToken: string,
+    xNewToken: string,
     redeemCodeObject?: {
       code: string;
       provider: string;
@@ -179,6 +180,11 @@ function SignUp(props: SignUpProps): JSX.Element {
     const urlParams = new URLSearchParams(window.location.search);
     const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
     const redirectUrl = authService.getRedirectUrl(urlParams, xToken);
+    const isVPNAuth = urlParams.get('vpnAuth');
+
+    if (isVPNAuth && xNewToken) {
+      authService.vpnExtensionAuth(xNewToken);
+    }
 
     if (redirectUrl) {
       window.location.replace(redirectUrl);
