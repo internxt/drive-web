@@ -50,16 +50,6 @@ interface UploadItemsPayload {
   onFileUploadCallback?: (driveFileData: DriveFileData) => void;
 }
 
-interface UploadItemRetryPayload {
-  file: File;
-  taskId?: string;
-  fileType?: string;
-  parentFolderId: string;
-  options?: Partial<UploadItemsThunkOptions>;
-  filesProgress?: { filesUploaded: number; totalFilesToUpload: number };
-  onFileUploadCallback?: (driveFileData: DriveFileData) => void;
-}
-
 const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = {
   showNotifications: true,
   showErrors: true,
