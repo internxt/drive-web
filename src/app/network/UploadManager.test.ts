@@ -226,8 +226,8 @@ describe('checkUploadFiles', () => {
     //needs to fail twice because MAX_UPLOAD_ATTEMPTS = 2
     (uploadFile as Mock)
       .mockResolvedValueOnce(mockFile1)
-      .mockRejectedValueOnce(new AppError('No fileId'))
-      .mockRejectedValueOnce(new AppError('No fileId'));
+      .mockRejectedValueOnce(new AppError('Retryable file'))
+      .mockRejectedValueOnce(new AppError('Retryable file'));
     vi.spyOn(Promise, 'all').mockResolvedValueOnce([mockFile1, undefined]);
     const RetryAddFilesSpy = vi.spyOn(RetryManager, 'addFiles');
 

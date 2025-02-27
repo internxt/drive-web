@@ -30,7 +30,7 @@ const TaskToRetyItem = ({ index, style, data }: ListChildComponentProps) => {
       </div>
       {file.status === 'failed' && <TaskLoggerButton onClick={() => downloadItem(file)} Icon={RestartIcon} />}
       {file.status === 'uploading' && (
-        <CircleNotch size={16} className="mr-2 animate-spin text-gray-60" weight="bold" />
+        <CircleNotch size={24} className="mr-2 animate-spin text-gray-60" weight="bold" />
       )}
     </div>
   );

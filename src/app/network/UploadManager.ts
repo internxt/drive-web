@@ -344,7 +344,8 @@ class UploadManager {
       errStatus: error?.status,
     };
 
-    if (error.message === 'No fileId') {
+    // Handle retry error
+    if (error.message === 'Retryable file') {
       next(null);
       return;
     }

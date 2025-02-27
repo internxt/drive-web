@@ -166,13 +166,13 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
 
   return (
     <div className="relative">
+      <TaskToRetry isOpen={isModalOpen} files={filesToRetry ?? []} onClose={() => setIsModalOpen(false)} />
       <div
         className={'flex h-12 items-center space-x-2 px-2 hover:bg-gray-5'}
         role="none"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <TaskToRetry isOpen={isModalOpen} files={filesToRetry ?? []} onClose={() => setIsModalOpen(false)} />
         <notification.icon className="h-8 w-8 drop-shadow-sm" />
         <div className="flex flex-1 flex-col overflow-hidden text-left">
           <span className="truncate text-sm font-medium text-gray-80" title={notification.title}>
