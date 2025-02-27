@@ -178,14 +178,15 @@ describe('checkUploadFiles', () => {
     expect(abortController.signal.aborted).toBe(true);
   });
 
-  it('should not add files to RetryManager if upload is correct', async () => {
+  it('should not add files to RetryManager if upload is successful and remove from RetryManager', async () => {
     (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
     vi.spyOn(Promise, 'all').mockResolvedValueOnce([mockFile1]);
     const RetryAddFilesSpy = vi.spyOn(RetryManager, 'addFiles');
     const RetryGetFilesSpy = vi.spyOn(RetryManager, 'getFiles');
+    const RetrRemoveFileSpy = vi.spyOn(RetryManager, 'removeFile');
 
     vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'updateTask').mockReturnValueOnce();
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
@@ -220,6 +221,7 @@ describe('checkUploadFiles', () => {
 
     expect(RetryAddFilesSpy).not.toHaveBeenCalled();
     expect(RetryGetFilesSpy).toHaveLength(0);
+    expect(RetrRemoveFileSpy).toHaveBeenCalledWith('taskId');
   });
 
   it('should add files to RetryManager if any upload fails', async () => {
@@ -279,5 +281,50 @@ describe('checkUploadFiles', () => {
 
     expect(RetryAddFilesSpy).toHaveBeenCalled();
     expect(RetryManager.getFiles().length).toBe(1);
+  });
+
+  it('should change status to failed if cannot retry successfully', async () => {
+    //needs to fail twice because MAX_UPLOAD_ATTEMPTS = 2
+    (uploadFile as Mock)
+      .mockRejectedValueOnce(new AppError('Retryable file'))
+      .mockRejectedValueOnce(new AppError('Retryable file'));
+    vi.spyOn(Promise, 'all').mockResolvedValueOnce([undefined]);
+    const RetryChangeStatusSpy = vi.spyOn(RetryManager, 'changeStatus');
+
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+
+    await uploadFileWithManager(
+      [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
+      openMaxSpaceOccupiedDialogMock,
+      DatabaseUploadRepository.getInstance(),
+      undefined,
+      {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
+    );
+
+    expect(RetryChangeStatusSpy).toHaveBeenCalledWith('taskId', 'failed');
   });
 });
