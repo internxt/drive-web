@@ -29,7 +29,7 @@ const PlanSelectionCard = ({
   const isSelectedInsideBorderStyle = selectedValidation
     ? '!border-primary ring ring-primary/10 bg-primary/3 dark:bg-primary/10 dark:ring-primary/30'
     : '';
-  let userText = isBusiness ? '/' + t('preferences.account.plans.peruser') : '';
+  let userText = isBusiness ? '/' + t('preferences.account.plans.user') : '';
   if (isBusiness && !displayBillingSlash) {
     userText = ' ' + t('preferences.account.plans.user');
   }

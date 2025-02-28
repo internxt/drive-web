@@ -205,6 +205,11 @@
         "year": "year",
         "lifetime": "lifetime"
       },
+      "renewalTitle": {
+        "month": "monthly",
+        "year": "annually",
+        "lifetime": "lifetime"
+      },
       "pcMobileRenews": "* Renews at 50€ first year after trial period",
       "title": "Order summary",
       "selectedPlan": "Selected plan",
@@ -1843,6 +1848,7 @@
         "free": "Get up to 10 GB for free",
         "manageBilling": "Manage billing",
         "freeForever": "Free forever",
+        "billedAnnually":"billed annually",
         "year": "Year",
         "month": "Month",
         "lifetime": "Lifetime",
@@ -1852,7 +1858,7 @@
           "ultimate": "Ultimate",
           "standard": "Standard",
           "pro": "Pro",
-          "free":"Internxt Free"
+          "free":"Free"
         },
         "planFeaturesList": {
           "title": "Plan details",
@@ -1922,7 +1928,7 @@
             },
           "proFeatures":{
             "feature1": "Post-quantum encryption",
-            "feature2": "Ultra fast unlimited VPN (FR, DE, PL)",
+            "feature2": "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
             "feature4": "Antivirus",
             "feature3":"Backup your files" ,
             "feature5": "Password-protected file sharing",
@@ -1936,8 +1942,7 @@
             }
           }
         },
-        "user": "user",
-        "peruser": "per user"
+        "user": "user"
       },
       "billing": {
         "title": "Billing"

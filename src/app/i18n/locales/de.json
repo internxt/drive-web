@@ -185,6 +185,11 @@
         "year": "jährlich",
         "lifetime": "lebenslang"
       },
+      "renewalTitle": {
+        "month": "monatlich",
+        "year": "jährlich",
+        "lifetime": "lebenslang"
+      },
       "pcMobileRenews": "* Verlängert sich im ersten Jahr nach der Testphase für 50€",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}}-Plan",
@@ -1776,6 +1781,7 @@
         "free": "Erhalten Sie bis zu 10 GB kostenlos",
         "manageBilling": "Abrechnung verwalten",
         "freeForever": "Für immer kostenlos",
+        "billedAnnually":"jährlich abgerechnet",
         "year": "Jahr",
         "month": "Monat",
         "lifetime": "Lebenslang",
@@ -1785,7 +1791,7 @@
           "ultimate": "Ultimate",
           "standard": "Standard",
           "pro": "Pro",
-          "free": "Internxt Free"
+          "free": "Free"
         },
         "planFeaturesList": {
           "title": "Plan-Details",
@@ -1855,7 +1861,7 @@
           },
           "proFeatures": {
             "feature1": "Post-Quanten- und Zero-Knowledge-Verschlüsselung",
-            "feature2": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL)",
+            "feature2": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL, CA, UK)",
             "feature4": "Antivirus",
             "feature3": "Backups",
             "feature5": "Passwortgeschütztes Teilen von Dateien",
@@ -1869,8 +1875,7 @@
             }
           }
         },
-        "user": "Benutzer",
-        "perUser": "pro Benutzer"
+        "user": "Benutzer"
       },
       "billing": {
         "title": "Billing"
