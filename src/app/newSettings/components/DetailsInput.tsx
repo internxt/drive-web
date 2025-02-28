@@ -1,4 +1,4 @@
-import Input from '../../shared/components/Input';
+import { Input } from '@internxt/ui';
 
 const DetailsInput = ({
   label,
