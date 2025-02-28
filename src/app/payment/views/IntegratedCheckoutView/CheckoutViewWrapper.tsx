@@ -379,11 +379,11 @@ const CheckoutViewWrapper = () => {
         companyVatId,
       );
 
-      const clientToken = mobileToken ?? token;
       const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
         await checkoutService.getClientSecret({
           selectedPlan: currentSelectedPlan as RequestedPlanData,
-          token: clientToken,
+          token,
+          mobileToken,
           customerId,
           promoCodeId: couponCodeData?.codeId,
           seatsForBusinessSubscription,

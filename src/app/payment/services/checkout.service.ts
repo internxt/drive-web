@@ -1,8 +1,8 @@
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { StripeElementsOptions } from '@stripe/stripe-js';
+import envService from '../../core/services/env.service';
 import paymentService from '../../payment/services/payment.service';
 import { ClientSecretData, CouponCodeData, PlanData, RequestedPlanData } from '../types';
-import envService from '../../core/services/env.service';
-import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 const IS_PRODUCTION = envService.isProduction();
 const BORDER_SHADOW = 'rgb(0 102 255)';
@@ -92,6 +92,7 @@ const getClientSecretForSubscriptionIntent = async ({
   customerId,
   priceId,
   token,
+  mobileToken,
   currency,
   promoCodeId,
   seatsForBusinessSubscription = 1,
@@ -99,10 +100,27 @@ const getClientSecretForSubscriptionIntent = async ({
   customerId: string;
   priceId: string;
   token: string;
+  mobileToken: string | null;
   currency: string;
   seatsForBusinessSubscription?: number;
   promoCodeId?: string;
 }): Promise<ClientSecretData & { subscriptionId?: string; paymentIntentId?: string }> => {
+  if (mobileToken) {
+    const {
+      type: paymentType,
+      clientSecret: client_secret,
+      subscriptionId,
+      paymentIntentId,
+    } = await paymentService.createSubscriptionWithTrial(customerId, priceId, token, mobileToken, currency);
+
+    return {
+      clientSecretType: paymentType,
+      client_secret,
+      subscriptionId,
+      paymentIntentId,
+    };
+  }
+
   const {
     type: paymentType,
     clientSecret: client_secret,
@@ -128,12 +146,14 @@ const getClientSecretForSubscriptionIntent = async ({
 const getClientSecret = async ({
   selectedPlan,
   token,
+  mobileToken,
   customerId,
   promoCodeId,
   seatsForBusinessSubscription = 1,
 }: {
   selectedPlan: RequestedPlanData;
   token: string;
+  mobileToken: string | null;
   customerId: string;
   promoCodeId?: CouponCodeData['codeId'];
   seatsForBusinessSubscription?: number;
@@ -160,6 +180,7 @@ const getClientSecret = async ({
       customerId,
       priceId: selectedPlan?.id,
       token,
+      mobileToken,
       currency: selectedPlan.currency,
       seatsForBusinessSubscription,
       promoCodeId,
