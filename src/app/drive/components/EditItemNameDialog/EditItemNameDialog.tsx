@@ -1,8 +1,7 @@
-import { Button } from '@internxt/ui';
+import { Button, Modal } from '@internxt/ui';
 import { DriveFolderMetadataPayload } from 'app/drive/types/index';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Input from 'app/shared/components/Input';
-import Modal from 'app/shared/components/Modal';
 import { useAppDispatch } from 'app/store/hooks';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { FC, useEffect, useState } from 'react';
