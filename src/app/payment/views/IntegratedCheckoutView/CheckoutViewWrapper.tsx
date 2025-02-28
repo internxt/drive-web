@@ -243,7 +243,7 @@ const CheckoutViewWrapper = () => {
           navigationService.push(AppView.Signup);
         }
       });
-  }, [checkoutTheme]);
+  }, [checkoutTheme, mobileToken]);
 
   useEffect(() => {
     if (isAuthenticated && user) {
