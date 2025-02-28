@@ -1803,84 +1803,85 @@
           "commingSoon": "Bientôt disponible",
           "storage": " de stockage ",
           "essentialFeatures": {
-            "featureOne": "Chiffrement post-quantique",
-            "featureTwo": "VPN ultra-rapide et illimité (FR)",
-            "featureFour": "Antivirus",
-            "featureThree": "Sauvegardes",
-            "featureFive": "Partage de fichiers protégés par mot de passe",
-            "featureSix": "Conformité RGPD",
-            "featureSeven": "Authentification à deux facteurs (2FA)",
-            "featureEight": "CLI, WebDav & Rclone"
+            "feature1": "Chiffrement post-quantique",
+            "feature2": "VPN ultra-rapide et illimité (FR)",
+            "feature4": "Antivirus",
+            "feature3": "Sauvegardes",
+            "feature5": "Partage de fichiers protégés par mot de passe",
+            "feature6": "Conformité RGPD",
+            "feature7": "Authentification à deux facteurs (2FA)",
+            "feature8": "CLI, WebDav & Rclone"
           },
           "premiumFeatures": {
-            "featureOne": "Chiffrement post-quantique",
-            "featureTwo": "VPN ultra-rapide et illimité (FR, DE, PL)",
-            "featureFour": "Antivirus",
-            "featureThree": "Sauvegardes",
-            "featureFive": "Partage de fichiers protégés par mot de passe",
-            "featureSix": "Conformité RGPD",
-            "featureSeven": "Authentification à deux facteurs (2FA)",
-            "featureEight": "CLI, WebDav & Rclone",
+            "feature1": "Chiffrement post-quantique",
+            "feature2": "VPN ultra-rapide et illimité (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Sauvegardes",
+            "feature5": "Partage de fichiers protégés par mot de passe",
+            "feature6": "Conformité RGPD",
+            "feature7": "Authentification à deux facteurs (2FA)",
+            "feature8": "CLI, WebDav & Rclone",
             "commingSoonFeatures": {
-              "featureOne": "Meet (3 participants)",
-              "featureTwo": "Mail (3 adresses email)"
+              "feature1": "Meet (3 participants)",
+              "feature2": "Mail (3 adresses email)"
             }
           },
           "ultimateFeatures": {
-            "featureOne": "Chiffrement post-quantique",
-            "featureTwo": "VPN ultra-rapide et illimité (FR, DE, PL, CA, UK)",
-            "featureFour": "Antivirus",
-            "featureThree": "Sauvegardes",
-            "featureFive": "Partage de fichiers protégés par mot de passe",
-            "featureSix": "Conformité RGPD",
-            "featureSeven": "Authentification à deux facteurs (2FA)",
-            "featureEight": "CLI, WebDav & Rclone",
+            "feature1": "Chiffrement post-quantique",
+            "feature2": "VPN ultra-rapide et illimité (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus",
+            "feature3": "Sauvegardes",
+            "feature5": "Partage de fichiers protégés par mot de passe",
+            "feature6": "Conformité RGPD",
+            "feature7": "Authentification à deux facteurs (2FA)",
+            "feature8": "CLI, WebDav & Rclone",
             "commingSoonFeatures": {
-              "featureOne": "Meet (5 participants)",
-              "featureTwo": "Mail (5 adresses email)"
+              "feature1": "Meet (5 participants)",
+              "feature2": "Mail (5 adresses email)"
             }
           },
           "freeFeatures": {
-            "featureOne": "Chiffrement Zero-Knowledge",
-            "featureTwo": "VPN standard (FR)",
-            "featureThree": "Support CLI, WebDav & Rclone"
+            "feature1": "Chiffrement Zero-Knowledge",
+            "feature2": "VPN standard (FR)",
+            "feature3": "Support CLI, WebDav & Rclone"
           }
         },
         "businessPlanFeaturesList": {
           "title": "Détails du plan",
           "storage": " de stockage",
           "standardFeatures": {
-            "featureOne": "Chiffrement post-quantique et Zero-Knowledge",
-            "featureTwo": "VPN ultra-rapide et illimité (FR, DE, PL)",
-            "featureFour": "Antivirus",
-            "featureThree": "Sauvegardes",
-            "featureFive": "Partage de fichiers protégés par mot de passe",
-            "featureSix": "Conformité RGPD",
-            "featureSeven": "Authentification à deux facteurs (2FA)",
-            "featureEight": "CLI/WebDav/Rclone",
-            "featureNine": "Gérez la facturation et les paiements de votre compte",
+            "feature1": "Chiffrement post-quantique et Zero-Knowledge",
+            "feature2": "VPN ultra-rapide et illimité (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Sauvegardes",
+            "feature5": "Partage de fichiers protégés par mot de passe",
+            "feature6": "Conformité RGPD",
+            "feature7": "Authentification à deux facteurs (2FA)",
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9": "Gérez la facturation et les paiements de votre compte",
             "commingSoonFeatures": {
-              "featureOne": "Réunions jusqu'à 10 utilisateurs (max. 10 participants)",
-              "featureTwo": "1 adresse email personnalisée/utilisateur"
+              "feature1": "Réunions jusqu'à 10 utilisateurs (max. 10 participants)",
+              "feature2": "1 adresse email personnalisée/utilisateur"
             }
           },
           "proFeatures": {
-            "featureOne": "Chiffrement post-quantique et Zero-Knowledge",
-            "featureTwo": "VPN ultra-rapide et illimité (FR, DE, PL)",
-            "featureFour": "Antivirus",
-            "featureThree": "Sauvegardes",
-            "featureFive": "Partage de fichiers protégés par mot de passe",
-            "featureSix": "Conformité RGPD",
-            "featureSeven": "Authentification à deux facteurs (2FA)",
-            "featureEight": "CLI/WebDav/Rclone",
-            "featureNine": "Gérez la facturation et les paiements de votre compte",
+            "feature1": "Chiffrement post-quantique et Zero-Knowledge",
+            "feature2": "VPN ultra-rapide et illimité (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Sauvegardes",
+            "feature5": "Partage de fichiers protégés par mot de passe",
+            "feature6": "Conformité RGPD",
+            "feature7": "Authentification à deux facteurs (2FA)",
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9": "Gérez la facturation et les paiements de votre compte",
             "commingSoonFeatures": {
-              "featureOne": "Réunions jusqu'à 10 utilisateurs (max. 10 participants)",
-              "featureTwo": "1 adresse email personnalisée/utilisateur"
+              "feature1": "Réunions jusqu'à 10 utilisateurs (max. 10 participants)",
+              "feature2": "1 adresse email personnalisée/utilisateur"
             }
           }
         },
-        "user": "Utilisateur"
+        "user": "Utilisateur",
+        "peruser": "per utilisateur"
       },
       "billing": {
         "title": "Billing"

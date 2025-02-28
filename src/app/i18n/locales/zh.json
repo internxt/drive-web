@@ -1849,84 +1849,85 @@
           "commingSoon": "即将推出",
           "storage": " 存储空间",
           "essentialFeatures": {
-            "featureOne": "后量子加密",
-            "featureTwo": "无限高速 VPN（法国）",
-            "featureFour": "杀毒软件",
-            "featureThree": "文件备份",
-            "featureFive": "密码保护的文件共享",
-            "featureSix": "符合 GDPR 规范",
-            "featureSeven": "双重身份验证（2FA）",
-            "featureEight": "CLI、WebDav 和 Rclone 支持"
+            "feature1": "后量子加密",
+            "feature2": "无限高速 VPN（法国）",
+            "feature4": "杀毒软件",
+            "feature3": "文件备份",
+            "feature5": "密码保护的文件共享",
+            "feature6": "符合 GDPR 规范",
+            "feature7": "双重身份验证（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支持"
           },
           "premiumFeatures": {
-            "featureOne": "后量子加密",
-            "featureTwo": "无限高速 VPN（法国、德国、波兰）",
-            "featureFour": "杀毒软件",
-            "featureThree": "文件备份",
-            "featureFive": "密码保护的文件共享",
-            "featureSix": "符合 GDPR 规范",
-            "featureSeven": "双重身份验证（2FA）",
-            "featureEight": "CLI、WebDav 和 Rclone 支持",
+            "feature1": "后量子加密",
+            "feature2": "无限高速 VPN（法国、德国、波兰）",
+            "feature4": "杀毒软件",
+            "feature3": "文件备份",
+            "feature5": "密码保护的文件共享",
+            "feature6": "符合 GDPR 规范",
+            "feature7": "双重身份验证（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支持",
             "commingSoonFeatures": {
-              "featureOne": "会议（最多 3 名参与者）",
-              "featureTwo": "电子邮件（最多 3 个账户）"
+              "feature1": "会议（最多 3 名参与者）",
+              "feature2": "电子邮件（最多 3 个账户）"
             }
           },
           "ultimateFeatures": {
-            "featureOne": "后量子加密",
-            "featureTwo": "无限高速 VPN（法国、德国、波兰、加拿大、英国）",
-            "featureFour": "杀毒软件",
-            "featureThree": "文件备份",
-            "featureFive": "密码保护的文件共享",
-            "featureSix": "符合 GDPR 规范",
-            "featureSeven": "双重身份验证（2FA）",
-            "featureEight": "CLI、WebDav 和 Rclone 支持",
+            "feature1": "后量子加密",
+            "feature2": "无限高速 VPN（法国、德国、波兰、加拿大、英国）",
+            "feature4": "杀毒软件",
+            "feature3": "文件备份",
+            "feature5": "密码保护的文件共享",
+            "feature6": "符合 GDPR 规范",
+            "feature7": "双重身份验证（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支持",
             "commingSoonFeatures": {
-              "featureOne": "会议（最多 5 名参与者）",
-              "featureTwo": "电子邮件（最多 5 个账户）"
+              "feature1": "会议（最多 5 名参与者）",
+              "feature2": "电子邮件（最多 5 个账户）"
             }
           },
           "freeFeatures": {
-            "featureOne": "零知识加密",
-            "featureTwo": "标准 VPN（法国）",
-            "featureThree": "CLI、WebDav 和 Rclone 支持"
+            "feature1": "零知识加密",
+            "feature2": "标准 VPN（法国）",
+            "feature3": "CLI、WebDav 和 Rclone 支持"
           }
         },
         "businessPlanFeaturesList": {
           "title": "套餐详情",
           "storage": " 存储空间",
           "standardFeatures": {
-            "featureOne": "后量子加密和零知识加密",
-            "featureTwo": "无限高速 VPN（法国、德国、波兰）",
-            "featureFour": "杀毒软件",
-            "featureThree": "文件备份",
-            "featureFive": "密码保护的文件共享",
-            "featureSix": "符合 GDPR 规范",
-            "featureSeven": "双重身份验证（2FA）",
-            "featureEight": "CLI、WebDav 和 Rclone 支持",
-            "featureNine": "管理账户账单和支付",
+            "feature1": "后量子加密和零知识加密",
+            "feature2": "无限高速 VPN（法国、德国、波兰）",
+            "feature4": "杀毒软件",
+            "feature3": "文件备份",
+            "feature5": "密码保护的文件共享",
+            "feature6": "符合 GDPR 规范",
+            "feature7": "双重身份验证（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支持",
+            "feature9": "管理账户账单和支付",
             "commingSoonFeatures": {
-              "featureOne": "会议最多 10 名用户（最多 10 名参与者）",
-              "featureTwo": "每位用户 1 个自定义电子邮件地址"
+              "feature1": "会议最多 10 名用户（最多 10 名参与者）",
+              "feature2": "每位用户 1 个自定义电子邮件地址"
             }
           },
           "proFeatures": {
-            "featureOne": "后量子加密和零知识加密",
-            "featureTwo": "无限高速 VPN（法国、德国、波兰）",
-            "featureFour": "杀毒软件",
-            "featureThree": "文件备份",
-            "featureFive": "密码保护的文件共享",
-            "featureSix": "符合 GDPR 规范",
-            "featureSeven": "双重身份验证（2FA）",
-            "featureEight": "CLI、WebDav 和 Rclone 支持",
-            "featureNine": "管理账户账单和支付",
+            "feature1": "后量子加密和零知识加密",
+            "feature2": "无限高速 VPN（法国、德国、波兰）",
+            "feature4": "杀毒软件",
+            "feature3": "文件备份",
+            "feature5": "密码保护的文件共享",
+            "feature6": "符合 GDPR 规范",
+            "feature7": "双重身份验证（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支持",
+            "feature9": "管理账户账单和支付",
             "commingSoonFeatures": {
-              "featureOne": "会议最多 10 名用户（最多 10 名参与者）",
-              "featureTwo": "每位用户 1 个自定义电子邮件地址"
+              "feature1": "会议最多 10 名用户（最多 10 名参与者）",
+              "feature2": "每位用户 1 个自定义电子邮件地址"
             }
           }
         },
-        "user": "用户"
+        "user": "用户",
+        "peruser": "每位用户"
       },
       "billing": {
         "title": "计费"

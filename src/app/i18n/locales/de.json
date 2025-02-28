@@ -1791,84 +1791,85 @@
           "commingSoon": "Demnächst",
           "storage": " Speicherplatz ",
           "essentialFeatures": {
-            "featureOne": "Post-Quanten-Kryptografie",
-            "featureTwo": "Unbegrenztes Hochgeschwindigkeits-VPN (FR)",
-            "featureFour": "Antivirus",
-            "featureThree": "Backups",
-            "featureFive": "Passwortgeschütztes Teilen von Dateien",
-            "featureSix": "DSGVO-Konformität",
-            "featureSeven": "Zwei-Faktor-Authentifizierung (2FA)",
-            "featureEight": "CLI, WebDav & Rclone"
+            "feature1": "Post-Quanten-Kryptografie",
+            "feature2": "Unbegrenztes Hochgeschwindigkeits-VPN (FR)",
+            "feature4": "Antivirus",
+            "feature3": "Backups",
+            "feature5": "Passwortgeschütztes Teilen von Dateien",
+            "feature6": "DSGVO-Konformität",
+            "feature7": "Zwei-Faktor-Authentifizierung (2FA)",
+            "feature8": "CLI, WebDav & Rclone"
           },
           "premiumFeatures": {
-            "featureOne": "Post-Quanten-Kryptografie",
-            "featureTwo": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL)",
-            "featureFour": "Antivirus",
-            "featureThree": "Backups",
-            "featureFive": "Passwortgeschütztes Teilen von Dateien",
-            "featureSix": "DSGVO-Konformität",
-            "featureSeven": "Zwei-Faktor-Authentifizierung (2FA)",
-            "featureEight": "CLI, WebDav & Rclone",
+            "feature1": "Post-Quanten-Kryptografie",
+            "feature2": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Backups",
+            "feature5": "Passwortgeschütztes Teilen von Dateien",
+            "feature6": "DSGVO-Konformität",
+            "feature7": "Zwei-Faktor-Authentifizierung (2FA)",
+            "feature8": "CLI, WebDav & Rclone",
             "commingSoonFeatures": {
-              "featureOne": "Meet (3 Teilnehmer)",
-              "featureTwo": "Mail (3 E-Mails)"
+              "feature1": "Meet (3 Teilnehmer)",
+              "feature2": "Mail (3 E-Mails)"
             }
           },
           "ultimateFeatures": {
-            "featureOne": "Post-Quanten-Kryptografie",
-            "featureTwo": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL, CA, UK)",
-            "featureFour": "Antivirus",
-            "featureThree": "Backups",
-            "featureFive": "Passwortgeschütztes Teilen von Dateien",
-            "featureSix": "DSGVO-Konformität",
-            "featureSeven": "Zwei-Faktor-Authentifizierung (2FA)",
-            "featureEight": "CLI, WebDav & Rclone",
+            "feature1": "Post-Quanten-Kryptografie",
+            "feature2": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus",
+            "feature3": "Backups",
+            "feature5": "Passwortgeschütztes Teilen von Dateien",
+            "feature6": "DSGVO-Konformität",
+            "feature7": "Zwei-Faktor-Authentifizierung (2FA)",
+            "feature8": "CLI, WebDav & Rclone",
             "commingSoonFeatures": {
-              "featureOne": "Meet (5 Teilnehmer)",
-              "featureTwo": "Mail (5 E-Mails)"
+              "feature1": "Meet (5 Teilnehmer)",
+              "feature2": "Mail (5 E-Mails)"
             }
           },
           "freeFeatures": {
-            "featureOne": "Zero-Knowledge-Verschlüsselung",
-            "featureTwo": "Standard-VPN (FR)",
-            "featureThree": "CLI, WebDav & Rclone-Unterstützung"
+            "feature1": "Zero-Knowledge-Verschlüsselung",
+            "feature2": "Standard-VPN (FR)",
+            "feature3": "CLI, WebDav & Rclone-Unterstützung"
           }
         },
         "businessPlanFeaturesList": {
           "title": "Plan-Details",
           "storage": " Speicherplatz",
           "standardFeatures": {
-            "featureOne": "Post-Quanten- und Zero-Knowledge-Verschlüsselung",
-            "featureTwo": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL)",
-            "featureFour": "Antivirus",
-            "featureThree": "Backups",
-            "featureFive": "Passwortgeschütztes Teilen von Dateien",
-            "featureSix": "DSGVO-Konformität",
-            "featureSeven": "Zwei-Faktor-Authentifizierung (2FA)",
-            "featureEight": "CLI/WebDav/Rclone",
-            "featureNine": "Verwalten Sie die Abrechnung und Zahlungen Ihres Kontos",
+            "feature1": "Post-Quanten- und Zero-Knowledge-Verschlüsselung",
+            "feature2": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Backups",
+            "feature5": "Passwortgeschütztes Teilen von Dateien",
+            "feature6": "DSGVO-Konformität",
+            "feature7": "Zwei-Faktor-Authentifizierung (2FA)",
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9": "Verwalten Sie die Abrechnung und Zahlungen Ihres Kontos",
             "commingSoonFeatures": {
-              "featureOne": "Meetings mit bis zu 10 Benutzern (max. 10 Teilnehmer)",
-              "featureTwo": "1 benutzerdefinierte E-Mail-Adresse pro Nutzer"
+              "feature1": "Meetings mit bis zu 10 Benutzern (max. 10 Teilnehmer)",
+              "feature2": "1 benutzerdefinierte E-Mail-Adresse pro Nutzer"
             }
           },
           "proFeatures": {
-            "featureOne": "Post-Quanten- und Zero-Knowledge-Verschlüsselung",
-            "featureTwo": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL)",
-            "featureFour": "Antivirus",
-            "featureThree": "Backups",
-            "featureFive": "Passwortgeschütztes Teilen von Dateien",
-            "featureSix": "DSGVO-Konformität",
-            "featureSeven": "Zwei-Faktor-Authentifizierung (2FA)",
-            "featureEight": "CLI/WebDav/Rclone",
-            "featureNine": "Verwalten Sie die Abrechnung und Zahlungen Ihres Kontos",
+            "feature1": "Post-Quanten- und Zero-Knowledge-Verschlüsselung",
+            "feature2": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Backups",
+            "feature5": "Passwortgeschütztes Teilen von Dateien",
+            "feature6": "DSGVO-Konformität",
+            "feature7": "Zwei-Faktor-Authentifizierung (2FA)",
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9": "Verwalten Sie die Abrechnung und Zahlungen Ihres Kontos",
             "commingSoonFeatures": {
-              "featureOne": "Meetings mit bis zu 10 Benutzern (max. 10 Teilnehmer)",
-              "featureTwo": "1 benutzerdefinierte E-Mail-Adresse pro Nutzer"
+              "feature1": "Meetings mit bis zu 10 Benutzern (max. 10 Teilnehmer)",
+              "feature2": "1 benutzerdefinierte E-Mail-Adresse pro Nutzer"
             }
           }
         },
-        "user": "Benutzer"
+        "user": "Benutzer",
+        "perUser": "pro Benutzer"
       },
       "billing": {
         "title": "Billing"

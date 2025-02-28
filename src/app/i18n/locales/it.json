@@ -1836,84 +1836,85 @@
           "commingSoon": "Prossimamente",
           "storage": " di archiviazione ",
           "essentialFeatures": {
-            "featureOne": "Crittografia post-quantistica",
-            "featureTwo": "VPN ad alta velocità illimitata (FR)",
-            "featureFour": "Antivirus",
-            "featureThree": "Backup",
-            "featureFive": "Condivisione di file protetti da password",
-            "featureSix": "Conformità GDPR",
-            "featureSeven": "Autenticazione a due fattori (2FA)",
-            "featureEight": "CLI, WebDav & Rclone"
+            "feature1": "Crittografia post-quantistica",
+            "feature2": "VPN ad alta velocità illimitata (FR)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI, WebDav & Rclone"
           },
           "premiumFeatures": {
-            "featureOne": "Crittografia post-quantistica",
-            "featureTwo": "VPN ad alta velocità illimitata (FR, DE, PL)",
-            "featureFour": "Antivirus",
-            "featureThree": "Backup",
-            "featureFive": "Condivisione di file protetti da password",
-            "featureSix": "Conformità GDPR",
-            "featureSeven": "Autenticazione a due fattori (2FA)",
-            "featureEight": "CLI, WebDav & Rclone",
+            "feature1": "Crittografia post-quantistica",
+            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI, WebDav & Rclone",
             "commingSoonFeatures": {
-              "featureOne": "Meet (3 partecipanti)",
-              "featureTwo": "Mail (3 email)"
+              "feature1": "Meet (3 partecipanti)",
+              "feature2": "Mail (3 email)"
             }
           },
           "ultimateFeatures": {
-            "featureOne": "Crittografia post-quantistica",
-            "featureTwo": "VPN ad alta velocità illimitata (FR, DE, PL, CA, UK)",
-            "featureFour": "Antivirus",
-            "featureThree": "Backup",
-            "featureFive": "Condivisione di file protetti da password",
-            "featureSix": "Conformità GDPR",
-            "featureSeven": "Autenticazione a due fattori (2FA)",
-            "featureEight": "CLI, WebDav & Rclone",
+            "feature1": "Crittografia post-quantistica",
+            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI, WebDav & Rclone",
             "commingSoonFeatures": {
-              "featureOne": "Meet (5 partecipanti)",
-              "featureTwo": "Mail (5 email)"
+              "feature1": "Meet (5 partecipanti)",
+              "feature2": "Mail (5 email)"
             }
           },
           "freeFeatures": {
-            "featureOne": "Crittografia zero-knowledge",
-            "featureTwo": "VPN standard (FR)",
-            "featureThree": "Supporto CLI, WebDav & Rclone"
+            "feature1": "Crittografia zero-knowledge",
+            "feature2": "VPN standard (FR)",
+            "feature3": "Supporto CLI, WebDav & Rclone"
           }
         },
         "businessPlanFeaturesList": {
           "title": "Dettagli del piano",
           "storage": " di archiviazione",
           "standardFeatures": {
-            "featureOne": "Crittografia post-quantistica e zero-knowledge",
-            "featureTwo": "VPN ad alta velocità illimitata (FR, DE, PL)",
-            "featureFour": "Antivirus",
-            "featureThree": "Backup",
-            "featureFive": "Condivisione di file protetti da password",
-            "featureSix": "Conformità GDPR",
-            "featureSeven": "Autenticazione a due fattori (2FA)",
-            "featureEight": "CLI/WebDav/Rclone",
-            "featureNine": "Gestisci la fatturazione e i pagamenti del tuo account",
+            "feature1": "Crittografia post-quantistica e zero-knowledge",
+            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9": "Gestisci la fatturazione e i pagamenti del tuo account",
             "commingSoonFeatures": {
-              "featureOne": "Riunioni fino a 10 utenti (max. 10 partecipanti)",
-              "featureTwo": "1 indirizzo email personalizzato/utente"
+              "feature1": "Riunioni fino a 10 utenti (max. 10 partecipanti)",
+              "feature2": "1 indirizzo email personalizzato/utente"
             }
           },
           "proFeatures": {
-            "featureOne": "Crittografia post-quantistica e zero-knowledge",
-            "featureTwo": "VPN ad alta velocità illimitata (FR, DE, PL)",
-            "featureFour": "Antivirus",
-            "featureThree": "Backup",
-            "featureFive": "Condivisione di file protetti da password",
-            "featureSix": "Conformità GDPR",
-            "featureSeven": "Autenticazione a due fattori (2FA)",
-            "featureEight": "CLI/WebDav/Rclone",
-            "featureNine": "Gestisci la fatturazione e i pagamenti del tuo account",
+            "feature1": "Crittografia post-quantistica e zero-knowledge",
+            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9": "Gestisci la fatturazione e i pagamenti del tuo account",
             "commingSoonFeatures": {
-              "featureOne": "Riunioni fino a 10 utenti (max. 10 partecipanti)",
-              "featureTwo": "1 indirizzo email personalizzato/utente"
+              "feature1": "Riunioni fino a 10 utenti (max. 10 partecipanti)",
+              "feature2": "1 indirizzo email personalizzato/utente"
             }
           }
         },
-        "user": "Utente"
+        "user": "Utente",
+        "persuser": "per utilisateur"
       },
       "billing": {
         "title": "Fatturazione"

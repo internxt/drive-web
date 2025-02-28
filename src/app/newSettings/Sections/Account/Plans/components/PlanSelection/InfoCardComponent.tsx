@@ -33,17 +33,6 @@ export const InfoCardComponent = ({
   translate,
 }: InfoCardComponentProps) => {
   const isPriceData = priceSelected?.id === freePlanData.id;
-
-  const getPlanInterval = (priceSelected) => {
-    if (!priceSelected) return '';
-
-    const { interval } = priceSelected;
-    if (interval === 'year') return 'month';
-    if (interval === 'lifetime') return 'lifetime';
-
-    return '';
-  };
-
   const getPriceAmount = (priceSelected) => {
     if (!priceSelected) return 0;
 
@@ -62,9 +51,10 @@ export const InfoCardComponent = ({
     return currencyService.getCurrencySymbol(priceSelected.currency);
   };
 
-  const billing = priceSelected
-    ? translate(`preferences.account.plans.${getPlanInterval(priceSelected)}`).toLowerCase()
-    : '';
+  const billing =
+    priceSelected.interval === 'lifetime'
+      ? translate('views.account.tabs.plans.card.oneTimePayment')
+      : translate('preferences.account.plans.month')?.toLowerCase();
 
   const price = priceSelected ? displayAmount(getPriceAmount(priceSelected)).replace(/\.00$/, '') : '0';
 

@@ -29,7 +29,7 @@ const PlanSelectionCard = ({
   const isSelectedInsideBorderStyle = selectedValidation
     ? '!border-primary ring ring-primary/10 bg-primary/3 dark:bg-primary/10 dark:ring-primary/30'
     : '';
-  let userText = isBusiness ? '/' + t('preferences.account.plans.user') : '';
+  let userText = isBusiness ? '/' + t('preferences.account.plans.peruser') : '';
   if (isBusiness && !displayBillingSlash) {
     userText = ' ' + t('preferences.account.plans.user');
   }
@@ -37,23 +37,28 @@ const PlanSelectionCard = ({
     ? `${amount} ${currency}/${billing}${userText}`
     : `${amount} ${currency} ${billing}${userText}`;
 
-  const planTypeText = (() => {
+  const getPlanFeaturePath = () => {
+    const PLAN_TYPES = {
+      FREE: t('preferences.account.plans.types.free'),
+      ESSENTIAL: t('preferences.account.plans.types.essential'),
+      STANDARD: t('preferences.account.plans.types.standard'),
+      PRO: t('preferences.account.plans.types.pro'),
+      PREMIUM: t('preferences.account.plans.types.premium'),
+      ULTIMATE: t('preferences.account.plans.types.ultimate'),
+    };
+
     if (capacity === '1TB') {
-      if (!isBusiness) {
-        return t('preferences.account.plans.types.essential');
-      } else {
-        return t('preferences.account.plans.types.standard');
-      }
-    } else if (capacity === '2TB') {
-      return t('preferences.account.plans.types.pro');
-    } else if (capacity === '3TB') {
-      return t('preferences.account.plans.types.premium');
-    } else if (capacity === '5TB') {
-      return t('preferences.account.plans.types.ultimate');
-    } else {
-      return t('preferences.account.plans.types.free');
+      return isBusiness ? PLAN_TYPES.STANDARD : PLAN_TYPES.ESSENTIAL;
     }
-  })();
+
+    const capacityToFeaturePath = {
+      '2TB': PLAN_TYPES.PRO,
+      '3TB': PLAN_TYPES.PREMIUM,
+      '5TB': PLAN_TYPES.ULTIMATE,
+    };
+
+    return capacityToFeaturePath[capacity] || PLAN_TYPES.FREE;
+  };
 
   return (
     <div
@@ -67,7 +72,7 @@ const PlanSelectionCard = ({
       >
         <div className="flex w-full flex-col justify-between space-y-2">
           <div className="flex flex-row justify-between">
-            <RoleBadge roleText={planTypeText} role={'planType'} size={'small'} />
+            <RoleBadge roleText={getPlanFeaturePath()} role={'planType'} size={'small'} />
             {isCurrentPlan && (
               <RoleBadge roleText={t('preferences.account.plans.current')} role={'current'} size={'small'} />
             )}
