@@ -303,7 +303,7 @@
     },
     "renewal": {
       "monthly": "Monthly",
-      "annually": "Annually",
+      "annually": "Annual",
       "lifetime": "Lifetime"
     },
     "workspaces": {
