@@ -49,6 +49,24 @@ export const PlanSelectionComponent = ({
     <div className="flex flex-1 flex-col items-stretch space-y-2.5">
       {pricesToRender.length > 0 ? (
         <>
+          {pricesToRender.map((plan) => (
+            <PlanSelectionCard
+              key={plan.id}
+              onClick={() => onPriceSelected(plan)}
+              isSelected={priceSelected?.id === plan.id}
+              capacity={bytesToString(plan.bytes)}
+              currency={currencyService.getCurrencySymbol(plan.currency.toUpperCase())}
+              amount={displayAmount(plan.interval === 'year' ? plan.amount / 12 : plan.amount).replace(/\.00$/, '')}
+              billing={
+                plan.interval === 'lifetime'
+                  ? translate('views.account.tabs.plans.card.oneTimePayment')
+                  : translate('preferences.account.plans.month')?.toLowerCase()
+              }
+              isCurrentPlan={isCurrentSubscriptionPlan(plan)}
+              displayBillingSlash={plan.interval !== 'lifetime'}
+              isBusiness={subscriptionSelected.business}
+            />
+          ))}
           {showFreePriceCard && (
             <PlanSelectionCard
               key={freePlanData.id}
@@ -61,24 +79,6 @@ export const PlanSelectionComponent = ({
               isCurrentPlan={isFreePlan}
             />
           )}
-          {pricesToRender.map((plan) => (
-            <PlanSelectionCard
-              key={plan.id}
-              onClick={() => onPriceSelected(plan)}
-              isSelected={priceSelected?.id === plan.id}
-              capacity={bytesToString(plan.bytes)}
-              currency={currencyService.getCurrencySymbol(plan.currency.toUpperCase())}
-              amount={displayAmount(plan.amount, plan.interval === 'lifetime' ? 0 : 2)}
-              billing={
-                plan.interval === 'lifetime'
-                  ? translate('views.account.tabs.plans.card.oneTimePayment')
-                  : translate(`preferences.account.plans.${plan.interval}`)?.toLowerCase()
-              }
-              isCurrentPlan={isCurrentSubscriptionPlan(plan)}
-              displayBillingSlash={plan.interval !== 'lifetime'}
-              isBusiness={subscriptionSelected.business}
-            />
-          ))}
         </>
       ) : (
         new Array(skeletonItems).fill(0).map((_, index) => <PlanSelectionCardSkeleton key={index} />)

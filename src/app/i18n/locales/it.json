@@ -1815,38 +1815,107 @@
       "emptyTrashDescription": "Gli elementi nel cestino verranno eliminati in modo permanente",
       "plans": {
         "title": "Piani",
-        "current": "Corrente",
-        "upgrade": "Aggiornamento",
-        "downgrade": "Retrocessione",
+        "current": "Attuale",
+        "upgrade": "Aggiorna",
+        "downgrade": "Retrocedi",
         "free": "Ottieni fino a 10 GB gratis",
         "manageBilling": "Gestisci la fatturazione",
-        "freeForever": "Gratuito per sempre",
+        "freeForever": "Gratis per sempre",
         "year": "Anno",
         "month": "Mese",
-        "lifetime": "Lifetime",
+        "lifetime": "A vita",
+        "types": {
+          "essential": "Essential",
+          "premium": "Premium",
+          "ultimate": "Ultimate",
+          "standard": "Standard",
+          "pro": "Pro",
+          "free": "Internxt Free"
+        },
         "planFeaturesList": {
           "title": "Dettagli del piano",
-          "storage": " di spazio di archiviazione",
-          "featureOne": "Condivisione di file e cartelle crittografati.",
-          "featureTwo": "Condivisione di file protetta da password.",
-          "featureThree": "Accedi ai tuoi file da qualsiasi dispositivo.",
-          "featureFour": "Carica file fino a 20 GB.",
-          "featureFive": "Autenticazione a due fattori (2FA).",
-          "featureSix": "Supporto clienti premium.",
-          "featureSeven": "Garanzia di rimborso di 30 giorni."
+          "commingSoon": "Prossimamente",
+          "storage": " di archiviazione ",
+          "essentialFeatures": {
+            "feature1": "Crittografia post-quantistica",
+            "feature2": "VPN ad alta velocità illimitata (FR)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI, WebDav & Rclone"
+          },
+          "premiumFeatures": {
+            "feature1": "Crittografia post-quantistica",
+            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "feature1": "Meet (3 partecipanti)",
+              "feature2": "Mail (3 email)"
+            }
+          },
+          "ultimateFeatures": {
+            "feature1": "Crittografia post-quantistica",
+            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "feature1": "Meet (5 partecipanti)",
+              "feature2": "Mail (5 email)"
+            }
+          },
+          "freeFeatures": {
+            "feature1": "Crittografia zero-knowledge",
+            "feature2": "VPN standard (FR)",
+            "feature3": "Supporto CLI, WebDav & Rclone"
+          }
         },
         "businessPlanFeaturesList": {
           "title": "Dettagli del piano",
-          "storage": " di spazio di archiviazione",
-          "featureOne": "Condivisione di file e cartelle crittografati.",
-          "featureTwo": "Crea e gestisci utenti e team.",
-          "featureThree": "A partire da 3 utenti e fino a 100.",
-          "featureFour": "Conformità GDPR.",
-          "featureFive": "Carica file fino a 20 GB.",
-          "featureSix": "Gestisci la fatturazione e i pagamenti dell'account.",
-          "featureSeven": "Supporto clienti premium."
+          "storage": " di archiviazione",
+          "standardFeatures": {
+            "feature1": "Crittografia post-quantistica e zero-knowledge",
+            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9": "Gestisci la fatturazione e i pagamenti del tuo account",
+            "commingSoonFeatures": {
+              "feature1": "Riunioni fino a 10 utenti (max. 10 partecipanti)",
+              "feature2": "1 indirizzo email personalizzato/utente"
+            }
+          },
+          "proFeatures": {
+            "feature1": "Crittografia post-quantistica e zero-knowledge",
+            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9": "Gestisci la fatturazione e i pagamenti del tuo account",
+            "commingSoonFeatures": {
+              "feature1": "Riunioni fino a 10 utenti (max. 10 partecipanti)",
+              "feature2": "1 indirizzo email personalizzato/utente"
+            }
+          }
         },
-        "user": "utente"
+        "user": "Utente",
+        "persuser": "per utilisateur"
       },
       "billing": {
         "title": "Fatturazione"

@@ -1846,29 +1846,98 @@
         "year": "Year",
         "month": "Month",
         "lifetime": "Lifetime",
+        "types": {
+          "essential": "Essential",
+          "premium": "Premium",
+          "ultimate": "Ultimate",
+          "standard": "Standard",
+          "pro": "Pro",
+          "free":"Internxt Free"
+        },
         "planFeaturesList": {
           "title": "Plan details",
-          "storage": " of storage",
-          "featureOne": "Encrypted file and folder sharing.",
-          "featureTwo": "Password-protected file sharing.",
-          "featureThree": "Access your files from any device.",
-          "featureFour": "Upload files up to 40GB.",
-          "featureFive": "Two-factor authentication (2FA).",
-          "featureSix": "Premium customer support.",
-          "featureSeven": "30-day money-back guarantee."
+          "commingSoon": "Coming soon",
+          "storage": " zero-knowledge encrypted storage",
+          "essentialFeatures":{
+            "feature1": "Post-quantum encryption",
+            "feature2":"Ultra fast unlimited VPN (FR)",
+            "feature4":"Antivirus",
+            "feature3":"Backup your files",
+            "feature5":"Password-protected file sharing",
+            "feature6":"GDPR compliance",
+            "feature7":"Two-factor authentication (2FA)",
+            "feature8": "CLI, WebDav & Rclone support"
+          },
+          "premiumFeatures":{
+            "feature1": "Post-quantum encryption",
+            "feature2": "Ultra fast unlimited VPN (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3":"Backup your files" ,
+            "feature5": "Password-protected file sharing",
+            "feature6":"GDPR compliance" ,
+            "feature7":"Two-factor authentication (2FA)" ,
+            "feature8": "CLI, WebDav & Rclone support",
+            "commingSoonFeatures": {
+              "feature1": "Meet (3 participants)",
+              "feature2": "Mail (3 addresses)"
+            }
+          },
+          "ultimateFeatures":{
+            "feature1": "Post-quantum encryption",
+            "feature2": "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus",
+            "feature3":"Backup your files" ,
+            "feature5": "Password-protected file sharing",
+            "feature6":"GDPR compliance" ,
+            "feature7":"Two-factor authentication (2FA)" ,
+            "feature8": "CLI, WebDav & Rclone support",
+            "commingSoonFeatures": {
+              "feature1": "Meet (5 participants)",
+              "feature2": "Mail (5 addresses)"
+            }
+          },
+          "freeFeatures": {
+            "feature1": "Zero-knowledge encryption",
+            "feature2": "Free Standard VPN (FR)",
+            "feature3": "CLI, WebDav & Rclone support"
+          }
         },
         "businessPlanFeaturesList": {
           "title": "Plan details",
           "storage": " of storage",
-          "featureOne": "Encrypted file and folder sharing.",
-          "featureTwo": "Create and manage users & teams.",
-          "featureThree": "Starting at 3 users and up to 100.",
-          "featureFour": "GDPR compliant.",
-          "featureFive": "Upload files of up to 40GB.",
-          "featureSix": "Manage account billing & payments.",
-          "featureSeven": "Premium customer support."
+          "standardFeatures":{
+            "feature1": "Post-quantum encryption",
+            "feature2": "Ultra fast unlimited VPN (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3":"Backup your files" ,
+            "feature5": "Password-protected file sharing",
+            "feature6":"GDPR compliance" ,
+            "feature7":"Two-factor authentication (2FA)" ,
+            "feature8": "CLI, WebDav & Rclone support",
+            "feature9":"Manage account billing & payments",
+            "commingSoonFeatures": {
+              "feature1": "Meet up to 10 users (max. 10 participants)",
+              "feature2": "1 custom email address/user"
+            }
+            },
+          "proFeatures":{
+            "feature1": "Post-quantum encryption",
+            "feature2": "Ultra fast unlimited VPN (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3":"Backup your files" ,
+            "feature5": "Password-protected file sharing",
+            "feature6":"GDPR compliance" ,
+            "feature7":"Two-factor authentication (2FA)" ,
+            "feature8": "CLI, WebDav & Rclone support",
+            "feature9":"Manage account billing & payments",
+            "commingSoonFeatures": {
+              "feature1": "Meet up to 100 users (max. 10 participants)",
+              "feature2": "2 custom email address/user"
+            }
+          }
         },
-        "user": "user"
+        "user": "user",
+        "peruser": "per user"
       },
       "billing": {
         "title": "Billing"
