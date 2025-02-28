@@ -11,7 +11,7 @@
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
     "boldBottomText": "Oferta especial!  ",
-    "bottomText":" Entra en el sorteo y gana 2 mochilas Swiss Peak x Internxt",
+    "bottomText": " Entra en el sorteo y gana 2 mochilas Swiss Peak x Internxt",
     "features": [
       "Seguridad de por vida",
       "Almacenamiento 100% privado y cifrado",
@@ -187,6 +187,8 @@
         "year": "anual",
         "lifetime": "lifetime"
       },
+      "pcMobileRenews": "* Se renueva a 50€ el primer año después del período de prueba",
+
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 plan {{interval}}",
         "year": "{{spaceToUpgrade}} - 1 plan {{interval}}",
@@ -423,7 +425,7 @@
               "errorSendingVerification": "Error enviando verificación",
               "confirm": "Confirmar"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "El nombre debe tener de uno a veinte caracteres",
               "lastnameError": "El apellido debe tener de uno a veinte caracteres"
             }
@@ -1639,7 +1641,7 @@
           "remove": "Eliminar miembro",
           "passwordChange": "Solicitar cambio de contraseña"
         },
-        "leaveModal":{
+        "leaveModal": {
           "title": "Abandonar",
           "description": "Perderás el acceso al Workspace y tu contenido será transferido al propietario",
           "leave": "Abandonar",

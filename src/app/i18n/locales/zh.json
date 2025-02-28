@@ -208,6 +208,7 @@
         "year": "每年",
         "lifetime": "终身"
       },
+      "pcMobileRenews": "* 试用期后第一年以 50€ 续订",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}} 计划",
         "year": "{{spaceToUpgrade}} - 1 {{interval}} 计划",
@@ -440,7 +441,7 @@
               "errorSendingVerification": "错误发送验证",
               "confirm": "确认"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "姓名必须在1到20个字符之间",
               "lastnameError": "姓氏必须在1到20个字符之间"
             }

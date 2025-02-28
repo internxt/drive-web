@@ -1,7 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Elements } from '@stripe/react-stripe-js';
 import { Stripe, StripeElements, StripeElementsOptionsMode } from '@stripe/stripe-js';
-import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef } from 'react';
+import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Loader } from '@internxt/ui';
@@ -114,6 +114,7 @@ const CheckoutViewWrapper = () => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
+  const [mobileToken, setMobileToken] = useState<string | null>(null);
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -165,6 +166,8 @@ const CheckoutViewWrapper = () => {
     prices,
   } = state;
 
+  const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
+
   const canChangePlanDialogBeOpened = prices && currentSelectedPlan && isUpdateSubscriptionDialogOpen;
 
   const userInfo: UserInfoProps = {
@@ -197,6 +200,8 @@ const CheckoutViewWrapper = () => {
     const planId = params.get('planId');
     const promotionCode = params.get('couponCode');
     const currency = params.get('currency');
+    const paramMobileToken = params.get('mobileToken');
+    setMobileToken(paramMobileToken);
 
     const currencyValue = currency ?? 'eur';
 
@@ -238,7 +243,7 @@ const CheckoutViewWrapper = () => {
           navigationService.push(AppView.Signup);
         }
       });
-  }, [checkoutTheme]);
+  }, [checkoutTheme, mobileToken]);
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -374,10 +379,11 @@ const CheckoutViewWrapper = () => {
         companyVatId,
       );
 
+      const clientToken = mobileToken ?? token;
       const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
         await checkoutService.getClientSecret({
           selectedPlan: currentSelectedPlan as RequestedPlanData,
-          token,
+          token: clientToken,
           customerId,
           promoCodeId: couponCodeData?.codeId,
           seatsForBusinessSubscription,
@@ -444,7 +450,8 @@ const CheckoutViewWrapper = () => {
   const handleFetchSelectedPlan = async (planId: string, currency?: string) => {
     const plan = await checkoutService.fetchPlanById(planId, currency);
     setPlan(plan);
-    setSelectedPlan(plan.selectedPlan);
+    const amount = mobileToken ? { amount: 0, decimalAmount: 0 } : {};
+    setSelectedPlan({ ...plan.selectedPlan, ...amount });
     if (plan.selectedPlan.minimumSeats) {
       setSeatsForBusinessSubscription(plan.selectedPlan.minimumSeats);
     }
@@ -529,8 +536,10 @@ const CheckoutViewWrapper = () => {
           <CheckoutView
             checkoutViewVariables={state}
             userAuthComponentRef={userAuthComponentRef}
+            showCouponCode={!mobileToken}
             userInfo={userInfo}
             isUserAuthenticated={isUserAuthenticated}
+            showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
             upsellManager={upsellManager}
             checkoutViewManager={checkoutViewManager}
           />
