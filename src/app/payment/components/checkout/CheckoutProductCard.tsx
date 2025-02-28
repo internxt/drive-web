@@ -224,7 +224,6 @@ export const CheckoutProductCard = ({
           )}
           {showCouponCode && (
             <>
-              <Separator />
               {couponCodeData?.codeName ? (
                 <div className="flex w-full flex-row justify-between">
                   <p className={'font-medium text-gray-50'}>{translate('checkout.productCard.addCoupon.inputText')}</p>
