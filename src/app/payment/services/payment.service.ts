@@ -37,7 +37,7 @@ export interface CreateTeamsPaymentSessionPayload {
   canceledUrl?: string;
 }
 
-const PAYMENTS_API_URL = process.env.REACT_APP_PAYMENTS_API_URL || 'https://payments.internxt.com';
+const PAYMENTS_API_URL = process.env.REACT_APP_PAYMENTS_API_URL;
 
 export interface ValidateCheckoutSessionResponse {
   valid: boolean;
