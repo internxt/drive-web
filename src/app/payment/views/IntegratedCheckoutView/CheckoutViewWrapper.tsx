@@ -450,7 +450,8 @@ const CheckoutViewWrapper = () => {
   const handleFetchSelectedPlan = async (planId: string, currency?: string) => {
     const plan = await checkoutService.fetchPlanById(planId, currency);
     setPlan(plan);
-    setSelectedPlan({ ...plan.selectedPlan, amount: 0, decimalAmount: 0 });
+    const amount = mobileToken ? { amount: 0, decimalAmount: 0 } : {};
+    setSelectedPlan({ ...plan.selectedPlan, ...amount });
     if (plan.selectedPlan.minimumSeats) {
       setSeatsForBusinessSubscription(plan.selectedPlan.minimumSeats);
     }
