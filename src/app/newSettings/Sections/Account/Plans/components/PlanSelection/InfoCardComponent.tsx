@@ -52,9 +52,7 @@ export const InfoCardComponent = ({
   };
 
   const billing =
-    priceSelected.interval === 'lifetime'
-      ? translate('views.account.tabs.plans.card.oneTimePayment')
-      : translate('preferences.account.plans.month')?.toLowerCase();
+    priceSelected.interval === 'lifetime' ? '' : translate('preferences.account.plans.month')?.toLowerCase();
 
   const price = priceSelected ? displayAmount(getPriceAmount(priceSelected)).replace(/\.00$/, '') : '0';
 

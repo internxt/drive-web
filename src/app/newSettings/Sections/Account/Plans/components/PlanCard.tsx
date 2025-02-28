@@ -30,7 +30,9 @@ const PlanCard = ({
   disableActionButton,
   isBusiness = false,
 }: PlanCardProps) => {
-  const userText = isBusiness ? '/' + t('preferences.account.plans.peruser') : '';
+  const userText = isBusiness
+    ? '/' + t('preferences.account.plans.user')
+    : ' ' + t('preferences.account.plans.billedAnnually');
 
   const getPlanFeaturePath = () => {
     const PLAN_TYPES = {

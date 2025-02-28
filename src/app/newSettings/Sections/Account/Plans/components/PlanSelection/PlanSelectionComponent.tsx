@@ -57,11 +57,7 @@ export const PlanSelectionComponent = ({
               capacity={bytesToString(plan.bytes)}
               currency={currencyService.getCurrencySymbol(plan.currency.toUpperCase())}
               amount={displayAmount(plan.interval === 'year' ? plan.amount / 12 : plan.amount).replace(/\.00$/, '')}
-              billing={
-                plan.interval === 'lifetime'
-                  ? translate('views.account.tabs.plans.card.oneTimePayment')
-                  : translate('preferences.account.plans.month')?.toLowerCase()
-              }
+              billing={plan.interval === 'lifetime' ? '' : translate('preferences.account.plans.month')?.toLowerCase()}
               isCurrentPlan={isCurrentSubscriptionPlan(plan)}
               displayBillingSlash={plan.interval !== 'lifetime'}
               isBusiness={subscriptionSelected.business}

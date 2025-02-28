@@ -208,6 +208,11 @@
         "year": "每年",
         "lifetime": "终身"
       },
+      "renewalTitle": {
+        "month": "每月",
+        "year": "每年",
+        "lifetime": "终身"
+      },
       "pcMobileRenews": "* 试用期后第一年以 50€ 续订",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}} 计划",
@@ -1834,6 +1839,7 @@
         "free": "免费获取最多 10GB",
         "manageBilling": "管理账单",
         "freeForever": "永久免费",
+        "billedAnnually":"按年计费",
         "year": "年",
         "month": "月",
         "lifetime": "终身",
@@ -1843,7 +1849,7 @@
           "ultimate": "至尊版",
           "standard": "标准版",
           "pro": "专业版",
-          "free": "Internxt 免费版"
+          "free": "免费版"
         },
         "planFeaturesList": {
           "title": "套餐详情",
@@ -1913,7 +1919,7 @@
           },
           "proFeatures": {
             "feature1": "后量子加密和零知识加密",
-            "feature2": "无限高速 VPN（法国、德国、波兰）",
+            "feature2": "无限高速 VPN（法国、德国、波兰、加拿大、英国）",
             "feature4": "杀毒软件",
             "feature3": "文件备份",
             "feature5": "密码保护的文件共享",
@@ -1927,8 +1933,7 @@
             }
           }
         },
-        "user": "用户",
-        "peruser": "每位用户"
+        "user": "用户"
       },
       "billing": {
         "title": "计费"

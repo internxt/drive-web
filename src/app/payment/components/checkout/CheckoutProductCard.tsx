@@ -105,6 +105,29 @@ export const CheckoutProductCard = ({
       ? ((couponCodeData?.amountOff / selectedPlan.amount) * 100).toFixed(2)
       : undefined;
 
+  const getPlanFeaturePath = () => {
+    const PLAN_TYPES = {
+      FREE: translate('preferences.account.plans.types.free'),
+      ESSENTIAL: translate('preferences.account.plans.types.essential'),
+      STANDARD: translate('preferences.account.plans.types.standard'),
+      PRO: translate('preferences.account.plans.types.pro'),
+      PREMIUM: translate('preferences.account.plans.types.premium'),
+      ULTIMATE: translate('preferences.account.plans.types.ultimate'),
+    };
+
+    if (bytes === '1TB') {
+      return isBusiness ? PLAN_TYPES.STANDARD : PLAN_TYPES.ESSENTIAL;
+    }
+
+    const capacityToFeaturePath = {
+      '2TB': PLAN_TYPES.PRO,
+      '3TB': PLAN_TYPES.PREMIUM,
+      '5TB': PLAN_TYPES.ULTIMATE,
+    };
+
+    return capacityToFeaturePath[bytes] || PLAN_TYPES.FREE;
+  };
+
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
       <div className="flex w-full flex-row items-center justify-between space-x-4">
@@ -117,10 +140,7 @@ export const CheckoutProductCard = ({
         <div className="flex w-full flex-col space-y-5">
           <p>{translate('checkout.productCard.selectedPlan')}</p>
           <p className="text-2xl font-bold text-gray-100">
-            {translate(`checkout.productCard.plan.${selectedPlan.interval}`, {
-              spaceToUpgrade: bytes,
-              interval: translate(`checkout.productCard.renewalPeriod.${selectedPlan.interval}`),
-            })}
+            {getPlanFeaturePath() + ' - ' + translate(`checkout.productCard.renewalTitle.${selectedPlan.interval}`)}
           </p>
           {isBusiness && selectedPlan.maximumSeats && selectedPlan.minimumSeats ? (
             <>
