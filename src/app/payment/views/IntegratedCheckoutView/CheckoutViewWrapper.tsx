@@ -1,7 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Elements } from '@stripe/react-stripe-js';
 import { Stripe, StripeElements, StripeElementsOptionsMode } from '@stripe/stripe-js';
-import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef } from 'react';
+import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Loader } from '@internxt/ui';
@@ -114,6 +114,7 @@ const CheckoutViewWrapper = () => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
+  const [mobileToken, setMobileToken] = useState<string | null>(null);
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -197,6 +198,8 @@ const CheckoutViewWrapper = () => {
     const planId = params.get('planId');
     const promotionCode = params.get('couponCode');
     const currency = params.get('currency');
+    const paramMobileToken = params.get('mobileToken');
+    setMobileToken(paramMobileToken);
 
     const currencyValue = currency ?? 'eur';
 
@@ -374,10 +377,11 @@ const CheckoutViewWrapper = () => {
         companyVatId,
       );
 
+      const clientToken = mobileToken ?? token;
       const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
         await checkoutService.getClientSecret({
           selectedPlan: currentSelectedPlan as RequestedPlanData,
-          token,
+          token: clientToken,
           customerId,
           promoCodeId: couponCodeData?.codeId,
           seatsForBusinessSubscription,
