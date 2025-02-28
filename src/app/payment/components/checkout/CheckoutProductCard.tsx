@@ -18,6 +18,8 @@ import { getProductAmount } from 'app/payment/utils/getProductAmount';
 interface CheckoutProductCardProps {
   selectedPlan: RequestedPlanData;
   seatsForBusinessSubscription: number;
+  showCouponCode: boolean;
+  showHardcodedRenewal?: string;
   upsellManager: UpsellManagerProps;
   onSeatsChange: (users: number) => void;
   onRemoveAppliedCouponCode: () => void;
@@ -61,6 +63,8 @@ const getTextContent = (
 export const CheckoutProductCard = ({
   selectedPlan,
   couponCodeData,
+  showCouponCode,
+  showHardcodedRenewal,
   couponError,
   seatsForBusinessSubscription,
   upsellManager,
@@ -179,7 +183,7 @@ export const CheckoutProductCard = ({
               {totalAmount}
             </p>
           </div>
-          <Separator />
+
           {showUpsellSwitch && upsellManager.amountSaved && (
             <>
               <div className="flex w-full flex-row items-center justify-between">
@@ -218,86 +222,92 @@ export const CheckoutProductCard = ({
               <Separator />
             </>
           )}
-          {couponCodeData?.codeName ? (
-            <div className="flex w-full flex-row justify-between">
-              <p className={'font-medium text-gray-50'}>{translate('checkout.productCard.addCoupon.inputText')}</p>
-              <div className="flex flex-row items-center gap-2">
-                <p className="text-lg font-medium text-gray-50">{couponCodeData.codeName}</p>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onRemoveAppliedCouponCode();
-                  }}
-                >
-                  <X size={20} className="text-gray-50" />
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-5">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setOpenCouponCodeDropdown(!openCouponCodeDropdown);
-                }}
-                className={'flex rounded-lg text-base transition-all duration-75 ease-in-out hover:underline'}
-              >
-                {translate('checkout.productCard.addCoupon.buttonTitle')}
-              </button>
-              <Transition
-                show={openCouponCodeDropdown}
-                className={'left-0'}
-                enter="transition duration-50 ease-out"
-                enterFrom="scale-98 opacity-0"
-                enterTo="scale-100 opacity-100"
-                leave="transition duration-50 ease-out"
-                leaveFrom="scale-98 opacity-100"
-                leaveTo="scale-100 opacity-0"
-              >
-                <div className="w-full items-center outline-none">
-                  <div className="flex w-full flex-col items-start space-y-1">
-                    <p className="text-sm text-gray-80">{translate('checkout.productCard.addCoupon.inputText')}</p>
-                    <div className="flex w-full flex-row space-x-3">
-                      <TextInput
-                        value={couponName}
-                        onChange={(e) => {
-                          e.preventDefault();
-                          setCouponName(e.target.value);
-                        }}
-                        placeholder={translate('checkout.productCard.addCoupon.inputText')}
-                        min={0}
-                        style={{
-                          textTransform: 'uppercase',
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            onCouponInputChange(couponName.toUpperCase().trim());
-                            setCouponName('');
-                          }
-                        }}
-                        data-cy={'coupon-code-input'}
-                        className={'inxt-input input-primary dark:bg-transparent'}
-                      />
-                      <Button
-                        disabled={!couponName?.length}
-                        onClick={() => {
-                          if (couponName) onCouponInputChange(couponName.toUpperCase().trim());
-                        }}
-                      >
-                        {translate('checkout.productCard.apply')}
-                      </Button>
-                    </div>
-                    {couponError && <p className="text-red-dark">{couponError}</p>}
+          {showCouponCode && (
+            <>
+              <Separator />
+              {couponCodeData?.codeName ? (
+                <div className="flex w-full flex-row justify-between">
+                  <p className={'font-medium text-gray-50'}>{translate('checkout.productCard.addCoupon.inputText')}</p>
+                  <div className="flex flex-row items-center gap-2">
+                    <p className="text-lg font-medium text-gray-50">{couponCodeData.codeName}</p>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onRemoveAppliedCouponCode();
+                      }}
+                    >
+                      <X size={20} className="text-gray-50" />
+                    </button>
                   </div>
                 </div>
-              </Transition>
-            </div>
+              ) : (
+                <div className="flex flex-col gap-5">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setOpenCouponCodeDropdown(!openCouponCodeDropdown);
+                    }}
+                    className={'flex rounded-lg text-base transition-all duration-75 ease-in-out hover:underline'}
+                  >
+                    {translate('checkout.productCard.addCoupon.buttonTitle')}
+                  </button>
+                  <Transition
+                    show={openCouponCodeDropdown}
+                    className={'left-0'}
+                    enter="transition duration-50 ease-out"
+                    enterFrom="scale-98 opacity-0"
+                    enterTo="scale-100 opacity-100"
+                    leave="transition duration-50 ease-out"
+                    leaveFrom="scale-98 opacity-100"
+                    leaveTo="scale-100 opacity-0"
+                  >
+                    <div className="w-full items-center outline-none">
+                      <div className="flex w-full flex-col items-start space-y-1">
+                        <p className="text-sm text-gray-80">{translate('checkout.productCard.addCoupon.inputText')}</p>
+                        <div className="flex w-full flex-row space-x-3">
+                          <TextInput
+                            value={couponName}
+                            onChange={(e) => {
+                              e.preventDefault();
+                              setCouponName(e.target.value);
+                            }}
+                            placeholder={translate('checkout.productCard.addCoupon.inputText')}
+                            min={0}
+                            style={{
+                              textTransform: 'uppercase',
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onCouponInputChange(couponName.toUpperCase().trim());
+                                setCouponName('');
+                              }
+                            }}
+                            data-cy={'coupon-code-input'}
+                            className={'inxt-input input-primary dark:bg-transparent'}
+                          />
+                          <Button
+                            disabled={!couponName?.length}
+                            onClick={() => {
+                              if (couponName) onCouponInputChange(couponName.toUpperCase().trim());
+                            }}
+                          >
+                            {translate('checkout.productCard.apply')}
+                          </Button>
+                        </div>
+                        {couponError && <p className="text-red-dark">{couponError}</p>}
+                      </div>
+                    </div>
+                  </Transition>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
       {couponCodeData && selectedPlan.interval !== 'lifetime' && <p className="text-gray-60">{renewalPeriodLabel}</p>}
+      {showHardcodedRenewal && <p className="text-gray-60">{showHardcodedRenewal}</p>}
     </div>
   );
 };

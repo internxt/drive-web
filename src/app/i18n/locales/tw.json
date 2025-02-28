@@ -4,24 +4,22 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    
-      "label": "節省 85%！",
-      "title": "永遠保護你所愛的一切！",
-      "subtitle": "聖誕主題網頁應用 + 最高可贏取 10TB 儲存空間！",
-      "cta": "選擇方案",
-      "guarantee": "30 天退款保證",
-      "lastCta": "*此優惠適用於免費帳戶或新客戶",
-      "boldBottomText": "特別優惠！",
-      "bottomText": "贏取兩個 Internxt x Swiss Peak 背包",
-      "features": [
-        "終身隱私保護，一次性付款",
-        "端對端加密雲端存儲",
-        "開源並經過審核",
-        "端對端加密傳輸",
-        "無未經授權的訪問",
-        "優惠截止日期：2 月 25 日"
-      ]
-
+    "label": "節省 85%！",
+    "title": "永遠保護你所愛的一切！",
+    "subtitle": "聖誕主題網頁應用 + 最高可贏取 10TB 儲存空間！",
+    "cta": "選擇方案",
+    "guarantee": "30 天退款保證",
+    "lastCta": "*此優惠適用於免費帳戶或新客戶",
+    "boldBottomText": "特別優惠！",
+    "bottomText": "贏取兩個 Internxt x Swiss Peak 背包",
+    "features": [
+      "終身隱私保護，一次性付款",
+      "端對端加密雲端存儲",
+      "開源並經過審核",
+      "端對端加密傳輸",
+      "無未經授權的訪問",
+      "優惠截止日期：2 月 25 日"
+    ]
   },
   "valentinesBanner": {
     "title": "愛無極限！",
@@ -210,6 +208,7 @@
         "year": "每年",
         "lifetime": "終身"
       },
+      "pcMobileRenews": "* 試用期後第一年以 50€ 續訂",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",
         "year": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",
@@ -442,7 +441,7 @@
               "errorSendingVerification": "發送驗證時出錯",
               "confirm": "確認"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "姓名必須在1到20個字符之間",
               "lastnameError": "姓氏必須在1到20個字符之間"
             }

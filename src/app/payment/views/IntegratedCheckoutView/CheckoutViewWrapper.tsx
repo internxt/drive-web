@@ -166,6 +166,8 @@ const CheckoutViewWrapper = () => {
     prices,
   } = state;
 
+  const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
+
   const canChangePlanDialogBeOpened = prices && currentSelectedPlan && isUpdateSubscriptionDialogOpen;
 
   const userInfo: UserInfoProps = {
@@ -448,7 +450,7 @@ const CheckoutViewWrapper = () => {
   const handleFetchSelectedPlan = async (planId: string, currency?: string) => {
     const plan = await checkoutService.fetchPlanById(planId, currency);
     setPlan(plan);
-    setSelectedPlan(plan.selectedPlan);
+    setSelectedPlan({ ...plan.selectedPlan, amount: 0, decimalAmount: 0 });
     if (plan.selectedPlan.minimumSeats) {
       setSeatsForBusinessSubscription(plan.selectedPlan.minimumSeats);
     }
@@ -533,8 +535,10 @@ const CheckoutViewWrapper = () => {
           <CheckoutView
             checkoutViewVariables={state}
             userAuthComponentRef={userAuthComponentRef}
+            showCouponCode={!mobileToken}
             userInfo={userInfo}
             isUserAuthenticated={isUserAuthenticated}
+            showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
             upsellManager={upsellManager}
             checkoutViewManager={checkoutViewManager}
           />

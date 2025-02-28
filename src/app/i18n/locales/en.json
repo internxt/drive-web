@@ -11,7 +11,7 @@
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
     "boldBottomText": "Special Offer! ",
-    "bottomText":" Win two Internxt x Swiss Peak backpacks",
+    "bottomText": " Win two Internxt x Swiss Peak backpacks",
     "features": [
       "A lifetime of privacy, one-time payment",
       "End-to-end encrypted cloud storage",
@@ -205,6 +205,7 @@
         "year": "year",
         "lifetime": "lifetime"
       },
+      "pcMobileRenews": "* Renews at 50€ first year after trial period",
       "title": "Order summary",
       "selectedPlan": "Selected plan",
       "numberOfUsers": "Number of users: {{seats}}",
@@ -440,7 +441,7 @@
               "errorSendingVerification": "Error sending verification",
               "confirm": "Confirm"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "The name must be between one and twenty characters",
               "lastnameError": "The last name must be between one and twenty characters"
             }
@@ -1662,7 +1663,7 @@
           "remove": "Remove member",
           "passwordChange": "Request password change"
         },
-        "leaveModal":{
+        "leaveModal": {
           "title": "Leave",
           "description": "You will lose access to the Workspace and your content will be transferred to the owner",
           "leave": "Leave",

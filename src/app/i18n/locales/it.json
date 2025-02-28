@@ -208,6 +208,7 @@
         "year": "annuale",
         "lifetime": "a vita"
       },
+      "pcMobileRenews": "* Si rinnova a 50€ il primo anno dopo il periodo di prova",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 piano {{interval}}",
         "year": "{{spaceToUpgrade}} - 1 piano {{interval}}",
@@ -440,7 +441,7 @@
               "errorSendingVerification": "Errore nell'invio della verifica",
               "confirm": "Confermare"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "Il nome deve essere tra uno e venti caratteri",
               "lastnameError": "Il cognome deve essere tra uno e venti caratteri"
             }

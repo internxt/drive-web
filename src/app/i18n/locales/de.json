@@ -4,7 +4,7 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-   "label": "Spare 85%!",
+    "label": "Spare 85%!",
     "title": "Schütze, was du liebst – für immer!",
     "subtitle": "Weihnachtliches Web-App-Design + Chance auf bis zu 10 TB Speicher!",
     "cta": "Plan wählen",
@@ -185,6 +185,7 @@
         "year": "jährlich",
         "lifetime": "lebenslang"
       },
+      "pcMobileRenews": "* Verlängert sich im ersten Jahr nach der Testphase für 50€",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}}-Plan",
         "year": "{{spaceToUpgrade}} - 1 {{interval}}-Plan",
@@ -403,7 +404,7 @@
               "errorSendingVerification": "Fehler beim Senden der Verifikation",
               "confirm": "Bestätigen"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "Der Name muss zwischen einem und zwanzig Zeichen lang sein",
               "lastnameError": "Der Nachname muss zwischen einem und zwanzig Zeichen lang sein"
             },

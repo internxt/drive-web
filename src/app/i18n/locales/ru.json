@@ -191,6 +191,7 @@
         "year": "ежегодный",
         "lifetime": "пожизненный"
       },
+      "pcMobileRenews": "* Продлевается за 50€ в первый год после пробного периода",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}} план",
         "year": "{{spaceToUpgrade}} - 1 {{interval}} план",
@@ -423,7 +424,7 @@
               "errorSendingVerification": "Ошибка при отправке верификации",
               "confirm": "Подтвердить"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "Имя должно содержать от одного до двадцати символов",
               "lastnameError": "Фамилия должна содержать от одного до двадцати символов"
             }
