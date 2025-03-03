@@ -10,6 +10,7 @@ import tasksService from '../tasks/services/tasks.service';
 import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 import { ConnectionLostError } from './requests';
 import { FileToUpload } from '../drive/services/file.service/types';
+import RetryManager from './RetryManager';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -43,9 +44,10 @@ type Options = {
     isDeepFolder?: boolean;
     currentFolderId?: string;
   };
+  isUploadedFromFolder?: boolean;
 };
 
-type UploadManagerFileParams = {
+export type UploadManagerFileParams = {
   filecontent: FileToUpload;
   taskId?: string;
   relatedTaskId?: string;
@@ -54,6 +56,7 @@ type UploadManagerFileParams = {
   parentFolderId: string;
   onFinishUploadFile?: (driveItemData: DriveFileData, taskId: string) => void;
   abortController?: AbortController;
+  isUploadedFromFolder?: boolean;
 };
 
 export const uploadFileWithManager = (
@@ -64,7 +67,7 @@ export const uploadFileWithManager = (
   options?: Options,
   relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
   onFileUploadCallback?: (driveFileData: DriveFileData) => void,
-): Promise<DriveFileData[]> => {
+): Promise<{ uploadedFiles: DriveFileData[] }> => {
   const uploadManager = new UploadManager(
     files,
     maxSpaceOccupiedCallback,
@@ -202,6 +205,7 @@ class UploadManager {
                 listener: abortListener,
               });
             },
+            isUploadedFromFolder: fileData.isUploadedFromFolder,
           },
           continueUploadOptions,
         )
@@ -276,10 +280,12 @@ class UploadManager {
             }
           })
           .finally(() => {
-            tasksService.removeListener({
-              event: TaskEvent.TaskCancelled,
-              listener: abortListener,
-            });
+            if (abortListener) {
+              tasksService.removeListener({
+                event: TaskEvent.TaskCancelled,
+                listener: abortListener,
+              });
+            }
           });
       };
 
@@ -339,6 +345,12 @@ class UploadManager {
       context: error?.context,
       errStatus: error?.status,
     };
+
+    // Handle retry error
+    if (error.message === 'Retryable file') {
+      next(null);
+      return;
+    }
 
     // Handle lost connection error
     if (isLostConnectionError) {
@@ -516,11 +528,13 @@ class UploadManager {
     return filesWithTaskId;
   }
 
-  async run(): Promise<DriveFileData[]> {
+  async run(): Promise<{ uploadedFiles: DriveFileData[] }> {
     let filesWithTaskId = [] as (UploadManagerFileParams & { taskId: string })[];
 
     try {
       filesWithTaskId = this.getFilesWithTaskId(this.items, this.options, this.abortController);
+
+      filesWithTaskId.forEach((item) => (item.isUploadedFromFolder = this.options?.isUploadedFromFolder));
 
       const [bigSizedFiles, mediumSizedFiles, smallSizedFiles] = this.classifyFilesBySize(filesWithTaskId);
       const uploadedFilesData: DriveFileData[] = [];
@@ -544,10 +558,23 @@ class UploadManager {
 
         const uploadPromises: Promise<DriveFileData>[] = await this.uploadQueue.pushAsync(files);
 
-        const uploadedFiles = await Promise.all(uploadPromises);
+        let uploadedFiles: DriveFileData[] = [];
+        const filesToRetry: UploadManagerFileParams[] = [];
 
-        for (const uploadedFile of uploadedFiles) {
-          uploadedFilesData.push(uploadedFile);
+        uploadedFiles = await Promise.all(uploadPromises);
+
+        for (let i = 0; i < uploadedFiles.length; i++) {
+          const uploadedFile = uploadedFiles[i];
+          if (uploadedFile) uploadedFilesData.push(uploadedFile);
+          else filesToRetry.push(files[i]);
+        }
+
+        if (filesToRetry.length > 0) RetryManager.addFiles(filesToRetry);
+        const fileTaskId = files[0]?.taskId;
+        if (files.length === 1 && fileTaskId) {
+          const noFilesToRetry = filesToRetry.length === 0;
+          if (noFilesToRetry) RetryManager.removeFile(fileTaskId);
+          else RetryManager.changeStatus(fileTaskId, 'failed');
         }
       };
 
@@ -561,7 +588,7 @@ class UploadManager {
 
       if (bigSizedFiles.length > 0) await uploadFiles(bigSizedFiles, this.filesGroups.big.concurrency);
 
-      return uploadedFilesData;
+      return { uploadedFiles: uploadedFilesData };
     } catch (error) {
       this.handleFailedUploads(filesWithTaskId);
 

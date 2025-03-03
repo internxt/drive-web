@@ -17,6 +17,7 @@ export interface FileUploadOptions {
   abortController?: AbortController;
   ownerUserAuthenticationData?: OwnerUserAuthenticationData;
   abortCallback?: (abort?: () => void) => void;
+  isUploadedFromFolder?: boolean;
 }
 
 export async function uploadFile(
@@ -49,6 +50,7 @@ export async function uploadFile(
       progressCallback: (progress) => {
         updateProgressCallback(progress);
       },
+      isUploadedFromFolder: options.isUploadedFromFolder,
     },
     continueUploadOptions,
   );
@@ -56,6 +58,7 @@ export async function uploadFile(
   options.abortCallback?.(abort?.abort);
 
   const fileId = await promise;
+  if (fileId === undefined) throw { message: 'Retryable file', file };
 
   const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
   const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;

@@ -1152,7 +1152,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "All processes have finished",
-      "processing": "Processing {{pending}} of {{finished}}"
+      "processing": "Processing {{pending}} of {{finished}}",
+      "failedToUpload": "Failed to upload"
     },
     "waiting": "Waiting",
     "paused": "Paused",
