@@ -187,6 +187,11 @@
         "year": "anual",
         "lifetime": "lifetime"
       },
+      "renewalTitle": {
+        "month": "mensual",
+        "year": "anual",
+        "lifetime": "pago único"
+      },
       "pcMobileRenews": "* Se renueva a 50€ el primer año después del período de prueba",
 
       "plan": {
@@ -1816,13 +1821,14 @@
         "year": "Año",
         "month": "Mes",
         "lifetime": "Lifetime",
+        "billedAnnually":"facturado anualmente",
         "types": {
           "essential": "Essential",
           "premium": "Premium",
           "ultimate": "Ultimate",
           "standard": "Standard",
           "pro": "Pro",
-          "free":"Internxt Free"
+          "free":"Free"
         },
         "planFeaturesList": {
           "title": "Detalles del plan",
@@ -1892,7 +1898,7 @@
           },
           "proFeatures":{
             "feature1": "Cifrado postcuántico y conocimiento cero",
-            "feature2": "VPN de alta velocidad ilimitado (FR, DE, PL)",
+            "feature2": "VPN de alta velocidad ilimitado (FR, DE, PL, CA, UK)",
             "feature4": "Antivirus",
             "feature3":"Copias de seguridad" ,
             "feature5": "Comparte archivos protegidos con contraseña",
@@ -1906,8 +1912,7 @@
             }
           }
         },
-        "user": "usuario",
-        "peruser": "por usuario"
+        "user": "usuario"
       },
       "billing": {
         "title": "Facturación"

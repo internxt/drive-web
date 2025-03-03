@@ -1,5 +1,6 @@
 import { t } from 'i18next';
 import RoleBadge from '../../../../Workspace/Members/components/RoleBadge';
+import { getPlan } from '../PlanCard';
 
 interface PlanSelectionCardProps {
   capacity: string;
@@ -29,36 +30,13 @@ const PlanSelectionCard = ({
   const isSelectedInsideBorderStyle = selectedValidation
     ? '!border-primary ring ring-primary/10 bg-primary/3 dark:bg-primary/10 dark:ring-primary/30'
     : '';
-  let userText = isBusiness ? '/' + t('preferences.account.plans.peruser') : '';
+  let userText = isBusiness ? '/' + t('preferences.account.plans.user') : '';
   if (isBusiness && !displayBillingSlash) {
     userText = ' ' + t('preferences.account.plans.user');
   }
   const displayText = displayBillingSlash
     ? `${amount} ${currency}/${billing}${userText}`
     : `${amount} ${currency} ${billing}${userText}`;
-
-  const getPlanFeaturePath = () => {
-    const PLAN_TYPES = {
-      FREE: t('preferences.account.plans.types.free'),
-      ESSENTIAL: t('preferences.account.plans.types.essential'),
-      STANDARD: t('preferences.account.plans.types.standard'),
-      PRO: t('preferences.account.plans.types.pro'),
-      PREMIUM: t('preferences.account.plans.types.premium'),
-      ULTIMATE: t('preferences.account.plans.types.ultimate'),
-    };
-
-    if (capacity === '1TB') {
-      return isBusiness ? PLAN_TYPES.STANDARD : PLAN_TYPES.ESSENTIAL;
-    }
-
-    const capacityToFeaturePath = {
-      '2TB': PLAN_TYPES.PRO,
-      '3TB': PLAN_TYPES.PREMIUM,
-      '5TB': PLAN_TYPES.ULTIMATE,
-    };
-
-    return capacityToFeaturePath[capacity] || PLAN_TYPES.FREE;
-  };
 
   return (
     <div
@@ -72,7 +50,7 @@ const PlanSelectionCard = ({
       >
         <div className="flex w-full flex-col justify-between space-y-2">
           <div className="flex flex-row justify-between">
-            <RoleBadge roleText={getPlanFeaturePath()} role={'planType'} size={'small'} />
+            <RoleBadge roleText={getPlan(capacity, isBusiness)} role={'planType'} size={'small'} />
             {isCurrentPlan && (
               <RoleBadge roleText={t('preferences.account.plans.current')} role={'current'} size={'small'} />
             )}

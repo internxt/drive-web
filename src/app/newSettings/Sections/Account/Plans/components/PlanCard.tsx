@@ -18,6 +18,29 @@ interface PlanCardProps {
   isBusiness?: boolean;
 }
 
+export const getPlan = (capacity, isBusiness) => {
+  const PLAN_TYPES = {
+    FREE: t('preferences.account.plans.types.free'),
+    ESSENTIAL: t('preferences.account.plans.types.essential'),
+    STANDARD: t('preferences.account.plans.types.standard'),
+    PRO: t('preferences.account.plans.types.pro'),
+    PREMIUM: t('preferences.account.plans.types.premium'),
+    ULTIMATE: t('preferences.account.plans.types.ultimate'),
+  };
+
+  if (capacity === '1TB') {
+    return isBusiness ? PLAN_TYPES.STANDARD : PLAN_TYPES.ESSENTIAL;
+  }
+
+  const capacityToFeaturePath = {
+    '2TB': PLAN_TYPES.PRO,
+    '3TB': PLAN_TYPES.PREMIUM,
+    '5TB': PLAN_TYPES.ULTIMATE,
+  };
+
+  return capacityToFeaturePath[capacity] || PLAN_TYPES.FREE;
+};
+
 const PlanCard = ({
   capacity,
   currency,
@@ -30,7 +53,9 @@ const PlanCard = ({
   disableActionButton,
   isBusiness = false,
 }: PlanCardProps) => {
-  const userText = isBusiness ? '/' + t('preferences.account.plans.peruser') : '';
+  const userText = isBusiness
+    ? '/' + t('preferences.account.plans.user')
+    : ' ' + t('preferences.account.plans.billedAnnually');
 
   const getPlanFeaturePath = () => {
     const PLAN_TYPES = {
@@ -60,7 +85,7 @@ const PlanCard = ({
       <div className="flex flex-col space-y-3">
         <div>
           <div className="flex w-full flex-row justify-between">
-            <span className="text-2xl font-medium leading-7 text-gray-100">{capacity}</span>
+            <span className="text-2xl font-medium leading-7 text-gray-100">{getPlan(capacity, isBusiness)}</span>
             {isCurrentPlan && (
               <RoleBadge roleText={t('preferences.account.plans.current')} role={'current'} size={'small'} />
             )}
