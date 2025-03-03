@@ -16,8 +16,9 @@ export function removePaymentsStorage() {
   localStorageService.removeItem('productName');
   localStorageService.removeItem('priceId');
   localStorageService.removeItem('customerId');
-  localStorageService.removeItem('token');
   localStorageService.removeItem('currency');
+  localStorageService.removeItem('customerToken');
+  localStorageService.removeItem('mobileToken');
 }
 
 const CheckoutSuccessView = (): JSX.Element => {

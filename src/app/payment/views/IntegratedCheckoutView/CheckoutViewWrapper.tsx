@@ -398,49 +398,47 @@ const CheckoutViewWrapper = () => {
         if (confirmIntentError) {
           throw new Error(confirmIntentError.message);
         }
+      } else {
+        const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
+          await checkoutService.getClientSecret({
+            selectedPlan: currentSelectedPlan as RequestedPlanData,
+            token,
+            mobileToken,
+            customerId,
+            promoCodeId: couponCodeData?.codeId,
+            seatsForBusinessSubscription,
+          });
 
-        return;
-      }
-
-      const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
-        await checkoutService.getClientSecret({
-          selectedPlan: currentSelectedPlan as RequestedPlanData,
-          token,
-          mobileToken,
-          customerId,
-          promoCodeId: couponCodeData?.codeId,
+        // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API
+        savePaymentDataInLocalStorage(
+          subscriptionId,
+          paymentIntentId,
+          plan?.selectedPlan,
           seatsForBusinessSubscription,
+          couponCodeData,
+        );
+
+        // !DO NOT REMOVE THIS
+        // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
+        // no client secret will be provided.
+        if (invoiceStatus && invoiceStatus === 'paid') {
+          navigationService.push(AppView.CheckoutSuccess);
+          return;
+        }
+
+        const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
+
+        const { error: confirmIntentError } = await confirmIntent({
+          elements,
+          clientSecret,
+          confirmParams: {
+            return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
+          },
         });
 
-      // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API
-      savePaymentDataInLocalStorage(
-        subscriptionId,
-        paymentIntentId,
-        plan?.selectedPlan,
-        seatsForBusinessSubscription,
-        couponCodeData,
-      );
-
-      // !DO NOT REMOVE THIS
-      // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
-      // no client secret will be provided.
-      if (invoiceStatus && invoiceStatus === 'paid') {
-        navigationService.push(AppView.CheckoutSuccess);
-        return;
-      }
-
-      const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
-
-      const { error: confirmIntentError } = await confirmIntent({
-        elements,
-        clientSecret,
-        confirmParams: {
-          return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
-        },
-      });
-
-      if (confirmIntentError) {
-        throw new Error(confirmIntentError.message);
+        if (confirmIntentError) {
+          throw new Error(confirmIntentError.message);
+        }
       }
     } catch (err) {
       const statusCode = (err as any).status;
