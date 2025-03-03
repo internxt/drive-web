@@ -80,7 +80,9 @@ export interface CheckoutViewManager {
 
 const ONE_YEAR_IN_MONTHS = 12;
 const IS_PRODUCTION = envService.isProduction();
-const RETURN_URL_DOMAIN = IS_PRODUCTION ? process.env.REACT_APP_HOSTNAME : 'http://localhost:3000';
+const RETURN_URL_DOMAIN = IS_PRODUCTION
+  ? process.env.REACT_APP_HOSTNAME
+  : 'https://drive-web-git-fix-pc-cloud-flow-internxt-web-team.vercel.app';
 const STATUS_CODE_ERROR = {
   USER_EXISTS: 409,
   COUPON_NOT_VALID: 422,

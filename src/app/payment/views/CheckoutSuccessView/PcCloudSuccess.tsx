@@ -1,13 +1,11 @@
 import { trackPaymentConversion } from 'app/analytics/impact.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import paymentService from 'app/payment/services/payment.service';
 import { useAppDispatch } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { userThunks } from 'app/store/slices/user';
 import { useCallback, useEffect } from 'react';
 import { removePaymentsStorage } from './CheckoutSuccessView';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
-import paymentService from 'app/payment/services/payment.service';
-import localStorageService from 'app/core/services/local-storage.service';
 
 const PcCloudSuccess = () => {
   const dispatch = useAppDispatch();
@@ -40,7 +38,8 @@ const PcCloudSuccess = () => {
       } catch (err) {
         console.log('Analytics error: ', err);
       }
-      navigationService.push(AppView.Drive);
+      const deepLinkUrl = 'com.internxt.pccloud://checkout';
+      window.location.href = deepLinkUrl;
     },
     [dispatch],
   );
