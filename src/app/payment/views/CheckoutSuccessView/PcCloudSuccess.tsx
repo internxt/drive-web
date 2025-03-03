@@ -1,0 +1,70 @@
+import { trackPaymentConversion } from 'app/analytics/impact.service';
+import { useAppDispatch } from 'app/store/hooks';
+import { planThunks } from 'app/store/slices/plan';
+import { userThunks } from 'app/store/slices/user';
+import { useCallback, useEffect } from 'react';
+import { removePaymentsStorage } from './CheckoutSuccessView';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
+import paymentService from 'app/payment/services/payment.service';
+import localStorageService from 'app/core/services/local-storage.service';
+
+const PcCloudSuccess = () => {
+  const dispatch = useAppDispatch();
+
+  const onPcCloudSuccess = useCallback(
+    async ({
+      customerId,
+      priceId,
+      token,
+      mobileTokenParam,
+      currency,
+    }: {
+      customerId: string;
+      priceId: string;
+      token: string;
+      mobileTokenParam: string;
+      currency: string;
+    }) => {
+      if (customerId && priceId && token && mobileTokenParam) {
+        await paymentService.createSubscriptionWithTrial(customerId, priceId, token, mobileTokenParam, currency);
+      }
+      setTimeout(async () => {
+        await dispatch(userThunks.initializeUserThunk());
+        await dispatch(planThunks.initializeThunk());
+      }, 3000);
+
+      try {
+        await trackPaymentConversion();
+        removePaymentsStorage();
+      } catch (err) {
+        console.log('Analytics error: ', err);
+      }
+      navigationService.push(AppView.Drive);
+    },
+    [dispatch],
+  );
+
+  useEffect(() => {
+    const customerId = localStorageService.get('customerId');
+    const token = localStorageService.get('customerToken');
+    const currency = localStorageService.get('currency') ?? 'eur';
+    const priceId = localStorageService.get('priceId');
+    const mobileTokenParam = localStorageService.get('mobileToken');
+
+    console.log(customerId, priceId, token, mobileTokenParam);
+
+    if (customerId && priceId && token && mobileTokenParam) {
+      onPcCloudSuccess({
+        customerId,
+        priceId,
+        token,
+        mobileTokenParam,
+        currency,
+      });
+    }
+  }, []);
+  return <></>;
+};
+
+export default PcCloudSuccess;

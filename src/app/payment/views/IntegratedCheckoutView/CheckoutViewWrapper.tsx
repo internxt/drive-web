@@ -115,6 +115,7 @@ const CheckoutViewWrapper = () => {
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const [mobileToken, setMobileToken] = useState<string | null>(null);
+  const [setupIntentSecret, setSetupIntentSecret] = useState<string | null>();
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -379,6 +380,28 @@ const CheckoutViewWrapper = () => {
         companyVatId,
       );
 
+      if (mobileToken) {
+        const setupIntent = await checkoutService.checkoutSetupIntent(customerId);
+        localStorageService.set('customerId', customerId);
+        localStorageService.set('token', token);
+        localStorageService.set('priceId', currentSelectedPlan?.id as string);
+        localStorageService.set('customerToken', token);
+        localStorageService.set('mobileToken', mobileToken);
+        const { error: confirmIntentError } = await stripeSDK.confirmSetup({
+          elements,
+          clientSecret: setupIntent.clientSecret,
+          confirmParams: {
+            return_url: `${RETURN_URL_DOMAIN}/checkout/pcCloud-success?mobileToken=${mobileToken}&priceId=${currentSelectedPlan?.id}`,
+          },
+        });
+
+        if (confirmIntentError) {
+          throw new Error(confirmIntentError.message);
+        }
+
+        return;
+      }
+
       const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
         await checkoutService.getClientSecret({
           selectedPlan: currentSelectedPlan as RequestedPlanData,
@@ -389,7 +412,7 @@ const CheckoutViewWrapper = () => {
           seatsForBusinessSubscription,
         });
 
-      // Store subscriptionId, paymentIntendId, and amountPaid to send to IMPACT API
+      // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API
       savePaymentDataInLocalStorage(
         subscriptionId,
         paymentIntentId,

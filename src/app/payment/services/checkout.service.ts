@@ -1,10 +1,11 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { StripeElementsOptions } from '@stripe/stripe-js';
-import envService from '../../core/services/env.service';
 import paymentService from '../../payment/services/payment.service';
 import { ClientSecretData, CouponCodeData, PlanData, RequestedPlanData } from '../types';
+import axios from 'axios';
+import localStorageService from 'app/core/services/local-storage.service';
 
-const IS_PRODUCTION = envService.isProduction();
+const PAYMENTS_API_URL = process.env.REACT_APP_PAYMENTS_API_URL;
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
 const fetchPlanById = async (priceId: string, currency?: string): Promise<PlanData> => {
@@ -196,6 +197,32 @@ const getClientSecret = async ({
   }
 };
 
+const checkoutSetupIntent = async (customerId: string) => {
+  try {
+    const newToken = localStorageService.get('xNewToken');
+
+    if (!newToken) {
+      throw new Error('No authentication token available');
+    }
+    const response = await axios.post<{ clientSecret: string }>(
+      `${PAYMENTS_API_URL}/setup-intent`,
+      {
+        customerId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error('Error creating subscription with trial');
+  }
+};
+
 const loadStripeElements = async (
   theme: {
     backgroundColor: string;
@@ -276,6 +303,7 @@ const checkoutService = {
   getClientSecret,
   loadStripeElements,
   fetchPrices,
+  checkoutSetupIntent,
 };
 
 export default checkoutService;
