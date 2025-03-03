@@ -80,7 +80,9 @@ export interface CheckoutViewManager {
 
 const ONE_YEAR_IN_MONTHS = 12;
 const IS_PRODUCTION = envService.isProduction();
-const RETURN_URL_DOMAIN = IS_PRODUCTION ? process.env.REACT_APP_HOSTNAME : 'http://localhost:3000';
+const RETURN_URL_DOMAIN = IS_PRODUCTION
+  ? process.env.REACT_APP_HOSTNAME
+  : 'https://drive-web-git-fix-pc-cloud-flow-internxt-web-team.vercel.app';
 const STATUS_CODE_ERROR = {
   USER_EXISTS: 409,
   COUPON_NOT_VALID: 422,
@@ -379,45 +381,65 @@ const CheckoutViewWrapper = () => {
         companyVatId,
       );
 
-      const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
-        await checkoutService.getClientSecret({
-          selectedPlan: currentSelectedPlan as RequestedPlanData,
-          token,
-          mobileToken,
-          customerId,
-          promoCodeId: couponCodeData?.codeId,
-          seatsForBusinessSubscription,
+      if (mobileToken) {
+        const setupIntent = await checkoutService.checkoutSetupIntent(customerId);
+        localStorageService.set('customerId', customerId);
+        localStorageService.set('token', token);
+        localStorageService.set('priceId', currentSelectedPlan?.id as string);
+        localStorageService.set('customerToken', token);
+        localStorageService.set('mobileToken', mobileToken);
+        const { error: confirmIntentError } = await stripeSDK.confirmSetup({
+          elements,
+          clientSecret: setupIntent.clientSecret,
+          confirmParams: {
+            return_url: `${RETURN_URL_DOMAIN}/checkout/pcCloud-success?mobileToken=${mobileToken}&priceId=${currentSelectedPlan?.id}`,
+          },
         });
 
-      // Store subscriptionId, paymentIntendId, and amountPaid to send to IMPACT API
-      savePaymentDataInLocalStorage(
-        subscriptionId,
-        paymentIntentId,
-        plan?.selectedPlan,
-        seatsForBusinessSubscription,
-        couponCodeData,
-      );
+        if (confirmIntentError) {
+          throw new Error(confirmIntentError.message);
+        }
+      } else {
+        const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
+          await checkoutService.getClientSecret({
+            selectedPlan: currentSelectedPlan as RequestedPlanData,
+            token,
+            mobileToken,
+            customerId,
+            promoCodeId: couponCodeData?.codeId,
+            seatsForBusinessSubscription,
+          });
 
-      // !DO NOT REMOVE THIS
-      // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
-      // no client secret will be provided.
-      if (invoiceStatus && invoiceStatus === 'paid') {
-        navigationService.push(AppView.CheckoutSuccess);
-        return;
-      }
+        // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API
+        savePaymentDataInLocalStorage(
+          subscriptionId,
+          paymentIntentId,
+          plan?.selectedPlan,
+          seatsForBusinessSubscription,
+          couponCodeData,
+        );
 
-      const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
+        // !DO NOT REMOVE THIS
+        // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
+        // no client secret will be provided.
+        if (invoiceStatus && invoiceStatus === 'paid') {
+          navigationService.push(AppView.CheckoutSuccess);
+          return;
+        }
 
-      const { error: confirmIntentError } = await confirmIntent({
-        elements,
-        clientSecret,
-        confirmParams: {
-          return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
-        },
-      });
+        const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
 
-      if (confirmIntentError) {
-        throw new Error(confirmIntentError.message);
+        const { error: confirmIntentError } = await confirmIntent({
+          elements,
+          clientSecret,
+          confirmParams: {
+            return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
+          },
+        });
+
+        if (confirmIntentError) {
+          throw new Error(confirmIntentError.message);
+        }
       }
     } catch (err) {
       const statusCode = (err as any).status;

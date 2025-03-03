@@ -190,7 +190,7 @@ const paymentService = {
     priceId: string,
     token: string,
     mobileToken: string,
-    currency: string,
+    currency?: string,
   ): Promise<CreatedSubscriptionData> {
     try {
       const newToken = localStorageService.get('xNewToken');

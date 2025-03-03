@@ -32,6 +32,7 @@ import NotFoundView from '../views/NotFoundView/NotFoundView';
 import VerifyEmailView from '../views/VerifyEmailView';
 import CheckoutViewWrapper from '../../payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
 import { CheckoutSessionId } from 'app/payment/views/CheckoutSession/CheckoutSessionId';
+import PcCloudSuccess from 'app/payment/views/CheckoutSuccessView/PcCloudSuccess';
 
 const views: Array<{
   id: string;
@@ -57,6 +58,7 @@ const views: Array<{
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
   { id: AppView.Deactivation, component: DeactivationView },
   { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
+  { id: AppView.PcCloudSuccess, component: PcCloudSuccess },
   { id: AppView.CheckoutCancel, component: CheckoutCancelView },
   { id: AppView.CheckoutSession, component: CheckoutSessionId },
   { id: AppView.Checkout, component: CheckoutViewWrapper },
