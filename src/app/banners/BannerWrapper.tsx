@@ -8,7 +8,7 @@ import FeaturesBanner from './FeaturesBanner';
 import { BannerManager } from './BannerManager';
 import { useEffect, useState } from 'react';
 
-const OFFER_END_DAY = new Date('2025-02-25');
+const OFFER_END_DAY = new Date('2025-03-17');
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState<boolean>(false);
