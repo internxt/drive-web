@@ -8,7 +8,6 @@ import { DriveItemData } from '../../../drive/types';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import shareService, { decryptMnemonic } from '../../../share/services/share.service';
-import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageActions } from '../../../store/slices/storage';
 import { uiActions } from '../../../store/slices/ui';
@@ -17,6 +16,7 @@ import BreadcrumbsSharedView from 'app/shared/components/Breadcrumbs/Containers/
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';
+import { Dialog as DeleteDialog } from '@internxt/ui';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import errorService from '../../../core/services/error.service';
 import { UPLOAD_ITEMS_LIMIT } from '../../../drive/components/DriveExplorer/DriveExplorer';
