@@ -5,8 +5,7 @@ import authService from '../../../../../auth/services/auth.service';
 import errorService from '../../../../../core/services/error.service';
 import Section from '../../../../../newSettings/Sections/General/components/Section';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
-import { Button } from '@internxt/ui';
-import Modal from '../../../../../shared/components/Modal';
+import { Button, Modal } from '@internxt/ui';
 import { RootState } from '../../../../../store';
 import { PlanState } from '../../../../../store/slices/plan';
 
