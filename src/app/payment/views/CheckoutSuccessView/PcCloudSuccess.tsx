@@ -51,8 +51,6 @@ const PcCloudSuccess = () => {
     const priceId = localStorageService.get('priceId');
     const mobileTokenParam = localStorageService.get('mobileToken');
 
-    console.log(customerId, priceId, token, mobileTokenParam);
-
     if (customerId && priceId && token && mobileTokenParam) {
       onPcCloudSuccess({
         customerId,
