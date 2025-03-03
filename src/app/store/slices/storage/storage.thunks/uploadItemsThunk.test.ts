@@ -1,11 +1,17 @@
 import { describe, it, expect, vi, beforeEach, afterEach, Mock } from 'vitest';
-import { uploadItemsThunk } from './uploadItemsThunk';
+import { uploadItemsParallelThunk, uploadItemsThunk, uploadItemsThunkExtraReducers } from './uploadItemsThunk';
 import { RootState } from '../../..';
 import { useDispatch } from 'react-redux';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
-import { uploadFileWithManager } from '../../../../network/UploadManager';
+import { uploadFileWithManager, UploadManagerFileParams } from '../../../../network/UploadManager';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import RetryManager from 'app/network/RetryManager';
+import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
+import { StorageState } from '../storage.model';
+
+vi.mock('i18next', () => ({
+  t: vi.fn((key, params) => `${key} ${params?.reason || ''}`),
+}));
 
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
@@ -48,6 +54,16 @@ vi.mock('../../workspaces/workspaces.selectors', () => ({
   default: {
     getSelectedWorkspace: vi.fn(),
     getWorkspaceCredentials: vi.fn(),
+  },
+}));
+
+vi.mock('app/drive/services/download.service/downloadFolder', () => ({
+  default: {
+    fetchFileBlob: vi.fn(),
+    downloadFileFromBlob: vi.fn(),
+    downloadFile: vi.fn(),
+    downloadFolder: vi.fn(),
+    downloadBackup: vi.fn(),
   },
 }));
 
@@ -135,5 +151,58 @@ describe('uploadItemsThunk', () => {
     })(dispatch, getState as () => RootState, {});
 
     expect(RetryChangeStatusSpy).toHaveBeenCalledWith('task1', 'failed');
+  });
+});
+
+describe('uploadItemsThunkExtraReducers', () => {
+  const sampleFile: UploadManagerFileParams = { taskId: 'task1' } as UploadManagerFileParams;
+
+  beforeEach(() => {
+    RetryManager.clearFiles();
+
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
+  });
+
+  it('should handle rejected case and call RetryManager and notificationsService', () => {
+    const cases = new Map();
+    const builder = {
+      addCase: (action, reducer) => {
+        cases.set(action, reducer);
+        return builder;
+      },
+    };
+
+    uploadItemsThunkExtraReducers(builder as unknown as ActionReducerMapBuilder<StorageState>);
+
+    expect(cases.has(uploadItemsParallelThunk.pending)).toBe(true);
+    expect(cases.has(uploadItemsParallelThunk.fulfilled)).toBe(true);
+    expect(cases.has(uploadItemsParallelThunk.rejected)).toBe(true);
+
+    const rejectedHandler = cases.get(uploadItemsParallelThunk.rejected);
+    const RetryIsRetryingFileSpy = vi.spyOn(RetryManager, 'isRetryingFile');
+    const RetryChangeStatusSpy = vi.spyOn(RetryManager, 'changeStatus');
+
+    RetryManager.addFile(sampleFile);
+
+    const state = {};
+    const action = {
+      meta: {
+        arg: {
+          taskId: 'task1',
+          options: { showErrors: true },
+        },
+      },
+      error: { message: 'Upload failed' },
+    };
+
+    rejectedHandler(state, action);
+
+    expect(RetryIsRetryingFileSpy).toHaveBeenCalledWith('task1');
+    expect(RetryChangeStatusSpy).toHaveBeenCalledWith('task1', 'failed');
+    expect(notificationsService.show).toHaveBeenCalledWith({
+      text: expect.stringContaining('Upload failed'),
+      type: ToastType.Error,
+    });
   });
 });
