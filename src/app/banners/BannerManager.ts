@@ -38,30 +38,18 @@ export class BannerManager {
   }
 
   private shouldShowBannerByType(type: 'free' | 'lifetime' | 'subscription'): boolean {
-    const isUserType = this.plan.individualSubscription?.type === type;
+    const isUserSubscriptionType = this.plan.individualSubscription?.type === type;
     const isOfferOffDay = new Date() > this.offerEndDay;
     const hasExpiredBanner = this.bannerItemInLocalStorage
       ? Number(this.bannerItemInLocalStorage) < Number(this.todayDate)
       : false;
 
     return (
-      isUserType &&
+      isUserSubscriptionType &&
       !this.bannerItemInLocalStorage &&
       !isOfferOffDay &&
       ((this.isNewAccount && this.isTutorialCompleted) || !this.isNewAccount)
     );
-  }
-
-  shouldShowBanner(): boolean {
-    return this.shouldShowBannerByType('free');
-  }
-
-  shouldShowLifetimeBanner(): boolean {
-    return this.shouldShowBannerByType('lifetime');
-  }
-
-  shouldShowSubscriptionBanner(): boolean {
-    return this.shouldShowBannerByType('subscription');
   }
 
   handleBannerDisplayByType(type: 'free' | 'lifetime' | 'subscription', setShowBanner: (show: boolean) => void): void {

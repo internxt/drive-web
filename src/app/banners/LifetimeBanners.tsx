@@ -48,7 +48,7 @@ const LifetimeBanners = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Elem
               ))}
             </div>
 
-            <p className="text-lg font-medium text-white pt-2 max-w-[333px]">
+            <p className="text-lg font-medium text-white pt-2 max-w-[380px]">
               {translate('lifetimesBanner.description')}
             </p>
             <div className="flex flex-col items-center space-y-3 lg:items-start">
