@@ -23,6 +23,8 @@ import { t } from 'i18next';
 import { Loader } from '@internxt/ui';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 
+const HUNDRED_TB = 109951162777600;
+
 interface SidenavProps {
   user: UserSettings | undefined;
   subscription: UserSubscription | null;
@@ -170,6 +172,12 @@ const Sidenav = ({
     navigationService.push(AppView.Drive, {}, workspaceUuid);
   };
 
+  const isUpgradeAvailable = () => {
+    const isLifetimeAvailable = subscription?.type === 'lifetime' && planLimit < HUNDRED_TB;
+
+    return subscription?.type === 'free' || isLifetimeAvailable;
+  };
+
   return (
     <div className="flex w-64 flex-col">
       {isLoadingCredentials && <LoadingSpinner text={translate('workspaces.messages.switchingWorkspace')} />}
@@ -192,7 +200,7 @@ const Sidenav = ({
           <PlanUsage
             limit={planLimit}
             usage={planUsage}
-            subscriptionType={subscription?.type}
+            isUpgradeAvailable={isUpgradeAvailable}
             isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
           />
         </div>
