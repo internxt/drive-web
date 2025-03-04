@@ -18,6 +18,26 @@
       "优惠截止至 3 月 17 日"
     ]
   },
+  "suscirptionsBanner": {
+    "title": "升級您的計畫！",
+    "features": [
+      "後量子加密",
+      "雲端硬碟、VPN 和防毒軟體",
+      "即將推出郵件和會議"
+    ],
+    "description": "續訂您的訂閱，即可享受我們的新功能！",
+    "cta": "8折優惠"
+  },
+  "lifetimesBanner": {
+    "title": "升級您的計畫！",
+    "features": [
+      "後量子加密",
+      "雲端硬碟、VPN 和防毒軟體",
+      "即將推出郵件和會議"
+    ],
+    "description": "升級您的計畫，享受我們的新功能，並擴展您的存儲空間！",
+    "cta": "8折優惠"
+  },
   "valentinesBanner": {
     "title": "愛無極限！",
     "subtitle": "使用代碼 VDAY 獲得我們 2TB 方案九折優惠",

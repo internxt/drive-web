@@ -18,6 +18,26 @@
       "Offer ends March 17"
     ]
   },
+  "suscirptionsBanner": {
+    "title": "Supercharge your plan!",
+    "features":[
+      "Post-quantum encryption",
+      "Drive, VPN and Antivirus",
+      "Upcoming Mail and Meet"
+    ],
+    "description": "Renew your subscription and get our new features!",
+    "cta": "80% OFF"
+  },
+  "lifetimesBanner": {
+    "title": "Supercharge your plan!",
+    "features":[
+      "Post-quantum encryption",
+      "Drive, VPN and Antivirus",
+      "Upcoming Mail and Meet"
+    ],
+    "description": "Upgrade your plan with our new features and stack your storage!",
+    "cta": "80% OFF"
+  },
   "valentinesBanner": {
     "title": "Love without limits!",
     "subtitle": "Get 90% off our 2TB plan with code VDAY",

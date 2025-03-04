@@ -18,6 +18,26 @@
       "La oferta finaliza el 17 de marzo"
     ]
   },
+  "suscirptionsBanner": {
+    "title": "¡Mejora tu plan!",
+    "features": [
+      "Cifrado postcuántico",
+      "Drive, VPN y Antivirus",
+      "Mail y Meet próximamente"
+    ],
+    "description": "¡Renueva tu suscripción y obtén nuestras nuevas funciones!",
+    "cta": "80% de descuento"
+  },
+  "lifetimesBanner": {
+    "title": "¡Mejora tu plan!",
+    "features": [
+      "Cifrado postcuántico",
+      "Drive, VPN y Antivirus",
+      "Mail y Meet próximamente"
+    ],
+    "description": "¡Mejora tu plan con nuestras nuevas funciones y aumenta tu almacenamiento!",
+    "cta": "80% de descuento"
+  },
   "valentinesBanner": {
     "title": "¡Amor sin limites!",
     "subtitle": "90% de descuento en nuestro plan de 2TB. Código: VDAY",
