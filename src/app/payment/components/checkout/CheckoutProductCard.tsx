@@ -106,6 +106,9 @@ export const CheckoutProductCard = ({
       : undefined;
 
   const getPlanFeaturePath = () => {
+    if (couponCodeData?.codeName === 'PCCOMPONENTES') {
+      return bytes;
+    }
     const PLAN_TYPES = {
       FREE: translate('preferences.account.plans.types.free'),
       ESSENTIAL: translate('preferences.account.plans.types.essential'),
