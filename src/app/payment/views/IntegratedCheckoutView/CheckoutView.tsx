@@ -30,6 +30,8 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
 interface CheckoutViewProps {
   userInfo: UserInfoProps;
   isUserAuthenticated: boolean;
+  showHardcodedRenewal?: string;
+  showCouponCode: boolean;
   upsellManager: UpsellManagerProps;
   userAuthComponentRef: LegacyRef<HTMLDivElement>;
   checkoutViewVariables: State;
@@ -43,6 +45,8 @@ const AUTH_METHOD_VALUES = {
 const CheckoutView = ({
   userInfo,
   isUserAuthenticated,
+  showCouponCode,
+  showHardcodedRenewal,
   upsellManager,
   userAuthComponentRef,
   checkoutViewVariables,
@@ -146,6 +150,8 @@ const CheckoutView = ({
                 <CheckoutProductCard
                   selectedPlan={currentSelectedPlan}
                   couponCodeData={couponCodeData}
+                  showHardcodedRenewal={showHardcodedRenewal}
+                  showCouponCode={showCouponCode}
                   couponError={error?.coupon}
                   seatsForBusinessSubscription={seatsForBusinessSubscription}
                   upsellManager={upsellManager}

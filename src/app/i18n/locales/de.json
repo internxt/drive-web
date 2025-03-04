@@ -6,7 +6,7 @@
  "featuresBanner": {
     "label": "Spare 80%!",
     "title": "Entdecke alle neuen Internxt-Tarife!",
-    "cta": "Wähle deinen Plan",
+    "cta": "Wähle deinen Plan"
     "guarantee": "30 Tage Geld-zurück-Garantie",
     "lastCta": "*Das Angebot gilt für kostenlose Konten oder neue Kunden",
     "features": [
@@ -202,6 +202,12 @@
         "year": "jährlich",
         "lifetime": "lebenslang"
       },
+      "renewalTitle": {
+        "month": "monatlich",
+        "year": "jährlich",
+        "lifetime": "lebenslang"
+      },
+      "pcMobileRenews": "* Verlängert sich im ersten Jahr nach der Testphase für 50€",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}}-Plan",
         "year": "{{spaceToUpgrade}} - 1 {{interval}}-Plan",
@@ -420,7 +426,7 @@
               "errorSendingVerification": "Fehler beim Senden der Verifikation",
               "confirm": "Bestätigen"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "Der Name muss zwischen einem und zwanzig Zeichen lang sein",
               "lastnameError": "Der Nachname muss zwischen einem und zwanzig Zeichen lang sein"
             },
@@ -1785,39 +1791,108 @@
       "emptyTrash": "Papierkorb leeren",
       "emptyTrashDescription": "Objekte im Papierkorb werden dauerhaft gelöscht",
       "plans": {
-        "title": "Tarife",
+        "title": "Pläne",
         "current": "Aktuell",
         "upgrade": "Upgrade",
         "downgrade": "Downgrade",
         "free": "Erhalten Sie bis zu 10 GB kostenlos",
         "manageBilling": "Abrechnung verwalten",
         "freeForever": "Für immer kostenlos",
+        "billedAnnually":"jährlich abgerechnet",
         "year": "Jahr",
         "month": "Monat",
-        "lifetime": "Lifetime",
+        "lifetime": "Lebenslang",
+        "types": {
+          "essential": "Essential",
+          "premium": "Premium",
+          "ultimate": "Ultimate",
+          "standard": "Standard",
+          "pro": "Pro",
+          "free": "Free"
+        },
         "planFeaturesList": {
-          "title": "Pläne-Details",
-          "storage": " Speicherplatz",
-          "featureOne": "Verschlüsseltes Teilen von Dateien und Ordnern.",
-          "featureTwo": "Passwortgeschütztes Teilen von Dateien.",
-          "featureThree": "Zugriff auf Ihre Dateien von jedem Gerät.",
-          "featureFour": "Hochladen von Dateien bis zu 20 GB.",
-          "featureFive": "Zwei-Faktor-Authentifizierung (2FA).",
-          "featureSix": "Premium-Kundensupport.",
-          "featureSeven": "30-Tage Geld-zurück-Garantie."
+          "title": "Plan-Details",
+          "commingSoon": "Demnächst",
+          "storage": " Speicherplatz ",
+          "essentialFeatures": {
+            "feature1": "Post-Quanten-Kryptografie",
+            "feature2": "Unbegrenztes Hochgeschwindigkeits-VPN (FR)",
+            "feature4": "Antivirus",
+            "feature3": "Backups",
+            "feature5": "Passwortgeschütztes Teilen von Dateien",
+            "feature6": "DSGVO-Konformität",
+            "feature7": "Zwei-Faktor-Authentifizierung (2FA)",
+            "feature8": "CLI, WebDav & Rclone"
+          },
+          "premiumFeatures": {
+            "feature1": "Post-Quanten-Kryptografie",
+            "feature2": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Backups",
+            "feature5": "Passwortgeschütztes Teilen von Dateien",
+            "feature6": "DSGVO-Konformität",
+            "feature7": "Zwei-Faktor-Authentifizierung (2FA)",
+            "feature8": "CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "feature1": "Meet (3 Teilnehmer)",
+              "feature2": "Mail (3 E-Mails)"
+            }
+          },
+          "ultimateFeatures": {
+            "feature1": "Post-Quanten-Kryptografie",
+            "feature2": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus",
+            "feature3": "Backups",
+            "feature5": "Passwortgeschütztes Teilen von Dateien",
+            "feature6": "DSGVO-Konformität",
+            "feature7": "Zwei-Faktor-Authentifizierung (2FA)",
+            "feature8": "CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "feature1": "Meet (5 Teilnehmer)",
+              "feature2": "Mail (5 E-Mails)"
+            }
+          },
+          "freeFeatures": {
+            "feature1": "Zero-Knowledge-Verschlüsselung",
+            "feature2": "Standard-VPN (FR)",
+            "feature3": "CLI, WebDav & Rclone-Unterstützung"
+          }
         },
         "businessPlanFeaturesList": {
-          "title": "Pläne-Details",
+          "title": "Plan-Details",
           "storage": " Speicherplatz",
-          "featureOne": "Verschlüsseltes Teilen von Dateien und Ordnern.",
-          "featureTwo": "Erstellen und Verwalten von Benutzern und Teams.",
-          "featureThree": "Ab 3 Benutzern und bis zu 100.",
-          "featureFour": "DSGVO-konform.",
-          "featureFive": "Hochladen von Dateien bis zu 20 GB.",
-          "featureSix": "Verwalten von Kontoabrechnungen und Zahlungen.",
-          "featureSeven": "Premium-Kundensupport."
+          "standardFeatures": {
+            "feature1": "Post-Quanten- und Zero-Knowledge-Verschlüsselung",
+            "feature2": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Backups",
+            "feature5": "Passwortgeschütztes Teilen von Dateien",
+            "feature6": "DSGVO-Konformität",
+            "feature7": "Zwei-Faktor-Authentifizierung (2FA)",
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9": "Verwalten Sie die Abrechnung und Zahlungen Ihres Kontos",
+            "commingSoonFeatures": {
+              "feature1": "Meetings mit bis zu 10 Benutzern (max. 10 Teilnehmer)",
+              "feature2": "1 benutzerdefinierte E-Mail-Adresse pro Nutzer"
+            }
+          },
+          "proFeatures": {
+            "feature1": "Post-Quanten- und Zero-Knowledge-Verschlüsselung",
+            "feature2": "Unbegrenztes Hochgeschwindigkeits-VPN (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus",
+            "feature3": "Backups",
+            "feature5": "Passwortgeschütztes Teilen von Dateien",
+            "feature6": "DSGVO-Konformität",
+            "feature7": "Zwei-Faktor-Authentifizierung (2FA)",
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9": "Verwalten Sie die Abrechnung und Zahlungen Ihres Kontos",
+            "commingSoonFeatures": {
+              "feature1": "Meetings mit bis zu 10 Benutzern (max. 10 Teilnehmer)",
+              "feature2": "1 benutzerdefinierte E-Mail-Adresse pro Nutzer"
+            }
+          }
         },
-        "user": "benutzer"
+        "user": "Benutzer"
       },
       "billing": {
         "title": "Billing"

@@ -9,13 +9,16 @@ import localStorageService from '../../../core/services/local-storage.service';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { trackPaymentConversion } from 'app/analytics/impact.service';
 
-function removePaymentsStorage() {
+export function removePaymentsStorage() {
   localStorageService.removeItem('subscriptionId');
   localStorageService.removeItem('paymentIntentId');
   localStorageService.removeItem('amountPaid');
   localStorageService.removeItem('productName');
   localStorageService.removeItem('priceId');
+  localStorageService.removeItem('customerId');
   localStorageService.removeItem('currency');
+  localStorageService.removeItem('customerToken');
+  localStorageService.removeItem('mobileToken');
 }
 
 const CheckoutSuccessView = (): JSX.Element => {

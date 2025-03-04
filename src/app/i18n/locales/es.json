@@ -204,6 +204,13 @@
         "year": "anual",
         "lifetime": "lifetime"
       },
+      "renewalTitle": {
+        "month": "mensual",
+        "year": "anual",
+        "lifetime": "pago único"
+      },
+      "pcMobileRenews": "* Se renueva a 50€ el primer año después del período de prueba",
+
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 plan {{interval}}",
         "year": "{{spaceToUpgrade}} - 1 plan {{interval}}",
@@ -440,7 +447,7 @@
               "errorSendingVerification": "Error enviando verificación",
               "confirm": "Confirmar"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "El nombre debe tener de uno a veinte caracteres",
               "lastnameError": "El apellido debe tener de uno a veinte caracteres"
             }
@@ -1656,7 +1663,7 @@
           "remove": "Eliminar miembro",
           "passwordChange": "Solicitar cambio de contraseña"
         },
-        "leaveModal":{
+        "leaveModal": {
           "title": "Abandonar",
           "description": "Perderás el acceso al Workspace y tu contenido será transferido al propietario",
           "leave": "Abandonar",
@@ -1831,27 +1838,96 @@
         "year": "Año",
         "month": "Mes",
         "lifetime": "Lifetime",
+        "billedAnnually":"facturado anualmente",
+        "types": {
+          "essential": "Essential",
+          "premium": "Premium",
+          "ultimate": "Ultimate",
+          "standard": "Standard",
+          "pro": "Pro",
+          "free":"Free"
+        },
         "planFeaturesList": {
           "title": "Detalles del plan",
-          "storage": " de almacenamiento",
-          "featureOne": "Compartir archivos y carpetas cifrados.",
-          "featureTwo": "Compartir archivos con contraseña.",
-          "featureThree": "Accede a tus archivos desde cualquier dispositivo.",
-          "featureFour": "Sube archivos de hasta 20 GB.",
-          "featureFive": "Autenticación de dos factores (2FA).",
-          "featureSix": "Soporte al cliente premium.",
-          "featureSeven": "Garantía de devolución de dinero de 30 días."
+          "commingSoon": "Muy Pronto",
+          "storage": " de almacenamiento ",
+          "essentialFeatures":{
+            "feature1": "Criptografía postcuántica",
+            "feature2":"VPN de alta velocidad ilimitado (FR)",
+            "feature4": "Antivirus" ,
+            "feature3": "Copias de seguridad",
+            "feature5": "Comparte archivos protegidos con contraseña",
+            "feature6":"Cumple con RGPD" ,
+            "feature7": "Autenticación de dos factores (2FA)",
+            "feature8":"CLI, WebDav & Rclone" 
+          },
+          "premiumFeatures":{
+            "feature1": "Criptografía postcuántica",
+            "feature2":"VPN de alta velocidad ilimitado (FR, DE, PL)",
+            "feature4": "Antivirus" ,
+            "feature3": "Copias de seguridad",
+            "feature5": "Comparte archivos protegidos con contraseña",
+            "feature6":"Cumple con RGPD" ,
+            "feature7": "Autenticación de dos factores (2FA)",
+            "feature8":"CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "feature1": "Meet (3 participantes)",
+              "feature2": "Mail (3 correos)"
+            }
+          },
+          "ultimateFeatures":{
+            "feature1": "Criptografía postcuántica",
+            "feature2":"VPN de alta velocidad ilimitado (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus" ,
+            "feature3": "Copias de seguridad",
+            "feature5": "Comparte archivos protegidos con contraseña",
+            "feature6":"Cumple con RGPD" ,
+            "feature7": "Autenticación de dos factores (2FA)",
+            "feature8":"CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "feature1": "Meet (5 participantes)",
+              "feature2": "Mail (5 correos)"
+            }
+          },
+          "freeFeatures": {
+            "feature1": "Cifrado de conocimiento cero",
+            "feature2": "VPN estandard (FR)",
+            "feature3": "CLI, WebDav & Rclone support"
+          }
         },
         "businessPlanFeaturesList": {
           "title": "Detalles del plan",
           "storage": " de almacenamiento",
-          "featureOne": "Compartir archivos y carpetas cifrados.",
-          "featureTwo": "Crear y gestionar usuarios y equipos.",
-          "featureThree": "Desde 3 usuarios y hasta 100.",
-          "featureFour": "Cumplimiento con el GDPR.",
-          "featureFive": "Sube archivos de hasta 20 GB.",
-          "featureSix": "Gestionar la facturación y los pagos de la cuenta.",
-          "featureSeven": "Soporte al cliente premium."
+          "standardFeatures":{
+            "feature1": "Cifrado postcuántico y conocimiento cero",
+            "feature2": "VPN de alta velocidad ilimitado (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3":"Copias de seguridad" ,
+            "feature5": "Comparte archivos protegidos con contraseña",
+            "feature6":"Cumple con RGPD" ,
+            "feature7":"Autenticación de dos factores (2FA)" ,
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9":"Gestiona la facturación y los pagos de la cuenta",
+            "commingSoonFeatures": {
+              "feature1": "Reuniones de hasta 10 usuarios (máx. 10 participantes)",
+              "feature2": "1 correo electrónico personalizado/usuario "
+            }
+          },
+          "proFeatures":{
+            "feature1": "Cifrado postcuántico y conocimiento cero",
+            "feature2": "VPN de alta velocidad ilimitado (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus",
+            "feature3":"Copias de seguridad" ,
+            "feature5": "Comparte archivos protegidos con contraseña",
+            "feature6":"Cumple con RGPD" ,
+            "feature7":"Autenticación de dos factores (2FA)" ,
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9":"Gestiona la facturación y los pagos de la cuenta",
+            "commingSoonFeatures": {
+              "feature1": "Reuniones de hasta 10 usuarios (máx. 10 participantes)",
+              "feature2": "1 correo electrónico personalizado/usuario "
+            }
+          }
         },
         "user": "usuario"
       },

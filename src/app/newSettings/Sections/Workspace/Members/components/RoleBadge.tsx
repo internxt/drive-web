@@ -14,7 +14,8 @@ const RoleBadge = ({ role, roleText, size }: RoleProps) => {
     manager: 'bg-primary/15 dark:bg-primary/50',
     member: 'bg-gray-10 dark:bg-gray-20',
     deactivated: 'bg-red/15 dark:bg-red/50',
-    current: 'bg-primary/15 dark:bg-primary/50',
+    planType: 'bg-primary/15 dark:bg-primary/85',
+    current: 'bg-primary dark:bg-primary',
   };
 
   const roleTextColorMapping = {
@@ -22,7 +23,8 @@ const RoleBadge = ({ role, roleText, size }: RoleProps) => {
     manager: 'text-primary dark:text-white',
     member: 'text-gray-60 dark:text-white',
     deactivated: 'text-red dark:text-white',
-    current: 'text-primary dark:text-white',
+    planType: 'text-primary dark:text-white',
+    current: 'text-white dark:text-white',
   };
 
   const sizeMapping = {

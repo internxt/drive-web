@@ -225,6 +225,12 @@
         "year": "每年",
         "lifetime": "终身"
       },
+      "renewalTitle": {
+        "month": "每月",
+        "year": "每年",
+        "lifetime": "终身"
+      },
+      "pcMobileRenews": "* 试用期后第一年以 50€ 续订",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}} 计划",
         "year": "{{spaceToUpgrade}} - 1 {{interval}} 计划",
@@ -457,7 +463,7 @@
               "errorSendingVerification": "错误发送验证",
               "confirm": "确认"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "姓名必须在1到20个字符之间",
               "lastnameError": "姓氏必须在1到20个字符之间"
             }
@@ -1843,37 +1849,106 @@
       "emptyTrash": "清空回收站",
       "emptyTrashDescription": "回收站中的项目将被永久删除",
       "plans": {
-        "title": "计划",
+        "title": "套餐",
         "current": "当前",
         "upgrade": "升级",
         "downgrade": "降级",
-        "free": "免费获得高达10 GB的空间",
+        "free": "免费获取最多 10GB",
         "manageBilling": "管理账单",
         "freeForever": "永久免费",
+        "billedAnnually":"按年计费",
         "year": "年",
         "month": "月",
-        "lifetime": "Lifetime",
+        "lifetime": "终身",
+        "types": {
+          "essential": "基础版",
+          "premium": "高级版",
+          "ultimate": "至尊版",
+          "standard": "标准版",
+          "pro": "专业版",
+          "free": "免费版"
+        },
         "planFeaturesList": {
-          "title": "计划详情",
-          "storage": " 的存储空间",
-          "featureOne": "加密文件和文件夹共享。",
-          "featureTwo": "密码保护的文件共享。",
-          "featureThree": "从任何设备访问您的文件。",
-          "featureFour": "上传文件最大可达20GB。",
-          "featureFive": "双重身份验证 (2FA)。",
-          "featureSix": "高级客户支持。",
-          "featureSeven": "30天退款保证。"
+          "title": "套餐详情",
+          "commingSoon": "即将推出",
+          "storage": " 存储空间",
+          "essentialFeatures": {
+            "feature1": "后量子加密",
+            "feature2": "无限高速 VPN（法国）",
+            "feature4": "杀毒软件",
+            "feature3": "文件备份",
+            "feature5": "密码保护的文件共享",
+            "feature6": "符合 GDPR 规范",
+            "feature7": "双重身份验证（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支持"
+          },
+          "premiumFeatures": {
+            "feature1": "后量子加密",
+            "feature2": "无限高速 VPN（法国、德国、波兰）",
+            "feature4": "杀毒软件",
+            "feature3": "文件备份",
+            "feature5": "密码保护的文件共享",
+            "feature6": "符合 GDPR 规范",
+            "feature7": "双重身份验证（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支持",
+            "commingSoonFeatures": {
+              "feature1": "会议（最多 3 名参与者）",
+              "feature2": "电子邮件（最多 3 个账户）"
+            }
+          },
+          "ultimateFeatures": {
+            "feature1": "后量子加密",
+            "feature2": "无限高速 VPN（法国、德国、波兰、加拿大、英国）",
+            "feature4": "杀毒软件",
+            "feature3": "文件备份",
+            "feature5": "密码保护的文件共享",
+            "feature6": "符合 GDPR 规范",
+            "feature7": "双重身份验证（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支持",
+            "commingSoonFeatures": {
+              "feature1": "会议（最多 5 名参与者）",
+              "feature2": "电子邮件（最多 5 个账户）"
+            }
+          },
+          "freeFeatures": {
+            "feature1": "零知识加密",
+            "feature2": "标准 VPN（法国）",
+            "feature3": "CLI、WebDav 和 Rclone 支持"
+          }
         },
         "businessPlanFeaturesList": {
-          "title": "计划详情",
-          "storage": " 的存储空间",
-          "featureOne": "加密文件和文件夹共享。",
-          "featureTwo": "创建和管理用户及团队。",
-          "featureThree": "从3名用户起至多100名用户。",
-          "featureFour": "符合GDPR规范。",
-          "featureFive": "上传文件最大可达20GB。",
-          "featureSix": "管理账户账单和付款。",
-          "featureSeven": "高级客户支持。"
+          "title": "套餐详情",
+          "storage": " 存储空间",
+          "standardFeatures": {
+            "feature1": "后量子加密和零知识加密",
+            "feature2": "无限高速 VPN（法国、德国、波兰）",
+            "feature4": "杀毒软件",
+            "feature3": "文件备份",
+            "feature5": "密码保护的文件共享",
+            "feature6": "符合 GDPR 规范",
+            "feature7": "双重身份验证（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支持",
+            "feature9": "管理账户账单和支付",
+            "commingSoonFeatures": {
+              "feature1": "会议最多 10 名用户（最多 10 名参与者）",
+              "feature2": "每位用户 1 个自定义电子邮件地址"
+            }
+          },
+          "proFeatures": {
+            "feature1": "后量子加密和零知识加密",
+            "feature2": "无限高速 VPN（法国、德国、波兰、加拿大、英国）",
+            "feature4": "杀毒软件",
+            "feature3": "文件备份",
+            "feature5": "密码保护的文件共享",
+            "feature6": "符合 GDPR 规范",
+            "feature7": "双重身份验证（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支持",
+            "feature9": "管理账户账单和支付",
+            "commingSoonFeatures": {
+              "feature1": "会议最多 10 名用户（最多 10 名参与者）",
+              "feature2": "每位用户 1 个自定义电子邮件地址"
+            }
+          }
         },
         "user": "用户"
       },
