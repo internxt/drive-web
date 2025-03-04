@@ -20,6 +20,13 @@ export interface FileUploadOptions {
   isUploadedFromFolder?: boolean;
 }
 
+class RetryableFileError extends Error {
+  constructor(public file: FileToUpload) {
+    super('Retryable file');
+    this.name = 'RetryableFileError';
+  }
+}
+
 export async function uploadFile(
   userEmail: string,
   file: FileToUpload,
@@ -58,7 +65,7 @@ export async function uploadFile(
   options.abortCallback?.(abort?.abort);
 
   const fileId = await promise;
-  if (fileId === undefined) throw { message: 'Retryable file', file };
+  if (fileId === undefined) throw new RetryableFileError(file);
 
   const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
   const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;
