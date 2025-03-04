@@ -205,4 +205,44 @@ describe('uploadItemsThunkExtraReducers', () => {
       type: ToastType.Error,
     });
   });
+
+  it('should handle rejected case and not call RetryManager if file is not retrying', () => {
+    const cases = new Map();
+    const builder = {
+      addCase: (action, reducer) => {
+        cases.set(action, reducer);
+        return builder;
+      },
+    };
+
+    uploadItemsThunkExtraReducers(builder as unknown as ActionReducerMapBuilder<StorageState>);
+
+    expect(cases.has(uploadItemsParallelThunk.pending)).toBe(true);
+    expect(cases.has(uploadItemsParallelThunk.fulfilled)).toBe(true);
+    expect(cases.has(uploadItemsParallelThunk.rejected)).toBe(true);
+
+    const rejectedHandler = cases.get(uploadItemsParallelThunk.rejected);
+    const RetryIsRetryingFileSpy = vi.spyOn(RetryManager, 'isRetryingFile');
+    const RetryChangeStatusSpy = vi.spyOn(RetryManager, 'changeStatus');
+
+    const state = {};
+    const action = {
+      meta: {
+        arg: {
+          taskId: 'task1',
+          options: { showErrors: true },
+        },
+      },
+      error: { message: 'Test Error' },
+    };
+
+    rejectedHandler(state, action);
+
+    expect(RetryIsRetryingFileSpy).toHaveBeenCalledWith('task1');
+    expect(RetryChangeStatusSpy).not.toBeCalled();
+    expect(notificationsService.show).toHaveBeenCalledWith({
+      text: expect.stringContaining('Test Error'),
+      type: ToastType.Error,
+    });
+  });
 });
