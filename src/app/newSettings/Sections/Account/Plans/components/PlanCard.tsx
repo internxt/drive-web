@@ -18,6 +18,29 @@ interface PlanCardProps {
   isBusiness?: boolean;
 }
 
+export const getPlan = (capacity, isBusiness) => {
+  const PLAN_TYPES = {
+    FREE: t('preferences.account.plans.types.free'),
+    ESSENTIAL: t('preferences.account.plans.types.essential'),
+    STANDARD: t('preferences.account.plans.types.standard'),
+    PRO: t('preferences.account.plans.types.pro'),
+    PREMIUM: t('preferences.account.plans.types.premium'),
+    ULTIMATE: t('preferences.account.plans.types.ultimate'),
+  };
+
+  if (capacity === '1TB') {
+    return isBusiness ? PLAN_TYPES.STANDARD : PLAN_TYPES.ESSENTIAL;
+  }
+
+  const capacityToFeaturePath = {
+    '2TB': PLAN_TYPES.PRO,
+    '3TB': PLAN_TYPES.PREMIUM,
+    '5TB': PLAN_TYPES.ULTIMATE,
+  };
+
+  return capacityToFeaturePath[capacity] || PLAN_TYPES.FREE;
+};
+
 const PlanCard = ({
   capacity,
   currency,
@@ -30,14 +53,39 @@ const PlanCard = ({
   disableActionButton,
   isBusiness = false,
 }: PlanCardProps) => {
-  const userText = isBusiness ? '/' + t('preferences.account.plans.user') : '';
+  const userText = isBusiness
+    ? '/' + t('preferences.account.plans.user')
+    : ' ' + t('preferences.account.plans.billedAnnually');
+
+  const getPlanFeaturePath = () => {
+    const PLAN_TYPES = {
+      FREE: 'freeFeatures',
+      ESSENTIAL: 'essentialFeatures',
+      STANDARD: 'standardFeatures',
+      PRO: 'proFeatures',
+      PREMIUM: 'premiumFeatures',
+      ULTIMATE: 'ultimateFeatures',
+    };
+
+    if (capacity === '1TB') {
+      return isBusiness ? PLAN_TYPES.STANDARD : PLAN_TYPES.ESSENTIAL;
+    }
+
+    const capacityToFeaturePath = {
+      '2TB': PLAN_TYPES.PRO,
+      '3TB': PLAN_TYPES.PREMIUM,
+      '5TB': PLAN_TYPES.ULTIMATE,
+    };
+
+    return capacityToFeaturePath[capacity] || PLAN_TYPES.FREE;
+  };
 
   return (
     <div className={'flex w-80 flex-col rounded-xl border border-gray-10 bg-gray-5 p-4 '}>
       <div className="flex flex-col space-y-3">
         <div>
           <div className="flex w-full flex-row justify-between">
-            <span className="text-2xl font-medium leading-7 text-gray-100">{capacity}</span>
+            <span className="text-2xl font-medium leading-7 text-gray-100">{getPlan(capacity, isBusiness)}</span>
             {isCurrentPlan && (
               <RoleBadge roleText={t('preferences.account.plans.current')} role={'current'} size={'small'} />
             )}
@@ -55,7 +103,7 @@ const PlanCard = ({
         />
       </div>
       <Divider />
-      <PlanDetailsList planSpace={capacity} isBusiness={isBusiness} />
+      <PlanDetailsList planSpace={capacity} isBusiness={isBusiness} planTypeTextPath={getPlanFeaturePath()} />
     </div>
   );
 };
@@ -66,81 +114,79 @@ const Divider = () => (
   </div>
 );
 
-const PlanDetailsList = ({ planSpace, isBusiness }: { planSpace: string; isBusiness: boolean }) => {
+const PlanDetailsList = ({
+  planSpace,
+  isBusiness,
+  planTypeTextPath,
+}: {
+  planSpace: string;
+  isBusiness: boolean;
+  planTypeTextPath: string;
+}) => {
   const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
+
+  const featureKeys = Array.from({ length: planTypeTextPath !== 'freeFeatures' ? 8 : 3 }, (_, i) => `feature${i + 1}`);
+
+  const commingSoonFeatureKeys = ['feature1', 'feature2'];
+
   return (
     <div className="flex flex-col space-y-2">
       <span className="text-sm font-semibold text-gray-100">
         {t('preferences.account.plans.planFeaturesList.title')}
       </span>
       <div className="flex flex-col space-y-2">
-        <div className="flex flex-row items-center space-x-2">
+        <div className="flex flex-row items-start space-x-2">
           <div>
-            <Check size={20} width={20} height={20} />
+            <Check size={20} className="text-green" />
           </div>
-          <span className="text-base font-semibold text-gray-100">
+          <span className="text-base text-gray-100">
             {planSpace}
             <span className="text-base font-normal text-gray-100">
               {t('preferences.account.plans.planFeaturesList.storage')}
             </span>
           </span>
         </div>
-        <div className="flex flex-row items-center space-x-2">
-          <div>
-            <Check size={20} width={20} height={20} />
+
+        {featureKeys.map((key) => (
+          <div key={key} className="flex flex-row items-start space-x-2">
+            <div>
+              <Check size={20} className="text-green" />
+            </div>
+            <span className="text-base font-normal text-gray-100">
+              {t(`preferences.account.plans.${planType}.${planTypeTextPath}.${key}`)}
+            </span>
           </div>
-          <span className="text-base font-normal text-gray-100">
-            {t(`preferences.account.plans.${planType}.featureOne`)}
-          </span>
-        </div>
-        <div className="flex flex-row items-center space-x-2">
-          <div>
-            <Check size={20} width={20} height={20} />
+        ))}
+
+        {isBusiness && (
+          <div className="flex flex-row space-x-2">
+            <div className="mt-1">
+              <Check size={20} className="text-green" />
+            </div>
+            <span className="text-base font-normal text-gray-100">
+              {t(`preferences.account.plans.${planType}.${planTypeTextPath}.feature9`)}
+            </span>
           </div>
-          <span className="text-base font-normal text-gray-100">
-            {t(`preferences.account.plans.${planType}.featureTwo`)}
-          </span>
-        </div>
-        <div className="flex flex-row space-x-2">
-          <div className="mt-1">
-            <Check size={20} width={20} height={20} />
-          </div>
-          <span className="text-base font-normal text-gray-100">
-            {t(`preferences.account.plans.${planType}.featureThree`)}
-          </span>
-        </div>
-        <div className="flex flex-row items-center space-x-2">
-          <div>
-            <Check size={20} width={20} height={20} />
-          </div>
-          <span className="text-base font-normal text-gray-100">
-            {t(`preferences.account.plans.${planType}.featureFour`)}
-          </span>
-        </div>
-        <div className="flex flex-row space-x-2">
-          <div className="mt-1">
-            <Check size={20} width={20} height={20} />
-          </div>
-          <span className="text-base font-normal text-gray-100">
-            {t(`preferences.account.plans.${planType}.featureFive`)}
-          </span>
-        </div>
-        <div className="flex flex-row space-x-2">
-          <div className="mt-1">
-            <Check size={20} width={20} height={20} />
-          </div>
-          <span className="text-base font-normal text-gray-100">
-            {t(`preferences.account.plans.${planType}.featureSix`)}
-          </span>
-        </div>
-        <div className="flex flex-row space-x-2">
-          <div className="mt-1">
-            <Check size={20} width={20} height={20} />
-          </div>
-          <span className="text-base font-normal text-gray-100">
-            {t(`preferences.account.plans.${planType}.featureSeven`)}
-          </span>
-        </div>
+        )}
+
+        {/* Coming soon features */}
+        {planTypeTextPath !== 'essentialFeatures' && planTypeTextPath !== 'freeFeatures' && (
+          <>
+            <span className="text-sm font-semibold text-gray-100">
+              {t('preferences.account.plans.planFeaturesList.commingSoon')}
+            </span>
+            {commingSoonFeatureKeys.map((key) => (
+              <div key={key} className="flex flex-row space-x-2">
+                <div className="mt-1">
+                  <Check size={20} className="dark:text-black" />
+                </div>
+                <span className="text-base font-normal text-gray-100">
+                  {t(`preferences.account.plans.${planType}.${planTypeTextPath}.commingSoonFeatures.${key}`)}
+                </span>
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );

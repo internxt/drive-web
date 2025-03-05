@@ -21,6 +21,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import { t } from 'i18next';
 import { Loader } from '@internxt/ui';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -39,23 +40,31 @@ interface SideNavItemsProps {
   to?: string;
   isActive?: boolean;
   notifications?: number;
-  onClick?: () => Promise<void>;
+  onClick?: () => void;
 }
+
+const resetAccessTokenFileFolder = () => {
+  localStorageService.set(STORAGE_KEYS.FOLDER_ACCESS_TOKEN, '');
+  localStorageService.set(STORAGE_KEYS.FILE_ACCESS_TOKEN, '');
+};
 
 const isActiveButton = (path: string) => {
   return !!matchPath(window.location.pathname, { path, exact: true });
 };
 
-const handleDownloadApp = async (): Promise<void> => {
-  try {
-    const download = await desktopService.getDownloadAppUrl();
-    window.open(download, '_self');
-  } catch {
-    notificationsService.show({
-      text: t('notificationMessages.errorDownloadingDesktopApp'),
-      type: ToastType.Error,
+const handleDownloadApp = (): void => {
+  resetAccessTokenFileFolder();
+  desktopService
+    .getDownloadAppUrl()
+    .then((download) => {
+      window.open(download, '_self');
+    })
+    .catch(() => {
+      notificationsService.show({
+        text: t('notificationMessages.errorDownloadingDesktopApp'),
+        type: ToastType.Error,
+      });
     });
-  }
 };
 
 const LoadingSpinner = ({ text }: { text: string }) => (
@@ -111,6 +120,7 @@ const Sidenav = ({
       icon: FolderSimple,
       iconDataCy: 'sideNavDriveIcon',
       isVisible: true,
+      onClick: resetAccessTokenFileFolder,
     },
     {
       to: getItemNavigationPath('/backups'),
@@ -128,6 +138,7 @@ const Sidenav = ({
       notifications: pendingInvitations.length,
       iconDataCy: 'sideNavSharedIcon',
       isVisible: true,
+      onClick: resetAccessTokenFileFolder,
     },
     {
       to: getItemNavigationPath('/recents'),
@@ -144,6 +155,7 @@ const Sidenav = ({
       icon: Trash,
       iconDataCy: 'sideNavTrashIcon',
       isVisible: true,
+      onClick: resetAccessTokenFileFolder,
     },
     {
       label: translate('sideNav.desktop'),

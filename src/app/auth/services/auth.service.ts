@@ -48,6 +48,7 @@ import httpService from '../../core/services/http.service';
 type ProfileInfo = {
   user: UserSettings;
   token: string;
+  newToken: string;
   mnemonic: string;
 };
 
@@ -102,9 +103,9 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
 }
 
 export function cancelAccount(): Promise<void> {
-  const email = localStorageService.getUser()?.email;
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.sendDeactivationEmail(<string>email);
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const token = localStorageService.get('xNewToken') ?? undefined;
+  return authClient.sendUserDeactivationEmail(token);
 }
 
 export const is2FANeeded = async (email: string): Promise<boolean> => {
@@ -195,6 +196,7 @@ export const doLogin = async (
       return {
         user: clearUser,
         token: token,
+        newToken,
         mnemonic: clearMnemonic,
       };
     })
@@ -501,12 +503,12 @@ export const signUp = async (params: SignUpParams) => {
   if (isNewUser) dispatch(referralsThunks.initializeThunk());
   await trackSignUp(xUser.uuid, email);
 
-  return { token: xToken, user: xUser, mnemonic };
+  return { token: xToken, user: xUser, mnemonic, newToken: xNewToken };
 };
 
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
-  const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
+  const { token, newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
   dispatch(userActions.setUser(user));
 
   try {
@@ -524,7 +526,7 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
 
   userActions.setUser(user);
 
-  return { token, user, mnemonic };
+  return { token, user, mnemonic, newToken };
 };
 
 export const authenticateUser = async (params: AuthenticateUserParams): Promise<ProfileInfo> => {
@@ -552,6 +554,11 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
   }
 };
 
+export const vpnExtensionAuth = (newToken: string, source = 'drive-web') => {
+  const targetUrl = process.env.REACT_APP_HOSTNAME;
+  window.postMessage({ source: source, payload: newToken }, targetUrl);
+};
+
 const authService = {
   logOut,
   check2FANeeded: is2FANeeded,
@@ -567,6 +574,7 @@ const authService = {
   requestUnblockAccount,
   unblockAccount,
   authenticateUser,
+  vpnExtensionAuth,
 };
 
 export default authService;

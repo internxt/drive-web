@@ -49,7 +49,8 @@ const AccountSection = ({ changeSection, onClosePreferences }: AccountSectionPro
   };
 
   const changeUserEmail = async (newEmail) => {
-    await userService.changeEmail(newEmail);
+    const emailLowerCase = newEmail.toLowerCase();
+    await userService.changeEmail(emailLowerCase);
     notificationsService.show({
       text: translate('views.account.tabs.account.accountDetails.changeEmail.sucessSendingVerification', {
         email: newEmail,

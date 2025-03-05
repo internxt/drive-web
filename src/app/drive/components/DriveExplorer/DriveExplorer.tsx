@@ -16,10 +16,10 @@ import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useHotkeys } from 'react-hotkeys-hook';
-import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 
 import { Role } from '@internxt/sdk/dist/drive/share/types';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import { t } from 'i18next';
 import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
@@ -68,9 +68,11 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
-import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
+import { getAncestorsAndSetNamePath } from '../../../store/slices/storage/storage.thunks/goToFolderThunk';
 import { IRoot } from '../../../store/slices/storage/types';
-import { useTrashPagination } from 'app/drive/hooks/trash/useTrashPagination';
+import { useTrashPagination } from '../../../drive/hooks/trash/useTrashPagination';
+import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { uploadFoldersWithManager } from '../../../network/UploadFolderManager';
 
 export const UPLOAD_ITEMS_LIMIT = 3000;
 
@@ -99,6 +101,7 @@ interface DriveExplorerProps {
   namePath: FolderPath[];
   dispatch: AppDispatch;
   workspace: Workspace;
+  selectedWorkspace: WorkspaceData | null;
   planLimit: number;
   planUsage: number;
   isOver: boolean;
@@ -143,11 +146,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     user,
     getTrashPaginated,
     roles,
+    selectedWorkspace,
   } = props;
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
-  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const menuItemsRef = useRef<HTMLDivElement | null>(null);
   const menuContextItemsRef = useRef<HTMLDivElement | null>(null);
 
@@ -677,7 +680,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           />
         )}
         <div className="flex w-1 grow flex-col">
-          <div className="z-10 flex flex-wrap min-h-14 max-w-full shrink-0 justify-between px-5">
+          <div className="z-10 flex flex-wrap min-h-14 max-w-full shrink-0 justify-between px-5 py-2 ">
             <div
               className={`mr-20 ${isTrash ? 'min-w-0' : 'min-w-[200px]'} flex w-full flex-1 flex-row flex-wrap items-center text-lg ${titleClassName ?? ''}`}
             >
@@ -904,9 +907,13 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
             onSuccess: onDragAndDropEnd,
           },
         }));
-        dispatch(storageThunks.uploadMultipleFolderThunkNoCheck(folderDataToUpload)).then(() => {
-          dispatch(fetchSortedFolderContentThunk(currentFolderId));
+
+        await uploadFoldersWithManager({
+          payload: folderDataToUpload,
+          selectedWorkspace: props.selectedWorkspace,
+          dispatch,
         });
+        dispatch(fetchSortedFolderContentThunk(currentFolderId));
       }
     }
   } else {
@@ -952,6 +959,7 @@ const dropTargetCollect: DropTargetCollector<
 
 export default connect((state: RootState) => {
   const currentFolderId: string = storageSelectors.currentFolderId(state);
+  const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
   const hasMoreFolders = state.storage.hasMoreDriveFolders[currentFolderId] ?? true;
   const hasMoreFiles = state.storage.hasMoreDriveFiles[currentFolderId] ?? true;
 
@@ -968,6 +976,7 @@ export default connect((state: RootState) => {
     viewMode: state.storage.viewMode,
     namePath: state.storage.namePath,
     workspace: state.session.workspace,
+    selectedWorkspace: selectedWorkspace,
     planLimit: planSelectors.planLimitToShow(state),
     planUsage: planSelectors.planUsageToShow(state),
     folderOnTrashLength: state.storage.folderOnTrashLength,

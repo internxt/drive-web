@@ -4,22 +4,39 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 85%!",
-    "title": "Protect what you love, forever!",
-    "subtitle": "Christmas Web App Theme + Chance to win up to 10TB of storage!",
+    "label": "Save 80%!",
+    "title": "Brand new pricing plans!",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
-    "boldBottomText": "Special Offer! ",
-    "bottomText":" Win two Internxt x Swiss Peak backpacks",
     "features": [
-      "A lifetime of privacy, one-time payment",
-      "End-to-end encrypted cloud storage",
+      "Premium VPN and Antivirus ",
+      "Post-quantum encryption",
       "Open-source and audited",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends February 25th"
+      "Offer ends March 17"
     ]
+  },
+  "suscirptionsBanner": {
+    "title": "Supercharge your plan!",
+    "features":[
+      "Post-quantum encryption",
+      "Drive, VPN and Antivirus",
+      "Upcoming Mail and Meet"
+    ],
+    "description": "Renew your subscription and get our new features!",
+    "cta": "80% OFF"
+  },
+  "lifetimesBanner": {
+    "title": "Supercharge your plan!",
+    "features":[
+      "Post-quantum encryption",
+      "Drive, VPN and Antivirus",
+      "Upcoming Mail and Meet"
+    ],
+    "description": "Upgrade your plan with our new features and stack your storage!",
+    "cta": "80% OFF"
   },
   "valentinesBanner": {
     "title": "Love without limits!",
@@ -168,7 +185,7 @@
     }
   },
   "checkout": {
-    "title": "You're almost there! Checkout securely:",
+    "title": "You're almost there! Checkout securely",
     "pay": "Pay",
     "processing": "Processing...",
     "checkout": "Checkout",
@@ -205,6 +222,12 @@
         "year": "year",
         "lifetime": "lifetime"
       },
+      "renewalTitle": {
+        "month": "monthly",
+        "year": "annually",
+        "lifetime": "lifetime"
+      },
+      "pcMobileRenews": "* Renews at 50€ first year after trial period",
       "title": "Order summary",
       "selectedPlan": "Selected plan",
       "numberOfUsers": "Number of users: {{seats}}",
@@ -244,7 +267,7 @@
           ]
         }
       },
-      "total": "Total: ",
+      "total": "Total ",
       "totalForBusiness": "Total for {{N}} users: ",
       "addCoupon": {
         "buttonTitle": "Add coupon",
@@ -297,7 +320,7 @@
     },
     "renewal": {
       "monthly": "Monthly",
-      "annually": "Annually",
+      "annually": "Annual",
       "lifetime": "Lifetime"
     },
     "workspaces": {
@@ -440,7 +463,7 @@
               "errorSendingVerification": "Error sending verification",
               "confirm": "Confirm"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "The name must be between one and twenty characters",
               "lastnameError": "The last name must be between one and twenty characters"
             }
@@ -1662,7 +1685,7 @@
           "remove": "Remove member",
           "passwordChange": "Request password change"
         },
-        "leaveModal":{
+        "leaveModal": {
           "title": "Leave",
           "description": "You will lose access to the Workspace and your content will be transferred to the owner",
           "leave": "Leave",
@@ -1842,30 +1865,99 @@
         "free": "Get up to 10 GB for free",
         "manageBilling": "Manage billing",
         "freeForever": "Free forever",
+        "billedAnnually":"billed annually",
         "year": "Year",
         "month": "Month",
         "lifetime": "Lifetime",
+        "types": {
+          "essential": "Essential",
+          "premium": "Premium",
+          "ultimate": "Ultimate",
+          "standard": "Standard",
+          "pro": "Pro",
+          "free":"Free"
+        },
         "planFeaturesList": {
           "title": "Plan details",
-          "storage": " of storage",
-          "featureOne": "Encrypted file and folder sharing.",
-          "featureTwo": "Password-protected file sharing.",
-          "featureThree": "Access your files from any device.",
-          "featureFour": "Upload files up to 40GB.",
-          "featureFive": "Two-factor authentication (2FA).",
-          "featureSix": "Premium customer support.",
-          "featureSeven": "30-day money-back guarantee."
+          "commingSoon": "Coming soon",
+          "storage": " zero-knowledge encrypted storage",
+          "essentialFeatures":{
+            "feature1": "Post-quantum encryption",
+            "feature2":"Ultra fast unlimited VPN (FR)",
+            "feature4":"Antivirus",
+            "feature3":"Backup your files",
+            "feature5":"Password-protected file sharing",
+            "feature6":"GDPR compliance",
+            "feature7":"Two-factor authentication (2FA)",
+            "feature8": "CLI, WebDav & Rclone support"
+          },
+          "premiumFeatures":{
+            "feature1": "Post-quantum encryption",
+            "feature2": "Ultra fast unlimited VPN (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3":"Backup your files" ,
+            "feature5": "Password-protected file sharing",
+            "feature6":"GDPR compliance" ,
+            "feature7":"Two-factor authentication (2FA)" ,
+            "feature8": "CLI, WebDav & Rclone support",
+            "commingSoonFeatures": {
+              "feature1": "Meet (3 participants)",
+              "feature2": "Mail (3 addresses)"
+            }
+          },
+          "ultimateFeatures":{
+            "feature1": "Post-quantum encryption",
+            "feature2": "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus",
+            "feature3":"Backup your files" ,
+            "feature5": "Password-protected file sharing",
+            "feature6":"GDPR compliance" ,
+            "feature7":"Two-factor authentication (2FA)" ,
+            "feature8": "CLI, WebDav & Rclone support",
+            "commingSoonFeatures": {
+              "feature1": "Meet (5 participants)",
+              "feature2": "Mail (5 addresses)"
+            }
+          },
+          "freeFeatures": {
+            "feature1": "Zero-knowledge encryption",
+            "feature2": "Free Standard VPN (FR)",
+            "feature3": "CLI, WebDav & Rclone support"
+          }
         },
         "businessPlanFeaturesList": {
           "title": "Plan details",
           "storage": " of storage",
-          "featureOne": "Encrypted file and folder sharing.",
-          "featureTwo": "Create and manage users & teams.",
-          "featureThree": "Starting at 3 users and up to 100.",
-          "featureFour": "GDPR compliant.",
-          "featureFive": "Upload files of up to 40GB.",
-          "featureSix": "Manage account billing & payments.",
-          "featureSeven": "Premium customer support."
+          "standardFeatures":{
+            "feature1": "Post-quantum encryption",
+            "feature2": "Ultra fast unlimited VPN (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3":"Backup your files" ,
+            "feature5": "Password-protected file sharing",
+            "feature6":"GDPR compliance" ,
+            "feature7":"Two-factor authentication (2FA)" ,
+            "feature8": "CLI, WebDav & Rclone support",
+            "feature9":"Manage account billing & payments",
+            "commingSoonFeatures": {
+              "feature1": "Meet up to 10 users (max. 10 participants)",
+              "feature2": "1 custom email address/user"
+            }
+            },
+          "proFeatures":{
+            "feature1": "Post-quantum encryption",
+            "feature2": "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus",
+            "feature3":"Backup your files" ,
+            "feature5": "Password-protected file sharing",
+            "feature6":"GDPR compliance" ,
+            "feature7":"Two-factor authentication (2FA)" ,
+            "feature8": "CLI, WebDav & Rclone support",
+            "feature9":"Manage account billing & payments",
+            "commingSoonFeatures": {
+              "feature1": "Meet up to 100 users (max. 10 participants)",
+              "feature2": "2 custom email address/user"
+            }
+          }
         },
         "user": "user"
       },

@@ -34,6 +34,7 @@ interface UploadItemsThunkOptions {
   onSuccess: () => void;
   isRetriedUpload?: boolean;
   disableDuplicatedNamesCheck?: boolean;
+  disableExistenceCheck?: boolean;
 }
 
 interface UploadItemsPayload {
@@ -43,6 +44,7 @@ interface UploadItemsPayload {
   parentFolderId: string;
   options?: Partial<UploadItemsThunkOptions>;
   filesProgress?: { filesUploaded: number; totalFilesToUpload: number };
+  onFileUploadCallback?: (driveFileData: DriveFileData) => void;
 }
 
 const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = {
@@ -394,7 +396,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
   'storage/uploadItems',
   async (
-    { files, parentFolderId, options: payloadOptions, filesProgress }: UploadItemsPayload,
+    { files, parentFolderId, options: payloadOptions, filesProgress, onFileUploadCallback }: UploadItemsPayload,
     { getState, dispatch },
   ) => {
     const state = getState();
@@ -423,6 +425,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       files,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
+      disableExistenceCheck: options.disableExistenceCheck,
     });
 
     showEmptyFilesNotification(zeroLengthFilesNumber);
@@ -452,7 +455,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         openMaxSpaceOccupiedDialog,
         DatabaseUploadRepository.getInstance(),
         abortController,
-
         {
           ...options,
           ownerUserAuthenticationData: ownerUserAuthenticationData ?? undefined,
@@ -462,6 +464,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
           },
         },
         filesProgress,
+        onFileUploadCallback,
       );
     } catch (error) {
       errors.push(error as Error);
