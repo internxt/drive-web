@@ -22,39 +22,33 @@ export class BannerManager {
     this.bannerItemInLocalStorage = localStorageService.get(BANNER_NAME_IN_LOCAL_STORAGE);
     this.isNewAccount = useAppSelector(userSelectors.hasSignedToday);
     this.todayDate = new Date().getDate().toString();
-
-    this.cleanUpExpiredBanners();
   }
 
-  private cleanUpExpiredBanners(): void {
+  shouldShowBanner(): boolean {
+    const isNewUser = this.plan.individualSubscription?.type === 'free';
     const isOfferOffDay = new Date() > this.offerEndDay;
-    const bannerExpirationDate = this.bannerItemInLocalStorage ? Number(this.bannerItemInLocalStorage) : null;
-    const isBannerExpired = bannerExpirationDate !== null && bannerExpirationDate < Number(this.todayDate);
+    const showBannerIfLocalStorageItemExpires = JSON.parse(this.bannerItemInLocalStorage as string) < this.todayDate;
 
-    if (isOfferOffDay || isBannerExpired) {
+    if (isOfferOffDay) {
       localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
       localStorageService.removeItem(BANNER_NAME_FOR_FREE_USERS);
     }
-  }
 
-  private shouldShowBannerByType(type: 'free' | 'lifetime' | 'subscription'): boolean {
-    const isUserSubscriptionType = this.plan.individualSubscription?.type === type;
-    const isOfferOffDay = new Date() > this.offerEndDay;
-    const hasExpiredBanner = this.bannerItemInLocalStorage
-      ? Number(this.bannerItemInLocalStorage) < Number(this.todayDate)
-      : false;
+    if (showBannerIfLocalStorageItemExpires) {
+      localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
+      localStorageService.removeItem(BANNER_NAME_FOR_FREE_USERS);
+    }
 
     return (
-      isUserSubscriptionType &&
+      isNewUser &&
       !this.bannerItemInLocalStorage &&
       !isOfferOffDay &&
       ((this.isNewAccount && this.isTutorialCompleted) || !this.isNewAccount)
     );
   }
 
-  handleBannerDisplayByType(type: 'free' | 'lifetime' | 'subscription', setShowBanner: (show: boolean) => void): void {
-    const shouldShow = this.shouldShowBannerByType(type);
-    if (shouldShow) {
+  handleBannerDisplay(setShowBanner: (show: boolean) => void): void {
+    if (this.shouldShowBanner()) {
       setTimeout(() => {
         setShowBanner(true);
       }, 5000);
