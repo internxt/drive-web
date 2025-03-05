@@ -13,9 +13,8 @@ import { shareItemWithTeamV2 } from 'app/drive/components/DriveExplorer/utils';
 import workspacesService from 'app/core/services/workspace.service';
 import errorService from 'app/core/services/error.service';
 
-import Modal from 'app/shared/components/Modal';
 import { X } from '@phosphor-icons/react';
-import { Button, Loader } from '@internxt/ui';
+import { Button, Loader, Modal } from '@internxt/ui';
 
 interface ShareWithTeamDialogProps {
   item: DriveItemData;
