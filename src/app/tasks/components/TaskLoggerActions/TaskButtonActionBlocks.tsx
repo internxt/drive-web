@@ -6,7 +6,9 @@ import { ReactComponent as Play } from '../../../../assets/icons/tasklogger/play
 import { ReactComponent as Success } from '../../../../assets/icons/tasklogger/success-check.svg';
 import { ReactComponent as ErrorIcon } from '../../../../assets/icons/tasklogger/error.svg';
 import { ReactComponent as MagnifyingGlass } from '../../../../assets/icons/tasklogger/magnifying-glass.svg';
+import { ReactComponent as InfoIcon } from '../../../../assets/icons/tasklogger/info.svg';
 import { ReactComponent as RestartIcon } from '../../../../assets/icons/tasklogger/circle-arrow.svg';
+import { ReactComponent as WarningIcon } from '../../../../assets/icons/tasklogger/warning.svg';
 import { TaskLoggerButton } from '../TaskLoggerButton/TaskLoggerButton';
 import { t } from 'i18next';
 
@@ -79,12 +81,15 @@ const PendingBlock = (): JSX.Element => {
   return <span className="text-sm font-medium text-gray-50">{t('tasks.waiting')}</span>;
 };
 
-const SuccessBlock = ({ isHovered, magnifyingAction, isUploadTask }): JSX.Element => {
+const SuccessBlock = ({ isHovered, magnifyingAction, infoAction, isUploadTask, haveWarnings }): JSX.Element => {
   return isHovered && isUploadTask ? (
-    <TaskLoggerButton onClick={magnifyingAction} Icon={MagnifyingGlass} />
+    <>
+      {haveWarnings && <TaskLoggerButton onClick={infoAction} Icon={InfoIcon} />}
+      <TaskLoggerButton onClick={magnifyingAction} Icon={MagnifyingGlass} />
+    </>
   ) : (
     <div className="flex h-8 w-8 items-center justify-center">
-      <Success width={20} height={20} />
+      {haveWarnings ? <WarningIcon width={20} height={20} /> : <Success width={20} height={20} />}
     </div>
   );
 };
