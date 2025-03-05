@@ -360,7 +360,7 @@ export const getNewToken = async (): Promise<string> => {
   const serviceHeaders = httpService.getHeaders(true, false);
   const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
 
-  const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
+  const res = await fetch('https://gateway.internxt.com/drive-old/new-token', {
     headers: headers,
   });
   if (!res.ok) {
