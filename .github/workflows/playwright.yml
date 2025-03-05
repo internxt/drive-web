@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       NODE_ENV: 'staging'
       REACT_APP_NODE_ENV: 'staging'
