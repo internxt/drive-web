@@ -22,33 +22,39 @@ export class BannerManager {
     this.bannerItemInLocalStorage = localStorageService.get(BANNER_NAME_IN_LOCAL_STORAGE);
     this.isNewAccount = useAppSelector(userSelectors.hasSignedToday);
     this.todayDate = new Date().getDate().toString();
+
+    this.cleanUpExpiredBanners();
   }
 
-  shouldShowBanner(): boolean {
-    const isNewUser = this.plan.individualSubscription?.type === 'free';
+  private cleanUpExpiredBanners(): void {
     const isOfferOffDay = new Date() > this.offerEndDay;
-    const showBannerIfLocalStorageItemExpires = JSON.parse(this.bannerItemInLocalStorage as string) < this.todayDate;
+    const bannerExpirationDate = this.bannerItemInLocalStorage ? Number(this.bannerItemInLocalStorage) : null;
+    const isBannerExpired = bannerExpirationDate !== null && bannerExpirationDate < Number(this.todayDate);
 
-    if (isOfferOffDay) {
+    if (isOfferOffDay || isBannerExpired) {
       localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
       localStorageService.removeItem(BANNER_NAME_FOR_FREE_USERS);
     }
+  }
 
-    if (showBannerIfLocalStorageItemExpires) {
-      localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
-      localStorageService.removeItem(BANNER_NAME_FOR_FREE_USERS);
-    }
+  private shouldShowBannerByType(type: 'free' | 'lifetime' | 'subscription'): boolean {
+    const isUserSubscriptionType = this.plan.individualSubscription?.type === type;
+    const isOfferOffDay = new Date() > this.offerEndDay;
+    const hasExpiredBanner = this.bannerItemInLocalStorage
+      ? Number(this.bannerItemInLocalStorage) < Number(this.todayDate)
+      : false;
 
     return (
-      isNewUser &&
+      isUserSubscriptionType &&
       !this.bannerItemInLocalStorage &&
       !isOfferOffDay &&
       ((this.isNewAccount && this.isTutorialCompleted) || !this.isNewAccount)
     );
   }
 
-  handleBannerDisplay(setShowBanner: (show: boolean) => void): void {
-    if (this.shouldShowBanner()) {
+  handleBannerDisplayByType(type: 'free' | 'lifetime' | 'subscription', setShowBanner: (show: boolean) => void): void {
+    const shouldShow = this.shouldShowBannerByType(type);
+    if (shouldShow) {
       setTimeout(() => {
         setShowBanner(true);
       }, 5000);
