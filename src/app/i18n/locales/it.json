@@ -9,20 +9,21 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia l'80%!",
-    "title": "Sorpresa di Babbo Natale!",
-    "subtitle": "Tema Web App di Natale + Possibilità di vincere fino a 10TB di spazio di archiviazione!",
-    "cta": "Scegli il tuo piano",
+    "label": "Risparmia l'85%!",
+    "title": "Proteggi ciò che ami, per sempre!",
+    "subtitle": "Tema Web di Natale + Possibilità di vincere fino a 10 TB di spazio di archiviazione!",
+    "cta": "Scegli il piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
     "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
+    "boldBottomText": "Offerta speciale!",
+    "bottomText": "Vinci due zaini Internxt x Swiss Peak",
     "features": [
-      "Risparmia su tutti i piani premium",
-      "Archivio cloud privato e crittografato",
-      "Open source e verificato",
+      "Una vita di privacy, un pagamento unico",
+      "Archiviazione cloud crittografata end-to-end",
+      "Open-source e verificato",
       "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
-      "L'offerta termina il",
-      "7 gennaio"
+      "L'offerta termina il 25 febbraio"
     ]
   },
   "banner": {
@@ -70,7 +71,8 @@
     "system": "Sistema",
     "starwars": "Star Wars",
     "halloween": "Halloween",
-    "christmas": "Natale"
+    "christmas": "Natale",
+    "superBowl": "Super Bowl"
   },
   "auth": {
     "email": "Email",
@@ -166,7 +168,7 @@
     }
   },
   "checkout": {
-    "title": "Ci sei quasi! Completa il pagamento in modo sicuro:",
+    "title": "Ci sei quasi! Completa il pagamento in modo sicuro",
     "pay": "Paga",
     "processing": "Elaborazione in corso...",
     "checkout": "Pagamento",
@@ -206,6 +208,12 @@
         "year": "annuale",
         "lifetime": "a vita"
       },
+      "renewalTitle": {
+       "month": "mensile",
+        "year": "annuale",
+        "lifetime": "a vita"
+      },
+      "pcMobileRenews": "* Si rinnova a 50€ il primo anno dopo il periodo di prova",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 piano {{interval}}",
         "year": "{{spaceToUpgrade}} - 1 piano {{interval}}",
@@ -242,7 +250,7 @@
           ]
         }
       },
-      "total": "Totale: ",
+      "total": "Totale ",
       "totalForBusiness": "Totale per {{N}} utenti: ",
       "addCoupon": {
         "buttonTitle": "Aggiungi coupon",
@@ -437,6 +445,10 @@
               "sucessSendingVerification": "Verifica e-mail inviata a {{email}}",
               "errorSendingVerification": "Errore nell'invio della verifica",
               "confirm": "Confermare"
+            },
+            "errorMsg": {
+              "nameError": "Il nome deve essere tra uno e venti caratteri",
+              "lastnameError": "Il cognome deve essere tra uno e venti caratteri"
             }
           },
           "support": {
@@ -457,7 +469,10 @@
           "subsRenew": "L'abbonamento si rinnova tra {{daysUntilRenewal}} giorni",
           "cancelSubscriptionModal": {
             "title": "Annulla abbonamento",
-            "description": "Stai per cancellare il tuo {{currentPlanName}} Internxt. Annullando il tuo piano, verrai declassato al piano gratuito Internxt {{freePlanName}}. Confermare la scelta per procedere, grazie.",
+            "description": {
+              "individual": "Stai per annullare il tuo piano Internxt {{currentPlanName}}. Annullando il tuo piano, verrai retrocesso al piano gratuito di Internxt {{freePlanName}}. Conferma la tua scelta per procedere, per favore.",
+              "business": "Annullando il tuo piano, lo spazio di lavoro verrà eliminato insieme a tutti i dati. Per favore, conferma la tua scelta per procedere."
+            },
             "keepSubscription": "Mantieni l'abbonamento",
             "continua": "Continua",
             "cancelSubscription": "Annulla abbonamento",
@@ -879,7 +894,8 @@
         "title": "Invita le persone",
         "textarea": "Inserire il testo del messaggio (opzionale)",
         "notifyUsers": "Notifica agli utenti",
-        "instructions": "Premere invio o spazio per separare le e-mail",
+        "instructions": "Premi Invio o virgola per inserire altri indirizzi email",
+        "duplicatedEmail": "L'indirizzo email esiste già",
         "email": "Tipo e-mail",
         "invite": "Invitare",
         "editor": "Editore",
@@ -894,6 +910,7 @@
         "cancel": "Annulla",
         "error": {
           "errorInviting": "Errore durante l'invio dell'invito a {{email}}",
+          "userAlreadyInvited": "L'utente {{email}} è già stato invitato",
           "acceptedError": "Errore nell'accettazione dell'invito alla cartella condivisa",
           "declinedError": "Errore nel rifiuto dell'invito alla cartella condivisa"
         }
@@ -989,7 +1006,9 @@
     "changingName": "Errore durante la modifica del nome",
     "fileAlreadyExists": "Il file con lo stesso nome esiste già",
     "folderAlreadyExists": "Esiste già una cartella con lo stesso nome",
+    "folderInvalidName": "Il nome della cartella non è valido",
     "folderCannotBeEmpty": "Il nome della cartella non può essere vuoto",
+    "fileCannotBeEmpty": "Il nome del file non può essere vuoto",
     "creatingFolder": "Errore durante la creazione della cartella",
     "sendReferralInvitation": "Impossibile inviare l'e-mail di invito",
     "sendClaimEmail": "Impossibile inviare l'e-mail di richiesta di risarcimento",
@@ -1630,9 +1649,16 @@
         },
         "actions": {
           "deactivate": "Disattiva membro",
+          "leave": "Lascia",
           "reactivate": "Riattiva membro",
           "remove": "Rimuovi membro",
           "passwordChange": "Richiedi la modifica della password"
+        },
+        "leaveModal": {
+          "title": "Lascia",
+          "description": "Perderai l'accesso al Workspace e i tuoi contenuti saranno trasferiti al proprietario",
+          "leave": "Lascia",
+          "leaving": "Lasciando"
         }
       },
       "teams": {
@@ -1794,38 +1820,108 @@
       "emptyTrashDescription": "Gli elementi nel cestino verranno eliminati in modo permanente",
       "plans": {
         "title": "Piani",
-        "current": "Corrente",
-        "upgrade": "Aggiornamento",
-        "downgrade": "Retrocessione",
+        "current": "Attuale",
+        "upgrade": "Aggiorna",
+        "downgrade": "Retrocedi",
         "free": "Ottieni fino a 10 GB gratis",
         "manageBilling": "Gestisci la fatturazione",
-        "freeForever": "Gratuito per sempre",
+        "freeForever": "Gratis per sempre",
+        "billedAnnually":"fatturato annualmente",
         "year": "Anno",
         "month": "Mese",
-        "lifetime": "Lifetime",
+        "lifetime": "A vita",
+        "types": {
+          "essential": "Essential",
+          "premium": "Premium",
+          "ultimate": "Ultimate",
+          "standard": "Standard",
+          "pro": "Pro",
+          "free": "Free"
+        },
         "planFeaturesList": {
           "title": "Dettagli del piano",
-          "storage": " di spazio di archiviazione",
-          "featureOne": "Condivisione di file e cartelle crittografati.",
-          "featureTwo": "Condivisione di file protetta da password.",
-          "featureThree": "Accedi ai tuoi file da qualsiasi dispositivo.",
-          "featureFour": "Carica file fino a 20 GB.",
-          "featureFive": "Autenticazione a due fattori (2FA).",
-          "featureSix": "Supporto clienti premium.",
-          "featureSeven": "Garanzia di rimborso di 30 giorni."
+          "commingSoon": "Prossimamente",
+          "storage": " di archiviazione ",
+          "essentialFeatures": {
+            "feature1": "Crittografia post-quantistica",
+            "feature2": "VPN ad alta velocità illimitata (FR)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI, WebDav & Rclone"
+          },
+          "premiumFeatures": {
+            "feature1": "Crittografia post-quantistica",
+            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "feature1": "Meet (3 partecipanti)",
+              "feature2": "Mail (3 email)"
+            }
+          },
+          "ultimateFeatures": {
+            "feature1": "Crittografia post-quantistica",
+            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "feature1": "Meet (5 partecipanti)",
+              "feature2": "Mail (5 email)"
+            }
+          },
+          "freeFeatures": {
+            "feature1": "Crittografia zero-knowledge",
+            "feature2": "VPN standard (FR)",
+            "feature3": "Supporto CLI, WebDav & Rclone"
+          }
         },
         "businessPlanFeaturesList": {
           "title": "Dettagli del piano",
-          "storage": " di spazio di archiviazione",
-          "featureOne": "Condivisione di file e cartelle crittografati.",
-          "featureTwo": "Crea e gestisci utenti e team.",
-          "featureThree": "A partire da 3 utenti e fino a 100.",
-          "featureFour": "Conformità GDPR.",
-          "featureFive": "Carica file fino a 20 GB.",
-          "featureSix": "Gestisci la fatturazione e i pagamenti dell'account.",
-          "featureSeven": "Supporto clienti premium."
+          "storage": " di archiviazione",
+          "standardFeatures": {
+            "feature1": "Crittografia post-quantistica e zero-knowledge",
+            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9": "Gestisci la fatturazione e i pagamenti del tuo account",
+            "commingSoonFeatures": {
+              "feature1": "Riunioni fino a 10 utenti (max. 10 partecipanti)",
+              "feature2": "1 indirizzo email personalizzato/utente"
+            }
+          },
+          "proFeatures": {
+            "feature1": "Crittografia post-quantistica e zero-knowledge",
+            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus",
+            "feature3": "Backup",
+            "feature5": "Condivisione di file protetti da password",
+            "feature6": "Conformità GDPR",
+            "feature7": "Autenticazione a due fattori (2FA)",
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9": "Gestisci la fatturazione e i pagamenti del tuo account",
+            "commingSoonFeatures": {
+              "feature1": "Riunioni fino a 10 utenti (max. 10 partecipanti)",
+              "feature2": "1 indirizzo email personalizzato/utente"
+            }
+          }
         },
-        "user": "utente"
+        "user": "Utente",
+        "persuser": "per utilisateur"
       },
       "billing": {
         "title": "Fatturazione"

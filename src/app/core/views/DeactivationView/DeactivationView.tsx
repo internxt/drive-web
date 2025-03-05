@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Alert, Container } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { isMobile } from 'react-device-detect';
@@ -12,6 +12,7 @@ import { match } from 'react-router-dom';
 import navigationService from '../../services/navigation.service';
 import { AppView } from '../../types';
 import { SdkFactory } from '../../factory/sdk';
+import localStorageService from 'app/core/services/local-storage.service';
 
 export interface DeactivationViewProps {
   match?: match<{ token: string }>;
@@ -41,9 +42,10 @@ class DeactivationView extends React.Component<DeactivationViewProps> {
   };
 
   ConfirmDeactivateUser = (token: string) => {
-    const authClient = SdkFactory.getInstance().createAuthClient();
+    const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+    const userToken = localStorageService.get('xNewToken') ?? undefined;
     return authClient
-      .confirmDeactivation(token)
+      .confirmUserDeactivation(token, userToken)
       .then(() => {
         this.ClearAndRedirect();
       })

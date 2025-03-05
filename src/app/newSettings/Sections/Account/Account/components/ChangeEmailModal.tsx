@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import Input from '../../../../../shared/components/Input';
 import Modal from '../../../../../shared/components/Modal';
 
@@ -8,7 +8,7 @@ interface ChangeEmailModalProps {
   isOpen: boolean;
   onClose: () => void;
   email: string;
-  checkEmailCredentials: (email: string, password: string) => Promise<boolean>;
+  checkEmailCredentials: (password: string) => Promise<boolean>;
   changeEmail: (newEmail: string) => Promise<void>;
   onChangeEmailError: (error: unknown) => void;
 }
@@ -47,7 +47,7 @@ const ChangeEmailModal = ({
     } else {
       try {
         setStatus({ tag: 'loading' });
-        const correctPassword = await checkEmailCredentials(email, password);
+        const correctPassword = await checkEmailCredentials(password);
         if (correctPassword) {
           await changeEmail(newEmail);
           onClose();

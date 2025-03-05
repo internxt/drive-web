@@ -10,7 +10,7 @@ import errorService from '../../../core/services/error.service';
 import { HTTP_CODES } from '../../../core/services/http.service';
 import AppError, { IFormValues } from '../../../core/types';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { Button, Avatar } from '@internxt/internxtui';
+import { Button, Avatar } from '@internxt/ui';
 import Input from '../../../shared/components/Input';
 import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { RootState } from '../../../store';
@@ -18,6 +18,7 @@ import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sh
 import { Role } from '../../../store/slices/sharedLinks/types';
 import ShareUserNotRegistered from '../ShareUserNotRegistered/ShareUserNotRegistered';
 import './ShareInviteDialog.scss';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface ShareInviteDialogProps {
   onInviteUser: () => void;
@@ -30,6 +31,10 @@ interface UsersToInvite {
   email: string;
   userRole: string;
   publicKey: string;
+  keys?: {
+    ecc: string;
+    kyber: string;
+  };
   isNewUser: boolean;
 }
 
@@ -70,7 +75,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     const isDuplicated = usersToInvite.find((user) => user.email === userInvited.email);
 
     if (!isDuplicated && isValidEmail(userInvitedEmail)) {
-      const publicKey = await getUserPublicKey(email);
+      const { publicKey, keys } = await getUserPublicKey(email);
 
       const markUserAsNew = !publicKey;
 
@@ -80,11 +85,17 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
       }
 
       const unique: Array<UsersToInvite> = [...usersToInvite];
-      unique.push({ ...userInvited, publicKey });
+      unique.push({ ...userInvited, publicKey, keys });
       setUsersToInvite(unique);
       setEmail('');
     } else {
       setEmailAccent('error');
+      if (isDuplicated) {
+        notificationsService.show({
+          text: translate('modals.shareModal.invite.duplicatedEmail'),
+          type: ToastType.Error,
+        });
+      }
     }
     setIsAnyInviteLoading(false);
   };
@@ -99,17 +110,23 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     setUsersToInvite(newUserToInvite);
   };
 
-  const getUserPublicKey = async (email: string): Promise<string> => {
+  const getUserPublicKey = async (
+    email: string,
+  ): Promise<{ publicKey: string; keys: { kyber: string; ecc: string } }> => {
     let publicKey = '';
+    let keys = { kyber: '', ecc: '' };
     try {
       const publicKeyResponse = await userService.getPublicKeyByEmail(email);
       publicKey = publicKeyResponse.publicKey;
+      if (publicKeyResponse.keys) {
+        keys = publicKeyResponse.keys;
+      }
     } catch (error) {
       if ((error as AppError)?.status !== HTTP_CODES.NOT_FOUND) {
         errorService.reportError(error);
       }
     }
-    return publicKey;
+    return { publicKey, keys };
   };
 
   const processInvites = async (usersToInvite: UsersToInvite[]) => {
@@ -130,6 +147,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
             notifyUser,
             notificationMessage: messageText,
             publicKey: user.publicKey,
+            keys: user.keys,
             isNewUser: user.isNewUser,
           }),
         ),
@@ -146,7 +164,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     let isThereAnyNewUser = newUsersExists;
 
     if (usersList.length === 0 && isValidEmail(email)) {
-      const publicKey = await getUserPublicKey(email);
+      const { publicKey, keys } = await getUserPublicKey(email);
       if (!publicKey && !preCreateUsers) {
         isThereAnyNewUser = true;
       }
@@ -155,6 +173,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
         userRole,
         isNewUser: !publicKey,
         publicKey,
+        keys,
       });
     }
 

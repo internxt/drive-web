@@ -1,6 +1,4 @@
-import { BreadcrumbItemData } from '../types';
 import { t } from 'i18next';
-import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import { SharedNamePath } from 'app/share/types';
 import { useShareViewContext } from 'app/share/views/SharedLinksView/context/SharedViewContextProvider';
 import {
@@ -11,8 +9,14 @@ import {
   setCurrentFolderLevelResourcesToken,
   setCurrentFolderId,
 } from 'app/share/views/SharedLinksView/context/SharedViewContext.actions';
-import { useAppDispatch } from 'app/store/hooks';
-import { storageActions } from 'app/store/slices/storage';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { storageActions, storageSelectors } from 'app/store/slices/storage';
+import { canItemDrop, onItemDropped } from '../helper';
+import iconService from 'app/drive/services/icon.service';
+import { DragAndDropType } from 'app/core/types';
+import { NativeTypes } from 'react-dnd-html5-backend';
+import { BreadcrumbItemData, Breadcrumbs } from '@internxt/ui';
+import { useDrop } from 'react-dnd';
 
 interface BreadcrumbsSharedViewProps {
   resetSharedItems: () => void;
@@ -24,6 +28,10 @@ const BreadcrumbsSharedView = ({ resetSharedItems, sharedNamePath }: Breadcrumbs
   const { state, actionDispatch } = useShareViewContext();
 
   const { isLoading } = state;
+
+  const namePath = useAppSelector((state) => state.storage.namePath);
+  const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
+  const selectedItems = useAppSelector((state) => state.storage.selectedItems);
 
   const goToFolderBredcrumb = (id, name, uuid, token?) => {
     if (!isLoading) {
@@ -68,7 +76,20 @@ const BreadcrumbsSharedView = ({ resetSharedItems, sharedNamePath }: Breadcrumbs
     return items;
   };
 
-  return <Breadcrumbs items={breadcrumbShareViewItems()} />;
+  return (
+    <Breadcrumbs
+      items={breadcrumbShareViewItems()}
+      namePath={namePath}
+      isSomeItemSelected={isSomeItemSelected}
+      selectedItems={selectedItems}
+      onItemDropped={onItemDropped}
+      canItemDrop={canItemDrop}
+      dispatch={dispatch}
+      acceptedTypes={[NativeTypes.FILE, DragAndDropType.DriveItem]}
+      itemComponent={iconService.getItemIcon(true)}
+      useDrop={useDrop}
+    />
+  );
 };
 
 export default BreadcrumbsSharedView;

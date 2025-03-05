@@ -4,20 +4,21 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "節省80%！",
-    "title": "聖誕老人驚喜！",
-    "subtitle": "聖誕網頁應用主題 + 有機會贏取多達 10TB 的儲存空間！",
-    "cta": "選擇您的方案",
-    "guarantee": "30天退款保證",
-    "lastCta": "*此優惠僅適用於免費帳戶或新客戶",
+    "label": "節省 85%！",
+    "title": "永遠保護你所愛的一切！",
+    "subtitle": "聖誕主題網頁應用 + 最高可贏取 10TB 儲存空間！",
+    "cta": "選擇方案",
+    "guarantee": "30 天退款保證",
+    "lastCta": "*此優惠適用於免費帳戶或新客戶",
+    "boldBottomText": "特別優惠！",
+    "bottomText": "贏取兩個 Internxt x Swiss Peak 背包",
     "features": [
-      "所有高級方案享有巨大的折扣",
-      "私人加密雲端存儲",
-      "開源且經過審查",
-      "端到端加密傳輸",
+      "終身隱私保護，一次性付款",
+      "端對端加密雲端存儲",
+      "開源並經過審核",
+      "端對端加密傳輸",
       "無未經授權的訪問",
-      "優惠截止至",
-      "01月07日"
+      "優惠截止日期：2 月 25 日"
     ]
   },
   "valentinesBanner": {
@@ -70,7 +71,8 @@
     "system": "系統",
     "starwars": "星際大戰",
     "halloween": "Halloween",
-    "christmas": "聖誕節"
+    "christmas": "聖誕節",
+    "superBowl": "Super Bowl"
   },
   "auth": {
     "email": "電子郵件",
@@ -166,7 +168,7 @@
     }
   },
   "checkout": {
-    "title": "您快完成了！請安全結帳：",
+    "title": "您快完成了！請安全結帳",
     "pay": "支付",
     "processing": "處理中...",
     "checkout": "結帳",
@@ -206,6 +208,12 @@
         "year": "每年",
         "lifetime": "終身"
       },
+      "renewalTitle": {
+        "month": "每月",
+        "year": "每年",
+        "lifetime": "終身"
+      },
+      "pcMobileRenews": "* 試用期後第一年以 50€ 續訂",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",
         "year": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",
@@ -242,7 +250,7 @@
           ]
         }
       },
-      "total": "總計：",
+      "total": "總計d",
       "totalForBusiness": "總計 {{N}} 用戶：",
       "addCoupon": {
         "buttonTitle": "添加優惠券",
@@ -437,6 +445,10 @@
               "sucessSendingVerification": "驗證郵件已發送至 {{email}}",
               "errorSendingVerification": "發送驗證時出錯",
               "confirm": "確認"
+            },
+            "errorMsg": {
+              "nameError": "姓名必須在1到20個字符之間",
+              "lastnameError": "姓氏必須在1到20個字符之間"
             }
           },
           "support": {
@@ -457,7 +469,10 @@
           "subsRenew": "訂閱將在 {{daysUntilRenewal}} 天後續訂",
           "cancelSubscriptionModal": {
             "title": "取消訂閱",
-            "description": "您即將取消您的 {{currentPlanName}} Internxt 計劃。取消後，您將降級為免費 Internxt {{freePlanName}} 計劃。請確認以繼續。",
+            "description": {
+              "individual": "您即將取消您的 Internxt {{currentPlanName}} 方案。取消方案後，您將降級為免費的 Internxt {{freePlanName}} 方案。請確認您的選擇以繼續。",
+              "business": "取消方案後，工作區以及所有資料將被刪除。請確認您的選擇以繼續。"
+            },
             "keepSubscription": "保留訂閱",
             "continue": "繼續",
             "cancelSubscription": "取消訂閱",
@@ -849,7 +864,8 @@
         "title": "邀請人員",
         "textarea": "輸入您的消息文字（選填）",
         "notifyUsers": "通知用戶",
-        "instructions": "按 Enter 或空格鍵分隔郵件地址",
+        "instructions": "按回車或逗號輸入更多電子郵件地址",
+        "duplicatedEmail": "電子郵件地址已存在",
         "email": "輸入電子郵件",
         "invite": "邀請",
         "editor": "編輯者",
@@ -864,6 +880,7 @@
         "cancel": "取消",
         "error": {
           "errorInviting": "向{{email}}發送邀請時出錯",
+          "userAlreadyInvited": "使用者 {{email}} 已被邀請",
           "acceptedError": "接受共享文件夾邀請時出錯",
           "declinedError": "拒絕共享文件夾邀請時出錯"
         }
@@ -959,7 +976,9 @@
     "changingName": "更改名稱時出錯",
     "fileAlreadyExists": "具有相同名稱的文件已存在",
     "folderAlreadyExists": "已存在具有相同名稱的文件夾",
+    "folderInvalidName": "文件夾名稱無效",
     "folderCannotBeEmpty": "文件夾名稱不能為空",
+    "fileCannotBeEmpty": "檔案名稱不能為空",
     "creatingFolder": "創建文件夾時出錯",
     "sendReferralInvitation": "無法發送邀請電子郵件",
     "sendClaimEmail": "無法發送索賠郵件",
@@ -1605,9 +1624,16 @@
         },
         "actions": {
           "deactivate": "停用成員",
+          "leave": "離開",
           "reactivate": "重新啟用成員",
           "remove": "移除成員",
           "passwordChange": "要求更改密碼"
+        },
+        "leaveModal": {
+          "title": "離開",
+          "description": "您將失去對工作區的訪問權限，您的內容將轉移給擁有者",
+          "leave": "離開",
+          "leaving": "正在離開"
         }
       },
       "teams": {
@@ -1765,37 +1791,106 @@
       "emptyTrash": "清空垃圾桶",
       "emptyTrashDescription": "垃圾桶中的項目將被永久刪除",
       "plans": {
-        "title": "計劃",
+        "title": "方案",
         "current": "當前",
         "upgrade": "升級",
         "downgrade": "降級",
-        "free": "免費獲得最多10 GB",
-        "manageBilling": "管理計費",
+        "free": "免費獲取最多 10GB",
+        "manageBilling": "管理帳單",
         "freeForever": "永久免費",
+        "billedAnnually":"按年計費",
         "year": "年",
         "month": "月",
         "lifetime": "終身",
+        "types": {
+          "essential": "基礎版",
+          "premium": "高級版",
+          "ultimate": "終極版",
+          "standard": "標準版",
+          "pro": "專業版",
+          "free": "免費版"
+        },
         "planFeaturesList": {
-          "title": "計劃詳情",
-          "storage": " 的儲存空間",
-          "featureOne": "加密文件和文件夾共享。",
-          "featureTwo": "密碼保護的文件共享。",
-          "featureThree": "從任何設備訪問您的文件。",
-          "featureFour": "上傳文件最大可達20GB。",
-          "featureFive": "雙重身份驗證 (2FA)。",
-          "featureSix": "高級客戶支持。",
-          "featureSeven": "30天退款保證。"
+          "title": "方案詳情",
+          "commingSoon": "即將推出",
+          "storage": " 儲存空間",
+          "essentialFeatures": {
+            "feature1": "後量子加密",
+            "feature2": "無限高速 VPN（法國）",
+            "feature4": "防毒軟體",
+            "feature3": "檔案備份",
+            "feature5": "密碼保護的檔案共享",
+            "feature6": "符合 GDPR 規範",
+            "feature7": "雙重身份驗證（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支援"
+          },
+          "premiumFeatures": {
+            "feature1": "後量子加密",
+            "feature2": "無限高速 VPN（法國、德國、波蘭）",
+            "feature4": "防毒軟體",
+            "feature3": "檔案備份",
+            "feature5": "密碼保護的檔案共享",
+            "feature6": "符合 GDPR 規範",
+            "feature7": "雙重身份驗證（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支援",
+            "commingSoonFeatures": {
+              "feature1": "會議（最多 3 名參與者）",
+              "feature2": "電子郵件（最多 3 個帳戶）"
+            }
+          },
+          "ultimateFeatures": {
+            "feature1": "後量子加密",
+            "feature2": "無限高速 VPN（法國、德國、波蘭、加拿大、英國）",
+            "feature4": "防毒軟體",
+            "feature3": "檔案備份",
+            "feature5": "密碼保護的檔案共享",
+            "feature6": "符合 GDPR 規範",
+            "feature7": "雙重身份驗證（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支援",
+            "commingSoonFeatures": {
+              "feature1": "會議（最多 5 名參與者）",
+              "feature2": "電子郵件（最多 5 個帳戶）"
+            }
+          },
+          "freeFeatures": {
+            "feature1": "零知識加密",
+            "feature2": "標準 VPN（法國）",
+            "feature3": "CLI、WebDav 和 Rclone 支援"
+          }
         },
         "businessPlanFeaturesList": {
-          "title": "計劃詳情",
-          "storage": " 的儲存空間",
-          "featureOne": "加密文件和文件夾共享。",
-          "featureTwo": "創建和管理用戶及團隊。",
-          "featureThree": "從3名用戶起至多100名用戶。",
-          "featureFour": "符合GDPR規範。",
-          "featureFive": "上傳文件最大可達20GB。",
-          "featureSix": "管理帳戶帳單和付款。",
-          "featureSeven": "高級客戶支持。"
+          "title": "方案詳情",
+          "storage": " 儲存空間",
+          "standardFeatures": {
+            "feature1": "後量子加密和零知識加密",
+            "feature2": "無限高速 VPN（法國、德國、波蘭）",
+            "feature4": "防毒軟體",
+            "feature3": "檔案備份",
+            "feature5": "密碼保護的檔案共享",
+            "feature6": "符合 GDPR 規範",
+            "feature7": "雙重身份驗證（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支援",
+            "feature9": "管理帳戶帳單和支付",
+            "commingSoonFeatures": {
+              "feature1": "會議最多 10 名用戶（最多 10 名參與者）",
+              "feature2": "每位用戶 1 個自訂電子郵件地址"
+            }
+          },
+          "proFeatures": {
+            "feature1": "後量子加密和零知識加密",
+            "feature2": "無限高速 VPN（法國、德國、波蘭、加拿大、英國）",
+            "feature4": "防毒軟體",
+            "feature3": "檔案備份",
+            "feature5": "密碼保護的檔案共享",
+            "feature6": "符合 GDPR 規範",
+            "feature7": "雙重身份驗證（2FA）",
+            "feature8": "CLI、WebDav 和 Rclone 支援",
+            "feature9": "管理帳戶帳單和支付",
+            "commingSoonFeatures": {
+              "feature1": "會議最多 10 名用戶（最多 10 名參與者）",
+              "feature2": "每位用戶 1 個自訂電子郵件地址"
+            }
+          }
         },
         "user": "用戶"
       },

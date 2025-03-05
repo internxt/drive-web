@@ -1,6 +1,32 @@
 import { aes } from '@internxt/lib';
-import { getOpenpgp } from './pgp.service';
+import { Keys } from '@internxt/sdk';
+import { getOpenpgp, generateNewKeys } from './pgp.service';
 import { isValid } from './utilspgp';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+const MINIMAL_ENCRYPTED_KEY_LEN = 129;
+
+export async function getKeys(password: string): Promise<Keys> {
+  const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
+    await generateNewKeys();
+  const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
+  const encPrivateKyberKey = aes.encrypt(privateKyberKeyBase64, password, getAesInitFromEnv());
+
+  const keys: Keys = {
+    privateKeyEncrypted: encPrivateKey,
+    publicKey: publicKeyArmored,
+    revocationCertificate: revocationCertificate,
+    ecc: {
+      privateKeyEncrypted: encPrivateKey,
+      publicKey: publicKeyArmored,
+    },
+    kyber: {
+      publicKey: publicKyberKeyBase64,
+      privateKeyEncrypted: encPrivateKyberKey,
+    },
+  };
+  return keys;
+}
+
 export class Base64EncodedPrivateKeyError extends Error {
   constructor() {
     super('Key is encoded in base64');
@@ -63,7 +89,33 @@ export async function assertPrivateKeyIsValid(privateKey: string, password: stri
 }
 
 export function decryptPrivateKey(privateKey: string, password: string): string {
-  return aes.decrypt(privateKey, password);
+  if (!privateKey || privateKey.length <= MINIMAL_ENCRYPTED_KEY_LEN) return '';
+  else {
+    try {
+      const result = aes.decrypt(privateKey, password);
+      return result;
+    } catch (error) {
+      throw new CorruptedEncryptedPrivateKeyError();
+    }
+  }
+}
+
+export function parseAndDecryptUserKeys(
+  user: UserSettings,
+  password: string,
+): { publicKey: string; privateKey: string; publicKyberKey: string; privateKyberKey: string } {
+  const decryptedPrivateKey = decryptPrivateKey(user.privateKey, password);
+  const privateKey = user.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : '';
+
+  let privateKyberKey = '';
+  if (user.keys?.kyber?.privateKey) {
+    privateKyberKey = decryptPrivateKey(user.keys.kyber.privateKey, password);
+  }
+
+  const publicKey = user.keys?.ecc?.publicKey ?? user.publicKey;
+  const publicKyberKey = user.keys?.kyber?.publicKey ?? '';
+
+  return { publicKey, privateKey, publicKyberKey, privateKyberKey };
 }
 
 export async function assertValidateKeys(privateKey: string, publicKey: string): Promise<void> {

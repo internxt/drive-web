@@ -1,5 +1,6 @@
 import { RenewalPeriod } from '@internxt/sdk/dist/drive/payments/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { UserResumeData } from '@internxt/sdk/dist/drive/users/types';
 import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
 import { AdvancedSharedItem } from 'app/share/types';
 import { SVGProps } from 'react';
@@ -28,6 +29,7 @@ export interface DriveFolderData {
   sharings?: { type: string; id: string }[];
   uuid: string;
   type?: string;
+  user?: UserResumeData;
 }
 
 export interface DriveFolderMetadataPayload {
@@ -60,6 +62,7 @@ export interface DriveFileData {
   shares?: Array<ShareLink>;
   sharings?: { type: string; id: string }[];
   uuid: string;
+  user?: UserResumeData;
 }
 
 interface Thumbnail {

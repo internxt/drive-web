@@ -4,9 +4,8 @@ import { useState } from 'react';
 
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-import Dropdown from '../../../../../shared/components/Dropdown';
 import UploadAvatarModal from './UploadAvatarModal';
-import { Avatar } from '@internxt/internxtui';
+import { Avatar, Dropdown } from '@internxt/ui';
 
 interface UserHeaderProps {
   className?: string;
@@ -43,7 +42,7 @@ export default function UserHeader({
     <div className={`${className} flex flex-col items-center p-5`}>
       <Dropdown
         options={dropdownOptions}
-        classMenuItems={'-left-10 mt-0 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5 py-1.5'}
+        classMenuItems={'-left-10 mt-0 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5'}
         openDirection={'right'}
       >
         <div className="relative">

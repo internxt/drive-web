@@ -6,10 +6,8 @@ import { OrderDirection } from '../../../../core/types';
 import iconService from '../../../../drive/services/icon.service';
 import sizeService from '../../../../drive/services/size.service';
 import { DriveFileData } from '../../../../drive/types';
-import List from '../../../../shared/components/List';
-import { ListItemMenu } from '../../../../shared/components/List/ListItem';
 import { AdvancedSharedItem } from '../../../types';
-import { Avatar } from '@internxt/internxtui';
+import { Avatar, List, MenuItemType } from '@internxt/ui';
 
 const skinSkeleton = [
   <div key="1" className="flex flex-row items-center space-x-4">
@@ -39,7 +37,7 @@ type SharedListItem = {
   onNameClicked: (shareItem: AdvancedSharedItem) => void;
   onNextPage: () => void;
   hasMoreItems: boolean;
-  contextMenu: ListItemMenu<AdvancedSharedItem> | undefined;
+  contextMenu: Array<MenuItemType<AdvancedSharedItem>> | undefined;
   currentShareOwnerAvatar: string;
   user?: AdvancedSharedItem['user'];
   orderBy?: { field: OrderField; direction: OrderDirection };
@@ -171,9 +169,11 @@ const ShareItemNameField = ({ shareItem, onItemDoubleClicked, onNameClicked }) =
     <div className={'flex h-full w-full flex-row items-center space-x-4 overflow-hidden'}>
       <div className="relative flex h-10 w-10 shrink items-center justify-center">
         <Icon className="flex h-full justify-center drop-shadow-soft" />
-        <div className="absolute -bottom-0.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-surface">
-          <img src={usersIcon} width={13} alt="shared users" />
-        </div>
+        {shareItem.dateShared && (
+          <div className="absolute -bottom-0.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-surface">
+            <img src={usersIcon} width={13} alt="shared users" />
+          </div>
+        )}
       </div>
       <button
         className="w-full max-w-full truncate pr-16 text-left"

@@ -1,8 +1,7 @@
 import { CheckoutProductCard } from '../../components/checkout/CheckoutProductCard';
 import { HeaderComponent } from '../../components/checkout/Header';
-import LoadingPulse from 'app/shared/components/LoadingPulse/LoadingPulse';
 import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { Button } from '@internxt/internxtui';
+import { Button, Loader } from '@internxt/ui';
 import { useForm } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
 import { AuthMethodTypes } from '../../types';
@@ -31,6 +30,8 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
 interface CheckoutViewProps {
   userInfo: UserInfoProps;
   isUserAuthenticated: boolean;
+  showHardcodedRenewal?: string;
+  showCouponCode: boolean;
   upsellManager: UpsellManagerProps;
   userAuthComponentRef: LegacyRef<HTMLDivElement>;
   checkoutViewVariables: State;
@@ -44,6 +45,8 @@ const AUTH_METHOD_VALUES = {
 const CheckoutView = ({
   userInfo,
   isUserAuthenticated,
+  showCouponCode,
+  showHardcodedRenewal,
   upsellManager,
   userAuthComponentRef,
   checkoutViewVariables,
@@ -77,12 +80,15 @@ const CheckoutView = ({
     checkoutViewManager.handleAuthMethodChange(authMethod);
   }
 
+  const handleFormSubmit = (formData: IFormValues, event: any) => {
+    event.preventDefault();
+    checkoutViewManager.onCheckoutButtonClicked(formData, event, stripeSDK, elements);
+  };
+
   return (
     <form
       className="flex h-full overflow-y-scroll bg-gray-1 lg:w-screen xl:px-16"
-      onSubmit={handleSubmit((formData, event) =>
-        checkoutViewManager.onCheckoutButtonClicked(formData, event, stripeSDK, elements),
-      )}
+      onSubmit={handleSubmit(handleFormSubmit)}
     >
       <div className="mx-auto flex w-full max-w-screen-xl px-5 py-10">
         <div className="flex w-full flex-col space-y-8 lg:space-y-16">
@@ -130,7 +136,12 @@ const CheckoutView = ({
                       {error.stripe}
                     </div>
                   )}
-                  <Button type="submit" id="submit" className="hidden lg:flex" disabled={isButtonDisabled}>
+                  <Button
+                    type="submit"
+                    id="submit-create-account"
+                    className="hidden lg:flex"
+                    disabled={isButtonDisabled}
+                  >
                     {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
                   </Button>
                 </div>
@@ -139,6 +150,8 @@ const CheckoutView = ({
                 <CheckoutProductCard
                   selectedPlan={currentSelectedPlan}
                   couponCodeData={couponCodeData}
+                  showHardcodedRenewal={showHardcodedRenewal}
+                  showCouponCode={showCouponCode}
                   couponError={error?.coupon}
                   seatsForBusinessSubscription={seatsForBusinessSubscription}
                   upsellManager={upsellManager}
@@ -152,7 +165,7 @@ const CheckoutView = ({
               </div>
             </div>
           ) : (
-            <LoadingPulse />
+            <Loader type="pulse" />
           )}
         </div>
       </div>

@@ -14,7 +14,7 @@ import { FileToUpload } from '../drive/services/file.service/types';
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
 
-const MAX_UPLOAD_ATTEMPTS = 1;
+const MAX_UPLOAD_ATTEMPTS = 2;
 
 enum FileSizeType {
   Big = 'big',
@@ -63,6 +63,7 @@ export const uploadFileWithManager = (
   abortController?: AbortController,
   options?: Options,
   relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
+  onFileUploadCallback?: (driveFileData: DriveFileData) => void,
 ): Promise<DriveFileData[]> => {
   const uploadManager = new UploadManager(
     files,
@@ -71,6 +72,7 @@ export const uploadFileWithManager = (
     abortController,
     options,
     relatedTaskProgress,
+    onFileUploadCallback,
   );
   return uploadManager.run();
 };
@@ -84,6 +86,7 @@ class UploadManager {
   private options?: Options;
   private relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
   private maxSpaceOccupiedCallback: () => void;
+  private onFileUploadCallback?: (driveFileData: DriveFileData) => void;
   private uploadRepository?: PersistUploadRepository;
   private filesUploadedList: (DriveFileData & { taskId: string })[] = [];
   private filesGroups: Record<
@@ -110,6 +113,7 @@ class UploadManager {
       concurrency: 6,
     },
   };
+
   private uploadQueue: QueueObject<UploadManagerFileParams> = queue<UploadManagerFileParams & { taskId: string }>(
     (fileData, next: (err: Error | null, res?: DriveFileData) => void) => {
       if (this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted) return;
@@ -158,6 +162,8 @@ class UploadManager {
           isRetriedUpload: !!this.options?.isRetriedUpload,
         };
 
+        let abortListener: (task: TaskData) => void;
+
         uploadFile(
           fileData.userEmail,
           {
@@ -185,15 +191,17 @@ class UploadManager {
             isTeam: false,
             abortController: this.abortController ?? fileData.abortController,
             ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,
-            abortCallback: (abort?: () => void) =>
+            abortCallback: (abort?: () => void) => {
+              abortListener = (task) => {
+                if (task.id === taskId) {
+                  abort?.();
+                }
+              };
               tasksService.addListener({
                 event: TaskEvent.TaskCancelled,
-                listener: (task) => {
-                  if (task.id === taskId) {
-                    abort?.();
-                  }
-                },
-              }),
+                listener: abortListener,
+              });
+            },
           },
           continueUploadOptions,
         )
@@ -241,6 +249,10 @@ class UploadManager {
                 uploadProgress: this.uploadsProgress[uploadId] ?? 0,
               },
             });
+
+            if (this.onFileUploadCallback) {
+              this.onFileUploadCallback(driveFileDataWithNameParsed);
+            }
             next(null, driveFileDataWithNameParsed);
           })
           .catch((error) => {
@@ -262,6 +274,12 @@ class UploadManager {
                 uploadId,
               });
             }
+          })
+          .finally(() => {
+            tasksService.removeListener({
+              event: TaskEvent.TaskCancelled,
+              listener: abortListener,
+            });
           });
       };
 
@@ -277,6 +295,7 @@ class UploadManager {
     abortController?: AbortController,
     options?: Options,
     relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
+    onFileUploadCallback?: (driveFileData: DriveFileData) => void,
   ) {
     this.items = items;
     this.abortController = abortController;
@@ -284,6 +303,7 @@ class UploadManager {
     this.relatedTaskProgress = relatedTaskProgress;
     this.maxSpaceOccupiedCallback = maxSpaceOccupiedCallback;
     this.uploadRepository = uploadRepository;
+    this.onFileUploadCallback = onFileUploadCallback;
   }
 
   private handleUploadErrors({
@@ -373,7 +393,7 @@ class UploadManager {
   }
 
   private manageMemoryUsage() {
-    if (window.performance && (window.performance as any).memory) {
+    if (window?.performance?.memory) {
       const memory = window.performance.memory;
 
       if (memory && memory?.jsHeapSizeLimit !== null && memory.usedJSHeapSize !== null) {
@@ -386,8 +406,10 @@ class UploadManager {
             this.uploadQueue.concurrency + 1,
             this.filesGroups[FileSizeType.Small].concurrency,
           );
-          console.warn(`Memory usage under 70%. Increasing upload concurrency to ${newConcurrency}`);
-          this.uploadQueue.concurrency = newConcurrency;
+          if (newConcurrency !== this.uploadQueue.concurrency) {
+            console.warn(`Memory usage under 70%. Increasing upload concurrency to ${newConcurrency}`);
+            this.uploadQueue.concurrency = newConcurrency;
+          }
         }
 
         const shouldReduceConcurrency = memoryUsagePercentage >= 0.8 && this.uploadQueue.concurrency > 1;

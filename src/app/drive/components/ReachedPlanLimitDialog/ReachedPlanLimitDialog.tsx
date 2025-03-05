@@ -1,7 +1,7 @@
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import DriveStorageError from '../../../../assets/images/drive-error.svg';

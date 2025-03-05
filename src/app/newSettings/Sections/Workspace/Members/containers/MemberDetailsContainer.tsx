@@ -20,7 +20,7 @@ import RemoveMemberModal from '../components/RemoveModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import TeamsTab from '../components/TeamsTab';
 import UserCard from '../components/UserCard';
-import { Spinner } from '@internxt/internxtui';
+import { Loader } from '@internxt/ui';
 import { RootState } from '../../../../../store';
 import { ActionDialog } from '../../../../../contexts/dialog-manager/ActionDialogManager.context';
 import { useActionDialog } from '../../../../../contexts/dialog-manager/useActionDialog';
@@ -338,7 +338,7 @@ const MemberDetailsContainer = ({
           />
         ) : (
           <div className="flex h-36 w-full items-center justify-center">
-            <Spinner className="h-7 w-7 text-primary" />
+            <Loader classNameLoader="h-7 w-7 text-primary" />
           </div>
         )}
       </Card>

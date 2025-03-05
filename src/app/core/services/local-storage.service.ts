@@ -6,6 +6,8 @@ export const STORAGE_KEYS = {
   TUTORIAL_COMPLETED_ID: 'signUpTutorialCompleted',
   B2B_WORKSPACE: 'b2bWorkspace',
   WORKSPACE_CREDENTIALS: 'workspace_credentials',
+  FOLDER_ACCESS_TOKEN: 'folderAccessToken',
+  FILE_ACCESS_TOKEN: 'fileAccessToken',
 };
 
 function get(key: string): string | null {

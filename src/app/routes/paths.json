@@ -123,6 +123,13 @@
       "auth": true
     },
     {
+      "id": "pcCloud-success",
+      "layout": "empty",
+      "path": "/checkout/pcCloud-success",
+      "exact": false,
+      "auth": true
+    },
+    {
       "id": "checkout-cancel",
       "layout": "empty",
       "path": "/checkout/cancel",
@@ -133,6 +140,13 @@
       "id": "checkout",
       "layout": "empty",
       "path": "/checkout",
+      "exact": false,
+      "auth": false
+    },
+    {
+      "id": "checkout-session",
+      "layout": "empty",
+      "path": "/checkout/:sessionId",
       "exact": false,
       "auth": false
     },

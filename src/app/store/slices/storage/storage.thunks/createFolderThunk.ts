@@ -104,9 +104,15 @@ export const createFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<
       const requestOptions = Object.assign({ showErrors: true }, action.meta.arg.options || {});
 
       if (requestOptions?.showErrors) {
-        const errorMessage = action.error.message?.includes('already exists')
-          ? t('error.folderAlreadyExists')
-          : t('error.creatingFolder');
+        let errorMessage: string;
+
+        if (action.error.message?.includes('already exists')) {
+          errorMessage = t('error.folderAlreadyExists');
+        } else if (action.error.message?.includes('Invalid folder name')) {
+          errorMessage = t('error.folderInvalidName');
+        } else {
+          errorMessage = t('error.creatingFolder');
+        }
 
         notificationsService.show({ text: errorMessage, type: ToastType.Error });
       }

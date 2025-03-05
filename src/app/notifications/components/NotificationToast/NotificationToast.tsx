@@ -1,11 +1,8 @@
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-import { uiActions } from 'app/store/slices/ui';
 import { Transition } from '@headlessui/react';
 import { CheckCircle, Info, Warning, WarningOctagon, X } from '@phosphor-icons/react';
 import { ToastShowProps, ToastType } from '../../services/notifications.service';
-import { Spinner } from '@internxt/internxtui';
+import { Loader } from '@internxt/ui';
 
 const NotificationToast = ({
   text,
@@ -15,13 +12,8 @@ const NotificationToast = ({
   closable,
   onClose,
 }: Omit<ToastShowProps, 'duration'> & { visible: boolean; onClose: () => void }): JSX.Element => {
-  const dispatch = useDispatch();
   let Icon: typeof CheckCircle | undefined;
   let IconColor: string | undefined;
-
-  useEffect(() => {
-    visible && dispatch(uiActions.setIsToastNotificacionOpen(visible));
-  }, [visible]);
 
   switch (type) {
     case ToastType.Success:
@@ -60,7 +52,7 @@ const NotificationToast = ({
         className="flex max-w-xl items-center rounded-lg border border-gray-10 bg-surface p-3 dark:bg-gray-5"
         style={{ minWidth: '300px' }}
       >
-        {type === ToastType.Loading && <Spinner className="mr-1.5 h-6 w-6" />}
+        {type === ToastType.Loading && <Loader classNameLoader="mr-1.5 h-6 w-6" />}
         {Icon && <Icon weight="fill" className={`${IconColor} mr-1.5`} size={24} />}
 
         <p className="line-clamp-2 flex-1 whitespace-pre break-words text-gray-80">{text}</p>

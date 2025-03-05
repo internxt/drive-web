@@ -312,11 +312,13 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
         </div>
         <div className="flex justify-center">
           <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
-            <IntervalSwitch
-              active={selectedInterval === 'month'}
-              text={translate('general.renewal.monthly')}
-              onClick={() => setSelectedInterval('month')}
-            />
+            {!isIndividualSubscriptionSelected && (
+              <IntervalSwitch
+                active={selectedInterval === 'month'}
+                text={translate('general.renewal.monthly')}
+                onClick={() => setSelectedInterval('month')}
+              />
+            )}
             <IntervalSwitch
               active={selectedInterval === 'year'}
               text={translate('general.renewal.annually')}

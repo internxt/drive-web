@@ -4,20 +4,21 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": "¡Ahorra un 80%!",
-    "title": "Tu regalo de Navidad ya está aquí!",
+    "label": "¡Ahorra un 85%!",
+    "title": "¡Protege lo que quieres, para siempre!",
     "subtitle": "Entra en nuestro sorteo y consigue hasta 10TB extra",
     "cta": "Elige tu plan",
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
+    "boldBottomText": "Oferta especial!  ",
+    "bottomText": " Entra en el sorteo y gana 2 mochilas Swiss Peak x Internxt",
     "features": [
-      "Ahorra a lo grande en todos los planes premium",
-      "Almacenamiento en la nube privado y encriptado",
-      "Código abierto y auditado",
-      "Transferencias encriptadas de extremo a extremo",
-      "Sin acceso no autorizado",
-      "La oferta termina el",
-      "7 de enero"
+      "Seguridad de por vida",
+      "Almacenamiento 100% privado y cifrado",
+      "Conocimiento cero y auditado",
+      "Cifrado de extremo a extremo",
+      "Cumple con RGPD",
+      "Oferta finaliza el 25 de febrero"
     ]
   },
   "valentinesBanner": {
@@ -49,7 +50,8 @@
     "system": "Sistema",
     "starwars": "Star Wars",
     "halloween": "Halloween",
-    "christmas": "Navidad"
+    "christmas": "Navidad",
+    "superBowl": "Super Bowl"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -145,7 +147,7 @@
     }
   },
   "checkout": {
-    "title": "¡Ya casi está! Finaliza tu compra de forma segura:",
+    "title": "¡Ya casi está! Finaliza tu compra de forma segura",
     "pay": "Pagar",
     "processing": "Procesando...",
     "checkout": "Finalizar compra",
@@ -171,7 +173,7 @@
       "optional": {
         "cta": "Opcional",
         "companyName": "Nombre de la empresa",
-        "companyVatId": "ID de IVA de la empresa"
+        "companyVatId": "VAT ID de la Empresa"
       }
     },
     "paymentTitle": "Seleccione un método de pago",
@@ -185,6 +187,13 @@
         "year": "anual",
         "lifetime": "lifetime"
       },
+      "renewalTitle": {
+        "month": "mensual",
+        "year": "anual",
+        "lifetime": "pago único"
+      },
+      "pcMobileRenews": "* Se renueva a 50€ el primer año después del período de prueba",
+
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 plan {{interval}}",
         "year": "{{spaceToUpgrade}} - 1 plan {{interval}}",
@@ -221,7 +230,7 @@
           ]
         }
       },
-      "total": "Total: ",
+      "total": "Total",
       "totalForBusiness": "Total para {{N}} usuarios: ",
       "addCoupon": {
         "buttonTitle": "Añadir cupón",
@@ -420,6 +429,10 @@
               "sucessSendingVerification": "Verificación enviada a {{email}}",
               "errorSendingVerification": "Error enviando verificación",
               "confirm": "Confirmar"
+            },
+            "errorMsg": {
+              "nameError": "El nombre debe tener de uno a veinte caracteres",
+              "lastnameError": "El apellido debe tener de uno a veinte caracteres"
             }
           },
           "support": {
@@ -440,7 +453,10 @@
           "subsRenew": "La suscripción se renueva en {{daysUntilRenewal}} días",
           "cancelSubscriptionModal": {
             "title": "Cancelar suscripción",
-            "description": "Está a punto de cancelar su plan Internxt de {{currentPlanName}}. Al cancelar su plan, será degradado al plan gratuito Internxt {{freePlanName}}. Confirme su elección para continuar, por favor.",
+            "description": {
+              "individual": "Estás a punto de cancelar tu plan de Internxt {{currentPlanName}}. Al cancelar tu plan, pasarás al plan gratuito de Internxt {{freePlanName}}. Por favor, confirma tu elección para continuar.",
+              "business": "Al cancelar tu plan, el espacio de trabajo se eliminará junto con todos los datos. Por favor, confirma tu elección para continuar."
+            },
             "keepSubscription": "Mantener suscripción",
             "continue": "Continuar",
             "cancelSubscription": "Cancelar suscripción",
@@ -865,7 +881,8 @@
         "title": "Invitar a otros",
         "textarea": "Escribe un mensaje (opcional)",
         "notifyUsers": "Notificar a los usuarios",
-        "instructions": "Pulsa intro o espacio para introducir más correos electronicos",
+        "instructions": "Pulsa intro o coma para introducir más correos electronicos",
+        "duplicatedEmail": "La dirección de correo ya existe",
         "email": "Correo electrónico",
         "invite": "Invitar",
         "editor": "Editor",
@@ -880,6 +897,7 @@
         "cancel": "Cancelar",
         "error": {
           "errorInviting": "Error al enviar la invitación a {{email}}",
+          "userAlreadyInvited": "El usuario {{email}} ya ha sido invitado",
           "acceptedError": "Error al aceptar la invitación a la carpeta compartida",
           "declinedError": "Error al rechazar la invitación a la carpeta compartida"
         }
@@ -975,7 +993,9 @@
     "changingName": "Error durante el cambio de nombre",
     "fileAlreadyExists": "Ya existe un archivo con el mismo nombre",
     "folderAlreadyExists": "Ya existe una carpeta con el mismo nombre",
+    "folderInvalidName": "El nombre de la carpeta no es válido",
     "folderCannotBeEmpty": "El nombre de la carpeta no puede estar vacío",
+    "fileCannotBeEmpty": "El nombre del archivo no puede estar vacío",
     "creatingFolder": "Error durante la creación de la carpeta",
     "sendReferralInvitation": "No se ha podido enviar el correo electrónico de invitación",
     "sendClaimEmail": "No se pudo enviar correo electrónico de reclamación",
@@ -1622,8 +1642,15 @@
         "actions": {
           "deactivate": "Desactivar miembro",
           "reactivate": "Reactivar miembro",
+          "leave": "Abandonar",
           "remove": "Eliminar miembro",
           "passwordChange": "Solicitar cambio de contraseña"
+        },
+        "leaveModal": {
+          "title": "Abandonar",
+          "description": "Perderás el acceso al Workspace y tu contenido será transferido al propietario",
+          "leave": "Abandonar",
+          "leaving": "Abandonando"
         }
       },
       "teams": {
@@ -1794,27 +1821,96 @@
         "year": "Año",
         "month": "Mes",
         "lifetime": "Lifetime",
+        "billedAnnually":"facturado anualmente",
+        "types": {
+          "essential": "Essential",
+          "premium": "Premium",
+          "ultimate": "Ultimate",
+          "standard": "Standard",
+          "pro": "Pro",
+          "free":"Free"
+        },
         "planFeaturesList": {
           "title": "Detalles del plan",
-          "storage": " de almacenamiento",
-          "featureOne": "Compartir archivos y carpetas cifrados.",
-          "featureTwo": "Compartir archivos con contraseña.",
-          "featureThree": "Accede a tus archivos desde cualquier dispositivo.",
-          "featureFour": "Sube archivos de hasta 20 GB.",
-          "featureFive": "Autenticación de dos factores (2FA).",
-          "featureSix": "Soporte al cliente premium.",
-          "featureSeven": "Garantía de devolución de dinero de 30 días."
+          "commingSoon": "Muy Pronto",
+          "storage": " de almacenamiento ",
+          "essentialFeatures":{
+            "feature1": "Criptografía postcuántica",
+            "feature2":"VPN de alta velocidad ilimitado (FR)",
+            "feature4": "Antivirus" ,
+            "feature3": "Copias de seguridad",
+            "feature5": "Comparte archivos protegidos con contraseña",
+            "feature6":"Cumple con RGPD" ,
+            "feature7": "Autenticación de dos factores (2FA)",
+            "feature8":"CLI, WebDav & Rclone" 
+          },
+          "premiumFeatures":{
+            "feature1": "Criptografía postcuántica",
+            "feature2":"VPN de alta velocidad ilimitado (FR, DE, PL)",
+            "feature4": "Antivirus" ,
+            "feature3": "Copias de seguridad",
+            "feature5": "Comparte archivos protegidos con contraseña",
+            "feature6":"Cumple con RGPD" ,
+            "feature7": "Autenticación de dos factores (2FA)",
+            "feature8":"CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "feature1": "Meet (3 participantes)",
+              "feature2": "Mail (3 correos)"
+            }
+          },
+          "ultimateFeatures":{
+            "feature1": "Criptografía postcuántica",
+            "feature2":"VPN de alta velocidad ilimitado (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus" ,
+            "feature3": "Copias de seguridad",
+            "feature5": "Comparte archivos protegidos con contraseña",
+            "feature6":"Cumple con RGPD" ,
+            "feature7": "Autenticación de dos factores (2FA)",
+            "feature8":"CLI, WebDav & Rclone",
+            "commingSoonFeatures": {
+              "feature1": "Meet (5 participantes)",
+              "feature2": "Mail (5 correos)"
+            }
+          },
+          "freeFeatures": {
+            "feature1": "Cifrado de conocimiento cero",
+            "feature2": "VPN estandard (FR)",
+            "feature3": "CLI, WebDav & Rclone support"
+          }
         },
         "businessPlanFeaturesList": {
           "title": "Detalles del plan",
           "storage": " de almacenamiento",
-          "featureOne": "Compartir archivos y carpetas cifrados.",
-          "featureTwo": "Crear y gestionar usuarios y equipos.",
-          "featureThree": "Desde 3 usuarios y hasta 100.",
-          "featureFour": "Cumplimiento con el GDPR.",
-          "featureFive": "Sube archivos de hasta 20 GB.",
-          "featureSix": "Gestionar la facturación y los pagos de la cuenta.",
-          "featureSeven": "Soporte al cliente premium."
+          "standardFeatures":{
+            "feature1": "Cifrado postcuántico y conocimiento cero",
+            "feature2": "VPN de alta velocidad ilimitado (FR, DE, PL)",
+            "feature4": "Antivirus",
+            "feature3":"Copias de seguridad" ,
+            "feature5": "Comparte archivos protegidos con contraseña",
+            "feature6":"Cumple con RGPD" ,
+            "feature7":"Autenticación de dos factores (2FA)" ,
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9":"Gestiona la facturación y los pagos de la cuenta",
+            "commingSoonFeatures": {
+              "feature1": "Reuniones de hasta 10 usuarios (máx. 10 participantes)",
+              "feature2": "1 correo electrónico personalizado/usuario "
+            }
+          },
+          "proFeatures":{
+            "feature1": "Cifrado postcuántico y conocimiento cero",
+            "feature2": "VPN de alta velocidad ilimitado (FR, DE, PL, CA, UK)",
+            "feature4": "Antivirus",
+            "feature3":"Copias de seguridad" ,
+            "feature5": "Comparte archivos protegidos con contraseña",
+            "feature6":"Cumple con RGPD" ,
+            "feature7":"Autenticación de dos factores (2FA)" ,
+            "feature8": "CLI/WebDav/Rclone",
+            "feature9":"Gestiona la facturación y los pagos de la cuenta",
+            "commingSoonFeatures": {
+              "feature1": "Reuniones de hasta 10 usuarios (máx. 10 participantes)",
+              "feature2": "1 correo electrónico personalizado/usuario "
+            }
+          }
         },
         "user": "usuario"
       },

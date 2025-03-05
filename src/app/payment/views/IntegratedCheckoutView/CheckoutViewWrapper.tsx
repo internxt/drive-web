@@ -1,9 +1,12 @@
-import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef } from 'react';
-import { Elements } from '@stripe/react-stripe-js';
-import { useSelector } from 'react-redux';
-import { Stripe, StripeElements, StripeElementsOptionsMode } from '@stripe/stripe-js';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { Elements } from '@stripe/react-stripe-js';
+import { Stripe, StripeElements, StripeElementsOptionsMode } from '@stripe/stripe-js';
+import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 
+import { Loader } from '@internxt/ui';
+import { bytesToString } from 'app/drive/services/size.service';
+import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
 import envService from '../../../core/services/env.service';
@@ -15,10 +18,10 @@ import { AppView, IFormValues } from '../../../core/types';
 import databaseService from '../../../database/services/database.service';
 import { getDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import checkoutService from '../../../payment/services/checkout.service';
 import paymentService from '../../../payment/services/payment.service';
-import LoadingPulse from '../../../shared/components/LoadingPulse/LoadingPulse';
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { planThunks } from '../../../store/slices/plan';
@@ -27,9 +30,6 @@ import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
 import { AuthMethodTypes, CouponCodeData, RequestedPlanData } from '../../types';
 import CheckoutView from './CheckoutView';
-import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
-import { getProductAmount } from 'app/payment/utils/getProductAmount';
-import { bytesToString } from 'app/drive/services/size.service';
 
 export const THEME_STYLES = {
   dark: {
@@ -80,7 +80,9 @@ export interface CheckoutViewManager {
 
 const ONE_YEAR_IN_MONTHS = 12;
 const IS_PRODUCTION = envService.isProduction();
-const RETURN_URL_DOMAIN = IS_PRODUCTION ? process.env.REACT_APP_HOSTNAME : 'http://localhost:3000';
+const RETURN_URL_DOMAIN = IS_PRODUCTION
+  ? process.env.REACT_APP_HOSTNAME
+  : 'https://drive-web-git-fix-pc-cloud-flow-internxt-web-team.vercel.app';
 const STATUS_CODE_ERROR = {
   USER_EXISTS: 409,
   COUPON_NOT_VALID: 422,
@@ -114,6 +116,7 @@ const CheckoutViewWrapper = () => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
+  const [mobileToken, setMobileToken] = useState<string | null>(null);
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -165,6 +168,8 @@ const CheckoutViewWrapper = () => {
     prices,
   } = state;
 
+  const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
+
   const canChangePlanDialogBeOpened = prices && currentSelectedPlan && isUpdateSubscriptionDialogOpen;
 
   const userInfo: UserInfoProps = {
@@ -197,6 +202,8 @@ const CheckoutViewWrapper = () => {
     const planId = params.get('planId');
     const promotionCode = params.get('couponCode');
     const currency = params.get('currency');
+    const paramMobileToken = params.get('mobileToken');
+    setMobileToken(paramMobileToken);
 
     const currencyValue = currency ?? 'eur';
 
@@ -238,7 +245,7 @@ const CheckoutViewWrapper = () => {
           navigationService.push(AppView.Signup);
         }
       });
-  }, [checkoutTheme]);
+  }, [checkoutTheme, mobileToken]);
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -374,44 +381,65 @@ const CheckoutViewWrapper = () => {
         companyVatId,
       );
 
-      const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
-        await checkoutService.getClientSecret({
-          selectedPlan: currentSelectedPlan as RequestedPlanData,
-          token,
-          customerId,
-          promoCodeId: couponCodeData?.codeId,
-          seatsForBusinessSubscription,
+      if (mobileToken) {
+        const setupIntent = await checkoutService.checkoutSetupIntent(customerId);
+        localStorageService.set('customerId', customerId);
+        localStorageService.set('token', token);
+        localStorageService.set('priceId', currentSelectedPlan?.id as string);
+        localStorageService.set('customerToken', token);
+        localStorageService.set('mobileToken', mobileToken);
+        const { error: confirmIntentError } = await stripeSDK.confirmSetup({
+          elements,
+          clientSecret: setupIntent.clientSecret,
+          confirmParams: {
+            return_url: `${RETURN_URL_DOMAIN}/checkout/pcCloud-success?mobileToken=${mobileToken}&priceId=${currentSelectedPlan?.id}`,
+          },
         });
 
-      // Store subscriptionId, paymentIntendId, and amountPaid to send to IMPACT API
-      savePaymentDataInLocalStorage(
-        subscriptionId,
-        paymentIntentId,
-        plan?.selectedPlan,
-        seatsForBusinessSubscription,
-        couponCodeData,
-      );
+        if (confirmIntentError) {
+          throw new Error(confirmIntentError.message);
+        }
+      } else {
+        const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
+          await checkoutService.getClientSecret({
+            selectedPlan: currentSelectedPlan as RequestedPlanData,
+            token,
+            mobileToken,
+            customerId,
+            promoCodeId: couponCodeData?.codeId,
+            seatsForBusinessSubscription,
+          });
 
-      // !DO NOT REMOVE THIS
-      // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
-      // no client secret will be provided.
-      if (invoiceStatus && invoiceStatus === 'paid') {
-        navigationService.push(AppView.CheckoutSuccess);
-        return;
-      }
+        // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API
+        savePaymentDataInLocalStorage(
+          subscriptionId,
+          paymentIntentId,
+          plan?.selectedPlan,
+          seatsForBusinessSubscription,
+          couponCodeData,
+        );
 
-      const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
+        // !DO NOT REMOVE THIS
+        // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
+        // no client secret will be provided.
+        if (invoiceStatus && invoiceStatus === 'paid') {
+          navigationService.push(AppView.CheckoutSuccess);
+          return;
+        }
 
-      const { error: confirmIntentError } = await confirmIntent({
-        elements,
-        clientSecret,
-        confirmParams: {
-          return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
-        },
-      });
+        const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
 
-      if (confirmIntentError) {
-        throw new Error(confirmIntentError.message);
+        const { error: confirmIntentError } = await confirmIntent({
+          elements,
+          clientSecret,
+          confirmParams: {
+            return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
+          },
+        });
+
+        if (confirmIntentError) {
+          throw new Error(confirmIntentError.message);
+        }
       }
     } catch (err) {
       const statusCode = (err as any).status;
@@ -444,7 +472,8 @@ const CheckoutViewWrapper = () => {
   const handleFetchSelectedPlan = async (planId: string, currency?: string) => {
     const plan = await checkoutService.fetchPlanById(planId, currency);
     setPlan(plan);
-    setSelectedPlan(plan.selectedPlan);
+    const amount = mobileToken ? { amount: 0, decimalAmount: 0 } : {};
+    setSelectedPlan({ ...plan.selectedPlan, ...amount });
     if (plan.selectedPlan.minimumSeats) {
       setSeatsForBusinessSubscription(plan.selectedPlan.minimumSeats);
     }
@@ -529,8 +558,10 @@ const CheckoutViewWrapper = () => {
           <CheckoutView
             checkoutViewVariables={state}
             userAuthComponentRef={userAuthComponentRef}
+            showCouponCode={!mobileToken}
             userInfo={userInfo}
             isUserAuthenticated={isUserAuthenticated}
+            showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
             upsellManager={upsellManager}
             checkoutViewManager={checkoutViewManager}
           />
@@ -547,7 +578,7 @@ const CheckoutViewWrapper = () => {
           ) : undefined}
         </Elements>
       ) : (
-        <LoadingPulse />
+        <Loader type="pulse" />
       )}
     </>
   );

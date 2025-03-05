@@ -9,7 +9,7 @@ import errorService from '../../../../core/services/error.service';
 import ClearTrashDialog from '../../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import { Button } from '@internxt/internxtui';
+import { Button } from '@internxt/ui';
 import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
 import { updateUserProfileThunk, userThunks } from '../../../../store/slices/user';
@@ -49,7 +49,8 @@ const AccountSection = ({ changeSection, onClosePreferences }: AccountSectionPro
   };
 
   const changeUserEmail = async (newEmail) => {
-    await userService.changeEmail(newEmail);
+    const emailLowerCase = newEmail.toLowerCase();
+    await userService.changeEmail(emailLowerCase);
     notificationsService.show({
       text: translate('views.account.tabs.account.accountDetails.changeEmail.sucessSendingVerification', {
         email: newEmail,
