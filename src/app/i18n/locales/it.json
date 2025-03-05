@@ -23,6 +23,26 @@
       "L'offerta termina il 17 marzo"
     ]
   },
+  "suscirptionsBanner": {
+    "title": "Potenzia il tuo piano!",
+    "features": [
+      "Crittografia post-quantistica",
+      "Drive, VPN e Antivirus",
+      "Prossimi Mail e Meet"
+    ],
+    "description": "Rinnova il tuo abbonamento e ottieni le nostre nuove funzionalità!",
+    "cta": "80% di sconto"
+  },
+  "lifetimesBanner": {
+    "title": "Potenzia il tuo piano!",
+    "features": [
+      "Crittografia post-quantistica",
+      "Drive, VPN e Antivirus",
+      "Prossimi Mail e Meet"
+    ],
+    "description": "Aggiorna il tuo piano con le nostre nuove funzionalità e aumenta il tuo spazio di archiviazione!",
+    "cta": "80% di sconto"
+  },
   "banner": {
     "label": "Proteggi i tuoi file per sempre",
     "title": "Ottieni l'accesso a vita allo storage cloud sicuro e privato con Internxt!",
