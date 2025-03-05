@@ -4,21 +4,18 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 85%!",
-    "title": "Protect what you love, forever!",
-    "subtitle": "Christmas Web App Theme + Chance to win up to 10TB of storage!",
+    "label": "Save 80%!",
+    "title": "Brand new pricing plans!",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
-    "boldBottomText": "Special Offer! ",
-    "bottomText": " Win two Internxt x Swiss Peak backpacks",
     "features": [
-      "A lifetime of privacy, one-time payment",
-      "End-to-end encrypted cloud storage",
+      "Premium VPN and Antivirus ",
+      "Post-quantum encryption",
       "Open-source and audited",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends February 25th"
+      "Offer ends March 17"
     ]
   },
   "valentinesBanner": {
