@@ -6,7 +6,7 @@ import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-
 import navigationService from '../../../core/services/navigation.service';
 import workspacesService from '../../../core/services/workspace.service';
 import { AppView } from '../../../core/types';
-import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import { hybridEncryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import {
   deleteWorkspaceAvatarFromDatabase,
   saveWorkspaceAvatarToDatabase,
@@ -148,14 +148,15 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         navigationService.push(AppView.Login);
         return;
       }
-      const { mnemonic, publicKey } = user;
+      const { mnemonic } = user;
+      const publicKey = user.keys.ecc.publicKey;
+      const publicKyberKey = user.keys.kyber.publicKey;
 
-      const encryptedMnemonic = await encryptMessageWithPublicKey({
+      const encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
         message: mnemonic,
         publicKeyInBase64: publicKey,
+        publicKyberKeyBase64: publicKyberKey,
       });
-
-      const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
 
       await workspacesService.setupWorkspace({
         workspaceId: pendingWorkspace.id,
@@ -188,7 +189,7 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         }
       }, 1000);
     } catch (error) {
-      notificationsService.show({ text: 'Error seting up workspace', type: ToastType.Error });
+      notificationsService.show({ text: 'Error setting up workspace', type: ToastType.Error });
     }
   },
 );
