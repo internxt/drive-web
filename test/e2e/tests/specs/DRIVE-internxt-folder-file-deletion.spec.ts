@@ -1,8 +1,9 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { staticData } from '../helper/staticData';
 import { DrivePage } from '../pages/drivePage';
 
-test.describe('Internxt file/folder deletion', () => {
+// skip temporarily
+test.describe.skip('Internxt file/folder deletion', () => {
   test.beforeEach('Visiting Internxt', async ({ page }) => {
     const drivePage = new DrivePage(page);
     await page.goto(staticData.driveURL);

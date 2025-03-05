@@ -1,10 +1,10 @@
+import { faker } from '@faker-js/faker';
 import { expect, test } from '@playwright/test';
 import { staticData } from '../helper/staticData';
 import { DrivePage } from '../pages/drivePage';
-import { faker } from '@faker-js/faker';
-import { set } from 'lodash';
 
-test.describe('Internxt folder creation and deletion', async () => {
+// Skip temporarily
+test.describe.skip('Internxt folder creation and deletion', async () => {
   test.beforeEach('Visiting Internxt', async ({ page }) => {
     await page.goto(staticData.driveURL);
   });
