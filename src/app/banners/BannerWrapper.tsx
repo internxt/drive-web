@@ -26,7 +26,7 @@ const BannerWrapper = (): JSX.Element => {
 
   useEffect(() => {
     bannerManager.handleBannerDisplay('free', setShowBanner);
-    bannerManager.handleBannerDisplay('subscription', setShowSubscriptionBanner);
+    bannerManager.handleBannerDisplay(plan.individualSubscription?.type ?? 'free', setShowSubscriptionBanner);
   }, [bannerManager]);
 
   const onCloseBanner = () => bannerManager.onCloseBanner(setShowBanner);
