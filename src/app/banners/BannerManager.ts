@@ -1,7 +1,5 @@
 import localStorageService from '../core/services/local-storage.service';
-import { useAppSelector } from '../store/hooks';
 import { PlanState } from '../store/slices/plan';
-import { userSelectors } from '../store/slices/user';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';
