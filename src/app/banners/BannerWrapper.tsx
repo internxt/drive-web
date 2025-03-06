@@ -13,8 +13,6 @@ import { userSelectors } from 'app/store/slices/user';
 const OFFER_END_DAY = new Date('2025-03-17');
 
 const BannerWrapper = (): JSX.Element => {
-  const [showBanner, setShowBanner] = useState<boolean>(false);
-  const [showSubscriptionBanner, setShowSubscriptionBanner] = useState<boolean>(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const isNewAccount = useSelector((state: RootState) => userSelectors.hasSignedToday(state));
@@ -24,21 +22,28 @@ const BannerWrapper = (): JSX.Element => {
     [user, plan, isNewAccount],
   );
 
+  const [bannersToShow, setBannersToShow] = useState({ showFreeBanner: false, showSubscriptionBanner: false });
+
   useEffect(() => {
-    bannerManager.handleBannerDisplay('free', setShowBanner);
-    bannerManager.handleBannerDisplay('subscription', setShowSubscriptionBanner);
+    const newBanners = bannerManager.getBannersToShow();
+    setBannersToShow((prev) => ({
+      showFreeBanner: prev.showFreeBanner || newBanners.showFreeBanner,
+      showSubscriptionBanner: prev.showSubscriptionBanner || newBanners.showSubscriptionBanner,
+    }));
   }, [bannerManager]);
 
-  const onCloseBanner = () => bannerManager.onCloseBanner(setShowBanner);
-  const onCloseSubscriptionBanner = () => bannerManager.onCloseBanner(setShowSubscriptionBanner);
+  const onCloseBanner = (bannerKey: keyof typeof bannersToShow) => {
+    bannerManager.onCloseBanner();
+    setBannersToShow((prev) => ({ ...prev, [bannerKey]: false }));
+  };
 
   return (
     <>
-      {showBanner && <FeaturesBanner showBanner={showBanner} onClose={onCloseBanner} />}
-      {showSubscriptionBanner && (
+      {bannersToShow.showFreeBanner && <FeaturesBanner showBanner onClose={() => onCloseBanner('showFreeBanner')} />}
+      {bannersToShow.showSubscriptionBanner && (
         <SubscriptionBanner
-          showBanner={showSubscriptionBanner}
-          onClose={onCloseSubscriptionBanner}
+          showBanner
+          onClose={() => onCloseBanner('showSubscriptionBanner')}
           isLifetimeUser={plan.individualSubscription?.type === 'lifetime'}
         />
       )}

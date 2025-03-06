@@ -22,39 +22,48 @@ export class BannerManager {
     this.todayDate = new Date().toISOString().split('T')[0];
   }
 
-  private shouldShowBanner(subscriptionType: 'free' | 'subscription' | 'lifetime'): boolean {
-    const isUserType = this.plan.individualSubscription?.type === subscriptionType;
-    const isOfferExpired = new Date() > this.offerEndDay;
-    const storedDate = this.bannerItemInLocalStorage ?? '';
-    const todayDate = new Date().toISOString().split('T')[0];
-    const isLocalStorageExpired = storedDate < todayDate;
+  private isOfferExpired(): boolean {
+    return new Date() > this.offerEndDay;
+  }
 
-    if (isOfferExpired || isLocalStorageExpired) {
+  private isLocalStorageExpired(): boolean {
+    return (this.bannerItemInLocalStorage ?? '') < this.todayDate;
+  }
+
+  private clearLocalStorageIfExpired(): void {
+    if (this.isOfferExpired() || this.isLocalStorageExpired()) {
       localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
       localStorageService.removeItem(BANNER_NAME_FOR_FREE_USERS);
     }
+  }
 
+  private shouldShowFreeBanner(): boolean {
     return (
-      isUserType &&
+      this.plan.individualSubscription?.type === 'free' &&
       !this.bannerItemInLocalStorage &&
-      !isOfferExpired &&
-      ((this.isNewAccount && this.isTutorialCompleted) || !this.isNewAccount)
+      !this.isOfferExpired() &&
+      (this.isNewAccount ? this.isTutorialCompleted : true)
     );
   }
 
-  public handleBannerDisplay(
-    subscriptionType: 'free' | 'subscription' | 'lifetime',
-    setShowBanner: (show: boolean) => void,
-  ): void {
-    if (this.shouldShowBanner(subscriptionType)) {
-      setTimeout(() => {
-        setShowBanner(true);
-      }, 5000);
-    }
+  private shouldShowSubscriptionBanner(): boolean {
+    return (
+      (this.plan.individualSubscription?.type === 'subscription' ||
+        this.plan.individualSubscription?.type === 'lifetime') &&
+      !this.bannerItemInLocalStorage &&
+      !this.isOfferExpired()
+    );
   }
 
-  public onCloseBanner(setShowBanner: (show: boolean) => void): void {
+  public getBannersToShow(): { showFreeBanner: boolean; showSubscriptionBanner: boolean } {
+    this.clearLocalStorageIfExpired();
+    return {
+      showFreeBanner: this.shouldShowFreeBanner(),
+      showSubscriptionBanner: this.shouldShowSubscriptionBanner(),
+    };
+  }
+
+  public onCloseBanner(): void {
     localStorageService.set(BANNER_NAME_IN_LOCAL_STORAGE, this.todayDate);
-    setShowBanner(false);
   }
 }
