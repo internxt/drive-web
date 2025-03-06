@@ -9,7 +9,7 @@ test.describe('internxt login', async () => {
 
   test.beforeEach('Visiting Internxt', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveURL(/.*internxt/);
+    await expect(page).toHaveURL('http://localhost:3000/');
   });
 
   test('TC1: Validate that the user can log in successfully', async ({ page }) => {
