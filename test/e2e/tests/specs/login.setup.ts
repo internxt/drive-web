@@ -20,7 +20,7 @@ setup('Creating new user and logging in', async ({ browser }) => {
   const userCredentials = { email: email.toLowerCase(), password };
   fs.writeFileSync(credentialsFile, JSON.stringify(userCredentials));
 
-  await page.goto('http://localhost:3000/new');
+  await page.goto('/new');
 
   await SignupPage.typeInEmail(email);
   await SignupPage.typeInPassword(password);
@@ -36,7 +36,7 @@ setup('Creating new user and logging in', async ({ browser }) => {
 
   const loginpage = new LoginPage(newPage);
 
-  await newPage.goto('http://localhost:3000/login');
+  await newPage.goto('/login');
   await expect(newPage).toHaveURL(/.*login/);
 
   const endpointPromise = newPage.waitForResponse(`${BASE_API_URL}/auth/login/access`);

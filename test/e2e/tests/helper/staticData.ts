@@ -5,9 +5,9 @@ export const staticData = {
   notComplexPassword: 'password',
 
   //URLS
-  passwordRecoveryLinkURL: 'http://localhost:3000/recovery-link/',
-  signUpURL: 'http://localhost:3000/new',
-  driveURL: 'http://localhost:3000/',
+  passwordRecoveryLinkURL: '/recovery-link/',
+  signUpURL: '/new',
+  driveURL: '/',
 
   //SIGNUP DISCLAIMER
   disclaimer:
