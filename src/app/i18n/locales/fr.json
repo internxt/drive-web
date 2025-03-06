@@ -4,22 +4,39 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 85%!",
-    "title": "Protège ce que tu aimes, pour toujours !",
-    "subtitle": "Thème Web de Noël + Chance de gagner jusqu'à 10 To de stockage !",
-    "cta": "Choisir un plan",
+    "label": "Économisez 80%!",
+    "title": "Découvrez tous les nouveaux plans d'Internxt!",
+    "cta": "Choisissez votre plan",
     "guarantee": "Garantie de remboursement de 30 jours",
-    "lastCta": "*Offre réservée aux comptes gratuits ou nouveaux clients",
-    "boldBottomText": "Offre spéciale !",
-    "bottomText": "Gagne deux sacs à dos Internxt x Swiss Peak",
+    "lastCta": "*L'offre est réservée aux comptes gratuits ou aux nouveaux clients",
     "features": [
-      "Une vie privée à vie, un paiement unique",
-      "Stockage cloud chiffré de bout en bout",
-      "Open-source et audité",
-      "Transferts chiffrés de bout en bout",
-      "Aucun accès non autorisé",
-      "L'offre se termine le 25 février"
+      "VPN et Antivirus Premium",
+      "Cryptographie post-quantique",
+      "Code open-source et audité",
+      "Transferts chiffrés",
+      "Conforme au RGPD",
+      "L'offre se termine le 17 mars"
     ]
+  },
+  "susbcriptionsBanner": {
+    "title": "Boostez votre abonnement !",
+    "features": [
+      "Chiffrement post-quantique",
+      "Drive, VPN et Antivirus",
+      "Mail et Meet à venir"
+    ],
+    "description": "Renouvelez votre abonnement et profitez de nos nouvelles fonctionnalités !",
+    "cta": "80% de réduction"
+  },
+  "lifetimesBanner": {
+    "title": "Boostez votre abonnement !",
+    "features": [
+      "Chiffrement post-quantique",
+      "Drive, VPN et Antivirus",
+      "Mail et Meet à venir"
+    ],
+    "description": "Améliorez votre plan avec nos nouvelles fonctionnalités et augmentez votre stockage !",
+    "cta": "80% de réduction"
   },
   "valentinesBanner": {
     "title": "L'amour sans limites !",

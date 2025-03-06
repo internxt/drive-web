@@ -4,22 +4,39 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "节省 85%！",
-    "title": "永远保护你所爱的一切！",
-    "subtitle": "圣诞主题网页应用 + 最高可赢取 10TB 存储空间！",
-    "cta": "选择计划",
+    "label": "立省 80%！",
+    "title": "探索 Internxt 的全新订阅计划！",
+    "cta": "选择您的方案",
     "guarantee": "30 天退款保证",
-    "lastCta": "*此优惠适用于免费账户或新客户",
-    "boldBottomText": "特别优惠！",
-    "bottomText": "赢取两个 Internxt x Swiss Peak 背包",
+    "lastCta": "*优惠适用于免费账户或新客户",
     "features": [
-      "终身隐私保护，一次性付款",
-      "端到端加密云存储",
-      "开源且经过审核",
-      "端到端加密传输",
-      "无未经授权的访问",
-      "优惠截止日期：2 月 25 日"
+      "高级 VPN 和杀毒软件",
+      "后量子加密",
+      "开源且经过审计",
+      "加密传输",
+      "符合 GDPR 规范",
+      "优惠截止至 3 月 17 日"
     ]
+  },
+  "susbcriptionsBanner": {
+    "title": "升级您的计划！",
+    "features": [
+      "后量子加密",
+      "云盘、VPN 和杀毒软件",
+      "即将推出邮件和会议"
+    ],
+    "description": "续订您的订阅，即可享受我们的新功能！",
+    "cta": "8折优惠"
+  },
+  "lifetimesBanner": {
+    "title": "升级您的计划！",
+    "features": [
+      "后量子加密",
+      "云盘、VPN 和杀毒软件",
+      "即将推出邮件和会议"
+    ],
+    "description": "升级您的计划，享受我们的新功能，并扩展您的存储空间！",
+    "cta": "8折优惠"
   },
   "valentinesBanner": {
     "title": "爱无极限！",

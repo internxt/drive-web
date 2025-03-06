@@ -1,7 +1,5 @@
 import localStorageService from '../core/services/local-storage.service';
-import { useAppSelector } from '../store/hooks';
 import { PlanState } from '../store/slices/plan';
-import { userSelectors } from '../store/slices/user';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';
@@ -15,47 +13,47 @@ export class BannerManager {
   private readonly bannerItemInLocalStorage: string | null;
   private readonly todayDate: string;
 
-  constructor(user: UserSettings, plan: PlanState, offerEndDay: Date) {
+  constructor(user: UserSettings, plan: PlanState, offerEndDay: Date, isNewAccount: boolean) {
     this.plan = plan;
     this.offerEndDay = offerEndDay;
     this.isTutorialCompleted = localStorageService.hasCompletedTutorial(user.userId);
     this.bannerItemInLocalStorage = localStorageService.get(BANNER_NAME_IN_LOCAL_STORAGE);
-    this.isNewAccount = useAppSelector(userSelectors.hasSignedToday);
-    this.todayDate = new Date().getDate().toString();
+    this.isNewAccount = isNewAccount;
+    this.todayDate = new Date().toISOString().split('T')[0];
   }
 
-  shouldShowBanner(): boolean {
-    const isNewUser = this.plan.individualSubscription?.type === 'free';
-    const isOfferOffDay = new Date() > this.offerEndDay;
-    const showBannerIfLocalStorageItemExpires = JSON.parse(this.bannerItemInLocalStorage as string) < this.todayDate;
+  private shouldShowBanner(subscriptionType: 'free' | 'subscription' | 'lifetime'): boolean {
+    const isUserType = this.plan.individualSubscription?.type === subscriptionType;
+    const isOfferExpired = new Date() > this.offerEndDay;
+    const storedDate = this.bannerItemInLocalStorage ?? '';
+    const todayDate = new Date().toISOString().split('T')[0];
+    const isLocalStorageExpired = storedDate < todayDate;
 
-    if (isOfferOffDay) {
-      localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
-      localStorageService.removeItem(BANNER_NAME_FOR_FREE_USERS);
-    }
-
-    if (showBannerIfLocalStorageItemExpires) {
+    if (isOfferExpired || isLocalStorageExpired) {
       localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
       localStorageService.removeItem(BANNER_NAME_FOR_FREE_USERS);
     }
 
     return (
-      isNewUser &&
+      isUserType &&
       !this.bannerItemInLocalStorage &&
-      !isOfferOffDay &&
+      !isOfferExpired &&
       ((this.isNewAccount && this.isTutorialCompleted) || !this.isNewAccount)
     );
   }
 
-  handleBannerDisplay(setShowBanner: (show: boolean) => void): void {
-    if (this.shouldShowBanner()) {
+  public handleBannerDisplay(
+    subscriptionType: 'free' | 'subscription' | 'lifetime',
+    setShowBanner: (show: boolean) => void,
+  ): void {
+    if (this.shouldShowBanner(subscriptionType)) {
       setTimeout(() => {
         setShowBanner(true);
       }, 5000);
     }
   }
 
-  onCloseBanner(setShowBanner: (show: boolean) => void): void {
+  public onCloseBanner(setShowBanner: (show: boolean) => void): void {
     localStorageService.set(BANNER_NAME_IN_LOCAL_STORAGE, this.todayDate);
     setShowBanner(false);
   }
