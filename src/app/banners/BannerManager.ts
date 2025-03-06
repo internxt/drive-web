@@ -27,7 +27,9 @@ export class BannerManager {
   private shouldShowBanner(subscriptionType: 'free' | 'subscription' | 'lifetime'): boolean {
     const isUserType = this.plan.individualSubscription?.type === subscriptionType;
     const isOfferExpired = new Date() > this.offerEndDay;
-    const isLocalStorageExpired = JSON.parse(this.bannerItemInLocalStorage as string) < this.todayDate;
+    const storedDate = JSON.parse(this.bannerItemInLocalStorage as string) ?? '';
+    const todayDate = new Date().toISOString().split('T')[0];
+    const isLocalStorageExpired = storedDate < todayDate;
 
     if (isOfferExpired || isLocalStorageExpired) {
       localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
