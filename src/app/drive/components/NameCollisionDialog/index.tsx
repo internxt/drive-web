@@ -1,8 +1,7 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { RadioGroup } from '@headlessui/react';
 
-import { Button } from '@internxt/ui';
-import Modal from 'app/shared/components/Modal';
+import { Button, Modal } from '@internxt/ui';
 import { DriveItemData } from '../../types';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { IRoot } from '../../../store/slices/storage/types';
