@@ -42,6 +42,7 @@ import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/u
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
+import envService from '../../core/services/env.service';
 import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
 
@@ -359,8 +360,9 @@ export const deactivate2FA = (
 export const getNewToken = async (): Promise<string> => {
   const serviceHeaders = httpService.getHeaders(true, false);
   const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
+  const BASE_API_URL = envService.isProduction() ? process.env.REACT_APP_API_URL : 'https://drive.internxt.com/api';
 
-  const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
+  const res = await fetch(`${BASE_API_URL}/new-token`, {
     headers: headers,
   });
   if (!res.ok) {
