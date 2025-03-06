@@ -362,7 +362,6 @@ export const getNewToken = async (): Promise<string> => {
   const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
   const BASE_API_URL = envService.isProduction() ? process.env.REACT_APP_API_URL : 'https://drive.internxt.com/api';
 
-  console.log('Requesting new token from:', 'https://drive.internxt.com/api/new-token');
   const res = await fetch(`${BASE_API_URL}/new-token`, {
     headers: headers,
   });

@@ -39,7 +39,6 @@ setup('Creating new user and logging in', async ({ browser }) => {
   await newPage.goto('http://localhost:3000/login');
   await expect(newPage).toHaveURL(/.*login/);
 
-  // CHANGE THIS, IT IS HARDCODED AND WILL FAIL WHEN THE URL CHANGE
   const endpointPromise = newPage.waitForResponse(`${BASE_API_URL}/auth/login/access`);
   await loginpage.typeEmail(email);
   await loginpage.typePassword(password);
