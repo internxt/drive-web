@@ -215,10 +215,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     status: [TaskStatus.Success],
   });
   const divRef = useRef<HTMLDivElement | null>(null);
+  const hasSignedToday = useAppSelector(userSelectors.hasSignedToday);
 
   const showTutorial =
     envService.isProduction() &&
-    useAppSelector(userSelectors.hasSignedToday) &&
+    hasSignedToday &&
     !isSignUpTutorialCompleted &&
     (showSecondTutorialStep || currentTutorialStep === 0);
   const signupSteps = getSignUpSteps(
