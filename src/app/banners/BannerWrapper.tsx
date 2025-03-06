@@ -8,6 +8,7 @@ import FeaturesBanner from './FeaturesBanner';
 import { BannerManager } from './BannerManager';
 import { useEffect, useMemo, useState } from 'react';
 import SubscriptionBanner from './SubscriptionBanner';
+import { userSelectors } from 'app/store/slices/user';
 
 const OFFER_END_DAY = new Date('2025-03-17');
 
@@ -16,8 +17,12 @@ const BannerWrapper = (): JSX.Element => {
   const [showSubscriptionBanner, setShowSubscriptionBanner] = useState<boolean>(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  const isNewAccount = useSelector((state: RootState) => userSelectors.hasSignedToday(state));
 
-  const bannerManager = useMemo(() => new BannerManager(user, plan, OFFER_END_DAY), [user, plan]);
+  const bannerManager = useMemo(
+    () => new BannerManager(user, plan, OFFER_END_DAY, isNewAccount),
+    [user, plan, isNewAccount],
+  );
 
   useEffect(() => {
     bannerManager.handleBannerDisplay('free', setShowBanner);
