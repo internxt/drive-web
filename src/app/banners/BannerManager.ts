@@ -15,19 +15,19 @@ export class BannerManager {
   private readonly bannerItemInLocalStorage: string | null;
   private readonly todayDate: string;
 
-  constructor(user: UserSettings, plan: PlanState, offerEndDay: Date) {
+  constructor(user: UserSettings, plan: PlanState, offerEndDay: Date, isNewAccount: boolean) {
     this.plan = plan;
     this.offerEndDay = offerEndDay;
     this.isTutorialCompleted = localStorageService.hasCompletedTutorial(user.userId);
     this.bannerItemInLocalStorage = localStorageService.get(BANNER_NAME_IN_LOCAL_STORAGE);
-    this.isNewAccount = useAppSelector(userSelectors.hasSignedToday);
-    this.todayDate = new Date().getDate().toString();
+    this.isNewAccount = isNewAccount;
+    this.todayDate = new Date().toISOString().split('T')[0];
   }
 
   private shouldShowBanner(subscriptionType: 'free' | 'subscription' | 'lifetime'): boolean {
     const isUserType = this.plan.individualSubscription?.type === subscriptionType;
     const isOfferExpired = new Date() > this.offerEndDay;
-    const storedDate = JSON.parse(this.bannerItemInLocalStorage as string) ?? '';
+    const storedDate = this.bannerItemInLocalStorage ?? '';
     const todayDate = new Date().toISOString().split('T')[0];
     const isLocalStorageExpired = storedDate < todayDate;
 
