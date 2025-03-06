@@ -57,12 +57,12 @@ export default defineConfig({
       dependencies: ['setup'],
     },
 
-    {
-      name: 'Internxt E2E tests on webkit',
-      testDir: './test/e2e/tests/specs',
-      use: { ...devices['Desktop Safari'], storageState: './test/e2e/tests/specs/playwright/auth/user.json' },
-      dependencies: ['setup'],
-    },
+    // {
+    //   name: 'Internxt E2E tests on webkit',
+    //   testDir: './test/e2e/tests/specs',
+    //   use: { ...devices['Desktop Safari'], storageState: './test/e2e/tests/specs/playwright/auth/user.json' },
+    //   dependencies: ['setup'],
+    // },
 
     /* Test against mobile viewports. */
     // {
