@@ -11,7 +11,7 @@ interface SubscriptionBannerProps {
 
 const SubscriptionBanner = ({ showBanner, onClose, isLifetimeUser }: SubscriptionBannerProps): JSX.Element => {
   const { translate, translateList } = useTranslationContext();
-  const features = translateList(isLifetimeUser ? 'lifetimesBanner.features' : 'suscirptionsBanner.features');
+  const features = translateList(isLifetimeUser ? 'lifetimesBanner.features' : 'susbcriptionsBanner.features');
 
   const handleOnClick = () => {
     window.open('https://internxt.com/pricing', '_blank', 'noopener noreferrer');
@@ -38,7 +38,7 @@ const SubscriptionBanner = ({ showBanner, onClose, isLifetimeUser }: Subscriptio
         <div className="flex max-w-[990px] max-h-[457px] flex-col md:flex-row items-center justify-between py-16 md:py-20 lg:w-screen">
           <div className="flex h-max w-full flex-col items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
             <p className="w-full max-w-[400px] text-5xl font-bold leading-tight text-white">
-              {translate(isLifetimeUser ? 'lifetimesBanner.title' : 'suscirptionsBanner.title')}
+              {translate(isLifetimeUser ? 'lifetimesBanner.title' : 'susbcriptionsBanner.title')}
             </p>
             <div className="flex flex-col items-start space-y-2 pt-2">
               {features.map((card, index) => (
@@ -50,14 +50,14 @@ const SubscriptionBanner = ({ showBanner, onClose, isLifetimeUser }: Subscriptio
             </div>
 
             <p className="text-lg font-medium text-white max-w-[400px]">
-              {translate(isLifetimeUser ? 'lifetimesBanner.description' : 'suscirptionsBanner.description')}
+              {translate(isLifetimeUser ? 'lifetimesBanner.description' : 'susbcriptionsBanner.description')}
             </p>
             <div className="flex flex-col items-center space-y-3 lg:items-start">
               <button
                 onClick={handleOnClick}
                 className="flex w-max items-center rounded-lg bg-primary dark:bg-primary px-5 py-2.5 text-lg font-medium text-white dark:text-white"
               >
-                {translate(isLifetimeUser ? 'lifetimesBanner.cta' : 'suscirptionsBanner.cta')}
+                {translate(isLifetimeUser ? 'lifetimesBanner.cta' : 'susbcriptionsBanner.cta')}
               </button>
             </div>
           </div>
