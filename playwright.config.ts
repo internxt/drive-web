@@ -1,16 +1,20 @@
 import { defineConfig, devices } from '@playwright/test';
-
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// require('dotenv').config();
+import 'dotenv/config';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './test/e2e',
+  expect: {
+    timeout: 4000,
+  },
+  timeout: 70000,
+
+  testDir: './test/e2e/tests/specs',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -24,28 +28,41 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://127.0.0.1:3000',
+    baseURL: 'http://localhost:3000',
+    screenshot: 'only-on-failure',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
+  outputDir: 'test-results',
 
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+      testDir: './test/e2e/tests/specs',
+    },
+    {
+      name: 'Internxt E2E tests on chromium',
+      testDir: './test/e2e/tests/specs',
+      use: { ...devices['Desktop Chrome'], storageState: './test/e2e/tests/specs/playwright/auth/user.json' },
+      dependencies: ['setup'],
     },
 
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: 'Internxt E2E tests on firefox',
+      testDir: './test/e2e/tests/specs',
+      use: { ...devices['Desktop Firefox'], storageState: './test/e2e/tests/specs/playwright/auth/user.json' },
+      dependencies: ['setup'],
     },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+    // {
+    //   name: 'Internxt E2E tests on webkit',
+    //   testDir: './test/e2e/tests/specs',
+    //   use: { ...devices['Desktop Safari'], storageState: './test/e2e/tests/specs/playwright/auth/user.json' },
+    //   dependencies: ['setup'],
+    // },
 
     /* Test against mobile viewports. */
     // {
@@ -59,8 +76,14 @@ export default defineConfig({
 
     /* Test against branded browsers. */
     {
-      name: 'edge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge' },
+      name: 'Internxt E2E tests on Edge',
+      testDir: './test/e2e/tests/specs',
+      use: {
+        ...devices['Desktop Edge'],
+        channel: 'msedge',
+        storageState: './test/e2e/tests/specs/playwright/auth/user.json',
+      },
+      dependencies: ['setup'],
     },
     // {
     //   name: 'Google Chrome',
