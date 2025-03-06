@@ -3,23 +3,40 @@
     "title": "Gestiona tus archivos, la cuenta y la suscripción en la app",
     "logOut": "Cerrar sesión"
   },
-  "featuresBanner": {
-    "label": "¡Ahorra un 85%!",
-    "title": "¡Protege lo que quieres, para siempre!",
-    "subtitle": "Entra en nuestro sorteo y consigue hasta 10TB extra",
+ "featuresBanner": {
+    "label": "¡Ahorra un 80%!",
+    "title": " ¡Descubre los nuevos planes de Internxt!",
     "cta": "Elige tu plan",
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
-    "boldBottomText": "Oferta especial!  ",
-    "bottomText": " Entra en el sorteo y gana 2 mochilas Swiss Peak x Internxt",
     "features": [
-      "Seguridad de por vida",
-      "Almacenamiento 100% privado y cifrado",
-      "Conocimiento cero y auditado",
-      "Cifrado de extremo a extremo",
+      "VPN y Antivirus Premium",
+      "Criptografía postcuántica",
+      "Código abierto y auditado",
+      "Transferencias cifradas",
       "Cumple con RGPD",
-      "Oferta finaliza el 25 de febrero"
+      "La oferta finaliza el 17 de marzo"
     ]
+  },
+  "susbcriptionsBanner": {
+    "title": "¡Mejora tu plan!",
+    "features": [
+      "Cifrado postcuántico",
+      "Drive, VPN y Antivirus",
+      "Mail y Meet próximamente"
+    ],
+    "description": "¡Renueva tu suscripción y obtén nuestras nuevas funciones!",
+    "cta": "80% de descuento"
+  },
+  "lifetimesBanner": {
+    "title": "¡Mejora tu plan!",
+    "features": [
+      "Cifrado postcuántico",
+      "Drive, VPN y Antivirus",
+      "Mail y Meet próximamente"
+    ],
+    "description": "¡Mejora tu plan con nuestras nuevas funciones y aumenta tu almacenamiento!",
+    "cta": "80% de descuento"
   },
   "valentinesBanner": {
     "title": "¡Amor sin limites!",

@@ -9,22 +9,39 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia l'85%!",
-    "title": "Proteggi ciò che ami, per sempre!",
-    "subtitle": "Tema Web di Natale + Possibilità di vincere fino a 10 TB di spazio di archiviazione!",
-    "cta": "Scegli il piano",
+    "label": "Risparmia l'80%!",
+    "title": "Scopri tutti i nuovi piani di Internxt!",
+    "cta": "Scegli il tuo piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
     "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
-    "boldBottomText": "Offerta speciale!",
-    "bottomText": "Vinci due zaini Internxt x Swiss Peak",
     "features": [
-      "Una vita di privacy, un pagamento unico",
-      "Archiviazione cloud crittografata end-to-end",
-      "Open-source e verificato",
-      "Trasferimenti crittografati end-to-end",
-      "Nessun accesso non autorizzato",
-      "L'offerta termina il 25 febbraio"
+      "VPN e Antivirus Premium",
+      "Crittografia post-quantistica",
+      "Codice open-source e verificato",
+      "Trasferimenti crittografati",
+      "Conforme al GDPR",
+      "L'offerta termina il 17 marzo"
     ]
+  },
+  "susbcriptionsBanner": {
+    "title": "Potenzia il tuo piano!",
+    "features": [
+      "Crittografia post-quantistica",
+      "Drive, VPN e Antivirus",
+      "Prossimi Mail e Meet"
+    ],
+    "description": "Rinnova il tuo abbonamento e ottieni le nostre nuove funzionalità!",
+    "cta": "80% di sconto"
+  },
+  "lifetimesBanner": {
+    "title": "Potenzia il tuo piano!",
+    "features": [
+      "Crittografia post-quantistica",
+      "Drive, VPN e Antivirus",
+      "Prossimi Mail e Meet"
+    ],
+    "description": "Aggiorna il tuo piano con le nostre nuove funzionalità e aumenta il tuo spazio di archiviazione!",
+    "cta": "80% di sconto"
   },
   "banner": {
     "label": "Proteggi i tuoi file per sempre",

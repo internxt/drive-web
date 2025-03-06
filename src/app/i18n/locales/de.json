@@ -4,22 +4,39 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Spare 85%!",
-    "title": "Schütze, was du liebst – für immer!",
-    "subtitle": "Weihnachtliches Web-App-Design + Chance auf bis zu 10 TB Speicher!",
-    "cta": "Plan wählen",
+    "label": "Spare 80%!",
+    "title": "Entdecke alle neuen Internxt-Tarife!",
+    "cta": "Wähle deinen Plan",
     "guarantee": "30 Tage Geld-zurück-Garantie",
-    "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
-    "boldBottomText": "Sonderangebot!",
-    "bottomText": "Gewinne zwei Internxt x Swiss Peak Rucksäcke",
+    "lastCta": "*Das Angebot gilt für kostenlose Konten oder neue Kunden",
     "features": [
-      "Ein Leben lang Privatsphäre, eine einmalige Zahlung",
-      "Ende-zu-Ende verschlüsselter Cloud-Speicher",
+      "Premium-VPN und Antivirus",
+      "Post-quanten Verschlüsselung",
       "Open-Source und geprüft",
-      "Ende-zu-Ende verschlüsselte Übertragungen",
-      "Kein unautorisierter Zugriff",
-      "Angebot endet am 25. Februar"
+      "Verschlüsselte Übertragungen",
+      "DSGVO-konform",
+      "Angebot endet am 17. März"
     ]
+  },
+  "susbcriptionsBanner": {
+    "title": "Maximiere deinen Plan!",
+    "features": [
+      "Post-Quanten-Verschlüsselung",
+      "Drive, VPN und Antivirus",
+      "Kommende Mail und Meet"
+    ],
+    "description": "Erneuern Sie Ihr Abonnement und erhalten Sie unsere neuen Funktionen!",
+    "cta": "80% Rabatt"
+  },
+  "lifetimesBanner": {
+    "title": "Maximiere deinen Plan!",
+    "features": [
+      "Post-Quanten-Verschlüsselung",
+      "Drive, VPN und Antivirus",
+      "Kommende Mail und Meet"
+    ],
+    "description": "Verbessern Sie Ihren Plan mit unseren neuen Funktionen und erweitern Sie Ihren Speicher!",
+    "cta": "80% Rabatt"
   },
   "valentinesBanner": {
     "title": "Liebe ohne grenzen!",
