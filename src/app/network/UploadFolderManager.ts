@@ -15,6 +15,7 @@ import { createFolder } from '../store/slices/storage/folderUtils/createFolder';
 import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
 import { checkFolderDuplicated } from '../store/slices/storage/folderUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from '../store/slices/storage/folderUtils/getUniqueFolderName';
+import { QueueUtilsService } from '../utils/queueUtils';
 
 interface UploadFolderPayload {
   root: IRoot;
@@ -164,7 +165,13 @@ export class UploadFoldersManager {
     (task, next: (err: Error | null, res?: DriveFolderData) => void) => {
       if (this.abortController?.signal.aborted) return;
 
-      this.manageMemoryUsage();
+      const newConcurrency = QueueUtilsService.getConcurrencyUsingPerfomance(
+        this.uploadFoldersQueue.concurrency,
+        UploadFoldersManager.MAX_CONCURRENT_UPLOADS,
+      );
+      if (this.uploadFoldersQueue.concurrency !== newConcurrency) {
+        this.uploadFoldersQueue.concurrency = newConcurrency;
+      }
 
       this.uploadFolderAsync(task)
         .then((uploadedFolder: DriveFolderData | undefined) => {
@@ -279,33 +286,6 @@ export class UploadFoldersManager {
     }
 
     return createdFolder;
-  };
-
-  private readonly manageMemoryUsage = () => {
-    if (window?.performance?.memory) {
-      const memory = window.performance.memory;
-
-      if (memory.jsHeapSizeLimit != null && memory.usedJSHeapSize != null) {
-        const memoryUsagePercentage = memory.usedJSHeapSize / memory.jsHeapSizeLimit;
-
-        const shouldIncreaseConcurrency = memoryUsagePercentage < 0.7;
-        if (shouldIncreaseConcurrency) {
-          const newConcurrency = Math.min(this.uploadFoldersQueue.concurrency + 1, 6);
-          if (newConcurrency !== this.uploadFoldersQueue.concurrency) {
-            console.warn(`Memory usage under 70%. Increasing folder upload concurrency to ${newConcurrency}`);
-            this.uploadFoldersQueue.concurrency = newConcurrency;
-          }
-        }
-
-        const shouldReduceConcurrency = memoryUsagePercentage >= 0.8 && this.uploadFoldersQueue.concurrency > 1;
-        if (shouldReduceConcurrency) {
-          console.warn('Memory usage reached 80%. Reducing folder upload concurrency.');
-          this.uploadFoldersQueue.concurrency = 1;
-        }
-      }
-    } else {
-      console.warn('Memory usage control is not available');
-    }
   };
 
   private readonly stopUploadTask = async (taskId: string, uploadFolderAbortController: AbortController) => {
