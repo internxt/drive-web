@@ -103,8 +103,15 @@ const generateTasksForItems = async (downloadItem: DownloadItem): Promise<Downlo
   const abort = async () => uploadFolderAbortController.abort('Download cancelled');
 
   const formattedDate = date.format(new Date(), 'YYYY-MM-DD_HHmmss');
-
-  const downloadName: string = downloadItem.payload.length === 1 ? itemsPayload[0].name : `Internxt (${formattedDate})`;
+  let downloadName = `Internxt (${formattedDate})`;
+  if (itemsPayload.length === 1) {
+    const item = itemsPayload[0];
+    if (itemsPayload[0].isFolder) {
+      downloadName = item.name;
+    } else {
+      downloadName = item.type ? `${item.name}.${item.type}` : item.name;
+    }
+  }
 
   let taskId = downloadItem.taskId;
   if (taskId) {
@@ -317,7 +324,7 @@ export class DownloadManager {
     downloadTask: DownloadTask,
     updateProgressCallback: (progress: number) => void,
   ) => {
-    const { items, credentials, abortController } = downloadTask;
+    const { items, credentials, options, abortController } = downloadTask;
     const file = items[0];
 
     let cachedFile: DriveItemBlobData | undefined;
@@ -339,8 +346,7 @@ export class DownloadManager {
 
     if (cachedFile?.source && !isCachedFileOlder) {
       updateProgressCallback(1);
-      const completeFileName = file.type ? `${file.name}.${file.type}` : file.name;
-      saveAs(cachedFile?.source, completeFileName);
+      saveAs(cachedFile.source, options.downloadName);
     } else {
       const isWorkspace = !!credentials?.workspaceId;
       await downloadService.downloadFile(file, isWorkspace, updateProgressCallback, abortController, credentials);
@@ -352,8 +358,7 @@ export class DownloadManager {
     updateProgressCallback: (progress: number) => void,
     incrementItemCount: () => void,
   ) => {
-    const { items, taskId, credentials, abortController, options, createFilesIterator, createFoldersIterator } =
-      downloadTask;
+    const { items, credentials, abortController, options, createFilesIterator, createFoldersIterator } = downloadTask;
 
     const folderZip = new FlatFolderZip(options.downloadName, {});
     const downloadProgress: number[] = [];
