@@ -511,30 +511,13 @@
     "@babel/traverse" "^7.25.9"
     "@babel/types" "^7.25.9"
 
-"@babel/helpers@^7.23.0":
-  version "7.23.1"
-  resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.23.1.tgz#44e981e8ce2b9e99f8f0b703f3326a4636c16d15"
-  integrity sha512-chNpneuK18yW5Oxsr+t553UZzzAs3aZnFm4bxhebsNTeshrC95yA7l5yl7GBAG+JG1rF0F7zzD2EixK9mWSDoA==
+"@babel/helpers@^7.23.0", "@babel/helpers@^7.26.0", "@babel/helpers@^7.26.7":
+  version "7.26.10"
+  resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.26.10.tgz#6baea3cd62ec2d0c1068778d63cb1314f6637384"
+  integrity sha512-UPYc3SauzZ3JGgj87GgZ89JVdC5dj0AoetR5Bw6wj4niittNyFh6+eOGonYvJ1ao6B8lEa3Q3klS7ADZ53bc5g==
   dependencies:
-    "@babel/template" "^7.22.15"
-    "@babel/traverse" "^7.23.0"
-    "@babel/types" "^7.23.0"
-
-"@babel/helpers@^7.26.0":
-  version "7.26.0"
-  resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.26.0.tgz#30e621f1eba5aa45fe6f4868d2e9154d884119a4"
-  integrity sha512-tbhNuIxNcVb21pInl3ZSjksLCvgdZy9KwJ8brv993QtIVKJBBkYXz4q4ZbAv31GdnC+R90np23L5FbEBlthAEw==
-  dependencies:
-    "@babel/template" "^7.25.9"
-    "@babel/types" "^7.26.0"
-
-"@babel/helpers@^7.26.7":
-  version "7.26.7"
-  resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.26.7.tgz#fd1d2a7c431b6e39290277aacfd8367857c576a4"
-  integrity sha512-8NHiL98vsi0mbPQmYAGWwfcFaOy4j2HY49fXJCfuDcdE7fMIsH9a7GdaeXpIBsbT7307WU8KCMp5pUVDNL4f9A==
-  dependencies:
-    "@babel/template" "^7.25.9"
-    "@babel/types" "^7.26.7"
+    "@babel/template" "^7.26.9"
+    "@babel/types" "^7.26.10"
 
 "@babel/highlight@^7.10.4", "@babel/highlight@^7.22.13":
   version "7.22.20"
@@ -563,6 +546,13 @@
   integrity sha512-kEvgGGgEjRUutvdVvZhbn/BxVt+5VSpwXz1j3WYXQbXDo8KzFOPNG2GQbdAiNq8g6wn1yKk7C/qrke03a84V+w==
   dependencies:
     "@babel/types" "^7.26.7"
+
+"@babel/parser@^7.26.9":
+  version "7.26.10"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.26.10.tgz#e9bdb82f14b97df6569b0b038edd436839c57749"
+  integrity sha512-6aQR2zGE/QFi8JpDLjUZEPYOs7+mhKXm86VaKFiLP35JQwQb6bwUE+XbvkH0EptsYhbNBSUGaUBLKqxH1xSgsA==
+  dependencies:
+    "@babel/types" "^7.26.10"
 
 "@babel/plugin-bugfix-firefox-class-in-computed-class-key@^7.25.9":
   version "7.25.9"
@@ -2047,6 +2037,15 @@
     "@babel/parser" "^7.25.9"
     "@babel/types" "^7.25.9"
 
+"@babel/template@^7.26.9":
+  version "7.26.9"
+  resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.26.9.tgz#4577ad3ddf43d194528cff4e1fa6b232fa609bb2"
+  integrity sha512-qyRplbeIpNZhmzOysF/wFMuP9sctmh2cFzRAZOn1YapxBsE1i9bJIY586R/WBLfLcmcBlM8ROBiQURnnNy+zfA==
+  dependencies:
+    "@babel/code-frame" "^7.26.2"
+    "@babel/parser" "^7.26.9"
+    "@babel/types" "^7.26.9"
+
 "@babel/traverse@^7.23.0", "@babel/traverse@^7.7.2":
   version "7.23.0"
   resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.23.0.tgz#18196ddfbcf4ccea324b7f6d3ada00d8c5a99c53"
@@ -2110,6 +2109,14 @@
   version "7.26.0"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.26.0.tgz#deabd08d6b753bc8e0f198f8709fb575e31774ff"
   integrity sha512-Z/yiTPj+lDVnF7lWeKCIJzaIkI0vYO87dMpZ4bg4TDrFe4XXLFWL1TbXU27gBP3QccxV9mZICCrnjnYlJjXHOA==
+  dependencies:
+    "@babel/helper-string-parser" "^7.25.9"
+    "@babel/helper-validator-identifier" "^7.25.9"
+
+"@babel/types@^7.26.10", "@babel/types@^7.26.9":
+  version "7.26.10"
+  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.26.10.tgz#396382f6335bd4feb65741eacfc808218f859259"
+  integrity sha512-emqcG3vHrpxUKTrxcblR36dcrcoRDvKmnL/dCL6ZsHaShW80qxCAcNhzQZrpeM765VzEos+xOi4s+r4IXzTwdQ==
   dependencies:
     "@babel/helper-string-parser" "^7.25.9"
     "@babel/helper-validator-identifier" "^7.25.9"
@@ -6950,7 +6957,7 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.1, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
-crypto-browserify@^3.12.0, "crypto@npm:crypto-browserify":
+crypto-browserify@^3.12.0:
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/crypto-browserify/-/crypto-browserify-3.12.0.tgz#396cf9f3137f03e4b8e532c58f698254e00f80ec"
   integrity sha512-fz4spIh+znjO2VjL+IdhEpRJ3YN6sMzITSBijk6FK2UvTqruSQW+/cCZTSNsMiZNvUeq0CqurF+dAbyiGOY6Wg==
@@ -6976,6 +6983,23 @@ crypto-random-string@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-2.0.0.tgz#ef2a7a966ec11083388369baa02ebead229b30d5"
   integrity sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==
+
+"crypto@npm:crypto-browserify":
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/crypto-browserify/-/crypto-browserify-3.12.0.tgz#396cf9f3137f03e4b8e532c58f698254e00f80ec"
+  integrity sha512-fz4spIh+znjO2VjL+IdhEpRJ3YN6sMzITSBijk6FK2UvTqruSQW+/cCZTSNsMiZNvUeq0CqurF+dAbyiGOY6Wg==
+  dependencies:
+    browserify-cipher "^1.0.0"
+    browserify-sign "^4.0.0"
+    create-ecdh "^4.0.0"
+    create-hash "^1.1.0"
+    create-hmac "^1.1.0"
+    diffie-hellman "^5.0.0"
+    inherits "^2.0.1"
+    pbkdf2 "^3.0.3"
+    public-encrypt "^4.0.0"
+    randombytes "^2.0.0"
+    randomfill "^1.0.3"
 
 css-blank-pseudo@^3.0.3:
   version "3.0.3"
@@ -14201,7 +14225,16 @@ string-natural-compare@^3.0.1:
   resolved "https://registry.yarnpkg.com/string-natural-compare/-/string-natural-compare-3.0.1.tgz#7a42d58474454963759e8e8b7ae63d71c1e7fdf4"
   integrity sha512-n3sPwynL1nwKi3WJ6AIsClwBMa0zTi54fn2oLU6ndfTSIO05xaznjSf15PcBZU6FNWbmN5Q6cxT4V5hGvB4taw==
 
-"string-width-cjs@npm:string-width@^4.2.0", "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
+
+"string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -14284,7 +14317,14 @@ stringify-object@^3.3.0:
     is-obj "^1.0.1"
     is-regexp "^1.0.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
+
+strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -15937,7 +15977,7 @@ workbox-window@6.6.1:
     "@types/trusted-types" "^2.0.2"
     workbox-core "6.6.1"
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -15950,6 +15990,15 @@ wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
+wrap-ansi@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"
