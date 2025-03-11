@@ -116,39 +116,37 @@ const generateTasksForItems = async (downloadItem: DownloadItem): Promise<Downlo
         stop: abort,
       },
     });
+  } else if (itemsPayload.length > 1) {
+    taskId = tasksService.create<DownloadFilesTask>({
+      action: TaskType.DownloadFile,
+      file: {
+        name: downloadName,
+        type: 'zip',
+        items: downloadItem.payload,
+      },
+      showNotification: true,
+      cancellable: true,
+      stop: abort,
+    });
   } else {
-    if (itemsPayload.length > 1) {
-      taskId = tasksService.create<DownloadFilesTask>({
-        action: TaskType.DownloadFile,
-        file: {
-          name: downloadName,
-          type: 'zip',
-          items: downloadItem.payload,
-        },
+    const item = itemsPayload[0];
+    if (item.isFolder) {
+      taskId = tasksService.create<DownloadFolderTask>({
+        action: TaskType.DownloadFolder,
+        folder: item,
+        compressionFormat: 'zip',
         showNotification: true,
         cancellable: true,
         stop: abort,
       });
     } else {
-      const item = itemsPayload[0];
-      if (item.isFolder) {
-        taskId = tasksService.create<DownloadFolderTask>({
-          action: TaskType.DownloadFolder,
-          folder: item,
-          compressionFormat: 'zip',
-          showNotification: true,
-          cancellable: true,
-          stop: abort,
-        });
-      } else {
-        taskId = tasksService.create<DownloadFileTask>({
-          action: TaskType.DownloadFile,
-          file: item,
-          showNotification: true,
-          cancellable: true,
-          stop: abort,
-        });
-      }
+      taskId = tasksService.create<DownloadFileTask>({
+        action: TaskType.DownloadFile,
+        file: item,
+        showNotification: true,
+        cancellable: true,
+        stop: abort,
+      });
     }
   }
 
@@ -214,7 +212,7 @@ export class DownloadManager {
     this.MAX_CONCURRENT_DOWNLOADS,
   );
 
-  private static downloadTask = async (downloadTask: DownloadTask) => {
+  private static readonly downloadTask = async (downloadTask: DownloadTask) => {
     const { items, taskId, abortController } = downloadTask;
 
     const task = tasksService.findTask(taskId);
@@ -235,6 +233,18 @@ export class DownloadManager {
         }
       };
 
+      const incrementItemCount = () => {
+        if (task?.status !== TaskStatus.Cancelled) {
+          tasksService.updateTask({
+            taskId,
+            merge: {
+              status: TaskStatus.InProcess,
+              nItems: (task?.nItems ?? 0) + 1,
+            },
+          });
+        }
+      };
+
       tasksService.updateTask({
         taskId: taskId,
         merge: {
@@ -243,13 +253,11 @@ export class DownloadManager {
       });
 
       if (items.length > 1) {
-        await this.downloadItems(downloadTask, updateProgressCallback);
+        await this.downloadItems(downloadTask, updateProgressCallback, incrementItemCount);
+      } else if (items[0].isFolder) {
+        await this.downloadFolder(downloadTask, updateProgressCallback, incrementItemCount);
       } else {
-        if (items[0].isFolder) {
-          await this.downloadFolder(downloadTask, updateProgressCallback);
-        } else {
-          await this.downloadFile(downloadTask, updateProgressCallback);
-        }
+        await this.downloadFile(downloadTask, updateProgressCallback);
       }
 
       tasksService.updateTask({
@@ -263,25 +271,13 @@ export class DownloadManager {
     }
   };
 
-  private static downloadFolder = async (
+  private static readonly downloadFolder = async (
     downloadTask: DownloadTask,
     updateProgressCallback: (progress: number) => void,
+    incrementItemCount: () => void,
   ) => {
     const { items, taskId, credentials, abortController, createFilesIterator, createFoldersIterator } = downloadTask;
     const folder = items[0];
-
-    const incrementItemCount = () => {
-      const task = tasksService.findTask(taskId);
-      if (task?.status !== TaskStatus.Cancelled) {
-        tasksService.updateTask({
-          taskId,
-          merge: {
-            status: TaskStatus.InProcess,
-            nItems: (task?.nItems || 0) + 1,
-          },
-        });
-      }
-    };
 
     if (isFirefox) {
       await downloadFolderUsingBlobs({
@@ -317,7 +313,7 @@ export class DownloadManager {
     }
   };
 
-  private static downloadFile = async (
+  private static readonly downloadFile = async (
     downloadTask: DownloadTask,
     updateProgressCallback: (progress: number) => void,
   ) => {
@@ -351,9 +347,10 @@ export class DownloadManager {
     }
   };
 
-  private static downloadItems = async (
+  private static readonly downloadItems = async (
     downloadTask: DownloadTask,
     updateProgressCallback: (progress: number) => void,
+    incrementItemCount: () => void,
   ) => {
     const { items, taskId, credentials, abortController, options, createFilesIterator, createFoldersIterator } =
       downloadTask;
@@ -361,30 +358,17 @@ export class DownloadManager {
     const folderZip = new FlatFolderZip(options.downloadName, {});
     const downloadProgress: number[] = [];
 
-    const incrementItemCount = () => {
-      const task = tasksService.findTask(taskId);
-      if (task?.status !== TaskStatus.Cancelled) {
-        tasksService.updateTask({
-          taskId,
-          merge: {
-            status: TaskStatus.InProcess,
-            nItems: (task?.nItems || 0) + 1,
-          },
-        });
-      }
-    };
+    items.forEach((_, index) => {
+      downloadProgress[index] = 0;
+    });
 
     const calculateProgress = () => {
       const totalProgress = downloadProgress.reduce((previous, current) => {
         return previous + current;
-      });
+      }, 0);
 
       return totalProgress / downloadProgress.length;
     };
-
-    items.forEach((_, index) => {
-      downloadProgress[index] = 0;
-    });
 
     for (const [index, driveItem] of items.entries()) {
       if (abortController?.signal.aborted) return;
@@ -484,7 +468,7 @@ export class DownloadManager {
     await folderZip.close();
   };
 
-  private static reportError = (err: unknown, downloadTask: DownloadTask) => {
+  private static readonly reportError = (err: unknown, downloadTask: DownloadTask) => {
     const { items, taskId, abortController } = downloadTask;
 
     if (err instanceof ConnectionLostError) {
@@ -542,7 +526,7 @@ export class DownloadManager {
     }
   };
 
-  public static add = async (downloadItem: DownloadItem) => {
+  public static readonly add = async (downloadItem: DownloadItem) => {
     const newTask = await generateTasksForItems(downloadItem);
 
     if (newTask) {
