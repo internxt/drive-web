@@ -27,6 +27,7 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { Iterator } from 'app/core/collections';
 import localStorageService from 'app/core/services/local-storage.service';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
+import { AdvancedSharedItem } from 'app/share/types';
 
 type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -35,7 +36,7 @@ type DownloadCredentials = {
 };
 
 type DownloadItem = {
-  payload: DriveItemData[];
+  payload: DownloadItemType[];
   taskId?: string;
   selectedWorkspace: WorkspaceData | null;
   workspaceCredentials: WorkspaceCredentialsDetails | null;
@@ -48,8 +49,10 @@ type DownloadItem = {
   createFilesIterator?: FileIterator | SharedFileIterator;
 };
 
+type DownloadItemType = DriveItemData | AdvancedSharedItem;
+
 export type DownloadTask = {
-  items: DriveItemData[];
+  items: DownloadItemType[];
   taskId: string;
   options: {
     downloadName: string;
@@ -129,7 +132,7 @@ const generateTasksForItems = async (downloadItem: DownloadItem): Promise<Downlo
       file: {
         name: downloadName,
         type: 'zip',
-        items: downloadItem.payload,
+        items: downloadItem.payload as DriveItemData[],
       },
       showNotification: true,
       cancellable: true,
@@ -140,7 +143,7 @@ const generateTasksForItems = async (downloadItem: DownloadItem): Promise<Downlo
     if (item.isFolder) {
       taskId = tasksService.create<DownloadFolderTask>({
         action: TaskType.DownloadFolder,
-        folder: item,
+        folder: item as DriveFolderData,
         compressionFormat: 'zip',
         showNotification: true,
         cancellable: true,
@@ -149,7 +152,7 @@ const generateTasksForItems = async (downloadItem: DownloadItem): Promise<Downlo
     } else {
       taskId = tasksService.create<DownloadFileTask>({
         action: TaskType.DownloadFile,
-        file: item,
+        file: item as DriveFileData,
         showNotification: true,
         cancellable: true,
         stop: abort,
@@ -284,7 +287,7 @@ export class DownloadManager {
     incrementItemCount: () => void,
   ) => {
     const { items, taskId, credentials, abortController, createFilesIterator, createFoldersIterator } = downloadTask;
-    const folder = items[0];
+    const folder = items[0] as DriveFolderData;
 
     if (isFirefox) {
       await downloadFolderUsingBlobs({
@@ -325,7 +328,7 @@ export class DownloadManager {
     updateProgressCallback: (progress: number) => void,
   ) => {
     const { items, credentials, options, abortController } = downloadTask;
-    const file = items[0];
+    const file = items[0] as DriveFileData;
 
     let cachedFile: DriveItemBlobData | undefined;
     let isCachedFileOlder = false;
@@ -390,14 +393,17 @@ export class DownloadManager {
                 downloadProgress[index] = progress;
                 updateProgressCallback(calculateProgress());
               },
-              () => {
-                incrementItemCount();
-              },
+              incrementItemCount,
               driveItem.uuid,
               {
                 destination: folderZip,
                 closeWhenFinished: false,
-                ...credentials,
+                credentials: {
+                  user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
+                  pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
+                },
+                mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
+                workspaceId: credentials.workspaceId,
               },
             );
           } else {
@@ -411,9 +417,7 @@ export class DownloadManager {
                 downloadProgress[index] = progress;
                 updateProgressCallback(calculateProgress());
               },
-              updateNumItems: () => {
-                incrementItemCount();
-              },
+              updateNumItems: incrementItemCount,
               options: {
                 destination: folderZip,
                 closeWhenFinished: false,
@@ -435,10 +439,13 @@ export class DownloadManager {
             fileStream = blob.stream();
           } else {
             const downloadedFileStream = await downloadFile({
-              fileId: driveItem.fileId,
-              bucketId: driveItem.bucket,
-              creds: credentials.credentials,
-              mnemonic: credentials.mnemonic,
+              fileId: (driveItem as DriveFileData).fileId,
+              bucketId: (driveItem as DriveFileData).bucket,
+              creds: {
+                user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
+                pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
+              },
+              mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
               options: {
                 abortController,
                 notifyProgress: (totalBytes, downloadedBytes) => {

@@ -35,6 +35,7 @@ import notificationsService, { ToastType } from '../../notifications/services/no
 import { domainManager } from './DomainManager';
 import { DownloadManager } from '../../network/DownloadManager';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { AdvancedSharedItem } from '../types';
 
 interface CreateShareResponse {
   created: boolean;
@@ -622,17 +623,15 @@ export async function downloadSharedFiles({
 }: {
   creds: { user: string; pass: string };
   decryptedEncryptionKey: string;
-  selectedItems: any[];
+  selectedItems: AdvancedSharedItem[];
   token?: string;
   teamId?: string;
   selectedWorkspace: WorkspaceData | null;
   workspaceCredentials: WorkspaceCredentialsDetails | null;
 }): Promise<void> {
-  const decryptedKey = decryptedEncryptionKey;
-
   const sharingCredentials = {
     credentials: { ...creds },
-    mnemonic: decryptedKey,
+    mnemonic: decryptedEncryptionKey,
   };
 
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
@@ -664,8 +663,21 @@ export async function downloadSharedFiles({
       );
     };
 
+    const payload: AdvancedSharedItem[] = [];
+
+    for (const selectedItem of selectedItems) {
+      const item = selectedItem;
+      payload.push({
+        ...item,
+        credentials: {
+          ...item.credentials,
+          mnemonic: await decryptMnemonic(item.encryptionKey),
+        },
+      });
+    }
+
     DownloadManager.add({
-      payload: selectedItems,
+      payload,
       selectedWorkspace,
       workspaceCredentials,
       downloadCredentials: sharingCredentials,

@@ -15,6 +15,7 @@ export type AdvancedSharedItem = SharedFolders &
 export type SharedNetworkCredentials = {
   networkUser: string;
   networkPass: string;
+  mnemonic?: string;
 };
 
 export type PreviewFileItem = DriveFileData & {
