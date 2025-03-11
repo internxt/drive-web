@@ -16,6 +16,7 @@ import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteI
 import { checkFolderDuplicated } from '../store/slices/storage/folderUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from '../store/slices/storage/folderUtils/getUniqueFolderName';
 import { QueueUtilsService } from '../utils/queueUtils';
+import { wait } from '../utils/timeUtils';
 
 interface UploadFolderPayload {
   root: IRoot;
@@ -121,10 +122,6 @@ const handleFoldersRename = async (root: IRoot, currentFolderId: string) => {
 
   const folder: IRoot = { ...root, name: finalFilename };
   return folder;
-};
-
-const wait = (ms: number): Promise<void> => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 export const uploadFoldersWithManager = ({
