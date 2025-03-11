@@ -95,7 +95,7 @@ const getDownloadCredentialsFromWorkspace = (
   return credentials;
 };
 
-const generateTaskIdForItems = async (downloadItem: DownloadItem): Promise<DownloadTask | undefined> => {
+const generateTasksForItems = async (downloadItem: DownloadItem): Promise<DownloadTask | undefined> => {
   const itemsPayload = downloadItem.payload;
   if (itemsPayload.length === 0) return;
 
@@ -543,7 +543,7 @@ export class DownloadManager {
   };
 
   public static add = async (downloadItem: DownloadItem) => {
-    const newTask = await generateTaskIdForItems(downloadItem);
+    const newTask = await generateTasksForItems(downloadItem);
 
     if (newTask) {
       this.downloadQueue.push(newTask);
