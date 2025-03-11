@@ -9,6 +9,8 @@ import {
   TaskType,
   UploadFolderData,
 } from '../types';
+import { DownloadManager } from '../../network/DownloadManager';
+import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 
 interface RetryDownload {
   retryDownload: () => void;
@@ -17,19 +19,19 @@ interface RetryDownload {
 type RetryDownloadArgs = {
   notification: TaskNotification;
   task?: TaskData;
-  downloadItemsAsZip: (items: DriveItemData[], existingTaskId: string) => void;
-  downloadItems: (item: DriveItemData, existingTaskId: string) => void;
   showErrorNotification: () => void;
   resetProgress: (notification: TaskNotification) => void;
+  selectedWorkspace: WorkspaceData | null;
+  workspaceCredentials: WorkspaceCredentialsDetails | null;
 };
 
 export const useRetryDownload = ({
   notification,
   task,
-  downloadItemsAsZip,
-  downloadItems,
   showErrorNotification,
   resetProgress,
+  selectedWorkspace,
+  workspaceCredentials,
 }: RetryDownloadArgs): RetryDownload => {
   const retryDownload = useCallback(() => {
     const { taskId } = notification;
@@ -38,18 +40,32 @@ export const useRetryDownload = ({
     const isZipAndMultipleItems = task?.file && (task?.file as DownloadFilesData)?.items && task?.file?.type === 'zip';
 
     if (folder) {
-      downloadItems(folder as DriveItemData, taskId);
+      DownloadManager.add({
+        payload: [folder as DriveItemData],
+        selectedWorkspace,
+        workspaceCredentials,
+        taskId,
+      });
       resetProgress(notification);
     } else if (isZipAndMultipleItems && task.file && (task.file as DownloadFilesData)?.items) {
+      DownloadManager.add({
+        payload: (task?.file as DownloadFilesData)?.items as DriveItemData[],
+        selectedWorkspace,
+        workspaceCredentials,
+        taskId,
+      });
       resetProgress(notification);
-      downloadItemsAsZip((task?.file as DownloadFilesData)?.items as DriveItemData[], taskId);
     } else if (isOneFileDownload) {
+      DownloadManager.add({
+        payload: [task?.file as DriveItemData],
+        selectedWorkspace,
+        workspaceCredentials,
+        taskId,
+      });
       resetProgress(notification);
-      downloadItems(task?.file as DriveItemData, taskId);
-
       showErrorNotification();
     }
-  }, [notification, task, downloadItemsAsZip, downloadItems, showErrorNotification, resetProgress]);
+  }, [notification, task, showErrorNotification, resetProgress]);
 
   return { retryDownload };
 };

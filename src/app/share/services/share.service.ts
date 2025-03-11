@@ -32,11 +32,9 @@ import localStorageService from '../../core/services/local-storage.service';
 import workspacesService from '../../core/services/workspace.service';
 import { hybridDecryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
-import {
-  downloadItemsAsZipThunk,
-  downloadItemsThunk,
-} from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { domainManager } from './DomainManager';
+import { DownloadManager } from '../../network/DownloadManager';
+import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 
 interface CreateShareResponse {
   created: boolean;
@@ -617,45 +615,38 @@ export async function downloadSharedFiles({
   creds,
   decryptedEncryptionKey,
   selectedItems,
-  dispatch,
   token,
-  workspaceId,
   teamId,
+  selectedWorkspace,
+  workspaceCredentials,
 }: {
   creds: { user: string; pass: string };
   decryptedEncryptionKey: string;
   selectedItems: any[];
-  dispatch: any;
   token?: string;
-  workspaceId?: string;
   teamId?: string;
+  selectedWorkspace: WorkspaceData | null;
+  workspaceCredentials: WorkspaceCredentialsDetails | null;
 }): Promise<void> {
   const decryptedKey = decryptedEncryptionKey;
+
+  const sharingCredentials = {
+    credentials: { ...creds },
+    mnemonic: decryptedKey,
+  };
+
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
-    try {
-      const sharingOptions = {
-        credentials: { ...creds },
-        mnemonic: decryptedKey,
-      };
-
-      dispatch(downloadItemsThunk([{ ...selectedItems[0], sharingOptions }]));
-    } catch (err) {
-      const error = errorService.castError(err);
-      errorService.reportError(error);
-      const itemError = selectedItems.length > 1 ? 'downloadingFiles' : 'downloadingFile';
-
-      notificationsService.show({
-        text: t(`error.${itemError}`, { message: error.message }),
-        type: ToastType.Error,
-      });
-    }
+    DownloadManager.add({
+      payload: selectedItems,
+      selectedWorkspace,
+      workspaceCredentials,
+      downloadCredentials: sharingCredentials,
+    });
   } else {
     const initPage = 0;
     const itemsPerPage = 15;
-    let folderName;
-    if (selectedItems.length === 1 && selectedItems[0].isFolder) {
-      folderName = selectedItems[0].name;
-    }
+
+    const workspaceId = selectedWorkspace?.workspace.id;
 
     const createFoldersIterator = (directoryUuid: string, resourcesToken?: string) => {
       return new DirectorySharedFolderIterator(
@@ -673,17 +664,17 @@ export async function downloadSharedFiles({
       );
     };
 
-    dispatch(
-      downloadItemsAsZipThunk({
-        items: selectedItems,
-        credentials: creds,
-        mnemonic: decryptedKey,
-        fileIterator: createFilesIterator,
-        folderIterator: createFoldersIterator,
+    DownloadManager.add({
+      payload: selectedItems,
+      selectedWorkspace,
+      workspaceCredentials,
+      downloadCredentials: sharingCredentials,
+      createFilesIterator,
+      createFoldersIterator,
+      downloadOptions: {
         areSharedItems: true,
-        sharedFolderName: folderName,
-      }),
-    );
+      },
+    });
   }
 }
 

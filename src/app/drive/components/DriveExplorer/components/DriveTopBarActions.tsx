@@ -21,7 +21,6 @@ import { Button, Dropdown } from '@internxt/ui';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../../shared/components/Tooltip/Tooltip';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { storageActions } from '../../../../store/slices/storage';
-import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../store/slices/ui';
 import useDriveItemStoreProps from '../DriveExplorerItem/hooks/useDriveStoreProps';
 import {
@@ -32,7 +31,8 @@ import {
   contextMenuWorkspaceFile,
   contextMenuWorkspaceFolder,
 } from '../DriveExplorerList/DriveItemContextMenu';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
+import { DownloadManager } from '../../../../network/DownloadManager';
 
 const DriveTopBarActions = ({
   selectedItems,
@@ -54,6 +54,7 @@ const DriveTopBarActions = ({
 }) => {
   const dispatch = useAppDispatch();
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceCredentials = useSelector(workspacesSelectors.getWorkspaceCredentials);
   const isWorkspaceSelected = !!selectedWorkspace;
 
   const { translate } = useTranslationContext();
@@ -93,7 +94,11 @@ const DriveTopBarActions = ({
   };
 
   const onDownloadButtonClicked = (): void => {
-    dispatch(storageThunks.downloadItemsThunk(selectedItems));
+    DownloadManager.add({
+      payload: selectedItems,
+      selectedWorkspace,
+      workspaceCredentials,
+    });
   };
 
   const onBulkDeleteButtonClicked = (): void => {

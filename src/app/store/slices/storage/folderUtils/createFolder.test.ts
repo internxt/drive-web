@@ -21,9 +21,6 @@ vi.mock('../storage.thunks', () => ({
     initializeThunk: vi.fn(),
     resetNamePathThunk: vi.fn(),
     uploadItemsThunk: vi.fn(),
-    downloadItemsThunk: vi.fn(),
-    downloadFileThunk: vi.fn(),
-    downloadFolderThunk: vi.fn(),
     fetchPaginatedFolderContentThunk: vi.fn(),
     deleteItemsThunk: vi.fn(),
     goToFolderThunk: vi.fn(),
@@ -53,6 +50,7 @@ vi.mock('../../../../drive/services/folder.service', () => ({
   },
   createFilesIterator: vi.fn(),
   createFoldersIterator: vi.fn(),
+  checkIfCachedSourceIsOlder: vi.fn(),
 }));
 
 describe('checkCreateFolder', () => {

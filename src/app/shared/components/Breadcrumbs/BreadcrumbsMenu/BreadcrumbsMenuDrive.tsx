@@ -15,10 +15,11 @@ import { DriveItemData, DriveItemDetails, FolderPath } from '../../../../drive/t
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { uiActions } from '../../../../store/slices/ui';
 import { getAppConfig } from '../../../../core/services/config.service';
-import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { storageActions } from '../../../../store/slices/storage';
 import shareService from '../../../../share/services/share.service';
 import { BreadcrumbsMenuProps, Dropdown } from '@internxt/ui';
+import { DownloadManager } from '../../../../network/DownloadManager';
+import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
 
 const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   const { onItemClicked } = props;
@@ -26,6 +27,8 @@ const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const allItems = useAppSelector((state) => state.storage.levels);
   const namePath = useAppSelector((state) => state.storage.namePath);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const currentBreadcrumb = namePath[namePath.length - 1];
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id;
@@ -54,7 +57,11 @@ const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   };
 
   const onDownloadButtonClicked = () => {
-    dispatch(storageThunks.downloadItemsThunk(currentFolder));
+    DownloadManager.add({
+      payload: currentFolder,
+      selectedWorkspace,
+      workspaceCredentials,
+    });
   };
 
   const onDetailsItemButtonClicked = async () => {

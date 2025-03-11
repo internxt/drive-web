@@ -1,6 +1,5 @@
 import { aes } from '@internxt/lib';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 import { FolderTree } from '@internxt/sdk/dist/drive/storage/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import { Iterator } from 'app/core/collections';
@@ -8,7 +7,6 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { downloadFile } from 'app/network/download';
-import { checkIfCachedSourceIsOlder } from 'app/store/slices/storage/storage.thunks/downloadFileThunk';
 import { t } from 'i18next';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
@@ -20,6 +18,10 @@ import { updateDatabaseFileSourceData } from './database.service';
 import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
 import { addAllFoldersToZip, addAllSharedFoldersToZip } from './foldersZip.service';
 import newStorageService from './new-storage.service';
+import { FileIterator, FolderIterator, SharedFileIterator, SharedFolderIterator } from '../../network/DownloadManager';
+import { DriveItemBlobData } from '../../database/services/database.service';
+import dateService from '../../core/services/date.service';
+import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 
 export interface IFolders {
   bucket: string;
@@ -273,8 +275,8 @@ interface FolderRef {
 async function downloadSharedFolderAsZip(
   folderId: DriveFolderData['id'],
   folderName: DriveFolderData['name'],
-  foldersIterator: (directoryId: any, token: string) => Iterator<SharedFolders>,
-  filesIterator: (directoryId: any, token: string) => Iterator<SharedFiles>,
+  foldersIterator: SharedFolderIterator,
+  filesIterator: SharedFileIterator,
   updateProgress: (progress: number) => void,
   updateNumItems: () => void,
   folderUuid?: string,
@@ -396,8 +398,8 @@ async function downloadFolderAsZip({
   folderId: DriveFolderData['id'];
   folderName: DriveFolderData['name'];
   folderUUID: DriveFolderData['uuid'];
-  foldersIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFolderData>;
-  filesIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFileData>;
+  foldersIterator: FolderIterator;
+  filesIterator: FileIterator;
   updateProgress: (progress: number) => void;
   updateNumItems: () => void;
   options?: DownloadFolderAsZipOptions;
@@ -489,6 +491,23 @@ async function downloadFolderAsZip({
     throw castedError;
   }
 }
+
+export const checkIfCachedSourceIsOlder = ({
+  cachedFile,
+  file,
+}: {
+  cachedFile: DriveItemBlobData | undefined;
+  file: DriveFileData | SharedFiles;
+}): boolean => {
+  const isCachedFileOlder = !cachedFile?.updatedAt
+    ? true
+    : dateService.isDateOneBefore({
+        dateOne: cachedFile?.updatedAt,
+        dateTwo: file?.updatedAt,
+      });
+
+  return isCachedFileOlder;
+};
 
 // NEED TO REVIEW THIS FUNCTION BEFORE MERGE, FOR NOW IS NOT WORKING WITH WORKSPACES FILES
 async function fetchFolderTree(folderUUID: string): Promise<{
