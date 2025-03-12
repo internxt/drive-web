@@ -95,10 +95,10 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
     errorService.reportError(error);
   }
 
+  vpnExtensionAuth({ message: 'user-logged-out' });
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
-  vpnExtensionAuth('user-logged-out');
   if (!navigationService.isCurrentPath(AppView.BlockedAccount) && !navigationService.isCurrentPath(AppView.Checkout)) {
     navigationService.push(AppView.Login, loginParams);
   }
@@ -557,7 +557,7 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
   }
 };
 
-export const vpnExtensionAuth = (payload: string, source = 'drive-web') => {
+export const vpnExtensionAuth = (payload: Record<string, any>, source = 'drive-web') => {
   const targetUrl = process.env.REACT_APP_HOSTNAME;
   window.postMessage({ source: source, payload }, targetUrl);
 };

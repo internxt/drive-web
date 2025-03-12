@@ -22,7 +22,10 @@ const useVpnAuth = (isVpnAuth: boolean, newToken: string | null) => {
 
   useEffect(() => {
     if (isVpnAuthNeeded && newToken) {
-      authService.vpnExtensionAuth(newToken);
+      authService.vpnExtensionAuth({
+        message: 'user-token',
+        token: newToken,
+      });
       setIsVpnAuthNeeded(false);
     }
   }, [isVpnAuthNeeded, newToken]);

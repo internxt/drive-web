@@ -183,7 +183,10 @@ function SignUp(props: SignUpProps): JSX.Element {
     const isVPNAuth = urlParams.get('vpnAuth');
 
     if (isVPNAuth && xNewToken) {
-      authService.vpnExtensionAuth(xNewToken);
+      authService.vpnExtensionAuth({
+        message: 'user-token',
+        token: xNewToken,
+      });
     }
 
     if (redirectUrl) {

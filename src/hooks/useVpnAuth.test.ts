@@ -27,7 +27,7 @@ describe('VPN authentication management', () => {
       });
 
       await waitFor(() => {
-        expect(authService.vpnExtensionAuth).toHaveBeenCalledWith(newToken);
+        expect(authService.vpnExtensionAuth).toHaveBeenCalledWith({ token: newToken, message: 'user-token' });
       });
     });
 

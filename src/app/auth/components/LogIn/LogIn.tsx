@@ -153,7 +153,10 @@ export default function LogIn(): JSX.Element {
         const isVPNAuth = urlParams.get('vpnAuth');
         const newToken = localStorageService.get('xNewToken');
         if (isVPNAuth && newToken) {
-          authService.vpnExtensionAuth(newToken);
+          authService.vpnExtensionAuth({
+            message: 'user-token',
+            token: newToken,
+          });
         }
 
         redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode, isSharingInvitation });
