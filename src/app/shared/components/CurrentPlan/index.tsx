@@ -1,3 +1,4 @@
+import { HUNDRED_TB } from 'app/core/components/Sidenav/Sidenav';
 import { bytesToString } from '../../../drive/services/size.service';
 import { Button } from '@internxt/ui';
 
@@ -16,7 +17,7 @@ export default function CurrentPlan({
   button?: string;
   onButtonClick?: () => void;
 }): JSX.Element {
-  const showInfinite = bytesInPlan >= 108851651149824;
+  const showInfinite = bytesInPlan >= HUNDRED_TB;
 
   return (
     <div className={`${className} flex items-center justify-between`}>

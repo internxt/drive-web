@@ -23,7 +23,7 @@ import { t } from 'i18next';
 import { Loader } from '@internxt/ui';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 
-const HUNDRED_TB = 109951162777600;
+export const HUNDRED_TB = 109951162777600;
 
 interface SidenavProps {
   user: UserSettings | undefined;
