@@ -69,6 +69,7 @@ export class FlatFolderZip {
   }
 
   abort(): void {
+    this.zip.end();
     this.abortController?.abort();
   }
 }
@@ -104,7 +105,11 @@ export function createFolderWithFilesWritable(progress?: FlatFolderZipOpts['prog
     },
     cancel() {
       if (passthroughController) {
-        passthroughController.close();
+        try {
+          passthroughController.close();
+        } catch {
+          // noop
+        }
         passthroughController = null;
       }
     },

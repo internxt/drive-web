@@ -2,9 +2,15 @@ import { queue, QueueObject } from 'async';
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import { QueueUtilsService } from 'app/utils/queueUtils';
 import tasksService from 'app/tasks/services/tasks.service';
-import { DownloadFilesTask, DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
-import { isFirefox } from 'react-device-detect';
-import downloadFolderUsingBlobs from 'app/drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
+import {
+  DownloadFilesTask,
+  DownloadFileTask,
+  DownloadFolderTask,
+  TaskData,
+  TaskEvent,
+  TaskStatus,
+  TaskType,
+} from 'app/tasks/types';
 import folderService, {
   checkIfCachedSourceIsOlder,
   createFilesIterator,
@@ -230,6 +236,14 @@ export class DownloadManager {
       return;
     }
 
+    const cancelTaskListener = (task?: TaskData) => {
+      const isCurrentTask = task && task.id === taskId;
+      if (isCurrentTask && task.status === TaskStatus.Cancelled) {
+        abortController?.abort();
+      }
+    };
+    tasksService.addListener({ event: TaskEvent.TaskCancelled, listener: cancelTaskListener });
+
     try {
       const updateProgressCallback = (progress: number) => {
         if (task?.status !== TaskStatus.Cancelled) {
@@ -278,6 +292,8 @@ export class DownloadManager {
       });
     } catch (err) {
       this.reportError(err, downloadTask);
+    } finally {
+      tasksService.removeListener({ event: TaskEvent.TaskCancelled, listener: cancelTaskListener });
     }
   };
 
@@ -286,41 +302,30 @@ export class DownloadManager {
     updateProgressCallback: (progress: number) => void,
     incrementItemCount: () => void,
   ) => {
-    const { items, taskId, credentials, abortController, createFilesIterator, createFoldersIterator } = downloadTask;
-    const folder = items[0] as DriveFolderData;
+    const { items, taskId, credentials, abortController, createFilesIterator, createFoldersIterator, options } =
+      downloadTask;
+    const folder = items[0];
 
-    if (isFirefox) {
-      await downloadFolderUsingBlobs({
-        folder,
-        updateProgressCallback,
-        incrementItemCount,
-        isWorkspace: !!credentials?.workspaceId,
-      });
-    } else {
-      tasksService.updateTask({
-        taskId,
-        merge: {
-          status: TaskStatus.InProcess,
-          progress: Infinity,
-          nItems: 0,
-        },
-      });
-      await folderService.downloadFolderAsZip({
-        folderId: folder.id,
-        folderName: folder.name,
-        folderUUID: folder.uuid,
-        foldersIterator: createFoldersIterator as FolderIterator,
-        filesIterator: createFilesIterator as FileIterator,
-        updateProgress: (progress) => {
-          updateProgressCallback(progress);
-        },
-        updateNumItems: () => {
-          incrementItemCount();
-        },
-        options: credentials,
-        abortController,
-      });
-    }
+    tasksService.updateTask({
+      taskId,
+      merge: {
+        status: TaskStatus.InProcess,
+        progress: Infinity,
+        nItems: 0,
+      },
+    });
+
+    await this.downloadFolderItem({
+      isSharedFolder: options.areSharedItems,
+      driveItem: folder,
+      closeWhenFinished: true,
+      credentials,
+      updateProgress: updateProgressCallback,
+      incrementItemCount,
+      createFoldersIterator,
+      createFilesIterator,
+      abortController,
+    });
   };
 
   private static readonly downloadFile = async (
@@ -351,7 +356,7 @@ export class DownloadManager {
       updateProgressCallback(1);
       saveAs(cachedFile.source, options.downloadName);
     } else {
-      const isWorkspace = !!credentials?.workspaceId;
+      const isWorkspace = !!credentials.workspaceId;
       await downloadService.downloadFile(file, isWorkspace, updateProgressCallback, abortController, credentials);
     }
   };
@@ -382,50 +387,21 @@ export class DownloadManager {
       if (abortController?.signal.aborted) return;
       try {
         if (driveItem.isFolder) {
-          const isSharedFolder = options.areSharedItems;
-          if (isSharedFolder) {
-            await folderService.downloadSharedFolderAsZip(
-              driveItem.id,
-              driveItem.name,
-              createFoldersIterator as SharedFolderIterator,
-              createFilesIterator as SharedFileIterator,
-              (progress) => {
-                downloadProgress[index] = progress;
-                updateProgressCallback(calculateProgress());
-              },
-              incrementItemCount,
-              driveItem.uuid,
-              {
-                destination: folderZip,
-                closeWhenFinished: false,
-                credentials: {
-                  user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
-                  pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
-                },
-                mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
-                workspaceId: credentials.workspaceId,
-              },
-            );
-          } else {
-            await folderService.downloadFolderAsZip({
-              folderId: driveItem.id,
-              folderName: driveItem.name,
-              folderUUID: driveItem.uuid,
-              foldersIterator: createFoldersIterator as FolderIterator,
-              filesIterator: createFilesIterator as FileIterator,
-              updateProgress: (progress) => {
-                downloadProgress[index] = progress;
-                updateProgressCallback(calculateProgress());
-              },
-              updateNumItems: incrementItemCount,
-              options: {
-                destination: folderZip,
-                closeWhenFinished: false,
-                ...credentials,
-              },
-              abortController,
-            });
-          }
+          await this.downloadFolderItem({
+            isSharedFolder: options.areSharedItems,
+            driveItem,
+            destination: folderZip,
+            closeWhenFinished: false,
+            credentials,
+            updateProgress: (progress) => {
+              downloadProgress[index] = progress;
+              updateProgressCallback(calculateProgress());
+            },
+            incrementItemCount,
+            createFoldersIterator,
+            createFilesIterator,
+            abortController,
+          });
           downloadProgress[index] = 1;
         } else {
           let fileStream: ReadableStream<Uint8Array>;
@@ -472,12 +448,75 @@ export class DownloadManager {
           folderZip.addFile(`${driveItem.name}${driveItem.type ? '.' + driveItem.type : ''}`, fileStream);
         }
       } catch (error) {
-        folderZip.abort();
+        abortController?.abort();
         throw error;
       }
     }
 
     await folderZip.close();
+  };
+
+  private static readonly downloadFolderItem = ({
+    isSharedFolder,
+    driveItem,
+    destination,
+    closeWhenFinished,
+    credentials,
+    updateProgress,
+    incrementItemCount,
+    createFoldersIterator,
+    createFilesIterator,
+    abortController,
+  }: {
+    isSharedFolder: boolean;
+    driveItem: DownloadItemType;
+    destination?: FlatFolderZip;
+    closeWhenFinished: boolean;
+    credentials: DownloadCredentials;
+    updateProgress: (progress: number) => void;
+    incrementItemCount: () => void;
+    createFoldersIterator: FolderIterator | SharedFolderIterator;
+    createFilesIterator: FileIterator | SharedFileIterator;
+    abortController?: AbortController;
+  }): Promise<void> => {
+    if (isSharedFolder) {
+      return folderService.downloadSharedFolderAsZip(
+        driveItem.id,
+        driveItem.name,
+        createFoldersIterator as SharedFolderIterator,
+        createFilesIterator as SharedFileIterator,
+        updateProgress,
+        incrementItemCount,
+        driveItem.uuid,
+        {
+          destination,
+          closeWhenFinished,
+          credentials: {
+            user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
+            pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
+          },
+          mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
+          workspaceId: credentials.workspaceId,
+        },
+        abortController,
+      );
+    } else {
+      return folderService.downloadFolderAsZip({
+        folderId: driveItem.id,
+        folderName: driveItem.name,
+        folderUUID: driveItem.uuid,
+        foldersIterator: createFoldersIterator as FolderIterator,
+        filesIterator: createFilesIterator as FileIterator,
+        updateProgress,
+        updateNumItems: incrementItemCount,
+        options: {
+          destination,
+          closeWhenFinished,
+          ...credentials,
+        },
+        abortController,
+      });
+    }
   };
 
   private static readonly reportError = (err: unknown, downloadTask: DownloadTask) => {

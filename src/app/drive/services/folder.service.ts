@@ -281,6 +281,7 @@ async function downloadSharedFolderAsZip(
   updateNumItems: () => void,
   folderUuid?: string,
   options?: DownloadFolderAsZipOptions,
+  abortController?: AbortController,
 ): Promise<void> {
   const rootFolder: FolderRef = { folderId: folderId, name: folderName, folderUuid: folderUuid };
   const pendingFolders: FolderRef[] = [rootFolder];
@@ -294,6 +295,7 @@ async function downloadSharedFolderAsZip(
           updateProgress(loadedBytes / totalSize);
         }
       },
+      abortController,
     });
 
   const user = localStorageService.getUser();
@@ -307,6 +309,8 @@ async function downloadSharedFolderAsZip(
     let nextFilesToken;
     let nextFolderToken;
     do {
+      if (abortController?.signal.aborted) throw new Error('Aborted');
+
       const folderToDownload = pendingFolders.shift() as FolderRef;
 
       const { files, token } = await addAllSharedFilesToZip(
@@ -357,6 +361,9 @@ async function downloadSharedFolderAsZip(
         folderToDownload.name,
         foldersIterator(folderToDownload.folderUuid as string, folderToDownload.folderToken ?? nextFolderToken),
         zip,
+        () => {
+          updateNumItems();
+        },
       );
 
       nextFolderToken = folderToken;
@@ -418,6 +425,8 @@ async function downloadFolderAsZip({
 
   try {
     do {
+      if (abortController?.signal.aborted) throw new Error('Aborted');
+
       const folderToDownload = pendingFolders.shift() as FolderRef;
 
       const files = await addAllFilesToZip(
@@ -468,6 +477,9 @@ async function downloadFolderAsZip({
         folderToDownload.name,
         foldersIterator(folderToDownload.folderId, folderToDownload.folderUuid as string, workspaceId),
         zip,
+        () => {
+          updateNumItems();
+        },
       );
 
       pendingFolders.push(
