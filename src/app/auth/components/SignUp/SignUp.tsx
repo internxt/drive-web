@@ -23,6 +23,7 @@ import paymentService from '../../../payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import { Button } from '@internxt/ui';
 import { AuthMethodTypes } from 'app/payment/types';
+import vpnAuthService from 'app/auth/services/vpnAuth.service';
 
 export interface SignUpProps {
   location: {
@@ -183,10 +184,7 @@ function SignUp(props: SignUpProps): JSX.Element {
     const isVPNAuth = urlParams.get('vpnAuth');
 
     if (isVPNAuth && xNewToken) {
-      authService.vpnExtensionAuth({
-        message: 'user-token',
-        token: xNewToken,
-      });
+      vpnAuthService.logIn(xNewToken);
     }
 
     if (redirectUrl) {

@@ -45,6 +45,7 @@ import { SdkFactory } from '../../core/factory/sdk';
 import envService from '../../core/services/env.service';
 import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
+import vpnAuthService from './vpnAuth.service';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -95,7 +96,7 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
     errorService.reportError(error);
   }
 
-  vpnExtensionAuth({ message: 'user-logged-out' });
+  vpnAuthService.logOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
@@ -557,11 +558,6 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
   }
 };
 
-export const vpnExtensionAuth = (payload: Record<string, any>, source = 'drive-web') => {
-  const targetUrl = process.env.REACT_APP_HOSTNAME;
-  window.postMessage({ source: source, payload }, targetUrl);
-};
-
 const authService = {
   logOut,
   check2FANeeded: is2FANeeded,
@@ -577,7 +573,6 @@ const authService = {
   requestUnblockAccount,
   unblockAccount,
   authenticateUser,
-  vpnExtensionAuth,
 };
 
 export default authService;
