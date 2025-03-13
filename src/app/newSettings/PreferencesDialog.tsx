@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux';
 
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Modal from 'app/shared/components/Modal';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import AccountSection from './Sections/Account/Account/AccountSection';
@@ -21,6 +20,7 @@ import { PreferencesDialogProps, Section, SelectSectionProps } from './types/typ
 import TeamsSection from './Sections/Workspace/Teams/TeamsSection';
 import { AccessLogsSection } from './Sections/Workspace/Logs/AccessLogsSection';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { Modal } from '@internxt/ui';
 
 const findSectionItemsBySectionAndSubsection = ({ section, subsection }: SelectSectionProps) => {
   return sectionItems.find((item) => item.section === section && item.subsection === subsection);

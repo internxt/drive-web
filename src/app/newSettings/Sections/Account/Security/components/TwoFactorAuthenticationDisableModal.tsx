@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { deactivate2FA, userHas2FAStored } from 'app/auth/services/auth.service';
-import { Button } from '@internxt/ui';
-import Modal from 'app/shared/components/Modal';
+import { Button, Modal } from '@internxt/ui';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import Input from 'app/shared/components/Input';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
