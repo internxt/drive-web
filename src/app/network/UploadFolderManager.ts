@@ -245,6 +245,7 @@ export class UploadFoldersManager {
             abortController: abortController,
             disableDuplicatedNamesCheck: true,
             disableExistenceCheck: true,
+            isUploadedFromFolder: true,
           },
           onFileUploadCallback: () => {
             this.tasksInfo[taskId].progress.itemsUploaded += 1;
