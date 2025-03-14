@@ -9,9 +9,9 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { DownloadItem, DownloadManagerService, DownloadTask } from 'app/drive/services/downloadManager.service';
 
 export class DownloadManager {
-  private static readonly MAX_CONCURRENT_DOWNLOADS = 6;
+  static readonly MAX_CONCURRENT_DOWNLOADS = 6;
 
-  private static readonly downloadQueue: QueueObject<DownloadTask> = queue<DownloadTask>(
+  static readonly downloadQueue: QueueObject<DownloadTask> = queue<DownloadTask>(
     (downloadTask, next: (err?: Error) => void) => {
       if (downloadTask.abortController?.signal.aborted) return next(new Error('Download aborted'));
 
@@ -34,7 +34,7 @@ export class DownloadManager {
     this.MAX_CONCURRENT_DOWNLOADS,
   );
 
-  public static readonly downloadTask = async (downloadTask: DownloadTask) => {
+  private static readonly downloadTask = async (downloadTask: DownloadTask) => {
     const { items, taskId, abortController } = downloadTask;
 
     const task = tasksService.findTask(taskId);
@@ -103,7 +103,7 @@ export class DownloadManager {
     }
   };
 
-  public static readonly reportError = (err: unknown, downloadTask: DownloadTask) => {
+  private static readonly reportError = (err: unknown, downloadTask: DownloadTask) => {
     const { items, taskId, abortController } = downloadTask;
 
     if (err instanceof ConnectionLostError) {
@@ -161,7 +161,7 @@ export class DownloadManager {
     }
   };
 
-  public static readonly add = async (downloadItem: DownloadItem) => {
+  static readonly downloadItem = async (downloadItem: DownloadItem) => {
     const newTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
 
     if (newTask) {

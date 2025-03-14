@@ -40,7 +40,7 @@ export const useRetryDownload = ({
     const isZipAndMultipleItems = task?.file && (task?.file as DownloadFilesData)?.items && task?.file?.type === 'zip';
 
     if (folder) {
-      DownloadManager.add({
+      DownloadManager.downloadItem({
         payload: [folder as DriveItemData],
         selectedWorkspace,
         workspaceCredentials,
@@ -48,7 +48,7 @@ export const useRetryDownload = ({
       });
       resetProgress(notification);
     } else if (isZipAndMultipleItems && task.file && (task.file as DownloadFilesData)?.items) {
-      DownloadManager.add({
+      DownloadManager.downloadItem({
         payload: (task?.file as DownloadFilesData)?.items as DriveItemData[],
         selectedWorkspace,
         workspaceCredentials,
@@ -56,7 +56,7 @@ export const useRetryDownload = ({
       });
       resetProgress(notification);
     } else if (isOneFileDownload) {
-      DownloadManager.add({
+      DownloadManager.downloadItem({
         payload: [task?.file as DriveItemData],
         selectedWorkspace,
         workspaceCredentials,

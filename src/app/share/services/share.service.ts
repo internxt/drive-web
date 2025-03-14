@@ -635,7 +635,7 @@ export async function downloadSharedFiles({
   };
 
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
-    await DownloadManager.add({
+    await DownloadManager.downloadItem({
       payload: selectedItems,
       selectedWorkspace,
       workspaceCredentials,
@@ -676,7 +676,7 @@ export async function downloadSharedFiles({
       });
     }
 
-    await DownloadManager.add({
+    await DownloadManager.downloadItem({
       payload,
       selectedWorkspace,
       workspaceCredentials,

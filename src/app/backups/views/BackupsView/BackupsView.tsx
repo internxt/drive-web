@@ -63,7 +63,7 @@ export default function BackupsView(): JSX.Element {
     useBackupsPagination(folderUuid, clearSelectedItems);
 
   const onDownloadSelectedItems = () => {
-    DownloadManager.add({
+    DownloadManager.downloadItem({
       payload: selectedItems,
       selectedWorkspace,
       workspaceCredentials,
@@ -72,7 +72,7 @@ export default function BackupsView(): JSX.Element {
 
   const onDownloadFileFormFileViewer = () => {
     if (itemToPreview && isFileViewerOpen) {
-      DownloadManager.add({
+      DownloadManager.downloadItem({
         payload: [itemToPreview as DriveItemData],
         selectedWorkspace,
         workspaceCredentials,

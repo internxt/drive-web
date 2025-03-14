@@ -73,7 +73,7 @@ describe('downloadManager', () => {
       .spyOn(DownloadManagerService.instance, 'downloadItems')
       .mockRejectedValue(new Error('It should download folder'));
 
-    await DownloadManager.add(downloadItem);
+    await DownloadManager.downloadItem(downloadItem);
 
     expect(downloadFolderSpy).toHaveBeenCalledOnce();
     expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything());
@@ -144,7 +144,7 @@ describe('downloadManager', () => {
       .spyOn(DownloadManagerService.instance, 'downloadItems')
       .mockRejectedValue(new Error('It should download file'));
 
-    await DownloadManager.add(downloadItem);
+    await DownloadManager.downloadItem(downloadItem);
 
     expect(downloadFileSpy).toHaveBeenCalledOnce();
     expect(downloadFileSpy).toHaveBeenCalledWith(mockTask, expect.anything());
@@ -236,7 +236,7 @@ describe('downloadManager', () => {
       .mockRejectedValue(new Error('It should download items'));
     const downloadItemsSpy = vi.spyOn(DownloadManagerService.instance, 'downloadItems').mockResolvedValue();
 
-    await DownloadManager.add(downloadItem);
+    await DownloadManager.downloadItem(downloadItem);
 
     expect(downloadItemsSpy).toHaveBeenCalledOnce();
     expect(downloadItemsSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything());

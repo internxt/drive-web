@@ -26,7 +26,7 @@ const BreadcrumbsMenuBackups = (props: BreadcrumbsMenuProps): JSX.Element => {
 
   const onDownloadBackupButtonClicked = async () => {
     const payload = [(isFolder ? currentFolder : currentDevice) as DriveItemData];
-    await DownloadManager.add({
+    await DownloadManager.downloadItem({
       payload,
       selectedWorkspace,
       workspaceCredentials,

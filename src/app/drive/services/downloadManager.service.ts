@@ -75,7 +75,7 @@ export type SharedFileIterator = (directoryId: string, resourcesToken: string) =
 export class DownloadManagerService {
   public static readonly instance: DownloadManagerService = new DownloadManagerService();
 
-  public readonly getDownloadCredentialsFromWorkspace = (
+  readonly getDownloadCredentialsFromWorkspace = (
     selectedWorkspace: WorkspaceData | null,
     workspaceCredentials: WorkspaceCredentialsDetails | null,
   ): DownloadCredentials | undefined => {
@@ -94,7 +94,7 @@ export class DownloadManagerService {
     return credentials;
   };
 
-  public readonly generateTasksForItem = async (downloadItem: DownloadItem): Promise<DownloadTask | undefined> => {
+  readonly generateTasksForItem = async (downloadItem: DownloadItem): Promise<DownloadTask | undefined> => {
     const itemsPayload = downloadItem.payload;
     if (itemsPayload.length === 0) return;
 
@@ -192,7 +192,7 @@ export class DownloadManagerService {
     };
   };
 
-  public readonly downloadFolder = async (
+  readonly downloadFolder = async (
     downloadTask: DownloadTask,
     updateProgressCallback: (progress: number) => void,
     incrementItemCount: () => void,
@@ -223,10 +223,7 @@ export class DownloadManagerService {
     });
   };
 
-  public readonly downloadFile = async (
-    downloadTask: DownloadTask,
-    updateProgressCallback: (progress: number) => void,
-  ) => {
+  readonly downloadFile = async (downloadTask: DownloadTask, updateProgressCallback: (progress: number) => void) => {
     const { items, credentials, options, abortController } = downloadTask;
     const file = items[0] as DriveFileData;
 
@@ -256,7 +253,7 @@ export class DownloadManagerService {
     }
   };
 
-  public readonly downloadItems = async (
+  readonly downloadItems = async (
     downloadTask: DownloadTask,
     updateProgressCallback: (progress: number) => void,
     incrementItemCount: () => void,
@@ -351,7 +348,7 @@ export class DownloadManagerService {
     await folderZip.close();
   };
 
-  public readonly downloadFolderItem = ({
+  readonly downloadFolderItem = ({
     isSharedFolder,
     driveItem,
     destination,

@@ -57,7 +57,7 @@ const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   };
 
   const onDownloadButtonClicked = () => {
-    DownloadManager.add({
+    DownloadManager.downloadItem({
       payload: currentFolder,
       selectedWorkspace,
       workspaceCredentials,

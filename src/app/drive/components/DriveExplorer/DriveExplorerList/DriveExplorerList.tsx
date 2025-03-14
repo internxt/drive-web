@@ -262,7 +262,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   );
 
   const downloadItem = useCallback((item: ContextMenuDriveItem) => {
-    DownloadManager.add({
+    DownloadManager.downloadItem({
       payload: [item as DriveItemData],
       selectedWorkspace,
       workspaceCredentials,
@@ -289,7 +289,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       dispatch(uiActions.setIsMoveItemsDialogOpen(true));
     },
     downloadItems: () => {
-      DownloadManager.add({
+      DownloadManager.downloadItem({
         payload: props.selectedItems,
         selectedWorkspace,
         workspaceCredentials,

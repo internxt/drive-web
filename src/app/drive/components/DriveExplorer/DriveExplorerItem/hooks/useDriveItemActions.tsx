@@ -96,7 +96,7 @@ const useDriveItemActions = (item): DriveItemActions => {
   };
 
   const onDownloadItemButtonClicked = () => {
-    DownloadManager.add({
+    DownloadManager.downloadItem({
       payload: [item as DriveItemData],
       selectedWorkspace,
       workspaceCredentials,

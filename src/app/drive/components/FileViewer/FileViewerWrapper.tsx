@@ -87,7 +87,7 @@ const FileViewerWrapper = ({
 
   const onDownload = () => {
     if (currentFile) {
-      DownloadManager.add({
+      DownloadManager.downloadItem({
         payload: [currentFile as DriveItemData],
         selectedWorkspace,
         workspaceCredentials,

@@ -94,7 +94,7 @@ const DriveTopBarActions = ({
   };
 
   const onDownloadButtonClicked = (): void => {
-    DownloadManager.add({
+    DownloadManager.downloadItem({
       payload: selectedItems,
       selectedWorkspace,
       workspaceCredentials,
