@@ -1,13 +1,14 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import useVpnAuth from './useVpnAuth';
-import authService from 'app/auth/services/auth.service';
+import vpnAuthService from 'app/auth/services/vpnAuth.service';
 
 const newToken = 'user-token';
 
-vi.mock('app/auth/services/auth.service', () => ({
+vi.mock('app/auth/services/vpnAuth.service', () => ({
   default: {
-    vpnExtensionAuth: vi.fn(),
+    logIn: vi.fn(),
+    logOut: vi.fn(),
   },
 }));
 
@@ -27,7 +28,7 @@ describe('VPN authentication management', () => {
       });
 
       await waitFor(() => {
-        expect(authService.vpnExtensionAuth).toHaveBeenCalledWith(newToken);
+        expect(vpnAuthService.logIn).toHaveBeenCalledWith(newToken);
       });
     });
 
@@ -43,7 +44,7 @@ describe('VPN authentication management', () => {
       });
 
       await waitFor(() => {
-        expect(authService.vpnExtensionAuth).not.toHaveBeenCalled();
+        expect(vpnAuthService.logIn).not.toHaveBeenCalled();
       });
     });
 
@@ -55,7 +56,7 @@ describe('VPN authentication management', () => {
       });
 
       await waitFor(() => {
-        expect(authService.vpnExtensionAuth).not.toHaveBeenCalled();
+        expect(vpnAuthService.logIn).not.toHaveBeenCalled();
       });
     });
   });
@@ -70,7 +71,7 @@ describe('VPN authentication management', () => {
       });
 
       await waitFor(() => {
-        expect(authService.vpnExtensionAuth).not.toHaveBeenCalled();
+        expect(vpnAuthService.logIn).not.toHaveBeenCalled();
       });
     });
   });

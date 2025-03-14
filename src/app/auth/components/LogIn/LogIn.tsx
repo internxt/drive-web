@@ -27,6 +27,7 @@ import shareService from '../../../share/services/share.service';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import TextInput from '../TextInput/TextInput';
 import { AuthMethodTypes } from 'app/payment/types';
+import vpnAuthService from 'app/auth/services/vpnAuth.service';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -153,7 +154,7 @@ export default function LogIn(): JSX.Element {
         const isVPNAuth = urlParams.get('vpnAuth');
         const newToken = localStorageService.get('xNewToken');
         if (isVPNAuth && newToken) {
-          authService.vpnExtensionAuth(newToken);
+          vpnAuthService.logIn(newToken);
         }
 
         redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode, isSharingInvitation });
