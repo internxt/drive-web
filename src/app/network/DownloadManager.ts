@@ -165,7 +165,8 @@ export class DownloadManager {
     const newTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
 
     if (newTask) {
-      this.downloadQueue.push(newTask);
+      await this.downloadQueue.pushAsync(newTask);
+      return newTask;
     }
   };
 }
