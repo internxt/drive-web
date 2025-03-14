@@ -103,12 +103,12 @@ const SharedItemListContainer = ({
             user: shareItem.credentials.networkUser,
             pass: shareItem.credentials.networkPass,
           },
-          dispatch,
-          selectedItems,
           decryptedEncryptionKey: encryptionKey as string,
+          selectedItems,
           token: undefined,
-          workspaceId,
           teamId: defaultTeamId,
+          selectedWorkspace,
+          workspaceCredentials,
         });
       } else {
         const pageItemsNumber = 5;
@@ -140,12 +140,12 @@ const SharedItemListContainer = ({
             user: shareItem.credentials.networkUser,
             pass: shareItem.credentials.networkPass,
           },
-          dispatch,
-          selectedItems,
           decryptedEncryptionKey: encryptionKey as string,
+          selectedItems,
           token: sharedToken,
-          workspaceId,
           teamId: defaultTeamId,
+          selectedWorkspace,
+          workspaceCredentials,
         });
       }
     } catch (err) {

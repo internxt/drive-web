@@ -1,17 +1,20 @@
 import { CaretDown, Trash, DownloadSimple } from '@phosphor-icons/react';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import { downloadItemsThunk } from '../../../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { uiActions } from '../../../../store/slices/ui';
 import { getAppConfig } from '../../../../core/services/config.service';
 import { DriveItemData } from '../../../../drive/types';
 import { BreadcrumbsMenuProps, Dropdown } from '@internxt/ui';
+import { DownloadManager } from '../../../../network/DownloadManager';
+import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
 
 const BreadcrumbsMenuBackups = (props: BreadcrumbsMenuProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
   const currentFolder = useAppSelector((state) => state.backups.currentFolder);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id;
   const isSharedView = pathId === 'shared';
@@ -22,11 +25,12 @@ const BreadcrumbsMenuBackups = (props: BreadcrumbsMenuProps): JSX.Element => {
   };
 
   const onDownloadBackupButtonClicked = async () => {
-    if (isFolder) {
-      dispatch(downloadItemsThunk([currentFolder as DriveItemData]));
-    } else {
-      dispatch(downloadItemsThunk([currentDevice as DriveItemData]));
-    }
+    const payload = [(isFolder ? currentFolder : currentDevice) as DriveItemData];
+    await DownloadManager.downloadItem({
+      payload,
+      selectedWorkspace,
+      workspaceCredentials,
+    });
   };
 
   return (

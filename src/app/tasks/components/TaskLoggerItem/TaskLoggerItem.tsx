@@ -72,6 +72,7 @@ const TaskLoggerItem = ({ notification, task }: TaskLoggerItemProps): JSX.Elemen
   const [isHovered, setIsHovered] = useState(false);
   const [isRetryActionDisabled, setIsRetryActionDisabled] = useState(false);
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceCredentials = useSelector(workspacesSelectors.getWorkspaceCredentials);
 
   const { openItem } = useOpenItem({
     notification,
@@ -89,16 +90,16 @@ const TaskLoggerItem = ({ notification, task }: TaskLoggerItemProps): JSX.Elemen
     },
     selectedWorkspace,
   });
-  const { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem, uploadSharedItem } = useReduxActions();
+  const { uploadFolder, uploadItem, uploadSharedItem } = useReduxActions();
   const { retryDownload } = useRetryDownload({
     notification,
     task,
-    downloadItemsAsZip,
-    downloadItems,
     showErrorNotification() {
       notificationsService.show({ text: t('tasks.generalErrorMessages.retryDownloadFailed'), type: ToastType.Error });
     },
     resetProgress: resetTaskProgress,
+    selectedWorkspace,
+    workspaceCredentials,
   });
   const { retryUpload } = useRetryUpload({
     notification,
