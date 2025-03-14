@@ -18,7 +18,12 @@ import { updateDatabaseFileSourceData } from './database.service';
 import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
 import { addAllFoldersToZip, addAllSharedFoldersToZip } from './foldersZip.service';
 import newStorageService from './new-storage.service';
-import { FileIterator, FolderIterator, SharedFileIterator, SharedFolderIterator } from '../../network/DownloadManager';
+import {
+  FileIterator,
+  FolderIterator,
+  SharedFileIterator,
+  SharedFolderIterator,
+} from '../../drive/services/downloadManager.service';
 import { DriveItemBlobData } from '../../database/services/database.service';
 import dateService from '../../core/services/date.service';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';

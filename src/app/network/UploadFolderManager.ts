@@ -162,7 +162,7 @@ export class UploadFoldersManager {
     (task, next: (err: Error | null, res?: DriveFolderData) => void) => {
       if (this.abortController?.signal.aborted) return;
 
-      const newConcurrency = QueueUtilsService.getConcurrencyUsingPerfomance(
+      const newConcurrency = QueueUtilsService.instance.getConcurrencyUsingPerfomance(
         this.uploadFoldersQueue.concurrency,
         UploadFoldersManager.MAX_CONCURRENT_UPLOADS,
       );
