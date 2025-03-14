@@ -3,8 +3,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import Modal from 'app/shared/components/Modal';
-import Input from 'app/shared/components/Input';
-import { Button, Avatar, Loader } from '@internxt/ui';
+import { Button, Avatar, Input, Loader } from '@internxt/ui';
 
 interface AddMemberDialogProps {
   isOpen: boolean;
