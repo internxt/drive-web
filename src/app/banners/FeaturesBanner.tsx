@@ -19,7 +19,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
       fixed bottom-0 left-0 right-0 top-0 z-50 h-screen bg-black bg-opacity-50 px-10 lg:px-0`}
     >
       <div
-        className={`${styles.linearGradient} fixed left-1/2 top-1/2 flex h-auto -translate-x-[50%] -translate-y-[50%] flex-col bg-white overflow-hidden rounded-2xl px-10`}
+        className={`${styles.linearGradient} fixed left-1/2 top-1/2 flex h-auto -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden rounded-2xl px-10`}
       >
         <button
           id="close-banner"
@@ -59,7 +59,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
                 {features.map((card, index) => (
                   <div className="flex flex-row space-x-1 font-bold " key={index}>
                     <div className="flex">
-                      <Clover size={32} className="mr-4 text-primary" weight="fill" />
+                      <Clover size={32} className="mr-4 text-green" weight="fill" />
                       <p className="text-xl font-semibold text-white">{card}</p>
                     </div>
                   </div>
