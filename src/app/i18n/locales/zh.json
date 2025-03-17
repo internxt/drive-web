@@ -10,12 +10,12 @@
     "guarantee": "30 天退款保证",
     "lastCta": "*优惠适用于免费账户或新客户",
     "features": [
-      "高级 VPN 和杀毒软件",
-      "后量子加密",
-      "开源且经过审计",
+      "VPN 和高级防病毒软件",
+      "后量子加密技术",
+      "开源且经过审核",
       "加密传输",
-      "符合 GDPR 规范",
-      "优惠截止至 3 月 17 日"
+      "免费网页应用主题",
+      "优惠截止至 3 月 30 日"
     ]
   },
   "susbcriptionsBanner": {
@@ -89,7 +89,9 @@
     "starwars": "Star Wars",
     "halloween": "Halloween",
     "christmas": "圣诞节",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "Valentine's Day",
+    "stpatricks": "St. Patrick's Day"
   },
   "auth": {
     "email": "电子邮件",
