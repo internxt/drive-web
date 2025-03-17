@@ -47,9 +47,26 @@ export class BannerManager {
   }
 
   private shouldShowSubscriptionBanner(): boolean {
+    const validProductIds = new Set([
+      'price_1PNxYtFAOdcgaBMQzkimr6OU',
+      'price_1PNxZkFAOdcgaBMQi0UCtXBj',
+      'price_1PNxaDFAOdcgaBMQnKXWQRs0',
+      'price_1OQ3MDFAOdcgaBMQ3he4Xqed',
+      'price_1OQ3LKFAOdcgaBMQMK2UHHRM',
+      'price_1OQ3IzFAOdcgaBMQqVd6kLyH',
+      'price_1OQ3JbFAOdcgaBMQsawuy1PI',
+      'price_1OQ3H6FAOdcgaBMQERw3KUuO',
+      'price_1OQ3H5FAOdcgaBMQwMJ734rd',
+      'price_1OQ3CtFAOdcgaBMQtqfzjX2M',
+      'price_1OQ3CtFAOdcgaBMQFq2xX79Q',
+    ]);
+
+    const subscription = this.plan.individualSubscription;
+
     return (
-      (this.plan.individualSubscription?.type === 'subscription' ||
-        this.plan.individualSubscription?.type === 'lifetime') &&
+      (subscription?.type === 'lifetime' || subscription?.type === 'subscription') &&
+      subscription.productId !== undefined &&
+      validProductIds.has(subscription.productId) &&
       !this.bannerItemInLocalStorage &&
       !this.isOfferExpired()
     );
