@@ -3,7 +3,7 @@ import { PlanState } from 'app/store/slices/plan';
 import paymentService from '../services/payment.service';
 import errorService from 'app/core/services/error.service';
 
-export const STPATRICKS_THEME_AVAILABLE_LOCAL_STORAGE_KEY = 'stPatricks_theme_enabled';
+export const STPATRICKS_THEME_AVAILABLE_LOCAL_STORAGE_KEY = 'stpatricks_theme_enabled';
 
 export const iStPatricksThemeAvailable = async (plan: PlanState, onSuccess?: () => void): Promise<boolean> => {
   const stPatricksInLocalStorage = localStorageService.get(STPATRICKS_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
