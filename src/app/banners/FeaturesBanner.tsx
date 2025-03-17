@@ -42,7 +42,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
             <div className="flex flex-col items-center space-y-3 lg:items-start">
               <button
                 onClick={handleOnClick}
-                className="flex w-max items-center rounded-lg bg-primary dark:bg-primary px-5 py-3 text-lg font-medium text-white dark:text-white"
+                className="flex w-max items-center rounded-lg bg-white dark:bg-primary px-5 py-3 text-lg font-medium text-white dark:text-white"
               >
                 {translate('featuresBanner.cta')}
               </button>
