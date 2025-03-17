@@ -261,13 +261,16 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     [dispatch, storageActions, uiActions],
   );
 
-  const downloadItem = useCallback((item: ContextMenuDriveItem) => {
-    DownloadManager.downloadItem({
-      payload: [item as DriveItemData],
-      selectedWorkspace,
-      workspaceCredentials,
-    });
-  }, []);
+  const downloadItem = useCallback(
+    (item: ContextMenuDriveItem) => {
+      DownloadManager.downloadItem({
+        payload: [item as DriveItemData],
+        selectedWorkspace,
+        workspaceCredentials,
+      });
+    },
+    [selectedWorkspace, workspaceCredentials],
+  );
 
   const moveToTrash = useCallback(
     (item: ContextMenuDriveItem) => {
