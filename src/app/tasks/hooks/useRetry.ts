@@ -65,7 +65,7 @@ export const useRetryDownload = ({
       resetProgress(notification);
       showErrorNotification();
     }
-  }, [notification, task, showErrorNotification, resetProgress]);
+  }, [notification, task, showErrorNotification, resetProgress, selectedWorkspace, workspaceCredentials]);
 
   return { retryDownload };
 };
