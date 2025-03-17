@@ -19,7 +19,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
       fixed bottom-0 left-0 right-0 top-0 z-50 h-screen bg-black bg-opacity-50 px-10 lg:px-0`}
     >
       <div
-        className={`${styles.lineargradient} bg-primary fixed left-1/2 top-1/2 flex h-max -translate-x-[50%] -translate-y-[50%] flex-col
+        className={`${styles['linear-gradient']} bg-primary fixed left-1/2 top-1/2 flex h-max -translate-x-[50%] -translate-y-[50%] flex-col
         overflow-hidden
         rounded-2xl px-10`}
       >
