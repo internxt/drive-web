@@ -13,9 +13,14 @@ import localStorageService from 'app/core/services/local-storage.service';
 import tasksService from 'app/tasks/services/tasks.service';
 import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { TaskStatus, TaskType } from 'app/tasks/types';
-import { saveAs } from 'file-saver';
 import downloadService from './download.service';
-import { getDatabaseFileSourceData } from './database.service';
+import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
+import { FlatFolderZip } from 'app/core/services/zip.service';
+import { downloadFile } from 'app/network/download';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { LevelsBlobsCache, LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
+import { LRUCache } from 'app/database/services/database.service/LRUCache';
+import { DriveItemBlobData } from 'app/database/services/database.service';
 
 describe('downloadManagerService', () => {
   beforeAll(() => {
@@ -39,6 +44,18 @@ describe('downloadManagerService', () => {
       createFilesIterator: vi.fn(),
       createFoldersIterator: vi.fn(),
       checkIfCachedSourceIsOlder: vi.fn(),
+    }));
+
+    vi.mock('app/network/download', () => ({
+      downloadFile: vi.fn(),
+      loadWritableStreamPonyfill: vi.fn(),
+      getDecryptedStream: vi.fn(),
+    }));
+
+    vi.mock('app/core/services/stream.service', () => ({
+      binaryStreamToBlob: vi.fn(),
+      streamFileIntoChunks: vi.fn(),
+      buildProgressStream: vi.fn(),
     }));
   });
 
@@ -352,7 +369,7 @@ describe('downloadManagerService', () => {
     const mockTaskId = 'mock-task-id';
     const downloadItem: DownloadItem = {
       taskId: mockTaskId,
-      payload: [mockFile as DriveItemData],
+      payload: [{ ...mockFile, type: '' } as DriveItemData],
       selectedWorkspace: null,
       workspaceCredentials: null,
     };
@@ -375,7 +392,7 @@ describe('downloadManagerService', () => {
       },
       options: {
         areSharedItems: false,
-        downloadName: `${mockFile.name}.${mockFile.type}`,
+        downloadName: mockFile.name,
         showErrors: true,
       },
       taskId: mockTaskId,
@@ -660,5 +677,142 @@ describe('downloadManagerService', () => {
       mockTask.abortController,
       mockTask.credentials,
     );
+  });
+
+  it('should download folder items from task as zip using download service', async () => {
+    const mockTaskId = 'mock-task-id';
+    const mockFolder2: DriveFolderData = { ...mockFolder, name: 'folder2' };
+    const downloadItem: DownloadItem = {
+      payload: [mockFolder as DriveItemData, mockFolder2 as DriveItemData],
+      selectedWorkspace: null,
+      workspaceCredentials: null,
+    };
+    const mockTask: DownloadTask = {
+      abortController: new AbortController(),
+      items: downloadItem.payload,
+      createFilesIterator: createFilesIterator,
+      createFoldersIterator: createFoldersIterator,
+      credentials: {
+        credentials: {
+          user: 'any-user',
+          pass: 'any-pass',
+        },
+        workspaceId: 'any-workspace-id',
+        mnemonic: 'any-mnemonic',
+      },
+      options: {
+        areSharedItems: false,
+        downloadName: `${mockFile.name}.${mockFile.type}`,
+        showErrors: true,
+      },
+      taskId: mockTaskId,
+    };
+    const mockUpdateProgress = vi.fn((progress: number) => progress);
+    const mockIncrementItemCount = vi.fn(() => 0);
+
+    const closeZipSpy = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
+
+    const downloadFolderSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFolderItem').mockResolvedValue();
+
+    await DownloadManagerService.instance.downloadItems(mockTask, mockUpdateProgress, mockIncrementItemCount);
+
+    expect(downloadFolderSpy).toHaveBeenNthCalledWith(1, {
+      isSharedFolder: mockTask.options.areSharedItems,
+      driveItem: mockFolder,
+      destination: expect.anything(),
+      closeWhenFinished: false,
+      credentials: mockTask.credentials,
+      updateProgress: expect.anything(),
+      incrementItemCount: mockIncrementItemCount,
+      createFoldersIterator: mockTask.createFoldersIterator,
+      createFilesIterator: mockTask.createFilesIterator,
+      abortController: mockTask.abortController,
+    });
+    expect(downloadFolderSpy).toHaveBeenNthCalledWith(2, {
+      isSharedFolder: mockTask.options.areSharedItems,
+      driveItem: mockFolder2,
+      destination: expect.anything(),
+      closeWhenFinished: false,
+      credentials: mockTask.credentials,
+      updateProgress: expect.anything(),
+      incrementItemCount: mockIncrementItemCount,
+      createFoldersIterator: mockTask.createFoldersIterator,
+      createFilesIterator: mockTask.createFilesIterator,
+      abortController: mockTask.abortController,
+    });
+    expect(closeZipSpy).toHaveBeenCalled();
+  });
+
+  it('should download file items from task as zip using download service', async () => {
+    const mockTaskId = 'mock-task-id';
+    const mockFileCache: DriveFileData = { ...mockFile, id: 2, name: 'File2', type: '' };
+    const downloadItem: DownloadItem = {
+      payload: [mockFile as DriveItemData, mockFileCache as DriveItemData],
+      selectedWorkspace: null,
+      workspaceCredentials: null,
+    };
+    const mockTask: DownloadTask = {
+      abortController: new AbortController(),
+      items: downloadItem.payload,
+      createFilesIterator: createFilesIterator,
+      createFoldersIterator: createFoldersIterator,
+      credentials: {
+        credentials: {
+          user: 'any-user',
+          pass: 'any-pass',
+        },
+        workspaceId: 'any-workspace-id',
+        mnemonic: 'any-mnemonic',
+      },
+      options: {
+        areSharedItems: false,
+        downloadName: `${mockFile.name}.${mockFile.type}`,
+        showErrors: true,
+      },
+      taskId: mockTaskId,
+    };
+
+    const levelsBlobsCache = new LevelsBlobsCache();
+    const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
+    const lruCacheSpy = vi
+      .spyOn(lruCache, 'get')
+      .mockResolvedValueOnce({
+        id: mockFile.id,
+        parentId: mockFile.folderId,
+        source: new Blob([]),
+      })
+      .mockResolvedValueOnce({
+        id: mockFileCache.id,
+        parentId: mockFileCache.folderId,
+      });
+    vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(lruCache);
+
+    const mockUpdateProgress = vi.fn((progress: number) => progress);
+    const mockIncrementItemCount = vi.fn(() => 0);
+
+    const checkIfCachedSourceIsOlderSpy = vi.fn().mockReturnValueOnce(false).mockReturnValueOnce(true);
+    const downloadedFileStreamSpy = vi.fn();
+    const binaryStreamToBlobSpy = vi.fn(() => new Blob([]));
+    const updateDatabaseFileSourceDataSpy = vi.fn();
+
+    (checkIfCachedSourceIsOlder as Mock).mockImplementation(checkIfCachedSourceIsOlderSpy);
+    (downloadFile as Mock).mockImplementation(downloadedFileStreamSpy);
+    (binaryStreamToBlob as Mock).mockImplementation(binaryStreamToBlobSpy);
+    (updateDatabaseFileSourceData as Mock).mockImplementation(updateDatabaseFileSourceDataSpy);
+
+    const addFileZipSpy = vi.spyOn(FlatFolderZip.prototype, 'addFile').mockResolvedValue();
+    const closeZipSpy = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
+
+    await DownloadManagerService.instance.downloadItems(mockTask, mockUpdateProgress, mockIncrementItemCount);
+
+    expect(addFileZipSpy).toHaveBeenNthCalledWith(1, `${mockFile.name}.${mockFile.type}`, expect.anything());
+    expect(addFileZipSpy).toHaveBeenNthCalledWith(2, mockFileCache.name, expect.anything());
+    expect(addFileZipSpy).toHaveBeenCalledTimes(2);
+    expect(closeZipSpy).toHaveBeenCalledTimes(1);
+    expect(checkIfCachedSourceIsOlderSpy).toHaveBeenCalledTimes(2);
+    expect(downloadedFileStreamSpy).toHaveBeenCalledTimes(1);
+    expect(binaryStreamToBlobSpy).toHaveBeenCalledTimes(1);
+    expect(updateDatabaseFileSourceDataSpy).toHaveBeenCalledTimes(1);
+    expect(lruCacheSpy).toHaveBeenCalledTimes(2);
   });
 });
