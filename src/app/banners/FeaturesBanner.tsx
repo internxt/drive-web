@@ -26,7 +26,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
         <button
           id="close-banner"
           aria-label="close-banner"
-          className="absolute right-0 m-7 flex rounded-md text-gray-80 dark:text-gray-20 hover:bg-gray-1/10"
+          className="absolute right-0 m-7 flex rounded-md text-white hover:bg-gray-1/10"
           onClick={onClose}
         >
           <X size={32} />
@@ -42,7 +42,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
             <div className="flex flex-col items-center space-y-3 lg:items-start">
               <button
                 onClick={handleOnClick}
-                className="flex w-max items-center rounded-lg bg-white  px-5 py-3 text-lg font-medium text-gray-80 dark:text-gray-20"
+                className="flex w-max items-center rounded-lg bg-primary px-5 py-3 text-lg font-medium text-white dark:text-white"
               >
                 {translate('featuresBanner.cta')}
               </button>
