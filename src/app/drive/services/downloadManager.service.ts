@@ -22,7 +22,7 @@ import { Iterator } from 'app/core/collections';
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 
-type DownloadCredentials = {
+export type DownloadCredentials = {
   credentials: NetworkCredentials;
   mnemonic: string;
   workspaceId?: string;
