@@ -113,10 +113,10 @@ const Appearance = () => {
     iStPatricksThemeAvailable(plan)
       .then((iStPatricksThemeAvailable) => {
         if (
-          !appearances.some((appearance) => appearance.theme === 'stPatricks' && appearance.img === appearance_dark) &&
+          !appearances.some((appearance) => appearance.theme === 'stpatricks' && appearance.img === appearance_dark) &&
           iStPatricksThemeAvailable
         ) {
-          setAppearances([...appearances, { theme: 'stPatricks', img: appearance_dark }]);
+          setAppearances([...appearances, { theme: 'stpatricks', img: appearance_dark }]);
         }
       })
       .catch((err) => {
