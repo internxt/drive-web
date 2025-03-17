@@ -67,6 +67,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         setCheckoutTheme('dark');
       } else if (currentTheme === 'stpatricks') {
         root.style.backgroundImage = `url(${StPaticksBG})`;
+        root.style.backgroundSize = 'cover';
+        root.style.backgroundPosition = 'center';
+        root.style.backgroundRepeat = 'no-repeat';
         document.documentElement.classList.add('dark');
         setCheckoutTheme('dark');
       } else if (currentTheme === 'superbowl') {
