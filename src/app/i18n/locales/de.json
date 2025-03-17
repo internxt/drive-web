@@ -10,12 +10,12 @@
     "guarantee": "30 Tage Geld-zurück-Garantie",
     "lastCta": "*Das Angebot gilt für kostenlose Konten oder neue Kunden",
     "features": [
-      "Premium-VPN und Antivirus",
-      "Post-quanten Verschlüsselung",
-      "Open-Source und geprüft",
+      "VPN und Premium-Antivirus",
+      "Postquanten-Kryptographie",
+      "Open Source und geprüft",
       "Verschlüsselte Übertragungen",
-      "DSGVO-konform",
-      "Angebot endet am 17. März"
+      "Kostenloses Thema für deine Web-App",
+      "Das Angebot endet am 30. März"
     ]
   },
   "susbcriptionsBanner": {
@@ -68,7 +68,9 @@
     "starwars": "Star Wars",
     "halloween": "Halloween",
     "christmas": "Weihnachten",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "sanValentin": "Valentinstag",
+    "stPatricks": "St. Patrick's"
   },
   "auth": {
     "email": "E-Mail",

@@ -68,7 +68,9 @@
     "starwars": "Star Wars",
     "halloween": "Halloween",
     "christmas": "Christmas",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "Valentines",
+    "stPatricks": "St. Patrick's"
   },
   "auth": {
     "email": "Email",

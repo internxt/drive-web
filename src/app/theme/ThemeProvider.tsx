@@ -2,9 +2,10 @@ import StarWarsBG from 'assets/images/banner/star-wars-bg.webp';
 import HalloweenBG from 'assets/images/banner/Ghosties-bg.webp';
 import ChristmasBG from 'assets/images/banner/christmas_theme.webp';
 import SuperBowlBG from 'assets/images/banner/superbowl_theme.webp';
+import StPaticksBG from 'assets/images/banner/StPatrick-bg.png';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-export type Theme = 'system' | 'light' | 'dark' | 'starwars' | 'halloween' | 'christmas' | 'superbowl';
+export type Theme = 'system' | 'light' | 'dark' | 'starwars' | 'halloween' | 'christmas' | 'superbowl' | 'stpatricks';
 
 interface ThemeContextProps {
   currentTheme: Theme | undefined;
@@ -62,6 +63,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         setCheckoutTheme('dark');
       } else if (currentTheme === 'christmas') {
         root.style.backgroundImage = `url(${ChristmasBG})`;
+        document.documentElement.classList.add('dark');
+        setCheckoutTheme('dark');
+      } else if (currentTheme === 'stpatricks') {
+        root.style.backgroundImage = `url(${StPaticksBG})`;
         document.documentElement.classList.add('dark');
         setCheckoutTheme('dark');
       } else if (currentTheme === 'superbowl') {
