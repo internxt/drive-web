@@ -98,6 +98,7 @@ export class DownloadManager {
       });
     } catch (err) {
       this.reportError(err, downloadTask);
+      throw err;
     } finally {
       tasksService.removeListener({ event: TaskEvent.TaskCancelled, listener: cancelTaskListener });
     }
@@ -107,19 +108,21 @@ export class DownloadManager {
     const { items, taskId, abortController } = downloadTask;
 
     if (err instanceof ConnectionLostError) {
-      return tasksService.updateTask({
+      tasksService.updateTask({
         taskId,
         merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
       });
+      throw err;
     }
 
     if (abortController?.signal.aborted) {
-      return tasksService.updateTask({
+      tasksService.updateTask({
         taskId,
         merge: {
           status: TaskStatus.Cancelled,
         },
       });
+      throw err;
     }
 
     if (items.length > 1) {
@@ -157,7 +160,6 @@ export class DownloadManager {
           type: ToastType.Error,
         });
       }
-      throw castedError;
     }
   };
 
