@@ -57,7 +57,10 @@ export class FlatFolderZip {
   }
 
   async close(): Promise<void> {
-    if (this.abortController?.signal.aborted) return;
+    if (this.abortController?.signal.aborted) {
+      this.zip.terminate();
+      return;
+    }
 
     this.zip.end();
 
@@ -69,7 +72,7 @@ export class FlatFolderZip {
   }
 
   abort(): void {
-    this.zip.end();
+    this.zip.terminate();
     this.abortController?.abort();
   }
 }
@@ -93,6 +96,7 @@ export interface ZipStream {
   addFolder: AddFolderToZipFunction;
   stream: ReadableStream<Uint8Array>;
   end: () => void;
+  terminate: () => void;
 }
 
 export function createFolderWithFilesWritable(progress?: FlatFolderZipOpts['progress']): ZipStream {
@@ -167,6 +171,9 @@ export function createFolderWithFilesWritable(progress?: FlatFolderZipOpts['prog
     stream: passthrough,
     end: () => {
       zip.end();
+    },
+    terminate: () => {
+      zip.terminate();
     },
   };
 }
