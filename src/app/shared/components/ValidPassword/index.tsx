@@ -1,8 +1,8 @@
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
-import Input from '../Input';
 import PasswordStrengthIndicator from '../PasswordStrengthIndicator';
+import { Input } from '@internxt/ui';
 
 export const MAX_PASSWORD_LENGTH = 50;
 

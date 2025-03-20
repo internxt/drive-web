@@ -449,7 +449,7 @@
               "title": "编辑帐户详细信息",
               "name": "名字",
               "lastname": "姓氏",
-              "updateProfile": "个人资料文件更新成功",
+              "updatedProfile": "个人资料文件更新成功",
               "errorUpdatingProfile": "我们无法更新您的个人资料"
             },
             "changeEmail": {
