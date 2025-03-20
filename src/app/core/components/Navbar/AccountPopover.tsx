@@ -108,7 +108,7 @@ export default function AccountPopover({
       {separator}
       <Item onClick={onDownloadAppButtonClicked}>
         <Desktop size={20} />
-        <p className="ml-3">{translate('views.account.popover.downloadApp')}</p>
+        <p className="ml-3 truncate">{translate('views.account.popover.downloadApp')}</p>
       </Item>
       <button
         className="flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 dark:hover:bg-gray-10"
@@ -132,7 +132,7 @@ export default function AccountPopover({
       )}
       <Item onClick={onLogout}>
         <SignOut size={20} />
-        <p className="ml-3" data-test="logout">
+        <p className="ml-3 truncate" data-test="logout">
           {translate('views.account.popover.logout')}
         </p>
       </Item>
@@ -146,6 +146,7 @@ function Item({ children, onClick }: { children: ReactNode; onClick: () => void 
   return (
     <div
       className="flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-1 dark:hover:bg-gray-10"
+      style={{ lineHeight: 1.25 }}
       onClick={onClick}
     >
       {children}
