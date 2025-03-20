@@ -17,10 +17,10 @@
     "features": [
       "VPN e Antivirus Premium",
       "Crittografia post-quantistica",
-      "Codice open-source e verificato",
+      "Codice open source e verificato",
       "Trasferimenti crittografati",
-      "Conforme al GDPR",
-      "L'offerta termina il 17 marzo"
+      "Tema gratuito per la tua web app",
+      "L'offerta termina il 30 marzo"
     ]
   },
   "susbcriptionsBanner": {
@@ -89,7 +89,9 @@
     "starwars": "Star Wars",
     "halloween": "Halloween",
     "christmas": "Natale",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "San Valentino",
+    "stpatricks": "San Patrizio"
   },
   "auth": {
     "email": "Email",

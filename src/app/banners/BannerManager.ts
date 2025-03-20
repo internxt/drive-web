@@ -1,6 +1,8 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from '../core/services/local-storage.service';
 import { PlanState } from '../store/slices/plan';
+import { fetchPlanPrices } from 'app/newSettings/Sections/Account/Plans/api/plansApi';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';
 const BANNER_NAME_FOR_FREE_USERS = 'show_free_users_banner';
@@ -47,12 +49,11 @@ export class BannerManager {
   }
 
   private shouldShowSubscriptionBanner(): boolean {
-    return (
-      (this.plan.individualSubscription?.type === 'subscription' ||
-        this.plan.individualSubscription?.type === 'lifetime') &&
-      !this.bannerItemInLocalStorage &&
-      !this.isOfferExpired()
-    );
+    const subscription = this.plan.individualSubscription;
+    const productId =
+      (subscription?.type === 'lifetime' || subscription?.type === 'subscription') && subscription.productId;
+
+    return false;
   }
 
   public getBannersToShow(): { showFreeBanner: boolean; showSubscriptionBanner: boolean } {

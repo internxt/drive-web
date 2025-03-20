@@ -10,12 +10,13 @@
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
-      "Premium VPN and Antivirus ",
+     "Premium VPN and Antivirus",
       "Post-quantum encryption",
       "Open-source and audited",
       "End-to-end encrypted transfers",
-      "No unauthorized access",
-      "Offer ends March 17"
+      "Free St. Patrick’s Day web theme",
+      "Offer ends March 30"
+      
     ]
   },
   "susbcriptionsBanner": {
@@ -89,7 +90,9 @@
     "starwars": "Star Wars",
     "halloween": "Halloween",
     "christmas": "Christmas",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "Valentine's Day",
+    "stpatricks": "St. Patrick's Day"
   },
   "auth": {
     "email": "Email",
