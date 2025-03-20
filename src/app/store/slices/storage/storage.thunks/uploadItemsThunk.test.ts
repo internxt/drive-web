@@ -8,6 +8,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import RetryManager from 'app/network/RetryManager';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
+import { ComponentType } from 'react';
 
 vi.mock('i18next', () => ({
   t: vi.fn((key, params) => `${key} ${params?.reason || ''}`),
@@ -40,6 +41,7 @@ vi.mock('app/notifications/services/notifications.service', () => ({
 vi.mock('react-redux', () => ({
   useSelector: vi.fn(),
   useDispatch: vi.fn(() => vi.fn()),
+  connect: vi.fn(() => (Component: ComponentType<unknown>) => Component),
 }));
 
 vi.mock('../../../../network/UploadManager', () => ({
