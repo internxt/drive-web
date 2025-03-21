@@ -34,6 +34,10 @@ const determineSubscriptionChangeType = ({
   }
 
   if (isIntervalSelected) {
+    if (currentUserSubscription?.type === 'lifetime' && priceSelected.interval === 'lifetime') {
+      return 'upgrade';
+    }
+
     if (currentStorage < selectedPlanStorage) {
       return 'upgrade';
     }

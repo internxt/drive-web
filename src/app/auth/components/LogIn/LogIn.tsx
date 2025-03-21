@@ -27,8 +27,7 @@ import shareService from '../../../share/services/share.service';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import TextInput from '../TextInput/TextInput';
 import { AuthMethodTypes } from 'app/payment/types';
-
-const UNAUTHORIZED_STATUS_CODE = 401;
+import vpnAuthService from 'app/auth/services/vpnAuth.service';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -79,6 +78,7 @@ export default function LogIn(): JSX.Element {
   useEffect(() => {
     if (user && mnemonic) {
       dispatch(userActions.setUser(user));
+
       redirectWithCredentials(
         user,
         mnemonic,
@@ -93,14 +93,6 @@ export default function LogIn(): JSX.Element {
     () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
     [],
   );
-
-  const getLoginErrorMessage = (err: unknown): string => {
-    const appError = err as AppError;
-    if (appError?.status === UNAUTHORIZED_STATUS_CODE) {
-      return translate('auth.login.wrongLogin');
-    }
-    return appError?.message || 'An unexpected error occurred';
-  };
 
   const {
     register,
@@ -158,6 +150,13 @@ export default function LogIn(): JSX.Element {
         if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
           window.location.replace(redirectUrl);
         }
+
+        const isVPNAuth = urlParams.get('vpnAuth');
+        const newToken = localStorageService.get('xNewToken');
+        if (isVPNAuth && newToken) {
+          vpnAuthService.logIn(newToken);
+        }
+
         redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode, isSharingInvitation });
       } else {
         setShowTwoFactor(true);

@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.395",
+  "version": "v1.0.418",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -9,8 +9,8 @@
     "@internxt/css-config": "^1.0.2",
     "@internxt/inxt-js": "=1.2.21",
     "@internxt/lib": "^1.2.0",
+    "@internxt/sdk": "=1.9.9",
     "@internxt/ui": "^0.0.16",
-    "@internxt/sdk": "=1.9.8",
     "@phosphor-icons/react": "^2.1.7",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.6.0",
@@ -20,7 +20,7 @@
     "@stripe/stripe-js": "^3.5.0",
     "@typeform/embed-react": "^1.19.0",
     "@types/uuid": "^8.3.4",
-    "@vitest/browser": "^2.1.5",
+    "@vitest/browser": "^2.1.9",
     "assert": "^2.1.0",
     "axios": "^0.28.0",
     "bip39": "^3.0.3",
@@ -123,6 +123,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@craco/craco": "^7.1.0",
+    "@faker-js/faker": "^9.0.0",
     "@internxt/eslint-config-internxt": "^1.0.3",
     "@internxt/prettier-config": "^1.0.1",
     "@playwright/test": "^1.44.1",
@@ -163,7 +164,7 @@
     "stylelint-scss": "^6.8.1",
     "tailwindcss": "^3.3.4",
     "typescript": "^4.4.2",
-    "vitest": "^2.1.5",
+    "vitest": "^2.1.9",
     "webpack-bundle-analyzer": "^4.9.1"
   },
   "engines": {

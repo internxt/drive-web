@@ -13,6 +13,7 @@ import { isStarWarsThemeAvailable } from '../../../../payment/utils/checkStarWar
 import { isHalloweenThemeAvailable } from '../../../../payment/utils/checkHalloweenCode';
 import { isChristmasThemeAvailable } from '../../../../payment/utils/checkChristmasCode';
 import { isSuperbowlThemeAvailable } from '../../../../payment/utils/checkSuperBowlCode';
+import { iStPatricksThemeAvailable } from '../../../../payment/utils/checkStPatrciksCode';
 import { RootState } from '../../../../store';
 
 function ThemeButton({ theme, toggleTheme, isSelected, img }) {
@@ -103,6 +104,19 @@ const Appearance = () => {
           isSuperbowlThemeAvailable
         ) {
           setAppearances([...appearances, { theme: 'superbowl', img: appearance_dark }]);
+        }
+      })
+      .catch((err) => {
+        const error = err as Error;
+        errorService.reportError(error);
+      });
+    iStPatricksThemeAvailable(plan)
+      .then((iStPatricksThemeAvailable) => {
+        if (
+          !appearances.some((appearance) => appearance.theme === 'stpatricks' && appearance.img === appearance_dark) &&
+          iStPatricksThemeAvailable
+        ) {
+          setAppearances([...appearances, { theme: 'stpatricks', img: appearance_dark }]);
         }
       })
       .catch((err) => {

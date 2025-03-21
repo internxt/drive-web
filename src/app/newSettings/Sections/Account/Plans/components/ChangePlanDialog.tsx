@@ -43,12 +43,16 @@ const ChangePlanDialog = ({
   } = plan;
 
   const subscription = isIndividualSubscription ? individualSubscription : businessSubscription;
+  const userHasLifetimeSub = individualSubscription?.type === 'lifetime';
   const selectedPlan: DisplayPrice = prices.find((price) => price.id === priceIdSelected) as DisplayPrice;
 
   const selectedPlanSize = selectedPlan?.bytes;
-  const selectedPlanSizeString = bytesToString(selectedPlanSize);
   const selectedPlanAmount = selectedPlan?.amount;
   const selectedPlanInterval = selectedPlan?.interval;
+  const selectedPlanSizeString =
+    userHasLifetimeSub && selectedPlanInterval === 'lifetime'
+      ? bytesToString(selectedPlanSize + planLimit)
+      : bytesToString(selectedPlanSize);
   const currentPlanSizeString = bytesToString(
     isIndividualSubscription ? planLimit : (businessPlan?.storageLimit ?? businessPlanLimit),
   );
@@ -77,7 +81,7 @@ const ChangePlanDialog = ({
   };
 
   const displayAmount = (value) => {
-    return (value / 100).toFixed(2);
+    return parseFloat((value / 100).toFixed(2));
   };
 
   return (
