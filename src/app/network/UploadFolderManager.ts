@@ -15,6 +15,7 @@ import { createFolder } from '../store/slices/storage/folderUtils/createFolder';
 import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
 import { checkFolderDuplicated } from '../store/slices/storage/folderUtils/checkFolderDuplicated';
 import { getUniqueFolderName } from '../store/slices/storage/folderUtils/getUniqueFolderName';
+import { ConnectionLostError } from './requests';
 
 interface UploadFolderPayload {
   root: IRoot;
@@ -344,6 +345,16 @@ export class UploadFoldersManager {
 
     const memberId = this.selectedWorkspace?.workspaceUser?.memberId;
 
+    const context = typeof window === 'undefined' ? self : window;
+
+    let connectionLost = false;
+
+    function connectionLostListener() {
+      connectionLost = true;
+      context.removeEventListener('offline', connectionLostListener);
+    }
+    context.addEventListener('offline', connectionLostListener);
+
     for (const taskFolder of payloadWithTaskId) {
       const { root, currentFolderId, options: payloadOptions, taskId } = taskFolder;
       const options = { withNotification: true, ...payloadOptions };
@@ -390,6 +401,8 @@ export class UploadFoldersManager {
           await this.uploadFoldersQueue.drain();
         }
 
+        if (connectionLost) throw new ConnectionLostError();
+
         tasksService.updateTask({
           taskId: taskId,
           merge: {
@@ -408,7 +421,17 @@ export class UploadFoldersManager {
         const castedError = errorService.castError(err);
         const updatedTask = tasksService.findTask(taskId);
 
-        if (updatedTask?.status !== TaskStatus.Cancelled && taskId === updatedTask?.id) {
+        if (connectionLost) {
+          tasksService.updateTask({
+            taskId: taskId,
+            merge: {
+              status: TaskStatus.Error,
+              subtitle: t('error.connectionLostError') as string,
+            },
+          });
+          errorService.reportError(castedError);
+          break;
+        } else if (updatedTask?.status !== TaskStatus.Cancelled && taskId === updatedTask?.id) {
           tasksService.updateTask({
             taskId: taskId,
             merge: {
