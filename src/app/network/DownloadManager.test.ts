@@ -520,7 +520,10 @@ describe('downloadManager', () => {
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'findTask').mockReturnValue(undefined);
+    vi.spyOn(tasksService, 'findTask').mockReturnValue({
+      id: 'any-taskId',
+      status: TaskStatus.Error,
+    } as TaskData);
 
     const testError = new Error('Test error');
 
@@ -596,7 +599,10 @@ describe('downloadManager', () => {
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'findTask').mockReturnValue(undefined);
+    vi.spyOn(tasksService, 'findTask').mockReturnValue({
+      id: 'any-taskId',
+      status: TaskStatus.Error,
+    } as TaskData);
 
     const testError = new Error('Test error');
 

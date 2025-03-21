@@ -105,7 +105,7 @@ export class DownloadManager {
   };
 
   private static readonly reportError = (err: unknown, downloadTask: DownloadTask) => {
-    const { items, taskId, abortController } = downloadTask;
+    const { items, taskId } = downloadTask;
 
     if (err instanceof ConnectionLostError) {
       tasksService.updateTask({
@@ -115,34 +115,23 @@ export class DownloadManager {
       throw err;
     }
 
-    if (abortController?.signal.aborted) {
-      tasksService.updateTask({
-        taskId,
-        merge: {
-          status: TaskStatus.Cancelled,
-        },
-      });
-      throw err;
-    }
-
-    if (items.length > 1) {
-      errorService.reportError(err);
-    } else {
-      const item = items[0];
-      if (item.isFolder) {
-        errorService.reportError(err, {
-          extra: { folder: item.name, bucket: item.bucket, folderParentId: item.parentId },
-        });
-      } else {
-        errorService.reportError(err, {
-          extra: { fileName: item.name, bucket: item.bucket, fileSize: item.size, fileType: item.type },
-        });
-      }
-    }
-
     const task = tasksService.findTask(taskId);
 
-    if (task?.status !== TaskStatus.Cancelled) {
+    if (task !== undefined && task.status !== TaskStatus.Cancelled) {
+      if (items.length > 1) {
+        errorService.reportError(err);
+      } else {
+        const item = items[0];
+        if (item.isFolder) {
+          errorService.reportError(err, {
+            extra: { folder: item.name, bucket: item.bucket, folderParentId: item.parentId },
+          });
+        } else {
+          errorService.reportError(err, {
+            extra: { fileName: item.name, bucket: item.bucket, fileSize: item.size, fileType: item.type },
+          });
+        }
+      }
       tasksService.updateTask({
         taskId,
         merge: {
@@ -160,6 +149,13 @@ export class DownloadManager {
           type: ToastType.Error,
         });
       }
+    } else {
+      tasksService.updateTask({
+        taskId,
+        merge: {
+          status: TaskStatus.Cancelled,
+        },
+      });
     }
   };
 

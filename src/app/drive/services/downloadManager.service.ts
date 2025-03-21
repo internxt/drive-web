@@ -99,7 +99,7 @@ export class DownloadManagerService {
     if (itemsPayload.length === 0) return;
 
     const uploadFolderAbortController = new AbortController();
-    const abort = async () => uploadFolderAbortController.abort('Download cancelled');
+    const abort = () => Promise.resolve(uploadFolderAbortController.abort('Download cancelled'));
 
     const formattedDate = date.format(new Date(), 'YYYY-MM-DD_HHmmss');
     let downloadName = `Internxt (${formattedDate})`;
@@ -260,7 +260,7 @@ export class DownloadManagerService {
   ) => {
     const { items, credentials, abortController, options, createFilesIterator, createFoldersIterator } = downloadTask;
 
-    const folderZip = new FlatFolderZip(options.downloadName, {});
+    const folderZip = new FlatFolderZip(options.downloadName, { abortController });
     const downloadProgress: number[] = [];
 
     items.forEach((_, index) => {
@@ -276,7 +276,11 @@ export class DownloadManagerService {
     };
 
     for (const [index, driveItem] of items.entries()) {
-      if (abortController?.signal.aborted) return;
+      if (abortController?.signal.aborted) {
+        await folderZip.close();
+        return;
+      }
+
       try {
         if (driveItem.isFolder) {
           await this.downloadFolderItem({
@@ -340,7 +344,7 @@ export class DownloadManagerService {
           folderZip.addFile(`${driveItem.name}${driveItem.type ? '.' + driveItem.type : ''}`, fileStream);
         }
       } catch (error) {
-        abortController?.abort();
+        folderZip.abort();
         throw error;
       }
     }
