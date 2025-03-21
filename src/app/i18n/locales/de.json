@@ -1111,7 +1111,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Alle Prozesse sind abgeschlossen",
-      "processing": "Wird bearbeitet {{pending}} von {{finished}}"
+      "processing": "Wird bearbeitet {{pending}} von {{finished}}",
+      "failedToUpload": "Fehler beim Hochladen"
     },
     "waiting": "Warten",
     "paused": "Pausiert",

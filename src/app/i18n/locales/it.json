@@ -1163,7 +1163,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Tutti i processi sono stati completati",
-      "processing": "Elaborazione {{pending}} di {{finished}}"
+      "processing": "Elaborazione {{pending}} di {{finished}}",
+      "failedToUpload": "Caricamento fallito"
     },
     "waiting": "In attesa",
     "paused": "In pausa",
