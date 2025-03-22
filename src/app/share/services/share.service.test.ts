@@ -19,6 +19,9 @@ describe('Encryption and Decryption', () => {
       default: {
         downloadSharedFolderAsZip: vi.fn(),
       },
+      createFilesIterator: vi.fn(),
+      createFoldersIterator: vi.fn(),
+      checkIfCachedSourceIsOlder: vi.fn(),
     }));
     vi.mock('../../core/factory/sdk', () => ({ SdkFactory: vi.fn() }));
     vi.mock('../../core/services/error.service', () => ({
@@ -45,10 +48,6 @@ describe('Encryption and Decryption', () => {
       ToastType: {
         Error: 'ERROR',
       },
-    }));
-    vi.mock('../../store/slices/storage/storage.thunks/downloadItemsThunk', () => ({
-      downloadItemsAsZipThunk: vi.fn(),
-      downloadItemsThunk: vi.fn(),
     }));
     vi.mock('./DomainManager', () => ({ domainManager: vi.fn() }));
   });
