@@ -1,10 +1,10 @@
 import { X } from '@phosphor-icons/react';
-import Modal from 'app/shared/components/Modal';
 import { useReduxActions } from 'app/store/slices/storage/hooks/useReduxActions';
 import { FixedSizeList as List } from 'react-window';
 import TaskToRetryItem from '../TaskToRetryItem/TaskToRetryItem';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import RetryManager, { FileToRetry } from 'app/network/RetryManager';
+import { Modal } from '@internxt/ui';
 
 interface TaskToRetryProps {
   isOpen: boolean;
