@@ -51,7 +51,7 @@ jobs:
       # Setup dependencies
       - run: yarn
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       # Build
       - run: yarn run build
