@@ -17,7 +17,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
 import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
 import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
-import { Avatar, Button, Loader, Modal } from '@internxt/ui';
+import { Avatar, Button, Checkbox, Loader, Modal } from '@internxt/ui';
 import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
