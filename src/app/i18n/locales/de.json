@@ -432,7 +432,7 @@
               "nameError": "Der Name muss zwischen einem und zwanzig Zeichen lang sein",
               "lastnameError": "Der Nachname muss zwischen einem und zwanzig Zeichen lang sein"
             },
-            "updateProfile": "Profil erfolgreich aktualisiert",
+            "updatedProfile": "Profil erfolgreich aktualisiert",
             "errorUpdatingProfile": "Wir konnten dein Profil nicht aktualisieren"
           },
           "support": {
