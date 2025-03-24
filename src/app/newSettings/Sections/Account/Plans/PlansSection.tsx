@@ -275,10 +275,31 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     }
   };
 
+  const handleIndividualUserCurrentSubscription = (plan: DisplayPrice) => {
+    switch (individualSubscription?.type) {
+      case 'free':
+        return false;
+      case 'subscription':
+        return (
+          individualSubscription?.productId === plan.productId && individualSubscription.interval === plan.interval
+        );
+      case 'lifetime':
+        return individualSubscription.productId === plan.productId && plan.interval === 'lifetime';
+
+      default:
+        return false;
+    }
+  };
+
   const isCurrentSubscriptionPlan = (plan: DisplayPrice) => {
+    const isBusinessCurrentPlanSelected =
+      businessSubscription?.type === 'subscription' &&
+      businessSubscription?.productId === plan.productId &&
+      businessSubscription.interval === plan.interval;
+
     return isIndividualSubscriptionSelected
-      ? individualSubscription?.type === 'subscription' && individualSubscription?.priceId === plan.id
-      : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === plan.id;
+      ? handleIndividualUserCurrentSubscription(plan)
+      : isBusinessCurrentPlanSelected;
   };
 
   return (
@@ -358,11 +379,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           onCancelSubscription={setIsCancelSubscriptionModalOpen}
           priceSelected={priceSelected}
           pricesToRender={pricesFilteredAndSorted(selectedSubscriptionType)}
-          isCurrentPlan={
-            isIndividualSubscriptionSelected
-              ? individualSubscription?.type === 'subscription' && individualSubscription?.priceId === priceSelected.id
-              : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === priceSelected.id
-          }
+          isCurrentPlan={isCurrentSubscriptionPlan(priceSelected)}
           isBusinessPlan={isBusinessSubscriptionSelected}
           translate={translate}
           handleOnPlanSelected={handleOnPlanSelected}

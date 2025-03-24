@@ -127,7 +127,7 @@ const PlanDetailsList = ({
 
   const featureKeys = Array.from({ length: planTypeTextPath !== 'freeFeatures' ? 8 : 3 }, (_, i) => `feature${i + 1}`);
 
-  const commingSoonFeatureKeys = ['feature1', 'feature2'];
+  const comingSoonFeatureKeys = ['feature1', 'feature2'];
 
   return (
     <div className="flex flex-col space-y-2">
@@ -175,7 +175,7 @@ const PlanDetailsList = ({
             <span className="text-sm font-semibold text-gray-100">
               {t('preferences.account.plans.planFeaturesList.commingSoon')}
             </span>
-            {commingSoonFeatureKeys.map((key) => (
+            {comingSoonFeatureKeys.map((key) => (
               <div key={key} className="flex flex-row space-x-2">
                 <div className="mt-1">
                   <Check size={20} className="dark:text-black" />

@@ -10,12 +10,12 @@
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
     "features": [
-      "VPN y Antivirus Premium",
+     "VPN y Antivirus Premium",
       "Criptografía postcuántica",
       "Código abierto y auditado",
       "Transferencias cifradas",
-      "Cumple con RGPD",
-      "La oferta finaliza el 17 de marzo"
+      "Tema gratuito para tu web app ",
+      "La oferta finaliza el 30 de marzo"
     ]
   },
   "susbcriptionsBanner": {
@@ -68,7 +68,9 @@
     "starwars": "Star Wars",
     "halloween": "Halloween",
     "christmas": "Navidad",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "San Valentín",
+    "stpatricks": "San Patricio"
   },
   "auth": {
     "email": "Correo electrónico",

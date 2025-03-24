@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { Helmet } from 'react-helmet-async';
 import DeleteBackupDialog from '../../../drive/components/DeleteBackupDialog/DeleteBackupDialog';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
-import Dialog from '../../../shared/components/Dialog/Dialog';
 import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
 import DeviceList from '../../components/DeviceList/DeviceList';
 import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
@@ -20,7 +19,7 @@ import { useBackupDeviceActions } from 'app/backups/hooks/useBackupDeviceActions
 import { useBackupsPagination } from 'app/backups/hooks/useBackupsPagination';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { MenuItemType } from '@internxt/ui';
+import { Dialog, MenuItemType } from '@internxt/ui';
 import { DownloadManager } from '../../../network/DownloadManager';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 

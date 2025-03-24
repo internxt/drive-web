@@ -1,7 +1,6 @@
 import { bytesToString } from './size.service';
 import { SdkFactory } from '../../core/factory/sdk';
-
-export const INFINITE_LIMIT = 108851651149824;
+import { HUNDRED_TB } from 'app/core/components/Sidenav/Sidenav';
 
 async function fetchLimit(): Promise<number> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
@@ -14,7 +13,7 @@ const formatLimit = (limit: number): string => {
   let result = '...';
 
   if (limit > 0) {
-    result = limit === INFINITE_LIMIT ? '\u221E' : bytesToString(limit);
+    result = limit > HUNDRED_TB ? '\u221E' : bytesToString(limit);
   }
 
   return result;
