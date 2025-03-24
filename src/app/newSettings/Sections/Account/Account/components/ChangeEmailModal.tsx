@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import { Button } from '@internxt/ui';
+import { Button, Modal } from '@internxt/ui';
 import Input from '../../../../../shared/components/Input';
-import Modal from '../../../../../shared/components/Modal';
 
 interface ChangeEmailModalProps {
   isOpen: boolean;

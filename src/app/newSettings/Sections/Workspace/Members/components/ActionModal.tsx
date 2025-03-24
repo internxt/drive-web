@@ -1,5 +1,4 @@
-import { Button } from '@internxt/ui';
-import Modal from '../../../../../shared/components/Modal';
+import { Button, Modal } from '@internxt/ui';
 
 // TODO: MOVE TO COMPONENTS LIBRARY
 const ActionModal = ({
