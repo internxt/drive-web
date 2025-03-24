@@ -2,7 +2,7 @@ import GridItem from './GridItem';
 import SkinSkeletonItem from './SkinSketelonItem';
 import { useEffect, useState } from 'react';
 import { ArrowUp, ArrowDown } from '@phosphor-icons/react';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import { Checkbox } from '@internxt/ui';
 
 interface HeaderProps {
   name: string;
@@ -240,7 +240,7 @@ export default function List({
               <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
                 {/* SELECTION CHECKBOX */}
                 <div className="absolute left-0 top-0 flex h-full w-0 flex-row items-center justify-start p-0">
-                  <BaseCheckbox
+                  <Checkbox
                     checked={itemsSelected.length > 0}
                     onClick={bulkItemsSelectionToggle}
                     indeterminate={itemList.length > itemsSelected.length && itemsSelected.length > 0}

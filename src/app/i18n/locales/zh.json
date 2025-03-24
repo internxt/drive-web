@@ -449,7 +449,7 @@
               "title": "编辑帐户详细信息",
               "name": "名字",
               "lastname": "姓氏",
-              "updateProfile": "个人资料文件更新成功",
+              "updatedProfile": "个人资料文件更新成功",
               "errorUpdatingProfile": "我们无法更新您的个人资料"
             },
             "changeEmail": {
@@ -1170,7 +1170,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "所有处理都已完成",
-      "processing": "正在处理 {{pending}}/{{finished}}"
+      "processing": "正在处理 {{pending}}/{{finished}}",
+      "failedToUpload": "上傳失敗"
     },
     "waiting": "等待中",
     "paused": "暂停",

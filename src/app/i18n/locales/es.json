@@ -433,7 +433,7 @@
             "editProfile": {
               "name": "Nombre",
               "lastname": "Apellido",
-              "updateProfile": "Perfil actualizado correctamente",
+              "updatedProfile": "Perfil actualizado correctamente",
               "errorUpdatingProfile": "No hemos podido actualizar su perfil"
             },
             "changeEmail": {
@@ -1150,7 +1150,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Todos los procesos han finalizado",
-      "processing": "Procesando {{pending}} de {{finished}}"
+      "processing": "Procesando {{pending}} de {{finished}}",
+      "failedToUpload": "Error al subir"
     },
     "waiting": "Esperando",
     "paused": "Pausado",

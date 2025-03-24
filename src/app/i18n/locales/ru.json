@@ -432,7 +432,7 @@
               "title": "Редактировать данные учетной записи",
               "name": "Имя",
               "lastname": "Фамилия.",
-              "updateProfile": "Профиль успешно обновлен",
+              "updatedProfile": "Профиль успешно обновлен",
               "errorUpdatingProfile": "Мы не смогли обновить ваш профиль"
             },
             "changeEmail": {
@@ -1143,7 +1143,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Все процессы завершены",
-      "processing": "Обработка {{pending}} из {{finished}}"
+      "processing": "Обработка {{pending}} из {{finished}}",
+      "failedToUpload": "Не удалось загрузить"
     },
     "waiting": "Ожидание",
     "paused": "Приостановлено",

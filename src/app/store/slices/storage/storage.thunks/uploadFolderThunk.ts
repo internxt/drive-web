@@ -168,6 +168,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
                 showErrors: false,
                 abortController: uploadFolderAbortController,
                 isRetriedUpload,
+                isUploadedFromFolder: true,
               },
               filesProgress: { filesUploaded: alreadyUploaded, totalFilesToUpload: itemsUnderRoot },
             }),

@@ -432,7 +432,7 @@
               "nameError": "Der Name muss zwischen einem und zwanzig Zeichen lang sein",
               "lastnameError": "Der Nachname muss zwischen einem und zwanzig Zeichen lang sein"
             },
-            "updateProfile": "Profil erfolgreich aktualisiert",
+            "updatedProfile": "Profil erfolgreich aktualisiert",
             "errorUpdatingProfile": "Wir konnten dein Profil nicht aktualisieren"
           },
           "support": {
@@ -1111,7 +1111,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Alle Prozesse sind abgeschlossen",
-      "processing": "Wird bearbeitet {{pending}} von {{finished}}"
+      "processing": "Wird bearbeitet {{pending}} von {{finished}}",
+      "failedToUpload": "Fehler beim Hochladen"
     },
     "waiting": "Warten",
     "paused": "Pausiert",

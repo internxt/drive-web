@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 
 import { useTaskManagerGetNotifications } from '../../hooks';
 import tasksService from '../../services/tasks.service';
@@ -9,6 +9,7 @@ import { CaretDown, CircleNotch, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
+import RetryManager, { FileToRetry } from 'app/network/RetryManager';
 
 const TaskLogger = (): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -16,12 +17,33 @@ const TaskLogger = (): JSX.Element => {
   const isOpen = useAppSelector((state) => state.ui.isFileLoggerOpen);
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [filesToRetry, setFilesToRetry] = useState(RetryManager.getFiles());
+
   const allNotifications = useTaskManagerGetNotifications();
   const finishedNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled],
   });
+  const filesToRetryGroupedByTask = useMemo(
+    () =>
+      filesToRetry.reduce<Record<string, FileToRetry[]>>((acc, file) => {
+        const relatedTaskId = file.params.relatedTaskId;
+        if (relatedTaskId) {
+          if (!acc[relatedTaskId]) {
+            acc[relatedTaskId] = [];
+          }
+          acc[relatedTaskId].push(file);
+        }
+        return acc;
+      }, {}),
+    [filesToRetry],
+  );
   const items: JSX.Element[] = allNotifications.map((n) => (
-    <TaskLoggerItem notification={n} task={tasksService.findTask(n.taskId)} key={n.taskId} />
+    <TaskLoggerItem
+      notification={n}
+      task={tasksService.findTask(n.taskId)}
+      key={n.taskId}
+      filesToRetry={filesToRetryGroupedByTask[n.taskId]}
+    />
   ));
   const onCloseButtonClicked = () => {
     if (hasFinished) {
@@ -36,6 +58,12 @@ const TaskLogger = (): JSX.Element => {
     e.returnValue = confirmationMessage; //Trident, Chrome 34+
     return confirmationMessage; // WebKit, Chrome <34
   };
+
+  useEffect(() => {
+    const handleUpdate = () => setFilesToRetry([...RetryManager.getFiles()]);
+    RetryManager.subscribe(handleUpdate);
+    return () => RetryManager.unsubscribe(handleUpdate);
+  }, []);
 
   useEffect(() => {
     const processingItems = allNotifications.findIndex(
