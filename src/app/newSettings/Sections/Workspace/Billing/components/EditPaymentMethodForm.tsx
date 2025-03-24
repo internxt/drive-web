@@ -30,7 +30,7 @@ const EditPaymentMethodForm = ({ setIsEditPaymentMethodModalOpen }: EditPaymentM
   }
   return (
     <>
-      <div className="flex max-h-[60vh] flex-col overflow-y-auto">
+      <div className="flex flex-col h-full overflow-hidden">
         <PaymentElement className="mt-5" />
       </div>
       {error && <p className="mt-2 text-sm text-red">{error}</p>}

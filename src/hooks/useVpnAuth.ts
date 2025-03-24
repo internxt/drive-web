@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import authService from 'app/auth/services/auth.service';
+import vpnAuthService from 'app/auth/services/vpnAuth.service';
 
 const useVpnAuth = (isVpnAuth: boolean, newToken: string | null) => {
   const [isVpnAuthNeeded, setIsVpnAuthNeeded] = useState(false);
@@ -22,7 +22,7 @@ const useVpnAuth = (isVpnAuth: boolean, newToken: string | null) => {
 
   useEffect(() => {
     if (isVpnAuthNeeded && newToken) {
-      authService.vpnExtensionAuth(newToken);
+      vpnAuthService.logIn(newToken);
       setIsVpnAuthNeeded(false);
     }
   }, [isVpnAuthNeeded, newToken]);

@@ -42,8 +42,10 @@ import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/u
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
+import envService from '../../core/services/env.service';
 import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
+import vpnAuthService from './vpnAuth.service';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -94,6 +96,7 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
     errorService.reportError(error);
   }
 
+  vpnAuthService.logOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
@@ -359,8 +362,9 @@ export const deactivate2FA = (
 export const getNewToken = async (): Promise<string> => {
   const serviceHeaders = httpService.getHeaders(true, false);
   const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
+  const BASE_API_URL = envService.isProduction() ? process.env.REACT_APP_API_URL : 'https://drive.internxt.com/api';
 
-  const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
+  const res = await fetch(`${BASE_API_URL}/new-token`, {
     headers: headers,
   });
   if (!res.ok) {
@@ -554,11 +558,6 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
   }
 };
 
-export const vpnExtensionAuth = (newToken: string, source = 'drive-web') => {
-  const targetUrl = process.env.REACT_APP_HOSTNAME;
-  window.postMessage({ source: source, payload: newToken }, targetUrl);
-};
-
 const authService = {
   logOut,
   check2FANeeded: is2FANeeded,
@@ -574,7 +573,6 @@ const authService = {
   requestUnblockAccount,
   unblockAccount,
   authenticateUser,
-  vpnExtensionAuth,
 };
 
 export default authService;

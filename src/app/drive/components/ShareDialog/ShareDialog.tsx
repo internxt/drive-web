@@ -17,10 +17,8 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
 import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
 import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
-import { Avatar, Button, Loader } from '@internxt/ui';
-import Modal from 'app/shared/components/Modal';
+import { Avatar, Button, Checkbox, Loader, Modal } from '@internxt/ui';
 import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { Role } from 'app/store/slices/sharedLinks/types';
@@ -611,7 +609,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
             <div className="flex items-center justify-between">
               <div className="flex flex-col space-y-2.5">
                 <div className="flex items-center">
-                  <BaseCheckbox checked={isPasswordProtected} onClick={onPasswordCheckboxChange} />
+                  <Checkbox checked={isPasswordProtected} onClick={onPasswordCheckboxChange} />
                   <p className="ml-2 select-none text-base font-medium">
                     {translate('modals.shareModal.protectSharingModal.protect')}
                   </p>
