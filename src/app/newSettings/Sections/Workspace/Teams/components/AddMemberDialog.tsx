@@ -1,9 +1,8 @@
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import Input from 'app/shared/components/Input';
-import { Button, Avatar, Loader, Modal } from '@internxt/ui';
+import { Button, Avatar, Loader, Modal, Checkbox } from '@internxt/ui';
 
 interface AddMemberDialogProps {
   isOpen: boolean;
@@ -69,7 +68,7 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
                   } ${isFirstItem && 'rounded-t-xl border-t'} ${isSelectedMember && '!bg-primary/10'}`}
                 >
                   <div className="flex flex-row items-center space-x-2">
-                    <BaseCheckbox checked={isSelectedMember} />
+                    <Checkbox checked={isSelectedMember} />
                     <Avatar
                       src={member.member.avatar}
                       fullName={`${member.member.name} ${member.member.lastname}`}
