@@ -65,5 +65,17 @@ export const useReduxActions = () => {
     );
   };
 
-  return { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem, uploadSharedItem };
+  const uploadRetryItem = (data: { uploadFile: File; parentFolderId: string; taskId: string; fileType: string }) => {
+    dispatch(
+      uploadItemsThunk({
+        files: [data.uploadFile],
+        parentFolderId: data.parentFolderId,
+        taskId: data.taskId,
+        fileType: data.fileType,
+        isRetry: true,
+      }),
+    );
+  };
+
+  return { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem, uploadSharedItem, uploadRetryItem };
 };

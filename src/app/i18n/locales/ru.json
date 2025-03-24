@@ -1143,7 +1143,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Все процессы завершены",
-      "processing": "Обработка {{pending}} из {{finished}}"
+      "processing": "Обработка {{pending}} из {{finished}}",
+      "failedToUpload": "Не удалось загрузить"
     },
     "waiting": "Ожидание",
     "paused": "Приостановлено",
