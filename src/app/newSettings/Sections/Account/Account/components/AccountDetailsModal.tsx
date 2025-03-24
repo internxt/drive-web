@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 
-import { Button, Input } from '@internxt/ui';
-import Modal from '../../../../../shared/components/Modal';
+import { Button, Modal, Input } from '@internxt/ui';
 
 const AccountDetailsModal = ({
   isOpen,

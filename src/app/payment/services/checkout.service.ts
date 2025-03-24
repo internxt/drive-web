@@ -1,10 +1,11 @@
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { StripeElementsOptions } from '@stripe/stripe-js';
 import paymentService from '../../payment/services/payment.service';
 import { ClientSecretData, CouponCodeData, PlanData, RequestedPlanData } from '../types';
-import envService from '../../core/services/env.service';
-import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import axios from 'axios';
+import localStorageService from 'app/core/services/local-storage.service';
 
-const IS_PRODUCTION = envService.isProduction();
+const PAYMENTS_API_URL = process.env.REACT_APP_PAYMENTS_API_URL;
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
 const fetchPlanById = async (priceId: string, currency?: string): Promise<PlanData> => {
@@ -92,6 +93,7 @@ const getClientSecretForSubscriptionIntent = async ({
   customerId,
   priceId,
   token,
+  mobileToken,
   currency,
   promoCodeId,
   seatsForBusinessSubscription = 1,
@@ -99,10 +101,27 @@ const getClientSecretForSubscriptionIntent = async ({
   customerId: string;
   priceId: string;
   token: string;
+  mobileToken: string | null;
   currency: string;
   seatsForBusinessSubscription?: number;
   promoCodeId?: string;
 }): Promise<ClientSecretData & { subscriptionId?: string; paymentIntentId?: string }> => {
+  if (mobileToken) {
+    const {
+      type: paymentType,
+      clientSecret: client_secret,
+      subscriptionId,
+      paymentIntentId,
+    } = await paymentService.createSubscriptionWithTrial(customerId, priceId, token, mobileToken, currency);
+
+    return {
+      clientSecretType: paymentType,
+      client_secret,
+      subscriptionId,
+      paymentIntentId,
+    };
+  }
+
   const {
     type: paymentType,
     clientSecret: client_secret,
@@ -128,12 +147,14 @@ const getClientSecretForSubscriptionIntent = async ({
 const getClientSecret = async ({
   selectedPlan,
   token,
+  mobileToken,
   customerId,
   promoCodeId,
   seatsForBusinessSubscription = 1,
 }: {
   selectedPlan: RequestedPlanData;
   token: string;
+  mobileToken: string | null;
   customerId: string;
   promoCodeId?: CouponCodeData['codeId'];
   seatsForBusinessSubscription?: number;
@@ -160,6 +181,7 @@ const getClientSecret = async ({
       customerId,
       priceId: selectedPlan?.id,
       token,
+      mobileToken,
       currency: selectedPlan.currency,
       seatsForBusinessSubscription,
       promoCodeId,
@@ -172,6 +194,32 @@ const getClientSecret = async ({
       subscriptionId,
       paymentIntentId,
     };
+  }
+};
+
+const checkoutSetupIntent = async (customerId: string) => {
+  try {
+    const newToken = localStorageService.get('xNewToken');
+
+    if (!newToken) {
+      throw new Error('No authentication token available');
+    }
+    const response = await axios.post<{ clientSecret: string }>(
+      `${PAYMENTS_API_URL}/setup-intent`,
+      {
+        customerId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error('Error creating subscription with trial');
   }
 };
 
@@ -255,6 +303,7 @@ const checkoutService = {
   getClientSecret,
   loadStripeElements,
   fetchPrices,
+  checkoutSetupIntent,
 };
 
 export default checkoutService;

@@ -1,5 +1,4 @@
-import { Button, Input } from '@internxt/ui';
-import Modal from 'app/shared/components/Modal';
+import { Button, Modal, Input } from '@internxt/ui';
 import { useState } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import validationService from 'app/core/services/validation.service';
