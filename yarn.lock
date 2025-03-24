@@ -2705,6 +2705,14 @@
     tailwindcss "^3.4.14"
     typescript "^5.6.3"
 
+"@internxt/css-config@^1.0.3":
+  version "1.0.3"
+  resolved "https://npm.pkg.github.com/download/@internxt/css-config/1.0.3/26437930886829b10faf82680c65ab28baff2d47#26437930886829b10faf82680c65ab28baff2d47"
+  integrity sha512-aLpqoS/qVeRToBbdytJDbPZD4hlJrthYjNZJH/Vv1Mpwd8IdkzrdcMPy1VrUb29DIEhowgBeBgnePh3fVqgdJQ==
+  dependencies:
+    tailwindcss "^3.4.14"
+    typescript "^5.6.3"
+
 "@internxt/eslint-config-internxt@^1.0.3":
   version "1.0.9"
   resolved "https://npm.pkg.github.com/download/@internxt/eslint-config-internxt/1.0.9/d2dddb6a5809873ce717507f8d9dbc5964f6d0f4#d2dddb6a5809873ce717507f8d9dbc5964f6d0f4"
