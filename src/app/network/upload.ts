@@ -151,10 +151,6 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
           });
         }
 
-        // TODO: Remove this after QA
-        const forceFail = Math.random();
-        if (file.name.includes('test_fail_file') && forceFail > 0.25) throw new Error('test error');
-
         return await uploadPromise;
       } catch (err) {
         if (connectionLost) {
