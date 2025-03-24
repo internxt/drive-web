@@ -6,10 +6,9 @@ import { Elements } from '@stripe/react-stripe-js';
 import paymentService from 'app/payment/services/payment.service';
 import useEffectAsync from 'app/core/hooks/useEffectAsync';
 
-import Modal from 'app/shared/components/Modal';
 import EditPaymentMethodForm from './EditPaymentMethodForm';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
-import { Loader } from '@internxt/ui';
+import { Loader, Modal } from '@internxt/ui';
 
 interface EditPaymentMethodModalProps {
   isEditPaymentMethodModalOpen: boolean;

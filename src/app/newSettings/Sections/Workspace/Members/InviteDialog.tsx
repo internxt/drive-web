@@ -4,11 +4,8 @@ import { UserPlus, X } from '@phosphor-icons/react';
 import { useForm } from 'react-hook-form';
 import { IFormValues } from '../../../../core/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import { Button } from '@internxt/ui';
+import { Button, Modal, Checkbox, Input } from '@internxt/ui';
 import Card from '../../../../shared/components/Card';
-import Input from '../../../../shared/components/Input';
-import Modal from '../../../../shared/components/Modal';
-import BaseCheckbox from '../../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
 import TextArea from '../../Account/Account/components/TextArea';
 import UserCard from './components/UserCard';
 
@@ -163,7 +160,7 @@ const UserInviteDialog = ({ isOpen, onClose, processInvitation }: UserInviteDial
             className={`flex items-center ${!isLoading ? 'cursor-pointer' : ''}`}
             onClick={() => !isLoading && setIsAddMessageSelected(!isAddMessageSelected)}
           >
-            <BaseCheckbox checked={isAddMessageSelected} />
+            <Checkbox checked={isAddMessageSelected} />
             <p className="ml-2 text-base font-medium">
               {translate('preferences.workspace.members.inviteDialog.addMessage')}
             </p>
