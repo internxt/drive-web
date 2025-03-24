@@ -53,7 +53,7 @@ export type DriveProduct = {
 
 export type Sections = Section[];
 
-export type MemberRole = 'owner' | 'manager' | 'member' | 'deactivated' | 'current';
+export type MemberRole = 'owner' | 'manager' | 'member' | 'deactivated' | 'current' | 'planType';
 
 export type Member = {
   id: string;

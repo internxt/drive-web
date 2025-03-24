@@ -1,9 +1,8 @@
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-import Modal from 'app/shared/components/Modal';
 import Input from 'app/shared/components/Input';
-import { Button, Avatar, Loader, Checkbox } from '@internxt/ui';
+import { Button, Avatar, Loader, Modal, Checkbox } from '@internxt/ui';
 
 interface AddMemberDialogProps {
   isOpen: boolean;
