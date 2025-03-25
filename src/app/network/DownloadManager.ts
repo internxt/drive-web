@@ -9,7 +9,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { DownloadItem, DownloadManagerService, DownloadTask } from 'app/drive/services/downloadManager.service';
 
 export class DownloadManager {
-  static readonly MAX_CONCURRENT_DOWNLOADS = 6;
+  static readonly MAX_CONCURRENT_DOWNLOADS = 4;
 
   static readonly downloadQueue: QueueObject<DownloadTask> = queue<DownloadTask>(
     (downloadTask, next: (err?: Error) => void) => {

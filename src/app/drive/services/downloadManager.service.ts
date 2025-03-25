@@ -4,10 +4,11 @@ import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 import { saveAs } from 'file-saver';
 import { DriveItemBlobData } from 'app/database/services/database.service';
 import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
-import folderService, {
+import {
   checkIfCachedSourceIsOlder,
   createFilesIterator,
   createFoldersIterator,
+  downloadFolderAsZip,
 } from './folder.service';
 import errorService from 'app/core/services/error.service';
 import { FlatFolderZip } from 'app/core/services/zip.service';
@@ -69,8 +70,8 @@ export type FileIterator = (
   workspaceId?: string,
 ) => Iterator<DriveFileData>;
 
-export type SharedFolderIterator = (directoryId: string, resourcesToken: string) => Iterator<SharedFolders>;
-export type SharedFileIterator = (directoryId: string, resourcesToken: string) => Iterator<SharedFiles>;
+export type SharedFolderIterator = (directoryId: string, resourcesToken?: string) => Iterator<SharedFolders>;
+export type SharedFileIterator = (directoryId: string, resourcesToken?: string) => Iterator<SharedFiles>;
 
 export class DownloadManagerService {
   public static readonly instance: DownloadManagerService = new DownloadManagerService();
@@ -210,15 +211,17 @@ export class DownloadManagerService {
       },
     });
 
-    await this.downloadFolderItem({
+    await downloadFolderAsZip({
+      folder: folder as DriveFolderData,
       isSharedFolder: options.areSharedItems,
-      driveItem: folder,
-      closeWhenFinished: true,
-      credentials,
+      foldersIterator: createFoldersIterator,
+      filesIterator: createFilesIterator,
       updateProgress: updateProgressCallback,
-      incrementItemCount,
-      createFoldersIterator,
-      createFilesIterator,
+      updateNumItems: incrementItemCount,
+      options: {
+        closeWhenFinished: true,
+        ...credentials,
+      },
       abortController,
     });
   };
@@ -275,6 +278,71 @@ export class DownloadManagerService {
       return totalProgress / downloadProgress.length;
     };
 
+    const addFileStreamToZip = async (index: number, driveItem: DownloadItemType) => {
+      let fileStream: ReadableStream<Uint8Array>;
+      const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+      const cachedFile = await lruFilesCacheManager.get(driveItem.id.toString());
+      const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file: driveItem });
+
+      if (cachedFile?.source && !isCachedFileOlder) {
+        const blob = cachedFile.source;
+        downloadProgress[index] = 1;
+        fileStream = blob.stream();
+      } else {
+        const downloadedFileStream = await downloadFile({
+          fileId: (driveItem as DriveFileData).fileId,
+          bucketId: (driveItem as DriveFileData).bucket,
+          creds: {
+            user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
+            pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
+          },
+          mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
+          options: {
+            abortController,
+            notifyProgress: (totalBytes, downloadedBytes) => {
+              const progress = downloadedBytes / totalBytes;
+
+              downloadProgress[index] = progress;
+
+              updateProgressCallback(calculateProgress());
+            },
+          },
+        });
+
+        const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
+        await updateDatabaseFileSourceData({
+          folderId: driveItem.folderId,
+          sourceBlob,
+          fileId: driveItem.id,
+          updatedAt: driveItem.updatedAt,
+        });
+
+        fileStream = sourceBlob.stream();
+      }
+      folderZip.addFile(`${driveItem.name}${driveItem.type ? '.' + driveItem.type : ''}`, fileStream);
+    };
+
+    const addFolderToZip = async (index: number, driveItem: DownloadItemType) => {
+      await downloadFolderAsZip({
+        folder: driveItem as DriveFolderData,
+        isSharedFolder: options.areSharedItems,
+        foldersIterator: createFoldersIterator,
+        filesIterator: createFilesIterator,
+        updateProgress: (progress) => {
+          downloadProgress[index] = progress;
+          updateProgressCallback(calculateProgress());
+        },
+        updateNumItems: incrementItemCount,
+        options: {
+          destination: folderZip,
+          closeWhenFinished: false,
+          ...credentials,
+        },
+        abortController,
+      });
+      downloadProgress[index] = 1;
+    };
+
     for (const [index, driveItem] of items.entries()) {
       if (abortController?.signal.aborted) {
         await folderZip.close();
@@ -283,65 +351,9 @@ export class DownloadManagerService {
 
       try {
         if (driveItem.isFolder) {
-          await this.downloadFolderItem({
-            isSharedFolder: options.areSharedItems,
-            driveItem,
-            destination: folderZip,
-            closeWhenFinished: false,
-            credentials,
-            updateProgress: (progress) => {
-              downloadProgress[index] = progress;
-              updateProgressCallback(calculateProgress());
-            },
-            incrementItemCount,
-            createFoldersIterator,
-            createFilesIterator,
-            abortController,
-          });
-          downloadProgress[index] = 1;
+          await addFolderToZip(index, driveItem);
         } else {
-          let fileStream: ReadableStream<Uint8Array>;
-          const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-          const cachedFile = await lruFilesCacheManager.get(driveItem.id.toString());
-          const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file: driveItem });
-
-          if (cachedFile?.source && !isCachedFileOlder) {
-            const blob = cachedFile.source;
-            downloadProgress[index] = 1;
-            fileStream = blob.stream();
-          } else {
-            const downloadedFileStream = await downloadFile({
-              fileId: (driveItem as DriveFileData).fileId,
-              bucketId: (driveItem as DriveFileData).bucket,
-              creds: {
-                user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
-                pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
-              },
-              mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
-              options: {
-                abortController,
-                notifyProgress: (totalBytes, downloadedBytes) => {
-                  const progress = downloadedBytes / totalBytes;
-
-                  downloadProgress[index] = progress;
-
-                  updateProgressCallback(calculateProgress());
-                },
-              },
-            });
-
-            const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
-            await updateDatabaseFileSourceData({
-              folderId: driveItem.folderId,
-              sourceBlob,
-              fileId: driveItem.id,
-              updatedAt: driveItem.updatedAt,
-            });
-
-            fileStream = sourceBlob.stream();
-          }
-
-          folderZip.addFile(`${driveItem.name}${driveItem.type ? '.' + driveItem.type : ''}`, fileStream);
+          await addFileStreamToZip(index, driveItem);
         }
       } catch (error) {
         folderZip.abort();
@@ -350,68 +362,5 @@ export class DownloadManagerService {
     }
 
     await folderZip.close();
-  };
-
-  readonly downloadFolderItem = ({
-    isSharedFolder,
-    driveItem,
-    destination,
-    closeWhenFinished,
-    credentials,
-    updateProgress,
-    incrementItemCount,
-    createFoldersIterator,
-    createFilesIterator,
-    abortController,
-  }: {
-    isSharedFolder: boolean;
-    driveItem: DownloadItemType;
-    destination?: FlatFolderZip;
-    closeWhenFinished: boolean;
-    credentials: DownloadCredentials;
-    updateProgress: (progress: number) => void;
-    incrementItemCount: () => void;
-    createFoldersIterator: FolderIterator | SharedFolderIterator;
-    createFilesIterator: FileIterator | SharedFileIterator;
-    abortController?: AbortController;
-  }): Promise<void> => {
-    if (isSharedFolder) {
-      return folderService.downloadSharedFolderAsZip(
-        driveItem.id,
-        driveItem.name,
-        createFoldersIterator as SharedFolderIterator,
-        createFilesIterator as SharedFileIterator,
-        updateProgress,
-        incrementItemCount,
-        driveItem.uuid,
-        {
-          destination,
-          closeWhenFinished,
-          credentials: {
-            user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
-            pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
-          },
-          mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
-          workspaceId: credentials.workspaceId,
-        },
-        abortController,
-      );
-    } else {
-      return folderService.downloadFolderAsZip({
-        folderId: driveItem.id,
-        folderName: driveItem.name,
-        folderUUID: driveItem.uuid,
-        foldersIterator: createFoldersIterator as FolderIterator,
-        filesIterator: createFilesIterator as FileIterator,
-        updateProgress,
-        updateNumItems: incrementItemCount,
-        options: {
-          destination,
-          closeWhenFinished,
-          ...credentials,
-        },
-        abortController,
-      });
-    }
   };
 }

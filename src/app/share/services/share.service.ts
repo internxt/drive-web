@@ -20,7 +20,7 @@ import {
   UpdateUserRoleResponse,
 } from '@internxt/sdk/dist/drive/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import folderService from 'app/drive/services/folder.service';
+import { downloadFolderAsZip } from '../../drive/services/folder.service';
 import copy from 'copy-to-clipboard';
 import crypto from 'crypto';
 import { t } from 'i18next';
@@ -36,6 +36,7 @@ import { domainManager } from './DomainManager';
 import { DownloadManager } from '../../network/DownloadManager';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { AdvancedSharedItem } from '../types';
+import { DriveFolderData } from '../../drive/types';
 
 interface CreateShareResponse {
   created: boolean;
@@ -747,16 +748,15 @@ export async function downloadPublicSharedFolder({
     isPublicShare: true,
   };
 
-  return folderService.downloadSharedFolderAsZip(
-    item.id,
-    item.plainName,
-    createFoldersIterator,
-    createFilesIterator,
-    (progress) => ({}),
-    incrementItemCount,
-    item.uuid,
+  return downloadFolderAsZip({
+    folder: item as DriveFolderData,
+    isSharedFolder: true,
+    foldersIterator: createFoldersIterator,
+    filesIterator: createFilesIterator,
+    updateProgress: () => {},
+    updateNumItems: incrementItemCount,
     options,
-  );
+  });
 }
 
 export const processInvitation = async (

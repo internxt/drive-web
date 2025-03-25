@@ -7,7 +7,12 @@ import {
 import { beforeAll, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { Workspace, WorkspaceCredentialsDetails, WorkspaceData, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
-import { checkIfCachedSourceIsOlder, createFilesIterator, createFoldersIterator } from './folder.service';
+import {
+  checkIfCachedSourceIsOlder,
+  createFilesIterator,
+  createFoldersIterator,
+  downloadFolderAsZip,
+} from './folder.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'app/core/services/local-storage.service';
 import tasksService from 'app/tasks/services/tasks.service';
@@ -41,6 +46,7 @@ describe('downloadManagerService', () => {
 
     vi.mock('app/drive/services/folder.service', () => ({
       default: {},
+      downloadFolderAsZip: vi.fn(),
       createFilesIterator: vi.fn(),
       createFoldersIterator: vi.fn(),
       checkIfCachedSourceIsOlder: vi.fn(),
@@ -547,7 +553,9 @@ describe('downloadManagerService', () => {
     const mockIncrementItemCount = vi.fn(() => 0);
 
     const updateTaskSpy = vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    const downloadFolderItemSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFolderItem').mockResolvedValue();
+
+    const downloadFolderItemSpy = vi.fn();
+    (downloadFolderAsZip as Mock).mockImplementation(downloadFolderItemSpy);
 
     await DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount);
 
@@ -560,14 +568,16 @@ describe('downloadManagerService', () => {
       },
     });
     expect(downloadFolderItemSpy).toHaveBeenCalledWith({
+      folder: mockFolder,
       isSharedFolder: mockTask.options.areSharedItems,
-      driveItem: mockFolder,
-      closeWhenFinished: true,
-      credentials: mockTask.credentials,
-      updateProgress: mockUpdateProgress,
-      incrementItemCount: mockIncrementItemCount,
-      createFoldersIterator: mockTask.createFoldersIterator,
-      createFilesIterator: mockTask.createFilesIterator,
+      foldersIterator: mockTask.createFoldersIterator,
+      filesIterator: mockTask.createFilesIterator,
+      updateProgress: expect.anything(),
+      updateNumItems: mockIncrementItemCount,
+      options: {
+        closeWhenFinished: true,
+        ...mockTask.credentials,
+      },
       abortController: mockTask.abortController,
     });
   });
@@ -712,32 +722,37 @@ describe('downloadManagerService', () => {
 
     const closeZipSpy = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
 
-    const downloadFolderSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFolderItem').mockResolvedValue();
+    const downloadFolderSpy = vi.fn();
+    (downloadFolderAsZip as Mock).mockImplementation(downloadFolderSpy);
 
     await DownloadManagerService.instance.downloadItems(mockTask, mockUpdateProgress, mockIncrementItemCount);
 
     expect(downloadFolderSpy).toHaveBeenNthCalledWith(1, {
+      folder: mockFolder,
       isSharedFolder: mockTask.options.areSharedItems,
-      driveItem: mockFolder,
-      destination: expect.anything(),
-      closeWhenFinished: false,
-      credentials: mockTask.credentials,
+      foldersIterator: mockTask.createFoldersIterator,
+      filesIterator: mockTask.createFilesIterator,
       updateProgress: expect.anything(),
-      incrementItemCount: mockIncrementItemCount,
-      createFoldersIterator: mockTask.createFoldersIterator,
-      createFilesIterator: mockTask.createFilesIterator,
+      updateNumItems: mockIncrementItemCount,
+      options: {
+        closeWhenFinished: false,
+        ...mockTask.credentials,
+        destination: expect.anything(),
+      },
       abortController: mockTask.abortController,
     });
     expect(downloadFolderSpy).toHaveBeenNthCalledWith(2, {
+      folder: mockFolder2,
       isSharedFolder: mockTask.options.areSharedItems,
-      driveItem: mockFolder2,
-      destination: expect.anything(),
-      closeWhenFinished: false,
-      credentials: mockTask.credentials,
+      foldersIterator: mockTask.createFoldersIterator,
+      filesIterator: mockTask.createFilesIterator,
       updateProgress: expect.anything(),
-      incrementItemCount: mockIncrementItemCount,
-      createFoldersIterator: mockTask.createFoldersIterator,
-      createFilesIterator: mockTask.createFilesIterator,
+      updateNumItems: mockIncrementItemCount,
+      options: {
+        closeWhenFinished: false,
+        ...mockTask.credentials,
+        destination: expect.anything(),
+      },
       abortController: mockTask.abortController,
     });
     expect(closeZipSpy).toHaveBeenCalled();

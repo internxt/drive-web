@@ -16,9 +16,8 @@ import { decryptMnemonic } from './share.service';
 describe('Encryption and Decryption', () => {
   beforeAll(() => {
     vi.mock('app/drive/services/folder.service', () => ({
-      default: {
-        downloadSharedFolderAsZip: vi.fn(),
-      },
+      default: {},
+      downloadFolderAsZip: vi.fn(),
       createFilesIterator: vi.fn(),
       createFoldersIterator: vi.fn(),
       checkIfCachedSourceIsOlder: vi.fn(),

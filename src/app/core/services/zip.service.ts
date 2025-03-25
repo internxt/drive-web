@@ -73,7 +73,7 @@ export class FlatFolderZip {
 
   abort(): void {
     this.zip.terminate();
-    this.abortController?.abort();
+    this.abortController?.abort('Zip aborted');
   }
 }
 
