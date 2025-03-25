@@ -171,6 +171,7 @@ export class DownloadManagerService {
       downloadItem.selectedWorkspace,
       downloadItem.workspaceCredentials,
     );
+    // First try to use the credentials from the download item, then from the workspace if it is selected, and lastly from the user
     const credentials = downloadItem.downloadCredentials ?? workspaceCredentials ?? userCredentials;
 
     const options: DownloadTask['options'] = {
