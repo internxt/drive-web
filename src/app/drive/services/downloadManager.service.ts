@@ -73,6 +73,26 @@ export type FileIterator = (
 export type SharedFolderIterator = (directoryId: string, resourcesToken?: string) => Iterator<SharedFolders>;
 export type SharedFileIterator = (directoryId: string, resourcesToken?: string) => Iterator<SharedFiles>;
 
+/**
+ * DownloadManagerService handles file and folder downloads with queue management
+ *
+ * @class DownloadManagerService
+ * @static
+ *
+ * @property {DownloadManagerService} instance - Singleton instance of the service
+ *
+ * @method getDownloadCredentialsFromWorkspace - Extracts download credentials from workspace data
+ * @method generateTasksForItem - Creates download tasks using download items
+ * @method downloadFile - Handles file download process
+ * @method downloadFolder - Handles folder download process (as zip)
+ *
+ * The service:
+ * - Manages file and folder downloads
+ * - Integrates with task service for progress tracking
+ * - Supports workspace-specific downloads
+ * - Handles shared items downloads
+ * - Provides error handling and notifications
+ */
 export class DownloadManagerService {
   public static readonly instance: DownloadManagerService = new DownloadManagerService();
 

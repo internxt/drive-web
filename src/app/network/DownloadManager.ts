@@ -8,6 +8,24 @@ import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { DownloadItem, DownloadManagerService, DownloadTask } from 'app/drive/services/downloadManager.service';
 
+/**
+ * DownloadManager class handles file and folder downloads with queue management
+ *
+ * @class DownloadManager
+ * @static
+ *
+ * @property {number} MAX_CONCURRENT_DOWNLOADS - Maximum number of concurrent downloads allowed
+ * @property {QueueObject<DownloadTask>} downloadQueue - Queue for managing download tasks
+ *
+ * @method downloadTask - Processes a download task from the queue
+ *
+ * The download manager:
+ * - Manages concurrent downloads based on system performance
+ * - Handles file and folder downloads
+ * - Provides progress tracking and cancellation support
+ * - Integrates with the task service for status updates
+ * - Implements memory-aware concurrency adjustment if its needed
+ */
 export class DownloadManager {
   static readonly MAX_CONCURRENT_DOWNLOADS = 4;
 
