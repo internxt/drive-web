@@ -84,11 +84,11 @@ export interface FetchFolderContentResponse {
 export interface DownloadFolderAsZipOptions {
   destination?: FlatFolderZip;
   closeWhenFinished?: boolean;
-  credentials?: {
-    user: string | undefined;
-    pass: string | undefined;
+  credentials: {
+    user: string;
+    pass: string;
   };
-  mnemonic?: string;
+  mnemonic: string;
   isPublicShare?: boolean;
   workspaceId?: string;
 }
@@ -296,7 +296,7 @@ export async function downloadFolderAsZip({
   filesIterator: FileIterator | SharedFileIterator;
   updateProgress: (progress: number) => void;
   updateNumItems: () => void;
-  options?: DownloadFolderAsZipOptions;
+  options: DownloadFolderAsZipOptions;
   abortController?: AbortController;
 }): Promise<void> {
   const folderId: DriveFolderData['id'] = folder.id;
@@ -304,11 +304,11 @@ export async function downloadFolderAsZip({
   const folderUUID: DriveFolderData['uuid'] = folder.uuid;
   const rootFolder: FolderRef = { folderId, name: folderName, folderUuid: folderUUID };
 
-  const workspaceId = options?.workspaceId;
+  const workspaceId = options.workspaceId;
   let totalSize = 0;
   let totalSizeIsReady = false;
   const zip =
-    options?.destination ||
+    options.destination ??
     new FlatFolderZip(rootFolder.name, {
       progress: (loadedBytes: number) => {
         if (totalSizeIsReady) {
@@ -350,12 +350,6 @@ export async function downloadFolderAsZip({
   }, maxConcurrency);
 
   const downloadFolder = async (folderToDownload: FolderRef) => {
-    const user = localStorageService.getUser();
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
     const files = await addAllFilesToZip(
       folderToDownload.name,
       async (file) => {
@@ -368,16 +362,11 @@ export async function downloadFolderAsZip({
           return cachedFile.source.stream();
         }
 
-        const creds = options?.credentials
-          ? (options.credentials as Record<'user' | 'pass', string>)
-          : { user: user.bridgeUser, pass: user.userId };
-
-        const mnemonic = options?.mnemonic ? options?.mnemonic : user.mnemonic;
         const downloadedFileStream = await downloadFile({
           bucketId: file.bucket,
           fileId: file.fileId,
-          creds: creds,
-          mnemonic: mnemonic,
+          creds: options.credentials,
+          mnemonic: options.mnemonic,
           options: {
             notifyProgress: () => {},
             abortController,
@@ -424,12 +413,6 @@ export async function downloadFolderAsZip({
   };
 
   const downloadSharedFolder = async (folderToDownload: FolderRef) => {
-    const user = localStorageService.getUser();
-
-    if (!user && !options?.isPublicShare) {
-      throw new Error('User not found');
-    }
-
     const { files, token: fileToken } = await addAllSharedFilesToZip(
       folderToDownload.name,
       async (file) => {
@@ -444,18 +427,12 @@ export async function downloadFolderAsZip({
           return cachedFile.source.stream();
         }
 
-        const creds = options?.credentials
-          ? (options.credentials as Record<'user' | 'pass', string>)
-          : { user: user?.bridgeUser || '', pass: user?.userId || '' };
-
-        const mnemonic = options?.mnemonic ? options?.mnemonic : user?.mnemonic || '';
-
         const downloadedFileStream = await downloadFile({
           bucketId: file.bucket as string,
           // TODO: TO WORK UNTIL SDK TYPE CORRECT THE field fileiId -> fileId
           fileId: (file as any).fileId,
-          creds: creds,
-          mnemonic: mnemonic,
+          creds: options.credentials,
+          mnemonic: options.mnemonic,
         });
 
         const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
@@ -505,7 +482,7 @@ export async function downloadFolderAsZip({
     }
 
     totalSizeIsReady = true;
-    if (options?.closeWhenFinished === undefined || options.closeWhenFinished === true) {
+    if (options.closeWhenFinished === true) {
       updateProgress(1);
       await zip.close();
     }

@@ -357,7 +357,12 @@ export class DownloadManagerService {
         options: {
           destination: folderZip,
           closeWhenFinished: false,
-          ...credentials,
+          credentials: {
+            user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
+            pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
+          },
+          mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
+          workspaceId: credentials.workspaceId,
         },
         abortController,
       });
