@@ -1,6 +1,5 @@
 import { aes } from '@internxt/lib';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 import { FolderTree } from '@internxt/sdk/dist/drive/storage/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import { Iterator } from 'app/core/collections';
@@ -8,7 +7,6 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { downloadFile } from 'app/network/download';
-import { checkIfCachedSourceIsOlder } from 'app/store/slices/storage/storage.thunks/downloadFileThunk';
 import { t } from 'i18next';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
@@ -20,6 +18,17 @@ import { updateDatabaseFileSourceData } from './database.service';
 import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
 import { addAllFoldersToZip, addAllSharedFoldersToZip } from './foldersZip.service';
 import newStorageService from './new-storage.service';
+import {
+  FileIterator,
+  FolderIterator,
+  SharedFileIterator,
+  SharedFolderIterator,
+} from '../../drive/services/downloadManager.service';
+import { DriveItemBlobData } from '../../database/services/database.service';
+import dateService from '../../core/services/date.service';
+import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
+import { queue, QueueObject } from 'async';
+import { QueueUtilsService } from 'app/utils/queueUtils';
 
 export interface IFolders {
   bucket: string;
@@ -75,11 +84,11 @@ export interface FetchFolderContentResponse {
 export interface DownloadFolderAsZipOptions {
   destination?: FlatFolderZip;
   closeWhenFinished?: boolean;
-  credentials?: {
-    user: string | undefined;
-    pass: string | undefined;
+  credentials: {
+    user: string;
+    pass: string;
   };
-  mnemonic?: string;
+  mnemonic: string;
   isPublicShare?: boolean;
   workspaceId?: string;
 }
@@ -268,124 +277,12 @@ interface FolderRef {
   folderId: number;
   folderUuid?: string;
   folderToken?: string;
+  fileToken?: string;
 }
 
-async function downloadSharedFolderAsZip(
-  folderId: DriveFolderData['id'],
-  folderName: DriveFolderData['name'],
-  foldersIterator: (directoryId: any, token: string) => Iterator<SharedFolders>,
-  filesIterator: (directoryId: any, token: string) => Iterator<SharedFiles>,
-  updateProgress: (progress: number) => void,
-  updateNumItems: () => void,
-  folderUuid?: string,
-  options?: DownloadFolderAsZipOptions,
-): Promise<void> {
-  const rootFolder: FolderRef = { folderId: folderId, name: folderName, folderUuid: folderUuid };
-  const pendingFolders: FolderRef[] = [rootFolder];
-  let totalSize = 0;
-  let totalSizeIsReady = false;
-  const zip =
-    options?.destination ||
-    new FlatFolderZip(rootFolder.name, {
-      progress: (loadedBytes: number) => {
-        if (totalSizeIsReady) {
-          updateProgress(loadedBytes / totalSize);
-        }
-      },
-    });
-
-  const user = localStorageService.getUser();
-
-  if (!user && !options?.isPublicShare) {
-    throw new Error('user null');
-  }
-
-  try {
-    // Necessary tokens to obtain files and folders if the user is not the owner
-    let nextFilesToken;
-    let nextFolderToken;
-    do {
-      const folderToDownload = pendingFolders.shift() as FolderRef;
-
-      const { files, token } = await addAllSharedFilesToZip(
-        folderToDownload.name,
-        async (file) => {
-          const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-          const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
-          const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
-
-          updateNumItems();
-
-          if (cachedFile?.source && !isCachedFileOlder) {
-            updateProgress(1);
-            return cachedFile.source.stream();
-          }
-
-          const creds = options?.credentials
-            ? (options.credentials as Record<'user' | 'pass', string>)
-            : { user: user?.bridgeUser || '', pass: user?.userId || '' };
-
-          const mnemonic = options?.mnemonic ? options?.mnemonic : user?.mnemonic || '';
-
-          const downloadedFileStream = await downloadFile({
-            bucketId: file.bucket as string,
-            // TODO: TO WORK UNTIL SDK TYPE CORRECT THE field fileiId -> fileId
-            fileId: (file as any).fileId,
-            creds: creds,
-            mnemonic: mnemonic,
-          });
-
-          const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
-          await updateDatabaseFileSourceData({
-            folderId: file.folderId,
-            sourceBlob,
-            fileId: file.id,
-            updatedAt: file.updatedAt,
-          });
-
-          return sourceBlob.stream();
-        },
-        filesIterator(folderToDownload.folderUuid as string, folderToDownload.folderToken ?? nextFilesToken),
-        zip,
-      );
-      nextFilesToken = token;
-      totalSize += files.reduce((a, f) => parseInt(f.size) + a, 0);
-
-      const { folders, token: folderToken } = await addAllSharedFoldersToZip(
-        folderToDownload.name,
-        foldersIterator(folderToDownload.folderUuid as string, folderToDownload.folderToken ?? nextFolderToken),
-        zip,
-      );
-
-      nextFolderToken = folderToken;
-      pendingFolders.push(
-        ...folders.map((f) => {
-          return {
-            name: folderToDownload.name + '/' + f.name,
-            folderId: f.id,
-            folderUuid: f.uuid,
-            folderToken,
-          };
-        }),
-      );
-    } while (pendingFolders.length > 0);
-
-    totalSizeIsReady = true;
-    if (options?.closeWhenFinished === undefined || options.closeWhenFinished === true) {
-      await zip.close();
-    }
-  } catch (err) {
-    const castedError = errorService.castError(err);
-    console.error('ERROR WHILE DOWNLOADING FOLDER', castedError);
-    zip.abort();
-    throw castedError;
-  }
-}
-
-async function downloadFolderAsZip({
-  folderId,
-  folderName,
-  folderUUID,
+export async function downloadFolderAsZip({
+  folder,
+  isSharedFolder,
   foldersIterator,
   filesIterator,
   updateProgress,
@@ -393,93 +290,199 @@ async function downloadFolderAsZip({
   options,
   abortController,
 }: {
-  folderId: DriveFolderData['id'];
-  folderName: DriveFolderData['name'];
-  folderUUID: DriveFolderData['uuid'];
-  foldersIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFolderData>;
-  filesIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFileData>;
+  folder: DriveFolderData;
+  isSharedFolder: boolean;
+  foldersIterator: FolderIterator | SharedFolderIterator;
+  filesIterator: FileIterator | SharedFileIterator;
   updateProgress: (progress: number) => void;
   updateNumItems: () => void;
-  options?: DownloadFolderAsZipOptions;
+  options: DownloadFolderAsZipOptions;
   abortController?: AbortController;
 }): Promise<void> {
+  const folderId: DriveFolderData['id'] = folder.id;
+  const folderName: DriveFolderData['name'] = folder.plainName ?? folder.plain_name ?? folder.name;
+  const folderUUID: DriveFolderData['uuid'] = folder.uuid;
   const rootFolder: FolderRef = { folderId, name: folderName, folderUuid: folderUUID };
-  const pendingFolders: FolderRef[] = [rootFolder];
-  let totalSize = 0;
-  const zip = options?.destination || new FlatFolderZip(folderName, {});
-  const workspaceId = options?.workspaceId;
-  const user = localStorageService.getUser();
 
-  if (!user) {
-    throw new Error('user null');
-  }
+  const workspaceId = options.workspaceId;
+  let totalSize = 0;
+  let totalSizeIsReady = false;
+  const zip =
+    options.destination ??
+    new FlatFolderZip(rootFolder.name, {
+      progress: (loadedBytes: number) => {
+        if (totalSizeIsReady) {
+          updateProgress(loadedBytes / totalSize);
+        }
+      },
+      abortController,
+    });
+
+  const maxConcurrency = 5;
+  const downloadQueue: QueueObject<FolderRef> = queue<FolderRef>((folderToDownload, next: (err?: Error) => void) => {
+    if (abortController?.signal.aborted) return next(new Error('Download aborted'));
+
+    const newConcurrency = QueueUtilsService.instance.getConcurrencyUsingPerfomance(
+      downloadQueue.concurrency,
+      maxConcurrency,
+    );
+    if (downloadQueue.concurrency !== newConcurrency) {
+      downloadQueue.concurrency = newConcurrency;
+    }
+
+    if (!isSharedFolder) {
+      downloadFolder(folderToDownload)
+        .then(() => {
+          next();
+        })
+        .catch((e: Error) => {
+          next(e);
+        });
+    } else {
+      downloadSharedFolder(folderToDownload)
+        .then(() => {
+          next();
+        })
+        .catch((e: Error) => {
+          next(e);
+        });
+    }
+  }, maxConcurrency);
+
+  const downloadFolder = async (folderToDownload: FolderRef) => {
+    const files = await addAllFilesToZip(
+      folderToDownload.name,
+      async (file) => {
+        updateNumItems();
+        const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+        const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
+        const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
+
+        if (cachedFile?.source && !isCachedFileOlder) {
+          return cachedFile.source.stream();
+        }
+
+        const downloadedFileStream = await downloadFile({
+          bucketId: file.bucket,
+          fileId: file.fileId,
+          creds: options.credentials,
+          mnemonic: options.mnemonic,
+          options: {
+            notifyProgress: () => {},
+            abortController,
+          },
+        });
+
+        const sourceBlob = await binaryStreamToBlob(downloadedFileStream, file.type || '');
+        await updateDatabaseFileSourceData({
+          folderId: file.folderId,
+          sourceBlob,
+          fileId: file.id,
+          updatedAt: file.updatedAt,
+        });
+
+        return sourceBlob.stream();
+      },
+      (filesIterator as FileIterator)(folderToDownload.folderId, folderToDownload.folderUuid as string, workspaceId),
+      zip,
+    );
+
+    const folders = await addAllFoldersToZip(
+      folderToDownload.name,
+      (foldersIterator as FolderIterator)(
+        folderToDownload.folderId,
+        folderToDownload.folderUuid as string,
+        workspaceId,
+      ),
+      zip,
+      () => {
+        updateNumItems();
+      },
+    );
+
+    totalSize += files.reduce((a, f) => f.size + a, 0);
+
+    const pendingFolders: FolderRef[] = folders.map((f) => {
+      return {
+        name: folderToDownload.name + '/' + (f.plainName ?? f.name),
+        folderId: f.id,
+        folderUuid: f.uuid,
+      };
+    });
+    downloadQueue.push(pendingFolders);
+  };
+
+  const downloadSharedFolder = async (folderToDownload: FolderRef) => {
+    const { files, token: fileToken } = await addAllSharedFilesToZip(
+      folderToDownload.name,
+      async (file) => {
+        const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+        const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
+        const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
+
+        updateNumItems();
+
+        if (cachedFile?.source && !isCachedFileOlder) {
+          updateProgress(1);
+          return cachedFile.source.stream();
+        }
+
+        const downloadedFileStream = await downloadFile({
+          bucketId: file.bucket as string,
+          // TODO: TO WORK UNTIL SDK TYPE CORRECT THE field fileiId -> fileId
+          fileId: (file as any).fileId,
+          creds: options.credentials,
+          mnemonic: options.mnemonic,
+        });
+
+        const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
+        await updateDatabaseFileSourceData({
+          folderId: file.folderId,
+          sourceBlob,
+          fileId: file.id,
+          updatedAt: file.updatedAt,
+        });
+
+        return sourceBlob.stream();
+      },
+      (filesIterator as SharedFileIterator)(
+        folderToDownload.folderUuid as string,
+        folderToDownload.folderToken ?? folderToDownload.fileToken,
+      ),
+      zip,
+    );
+
+    const { folders, token: folderToken } = await addAllSharedFoldersToZip(
+      folderToDownload.name,
+      (foldersIterator as SharedFolderIterator)(folderToDownload.folderUuid as string, folderToDownload.folderToken),
+      zip,
+      () => {
+        updateNumItems();
+      },
+    );
+
+    totalSize += files.reduce((a, f) => parseInt(f.size) + a, 0);
+
+    const pendingFolders: FolderRef[] = folders.map((f) => {
+      return {
+        name: folderToDownload.name + '/' + (f.plainName ?? f.name),
+        folderId: f.id,
+        folderUuid: f.uuid,
+        folderToken,
+        fileToken,
+      };
+    });
+    downloadQueue.push(pendingFolders);
+  };
 
   try {
-    do {
-      const folderToDownload = pendingFolders.shift() as FolderRef;
+    await downloadQueue.pushAsync(rootFolder);
+    while (downloadQueue.running() > 0 || downloadQueue.length() > 0) {
+      await downloadQueue.drain();
+    }
 
-      const files = await addAllFilesToZip(
-        folderToDownload.name,
-        async (file) => {
-          updateNumItems();
-          const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-          const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
-          const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
-
-          if (cachedFile?.source && !isCachedFileOlder) {
-            return cachedFile.source.stream();
-          }
-
-          const creds = options?.credentials
-            ? (options.credentials as Record<'user' | 'pass', string>)
-            : { user: user.bridgeUser, pass: user.userId };
-
-          const mnemonic = options?.mnemonic ? options?.mnemonic : user.mnemonic;
-          const downloadedFileStream = await downloadFile({
-            bucketId: file.bucket,
-            fileId: file.fileId,
-            creds: creds,
-            mnemonic: mnemonic,
-            options: {
-              notifyProgress: () => {},
-              abortController,
-            },
-          });
-
-          const sourceBlob = await binaryStreamToBlob(downloadedFileStream, file.type || '');
-          await updateDatabaseFileSourceData({
-            folderId: file.folderId,
-            sourceBlob,
-            fileId: file.id,
-            updatedAt: file.updatedAt,
-          });
-
-          return sourceBlob.stream();
-        },
-        filesIterator(folderToDownload.folderId, folderToDownload.folderUuid as string, workspaceId),
-        zip,
-      );
-
-      totalSize += files.reduce((a, f) => f.size + a, 0);
-
-      const folders = await addAllFoldersToZip(
-        folderToDownload.name,
-        foldersIterator(folderToDownload.folderId, folderToDownload.folderUuid as string, workspaceId),
-        zip,
-      );
-
-      pendingFolders.push(
-        ...folders.map((f) => {
-          return {
-            name: folderToDownload.name + '/' + (f.plainName ?? f.name),
-            folderId: f.id,
-            folderUuid: f.uuid,
-          };
-        }),
-      );
-    } while (pendingFolders.length > 0);
-
-    if (options?.closeWhenFinished === undefined || options.closeWhenFinished === true) {
+    totalSizeIsReady = true;
+    if (options.closeWhenFinished === true) {
       updateProgress(1);
       await zip.close();
     }
@@ -489,6 +492,23 @@ async function downloadFolderAsZip({
     throw castedError;
   }
 }
+
+export const checkIfCachedSourceIsOlder = ({
+  cachedFile,
+  file,
+}: {
+  cachedFile: DriveItemBlobData | undefined;
+  file: DriveFileData | SharedFiles;
+}): boolean => {
+  const isCachedFileOlder = !cachedFile?.updatedAt
+    ? true
+    : dateService.isDateOneBefore({
+        dateOne: cachedFile?.updatedAt,
+        dateTwo: file?.updatedAt,
+      });
+
+  return isCachedFileOlder;
+};
 
 // NEED TO REVIEW THIS FUNCTION BEFORE MERGE, FOR NOW IS NOT WORKING WITH WORKSPACES FILES
 async function fetchFolderTree(folderUUID: string): Promise<{
@@ -577,7 +597,6 @@ const folderService = {
   downloadFolderAsZip,
   addAllFoldersToZip,
   addAllFilesToZip,
-  downloadSharedFolderAsZip,
 };
 
 export default folderService;
