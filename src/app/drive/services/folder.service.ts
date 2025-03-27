@@ -482,7 +482,7 @@ export async function downloadFolderAsZip({
     }
 
     totalSizeIsReady = true;
-    if (options.closeWhenFinished === true) {
+    if (options.closeWhenFinished === undefined || options.closeWhenFinished === true) {
       updateProgress(1);
       await zip.close();
     }
