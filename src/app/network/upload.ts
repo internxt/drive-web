@@ -1,8 +1,7 @@
 import { Network } from '@internxt/sdk/dist/network';
 import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 import * as Sentry from '@sentry/react';
-
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosProgressEvent } from 'axios';
 import { getSha256 } from '../crypto/services/utils';
 import { NetworkFacade } from './NetworkFacade';
 import { ConnectionLostError } from './requests';
@@ -43,8 +42,8 @@ export async function uploadFileBlob(
       headers: {
         'content-type': 'application/octet-stream',
       },
-      onUploadProgress: (progress: ProgressEvent) => {
-        opts.progressCallback(progress.total, progress.loaded);
+      onUploadProgress: (progress: AxiosProgressEvent) => {
+        opts.progressCallback(progress.total ?? 0, progress.loaded);
       },
       cancelToken: new axios.CancelToken((canceler) => {
         opts.abortController?.signal.addEventListener('abort', () => {
