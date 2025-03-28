@@ -448,12 +448,7 @@ const CheckoutViewWrapper = () => {
       const statusCode = (err as any).status;
       const castedError = errorService.castError(err);
 
-      if (statusCode === STATUS_CODE_ERROR.BAD_REQUEST) {
-        notificationsService.show({
-          text: translate('notificationMessages.invalidTaxIdIsProvided'),
-          type: ToastType.Error,
-        });
-      } else if (statusCode === STATUS_CODE_ERROR.USER_EXISTS) {
+      if (statusCode === STATUS_CODE_ERROR.USER_EXISTS) {
         setIsUpdateSubscriptionDialogOpen(true);
       } else if (statusCode === STATUS_CODE_ERROR.COUPON_NOT_VALID) {
         notificationsService.show({
