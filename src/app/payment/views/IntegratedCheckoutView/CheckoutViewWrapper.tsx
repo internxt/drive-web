@@ -14,11 +14,12 @@ import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import RealtimeService from '../../../core/services/socket.service';
-import { AppView, IFormValues } from '../../../core/types';
+import AppError, { AppView, IFormValues } from '../../../core/types';
 import databaseService from '../../../database/services/database.service';
 import { getDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
+import longNotificationsService from '../../../notifications/services/longNotification.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import checkoutService from '../../../payment/services/checkout.service';
 import paymentService from '../../../payment/services/payment.service';
@@ -86,6 +87,7 @@ const STATUS_CODE_ERROR = {
   COUPON_NOT_VALID: 422,
   PROMO_CODE_BY_NAME_NOT_FOUND: 404,
   BAD_REQUEST: 400,
+  INTERNAL_SERVER_ERROR: 500,
 };
 
 function savePaymentDataInLocalStorage(
@@ -285,18 +287,23 @@ const CheckoutViewWrapper = () => {
     [translate],
   );
 
-  const showCancelSubscriptionErrorNotification = useCallback(
-    () =>
-      notificationsService.show({
-        text: translate('notificationMessages.errorCancelSubscription'),
-        type: ToastType.Error,
-      }),
-    [translate],
-  );
-
   const handlePaymentSuccess = () => {
     showSuccessSubscriptionNotification();
     dispatch(planThunks.initializeThunk()).unwrap();
+  };
+
+  const handleErrorMessage = (error: AppError, defaultErrorMessage: string) => {
+    if (error?.status && error?.status >= STATUS_CODE_ERROR.INTERNAL_SERVER_ERROR) {
+      notificationsService.show({
+        text: defaultErrorMessage,
+        type: ToastType.Error,
+      });
+    } else {
+      longNotificationsService.show({
+        type: ToastType.Error,
+        text: error?.message,
+      });
+    }
   };
 
   const handleSubscriptionPayment = async (priceId: string) => {
@@ -322,16 +329,14 @@ const CheckoutViewWrapper = () => {
           })
           .catch((err) => {
             const error = errorService.castError(err);
-            errorService.reportError(error);
-            showCancelSubscriptionErrorNotification();
+            handleErrorMessage(error, translate('notificationMessages.errorCancelSubscription'));
           });
       } else {
         handlePaymentSuccess();
       }
     } catch (err) {
       const error = errorService.castError(err);
-      errorService.reportError(error);
-      showCancelSubscriptionErrorNotification();
+      handleErrorMessage(error, translate('notificationMessages.errorCancelSubscription'));
     }
   };
 
@@ -441,6 +446,7 @@ const CheckoutViewWrapper = () => {
       }
     } catch (err) {
       const statusCode = (err as any).status;
+      const castedError = errorService.castError(err);
 
       if (statusCode === STATUS_CODE_ERROR.BAD_REQUEST) {
         notificationsService.show({
@@ -455,13 +461,8 @@ const CheckoutViewWrapper = () => {
           type: ToastType.Error,
         });
       } else {
-        notificationsService.show({
-          text: translate('notificationMessages.errorCreatingSubscription'),
-          type: ToastType.Error,
-        });
+        handleErrorMessage(castedError, translate('notificationMessages.errorCreatingSubscription'));
       }
-
-      errorService.reportError(err);
     } finally {
       setIsUserPaying(false);
     }

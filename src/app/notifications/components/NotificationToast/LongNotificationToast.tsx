@@ -4,7 +4,7 @@ import { CheckCircle, Info, Warning, WarningOctagon, X } from '@phosphor-icons/r
 import { NavLink } from 'react-router-dom';
 import { ToastShowProps, ToastType } from '../../services/notifications.service';
 
-const NotificationToast = ({
+const LongNotificationToast = ({
   text,
   type,
   action,
@@ -14,7 +14,6 @@ const NotificationToast = ({
 }: Omit<ToastShowProps, 'duration'> & { visible: boolean; onClose: () => void }): JSX.Element => {
   let Icon: typeof CheckCircle | undefined;
   let IconColor: string | undefined;
-
   switch (type) {
     case ToastType.Success:
       Icon = CheckCircle;
@@ -36,7 +35,6 @@ const NotificationToast = ({
       IconColor = 'text-primary';
       break;
   }
-
   return (
     <Transition
       appear
@@ -49,35 +47,37 @@ const NotificationToast = ({
       show={visible}
     >
       <div
-        className="flex max-w-xl items-center rounded-lg border border-gray-10 bg-surface p-3 dark:bg-gray-5"
+        className="flex max-w-xl items-start rounded-lg border border-gray-10 bg-surface p-3 dark:bg-gray-5"
         style={{ minWidth: '300px' }}
       >
-        {type === ToastType.Loading && <Loader classNameLoader="mr-1.5 h-6 w-6" />}
-        {Icon && <Icon weight="fill" className={`${IconColor} mr-1.5`} size={24} />}
-
-        <p className="line-clamp-2 flex-1 whitespace-pre break-words text-gray-80">{text}</p>
-        {action &&
-          (action.to ? (
-            <NavLink
-              className="ml-3 truncate font-medium text-primary no-underline"
-              exact
-              to={action.to}
-              onClick={action.onClick}
-            >
-              {action.text}
-            </NavLink>
-          ) : (
-            <button onClick={action.onClick} className="ml-3 truncate font-medium text-primary">
-              {action.text}
-            </button>
-          ))}
-
+        <div className="flex-shrink-0 pt-0.5">
+          {type === ToastType.Loading && <Loader classNameLoader="mr-1.5 h-6 w-6" />}
+          {Icon && <Icon weight="fill" className={`${IconColor} mr-1.5`} size={24} />}
+        </div>
+        <div className="ml-1.5 flex-1">
+          <p className="whitespace-normal break-words text-gray-80">{text}</p>
+          {action &&
+            (action.to ? (
+              <NavLink
+                className="mt-1 block truncate font-medium text-primary no-underline"
+                exact
+                to={action.to}
+                onClick={action.onClick}
+              >
+                {action.text}
+              </NavLink>
+            ) : (
+              <button onClick={action.onClick} className="mt-1 block truncate font-medium text-primary">
+                {action.text}
+              </button>
+            ))}
+        </div>
         {closable && (
           <button
             onClick={() => {
               onClose();
             }}
-            className="ml-3 text-gray-40"
+            className="ml-2 flex-shrink-0 text-gray-40 items-center justify-center"
           >
             <X size={20} />
           </button>
@@ -87,4 +87,4 @@ const NotificationToast = ({
   );
 };
 
-export default NotificationToast;
+export default LongNotificationToast;
