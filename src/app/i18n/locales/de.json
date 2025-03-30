@@ -4,20 +4,23 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Spare 80%!",
-    "title": "Entdecke alle neuen Internxt-Tarife!",
-    "cta": "Wähle deinen Plan",
+    "label": "75 % Rabatt",
+    "title": "Auf alle Internxt-Tarife",
+    "cta": "Plan wählen",
     "guarantee": "30 Tage Geld-zurück-Garantie",
-    "lastCta": "*Das Angebot gilt für kostenlose Konten oder neue Kunden",
+    "lastCta": "*Angebot gültig für kostenlose oder neue Konten",
+    "specialOfferLabel": "Spezialangebot",
+    "specialOfferGift": " Gewinne einen Internxt x Swiss Peak Rucksack",
     "features": [
-      "VPN und Premium-Antivirus",
-      "Postquanten-Kryptographie",
+      "Internxt Drive, VPN und Antivirus",
+      "Post-quanten Kryptografie",
       "Open Source und geprüft",
       "Verschlüsselte Übertragungen",
-      "Kostenloses Thema für deine Web-App",
-      "Das Angebot endet am 30. März"
+      "Kein unbefugter Zugriff",
+      "Angebot endet am 8. April"
     ]
   },
+
   "susbcriptionsBanner": {
     "title": "Maximiere deinen Plan!",
     "features": [

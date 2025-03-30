@@ -4,18 +4,20 @@
     "logOut": "Cerrar sesión"
   },
  "featuresBanner": {
-    "label": "¡Ahorra un 80%!",
-    "title": " ¡Descubre los nuevos planes de Internxt!",
-    "cta": "Elige tu plan",
+    "label": "Oferta 75%",
+    "title": "En todos los planes de Internxt",
+    "cta": "Consigue tu plan",
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
+    "specialOfferLabel":"Oferta Especial ",
+    "specialOfferGift":" Gana una mochila Internxt x Swiss Peak ",
     "features": [
-     "VPN y Antivirus Premium",
+      "Internxt Drive, VPN, y Antivirus ",
       "Criptografía postcuántica",
       "Código abierto y auditado",
       "Transferencias cifradas",
-      "Tema gratuito para tu web app ",
-      "La oferta finaliza el 30 de marzo"
+      "Sin accesos no autorizados",
+      "La oferta finaliza el 8 de abril"      
     ]
   },
   "susbcriptionsBanner": {

@@ -4,18 +4,20 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 80%!",
-    "title": "Brand new pricing plans!",
-    "cta": "Choose plan",
+    "label": "Save 75%!",
+    "title": "All Internxt plans!",
+    "cta": "Claim deal",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
+    "specialOfferLabel":"Special offer! ",
+    "specialOfferGift":" Win an Internxt x Swiss Peak backpack",
     "features": [
-     "Premium VPN and Antivirus",
+      "Drive, VPN, and Antivirus",
       "Post-quantum encryption",
       "Open-source and audited",
       "End-to-end encrypted transfers",
-      "Free St. Patrick’s Day web theme",
-      "Offer ends March 30"
+      "No unauthorized access",
+      "Offer ends April 8"
       
     ]
   },
