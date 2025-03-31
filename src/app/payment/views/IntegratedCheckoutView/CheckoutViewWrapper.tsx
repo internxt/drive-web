@@ -117,6 +117,7 @@ const CheckoutViewWrapper = () => {
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const [mobileToken, setMobileToken] = useState<string | null>(null);
+  const [websiteToken, setWebsiteToken] = useState<string | null>(null);
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -203,7 +204,9 @@ const CheckoutViewWrapper = () => {
     const promotionCode = params.get('couponCode');
     const currency = params.get('currency');
     const paramMobileToken = params.get('mobileToken');
+    const paramWebsiteToken = params.get('websiteToken');
     setMobileToken(paramMobileToken);
+    setWebsiteToken(paramWebsiteToken);
 
     const currencyValue = currency ?? 'eur';
 
@@ -245,7 +248,7 @@ const CheckoutViewWrapper = () => {
           navigationService.push(AppView.Signup);
         }
       });
-  }, [checkoutTheme, mobileToken]);
+  }, [checkoutTheme, mobileToken || websiteToken]);
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -402,12 +405,31 @@ const CheckoutViewWrapper = () => {
         if (confirmIntentError) {
           throw new Error(confirmIntentError.message);
         }
+      } else if (websiteToken) {
+        const setupIntent = await checkoutService.checkoutSetupIntent(customerId);
+        localStorageService.set('customerId', customerId);
+        localStorageService.set('token', token);
+        localStorageService.set('priceId', currentSelectedPlan?.id as string);
+        localStorageService.set('customerToken', token);
+        localStorageService.set('websiteToken', websiteToken);
+        const { error: confirmIntentError } = await stripeSDK.confirmSetup({
+          elements,
+          clientSecret: setupIntent.clientSecret,
+          confirmParams: {
+            return_url: `${RETURN_URL_DOMAIN}/checkout/pcComponentes-success?websiteToken=${websiteToken}&priceId=${currentSelectedPlan?.id}`,
+          },
+        });
+
+        if (confirmIntentError) {
+          throw new Error(confirmIntentError.message);
+        }
       } else {
         const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
           await checkoutService.getClientSecret({
             selectedPlan: currentSelectedPlan as RequestedPlanData,
             token,
             mobileToken,
+            websiteToken,
             customerId,
             promoCodeId: couponCodeData?.codeId,
             seatsForBusinessSubscription,
@@ -466,7 +488,7 @@ const CheckoutViewWrapper = () => {
   const handleFetchSelectedPlan = async (planId: string, currency?: string) => {
     const plan = await checkoutService.fetchPlanById(planId, currency);
     setPlan(plan);
-    const amount = mobileToken ? { amount: 0, decimalAmount: 0 } : {};
+    const amount = mobileToken || websiteToken ? { amount: 0, decimalAmount: 0 } : {};
     setSelectedPlan({ ...plan.selectedPlan, ...amount });
     if (plan.selectedPlan.minimumSeats) {
       setSeatsForBusinessSubscription(plan.selectedPlan.minimumSeats);
@@ -552,10 +574,10 @@ const CheckoutViewWrapper = () => {
           <CheckoutView
             checkoutViewVariables={state}
             userAuthComponentRef={userAuthComponentRef}
-            showCouponCode={!mobileToken}
+            showCouponCode={!mobileToken && !websiteToken}
             userInfo={userInfo}
             isUserAuthenticated={isUserAuthenticated}
-            showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
+            showHardcodedRenewal={mobileToken || websiteToken ? renewsAtPCComp : undefined}
             upsellManager={upsellManager}
             checkoutViewManager={checkoutViewManager}
           />

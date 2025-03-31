@@ -94,6 +94,7 @@ const getClientSecretForSubscriptionIntent = async ({
   priceId,
   token,
   mobileToken,
+  websiteToken,
   currency,
   promoCodeId,
   seatsForBusinessSubscription = 1,
@@ -102,17 +103,20 @@ const getClientSecretForSubscriptionIntent = async ({
   priceId: string;
   token: string;
   mobileToken: string | null;
+  websiteToken: string | null;
   currency: string;
   seatsForBusinessSubscription?: number;
   promoCodeId?: string;
 }): Promise<ClientSecretData & { subscriptionId?: string; paymentIntentId?: string }> => {
-  if (mobileToken) {
+  const trialToken = mobileToken || websiteToken;
+
+  if (trialToken) {
     const {
       type: paymentType,
       clientSecret: client_secret,
       subscriptionId,
       paymentIntentId,
-    } = await paymentService.createSubscriptionWithTrial(customerId, priceId, token, mobileToken, currency);
+    } = await paymentService.createSubscriptionWithTrial(customerId, priceId, token, trialToken, currency);
 
     return {
       clientSecretType: paymentType,
@@ -148,6 +152,7 @@ const getClientSecret = async ({
   selectedPlan,
   token,
   mobileToken,
+  websiteToken,
   customerId,
   promoCodeId,
   seatsForBusinessSubscription = 1,
@@ -155,6 +160,7 @@ const getClientSecret = async ({
   selectedPlan: RequestedPlanData;
   token: string;
   mobileToken: string | null;
+  websiteToken: string | null;
   customerId: string;
   promoCodeId?: CouponCodeData['codeId'];
   seatsForBusinessSubscription?: number;
@@ -182,6 +188,7 @@ const getClientSecret = async ({
       priceId: selectedPlan?.id,
       token,
       mobileToken,
+      websiteToken,
       currency: selectedPlan.currency,
       seatsForBusinessSubscription,
       promoCodeId,

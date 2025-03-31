@@ -189,9 +189,11 @@ const paymentService = {
     customerId: string,
     priceId: string,
     token: string,
-    mobileToken: string,
+    mobileToken?: string,
+    websiteToken?: string,
     currency?: string,
   ): Promise<CreatedSubscriptionData> {
+    const trialToken = mobileToken || websiteToken;
     try {
       const newToken = localStorageService.get('xNewToken');
 
@@ -199,7 +201,7 @@ const paymentService = {
         throw new Error('No authentication token available');
       }
       const response = await axios.post<CreatedSubscriptionData>(
-        `${PAYMENTS_API_URL}/create-subscription-with-trial?trialToken=${mobileToken}`,
+        `${PAYMENTS_API_URL}/create-subscription-with-trial?trialToken=${trialToken}`,
         {
           customerId,
           priceId,
