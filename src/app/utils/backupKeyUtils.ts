@@ -7,15 +7,36 @@ import localStorageService from 'app/core/services/local-storage.service';
  * @param translate used for the notification message
  */
 
+export interface BackupData {
+  mnemonic: string;
+  privateKey: string;
+  keys: {
+    ecc: string;
+    kyber: string;
+  };
+}
 export function handleExportBackupKey(translate) {
   const mnemonic = localStorageService.get('xMnemonic');
-  if (!mnemonic) {
+  const user = localStorageService.getUser();
+
+  if (!mnemonic || !user) {
     notificationsService.show({
       text: translate('views.account.tabs.security.backupKey.error'),
       type: ToastType.Error,
     });
   } else {
-    saveAs(new Blob([mnemonic], { type: 'text/plain' }), 'INTERNXT-BACKUP-KEY.txt');
+    const backupData: BackupData = {
+      mnemonic,
+      privateKey: user.privateKey,
+      keys: {
+        ecc: user.keys?.ecc?.privateKey || user.privateKey,
+        kyber: user.keys?.kyber?.privateKey || '',
+      },
+    };
+
+    const backupContent = JSON.stringify(backupData, null, 2);
+    saveAs(new Blob([backupContent], { type: 'text/plain' }), 'INTERNXT-BACKUP-KEY.txt');
+
     notificationsService.show({
       text: translate('views.account.tabs.security.backupKey.success'),
       type: ToastType.Success,
