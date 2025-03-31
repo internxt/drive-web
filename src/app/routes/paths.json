@@ -130,6 +130,13 @@
       "auth": true
     },
     {
+      "id": "pcComponentes-success",
+      "layout": "empty",
+      "path": "/checkout/pcComponentes-success",
+      "exact": false,
+      "auth": true
+    },
+    {
       "id": "checkout-cancel",
       "layout": "empty",
       "path": "/checkout/cancel",
