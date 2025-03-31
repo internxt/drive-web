@@ -1,4 +1,4 @@
-import { CheckCircle, Clover, X } from '@phosphor-icons/react';
+import { CheckCircle, CloudCheck, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import styles from 'app/banners/FeaturesBanner.module.scss';
 interface FeaturesBannerProps {
@@ -19,9 +19,10 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
       fixed bottom-0 left-0 right-0 top-0 z-50 h-screen bg-black bg-opacity-50 px-10 lg:px-0`}
     >
       <div
-        className={`${styles['linear-gradient']} bg-primary fixed left-1/2 top-1/2 flex h-max -translate-x-[50%] -translate-y-[50%] flex-col
+        className={`${styles['linear-gradient']} bg-primary fixed  left-1/2 top-1/2 flex h-max -translate-x-[50%] -translate-y-[50%] 
+        flex-col
         overflow-hidden
-        rounded-2xl px-10`}
+        rounded-2xl`}
       >
         <button
           id="close-banner"
@@ -31,8 +32,9 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
         >
           <X size={32} />
         </button>
-        <div className="flex max-w-[800px] flex-col items-center justify-between py-16 md:flex-row md:pb-20 lg:w-screen">
-          <div className="flex h-max w-full flex-col items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
+
+        <div className="flex max-w-[800px] px-10 flex-col items-center justify-between py-8 md:flex-row md:pb-10 lg:w-screen">
+          <div className="flex flex-1 w-full flex-col items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
             <div className="flex rounded-lg border-2 border-green-dark bg-green px-3 py-1.5">
               <p className="text-2xl font-bold text-white">{translate('featuresBanner.label')}</p>
             </div>
@@ -46,7 +48,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
               >
                 {translate('featuresBanner.cta')}
               </button>
-              <div className="flex flex-row items-center space-x-3 pt-2">
+              <div className="flex flex-row items-center space-x-3 pt-8">
                 <CheckCircle size={24} className="text-green" weight="fill" />
                 <p className="whitespace-nowrap font-medium text-white lg:text-lg">
                   {translate('featuresBanner.guarantee')}
@@ -55,13 +57,13 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
               <p className="text-sm font-medium text-white">{translate('featuresBanner.lastCta')}</p>
             </div>
           </div>
-          <div className="hidden w-full items-center lg:flex">
+          <div className="hidden w-full flex-1 items-center h-[360px]  lg:flex">
             <div className="flex flex-col">
               <div className="flex flex-col space-y-8">
                 {features.map((card, index) => (
                   <div className="flex flex-row space-x-1 font-bold " key={index}>
                     <div className="flex">
-                      <Clover size={32} className="mr-4 text-green" weight="fill" />
+                      <CloudCheck size={32} className="mr-4 text-green" weight="fill" />
                       <p className="text-xl font-semibold text-white">{card}</p>
                     </div>
                   </div>
@@ -69,6 +71,10 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
               </div>
             </div>
           </div>
+        </div>
+        <div className="bg-green py-4 w-full flex flex-row justify-center items-center text-lg font-medium text-white">
+          <p className="font-bold">{translate('featuresBanner.specialOfferLabel')}</p>
+          <p className="ml-2">{translate('featuresBanner.specialOfferGift')}</p>
         </div>
       </div>
     </div>
