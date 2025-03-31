@@ -13,6 +13,7 @@ import { userActions } from 'app/store/slices/user';
 import * as pgpService from 'app/crypto/services/pgp.service';
 import { validateMnemonic } from 'bip39';
 import { BackupData } from 'app/utils/backupKeyUtils';
+import { aes } from '@internxt/lib';
 
 const originalEnv = process.env.REACT_APP_CRYPTO_SECRET;
 const originalSalt = process.env.REACT_APP_MAGIC_SALT;
@@ -718,6 +719,8 @@ describe('updateCredentialsWithToken', () => {
 
     (validateMnemonic as any).mockReturnValue(true);
 
+    vi.spyOn(aes, 'encrypt').mockReturnValue('mock-encrypted-data');
+
     const mockChangePasswordWithLink = vi.fn().mockResolvedValue({ success: true });
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: vi.fn().mockReturnValue({
@@ -735,7 +738,8 @@ describe('updateCredentialsWithToken', () => {
     expect(encryptedSalt).toBeDefined();
     expect(encryptedMnemonic).toBeDefined();
     expect(keys).toBeDefined();
-    expect(keys.ecc).toBe('test-private-key');
+
+    expect(keys.ecc).toBe('mock-encrypted-data');
     expect(keys.kyber).toBeUndefined();
   });
 
@@ -755,6 +759,8 @@ describe('updateCredentialsWithToken', () => {
 
     (validateMnemonic as any).mockReturnValue(true);
 
+    vi.spyOn(aes, 'encrypt').mockReturnValue('mock-encrypted-data');
+
     const mockChangePasswordWithLink = vi.fn().mockResolvedValue({ success: true });
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: vi.fn().mockReturnValue({
@@ -772,8 +778,9 @@ describe('updateCredentialsWithToken', () => {
     expect(encryptedSalt).toBeDefined();
     expect(encryptedMnemonic).toBeDefined();
     expect(keys).toBeDefined();
-    expect(keys.ecc).toBe('test-ecc-private-key');
-    expect(keys.kyber).toBe('test-kyber-private-key');
+
+    expect(keys.ecc).toBe('mock-encrypted-data');
+    expect(keys.kyber).toBe('mock-encrypted-data');
   });
 
   it('should throw an error when mnemonic is invalid', async () => {
@@ -794,7 +801,6 @@ describe('updateCredentialsWithToken', () => {
     const mockMnemonic =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
 
-    // Mock validateMnemonic to return true
     (validateMnemonic as any).mockReturnValue(true);
 
     const mockError = new Error('API error');
