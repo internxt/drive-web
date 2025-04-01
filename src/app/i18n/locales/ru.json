@@ -230,6 +230,7 @@
       "saving": "Вы экономите {{percent}}%",
       "planDetails": {
         "title": "Детали плана:",
+         "commingSoon":"Скоро",
         "features": {
           "individuals": {
             "1TB": [

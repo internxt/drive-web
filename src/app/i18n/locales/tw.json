@@ -247,6 +247,7 @@
       "saving": "您節省了 {{percent}}%",
       "planDetails": {
         "title": "計劃詳情：",
+         "commingSoon":"即將推出",
         "features": {
           "individuals": {
             "1TB": [

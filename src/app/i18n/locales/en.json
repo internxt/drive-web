@@ -248,6 +248,7 @@
       "saving": "You're saving {{percent}}%",
       "planDetails": {
         "title": "Plan details:",
+        "commingSoon":"Coming soon",
         "features": {
           "individuals": {
             "1TB": [

@@ -212,10 +212,15 @@ export const CheckoutProductCard = ({
           <div className="flex flex-col space-y-5">
             <p className="font-medium text-gray-100">{translate('checkout.productCard.planDetails.title')}</p>
             <div className="flex flex-col space-y-4">
-              {getFeaturesForCheckout().map((feature) => (
+              {getFeaturesForCheckout().map((feature, index) => (
                 <div key={feature} className="flex flex-row items-center space-x-2">
                   <Check className="text-green-dark" size={16} weight="bold" />
                   <p className="text-gray-100">{feature}</p>
+                  {index > (isBusiness ? 9 : 8) ? (
+                    <span className="rounded-md bg-orange/10 px-1 text-center text-orange">
+                      {translate('checkout.productCard.planDetails.commingSoon')}
+                    </span>
+                  ) : null}
                 </div>
               ))}
             </div>

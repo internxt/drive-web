@@ -247,6 +247,7 @@
       "saving": "您节省了 {{percent}}%",
       "planDetails": {
         "title": "计划详情：",
+         "commingSoon":"即将推出",
         "features": {
           "1TB": [
             "1TB 零知识加密存储",
