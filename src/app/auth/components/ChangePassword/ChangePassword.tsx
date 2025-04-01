@@ -64,17 +64,17 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
 
   const onUploadBackupKeyInputChanged = async (e) => {
     const file = e.target.files[0];
-    const backupKeyContent = await file.text();
+    const uploadedBackupKeyContent = await file.text();
 
     try {
-      const backupData = JSON.parse(backupKeyContent);
+      const backupData = JSON.parse(uploadedBackupKeyContent);
       if (backupData.mnemonic && validateMnemonic(backupData.mnemonic)) {
-        setBackupKeyContent(backupKeyContent);
+        setBackupKeyContent(uploadedBackupKeyContent);
         return;
       }
     } catch (err) {
-      if (validateMnemonic(backupKeyContent)) {
-        setBackupKeyContent(backupKeyContent);
+      if (validateMnemonic(uploadedBackupKeyContent)) {
+        setBackupKeyContent(uploadedBackupKeyContent);
         return;
       }
     }
