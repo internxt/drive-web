@@ -228,25 +228,75 @@
       "planDetails": {
         "title": "Detalles del plan:",
         "features": {
-          "individual": [
-            "{{spaceToUpgrade}} de almacenamiento encriptado",
-            "Compartir archivos y carpetas encriptados",
-            "Compartir archivos con protección por contraseña",
-            "Acceda a sus archivos desde cualquier dispositivo",
-            "Acceso a todos nuestros servicios",
-            "Autenticación de dos factores (2FA)",
-            "Soporte al cliente premium",
-            "Garantía de devolución de dinero de 30 días"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} almacenamiento/usuario",
-            "Compartir archivos y carpetas cifrados",
-            "Crear y gestionar usuarios y equipos",
-            "Desde {{minimumSeats}} usuarios y hasta {{maximumSeats}}",
-            "Cumple con el GDPR",
-            "Gestionar facturación y pagos de la cuenta",
-            "Soporte al cliente premium"
-          ]
+          "individuals": {
+            "1TB": [
+              "1TB de almacenamiento",
+              "Criptografía postcuántica",
+              "VPN de alta velocidad ilimitado (FR)",
+              "Antivirus",
+              "Copias de seguridad",
+              "Comparte archivos protegidos con contraseña",
+              "Cumple con RGPD",
+              "Autenticación de dos factores (2FA)",
+              "CLI, WebDav & Rclone"
+            ],
+            "3TB": [
+              "3TB de almacenamiento",
+              "Criptografía postcuántica",
+              "VPN de alta velocidad ilimitado (FR, DE, PL)",
+              "Antivirus",
+              "Copias de seguridad",
+              "Comparte archivos protegidos con contraseña",
+              "Cumple con RGPD",
+              "Autenticación de dos factores (2FA)",
+              "CLI, WebDav & Rclone",
+              "Meet (3 participantes)",
+              "Mail (3 correos)"
+            ],
+            "5TB": [
+              "5TB de almacenamiento",
+              "Criptografía postcuántica",
+              "VPN de alta velocidad ilimitado (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Copias de seguridad",
+              "Comparte archivos protegidos con contraseña",
+              "Cumple con RGPD",
+              "Autenticación de dos factores (2FA)",
+              "CLI, WebDav & Rclone",
+              "Meet (5 participantes)",
+              "Mail (5 correos)"
+            ]
+          },
+          "business": {
+            "1TB": [
+              "1TB de almacenamiento",
+              "Cifrado postcuántico y conocimiento cero",
+              "VPN de alta velocidad ilimitado (FR, DE, PL)",
+              "Antivirus",
+              "Copias de seguridad",
+              "Comparte archivos protegidos con contraseña",
+              "Cumple con RGPD",
+              "Autenticación de dos factores (2FA)",
+              "CLI/WebDav/Rclone",
+              "Gestiona la facturación y los pagos de la cuenta",
+              "Reuniones de hasta 10 usuarios",
+              "1 email personalizado por usuario "
+            ],
+            "2TB": [
+              "2TB de almacenamiento",
+              "Cifrado postcuántico y conocimiento cero",
+              "VPN de alta velocidad ilimitado (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Copias de seguridad",
+              "Comparte archivos protegidos con contraseña",
+              "Cumple con RGPD",
+              "Autenticación de dos factores (2FA)",
+              "CLI/WebDav/Rclone",
+              "Gestiona la facturación y los pagos de la cuenta",
+              "Reuniones de hasta 100 usuarios ",
+              "2 emails personalizados por usuario "
+            ]
+          }
         }
       },
       "total": "Total",

@@ -249,25 +249,75 @@
       "planDetails": {
         "title": "Plan details:",
         "features": {
-          "individual": [
-            "{{spaceToUpgrade}} encrypted storage",
-            "Encrypted file and folder sharing",
-            "Password-protected file sharing",
-            "Access your files from any device",
-            "Get access to all our services",
-            "Two-factor authentication (2FA)",
-            "Premium customer support",
-            "30-day money-back guarantee"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} storage/user",
-            "Encrypted file and folder sharing",
-            "Create and manage users & teams",
-            "Starting at {{minimumSeats}} users and up to {{maximumSeats}}",
-            "GDPR compliant",
-            "Manage account billing & payments",
-            "Premium customer support"
-          ]
+          "individuals": {
+            "1TB": [
+              "1TB zero-knowledge encrypted storage",
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support"
+            ],
+            "3TB": [
+              "3TB zero-knowledge encrypted storage",
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR, DE, PL)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support",
+              "Meet (3 participants)",
+              "Mail (3 addresses)"
+            ],
+            "5TB": [
+              "5TB zero-knowledge encrypted storage",
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support",
+              "Meet (5 participants)",
+              "Mail (5 addresses)"
+            ]
+          },
+          "business":{
+            "1TB": [
+              "1TB storage/user",
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR, DE, PL)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support",
+              "Manage account billing & payments",
+              "Meet (up to 10 participants)",
+              "1 custom email address/user"
+            ],
+            "2TB": [
+              "2TB storage/user",
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support",
+              "Manage account billing & payments",
+              "Meet (up to 100 participants)",
+              "2 custom email address/user"
+            ]
+          }
         }
       },
       "total": "Total ",

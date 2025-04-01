@@ -131,6 +131,28 @@ export const CheckoutProductCard = ({
     return capacityToFeaturePath[bytes] || PLAN_TYPES.FREE;
   };
 
+  const getFeaturesForCheckout = () => {
+    const PLAN_TYPES = {
+      ESSENTIAL: 'features.individuals.1TB',
+      STANDARD: 'features.business.1TB',
+      PRO: 'features.business.2TB',
+      PREMIUM: 'features.individuals.3TB',
+      ULTIMATE: 'features.individuals.5TB',
+    };
+
+    if (bytes === '1TB') {
+      return isBusiness ? PLAN_TYPES.STANDARD : PLAN_TYPES.ESSENTIAL;
+    }
+
+    const capacityToFeaturePath = {
+      '2TB': PLAN_TYPES.PRO,
+      '3TB': PLAN_TYPES.PREMIUM,
+      '5TB': PLAN_TYPES.ULTIMATE,
+    };
+
+    return capacityToFeaturePath[bytes];
+  };
+
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
       <div className="flex w-full flex-row items-center justify-between space-x-4">
@@ -190,7 +212,7 @@ export const CheckoutProductCard = ({
           <div className="flex flex-col space-y-5">
             <p className="font-medium text-gray-100">{translate('checkout.productCard.planDetails.title')}</p>
             <div className="flex flex-col space-y-4">
-              {textContent.features.map((feature) => (
+              {getFeaturesForCheckout().map((feature) => (
                 <div key={feature} className="flex flex-row items-center space-x-2">
                   <Check className="text-green-dark" size={16} weight="bold" />
                   <p className="text-gray-100">{feature}</p>

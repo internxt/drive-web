@@ -231,25 +231,75 @@
       "planDetails": {
         "title": "Détails du plan :",
         "features": {
-          "individual": [
-            "{{spaceToUpgrade}} de stockage chiffré",
-            "Partage de fichiers et dossiers chiffrés",
-            "Partage de fichiers protégé par mot de passe",
-            "Accédez à vos fichiers depuis n'importe quel appareil",
-            "Accédez à tous nos services",
-            "Authentification à deux facteurs (2FA)",
-            "Support client premium",
-            "Garantie de remboursement de 30 jours"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} stockage/utilisateur",
-            "Partage de fichiers et de dossiers chiffrés",
-            "Créer et gérer des utilisateurs et des équipes",
-            "À partir de {{minimumSeats}} utilisateurs et jusqu'à {{maximumSeats}}",
-            "Conforme au GDPR",
-            "Gérer la facturation et les paiements du compte",
-            "Support client premium"
-          ]
+          "individuals": {
+            "1TB": [
+              "Stockage chiffré 1TB à connaissance zéro",
+              "Chiffrement post-quantique",
+              "VPN ultra rapide illimité (FR)",
+              "Antivirus",
+              "Sauvegardez vos fichiers",
+              "Partage de fichiers protégé par mot de passe",
+              "Conformité RGPD",
+              "Authentification à deux facteurs (2FA)",
+              "Support CLI, WebDav & Rclone"
+            ],
+            "3TB": [
+              "Stockage chiffré 3TB à connaissance zéro",
+              "Chiffrement post-quantique",
+              "VPN ultra rapide illimité (FR, DE, PL)",
+              "Antivirus",
+              "Sauvegardez vos fichiers",
+              "Partage de fichiers protégé par mot de passe",
+              "Conformité RGPD",
+              "Authentification à deux facteurs (2FA)",
+              "Support CLI, WebDav & Rclone",
+              "Meet (3 participants)",
+              "Mail (3 adresses)"
+            ],
+            "5TB": [
+              "Stockage chiffré 5TB à connaissance zéro",
+              "Chiffrement post-quantique",
+              "VPN ultra rapide illimité (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Sauvegardez vos fichiers",
+              "Partage de fichiers protégé par mot de passe",
+              "Conformité RGPD",
+              "Authentification à deux facteurs (2FA)",
+              "Support CLI, WebDav & Rclone",
+              "Meet (5 participants)",
+              "Mail (5 adresses)"
+            ]
+          },
+          "business": {
+            "1TB": [
+              "1TB de stockage/utilisateur",
+              "Chiffrement post-quantique",
+              "VPN ultra rapide et illimité (FR, DE, PL)",
+              "Antivirus",
+              "Sauvegarde de vos fichiers",
+              "Partage de fichiers protégé par mot de passe",
+              "Conformité au RGPD",
+              "Authentification à deux facteurs (2FA)",
+              "Support CLI, WebDav & Rclone",
+              "Gérer la facturation et les paiements du compte",
+              "Réunions jusqu'à 10 utilisateurs",
+              "1 adresse e-mail personnalisée/utiliateur"
+            ],
+            "2TB": [
+              "2TB de stockage/utilisateur",
+              "Chiffrement post-quantique",
+              "VPN ultra rapide et illimité (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Sauvegarde de vos fichiers",
+              "Partage de fichiers protégé par mot de passe",
+              "Conformité au RGPD",
+              "Authentification à deux facteurs (2FA)",
+              "Support CLI, WebDav & Rclone",
+              "Gérer la facturation et les paiements du compte",
+              "Réunions jusqu'à 100 utilisateurs ",
+              "2 adresse e-mail personnalisée/utilisateur"
+            ]
+          }
         }
       },
       "total": "Total ",

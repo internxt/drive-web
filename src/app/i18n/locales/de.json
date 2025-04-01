@@ -225,25 +225,75 @@
       "planDetails": {
         "title": "Plandetails:",
         "features": {
-          "individual": [
-            "{{spaceToUpgrade}} verschlüsselter Speicher",
-            "Verschlüsseltes Teilen von Dateien und Ordnern",
-            "Passwortgeschütztes Teilen von Dateien",
-            "Zugriff auf Ihre Dateien von jedem Gerät",
-            "Zugang zu allen unseren Diensten",
-            "Zwei-Faktor-Authentifizierung (2FA)",
-            "Premium-Kundensupport",
-            "30-Tage-Geld-zurück-Garantie"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} Speicher/Benutzer",
-            "Verschlüsseltes Teilen von Dateien und Ordnern",
-            "Benutzer und Teams erstellen und verwalten",
-            "Ab {{minimumSeats}} Benutzer bis zu {{maximumSeats}}",
-            "GDPR-konform",
-            "Kontofakturierung und -zahlungen verwalten",
-            "Premium-Kundensupport"
-          ]
+          "individuals": {
+            "1TB": [
+              "1TB Zero-Knowledge-verschlüsselter Speicher",
+              "Post-Quanten-Verschlüsselung",
+              "Ultraschnelles unbegrenztes VPN (FR)",
+              "Antivirus",
+              "Sichern Sie Ihre Dateien",
+              "Passwortgeschütztes Datei-Sharing",
+              "DSGVO-Konformität",
+              "Zwei-Faktor-Authentifizierung (2FA)",
+              "CLI-, WebDav- & Rclone-Unterstützung"
+            ],
+            "3TB": [
+              "3TB Zero-Knowledge-verschlüsselter Speicher",
+              "Post-Quanten-Verschlüsselung",
+              "Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
+              "Antivirus",
+              "Sichern Sie Ihre Dateien",
+              "Passwortgeschütztes Datei-Sharing",
+              "DSGVO-Konformität",
+              "Zwei-Faktor-Authentifizierung (2FA)",
+              "CLI-, WebDav- & Rclone-Unterstützung",
+              "Meet (3 Teilnehmer)",
+              "Mail (3 Adressen)"
+            ],
+            "5TB": [
+              "5TB Zero-Knowledge-verschlüsselter Speicher",
+              "Post-Quanten-Verschlüsselung",
+              "Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Sichern Sie Ihre Dateien",
+              "Passwortgeschütztes Datei-Sharing",
+              "DSGVO-Konformität",
+              "Zwei-Faktor-Authentifizierung (2FA)",
+              "CLI-, WebDav- & Rclone-Unterstützung",
+              "Meet (5 Teilnehmer)",
+              "Mail (5 Adressen)"
+            ]
+          },
+          "business": {
+            "1TB": [
+              "1TB Speicher pro Benutzer",
+              "Post-Quanten-Verschlüsselung",
+              "Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
+              "Antivirus",
+              "Sichern Sie Ihre Dateien",
+              "Passwortgeschütztes Datei-Sharing",
+              "DSGVO-Konformität",
+              "Zwei-Faktor-Authentifizierung (2FA)",
+              "CLI-, WebDav- & Rclone-Unterstützung",
+              "Kontoverwaltung für Abrechnung & Zahlungen",
+              "Meetings mit bis zu 100 Benutzern",
+              "1 benutzerdefinierte E-Mail-Adresse pro Benutzer"
+            ],
+            "2TB": [
+              "2TB Speicher pro Benutzer",
+              "Post-Quanten-Verschlüsselung",
+              "Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Sichern Sie Ihre Dateien",
+              "Passwortgeschütztes Datei-Sharing",
+              "DSGVO-Konformität",
+              "Zwei-Faktor-Authentifizierung (2FA)",
+              "CLI-, WebDav- & Rclone-Unterstützung",
+              "Kontoverwaltung für Abrechnung & Zahlungen",
+              "Meetings mit bis zu 100 Benutzern ",
+              "2 benutzerdefinierte E-Mail-Adresse pro Benutzer"
+            ]
+          }
         }
       },
       "total": "Gesamt ",

@@ -248,25 +248,75 @@
       "planDetails": {
         "title": "Dettagli del piano:",
         "features": {
-          "individual": [
-            "{{spaceToUpgrade}} di spazio di archiviazione crittografato",
-            "Condivisione di file e cartelle crittografati",
-            "Condivisione di file protetta da password",
-            "Accedi ai tuoi file da qualsiasi dispositivo",
-            "Accesso a tutti i nostri servizi",
-            "Autenticazione a due fattori (2FA)",
-            "Assistenza clienti premium",
-            "Garanzia di rimborso di 30 giorni"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} spazio di archiviazione/utente",
-            "Condivisione di file e cartelle crittografata",
-            "Creare e gestire utenti e team",
-            "A partire da {{minimumSeats}} utenti e fino a {{maximumSeats}}",
-            "Conforme al GDPR",
-            "Gestire la fatturazione e i pagamenti dell'account",
-            "Supporto clienti premium"
-          ]
+          "individuals": {
+            "1TB": [
+              "1TB di archiviazione crittografata a conoscenza zero",
+              "Crittografia post-quantistica",
+              "VPN ultraveloce illimitata (FR)",
+              "Antivirus",
+              "Esegui il backup dei tuoi file",
+              "Condivisione di file protetta da password",
+              "Conformità GDPR",
+              "Autenticazione a due fattori (2FA)",
+              "Supporto CLI, WebDav e Rclone"
+            ],
+            "3TB": [
+              "3TB di archiviazione crittografata a conoscenza zero",
+              "Crittografia post-quantistica",
+              "VPN ultraveloce illimitata (FR, DE, PL)",
+              "Antivirus",
+              "Esegui il backup dei tuoi file",
+              "Condivisione di file protetta da password",
+              "Conformità GDPR",
+              "Autenticazione a due fattori (2FA)",
+              "Supporto CLI, WebDav e Rclone",
+              "Meet (3 partecipanti)",
+              "Mail (3 indirizzi)"
+            ],
+            "5TB": [
+              "5TB di archiviazione crittografata a conoscenza zero",
+              "Crittografia post-quantistica",
+              "VPN ultraveloce illimitata (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Esegui il backup dei tuoi file",
+              "Condivisione di file protetta da password",
+              "Conformità GDPR",
+              "Autenticazione a due fattori (2FA)",
+              "Supporto CLI, WebDav e Rclone",
+              "Meet (5 partecipanti)",
+              "Mail (5 indirizzi)"
+            ]  
+          },
+          "business": {
+            "1TB": [
+              "1TB di archiviazione/utente",
+              "Crittografia post-quantistica",
+              "VPN ultra veloce e illimitata (FR, DE, PL)",
+              "Antivirus",
+              "Backup dei tuoi file",
+              "Condivisione di file protetta da password",
+              "Conformità GDPR",
+              "Autenticazione a due fattori (2FA)",
+              "Supporto CLI, WebDav & Rclone",
+              "Gestisci fatturazione e pagamenti dell'account",
+              "Riunioni fino a 10 utenti ",
+              "1 indirizzo email personalizzato/utente"
+            ],
+            "2TB": [
+              "2TB di archiviazione/utente",
+              "Crittografia post-quantistica",
+              "VPN ultra veloce e illimitata (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Backup dei tuoi file",
+              "Condivisione di file protetta da password",
+              "Conformità GDPR",
+              "Autenticazione a due fattori (2FA)",
+              "Supporto CLI, WebDav & Rclone",
+              "Gestisci fatturazione e pagamenti dell'account",
+              "Riunioni fino a 100 utenti",
+              "2 indirizzo email personalizzato/utente"
+            ]
+          }
         }
       },
       "total": "Totale ",
