@@ -55,13 +55,19 @@ const Appearance = () => {
 
   // CHECK IF THIS WORKS BEFORE MERGE
   useEffect(() => {
-    const updateAppearance = (theme, img) => {
-      setAppearances((prevAppearances) => {
-        if (!prevAppearances.some((appearance) => appearance.theme === theme && appearance.img === img)) {
-          return [...prevAppearances, { theme, img }];
-        }
+    function isAppearanceExist(prevAppearances, theme, img) {
+      return prevAppearances.some((appearance) => appearance.theme === theme && appearance.img === img);
+    }
+
+    function addAppearanceIfUnique(prevAppearances, theme, img) {
+      if (isAppearanceExist(prevAppearances, theme, img)) {
         return prevAppearances;
-      });
+      }
+      return [...prevAppearances, { theme, img }];
+    }
+
+    const updateAppearance = (theme, img) => {
+      setAppearances((prevAppearances) => addAppearanceIfUnique(prevAppearances, theme, img));
     };
 
     isStarWarsThemeAvailable(plan)
