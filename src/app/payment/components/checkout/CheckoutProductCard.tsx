@@ -133,11 +133,11 @@ export const CheckoutProductCard = ({
 
   const getFeaturesForCheckout = () => {
     const PLAN_TYPES = {
-      ESSENTIAL: 'features.individuals.1TB',
-      STANDARD: 'features.business.1TB',
-      PRO: 'features.business.2TB',
-      PREMIUM: 'features.individuals.3TB',
-      ULTIMATE: 'features.individuals.5TB',
+      ESSENTIAL: 'checkout.productCard.planDetailsfeatures.individuals.1TB',
+      STANDARD: 'checkout.productCard.planDetailsfeatures.features.business.1TB',
+      PRO: 'checkout.productCard.planDetailsfeatures.features.business.2TB',
+      PREMIUM: 'checkout.productCard.planDetailsfeatures.features.individuals.3TB',
+      ULTIMATE: 'checkout.productCard.planDetailsfeatures.features.individuals.5TB',
     };
 
     if (bytes === '1TB') {
