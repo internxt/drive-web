@@ -105,6 +105,9 @@ export const CheckoutProductCard = ({
       ? ((couponCodeData?.amountOff / selectedPlan.amount) * 100).toFixed(2)
       : undefined;
 
+  const COMING_SOON_FEATURE_KEYS = ['feature10', 'feature11'];
+  const INDIVIDUAL_PLANS = ['ESSENTIAL', 'PREMIUM', 'ULTIMATE'];
+
   const getPlanTypeLabels = () => ({
     FREE: translate('preferences.account.plans.types.free'),
     ESSENTIAL: translate('preferences.account.plans.types.essential'),
@@ -150,7 +153,15 @@ export const CheckoutProductCard = ({
     return getPlanOrFeatureByBytes(featureMap);
   };
 
-  const showComingSoonTag = ['3TB', '5TB'].includes(bytes);
+  const features = getFeaturesForCheckout();
+  const planLabel = getPlanFeaturePath();
+  const isIndividual = INDIVIDUAL_PLANS.includes(planLabel);
+  const tierMap = {
+    ESSENTIAL: '1TB',
+    PREMIUM: '3TB',
+    ULTIMATE: '5TB',
+  };
+  const tier = tierMap[planLabel];
 
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
@@ -211,17 +222,22 @@ export const CheckoutProductCard = ({
           <div className="flex flex-col space-y-5">
             <p className="font-medium text-gray-100">{translate('checkout.productCard.planDetails.title')}</p>
             <div className="flex flex-col space-y-4">
-              {getFeaturesForCheckout().map((feature) => (
-                <div key={feature} className="flex flex-row items-center space-x-2">
-                  <Check className="text-green-dark" size={16} weight="bold" />
-                  <p className="text-gray-100">{feature}</p>
-                  {showComingSoonTag && (
-                    <span className="rounded-md bg-orange/10 px-1 text-center text-orange">
-                      {translate('checkout.productCard.planDetails.comingSoon')}
-                    </span>
-                  )}
-                </div>
-              ))}
+              {Object.keys(features).map((key) => {
+                const shouldShowComingSoon = isIndividual && COMING_SOON_FEATURE_KEYS.includes(key);
+                const featureText = translate(`checkout.productCard.planDetails.features.individuals.${tier}.${key}`);
+
+                return (
+                  <div key={key} className="flex flex-row items-center space-x-2">
+                    <Check className="text-green-dark" size={16} weight="bold" />
+                    <p className="text-gray-100">{featureText}</p>
+                    {shouldShowComingSoon && (
+                      <span className="rounded-md bg-orange/10 px-1 text-center text-orange">
+                        {translate('checkout.productCard.planDetails.comingSoon')}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
           <Separator />
