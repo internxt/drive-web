@@ -126,6 +126,7 @@ export enum AppView {
   Deactivation = 'deactivation',
   CheckoutSuccess = 'checkout-success',
   PcCloudSuccess = 'pcCloud-success',
+  PcComponentesSuccess = 'pcComponentes-sucess',
   CheckoutCancel = 'checkout-cancel',
   Checkout = 'checkout',
   CheckoutSession = 'checkout-session',
