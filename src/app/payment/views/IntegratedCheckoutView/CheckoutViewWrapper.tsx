@@ -248,7 +248,7 @@ const CheckoutViewWrapper = () => {
           navigationService.push(AppView.Signup);
         }
       });
-  }, [checkoutTheme, mobileToken || websiteToken]);
+  }, [checkoutTheme, mobileToken, websiteToken]);
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -387,36 +387,26 @@ const CheckoutViewWrapper = () => {
         companyVatId,
       );
 
-      if (mobileToken) {
-        const setupIntent = await checkoutService.checkoutSetupIntent(customerId);
-        localStorageService.set('customerId', customerId);
-        localStorageService.set('token', token);
-        localStorageService.set('priceId', currentSelectedPlan?.id as string);
-        localStorageService.set('customerToken', token);
-        localStorageService.set('mobileToken', mobileToken);
-        const { error: confirmIntentError } = await stripeSDK.confirmSetup({
-          elements,
-          clientSecret: setupIntent.clientSecret,
-          confirmParams: {
-            return_url: `${RETURN_URL_DOMAIN}/checkout/pcCloud-success?mobileToken=${mobileToken}&priceId=${currentSelectedPlan?.id}`,
-          },
-        });
+      const isMobileFlow = !!mobileToken;
+      const isWebsiteFlow = !!websiteToken;
 
-        if (confirmIntentError) {
-          throw new Error(confirmIntentError.message);
-        }
-      } else if (websiteToken) {
+      if (isMobileFlow || isWebsiteFlow) {
         const setupIntent = await checkoutService.checkoutSetupIntent(customerId);
+
         localStorageService.set('customerId', customerId);
         localStorageService.set('token', token);
         localStorageService.set('priceId', currentSelectedPlan?.id as string);
         localStorageService.set('customerToken', token);
-        localStorageService.set('websiteToken', websiteToken);
+
+        const tokenKey = isMobileFlow ? 'mobileToken' : 'websiteToken';
+        const tokenValue = isMobileFlow ? mobileToken : websiteToken;
+        const successPath = isMobileFlow ? 'pcCloud-success' : 'pcComponentes-success';
+
         const { error: confirmIntentError } = await stripeSDK.confirmSetup({
           elements,
           clientSecret: setupIntent.clientSecret,
           confirmParams: {
-            return_url: `${RETURN_URL_DOMAIN}/checkout/pcComponentes-success?websiteToken=${websiteToken}&priceId=${currentSelectedPlan?.id}`,
+            return_url: `${RETURN_URL_DOMAIN}/checkout/${successPath}?${tokenKey}=${tokenValue}&priceId=${currentSelectedPlan?.id}`,
           },
         });
 
