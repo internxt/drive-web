@@ -127,7 +127,7 @@ export const CheckoutProductCard = ({
       '5TB': 'ULTIMATE',
     };
 
-    return map[capacityToKey[bytes]] || map.FREE;
+    return map[capacityToKey[bytes]] ?? map.FREE;
   };
 
   const getPlanTitlePath = () => {
@@ -149,7 +149,7 @@ export const CheckoutProductCard = ({
 
   const featuresList = getPlanOrFeatureByBytes(getCheckoutFeaturesPaths());
   const getFeatureLabel = (key: string) =>
-    translate(`checkout.productCard.planDetails.features.${isBusiness ? 'business' : 'individuals'}.${bytes}.${key}`);
+    translate(`checkout.productCard.planDetails.features.individuals.${bytes}.${key}`);
 
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
