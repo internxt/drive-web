@@ -106,7 +106,6 @@ export const CheckoutProductCard = ({
       : undefined;
 
   const COMING_SOON_FEATURE_KEYS = ['feature10', 'feature11'];
-  const INDIVIDUAL_PLANS = ['ESSENTIAL', 'PREMIUM', 'ULTIMATE'];
 
   const getPlanTypeLabels = () => ({
     FREE: translate('preferences.account.plans.types.free'),
@@ -115,14 +114,6 @@ export const CheckoutProductCard = ({
     PRO: translate('preferences.account.plans.types.pro'),
     PREMIUM: translate('preferences.account.plans.types.premium'),
     ULTIMATE: translate('preferences.account.plans.types.ultimate'),
-  });
-
-  const getCheckoutFeatures = () => ({
-    ESSENTIAL: translate('checkout.productCard.planDetails.features.individuals.1TB', { returnObjects: true }),
-    STANDARD: translate('checkout.productCard.planDetails.features.business.1TB', { returnObjects: true }),
-    PRO: translate('checkout.productCard.planDetails.features.business.2TB', { returnObjects: true }),
-    PREMIUM: translate('checkout.productCard.planDetails.features.individuals.3TB', { returnObjects: true }),
-    ULTIMATE: translate('checkout.productCard.planDetails.features.individuals.5TB', { returnObjects: true }),
   });
 
   const getPlanOrFeatureByBytes = (map) => {
@@ -139,7 +130,7 @@ export const CheckoutProductCard = ({
     return map[capacityToKey[bytes]] || map.FREE;
   };
 
-  const getPlanFeaturePath = () => {
+  const getPlanTitlePath = () => {
     if (couponCodeData?.codeName === 'PCCOMPONENTES') {
       return bytes;
     }
@@ -148,14 +139,17 @@ export const CheckoutProductCard = ({
     return getPlanOrFeatureByBytes(planLabels);
   };
 
-  const getFeaturesForCheckout = () => {
-    const featureMap = getCheckoutFeatures();
-    return getPlanOrFeatureByBytes(featureMap);
-  };
+  const getCheckoutFeaturesPaths = () => ({
+    ESSENTIAL: translate('checkout.productCard.planDetails.features.individuals.1TB', { returnObjects: true }),
+    STANDARD: translate('checkout.productCard.planDetails.features.business.1TB', { returnObjects: true }),
+    PRO: translate('checkout.productCard.planDetails.features.business.2TB', { returnObjects: true }),
+    PREMIUM: translate('checkout.productCard.planDetails.features.individuals.3TB', { returnObjects: true }),
+    ULTIMATE: translate('checkout.productCard.planDetails.features.individuals.5TB', { returnObjects: true }),
+  });
 
-  const features = getFeaturesForCheckout();
-  const planLabel = getPlanFeaturePath();
-  const isIndividual = INDIVIDUAL_PLANS.includes(planLabel);
+  const featuresList = getPlanOrFeatureByBytes(getCheckoutFeaturesPaths());
+  const getFeatureLabel = (key: string) =>
+    translate(`checkout.productCard.planDetails.features.${isBusiness ? 'business' : 'individuals'}.${bytes}.${key}`);
 
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
@@ -169,7 +163,7 @@ export const CheckoutProductCard = ({
         <div className="flex w-full flex-col space-y-5">
           <p>{translate('checkout.productCard.selectedPlan')}</p>
           <p className="text-2xl font-bold text-gray-100">
-            {getPlanFeaturePath() + ' - ' + translate(`checkout.productCard.renewalTitle.${selectedPlan.interval}`)}
+            {getPlanTitlePath() + ' - ' + translate(`checkout.productCard.renewalTitle.${selectedPlan.interval}`)}
           </p>
           {isBusiness && selectedPlan.maximumSeats && selectedPlan.minimumSeats ? (
             <>
@@ -216,14 +210,13 @@ export const CheckoutProductCard = ({
           <div className="flex flex-col space-y-5">
             <p className="font-medium text-gray-100">{translate('checkout.productCard.planDetails.title')}</p>
             <div className="flex flex-col space-y-4">
-              {Object.keys(features).map((key) => {
-                const shouldShowComingSoon = !isBusiness && COMING_SOON_FEATURE_KEYS.includes(key);
-                const featureText = features;
+              {featuresList.map((key) => {
+                const isComingSoon = COMING_SOON_FEATURE_KEYS.includes(key);
                 return (
                   <div key={key} className="flex flex-row items-center space-x-2">
                     <Check className="text-green-dark" size={16} weight="bold" />
-                    <p className="text-gray-100">{featureText}</p>
-                    {shouldShowComingSoon && (
+                    <p className="text-gray-100">{getFeatureLabel(key)}</p>
+                    {isComingSoon && !isBusiness && (
                       <span className="rounded-md bg-orange/10 px-1 text-center text-orange">
                         {translate('checkout.productCard.planDetails.comingSoon')}
                       </span>
