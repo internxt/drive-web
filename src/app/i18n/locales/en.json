@@ -9,13 +9,15 @@
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
+    "specialOfferLabel":"",
+    "specialOfferGift":"Buy any plan for a chance to win an Internxt x Swiss Peak backpack!",
     "features": [
-     "Premium VPN and Antivirus",
+      "Drive, VPN, and Antivirus",
       "Post-quantum encryption",
       "Open-source and audited",
       "End-to-end encrypted transfers",
-      "Free St. Patrick’s Day web theme",
-      "Offer ends March 30"
+      "No unauthorized access",
+      "Offer ends April 8"
       
     ]
   },
