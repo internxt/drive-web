@@ -156,12 +156,6 @@ export const CheckoutProductCard = ({
   const features = getFeaturesForCheckout();
   const planLabel = getPlanFeaturePath();
   const isIndividual = INDIVIDUAL_PLANS.includes(planLabel);
-  const tierMap = {
-    ESSENTIAL: '1TB',
-    PREMIUM: '3TB',
-    ULTIMATE: '5TB',
-  };
-  const tier = tierMap[planLabel];
 
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
@@ -224,7 +218,7 @@ export const CheckoutProductCard = ({
             <div className="flex flex-col space-y-4">
               {Object.keys(features).map((key) => {
                 const shouldShowComingSoon = isIndividual && COMING_SOON_FEATURE_KEYS.includes(key);
-                const featureText = translate(`checkout.productCard.planDetails.features.individuals.${tier}.${key}`);
+                const featureText = translate(`checkout.productCard.planDetails.features.individuals.${bytes}.${key}`);
 
                 return (
                   <div key={key} className="flex flex-row items-center space-x-2">
