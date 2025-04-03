@@ -7,9 +7,9 @@ import TaskLoggerItem from '../TaskLoggerItem/TaskLoggerItem';
 
 import { CaretDown, CircleNotch, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import RetryManager, { FileToRetry } from 'app/network/RetryManager';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
-import RetryManager, { FileToRetry } from 'app/network/RetryManager';
 
 const TaskLogger = (): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -21,8 +21,9 @@ const TaskLogger = (): JSX.Element => {
 
   const allNotifications = useTaskManagerGetNotifications();
   const finishedNotifications = useTaskManagerGetNotifications({
-    status: [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled],
+    status: [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled, TaskStatus.InProcess],
   });
+
   const filesToRetryGroupedByTask = useMemo(
     () =>
       filesToRetry.reduce<Record<string, FileToRetry[]>>((acc, file) => {
