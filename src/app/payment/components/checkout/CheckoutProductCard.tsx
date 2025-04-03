@@ -217,10 +217,8 @@ export const CheckoutProductCard = ({
             <p className="font-medium text-gray-100">{translate('checkout.productCard.planDetails.title')}</p>
             <div className="flex flex-col space-y-4">
               {Object.keys(features).map((key) => {
-                const shouldShowComingSoon = isIndividual && COMING_SOON_FEATURE_KEYS.includes(key);
-                const featureText = isIndividual
-                  ? translate(`checkout.productCard.planDetails.features.individuals.${bytes}.${key}`)
-                  : translate(`checkout.productCard.planDetails.features.business.${bytes}.${key}`);
+                const shouldShowComingSoon = !isBusiness && COMING_SOON_FEATURE_KEYS.includes(key);
+                const featureText = features;
                 return (
                   <div key={key} className="flex flex-row items-center space-x-2">
                     <Check className="text-green-dark" size={16} weight="bold" />
