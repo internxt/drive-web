@@ -45,7 +45,7 @@ const getTextContent = (
       })
     : translate('checkout.productCard.total');
   const features = translateList(
-    `checkout.productCard.planDetails.features.${selectedPlan.type ?? UserType.Individual}`,
+    `checkout.productCard.planDetails.features.${selectedPlan.type ?? UserType.Individual}.${bytes}`,
     {
       spaceToUpgrade: bytes,
       minimumSeats: selectedPlan.minimumSeats,
