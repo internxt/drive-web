@@ -1,5 +1,4 @@
-import { Button } from '@internxt/ui';
-import Modal from 'app/shared/components/Modal';
+import { Button, Modal } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface ShareUserNotRegisteredProps {

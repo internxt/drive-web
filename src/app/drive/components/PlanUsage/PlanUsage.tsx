@@ -12,13 +12,13 @@ export default function PlanUsage({
   limit,
   usage,
   isLoading,
-  subscriptionType,
+  isUpgradeAvailable,
   className = '',
 }: {
   limit: number;
   usage: number;
   isLoading: boolean;
-  subscriptionType?: string;
+  isUpgradeAvailable: () => boolean;
   className?: string;
 }): JSX.Element {
   const { translate } = useTranslationContext();
@@ -50,7 +50,7 @@ export default function PlanUsage({
       <div className="mt-1 flex h-1.5 w-full justify-start overflow-hidden rounded-lg bg-gray-5">
         <div className={`h-full ${componentColor}`} style={{ width: isLoading ? 0 : `${usagePercent}%` }} />
       </div>
-      {subscriptionType === 'free' && (
+      {isUpgradeAvailable() && (
         <p
           onClick={onUpgradeButtonClicked}
           className={`mt-3 h-full cursor-pointer text-sm font-medium ${isLimitReached ? 'text-red' : 'text-primary'}`}

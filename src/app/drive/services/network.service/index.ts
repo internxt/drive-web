@@ -13,6 +13,7 @@ type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBy
 export interface IUploadParams {
   filesize: number;
   filecontent: File;
+  isUploadedFromFolder?: boolean;
   progressCallback: ProgressCallback;
 }
 
@@ -103,6 +104,7 @@ export class Network {
       creds: this.creds,
       mnemonic: this.mnemonic,
       continueUploadOptions,
+      isUploadedFromFolder: params.isUploadedFromFolder,
     };
 
     worker.postMessage({ bucketId, params: payload, type: 'upload' });

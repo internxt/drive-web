@@ -25,6 +25,7 @@ import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
 import { FileToUpload } from '../../../../drive/services/file.service/types';
+import RetryManager from 'app/network/RetryManager';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -35,6 +36,7 @@ interface UploadItemsThunkOptions {
   isRetriedUpload?: boolean;
   disableDuplicatedNamesCheck?: boolean;
   disableExistenceCheck?: boolean;
+  isUploadedFromFolder?: boolean;
 }
 
 interface UploadItemsPayload {
@@ -44,6 +46,7 @@ interface UploadItemsPayload {
   parentFolderId: string;
   options?: Partial<UploadItemsThunkOptions>;
   filesProgress?: { filesUploaded: number; totalFilesToUpload: number };
+  isRetry?: boolean;
   onFileUploadCallback?: (driveFileData: DriveFileData) => void;
 }
 
@@ -109,7 +112,7 @@ const isUploadAllowed = ({
 export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
   'storage/uploadItems',
   async (
-    { files, parentFolderId, options: payloadOptions, taskId, fileType }: UploadItemsPayload,
+    { files, parentFolderId, options: payloadOptions, taskId, fileType, isRetry = false }: UploadItemsPayload,
     { getState, dispatch },
   ) => {
     const user = getState().user.user as UserSettings;
@@ -188,9 +191,11 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
             isDeepFolder: false,
             currentFolderId: parentFolderId,
           },
+          isUploadedFromFolder: isRetry,
         },
       );
     } catch (error) {
+      if (taskId && isRetry) RetryManager.changeStatus(taskId, 'failed');
       errors.push(error as Error);
     }
 
@@ -488,6 +493,8 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(uploadItemsParallelThunk.fulfilled, () => undefined)
     .addCase(uploadItemsParallelThunk.rejected, (state, action) => {
       const requestOptions = Object.assign(DEFAULT_OPTIONS, action.meta.arg.options ?? {});
+      const taskId = action.meta.arg.taskId;
+      if (taskId && RetryManager.isRetryingFile(taskId)) RetryManager.changeStatus(taskId, 'failed');
       if (requestOptions?.showErrors) {
         notificationsService.show({
           text: t('error.uploadingFile', { reason: action.error.message ?? '' }),

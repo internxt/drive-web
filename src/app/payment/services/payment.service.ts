@@ -12,8 +12,10 @@ import {
 } from '@internxt/sdk/dist/drive/payments/types';
 import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js/pure';
+import axios from 'axios';
 import { SdkFactory } from '../../core/factory/sdk';
 import envService from '../../core/services/env.service';
+import localStorageService from '../../core/services/local-storage.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
 
 export interface CreatePaymentSessionPayload {
@@ -33,6 +35,16 @@ export interface CreateTeamsPaymentSessionPayload {
   mnemonicTeam: string;
   successUrl?: string;
   canceledUrl?: string;
+}
+
+const PAYMENTS_API_URL = process.env.REACT_APP_PAYMENTS_API_URL;
+
+export interface ValidateCheckoutSessionResponse {
+  valid: boolean;
+  customerId?: string;
+  planId: string;
+  userType?: UserType;
+  message?: string;
 }
 
 let stripe: Stripe;
@@ -171,6 +183,41 @@ const paymentService = {
   async updateCustomerBillingInfo(payload: CustomerBillingInfo): Promise<void> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.updateCustomerBillingInfo(payload);
+  },
+
+  async createSubscriptionWithTrial(
+    customerId: string,
+    priceId: string,
+    token: string,
+    mobileToken: string,
+    currency?: string,
+  ): Promise<CreatedSubscriptionData> {
+    try {
+      const newToken = localStorageService.get('xNewToken');
+
+      if (!newToken) {
+        throw new Error('No authentication token available');
+      }
+      const response = await axios.post<CreatedSubscriptionData>(
+        `${PAYMENTS_API_URL}/create-subscription-with-trial?trialToken=${mobileToken}`,
+        {
+          customerId,
+          priceId,
+          currency,
+          token,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${newToken}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      throw new Error('Error creating subscription with trial');
+    }
   },
 };
 
