@@ -1,21 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach, Mock } from 'vitest';
 import { useDispatch } from 'react-redux';
 import { useReduxActions } from './useReduxActions';
-import { downloadItemsAsZipThunk, downloadItemsThunk } from '../storage.thunks/downloadItemsThunk';
 import { uploadFolderThunk } from '../storage.thunks/uploadFolderThunk';
 import { uploadItemsThunk, uploadSharedItemsThunk } from '../storage.thunks/uploadItemsThunk';
-import { createFilesIterator, createFoldersIterator } from '../../../../drive/services/folder.service';
-import { DriveFileData, DriveItemData } from '../../../../drive/types';
-import { SharedItemAuthenticationData, UploadFolderData } from '../../../../tasks/types';
+import { UploadFolderData } from '../../../../tasks/types';
 import { renderHook } from '@testing-library/react';
 
 vi.mock('react-redux', () => ({
   useDispatch: vi.fn(),
-}));
-
-vi.mock('../storage.thunks/downloadItemsThunk', () => ({
-  downloadItemsAsZipThunk: vi.fn(),
-  downloadItemsThunk: vi.fn(),
 }));
 
 vi.mock('../storage.thunks/uploadFolderThunk', () => ({
@@ -32,18 +24,6 @@ vi.mock('../../../../drive/services/folder.service', () => ({
   createFoldersIterator: vi.fn(),
 }));
 
-const mockFile = {
-  id: 1,
-  uuid: 'file-uuid1',
-  name: 'File1',
-  bucket: 'bucket',
-  folderId: 0,
-  userId: 0,
-  isFile: true,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-} as unknown as DriveItemData;
-
 describe('useReduxActions', () => {
   const dispatch = vi.fn();
 
@@ -53,33 +33,6 @@ describe('useReduxActions', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-  });
-
-  it('should dispatch downloadItemsAsZipThunk with correct arguments', () => {
-    const { result } = renderHook(() => useReduxActions());
-    const items: DriveItemData[] = [mockFile];
-    const existingTaskId = 'task1';
-
-    result.current.downloadItemsAsZip(items, existingTaskId);
-
-    expect(dispatch).toHaveBeenCalledWith(
-      downloadItemsAsZipThunk({
-        items,
-        existingTaskId,
-        fileIterator: createFilesIterator,
-        folderIterator: createFoldersIterator,
-      }),
-    );
-  });
-
-  it('should dispatch downloadItemsThunk with correct arguments', () => {
-    const { result } = renderHook(() => useReduxActions());
-    const item: DriveItemData = mockFile;
-    const existingTaskId = 'task1';
-
-    result.current.downloadItems(item, existingTaskId);
-
-    expect(dispatch).toHaveBeenCalledWith(downloadItemsThunk([{ ...item, taskId: existingTaskId }]));
   });
 
   it('should dispatch uploadFolderThunk with correct arguments', () => {

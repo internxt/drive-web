@@ -4,18 +4,20 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "立省 80%！",
-    "title": "探索 Internxt 的全新订阅计划！",
-    "cta": "选择您的方案",
+    "label": "80% 优惠",
+    "title": "适用于所有 Internxt 方案",
+    "cta": "选择方案",
     "guarantee": "30 天退款保证",
-    "lastCta": "*优惠适用于免费账户或新客户",
+    "lastCta": "*仅适用于免费账户或新用户",
+    "specialOfferLabel": "",
+    "specialOfferGift": "购买任意方案，即可参与 Internxt x Swiss Peak 背包抽奖！",
     "features": [
-      "VPN 和高级防病毒软件",
+      "Internxt 云盘、VPN 和杀毒软件",
       "后量子加密技术",
-      "开源且经过审核",
+      "开源并经过审计",
       "加密传输",
-      "免费网页应用主题",
-      "优惠截止至 3 月 30 日"
+      "无未授权访问",
+      "优惠截止至 4 月 8 日"
     ]
   },
   "susbcriptionsBanner": {

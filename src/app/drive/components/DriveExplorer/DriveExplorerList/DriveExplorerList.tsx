@@ -14,7 +14,6 @@ import shareService from '../../../../share/services/share.service';
 import { AppDispatch, RootState } from '../../../../store';
 import { sharedThunks } from '../../../../store/slices/sharedLinks';
 import { storageActions } from '../../../../store/slices/storage';
-import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../store/slices/ui';
 import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
 import { DriveItemData, DriveItemDetails } from '../../../types';
@@ -34,6 +33,7 @@ import {
   contextMenuWorkspaceFolder,
 } from './DriveItemContextMenu';
 import { List } from '@internxt/ui';
+import { DownloadManager } from '../../../../network/DownloadManager';
 
 interface DriveExplorerListProps {
   folderId: string;
@@ -107,10 +107,10 @@ const resetDriveOrder = ({
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll, forceLoading, roles } = props;
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
-  const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
-  const isWorkspaceSelected = !!workspaceSelected;
+  const isWorkspaceSelected = !!selectedWorkspace;
   const isSelectedMultipleItemsAndNotTrash = props.selectedItems.length > 1 && !props.isTrash;
   const isSelectedSharedItem =
     props.selectedItems.length === 1 &&
@@ -262,10 +262,14 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   );
 
   const downloadItem = useCallback(
-    async (item: ContextMenuDriveItem) => {
-      dispatch(storageThunks.downloadItemsThunk([item as DriveItemData]));
+    (item: ContextMenuDriveItem) => {
+      DownloadManager.downloadItem({
+        payload: [item as DriveItemData],
+        selectedWorkspace,
+        workspaceCredentials,
+      });
     },
-    [dispatch, storageThunks],
+    [selectedWorkspace, workspaceCredentials],
   );
 
   const moveToTrash = useCallback(
@@ -288,7 +292,11 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       dispatch(uiActions.setIsMoveItemsDialogOpen(true));
     },
     downloadItems: () => {
-      dispatch(storageThunks.downloadItemsThunk(props.selectedItems));
+      DownloadManager.downloadItem({
+        payload: props.selectedItems,
+        selectedWorkspace,
+        workspaceCredentials,
+      });
     },
     moveToTrash: () => {
       isSelectedSharedItems ? props.onOpenStopSharingAndMoveToTrashDialog() : moveItemsToTrash(props.selectedItems);
