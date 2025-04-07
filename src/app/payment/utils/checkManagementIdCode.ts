@@ -10,11 +10,14 @@ export const isManagementIdThemeAvailable = async (plan: PlanState, onSuccess?: 
 
   if (managementIdInLocalStorage === 'true') return true;
   try {
-    const couponUsedResult = await paymentService.isCouponUsedByUser('IDENTITY82');
+    const coupons = ['IDENTITY82', 'IDENTITY82AFF'];
 
-    if (couponUsedResult.couponUsed) {
+    const couponUsedResults = await Promise.all(coupons.map((code) => paymentService.isCouponUsedByUser(code)));
+    const couponUsed = couponUsedResults.some((result) => result);
+
+    if (couponUsed) {
       onSuccess?.();
-      localStorageService.set(MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY, `${couponUsedResult.couponUsed}`);
+      localStorageService.set(MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY, 'true');
       return true;
     }
 
