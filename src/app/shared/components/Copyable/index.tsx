@@ -1,13 +1,13 @@
-import copy from 'copy-to-clipboard';
 import { Copy } from '@phosphor-icons/react';
 import { useState } from 'react';
 import Tooltip from '../Tooltip';
+import { copyTextToClipboard } from 'app/share/services/share.service';
 
 export default function Copyable({ className = '', text }: { className?: string; text: string }): JSX.Element {
   const [justCopied, setJustCopied] = useState(false);
 
-  function onCopy() {
-    copy(text);
+  async function onCopy() {
+    await copyTextToClipboard(text);
     setJustCopied(true);
     setTimeout(() => setJustCopied(false), 1000);
   }
