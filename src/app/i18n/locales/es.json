@@ -16,7 +16,7 @@
       "Criptografía postcuántica",
       "Código abierto y auditado",
       "Transferencias cifradas",
-      "Tema especial para Web app gratis",
+      "Tema especial para Web app",
       "La oferta finaliza el 30 de abril"      
     ]
   },
@@ -72,7 +72,8 @@
     "christmas": "Navidad",
     "superBowl": "Super Bowl",
     "valentines": "San Valentín",
-    "stpatricks": "San Patricio"
+    "stpatricks": "San Patricio",
+    "idmanagement": "Gestión de Identidad"
   },
   "auth": {
     "email": "Correo electrónico",

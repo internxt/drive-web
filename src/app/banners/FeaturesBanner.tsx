@@ -22,6 +22,12 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
   const themeStyles = {
     light: 'bg-white text-black',
     dark: `${styles['linear-gradient']}`,
+    starwars: `${styles['linear-gradient']}`,
+    halloween: `${styles['linear-gradient']}`,
+    christmas: `${styles['linear-gradient']}`,
+    superbowl: `${styles['linear-gradient']}`,
+    stpatricks: `${styles['linear-gradient']}`,
+    idmanagement: `${styles['linear-gradient']}`,
   };
 
   return (

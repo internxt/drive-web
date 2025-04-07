@@ -21,7 +21,7 @@
       "Crittografia post-quantistica",
       "Open source e verificato",
       "Trasferimenti crittografati",
-      "Tema speciale per app web gratuite",
+      "Tema speciale per app web",
       "L'offerta termina l'30 aprile"
     ]
   },
@@ -85,7 +85,8 @@
     "christmas": "Natale",
     "superBowl": "Super Bowl",
     "valentines": "San Valentino",
-    "stpatricks": "San Patrizio"
+    "stpatricks": "San Patrizio",
+    "idmanagement": "Gestione dell'identità"
   },
   "auth": {
     "email": "Email",

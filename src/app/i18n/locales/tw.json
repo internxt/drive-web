@@ -85,7 +85,8 @@
     "christmas": "聖誕節",
     "superBowl": "Super Bowl",
     "valentines": "情人節",
-    "stpatricks": "St. Patrick's"
+    "stpatricks": "St. Patrick's",
+    "idmanagement": "Identity Management"
   },
   "auth": {
     "email": "電子郵件",

@@ -3,9 +3,19 @@ import HalloweenBG from 'assets/images/banner/Ghosties-bg.webp';
 import ChristmasBG from 'assets/images/banner/christmas_theme.webp';
 import SuperBowlBG from 'assets/images/banner/superbowl_theme.webp';
 import StPaticksBG from 'assets/images/banner/StPatrick-bg.png';
+import IdManagementBG from 'assets/images/banner/IdManagement-bg.png';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-export type Theme = 'system' | 'light' | 'dark' | 'starwars' | 'halloween' | 'christmas' | 'superbowl' | 'stpatricks';
+export type Theme =
+  | 'system'
+  | 'light'
+  | 'dark'
+  | 'starwars'
+  | 'halloween'
+  | 'christmas'
+  | 'superbowl'
+  | 'stpatricks'
+  | 'idmanagement';
 
 interface ThemeContextProps {
   currentTheme: Theme | undefined;
@@ -74,6 +84,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         setCheckoutTheme('dark');
       } else if (currentTheme === 'superbowl') {
         root.style.backgroundImage = `url(${SuperBowlBG})`;
+        root.style.backgroundSize = 'cover';
+        root.style.backgroundPosition = 'center';
+        root.style.backgroundRepeat = 'no-repeat';
+        document.documentElement.classList.add('dark');
+        setCheckoutTheme('dark');
+      } else if (currentTheme === 'idmanagement') {
+        root.style.backgroundImage = `url(${IdManagementBG})`;
         root.style.backgroundSize = 'cover';
         root.style.backgroundPosition = 'center';
         root.style.backgroundRepeat = 'no-repeat';

@@ -16,7 +16,7 @@
       "Cryptographie post-quantique",
       "Open source et audité",
       "Transferts chiffrés",
-      "Thème spécial pour application web gratuite",
+      "Thème spécial pour application web",
       "L'offre se termine le 30 avril"
     ]
   },
@@ -64,7 +64,8 @@
     "christmas": "Noël",
     "superBowl": "Super Bowl",
     "valentines": "Saint Valentin",
-    "stpatricks": "Saint Patrick"
+    "stpatricks": "Saint Patrick",
+    "idmanagement": "Gestion de l'identité"
   },
   "auth": {
     "email": "Email",

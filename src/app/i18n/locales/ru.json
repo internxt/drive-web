@@ -64,7 +64,8 @@
     "christmas": "Christmas",
     "superBowl": "Super Bowl",
     "valentines": "Valentines",
-    "stPatricks": "St. Patrick's"
+    "stPatricks": "St. Patrick's",
+    "idmanagement": "Identity Management"
   },
   "auth": {
     "email": "Email",
