@@ -4,39 +4,31 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "80% 優惠",
-    "title": "適用於所有 Internxt 方案",
-    "cta": "選擇方案",
+    "label": "優惠 82%",
+    "title": "全新終身方案！",
+    "cta": "獲取你的方案",
     "guarantee": "30 天退款保證",
-    "lastCta": "*僅適用於免費帳號或新用戶",
-    "specialOfferLabel": "特別優惠",
-    "specialOfferGift": " 購買任一方案，即可參加 Internxt x Swiss Peak 背包抽獎活動！",
+    "lastCta": "*此優惠適用於免費帳戶或新客戶",
+    "specialOfferLabel": "",
+    "specialOfferGift": "購買終身方案，即可參加 Internxt x Swiss Peak 背包抽獎！",
     "features": [
-      "Internxt 雲端硬碟、VPN 與防毒軟體",
+      "Internxt 雲端硬碟、VPN 和防毒軟體",
       "後量子加密技術",
-      "開源並通過審核",
-      "加密傳輸",
-      "無未經授權的存取",
-      "優惠截止至 4 月 8 日"
+      "開源且通過審核",
+      "加密數據傳輸",
+      "免費網頁應用程式專屬主題",
+      "優惠截止日期：4 月 30 日"
     ]
   },
   "susbcriptionsBanner": {
     "title": "升級您的計畫！",
-    "features": [
-      "後量子加密",
-      "雲端硬碟、VPN 和防毒軟體",
-      "即將推出郵件和會議"
-    ],
+    "features": ["後量子加密", "雲端硬碟、VPN 和防毒軟體", "即將推出郵件和會議"],
     "description": "續訂您的訂閱，即可享受我們的新功能！",
     "cta": "8折優惠"
   },
   "lifetimesBanner": {
     "title": "升級您的計畫！",
-    "features": [
-      "後量子加密",
-      "雲端硬碟、VPN 和防毒軟體",
-      "即將推出郵件和會議"
-    ],
+    "features": ["後量子加密", "雲端硬碟、VPN 和防毒軟體", "即將推出郵件和會議"],
     "description": "升級您的計畫，享受我們的新功能，並擴展您的存儲空間！",
     "cta": "8折優惠"
   },
@@ -93,7 +85,8 @@
     "christmas": "聖誕節",
     "superBowl": "Super Bowl",
     "valentines": "情人節",
-    "stpatricks": "St. Patrick's"
+    "stpatricks": "St. Patrick's",
+    "idmanagement": "Identity Management"
   },
   "auth": {
     "email": "電子郵件",
@@ -1871,7 +1864,7 @@
         "free": "免費獲取最多 10GB",
         "manageBilling": "管理帳單",
         "freeForever": "永久免費",
-        "billedAnnually":"按年計費",
+        "billedAnnually": "按年計費",
         "year": "年",
         "month": "月",
         "lifetime": "終身",
