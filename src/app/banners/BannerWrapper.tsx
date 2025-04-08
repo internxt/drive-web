@@ -26,9 +26,9 @@ const BannerWrapper = (): JSX.Element => {
 
   useEffect(() => {
     const newBanners = bannerManager.getBannersToShow();
-    setBannersToShow((prev) => ({
-      showFreeBanner: prev.showFreeBanner || newBanners.showFreeBanner,
-      showSubscriptionBanner: prev.showSubscriptionBanner || newBanners.showSubscriptionBanner,
+    setBannersToShow(() => ({
+      showFreeBanner: newBanners.showFreeBanner,
+      showSubscriptionBanner: newBanners.showSubscriptionBanner,
     }));
   }, [bannerManager]);
 
