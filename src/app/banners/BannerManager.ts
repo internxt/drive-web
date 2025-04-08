@@ -1,8 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from '../core/services/local-storage.service';
 import { PlanState } from '../store/slices/plan';
-import { fetchPlanPrices } from 'app/newSettings/Sections/Account/Plans/api/plansApi';
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 
 const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';
 const BANNER_NAME_FOR_FREE_USERS = 'show_free_users_banner';
@@ -42,16 +40,13 @@ export class BannerManager {
   }
 
   private shouldShowSubscriptionBanner(): boolean {
-    const planId = this.plan.individualPlan?.productId;
-    const subscription = this.plan.individualSubscription;
-
     return false;
   }
 
   public getBannersToShow(): { showFreeBanner: boolean; showSubscriptionBanner: boolean } {
     this.clearLocalStorageIfExpired();
     return {
-      showFreeBanner: this.shouldShowFreeBanner(),
+      showFreeBanner: true,
       showSubscriptionBanner: this.shouldShowSubscriptionBanner(),
     };
   }
