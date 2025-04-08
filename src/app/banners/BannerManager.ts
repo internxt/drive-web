@@ -46,7 +46,7 @@ export class BannerManager {
   public getBannersToShow(): { showFreeBanner: boolean; showSubscriptionBanner: boolean } {
     this.clearLocalStorageIfExpired();
     return {
-      showFreeBanner: true,
+      showFreeBanner: this.shouldShowFreeBanner(),
       showSubscriptionBanner: this.shouldShowSubscriptionBanner(),
     };
   }
