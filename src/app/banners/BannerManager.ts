@@ -60,7 +60,7 @@ export class BannerManager {
 
     const planId = this.plan.individualPlan?.productId;
 
-    return planId !== undefined && !plansToShow.includes(planId);
+    return planId !== undefined && plansToShow.includes(planId);
   }
 
   public getBannersToShow(): { showFreeBanner: boolean; showSubscriptionBanner: boolean } {
