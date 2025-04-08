@@ -124,7 +124,7 @@ export const CheckoutProductCard = ({
     ULTIMATE: translate('checkout.productCard.planDetails.features.individuals.5TB', { returnObjects: true }),
   });
 
-  const getPlanByBytes = (map) => {
+  const getPlanByBytes = (map: any) => {
     if (bytes === '1TB') {
       return isBusiness ? map.STANDARD : map.ESSENTIAL;
     }
