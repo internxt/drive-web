@@ -1,4 +1,3 @@
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { backupsActions } from 'app/store/slices/backups';
 import { t } from 'i18next';
@@ -10,6 +9,7 @@ import { DragAndDropType } from 'app/core/types';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { BreadcrumbItemData, Breadcrumbs } from '@internxt/ui';
 import { useDrop } from 'react-dnd';
+import { DriveFolderData } from 'app/drive/types';
 
 interface BreadcrumbsBackupsViewProps {
   backupsAsFoldersPath: DriveFolderData[];
@@ -39,7 +39,7 @@ const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToFolderRo
     if (currentDevice && 'mac' in currentDevice) {
       items.push({
         uuid: currentDevice.id.toString(),
-        label: currentDevice.name,
+        label: (currentDevice as unknown as DriveFolderData).plainName ?? currentDevice.name,
         icon: null,
         active: false,
         isBackup: true,
@@ -55,7 +55,7 @@ const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToFolderRo
         };
         items.push({
           uuid: item.uuid,
-          label: item.name,
+          label: item.plainName ?? item.name,
           icon: null,
           isBackup: true,
           ...(i === backupsAsFoldersPath.length - 1 ? { active: false } : clickableOptions),

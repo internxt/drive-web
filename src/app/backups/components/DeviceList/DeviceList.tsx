@@ -13,9 +13,10 @@ import UilWindows from '@iconscout/react-unicons/icons/uil-windows';
 import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
 import dateService from '../../../core/services/date.service';
 import sizeService from '../../../drive/services/size.service';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+
 import { skinSkeleton } from 'app/shared/Skeleton';
 import { List } from '@internxt/ui';
+import { DriveFolderData } from 'app/drive/types';
 
 interface Props {
   items: (Device | DriveFolderData)[];
@@ -91,7 +92,7 @@ const DeviceList = (props: Props): JSX.Element => {
                   </div>
                   <div className="grow cursor-default truncate pr-3">
                     <button className="z-10 shrink cursor-pointer truncate" onClick={() => onDeviceClicked(device)}>
-                      {device.name}
+                      {(device as DriveFolderData).plainName}
                     </button>
                   </div>
                 </div>

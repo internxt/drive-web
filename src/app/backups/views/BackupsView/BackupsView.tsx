@@ -12,7 +12,6 @@ import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.servi
 import { deleteFile } from '../../../drive/services/file.service';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
 import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import { useBackupListActions } from 'app/backups/hooks/useBackupListActions';
 import { useBackupDeviceActions } from 'app/backups/hooks/useBackupDeviceActions';
@@ -31,7 +30,7 @@ export default function BackupsView(): JSX.Element {
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
-  const [foldersInBreadcrumbs, setFoldersInBreadcrumbs] = useState<DriveFolderData[]>([]);
+  const [foldersInBreadcrumbs, setFoldersInBreadcrumbs] = useState<DriveWebFolderData[]>([]);
 
   const {
     folderUuid,

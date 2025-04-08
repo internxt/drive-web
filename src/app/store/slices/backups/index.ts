@@ -7,7 +7,7 @@ import downloadService from '../../../drive/services/download.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { DownloadBackupTask, TaskStatus, TaskType } from '../../../tasks/types';
 import tasksService from '../../../tasks/services/tasks.service';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFolderData } from 'app/drive/types';
 
 interface BackupsState {
   isLoadingDevices: boolean;
