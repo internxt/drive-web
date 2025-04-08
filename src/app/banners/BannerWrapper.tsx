@@ -18,7 +18,7 @@ const BannerWrapper = (): JSX.Element => {
   const isNewAccount = useSelector((state: RootState) => userSelectors.hasSignedToday(state));
 
   const bannerManager = useMemo(
-    () => new BannerManager(user, plan, OFFER_END_DAY, isNewAccount),
+    () => new BannerManager(user, plan, OFFER_END_DAY),
     [user, plan, isNewAccount],
   );
 
