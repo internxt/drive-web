@@ -3,7 +3,7 @@ import { describe, it, vi, expect, beforeEach } from 'vitest';
 import * as reduxActionsHook from 'app/store/slices/storage/hooks/useReduxActions';
 import * as translationProvider from 'app/i18n/provider/TranslationProvider';
 import TaskToRetry from './TaskToRetry';
-import RetryManager, { FileToRetry } from 'app/network/RetryManager';
+import RetryManager, { RetryableTask } from 'app/network/RetryManager';
 
 vi.mock('app/shared/components/Modal', () => ({
   default: ({ isOpen, children }: { isOpen: boolean; children: React.ReactNode }) =>
@@ -24,8 +24,10 @@ describe('TaskToRetry', () => {
   const mockTranslate = vi.fn();
   const mockChangeStatus = vi.spyOn(RetryManager, 'changeStatus');
 
-  const files: FileToRetry[] = [
+  const files: RetryableTask[] = [
     {
+      taskId: 'task-1',
+      type: 'upload',
       params: {
         filecontent: {
           content: 'file-content' as any,

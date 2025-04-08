@@ -1146,7 +1146,8 @@
     "messages": {
       "allProcessesHaveFinished": "Все процессы завершены",
       "processing": "Обработка {{pending}} из {{finished}}",
-      "failedToUpload": "Не удалось загрузить"
+      "failedToUpload": "Не удалось загрузить",
+      "failedToDownload": "Не удалось загрузить"
     },
     "waiting": "Ожидание",
     "paused": "Приостановлено",

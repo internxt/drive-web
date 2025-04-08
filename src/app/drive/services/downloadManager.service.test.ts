@@ -53,7 +53,9 @@ describe('downloadManagerService', () => {
     }));
 
     vi.mock('app/network/download', () => ({
-      downloadFile: vi.fn(),
+      downloadFile: vi.fn().mockImplementation(() => {
+        return Promise.resolve(new Blob(['test content'], { type: 'application/octet-stream' }));
+      }),
       loadWritableStreamPonyfill: vi.fn(),
       getDecryptedStream: vi.fn(),
     }));
@@ -148,6 +150,50 @@ describe('downloadManagerService', () => {
     deleted: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+  };
+
+  const mockTask: DownloadTask = {
+    abortController: new AbortController(),
+    items: [mockFile as DriveItemData],
+    createFilesIterator: createFilesIterator,
+    createFoldersIterator: createFoldersIterator,
+    credentials: {
+      credentials: {
+        user: 'any-user',
+        pass: 'any-pass',
+      },
+      workspaceId: 'any-workspace-id',
+      mnemonic: 'any-mnemonic',
+    },
+    options: {
+      areSharedItems: false,
+      downloadName: `${mockFile.name}.${mockFile.type}`,
+      showErrors: true,
+    },
+    taskId: 'mock-task-id',
+    failedItems: [],
+  };
+
+  const mockFolderTask: DownloadTask = {
+    abortController: new AbortController(),
+    items: [mockFolder as DriveItemData],
+    createFilesIterator: createFilesIterator,
+    createFoldersIterator: createFoldersIterator,
+    credentials: {
+      credentials: {
+        user: 'any-user',
+        pass: 'any-pass',
+      },
+      workspaceId: 'any-workspace-id',
+      mnemonic: 'any-mnemonic',
+    },
+    options: {
+      areSharedItems: false,
+      downloadName: `${mockFolder.name}`,
+      showErrors: true,
+    },
+    taskId: 'mock-task-id',
+    failedItems: [],
   };
 
   it('should return download credentials from workspace', () => {
@@ -264,6 +310,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
 
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
@@ -308,6 +355,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
 
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
@@ -353,6 +401,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
 
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
@@ -402,6 +451,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
 
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
@@ -454,6 +504,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
 
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
@@ -514,6 +565,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
 
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
@@ -522,33 +574,6 @@ describe('downloadManagerService', () => {
   });
 
   it('should downloadFolder updating task successfully', async () => {
-    const mockTaskId = 'mock-task-id';
-    const downloadItem: DownloadItem = {
-      payload: [mockFolder as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
-
-    const mockTask: DownloadTask = {
-      abortController: new AbortController(),
-      items: downloadItem.payload,
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
-      options: {
-        areSharedItems: false,
-        downloadName: `${mockFile.name}.${mockFile.type}`,
-        showErrors: true,
-      },
-      taskId: mockTaskId,
-    };
     const mockUpdateProgress = vi.fn((progress: number) => progress);
     const mockIncrementItemCount = vi.fn(() => 0);
 
@@ -557,10 +582,10 @@ describe('downloadManagerService', () => {
     const downloadFolderItemSpy = vi.fn();
     (downloadFolderAsZip as Mock).mockImplementation(downloadFolderItemSpy);
 
-    await DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount);
+    await DownloadManagerService.instance.downloadFolder(mockFolderTask, mockUpdateProgress, mockIncrementItemCount);
 
     expect(updateTaskSpy).toHaveBeenCalledWith({
-      taskId: mockTaskId,
+      taskId: mockFolderTask.taskId,
       merge: {
         status: TaskStatus.InProcess,
         progress: Infinity,
@@ -569,51 +594,24 @@ describe('downloadManagerService', () => {
     });
     expect(downloadFolderItemSpy).toHaveBeenCalledWith({
       folder: mockFolder,
-      isSharedFolder: mockTask.options.areSharedItems,
-      foldersIterator: mockTask.createFoldersIterator,
-      filesIterator: mockTask.createFilesIterator,
+      isSharedFolder: mockFolderTask.options.areSharedItems,
+      foldersIterator: mockFolderTask.createFoldersIterator,
+      filesIterator: mockFolderTask.createFilesIterator,
       updateProgress: expect.anything(),
       updateNumItems: mockIncrementItemCount,
       options: {
         closeWhenFinished: true,
-        ...mockTask.credentials,
+        ...mockFolderTask.credentials,
       },
-      abortController: mockTask.abortController,
+      abortController: mockFolderTask.abortController,
     });
   });
 
   it('should downloadFile from task using cache', async () => {
-    const mockTaskId = 'mock-task-id';
-    const downloadItem: DownloadItem = {
-      payload: [mockFile as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
-
-    const mockTask: DownloadTask = {
-      abortController: new AbortController(),
-      items: downloadItem.payload,
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
-      options: {
-        areSharedItems: false,
-        downloadName: `${mockFile.name}.${mockFile.type}`,
-        showErrors: true,
-      },
-      taskId: mockTaskId,
-    };
     const mockUpdateProgress = vi.fn((progress: number) => progress);
 
     const getDatabaseFileSourceDataSpy = vi.fn(() => {
-      return { source: new Blob([]) };
+      return { source: new Blob(['test content'], { type: 'application/octet-stream' }) };
     });
     const checkIfCachedSourceIsOlderSpy = vi.fn(() => false);
 
@@ -635,33 +633,6 @@ describe('downloadManagerService', () => {
   });
 
   it('should downloadFile from task using download service', async () => {
-    const mockTaskId = 'mock-task-id';
-    const downloadItem: DownloadItem = {
-      payload: [mockFile as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
-
-    const mockTask: DownloadTask = {
-      abortController: new AbortController(),
-      items: downloadItem.payload,
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
-      options: {
-        areSharedItems: false,
-        downloadName: `${mockFile.name}.${mockFile.type}`,
-        showErrors: true,
-      },
-      taskId: mockTaskId,
-    };
     const mockUpdateProgress = vi.fn((progress: number) => progress);
 
     const getDatabaseFileSourceDataSpy = vi.fn(() => {
@@ -690,7 +661,6 @@ describe('downloadManagerService', () => {
   });
 
   it('should download folder items from task as zip using download service', async () => {
-    const mockTaskId = 'mock-task-id';
     const mockFolder2: DriveFolderData = { ...mockFolder, name: 'folder2' };
     const downloadItem: DownloadItem = {
       payload: [mockFolder as DriveItemData, mockFolder2 as DriveItemData],
@@ -715,34 +685,21 @@ describe('downloadManagerService', () => {
         downloadName: `${mockFile.name}.${mockFile.type}`,
         showErrors: true,
       },
-      taskId: mockTaskId,
+      taskId: 'mock-task-id',
+      failedItems: [],
     };
     const mockUpdateProgress = vi.fn((progress: number) => progress);
     const mockIncrementItemCount = vi.fn(() => 0);
 
     const closeZipSpy = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
 
-    const downloadFolderSpy = vi.fn();
+    const downloadFolderSpy = vi.fn().mockResolvedValue(1);
     (downloadFolderAsZip as Mock).mockImplementation(downloadFolderSpy);
 
     await DownloadManagerService.instance.downloadItems(mockTask, mockUpdateProgress, mockIncrementItemCount);
 
-    expect(downloadFolderSpy).toHaveBeenNthCalledWith(1, {
+    expect(downloadFolderSpy).toHaveBeenCalledWith({
       folder: mockFolder,
-      isSharedFolder: mockTask.options.areSharedItems,
-      foldersIterator: mockTask.createFoldersIterator,
-      filesIterator: mockTask.createFilesIterator,
-      updateProgress: expect.anything(),
-      updateNumItems: mockIncrementItemCount,
-      options: {
-        closeWhenFinished: false,
-        ...mockTask.credentials,
-        destination: expect.anything(),
-      },
-      abortController: mockTask.abortController,
-    });
-    expect(downloadFolderSpy).toHaveBeenNthCalledWith(2, {
-      folder: mockFolder2,
       isSharedFolder: mockTask.options.areSharedItems,
       foldersIterator: mockTask.createFoldersIterator,
       filesIterator: mockTask.createFilesIterator,
@@ -759,8 +716,7 @@ describe('downloadManagerService', () => {
   });
 
   it('should download file items from task as zip using download service', async () => {
-    const mockTaskId = 'mock-task-id';
-    const mockFileCache: DriveFileData = { ...mockFile, id: 2, name: 'File2', type: '' };
+    const mockFileCache: DriveFileData = { ...mockFile, id: 2, name: 'File2', type: 'txt' };
     const downloadItem: DownloadItem = {
       payload: [mockFile as DriveItemData, mockFileCache as DriveItemData],
       selectedWorkspace: null,
@@ -784,7 +740,8 @@ describe('downloadManagerService', () => {
         downloadName: `${mockFile.name}.${mockFile.type}`,
         showErrors: true,
       },
-      taskId: mockTaskId,
+      taskId: 'mock-task-id',
+      failedItems: [],
     };
 
     const levelsBlobsCache = new LevelsBlobsCache();
@@ -794,11 +751,12 @@ describe('downloadManagerService', () => {
       .mockResolvedValueOnce({
         id: mockFile.id,
         parentId: mockFile.folderId,
-        source: new Blob([]),
+        source: new Blob(['mock content']),
       })
       .mockResolvedValueOnce({
         id: mockFileCache.id,
         parentId: mockFileCache.folderId,
+        source: new Blob(['mock content']),
       });
     vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(lruCache);
 
@@ -806,8 +764,8 @@ describe('downloadManagerService', () => {
     const mockIncrementItemCount = vi.fn(() => 0);
 
     const checkIfCachedSourceIsOlderSpy = vi.fn().mockReturnValueOnce(false).mockReturnValueOnce(true);
-    const downloadedFileStreamSpy = vi.fn();
-    const binaryStreamToBlobSpy = vi.fn(() => new Blob([]));
+    const downloadedFileStreamSpy = vi.fn(() => new ReadableStream());
+    const binaryStreamToBlobSpy = vi.fn((stream) => new Blob(['mock content']));
     const updateDatabaseFileSourceDataSpy = vi.fn();
 
     (checkIfCachedSourceIsOlder as Mock).mockImplementation(checkIfCachedSourceIsOlderSpy);
@@ -821,7 +779,7 @@ describe('downloadManagerService', () => {
     await DownloadManagerService.instance.downloadItems(mockTask, mockUpdateProgress, mockIncrementItemCount);
 
     expect(addFileZipSpy).toHaveBeenNthCalledWith(1, `${mockFile.name}.${mockFile.type}`, expect.anything());
-    expect(addFileZipSpy).toHaveBeenNthCalledWith(2, mockFileCache.name, expect.anything());
+    expect(addFileZipSpy).toHaveBeenNthCalledWith(2, `${mockFileCache.name}.${mockFileCache.type}`, expect.anything());
     expect(addFileZipSpy).toHaveBeenCalledTimes(2);
     expect(closeZipSpy).toHaveBeenCalledTimes(1);
     expect(checkIfCachedSourceIsOlderSpy).toHaveBeenCalledTimes(2);

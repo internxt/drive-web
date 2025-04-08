@@ -7,9 +7,9 @@ import TaskLoggerItem from '../TaskLoggerItem/TaskLoggerItem';
 
 import { CaretDown, CircleNotch, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import RetryManager, { FileToRetry } from 'app/network/RetryManager';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
+import RetryManager, { RetryableTask } from 'app/network/RetryManager';
 
 const TaskLogger = (): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -17,7 +17,8 @@ const TaskLogger = (): JSX.Element => {
   const isOpen = useAppSelector((state) => state.ui.isFileLoggerOpen);
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [filesToRetry, setFilesToRetry] = useState(RetryManager.getFiles());
+  const [filesToRetry, setFilesToRetry] = useState(RetryManager.getTasks());
+  const [items, setItems] = useState<JSX.Element[]>([]);
 
   const allNotifications = useTaskManagerGetNotifications();
   const finishedNotifications = useTaskManagerGetNotifications({
@@ -26,8 +27,8 @@ const TaskLogger = (): JSX.Element => {
 
   const filesToRetryGroupedByTask = useMemo(
     () =>
-      filesToRetry.reduce<Record<string, FileToRetry[]>>((acc, file) => {
-        const relatedTaskId = file.params.relatedTaskId;
+      filesToRetry.reduce<Record<string, RetryableTask[]>>((acc, file) => {
+        const relatedTaskId = file.taskId;
         if (relatedTaskId) {
           if (!acc[relatedTaskId]) {
             acc[relatedTaskId] = [];
@@ -38,18 +39,29 @@ const TaskLogger = (): JSX.Element => {
       }, {}),
     [filesToRetry],
   );
-  const items: JSX.Element[] = allNotifications.map((n) => (
-    <TaskLoggerItem
-      notification={n}
-      task={tasksService.findTask(n.taskId)}
-      key={n.taskId}
-      filesToRetry={filesToRetryGroupedByTask[n.taskId]}
-    />
-  ));
+
+  const refreshItems = () => {
+    setItems(
+      allNotifications.map((n) => (
+        <TaskLoggerItem
+          notification={n}
+          task={tasksService.findTask(n.taskId)}
+          key={n.taskId}
+          filesToRetry={filesToRetryGroupedByTask[n.taskId]}
+        />
+      )),
+    );
+  };
+
+  useEffect(() => {
+    refreshItems();
+  }, [allNotifications, filesToRetryGroupedByTask]);
+
   const onCloseButtonClicked = () => {
     if (hasFinished) {
       dispatch(uiActions.setIsFileLoggerOpen(false));
       tasksService.clearTasks();
+      RetryManager.clearTasks();
     }
   };
 
@@ -60,10 +72,17 @@ const TaskLogger = (): JSX.Element => {
     return confirmationMessage; // WebKit, Chrome <34
   };
 
-  useEffect(() => {
-    const handleUpdate = () => setFilesToRetry([...RetryManager.getFiles()]);
+  const getTasksToRetry = () => {
+    const tasks = RetryManager.getTasks();
+    setFilesToRetry([...tasks]);
+    const handleUpdate = () => setFilesToRetry([...RetryManager.getTasks()]);
     RetryManager.subscribe(handleUpdate);
     return () => RetryManager.unsubscribe(handleUpdate);
+  };
+
+  useEffect(() => {
+    const unsubscribe = getTasksToRetry();
+    return unsubscribe;
   }, []);
 
   useEffect(() => {

@@ -1153,7 +1153,8 @@
     "messages": {
       "allProcessesHaveFinished": "Todos los procesos han finalizado",
       "processing": "Procesando {{pending}} de {{finished}}",
-      "failedToUpload": "Error al subir"
+      "failedToUpload": "Error al subir",
+      "failedToDownload": "Error al descargar"
     },
     "waiting": "Esperando",
     "paused": "Pausado",

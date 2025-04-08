@@ -9,6 +9,7 @@ import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/
 import { ConnectionLostError } from './requests';
 import errorService from 'app/core/services/error.service';
 import { TaskData, TaskStatus } from 'app/tasks/types';
+import RetryManager from 'app/network/RetryManager';
 
 describe('downloadManager', () => {
   beforeEach(() => {
@@ -59,6 +60,7 @@ describe('downloadManager', () => {
         downloadName: mockFolder.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -130,6 +132,7 @@ describe('downloadManager', () => {
         downloadName: mockFile.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -222,6 +225,7 @@ describe('downloadManager', () => {
         downloadName: mockFile.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -293,6 +297,7 @@ describe('downloadManager', () => {
         downloadName: mockFile.name,
         showErrors: true,
       },
+      failedItems: [],
     };
     const newConcurrency = DownloadManager.downloadQueue.concurrency + 1;
 
@@ -362,6 +367,7 @@ describe('downloadManager', () => {
         showErrors: true,
       },
       abortController,
+      failedItems: [],
     };
     const newConcurrency = DownloadManager.downloadQueue.concurrency + 1;
 
@@ -435,6 +441,7 @@ describe('downloadManager', () => {
         downloadName: mockFile.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -513,6 +520,7 @@ describe('downloadManager', () => {
         downloadName: mockFile.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -592,6 +600,7 @@ describe('downloadManager', () => {
         downloadName: mockFolder.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -675,6 +684,7 @@ describe('downloadManager', () => {
         downloadName: mockFile.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -685,5 +695,201 @@ describe('downloadManager', () => {
     } as TaskData);
 
     await expect(DownloadManager.downloadItem(downloadItem)).resolves.not.toThrow();
+  });
+
+  it('should handle server error and retry tasks', async () => {
+    const mockFile: DriveFileData = {
+      id: 0,
+      uuid: 'uuid',
+      bucket: 'bucket',
+      name: 'File1',
+      plainName: 'File1',
+      plain_name: 'File1',
+      type: 'jpg',
+      size: 100,
+      fileId: 'fileId1',
+      folder_id: 1,
+      folderId: 1,
+      folderUuid: 'uuid1',
+      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      deleted: false,
+      deletedAt: null,
+      currentThumbnail: null,
+      encrypt_version: EncryptionVersion.Aes03,
+      status: FileStatus.EXISTS,
+      thumbnails: [],
+    };
+
+    const downloadItem: DownloadItem = {
+      payload: [mockFile as DriveItemData],
+      selectedWorkspace: null,
+      workspaceCredentials: null,
+    };
+
+    const mockTask: DownloadTask = {
+      items: downloadItem.payload,
+      credentials: {
+        credentials: {
+          user: 'any-user',
+          pass: 'any-pass',
+        },
+        mnemonic: 'any-mnemonic',
+      },
+      taskId: 'any-taskId',
+      createFilesIterator: createFilesIterator,
+      createFoldersIterator: createFoldersIterator,
+      options: {
+        areSharedItems: false,
+        downloadName: mockFile.name,
+        showErrors: true,
+      },
+      failedItems: [],
+    };
+
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(tasksService, 'findTask').mockReturnValue({
+      id: 'any-taskId',
+      status: TaskStatus.Error,
+    } as TaskData);
+
+    const serverError = new Error('Server error');
+    const retryManagerSpy = vi.spyOn(RetryManager, 'addTasks').mockReturnValue();
+
+    vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockRejectedValue(serverError);
+
+    const downloadPromise = DownloadManager.downloadItem(downloadItem);
+    await expect(downloadPromise).rejects.toThrow(serverError);
+
+    expect(retryManagerSpy).toHaveBeenCalled();
+  });
+
+  it('should handle connection lost error and update task status', async () => {
+    const mockFile: DriveFileData = {
+      id: 0,
+      uuid: 'uuid',
+      bucket: 'bucket',
+      name: 'File1',
+      plainName: 'File1',
+      plain_name: 'File1',
+      type: 'jpg',
+      size: 100,
+      fileId: 'fileId1',
+      folder_id: 1,
+      folderId: 1,
+      folderUuid: 'uuid1',
+      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      deleted: false,
+      deletedAt: null,
+      currentThumbnail: null,
+      encrypt_version: EncryptionVersion.Aes03,
+      status: FileStatus.EXISTS,
+      thumbnails: [],
+    };
+
+    const downloadItem: DownloadItem = {
+      payload: [mockFile as DriveItemData],
+      selectedWorkspace: null,
+      workspaceCredentials: null,
+    };
+
+    const mockTask: DownloadTask = {
+      items: downloadItem.payload,
+      credentials: {
+        credentials: {
+          user: 'any-user',
+          pass: 'any-pass',
+        },
+        mnemonic: 'any-mnemonic',
+      },
+      taskId: 'any-taskId',
+      createFilesIterator: createFilesIterator,
+      createFoldersIterator: createFoldersIterator,
+      options: {
+        areSharedItems: false,
+        downloadName: mockFile.name,
+        showErrors: true,
+      },
+      failedItems: [],
+    };
+
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+
+    const connectionLostError = new ConnectionLostError();
+
+    vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockRejectedValue(connectionLostError);
+
+    const downloadPromise = DownloadManager.downloadItem(downloadItem);
+    await expect(downloadPromise).rejects.toThrow(connectionLostError);
+
+    expect(tasksService.updateTask).toHaveBeenCalledWith({
+      taskId: mockTask.taskId,
+      merge: { status: TaskStatus.Error, subtitle: expect.any(String) },
+    });
+  });
+
+  it('should remove retry items after successful download', async () => {
+    const mockFile: DriveFileData = {
+      id: 0,
+      uuid: 'uuid',
+      bucket: 'bucket',
+      name: 'File1',
+      plainName: 'File1',
+      plain_name: 'File1',
+      type: 'jpg',
+      size: 100,
+      fileId: 'fileId1',
+      folder_id: 1,
+      folderId: 1,
+      folderUuid: 'uuid1',
+      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      deleted: false,
+      deletedAt: null,
+      currentThumbnail: null,
+      encrypt_version: EncryptionVersion.Aes03,
+      status: FileStatus.EXISTS,
+      thumbnails: [],
+    };
+
+    const downloadItem: DownloadItem = {
+      payload: [mockFile as DriveItemData],
+      selectedWorkspace: null,
+      workspaceCredentials: null,
+    };
+
+    const mockTask: DownloadTask = {
+      items: downloadItem.payload,
+      credentials: {
+        credentials: {
+          user: 'any-user',
+          pass: 'any-pass',
+        },
+        mnemonic: 'any-mnemonic',
+      },
+      taskId: 'any-taskId',
+      createFilesIterator: createFilesIterator,
+      createFoldersIterator: createFoldersIterator,
+      options: {
+        areSharedItems: false,
+        downloadName: mockFile.name,
+        showErrors: true,
+      },
+      failedItems: [],
+    };
+
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    const retryManagerSpy = vi.spyOn(RetryManager, 'removeTaskByIdAndParams').mockReturnValue();
+
+    vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockResolvedValue();
+
+    await DownloadManager.downloadItem(downloadItem);
+
+    expect(retryManagerSpy).toHaveBeenCalledWith(mockTask.taskId, { id: mockFile.id });
   });
 });
