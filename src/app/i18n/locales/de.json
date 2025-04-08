@@ -4,40 +4,31 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "80 % Rabatt",
-    "title": "Auf alle Internxt-Tarife",
-    "cta": "Plan wählen",
+    "label": "Angebot 82%",
+    "title": "Neue Lifetime-Pläne!",
+    "cta": "Sichere dir deinen Plan",
     "guarantee": "30 Tage Geld-zurück-Garantie",
-    "lastCta": "*Angebot gültig für kostenlose oder neue Konten",
+    "lastCta": "*Das Angebot gilt für kostenlose Konten oder neue Kunden",
     "specialOfferLabel": "",
-    "specialOfferGift": " Beim Kauf eines Plans nimmst du an der Verlosung eines Internxt x Swiss Peak Rucksacks teil!",
+    "specialOfferGift": "Verlosung eines Internxt x Swiss Peak Rucksacks beim Kauf eines Lifetime-Plans!",
     "features": [
       "Internxt Drive, VPN und Antivirus",
-      "Post-quanten Kryptografie",
-      "Open Source und geprüft",
+      "Post-Quanten-Kryptographie",
+      "Open-Source und geprüft",
       "Verschlüsselte Übertragungen",
-      "Kein unbefugter Zugriff",
-      "Angebot endet am 8. April"
+      "Sonderthema für kostenlose Web-App",
+      "Das Angebot endet am 30. April"
     ]
   },
-
   "susbcriptionsBanner": {
     "title": "Maximiere deinen Plan!",
-    "features": [
-      "Post-Quanten-Verschlüsselung",
-      "Drive, VPN und Antivirus",
-      "Kommende Mail und Meet"
-    ],
+    "features": ["Post-Quanten-Verschlüsselung", "Drive, VPN und Antivirus", "Kommende Mail und Meet"],
     "description": "Erneuern Sie Ihr Abonnement und erhalten Sie unsere neuen Funktionen!",
     "cta": "80% Rabatt"
   },
   "lifetimesBanner": {
     "title": "Maximiere deinen Plan!",
-    "features": [
-      "Post-Quanten-Verschlüsselung",
-      "Drive, VPN und Antivirus",
-      "Kommende Mail und Meet"
-    ],
+    "features": ["Post-Quanten-Verschlüsselung", "Drive, VPN und Antivirus", "Kommende Mail und Meet"],
     "description": "Verbessern Sie Ihren Plan mit unseren neuen Funktionen und erweitern Sie Ihren Speicher!",
     "cta": "80% Rabatt"
   },
@@ -73,7 +64,8 @@
     "christmas": "Weihnachten",
     "superBowl": "Super Bowl",
     "sanValentin": "Valentinstag",
-    "stpatricks": "St. Patrick's"
+    "stpatricks": "St. Patrick's",
+    "idmanagement": "Identitätsmanagement"
   },
   "auth": {
     "email": "E-Mail",
@@ -1855,7 +1847,7 @@
         "free": "Erhalten Sie bis zu 10 GB kostenlos",
         "manageBilling": "Abrechnung verwalten",
         "freeForever": "Für immer kostenlos",
-        "billedAnnually":"jährlich abgerechnet",
+        "billedAnnually": "jährlich abgerechnet",
         "year": "Jahr",
         "month": "Monat",
         "lifetime": "Lebenslang",

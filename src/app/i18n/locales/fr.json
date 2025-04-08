@@ -4,39 +4,31 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Offre 80 %",
-    "title": "Sur tous les plans Internxt",
-    "cta": "Choisir un plan",
+    "label": "Offre 82%",
+    "title": "Nouveaux plans à vie !",
+    "cta": "Obtiens ton plan",
     "guarantee": "Garantie de remboursement de 30 jours",
-    "lastCta": "*Offre valable pour les nouveaux clients ou comptes gratuits",
+    "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
     "specialOfferLabel": "",
-    "specialOfferGift": " Pour l'achat d'un plan, participez au tirage au sort pour gagner un sac à dos Internxt x Swiss Peak !",
+    "specialOfferGift": "Tirage au sort d'un sac à dos Internxt x Swiss Peak pour l'achat d'un plan à vie !",
     "features": [
       "Internxt Drive, VPN et Antivirus",
       "Cryptographie post-quantique",
-      "Code source ouvert et audité",
+      "Open source et audité",
       "Transferts chiffrés",
-      "Aucun accès non autorisé",
-      "L'offre se termine le 8 avril"
+      "Thème spécial pour application web",
+      "L'offre se termine le 30 avril"
     ]
   },
   "susbcriptionsBanner": {
     "title": "Boostez votre abonnement !",
-    "features": [
-      "Chiffrement post-quantique",
-      "Drive, VPN et Antivirus",
-      "Mail et Meet à venir"
-    ],
+    "features": ["Chiffrement post-quantique", "Drive, VPN et Antivirus", "Mail et Meet à venir"],
     "description": "Renouvelez votre abonnement et profitez de nos nouvelles fonctionnalités !",
     "cta": "80% de réduction"
   },
   "lifetimesBanner": {
     "title": "Boostez votre abonnement !",
-    "features": [
-      "Chiffrement post-quantique",
-      "Drive, VPN et Antivirus",
-      "Mail et Meet à venir"
-    ],
+    "features": ["Chiffrement post-quantique", "Drive, VPN et Antivirus", "Mail et Meet à venir"],
     "description": "Améliorez votre plan avec nos nouvelles fonctionnalités et augmentez votre stockage !",
     "cta": "80% de réduction"
   },
@@ -72,7 +64,8 @@
     "christmas": "Noël",
     "superBowl": "Super Bowl",
     "valentines": "Saint Valentin",
-    "stpatricks": "Saint Patrick"
+    "stpatricks": "Saint Patrick",
+    "idmanagement": "Gestion de l'identité"
   },
   "auth": {
     "email": "Email",
@@ -1866,7 +1859,7 @@
         "free": "Obtenez jusqu'à 10 Go gratuitement",
         "manageBilling": "Gérer la facturation",
         "freeForever": "Gratuit à vie",
-        "billedAnnually":"facturé annuellement",
+        "billedAnnually": "facturé annuellement",
         "year": "Année",
         "month": "Mois",
         "lifetime": "À vie",
