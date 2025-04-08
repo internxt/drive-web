@@ -4,21 +4,20 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 80%!",
-    "title": "Get our new plans!",
+    "label": "Save 82%",
+    "title": "New lifetime plans!",
     "cta": "Claim deal",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
     "specialOfferLabel":"",
-    "specialOfferGift":"Buy any plan for a chance to win an Internxt x Swiss Peak backpack!",
+    "specialOfferGift":"Buy a lifetime plan for a chance to win an Internxt backpack!",
     "features": [
       "Drive, VPN, and Antivirus",
       "Post-quantum encryption",
       "Open-source and audited",
       "End-to-end encrypted transfers",
-      "No unauthorized access",
-      "Offer ends April 8"
-      
+      "Special theme for Web App",
+      "Offer ends April 30"
     ]
   },
   "susbcriptionsBanner": {
@@ -94,7 +93,9 @@
     "christmas": "Christmas",
     "superBowl": "Super Bowl",
     "valentines": "Valentine's Day",
-    "stpatricks": "St. Patrick's Day"
+    "stpatricks": "St. Patrick's Day",
+    "idmanagement": "Identity Management"
+
   },
   "auth": {
     "email": "Email",
