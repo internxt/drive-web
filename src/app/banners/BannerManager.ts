@@ -11,7 +11,8 @@ export class BannerManager {
   private readonly isTutorialCompleted: boolean;
   private readonly isNewAccount: boolean;
   private readonly bannerItemInLocalStorage: string | null;
-  private readonly todayDate: string;
+  private readonly todayD;
+  constructo;
 
   constructor(user: UserSettings, plan: PlanState, offerEndDay: Date, isNewAccount: boolean) {
     this.plan = plan;
@@ -58,9 +59,9 @@ export class BannerManager {
       'price_1OQ3CtFAOdcgaBMQFq2xX79Q',
     ];
 
-    const planId = this.plan.individualPlan?.productId;
+    const planId = this.plan.individualPlan?.planId;
 
-    return planId !== undefined && plansToShow.includes(planId);
+    return planId !== undefined && !plansToShow.includes(planId);
   }
 
   public getBannersToShow(): { showFreeBanner: boolean; showSubscriptionBanner: boolean } {
