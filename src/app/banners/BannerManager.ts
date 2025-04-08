@@ -8,18 +8,13 @@ const BANNER_NAME_FOR_FREE_USERS = 'show_free_users_banner';
 export class BannerManager {
   private readonly plan: PlanState;
   private readonly offerEndDay: Date;
-  private readonly isTutorialCompleted: boolean;
-  private readonly isNewAccount: boolean;
   private readonly bannerItemInLocalStorage: string | null;
-  private readonly todayD;
-  constructo;
+  private readonly todayDate: string;
 
-  constructor(user: UserSettings, plan: PlanState, offerEndDay: Date, isNewAccount: boolean) {
+  constructor(user: UserSettings, plan: PlanState, offerEndDay: Date) {
     this.plan = plan;
     this.offerEndDay = offerEndDay;
-    this.isTutorialCompleted = localStorageService.hasCompletedTutorial(user.userId);
     this.bannerItemInLocalStorage = localStorageService.get(BANNER_NAME_IN_LOCAL_STORAGE);
-    this.isNewAccount = isNewAccount;
     this.todayDate = new Date().toISOString().split('T')[0];
   }
 
