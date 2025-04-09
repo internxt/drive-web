@@ -1,12 +1,12 @@
 import { aes } from '@internxt/lib';
-import localStorageService from 'app/core/services/local-storage.service';
-import { DriveFolderData } from 'app/drive/types';
+import { DriveFolderData } from '../../drive/types';
 
-export const decryptedBackupFolderName = (folder: DriveFolderData) => {
-  const user = localStorageService.getUser();
+export const decryptedBackupFolderName = (backupFolder: DriveFolderData) => {
   return {
-    ...folder,
-    name: folder.plainName ?? aes.decrypt(folder.name, user?.backupsBucket ?? ''),
+    ...backupFolder,
+    name:
+      backupFolder.plainName ??
+      aes.decrypt(backupFolder.name, `${process.env.REACT_APP_CRYPTO_SECRET2}-${backupFolder.bucket}`),
     isFolder: true,
   };
 };
