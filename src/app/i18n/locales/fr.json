@@ -4,39 +4,31 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Offre 80 %",
-    "title": "Sur tous les plans Internxt",
-    "cta": "Choisir un plan",
+    "label": "Offre 82%",
+    "title": "Nouveaux plans à vie !",
+    "cta": "Obtiens ton plan",
     "guarantee": "Garantie de remboursement de 30 jours",
-    "lastCta": "*Offre valable pour les nouveaux clients ou comptes gratuits",
+    "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
     "specialOfferLabel": "",
-    "specialOfferGift": " Pour l'achat d'un plan, participez au tirage au sort pour gagner un sac à dos Internxt x Swiss Peak !",
+    "specialOfferGift": "Tirage au sort d'un sac à dos Internxt x Swiss Peak pour l'achat d'un plan à vie !",
     "features": [
       "Internxt Drive, VPN et Antivirus",
       "Cryptographie post-quantique",
-      "Code source ouvert et audité",
+      "Open source et audité",
       "Transferts chiffrés",
-      "Aucun accès non autorisé",
-      "L'offre se termine le 8 avril"
+      "Thème spécial pour application web",
+      "L'offre se termine le 30 avril"
     ]
   },
   "susbcriptionsBanner": {
     "title": "Boostez votre abonnement !",
-    "features": [
-      "Chiffrement post-quantique",
-      "Drive, VPN et Antivirus",
-      "Mail et Meet à venir"
-    ],
+    "features": ["Chiffrement post-quantique", "Drive, VPN et Antivirus", "Mail et Meet à venir"],
     "description": "Renouvelez votre abonnement et profitez de nos nouvelles fonctionnalités !",
     "cta": "80% de réduction"
   },
   "lifetimesBanner": {
     "title": "Boostez votre abonnement !",
-    "features": [
-      "Chiffrement post-quantique",
-      "Drive, VPN et Antivirus",
-      "Mail et Meet à venir"
-    ],
+    "features": ["Chiffrement post-quantique", "Drive, VPN et Antivirus", "Mail et Meet à venir"],
     "description": "Améliorez votre plan avec nos nouvelles fonctionnalités et augmentez votre stockage !",
     "cta": "80% de réduction"
   },
@@ -72,7 +64,8 @@
     "christmas": "Noël",
     "superBowl": "Super Bowl",
     "valentines": "Saint Valentin",
-    "stpatricks": "Saint Patrick"
+    "stpatricks": "Saint Patrick",
+    "idmanagement": "Gestion de l'identité"
   },
   "auth": {
     "email": "Email",
@@ -232,26 +225,77 @@
       "saving": "Vous économisez {{percent}}%",
       "planDetails": {
         "title": "Détails du plan :",
+         "commingSoon":"Bientôt disponible",
         "features": {
-          "individual": [
-            "{{spaceToUpgrade}} de stockage chiffré",
-            "Partage de fichiers et dossiers chiffrés",
-            "Partage de fichiers protégé par mot de passe",
-            "Accédez à vos fichiers depuis n'importe quel appareil",
-            "Accédez à tous nos services",
-            "Authentification à deux facteurs (2FA)",
-            "Support client premium",
-            "Garantie de remboursement de 30 jours"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} stockage/utilisateur",
-            "Partage de fichiers et de dossiers chiffrés",
-            "Créer et gérer des utilisateurs et des équipes",
-            "À partir de {{minimumSeats}} utilisateurs et jusqu'à {{maximumSeats}}",
-            "Conforme au GDPR",
-            "Gérer la facturation et les paiements du compte",
-            "Support client premium"
-          ]
+          "individuals": {
+            "1TB": {
+              "feature1":"Stockage chiffré 1TB à connaissance zéro",
+              "feature2":"Chiffrement post-quantique",
+              "feature3":"VPN ultra rapide illimité (FR)",
+              "feature4":"Antivirus",
+              "feature5":"Sauvegardez vos fichiers",
+              "feature6":"Partage de fichiers protégé par mot de passe",
+              "feature7":"Conformité RGPD",
+              "feature8":"Authentification à deux facteurs (2FA)",
+              "feature9":"Support CLI, WebDav & Rclone"
+            },
+            "3TB": {
+              "feature1":"Stockage chiffré 3TB à connaissance zéro",
+              "feature2":"Chiffrement post-quantique",
+              "feature3":"VPN ultra rapide illimité (FR, DE, PL)",
+              "feature4":"Antivirus",
+              "feature5":"Sauvegardez vos fichiers",
+              "feature6":"Partage de fichiers protégé par mot de passe",
+              "feature7":"Conformité RGPD",
+              "feature8":"Authentification à deux facteurs (2FA)",
+              "feature9":"Support CLI, WebDav & Rclone",
+              "feature10":"Meet (3 participants)",
+              "feature11":"Mail (3 adresses)"
+            },
+            "5TB": {
+              "feature1":"Stockage chiffré 5TB à connaissance zéro",
+              "feature2":"Chiffrement post-quantique",
+              "feature3":"VPN ultra rapide illimité (FR, DE, PL, CA, UK)",
+              "feature4":"Antivirus",
+              "feature5":"Sauvegardez vos fichiers",
+              "feature6":"Partage de fichiers protégé par mot de passe",
+              "feature7":"Conformité RGPD",
+              "feature8":"Authentification à deux facteurs (2FA)",
+              "feature9":"Support CLI, WebDav & Rclone",
+              "feature10":"Meet (5 participants)",
+              "feature11":"Mail (5 adresses)"
+            }
+          },
+          "business": {
+            "1TB": {
+              "feature1":"1TB de stockage/utilisateur",
+              "feature2":"Chiffrement post-quantique",
+              "feature3":"VPN ultra rapide et illimité (FR, DE, PL)",
+              "feature4":"Antivirus",
+              "feature5":"Sauvegarde de vos fichiers",
+              "feature6":"Partage de fichiers protégé par mot de passe",
+              "feature7":"Conformité au RGPD",
+              "feature8":"Authentification à deux facteurs (2FA)",
+              "feature9":"Support CLI, WebDav & Rclone",
+              "feature10":"Gérer la facturation et les paiements du compte",
+              "feature11":"Réunions jusqu'à 10 utilisateurs",
+              "feature12":"1 adresse e-mail personnalisée/utiliateur"
+            },
+            "2TB": {
+              "feature1":"2TB de stockage/utilisateur",
+              "feature2":"Chiffrement post-quantique",
+              "feature3":"VPN ultra rapide et illimité (FR, DE, PL, CA, UK)",
+              "feature4":"Antivirus",
+              "feature5":"Sauvegarde de vos fichiers",
+              "feature6":"Partage de fichiers protégé par mot de passe",
+              "feature7":"Conformité au RGPD",
+              "feature8":"Authentification à deux facteurs (2FA)",
+              "feature9":"Support CLI, WebDav & Rclone",
+              "feature10":"Gérer la facturation et les paiements du compte",
+              "feature11":"Réunions jusqu'à 100 utilisateurs ",
+              "feature12":"2 adresse e-mail personnalisée/utilisateur"
+            }
+          }
         }
       },
       "total": "Total ",
@@ -1815,7 +1859,7 @@
         "free": "Obtenez jusqu'à 10 Go gratuitement",
         "manageBilling": "Gérer la facturation",
         "freeForever": "Gratuit à vie",
-        "billedAnnually":"facturé annuellement",
+        "billedAnnually": "facturé annuellement",
         "year": "Année",
         "month": "Mois",
         "lifetime": "À vie",
