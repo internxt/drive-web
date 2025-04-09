@@ -85,7 +85,7 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
       const { user, token } = await userService.refreshUser();
 
       const { avatar, emailVerified, name, lastname, uuid } = user;
-      await syncAvatarIfNeeded(uuid ?? '', avatar);
+      await syncAvatarIfNeeded(uuid, avatar);
 
       dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
       dispatch(userActions.setToken(token));
@@ -102,7 +102,7 @@ export const refreshUserDataThunk = createAsyncThunk<void, void, { state: RootSt
     try {
       const { user } = await userService.refreshUserData(currentUser.uuid);
       const { avatar, emailVerified, name, lastname, uuid } = user;
-      await syncAvatarIfNeeded(uuid ?? '', avatar);
+      await syncAvatarIfNeeded(uuid, avatar);
 
       dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
     } catch (err) {
