@@ -20,12 +20,18 @@ vi.mock('../../drive/services/database.service', async () => {
   };
 });
 
+vi.mock('../../auth/services/user.service', async () => ({
+  default: {
+    downloadAvatar: vi.fn(),
+  },
+}));
+
 describe('Sync avatar if needed', () => {
   const uuid = '1234';
   const avatarUrl = 'https://url.com/avatar.jpg';
 
   beforeEach(() => {
-    vi.resetAllMocks();
+    vi.clearAllMocks();
   });
 
   it('When no avatar URL is provided, then it should not update the database', async () => {
