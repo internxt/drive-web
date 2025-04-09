@@ -9,22 +9,33 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia l'85%!",
-    "title": "Proteggi ciò che ami, per sempre!",
-    "subtitle": "Tema Web di Natale + Possibilità di vincere fino a 10 TB di spazio di archiviazione!",
-    "cta": "Scegli il piano",
+    "label": "Offerta 82%",
+    "title": "Nuovi piani a vita!",
+    "cta": "Ottieni il tuo piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
     "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
-    "boldBottomText": "Offerta speciale!",
-    "bottomText": "Vinci due zaini Internxt x Swiss Peak",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Estrazione di uno zaino Internxt x Swiss Peak con l'acquisto di un piano a vita!",
     "features": [
-      "Una vita di privacy, un pagamento unico",
-      "Archiviazione cloud crittografata end-to-end",
-      "Open-source e verificato",
-      "Trasferimenti crittografati end-to-end",
-      "Nessun accesso non autorizzato",
-      "L'offerta termina il 25 febbraio"
+      "Internxt Drive, VPN e Antivirus",
+      "Crittografia post-quantistica",
+      "Open source e verificato",
+      "Trasferimenti crittografati",
+      "Tema speciale per app web",
+      "L'offerta termina l'30 aprile"
     ]
+  },
+  "susbcriptionsBanner": {
+    "title": "Potenzia il tuo piano!",
+    "features": ["Crittografia post-quantistica", "Drive, VPN e Antivirus", "Prossimi Mail e Meet"],
+    "description": "Rinnova il tuo abbonamento e ottieni le nostre nuove funzionalità!",
+    "cta": "80% di sconto"
+  },
+  "lifetimesBanner": {
+    "title": "Potenzia il tuo piano!",
+    "features": ["Crittografia post-quantistica", "Drive, VPN e Antivirus", "Prossimi Mail e Meet"],
+    "description": "Aggiorna il tuo piano con le nostre nuove funzionalità e aumenta il tuo spazio di archiviazione!",
+    "cta": "80% di sconto"
   },
   "banner": {
     "label": "Proteggi i tuoi file per sempre",
@@ -72,7 +83,10 @@
     "starwars": "Star Wars",
     "halloween": "Halloween",
     "christmas": "Natale",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "San Valentino",
+    "stpatricks": "San Patrizio",
+    "idmanagement": "Gestione dell'identità"
   },
   "auth": {
     "email": "Email",
@@ -209,7 +223,7 @@
         "lifetime": "a vita"
       },
       "renewalTitle": {
-       "month": "mensile",
+        "month": "mensile",
         "year": "annuale",
         "lifetime": "a vita"
       },
@@ -430,7 +444,7 @@
               "title": "Modifica dei dettagli dell'account",
               "name": "Nome",
               "lastname": "Cognome",
-              "updateProfile": "Profilo aggiornato con successo",
+              "updatedProfile": "Profilo aggiornato con successo",
               "errorUpdatingProfile": "Non è stato possibile aggiornare il profilo"
             },
             "changeEmail": {
@@ -1144,7 +1158,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Tutti i processi sono stati completati",
-      "processing": "Elaborazione {{pending}} di {{finished}}"
+      "processing": "Elaborazione {{pending}} di {{finished}}",
+      "failedToUpload": "Caricamento fallito"
     },
     "waiting": "In attesa",
     "paused": "In pausa",
@@ -1826,7 +1841,7 @@
         "free": "Ottieni fino a 10 GB gratis",
         "manageBilling": "Gestisci la fatturazione",
         "freeForever": "Gratis per sempre",
-        "billedAnnually":"fatturato annualmente",
+        "billedAnnually": "fatturato annualmente",
         "year": "Anno",
         "month": "Mese",
         "lifetime": "A vita",

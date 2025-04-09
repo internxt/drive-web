@@ -3,23 +3,42 @@
     "title": "Gestiona tus archivos, la cuenta y la suscripción en la app",
     "logOut": "Cerrar sesión"
   },
-  "featuresBanner": {
-    "label": "¡Ahorra un 85%!",
-    "title": "¡Protege lo que quieres, para siempre!",
-    "subtitle": "Entra en nuestro sorteo y consigue hasta 10TB extra",
-    "cta": "Elige tu plan",
+ "featuresBanner": {
+    "label": "Oferta 82%",
+    "title": "Nuevos planes lifetime! ",
+    "cta": "Consigue tu plan",
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
-    "boldBottomText": "Oferta especial!  ",
-    "bottomText": " Entra en el sorteo y gana 2 mochilas Swiss Peak x Internxt",
+    "specialOfferLabel":"",
+    "specialOfferGift":" Sorteo mochila Internxt x Swiss Peak con la compra de un plan lifetime! ",
     "features": [
-      "Seguridad de por vida",
-      "Almacenamiento 100% privado y cifrado",
-      "Conocimiento cero y auditado",
-      "Cifrado de extremo a extremo",
-      "Cumple con RGPD",
-      "Oferta finaliza el 25 de febrero"
+      "Internxt Drive, VPN, y Antivirus ",
+      "Criptografía postcuántica",
+      "Código abierto y auditado",
+      "Transferencias cifradas",
+      "Tema especial para Web app",
+      "La oferta finaliza el 30 de abril"      
     ]
+  },
+  "susbcriptionsBanner": {
+    "title": "¡Mejora tu plan!",
+    "features": [
+      "Cifrado postcuántico",
+      "Drive, VPN y Antivirus",
+      "Mail y Meet próximamente"
+    ],
+    "description": "¡Renueva tu suscripción y obtén nuestras nuevas funciones!",
+    "cta": "80% de descuento"
+  },
+  "lifetimesBanner": {
+    "title": "¡Mejora tu plan!",
+    "features": [
+      "Cifrado postcuántico",
+      "Drive, VPN y Antivirus",
+      "Mail y Meet próximamente"
+    ],
+    "description": "¡Mejora tu plan con nuestras nuevas funciones y aumenta tu almacenamiento!",
+    "cta": "80% de descuento"
   },
   "valentinesBanner": {
     "title": "¡Amor sin limites!",
@@ -51,7 +70,10 @@
     "starwars": "Star Wars",
     "halloween": "Halloween",
     "christmas": "Navidad",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "San Valentín",
+    "stpatricks": "San Patricio",
+    "idmanagement": "Gestión de Identidad"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -414,7 +436,7 @@
             "editProfile": {
               "name": "Nombre",
               "lastname": "Apellido",
-              "updateProfile": "Perfil actualizado correctamente",
+              "updatedProfile": "Perfil actualizado correctamente",
               "errorUpdatingProfile": "No hemos podido actualizar su perfil"
             },
             "changeEmail": {
@@ -1131,7 +1153,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Todos los procesos han finalizado",
-      "processing": "Procesando {{pending}} de {{finished}}"
+      "processing": "Procesando {{pending}} de {{finished}}",
+      "failedToUpload": "Error al subir"
     },
     "waiting": "Esperando",
     "paused": "Pausado",

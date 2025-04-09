@@ -1,5 +1,4 @@
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { DriveFileData, DriveItemData } from '../../types';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { getAppConfig } from 'app/core/services/config.service';
@@ -30,6 +29,7 @@ import {
 } from './utils/fileViewerWrapperUtils';
 import { FileToUpload } from '../../../drive/services/file.service/types';
 import { MenuItemType } from '@internxt/ui';
+import { DownloadManager } from '../../../network/DownloadManager';
 
 export type TopBarActionsMenu =
   | Array<MenuItemType<DriveItemData>>
@@ -63,7 +63,9 @@ const FileViewerWrapper = ({
   sharedKeyboardShortcuts,
 }: FileViewerWrapperProps): JSX.Element => {
   const dispatch = useAppDispatch();
-  const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
+  const isWorkspace = !!selectedWorkspace;
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
@@ -83,7 +85,15 @@ const FileViewerWrapper = ({
 
   const driveItemActions = useDriveItemActions(currentFile);
 
-  const onDownload = () => currentFile && dispatch(storageThunks.downloadItemsThunk([currentFile as DriveItemData]));
+  const onDownload = () => {
+    if (currentFile) {
+      DownloadManager.downloadItem({
+        payload: [currentFile as DriveItemData],
+        selectedWorkspace,
+        workspaceCredentials,
+      });
+    }
+  };
 
   useEffect(() => {
     if (currentFile?.plainName === currentFile.name) {

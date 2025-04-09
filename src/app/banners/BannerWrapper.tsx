@@ -6,24 +6,49 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 import FeaturesBanner from './FeaturesBanner';
 import { BannerManager } from './BannerManager';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import SubscriptionBanner from './SubscriptionBanner';
+import { userSelectors } from 'app/store/slices/user';
 
-const OFFER_END_DAY = new Date('2025-02-25');
+const OFFER_END_DAY = new Date('2025-04-18');
 
 const BannerWrapper = (): JSX.Element => {
-  const [showBanner, setShowBanner] = useState<boolean>(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  const isNewAccount = useSelector((state: RootState) => userSelectors.hasSignedToday(state));
 
-  const bannerManager = new BannerManager(user, plan, OFFER_END_DAY);
+  const bannerManager = useMemo(
+    () => new BannerManager(user, plan, OFFER_END_DAY),
+    [user, plan, isNewAccount],
+  );
+
+  const [bannersToShow, setBannersToShow] = useState({ showFreeBanner: false, showSubscriptionBanner: false });
 
   useEffect(() => {
-    bannerManager.handleBannerDisplay(setShowBanner);
-  }, [user, plan]);
+    const newBanners = bannerManager.getBannersToShow();
+    setBannersToShow(() => ({
+      showFreeBanner: newBanners.showFreeBanner,
+      showSubscriptionBanner: newBanners.showSubscriptionBanner,
+    }));
+  }, [bannerManager]);
 
-  const onCloseBanner = () => bannerManager.onCloseBanner(setShowBanner);
+  const onCloseBanner = (bannerKey: keyof typeof bannersToShow) => {
+    bannerManager.onCloseBanner();
+    setBannersToShow((prev) => ({ ...prev, [bannerKey]: false }));
+  };
 
-  return <>{showBanner && <FeaturesBanner showBanner={showBanner} onClose={onCloseBanner} />}</>;
+  return (
+    <>
+      {bannersToShow.showFreeBanner && <FeaturesBanner showBanner onClose={() => onCloseBanner('showFreeBanner')} />}
+      {bannersToShow.showSubscriptionBanner && (
+        <SubscriptionBanner
+          showBanner
+          onClose={() => onCloseBanner('showSubscriptionBanner')}
+          isLifetimeUser={plan.individualSubscription?.type === 'lifetime'}
+        />
+      )}
+    </>
+  );
 };
 
 export default BannerWrapper;

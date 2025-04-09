@@ -4,22 +4,33 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "節省 85%！",
-    "title": "永遠保護你所愛的一切！",
-    "subtitle": "聖誕主題網頁應用 + 最高可贏取 10TB 儲存空間！",
-    "cta": "選擇方案",
+    "label": "優惠 82%",
+    "title": "全新終身方案！",
+    "cta": "獲取你的方案",
     "guarantee": "30 天退款保證",
     "lastCta": "*此優惠適用於免費帳戶或新客戶",
-    "boldBottomText": "特別優惠！",
-    "bottomText": "贏取兩個 Internxt x Swiss Peak 背包",
+    "specialOfferLabel": "",
+    "specialOfferGift": "購買終身方案，即可參加 Internxt x Swiss Peak 背包抽獎！",
     "features": [
-      "終身隱私保護，一次性付款",
-      "端對端加密雲端存儲",
-      "開源並經過審核",
-      "端對端加密傳輸",
-      "無未經授權的訪問",
-      "優惠截止日期：2 月 25 日"
+      "Internxt 雲端硬碟、VPN 和防毒軟體",
+      "後量子加密技術",
+      "開源且通過審核",
+      "加密數據傳輸",
+      "免費網頁應用程式專屬主題",
+      "優惠截止日期：4 月 30 日"
     ]
+  },
+  "susbcriptionsBanner": {
+    "title": "升級您的計畫！",
+    "features": ["後量子加密", "雲端硬碟、VPN 和防毒軟體", "即將推出郵件和會議"],
+    "description": "續訂您的訂閱，即可享受我們的新功能！",
+    "cta": "8折優惠"
+  },
+  "lifetimesBanner": {
+    "title": "升級您的計畫！",
+    "features": ["後量子加密", "雲端硬碟、VPN 和防毒軟體", "即將推出郵件和會議"],
+    "description": "升級您的計畫，享受我們的新功能，並擴展您的存儲空間！",
+    "cta": "8折優惠"
   },
   "valentinesBanner": {
     "title": "愛無極限！",
@@ -72,7 +83,10 @@
     "starwars": "星際大戰",
     "halloween": "Halloween",
     "christmas": "聖誕節",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "情人節",
+    "stpatricks": "St. Patrick's",
+    "idmanagement": "Identity Management"
   },
   "auth": {
     "email": "電子郵件",
@@ -1114,7 +1128,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "所有進程已完成",
-      "processing": "處理中 {{pending}} 個，共 {{finished}} 個"
+      "processing": "處理中 {{pending}} 個，共 {{finished}} 個",
+      "failedToUpload": "上傳失敗"
     },
     "waiting": "等待中",
     "paused": "已暫停",
@@ -1798,7 +1813,7 @@
         "free": "免費獲取最多 10GB",
         "manageBilling": "管理帳單",
         "freeForever": "永久免費",
-        "billedAnnually":"按年計費",
+        "billedAnnually": "按年計費",
         "year": "年",
         "month": "月",
         "lifetime": "終身",

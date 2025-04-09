@@ -17,6 +17,14 @@ export interface FileUploadOptions {
   abortController?: AbortController;
   ownerUserAuthenticationData?: OwnerUserAuthenticationData;
   abortCallback?: (abort?: () => void) => void;
+  isUploadedFromFolder?: boolean;
+}
+
+class RetryableFileError extends Error {
+  constructor(public file: FileToUpload) {
+    super('Retryable file');
+    this.name = 'RetryableFileError';
+  }
 }
 
 export async function uploadFile(
@@ -49,6 +57,7 @@ export async function uploadFile(
       progressCallback: (progress) => {
         updateProgressCallback(progress);
       },
+      isUploadedFromFolder: options.isUploadedFromFolder,
     },
     continueUploadOptions,
   );
@@ -56,6 +65,7 @@ export async function uploadFile(
   options.abortCallback?.(abort?.abort);
 
   const fileId = await promise;
+  if (fileId === undefined) throw new RetryableFileError(file);
 
   const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
   const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;

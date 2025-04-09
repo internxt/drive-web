@@ -4,22 +4,33 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 85%!",
-    "title": "Protège ce que tu aimes, pour toujours !",
-    "subtitle": "Thème Web de Noël + Chance de gagner jusqu'à 10 To de stockage !",
-    "cta": "Choisir un plan",
+    "label": "Offre 82%",
+    "title": "Nouveaux plans à vie !",
+    "cta": "Obtiens ton plan",
     "guarantee": "Garantie de remboursement de 30 jours",
-    "lastCta": "*Offre réservée aux comptes gratuits ou nouveaux clients",
-    "boldBottomText": "Offre spéciale !",
-    "bottomText": "Gagne deux sacs à dos Internxt x Swiss Peak",
+    "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Tirage au sort d'un sac à dos Internxt x Swiss Peak pour l'achat d'un plan à vie !",
     "features": [
-      "Une vie privée à vie, un paiement unique",
-      "Stockage cloud chiffré de bout en bout",
-      "Open-source et audité",
-      "Transferts chiffrés de bout en bout",
-      "Aucun accès non autorisé",
-      "L'offre se termine le 25 février"
+      "Internxt Drive, VPN et Antivirus",
+      "Cryptographie post-quantique",
+      "Open source et audité",
+      "Transferts chiffrés",
+      "Thème spécial pour application web",
+      "L'offre se termine le 30 avril"
     ]
+  },
+  "susbcriptionsBanner": {
+    "title": "Boostez votre abonnement !",
+    "features": ["Chiffrement post-quantique", "Drive, VPN et Antivirus", "Mail et Meet à venir"],
+    "description": "Renouvelez votre abonnement et profitez de nos nouvelles fonctionnalités !",
+    "cta": "80% de réduction"
+  },
+  "lifetimesBanner": {
+    "title": "Boostez votre abonnement !",
+    "features": ["Chiffrement post-quantique", "Drive, VPN et Antivirus", "Mail et Meet à venir"],
+    "description": "Améliorez votre plan avec nos nouvelles fonctionnalités et augmentez votre stockage !",
+    "cta": "80% de réduction"
   },
   "valentinesBanner": {
     "title": "L'amour sans limites !",
@@ -51,7 +62,10 @@
     "starwars": "Star Wars",
     "halloween": "Halloween",
     "christmas": "Noël",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "Saint Valentin",
+    "stpatricks": "Saint Patrick",
+    "idmanagement": "Gestion de l'identité"
   },
   "auth": {
     "email": "Email",
@@ -413,7 +427,7 @@
               "title": "Modifier les détails du compte",
               "name": "Prénom",
               "lastname": "Nom",
-              "updateProfile": "Profil mis à jour avec succès",
+              "updatedProfile": "Profil mis à jour avec succès",
               "errorUpdatingProfile": "Nous n'avons pas pu mettre à jour votre profil"
             },
             "changeEmail": {
@@ -1111,7 +1125,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Tous les processus ont été complétés",
-      "processing": "Traitement {{pending}} de {{finished}}"
+      "processing": "Traitement {{pending}} de {{finished}}",
+      "failedToUpload": "Échec du téléchargement"
     },
     "waiting": "En attente",
     "paused": "En pause",
@@ -1793,7 +1808,7 @@
         "free": "Obtenez jusqu'à 10 Go gratuitement",
         "manageBilling": "Gérer la facturation",
         "freeForever": "Gratuit à vie",
-        "billedAnnually":"facturé annuellement",
+        "billedAnnually": "facturé annuellement",
         "year": "Année",
         "month": "Mois",
         "lifetime": "À vie",

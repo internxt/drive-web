@@ -4,22 +4,41 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 85%!",
-    "title": "Protect what you love, forever!",
-    "subtitle": "Christmas Web App Theme + Chance to win up to 10TB of storage!",
-    "cta": "Choose plan",
+    "label": "Save 82%",
+    "title": "New lifetime plans!",
+    "cta": "Claim deal",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
-    "boldBottomText": "Special Offer! ",
-    "bottomText": " Win two Internxt x Swiss Peak backpacks",
+    "specialOfferLabel":"",
+    "specialOfferGift":"Buy a lifetime plan for a chance to win an Internxt backpack!",
     "features": [
-      "A lifetime of privacy, one-time payment",
-      "End-to-end encrypted cloud storage",
+      "Drive, VPN, and Antivirus",
+      "Post-quantum encryption",
       "Open-source and audited",
       "End-to-end encrypted transfers",
-      "No unauthorized access",
-      "Offer ends February 25th"
+      "Special theme for Web App",
+      "Offer ends April 30"
     ]
+  },
+  "susbcriptionsBanner": {
+    "title": "Supercharge your plan!",
+    "features":[
+      "Post-quantum encryption",
+      "Drive, VPN and Antivirus",
+      "Upcoming Mail and Meet"
+    ],
+    "description": "Renew your subscription and get our new features!",
+    "cta": "80% OFF"
+  },
+  "lifetimesBanner": {
+    "title": "Supercharge your plan!",
+    "features":[
+      "Post-quantum encryption",
+      "Drive, VPN and Antivirus",
+      "Upcoming Mail and Meet"
+    ],
+    "description": "Upgrade your plan with our new features and stack your storage!",
+    "cta": "80% OFF"
   },
   "valentinesBanner": {
     "title": "Love without limits!",
@@ -72,7 +91,11 @@
     "starwars": "Star Wars",
     "halloween": "Halloween",
     "christmas": "Christmas",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "Valentine's Day",
+    "stpatricks": "St. Patrick's Day",
+    "idmanagement": "Identity Management"
+
   },
   "auth": {
     "email": "Email",
@@ -1152,7 +1175,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "All processes have finished",
-      "processing": "Processing {{pending}} of {{finished}}"
+      "processing": "Processing {{pending}} of {{finished}}",
+      "failedToUpload": "Failed to upload"
     },
     "waiting": "Waiting",
     "paused": "Paused",

@@ -19,10 +19,12 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 
 import { Role } from '@internxt/sdk/dist/drive/share/types';
-import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { ContextMenu } from '@internxt/ui';
 import { t } from 'i18next';
 import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
+import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
@@ -30,14 +32,15 @@ import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.se
 import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/CreateFolderDialog';
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
+import { useTrashPagination } from '../../../drive/hooks/trash/useTrashPagination';
 import {
   transformInputFilesToJSON,
   transformJsonFilesToItems,
 } from '../../../drive/services/folder.service/uploadFolderInput.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { uploadFoldersWithManager } from '../../../network/UploadFolderManager';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { AdvancedSharedItem } from '../../../share/types';
-import { ContextMenu } from '@internxt/ui';
 import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -47,12 +50,15 @@ import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import { getAncestorsAndSetNamePath } from '../../../store/slices/storage/storage.thunks/goToFolderThunk';
 import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
+import { IRoot } from '../../../store/slices/storage/types';
 import { uiActions } from '../../../store/slices/ui';
 import { userSelectors } from '../../../store/slices/user';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
 import { TaskStatus } from '../../../tasks/types';
 import iconService from '../../services/icon.service';
@@ -68,11 +74,6 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
-import { getAncestorsAndSetNamePath } from '../../../store/slices/storage/storage.thunks/goToFolderThunk';
-import { IRoot } from '../../../store/slices/storage/types';
-import { useTrashPagination } from '../../../drive/hooks/trash/useTrashPagination';
-import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { uploadFoldersWithManager } from '../../../network/UploadFolderManager';
 
 export const UPLOAD_ITEMS_LIMIT = 3000;
 
@@ -214,9 +215,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     status: [TaskStatus.Success],
   });
   const divRef = useRef<HTMLDivElement | null>(null);
+  const hasSignedToday = useAppSelector(userSelectors.hasSignedToday);
 
   const showTutorial =
-    useAppSelector(userSelectors.hasSignedToday) &&
+    envService.isProduction() &&
+    hasSignedToday &&
     !isSignUpTutorialCompleted &&
     (showSecondTutorialStep || currentTutorialStep === 0);
   const signupSteps = getSignUpSteps(
@@ -636,7 +639,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       )}
       <BannerWrapper />
 
-      <div className="z-0 flex h-full w-full max-w-full grow">
+      <div className="flex h-full w-full max-w-full grow">
         {!isTrash && isOpen && (
           <ContextMenu
             item={'item'}
@@ -682,7 +685,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         <div className="flex w-1 grow flex-col">
           <div className="z-10 flex flex-wrap min-h-14 max-w-full shrink-0 justify-between px-5 py-2 ">
             <div
-              className={`mr-20 ${isTrash ? 'min-w-0' : 'min-w-[200px]'} flex w-full flex-1 flex-row flex-wrap items-center text-lg ${titleClassName ?? ''}`}
+              className={`mr-20 ${isTrash ? 'min-w-0' : 'min-w-[200px]'} flex w-full z-20 flex-1 flex-row flex-wrap items-center text-lg ${titleClassName ?? ''}`}
             >
               {title}
             </div>
@@ -732,7 +735,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             />
           )}
 
-          <div className="z-0 flex h-full grow flex-col justify-between overflow-y-hidden">
+          <div className="flex h-full grow flex-col justify-between overflow-y-hidden">
             <WarningMessageWrapper />
 
             <div className="flex grow flex-col justify-between overflow-hidden">
