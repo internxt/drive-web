@@ -8,7 +8,11 @@ import userService from '../../../auth/services/user.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView, LocalStorageItem } from '../../../core/types';
-import { deleteDatabaseProfileAvatar, updateDatabaseProfileAvatar } from '../../../drive/services/database.service';
+import {
+  deleteDatabaseProfileAvatar,
+  getDatabaseProfileAvatar,
+  updateDatabaseProfileAvatar,
+} from '../../../drive/services/database.service';
 import { saveAvatarToDatabase } from '../../../newSettings/Sections/Account/Account/components/AvatarWrapper';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import tasksService from '../../../tasks/services/tasks.service';
@@ -21,6 +25,7 @@ import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
 
 import errorService from '../../../core/services/error.service';
 import { isTokenExpired } from '../../utils';
+import { isAvatarExpired } from 'app/utils/avatarUtils';
 
 export interface UserState {
   isInitializing: boolean;
@@ -84,8 +89,10 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
       const { user, token } = await userService.refreshUser();
 
       const { avatar, emailVerified, name, lastname, uuid } = user;
+      const storedUserAvatar = await getDatabaseProfileAvatar();
+      const shouldUpdateDBAvatar = avatar && (!storedUserAvatar?.srcURL || isAvatarExpired(storedUserAvatar.srcURL));
 
-      if (avatar) {
+      if (shouldUpdateDBAvatar) {
         const avatarBlob = await userService.downloadAvatar(avatar);
         await updateDatabaseProfileAvatar({
           sourceURL: avatar,
@@ -109,8 +116,10 @@ export const refreshUserDataThunk = createAsyncThunk<void, void, { state: RootSt
     try {
       const { user } = await userService.refreshUserData(currentUser.uuid);
       const { avatar, emailVerified, name, lastname, uuid } = user;
+      const storedUserAvatar = await getDatabaseProfileAvatar();
+      const shouldUpdateDBAvatar = avatar && (!storedUserAvatar?.srcURL || isAvatarExpired(storedUserAvatar.srcURL));
 
-      if (avatar) {
+      if (shouldUpdateDBAvatar) {
         const avatarBlob = await userService.downloadAvatar(avatar);
         await updateDatabaseProfileAvatar({
           sourceURL: avatar,
