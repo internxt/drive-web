@@ -22,8 +22,7 @@ describe('Check if avatar URL is expired or not', () => {
       .toISOString()
       .replace(/[:-]/g, '')
       .replace(/\.\d{3}Z$/, 'Z')
-      .replace('Z', '')
-      .replace('T', 'T');
+      .replace('Z', '');
 
     const url = `https://s3.wasabisys.com/file.png?X-Amz-Date=${dateStr}Z&X-Amz-Expires=3600`;
 
