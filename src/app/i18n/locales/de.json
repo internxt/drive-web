@@ -219,26 +219,77 @@
       "saving": "Sie sparen {{percent}}%",
       "planDetails": {
         "title": "Plandetails:",
+        "commingSoon":"Demnächst",
         "features": {
-          "individual": [
-            "{{spaceToUpgrade}} verschlüsselter Speicher",
-            "Verschlüsseltes Teilen von Dateien und Ordnern",
-            "Passwortgeschütztes Teilen von Dateien",
-            "Zugriff auf Ihre Dateien von jedem Gerät",
-            "Zugang zu allen unseren Diensten",
-            "Zwei-Faktor-Authentifizierung (2FA)",
-            "Premium-Kundensupport",
-            "30-Tage-Geld-zurück-Garantie"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} Speicher/Benutzer",
-            "Verschlüsseltes Teilen von Dateien und Ordnern",
-            "Benutzer und Teams erstellen und verwalten",
-            "Ab {{minimumSeats}} Benutzer bis zu {{maximumSeats}}",
-            "GDPR-konform",
-            "Kontofakturierung und -zahlungen verwalten",
-            "Premium-Kundensupport"
-          ]
+          "individuals": {
+            "1TB": {
+              "feature1":"1TB Zero-Knowledge-verschlüsselter Speicher",
+              "feature2":"Post-Quanten-Verschlüsselung",
+              "feature3":"Ultraschnelles unbegrenztes VPN (FR)",
+              "feature4":"Antivirus",
+              "feature5":"Sichern Sie Ihre Dateien",
+              "feature6":"Passwortgeschütztes Datei-Sharing",
+              "feature7":"DSGVO-Konformität",
+              "feature8":"Zwei-Faktor-Authentifizierung (2FA)",
+              "feature9":"CLI-, WebDav- & Rclone-Unterstützung"
+            },
+            "3TB": {
+              "feature1":"3TB Zero-Knowledge-verschlüsselter Speicher",
+              "feature2":"Post-Quanten-Verschlüsselung",
+              "feature3":"Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
+              "feature4":"Antivirus",
+              "feature5":"Sichern Sie Ihre Dateien",
+              "feature6":"Passwortgeschütztes Datei-Sharing",
+              "feature7":"DSGVO-Konformität",
+              "feature8":"Zwei-Faktor-Authentifizierung (2FA)",
+              "feature9":"CLI-, WebDav- & Rclone-Unterstützung",
+              "feature10":"Meet (3 Teilnehmer)",
+              "feature11":"Mail (3 Adressen)"
+            },
+            "5TB": {
+              "feature1":"5TB Zero-Knowledge-verschlüsselter Speicher",
+              "feature2":"Post-Quanten-Verschlüsselung",
+              "feature3":"Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
+              "feature4":"Antivirus",
+              "feature5":"Sichern Sie Ihre Dateien",
+              "feature6":"Passwortgeschütztes Datei-Sharing",
+              "feature7":"DSGVO-Konformität",
+              "feature8":"Zwei-Faktor-Authentifizierung (2FA)",
+              "feature9":"CLI-, WebDav- & Rclone-Unterstützung",
+              "feature10":"Meet (5 Teilnehmer)",
+              "feature11":"Mail (5 Adressen)"
+            }
+          },
+          "business": {
+            "1TB": {
+              "feature1":"1TB Speicher pro Benutzer",
+              "feature2":"Post-Quanten-Verschlüsselung",
+              "feature3":"Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
+              "feature4":"Antivirus",
+              "feature5":"Sichern Sie Ihre Dateien",
+              "feature6":"Passwortgeschütztes Datei-Sharing",
+              "feature7":"DSGVO-Konformität",
+              "feature8":"Zwei-Faktor-Authentifizierung (2FA)",
+              "feature9":"CLI-, WebDav- & Rclone-Unterstützung",
+              "feature10":"Kontoverwaltung für Abrechnung & Zahlungen",
+              "feature11":"Meetings mit bis zu 100 Benutzern",
+              "feature12":"1 benutzerdefinierte E-Mail-Adresse pro Benutzer"
+            },
+            "2TB": {
+              "feature1":"2TB Speicher pro Benutzer",
+              "feature2":"Post-Quanten-Verschlüsselung",
+              "feature3":"Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
+              "feature4":"Antivirus",
+              "feature5":"Sichern Sie Ihre Dateien",
+              "feature6":"Passwortgeschütztes Datei-Sharing",
+              "feature7":"DSGVO-Konformität",
+              "feature8":"Zwei-Faktor-Authentifizierung (2FA)",
+              "feature9":"CLI-, WebDav- & Rclone-Unterstützung",
+              "feature10":"Kontoverwaltung für Abrechnung & Zahlungen",
+              "feature11":"Meetings mit bis zu 100 Benutzern ",
+              "feature12":"2 benutzerdefinierte E-Mail-Adresse pro Benutzer"
+            }
+          }
         }
       },
       "total": "Gesamt ",

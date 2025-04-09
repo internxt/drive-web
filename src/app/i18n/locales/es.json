@@ -230,26 +230,77 @@
       "saving": "Estás ahorrando un {{percent}}%",
       "planDetails": {
         "title": "Detalles del plan:",
+        "commingSoon":"Muy Pronto",
         "features": {
-          "individual": [
-            "{{spaceToUpgrade}} de almacenamiento encriptado",
-            "Compartir archivos y carpetas encriptados",
-            "Compartir archivos con protección por contraseña",
-            "Acceda a sus archivos desde cualquier dispositivo",
-            "Acceso a todos nuestros servicios",
-            "Autenticación de dos factores (2FA)",
-            "Soporte al cliente premium",
-            "Garantía de devolución de dinero de 30 días"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} almacenamiento/usuario",
-            "Compartir archivos y carpetas cifrados",
-            "Crear y gestionar usuarios y equipos",
-            "Desde {{minimumSeats}} usuarios y hasta {{maximumSeats}}",
-            "Cumple con el GDPR",
-            "Gestionar facturación y pagos de la cuenta",
-            "Soporte al cliente premium"
-          ]
+          "individuals": {
+            "1TB":{ 
+              "feature1": "1TB de almacenamiento",
+              "feature2": "Criptografía postcuántica",
+              "feature3": "VPN de alta velocidad ilimitado (FR)",
+              "feature4": "Antivirus",
+              "feature5": "Copias de seguridad",
+              "feature6": "Comparte archivos protegidos con contraseña",
+              "feature7": "Cumple con RGPD",
+              "feature8": "Autenticación de dos factores (2FA)",
+              "feature9":"CLI, WebDav & Rclone"
+            },
+            "3TB": {
+              "feature1":"3TB de almacenamiento",
+              "feature2":"Criptografía postcuántica",
+              "feature3":"VPN de alta velocidad ilimitado (FR, DE, PL)",
+              "feature4":"Antivirus",
+              "feature5":"Copias de seguridad",
+              "feature6":"Comparte archivos protegidos con contraseña",
+              "feature7":"Cumple con RGPD",
+              "feature8":"Autenticación de dos factores (2FA)",
+              "feature9":"CLI, WebDav & Rclone",
+              "feature10":"Meet (3 participantes)",
+              "feature11":"Mail (3 correos)"
+            },
+            "5TB": {
+              "feature1":"5TB de almacenamiento",
+              "feature2":"Criptografía postcuántica",
+              "feature3":"VPN de alta velocidad ilimitado (FR, DE, PL, CA, UK)",
+              "feature4":"Antivirus",
+              "feature5":"Copias de seguridad",
+              "feature6":"Comparte archivos protegidos con contraseña",
+              "feature7":"Cumple con RGPD",
+              "feature8":"Autenticación de dos factores (2FA)",
+              "feature9":"CLI, WebDav & Rclone",
+              "feature10":"Meet (5 participantes)",
+              "feature11":"Mail (5 correos)"
+            }
+          },
+          "business": {
+            "1TB": {
+              "feature1":"1TB de almacenamiento",
+              "feature2":"Cifrado postcuántico y conocimiento cero",
+              "feature3":"VPN de alta velocidad ilimitado (FR, DE, PL)",
+              "feature4":"Antivirus",
+              "feature5":"Copias de seguridad",
+              "feature6":"Comparte archivos protegidos con contraseña",
+              "feature7":"Cumple con RGPD",
+              "feature8":"Autenticación de dos factores (2FA)",
+              "feature9":"CLI/WebDav/Rclone",
+              "feature10":"Gestiona la facturación y los pagos de la cuenta",
+              "feature11":"Reuniones de hasta 10 usuarios",
+              "feature12":"1 email personalizado por usuario "
+            },
+            "2TB": {
+              "feature1":"2TB de almacenamiento",
+              "feature2":"Cifrado postcuántico y conocimiento cero",
+              "feature3":"VPN de alta velocidad ilimitado (FR, DE, PL, CA, UK)",
+              "feature4":"Antivirus",
+              "feature5":"Copias de seguridad",
+              "feature6":"Comparte archivos protegidos con contraseña",
+              "feature7":"Cumple con RGPD",
+              "feature8":"Autenticación de dos factores (2FA)",
+              "feature9":"CLI/WebDav/Rclone",
+              "feature10":"Gestiona la facturación y los pagos de la cuenta",
+              "feature11":"Reuniones de hasta 100 usuarios ",
+              "feature12":"2 emails personalizados por usuario "
+            }
+          }
         }
       },
       "total": "Total",
