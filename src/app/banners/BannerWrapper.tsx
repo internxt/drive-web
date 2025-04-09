@@ -17,10 +17,7 @@ const BannerWrapper = (): JSX.Element => {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const isNewAccount = useSelector((state: RootState) => userSelectors.hasSignedToday(state));
 
-  const bannerManager = useMemo(
-    () => new BannerManager(user, plan, OFFER_END_DAY),
-    [user, plan, isNewAccount],
-  );
+  const bannerManager = useMemo(() => new BannerManager(user, plan, OFFER_END_DAY), [user, plan, isNewAccount]);
 
   const [bannersToShow, setBannersToShow] = useState({ showFreeBanner: false, showSubscriptionBanner: false });
 
