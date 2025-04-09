@@ -18,6 +18,7 @@ import { StorageState } from '../storage.model';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
 import { IRoot } from '../types';
+import { wait } from '../../../../utils/timeUtils';
 
 interface UploadFolderThunkPayload {
   root: IRoot;
@@ -43,9 +44,6 @@ const handleFoldersRename = async (root: IRoot, currentFolderId: string) => {
   const folder: IRoot = { ...root, name: finalFilename };
 
   return folder;
-};
-const wait = (ms: number): Promise<void> => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 const stopUploadTask = async (
@@ -170,6 +168,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
                 showErrors: false,
                 abortController: uploadFolderAbortController,
                 isRetriedUpload,
+                isUploadedFromFolder: true,
               },
               filesProgress: { filesUploaded: alreadyUploaded, totalFilesToUpload: itemsUnderRoot },
             }),

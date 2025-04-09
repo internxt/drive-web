@@ -4,37 +4,31 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Spare 80%!",
-    "title": "Entdecke alle neuen Internxt-Tarife!",
-    "cta": "Wähle deinen Plan",
+    "label": "Angebot 82%",
+    "title": "Neue Lifetime-Pläne!",
+    "cta": "Sichere dir deinen Plan",
     "guarantee": "30 Tage Geld-zurück-Garantie",
     "lastCta": "*Das Angebot gilt für kostenlose Konten oder neue Kunden",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Verlosung eines Internxt x Swiss Peak Rucksacks beim Kauf eines Lifetime-Plans!",
     "features": [
-      "VPN und Premium-Antivirus",
-      "Postquanten-Kryptographie",
-      "Open Source und geprüft",
+      "Internxt Drive, VPN und Antivirus",
+      "Post-Quanten-Kryptographie",
+      "Open-Source und geprüft",
       "Verschlüsselte Übertragungen",
-      "Kostenloses Thema für deine Web-App",
-      "Das Angebot endet am 30. März"
+      "Sonderthema für kostenlose Web-App",
+      "Das Angebot endet am 30. April"
     ]
   },
   "susbcriptionsBanner": {
     "title": "Maximiere deinen Plan!",
-    "features": [
-      "Post-Quanten-Verschlüsselung",
-      "Drive, VPN und Antivirus",
-      "Kommende Mail und Meet"
-    ],
+    "features": ["Post-Quanten-Verschlüsselung", "Drive, VPN und Antivirus", "Kommende Mail und Meet"],
     "description": "Erneuern Sie Ihr Abonnement und erhalten Sie unsere neuen Funktionen!",
     "cta": "80% Rabatt"
   },
   "lifetimesBanner": {
     "title": "Maximiere deinen Plan!",
-    "features": [
-      "Post-Quanten-Verschlüsselung",
-      "Drive, VPN und Antivirus",
-      "Kommende Mail und Meet"
-    ],
+    "features": ["Post-Quanten-Verschlüsselung", "Drive, VPN und Antivirus", "Kommende Mail und Meet"],
     "description": "Verbessern Sie Ihren Plan mit unseren neuen Funktionen und erweitern Sie Ihren Speicher!",
     "cta": "80% Rabatt"
   },
@@ -70,7 +64,8 @@
     "christmas": "Weihnachten",
     "superBowl": "Super Bowl",
     "sanValentin": "Valentinstag",
-    "stpatricks": "St. Patrick's"
+    "stpatricks": "St. Patrick's",
+    "idmanagement": "Identitätsmanagement"
   },
   "auth": {
     "email": "E-Mail",
@@ -224,26 +219,77 @@
       "saving": "Sie sparen {{percent}}%",
       "planDetails": {
         "title": "Plandetails:",
+        "commingSoon":"Demnächst",
         "features": {
-          "individual": [
-            "{{spaceToUpgrade}} verschlüsselter Speicher",
-            "Verschlüsseltes Teilen von Dateien und Ordnern",
-            "Passwortgeschütztes Teilen von Dateien",
-            "Zugriff auf Ihre Dateien von jedem Gerät",
-            "Zugang zu allen unseren Diensten",
-            "Zwei-Faktor-Authentifizierung (2FA)",
-            "Premium-Kundensupport",
-            "30-Tage-Geld-zurück-Garantie"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} Speicher/Benutzer",
-            "Verschlüsseltes Teilen von Dateien und Ordnern",
-            "Benutzer und Teams erstellen und verwalten",
-            "Ab {{minimumSeats}} Benutzer bis zu {{maximumSeats}}",
-            "GDPR-konform",
-            "Kontofakturierung und -zahlungen verwalten",
-            "Premium-Kundensupport"
-          ]
+          "individuals": {
+            "1TB": {
+              "feature1":"1TB Zero-Knowledge-verschlüsselter Speicher",
+              "feature2":"Post-Quanten-Verschlüsselung",
+              "feature3":"Ultraschnelles unbegrenztes VPN (FR)",
+              "feature4":"Antivirus",
+              "feature5":"Sichern Sie Ihre Dateien",
+              "feature6":"Passwortgeschütztes Datei-Sharing",
+              "feature7":"DSGVO-Konformität",
+              "feature8":"Zwei-Faktor-Authentifizierung (2FA)",
+              "feature9":"CLI-, WebDav- & Rclone-Unterstützung"
+            },
+            "3TB": {
+              "feature1":"3TB Zero-Knowledge-verschlüsselter Speicher",
+              "feature2":"Post-Quanten-Verschlüsselung",
+              "feature3":"Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
+              "feature4":"Antivirus",
+              "feature5":"Sichern Sie Ihre Dateien",
+              "feature6":"Passwortgeschütztes Datei-Sharing",
+              "feature7":"DSGVO-Konformität",
+              "feature8":"Zwei-Faktor-Authentifizierung (2FA)",
+              "feature9":"CLI-, WebDav- & Rclone-Unterstützung",
+              "feature10":"Meet (3 Teilnehmer)",
+              "feature11":"Mail (3 Adressen)"
+            },
+            "5TB": {
+              "feature1":"5TB Zero-Knowledge-verschlüsselter Speicher",
+              "feature2":"Post-Quanten-Verschlüsselung",
+              "feature3":"Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
+              "feature4":"Antivirus",
+              "feature5":"Sichern Sie Ihre Dateien",
+              "feature6":"Passwortgeschütztes Datei-Sharing",
+              "feature7":"DSGVO-Konformität",
+              "feature8":"Zwei-Faktor-Authentifizierung (2FA)",
+              "feature9":"CLI-, WebDav- & Rclone-Unterstützung",
+              "feature10":"Meet (5 Teilnehmer)",
+              "feature11":"Mail (5 Adressen)"
+            }
+          },
+          "business": {
+            "1TB": {
+              "feature1":"1TB Speicher pro Benutzer",
+              "feature2":"Post-Quanten-Verschlüsselung",
+              "feature3":"Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
+              "feature4":"Antivirus",
+              "feature5":"Sichern Sie Ihre Dateien",
+              "feature6":"Passwortgeschütztes Datei-Sharing",
+              "feature7":"DSGVO-Konformität",
+              "feature8":"Zwei-Faktor-Authentifizierung (2FA)",
+              "feature9":"CLI-, WebDav- & Rclone-Unterstützung",
+              "feature10":"Kontoverwaltung für Abrechnung & Zahlungen",
+              "feature11":"Meetings mit bis zu 100 Benutzern",
+              "feature12":"1 benutzerdefinierte E-Mail-Adresse pro Benutzer"
+            },
+            "2TB": {
+              "feature1":"2TB Speicher pro Benutzer",
+              "feature2":"Post-Quanten-Verschlüsselung",
+              "feature3":"Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
+              "feature4":"Antivirus",
+              "feature5":"Sichern Sie Ihre Dateien",
+              "feature6":"Passwortgeschütztes Datei-Sharing",
+              "feature7":"DSGVO-Konformität",
+              "feature8":"Zwei-Faktor-Authentifizierung (2FA)",
+              "feature9":"CLI-, WebDav- & Rclone-Unterstützung",
+              "feature10":"Kontoverwaltung für Abrechnung & Zahlungen",
+              "feature11":"Meetings mit bis zu 100 Benutzern ",
+              "feature12":"2 benutzerdefinierte E-Mail-Adresse pro Benutzer"
+            }
+          }
         }
       },
       "total": "Gesamt ",
@@ -432,7 +478,7 @@
               "nameError": "Der Name muss zwischen einem und zwanzig Zeichen lang sein",
               "lastnameError": "Der Nachname muss zwischen einem und zwanzig Zeichen lang sein"
             },
-            "updateProfile": "Profil erfolgreich aktualisiert",
+            "updatedProfile": "Profil erfolgreich aktualisiert",
             "errorUpdatingProfile": "Wir konnten dein Profil nicht aktualisieren"
           },
           "support": {
@@ -1111,7 +1157,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Alle Prozesse sind abgeschlossen",
-      "processing": "Wird bearbeitet {{pending}} von {{finished}}"
+      "processing": "Wird bearbeitet {{pending}} von {{finished}}",
+      "failedToUpload": "Fehler beim Hochladen"
     },
     "waiting": "Warten",
     "paused": "Pausiert",
@@ -1800,7 +1847,7 @@
         "free": "Erhalten Sie bis zu 10 GB kostenlos",
         "manageBilling": "Abrechnung verwalten",
         "freeForever": "Für immer kostenlos",
-        "billedAnnually":"jährlich abgerechnet",
+        "billedAnnually": "jährlich abgerechnet",
         "year": "Jahr",
         "month": "Monat",
         "lifetime": "Lebenslang",

@@ -1,7 +1,7 @@
 import databaseService, { DatabaseCollection, DriveItemBlobData, LRUCacheTypes } from '.';
 import { ICacheStorage, LRUCache, LRUCacheStruture } from './LRUCache';
 
-class LevelsBlobsCache implements ICacheStorage<DriveItemBlobData> {
+export class LevelsBlobsCache implements ICacheStorage<DriveItemBlobData> {
   async getSize(key: string): Promise<number> {
     const blobItem = await databaseService.get(DatabaseCollection.LevelsBlobs, key);
     return blobItem?.source?.size || 0;

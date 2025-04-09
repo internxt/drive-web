@@ -9,37 +9,31 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia l'80%!",
-    "title": "Scopri tutti i nuovi piani di Internxt!",
-    "cta": "Scegli il tuo piano",
+    "label": "Offerta 82%",
+    "title": "Nuovi piani a vita!",
+    "cta": "Ottieni il tuo piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
     "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Estrazione di uno zaino Internxt x Swiss Peak con l'acquisto di un piano a vita!",
     "features": [
-      "VPN e Antivirus Premium",
+      "Internxt Drive, VPN e Antivirus",
       "Crittografia post-quantistica",
-      "Codice open source e verificato",
+      "Open source e verificato",
       "Trasferimenti crittografati",
-      "Tema gratuito per la tua web app",
-      "L'offerta termina il 30 marzo"
+      "Tema speciale per app web",
+      "L'offerta termina l'30 aprile"
     ]
   },
   "susbcriptionsBanner": {
     "title": "Potenzia il tuo piano!",
-    "features": [
-      "Crittografia post-quantistica",
-      "Drive, VPN e Antivirus",
-      "Prossimi Mail e Meet"
-    ],
+    "features": ["Crittografia post-quantistica", "Drive, VPN e Antivirus", "Prossimi Mail e Meet"],
     "description": "Rinnova il tuo abbonamento e ottieni le nostre nuove funzionalità!",
     "cta": "80% di sconto"
   },
   "lifetimesBanner": {
     "title": "Potenzia il tuo piano!",
-    "features": [
-      "Crittografia post-quantistica",
-      "Drive, VPN e Antivirus",
-      "Prossimi Mail e Meet"
-    ],
+    "features": ["Crittografia post-quantistica", "Drive, VPN e Antivirus", "Prossimi Mail e Meet"],
     "description": "Aggiorna il tuo piano con le nostre nuove funzionalità e aumenta il tuo spazio di archiviazione!",
     "cta": "80% di sconto"
   },
@@ -91,7 +85,8 @@
     "christmas": "Natale",
     "superBowl": "Super Bowl",
     "valentines": "San Valentino",
-    "stpatricks": "San Patrizio"
+    "stpatricks": "San Patrizio",
+    "idmanagement": "Gestione dell'identità"
   },
   "auth": {
     "email": "Email",
@@ -228,7 +223,7 @@
         "lifetime": "a vita"
       },
       "renewalTitle": {
-       "month": "mensile",
+        "month": "mensile",
         "year": "annuale",
         "lifetime": "a vita"
       },
@@ -247,26 +242,76 @@
       "saving": "Stai risparmiando {{percent}}%",
       "planDetails": {
         "title": "Dettagli del piano:",
+         "commingSoon":"Prossimamente",
         "features": {
-          "individual": [
-            "{{spaceToUpgrade}} di spazio di archiviazione crittografato",
-            "Condivisione di file e cartelle crittografati",
-            "Condivisione di file protetta da password",
-            "Accedi ai tuoi file da qualsiasi dispositivo",
-            "Accesso a tutti i nostri servizi",
-            "Autenticazione a due fattori (2FA)",
-            "Assistenza clienti premium",
-            "Garanzia di rimborso di 30 giorni"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} spazio di archiviazione/utente",
-            "Condivisione di file e cartelle crittografata",
-            "Creare e gestire utenti e team",
-            "A partire da {{minimumSeats}} utenti e fino a {{maximumSeats}}",
-            "Conforme al GDPR",
-            "Gestire la fatturazione e i pagamenti dell'account",
-            "Supporto clienti premium"
-          ]
+          "individuals": {
+            "1TB": {
+              "feature1":"1TB di archiviazione crittografata a conoscenza zero",
+              "feature2":"Crittografia post-quantistica",
+              "feature3":"VPN ultraveloce illimitata (FR)",
+              "feature4":"Antivirus",
+              "feature5":"Esegui il backup dei tuoi file",
+              "feature6":"Condivisione di file protetta da password",
+              "feature7":"Conformità GDPR",
+              "feature8":"Autenticazione a due fattori (2FA)",
+              "feature9":"Supporto CLI, WebDav e Rclone" },   
+            "3TB": {
+              "feature1":"3TB di archiviazione crittografata a conoscenza zero",
+              "feature2":"Crittografia post-quantistica",
+              "feature3":"VPN ultraveloce illimitata (FR, DE, PL)",
+              "feature4":"Antivirus",
+              "feature5":"Esegui il backup dei tuoi file",
+              "feature6":"Condivisione di file protetta da password",
+              "feature7":"Conformità GDPR",
+              "feature8":"Autenticazione a due fattori (2FA)",
+              "feature9":"Supporto CLI, WebDav e Rclone",
+              "feature10":"Meet (3 partecipanti)",
+              "feature11":  "Mail (3 indirizzi)"
+            },
+            "5TB": {
+              "feature1":"5TB di archiviazione crittografata a conoscenza zero",
+              "feature2":"Crittografia post-quantistica",
+              "feature3":"VPN ultraveloce illimitata (FR, DE, PL, CA, UK)",
+              "feature4":"Antivirus",
+              "feature5":"Esegui il backup dei tuoi file",
+              "feature6":"Condivisione di file protetta da password",
+              "feature7":"Conformità GDPR",
+              "feature8":"Autenticazione a due fattori (2FA)",
+              "feature9":"Supporto CLI, WebDav e Rclone",
+              "feature10":"Meet (5 partecipanti)",
+              "feature11": "Mail (5 indirizzi)"
+            }  
+          },
+          "business": {
+            "1TB": {
+              "feature1":"1TB di archiviazione/utente",
+              "feature2":"Crittografia post-quantistica",
+              "feature3":"VPN ultra veloce e illimitata (FR, DE, PL)",
+              "feature4":"Antivirus",
+              "feature5":"Backup dei tuoi file",
+              "feature6":"Condivisione di file protetta da password",
+              "feature7":"Conformità GDPR",
+              "feature8":"Autenticazione a due fattori (2FA)",
+              "feature9":"Supporto CLI, WebDav & Rclone",
+              "feature10":"Gestisci fatturazione e pagamenti dell'account",
+              "feature11":"Riunioni fino a 10 utenti ",
+              "feature12":"1 indirizzo email personalizzato/utente"
+            },
+            "2TB": {
+              "feature1":"2TB di archiviazione/utente",
+              "feature2":"Crittografia post-quantistica",
+              "feature3":"VPN ultra veloce e illimitata (FR, DE, PL, CA, UK)",
+              "feature4":"Antivirus",
+              "feature5":"Backup dei tuoi file",
+              "feature6":"Condivisione di file protetta da password",
+              "feature7":"Conformità GDPR",
+              "feature8":"Autenticazione a due fattori (2FA)",
+              "feature9":"Supporto CLI, WebDav & Rclone",
+              "feature10":"Gestisci fatturazione e pagamenti dell'account",
+              "feature11":"Riunioni fino a 100 utenti",
+              "feature12":"2 indirizzo email personalizzato/utente"
+            }
+          }
         }
       },
       "total": "Totale ",
@@ -449,7 +494,7 @@
               "title": "Modifica dei dettagli dell'account",
               "name": "Nome",
               "lastname": "Cognome",
-              "updateProfile": "Profilo aggiornato con successo",
+              "updatedProfile": "Profilo aggiornato con successo",
               "errorUpdatingProfile": "Non è stato possibile aggiornare il profilo"
             },
             "changeEmail": {
@@ -1163,7 +1208,8 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Tutti i processi sono stati completati",
-      "processing": "Elaborazione {{pending}} di {{finished}}"
+      "processing": "Elaborazione {{pending}} di {{finished}}",
+      "failedToUpload": "Caricamento fallito"
     },
     "waiting": "In attesa",
     "paused": "In pausa",
@@ -1845,7 +1891,7 @@
         "free": "Ottieni fino a 10 GB gratis",
         "manageBilling": "Gestisci la fatturazione",
         "freeForever": "Gratis per sempre",
-        "billedAnnually":"fatturato annualmente",
+        "billedAnnually": "fatturato annualmente",
         "year": "Anno",
         "month": "Mese",
         "lifetime": "A vita",

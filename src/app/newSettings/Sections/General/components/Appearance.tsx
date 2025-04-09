@@ -14,6 +14,7 @@ import { isHalloweenThemeAvailable } from '../../../../payment/utils/checkHallow
 import { isChristmasThemeAvailable } from '../../../../payment/utils/checkChristmasCode';
 import { isSuperbowlThemeAvailable } from '../../../../payment/utils/checkSuperBowlCode';
 import { iStPatricksThemeAvailable } from '../../../../payment/utils/checkStPatrciksCode';
+import { isManagementIdThemeAvailable } from '../../../../payment/utils/checkManagementIdCode';
 import { RootState } from '../../../../store';
 
 function ThemeButton({ theme, toggleTheme, isSelected, img }) {
@@ -117,6 +118,21 @@ const Appearance = () => {
           iStPatricksThemeAvailable
         ) {
           setAppearances([...appearances, { theme: 'stpatricks', img: appearance_dark }]);
+        }
+      })
+      .catch((err) => {
+        const error = err as Error;
+        errorService.reportError(error);
+      });
+    isManagementIdThemeAvailable(plan)
+      .then((isManagementIdThemeAvailable) => {
+        if (
+          !appearances.some(
+            (appearance) => appearance.theme === 'idmanagement' && appearance.img === appearance_dark,
+          ) &&
+          isManagementIdThemeAvailable
+        ) {
+          setAppearances([...appearances, { theme: 'idmanagement', img: appearance_dark }]);
         }
       })
       .catch((err) => {

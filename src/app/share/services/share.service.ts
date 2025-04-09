@@ -20,7 +20,7 @@ import {
   UpdateUserRoleResponse,
 } from '@internxt/sdk/dist/drive/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import folderService from 'app/drive/services/folder.service';
+import { downloadFolderAsZip } from '../../drive/services/folder.service';
 import copy from 'copy-to-clipboard';
 import crypto from 'crypto';
 import { t } from 'i18next';
@@ -32,11 +32,11 @@ import localStorageService from '../../core/services/local-storage.service';
 import workspacesService from '../../core/services/workspace.service';
 import { hybridDecryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
-import {
-  downloadItemsAsZipThunk,
-  downloadItemsThunk,
-} from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { domainManager } from './DomainManager';
+import { DownloadManager } from '../../network/DownloadManager';
+import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { AdvancedSharedItem } from '../types';
+import { DriveFolderData } from '../../drive/types';
 
 interface CreateShareResponse {
   created: boolean;
@@ -373,15 +373,12 @@ export const getPublicShareLink = async (
     }
     const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
 
-    window.focus();
     const domains = domainManager.getDomainsList();
     const selectedDomain = getRandomElement(domains);
 
     const publicShareLink = `${selectedDomain}/d/sh/${itemType}/${sharingId}/${plainCode}`;
-    // workaround to enable copy after login, because first copy always fails
-    copy(publicShareLink);
-    const isCopied = copy(publicShareLink);
-    if (!isCopied) throw Error('Error copying shared public link');
+
+    await copyTextToClipboard(publicShareLink);
 
     notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
     return publicSharingItemData;
@@ -391,6 +388,14 @@ export const getPublicShareLink = async (
       type: ToastType.Error,
     });
     errorService.reportError(error);
+  }
+};
+
+export const copyTextToClipboard = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    copy(text);
   }
 };
 
@@ -617,45 +622,36 @@ export async function downloadSharedFiles({
   creds,
   decryptedEncryptionKey,
   selectedItems,
-  dispatch,
   token,
-  workspaceId,
   teamId,
+  selectedWorkspace,
+  workspaceCredentials,
 }: {
   creds: { user: string; pass: string };
   decryptedEncryptionKey: string;
-  selectedItems: any[];
-  dispatch: any;
+  selectedItems: AdvancedSharedItem[];
   token?: string;
-  workspaceId?: string;
   teamId?: string;
+  selectedWorkspace: WorkspaceData | null;
+  workspaceCredentials: WorkspaceCredentialsDetails | null;
 }): Promise<void> {
-  const decryptedKey = decryptedEncryptionKey;
+  const sharingCredentials = {
+    credentials: { ...creds },
+    mnemonic: decryptedEncryptionKey,
+  };
+
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
-    try {
-      const sharingOptions = {
-        credentials: { ...creds },
-        mnemonic: decryptedKey,
-      };
-
-      dispatch(downloadItemsThunk([{ ...selectedItems[0], sharingOptions }]));
-    } catch (err) {
-      const error = errorService.castError(err);
-      errorService.reportError(error);
-      const itemError = selectedItems.length > 1 ? 'downloadingFiles' : 'downloadingFile';
-
-      notificationsService.show({
-        text: t(`error.${itemError}`, { message: error.message }),
-        type: ToastType.Error,
-      });
-    }
+    await DownloadManager.downloadItem({
+      payload: selectedItems,
+      selectedWorkspace,
+      workspaceCredentials,
+      downloadCredentials: sharingCredentials,
+    });
   } else {
     const initPage = 0;
     const itemsPerPage = 15;
-    let folderName;
-    if (selectedItems.length === 1 && selectedItems[0].isFolder) {
-      folderName = selectedItems[0].name;
-    }
+
+    const workspaceId = selectedWorkspace?.workspace.id;
 
     const createFoldersIterator = (directoryUuid: string, resourcesToken?: string) => {
       return new DirectorySharedFolderIterator(
@@ -673,17 +669,30 @@ export async function downloadSharedFiles({
       );
     };
 
-    dispatch(
-      downloadItemsAsZipThunk({
-        items: selectedItems,
-        credentials: creds,
-        mnemonic: decryptedKey,
-        fileIterator: createFilesIterator,
-        folderIterator: createFoldersIterator,
+    const payload: AdvancedSharedItem[] = [];
+
+    for (const selectedItem of selectedItems) {
+      const item = selectedItem;
+      payload.push({
+        ...item,
+        credentials: {
+          ...item.credentials,
+          mnemonic: await decryptMnemonic(item.encryptionKey),
+        },
+      });
+    }
+
+    await DownloadManager.downloadItem({
+      payload,
+      selectedWorkspace,
+      workspaceCredentials,
+      downloadCredentials: sharingCredentials,
+      createFilesIterator,
+      createFoldersIterator,
+      downloadOptions: {
         areSharedItems: true,
-        sharedFolderName: folderName,
-      }),
-    );
+      },
+    });
   }
 }
 
@@ -744,16 +753,15 @@ export async function downloadPublicSharedFolder({
     isPublicShare: true,
   };
 
-  return folderService.downloadSharedFolderAsZip(
-    item.id,
-    item.plainName,
-    createFoldersIterator,
-    createFilesIterator,
-    (progress) => ({}),
-    incrementItemCount,
-    item.uuid,
+  return downloadFolderAsZip({
+    folder: item as DriveFolderData,
+    isSharedFolder: true,
+    foldersIterator: createFoldersIterator,
+    filesIterator: createFilesIterator,
+    updateProgress: () => {},
+    updateNumItems: incrementItemCount,
     options,
-  );
+  });
 }
 
 export const processInvitation = async (
