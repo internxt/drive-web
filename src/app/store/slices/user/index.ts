@@ -8,7 +8,7 @@ import userService from '../../../auth/services/user.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView, LocalStorageItem } from '../../../core/types';
-import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
+import { deleteDatabaseProfileAvatar, updateDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import { saveAvatarToDatabase } from '../../../newSettings/Sections/Account/Account/components/AvatarWrapper';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import tasksService from '../../../tasks/services/tasks.service';
@@ -83,7 +83,16 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
     if (isExpired || forceRefresh) {
       const { user, token } = await userService.refreshUser();
 
-      const { avatar, emailVerified, name, lastname } = user;
+      const { avatar, emailVerified, name, lastname, uuid } = user;
+
+      if (avatar) {
+        const avatarBlob = await userService.downloadAvatar(avatar);
+        await updateDatabaseProfileAvatar({
+          sourceURL: avatar,
+          avatarBlob: avatarBlob,
+          uuid: uuid ?? '',
+        });
+      }
 
       dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
       dispatch(userActions.setToken(token));
@@ -99,7 +108,16 @@ export const refreshUserDataThunk = createAsyncThunk<void, void, { state: RootSt
 
     try {
       const { user } = await userService.refreshUserData(currentUser.uuid);
-      const { avatar, emailVerified, name, lastname } = user;
+      const { avatar, emailVerified, name, lastname, uuid } = user;
+
+      if (avatar) {
+        const avatarBlob = await userService.downloadAvatar(avatar);
+        await updateDatabaseProfileAvatar({
+          sourceURL: avatar,
+          avatarBlob: avatarBlob,
+          uuid: uuid ?? '',
+        });
+      }
 
       dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
     } catch (err) {
