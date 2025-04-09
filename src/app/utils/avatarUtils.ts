@@ -7,17 +7,12 @@ function getAvatarExpiration(url: string): Date | null {
 
   if (!dateMatch || !expiresMatch) return null;
 
-  const issuedAt = dateMatch[1];
-  const expiresIn = parseInt(expiresMatch[1], 10);
+  const isoString = dateMatch[1].replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})$/, '$1-$2-$3T$4:$5:$6Z');
+  const issuedDate = new Date(isoString);
+  const expiresIn = Number(expiresMatch[1]);
 
-  const year = Number(issuedAt.slice(0, 4));
-  const month = Number(issuedAt.slice(4, 6)) - 1;
-  const day = Number(issuedAt.slice(6, 8));
-  const hour = Number(issuedAt.slice(9, 11));
-  const minute = Number(issuedAt.slice(11, 13));
-  const second = Number(issuedAt.slice(13, 15));
+  if (isNaN(issuedDate.getTime())) return null;
 
-  const issuedDate = new Date(Date.UTC(year, month, day, hour, minute, second));
   return new Date(issuedDate.getTime() + expiresIn * 1000);
 }
 
