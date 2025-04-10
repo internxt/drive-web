@@ -1,7 +1,7 @@
 import { aes } from '@internxt/lib';
 import { DriveFolderData } from '../../drive/types';
 
-export const decryptedBackupFolderName = (backupFolder: DriveFolderData) => {
+export const mappedBackup = (backupFolder: DriveFolderData) => {
   return {
     ...backupFolder,
     name:
