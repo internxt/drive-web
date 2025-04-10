@@ -1,5 +1,5 @@
-import userService from '../../auth/services/user.service';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import userService from '../../auth/services/user.service';
 import { getAvatarExpiration, isAvatarExpired, syncAvatarIfNeeded } from './avatarUtils';
 import { getDatabaseProfileAvatar, updateDatabaseProfileAvatar } from '../../drive/services/database.service';
 

@@ -21,7 +21,7 @@ import { workspacesActions } from '../../../store/slices/workspaces/workspacesSt
 
 import errorService from '../../../core/services/error.service';
 import { isTokenExpired } from '../../utils';
-import { syncAvatarIfNeeded } from 'app/utils/avatar/avatarUtils';
+import { syncAvatarIfNeeded } from '../../../utils/avatar/avatarUtils';
 
 export interface UserState {
   isInitializing: boolean;

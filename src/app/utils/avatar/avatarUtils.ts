@@ -1,5 +1,5 @@
-import userService from 'app/auth/services/user.service';
-import { getDatabaseProfileAvatar, updateDatabaseProfileAvatar } from 'app/drive/services/database.service';
+import userService from '../../auth/services/user.service';
+import { getDatabaseProfileAvatar, updateDatabaseProfileAvatar } from '../../drive/services/database.service';
 
 function getAvatarExpiration(url: string): Date | null {
   const dateRegex = /X-Amz-Date=(\d{8}T\d{6})Z/;
@@ -32,8 +32,6 @@ async function syncAvatarIfNeeded(uuid: string, avatarUrl: string | null): Promi
   const storedUserAvatar = await getDatabaseProfileAvatar();
 
   const shouldUpdate = !storedUserAvatar?.srcURL || isAvatarExpired(storedUserAvatar.srcURL);
-
-  console.log('Avatar URL:', { avatarUrl, shouldUpdate });
 
   if (!shouldUpdate) return;
 
