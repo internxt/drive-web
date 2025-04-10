@@ -3,7 +3,7 @@ import { Device, DeviceBackup } from '@internxt/sdk/dist/drive/backups/types';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
-import { mappedBackup } from '../utils/mappedBackup';
+import { mapBackupFolder } from '../utils/mappers';
 
 const backupsService = {
   async getAllDevices(): Promise<Device[]> {
@@ -20,7 +20,7 @@ const backupsService = {
     });
     if (res.ok) {
       const encryptedFolders = await res.json();
-      return encryptedFolders.map(mappedBackup);
+      return encryptedFolders.map(mapBackupFolder);
     } else return [];
   },
 

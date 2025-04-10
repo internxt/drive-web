@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterAll, Mock } from 'vitest';
-import { mappedBackup } from './mappedBackup';
+import { mapBackupFolder } from './mappers';
 import { aes } from '@internxt/lib';
 import type { DriveFolderData } from '../../drive/types';
 
@@ -29,7 +29,7 @@ describe('Mapping backup folder', () => {
       plainName: 'My Folder',
     } as DriveFolderData;
 
-    const result = mappedBackup(folder);
+    const result = mapBackupFolder(folder);
 
     expect(result.name).toBe('My Folder');
     expect(result.isFolder).toBe(true);
@@ -44,7 +44,7 @@ describe('Mapping backup folder', () => {
       bucket: 'bucket-1',
     } as DriveFolderData;
 
-    const result = mappedBackup(folder);
+    const result = mapBackupFolder(folder);
 
     expect(aes.decrypt).toHaveBeenCalledWith('encrypted-name', 'my-secret-bucket-1');
     expect(result.name).toBe(decrypted);
