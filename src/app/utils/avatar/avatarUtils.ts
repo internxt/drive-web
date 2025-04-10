@@ -7,6 +7,12 @@ interface ExpirationConfig {
   dateTransform?: (match: string) => string;
 }
 
+type Provider = 'AWS';
+
+const PREFIX_PROVIDERS: Record<Provider, string> = {
+  AWS: 'X-Amz-',
+};
+
 const PROVIDER_CONFIGS: Record<string, ExpirationConfig> = {
   AWS: {
     datePattern: /X-Amz-Date=(\d{8}T\d{6})Z/,
@@ -16,8 +22,7 @@ const PROVIDER_CONFIGS: Record<string, ExpirationConfig> = {
 };
 
 function detectProvider(url: string): string | null {
-  if (url.includes('X-Amz-')) return 'AWS';
-  if (url.includes('azure')) return 'AZURE';
+  if (url.includes(PREFIX_PROVIDERS['AWS'])) return 'AWS';
 
   return null;
 }
