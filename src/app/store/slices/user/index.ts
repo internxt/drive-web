@@ -17,11 +17,11 @@ import { sessionActions } from '../session';
 import { sessionSelectors } from '../session/session.selectors';
 import { storageActions } from '../storage';
 import { uiActions } from '../ui';
-import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
+import { workspacesActions } from '../../../store/slices/workspaces/workspacesStore';
 
 import errorService from '../../../core/services/error.service';
 import { isTokenExpired } from '../../utils';
-import { syncAvatarIfNeeded } from 'app/utils/avatar/syncAvatar';
+import { syncAvatarIfNeeded } from 'app/utils/avatar/avatarUtils';
 
 export interface UserState {
   isInitializing: boolean;
