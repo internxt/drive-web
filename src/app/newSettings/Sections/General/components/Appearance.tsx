@@ -56,13 +56,25 @@ const Appearance = () => {
 
   // CHECK IF THIS WORKS BEFORE MERGE
   useEffect(() => {
+    function isAppearanceExist(prevAppearances, theme, img) {
+      return prevAppearances.some((appearance) => appearance.theme === theme && appearance.img === img);
+    }
+
+    function addAppearanceIfUnique(prevAppearances, theme, img) {
+      if (isAppearanceExist(prevAppearances, theme, img)) {
+        return prevAppearances;
+      }
+      return [...prevAppearances, { theme, img }];
+    }
+
+    const updateAppearance = (theme, img) => {
+      setAppearances((prevAppearances) => addAppearanceIfUnique(prevAppearances, theme, img));
+    };
+
     isStarWarsThemeAvailable(plan)
       .then((isStarWarsThemeAvailable) => {
-        if (
-          !appearances.some((appearance) => appearance.theme === 'starwars' && appearance.img === appearance_dark) &&
-          isStarWarsThemeAvailable
-        ) {
-          setAppearances([...appearances, { theme: 'starwars', img: appearance_dark }]);
+        if (isStarWarsThemeAvailable) {
+          updateAppearance('starwars', appearance_dark);
         }
       })
       .catch((err) => {
@@ -72,11 +84,8 @@ const Appearance = () => {
 
     isHalloweenThemeAvailable(plan)
       .then((isHalloweenThemeAvailable) => {
-        if (
-          !appearances.some((appearance) => appearance.theme === 'halloween' && appearance.img === appearance_dark) &&
-          isHalloweenThemeAvailable
-        ) {
-          setAppearances([...appearances, { theme: 'halloween', img: appearance_dark }]);
+        if (isHalloweenThemeAvailable) {
+          updateAppearance('halloween', appearance_dark);
         }
       })
       .catch((err) => {
@@ -86,11 +95,8 @@ const Appearance = () => {
 
     isChristmasThemeAvailable(plan)
       .then((isChristmasThemeAvailable) => {
-        if (
-          !appearances.some((appearance) => appearance.theme === 'christmas' && appearance.img === appearance_dark) &&
-          isChristmasThemeAvailable
-        ) {
-          setAppearances([...appearances, { theme: 'christmas', img: appearance_dark }]);
+        if (isChristmasThemeAvailable) {
+          updateAppearance('christmas', appearance_dark);
         }
       })
       .catch((err) => {
@@ -100,24 +106,19 @@ const Appearance = () => {
 
     isSuperbowlThemeAvailable(plan)
       .then((isSuperbowlThemeAvailable) => {
-        if (
-          !appearances.some((appearance) => appearance.theme === 'superbowl' && appearance.img === appearance_dark) &&
-          isSuperbowlThemeAvailable
-        ) {
-          setAppearances([...appearances, { theme: 'superbowl', img: appearance_dark }]);
+        if (isSuperbowlThemeAvailable) {
+          updateAppearance('superbowl', appearance_dark);
         }
       })
       .catch((err) => {
         const error = err as Error;
         errorService.reportError(error);
       });
+
     iStPatricksThemeAvailable(plan)
       .then((iStPatricksThemeAvailable) => {
-        if (
-          !appearances.some((appearance) => appearance.theme === 'stpatricks' && appearance.img === appearance_dark) &&
-          iStPatricksThemeAvailable
-        ) {
-          setAppearances([...appearances, { theme: 'stpatricks', img: appearance_dark }]);
+        if (iStPatricksThemeAvailable) {
+          updateAppearance('stpatricks', appearance_dark);
         }
       })
       .catch((err) => {
