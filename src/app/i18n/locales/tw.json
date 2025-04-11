@@ -4,39 +4,31 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "80% 優惠",
-    "title": "適用於所有 Internxt 方案",
-    "cta": "選擇方案",
+    "label": "優惠 82%",
+    "title": "全新終身方案！",
+    "cta": "獲取你的方案",
     "guarantee": "30 天退款保證",
-    "lastCta": "*僅適用於免費帳號或新用戶",
-    "specialOfferLabel": "特別優惠",
-    "specialOfferGift": " 購買任一方案，即可參加 Internxt x Swiss Peak 背包抽獎活動！",
+    "lastCta": "*此優惠適用於免費帳戶或新客戶",
+    "specialOfferLabel": "",
+    "specialOfferGift": "購買終身方案，即可參加 Internxt x Swiss Peak 背包抽獎！",
     "features": [
-      "Internxt 雲端硬碟、VPN 與防毒軟體",
+      "Internxt 雲端硬碟、VPN 和防毒軟體",
       "後量子加密技術",
-      "開源並通過審核",
-      "加密傳輸",
-      "無未經授權的存取",
-      "優惠截止至 4 月 8 日"
+      "開源且通過審核",
+      "加密數據傳輸",
+      "免費網頁應用程式專屬主題",
+      "優惠截止日期：4 月 30 日"
     ]
   },
   "susbcriptionsBanner": {
     "title": "升級您的計畫！",
-    "features": [
-      "後量子加密",
-      "雲端硬碟、VPN 和防毒軟體",
-      "即將推出郵件和會議"
-    ],
+    "features": ["後量子加密", "雲端硬碟、VPN 和防毒軟體", "即將推出郵件和會議"],
     "description": "續訂您的訂閱，即可享受我們的新功能！",
     "cta": "8折優惠"
   },
   "lifetimesBanner": {
     "title": "升級您的計畫！",
-    "features": [
-      "後量子加密",
-      "雲端硬碟、VPN 和防毒軟體",
-      "即將推出郵件和會議"
-    ],
+    "features": ["後量子加密", "雲端硬碟、VPN 和防毒軟體", "即將推出郵件和會議"],
     "description": "升級您的計畫，享受我們的新功能，並擴展您的存儲空間！",
     "cta": "8折優惠"
   },
@@ -93,7 +85,8 @@
     "christmas": "聖誕節",
     "superBowl": "Super Bowl",
     "valentines": "情人節",
-    "stpatricks": "St. Patrick's"
+    "stpatricks": "St. Patrick's",
+    "idmanagement": "Identity Management"
   },
   "auth": {
     "email": "電子郵件",
@@ -249,26 +242,77 @@
       "saving": "您節省了 {{percent}}%",
       "planDetails": {
         "title": "計劃詳情：",
+         "commingSoon":"即將推出",
         "features": {
-          "individual": [
-            "{{spaceToUpgrade}} 加密存儲",
-            "加密文件和文件夾共享",
-            "密碼保護的文件共享",
-            "從任何設備訪問您的文件",
-            "訪問我們所有的服務",
-            "雙因素認證（2FA）",
-            "高級客戶支持",
-            "30 天退款保證"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} 儲存/用戶",
-            "加密檔案和資料夾共享",
-            "創建和管理用戶及團隊",
-            "從 {{minimumSeats}} 用戶到 {{maximumSeats}}",
-            "符合GDPR",
-            "管理帳戶計費與支付",
-            "高級客戶支持"
-          ]
+          "individuals": {
+            "1TB": {
+              "feature1":"1TB 零知识加密存储",
+              "feature2":"后量子加密",
+              "feature3":"超高速无限 VPN（法国）",
+              "feature4":"杀毒软件",
+              "feature5":"文件备份",
+              "feature6":"密码保护文件共享",
+              "feature7":"符合 GDPR 规定",
+              "feature8":"双重身份验证（2FA）",
+              "feature9": "支持 CLI、WebDav 和 Rclone"
+            },
+            "3TB": {
+              "feature1":"3TB 零知识加密存储",
+              "feature2":"后量子加密",
+              "feature3":"超高速无限 VPN（法国、德国、波兰）",
+              "feature4":"杀毒软件",
+              "feature5":"文件备份",
+              "feature6":"密码保护文件共享",
+              "feature7":"符合 GDPR 规定",
+              "feature8":"双重身份验证（2FA）",
+              "feature9":"支持 CLI、WebDav 和 Rclone",
+              "feature10":"Meet（3 名参与者）",
+              "feature11": "Mail（3 个地址）"
+            },
+            "5TB": {
+              "feature1":"5TB 零知识加密存储",
+              "feature2":"后量子加密",
+              "feature3":"超高速无限 VPN（法国、德国、波兰、加拿大、英国）",
+              "feature4":"杀毒软件",
+              "feature5":"文件备份",
+              "feature6":"密码保护文件共享",
+              "feature7":"符合 GDPR 规定",
+              "feature8":"双重身份验证（2FA）",
+              "feature9":"支持 CLI、WebDav 和 Rclone",
+              "feature10":"Meet（5 名参与者）",
+              "feature11": "Mail（5 个地址）"
+            }
+          },
+          "business": {
+            "1TB": {
+              "feature1":"每用户 1TB 存储",
+              "feature2":"后量子加密",
+              "feature3":"超高速无限 VPN（法国、德国、波兰）",
+              "feature4":"杀毒软件",
+              "feature5":"文件备份",
+              "feature6":"密码保护的文件共享",
+              "feature7":"符合 GDPR 规定",
+              "feature8":"双因素认证（2FA）",
+              "feature9":"支持 CLI、WebDav 和 Rclone",
+              "feature10":"管理账户账单和支付",
+              "feature11":"最多 10 人会议",
+              "feature12":"每用户 1 个自定义电子邮件地址"
+            },
+            "2TB": {
+              "feature1":"每用户 2TB 存储",
+              "feature2":"后量子加密",
+              "feature3":"超高速无限 VPN（法国、德国、波兰、加拿大、英国）",
+              "feature4":"杀毒软件",
+              "feature5":"文件备份",
+              "feature6":"密码保护的文件共享",
+              "feature7":"符合 GDPR 规定",
+              "feature8":"双因素认证（2FA）",
+              "feature9":"支持 CLI、WebDav 和 Rclone",
+              "feature10":"管理账户账单和支付",
+              "feature11":"最多 100 人会议",
+              "feature12":"每用户 2 个自定义电子邮件地址"
+            }
+          }
         }
       },
       "total": "總計d",
@@ -1821,7 +1865,7 @@
         "free": "免費獲取最多 10GB",
         "manageBilling": "管理帳單",
         "freeForever": "永久免費",
-        "billedAnnually":"按年計費",
+        "billedAnnually": "按年計費",
         "year": "年",
         "month": "月",
         "lifetime": "終身",
