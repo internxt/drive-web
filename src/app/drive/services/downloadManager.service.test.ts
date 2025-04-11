@@ -21,11 +21,12 @@ import { TaskStatus, TaskType } from 'app/tasks/types';
 import downloadService from './download.service';
 import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
 import { FlatFolderZip } from 'app/core/services/zip.service';
-import { downloadFile } from 'app/network/download';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { LevelsBlobsCache, LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { LRUCache } from 'app/database/services/database.service/LRUCache';
 import { DriveItemBlobData } from 'app/database/services/database.service';
+
+vi.mock('file-saver', () => ({ saveAs: vi.fn() }));
 
 describe('downloadManagerService', () => {
   beforeAll(() => {
@@ -264,6 +265,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
 
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
@@ -308,6 +310,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
 
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
@@ -353,6 +356,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
 
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
@@ -402,6 +406,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
 
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
@@ -454,6 +459,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
 
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
@@ -514,6 +520,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
 
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
@@ -548,6 +555,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
     const mockUpdateProgress = vi.fn((progress: number) => progress);
     const mockIncrementItemCount = vi.fn(() => 0);
@@ -609,6 +617,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
     const mockUpdateProgress = vi.fn((progress: number) => progress);
 
@@ -661,6 +670,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
     const mockUpdateProgress = vi.fn((progress: number) => progress);
 
@@ -716,6 +726,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
     const mockUpdateProgress = vi.fn((progress: number) => progress);
     const mockIncrementItemCount = vi.fn(() => 0);
@@ -785,6 +796,7 @@ describe('downloadManagerService', () => {
         showErrors: true,
       },
       taskId: mockTaskId,
+      failedItems: [],
     };
 
     const levelsBlobsCache = new LevelsBlobsCache();
@@ -794,7 +806,9 @@ describe('downloadManagerService', () => {
       .mockResolvedValueOnce({
         id: mockFile.id,
         parentId: mockFile.folderId,
-        source: new Blob([]),
+        source: {
+          stream: vi.fn().mockReturnValue(new ReadableStream()),
+        } as unknown as Blob,
       })
       .mockResolvedValueOnce({
         id: mockFileCache.id,
@@ -806,13 +820,12 @@ describe('downloadManagerService', () => {
     const mockIncrementItemCount = vi.fn(() => 0);
 
     const checkIfCachedSourceIsOlderSpy = vi.fn().mockReturnValueOnce(false).mockReturnValueOnce(true);
-    const downloadedFileStreamSpy = vi.fn();
-    const binaryStreamToBlobSpy = vi.fn(() => new Blob([]));
     const updateDatabaseFileSourceDataSpy = vi.fn();
 
     (checkIfCachedSourceIsOlder as Mock).mockImplementation(checkIfCachedSourceIsOlderSpy);
-    (downloadFile as Mock).mockImplementation(downloadedFileStreamSpy);
-    (binaryStreamToBlob as Mock).mockImplementation(binaryStreamToBlobSpy);
+    (binaryStreamToBlob as Mock).mockResolvedValue({
+      stream: vi.fn().mockReturnValue(new ReadableStream()),
+    });
     (updateDatabaseFileSourceData as Mock).mockImplementation(updateDatabaseFileSourceDataSpy);
 
     const addFileZipSpy = vi.spyOn(FlatFolderZip.prototype, 'addFile').mockResolvedValue();
@@ -825,8 +838,7 @@ describe('downloadManagerService', () => {
     expect(addFileZipSpy).toHaveBeenCalledTimes(2);
     expect(closeZipSpy).toHaveBeenCalledTimes(1);
     expect(checkIfCachedSourceIsOlderSpy).toHaveBeenCalledTimes(2);
-    expect(downloadedFileStreamSpy).toHaveBeenCalledTimes(1);
-    expect(binaryStreamToBlobSpy).toHaveBeenCalledTimes(1);
+    expect(binaryStreamToBlob).toHaveBeenCalledTimes(1);
     expect(updateDatabaseFileSourceDataSpy).toHaveBeenCalledTimes(1);
     expect(lruCacheSpy).toHaveBeenCalledTimes(2);
   });

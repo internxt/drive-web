@@ -1,4 +1,10 @@
-import { DownloadItem, DownloadManagerService, DownloadTask } from 'app/drive/services/downloadManager.service';
+import {
+  DownloadItem,
+  DownloadItemType,
+  DownloadManagerService,
+  DownloadTask,
+  ErrorMessages,
+} from 'app/drive/services/downloadManager.service';
 import { createFilesIterator, createFoldersIterator } from 'app/drive/services/folder.service';
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import tasksService from 'app/tasks/services/tasks.service';
@@ -9,10 +15,19 @@ import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/
 import { ConnectionLostError } from './requests';
 import errorService from 'app/core/services/error.service';
 import { TaskData, TaskStatus } from 'app/tasks/types';
+import localStorageService from 'app/core/services/local-storage.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+
+vi.mock('i18next', () => ({ t: (_) => 'Test translation message' }));
 
 describe('downloadManager', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({
+      userId: 'user-id',
+      bridgeUser: 'user-bridge',
+      mnemonic: 'mnemonic',
+    } as UserSettings);
   });
 
   it('should generate task for a folder and download it using the queue', async () => {
@@ -59,6 +74,7 @@ describe('downloadManager', () => {
         downloadName: mockFolder.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -130,6 +146,7 @@ describe('downloadManager', () => {
         downloadName: mockFile.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -222,6 +239,7 @@ describe('downloadManager', () => {
         downloadName: mockFile.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -293,6 +311,7 @@ describe('downloadManager', () => {
         downloadName: mockFile.name,
         showErrors: true,
       },
+      failedItems: [],
     };
     const newConcurrency = DownloadManager.downloadQueue.concurrency + 1;
 
@@ -362,6 +381,7 @@ describe('downloadManager', () => {
         showErrors: true,
       },
       abortController,
+      failedItems: [],
     };
     const newConcurrency = DownloadManager.downloadQueue.concurrency + 1;
 
@@ -435,6 +455,7 @@ describe('downloadManager', () => {
         downloadName: mockFile.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -513,6 +534,7 @@ describe('downloadManager', () => {
         downloadName: mockFile.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -525,7 +547,7 @@ describe('downloadManager', () => {
       status: TaskStatus.Error,
     } as TaskData);
 
-    const testError = new Error('Test error');
+    const testError = new Error(ErrorMessages.ServerUnavailable);
 
     const downloadFolderSpy = vi
       .spyOn(DownloadManagerService.instance, 'downloadFolder')
@@ -592,6 +614,7 @@ describe('downloadManager', () => {
         downloadName: mockFolder.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -604,7 +627,7 @@ describe('downloadManager', () => {
       status: TaskStatus.Error,
     } as TaskData);
 
-    const testError = new Error('Test error');
+    const testError = new Error(ErrorMessages.ServerUnavailable);
 
     const downloadFolderSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFolder').mockRejectedValue(testError);
     const downloadFileSpy = vi
@@ -675,6 +698,7 @@ describe('downloadManager', () => {
         downloadName: mockFile.name,
         showErrors: true,
       },
+      failedItems: [],
     };
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
@@ -685,5 +709,48 @@ describe('downloadManager', () => {
     } as TaskData);
 
     await expect(DownloadManager.downloadItem(downloadItem)).resolves.not.toThrow();
+  });
+
+  describe('compareArraysByIdAndFolder', () => {
+    it('should return true for arrays with identical id and isFolder properties', () => {
+      const arr1 = [
+        { id: 1, isFolder: true },
+        { id: 2, isFolder: false },
+      ] as DownloadItemType[];
+      const arr2 = [
+        { id: 1, isFolder: true },
+        { id: 2, isFolder: false },
+      ] as DownloadItemType[];
+
+      const result = DownloadManager['compareArraysByIdAndFolder'](arr1, arr2);
+      expect(result).toBe(true);
+    });
+
+    it('should return false for arrays with different lengths', () => {
+      const arr1 = [{ id: 1, isFolder: true }] as DownloadItemType[];
+      const arr2 = [
+        { id: 1, isFolder: true },
+        { id: 2, isFolder: false },
+      ] as DownloadItemType[];
+
+      const result = DownloadManager['compareArraysByIdAndFolder'](arr1, arr2);
+      expect(result).toBe(false);
+    });
+
+    it('should return false for arrays with different id properties', () => {
+      const arr1 = [{ id: 1, isFolder: true }] as DownloadItemType[];
+      const arr2 = [{ id: 2, isFolder: true }] as DownloadItemType[];
+
+      const result = DownloadManager['compareArraysByIdAndFolder'](arr1, arr2);
+      expect(result).toBe(false);
+    });
+
+    it('should return false for arrays with different isFolder properties', () => {
+      const arr1: DownloadItemType[] = [{ id: 1, isFolder: true }] as DownloadItemType[];
+      const arr2: DownloadItemType[] = [{ id: 1, isFolder: false }] as DownloadItemType[];
+
+      const result = DownloadManager['compareArraysByIdAndFolder'](arr1, arr2);
+      expect(result).toBe(false);
+    });
   });
 });

@@ -6,7 +6,13 @@ import { ConnectionLostError } from './requests';
 import { t } from 'i18next';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { DownloadItem, DownloadManagerService, DownloadTask } from 'app/drive/services/downloadManager.service';
+import {
+  DownloadItem,
+  DownloadItemType,
+  DownloadManagerService,
+  DownloadTask,
+  ErrorMessages,
+} from 'app/drive/services/downloadManager.service';
 
 /**
  * DownloadManager class handles file and folder downloads with queue management
@@ -51,6 +57,13 @@ export class DownloadManager {
     },
     this.MAX_CONCURRENT_DOWNLOADS,
   );
+
+  private static readonly isConnectionLostError = (error: any): boolean => {
+    return (
+      error instanceof ConnectionLostError ||
+      [ErrorMessages.NetworkError, ErrorMessages.ConnectionLost].includes(error.message)
+    );
+  };
 
   private static readonly downloadTask = async (downloadTask: DownloadTask) => {
     const { items, taskId, abortController } = downloadTask;
@@ -108,6 +121,18 @@ export class DownloadManager {
         await DownloadManagerService.instance.downloadFile(downloadTask, updateProgressCallback);
       }
 
+      if (downloadTask.failedItems && downloadTask.failedItems.length > 0) {
+        if (this.compareArraysByIdAndFolder(items, downloadTask.failedItems)) {
+          tasksService.updateTask({
+            taskId,
+            merge: {
+              status: TaskStatus.Error,
+            },
+          });
+          throw new Error(ErrorMessages.ServerUnavailable);
+        }
+      }
+
       tasksService.updateTask({
         taskId,
         merge: {
@@ -124,8 +149,9 @@ export class DownloadManager {
 
   private static readonly reportError = (err: unknown, downloadTask: DownloadTask) => {
     const { items, taskId } = downloadTask;
+    const isConnectionLost = this.isConnectionLostError(err);
 
-    if (err instanceof ConnectionLostError) {
+    if (isConnectionLost) {
       tasksService.updateTask({
         taskId,
         merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
@@ -184,5 +210,14 @@ export class DownloadManager {
       await this.downloadQueue.pushAsync(newTask);
       return newTask;
     }
+  };
+
+  private static compareArraysByIdAndFolder = (arr1: DownloadItemType[], arr2: DownloadItemType[]) => {
+    if (arr1.length !== arr2.length) return false;
+
+    return arr1.every((obj1, index) => {
+      const obj2 = arr2[index];
+      return obj2?.id === obj1.id && obj2?.isFolder === obj1.isFolder;
+    });
   };
 }
