@@ -1,6 +1,7 @@
-import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
-import { PlanState } from 'app/store/slices/plan';
+import localStorageService, { STORAGE_KEYS } from '../../core/services/local-storage.service';
+import { PlanState } from '../../store/slices/plan';
 import paymentService from '../services/payment.service';
+import errorService from '../../core/services/error.service';
 
 export const isManagementIdThemeAvailable = async (plan: PlanState, onSuccess?: () => void): Promise<boolean> => {
   const managementIdInLocalStorage = localStorageService.get(
@@ -19,7 +20,7 @@ export const isManagementIdThemeAvailable = async (plan: PlanState, onSuccess?: 
       return true;
     }
   } catch (err) {
-    console.log(`[COUPON CODE CHECK/ERROR]: User does not have any relationship with ${coupons.join(', ')}`);
+    errorService.reportError(err);
     return false;
   }
 
