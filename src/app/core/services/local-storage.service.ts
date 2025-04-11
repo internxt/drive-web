@@ -1,6 +1,10 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { Workspace } from '../types';
+import {
+  ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
+  MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
+} from 'app/payment/utils/checkManagementIdCode';
 
 export const STORAGE_KEYS = {
   TUTORIAL_COMPLETED_ID: 'signUpTutorialCompleted',
@@ -74,6 +78,8 @@ function clear(): void {
   localStorage.removeItem('xInvitedToken');
   localStorage.removeItem('xResourcesToken');
   localStorage.removeItem('star_wars_theme_enabled');
+  localStorage.removeItem(MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
+  localStorage.removeItem(ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
   localStorage.removeItem(STORAGE_KEYS.B2B_WORKSPACE);
   localStorage.removeItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS);
 }
