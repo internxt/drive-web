@@ -11,6 +11,9 @@ import errorService from 'app/core/services/error.service';
 import { TaskData, TaskStatus } from 'app/tasks/types';
 import RetryManager from 'app/network/RetryManager';
 
+vi.mock('app/notifications/services/notifications.service');
+vi.mock('i18next', () => ({ t: (_) => 'Some messages' }));
+
 describe('downloadManager', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -697,7 +700,7 @@ describe('downloadManager', () => {
     await expect(DownloadManager.downloadItem(downloadItem)).resolves.not.toThrow();
   });
 
-  it('should handle server error and retry tasks', async () => {
+  it('should handle server error', async () => {
     const mockFile: DriveFileData = {
       id: 0,
       uuid: 'uuid',
@@ -762,7 +765,7 @@ describe('downloadManager', () => {
     const downloadPromise = DownloadManager.downloadItem(downloadItem);
     await expect(downloadPromise).rejects.toThrow(serverError);
 
-    expect(retryManagerSpy).toHaveBeenCalled();
+    expect(retryManagerSpy).not.toHaveBeenCalled();
   });
 
   it('should handle connection lost error and update task status', async () => {

@@ -182,7 +182,6 @@ describe('checkUploadFiles', () => {
     (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
     vi.spyOn(Promise, 'all').mockResolvedValueOnce([mockFile1]);
     const RetryAddFilesSpy = vi.spyOn(RetryManager, 'addTasks');
-    const RetryGetFilesSpy = vi.spyOn(RetryManager, 'getTasks');
     const RetrRemoveFileSpy = vi.spyOn(RetryManager, 'removeTask');
 
     vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
@@ -220,7 +219,6 @@ describe('checkUploadFiles', () => {
     );
 
     expect(RetryAddFilesSpy).not.toHaveBeenCalled();
-    expect(RetryGetFilesSpy).toHaveLength(0);
     expect(RetrRemoveFileSpy).toHaveBeenCalledWith('taskId');
   });
 

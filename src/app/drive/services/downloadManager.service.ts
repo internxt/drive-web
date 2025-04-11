@@ -444,9 +444,7 @@ export class DownloadManagerService {
     }
 
     if (failedItems.length > 0) {
-      const totalItems = items.length;
-
-      if (failedItems.length === totalItems) {
+      if (failedItems.length === items.length) {
         const allEqual = failedItems.every(
           (item, index) => item.id === items[index].id && item.isFolder === items[index].isFolder,
         );

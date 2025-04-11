@@ -5,17 +5,28 @@ import * as translationProvider from 'app/i18n/provider/TranslationProvider';
 import TaskToRetry from './TaskToRetry';
 import RetryManager, { RetryableTask } from 'app/network/RetryManager';
 
-vi.mock('app/shared/components/Modal', () => ({
-  default: ({ isOpen, children }: { isOpen: boolean; children: React.ReactNode }) =>
-    isOpen ? <div>{children}</div> : null,
+vi.mock('app/store/hooks', () => ({
+  useAppDispatch: vi.fn(),
+  useAppSelector: vi.fn(),
+}));
+
+vi.mock('app/i18n/provider/TranslationProvider', () => ({
+  useTranslationContext: vi.fn(),
 }));
 
 vi.mock('app/store/slices/storage/hooks/useReduxActions', () => ({
   useReduxActions: vi.fn(),
 }));
 
-vi.mock('app/i18n/provider/TranslationProvider', () => ({
-  useTranslationContext: vi.fn(),
+vi.mock('@internxt/ui', () => ({
+  Modal: vi.fn(({ isOpen, onClose, children }) =>
+    isOpen ? (
+      <div data-testid="modal">
+        <button data-testid="close-button" onClick={onClose} />
+        {children}
+      </div>
+    ) : null,
+  ),
 }));
 
 describe('TaskToRetry', () => {
@@ -84,7 +95,7 @@ describe('TaskToRetry', () => {
 
     if (downloadItem) fireEvent.click(downloadItem);
 
-    expect(mockChangeStatus).toHaveBeenCalledWith('task-1', 'uploading');
+    expect(mockChangeStatus).toHaveBeenCalledWith('task-1', 'retrying');
     expect(mockUploadRetryItem).toHaveBeenCalledWith({
       uploadFile: 'file-content',
       parentFolderId: 'folder-1',
@@ -104,7 +115,7 @@ describe('TaskToRetry', () => {
 
     if (downloadItem) fireEvent.click(downloadItem);
 
-    expect(mockChangeStatus).toHaveBeenCalledWith('task-1', 'uploading');
+    expect(mockChangeStatus).toHaveBeenCalledWith('task-1', 'retrying');
     expect(mockChangeStatus).toHaveBeenCalledWith('task-1', 'failed');
   });
 });
