@@ -66,7 +66,9 @@ describe('downloadManager', () => {
       failedItems: [],
     };
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockImplementation(() =>
+      Promise.resolve(mockTask),
+    );
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
@@ -138,7 +140,9 @@ describe('downloadManager', () => {
       failedItems: [],
     };
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockImplementation(() =>
+      Promise.resolve(mockTask),
+    );
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
@@ -231,7 +235,9 @@ describe('downloadManager', () => {
       failedItems: [],
     };
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockImplementation(() =>
+      Promise.resolve(mockTask),
+    );
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
@@ -306,7 +312,9 @@ describe('downloadManager', () => {
 
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(newConcurrency);
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockImplementation(() =>
+      Promise.resolve(mockTask),
+    );
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -376,7 +384,9 @@ describe('downloadManager', () => {
 
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(newConcurrency);
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockImplementation(() =>
+      Promise.resolve(mockTask),
+    );
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -447,7 +457,9 @@ describe('downloadManager', () => {
       failedItems: [],
     };
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockImplementation(() =>
+      Promise.resolve(mockTask),
+    );
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
@@ -526,7 +538,9 @@ describe('downloadManager', () => {
       failedItems: [],
     };
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockImplementation(() =>
+      Promise.resolve(mockTask),
+    );
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
@@ -606,7 +620,9 @@ describe('downloadManager', () => {
       failedItems: [],
     };
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockImplementation(() =>
+      Promise.resolve(mockTask),
+    );
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
     vi.spyOn(tasksService, 'addListener').mockReturnValue();
     vi.spyOn(tasksService, 'removeListener').mockReturnValue();
@@ -690,7 +706,9 @@ describe('downloadManager', () => {
       failedItems: [],
     };
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockImplementation(() =>
+      Promise.resolve(mockTask),
+    );
     vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockResolvedValue();
     vi.spyOn(tasksService, 'findTask').mockReturnValue({
       id: 'any-taskId',
@@ -751,7 +769,9 @@ describe('downloadManager', () => {
       failedItems: [],
     };
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockImplementation(() =>
+      Promise.resolve(mockTask),
+    );
     vi.spyOn(tasksService, 'findTask').mockReturnValue({
       id: 'any-taskId',
       status: TaskStatus.Error,
@@ -819,7 +839,9 @@ describe('downloadManager', () => {
       failedItems: [],
     };
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockImplementation(() =>
+      Promise.resolve(mockTask),
+    );
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
 
     const connectionLostError = new ConnectionLostError();
@@ -886,7 +908,9 @@ describe('downloadManager', () => {
       failedItems: [],
     };
 
-    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
+    vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockImplementation(() =>
+      Promise.resolve(mockTask),
+    );
     const retryManagerSpy = vi.spyOn(RetryManager, 'removeTaskByIdAndParams').mockReturnValue();
 
     vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockResolvedValue();
