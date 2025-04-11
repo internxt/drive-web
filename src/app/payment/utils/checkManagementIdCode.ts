@@ -3,7 +3,7 @@ import { PlanState } from 'app/store/slices/plan';
 import paymentService from '../services/payment.service';
 
 export const MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY = 'managementid_theme_enabled';
-export const ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY = 'managementid_theme_enabled';
+export const ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY = 'id_management_theme_enabled';
 
 export const isManagementIdThemeAvailable = async (plan: PlanState, onSuccess?: () => void): Promise<boolean> => {
   const managementIdInLocalStorage = localStorageService.get(ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
