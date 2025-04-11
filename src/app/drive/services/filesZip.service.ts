@@ -8,7 +8,7 @@ type File = SharedFiles | DriveFileData;
 
 async function addFilesToZip<T extends File>(
   currentAbsolutePath: string,
-  downloadFile: (file: T) => Promise<ReadableStream<Uint8Array<ArrayBufferLike>> | undefined>,
+  downloadFile: (file: T) => Promise<ReadableStream | undefined>,
   iterator: Iterator<T>,
   zip: FlatFolderZip,
 ): Promise<{ files: T[]; token?: string }> {
@@ -80,7 +80,7 @@ async function addFilesToZip<T extends File>(
 
 async function addAllFilesToZip(
   currentAbsolutePath: string,
-  downloadFile: (file: DriveFileData) => Promise<ReadableStream<Uint8Array<ArrayBufferLike>> | undefined>,
+  downloadFile: (file: DriveFileData) => Promise<ReadableStream | undefined>,
   iterator: Iterator<DriveFileData>,
   zip: FlatFolderZip,
 ): Promise<DriveFileData[]> {
@@ -90,7 +90,7 @@ async function addAllFilesToZip(
 
 async function addAllSharedFilesToZip(
   currentAbsolutePath: string,
-  downloadFile: (file: SharedFiles) => Promise<ReadableStream<Uint8Array<ArrayBufferLike>> | undefined>,
+  downloadFile: (file: SharedFiles) => Promise<ReadableStream | undefined>,
   iterator: Iterator<SharedFiles>,
   zip: FlatFolderZip,
 ): Promise<{ files: SharedFiles[]; token: string }> {
