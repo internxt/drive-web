@@ -160,7 +160,7 @@ describe('uploadItemsThunkExtraReducers', () => {
   const sampleFile: UploadManagerFileParams = { taskId: 'task1' } as UploadManagerFileParams;
 
   beforeEach(() => {
-    RetryManager.clearFiles();
+    RetryManager.clearTasks();
 
     vi.clearAllMocks();
     vi.restoreAllMocks();
@@ -182,10 +182,14 @@ describe('uploadItemsThunkExtraReducers', () => {
     expect(cases.has(uploadItemsParallelThunk.rejected)).toBe(true);
 
     const rejectedHandler = cases.get(uploadItemsParallelThunk.rejected);
-    const RetryIsRetryingFileSpy = vi.spyOn(RetryManager, 'isRetryingFile');
+    const RetryIsRetryingFileSpy = vi.spyOn(RetryManager, 'isRetryingTask');
     const RetryChangeStatusSpy = vi.spyOn(RetryManager, 'changeStatus');
 
-    RetryManager.addFile(sampleFile);
+    RetryManager.addTask({
+      type: 'upload',
+      taskId: sampleFile.taskId || 'task1',
+      params: sampleFile,
+    });
 
     const state = {};
     const action = {
@@ -224,7 +228,7 @@ describe('uploadItemsThunkExtraReducers', () => {
     expect(cases.has(uploadItemsParallelThunk.rejected)).toBe(true);
 
     const rejectedHandler = cases.get(uploadItemsParallelThunk.rejected);
-    const RetryIsRetryingFileSpy = vi.spyOn(RetryManager, 'isRetryingFile');
+    const RetryIsRetryingFileSpy = vi.spyOn(RetryManager, 'isRetryingTask');
     const RetryChangeStatusSpy = vi.spyOn(RetryManager, 'changeStatus');
 
     const state = {};

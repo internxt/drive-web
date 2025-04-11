@@ -494,7 +494,7 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(uploadItemsParallelThunk.rejected, (state, action) => {
       const requestOptions = Object.assign(DEFAULT_OPTIONS, action.meta.arg.options ?? {});
       const taskId = action.meta.arg.taskId;
-      if (taskId && RetryManager.isRetryingFile(taskId)) RetryManager.changeStatus(taskId, 'failed');
+      if (taskId && RetryManager.isRetryingTask(taskId)) RetryManager.changeStatus(taskId, 'failed');
       if (requestOptions?.showErrors) {
         notificationsService.show({
           text: t('error.uploadingFile', { reason: action.error.message ?? '' }),

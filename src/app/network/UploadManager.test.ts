@@ -50,7 +50,7 @@ const taskId = 'task-id';
 
 describe('checkUploadFiles', () => {
   beforeEach(() => {
-    RetryManager.clearFiles();
+    RetryManager.clearTasks();
     vi.clearAllMocks();
   });
 
@@ -181,9 +181,8 @@ describe('checkUploadFiles', () => {
   it('should not add files to RetryManager if upload is successful and remove from RetryManager', async () => {
     (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
     vi.spyOn(Promise, 'all').mockResolvedValueOnce([mockFile1]);
-    const RetryAddFilesSpy = vi.spyOn(RetryManager, 'addFiles');
-    const RetryGetFilesSpy = vi.spyOn(RetryManager, 'getFiles');
-    const RetrRemoveFileSpy = vi.spyOn(RetryManager, 'removeFile');
+    const RetryAddFilesSpy = vi.spyOn(RetryManager, 'addTasks');
+    const RetrRemoveFileSpy = vi.spyOn(RetryManager, 'removeTask');
 
     vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
     vi.spyOn(tasksService, 'updateTask').mockReturnValueOnce();
@@ -220,7 +219,6 @@ describe('checkUploadFiles', () => {
     );
 
     expect(RetryAddFilesSpy).not.toHaveBeenCalled();
-    expect(RetryGetFilesSpy).toHaveLength(0);
     expect(RetrRemoveFileSpy).toHaveBeenCalledWith('taskId');
   });
 
@@ -231,7 +229,7 @@ describe('checkUploadFiles', () => {
       .mockRejectedValueOnce(new AppError('Retryable file'))
       .mockRejectedValueOnce(new AppError('Retryable file'));
     vi.spyOn(Promise, 'all').mockResolvedValueOnce([mockFile1, undefined]);
-    const RetryAddFilesSpy = vi.spyOn(RetryManager, 'addFiles');
+    const RetryAddFilesSpy = vi.spyOn(RetryManager, 'addTasks');
 
     vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
@@ -280,7 +278,7 @@ describe('checkUploadFiles', () => {
     );
 
     expect(RetryAddFilesSpy).toHaveBeenCalled();
-    expect(RetryManager.getFiles().length).toBe(1);
+    expect(RetryManager.getTasks().length).toBe(1);
   });
 
   it('should change status to failed if cannot retry successfully', async () => {

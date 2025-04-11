@@ -3,7 +3,7 @@ import { createDecipheriv, Decipher } from 'crypto';
 
 import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
 import { Abortable } from './Abortable';
-import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
+import { ConnectionLostError, getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
 import downloadFileV2 from './download/v2';
@@ -182,39 +182,55 @@ async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Ui
   const { bucketId, fileId, token, creds } = params;
 
   let metadata: MetadataRequiredForDownload;
+  let connectionLost = false;
 
-  if (creds) {
-    metadata = await getRequiredFileMetadataWithAuth(bucketId, fileId, creds);
-  } else if (token) {
-    metadata = await getRequiredFileMetadataWithToken(bucketId, fileId, token);
-  } else {
-    throw new Error('Download error 1');
+  const connectionLostListener = () => {
+    connectionLost = true;
+    window.removeEventListener('offline', connectionLostListener);
+  };
+  window.addEventListener('offline', connectionLostListener);
+
+  try {
+    if (creds) {
+      metadata = await getRequiredFileMetadataWithAuth(bucketId, fileId, creds);
+    } else if (token) {
+      metadata = await getRequiredFileMetadataWithToken(bucketId, fileId, token);
+    } else {
+      throw new Error('Download error 1');
+    }
+
+    const { mirrors, fileMeta } = metadata;
+    const downloadUrls: string[] = mirrors.map((m) => m.url);
+
+    const index = Buffer.from(fileMeta.index, 'hex');
+    const iv = index.slice(0, 16);
+    let key: Buffer;
+
+    if (params.encryptionKey) {
+      key = params.encryptionKey;
+    } else if (params.mnemonic) {
+      key = await generateFileKey(params.mnemonic, bucketId, index);
+    } else {
+      throw new Error('Download error code 1');
+    }
+
+    const downloadStream = await getFileDownloadStream(
+      downloadUrls,
+      createDecipheriv('aes-256-ctr', key, iv),
+      params.options?.abortController,
+    );
+
+    return buildProgressStream(downloadStream, (readBytes) => {
+      params.options?.notifyProgress(metadata.fileMeta.size, readBytes);
+    });
+  } catch (err) {
+    if (connectionLost) {
+      throw new ConnectionLostError();
+    }
+    throw err;
+  } finally {
+    window.removeEventListener('offline', connectionLostListener);
   }
-
-  const { mirrors, fileMeta } = metadata;
-  const downloadUrls: string[] = mirrors.map((m) => m.url);
-
-  const index = Buffer.from(fileMeta.index, 'hex');
-  const iv = index.slice(0, 16);
-  let key: Buffer;
-
-  if (params.encryptionKey) {
-    key = params.encryptionKey;
-  } else if (params.mnemonic) {
-    key = await generateFileKey(params.mnemonic, bucketId, index);
-  } else {
-    throw new Error('Download error code 1');
-  }
-
-  const downloadStream = await getFileDownloadStream(
-    downloadUrls,
-    createDecipheriv('aes-256-ctr', key, iv),
-    params.options?.abortController,
-  );
-
-  return buildProgressStream(downloadStream, (readBytes) => {
-    params.options?.notifyProgress(metadata.fileMeta.size, readBytes);
-  });
 }
 
 export function downloadFileToFileSystem(
