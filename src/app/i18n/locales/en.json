@@ -1227,7 +1227,8 @@
     "messages": {
       "allProcessesHaveFinished": "All processes have finished",
       "processing": "Processing {{pending}} of {{finished}}",
-      "failedToUpload": "Failed to upload"
+      "failedToUpload": "Failed to upload",
+      "failedToDownload": "Failed to download"
     },
     "waiting": "Waiting",
     "paused": "Paused",

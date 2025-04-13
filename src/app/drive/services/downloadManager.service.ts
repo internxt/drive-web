@@ -80,6 +80,7 @@ export enum ErrorMessages {
   ServerError = 'Server error',
   NetworkError = 'Network error',
   ConnectionLost = 'Connection lost',
+  FilePickerCancelled = 'File picker was canceled or failed',
 }
 
 /**
@@ -260,6 +261,13 @@ export class DownloadManagerService {
       if (res?.allItemsFailed) {
         throw new Error(ErrorMessages.ServerUnavailable);
       }
+      // TODO: REMOVE this Code if everything is working as we expected
+      // if (res?.allItemsFailed) {
+      //   downloadTask.failedItems.push(folder);
+      // }
+      else if (res?.failedItems.length > 0) {
+        downloadTask.failedItems.push(...(res.failedItems as DownloadItemType[]));
+      }
     } catch (error: any) {
       if (this.isRequiredHandleError(error)) {
         throw error;
@@ -409,7 +417,11 @@ export class DownloadManagerService {
         });
         downloadProgress[index] = 1;
 
-        if (res?.allItemsFailed) failedItems.push(driveItem);
+        if (res?.allItemsFailed) {
+          failedItems.push(driveItem);
+        } else if (res?.failedItems.length > 0) {
+          failedItems.push(...(res?.failedItems as DownloadItemType[]));
+        }
       } catch (error: any) {
         if (this.isRequiredHandleError(error)) {
           folderZip.abort();
@@ -464,6 +476,6 @@ export class DownloadManagerService {
       error instanceof ConnectionLostError ||
       [ErrorMessages.NetworkError, ErrorMessages.ConnectionLost].includes(error.message);
 
-    return serverError || isLostConnectionError;
+    return serverError || isLostConnectionError || ErrorMessages.FilePickerCancelled;
   };
 }

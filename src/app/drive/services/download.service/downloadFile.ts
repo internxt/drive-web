@@ -7,6 +7,7 @@ import { DriveFileData } from '../../types';
 import downloadFileFromBlob from './downloadFileFromBlob';
 import fetchFileStream from './fetchFileStream';
 import fetchFileStreamWithCreds from './fetchFileStreamWithCreds';
+import { ErrorMessages } from '../downloadManager.service';
 
 interface BlobWritable {
   getWriter: () => {
@@ -83,7 +84,8 @@ export default async function downloadFile(
   abortController?: AbortController,
   sharingOptions?: { credentials: { user: string; pass: string }; mnemonic: string },
 ): Promise<void> {
-  const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
+  const fileName = itemData.plainName || itemData.name;
+  const completeFilename = itemData.type ? `${fileName}.${itemData.type}` : `${fileName}`;
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
   const isCypress = window['Cypress'] !== undefined;
 
@@ -176,7 +178,10 @@ async function downloadToFs(
   switch (supports) {
     case DownloadSupport.StreamApi:
       // eslint-disable-next-line no-case-declarations
-      const fsHandle = await window.showSaveFilePicker({ suggestedName: filename });
+      const fsHandle = await window.showSaveFilePicker({ suggestedName: filename }).catch((_) => {
+        abortController?.abort();
+        throw new Error(ErrorMessages.FilePickerCancelled);
+      });
       // eslint-disable-next-line no-case-declarations
       const destination = await fsHandle.createWritable({ keepExistingData: false });
 

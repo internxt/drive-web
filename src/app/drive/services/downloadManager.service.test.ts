@@ -3,6 +3,7 @@ import {
   DownloadItem,
   DownloadManagerService,
   DownloadTask,
+  ErrorMessages,
 } from 'app/drive/services/downloadManager.service';
 import { beforeAll, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { Workspace, WorkspaceCredentialsDetails, WorkspaceData, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
@@ -25,6 +26,7 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { LevelsBlobsCache, LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { LRUCache } from 'app/database/services/database.service/LRUCache';
 import { DriveItemBlobData } from 'app/database/services/database.service';
+import { ConnectionLostError } from './../../network/requests';
 
 vi.mock('file-saver', () => ({ saveAs: vi.fn() }));
 

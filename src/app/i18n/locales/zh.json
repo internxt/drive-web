@@ -1216,7 +1216,8 @@
     "messages": {
       "allProcessesHaveFinished": "所有处理都已完成",
       "processing": "正在处理 {{pending}}/{{finished}}",
-      "failedToUpload": "上傳失敗"
+      "failedToUpload": "上傳失敗",
+      "failedToDownload": "下載失敗"
     },
     "waiting": "等待中",
     "paused": "暂停",
