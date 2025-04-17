@@ -21,7 +21,7 @@ export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess?: () =
   try {
     // Check if user used the coupon code
     if (individualSubscription?.type === 'subscription' || businessSubscription?.type === 'subscription') {
-      const couponUsedResult = await paymentService.isCouponUsedByUser('STARWARS75');
+      const couponUsedResult = await paymentService.isCouponUsedByUser('STARWARS85');
 
       if (couponUsedResult.couponUsed) {
         onSuccess?.();

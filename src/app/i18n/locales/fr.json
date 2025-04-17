@@ -4,19 +4,19 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Offre 82%",
-    "title": "Nouveaux plans à vie !",
-    "cta": "Obtiens ton plan",
+    "label": "Offre 85 %",
+    "title": "Rejoignez le côté de la vie privée",
+    "cta": "Obtenez votre offre",
     "guarantee": "Garantie de remboursement de 30 jours",
     "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
     "specialOfferLabel": "",
-    "specialOfferGift": "Tirage au sort d'un sac à dos Internxt x Swiss Peak pour l'achat d'un plan à vie !",
+    "specialOfferGift": "Tirage au sort : sac à dos Internxt x Swiss Peak !",
     "features": [
       "Internxt Drive, VPN et Antivirus",
       "Cryptographie post-quantique",
-      "Open source et audité",
+      "Code source ouvert et audité",
       "Transferts chiffrés",
-      "Thème spécial pour application web",
+      "Thème spécial pour l’application Web",
       "L'offre se termine le 30 avril"
     ]
   },
@@ -60,6 +60,7 @@
     "dark": "Sombre",
     "system": "Système",
     "starwars": "Star Wars",
+    "starwars2": "Star Wars 2",
     "halloween": "Halloween",
     "christmas": "Noël",
     "superBowl": "Super Bowl",

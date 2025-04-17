@@ -4,20 +4,20 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "优惠 82%",
-    "title": "全新终身计划！",
-    "cta": "获取你的计划",
-    "guarantee": "30 天退款保证",
-    "lastCta": "*此优惠适用于免费账户或新客户",
+    "label": "85%优惠",
+    "title": "加入隐私守护者的行列",
+    "cta": "获取你的方案",
+    "guarantee": "30天退款保证",
+    "lastCta": "*该优惠适用于免费账户或新用户",
     "specialOfferLabel": "",
-    "specialOfferGift": "购买终身计划，即可参与 Internxt x Swiss Peak 背包抽奖！",
+    "specialOfferGift": "抽奖活动：Internxt x Swiss Peak 双肩包！",
     "features": [
       "Internxt 云盘、VPN 和杀毒软件",
       "后量子加密技术",
-      "开源且经过审计",
-      "加密数据传输",
-      "免费网页应用程序专属主题",
-      "优惠截止日期：4 月 30 日"
+      "开源并经过审计的代码",
+      "加密传输",
+      "网页应用专属主题",
+      "优惠截止至4月30日"
     ]
   },
   "susbcriptionsBanner": {
@@ -81,6 +81,7 @@
     "dark": "暗",
     "system": "系统",
     "starwars": "Star Wars",
+    "starwars2": "Star Wars 2",
     "halloween": "Halloween",
     "christmas": "圣诞节",
     "superBowl": "Super Bowl",

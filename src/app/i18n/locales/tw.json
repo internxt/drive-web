@@ -4,20 +4,20 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "優惠 82%",
-    "title": "全新終身方案！",
-    "cta": "獲取你的方案",
+    "label": "85% 優惠",
+    "title": "加入隱私守護的一方",
+    "cta": "立即取得方案",
     "guarantee": "30 天退款保證",
-    "lastCta": "*此優惠適用於免費帳戶或新客戶",
+    "lastCta": "*本優惠僅適用於免費帳號或新用戶",
     "specialOfferLabel": "",
-    "specialOfferGift": "購買終身方案，即可參加 Internxt x Swiss Peak 背包抽獎！",
+    "specialOfferGift": "抽獎活動：Internxt x Swiss Peak 後背包！",
     "features": [
       "Internxt 雲端硬碟、VPN 和防毒軟體",
       "後量子加密技術",
-      "開源且通過審核",
-      "加密數據傳輸",
-      "免費網頁應用程式專屬主題",
-      "優惠截止日期：4 月 30 日"
+      "開源且經過審核的程式碼",
+      "加密傳輸",
+      "網頁版專屬主題",
+      "優惠至 4 月 30 日止"
     ]
   },
   "susbcriptionsBanner": {
@@ -81,6 +81,7 @@
     "dark": "深色",
     "system": "系統",
     "starwars": "星際大戰",
+    "starwars2": "Star Wars 2",
     "halloween": "Halloween",
     "christmas": "聖誕節",
     "superBowl": "Super Bowl",
