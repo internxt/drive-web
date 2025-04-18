@@ -26,6 +26,8 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { LevelsBlobsCache, LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { LRUCache } from 'app/database/services/database.service/LRUCache';
 import { DriveItemBlobData } from 'app/database/services/database.service';
+import { ConnectionLostError } from 'app/network/requests';
+import { downloadFile } from 'app/network/download';
 
 vi.mock('file-saver', () => ({ saveAs: vi.fn() }));
 
@@ -980,5 +982,120 @@ describe('downloadManagerService', () => {
     expect(addFileZipSpy).toHaveBeenCalledTimes(1);
     expect(closeZipSpy).toHaveBeenCalledTimes(1);
     expect(lruCacheSpy).toHaveBeenCalledTimes(2);
+  });
+
+  describe('downloadItems', () => {
+    it('should throw an error when the connection is lost', async () => {
+      const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+      const mockTask: DownloadTask = {
+        abortController: new AbortController(),
+        items: [mockFile as DriveItemData, mockFile2 as DriveItemData],
+        createFilesIterator: createFilesIterator,
+        createFoldersIterator: createFoldersIterator,
+        credentials: {
+          credentials: {
+            user: 'any-user',
+            pass: 'any-pass',
+          },
+          workspaceId: 'any-workspace-id',
+          mnemonic: 'any-mnemonic',
+        },
+        options: {
+          areSharedItems: false,
+          downloadName: `${mockFile.name}.${mockFile.type}`,
+          showErrors: true,
+        },
+        taskId: 'mock-task-id',
+        failedItems: [],
+      };
+
+      const mockUpdateProgress = vi.fn();
+      const mockIncrementItemCount = vi.fn();
+
+      const levelsBlobsCache = new LevelsBlobsCache();
+      const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
+      const lruCacheSpy = vi.spyOn(lruCache, 'get').mockResolvedValueOnce({
+        id: mockFile.id,
+        parentId: mockFile.folderId,
+        source: undefined,
+      });
+      vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(lruCache);
+
+      const checkIfCachedSourceIsOlderSpy = vi.fn().mockReturnValueOnce(true);
+
+      (checkIfCachedSourceIsOlder as Mock).mockImplementation(checkIfCachedSourceIsOlderSpy);
+
+      (downloadFile as Mock).mockImplementation(() => {
+        throw new ConnectionLostError();
+      });
+
+      vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
+
+      const closeZipSpy = vi.spyOn(FlatFolderZip.prototype, 'close').mockRejectedValue(new ConnectionLostError());
+
+      await expect(
+        DownloadManagerService.instance.downloadItems(mockTask, mockUpdateProgress, mockIncrementItemCount),
+      ).rejects.toThrow(ConnectionLostError);
+
+      expect(closeZipSpy).toHaveBeenCalled();
+    });
+
+    it('should throw a ServerUnavailable error when all items fail', async () => {
+      const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+      const mockTask: DownloadTask = {
+        abortController: new AbortController(),
+        items: [mockFile as DriveItemData, mockFile2 as DriveItemData],
+        createFilesIterator: createFilesIterator,
+        createFoldersIterator: createFoldersIterator,
+        credentials: {
+          credentials: {
+            user: 'any-user',
+            pass: 'any-pass',
+          },
+          workspaceId: 'any-workspace-id',
+          mnemonic: 'any-mnemonic',
+        },
+        options: {
+          areSharedItems: false,
+          downloadName: `${mockFile.name}.${mockFile.type}`,
+          showErrors: true,
+        },
+        taskId: 'mock-task-id',
+        failedItems: [],
+      };
+
+      const mockUpdateProgress = vi.fn();
+      const mockIncrementItemCount = vi.fn();
+
+      const levelsBlobsCache = new LevelsBlobsCache();
+      const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
+      const lruCacheSpy = vi
+        .spyOn(lruCache, 'get')
+        .mockRejectedValueOnce(() => {
+          throw new Error('File error 1');
+        })
+        .mockRejectedValueOnce(() => {
+          throw new Error('File error 2');
+        });
+      vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(lruCache);
+
+      const checkIfCachedSourceIsOlderSpy = vi.fn().mockReturnValueOnce(true);
+
+      (checkIfCachedSourceIsOlder as Mock).mockImplementation(checkIfCachedSourceIsOlderSpy);
+
+      vi.spyOn(FlatFolderZip.prototype, 'addFile').mockImplementation(() => {
+        throw new Error(ErrorMessages.ServerUnavailable);
+      });
+
+      vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
+
+      const closeZipSpy = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
+
+      await expect(
+        DownloadManagerService.instance.downloadItems(mockTask, mockUpdateProgress, mockIncrementItemCount),
+      ).rejects.toThrow(ErrorMessages.ServerUnavailable);
+
+      expect(closeZipSpy).toHaveBeenCalled();
+    });
   });
 });
