@@ -408,8 +408,6 @@ export class DownloadManagerService {
           await addFileStreamToZip(index, driveItem);
         }
       } catch (error: unknown) {
-        console.log('Error downloading item:', error);
-        console.log('Error downloading item driveitem:', driveItem.name);
         if (isLostConnectionError(error)) {
           folderZip.abort();
           await folderZip.close();
@@ -427,6 +425,7 @@ export class DownloadManagerService {
 
         if (allEqual) {
           folderZip.abort();
+          await folderZip.close();
           throw new Error(ErrorMessages.ServerUnavailable);
         }
       }

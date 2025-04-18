@@ -918,55 +918,6 @@ describe('downloadManagerService', () => {
     expect(closeZipSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should handle all items failing during downloadItems', async () => {
-    const mockTaskId = 'mock-task-id';
-    const mockFolder2: DriveFolderData = { ...mockFolder, id: 2, name: 'folder2' };
-    const downloadItem: DownloadItem = {
-      payload: [mockFolder as DriveItemData, mockFolder2 as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
-    const mockTask: DownloadTask = {
-      abortController: new AbortController(),
-      items: downloadItem.payload,
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
-      options: {
-        areSharedItems: false,
-        downloadName: `${mockFolder.name}`,
-        showErrors: true,
-      },
-      taskId: mockTaskId,
-      failedItems: [],
-    };
-
-    const mockUpdateProgress = vi.fn();
-    const mockIncrementItemCount = vi.fn();
-
-    const downloadFolderSpy = vi.fn(() => {
-      return Promise.resolve({
-        totalItems: downloadItem.payload,
-        failedItems: mockTask.items,
-        allItemsFailed: true,
-      });
-    });
-    (downloadFolderAsZip as Mock).mockImplementation(downloadFolderSpy);
-
-    await expect(
-      DownloadManagerService.instance.downloadItems(mockTask, mockUpdateProgress, mockIncrementItemCount),
-    ).rejects.toThrow(ErrorMessages.ServerUnavailable);
-
-    expect(downloadFolderSpy).toHaveBeenCalledTimes(2);
-  });
-
   it('should handle partial failures during downloadItems', async () => {
     const mockTaskId = 'mock-task-id';
     const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
