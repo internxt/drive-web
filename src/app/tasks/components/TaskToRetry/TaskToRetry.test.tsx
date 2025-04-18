@@ -4,6 +4,7 @@ import * as reduxActionsHook from 'app/store/slices/storage/hooks/useReduxAction
 import * as translationProvider from 'app/i18n/provider/TranslationProvider';
 import TaskToRetry from './TaskToRetry';
 import RetryManager, { RetryableTask } from 'app/network/RetryManager';
+import { Avatar } from '@internxt/ui';
 
 vi.mock('app/store/hooks', () => ({
   useAppDispatch: vi.fn(),
@@ -28,6 +29,12 @@ vi.mock('@internxt/ui', () => ({
     ) : null,
   ),
   Loader: vi.fn(() => <div data-testid="loader" />),
+  Avatar: vi.fn(() => <div data-testid="avatar" />),
+  Button: vi.fn(({ onClick, children }) => (
+    <button data-testid="button" onClick={onClick}>
+      {children}
+    </button>
+  )),
 }));
 
 describe('TaskToRetry', () => {
