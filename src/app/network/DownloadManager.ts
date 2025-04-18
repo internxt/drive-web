@@ -60,10 +60,14 @@ export class DownloadManager {
     this.MAX_CONCURRENT_DOWNLOADS,
   );
 
-  private static readonly isServerError = (error: any): boolean => {
+  private static readonly isServerError = (error: unknown): boolean => {
+    const castedError = errorService.castError(error);
     return (
-      [ErrorMessages.ServerUnavailable, ErrorMessages.ServerError].includes(error.message || '') ||
-      (error.status !== undefined && error.status >= 500)
+      [
+        ErrorMessages.ServerUnavailable.toLowerCase(),
+        ErrorMessages.ServerError.toLowerCase(),
+        ErrorMessages.InternalServerError.toLowerCase(),
+      ].includes(castedError.message.toLowerCase() as ErrorMessages) || (castedError.status ?? 0) >= 500
     );
   };
 
@@ -164,6 +168,8 @@ export class DownloadManager {
     const { items, taskId } = downloadTask;
     const isConnectionLost = isLostConnectionError(err);
     const isServerError = this.isServerError(err);
+    const castedError = errorService.castError(err);
+    const filePickerCancelled = castedError.message === ErrorMessages.FilePickerCancelled;
     let updateTaskWithErrorStatus = true;
 
     if (isConnectionLost) {
@@ -174,7 +180,7 @@ export class DownloadManager {
       throw err;
     }
 
-    if (isServerError || ErrorMessages.FilePickerCancelled) {
+    if (isServerError || filePickerCancelled) {
       const retryTasks = RetryManager.getTasksById(downloadTask.taskId);
       if (retryTasks.length > 0) {
         tasksService.updateTask({
@@ -255,7 +261,7 @@ export class DownloadManager {
     );
   };
 
-  private static readonly removeRetryItems = (items: any, downloadTask: DownloadTask) => {
+  private static readonly removeRetryItems = (items: DownloadItemType[], downloadTask: DownloadTask) => {
     items
       .filter((item) => !downloadTask.failedItems?.some((failedItem) => failedItem.id === item.id))
       .forEach((item) => RetryManager.removeTaskByIdAndParams(downloadTask.taskId, { id: item.id }));

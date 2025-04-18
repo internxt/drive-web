@@ -446,7 +446,7 @@ export const isLostConnectionError = (error: unknown) => {
   const isLostConnectionError =
     error instanceof ConnectionLostError ||
     [ErrorMessages.ConnectionLost.toLowerCase(), ErrorMessages.NetworkError.toLowerCase()].includes(
-      castedError.message as ErrorMessages,
+      castedError.message.toLowerCase() as ErrorMessages,
     );
 
   return isLostConnectionError;

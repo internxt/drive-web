@@ -30,6 +30,14 @@ import { ConnectionLostError } from 'app/network/requests';
 import { downloadFile } from 'app/network/download';
 
 vi.mock('file-saver', () => ({ saveAs: vi.fn() }));
+vi.mock('src/app/network/NetworkFacade.ts', () => ({
+  NetworkFacade: vi.fn().mockImplementation(() => ({
+    downloadFile: vi.fn(),
+    downloadFolder: vi.fn(),
+    downloadItems: vi.fn(),
+    generateTasksForItem: vi.fn(),
+  })),
+}));
 
 describe('downloadManagerService', () => {
   beforeAll(() => {

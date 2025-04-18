@@ -18,6 +18,16 @@ import { TaskData, TaskStatus } from 'app/tasks/types';
 import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { FlatFolderZip } from 'app/core/services/zip.service';
+import retryManager from './RetryManager';
+
+vi.mock('src/app/network/NetworkFacade.ts', () => ({
+  NetworkFacade: vi.fn().mockImplementation(() => ({
+    downloadFile: vi.fn(),
+    downloadFolder: vi.fn(),
+    downloadItems: vi.fn(),
+    generateTasksForItem: vi.fn(),
+  })),
+}));
 
 vi.mock('i18next', () => ({ t: (_) => 'Test translation message' }));
 
@@ -818,6 +828,85 @@ describe('downloadManager', () => {
         merge: { status: TaskStatus.Success },
       });
       expect(downloadItemsSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('removeRetryItems', () => {
+    it('should remove retry items that are not in the failed items list', () => {
+      const items = [
+        { id: 1, isFolder: false },
+        { id: 2, isFolder: true },
+        { id: 3, isFolder: false },
+      ] as DownloadItemType[];
+
+      const downloadTask = {
+        taskId: 'task-1',
+        failedItems: [{ id: 2, isFolder: true }],
+      } as DownloadTask;
+
+      const removeTaskSpy = vi.spyOn(retryManager, 'removeTaskByIdAndParams');
+
+      DownloadManager['removeRetryItems'](items, downloadTask);
+
+      expect(removeTaskSpy).toHaveBeenCalledTimes(2);
+      expect(removeTaskSpy).toHaveBeenCalledWith('task-1', { id: 1 });
+      expect(removeTaskSpy).toHaveBeenCalledWith('task-1', { id: 3 });
+    });
+
+    it('should not remove any retry items if all items are in the failed items list', () => {
+      const items = [
+        { id: 1, isFolder: false },
+        { id: 2, isFolder: true },
+      ] as DownloadItemType[];
+
+      const downloadTask = {
+        taskId: 'task-2',
+        failedItems: [
+          { id: 1, isFolder: false },
+          { id: 2, isFolder: true },
+        ],
+      } as DownloadTask;
+
+      const removeTaskSpy = vi.spyOn(retryManager, 'removeTaskByIdAndParams');
+
+      DownloadManager['removeRetryItems'](items, downloadTask);
+
+      expect(removeTaskSpy).not.toHaveBeenCalled();
+    });
+
+    it('should handle an empty failed items list', () => {
+      const items = [
+        { id: 1, isFolder: false },
+        { id: 2, isFolder: true },
+      ] as DownloadItemType[];
+
+      const downloadTask = {
+        taskId: 'task-3',
+        failedItems: [] as DownloadItemType[],
+      } as DownloadTask;
+
+      const removeTaskSpy = vi.spyOn(retryManager, 'removeTaskByIdAndParams').mockReturnValue();
+
+      DownloadManager['removeRetryItems'](items, downloadTask);
+
+      expect(removeTaskSpy).toHaveBeenCalledTimes(2);
+      expect(removeTaskSpy).toHaveBeenCalledWith('task-3', { id: 1 });
+      expect(removeTaskSpy).toHaveBeenCalledWith('task-3', { id: 2 });
+    });
+
+    it('should handle an empty items list', () => {
+      const items: DownloadItemType[] = [];
+
+      const downloadTask = {
+        taskId: 'task-4',
+        failedItems: [{ id: 1, isFolder: false }],
+      } as DownloadTask;
+
+      const removeTaskSpy = vi.spyOn(retryManager, 'removeTaskByIdAndParams').mockReturnValue();
+
+      DownloadManager['removeRetryItems'](items, downloadTask);
+
+      expect(removeTaskSpy).not.toHaveBeenCalled();
     });
   });
 });
