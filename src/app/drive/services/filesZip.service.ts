@@ -120,4 +120,4 @@ function* getFilesChunksUntilMaxCacheSize<T extends File>(maxCacheSizeUsed: numb
   }
 }
 
-export { addAllFilesToZip, addAllSharedFilesToZip };
+export { addAllFilesToZip, addAllSharedFilesToZip, addFilesToZip };

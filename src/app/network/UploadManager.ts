@@ -11,6 +11,7 @@ import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../ta
 import { ConnectionLostError } from './requests';
 import { FileToUpload } from '../drive/services/file.service/types';
 import RetryManager, { RetryableTask } from './RetryManager';
+import { ErrorMessages } from 'app/drive/services/downloadManager.service';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -262,7 +263,8 @@ class UploadManager {
           .catch((error) => {
             const isUploadAborted =
               !!this.abortController?.signal.aborted || !!fileData.abortController?.signal.aborted || error === 'abort';
-            const isLostConnectionError = error instanceof ConnectionLostError || error.message === 'Network Error';
+            const isLostConnectionError =
+              error instanceof ConnectionLostError || error.message === ErrorMessages.NetworkError;
 
             if (uploadAttempts < MAX_UPLOAD_ATTEMPTS && !isUploadAborted && !isLostConnectionError) {
               upload();

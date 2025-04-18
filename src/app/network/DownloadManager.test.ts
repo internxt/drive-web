@@ -17,6 +17,7 @@ import errorService from 'app/core/services/error.service';
 import { TaskData, TaskStatus } from 'app/tasks/types';
 import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { FlatFolderZip } from 'app/core/services/zip.service';
 
 vi.mock('i18next', () => ({ t: (_) => 'Test translation message' }));
 
@@ -28,6 +29,7 @@ describe('downloadManager', () => {
       bridgeUser: 'user-bridge',
       mnemonic: 'mnemonic',
     } as UserSettings);
+    vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
   });
 
   it('should generate task for a folder and download it using the queue', async () => {
@@ -711,18 +713,20 @@ describe('downloadManager', () => {
     await expect(DownloadManager.downloadItem(downloadItem)).resolves.not.toThrow();
   });
 
-  describe('compareArraysByIdAndFolder', () => {
-    it('should return true for arrays with identical id and isFolder properties', () => {
+  describe('areItemArraysEqual', () => {
+    it('should return true for identical arrays', () => {
       const arr1 = [
+        { id: 5, isFolder: true },
         { id: 1, isFolder: true },
-        { id: 2, isFolder: false },
+        { id: 7, isFolder: true },
       ] as DownloadItemType[];
       const arr2 = [
         { id: 1, isFolder: true },
-        { id: 2, isFolder: false },
+        { id: 7, isFolder: true },
+        { id: 5, isFolder: true },
       ] as DownloadItemType[];
 
-      const result = DownloadManager['compareArraysByIdAndFolder'](arr1, arr2);
+      const result = DownloadManager['areItemArraysEqual'](arr1, arr2);
       expect(result).toBe(true);
     });
 
@@ -733,24 +737,87 @@ describe('downloadManager', () => {
         { id: 2, isFolder: false },
       ] as DownloadItemType[];
 
-      const result = DownloadManager['compareArraysByIdAndFolder'](arr1, arr2);
+      const result = DownloadManager['areItemArraysEqual'](arr1, arr2);
       expect(result).toBe(false);
     });
 
-    it('should return false for arrays with different id properties', () => {
-      const arr1 = [{ id: 1, isFolder: true }] as DownloadItemType[];
-      const arr2 = [{ id: 2, isFolder: true }] as DownloadItemType[];
+    it('should return false for arrays with different items', () => {
+      const arr1 = [
+        { id: 1, isFolder: true },
+        { id: 3, isFolder: true },
+      ] as DownloadItemType[];
+      const arr2 = [
+        { id: 2, isFolder: true },
+        { id: 1, isFolder: true },
+      ] as DownloadItemType[];
 
-      const result = DownloadManager['compareArraysByIdAndFolder'](arr1, arr2);
+      const result = DownloadManager['areItemArraysEqual'](arr1, arr2);
       expect(result).toBe(false);
     });
+  });
 
-    it('should return false for arrays with different isFolder properties', () => {
-      const arr1: DownloadItemType[] = [{ id: 1, isFolder: true }] as DownloadItemType[];
-      const arr2: DownloadItemType[] = [{ id: 1, isFolder: false }] as DownloadItemType[];
+  describe('downloadTask', () => {
+    it('should update task status to Error when all items fail (failedItems > 0)', async () => {
+      const mockTask = { id: 'task-1', status: TaskStatus.InProcess } as TaskData;
+      vi.spyOn(tasksService, 'findTask').mockReturnValue(mockTask);
 
-      const result = DownloadManager['compareArraysByIdAndFolder'](arr1, arr2);
-      expect(result).toBe(false);
+      const downloadTask = {
+        items: [
+          { id: 123, isFolder: false },
+          { id: 234, isFolder: true },
+        ] as DownloadItemType[],
+        taskId: 'task-1',
+        abortController: new AbortController(),
+        options: {
+          showErrors: true,
+        },
+        failedItems: [
+          { id: 123, isFolder: false },
+          { id: 234, isFolder: true },
+        ] as DownloadItemType[],
+      } as DownloadTask;
+
+      const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+
+      const downloadItemsSpy = vi.spyOn(DownloadManagerService.instance, 'downloadItems').mockResolvedValue();
+
+      await expect(DownloadManager['downloadTask'](downloadTask)).rejects.toThrow(ErrorMessages.ServerUnavailable);
+
+      expect(updateTaskSpy).toHaveBeenCalledWith({
+        taskId: 'task-1',
+        merge: { status: TaskStatus.Error },
+      });
+      expect(downloadItemsSpy).toHaveBeenCalled();
+    });
+
+    it('should not throw an error if only some items fail (failedItems > 0 but not all)', async () => {
+      const mockTask = { id: 'task-2', status: TaskStatus.InProcess } as TaskData;
+      vi.spyOn(tasksService, 'findTask').mockReturnValue(mockTask);
+
+      const downloadTask = {
+        items: [
+          { id: 123, isFolder: false },
+          { id: 234, isFolder: true },
+        ] as DownloadItemType[],
+        taskId: 'task-2',
+        abortController: new AbortController(),
+        options: {
+          showErrors: true,
+        },
+        failedItems: [{ id: 123, isFolder: false }] as DownloadItemType[],
+      } as DownloadTask;
+
+      const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+
+      const downloadItemsSpy = vi.spyOn(DownloadManagerService.instance, 'downloadItems').mockResolvedValue();
+
+      await expect(DownloadManager['downloadTask'](downloadTask)).resolves.not.toThrow();
+
+      expect(updateTaskSpy).toHaveBeenCalledWith({
+        taskId: 'task-2',
+        merge: { status: TaskStatus.Success },
+      });
+      expect(downloadItemsSpy).toHaveBeenCalled();
     });
   });
 });

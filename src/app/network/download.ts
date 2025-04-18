@@ -166,16 +166,40 @@ async function getRequiredFileMetadataWithAuth(
 }
 
 export function downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
+  let connectionLost = false;
+  const timeoutMs = 10000;
+
+  const connectionLostListener = () => {
+    connectionLost = true;
+    window.removeEventListener('offline', connectionLostListener);
+  };
+
+  window.addEventListener('offline', connectionLostListener);
+  const timeoutId = setTimeout(() => {
+    if (!navigator.onLine) {
+      connectionLost = true;
+    }
+  }, timeoutMs);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const downloadFileV2Promise = downloadFileV2(params as any);
 
-  return downloadFileV2Promise.catch((err) => {
-    if (err instanceof FileVersionOneError) {
-      return _downloadFile(params);
-    }
+  return downloadFileV2Promise
+    .catch((err) => {
+      if (connectionLost) {
+        throw new ConnectionLostError();
+      }
 
-    throw err;
-  });
+      if (err instanceof FileVersionOneError) {
+        return _downloadFile(params);
+      }
+
+      throw err;
+    })
+    .finally(() => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('offline', connectionLostListener);
+    });
 }
 
 async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
@@ -183,12 +207,19 @@ async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Ui
 
   let metadata: MetadataRequiredForDownload;
   let connectionLost = false;
+  const timeoutMs = 10000;
 
   const connectionLostListener = () => {
     connectionLost = true;
     window.removeEventListener('offline', connectionLostListener);
   };
   window.addEventListener('offline', connectionLostListener);
+
+  const timeoutId = setTimeout(() => {
+    if (!navigator.onLine) {
+      connectionLost = true;
+    }
+  }, timeoutMs);
 
   try {
     if (creds) {
@@ -229,6 +260,7 @@ async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Ui
     }
     throw err;
   } finally {
+    clearTimeout(timeoutId);
     window.removeEventListener('offline', connectionLostListener);
   }
 }
