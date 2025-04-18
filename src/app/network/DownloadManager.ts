@@ -12,6 +12,7 @@ import {
   DownloadManagerService,
   DownloadTask,
   ErrorMessages,
+  isLostConnectionError,
 } from 'app/drive/services/downloadManager.service';
 
 /**
@@ -57,13 +58,6 @@ export class DownloadManager {
     },
     this.MAX_CONCURRENT_DOWNLOADS,
   );
-
-  private static readonly isConnectionLostError = (error: any): boolean => {
-    return (
-      error instanceof ConnectionLostError ||
-      [ErrorMessages.NetworkError, ErrorMessages.ConnectionLost].includes(error.message)
-    );
-  };
 
   private static readonly downloadTask = async (downloadTask: DownloadTask) => {
     const { items, taskId, abortController } = downloadTask;
@@ -122,7 +116,7 @@ export class DownloadManager {
       }
 
       if (downloadTask.failedItems && downloadTask.failedItems.length > 0) {
-        if (this.compareArraysByIdAndFolder(items, downloadTask.failedItems)) {
+        if (this.areItemArraysEqual(items, downloadTask.failedItems)) {
           tasksService.updateTask({
             taskId,
             merge: {
@@ -149,7 +143,7 @@ export class DownloadManager {
 
   private static readonly reportError = (err: unknown, downloadTask: DownloadTask) => {
     const { items, taskId } = downloadTask;
-    const isConnectionLost = this.isConnectionLostError(err);
+    const isConnectionLost = isLostConnectionError(err);
 
     if (isConnectionLost) {
       tasksService.updateTask({
@@ -212,12 +206,14 @@ export class DownloadManager {
     }
   };
 
-  private static compareArraysByIdAndFolder = (arr1: DownloadItemType[], arr2: DownloadItemType[]) => {
-    if (arr1.length !== arr2.length) return false;
+  private static areItemArraysEqual = (firstArray: DownloadItemType[], secondArray: DownloadItemType[]) => {
+    if (firstArray.length !== secondArray.length) return false;
 
-    return arr1.every((obj1, index) => {
-      const obj2 = arr2[index];
-      return obj2?.id === obj1.id && obj2?.isFolder === obj1.isFolder;
-    });
+    return firstArray.every((itemInFirstArray) =>
+      secondArray.some(
+        (itemInSecondArray) =>
+          itemInSecondArray.id === itemInFirstArray.id && itemInSecondArray.isFolder === itemInFirstArray.isFolder,
+      ),
+    );
   };
 }

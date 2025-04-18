@@ -18,17 +18,18 @@ import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
 import { addAllFoldersToZip, addAllSharedFoldersToZip } from './foldersZip.service';
 import newStorageService from './new-storage.service';
 import {
+  DownloadFilesType,
   FileIterator,
   FolderIterator,
   SharedFileIterator,
   SharedFolderIterator,
+  isLostConnectionError,
 } from '../../drive/services/downloadManager.service';
 import { DriveItemBlobData } from '../../database/services/database.service';
 import dateService from '../../core/services/date.service';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { queue, QueueObject } from 'async';
 import { QueueUtilsService } from 'app/utils/queueUtils';
-import { ConnectionLostError } from './../../network/requests';
 
 export interface IFolders {
   bucket: string;
@@ -299,16 +300,16 @@ export async function downloadFolderAsZip({
   options: DownloadFolderAsZipOptions;
   abortController?: AbortController;
 }): Promise<{
-  totalItems: DriveFileData[] & SharedFiles[];
-  failedItems: DriveFileData[] & SharedFiles[];
+  totalItems: DownloadFilesType;
+  failedItems: DownloadFilesType;
   allItemsFailed: boolean;
 }> {
   const folderId: DriveFolderData['id'] = folder.id;
   const folderName: DriveFolderData['name'] = folder.plainName ?? folder.plain_name ?? folder.name;
   const folderUUID: DriveFolderData['uuid'] = folder.uuid;
   const rootFolder: FolderRef = { folderId, name: folderName, folderUuid: folderUUID };
-  const failedItems: DriveFileData[] & SharedFiles[] = [];
-  const totalItems: DriveFileData[] & SharedFiles[] = [];
+  const failedItems: DownloadFilesType = [];
+  const totalItems: DownloadFilesType = [];
   let allItemsFailed = false;
 
   const workspaceId = options.workspaceId;
@@ -403,10 +404,8 @@ export async function downloadFolderAsZip({
           });
 
           return sourceBlob.stream();
-        } catch (error: any) {
-          const serverUnavailableError = error.message === 'Server unavailable';
-          const isLostConnectionError = error instanceof ConnectionLostError || error.message === 'Network Error';
-          if (serverUnavailableError || isLostConnectionError) {
+        } catch (error: unknown) {
+          if (isLostConnectionError(error)) {
             throw error;
           }
           failedItems.push(file);
@@ -481,10 +480,8 @@ export async function downloadFolderAsZip({
           });
 
           return sourceBlob.stream();
-        } catch (error: any) {
-          const serverUnavailableError = error.message === 'Server unavailable';
-          const isLostConnectionError = error instanceof ConnectionLostError || error.message === 'Network Error';
-          if (serverUnavailableError || isLostConnectionError) {
+        } catch (error: unknown) {
+          if (isLostConnectionError(error)) {
             throw error;
           }
           failedItems.push(file);
