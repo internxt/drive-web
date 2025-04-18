@@ -82,6 +82,7 @@ export enum ErrorMessages {
   InternalServerError = 'Internal Server Error',
   NetworkError = 'Network Error',
   ConnectionLost = 'Connection lost',
+  FilePickerCancelled = 'File picker was canceled or failed',
 }
 
 /**
@@ -260,6 +261,8 @@ export class DownloadManagerService {
 
     if (zipFolderResult?.allItemsFailed) {
       throw new Error(ErrorMessages.ServerUnavailable);
+    } else if (zipFolderResult?.failedItems.length > 0) {
+      downloadTask.failedItems.push(...(zipFolderResult.failedItems as DownloadItemType[]));
     }
   };
 
@@ -392,6 +395,8 @@ export class DownloadManagerService {
 
       if (downloadedItems.allItemsFailed) {
         failedItems.push(driveItem);
+      } else if (downloadedItems?.failedItems.length > 0) {
+        failedItems.push(...(downloadedItems?.failedItems as DownloadItemType[]));
       }
     };
 
@@ -441,7 +446,7 @@ export const isLostConnectionError = (error: unknown) => {
   const isLostConnectionError =
     error instanceof ConnectionLostError ||
     [ErrorMessages.ConnectionLost.toLowerCase(), ErrorMessages.NetworkError.toLowerCase()].includes(
-      castedError.message as ErrorMessages,
+      castedError.message.toLowerCase() as ErrorMessages,
     );
 
   return isLostConnectionError;
