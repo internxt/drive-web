@@ -27,6 +27,7 @@ vi.mock('@internxt/ui', () => ({
       </div>
     ) : null,
   ),
+  Loader: vi.fn(() => <div data-testid="loader" />),
 }));
 
 describe('TaskToRetry', () => {
