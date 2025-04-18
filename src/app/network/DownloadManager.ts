@@ -6,7 +6,14 @@ import { ConnectionLostError } from './requests';
 import { t } from 'i18next';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { DownloadItem, DownloadManagerService, DownloadTask } from 'app/drive/services/downloadManager.service';
+import {
+  DownloadItem,
+  DownloadItemType,
+  DownloadManagerService,
+  DownloadTask,
+  ErrorMessages,
+  isLostConnectionError,
+} from 'app/drive/services/downloadManager.service';
 
 /**
  * DownloadManager class handles file and folder downloads with queue management
@@ -108,6 +115,18 @@ export class DownloadManager {
         await DownloadManagerService.instance.downloadFile(downloadTask, updateProgressCallback);
       }
 
+      if (downloadTask.failedItems && downloadTask.failedItems.length > 0) {
+        if (this.areItemArraysEqual(items, downloadTask.failedItems)) {
+          tasksService.updateTask({
+            taskId,
+            merge: {
+              status: TaskStatus.Error,
+            },
+          });
+          throw new Error(ErrorMessages.ServerUnavailable);
+        }
+      }
+
       tasksService.updateTask({
         taskId,
         merge: {
@@ -124,8 +143,9 @@ export class DownloadManager {
 
   private static readonly reportError = (err: unknown, downloadTask: DownloadTask) => {
     const { items, taskId } = downloadTask;
+    const isConnectionLost = isLostConnectionError(err);
 
-    if (err instanceof ConnectionLostError) {
+    if (isConnectionLost) {
       tasksService.updateTask({
         taskId,
         merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
@@ -184,5 +204,16 @@ export class DownloadManager {
       await this.downloadQueue.pushAsync(newTask);
       return newTask;
     }
+  };
+
+  private static areItemArraysEqual = (firstArray: DownloadItemType[], secondArray: DownloadItemType[]) => {
+    if (firstArray.length !== secondArray.length) return false;
+
+    return firstArray.every((itemInFirstArray) =>
+      secondArray.some(
+        (itemInSecondArray) =>
+          itemInSecondArray.id === itemInFirstArray.id && itemInSecondArray.isFolder === itemInFirstArray.isFolder,
+      ),
+    );
   };
 }

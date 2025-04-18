@@ -753,7 +753,7 @@ export async function downloadPublicSharedFolder({
     isPublicShare: true,
   };
 
-  return downloadFolderAsZip({
+  await downloadFolderAsZip({
     folder: item as DriveFolderData,
     isSharedFolder: true,
     foldersIterator: createFoldersIterator,

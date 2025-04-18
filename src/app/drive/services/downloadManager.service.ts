@@ -22,6 +22,7 @@ import date from 'app/core/services/date.service';
 import { Iterator } from 'app/core/collections';
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { ConnectionLostError } from './../../network/requests';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -43,7 +44,8 @@ export type DownloadItem = {
   createFilesIterator?: FileIterator | SharedFileIterator;
 };
 
-type DownloadItemType = DriveItemData | AdvancedSharedItem;
+export type DownloadItemType = DriveItemData | AdvancedSharedItem;
+export type DownloadFilesType = DriveFileData[] & SharedFiles[];
 
 export type DownloadTask = {
   items: DownloadItemType[];
@@ -57,6 +59,7 @@ export type DownloadTask = {
   abortController?: AbortController;
   createFoldersIterator: FolderIterator | SharedFolderIterator;
   createFilesIterator: FileIterator | SharedFileIterator;
+  failedItems: DownloadItemType[];
 };
 
 export type FolderIterator = (
@@ -72,6 +75,14 @@ export type FileIterator = (
 
 export type SharedFolderIterator = (directoryId: string, resourcesToken?: string) => Iterator<SharedFolders>;
 export type SharedFileIterator = (directoryId: string, resourcesToken?: string) => Iterator<SharedFiles>;
+
+export enum ErrorMessages {
+  ServerUnavailable = 'Server Unavailable',
+  ServerError = 'Server Error',
+  InternalServerError = 'Internal Server Error',
+  NetworkError = 'Network Error',
+  ConnectionLost = 'Connection lost',
+}
 
 /**
  * DownloadManagerService handles file and folder downloads with queue management
@@ -211,6 +222,7 @@ export class DownloadManagerService {
       abortController: uploadFolderAbortController,
       createFilesIterator: filesIterator,
       createFoldersIterator: foldersIterator,
+      failedItems: [],
     };
   };
 
@@ -232,7 +244,7 @@ export class DownloadManagerService {
       },
     });
 
-    await downloadFolderAsZip({
+    const zipFolderResult = await downloadFolderAsZip({
       folder: folder as DriveFolderData,
       isSharedFolder: options.areSharedItems,
       foldersIterator: createFoldersIterator,
@@ -245,6 +257,10 @@ export class DownloadManagerService {
       },
       abortController,
     });
+
+    if (zipFolderResult?.allItemsFailed) {
+      throw new Error(ErrorMessages.ServerUnavailable);
+    }
   };
 
   readonly downloadFile = async (downloadTask: DownloadTask, updateProgressCallback: (progress: number) => void) => {
@@ -286,6 +302,7 @@ export class DownloadManagerService {
 
     const folderZip = new FlatFolderZip(options.downloadName, { abortController });
     const downloadProgress: number[] = [];
+    const failedItems: DownloadItemType[] = [];
 
     items.forEach((_, index) => {
       downloadProgress[index] = 0;
@@ -300,8 +317,13 @@ export class DownloadManagerService {
     };
 
     const addFileStreamToZip = async (index: number, driveItem: DownloadItemType) => {
-      let fileStream: ReadableStream<Uint8Array>;
+      // TODO: QA REMOVE
+      if (driveItem.name.includes('internxt_test_file') || driveItem.plainName?.includes('internxt_test_file')) {
+        failedItems.push(driveItem);
+        return;
+      }
       const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+      let fileStream: ReadableStream<Uint8Array>;
       const cachedFile = await lruFilesCacheManager.get(driveItem.id.toString());
       const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file: driveItem });
 
@@ -344,7 +366,7 @@ export class DownloadManagerService {
     };
 
     const addFolderToZip = async (index: number, driveItem: DownloadItemType) => {
-      await downloadFolderAsZip({
+      const downloadedItems = await downloadFolderAsZip({
         folder: driveItem as DriveFolderData,
         isSharedFolder: options.areSharedItems,
         foldersIterator: createFoldersIterator,
@@ -367,6 +389,10 @@ export class DownloadManagerService {
         abortController,
       });
       downloadProgress[index] = 1;
+
+      if (downloadedItems.allItemsFailed) {
+        failedItems.push(driveItem);
+      }
     };
 
     for (const [index, driveItem] of items.entries()) {
@@ -381,12 +407,42 @@ export class DownloadManagerService {
         } else {
           await addFileStreamToZip(index, driveItem);
         }
-      } catch (error) {
-        folderZip.abort();
-        throw error;
+      } catch (error: unknown) {
+        if (isLostConnectionError(error)) {
+          folderZip.abort();
+          await folderZip.close();
+          throw error;
+        }
+        failedItems.push(driveItem);
       }
+    }
+
+    if (failedItems.length > 0) {
+      if (failedItems.length === items.length) {
+        const allEqual = failedItems.every((failedItem) =>
+          items.some((item) => item.id === failedItem.id && item.isFolder === failedItem.isFolder),
+        );
+
+        if (allEqual) {
+          folderZip.abort();
+          await folderZip.close();
+          throw new Error(ErrorMessages.ServerUnavailable);
+        }
+      }
+      downloadTask.failedItems = failedItems;
     }
 
     await folderZip.close();
   };
 }
+
+export const isLostConnectionError = (error: unknown) => {
+  const castedError = errorService.castError(error);
+  const isLostConnectionError =
+    error instanceof ConnectionLostError ||
+    [ErrorMessages.ConnectionLost.toLowerCase(), ErrorMessages.NetworkError.toLowerCase()].includes(
+      castedError.message as ErrorMessages,
+    );
+
+  return isLostConnectionError;
+};
