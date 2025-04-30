@@ -91,6 +91,12 @@ const checkChangeEmailLinkExpiration = (verifyToken: string): Promise<CheckChang
   return authClient.checkChangeEmailExpiration(verifyToken);
 };
 
+const downloadAvatar = async (url: string): Promise<Blob> => {
+  const response = await fetch(url);
+  const data = await response.blob();
+  return data;
+};
+
 const userService = {
   initializeUser,
   refreshUser,
@@ -106,6 +112,7 @@ const userService = {
   checkChangeEmailLinkExpiration,
   preCreateUser,
   refreshUserData,
+  downloadAvatar,
 };
 
 export default userService;
