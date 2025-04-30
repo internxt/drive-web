@@ -1,17 +1,17 @@
-import { Dispatch, SetStateAction, useState, RefObject, createRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import authService from 'app/auth/services/auth.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button, Input } from '@internxt/ui';
-import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
-import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
-import { CaretLeft, FileArrowUp, Warning, WarningCircle, CheckCircle } from '@phosphor-icons/react';
-import { validateMnemonic } from 'bip39';
+import { CaretLeft, CheckCircle, FileArrowUp, Warning, WarningCircle } from '@phosphor-icons/react';
+import authService from 'app/auth/services/auth.service';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import { BackupData } from 'app/utils/backupKeyUtils';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
+import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
+import { validateMnemonic } from 'bip39';
+import { Dispatch, RefObject, SetStateAction, createRef, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+
 interface ChangePasswordProps {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;
 }
@@ -68,6 +68,7 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
 
     try {
       const backupData = JSON.parse(uploadedBackupKeyContent);
+      console.log({ backupData });
       if (backupData.mnemonic && validateMnemonic(backupData.mnemonic)) {
         setBackupKeyContent(uploadedBackupKeyContent);
         return;
@@ -124,18 +125,6 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
     const token = window.location.pathname.split('/').pop();
     const password = newPassword;
 
-    let mnemonic = backupKeyContent;
-    let backupData: BackupData | undefined;
-
-    try {
-      backupData = JSON.parse(backupKeyContent) as BackupData;
-      if (backupData?.mnemonic) {
-        mnemonic = backupData.mnemonic;
-      }
-    } catch (err) {
-      // plain mnemonic
-    }
-
     if (!token) {
       notificationsService.show({
         text: translate('auth.recoverAccount.changePassword.tokenError'),
@@ -146,11 +135,7 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
     }
 
     try {
-      if (backupData && (backupData.privateKey || backupData.keys)) {
-        await authService.updateCredentialsWithToken(token, password, mnemonic, backupData);
-      } else {
-        await authService.updateCredentialsWithToken(token, password, mnemonic);
-      }
+      await authService.recoverAccountWithBackupKey(token, password, backupKeyContent);
 
       localStorageService.clear();
       setIsEmailSent(true);
