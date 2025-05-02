@@ -243,26 +243,76 @@
       "saving": "您节省了 {{percent}}%",
       "planDetails": {
         "title": "计划详情：",
+         "commingSoon":"即将推出",
         "features": {
-          "individual": [
-            "{{spaceToUpgrade}} 加密存储",
-            "加密文件和文件夹共享",
-            "密码保护的文件共享",
-            "从任何设备访问您的文件",
-            "访问我们所有的服务",
-            "双因素认证（2FA）",
-            "高级客户支持",
-            "30 天退款保证"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} 存储/用户",
-            "加密文件和文件夹共享",
-            "创建和管理用户与团队",
-            "从 {{minimumSeats}} 用户到 {{maximumSeats}}",
-            "符合GDPR",
-            "管理账户计费和支付",
-            "高级客户支持"
-          ]
+          "1TB": {
+            "feature1":"1TB 零知识加密存储",
+            "feature2":"后量子加密",
+            "feature3":"超高速无限 VPN（法国）",
+            "feature4":"杀毒软件",
+            "feature5":"文件备份",
+            "feature6":"密码保护文件共享",
+            "feature7":"符合 GDPR 规定",
+            "feature8":"双重身份验证（2FA）",
+            "feature9": "支持 CLI、WebDav 和 Rclone"
+          },
+          "3TB": {
+            "feature1":"3TB 零知识加密存储",
+            "feature2":"后量子加密",
+            "feature3":"超高速无限 VPN（法国、德国、波兰）",
+            "feature4":"杀毒软件",
+            "feature5":"文件备份",
+            "feature6":"密码保护文件共享",
+            "feature7":"符合 GDPR 规定",
+            "feature8":"双重身份验证（2FA）",
+            "feature9":"支持 CLI、WebDav 和 Rclone",
+            "feature10":"Meet（3 名参与者）",
+            "feature11": "Mail（3 个地址）"
+          },
+          "5TB": {
+            "feature1":"5TB 零知识加密存储",
+            "feature2":"后量子加密",
+            "feature3":"超高速无限 VPN（法国、德国、波兰、加拿大、英国）",
+            "feature4":"杀毒软件",
+            "feature5":"文件备份",
+            "feature6":"密码保护文件共享",
+            "feature7":"符合 GDPR 规定",
+            "feature8":"双重身份验证（2FA）",
+            "feature9":"支持 CLI、WebDav 和 Rclone",
+            "feature10":"Meet（5 名参与者）",
+            "feature11": "Mail（5 个地址）"
+          }
+        },
+        "business": {
+          "1TB": {
+            "feature1":"每用戶 1TB 儲存空間",
+            "feature2":"後量子加密",
+            "feature3":"超高速無限 VPN（法國、德國、波蘭）",
+            "feature4":"防毒軟體",
+            "feature5":"文件備份",
+            "feature6":"密碼保護的文件共享",
+            "feature7":"符合 GDPR 規範",
+            "feature8":"雙重驗證（2FA）",
+            "feature9":"支援 CLI、WebDav 和 Rclone",
+            "feature10":"管理帳戶帳單與付款",
+            "feature11":"最多 10 人會議",
+            "feature12":"每用戶 1 個自訂電子郵件地址"
+          },
+          "2TB": {
+            "feature1":"每用戶 2TB 儲存空間",
+            "feature2":"後量子加密",
+            "feature3":"超高速無限 VPN（法國、德國、波蘭、加拿大、英國）",
+            "feature4":"防毒軟體",
+            "feature5":"文件備份",
+            "feature6":"密碼保護的文件共享",
+            "feature7":"符合 GDPR 規範",
+            "feature8":"雙重驗證（2FA）",
+            "feature9":"支援 CLI、WebDav 和 Rclone",
+            "feature10":"管理帳戶帳單與付款",
+            "feature11":"最多 10 人會議",
+            "feature12":"每用戶 2 個自訂電子郵件地址"
+          }
+          
         }
       },
       "total": "总计",
