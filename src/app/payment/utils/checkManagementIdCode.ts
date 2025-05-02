@@ -13,7 +13,7 @@ export const isManagementIdThemeAvailable = async (plan: PlanState, onSuccess?: 
     const coupons = ['IDENTITY82', 'IDENTITY82AFF'];
 
     const couponUsedResults = await Promise.all(coupons.map((code) => paymentService.isCouponUsedByUser(code)));
-    const couponUsed = couponUsedResults.some((result) => result);
+    const couponUsed = couponUsedResults.some((result) => result?.couponUsed === true);
 
     if (couponUsed) {
       onSuccess?.();
