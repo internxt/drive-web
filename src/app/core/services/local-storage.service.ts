@@ -8,6 +8,10 @@ export const STORAGE_KEYS = {
   WORKSPACE_CREDENTIALS: 'workspace_credentials',
   FOLDER_ACCESS_TOKEN: 'folderAccessToken',
   FILE_ACCESS_TOKEN: 'fileAccessToken',
+  THEMES: {
+    MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'managementid_theme_enabled',
+    ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'id_management_theme_enabled',
+  },
 };
 
 function get(key: string): string | null {
@@ -74,6 +78,8 @@ function clear(): void {
   localStorage.removeItem('xInvitedToken');
   localStorage.removeItem('xResourcesToken');
   localStorage.removeItem('star_wars_theme_enabled');
+  localStorage.removeItem(STORAGE_KEYS.THEMES.MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
+  localStorage.removeItem(STORAGE_KEYS.THEMES.ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
   localStorage.removeItem(STORAGE_KEYS.B2B_WORKSPACE);
   localStorage.removeItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS);
 }
