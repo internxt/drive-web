@@ -90,7 +90,6 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 - [.stylelintignore](./.stylelintignore)
 - [.stylelintrc.json](./.stylelintrc.json)
 - [craco.config.js](./craco.config.js)
-- [jest.config.js](./jest.config.js)
 - [package.json](./package.json)
 - [README.md](./README.md)
 - [tailwind.config.js](./tailwind.config.js)
