@@ -98,8 +98,6 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 The [/src](./src) folder contains the source code.
 
-The subfolder [/src/app](./src/app) organizes the code in a very similar way to Angular, grouping by feature related files in modules.
-
 # New Project Structure
 
 This project is organized following a **visual and functional hierarchy** approach. Each view (or page) has its own folder containing its specific components, styles, and logic. Additionally, reusable components, custom hooks, utilities, and global styles are stored in separate directories to enhance reusability and maintainability.
