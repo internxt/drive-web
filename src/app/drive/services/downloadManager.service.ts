@@ -231,6 +231,7 @@ export class DownloadManagerService {
     updateProgressCallback: (progress: number) => void,
     incrementItemCount: () => void,
   ) => {
+    const { connectionLost, cleanup } = this.handleConnectionLost(5000);
     const { items, taskId, credentials, abortController, createFilesIterator, createFoldersIterator, options } =
       downloadTask;
     const folder = items[0];
@@ -244,52 +245,72 @@ export class DownloadManagerService {
       },
     });
 
-    const zipFolderResult = await downloadFolderAsZip({
-      folder: folder as DriveFolderData,
-      isSharedFolder: options.areSharedItems,
-      foldersIterator: createFoldersIterator,
-      filesIterator: createFilesIterator,
-      updateProgress: updateProgressCallback,
-      updateNumItems: incrementItemCount,
-      options: {
-        closeWhenFinished: true,
-        ...credentials,
-      },
-      abortController,
-    });
+    try {
+      const zipFolderResult = await downloadFolderAsZip({
+        folder: folder as DriveFolderData,
+        isSharedFolder: options.areSharedItems,
+        foldersIterator: createFoldersIterator,
+        filesIterator: createFilesIterator,
+        updateProgress: updateProgressCallback,
+        updateNumItems: incrementItemCount,
+        options: {
+          closeWhenFinished: true,
+          ...credentials,
+        },
+        abortController,
+      });
 
-    if (zipFolderResult?.allItemsFailed) {
-      throw new Error(ErrorMessages.ServerUnavailable);
+      await this.checkAndHandleConnectionLoss(connectionLost);
+
+      if (zipFolderResult?.allItemsFailed) {
+        throw new Error(ErrorMessages.ServerUnavailable);
+      }
+    } catch (error) {
+      await this.checkAndHandleConnectionLoss(connectionLost);
+      throw error;
+    } finally {
+      cleanup();
     }
   };
 
   readonly downloadFile = async (downloadTask: DownloadTask, updateProgressCallback: (progress: number) => void) => {
-    const { items, credentials, options, abortController } = downloadTask;
-    const file = items[0] as DriveFileData;
+    const { connectionLost, cleanup } = this.handleConnectionLost(5000);
 
-    let cachedFile: DriveItemBlobData | undefined;
-    let isCachedFileOlder = false;
     try {
-      cachedFile = await getDatabaseFileSourceData({ fileId: file.id });
-      isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
-    } catch (error) {
-      errorService.addBreadcrumb({
-        level: 'info',
-        category: 'download-file',
-        message: 'Failed to check if cached file is older',
-        data: {
-          fileId: file.id,
-        },
-      });
-      errorService.reportError(error);
-    }
+      const { items, credentials, options, abortController } = downloadTask;
+      const file = items[0] as DriveFileData;
 
-    if (cachedFile?.source && !isCachedFileOlder) {
-      updateProgressCallback(1);
-      saveAs(cachedFile.source, options.downloadName);
-    } else {
-      const isWorkspace = !!credentials.workspaceId;
-      await downloadService.downloadFile(file, isWorkspace, updateProgressCallback, abortController, credentials);
+      let cachedFile: DriveItemBlobData | undefined;
+      let isCachedFileOlder = false;
+      try {
+        cachedFile = await getDatabaseFileSourceData({ fileId: file.id });
+        isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
+      } catch (error) {
+        errorService.addBreadcrumb({
+          level: 'info',
+          category: 'download-file',
+          message: 'Failed to check if cached file is older',
+          data: {
+            fileId: file.id,
+          },
+        });
+        errorService.reportError(error);
+      }
+
+      if (cachedFile?.source && !isCachedFileOlder) {
+        updateProgressCallback(1);
+        saveAs(cachedFile.source, options.downloadName);
+      } else {
+        const isWorkspace = !!credentials.workspaceId;
+        await downloadService.downloadFile(file, isWorkspace, updateProgressCallback, abortController, credentials);
+      }
+
+      await this.checkAndHandleConnectionLoss(connectionLost);
+    } catch (error) {
+      await this.checkAndHandleConnectionLoss(connectionLost);
+      throw error;
+    } finally {
+      cleanup();
     }
   };
 
@@ -298,141 +319,190 @@ export class DownloadManagerService {
     updateProgressCallback: (progress: number) => void,
     incrementItemCount: () => void,
   ) => {
-    const { items, credentials, abortController, options, createFilesIterator, createFoldersIterator } = downloadTask;
+    const { connectionLost, cleanup } = this.handleConnectionLost(5000);
+    try {
+      const { items, credentials, abortController, options, createFilesIterator, createFoldersIterator } = downloadTask;
 
-    const folderZip = new FlatFolderZip(options.downloadName, { abortController });
-    const downloadProgress: number[] = [];
-    const failedItems: DownloadItemType[] = [];
+      const folderZip = new FlatFolderZip(options.downloadName, { abortController });
+      const downloadProgress: number[] = [];
+      const failedItems: DownloadItemType[] = [];
 
-    items.forEach((_, index) => {
-      downloadProgress[index] = 0;
-    });
-
-    const calculateProgress = () => {
-      const totalProgress = downloadProgress.reduce((previous, current) => {
-        return previous + current;
-      }, 0);
-
-      return totalProgress / downloadProgress.length;
-    };
-
-    const addFileStreamToZip = async (index: number, driveItem: DownloadItemType) => {
-      // TODO: QA REMOVE
-      if (driveItem.name.includes('internxt_test_file') || driveItem.plainName?.includes('internxt_test_file')) {
-        failedItems.push(driveItem);
-        return;
-      }
-      const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-      let fileStream: ReadableStream<Uint8Array>;
-      const cachedFile = await lruFilesCacheManager.get(driveItem.id.toString());
-      const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file: driveItem });
-
-      if (cachedFile?.source && !isCachedFileOlder) {
-        const blob = cachedFile.source;
-        downloadProgress[index] = 1;
-        fileStream = blob.stream();
-      } else {
-        const downloadedFileStream = await downloadFile({
-          fileId: (driveItem as DriveFileData).fileId,
-          bucketId: (driveItem as DriveFileData).bucket,
-          creds: {
-            user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
-            pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
-          },
-          mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
-          options: {
-            abortController,
-            notifyProgress: (totalBytes, downloadedBytes) => {
-              const progress = downloadedBytes / totalBytes;
-
-              downloadProgress[index] = progress;
-
-              updateProgressCallback(calculateProgress());
-            },
-          },
-        });
-
-        const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
-        await updateDatabaseFileSourceData({
-          folderId: driveItem.folderId,
-          sourceBlob,
-          fileId: driveItem.id,
-          updatedAt: driveItem.updatedAt,
-        });
-
-        fileStream = sourceBlob.stream();
-      }
-      folderZip.addFile(`${driveItem.name}${driveItem.type ? '.' + driveItem.type : ''}`, fileStream);
-    };
-
-    const addFolderToZip = async (index: number, driveItem: DownloadItemType) => {
-      const downloadedItems = await downloadFolderAsZip({
-        folder: driveItem as DriveFolderData,
-        isSharedFolder: options.areSharedItems,
-        foldersIterator: createFoldersIterator,
-        filesIterator: createFilesIterator,
-        updateProgress: (progress) => {
-          downloadProgress[index] = progress;
-          updateProgressCallback(calculateProgress());
-        },
-        updateNumItems: incrementItemCount,
-        options: {
-          destination: folderZip,
-          closeWhenFinished: false,
-          credentials: {
-            user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
-            pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
-          },
-          mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
-          workspaceId: credentials.workspaceId,
-        },
-        abortController,
+      items.forEach((_, index) => {
+        downloadProgress[index] = 0;
       });
-      downloadProgress[index] = 1;
 
-      if (downloadedItems.allItemsFailed) {
-        failedItems.push(driveItem);
+      const calculateProgress = () => {
+        const totalProgress = downloadProgress.reduce((previous, current) => {
+          return previous + current;
+        }, 0);
+
+        return totalProgress / downloadProgress.length;
+      };
+
+      const addFileStreamToZip = async (index: number, driveItem: DownloadItemType) => {
+        // TODO: QA REMOVE
+        if (driveItem.name.includes('internxt_test_file') || driveItem.plainName?.includes('internxt_test_file')) {
+          failedItems.push(driveItem);
+          return;
+        }
+        const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+        let fileStream: ReadableStream<Uint8Array>;
+        const cachedFile = await lruFilesCacheManager.get(driveItem.id.toString());
+        const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file: driveItem });
+
+        if (cachedFile?.source && !isCachedFileOlder) {
+          const blob = cachedFile.source;
+          downloadProgress[index] = 1;
+          fileStream = blob.stream();
+        } else {
+          const downloadedFileStream = await downloadFile({
+            fileId: (driveItem as DriveFileData).fileId,
+            bucketId: (driveItem as DriveFileData).bucket,
+            creds: {
+              user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
+              pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
+            },
+            mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
+            options: {
+              abortController,
+              notifyProgress: (totalBytes, downloadedBytes) => {
+                const progress = downloadedBytes / totalBytes;
+
+                downloadProgress[index] = progress;
+
+                updateProgressCallback(calculateProgress());
+              },
+            },
+          });
+
+          const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
+          await updateDatabaseFileSourceData({
+            folderId: driveItem.folderId,
+            sourceBlob,
+            fileId: driveItem.id,
+            updatedAt: driveItem.updatedAt,
+          });
+
+          fileStream = sourceBlob.stream();
+        }
+        folderZip.addFile(`${driveItem.name}${driveItem.type ? '.' + driveItem.type : ''}`, fileStream);
+      };
+
+      const addFolderToZip = async (index: number, driveItem: DownloadItemType) => {
+        const downloadedItems = await downloadFolderAsZip({
+          folder: driveItem as DriveFolderData,
+          isSharedFolder: options.areSharedItems,
+          foldersIterator: createFoldersIterator,
+          filesIterator: createFilesIterator,
+          updateProgress: (progress) => {
+            downloadProgress[index] = progress;
+            updateProgressCallback(calculateProgress());
+          },
+          updateNumItems: incrementItemCount,
+          options: {
+            destination: folderZip,
+            closeWhenFinished: false,
+            credentials: {
+              user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
+              pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
+            },
+            mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
+            workspaceId: credentials.workspaceId,
+          },
+          abortController,
+        });
+        downloadProgress[index] = 1;
+
+        await this.checkAndHandleConnectionLoss(connectionLost, folderZip);
+
+        if (downloadedItems.allItemsFailed) {
+          failedItems.push(driveItem);
+        }
+      };
+
+      for (const [index, driveItem] of items.entries()) {
+        if (abortController?.signal.aborted) {
+          await folderZip.close();
+          return;
+        }
+
+        try {
+          if (driveItem.isFolder) {
+            await addFolderToZip(index, driveItem);
+          } else {
+            await addFileStreamToZip(index, driveItem);
+          }
+        } catch (error: unknown) {
+          await this.checkAndHandleConnectionLoss(connectionLost, folderZip);
+          if (isLostConnectionError(error)) {
+            folderZip.abort();
+            await folderZip.close();
+            throw error;
+          }
+          failedItems.push(driveItem);
+        }
+      }
+
+      if (failedItems.length > 0) {
+        if (failedItems.length === items.length) {
+          const allEqual = failedItems.every((failedItem) =>
+            items.some((item) => item.id === failedItem.id && item.isFolder === failedItem.isFolder),
+          );
+
+          if (allEqual) {
+            folderZip.abort();
+            await folderZip.close();
+            throw new Error(ErrorMessages.ServerUnavailable);
+          }
+        }
+        downloadTask.failedItems = failedItems;
+      }
+
+      await folderZip.close();
+    } catch (error) {
+      await this.checkAndHandleConnectionLoss(connectionLost);
+      throw error;
+    } finally {
+      cleanup();
+    }
+  };
+
+  readonly checkAndHandleConnectionLoss = async (conn: boolean, zip?: FlatFolderZip) => {
+    if (zip) {
+      zip.abort();
+      await zip.close();
+    }
+    if (conn || navigator.onLine === false) {
+      throw new ConnectionLostError();
+    }
+  };
+
+  readonly handleConnectionLost = (timeoutMs: number): { connectionLost: boolean; cleanup: () => void } => {
+    let connectionLost = !navigator.onLine;
+
+    const checkConnection = () => {
+      connectionLost = !navigator.onLine;
+      if (connectionLost) {
+        console.warn('Connection lost detected.');
       }
     };
 
-    for (const [index, driveItem] of items.entries()) {
-      if (abortController?.signal.aborted) {
-        await folderZip.close();
-        return;
-      }
+    const connectionLostListener = () => {
+      connectionLost = true;
+      console.warn('Offline event detected');
+      window.removeEventListener('offline', connectionLostListener);
+    };
 
-      try {
-        if (driveItem.isFolder) {
-          await addFolderToZip(index, driveItem);
-        } else {
-          await addFileStreamToZip(index, driveItem);
-        }
-      } catch (error: unknown) {
-        if (isLostConnectionError(error)) {
-          folderZip.abort();
-          await folderZip.close();
-          throw error;
-        }
-        failedItems.push(driveItem);
-      }
-    }
+    window.addEventListener('offline', connectionLostListener);
 
-    if (failedItems.length > 0) {
-      if (failedItems.length === items.length) {
-        const allEqual = failedItems.every((failedItem) =>
-          items.some((item) => item.id === failedItem.id && item.isFolder === failedItem.isFolder),
-        );
+    const timeoutId = setTimeout(checkConnection, timeoutMs);
 
-        if (allEqual) {
-          folderZip.abort();
-          await folderZip.close();
-          throw new Error(ErrorMessages.ServerUnavailable);
-        }
-      }
-      downloadTask.failedItems = failedItems;
-    }
+    const cleanup = () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('offline', connectionLostListener);
+    };
 
-    await folderZip.close();
+    return { connectionLost, cleanup };
   };
 }
 

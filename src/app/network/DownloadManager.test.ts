@@ -19,6 +19,15 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 
+vi.mock('src/app/network/NetworkFacade.ts', () => ({
+  NetworkFacade: vi.fn().mockImplementation(() => ({
+    downloadFile: vi.fn(),
+    downloadFolder: vi.fn(),
+    downloadItems: vi.fn(),
+    generateTasksForItem: vi.fn(),
+  })),
+}));
+
 vi.mock('i18next', () => ({ t: (_) => 'Test translation message' }));
 
 describe('downloadManager', () => {
