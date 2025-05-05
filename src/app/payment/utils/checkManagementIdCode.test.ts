@@ -5,9 +5,22 @@ import paymentService from '../services/payment.service';
 import errorService from 'app/core/services/error.service';
 import { PlanState } from 'app/store/slices/plan';
 
-vi.mock('app/core/services/local-storage.service');
-vi.mock('../services/payment.service');
-vi.mock('app/core/services/error.service');
+vi.mock('app/core/services/local-storage.service', () => ({
+  default: {
+    get: vi.fn(),
+    set: vi.fn(),
+  },
+}));
+vi.mock('../services/payment.service', () => ({
+  default: {
+    isCouponUsedByUser: vi.fn(),
+  },
+}));
+vi.mock('app/core/services/error.service', () => ({
+  default: {
+    reportError: vi.fn(),
+  },
+}));
 
 describe('checkManagementIdCode', () => {
   const mockPlan: PlanState = {
@@ -43,7 +56,9 @@ describe('checkManagementIdCode', () => {
 
   it('should check coupons if not enabled in localStorage', async () => {
     vi.mocked(localStorageService.get).mockReturnValue(null);
-    vi.mocked(paymentService.isCouponUsedByUser).mockResolvedValue({ couponUsed: true });
+    vi.mocked(paymentService.isCouponUsedByUser)
+      .mockResolvedValueOnce({ couponUsed: false })
+      .mockResolvedValueOnce({ couponUsed: true });
 
     const result = await isManagementIdThemeAvailable(mockPlan);
 
@@ -67,7 +82,9 @@ describe('checkManagementIdCode', () => {
 
   it('should call onSuccess callback when coupons are used', async () => {
     vi.mocked(localStorageService.get).mockReturnValue(null);
-    vi.mocked(paymentService.isCouponUsedByUser).mockResolvedValue({ couponUsed: true });
+    vi.mocked(paymentService.isCouponUsedByUser)
+      .mockResolvedValueOnce({ couponUsed: false })
+      .mockResolvedValueOnce({ couponUsed: true });
     const onSuccess = vi.fn();
 
     await isManagementIdThemeAvailable(mockPlan, onSuccess);
