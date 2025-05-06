@@ -1532,28 +1532,22 @@ describe('downloadManagerService', () => {
   });
 
   describe('downloadManagerService - Connection Handling', () => {
-    let originalNavigatorOnLine: boolean;
+    let navigatorOnLineSpy: MockInstance;
     let addEventListenerSpy: MockInstance;
     let removeEventListenerSpy: MockInstance;
     let setTimeoutSpy: MockInstance;
     let clearTimeoutSpy: MockInstance;
 
     beforeAll(() => {
-      originalNavigatorOnLine = navigator.onLine;
-
+      navigatorOnLineSpy = vi.spyOn(navigator, 'onLine', 'get');
       addEventListenerSpy = vi.spyOn(window, 'addEventListener');
       removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
-
       setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout');
       clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
     });
 
     afterAll(() => {
-      Object.defineProperty(navigator, 'onLine', {
-        configurable: true,
-        value: originalNavigatorOnLine,
-      });
-
+      navigatorOnLineSpy.mockRestore();
       addEventListenerSpy.mockRestore();
       removeEventListenerSpy.mockRestore();
       setTimeoutSpy.mockRestore();
@@ -1562,7 +1556,7 @@ describe('downloadManagerService', () => {
 
     describe('checkAndHandleConnectionLoss', () => {
       it('should throw ConnectionLostError if connection is lost', async () => {
-        Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
+        navigatorOnLineSpy.mockReturnValue(false);
         await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(true)).rejects.toThrow(
           ConnectionLostError,
         );
@@ -1575,20 +1569,20 @@ describe('downloadManagerService', () => {
       });
 
       it('should not throw if connection is fine', async () => {
-        Object.defineProperty(navigator, 'onLine', { configurable: true, value: true });
+        navigatorOnLineSpy.mockReturnValue(true);
         await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(false)).resolves.toBeUndefined();
       });
     });
 
     describe('handleConnectionLost', () => {
       it('should initialize with connectionLost as false when online', () => {
-        Object.defineProperty(navigator, 'onLine', { configurable: true, value: true });
+        navigatorOnLineSpy.mockReturnValue(true);
         const { connectionLost } = DownloadManagerService.instance.handleConnectionLost(1000);
         expect(connectionLost).toBe(false);
       });
 
       it('should initialize with connectionLost as true when offline', () => {
-        Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
+        navigatorOnLineSpy.mockReturnValue(false);
         const { connectionLost } = DownloadManagerService.instance.handleConnectionLost(1000);
         expect(connectionLost).toBe(true);
       });
