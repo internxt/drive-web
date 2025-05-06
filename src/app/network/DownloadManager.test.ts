@@ -9,7 +9,7 @@ import { createFilesIterator, createFoldersIterator } from 'app/drive/services/f
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import { QueueUtilsService } from 'app/utils/queueUtils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DownloadManager } from './DownloadManager';
 import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { ConnectionLostError } from './requests';
@@ -32,15 +32,6 @@ vi.mock('src/app/network/NetworkFacade.ts', () => ({
   })),
 }));
 
-vi.mock('src/app/network/NetworkFacade.ts', () => ({
-  NetworkFacade: vi.fn().mockImplementation(() => ({
-    downloadFile: vi.fn(),
-    downloadFolder: vi.fn(),
-    downloadItems: vi.fn(),
-    generateTasksForItem: vi.fn(),
-  })),
-}));
-
 vi.mock('i18next', () => ({ t: (_) => MOCK_TRANSLATION_MESSAGE }));
 
 vi.mock('app/notifications/services/notifications.service', () => ({
@@ -53,6 +44,43 @@ vi.mock('app/notifications/services/notifications.service', () => ({
 }));
 
 describe('downloadManager', () => {
+  beforeAll(() => {
+    vi.mock('app/drive/services/database.service', () => ({
+      canFileBeCached: vi.fn(),
+      deleteDatabaseItems: vi.fn(),
+      deleteDatabaseProfileAvatar: vi.fn(),
+      deleteDatabaseWorkspaceAvatar: vi.fn(),
+      getDatabaseFilePreviewData: vi.fn(),
+      getDatabaseFileSourceData: vi.fn(),
+      getDatabaseProfileAvatar: vi.fn(),
+      getDatabaseWorkspaceAvatar: vi.fn(),
+      updateDatabaseFilePreviewData: vi.fn(),
+      updateDatabaseFileSourceData: vi.fn(),
+      updateDatabaseProfileAvatar: vi.fn(),
+      updateDatabaseWorkspaceAvatar: vi.fn(),
+    }));
+
+    vi.mock('app/drive/services/folder.service', () => ({
+      default: {},
+      downloadFolderAsZip: vi.fn(),
+      createFilesIterator: vi.fn(),
+      createFoldersIterator: vi.fn(),
+      checkIfCachedSourceIsOlder: vi.fn(),
+    }));
+
+    vi.mock('app/network/download', () => ({
+      downloadFile: vi.fn(),
+      loadWritableStreamPonyfill: vi.fn(),
+      getDecryptedStream: vi.fn(),
+    }));
+
+    vi.mock('app/core/services/stream.service', () => ({
+      binaryStreamToBlob: vi.fn(),
+      streamFileIntoChunks: vi.fn(),
+      buildProgressStream: vi.fn(),
+    }));
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(localStorageService, 'getUser').mockReturnValue({
