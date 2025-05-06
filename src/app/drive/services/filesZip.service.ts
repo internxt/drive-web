@@ -8,7 +8,7 @@ type File = SharedFiles | DriveFileData;
 
 async function addFilesToZip<T extends File>(
   currentAbsolutePath: string,
-  downloadFile: (file: T) => Promise<ReadableStream>,
+  downloadFile: (file: T) => Promise<ReadableStream> | undefined,
   iterator: Iterator<T>,
   zip: FlatFolderZip,
 ): Promise<{ files: T[]; token?: string }> {
@@ -17,7 +17,9 @@ async function addFilesToZip<T extends File>(
 
   const addFileToZip = async (file: T) => {
     const fileStream = await downloadFile(file);
-    zip.addFile(path + '/' + (file.plainName ?? file.name) + (file.type ? '.' + file.type : ''), fileStream);
+    if (fileStream) {
+      zip.addFile(path + '/' + (file.plainName ?? file.name) + (file.type ? '.' + file.type : ''), fileStream);
+    }
   };
 
   let pack;
@@ -39,22 +41,30 @@ async function addFilesToZip<T extends File>(
         const [file] = filesChunk;
         await addFileToZip(file);
       } else {
-        const downloadPromises: Promise<{
-          name: string;
-          type: string;
-          blob: Blob;
-        }>[] = [];
+        const downloadPromises: Promise<
+          | {
+              name: string;
+              type: string;
+              blob: Blob;
+            }
+          | undefined
+        >[] = [];
 
         for (const file of filesChunk) {
-          const downloadPromise = downloadFile(file).then(async (fileStream) => {
+          const downloadPromise = downloadFile(file)?.then(async (fileStream) => {
+            if (!fileStream) {
+              return undefined;
+            }
             const fileBlob = await binaryStreamToBlob(fileStream, file.type || '');
             return { name: file.plainName ?? file.name, type: file.type, blob: fileBlob };
           });
 
-          downloadPromises.push(downloadPromise);
+          if (downloadPromise) {
+            downloadPromises.push(downloadPromise);
+          }
         }
 
-        const downloadedFiles = await Promise.all(downloadPromises);
+        const downloadedFiles = await Promise.all(downloadPromises.filter((promise) => promise !== undefined));
 
         for (const downloadedFile of downloadedFiles) {
           if (downloadedFile) {
@@ -70,7 +80,7 @@ async function addFilesToZip<T extends File>(
 
 async function addAllFilesToZip(
   currentAbsolutePath: string,
-  downloadFile: (file: DriveFileData) => Promise<ReadableStream>,
+  downloadFile: (file: DriveFileData) => any,
   iterator: Iterator<DriveFileData>,
   zip: FlatFolderZip,
 ): Promise<DriveFileData[]> {
@@ -80,7 +90,7 @@ async function addAllFilesToZip(
 
 async function addAllSharedFilesToZip(
   currentAbsolutePath: string,
-  downloadFile: (file: SharedFiles) => Promise<ReadableStream>,
+  downloadFile: (file: SharedFiles) => any,
   iterator: Iterator<SharedFiles>,
   zip: FlatFolderZip,
 ): Promise<{ files: SharedFiles[]; token: string }> {

@@ -3,39 +3,63 @@ import { useReduxActions } from 'app/store/slices/storage/hooks/useReduxActions'
 import { FixedSizeList as List } from 'react-window';
 import TaskToRetryItem from '../TaskToRetryItem/TaskToRetryItem';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import RetryManager, { FileToRetry } from 'app/network/RetryManager';
+import RetryManager, { RetryableTask } from '../../../network/RetryManager';
 import { Modal } from '@internxt/ui';
+import { DownloadManager } from '../../../network/DownloadManager';
+import { useAppSelector } from '../../../store/hooks';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 
 interface TaskToRetryProps {
   isOpen: boolean;
-  files: FileToRetry[];
+  files: RetryableTask[];
   onClose: () => void;
 }
 
 const TaskToRetry = ({ isOpen, files, onClose }: TaskToRetryProps): JSX.Element => {
   const { uploadRetryItem } = useReduxActions();
   const { translate } = useTranslationContext();
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
 
-  const downloadItem = (fileParams: FileToRetry) => {
-    const data = {
-      uploadFile: fileParams.params.filecontent.content,
-      parentFolderId: fileParams.params.parentFolderId,
-      taskId: fileParams.params.taskId ?? '',
-      fileType: fileParams.params.filecontent.type ?? '',
-    };
-    RetryManager.changeStatus(fileParams.params.taskId ?? '', 'uploading');
-    try {
-      uploadRetryItem(data);
-    } catch {
-      RetryManager.changeStatus(fileParams.params.taskId ?? '', 'failed');
+  const downloadItem = async ({ taskId, params, type }: RetryableTask) => {
+    if (type == 'upload') {
+      const data = {
+        uploadFile: params?.filecontent?.content,
+        parentFolderId: params?.parentFolderId,
+        taskId: taskId ?? params?.taskId ?? '',
+        fileType: params?.filecontent?.type ?? '',
+      };
+      RetryManager.changeStatus(taskId ?? params?.taskId ?? '', 'retrying');
+      try {
+        uploadRetryItem(data);
+      } catch {
+        RetryManager.changeStatus(taskId ?? params?.taskId ?? '', 'failed');
+      }
+    } else {
+      RetryManager.changeStatus(taskId, 'retrying');
+      try {
+        await DownloadManager.downloadItem({
+          payload: [params],
+          selectedWorkspace,
+          workspaceCredentials,
+          taskId,
+        });
+      } catch {
+        RetryManager.changeStatus(taskId ?? params?.taskId ?? '', 'failed');
+      }
     }
+    RetryManager.changeStatus(taskId ?? params?.taskId ?? '', 'failed');
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex pb-5 justify-between items-center">
         <h4 data-testid="title-taskRetry" className="text-xl font-medium text-gray-100 ">
-          {translate('tasks.messages.failedToUpload')}
+          {translate(
+            files?.length > 0 && files[0].type === 'upload'
+              ? 'tasks.messages.failedToUpload'
+              : 'tasks.messages.failedToDownload',
+          )}
         </h4>
 
         <button

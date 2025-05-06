@@ -1,49 +1,62 @@
-import { UploadManagerFileParams } from 'app/network/UploadManager';
-
-export type FileToRetry = {
-  params: UploadManagerFileParams;
-  status: 'uploading' | 'failed';
+export type RetryableTask = {
+  taskId: string;
+  type: 'upload' | 'download';
+  params: any;
+  status?: 'pending' | 'failed' | 'retrying';
 };
 
-class FileRetryManager {
-  private filesToRetry: FileToRetry[] = [];
+class RetryManager {
+  private tasksToRetry: RetryableTask[] = [];
   private listeners: (() => void)[] = [];
 
-  addFile(file: UploadManagerFileParams) {
-    this.filesToRetry.push({ params: file, status: 'failed' });
+  addTask(task: RetryableTask) {
+    this.tasksToRetry.push({ ...task, status: 'failed' });
     this.notify();
   }
 
-  addFiles(files: UploadManagerFileParams[]) {
-    const filesWithStatus: FileToRetry[] = files.map((file) => ({
-      params: file,
-      status: 'failed',
-    }));
-    this.filesToRetry.push(...filesWithStatus);
+  addTasks(tasks: RetryableTask[]) {
+    const tasksWithStatus = tasks.map((task) => ({ ...task, status: 'failed' }) as RetryableTask);
+    this.tasksToRetry.push(...tasksWithStatus);
     this.notify();
   }
 
-  changeStatus(taskId: string, status: 'uploading' | 'failed') {
-    this.filesToRetry = this.filesToRetry.map((file) => (file.params.taskId === taskId ? { ...file, status } : file));
+  changeStatus(taskId: string, status: 'pending' | 'failed' | 'retrying') {
+    this.tasksToRetry = this.tasksToRetry.map((task) => (task.taskId === taskId ? { ...task, status } : task));
     this.notify();
   }
 
-  removeFile(taskId: string) {
-    this.filesToRetry = this.filesToRetry.filter((file) => file.params.taskId !== taskId);
+  removeTask(taskId: string) {
+    this.tasksToRetry = this.tasksToRetry.filter((task) => task.taskId !== taskId);
     this.notify();
   }
 
-  clearFiles() {
-    this.filesToRetry = [];
+  removeTaskByIdAndParams(taskId: string, where: { [attribute: string]: any }) {
+    this.tasksToRetry = this.tasksToRetry.filter((task) => {
+      const idMatches = task.taskId === taskId;
+
+      const attributesMatch = Object.entries(where).every(([key, value]) => task.params[key] === value);
+
+      return !(idMatches && attributesMatch);
+    });
+
     this.notify();
   }
 
-  getFiles() {
-    return this.filesToRetry;
+  clearTasks() {
+    this.tasksToRetry = [];
+    this.notify();
   }
 
-  isRetryingFile(taskId: string): boolean {
-    return this.filesToRetry.some((file) => file.params.taskId === taskId);
+  getTasks(type?: 'upload' | 'download') {
+    return type ? this.tasksToRetry.filter((task) => task.type === type) : this.tasksToRetry;
+  }
+
+  getTasksById(id: string) {
+    return this.tasksToRetry.filter((task) => task.taskId === id);
+  }
+
+  isRetryingTask(taskId: string): boolean {
+    return this.tasksToRetry.some((task) => task.taskId === taskId);
   }
 
   subscribe(listener: () => void) {
@@ -59,5 +72,5 @@ class FileRetryManager {
   }
 }
 
-const RetryManager = new FileRetryManager();
-export default RetryManager;
+const retryManager = new RetryManager();
+export default retryManager;

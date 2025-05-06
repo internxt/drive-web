@@ -29,6 +29,7 @@ import dateService from '../../core/services/date.service';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { queue, QueueObject } from 'async';
 import { QueueUtilsService } from 'app/utils/queueUtils';
+import { ConnectionLostError } from './../../network/requests';
 
 export interface IFolders {
   bucket: string;
@@ -298,11 +299,18 @@ export async function downloadFolderAsZip({
   updateNumItems: () => void;
   options: DownloadFolderAsZipOptions;
   abortController?: AbortController;
-}): Promise<void> {
+}): Promise<{
+  totalItems: DriveFileData[] & SharedFiles[];
+  failedItems: DriveFileData[] & SharedFiles[];
+  allItemsFailed: boolean;
+}> {
   const folderId: DriveFolderData['id'] = folder.id;
   const folderName: DriveFolderData['name'] = folder.plainName ?? folder.plain_name ?? folder.name;
   const folderUUID: DriveFolderData['uuid'] = folder.uuid;
   const rootFolder: FolderRef = { folderId, name: folderName, folderUuid: folderUUID };
+  const failedItems: DriveFileData[] & SharedFiles[] = [];
+  const totalItems: DriveFileData[] & SharedFiles[] = [];
+  let allItemsFailed = false;
 
   const workspaceId = options.workspaceId;
   let totalSize = 0;
@@ -349,39 +357,62 @@ export async function downloadFolderAsZip({
     }
   }, maxConcurrency);
 
+  const addUniqueItem = (item) => {
+    const isItemAlreadyAdded = totalItems.some((i) => i.id === item.id);
+    if (!isItemAlreadyAdded) {
+      totalItems.push(item);
+    }
+  };
+
   const downloadFolder = async (folderToDownload: FolderRef) => {
     const files = await addAllFilesToZip(
       folderToDownload.name,
       async (file) => {
-        updateNumItems();
-        const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-        const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
-        const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
-
-        if (cachedFile?.source && !isCachedFileOlder) {
-          return cachedFile.source.stream();
+        addUniqueItem(file);
+        // TODO: QA REMOVE
+        if (file.name.includes('internxt_test_file')) {
+          failedItems.push(file as DriveFileData);
+          return;
         }
+        try {
+          updateNumItems();
+          const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+          const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
+          const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
-        const downloadedFileStream = await downloadFile({
-          bucketId: file.bucket,
-          fileId: file.fileId,
-          creds: options.credentials,
-          mnemonic: options.mnemonic,
-          options: {
-            notifyProgress: () => {},
-            abortController,
-          },
-        });
+          if (cachedFile?.source && !isCachedFileOlder) {
+            return cachedFile.source.stream();
+          }
 
-        const sourceBlob = await binaryStreamToBlob(downloadedFileStream, file.type || '');
-        await updateDatabaseFileSourceData({
-          folderId: file.folderId,
-          sourceBlob,
-          fileId: file.id,
-          updatedAt: file.updatedAt,
-        });
+          const downloadedFileStream = await downloadFile({
+            bucketId: file.bucket,
+            fileId: file.fileId,
+            creds: options.credentials,
+            mnemonic: options.mnemonic,
+            options: {
+              notifyProgress: () => {},
+              abortController,
+            },
+          });
 
-        return sourceBlob.stream();
+          const sourceBlob = await binaryStreamToBlob(downloadedFileStream, file.type || '');
+          await updateDatabaseFileSourceData({
+            folderId: file.folderId,
+            sourceBlob,
+            fileId: file.id,
+            updatedAt: file.updatedAt,
+          });
+
+          return sourceBlob.stream();
+        } catch (error: any) {
+          const serverUnavailableError = error.message === 'Server unavailable';
+          const isLostConnectionError = error instanceof ConnectionLostError || error.message === 'Network Error';
+          if (serverUnavailableError || isLostConnectionError) {
+            throw error;
+          }
+          failedItems.push(file);
+          return;
+        }
       },
       (filesIterator as FileIterator)(folderToDownload.folderId, folderToDownload.folderUuid as string, workspaceId),
       zip,
@@ -400,7 +431,7 @@ export async function downloadFolderAsZip({
       },
     );
 
-    totalSize += files.reduce((a, f) => f.size + a, 0);
+    totalSize += files.reduce((a, f) => f?.size + a, 0);
 
     const pendingFolders: FolderRef[] = folders.map((f) => {
       return {
@@ -416,34 +447,50 @@ export async function downloadFolderAsZip({
     const { files, token: fileToken } = await addAllSharedFilesToZip(
       folderToDownload.name,
       async (file) => {
-        const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-        const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
-        const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
-
-        updateNumItems();
-
-        if (cachedFile?.source && !isCachedFileOlder) {
-          updateProgress(1);
-          return cachedFile.source.stream();
+        addUniqueItem(file);
+        // TODO: QA REMOVE
+        if (file.name.includes('internxt_test_file')) {
+          failedItems.push(file);
+          return;
         }
+        try {
+          const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+          const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
+          const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
-        const downloadedFileStream = await downloadFile({
-          bucketId: file.bucket as string,
-          // TODO: TO WORK UNTIL SDK TYPE CORRECT THE field fileiId -> fileId
-          fileId: (file as any).fileId,
-          creds: options.credentials,
-          mnemonic: options.mnemonic,
-        });
+          updateNumItems();
 
-        const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
-        await updateDatabaseFileSourceData({
-          folderId: file.folderId,
-          sourceBlob,
-          fileId: file.id,
-          updatedAt: file.updatedAt,
-        });
+          if (cachedFile?.source && !isCachedFileOlder) {
+            updateProgress(1);
+            return cachedFile.source.stream();
+          }
 
-        return sourceBlob.stream();
+          const downloadedFileStream = await downloadFile({
+            bucketId: file.bucket as string,
+            // TODO: TO WORK UNTIL SDK TYPE CORRECT THE field fileiId -> fileId
+            fileId: (file as any).fileId,
+            creds: options.credentials,
+            mnemonic: options.mnemonic,
+          });
+
+          const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
+          await updateDatabaseFileSourceData({
+            folderId: file.folderId,
+            sourceBlob,
+            fileId: file.id,
+            updatedAt: file.updatedAt,
+          });
+
+          return sourceBlob.stream();
+        } catch (error: any) {
+          const serverUnavailableError = error.message === 'Server unavailable';
+          const isLostConnectionError = error instanceof ConnectionLostError || error.message === 'Network Error';
+          if (serverUnavailableError || isLostConnectionError) {
+            throw error;
+          }
+          failedItems.push(file);
+          return;
+        }
       },
       (filesIterator as SharedFileIterator)(
         folderToDownload.folderUuid as string,
@@ -480,17 +527,24 @@ export async function downloadFolderAsZip({
     while (downloadQueue.running() > 0 || downloadQueue.length() > 0) {
       await downloadQueue.drain();
     }
+    allItemsFailed = failedItems.length === totalItems.length;
 
     totalSizeIsReady = true;
     if (options.closeWhenFinished === undefined || options.closeWhenFinished === true) {
+      if (allItemsFailed) {
+        zip.abort();
+      }
       updateProgress(1);
       await zip.close();
     }
   } catch (err) {
     const castedError = errorService.castError(err);
     zip.abort();
+    await zip.close();
     throw castedError;
   }
+
+  return { totalItems, failedItems, allItemsFailed };
 }
 
 export const checkIfCachedSourceIsOlder = ({
