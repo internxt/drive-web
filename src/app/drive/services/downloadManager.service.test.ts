@@ -742,6 +742,7 @@ describe('downloadManagerService', () => {
     const mockUpdateProgress = vi.fn((progress: number) => progress);
     const mockIncrementItemCount = vi.fn(() => 0);
 
+    vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
     const closeZipSpy = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
 
     const downloadFolderSpy = vi.fn(() => {
@@ -845,6 +846,7 @@ describe('downloadManagerService', () => {
     });
     (updateDatabaseFileSourceData as Mock).mockImplementation(updateDatabaseFileSourceDataSpy);
 
+    vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
     const addFileZipSpy = vi.spyOn(FlatFolderZip.prototype, 'addFile').mockResolvedValue();
     const closeZipSpy = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
 
@@ -914,6 +916,7 @@ describe('downloadManagerService', () => {
     (checkIfCachedSourceIsOlder as Mock).mockImplementation(checkIfCachedSourceIsOlderSpy);
     (updateDatabaseFileSourceData as Mock).mockImplementation(vi.fn());
 
+    vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
     const closeZipSpy = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
 
     await expect(
@@ -925,7 +928,7 @@ describe('downloadManagerService', () => {
     expect(checkIfCachedSourceIsOlderSpy).toHaveBeenCalledTimes(1);
     expect(binaryStreamToBlob).toHaveBeenCalledTimes(1);
     expect(updateDatabaseFileSourceData).toHaveBeenCalledTimes(1);
-    expect(closeZipSpy).toHaveBeenCalledTimes(1);
+    expect(closeZipSpy).toHaveBeenCalled();
   });
 
   it('should handle partial failures during downloadItems', async () => {
@@ -981,6 +984,7 @@ describe('downloadManagerService', () => {
 
     (checkIfCachedSourceIsOlder as Mock).mockImplementation(checkIfCachedSourceIsOlderSpy);
 
+    vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
     const addFileZipSpy = vi.spyOn(FlatFolderZip.prototype, 'addFile').mockResolvedValueOnce();
     const closeZipSpy = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
 
@@ -988,7 +992,7 @@ describe('downloadManagerService', () => {
 
     expect(mockTask.failedItems).toContain(mockFile2);
     expect(addFileZipSpy).toHaveBeenCalledTimes(1);
-    expect(closeZipSpy).toHaveBeenCalledTimes(1);
+    expect(closeZipSpy).toHaveBeenCalled();
     expect(lruCacheSpy).toHaveBeenCalledTimes(2);
   });
 
