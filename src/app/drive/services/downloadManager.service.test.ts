@@ -1539,6 +1539,7 @@ describe('downloadManagerService', () => {
     let clearTimeoutSpy: MockInstance;
 
     beforeAll(() => {
+      vi.useFakeTimers();
       navigatorOnLineSpy = vi.spyOn(navigator, 'onLine', 'get');
       addEventListenerSpy = vi.spyOn(window, 'addEventListener');
       removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
@@ -1547,6 +1548,7 @@ describe('downloadManagerService', () => {
     });
 
     afterAll(() => {
+      vi.useRealTimers();
       navigatorOnLineSpy.mockRestore();
       addEventListenerSpy.mockRestore();
       removeEventListenerSpy.mockRestore();
@@ -1562,10 +1564,15 @@ describe('downloadManagerService', () => {
         );
       });
 
-      it('should throw ConnectionLostError if conn is true', async () => {
-        await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(true)).rejects.toThrow(
+      it('should throw ConnectionLostError if conn is true and there is a zip value', async () => {
+        const zip = new FlatFolderZip('any-path', {} as any);
+        const spyAbort = vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementationOnce(() => {});
+        const spyClose = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValueOnce();
+        await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(true, zip)).rejects.toThrow(
           ConnectionLostError,
         );
+        expect(spyAbort).toHaveBeenCalledTimes(1);
+        expect(spyClose).toHaveBeenCalledTimes(1);
       });
 
       it('should not throw if connection is fine', async () => {
@@ -1585,6 +1592,17 @@ describe('downloadManagerService', () => {
         navigatorOnLineSpy.mockReturnValue(false);
         const { connectionLost } = DownloadManagerService.instance.handleConnectionLost(1000);
         expect(connectionLost).toBe(true);
+      });
+
+      it('should call checkConnection after timeout', async () => {
+        navigatorOnLineSpy.mockReturnValue(false);
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+        const { cleanup } = DownloadManagerService.instance.handleConnectionLost(1000);
+        vi.advanceTimersByTime(1000);
+
+        expect(warnSpy).toHaveBeenCalledWith('Connection lost detected.');
+        cleanup();
       });
 
       it('should add an offline event listener', () => {
