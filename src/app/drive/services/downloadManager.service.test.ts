@@ -5,7 +5,7 @@ import {
   DownloadTask,
   ErrorMessages,
 } from 'app/drive/services/downloadManager.service';
-import { beforeAll, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, Mock, MockInstance, vi } from 'vitest';
 import { Workspace, WorkspaceCredentialsDetails, WorkspaceData, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 import {
@@ -576,6 +576,9 @@ describe('downloadManagerService', () => {
     const downloadFolderItemSpy = vi.fn();
     (downloadFolderAsZip as Mock).mockImplementation(downloadFolderItemSpy);
 
+    const handleConnectionLostSpy = vi.spyOn(DownloadManagerService.instance, 'handleConnectionLost');
+    const checkAndHandleConnectionLossSpy = vi.spyOn(DownloadManagerService.instance, 'checkAndHandleConnectionLoss');
+
     await DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount);
 
     expect(updateTaskSpy).toHaveBeenCalledWith({
@@ -599,6 +602,143 @@ describe('downloadManagerService', () => {
       },
       abortController: mockTask.abortController,
     });
+    expect(handleConnectionLostSpy).toHaveBeenCalledWith(5000);
+    expect(checkAndHandleConnectionLossSpy).toHaveBeenCalled();
+  });
+
+  it('should downloadFolder keep working if some files fails', async () => {
+    const mockTaskId = 'mock-task-id';
+    const mockTask: DownloadTask = {
+      abortController: new AbortController(),
+      items: [mockFolder as DriveItemData],
+      createFilesIterator: createFilesIterator,
+      createFoldersIterator: createFoldersIterator,
+      credentials: {
+        credentials: {
+          user: 'any-user',
+          pass: 'any-pass',
+        },
+        workspaceId: 'any-workspace-id',
+        mnemonic: 'any-mnemonic',
+      },
+      options: {
+        areSharedItems: false,
+        downloadName: `${mockFile.name}.${mockFile.type}`,
+        showErrors: true,
+      },
+      taskId: mockTaskId,
+      failedItems: [],
+    };
+    const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+
+    const mockUpdateProgress = vi.fn((progress: number) => progress);
+    const mockIncrementItemCount = vi.fn(() => 0);
+
+    (downloadFolderAsZip as Mock).mockImplementationOnce(
+      vi.fn(() => ({
+        totalItems: mockTask.items,
+        failedItems: [mockFile, mockFile2],
+        allItemsFailed: false,
+      })),
+    );
+
+    const handleConnectionLostSpy = vi.spyOn(DownloadManagerService.instance, 'handleConnectionLost');
+    const checkAndHandleConnectionLossSpy = vi.spyOn(DownloadManagerService.instance, 'checkAndHandleConnectionLoss');
+
+    await DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount);
+
+    expect(mockTask.failedItems).toEqual([mockFile, mockFile2]);
+    expect(handleConnectionLostSpy).toHaveBeenCalledWith(5000);
+    expect(checkAndHandleConnectionLossSpy).toHaveBeenCalled();
+  });
+
+  it('should downloadFolder throw if all files inside the folder fails', async () => {
+    const mockTaskId = 'mock-task-id';
+    const mockTask: DownloadTask = {
+      abortController: new AbortController(),
+      items: [mockFolder as DriveItemData],
+      createFilesIterator: createFilesIterator,
+      createFoldersIterator: createFoldersIterator,
+      credentials: {
+        credentials: {
+          user: 'any-user',
+          pass: 'any-pass',
+        },
+        workspaceId: 'any-workspace-id',
+        mnemonic: 'any-mnemonic',
+      },
+      options: {
+        areSharedItems: false,
+        downloadName: `${mockFile.name}.${mockFile.type}`,
+        showErrors: true,
+      },
+      taskId: mockTaskId,
+      failedItems: [],
+    };
+    const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
+
+    const mockUpdateProgress = vi.fn((progress: number) => progress);
+    const mockIncrementItemCount = vi.fn(() => 0);
+
+    (downloadFolderAsZip as Mock).mockImplementationOnce(
+      vi.fn(() => ({
+        allItemsFailed: true,
+      })),
+    );
+
+    const handleConnectionLostSpy = vi.spyOn(DownloadManagerService.instance, 'handleConnectionLost');
+    const checkAndHandleConnectionLossSpy = vi.spyOn(DownloadManagerService.instance, 'checkAndHandleConnectionLoss');
+
+    await expect(
+      DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount),
+    ).rejects.toThrow(ErrorMessages.ServerUnavailable);
+
+    expect(mockTask.failedItems).toEqual([]);
+    expect(handleConnectionLostSpy).toHaveBeenCalledWith(5000);
+    expect(checkAndHandleConnectionLossSpy).toHaveBeenCalled();
+  });
+
+  it('should handle connection loss during downloadFolder', async () => {
+    const mockTask: DownloadTask = {
+      abortController: new AbortController(),
+      items: [mockFolder as DriveItemData],
+      createFilesIterator: createFilesIterator,
+      createFoldersIterator: createFoldersIterator,
+      credentials: {
+        credentials: {
+          user: 'any-user',
+          pass: 'any-pass',
+        },
+        mnemonic: 'any-mnemonic',
+      },
+      options: {
+        areSharedItems: false,
+        downloadName: mockFolder.name,
+        showErrors: true,
+      },
+      taskId: 'mock-task-id',
+      failedItems: [],
+    };
+
+    const mockUpdateProgress = vi.fn();
+    const mockIncrementItemCount = vi.fn();
+
+    const handleConnectionLostSpy = vi
+      .spyOn(DownloadManagerService.instance, 'handleConnectionLost')
+      .mockReturnValueOnce({
+        connectionLost: true,
+        cleanup: vi.fn(),
+      });
+
+    (downloadFolderAsZip as Mock).mockImplementationOnce(() => {
+      throw new ConnectionLostError();
+    });
+
+    await expect(
+      DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount),
+    ).rejects.toThrow(ConnectionLostError);
+
+    expect(handleConnectionLostSpy).toHaveBeenCalledWith(5000);
   });
 
   it('should downloadFile from task using cache', async () => {
@@ -997,6 +1137,62 @@ describe('downloadManagerService', () => {
   });
 
   describe('downloadItems', () => {
+    it('should handle partial failures when calling addFolderToZip and add to failedItems', async () => {
+      const mockTask: DownloadTask = {
+        abortController: new AbortController(),
+        items: [mockFile as DriveItemData, mockFolder as DriveItemData],
+        createFilesIterator: createFilesIterator,
+        createFoldersIterator: createFoldersIterator,
+        credentials: {
+          credentials: {
+            user: 'any-user',
+            pass: 'any-pass',
+          },
+          mnemonic: 'any-mnemonic',
+        },
+        options: {
+          areSharedItems: false,
+          downloadName: `${mockFile.name}.${mockFile.type}`,
+          showErrors: true,
+        },
+        taskId: 'mock-task-id',
+        failedItems: [],
+      };
+
+      const mockUpdateProgress = vi.fn();
+      const mockIncrementItemCount = vi.fn();
+
+      const levelsBlobsCache = new LevelsBlobsCache();
+      const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
+      const lruCacheSpy = vi.spyOn(lruCache, 'get').mockResolvedValueOnce({
+        id: mockFile.id,
+        parentId: mockFile.folderId,
+        source: {
+          stream: vi.fn().mockReturnValue(new ReadableStream()),
+        } as unknown as Blob,
+      });
+      vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(lruCache);
+
+      const checkIfCachedSourceIsOlderSpy = vi.fn().mockReturnValueOnce(false);
+
+      (checkIfCachedSourceIsOlder as Mock).mockImplementation(checkIfCachedSourceIsOlderSpy);
+
+      vi.spyOn(FlatFolderZip.prototype, 'addFile').mockImplementation(() => {});
+      vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
+      vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
+
+      (downloadFolderAsZip as Mock).mockResolvedValueOnce({
+        allItemsFailed: false,
+        failedItems: [mockFile],
+      });
+
+      await DownloadManagerService.instance.downloadItems(mockTask, mockUpdateProgress, mockIncrementItemCount);
+
+      expect(mockTask.failedItems).toContain(mockFile);
+      expect(lruCacheSpy).toHaveBeenCalledTimes(1);
+      expect(checkIfCachedSourceIsOlderSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should throw an error when the connection is lost', async () => {
       const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
       const mockTask: DownloadTask = {
@@ -1332,6 +1528,143 @@ describe('downloadManagerService', () => {
       expect(mockTask.failedItems).toContain(mockFolder);
       expect(lruCacheSpy).toHaveBeenCalledTimes(1);
       expect(checkIfCachedSourceIsOlderSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('downloadManagerService - Connection Handling', () => {
+    let originalNavigator: Navigator;
+    let originalAddEventListener: MockInstance;
+    let originalRemoveEventListener: MockInstance;
+    let originalSetTimeout: MockInstance;
+    let originalClearTimeout: MockInstance;
+    let originalAbort: MockInstance;
+    let originalClose: MockInstance;
+
+    beforeAll(() => {
+      originalNavigator = navigator;
+      Object.defineProperty(navigator, 'onLine', {
+        configurable: true,
+        value: true,
+      });
+
+      originalAbort = vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
+      originalClose = vi.spyOn(FlatFolderZip.prototype, 'close').mockImplementation(async () => {});
+
+      originalAddEventListener = vi.spyOn(window, 'addEventListener');
+      originalRemoveEventListener = vi.spyOn(window, 'removeEventListener');
+
+      originalSetTimeout = vi.spyOn(global, 'setTimeout');
+      originalClearTimeout = vi.spyOn(global, 'clearTimeout');
+    });
+
+    afterAll(() => {
+      navigator = originalNavigator;
+      originalAbort.mockRestore();
+      originalClose.mockRestore();
+      originalAddEventListener.mockRestore();
+      originalRemoveEventListener.mockRestore();
+      originalSetTimeout.mockRestore();
+      originalClearTimeout.mockRestore();
+    });
+
+    describe('checkAndHandleConnectionLoss', () => {
+      it('should throw ConnectionLostError if connection is lost', async () => {
+        Object.defineProperty(navigator, 'onLine', { value: false });
+        await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(true)).rejects.toThrow(
+          ConnectionLostError,
+        );
+      });
+
+      it('should throw ConnectionLostError if conn is true', async () => {
+        await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(true)).rejects.toThrow(
+          ConnectionLostError,
+        );
+      });
+
+      it('should abort and close zip if provided and connection is lost', async () => {
+        Object.defineProperty(navigator, 'onLine', { value: false });
+        const zip = new FlatFolderZip('test.zip', {});
+
+        await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(false, zip)).rejects.toThrow(
+          ConnectionLostError,
+        );
+
+        expect(originalAbort).toHaveBeenCalled();
+        expect(originalClose).toHaveBeenCalled();
+      });
+
+      it('should not abort or close zip if connection is fine', async () => {
+        Object.defineProperty(navigator, 'onLine', { value: true });
+        const zip = new FlatFolderZip('test.zip', {});
+
+        await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(false, zip)).resolves.toBeUndefined();
+
+        expect(originalAbort).not.toHaveBeenCalled();
+        expect(originalClose).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('handleConnectionLost', () => {
+      beforeAll(() => {
+        originalNavigator = navigator;
+        Object.defineProperty(navigator, 'onLine', {
+          configurable: true,
+          value: true,
+        });
+
+        originalAddEventListener = vi.spyOn(window, 'addEventListener');
+        originalRemoveEventListener = vi.spyOn(window, 'removeEventListener');
+
+        originalSetTimeout = vi.spyOn(global, 'setTimeout');
+        originalClearTimeout = vi.spyOn(global, 'clearTimeout');
+      });
+
+      afterAll(() => {
+        navigator = originalNavigator;
+        originalAddEventListener.mockRestore();
+        originalRemoveEventListener.mockRestore();
+        originalSetTimeout.mockRestore();
+        originalClearTimeout.mockRestore();
+      });
+
+      it('should initialize with connectionLost as false when online', () => {
+        const { connectionLost } = DownloadManagerService.instance.handleConnectionLost(1000);
+        expect(connectionLost).toBe(false);
+      });
+
+      it('should initialize with connectionLost as true when offline', () => {
+        Object.defineProperty(navigator, 'onLine', { value: false });
+        const { connectionLost } = DownloadManagerService.instance.handleConnectionLost(1000);
+        expect(connectionLost).toBe(true);
+      });
+
+      it('should add an offline event listener', () => {
+        DownloadManagerService.instance.handleConnectionLost(1000);
+        expect(originalAddEventListener).toHaveBeenCalledWith('offline', expect.any(Function));
+      });
+
+      it('should set a timeout to check connection', () => {
+        DownloadManagerService.instance.handleConnectionLost(1000);
+        expect(originalSetTimeout).toHaveBeenCalled();
+      });
+
+      it('should update connectionLost when offline event is triggered', () => {
+        const { cleanup } = DownloadManagerService.instance.handleConnectionLost(1000);
+        const offlineListener = originalAddEventListener.mock.calls[0][1];
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+        offlineListener();
+        expect(navigator.onLine).toBe(false);
+        expect(warnSpy).toHaveBeenCalledWith('Offline event detected');
+        cleanup();
+      });
+
+      it('should clear the timeout and remove the event listener on cleanup', () => {
+        const { cleanup } = DownloadManagerService.instance.handleConnectionLost(1000);
+        cleanup();
+        expect(originalClearTimeout).toHaveBeenCalled();
+        expect(originalRemoveEventListener).toHaveBeenCalledWith('offline', expect.any(Function));
+      });
     });
   });
 });
