@@ -46,6 +46,7 @@ import envService from '../../core/services/env.service';
 import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
 import vpnAuthService from './vpnAuth.service';
+import { BackupData } from 'app/utils/backupKeyUtils';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -236,10 +237,11 @@ export const getPasswordDetails = async (
   return { salt, hashedCurrentPassword, encryptedCurrentPassword };
 };
 
-const updateCredentialsWithToken = async (
+export const updateCredentialsWithToken = async (
   token: string | undefined,
   newPassword: string,
   mnemonicInPlain: string,
+  backupData?: BackupData,
 ): Promise<void> => {
   const mnemonicIsInvalid = !validateMnemonic(mnemonicInPlain);
   if (mnemonicIsInvalid) {
@@ -252,12 +254,42 @@ const updateCredentialsWithToken = async (
 
   const encryptedMnemonic = encryptTextWithKey(mnemonicInPlain, newPassword);
 
+  let encryptedEccPrivateKey: string | undefined;
+  let encryptedKyberPrivateKey: string | undefined;
+
+  if (backupData) {
+    if (backupData.privateKey || backupData.keys?.ecc) {
+      const eccPrivateKeyBase64 = backupData.privateKey || backupData.keys?.ecc;
+      if (eccPrivateKeyBase64) {
+        const eccPrivateKey = Buffer.from(eccPrivateKeyBase64, 'base64').toString();
+        encryptedEccPrivateKey = aes.encrypt(eccPrivateKey, newPassword, getAesInitFromEnv());
+      }
+    }
+
+    if (backupData.keys?.kyber) {
+      const kyberPrivateKey = backupData.keys.kyber;
+      if (kyberPrivateKey) {
+        encryptedKyberPrivateKey = aes.encrypt(kyberPrivateKey, newPassword, getAesInitFromEnv());
+      }
+    }
+  }
+
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+
+  const keys =
+    encryptedEccPrivateKey || encryptedKyberPrivateKey
+      ? {
+          ecc: encryptedEccPrivateKey,
+          kyber: encryptedKyberPrivateKey,
+        }
+      : undefined;
+
   return authClient.changePasswordWithLink(
     token,
     encryptedHashedNewPassword,
     encryptedHashedNewPasswordSalt,
     encryptedMnemonic,
+    keys,
   );
 };
 
