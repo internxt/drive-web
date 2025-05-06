@@ -32,6 +32,17 @@ vi.mock('src/app/network/NetworkFacade.ts', () => ({
   })),
 }));
 
+vi.mock('app/core/services/local-storage.service', () => ({
+  getUser: vi.fn().mockReturnValue({
+    userId: 'user-id',
+    bridgeUser: 'user-bridge',
+    mnemonic: 'mnemonic',
+  } as UserSettings),
+  getUserId: vi.fn().mockReturnValue('user-id'),
+  getBridgeUser: vi.fn().mockReturnValue('user-bridge'),
+  getMnemonic: vi.fn().mockReturnValue('mnemonic'),
+}));
+
 vi.mock('i18next', () => ({ t: (_) => MOCK_TRANSLATION_MESSAGE }));
 
 vi.mock('app/notifications/services/notifications.service', () => ({
@@ -83,11 +94,6 @@ describe('downloadManager', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({
-      userId: 'user-id',
-      bridgeUser: 'user-bridge',
-      mnemonic: 'mnemonic',
-    } as UserSettings);
     vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
   });
 
