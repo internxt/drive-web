@@ -468,11 +468,11 @@ export class DownloadManagerService {
   };
 
   readonly checkAndHandleConnectionLoss = async (conn: boolean, zip?: FlatFolderZip) => {
-    if (zip) {
-      zip.abort();
-      await zip.close();
-    }
     if (conn || navigator.onLine === false) {
+      if (zip) {
+        zip.abort();
+        await zip.close();
+      }
       throw new ConnectionLostError();
     }
   };
