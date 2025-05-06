@@ -9,20 +9,20 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Offerta 82%",
-    "title": "Nuovi piani a vita!",
+    "label": "Offerta all’85%",
+    "title": "Unisciti al lato della privacy",
     "cta": "Ottieni il tuo piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
     "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
     "specialOfferLabel": "",
-    "specialOfferGift": "Estrazione di uno zaino Internxt x Swiss Peak con l'acquisto di un piano a vita!",
+    "specialOfferGift": "Estratto a sorte: zaino Internxt x Swiss Peak!",
     "features": [
       "Internxt Drive, VPN e Antivirus",
       "Crittografia post-quantistica",
-      "Open source e verificato",
+      "Codice open source e verificato",
       "Trasferimenti crittografati",
-      "Tema speciale per app web",
-      "L'offerta termina l'30 aprile"
+      "Tema speciale per l’app Web",
+      "L'offerta termina il 26 maggio."
     ]
   },
   "susbcriptionsBanner": {
@@ -81,6 +81,7 @@
     "dark": "Scuro",
     "system": "Sistema",
     "starwars": "Star Wars",
+    "starwars2": "Tema di Star Wars",
     "halloween": "Halloween",
     "christmas": "Natale",
     "superBowl": "Super Bowl",
