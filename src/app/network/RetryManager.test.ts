@@ -100,4 +100,49 @@ describe('RetryManager', () => {
     expect(listener1).toHaveBeenCalledTimes(1);
     expect(listener2).toHaveBeenCalledTimes(2);
   });
+
+  it('should return all tasks if no type is specified', () => {
+    RetryManager.addTasks([
+      { taskId: 'task1', type: 'upload', params: {} },
+      { taskId: 'task2', type: 'download', params: {} },
+    ]);
+
+    const tasks = RetryManager.getTasks();
+    expect(tasks).toHaveLength(2);
+    expect(tasks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ taskId: 'task1', type: 'upload' }),
+        expect.objectContaining({ taskId: 'task2', type: 'download' }),
+      ]),
+    );
+  });
+
+  it('should return only upload tasks when type is upload', () => {
+    RetryManager.addTasks([
+      { taskId: 'task1', type: 'upload', params: {} },
+      { taskId: 'task2', type: 'download', params: {} },
+    ]);
+
+    const tasks = RetryManager.getTasks('upload');
+    expect(tasks).toHaveLength(1);
+    expect(tasks[0]).toEqual(expect.objectContaining({ taskId: 'task1', type: 'upload' }));
+  });
+
+  it('should return only download tasks when type is download', () => {
+    RetryManager.addTasks([
+      { taskId: 'task1', type: 'upload', params: {} },
+      { taskId: 'task2', type: 'download', params: {} },
+    ]);
+
+    const tasks = RetryManager.getTasks('download');
+    expect(tasks).toHaveLength(1);
+    expect(tasks[0]).toEqual(expect.objectContaining({ taskId: 'task2', type: 'download' }));
+  });
+
+  it('should return an empty array if no tasks match the specified type', () => {
+    RetryManager.addTask({ taskId: 'task1', type: 'upload', params: {} });
+
+    const tasks = RetryManager.getTasks('download');
+    expect(tasks).toHaveLength(0);
+  });
 });
