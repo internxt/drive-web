@@ -4,6 +4,7 @@ import {
   DownloadManagerService,
   DownloadTask,
   ErrorMessages,
+  isLostConnectionError,
 } from 'app/drive/services/downloadManager.service';
 import { createFilesIterator, createFoldersIterator } from 'app/drive/services/folder.service';
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
@@ -93,22 +94,25 @@ describe('downloadManager', () => {
       buildProgressStream: vi.fn(),
     }));
 
-    vi.mock('app/drive/services/downloadManager.service', async () => {
-      const originalModule = await vi.importActual<typeof import('app/drive/services/downloadManager.service')>(
-        'app/drive/services/downloadManager.service',
-      );
-      return {
-        ...originalModule,
-        DownloadManagerService: {
-          instance: {
-            generateTasksForItem: vi.fn(),
-            downloadFolder: vi.fn(),
-            downloadFile: vi.fn(),
-            downloadItems: vi.fn(),
-          },
+    vi.mock('app/drive/services/downloadManager.service', () => ({
+      DownloadManagerService: {
+        instance: {
+          generateTasksForItem: vi.fn(),
+          downloadFolder: vi.fn(),
+          downloadFile: vi.fn(),
+          downloadItems: vi.fn(),
         },
-      };
-    });
+      },
+      ErrorMessages: {
+        ServerUnavailable: 'Server Unavailable',
+        ServerError: 'Server Error',
+        InternalServerError: 'Internal Server Error',
+        NetworkError: 'Network Error',
+        ConnectionLost: 'Connection lost',
+        FilePickerCancelled: 'File picker was canceled or failed',
+      },
+      isLostConnectionError: vi.fn(),
+    }));
 
     vi.mock('app/utils/queueUtils', () => ({
       QueueUtilsService: {
@@ -1027,6 +1031,7 @@ describe('downloadManager', () => {
       } as DownloadTask;
 
       const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+      vi.mocked(isLostConnectionError).mockReturnValueOnce(true);
 
       expect(() => {
         DownloadManager['reportError'](mockError, mockDownloadTask);
