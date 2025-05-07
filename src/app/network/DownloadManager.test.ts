@@ -9,15 +9,16 @@ import { createFilesIterator, createFoldersIterator } from 'app/drive/services/f
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import { QueueUtilsService } from 'app/utils/queueUtils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DownloadManager } from './DownloadManager';
 import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { ConnectionLostError } from './requests';
 import errorService from 'app/core/services/error.service';
 import { TaskData, TaskStatus } from 'app/tasks/types';
-import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { FlatFolderZip } from 'app/core/services/zip.service';
+
+const MOCK_TRANSLATION_MESSAGE = 'Test translation message';
 
 vi.mock('src/app/network/NetworkFacade.ts', () => ({
   NetworkFacade: vi.fn().mockImplementation(() => ({
@@ -28,16 +29,96 @@ vi.mock('src/app/network/NetworkFacade.ts', () => ({
   })),
 }));
 
-vi.mock('i18next', () => ({ t: (_) => 'Test translation message' }));
-
-describe('downloadManager', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({
+vi.mock('app/core/services/local-storage.service', () => ({
+  default: {
+    getUser: vi.fn().mockReturnValue({
       userId: 'user-id',
       bridgeUser: 'user-bridge',
       mnemonic: 'mnemonic',
-    } as UserSettings);
+    } as UserSettings),
+    getUserId: vi.fn().mockReturnValue('user-id'),
+    getBridgeUser: vi.fn().mockReturnValue('user-bridge'),
+    getMnemonic: vi.fn().mockReturnValue('mnemonic'),
+  },
+}));
+
+vi.mock('i18next', () => ({ t: (_) => MOCK_TRANSLATION_MESSAGE }));
+
+vi.mock('app/core/services/error.service', () => ({
+  default: {
+    castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
+    reportError: vi.fn(),
+  },
+}));
+
+describe('downloadManager', () => {
+  beforeAll(() => {
+    vi.mock('app/drive/services/database.service', () => ({
+      canFileBeCached: vi.fn(),
+      deleteDatabaseItems: vi.fn(),
+      deleteDatabaseProfileAvatar: vi.fn(),
+      deleteDatabaseWorkspaceAvatar: vi.fn(),
+      getDatabaseFilePreviewData: vi.fn(),
+      getDatabaseFileSourceData: vi.fn(),
+      getDatabaseProfileAvatar: vi.fn(),
+      getDatabaseWorkspaceAvatar: vi.fn(),
+      updateDatabaseFilePreviewData: vi.fn(),
+      updateDatabaseFileSourceData: vi.fn(),
+      updateDatabaseProfileAvatar: vi.fn(),
+      updateDatabaseWorkspaceAvatar: vi.fn(),
+    }));
+
+    vi.mock('app/drive/services/folder.service', () => ({
+      default: {},
+      downloadFolderAsZip: vi.fn(),
+      createFilesIterator: vi.fn(),
+      createFoldersIterator: vi.fn(),
+      checkIfCachedSourceIsOlder: vi.fn(),
+    }));
+
+    vi.mock('app/network/download', () => ({
+      downloadFile: vi.fn(),
+      loadWritableStreamPonyfill: vi.fn(),
+      getDecryptedStream: vi.fn(),
+    }));
+
+    vi.mock('app/core/services/stream.service', () => ({
+      binaryStreamToBlob: vi.fn(),
+      streamFileIntoChunks: vi.fn(),
+      buildProgressStream: vi.fn(),
+    }));
+
+    vi.mock('app/drive/services/downloadManager.service', () => ({
+      DownloadManagerService: {
+        instance: {
+          generateTasksForItem: vi.fn(),
+          downloadFolder: vi.fn(),
+          downloadFile: vi.fn(),
+          downloadItems: vi.fn(),
+        },
+      },
+      ErrorMessages: {
+        ServerUnavailable: 'Server Unavailable',
+        ServerError: 'Server Error',
+        InternalServerError: 'Internal Server Error',
+        NetworkError: 'Network Error',
+        ConnectionLost: 'Connection lost',
+        FilePickerCancelled: 'File picker was canceled or failed',
+      },
+      isLostConnectionError: vi.fn(),
+    }));
+
+    vi.mock('app/utils/queueUtils', () => ({
+      QueueUtilsService: {
+        instance: {
+          getConcurrencyUsingPerfomance: vi.fn(),
+        },
+      },
+    }));
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
     vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
   });
 
