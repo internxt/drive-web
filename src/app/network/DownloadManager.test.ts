@@ -169,6 +169,8 @@ describe('downloadManager', () => {
     expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything());
     expect(downloadFileSpy).not.toHaveBeenCalled();
     expect(downloadItemsSpy).not.toHaveBeenCalled();
+    expect(tasksService.addListener).toHaveBeenCalledWith(expect.any(Object));
+    expect(tasksService.removeListener).toHaveBeenCalledWith(expect.any(Object));
   });
 
   it('should generate task for a file and download it using the queue', async () => {
