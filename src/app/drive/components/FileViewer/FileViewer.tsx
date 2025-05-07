@@ -80,7 +80,7 @@ const FileViewer = ({
 
   const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(file);
 
-  const isTypeAllowed = extensionGroup?.isTypeAllowed;
+  const isTypeAllowed = !!extensionGroup?.isTypeAllowed;
   const fileExtensionGroup = extensionGroup?.fileExtensionGroup;
 
   const Viewer: React.FC<FormatFileViewerProps> = isTypeAllowed
@@ -92,14 +92,14 @@ const FileViewer = ({
   const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
   const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
 
-  const fileType = file?.type ? `.${file.type}` : '';
-  const filename = file ? `${file?.plainName ?? file.name}${fileType}` : '';
+  const fileType = file.type ? `.${file.type}` : '';
+  const filename = file ? `${file.plainName ?? file.name}${fileType}` : '';
   const isFirstItemOrShareView = fileIndex === 0 || isShareView;
   const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
   const isItemValidToPreview = isTypeAllowed && isPreviewAvailable;
-  const shouldRenderThePreview = isTypeAllowed && isFileSizePreviewable(file?.size);
+  const shouldRenderThePreview = isTypeAllowed && isFileSizePreviewable(file.size);
 
-  const ItemIconComponent = iconService.getItemIcon(false, file?.type);
+  const ItemIconComponent = iconService.getItemIcon(false, file.type);
 
   useEffect(() => {
     const handleContextmenu = (e) => {
@@ -112,11 +112,7 @@ const FileViewer = ({
   }, []);
 
   useEffect(() => {
-    setIsPreviewAvailable(true);
-
-    if (!show || !shouldRenderThePreview) {
-      setIsPreviewAvailable(false);
-    }
+    setIsPreviewAvailable(show && shouldRenderThePreview);
   }, [show, file]);
 
   // To prevent close FileViewer if any of those modal are open
@@ -211,7 +207,7 @@ const FileViewer = ({
           <Dialog.Overlay className="fixed inset-0 bg-black/85 backdrop-blur-md" />
 
           {/* Content */}
-          {file && <ShareItemDialog share={file?.shares?.[0]} isPreviewView item={file as DriveItemData} />}
+          {file && <ShareItemDialog share={file.shares?.[0]} isPreviewView item={file as DriveItemData} />}
           {isFirstItemOrShareView ? null : (
             <button
               title={translate('actions.previous')}
