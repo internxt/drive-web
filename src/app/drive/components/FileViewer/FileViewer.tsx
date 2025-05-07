@@ -17,7 +17,7 @@ import { setItemsToMove, storageActions } from '../../../store/slices/storage';
 import { TopBarActionsMenu } from './FileViewerWrapper';
 import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailableComponent';
 import TopBarActions from './components/TopBarActions';
-import { checkIfExtensionIsAllowed, getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
+import { getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
 import viewers from './viewers';
 import { MenuItemType } from '@internxt/ui';
 
@@ -96,8 +96,8 @@ const FileViewer = ({
   const filename = file ? `${file?.plainName ?? file.name}${fileType}` : '';
   const isFirstItemOrShareView = fileIndex === 0 || isShareView;
   const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
-  const shouldRenderThePreview = checkIfExtensionIsAllowed(fileExtensionGroup) && isFileSizePreviewable(file?.size);
   const isItemValidToPreview = isTypeAllowed && isPreviewAvailable;
+  const shouldRenderThePreview = isTypeAllowed && isFileSizePreviewable(file?.size);
 
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
 
@@ -114,12 +114,7 @@ const FileViewer = ({
   useEffect(() => {
     setIsPreviewAvailable(true);
 
-    if (show && isTypeAllowed) {
-      if (shouldRenderThePreview) {
-        setIsPreviewAvailable(false);
-        return;
-      }
-    } else {
+    if (!show || !shouldRenderThePreview) {
       setIsPreviewAvailable(false);
     }
   }, [show, file]);

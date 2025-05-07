@@ -19,7 +19,7 @@ const FileAudioViewer = ({
     audioPlayer.addEventListener('loadedmetadata', () => {
       audioPlayer.play().catch((err) => {
         const error = err as Error;
-        console.error('[ERROR WHILE PLAYING AUDIO/STACK]: ', error.stack || error.message);
+        console.error('[ERROR WHILE PLAYING AUDIO/STACK]: ', error.stack ?? error.message);
         setIsPreviewAvailable(false);
       });
     });

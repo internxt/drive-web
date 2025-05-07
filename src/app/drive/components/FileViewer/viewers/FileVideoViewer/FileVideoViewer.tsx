@@ -24,7 +24,7 @@ const FileVideoViewer = ({
 
       videoPlayer.play().catch((err) => {
         const error = err as Error;
-        console.error('[ERROR WHILE PLAYING VIDEO/STACK]: ', error.stack || error.message);
+        console.error('[ERROR WHILE PLAYING VIDEO/STACK]: ', error.stack ?? error.message);
         setIsPreviewAvailable(false);
       });
     });
