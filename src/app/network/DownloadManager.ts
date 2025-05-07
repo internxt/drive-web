@@ -256,7 +256,8 @@ export class DownloadManager {
     return firstArray.every((itemInFirstArray) =>
       secondArray.some(
         (itemInSecondArray) =>
-          itemInSecondArray.id === itemInFirstArray.id && itemInSecondArray.isFolder === itemInFirstArray.isFolder,
+          itemInSecondArray.id === itemInFirstArray.id &&
+          Boolean(itemInSecondArray?.isFolder) === Boolean(itemInFirstArray?.isFolder),
       ),
     );
   };
