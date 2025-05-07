@@ -3,9 +3,15 @@ import { VideoExtensions, AudioExtensions } from '../../drive/types/file-types';
 type VideoTypes = Record<keyof VideoExtensions, string>;
 type AudioTypes = Record<keyof AudioExtensions, string>;
 
-const videoTypes: Partial<VideoTypes> = {
-  mp4: 'video/webm; codecs="vp8,vorbis"',
-  webm: 'video/webm; codecs="vp8,vorbis"',
+export const videoTypes: Partial<VideoTypes> = {
+  webm: 'video/webm',
+  mkv: 'video/x-matroska',
+  mov: 'video/quicktime',
+  qt: 'video/quicktime',
+  mp4: 'video/mp4',
+  mpg4: 'video/mp4',
+  m4v: 'video/mp4',
+  '3gp': 'video/3gpp',
 };
 
 const audioTypes: Partial<AudioTypes> = {

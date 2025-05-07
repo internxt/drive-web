@@ -18,8 +18,8 @@ export interface VideoExtensions {
   asf: 'asf';
   amv: 'amv';
   mp4: 'mp4';
-  m4p: 'm4p';
   mpg: 'mpg';
+  mpg4: 'mpg4';
   mp2: 'mp2';
   mpeg: 'mpeg';
   mpe: 'mpe';
@@ -40,7 +40,6 @@ export interface VideoExtensions {
 }
 
 export interface AudioExtensions {
-  '3gp': ['3gp'];
   aa: ['aa'];
   aac: ['aac'];
   aax: ['aax'];
@@ -82,7 +81,6 @@ export interface AudioExtensions {
 }
 
 export const audioExtensions: FileExtensionMap = {
-  '3gp': ['3gp'],
   aa: ['aa'],
   aac: ['aac'],
   aax: ['aax'],
@@ -197,10 +195,9 @@ export const videoExtensions: FileExtensionMap = {
   'vivo-active': ['viv'],
   asf: ['asf'],
   amv: ['amv'],
-  'mpeg-4': ['mp4', 'm4p', 'm4v'],
-  'mpeg-1': ['mpg', 'mp2', 'mpeg', 'mpe', 'mpv'],
-  'mpeg-2': ['mpg', 'mpeg', 'm2v'],
-  m4v: ['m4v'],
+  'mpeg-4': ['mp4', 'mpg4', 'm4v'],
+  'mpeg-1': ['mpg', 'mpeg', 'mpe', 'mpv'],
+  'mpeg-2': ['m2v'],
   svi: ['svi'],
   '3gpp': ['3gp'],
   '3gpp2': ['3g2'],
@@ -210,44 +207,7 @@ export const videoExtensions: FileExtensionMap = {
   flv: ['flv', 'f4v', 'f4p', 'f4a', 'f4b'],
 };
 
-const excludeUnsupportedVideoExtensions: string[] = [
-  'mkv',
-  'vob',
-  'ogv',
-  'ogg',
-  'drc',
-  'avi',
-  'mts',
-  'm2ts',
-  'qt',
-  'wmv',
-  'yuv',
-  'rm',
-  'rmvb',
-  'viv',
-  'asf',
-  'amv',
-  'm4p',
-  'mpg',
-  'mp2',
-  'mpe',
-  'mpv',
-  'mpeg',
-  'm2v',
-  'svi',
-  '3g2',
-  'mxf',
-  'roq',
-  'nsv',
-  'flv',
-  'f4p',
-  'f4a',
-  'f4b',
-];
-
-const previewVideoExtensionsGroup: string[] = Object.keys(videoExtensions).filter(
-  (extension) => !excludeUnsupportedVideoExtensions.includes(extension),
-);
+const previewVideoExtensionsGroup: string[] = ['webm', 'mkv', 'quicktime', 'mpeg-4', '3gpp'];
 
 const excludeUnsupportedAudioExtensions: string[] = [
   'aa',
