@@ -57,6 +57,13 @@ vi.mock('app/notifications/services/notifications.service', () => ({
   },
 }));
 
+vi.mock('app/core/services/error.service', () => ({
+  default: {
+    castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
+    reportError: vi.fn(),
+  },
+}));
+
 describe('downloadManager', () => {
   beforeAll(() => {
     vi.mock('app/drive/services/database.service', () => ({
