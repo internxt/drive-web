@@ -28,8 +28,8 @@ export function isTypeSupportedByAudioPlayer(type: keyof AudioExtensions): boole
   return Object.keys(audioTypes).includes(type);
 }
 
-export function isLargeFile(size: number): boolean {
-  return size > 100 * 1024 * 1024;
+export function isFileSizePreviewable(size: number): boolean {
+  return size > 512 * 1024 * 1024;
 }
 
 export async function loadVideoIntoPlayer(
