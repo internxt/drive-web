@@ -20,7 +20,6 @@ export interface VideoExtensions {
   mp4: 'mp4';
   mpg: 'mpg';
   mpg4: 'mpg4';
-  mp2: 'mp2';
   mpeg: 'mpeg';
   mpe: 'mpe';
   mpv: 'mpv';
@@ -40,50 +39,57 @@ export interface VideoExtensions {
 }
 
 export interface AudioExtensions {
-  aa: ['aa'];
-  aac: ['aac'];
-  aax: ['aax'];
-  act: ['act'];
-  aiff: ['aiff'];
-  alac: ['alac'];
-  amr: ['amr'];
-  ape: ['ape'];
-  au: ['au'];
-  awd: ['awd'];
-  dss: ['dss'];
-  dvf: ['dvf'];
-  flac: ['flac'];
-  gsm: ['gsm'];
-  iklax: ['iklax'];
-  ivs: ['ivs'];
-  m4a: ['m4a'];
-  m4b: ['m4b'];
-  m4p: ['m4p'];
-  mmf: ['mmf'];
-  mp3: ['mp3'];
-  mpc: ['mpc'];
-  msv: ['msv'];
-  nmf: ['nmf'];
-  ogg: ['ogg', 'oga', 'mogg'];
-  opus: ['opus'];
-  ra: ['ra', 'rm'];
-  rf64: ['rf64'];
-  sln: ['sln'];
-  tta: ['tta'];
-  voc: ['voc'];
-  vox: ['vox'];
-  wav: ['wav'];
-  wma: ['wma'];
-  wv: ['wv'];
-  webm: ['webm'];
-  '8svx': ['8svx'];
-  cda: ['cda'];
+  aa: 'aa';
+  aac: 'aac';
+  aax: 'aax';
+  ac3: 'ac3';
+  act: 'act';
+  aiff: 'aiff';
+  alac: 'alac';
+  amr: 'amr';
+  ape: 'ape';
+  au: 'au';
+  awd: 'awd';
+  dss: 'dss';
+  dts: 'dts';
+  dvf: 'dvf';
+  flac: 'flac';
+  gsm: 'gsm';
+  iklax: 'iklax';
+  ivs: 'ivs';
+  m4a: 'm4a';
+  m4b: 'm4b';
+  m4p: 'm4p';
+  mmf: 'mmf';
+  mogg: 'mogg';
+  mp2: 'mp2';
+  mp3: 'mp3';
+  mpc: 'mpc';
+  msv: 'msv';
+  nmf: 'nmf';
+  oga: 'oga';
+  ogg: 'ogg';
+  opus: 'opus';
+  ra: 'ra';
+  rm: 'rm';
+  rf64: 'rf64';
+  sln: 'sln';
+  tta: 'tta';
+  voc: 'voc';
+  vox: 'vox';
+  wav: 'wav';
+  wma: 'wma';
+  wv: 'wv';
+  weba: 'weba';
+  '8svx': '8svx';
+  cda: 'cda';
 }
 
 export const audioExtensions: FileExtensionMap = {
   aa: ['aa'],
   aac: ['aac'],
   aax: ['aax'],
+  ac3: ['ac3'],
   act: ['act'],
   aiff: ['aiff'],
   alac: ['alac'],
@@ -92,6 +98,7 @@ export const audioExtensions: FileExtensionMap = {
   au: ['au'],
   awd: ['awd'],
   dss: ['dss'],
+  dts: ['dts'],
   dvf: ['dvf'],
   flac: ['flac'],
   gsm: ['gsm'],
@@ -101,11 +108,13 @@ export const audioExtensions: FileExtensionMap = {
   m4b: ['m4b'],
   m4p: ['m4p'],
   mmf: ['mmf'],
+  mogg: ['mogg'],
+  mp2: ['mp2'],
   mp3: ['mp3'],
   mpc: ['mpc'],
   msv: ['msv'],
   nmf: ['nmf'],
-  ogg: ['ogg', 'oga', 'mogg'],
+  ogg: ['ogg', 'oga'],
   opus: ['opus'],
   ra: ['ra', 'rm'],
   rf64: ['rf64'],
@@ -120,6 +129,8 @@ export const audioExtensions: FileExtensionMap = {
   '8svx': ['8svx'],
   cda: ['cda'],
 };
+
+const previewableAudioExtensionsGroup: string[] = ['aac', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav', 'weba'];
 
 const codeExtensions: FileExtensionMap = {
   c: ['c', 'h'],
@@ -207,47 +218,7 @@ export const videoExtensions: FileExtensionMap = {
   flv: ['flv', 'f4v', 'f4p', 'f4a', 'f4b'],
 };
 
-const previewVideoExtensionsGroup: string[] = ['webm', 'mkv', 'quicktime', 'mpeg-4', '3gpp'];
-
-const excludeUnsupportedAudioExtensions: string[] = [
-  'aa',
-  'aax',
-  'act',
-  'aiff',
-  'alac',
-  'amr',
-  'ape',
-  'au',
-  'awd',
-  'dss',
-  '3gp',
-  'dvf',
-  'gsm',
-  'iklax',
-  'ivs',
-  'm4b',
-  'm4p',
-  'mmf',
-  'mpc',
-  'msv',
-  'nmf',
-  'mogg',
-  'ra',
-  'rm',
-  'rf64',
-  'sln',
-  'tta',
-  'voc',
-  'vox',
-  'wma',
-  'wv',
-  '8svx',
-  'cda',
-];
-
-const previewAudioExtensionsGroup: string[] = Object.values(audioExtensions)
-  .flatMap((extensions) => extensions.flat())
-  .filter((extension) => !excludeUnsupportedAudioExtensions.includes(extension));
+const previewableVideoExtensionsGroup: string[] = ['webm', 'mkv', 'quicktime', 'mpeg-4', '3gpp'];
 
 const WordExtensions: FileExtensionMap = {
   doc: ['doc'],
@@ -320,14 +291,14 @@ const fileExtensionGroups: fileExtensionsDictionary = {
 };
 
 export const fileExtensionPreviewableGroups: fileExtensionsPreviewableDictionary = {
-  [FileExtensionGroup.Audio]: previewAudioExtensionsGroup,
+  [FileExtensionGroup.Audio]: previewableAudioExtensionsGroup,
   [FileExtensionGroup.Code]: [],
   [FileExtensionGroup.Figma]: [],
   [FileExtensionGroup.Image]: previewableImageExtensionGroups,
   [FileExtensionGroup.Pdf]: previewablePdfExtensionGroups,
   [FileExtensionGroup.Ppt]: [],
   [FileExtensionGroup.Txt]: [],
-  [FileExtensionGroup.Video]: previewVideoExtensionsGroup,
+  [FileExtensionGroup.Video]: previewableVideoExtensionsGroup,
   [FileExtensionGroup.Word]: previewDocsGroup,
   [FileExtensionGroup.Xls]: previewExcelFormatExtensionGroup,
   [FileExtensionGroup.Xml]: [],
