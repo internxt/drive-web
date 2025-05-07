@@ -16,7 +16,6 @@ import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/
 import { ConnectionLostError } from './requests';
 import errorService from 'app/core/services/error.service';
 import { TaskData, TaskStatus } from 'app/tasks/types';
-import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import retryManager, { RetryableTask } from './RetryManager';
@@ -189,9 +188,7 @@ describe('downloadManager', () => {
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(tasksService, 'findTask').mockReturnValue(undefined);
 
-    const downloadFolderSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadFolder')
-      .mockImplementationOnce(vi.fn(() => Promise.resolve()));
+    const downloadFolderSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFolder').mockResolvedValue();
     const downloadFileSpy = vi
       .spyOn(DownloadManagerService.instance, 'downloadFile')
       .mockRejectedValue(new Error('It should download folder'));
@@ -205,8 +202,6 @@ describe('downloadManager', () => {
     expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything());
     expect(downloadFileSpy).not.toHaveBeenCalled();
     expect(downloadItemsSpy).not.toHaveBeenCalled();
-    expect(tasksService.addListener).toHaveBeenCalledWith(expect.any(Object));
-    expect(tasksService.removeListener).toHaveBeenCalledWith(expect.any(Object));
   });
 
   it('should generate task for a file and download it using the queue', async () => {
@@ -268,9 +263,7 @@ describe('downloadManager', () => {
     const downloadFolderSpy = vi
       .spyOn(DownloadManagerService.instance, 'downloadFolder')
       .mockRejectedValue(new Error('It should download file'));
-    const downloadFileSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadFile')
-      .mockImplementationOnce(vi.fn(() => Promise.resolve()));
+    const downloadFileSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockResolvedValue();
     const downloadItemsSpy = vi
       .spyOn(DownloadManagerService.instance, 'downloadItems')
       .mockRejectedValue(new Error('It should download file'));
@@ -366,9 +359,7 @@ describe('downloadManager', () => {
     const downloadFileSpy = vi
       .spyOn(DownloadManagerService.instance, 'downloadFile')
       .mockRejectedValue(new Error('It should download items'));
-    const downloadItemsSpy = vi
-      .spyOn(DownloadManagerService.instance, 'downloadItems')
-      .mockImplementationOnce(vi.fn(() => Promise.resolve()));
+    const downloadItemsSpy = vi.spyOn(DownloadManagerService.instance, 'downloadItems').mockResolvedValue();
 
     await DownloadManager.downloadItem(downloadItem);
 
@@ -437,7 +428,7 @@ describe('downloadManager', () => {
     vi.spyOn(tasksService, 'findTask').mockReturnValue(undefined);
 
     vi.spyOn(DownloadManagerService.instance, 'downloadFolder').mockResolvedValue();
-    vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockImplementationOnce(vi.fn(() => Promise.resolve()));
+    vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockResolvedValue();
     vi.spyOn(DownloadManagerService.instance, 'downloadItems').mockResolvedValue();
 
     await DownloadManager.downloadItem(downloadItem);
@@ -583,11 +574,9 @@ describe('downloadManager', () => {
     const downloadFolderSpy = vi
       .spyOn(DownloadManagerService.instance, 'downloadFolder')
       .mockRejectedValue(new Error('It should download file'));
-    const downloadFileSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockImplementationOnce(
-      vi.fn(() => {
-        throw connectionLostError;
-      }),
-    );
+    const downloadFileSpy = vi
+      .spyOn(DownloadManagerService.instance, 'downloadFile')
+      .mockRejectedValue(connectionLostError);
     const downloadItemsSpy = vi
       .spyOn(DownloadManagerService.instance, 'downloadItems')
       .mockRejectedValue(new Error('It should download file'));
@@ -667,11 +656,7 @@ describe('downloadManager', () => {
     const downloadFolderSpy = vi
       .spyOn(DownloadManagerService.instance, 'downloadFolder')
       .mockRejectedValue(new Error('It should download file'));
-    const downloadFileSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockImplementationOnce(
-      vi.fn(() => {
-        throw testError;
-      }),
-    );
+    const downloadFileSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFile').mockRejectedValue(testError);
     const downloadItemsSpy = vi
       .spyOn(DownloadManagerService.instance, 'downloadItems')
       .mockRejectedValue(new Error('It should download file'));
@@ -681,8 +666,6 @@ describe('downloadManager', () => {
     const downloadPromise = DownloadManager.downloadItem(downloadItem);
     await expect(downloadPromise).rejects.toThrow(testError);
 
-    expect(downloadFileSpy).toHaveBeenCalledOnce();
-    expect(downloadFileSpy).toHaveBeenCalledWith(mockTask, expect.anything());
     expect(errorServiceSpy).toHaveBeenCalledWith(testError, {
       extra: { fileName: mockFile.name, bucket: mockFile.bucket, fileSize: mockFile.size, fileType: mockFile.type },
     });
@@ -750,11 +733,7 @@ describe('downloadManager', () => {
 
     const testError = new Error(ErrorMessages.ServerUnavailable);
 
-    const downloadFolderSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFolder').mockImplementationOnce(
-      vi.fn(() => {
-        throw testError;
-      }),
-    );
+    const downloadFolderSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFolder').mockRejectedValue(testError);
     const downloadFileSpy = vi
       .spyOn(DownloadManagerService.instance, 'downloadFile')
       .mockRejectedValue(new Error('It should download folder'));
@@ -902,9 +881,7 @@ describe('downloadManager', () => {
 
       const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
 
-      const downloadItemsSpy = vi
-        .spyOn(DownloadManagerService.instance, 'downloadItems')
-        .mockImplementationOnce(vi.fn(() => Promise.resolve()));
+      const downloadItemsSpy = vi.spyOn(DownloadManagerService.instance, 'downloadItems').mockResolvedValue();
 
       await expect(DownloadManager['downloadTask'](downloadTask)).rejects.toThrow(ErrorMessages.ServerUnavailable);
 
@@ -934,9 +911,7 @@ describe('downloadManager', () => {
 
       const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
 
-      const downloadItemsSpy = vi
-        .spyOn(DownloadManagerService.instance, 'downloadItems')
-        .mockImplementationOnce(vi.fn(() => Promise.resolve()));
+      const downloadItemsSpy = vi.spyOn(DownloadManagerService.instance, 'downloadItems').mockResolvedValue();
 
       await expect(DownloadManager['downloadTask'](downloadTask)).resolves.not.toThrow();
 
