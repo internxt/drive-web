@@ -33,12 +33,15 @@ import {
 } from '@internxt/sdk/dist/workspaces';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
+import { client } from '../network/client';
 
-export function getWorkspaces(): Promise<WorkspacesResponse> {
-  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.getWorkspaces().catch((error) => {
-    throw errorService.castError(error);
+export async function getWorkspaces(): Promise<WorkspacesResponse> {
+  const { data, error } = await client.GET('/workspaces', {
+    headers: SdkFactory.getNewApiInstance().getHeaders(),
   });
+  if (!data) throw errorService.castError(error);
+  console.log('🚀 ~ getWorkspaces ~ data:', data);
+  return data as unknown as WorkspacesResponse;
 }
 
 export function getWorkspacesMembers(workspaceId: string): Promise<WorkspaceMembers> {
