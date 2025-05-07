@@ -92,6 +92,31 @@ describe('downloadManager', () => {
       streamFileIntoChunks: vi.fn(),
       buildProgressStream: vi.fn(),
     }));
+
+    vi.mock('app/drive/services/downloadManager.service', async () => {
+      const originalModule = await vi.importActual<typeof import('app/drive/services/downloadManager.service')>(
+        'app/drive/services/downloadManager.service',
+      );
+      return {
+        ...originalModule,
+        DownloadManagerService: {
+          instance: {
+            generateTasksForItem: vi.fn(),
+            downloadFolder: vi.fn(),
+            downloadFile: vi.fn(),
+            downloadItems: vi.fn(),
+          },
+        },
+      };
+    });
+
+    vi.mock('app/utils/queueUtils', () => ({
+      QueueUtilsService: {
+        instance: {
+          getConcurrencyUsingPerfomance: vi.fn(),
+        },
+      },
+    }));
   });
 
   beforeEach(() => {
