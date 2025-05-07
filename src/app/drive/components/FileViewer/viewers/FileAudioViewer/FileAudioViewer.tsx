@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-
-import { loadAudioIntoPlayer } from 'app/core/services/media.service';
-import { AudioExtensions } from 'app/drive/types/file-types';
+import { audioTypes } from 'app/core/services/media.service';
 
 const FileAudioViewer = ({
   file,
@@ -14,15 +12,26 @@ const FileAudioViewer = ({
   setIsPreviewAvailable: (isError: boolean) => void;
 }): JSX.Element => {
   const audioRef = useRef<HTMLAudioElement>(null);
-  useEffect(() => {
-    const audioPlayer = audioRef.current;
 
-    if (audioPlayer) {
-      loadAudioIntoPlayer(audioPlayer, blob, file.type as keyof AudioExtensions).catch((err) => {
-        console.error('Error loading audio into player', err);
+  useEffect(() => {
+    const audioPlayer = audioRef.current as HTMLAudioElement;
+
+    audioPlayer.addEventListener('loadedmetadata', () => {
+      audioPlayer.play().catch((err) => {
+        const error = err as Error;
+        console.error('[ERROR WHILE PLAYING AUDIO/STACK]: ', error.stack || error.message);
         setIsPreviewAvailable(false);
       });
-    }
+    });
+
+    const type: string = audioTypes[file.type] ?? `audio/${file.type}`;
+
+    audioPlayer.src = URL.createObjectURL(new Blob([blob], { type }));
+
+    // Cleanup
+    return () => {
+      URL.revokeObjectURL(audioPlayer.src);
+    };
   }, []);
 
   return (

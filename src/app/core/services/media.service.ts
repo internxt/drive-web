@@ -14,10 +14,16 @@ export const videoTypes: Partial<VideoTypes> = {
   '3gp': 'video/3gpp',
 };
 
-const audioTypes: Partial<AudioTypes> = {
-  mp3: 'audio/mp3',
-  wav: 'audio/wav',
+export const audioTypes: Partial<AudioTypes> = {
+  aac: 'audio/aac',
+  flac: 'audio/flac',
+  m4a: 'audio/mp4',
+  mp3: 'audio/mpeg',
+  oga: 'audio/ogg',
   ogg: 'audio/ogg',
+  opus: 'audio/opus',
+  wav: 'audio/wav',
+  weba: 'audio/webm',
 };
 
 export function isTypeSupportedByVideoPlayer(type: keyof VideoExtensions): boolean {
