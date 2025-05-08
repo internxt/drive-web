@@ -4,6 +4,7 @@ import {
   DownloadManagerService,
   DownloadTask,
   ErrorMessages,
+  isLostConnectionError,
 } from 'app/drive/services/downloadManager.service';
 import { createFilesIterator, createFoldersIterator } from 'app/drive/services/folder.service';
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
@@ -17,6 +18,8 @@ import errorService from 'app/core/services/error.service';
 import { TaskData, TaskStatus } from 'app/tasks/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { FlatFolderZip } from 'app/core/services/zip.service';
+import retryManager, { RetryableTask } from './RetryManager';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 const MOCK_TRANSLATION_MESSAGE = 'Test translation message';
 
@@ -43,6 +46,15 @@ vi.mock('app/core/services/local-storage.service', () => ({
 }));
 
 vi.mock('i18next', () => ({ t: (_) => MOCK_TRANSLATION_MESSAGE }));
+
+vi.mock('app/notifications/services/notifications.service', () => ({
+  default: {
+    show: vi.fn(),
+  },
+  ToastType: {
+    Error: 'ERROR',
+  },
+}));
 
 vi.mock('app/core/services/error.service', () => ({
   default: {
@@ -492,7 +504,7 @@ describe('downloadManager', () => {
     const downloadPromise = DownloadManager.downloadItem(downloadItem);
     abortController.abort();
 
-    await expect(downloadPromise).rejects.toThrow(new Error('Download aborted'));
+    await expect(downloadPromise).rejects.toThrow();
     expect(abortController.signal.aborted).toBe(true);
     expect(downloadFolderSpy).not.toHaveBeenCalled();
     expect(downloadFileSpy).not.toHaveBeenCalled();
@@ -908,6 +920,270 @@ describe('downloadManager', () => {
         merge: { status: TaskStatus.Success },
       });
       expect(downloadItemsSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('removeRetryItems', () => {
+    it('should remove retry items that are not in the failed items list', () => {
+      const items = [
+        { id: 1, isFolder: false },
+        { id: 2, isFolder: true },
+        { id: 3, isFolder: false },
+      ] as DownloadItemType[];
+
+      const downloadTask = {
+        taskId: 'task-1',
+        failedItems: [{ id: 2, isFolder: true }],
+      } as DownloadTask;
+
+      const removeTaskSpy = vi.spyOn(retryManager, 'removeTaskByIdAndParams');
+
+      DownloadManager['removeRetryItems'](items, downloadTask);
+
+      expect(removeTaskSpy).toHaveBeenCalledTimes(2);
+      expect(removeTaskSpy).toHaveBeenCalledWith('task-1', { id: 1 });
+      expect(removeTaskSpy).toHaveBeenCalledWith('task-1', { id: 3 });
+    });
+
+    it('should not remove any retry items if all items are in the failed items list', () => {
+      const items = [
+        { id: 1, isFolder: false },
+        { id: 2, isFolder: true },
+      ] as DownloadItemType[];
+
+      const downloadTask = {
+        taskId: 'task-2',
+        failedItems: [
+          { id: 1, isFolder: false },
+          { id: 2, isFolder: true },
+        ],
+      } as DownloadTask;
+
+      const removeTaskSpy = vi.spyOn(retryManager, 'removeTaskByIdAndParams');
+
+      DownloadManager['removeRetryItems'](items, downloadTask);
+
+      expect(removeTaskSpy).not.toHaveBeenCalled();
+    });
+
+    it('should handle an empty failed items list', () => {
+      const items = [
+        { id: 1, isFolder: false },
+        { id: 2, isFolder: true },
+      ] as DownloadItemType[];
+
+      const downloadTask = {
+        taskId: 'task-3',
+        failedItems: [] as DownloadItemType[],
+      } as DownloadTask;
+
+      const removeTaskSpy = vi.spyOn(retryManager, 'removeTaskByIdAndParams').mockReturnValue();
+
+      DownloadManager['removeRetryItems'](items, downloadTask);
+
+      expect(removeTaskSpy).toHaveBeenCalledTimes(2);
+      expect(removeTaskSpy).toHaveBeenCalledWith('task-3', { id: 1 });
+      expect(removeTaskSpy).toHaveBeenCalledWith('task-3', { id: 2 });
+    });
+
+    it('should handle an empty items list', () => {
+      const items: DownloadItemType[] = [];
+
+      const downloadTask = {
+        taskId: 'task-4',
+        failedItems: [{ id: 1, isFolder: false }],
+      } as DownloadTask;
+
+      const removeTaskSpy = vi.spyOn(retryManager, 'removeTaskByIdAndParams').mockReturnValue();
+
+      DownloadManager['removeRetryItems'](items, downloadTask);
+
+      expect(removeTaskSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('reportError', () => {
+    it('should update task status to Error and throw connection lost error', () => {
+      const mockTaskId = 'task-1';
+      const mockError = new ConnectionLostError();
+      const mockDownloadTask = {
+        taskId: mockTaskId,
+        items: [] as DownloadItemType[],
+        options: { showErrors: true },
+      } as DownloadTask;
+
+      const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+      vi.mocked(isLostConnectionError).mockReturnValueOnce(true);
+
+      expect(() => {
+        DownloadManager['reportError'](mockError, mockDownloadTask);
+      }).toThrow(mockError);
+
+      expect(updateTaskSpy).toHaveBeenCalledWith({
+        taskId: mockTaskId,
+        merge: { status: TaskStatus.Error, subtitle: MOCK_TRANSLATION_MESSAGE },
+      });
+    });
+
+    it('should handle server error and remove retry items', () => {
+      const mockTaskId = 'task-2';
+      const mockError = new Error(ErrorMessages.ServerUnavailable);
+      const mockItems = [{ id: 1, isFolder: false }];
+      const mockDownloadTask = {
+        taskId: mockTaskId,
+        items: mockItems,
+        options: { showErrors: true },
+      } as DownloadTask;
+
+      const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+      const retryTaskSpy = vi.spyOn(retryManager, 'getTasksById').mockReturnValueOnce([]);
+
+      DownloadManager['reportError'](mockError, mockDownloadTask);
+
+      expect(retryTaskSpy).toHaveBeenCalledWith(mockTaskId);
+      expect(updateTaskSpy).toHaveBeenCalledWith({
+        taskId: mockTaskId,
+        merge: { status: TaskStatus.Error },
+      });
+    });
+
+    it('should handle server error when retry task has elements', () => {
+      const mockTaskId = 'task-2';
+      const mockError = new Error(ErrorMessages.ServerUnavailable);
+      const mockItems = [{ id: 1, isFolder: false }];
+      const mockDownloadTask = {
+        taskId: mockTaskId,
+        items: mockItems,
+        options: { showErrors: true },
+      } as DownloadTask;
+
+      const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+      const retryTaskSpy = vi.spyOn(retryManager, 'getTasksById').mockReturnValueOnce([
+        {
+          taskId: mockTaskId,
+          type: 'download',
+          params: { id: 1, isFolder: false },
+        } as RetryableTask,
+      ]);
+
+      DownloadManager['reportError'](mockError, mockDownloadTask);
+
+      expect(retryTaskSpy).toHaveBeenCalledWith(mockTaskId);
+      expect(updateTaskSpy).toHaveBeenCalledWith({
+        taskId: mockTaskId,
+        merge: { status: TaskStatus.Success },
+      });
+    });
+
+    it('should report folder error with extra details', () => {
+      const mockTaskId = 'task-3';
+      const mockError = new Error('Folder error');
+      const mockPartialFolder = { id: 1, isFolder: true, name: 'Folder1', bucket: 'bucket1', parentId: 0 };
+      const mockItems = [mockPartialFolder];
+      const mockDownloadTask = {
+        taskId: mockTaskId,
+        items: mockItems,
+        options: { showErrors: true },
+      } as DownloadTask;
+
+      const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+      const findTaskSpy = vi.spyOn(tasksService, 'findTask').mockReturnValue({
+        id: mockTaskId,
+        status: TaskStatus.Success,
+      } as TaskData);
+      const errorServiceSpy = vi.spyOn(errorService, 'reportError');
+
+      DownloadManager['reportError'](mockError, mockDownloadTask);
+
+      expect(errorServiceSpy).toHaveBeenCalledWith(mockError, {
+        extra: {
+          folder: mockPartialFolder.name,
+          bucket: mockPartialFolder.bucket,
+          folderParentId: mockPartialFolder.parentId,
+        },
+      });
+      expect(updateTaskSpy).toHaveBeenCalledWith({
+        taskId: mockTaskId,
+        merge: { status: TaskStatus.Error },
+      });
+      expect(findTaskSpy).toHaveBeenCalledWith(mockTaskId);
+    });
+
+    it('should report file error with extra details', () => {
+      const mockTaskId = 'task-4';
+      const mockError = new Error('File error');
+      const mockPartialFile = { id: 1, isFolder: false, name: 'File1', bucket: 'bucket1', size: 100, type: 'jpg' };
+      const mockItems = [mockPartialFile];
+      const mockDownloadTask = {
+        taskId: mockTaskId,
+        items: mockItems,
+        options: { showErrors: true },
+      } as DownloadTask;
+
+      const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+      const findTaskSpy = vi.spyOn(tasksService, 'findTask').mockReturnValue({
+        id: mockTaskId,
+        status: TaskStatus.Success,
+      } as TaskData);
+      const errorServiceSpy = vi.spyOn(errorService, 'reportError');
+
+      DownloadManager['reportError'](mockError, mockDownloadTask);
+
+      expect(errorServiceSpy).toHaveBeenCalledWith(mockError, {
+        extra: {
+          fileName: mockPartialFile.name,
+          bucket: mockPartialFile.bucket,
+          fileSize: mockPartialFile.size,
+          fileType: mockPartialFile.type,
+        },
+      });
+      expect(updateTaskSpy).toHaveBeenCalledWith({
+        taskId: mockTaskId,
+        merge: { status: TaskStatus.Error },
+      });
+      expect(findTaskSpy).toHaveBeenCalledWith(mockTaskId);
+    });
+
+    it('should show error notification if showErrors is true', () => {
+      const mockTaskId = 'task-5';
+      const mockError = new Error('Notification error');
+      const mockItems = [{ id: 1, isFolder: false }];
+      const mockDownloadTask = {
+        taskId: mockTaskId,
+        items: mockItems,
+        options: { showErrors: true },
+      } as DownloadTask;
+
+      DownloadManager['reportError'](mockError, mockDownloadTask);
+
+      expect(notificationsService.show).toHaveBeenCalledWith({
+        text: MOCK_TRANSLATION_MESSAGE,
+        type: ToastType.Error,
+      });
+    });
+
+    it('should update task status to Cancelled if task is cancelled', () => {
+      const mockTaskId = 'task-6';
+      const mockError = new Error('Cancelled error');
+      const mockDownloadTask = {
+        taskId: mockTaskId,
+        items: [] as DownloadItemType[],
+        options: { showErrors: true },
+      } as DownloadTask;
+
+      vi.spyOn(tasksService, 'findTask').mockReturnValue({
+        id: mockTaskId,
+        status: TaskStatus.Cancelled,
+      } as TaskData);
+
+      const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+
+      DownloadManager['reportError'](mockError, mockDownloadTask);
+
+      expect(updateTaskSpy).toHaveBeenCalledWith({
+        taskId: mockTaskId,
+        merge: { status: TaskStatus.Cancelled },
+      });
     });
   });
 });

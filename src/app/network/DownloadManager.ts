@@ -14,6 +14,7 @@ import {
   ErrorMessages,
   isLostConnectionError,
 } from 'app/drive/services/downloadManager.service';
+import RetryManager, { RetryableTask } from './RetryManager';
 
 /**
  * DownloadManager class handles file and folder downloads with queue management
@@ -58,6 +59,17 @@ export class DownloadManager {
     },
     this.MAX_CONCURRENT_DOWNLOADS,
   );
+
+  private static readonly isServerError = (error: unknown): boolean => {
+    const castedError = errorService.castError(error);
+    return (
+      [
+        ErrorMessages.ServerUnavailable.toLowerCase(),
+        ErrorMessages.ServerError.toLowerCase(),
+        ErrorMessages.InternalServerError.toLowerCase(),
+      ].includes(castedError.message.toLowerCase() as ErrorMessages) || (castedError.status ?? 0) >= 500
+    );
+  };
 
   private static readonly downloadTask = async (downloadTask: DownloadTask) => {
     const { items, taskId, abortController } = downloadTask;
@@ -125,7 +137,18 @@ export class DownloadManager {
           });
           throw new Error(ErrorMessages.ServerUnavailable);
         }
+        const failedTasks = downloadTask.failedItems.map(
+          (item) =>
+            ({
+              taskId: downloadTask.taskId,
+              params: item,
+              type: 'download',
+            }) as RetryableTask,
+        );
+        RetryManager.addTasks(failedTasks);
       }
+
+      this.removeRetryItems(items, downloadTask);
 
       tasksService.updateTask({
         taskId,
@@ -144,6 +167,10 @@ export class DownloadManager {
   private static readonly reportError = (err: unknown, downloadTask: DownloadTask) => {
     const { items, taskId } = downloadTask;
     const isConnectionLost = isLostConnectionError(err);
+    const isServerError = this.isServerError(err);
+    const castedError = errorService.castError(err);
+    const filePickerCancelled = castedError.message === ErrorMessages.FilePickerCancelled;
+    let updateTaskWithErrorStatus = true;
 
     if (isConnectionLost) {
       tasksService.updateTask({
@@ -151,6 +178,21 @@ export class DownloadManager {
         merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
       });
       throw err;
+    }
+
+    if (isServerError || filePickerCancelled) {
+      const retryTasks = RetryManager.getTasksById(downloadTask.taskId);
+      if (retryTasks.length > 0) {
+        tasksService.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Success,
+          },
+        });
+        updateTaskWithErrorStatus = false;
+      } else {
+        this.removeRetryItems(items, downloadTask);
+      }
     }
 
     const task = tasksService.findTask(taskId);
@@ -170,12 +212,14 @@ export class DownloadManager {
           });
         }
       }
-      tasksService.updateTask({
-        taskId,
-        merge: {
-          status: TaskStatus.Error,
-        },
-      });
+      if (updateTaskWithErrorStatus) {
+        tasksService.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Error,
+          },
+        });
+      }
 
       const castedError = errorService.castError(err);
 
@@ -212,8 +256,15 @@ export class DownloadManager {
     return firstArray.every((itemInFirstArray) =>
       secondArray.some(
         (itemInSecondArray) =>
-          itemInSecondArray.id === itemInFirstArray.id && itemInSecondArray.isFolder === itemInFirstArray.isFolder,
+          itemInSecondArray.id === itemInFirstArray.id &&
+          Boolean(itemInSecondArray?.isFolder) === Boolean(itemInFirstArray?.isFolder),
       ),
     );
+  };
+
+  private static readonly removeRetryItems = (items: DownloadItemType[], downloadTask: DownloadTask) => {
+    items
+      .filter((item) => !downloadTask.failedItems?.some((failedItem) => failedItem.id === item.id))
+      .forEach((item) => RetryManager.removeTaskByIdAndParams(downloadTask.taskId, { id: item.id }));
   };
 }

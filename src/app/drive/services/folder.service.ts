@@ -523,7 +523,7 @@ export async function downloadFolderAsZip({
     while (downloadQueue.running() > 0 || downloadQueue.length() > 0) {
       await downloadQueue.drain();
     }
-    allItemsFailed = failedItems.length === totalItems.length;
+    allItemsFailed = totalItems.length > 0 && failedItems.length === totalItems.length;
 
     totalSizeIsReady = true;
     if (options.closeWhenFinished === undefined || options.closeWhenFinished === true) {
