@@ -306,5 +306,67 @@ describe('filesZip', () => {
       expect(addFile).toHaveBeenCalledTimes(3);
       expect(result.files).toEqual([file1, file2, file3]);
     });
+
+    test('should validate fileStream is not undefined', async () => {
+      mockDownloadFile.mockResolvedValue(undefined);
+      const zip = new MockFlatFolderZip('folderName');
+      const addFile = vi.spyOn(zip.zip, 'addFile');
+
+      const iterator = {
+        next: vi
+          .fn()
+          .mockReturnValueOnce({ value: filesPage1, done: false })
+          .mockReturnValueOnce({ value: [], done: true }),
+      };
+
+      const result = await addFilesToZip('/path/to/files', mockDownloadFile, iterator, zip as unknown as FlatFolderZip);
+
+      expect(mockDownloadFile).toHaveBeenCalledTimes(filesPage1.length);
+      expect(addFile).not.toHaveBeenCalled();
+      expect(result.files).toEqual(filesPage1);
+    });
+
+    test('should validate downloadPromise resolves correctly', async () => {
+      mockDownloadFile
+        .mockResolvedValueOnce('Mocked file stream')
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce('Mocked file stream')
+        .mockResolvedValueOnce('Mocked file stream');
+
+      const zip = new MockFlatFolderZip('folderName');
+      const addFile = vi.spyOn(zip.zip, 'addFile');
+
+      const iterator = {
+        next: vi
+          .fn()
+          .mockReturnValueOnce({ value: filesPage1, done: false })
+          .mockReturnValueOnce({ value: [], done: true }),
+      };
+
+      const result = await addFilesToZip('/path/to/files', mockDownloadFile, iterator, zip as unknown as FlatFolderZip);
+
+      expect(mockDownloadFile).toHaveBeenCalledTimes(filesPage1.length);
+      expect(addFile).toHaveBeenCalledTimes(3);
+      expect(result.files).toEqual(filesPage1);
+    });
+
+    test('should validate downloadFile is called for each file', async () => {
+      mockDownloadFile.mockResolvedValue('Mocked file stream');
+      const zip = new MockFlatFolderZip('folderName');
+      const addFile = vi.spyOn(zip.zip, 'addFile');
+
+      const iterator = {
+        next: vi
+          .fn()
+          .mockReturnValueOnce({ value: filesPage1, done: false })
+          .mockReturnValueOnce({ value: [], done: true }),
+      };
+
+      const result = await addFilesToZip('/path/to/files', mockDownloadFile, iterator, zip as unknown as FlatFolderZip);
+
+      expect(mockDownloadFile).toHaveBeenCalledTimes(filesPage1.length);
+      expect(addFile).toHaveBeenCalledTimes(filesPage1.length);
+      expect(result.files).toEqual(filesPage1);
+    });
   });
 });
