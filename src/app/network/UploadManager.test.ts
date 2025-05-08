@@ -7,6 +7,8 @@ import uploadFile from '../drive/services/file.service/uploadFile';
 import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
 import { DriveFileData } from 'app/drive/types';
 import RetryManager from './RetryManager';
+import { ErrorMessages } from 'app/drive/services/downloadManager.service';
+import { TaskStatus } from 'app/tasks/types';
 
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
@@ -21,6 +23,26 @@ vi.mock('app/store/slices/storage/storage.thunks', () => ({
 vi.mock('../drive/services/file.service/uploadFile', () => ({
   default: vi.fn(),
 }));
+
+vi.mock('app/repositories/DatabaseUploadRepository', () => {
+  const uploadState: Record<string, TaskStatus> = {};
+
+  return {
+    default: {
+      getInstance: vi.fn(() => ({
+        setUploadState: vi.fn(async (id: string, status: TaskStatus) => {
+          uploadState[id] = status;
+        }),
+        getUploadState: vi.fn(async (id: string) => uploadState[id]),
+        removeUploadState: vi.fn(async (id: string) => {
+          delete uploadState[id];
+        }),
+      })),
+    },
+  };
+});
+
+vi.mock('i18next', () => ({ t: (_) => 'Translation message' }));
 
 const openMaxSpaceOccupiedDialogMock = vi.fn();
 
@@ -324,5 +346,49 @@ describe('checkUploadFiles', () => {
     );
 
     expect(RetryChangeStatusSpy).toHaveBeenCalledWith('taskId', 'failed');
+  });
+
+  it('should handle lost connection error during upload', async () => {
+    const lostConnectionError = new AppError(ErrorMessages.NetworkError);
+    (uploadFile as Mock).mockRejectedValueOnce(lostConnectionError);
+
+    const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+    vi.spyOn(errorService, 'reportError').mockReturnValue();
+
+    await expect(
+      uploadFileWithManager(
+        [
+          {
+            taskId: 'taskId',
+            filecontent: {
+              content: 'file-content' as unknown as File,
+              type: 'text/plain',
+              name: 'file.txt',
+              size: 1024,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: '',
+          },
+        ],
+        openMaxSpaceOccupiedDialogMock,
+        DatabaseUploadRepository.getInstance(),
+        undefined,
+        {
+          ownerUserAuthenticationData: undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: 'parentFolderId',
+          },
+          isUploadedFromFolder: true,
+        },
+      ),
+    ).rejects.toThrow(lostConnectionError);
+
+    expect(errorService.reportError).toHaveBeenCalledWith(lostConnectionError, expect.any(Object));
+    expect(updateTaskSpy).toHaveBeenCalledWith({
+      taskId: 'taskId',
+      merge: { status: TaskStatus.Error, subtitle: expect.any(String) },
+    });
   });
 });
