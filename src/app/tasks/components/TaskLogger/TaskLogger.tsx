@@ -18,7 +18,6 @@ const TaskLogger = (): JSX.Element => {
   const [hasFinished, setHasFinished] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
   const [filesToRetry, setFilesToRetry] = useState(RetryManager.getTasks());
-  const [items, setItems] = useState<JSX.Element[]>([]);
 
   const allNotifications = useTaskManagerGetNotifications();
   const finishedNotifications = useTaskManagerGetNotifications({
@@ -40,21 +39,15 @@ const TaskLogger = (): JSX.Element => {
     [filesToRetry],
   );
 
-  const refreshItems = () => {
-    setItems(
-      allNotifications.map((n) => (
-        <TaskLoggerItem
-          notification={n}
-          task={tasksService.findTask(n.taskId)}
-          key={n.taskId}
-          filesToRetry={filesToRetryGroupedByTask[n.taskId]}
-        />
-      )),
-    );
-  };
-
-  useEffect(() => {
-    refreshItems();
+  const items = useMemo(() => {
+    return allNotifications.map((n) => (
+      <TaskLoggerItem
+        notification={n}
+        task={tasksService.findTask(n.taskId)}
+        key={n.taskId}
+        filesToRetry={filesToRetryGroupedByTask[n.taskId]}
+      />
+    ));
   }, [allNotifications, filesToRetryGroupedByTask]);
 
   const onCloseButtonClicked = () => {
