@@ -368,5 +368,65 @@ describe('filesZip', () => {
       expect(addFile).toHaveBeenCalledTimes(filesPage1.length);
       expect(result.files).toEqual(filesPage1);
     });
+
+    test('should not add undefined downloadPromise to downloadPromises array', async () => {
+      mockDownloadFile
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce('Mocked file stream')
+        .mockResolvedValueOnce('Mocked file stream');
+
+      mockDownloadFile.mockImplementation((file) => {
+        if (!file) {
+          return Promise.resolve(undefined);
+        }
+        return Promise.resolve({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          blob: {
+            stream: vi.fn().mockReturnValue({
+              getReader: () => ({
+                read: vi.fn().mockResolvedValue({ done: true, value: undefined }),
+                releaseLock: vi.fn(),
+              }),
+            }),
+          },
+        });
+      });
+      (binaryStreamToBlob as Mock).mockResolvedValue({
+        stream: vi.fn().mockReturnValue(new ReadableStream()),
+      });
+
+      const zip = new MockFlatFolderZip('folderName');
+      const addFile = vi.spyOn(zip.zip, 'addFile');
+
+      const iterator = {
+        next: vi
+          .fn()
+          .mockReturnValueOnce({ value: filesPage1, done: false })
+          .mockReturnValueOnce({ value: [], done: true }),
+      };
+
+      const result = await addFilesToZip('/path/to/files', mockDownloadFile, iterator, zip as unknown as FlatFolderZip);
+
+      expect(mockDownloadFile).toHaveBeenCalledTimes(filesPage1.length);
+      expect(addFile).toHaveBeenCalledTimes(2);
+    });
+
+    test('should handle empty filesChunk gracefully', async () => {
+      const zip = new MockFlatFolderZip('folderName');
+      const addFile = vi.spyOn(zip.zip, 'addFile');
+
+      const iterator = {
+        next: vi.fn().mockReturnValueOnce({ value: [], done: true }),
+      };
+
+      const result = await addFilesToZip('/path/to/files', mockDownloadFile, iterator, zip as unknown as FlatFolderZip);
+
+      expect(mockDownloadFile).not.toHaveBeenCalled();
+      expect(addFile).not.toHaveBeenCalled();
+      expect(result.files).toEqual([]);
+    });
   });
 });

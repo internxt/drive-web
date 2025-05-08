@@ -357,37 +357,39 @@ export class DownloadManagerService {
           const blob = cachedFile.source;
           downloadProgress[index] = 1;
           fileStream = blob.stream();
-        } else {
-          const downloadedFileStream = await downloadFile({
-            fileId: (driveItem as DriveFileData).fileId,
-            bucketId: (driveItem as DriveFileData).bucket,
-            creds: {
-              user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
-              pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
-            },
-            mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
-            options: {
-              abortController,
-              notifyProgress: (totalBytes, downloadedBytes) => {
-                const progress = downloadedBytes / totalBytes;
-
-                downloadProgress[index] = progress;
-
-                updateProgressCallback(calculateProgress());
-              },
-            },
-          });
-
-          const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
-          await updateDatabaseFileSourceData({
-            folderId: driveItem.folderId,
-            sourceBlob,
-            fileId: driveItem.id,
-            updatedAt: driveItem.updatedAt,
-          });
-
-          fileStream = sourceBlob.stream();
+          folderZip.addFile(`${driveItem.name}${driveItem.type ? '.' + driveItem.type : ''}`, fileStream);
+          return;
         }
+
+        const downloadedFileStream = await downloadFile({
+          fileId: (driveItem as DriveFileData).fileId,
+          bucketId: (driveItem as DriveFileData).bucket,
+          creds: {
+            user: (driveItem as AdvancedSharedItem).credentials?.networkUser ?? credentials.credentials.user,
+            pass: (driveItem as AdvancedSharedItem).credentials?.networkPass ?? credentials.credentials.pass,
+          },
+          mnemonic: (driveItem as AdvancedSharedItem).credentials?.mnemonic ?? credentials.mnemonic,
+          options: {
+            abortController,
+            notifyProgress: (totalBytes, downloadedBytes) => {
+              const progress = downloadedBytes / totalBytes;
+
+              downloadProgress[index] = progress;
+
+              updateProgressCallback(calculateProgress());
+            },
+          },
+        });
+
+        const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
+        await updateDatabaseFileSourceData({
+          folderId: driveItem.folderId,
+          sourceBlob,
+          fileId: driveItem.id,
+          updatedAt: driveItem.updatedAt,
+        });
+
+        fileStream = sourceBlob.stream();
         folderZip.addFile(`${driveItem.name}${driveItem.type ? '.' + driveItem.type : ''}`, fileStream);
       };
 
@@ -420,7 +422,9 @@ export class DownloadManagerService {
 
         if (downloadedItems.allItemsFailed) {
           failedItems.push(driveItem);
-        } else if (downloadedItems?.failedItems.length > 0) {
+          return;
+        }
+        if (downloadedItems?.failedItems.length > 0) {
           failedItems.push(...(downloadedItems?.failedItems as DownloadItemType[]));
         }
       };
@@ -434,9 +438,9 @@ export class DownloadManagerService {
         try {
           if (driveItem.isFolder) {
             await addFolderToZip(index, driveItem);
-          } else {
-            await addFileStreamToZip(index, driveItem);
+            continue;
           }
+          await addFileStreamToZip(index, driveItem);
         } catch (error: unknown) {
           await this.checkAndHandleConnectionLoss(connectionLost, folderZip);
           if (isLostConnectionError(error)) {

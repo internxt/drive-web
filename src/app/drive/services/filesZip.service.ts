@@ -59,7 +59,7 @@ async function addFilesToZip<T extends File>(
             return { name: file.plainName ?? file.name, type: file.type, blob: fileBlob };
           });
 
-          if (downloadPromise) {
+          if (downloadPromise !== undefined) {
             downloadPromises.push(downloadPromise);
           }
         }
