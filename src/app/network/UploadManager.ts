@@ -10,7 +10,8 @@ import tasksService from '../tasks/services/tasks.service';
 import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 import { ConnectionLostError } from './requests';
 import { FileToUpload } from '../drive/services/file.service/types';
-import RetryManager from './RetryManager';
+import RetryManager, { RetryableTask } from './RetryManager';
+import { ErrorMessages } from 'app/drive/services/downloadManager.service';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -262,7 +263,8 @@ class UploadManager {
           .catch((error) => {
             const isUploadAborted =
               !!this.abortController?.signal.aborted || !!fileData.abortController?.signal.aborted || error === 'abort';
-            const isLostConnectionError = error instanceof ConnectionLostError || error.message === 'Network Error';
+            const isLostConnectionError =
+              error instanceof ConnectionLostError || error.message === ErrorMessages.NetworkError;
 
             if (uploadAttempts < MAX_UPLOAD_ATTEMPTS && !isUploadAborted && !isLostConnectionError) {
               upload();
@@ -559,21 +561,26 @@ class UploadManager {
         const uploadPromises: Promise<DriveFileData>[] = await this.uploadQueue.pushAsync(files);
 
         let uploadedFiles: DriveFileData[] = [];
-        const filesToRetry: UploadManagerFileParams[] = [];
+        const filesToRetry: RetryableTask[] = [];
 
         uploadedFiles = await Promise.all(uploadPromises);
 
         for (let i = 0; i < uploadedFiles.length; i++) {
           const uploadedFile = uploadedFiles[i];
           if (uploadedFile) uploadedFilesData.push(uploadedFile);
-          else filesToRetry.push(files[i]);
+          else
+            filesToRetry.push({
+              taskId: files[i]?.taskId ?? files[i]?.relatedTaskId ?? '',
+              type: 'upload',
+              params: files[i],
+            });
         }
 
-        if (filesToRetry.length > 0) RetryManager.addFiles(filesToRetry);
+        if (filesToRetry.length > 0) RetryManager.addTasks(filesToRetry);
         const fileTaskId = files[0]?.taskId;
         if (files.length === 1 && fileTaskId) {
           const noFilesToRetry = filesToRetry.length === 0;
-          if (noFilesToRetry) RetryManager.removeFile(fileTaskId);
+          if (noFilesToRetry) RetryManager.removeTask(fileTaskId);
           else RetryManager.changeStatus(fileTaskId, 'failed');
         }
       };

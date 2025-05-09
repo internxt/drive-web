@@ -1210,7 +1210,8 @@
     "messages": {
       "allProcessesHaveFinished": "Tutti i processi sono stati completati",
       "processing": "Elaborazione {{pending}} di {{finished}}",
-      "failedToUpload": "Caricamento fallito"
+      "failedToUpload": "Caricamento fallito",
+      "failedToDownload": "Download fallito"
     },
     "waiting": "In attesa",
     "paused": "In pausa",

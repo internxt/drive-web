@@ -1,6 +1,6 @@
 import DatabaseUploadRepository from '../../../repositories/DatabaseUploadRepository';
 import tasksService from '../../services/tasks.service';
-import { TaskStatus } from '../../types';
+import { TaskStatus, TaskType } from '../../types';
 import { ErrorBlock, PauseBlock, PausedBlock, PendingBlock, SuccessBlock } from './TaskButtonActionBlocks';
 
 const ITEM_DEPEND_STATUS = {
@@ -20,7 +20,7 @@ type TaskLoggerActionsProps = {
   nItems: string;
   cancelAction: () => void;
   retryAction: () => void;
-  isUploadTask: boolean;
+  taskType: TaskType;
   openItemAction: () => void;
   openRetryItemsAction: () => void;
   showPauseButton: boolean;
@@ -60,7 +60,7 @@ export const TaskLoggerActions = ({
   nItems,
   cancelAction,
   retryAction,
-  isUploadTask,
+  taskType,
   openItemAction,
   openRetryItemsAction,
   showPauseButton,
@@ -84,7 +84,7 @@ export const TaskLoggerActions = ({
       }}
       magnifyingAction={openItemAction}
       infoAction={openRetryItemsAction}
-      isUploadTask={isUploadTask}
+      taskType={taskType}
       showPauseButton={showPauseButton}
       haveWarnings={haveWarnings}
     />
