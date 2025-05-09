@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
-import { isLargeFile } from 'app/core/services/media.service';
+import { isFileSizePreviewable } from 'app/core/services/media.service';
 import iconService from 'app/drive/services/icon.service';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { FileExtensionGroup } from 'app/drive/types/file-types';
@@ -17,7 +17,7 @@ import { setItemsToMove, storageActions } from '../../../store/slices/storage';
 import { TopBarActionsMenu } from './FileViewerWrapper';
 import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailableComponent';
 import TopBarActions from './components/TopBarActions';
-import { checkIfExtensionIsAllowed, getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
+import { getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
 import viewers from './viewers';
 import { MenuItemType } from '@internxt/ui';
 
@@ -80,7 +80,7 @@ const FileViewer = ({
 
   const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(file);
 
-  const isTypeAllowed = extensionGroup?.isTypeAllowed;
+  const isTypeAllowed = !!extensionGroup?.isTypeAllowed;
   const fileExtensionGroup = extensionGroup?.fileExtensionGroup;
 
   const Viewer: React.FC<FormatFileViewerProps> = isTypeAllowed
@@ -92,14 +92,14 @@ const FileViewer = ({
   const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
   const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
 
-  const fileType = file?.type ? `.${file.type}` : '';
-  const filename = file ? `${file?.plainName ?? file.name}${fileType}` : '';
+  const fileType = file.type ? `.${file.type}` : '';
+  const filename = file ? `${file.plainName ?? file.name}${fileType}` : '';
   const isFirstItemOrShareView = fileIndex === 0 || isShareView;
   const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
-  const shouldRenderThePreview = checkIfExtensionIsAllowed(fileExtensionGroup) && isLargeFile(file?.size);
   const isItemValidToPreview = isTypeAllowed && isPreviewAvailable;
+  const shouldRenderThePreview = isTypeAllowed && isFileSizePreviewable(file.size);
 
-  const ItemIconComponent = iconService.getItemIcon(false, file?.type);
+  const ItemIconComponent = iconService.getItemIcon(false, file.type);
 
   useEffect(() => {
     const handleContextmenu = (e) => {
@@ -112,16 +112,7 @@ const FileViewer = ({
   }, []);
 
   useEffect(() => {
-    setIsPreviewAvailable(true);
-
-    if (show && isTypeAllowed) {
-      if (shouldRenderThePreview) {
-        setIsPreviewAvailable(false);
-        return;
-      }
-    } else {
-      setIsPreviewAvailable(false);
-    }
+    setIsPreviewAvailable(show && shouldRenderThePreview);
   }, [show, file]);
 
   // To prevent close FileViewer if any of those modal are open
@@ -216,7 +207,7 @@ const FileViewer = ({
           <Dialog.Overlay className="fixed inset-0 bg-black/85 backdrop-blur-md" />
 
           {/* Content */}
-          {file && <ShareItemDialog share={file?.shares?.[0]} isPreviewView item={file as DriveItemData} />}
+          {file && <ShareItemDialog share={file.shares?.[0]} isPreviewView item={file as DriveItemData} />}
           {isFirstItemOrShareView ? null : (
             <button
               title={translate('actions.previous')}

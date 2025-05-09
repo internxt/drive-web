@@ -1,9 +1,13 @@
+import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
+import { videoTypes } from 'app/core/services/media.service';
 import { useEffect, useRef, useState } from 'react';
 
 const FileVideoViewer = ({
+  file,
   blob,
   setIsPreviewAvailable,
 }: {
+  file: DriveFileData;
   blob: Blob;
   setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
 }): JSX.Element => {
@@ -17,15 +21,17 @@ const FileVideoViewer = ({
     videoPlayer.addEventListener('loadedmetadata', () => {
       const { videoWidth, videoHeight } = videoPlayer;
       setDimensions({ width: videoWidth, height: videoHeight });
+
+      videoPlayer.play().catch((err) => {
+        const error = err as Error;
+        console.error('[ERROR WHILE PLAYING VIDEO/STACK]: ', error.stack ?? error.message);
+        setIsPreviewAvailable(false);
+      });
     });
 
-    videoPlayer.src = URL.createObjectURL(blob);
+    const type: string = videoTypes[file.type] ?? 'video/webm';
 
-    videoPlayer.play().catch((err) => {
-      const error = err as Error;
-      console.error('[ERROR WHILE PLAYING VIDEO/STACK]: ', error.stack || error.message);
-      setIsPreviewAvailable(false);
-    });
+    videoPlayer.src = URL.createObjectURL(new Blob([blob], { type }));
 
     // Cleanup
     return () => {

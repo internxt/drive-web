@@ -22,7 +22,7 @@
 - [ ] SonarCloud issues have been reviewed and addressed.
 - [ ] QA Passed
 
-## How Has This Been Tested?
+## Testing Process
 
 <!-- Describe the testing process, including steps, configurations, and tools used to verify the changes. -->
 
