@@ -270,6 +270,7 @@ const FileViewerWrapper = ({
 
     if (isDifferentThumbnailOrNotExists && thumbnailGenerated.file) {
       const thumbnailToUpload: ThumbnailToUpload = {
+        fileUuid: driveFile.uuid,
         fileId: driveFile.id,
         size: thumbnailGenerated.file.size,
         max_width: thumbnailGenerated.max_width,

@@ -112,7 +112,13 @@ export async function uploadFile(
     };
   }
 
-  const generatedThumbnail = await generateThumbnailFromFile(file, response.id, userEmail, options.isTeam);
+  const generatedThumbnail = await generateThumbnailFromFile(
+    file,
+    response.id,
+    response.uuid,
+    userEmail,
+    options.isTeam,
+  );
   if (generatedThumbnail?.thumbnail) {
     response.thumbnails.push(generatedThumbnail.thumbnail);
     if (generatedThumbnail.thumbnailFile) {
