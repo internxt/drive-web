@@ -570,7 +570,7 @@ class UploadManager {
           if (uploadedFile) uploadedFilesData.push(uploadedFile);
           else
             filesToRetry.push({
-              taskId: files[i]?.taskId || files[i]?.relatedTaskId || '',
+              taskId: files[i]?.taskId ?? files[i]?.relatedTaskId ?? '',
               type: 'upload',
               params: files[i],
             });

@@ -452,20 +452,13 @@ export class DownloadManagerService {
         }
       }
 
-      if (failedItems.length > 0) {
-        if (failedItems.length === items.length) {
-          const allEqual = failedItems.every((failedItem) =>
-            items.some((item) => item.id === failedItem.id && item.isFolder === failedItem.isFolder),
-          );
-
-          if (allEqual) {
-            folderZip.abort();
-            await folderZip.close();
-            throw new Error(ErrorMessages.ServerUnavailable);
-          }
-        }
-        downloadTask.failedItems = failedItems;
+      if (failedItems.length > 0 && areItemArraysEqual(items, failedItems)) {
+        folderZip.abort();
+        await folderZip.close();
+        throw new Error(ErrorMessages.ServerUnavailable);
       }
+
+      downloadTask.failedItems = failedItems;
 
       await folderZip.close();
     } catch (error) {
@@ -524,4 +517,16 @@ export const isLostConnectionError = (error: unknown) => {
     );
 
   return isLostConnectionError;
+};
+
+export const areItemArraysEqual = (firstArray: DownloadItemType[], secondArray: DownloadItemType[]) => {
+  if (firstArray.length !== secondArray.length) return false;
+
+  return firstArray.every((itemInFirstArray) =>
+    secondArray.some(
+      (itemInSecondArray) =>
+        itemInSecondArray.id === itemInFirstArray.id &&
+        Boolean(itemInSecondArray?.isFolder) === Boolean(itemInFirstArray?.isFolder),
+    ),
+  );
 };

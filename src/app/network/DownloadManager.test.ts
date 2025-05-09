@@ -1,4 +1,5 @@
 import {
+  areItemArraysEqual,
   DownloadItem,
   DownloadItemType,
   DownloadManagerService,
@@ -118,6 +119,7 @@ describe('downloadManager', () => {
         FilePickerCancelled: 'File picker was canceled or failed',
       },
       isLostConnectionError: vi.fn(),
+      areItemArraysEqual: vi.fn(),
     }));
 
     vi.mock('app/utils/queueUtils', () => ({
@@ -815,49 +817,6 @@ describe('downloadManager', () => {
     await expect(DownloadManager.downloadItem(downloadItem)).resolves.not.toThrow();
   });
 
-  describe('areItemArraysEqual', () => {
-    it('should return true for identical arrays', () => {
-      const arr1 = [
-        { id: 5, isFolder: true },
-        { id: 1, isFolder: true },
-        { id: 7, isFolder: true },
-      ] as DownloadItemType[];
-      const arr2 = [
-        { id: 1, isFolder: true },
-        { id: 7, isFolder: true },
-        { id: 5, isFolder: true },
-      ] as DownloadItemType[];
-
-      const result = DownloadManager['areItemArraysEqual'](arr1, arr2);
-      expect(result).toBe(true);
-    });
-
-    it('should return false for arrays with different lengths', () => {
-      const arr1 = [{ id: 1, isFolder: true }] as DownloadItemType[];
-      const arr2 = [
-        { id: 1, isFolder: true },
-        { id: 2, isFolder: false },
-      ] as DownloadItemType[];
-
-      const result = DownloadManager['areItemArraysEqual'](arr1, arr2);
-      expect(result).toBe(false);
-    });
-
-    it('should return false for arrays with different items', () => {
-      const arr1 = [
-        { id: 1, isFolder: true },
-        { id: 3, isFolder: true },
-      ] as DownloadItemType[];
-      const arr2 = [
-        { id: 2, isFolder: true },
-        { id: 1, isFolder: true },
-      ] as DownloadItemType[];
-
-      const result = DownloadManager['areItemArraysEqual'](arr1, arr2);
-      expect(result).toBe(false);
-    });
-  });
-
   describe('downloadTask', () => {
     it('should update task status to Error when all items fail (failedItems > 0)', async () => {
       const mockTask = { id: 'task-1', status: TaskStatus.InProcess } as TaskData;
@@ -882,6 +841,7 @@ describe('downloadManager', () => {
       const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
 
       const downloadItemsSpy = vi.spyOn(DownloadManagerService.instance, 'downloadItems').mockResolvedValue();
+      vi.mocked(areItemArraysEqual).mockReturnValueOnce(true);
 
       await expect(DownloadManager['downloadTask'](downloadTask)).rejects.toThrow(ErrorMessages.ServerUnavailable);
 

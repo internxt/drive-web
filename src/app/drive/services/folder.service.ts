@@ -371,7 +371,7 @@ export async function downloadFolderAsZip({
         addUniqueItem(file);
         // TODO: QA REMOVE
         if (file.name.includes('internxt_test_file') || file.plainName?.includes('internxt_test_file')) {
-          failedItems.push(file as DriveFileData);
+          failedItems.push(file);
           return;
         }
         try {

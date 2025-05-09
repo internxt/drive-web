@@ -2,7 +2,6 @@ import { queue, QueueObject } from 'async';
 import { QueueUtilsService } from 'app/utils/queueUtils';
 import tasksService from 'app/tasks/services/tasks.service';
 import { TaskData, TaskEvent, TaskStatus } from 'app/tasks/types';
-import { ConnectionLostError } from './requests';
 import { t } from 'i18next';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -13,6 +12,7 @@ import {
   DownloadTask,
   ErrorMessages,
   isLostConnectionError,
+  areItemArraysEqual,
 } from 'app/drive/services/downloadManager.service';
 import RetryManager, { RetryableTask } from './RetryManager';
 
@@ -128,7 +128,7 @@ export class DownloadManager {
       }
 
       if (downloadTask.failedItems && downloadTask.failedItems.length > 0) {
-        if (this.areItemArraysEqual(items, downloadTask.failedItems)) {
+        if (areItemArraysEqual(items, downloadTask.failedItems)) {
           tasksService.updateTask({
             taskId,
             merge: {
@@ -248,18 +248,6 @@ export class DownloadManager {
       await this.downloadQueue.pushAsync(newTask);
       return newTask;
     }
-  };
-
-  private static areItemArraysEqual = (firstArray: DownloadItemType[], secondArray: DownloadItemType[]) => {
-    if (firstArray.length !== secondArray.length) return false;
-
-    return firstArray.every((itemInFirstArray) =>
-      secondArray.some(
-        (itemInSecondArray) =>
-          itemInSecondArray.id === itemInFirstArray.id &&
-          Boolean(itemInSecondArray?.isFolder) === Boolean(itemInFirstArray?.isFolder),
-      ),
-    );
   };
 
   private static readonly removeRetryItems = (items: DownloadItemType[], downloadTask: DownloadTask) => {

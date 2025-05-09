@@ -1,9 +1,11 @@
 import {
   DownloadCredentials,
   DownloadItem,
+  DownloadItemType,
   DownloadManagerService,
   DownloadTask,
   ErrorMessages,
+  areItemArraysEqual,
 } from 'app/drive/services/downloadManager.service';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, Mock, MockInstance, vi } from 'vitest';
 import { Workspace, WorkspaceCredentialsDetails, WorkspaceData, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
@@ -652,7 +654,7 @@ describe('downloadManagerService', () => {
     expect(checkAndHandleConnectionLossSpy).toHaveBeenCalled();
   });
 
-  it('should downloadFolder throw if all files inside the folder fails', async () => {
+  it('should downloadFolder throw ServerUnavailable if all files inside the folder fails', async () => {
     const mockTaskId = 'mock-task-id';
     const mockTask: DownloadTask = {
       abortController: new AbortController(),
@@ -1307,6 +1309,49 @@ describe('downloadManagerService', () => {
     });
   });
 
+  describe('areItemArraysEqual', () => {
+    it('should return true for identical arrays', () => {
+      const arr1 = [
+        { id: 5, isFolder: true },
+        { id: 1, isFolder: true },
+        { id: 7, isFolder: true },
+      ] as DownloadItemType[];
+      const arr2 = [
+        { id: 1, isFolder: true },
+        { id: 7, isFolder: true },
+        { id: 5, isFolder: true },
+      ] as DownloadItemType[];
+
+      const result = areItemArraysEqual(arr1, arr2);
+      expect(result).toBe(true);
+    });
+
+    it('should return false for arrays with different lengths', () => {
+      const arr1 = [{ id: 1, isFolder: true }] as DownloadItemType[];
+      const arr2 = [
+        { id: 1, isFolder: true },
+        { id: 2, isFolder: false },
+      ] as DownloadItemType[];
+
+      const result = areItemArraysEqual(arr1, arr2);
+      expect(result).toBe(false);
+    });
+
+    it('should return false for arrays with different items', () => {
+      const arr1 = [
+        { id: 1, isFolder: true },
+        { id: 3, isFolder: true },
+      ] as DownloadItemType[];
+      const arr2 = [
+        { id: 2, isFolder: true },
+        { id: 1, isFolder: true },
+      ] as DownloadItemType[];
+
+      const result = areItemArraysEqual(arr1, arr2);
+      expect(result).toBe(false);
+    });
+  });
+
   describe('downloadManagerService - Error Handling', () => {
     it('should handle errors in downloadFolder and rethrow them', async () => {
       const mockTask: DownloadTask = {
@@ -1564,11 +1609,12 @@ describe('downloadManagerService', () => {
         );
       });
 
-      it('should throw ConnectionLostError if conn is true and there is a zip value', async () => {
+      it('should throw ConnectionLostError if connectionLost is true and there is a zip value', async () => {
+        const connectionLost = true;
         const zip = new FlatFolderZip('any-path', {} as any);
         const spyAbort = vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementationOnce(() => {});
         const spyClose = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValueOnce();
-        await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(true, zip)).rejects.toThrow(
+        await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(connectionLost, zip)).rejects.toThrow(
           ConnectionLostError,
         );
         expect(spyAbort).toHaveBeenCalledTimes(1);

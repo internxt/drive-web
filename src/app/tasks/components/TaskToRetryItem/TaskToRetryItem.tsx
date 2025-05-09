@@ -22,14 +22,14 @@ const TaskToRetyItem = ({ index, style, data }: ListChildComponentProps) => {
   return (
     <div style={style} className="flex items-center justify-between px-4 py-3 border-b border-gray-5">
       <div className="flex items-center gap-4">
-        {params?.isFolder ? getFolderIcon : getFileIcon(params?.filecontent?.type || params.type)}
+        {params?.isFolder ? getFolderIcon : getFileIcon(params?.filecontent?.type ?? params.type)}
         <div>
           <p className="text-base font-medium text-gray-100 truncate max-w-xs">
-            {params?.filecontent?.name || params.plainName || params.name}
+            {params?.filecontent?.name ?? params.plainName ?? params.name}
           </p>
           <p className="text-sm font-regular text-gray-50">
-            {bytesToString(params?.filecontent?.size || params.size)} -{' '}
-            {formatDefaultDate(params?.filecontent?.content.lastModified || params.updatedAt, t)}
+            {bytesToString(params?.filecontent?.size ?? params.size)} -{' '}
+            {formatDefaultDate(params?.filecontent?.content.lastModified ?? params.updatedAt, t)}
           </p>
         </div>
       </div>
