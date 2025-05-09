@@ -34,6 +34,7 @@ export function isTypeSupportedByAudioPlayer(type: keyof AudioExtensions): boole
   return Object.keys(audioTypes).includes(type);
 }
 
+const HALF_A_GIGABYTE_IN_BYTES = 512 * 1024 * 1024;
 export function isFileSizePreviewable(size: number): boolean {
-  return size < 512 * 1024 * 1024;
+  return size < HALF_A_GIGABYTE_IN_BYTES;
 }
