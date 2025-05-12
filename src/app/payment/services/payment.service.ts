@@ -9,7 +9,7 @@ import {
   RedeemCodePayload,
   UserSubscription,
   UserType,
-} from '@internxt/sdk/dist/drive/payments/types';
+} from '@internxt/sdk/dist/drive/payments/types/types';
 import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js/pure';
 import axios from 'axios';

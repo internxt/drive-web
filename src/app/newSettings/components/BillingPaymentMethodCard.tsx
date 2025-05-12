@@ -1,4 +1,4 @@
-import { PaymentMethod, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { PaymentMethod, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Button, Loader } from '@internxt/ui';
 import Card from 'app/shared/components/Card';
 import { t } from 'i18next';

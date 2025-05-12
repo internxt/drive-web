@@ -1,4 +1,4 @@
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
+import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types/types';
 import { CouponCodeData } from '../types';
 
 export const getProductAmount = (

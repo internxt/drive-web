@@ -1,4 +1,4 @@
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
+import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types/types';
 import { AuthMethodTypes, CouponCodeData, PartialErrorState, PlanData, RequestedPlanData } from '../types';
 import { StripeElementsOptions } from '@stripe/stripe-js';
 
