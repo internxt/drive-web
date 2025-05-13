@@ -1,15 +1,15 @@
 import downloadBackup from './downloadBackup';
 import downloadFile from './downloadFile';
 import downloadFileFromBlob from './downloadFileFromBlob';
-import downloadFolder from './downloadFolder';
 import fetchFileBlob from './fetchFileBlob';
+import downloadFolder from './downloadFolder';
 
 const downloadService = {
   fetchFileBlob,
   downloadFileFromBlob,
   downloadFile,
-  downloadFolder,
   downloadBackup,
+  downloadFolder,
 };
 
 export default downloadService;
