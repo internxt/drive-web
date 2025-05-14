@@ -2,11 +2,19 @@ import { queue, QueueObject } from 'async';
 import { QueueUtilsService } from 'app/utils/queueUtils';
 import tasksService from 'app/tasks/services/tasks.service';
 import { TaskData, TaskEvent, TaskStatus } from 'app/tasks/types';
-import { ConnectionLostError } from './requests';
 import { t } from 'i18next';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { DownloadItem, DownloadManagerService, DownloadTask } from 'app/drive/services/downloadManager.service';
+import {
+  DownloadItem,
+  DownloadItemType,
+  DownloadManagerService,
+  DownloadTask,
+  ErrorMessages,
+  isLostConnectionError,
+  areItemArraysEqual,
+} from 'app/drive/services/downloadManager.service';
+import RetryManager, { RetryableTask } from './RetryManager';
 
 /**
  * DownloadManager class handles file and folder downloads with queue management
@@ -51,6 +59,17 @@ export class DownloadManager {
     },
     this.MAX_CONCURRENT_DOWNLOADS,
   );
+
+  private static readonly isServerError = (error: unknown): boolean => {
+    const castedError = errorService.castError(error);
+    return (
+      [
+        ErrorMessages.ServerUnavailable.toLowerCase(),
+        ErrorMessages.ServerError.toLowerCase(),
+        ErrorMessages.InternalServerError.toLowerCase(),
+      ].includes(castedError.message.toLowerCase() as ErrorMessages) || (castedError.status ?? 0) >= 500
+    );
+  };
 
   private static readonly downloadTask = async (downloadTask: DownloadTask) => {
     const { items, taskId, abortController } = downloadTask;
@@ -108,6 +127,29 @@ export class DownloadManager {
         await DownloadManagerService.instance.downloadFile(downloadTask, updateProgressCallback);
       }
 
+      if (downloadTask.failedItems && downloadTask.failedItems.length > 0) {
+        if (areItemArraysEqual(items, downloadTask.failedItems)) {
+          tasksService.updateTask({
+            taskId,
+            merge: {
+              status: TaskStatus.Error,
+            },
+          });
+          throw new Error(ErrorMessages.ServerUnavailable);
+        }
+        const failedTasks = downloadTask.failedItems.map(
+          (item) =>
+            ({
+              taskId: downloadTask.taskId,
+              params: item,
+              type: 'download',
+            }) as RetryableTask,
+        );
+        RetryManager.addTasks(failedTasks);
+      }
+
+      this.removeRetryItems(items, downloadTask);
+
       tasksService.updateTask({
         taskId,
         merge: {
@@ -124,13 +166,33 @@ export class DownloadManager {
 
   private static readonly reportError = (err: unknown, downloadTask: DownloadTask) => {
     const { items, taskId } = downloadTask;
+    const isConnectionLost = isLostConnectionError(err);
+    const isServerError = this.isServerError(err);
+    const castedError = errorService.castError(err);
+    const filePickerCancelled = castedError.message === ErrorMessages.FilePickerCancelled;
+    let updateTaskWithErrorStatus = true;
 
-    if (err instanceof ConnectionLostError) {
+    if (isConnectionLost) {
       tasksService.updateTask({
         taskId,
         merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
       });
       throw err;
+    }
+
+    if (isServerError || filePickerCancelled) {
+      const retryTasks = RetryManager.getTasksById(downloadTask.taskId);
+      if (retryTasks.length > 0) {
+        tasksService.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Success,
+          },
+        });
+        updateTaskWithErrorStatus = false;
+      } else {
+        this.removeRetryItems(items, downloadTask);
+      }
     }
 
     const task = tasksService.findTask(taskId);
@@ -150,12 +212,14 @@ export class DownloadManager {
           });
         }
       }
-      tasksService.updateTask({
-        taskId,
-        merge: {
-          status: TaskStatus.Error,
-        },
-      });
+      if (updateTaskWithErrorStatus) {
+        tasksService.updateTask({
+          taskId,
+          merge: {
+            status: TaskStatus.Error,
+          },
+        });
+      }
 
       const castedError = errorService.castError(err);
 
@@ -184,5 +248,11 @@ export class DownloadManager {
       await this.downloadQueue.pushAsync(newTask);
       return newTask;
     }
+  };
+
+  private static readonly removeRetryItems = (items: DownloadItemType[], downloadTask: DownloadTask) => {
+    items
+      .filter((item) => !downloadTask.failedItems?.some((failedItem) => failedItem.id === item.id))
+      .forEach((item) => RetryManager.removeTaskByIdAndParams(downloadTask.taskId, { id: item.id }));
   };
 }
