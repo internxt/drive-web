@@ -369,11 +369,6 @@ export async function downloadFolderAsZip({
       folderToDownload.name,
       async (file) => {
         addUniqueItem(file);
-        // TODO: QA REMOVE
-        if (file.name.includes('internxt_test_file') || file.plainName?.includes('internxt_test_file')) {
-          failedItems.push(file);
-          return;
-        }
         try {
           updateNumItems();
           const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
@@ -446,11 +441,6 @@ export async function downloadFolderAsZip({
       folderToDownload.name,
       async (file) => {
         addUniqueItem(file);
-        // TODO: QA REMOVE
-        if (file.name.includes('internxt_test_file') || file.plainName?.includes('internxt_test_file')) {
-          failedItems.push(file);
-          return;
-        }
         try {
           const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
           const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());

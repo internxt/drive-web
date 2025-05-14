@@ -343,11 +343,6 @@ export class DownloadManagerService {
       };
 
       const addFileStreamToZip = async (index: number, driveItem: DownloadItemType) => {
-        // TODO: QA REMOVE
-        if (driveItem.name.includes('internxt_test_file') || driveItem.plainName?.includes('internxt_test_file')) {
-          failedItems.push(driveItem);
-          return;
-        }
         const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
         let fileStream: ReadableStream<Uint8Array>;
         const cachedFile = await lruFilesCacheManager.get(driveItem.id.toString());
