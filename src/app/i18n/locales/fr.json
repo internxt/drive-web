@@ -226,75 +226,75 @@
       "saving": "Vous économisez {{percent}}%",
       "planDetails": {
         "title": "Détails du plan :",
-         "commingSoon":"Bientôt disponible",
+        "commingSoon": "Bientôt disponible",
         "features": {
           "individuals": {
             "1TB": {
-              "feature1":"Stockage chiffré 1TB à connaissance zéro",
-              "feature2":"Chiffrement post-quantique",
-              "feature3":"VPN ultra rapide illimité (FR)",
-              "feature4":"Antivirus",
-              "feature5":"Sauvegardez vos fichiers",
-              "feature6":"Partage de fichiers protégé par mot de passe",
-              "feature7":"Conformité RGPD",
-              "feature8":"Authentification à deux facteurs (2FA)",
-              "feature9":"Support CLI, WebDav & Rclone"
+              "feature1": "Stockage chiffré 1TB à connaissance zéro",
+              "feature2": "Chiffrement post-quantique",
+              "feature3": "VPN ultra rapide illimité (FR)",
+              "feature4": "Antivirus",
+              "feature5": "Sauvegardez vos fichiers",
+              "feature6": "Partage de fichiers protégé par mot de passe",
+              "feature7": "Conformité RGPD",
+              "feature8": "Authentification à deux facteurs (2FA)",
+              "feature9": "Support CLI, WebDav & Rclone"
             },
             "3TB": {
-              "feature1":"Stockage chiffré 3TB à connaissance zéro",
-              "feature2":"Chiffrement post-quantique",
-              "feature3":"VPN ultra rapide illimité (FR, DE, PL)",
-              "feature4":"Antivirus",
-              "feature5":"Sauvegardez vos fichiers",
-              "feature6":"Partage de fichiers protégé par mot de passe",
-              "feature7":"Conformité RGPD",
-              "feature8":"Authentification à deux facteurs (2FA)",
-              "feature9":"Support CLI, WebDav & Rclone",
-              "feature10":"Meet (3 participants)",
-              "feature11":"Mail (3 adresses)"
+              "feature1": "Stockage chiffré 3TB à connaissance zéro",
+              "feature2": "Chiffrement post-quantique",
+              "feature3": "VPN ultra rapide illimité (FR, DE, PL)",
+              "feature4": "Antivirus",
+              "feature5": "Sauvegardez vos fichiers",
+              "feature6": "Partage de fichiers protégé par mot de passe",
+              "feature7": "Conformité RGPD",
+              "feature8": "Authentification à deux facteurs (2FA)",
+              "feature9": "Support CLI, WebDav & Rclone",
+              "feature10": "Meet (3 participants)",
+              "feature11": "Mail (3 adresses)"
             },
             "5TB": {
-              "feature1":"Stockage chiffré 5TB à connaissance zéro",
-              "feature2":"Chiffrement post-quantique",
-              "feature3":"VPN ultra rapide illimité (FR, DE, PL, CA, UK)",
-              "feature4":"Antivirus",
-              "feature5":"Sauvegardez vos fichiers",
-              "feature6":"Partage de fichiers protégé par mot de passe",
-              "feature7":"Conformité RGPD",
-              "feature8":"Authentification à deux facteurs (2FA)",
-              "feature9":"Support CLI, WebDav & Rclone",
-              "feature10":"Meet (5 participants)",
-              "feature11":"Mail (5 adresses)"
+              "feature1": "Stockage chiffré 5TB à connaissance zéro",
+              "feature2": "Chiffrement post-quantique",
+              "feature3": "VPN ultra rapide illimité (FR, DE, PL, CA, UK)",
+              "feature4": "Antivirus",
+              "feature5": "Sauvegardez vos fichiers",
+              "feature6": "Partage de fichiers protégé par mot de passe",
+              "feature7": "Conformité RGPD",
+              "feature8": "Authentification à deux facteurs (2FA)",
+              "feature9": "Support CLI, WebDav & Rclone",
+              "feature10": "Meet (5 participants)",
+              "feature11": "Mail (5 adresses)"
             }
           },
           "business": {
             "1TB": {
-              "feature1":"1TB de stockage/utilisateur",
-              "feature2":"Chiffrement post-quantique",
-              "feature3":"VPN ultra rapide et illimité (FR, DE, PL)",
-              "feature4":"Antivirus",
-              "feature5":"Sauvegarde de vos fichiers",
-              "feature6":"Partage de fichiers protégé par mot de passe",
-              "feature7":"Conformité au RGPD",
-              "feature8":"Authentification à deux facteurs (2FA)",
-              "feature9":"Support CLI, WebDav & Rclone",
-              "feature10":"Gérer la facturation et les paiements du compte",
-              "feature11":"Réunions jusqu'à 10 utilisateurs",
-              "feature12":"1 adresse e-mail personnalisée/utiliateur"
+              "feature1": "1TB de stockage/utilisateur",
+              "feature2": "Chiffrement post-quantique",
+              "feature3": "VPN ultra rapide et illimité (FR, DE, PL)",
+              "feature4": "Antivirus",
+              "feature5": "Sauvegarde de vos fichiers",
+              "feature6": "Partage de fichiers protégé par mot de passe",
+              "feature7": "Conformité au RGPD",
+              "feature8": "Authentification à deux facteurs (2FA)",
+              "feature9": "Support CLI, WebDav & Rclone",
+              "feature10": "Gérer la facturation et les paiements du compte",
+              "feature11": "Réunions jusqu'à 10 utilisateurs",
+              "feature12": "1 adresse e-mail personnalisée/utiliateur"
             },
             "2TB": {
-              "feature1":"2TB de stockage/utilisateur",
-              "feature2":"Chiffrement post-quantique",
-              "feature3":"VPN ultra rapide et illimité (FR, DE, PL, CA, UK)",
-              "feature4":"Antivirus",
-              "feature5":"Sauvegarde de vos fichiers",
-              "feature6":"Partage de fichiers protégé par mot de passe",
-              "feature7":"Conformité au RGPD",
-              "feature8":"Authentification à deux facteurs (2FA)",
-              "feature9":"Support CLI, WebDav & Rclone",
-              "feature10":"Gérer la facturation et les paiements du compte",
-              "feature11":"Réunions jusqu'à 100 utilisateurs ",
-              "feature12":"2 adresse e-mail personnalisée/utilisateur"
+              "feature1": "2TB de stockage/utilisateur",
+              "feature2": "Chiffrement post-quantique",
+              "feature3": "VPN ultra rapide et illimité (FR, DE, PL, CA, UK)",
+              "feature4": "Antivirus",
+              "feature5": "Sauvegarde de vos fichiers",
+              "feature6": "Partage de fichiers protégé par mot de passe",
+              "feature7": "Conformité au RGPD",
+              "feature8": "Authentification à deux facteurs (2FA)",
+              "feature9": "Support CLI, WebDav & Rclone",
+              "feature10": "Gérer la facturation et les paiements du compte",
+              "feature11": "Réunions jusqu'à 100 utilisateurs ",
+              "feature12": "2 adresse e-mail personnalisée/utilisateur"
             }
           }
         }
@@ -307,7 +307,8 @@
       },
       "apply": "Appliquer",
       "amountSaved": "Économisez ",
-      "withAnnualBilling": "avec facturation annuelle"
+      "withAnnualBilling": "avec facturation annuelle",
+      "taxes": "Taxes"
     }
   },
   "general": {

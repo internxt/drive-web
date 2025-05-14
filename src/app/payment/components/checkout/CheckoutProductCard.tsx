@@ -198,7 +198,7 @@ export const CheckoutProductCard = ({
           </div>
 
           <div className="flex flex-row items-center justify-between text-gray-100">
-            <p className="font-medium">Taxes</p>
+            <p className="font-medium">{translate('checkout.productCard.taxes')}</p>
             <p className="font-semibold">
               {currencySymbol}
               {selectedPlan.taxes.decimalTax}

@@ -257,17 +257,21 @@ const CheckoutViewWrapper = () => {
   }, [promoCodeName]);
 
   useEffect(() => {
-    getUserLocation().then(({ location }) => {
-      if (location !== country && currentSelectedPlan) {
-        recalculatePrice(
-          currentSelectedPlan.price.id,
-          currentSelectedPlan.price.currency,
-          promoCodeName,
-          postalCode,
-          country,
-        );
-      }
-    });
+    getUserLocation()
+      .then(({ location }) => {
+        if (location !== country && currentSelectedPlan) {
+          recalculatePrice(
+            currentSelectedPlan.price.id,
+            currentSelectedPlan.price.currency,
+            promoCodeName,
+            postalCode,
+            country,
+          );
+        }
+      })
+      .catch(() => {
+        console.log('ERROR GETTING USER LOCATION');
+      });
   }, [country, postalCode]);
 
   useEffect(() => {
