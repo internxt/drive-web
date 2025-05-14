@@ -12,13 +12,13 @@ import { TaskData, TaskNotification, TaskStatus, TaskType, UploadFileData, Uploa
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import TaskToRetry from '../TaskToRetry/TaskToRetry';
-import { FileToRetry } from 'app/network/RetryManager';
+import { RetryableTask } from 'app/network/RetryManager';
 
 const THREE_HUNDRED_MB_IN_BYTES = 3 * 100 * 1024 * 1024;
 interface TaskLoggerItemProps {
   notification: TaskNotification;
   task?: TaskData;
-  filesToRetry: FileToRetry[];
+  filesToRetry: RetryableTask[];
 }
 
 const taskStatusTextColors = {
@@ -120,7 +120,6 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
   const notExistProgress = notification.progress && notification.progress === Infinity;
   const progress = notExistProgress ? '-' : progressInPercentage;
   const showProgressBar = notification.status === TaskStatus.InProcess || notification.status === TaskStatus.Paused;
-  const isUploadTask = notification.action.includes('upload');
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -130,9 +129,14 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
     setIsHovered(false);
   };
 
-  const isDownloadError =
+  const isDownloadAction =
     [TaskStatus.Error, TaskStatus.Cancelled].includes(notification.status) &&
     (notification.action === TaskType.DownloadFile || notification.action === TaskType.DownloadFolder);
+  const someFileIsDownloaded = filesToRetry?.some(
+    (file) => file.taskId === notification.taskId && file.type === 'download',
+  );
+
+  const isDownloadError = isDownloadAction || someFileIsDownloaded;
 
   const getRetryActionFunction = (isDownload: boolean) => {
     return isDownload ? retryDownload : retryUpload;
@@ -189,7 +193,7 @@ const TaskLoggerItem = ({ notification, task, filesToRetry }: TaskLoggerItemProp
           nItems={notification.nItems?.toString() ?? '0'}
           cancelAction={onCancelButtonClicked}
           retryAction={handleRetryClick}
-          isUploadTask={isUploadTask}
+          taskType={notification.action}
           openItemAction={openItem}
           openRetryItemsAction={() => setIsModalOpen(true)}
           showPauseButton={shouldDisplayPauseButton(notification)}
