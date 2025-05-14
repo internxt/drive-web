@@ -44,6 +44,7 @@
     "jszip": "=3.2.2",
     "lint-staged": "^13.1.0",
     "lodash": "^4.17.21",
+    "openapi-fetch": "^0.13.5",
     "openpgp": "^5.9.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
@@ -107,6 +108,7 @@
     "lint": "yarn run lint:ts && yarn run lint:scss",
     "lint:fix": "yarn run lint:ts:fix && yarn run lint:scss:fix",
     "analyze": "cross-env ANALYZE=true yarn build",
+    "generate_schema": "openapi-typescript http://localhost:3004/api-json -o ./src/app/core/network/schema.d.ts",
     "add:npmrc": "echo \"registry=https://registry.yarnpkg.com/\" >> .npmrc && echo \"@internxt:registry=https://npm.pkg.github.com\" >> .npmrc && echo \"//npm.pkg.github.com/:_authToken=$NPM_TOKEN\" >> .npmrc && echo \"always-auth=true\" >> .npmrc"
   },
   "browserslist": {
@@ -155,6 +157,7 @@
     "dotenv": "^16.4.5",
     "eslint": "^7.32.0",
     "husky": "^7.0.2",
+    "openapi-typescript": "^7.6.1",
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
     "process": "^0.11.10",
