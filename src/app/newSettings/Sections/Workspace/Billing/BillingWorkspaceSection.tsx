@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
 import { PlanState, planThunks } from 'app/store/slices/plan';
 
-import { CustomerBillingInfo, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { CustomerBillingInfo, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Section from 'app/newSettings/components/Section';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';

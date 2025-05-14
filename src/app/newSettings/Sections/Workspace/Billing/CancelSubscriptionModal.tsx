@@ -1,4 +1,4 @@
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { ArrowRight } from '@phosphor-icons/react';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import sizeService from '../../../../drive/services/size.service';

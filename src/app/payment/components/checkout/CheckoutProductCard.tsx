@@ -1,26 +1,25 @@
 import { useState } from 'react';
-import { Switch, Transition } from '@headlessui/react';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { Transition } from '@headlessui/react';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Check, SealPercent, X } from '@phosphor-icons/react';
 
 import { bytesToString } from '../../../drive/services/size.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { UpsellManagerProps } from '../../views/IntegratedCheckoutView/CheckoutViewWrapper';
 import TextInput from '../../../share/components/ShareItemDialog/components/TextInput';
 import { Button } from '@internxt/ui';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guarantee-dark.svg';
 import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
-import { CouponCodeData, Currency, RequestedPlanData } from '../../types';
+import { CouponCodeData, Currency } from '../../types';
 import { SelectSeatsComponent } from './SelectSeatsComponent';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 
 interface CheckoutProductCardProps {
-  selectedPlan: RequestedPlanData;
+  selectedPlan: PriceWithTax;
   seatsForBusinessSubscription: number;
   showCouponCode: boolean;
   showHardcodedRenewal?: string;
-  upsellManager: UpsellManagerProps;
   onSeatsChange: (users: number) => void;
   onRemoveAppliedCouponCode: () => void;
   onCouponInputChange: (promoCode: string) => void;
@@ -34,7 +33,7 @@ const getTextContent = (
   users: number,
   isBusiness: boolean,
   bytes: string,
-  selectedPlan: RequestedPlanData,
+  selectedPlan: PriceWithTax,
   translate: (key: string, props?: Record<string, unknown>) => string,
   translateList: (key: string, props?: Record<string, unknown>) => string[],
 ) => {
@@ -45,11 +44,11 @@ const getTextContent = (
       })
     : translate('checkout.productCard.total');
   const features = translateList(
-    `checkout.productCard.planDetails.features.${selectedPlan.type ?? UserType.Individual}`,
+    `checkout.productCard.planDetails.features.${selectedPlan.price.type ?? UserType.Individual}`,
     {
       spaceToUpgrade: bytes,
-      minimumSeats: selectedPlan.minimumSeats,
-      maximumSeats: selectedPlan.maximumSeats,
+      minimumSeats: selectedPlan.price?.minimumSeats,
+      maximumSeats: selectedPlan.price?.maximumSeats,
     },
   );
 
@@ -67,7 +66,6 @@ export const CheckoutProductCard = ({
   showHardcodedRenewal,
   couponError,
   seatsForBusinessSubscription,
-  upsellManager,
   onSeatsChange,
   onRemoveAppliedCouponCode,
   onCouponInputChange,
@@ -76,12 +74,11 @@ export const CheckoutProductCard = ({
   const { checkoutTheme } = useThemeContext();
   const [couponName, setCouponName] = useState<string>('');
   const [openCouponCodeDropdown, setOpenCouponCodeDropdown] = useState<boolean>(false);
-  const bytes = bytesToString(selectedPlan.bytes);
-  const currencySymbol = Currency[selectedPlan.currency];
-  const normalPriceAmount = selectedPlan.decimalAmount;
+  const bytes = bytesToString(selectedPlan.price.bytes);
+  const currencySymbol = Currency[selectedPlan.price.currency];
+  const normalPriceAmount = selectedPlan.price.decimalAmount;
 
-  const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
-  const isBusiness = selectedPlan.type === UserType.Business;
+  const isBusiness = selectedPlan.price.type === UserType.Business;
   const textContent = getTextContent(
     seatsForBusinessSubscription,
     isBusiness,
@@ -92,17 +89,19 @@ export const CheckoutProductCard = ({
   );
   const renewalPeriodLabel = `${translate('checkout.productCard.renewalPeriod.renewsAt')}
           ${currencySymbol}${normalPriceAmount}/${translate(
-            `checkout.productCard.renewalPeriod.${selectedPlan.interval}`,
+            `checkout.productCard.renewalPeriod.${selectedPlan.price.interval}`,
           )}`;
 
-  const planAmount = getProductAmount(selectedPlan.decimalAmount, 1, couponCodeData);
-  const totalAmount = getProductAmount(selectedPlan.decimalAmount, seatsForBusinessSubscription, couponCodeData);
-  const upsellPlanAmount =
-    upsellManager.amount && getProductAmount(upsellManager.amount, seatsForBusinessSubscription, couponCodeData);
+  const planAmountWithoutTaxes = getProductAmount(selectedPlan.price.decimalAmount, 1, couponCodeData);
+  const totalAmountWithTaxes = getProductAmount(
+    selectedPlan.taxes.decimalAmountWithTax,
+    seatsForBusinessSubscription,
+    couponCodeData,
+  );
 
   const discountPercentage =
-    couponCodeData?.amountOff && couponCodeData?.amountOff < selectedPlan.amount
-      ? ((couponCodeData?.amountOff / selectedPlan.amount) * 100).toFixed(2)
+    couponCodeData?.amountOff && couponCodeData?.amountOff < selectedPlan.taxes.amountWithTax
+      ? ((couponCodeData?.amountOff / selectedPlan.taxes.amountWithTax) * 100).toFixed(2)
       : undefined;
 
   const COMING_SOON_FEATURE_KEYS = ['feature10', 'feature11'];
@@ -138,6 +137,8 @@ export const CheckoutProductCard = ({
     return map[capacityToKey[bytes]] || map.FREE;
   };
 
+  console.log('selectedPlan', { selectedPlan });
+
   const getPlanLabelFeaturePath = () => {
     if (couponCodeData?.codeName === 'PCCOMPONENTES') {
       return bytes;
@@ -168,9 +169,9 @@ export const CheckoutProductCard = ({
           <p className="text-2xl font-bold text-gray-100">
             {getPlanLabelFeaturePath() +
               ' - ' +
-              translate(`checkout.productCard.renewalTitle.${selectedPlan.interval}`)}
+              translate(`checkout.productCard.renewalTitle.${selectedPlan.price.interval}`)}
           </p>
-          {isBusiness && selectedPlan.maximumSeats && selectedPlan.minimumSeats ? (
+          {isBusiness && selectedPlan.price?.maximumSeats && selectedPlan.price?.minimumSeats ? (
             <>
               <p className="text-lg font-medium">
                 {translate('checkout.productCard.numberOfUsers', {
@@ -178,8 +179,8 @@ export const CheckoutProductCard = ({
                 })}
               </p>
               <SelectSeatsComponent
-                maxSeats={selectedPlan.maximumSeats}
-                minSeats={selectedPlan.minimumSeats}
+                maxSeats={selectedPlan.price?.maximumSeats}
+                minSeats={selectedPlan.price?.minimumSeats}
                 seats={seatsForBusinessSubscription}
                 onSeatsChange={onSeatsChange}
               />
@@ -187,12 +188,20 @@ export const CheckoutProductCard = ({
           ) : undefined}
           <div className="flex flex-row items-center justify-between text-gray-100">
             <p className="font-medium">
-              {translate(`checkout.productCard.billed.${selectedPlan.interval}`)}
+              {translate(`checkout.productCard.billed.${selectedPlan.price.interval}`)}
               {textContent.perUserLabel}
             </p>
             <p className="font-semibold">
               {currencySymbol}
-              {planAmount}
+              {planAmountWithoutTaxes}
+            </p>
+          </div>
+
+          <div className="flex flex-row items-center justify-between text-gray-100">
+            <p className="font-medium">Taxes</p>
+            <p className="font-semibold">
+              {currencySymbol}
+              {selectedPlan.taxes.decimalTax}
             </p>
           </div>
           {couponCodeData && (
@@ -237,48 +246,10 @@ export const CheckoutProductCard = ({
             <p>{textContent.totalLabel}</p>
             <p>
               {currencySymbol}
-              {totalAmount}
+              {totalAmountWithTaxes}
             </p>
           </div>
 
-          {showUpsellSwitch && upsellManager.amountSaved && (
-            <>
-              <div className="flex w-full flex-row items-center justify-between">
-                <div className="flex flex-row items-center gap-4">
-                  <Switch
-                    checked={isUpsellSwitchActivated}
-                    onChange={onUpsellSwitchButtonClicked}
-                    className={`${
-                      isUpsellSwitchActivated ? 'bg-green' : 'bg-gray-10'
-                    } relative inline-flex h-6 w-11 items-center rounded-full`}
-                  >
-                    <span
-                      id="switchButton"
-                      className={`${
-                        isUpsellSwitchActivated ? 'translate-x-6' : 'translate-x-1'
-                      } inline-block h-4 w-4 transform rounded-full bg-white transition`}
-                    />
-                  </Switch>
-
-                  <div className="flex h-full rounded-lg bg-green/10 px-3 py-1">
-                    <p className="text-sm text-green">
-                      {translate('checkout.productCard.amountSaved')}
-                      {currencySymbol}
-                      {upsellManager.amountSaved}
-                    </p>
-                  </div>
-                  <p className="font-medium text-gray-80">{translate('checkout.productCard.withAnnualBilling')}</p>
-                </div>
-                <div className="flex flex-row items-center">
-                  <p className="text-sm text-gray-80">
-                    {currencySymbol}
-                    {upsellPlanAmount}/{translate('views.account.tabs.account.view.subscription.yearly')}
-                  </p>
-                </div>
-              </div>
-              <Separator />
-            </>
-          )}
           {showCouponCode && (
             <>
               {couponCodeData?.codeName ? (
@@ -362,7 +333,9 @@ export const CheckoutProductCard = ({
           )}
         </div>
       </div>
-      {couponCodeData && selectedPlan.interval !== 'lifetime' && <p className="text-gray-60">{renewalPeriodLabel}</p>}
+      {couponCodeData && selectedPlan.price.interval !== 'lifetime' && (
+        <p className="text-gray-60">{renewalPeriodLabel}</p>
+      )}
       {showHardcodedRenewal && <p className="text-gray-60">{showHardcodedRenewal}</p>}
     </div>
   );

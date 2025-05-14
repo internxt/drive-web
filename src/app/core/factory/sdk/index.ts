@@ -8,6 +8,7 @@ import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { LocalStorageService, STORAGE_KEYS } from '../../services/local-storage.service';
 import { Workspace } from '../../types';
+import { Checkout } from '@internxt/sdk/dist/payments';
 
 export class SdkFactory {
   private static sdk: {
@@ -130,6 +131,17 @@ export class SdkFactory {
     return Payments.client(process.env.REACT_APP_PAYMENTS_API_URL, appDetails, apiSecurity);
   }
 
+  public async createCheckoutClient(ipAddress?: string): Promise<Checkout> {
+    const optionalHeaders = ipAddress ? { 'X-Real-Ip': ipAddress } : undefined;
+    const appDetails = SdkFactory.getAppDetails(optionalHeaders);
+
+    const newToken = SdkFactory.sdk.localStorage.get('xNewToken');
+
+    const apiSecurity = { ...this.getApiSecurity(), token: newToken ?? '' };
+
+    return Checkout.client(`${process.env.REACT_APP_PAYMENTS_API_URL}`, appDetails, apiSecurity);
+  }
+
   public createBackupsClient(): Backups {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
@@ -167,10 +179,13 @@ export class SdkFactory {
     return this.apiUrl;
   }
 
-  private static getAppDetails(): AppDetails {
+  private static getAppDetails(customHeaders?: Record<string, string>): AppDetails {
     return {
       clientName: packageJson.name,
       clientVersion: packageJson.version,
+      customHeaders: {
+        ...customHeaders,
+      },
     };
   }
 

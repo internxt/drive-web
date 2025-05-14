@@ -8,11 +8,11 @@ import { AuthMethodTypes } from '../../types';
 import { CheckoutUserAuth } from '../../components/checkout/CheckoutUserAuth';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
-import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
+import { CheckoutViewManager, UserInfoProps } from './CheckoutViewWrapper';
 import { State } from 'app/payment/store/types';
 import { LegacyRef } from 'react';
 import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -32,7 +32,6 @@ interface CheckoutViewProps {
   isUserAuthenticated: boolean;
   showHardcodedRenewal?: string;
   showCouponCode: boolean;
-  upsellManager: UpsellManagerProps;
   userAuthComponentRef: LegacyRef<HTMLDivElement>;
   checkoutViewVariables: State;
   checkoutViewManager: CheckoutViewManager;
@@ -47,7 +46,6 @@ const CheckoutView = ({
   isUserAuthenticated,
   showCouponCode,
   showHardcodedRenewal,
-  upsellManager,
   userAuthComponentRef,
   checkoutViewVariables,
   checkoutViewManager,
@@ -116,6 +114,7 @@ const CheckoutView = ({
                         onChange={(e) => {
                           checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
                           checkoutViewManager.onCountryChange(e.value.address.country);
+                          checkoutViewManager.onPostalCodeChange(e.value.address.postal_code);
                         }}
                         options={{
                           mode: 'billing',
@@ -125,7 +124,7 @@ const CheckoutView = ({
                         }}
                       />
                     </div>
-                    {currentSelectedPlan.type === UserType.Business ? (
+                    {currentSelectedPlan.price.type === UserType.Business ? (
                       <OptionalB2BDropdown errors={errors} register={register} translate={translate} />
                     ) : undefined}
                   </div>
@@ -154,7 +153,6 @@ const CheckoutView = ({
                   showCouponCode={showCouponCode}
                   couponError={error?.coupon}
                   seatsForBusinessSubscription={seatsForBusinessSubscription}
-                  upsellManager={upsellManager}
                   onSeatsChange={checkoutViewManager.onSeatsChange}
                   onCouponInputChange={checkoutViewManager.onCouponInputChange}
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}

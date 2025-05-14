@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Elements } from '@stripe/react-stripe-js';
-import { Stripe, StripeElements, StripeElementsOptionsMode } from '@stripe/stripe-js';
+import { Stripe, StripeElements } from '@stripe/stripe-js';
 import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -29,8 +29,10 @@ import { planThunks } from '../../../store/slices/plan';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
-import { AuthMethodTypes, CouponCodeData, RequestedPlanData } from '../../types';
+import { AuthMethodTypes, CouponCodeData } from '../../types';
 import CheckoutView from './CheckoutView';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import { getUserLocation } from 'app/utils/userLocationUtils';
 
 export const THEME_STYLES = {
   dark: {
@@ -67,6 +69,7 @@ export interface CheckoutViewManager {
   onCouponInputChange: (coupon: string) => void;
   onLogOut: () => Promise<void>;
   onCountryChange: (country: string) => void;
+  onPostalCodeChange: (postalCode: string) => void;
   onCheckoutButtonClicked: (
     formData: IFormValues,
     event: BaseSyntheticEvent<object, any, any> | undefined,
@@ -79,7 +82,6 @@ export interface CheckoutViewManager {
   onSeatsChange: (seat: number) => void;
 }
 
-const ONE_YEAR_IN_MONTHS = 12;
 const IS_PRODUCTION = envService.isProduction();
 const RETURN_URL_DOMAIN = IS_PRODUCTION ? process.env.REACT_APP_HOSTNAME : 'http://localhost:3000';
 const STATUS_CODE_ERROR = {
@@ -93,20 +95,20 @@ const STATUS_CODE_ERROR = {
 function savePaymentDataInLocalStorage(
   subscriptionId: string | undefined,
   paymentIntentId: string | undefined,
-  selectedPlan: RequestedPlanData | undefined,
+  selectedPlan: PriceWithTax | undefined,
   users: number,
   couponCodeData: CouponCodeData | undefined,
 ) {
   if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
   if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
   if (selectedPlan) {
-    const planName = bytesToString(selectedPlan.bytes) + selectedPlan.interval;
-    const amountToPay = getProductAmount(selectedPlan.decimalAmount, users, couponCodeData);
+    const planName = bytesToString(selectedPlan.price.bytes) + selectedPlan.price.interval;
+    const amountToPay = getProductAmount(selectedPlan.taxes.decimalAmountWithTax, users, couponCodeData);
 
     localStorageService.set('productName', planName);
     localStorageService.set('amountPaid', amountToPay);
-    localStorageService.set('priceId', selectedPlan.id);
-    localStorageService.set('currency', selectedPlan.currency);
+    localStorageService.set('priceId', selectedPlan.price.id);
+    localStorageService.set('currency', selectedPlan.price.currency);
   }
 }
 
@@ -117,6 +119,8 @@ const CheckoutViewWrapper = () => {
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const [mobileToken, setMobileToken] = useState<string | null>(null);
+  const [postalCode, setPOstalCode] = useState<string>('');
+  const [country, setCountry] = useState<string>('');
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -142,12 +146,10 @@ const CheckoutViewWrapper = () => {
     setStripeElementsOptions,
     setUserNameFromElementAddress,
     setSeatsForBusinessSubscription,
-    setCountry,
     setPrices,
     setIsCheckoutReadyToRender,
     setIsUpdateSubscriptionDialogOpen,
     setIsUpdatingSubscription,
-    setIsUpsellSwitchActivated,
   } = useCheckout(dispatchReducer);
 
   const {
@@ -160,11 +162,9 @@ const CheckoutViewWrapper = () => {
     elementsOptions,
     promoCodeName,
     seatsForBusinessSubscription,
-    country,
     isCheckoutReadyToRender,
     isUpdateSubscriptionDialogOpen,
     isUpdatingSubscription,
-    isUpsellSwitchActivated,
     prices,
   } = state;
 
@@ -176,25 +176,6 @@ const CheckoutViewWrapper = () => {
     name: fullName,
     avatar: avatarBlob,
     email: user?.email ?? '',
-  };
-
-  const upsellManager = {
-    onUpsellSwitchButtonClicked: () => {
-      setIsUpsellSwitchActivated(!isUpsellSwitchActivated);
-      const planType = isUpsellSwitchActivated ? 'selectedPlan' : 'upsellPlan';
-      const stripeElementsOptions = {
-        ...(elementsOptions as StripeElementsOptionsMode),
-        amount: plan![planType].amount,
-      };
-      setSelectedPlan(plan![planType]);
-      setStripeElementsOptions(stripeElementsOptions);
-    },
-    isUpsellSwitchActivated,
-    showUpsellSwitch: !!plan?.upsellPlan,
-    amountSaved: plan?.upsellPlan
-      ? (plan?.selectedPlan.amount * ONE_YEAR_IN_MONTHS - plan?.upsellPlan.amount) / 100
-      : undefined,
-    amount: plan?.upsellPlan?.decimalAmount,
   };
 
   useEffect(() => {
@@ -225,14 +206,14 @@ const CheckoutViewWrapper = () => {
       });
 
     handleFetchSelectedPlan(planId, currencyValue)
-      .then(async (plan) => {
-        if (checkoutTheme && plan) {
+      .then(async (price) => {
+        if (checkoutTheme && price) {
           if (promotionCode) {
-            handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
+            handleFetchPromotionCode(price.price.id, promotionCode).catch(handlePromoCodeError);
           }
 
-          checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, plan);
-          const prices = await checkoutService.fetchPrices(plan.selectedPlan.type, currencyValue);
+          checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, price);
+          const prices = await checkoutService.fetchPrices(price.price.type, currencyValue);
           setPrices(prices);
           setIsCheckoutReadyToRender(true);
         }
@@ -259,10 +240,35 @@ const CheckoutViewWrapper = () => {
   }, [isAuthenticated, user]);
 
   useEffect(() => {
-    if (promoCodeName && currentSelectedPlan) {
-      handleFetchPromotionCode(currentSelectedPlan?.id, promoCodeName).catch(handlePromoCodeError);
+    if (currentSelectedPlan) {
+      promoCodeName &&
+        handleFetchPromotionCode(currentSelectedPlan.price.id, promoCodeName).catch(handlePromoCodeError);
+
+      checkoutService
+        .getPriceById({ priceId: currentSelectedPlan.price.id, promoCodeName })
+        .then((price) => {
+          setSelectedPlan(price);
+          setPlan(price);
+        })
+        .catch(() => {
+          // Handle error
+        });
     }
   }, [promoCodeName]);
+
+  useEffect(() => {
+    getUserLocation().then(({ location }) => {
+      if (location !== country && currentSelectedPlan) {
+        recalculatePrice(
+          currentSelectedPlan.price.id,
+          currentSelectedPlan.price.currency,
+          promoCodeName,
+          postalCode,
+          country,
+        );
+      }
+    });
+  }, [country, postalCode]);
 
   useEffect(() => {
     if (thereIsAnyError) {
@@ -312,7 +318,7 @@ const CheckoutViewWrapper = () => {
     try {
       const updatedSubscription = await paymentService.updateSubscriptionPrice({
         priceId,
-        userType: currentSelectedPlan.type,
+        userType: currentSelectedPlan.price.type,
       });
       if (updatedSubscription.request3DSecure) {
         stripeSdk
@@ -377,25 +383,25 @@ const CheckoutViewWrapper = () => {
         throw new Error(elementsError.message);
       }
 
-      const { customerId, token } = await paymentService.getCustomerId(
-        customerName,
-        email ?? user?.email,
-        country,
-        companyVatId,
-      );
+      const { customerId, token } = await checkoutService.getCustomerId({
+        companyName: customerName,
+        countryCode: country,
+        postalCode,
+        vatId: companyVatId,
+      });
 
       if (mobileToken) {
         const setupIntent = await checkoutService.checkoutSetupIntent(customerId);
         localStorageService.set('customerId', customerId);
         localStorageService.set('token', token);
-        localStorageService.set('priceId', currentSelectedPlan?.id as string);
+        localStorageService.set('priceId', currentSelectedPlan?.price?.id as string);
         localStorageService.set('customerToken', token);
         localStorageService.set('mobileToken', mobileToken);
         const { error: confirmIntentError } = await stripeSDK.confirmSetup({
           elements,
           clientSecret: setupIntent.clientSecret,
           confirmParams: {
-            return_url: `${RETURN_URL_DOMAIN}/checkout/pcCloud-success?mobileToken=${mobileToken}&priceId=${currentSelectedPlan?.id}`,
+            return_url: `${RETURN_URL_DOMAIN}/checkout/pcCloud-success?mobileToken=${mobileToken}&priceId=${currentSelectedPlan?.price?.id}`,
           },
         });
 
@@ -405,7 +411,7 @@ const CheckoutViewWrapper = () => {
       } else {
         const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
           await checkoutService.getClientSecret({
-            selectedPlan: currentSelectedPlan as RequestedPlanData,
+            selectedPlan: currentSelectedPlan as PriceWithTax,
             token,
             mobileToken,
             customerId,
@@ -417,7 +423,7 @@ const CheckoutViewWrapper = () => {
         savePaymentDataInLocalStorage(
           subscriptionId,
           paymentIntentId,
-          plan?.selectedPlan,
+          plan as PriceWithTax,
           seatsForBusinessSubscription,
           couponCodeData,
         );
@@ -463,13 +469,13 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const handleFetchSelectedPlan = async (planId: string, currency?: string) => {
-    const plan = await checkoutService.fetchPlanById(planId, currency);
+  const handleFetchSelectedPlan = async (priceId: string, currency?: string) => {
+    const plan = await checkoutService.getPriceById({ priceId, currency });
     setPlan(plan);
     const amount = mobileToken ? { amount: 0, decimalAmount: 0 } : {};
-    setSelectedPlan({ ...plan.selectedPlan, ...amount });
-    if (plan.selectedPlan.minimumSeats) {
-      setSeatsForBusinessSubscription(plan.selectedPlan.minimumSeats);
+    setSelectedPlan({ ...plan, ...amount });
+    if (plan.price?.minimumSeats) {
+      setSeatsForBusinessSubscription(plan.price?.minimumSeats);
     }
 
     return plan;
@@ -483,6 +489,7 @@ const CheckoutViewWrapper = () => {
       amountOff: promoCodeData.amountOff,
       percentOff: promoCodeData.percentOff,
     };
+
     setPromoCodeData(promoCode);
   };
 
@@ -491,6 +498,18 @@ const CheckoutViewWrapper = () => {
     localStorageService.clear();
     RealtimeService.getInstance().stop();
     setAuthMethod('signUp');
+  };
+
+  const recalculatePrice = async (
+    priceId: string,
+    currency: string,
+    promoCodeName?: string,
+    postalCode?: string,
+    country?: string,
+  ) => {
+    const price = await checkoutService.getPriceById({ priceId, currency, promoCodeName, postalCode, country });
+    setSelectedPlan(price);
+    setPlan(price);
   };
 
   const handlePromoCodeError = (err: unknown, showNotification?: boolean) => {
@@ -521,9 +540,13 @@ const CheckoutViewWrapper = () => {
     setCountry(country);
   };
 
+  const onPostalCodeChange = (postalCode: string) => {
+    setPOstalCode(postalCode);
+  };
+
   const onSeatsChange = (seats: number) => {
-    const minSeats = currentSelectedPlan?.minimumSeats;
-    const maxSeats = currentSelectedPlan?.maximumSeats;
+    const minSeats = currentSelectedPlan?.price?.minimumSeats;
+    const maxSeats = currentSelectedPlan?.price?.maximumSeats;
 
     if (maxSeats && seats > maxSeats) {
       setSeatsForBusinessSubscription(maxSeats);
@@ -540,6 +563,7 @@ const CheckoutViewWrapper = () => {
     onCheckoutButtonClicked,
     onRemoveAppliedCouponCode,
     onCountryChange,
+    onPostalCodeChange,
     handleAuthMethodChange: setAuthMethod,
     onUserNameFromAddressElementChange: setUserNameFromElementAddress,
     onSeatsChange,
@@ -556,7 +580,6 @@ const CheckoutViewWrapper = () => {
             userInfo={userInfo}
             isUserAuthenticated={isUserAuthenticated}
             showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
-            upsellManager={upsellManager}
             checkoutViewManager={checkoutViewManager}
           />
           {canChangePlanDialogBeOpened ? (
@@ -565,9 +588,9 @@ const CheckoutViewWrapper = () => {
               isDialogOpen={isUpdateSubscriptionDialogOpen}
               setIsDialogOpen={setIsUpdateSubscriptionDialogOpen}
               onPlanClick={onChangePlanClicked}
-              priceIdSelected={currentSelectedPlan.id}
+              priceIdSelected={currentSelectedPlan.price.id}
               isUpdatingSubscription={isUpdatingSubscription}
-              subscriptionSelected={currentSelectedPlan.type}
+              subscriptionSelected={currentSelectedPlan.price.type}
             />
           ) : undefined}
         </Elements>
