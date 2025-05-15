@@ -134,7 +134,6 @@ export const uploadThumbnail = async (
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
   const thumbnailEntry: StorageTypes.CreateThumbnailEntryPayload = {
-    fileId: thumbnailToUpload.fileId,
     fileUuid: thumbnailToUpload.fileUuid,
     maxWidth: thumbnailToUpload.max_width,
     maxHeight: thumbnailToUpload.max_height,

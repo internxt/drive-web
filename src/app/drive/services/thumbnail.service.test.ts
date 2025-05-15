@@ -18,7 +18,6 @@ vi.mock('app/network/upload', () => ({
   uploadFileBlob: vi.fn(),
 }));
 
-// Mock app/store and related modules to prevent circular dependencies
 vi.mock('app/store', () => ({
   AppDispatch: vi.fn(),
 }));
@@ -128,7 +127,6 @@ interface MockEnvironmentConfig {
 describe('uploadThumbnail', () => {
   const userEmail = 'test@example.com';
   const thumbnailToUpload = {
-    fileId: 1,
     fileUuid: 'uuid-123',
     size: 1024,
     max_width: 100,
@@ -179,7 +177,6 @@ describe('uploadThumbnail', () => {
       abortController,
     });
     expect(mockCreateThumbnailEntryWithUUID).toHaveBeenCalledWith({
-      fileId: thumbnailToUpload.fileId,
       fileUuid: thumbnailToUpload.fileUuid,
       maxWidth: thumbnailToUpload.max_width,
       maxHeight: thumbnailToUpload.max_height,
