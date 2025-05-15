@@ -301,7 +301,7 @@ const FileViewerWrapper = ({
     handleUpdateThumbnail: handleFileThumbnail,
   };
 
-  return showPreview ? (
+  return showPreview && currentFile ? (
     <FileViewer
       show={showPreview}
       file={currentFile}

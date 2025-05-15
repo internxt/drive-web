@@ -328,16 +328,18 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   return (
     <>
       <SendBanner sendBannerVisible={sendBannerVisible} setIsSendBannerVisible={setIsSendBannerVisible} />
-      <FileViewer
-        show={openPreview}
-        file={info!['item']}
-        onClose={closePreview}
-        onDownload={onDownloadFromPreview}
-        progress={blobProgress}
-        blob={blob}
-        isAuthenticated={isAuthenticated}
-        isShareView
-      />
+      {openPreview && info['item'] && (
+        <FileViewer
+          show={openPreview}
+          file={info['item']}
+          onClose={closePreview}
+          onDownload={onDownloadFromPreview}
+          progress={blobProgress}
+          blob={blob}
+          isAuthenticated={isAuthenticated}
+          isShareView
+        />
+      )}
       {body}
     </>
   );
