@@ -1,7 +1,11 @@
 // __tests__/checkoutService.test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import checkoutService from './checkout.service';
-import { CreateSubscriptionPayload, GetPriceByIdPayload } from '@internxt/sdk/dist/payments/types';
+import {
+  CreatePaymentIntentPayload,
+  CreateSubscriptionPayload,
+  GetPriceByIdPayload,
+} from '@internxt/sdk/dist/payments/types';
 
 vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
@@ -162,7 +166,44 @@ describe('Checkout Service tests', () => {
     });
   });
 
-  describe('Create one time payment for customer', () => {
+  describe('Create a payment intent', () => {
+    it('When the user creates a payment intent, then the correct data is returned', async () => {
+      const createInvoicePayload: CreatePaymentIntentPayload = {
+        customerId: 'cus_123',
+        priceId: 'price_123',
+        token: 'user_mocked_token',
+        currency: 'eur',
+      };
+
+      const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload);
+
+      expect(createInvoiceResponse).toStrictEqual({
+        clientSecret: 'client_secret',
+        id: 'py_id',
+        invoiceStatus: 'paid',
+      });
+    });
+
+    it('When the user creates a payment intent with a promotional code, then the correct data is returned', async () => {
+      const createInvoicePayload: CreatePaymentIntentPayload = {
+        customerId: 'cus_123',
+        priceId: 'price_123',
+        token: 'user_mocked_token',
+        currency: 'eur',
+        promoCodeId: 'promo_code_name',
+      };
+
+      const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload);
+
+      expect(createInvoiceResponse).toStrictEqual({
+        clientSecret: 'client_secret',
+        id: 'py_id',
+        invoiceStatus: 'paid',
+      });
+    });
+  });
+
+  describe('Get the client secret from a payment intent', () => {
     it('When the user wants to purchase a one time payment, then the correct data is returned', async () => {
       const createInvoicePayload = {
         customerId: 'cus_123',

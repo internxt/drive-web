@@ -140,12 +140,11 @@ const getClientSecretForPaymentIntent = async ({
   currency: string;
   promoCode?: string;
 }): Promise<ClientSecretData & { paymentIntentId: string; invoiceStatus?: string }> => {
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
   const {
     clientSecret: client_secret,
     id,
     invoiceStatus,
-  } = await checkoutClient.createPaymentIntent({ customerId, priceId, token, currency, promoCodeId: promoCode });
+  } = await createPaymentIntent({ customerId, priceId, token, currency, promoCodeId: promoCode });
 
   return {
     clientSecretType: 'payment',
@@ -366,6 +365,7 @@ const checkoutService = {
   getClientSecretForSubscriptionIntent,
   getClientSecret,
   getCustomerId,
+  createPaymentIntent,
   getPriceById,
   createSubscription,
   loadStripeElements,
