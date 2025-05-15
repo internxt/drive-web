@@ -127,6 +127,7 @@ interface MockEnvironmentConfig {
 describe('uploadThumbnail', () => {
   const userEmail = 'test@example.com';
   const thumbnailToUpload = {
+    fileId: 1,
     fileUuid: 'uuid-123',
     size: 1024,
     max_width: 100,
