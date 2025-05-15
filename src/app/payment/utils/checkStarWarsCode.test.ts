@@ -29,9 +29,6 @@ describe('isStarWarsThemeAvailable', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    (localStorageService.get as Mock).mockReset();
-    (localStorageService.set as Mock).mockReset();
   });
 
   it('returns true if localStorage has the key set to "true"', async () => {

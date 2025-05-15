@@ -26,7 +26,7 @@ describe('User location function', () => {
     (sdk.getUserLocation as Mock).mockResolvedValue(mockedLocation);
   });
 
-  it('When the user location is requested, then the IP and location (country) are requested', async () => {
+  it('When the user location is requested, then the IP and country are returned', async () => {
     const result = await userLocation();
 
     expect(result).toEqual(mockedLocation);
