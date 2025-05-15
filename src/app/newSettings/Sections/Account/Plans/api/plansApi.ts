@@ -2,7 +2,7 @@ import { Stripe, loadStripe } from '@stripe/stripe-js';
 import envService from '../../../../../core/services/env.service';
 import paymentService from '../../../../../payment/services/payment.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import { getUserLocation } from 'app/utils/userLocationUtils';
+import { userLocation } from 'app/utils/userLocation';
 
 const productValue = {
   US: 'usd',
@@ -19,7 +19,7 @@ const getPlanPrices = async ({
 
 const fetchPlanPrices = async (userType: UserType) => {
   try {
-    const { location } = await getUserLocation();
+    const { location } = await userLocation();
     const currencyValue = productValue[location] || 'eur';
 
     return getPlanPrices({ currencyValue, userType });

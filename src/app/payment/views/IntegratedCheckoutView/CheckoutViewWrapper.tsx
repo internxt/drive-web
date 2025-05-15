@@ -32,7 +32,7 @@ import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutRe
 import { AuthMethodTypes, CouponCodeData } from '../../types';
 import CheckoutView from './CheckoutView';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { getUserLocation } from 'app/utils/userLocationUtils';
+import { userLocation } from 'app/utils/userLocation';
 
 export const THEME_STYLES = {
   dark: {
@@ -140,7 +140,6 @@ const CheckoutViewWrapper = () => {
     setCouponCodeName,
     setError,
     setIsUserPaying,
-    setPlan,
     setPromoCodeData,
     setSelectedPlan,
     setStripeElementsOptions,
@@ -155,7 +154,6 @@ const CheckoutViewWrapper = () => {
   const {
     authMethod,
     currentSelectedPlan,
-    plan,
     avatarBlob,
     userNameFromAddressElement,
     couponCodeData,
@@ -197,7 +195,6 @@ const CheckoutViewWrapper = () => {
       .getStripe()
       .then((stripe) => (stripeSdk = stripe))
       .catch((error) => {
-        console.log(`GET STRIPE ERROR: ${error}`);
         if (user) {
           navigationService.push(AppView.Drive);
         } else {
@@ -219,7 +216,6 @@ const CheckoutViewWrapper = () => {
         }
       })
       .catch((error) => {
-        console.log(`FETCH SELECTED PLAN ERROR: ${error}`);
         if (user) {
           navigationService.push(AppView.Drive);
         } else {
@@ -246,18 +242,21 @@ const CheckoutViewWrapper = () => {
 
       checkoutService
         .getPriceById({ priceId: currentSelectedPlan.price.id, promoCodeName })
-        .then((price) => {
-          setSelectedPlan(price);
-          setPlan(price);
+        .then((priceWithTaxes: PriceWithTax) => {
+          setSelectedPlan(priceWithTaxes);
         })
         .catch(() => {
-          // Handle error
+          if (user) {
+            navigationService.push(AppView.Drive);
+          } else {
+            navigationService.push(AppView.Signup);
+          }
         });
     }
   }, [promoCodeName]);
 
   useEffect(() => {
-    getUserLocation()
+    userLocation()
       .then(({ location }) => {
         if (location !== country && currentSelectedPlan) {
           recalculatePrice(
@@ -270,7 +269,7 @@ const CheckoutViewWrapper = () => {
         }
       })
       .catch(() => {
-        console.log('ERROR GETTING USER LOCATION');
+        // NO OP
       });
   }, [country, postalCode]);
 
@@ -388,7 +387,7 @@ const CheckoutViewWrapper = () => {
       }
 
       const { customerId, token } = await checkoutService.getCustomerId({
-        companyName: customerName,
+        customerName,
         countryCode: country,
         postalCode,
         vatId: companyVatId,
@@ -427,7 +426,7 @@ const CheckoutViewWrapper = () => {
         savePaymentDataInLocalStorage(
           subscriptionId,
           paymentIntentId,
-          plan as PriceWithTax,
+          currentSelectedPlan as PriceWithTax,
           seatsForBusinessSubscription,
           couponCodeData,
         );
@@ -475,7 +474,6 @@ const CheckoutViewWrapper = () => {
 
   const handleFetchSelectedPlan = async (priceId: string, currency?: string) => {
     const plan = await checkoutService.getPriceById({ priceId, currency });
-    setPlan(plan);
     const amount = mobileToken ? { amount: 0, decimalAmount: 0 } : {};
     setSelectedPlan({ ...plan, ...amount });
     if (plan.price?.minimumSeats) {
@@ -513,7 +511,6 @@ const CheckoutViewWrapper = () => {
   ) => {
     const price = await checkoutService.getPriceById({ priceId, currency, promoCodeName, postalCode, country });
     setSelectedPlan(price);
-    setPlan(price);
   };
 
   const handlePromoCodeError = (err: unknown, showNotification?: boolean) => {

@@ -135,7 +135,7 @@ export class SdkFactory {
     const optionalHeaders = ipAddress ? { 'X-Real-Ip': ipAddress } : undefined;
     const appDetails = SdkFactory.getAppDetails(optionalHeaders);
 
-    const newToken = SdkFactory.sdk.localStorage.get('xNewToken');
+    const newToken = this.getNewApiSecurity().token;
 
     const apiSecurity = { ...this.getApiSecurity(), token: newToken ?? '' };
 

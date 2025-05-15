@@ -6,7 +6,7 @@ import axios from 'axios';
 import localStorageService from 'app/core/services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { CreatePaymentIntentPayload, PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { getUserLocation } from 'app/utils/userLocationUtils';
+import { userLocation } from 'app/utils/userLocation';
 
 const PAYMENTS_API_URL = process.env.REACT_APP_PAYMENTS_API_URL;
 const BORDER_SHADOW = 'rgb(0 102 255)';
@@ -32,14 +32,14 @@ const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: stri
 };
 
 const getCustomerId = async ({
+  customerName,
   countryCode,
   postalCode,
-  companyName,
   vatId,
 }: {
+  customerName: string;
   countryCode: string;
   postalCode: string;
-  companyName?: string;
   vatId?: string;
 }): Promise<{
   customerId: string;
@@ -47,9 +47,9 @@ const getCustomerId = async ({
 }> => {
   const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
   return checkoutClient.getCustomerId({
+    name: customerName,
     country: countryCode,
     postalCode,
-    companyName,
     companyVatId: vatId,
   });
 };
@@ -67,7 +67,7 @@ const getPriceById = async ({
   postalCode?: string;
   country?: string;
 }): Promise<PriceWithTax> => {
-  const { ip } = await getUserLocation();
+  const { ip } = await userLocation();
   const checkoutClient = await SdkFactory.getInstance().createCheckoutClient(ip);
   return checkoutClient.getPriceById({ priceId, promoCodeName, currency, postalCode, country });
 };
