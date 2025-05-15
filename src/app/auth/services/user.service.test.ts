@@ -1,9 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import localStorageService from 'app/core/services/local-storage.service';
 import userService from './user.service';
 
 const testToken = 'testToken';
 const testEmail = 'test@initnxt.com';
+
+vi.mock('app/core/services/local-storage.service', () => ({
+  default: {
+    get: vi.fn(() => testToken),
+    set: vi.fn(),
+    clear: vi.fn(),
+  },
+  STORAGE_KEYS: {},
+}));
 
 const usersClientMock = {
   initialize: vi.fn(),
@@ -25,7 +33,6 @@ const authClientMock = {
   sendUserDeactivationEmail: vi.fn(),
 };
 
-vi.spyOn(localStorageService, 'get').mockReturnValue(testToken);
 vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(() => ({
@@ -109,7 +116,7 @@ describe('userService', () => {
   it('should send a verification email', async () => {
     usersClientMock.sendVerificationEmail.mockResolvedValue({ success: true });
     await userService.sendVerificationEmail();
-    expect(usersClientMock.sendVerificationEmail).toHaveBeenCalled();
+    expect(usersClientMock.sendVerificationEmail).toHaveBeenCalledWith(testToken);
   });
 
   it('should get public key by email', async () => {

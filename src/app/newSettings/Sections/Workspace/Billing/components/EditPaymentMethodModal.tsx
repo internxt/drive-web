@@ -7,7 +7,7 @@ import paymentService from 'app/payment/services/payment.service';
 import useEffectAsync from 'app/core/hooks/useEffectAsync';
 
 import EditPaymentMethodForm from './EditPaymentMethodForm';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Loader, Modal } from '@internxt/ui';
 
 interface EditPaymentMethodModalProps {

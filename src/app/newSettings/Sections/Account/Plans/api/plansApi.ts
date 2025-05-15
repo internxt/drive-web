@@ -2,7 +2,7 @@ import { Stripe, loadStripe } from '@stripe/stripe-js';
 import envService from '../../../../../core/services/env.service';
 import errorService from '../../../../../core/services/error.service';
 import paymentService from '../../../../../payment/services/payment.service';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
 const COUNTRY_API = process.env.REACT_APP_COUNTRY_API_URL;
 const productValue = {

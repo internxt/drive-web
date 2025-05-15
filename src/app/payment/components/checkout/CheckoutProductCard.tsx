@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Switch, Transition } from '@headlessui/react';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Check, SealPercent, X } from '@phosphor-icons/react';
 
 import { bytesToString } from '../../../drive/services/size.service';
