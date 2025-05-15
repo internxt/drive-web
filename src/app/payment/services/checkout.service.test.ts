@@ -35,6 +35,11 @@ vi.mock('../../core/factory/sdk', () => ({
           subscriptionId: 'sub_123',
           paymentIntentId: 'py_123',
         }),
+        createPaymentIntent: vi.fn().mockResolvedValue({
+          clientSecret: 'client_secret',
+          id: 'py_id',
+          invoiceStatus: 'paid',
+        }),
       }),
     }),
   },
@@ -157,7 +162,42 @@ describe('Checkout Service tests', () => {
     });
   });
 
-  describe('Create customer one time payment', () => {
-    it('When the user wants to purchase a one time payment, then the correct data is returned', async () => {});
+  describe('Create one time payment for customer', () => {
+    it('When the user wants to purchase a one time payment, then the correct data is returned', async () => {
+      const createInvoicePayload = {
+        customerId: 'cus_123',
+        priceId: 'price_123',
+        token: 'user_mocked_token',
+        currency: 'eur',
+      };
+
+      const createInvoiceResponse = await checkoutService.getClientSecretForPaymentIntent(createInvoicePayload);
+
+      expect(createInvoiceResponse).toStrictEqual({
+        clientSecretType: 'payment',
+        client_secret: 'client_secret',
+        paymentIntentId: 'py_id',
+        invoiceStatus: 'paid',
+      });
+    });
+
+    it('When the user wants to purchase a one time payment with a promotional code, then the correct data is returned', async () => {
+      const createInvoicePayload = {
+        customerId: 'cus_123',
+        priceId: 'price_123',
+        token: 'user_mocked_token',
+        currency: 'eur',
+        promoCodeId: 'promo_code_name',
+      };
+
+      const createInvoiceResponse = await checkoutService.getClientSecretForPaymentIntent(createInvoicePayload);
+
+      expect(createInvoiceResponse).toStrictEqual({
+        clientSecretType: 'payment',
+        client_secret: 'client_secret',
+        paymentIntentId: 'py_id',
+        invoiceStatus: 'paid',
+      });
+    });
   });
 });
