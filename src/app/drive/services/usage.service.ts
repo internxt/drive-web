@@ -1,4 +1,4 @@
-import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
+import { UsageResponseV2 } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 
@@ -8,7 +8,7 @@ export interface UsageDetailsProps {
   backups: number;
 }
 
-export async function fetchUsage(): Promise<UsageResponse> {
+export async function fetchUsage(): Promise<UsageResponseV2> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   const driveUsage = await storageClient.spaceUsageV2();
 
