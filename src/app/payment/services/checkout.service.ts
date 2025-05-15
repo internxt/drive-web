@@ -1,11 +1,21 @@
-import { CreatedSubscriptionData, DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import {
+  CreatedPaymentIntent,
+  CreatedSubscriptionData,
+  DisplayPrice,
+  UserType,
+} from '@internxt/sdk/dist/drive/payments/types/types';
 import { StripeElementsOptions } from '@stripe/stripe-js';
 import paymentService from '../../payment/services/payment.service';
 import { ClientSecretData, CouponCodeData } from '../types';
 import axios from 'axios';
 import localStorageService from 'app/core/services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
-import { CreatePaymentIntentPayload, PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import {
+  CreatePaymentIntentPayload,
+  CreateSubscriptionPayload,
+  GetPriceByIdPayload,
+  PriceWithTax,
+} from '@internxt/sdk/dist/payments/types';
 import { userLocation } from 'app/utils/userLocation';
 
 const PAYMENTS_API_URL = process.env.REACT_APP_PAYMENTS_API_URL;
@@ -47,7 +57,7 @@ const getCustomerId = async ({
 }> => {
   const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
   return checkoutClient.getCustomerId({
-    name: customerName,
+    customerName,
     country: countryCode,
     postalCode,
     companyVatId: vatId,
@@ -60,13 +70,7 @@ const getPriceById = async ({
   currency,
   postalCode,
   country,
-}: {
-  priceId: string;
-  promoCodeName?: string;
-  currency?: string;
-  postalCode?: string;
-  country?: string;
-}): Promise<PriceWithTax> => {
+}: GetPriceByIdPayload): Promise<PriceWithTax> => {
   const { ip } = await userLocation();
   const checkoutClient = await SdkFactory.getInstance().createCheckoutClient(ip);
   return checkoutClient.getPriceById({ priceId, promoCodeName, currency, postalCode, country });
@@ -79,7 +83,7 @@ const createSubscription = async ({
   currency,
   promoCodeId,
   quantity,
-}): Promise<CreatedSubscriptionData> => {
+}: CreateSubscriptionPayload): Promise<CreatedSubscriptionData> => {
   const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
   return checkoutClient.createSubscription({
     customerId,
@@ -97,7 +101,7 @@ export const createPaymentIntent = async ({
   token,
   currency,
   promoCodeId,
-}: CreatePaymentIntentPayload): Promise<{ clientSecret: string; id: string; invoiceStatus?: string }> => {
+}: CreatePaymentIntentPayload): Promise<CreatedPaymentIntent> => {
   const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
   return checkoutClient.createPaymentIntent({
     customerId,

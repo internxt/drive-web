@@ -1,4 +1,4 @@
-import { envConfig } from 'config';
+import { envConfig } from '../../config';
 import { getUserLocation, UserLocation } from '@internxt/sdk';
 
 export const userLocation = (): Promise<UserLocation> => {
