@@ -26,11 +26,18 @@ vi.mock('../../core/factory/sdk', () => ({
   },
 }));
 
-vi.mock('./size.service', () => ({
-  bytesToString: (size) => {
+vi.mock('./size.service', () => {
+  const bytesToStringMock = (size) => {
     return size > 0 ? 'formatted-size' : '';
-  },
-}));
+  };
+
+  return {
+    bytesToString: bytesToStringMock,
+    default: {
+      bytesToString: bytesToStringMock,
+    },
+  };
+});
 
 describe('limitService', () => {
   const mockStorageClient = {
