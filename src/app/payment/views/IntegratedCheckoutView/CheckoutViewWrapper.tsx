@@ -197,7 +197,7 @@ const CheckoutViewWrapper = () => {
       .getStripe()
       .then((stripe) => (stripeSdk = stripe))
       .catch((error) => {
-        errorService.reportError(error);
+        console.log(`GET STRIPE ERROR: ${error}`);
         if (user) {
           navigationService.push(AppView.Drive);
         } else {
@@ -219,7 +219,7 @@ const CheckoutViewWrapper = () => {
         }
       })
       .catch((error) => {
-        errorService.reportError(error);
+        console.log(`FETCH SELECTED PLAN ERROR: ${error}`);
         if (user) {
           navigationService.push(AppView.Drive);
         } else {

@@ -93,11 +93,6 @@ export const CheckoutProductCard = ({
           )}`;
 
   const planAmountWithoutTaxes = getProductAmount(selectedPlan.price.decimalAmount, 1, couponCodeData);
-  const totalAmountWithTaxes = getProductAmount(
-    selectedPlan.taxes.decimalAmountWithTax,
-    seatsForBusinessSubscription,
-    couponCodeData,
-  );
 
   const discountPercentage =
     couponCodeData?.amountOff && couponCodeData?.amountOff < selectedPlan.taxes.amountWithTax
@@ -136,8 +131,6 @@ export const CheckoutProductCard = ({
 
     return map[capacityToKey[bytes]] || map.FREE;
   };
-
-  console.log('selectedPlan', { selectedPlan });
 
   const getPlanLabelFeaturePath = () => {
     if (couponCodeData?.codeName === 'PCCOMPONENTES') {
@@ -246,7 +239,7 @@ export const CheckoutProductCard = ({
             <p>{textContent.totalLabel}</p>
             <p>
               {currencySymbol}
-              {totalAmountWithTaxes}
+              {selectedPlan.taxes.decimalAmountWithTax * seatsForBusinessSubscription}
             </p>
           </div>
 
