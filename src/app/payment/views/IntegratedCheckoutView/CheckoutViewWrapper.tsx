@@ -147,7 +147,6 @@ const CheckoutViewWrapper = () => {
     setStripeElementsOptions,
     setUserNameFromElementAddress,
     setSeatsForBusinessSubscription,
-    setIsUpsellSwitchActivated,
     setPrices,
     setIsCheckoutReadyToRender,
     setIsUpdateSubscriptionDialogOpen,
