@@ -8,7 +8,7 @@ import { AuthMethodTypes } from '../../types';
 import { CheckoutUserAuth } from '../../components/checkout/CheckoutUserAuth';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
-import { CheckoutViewManager, UserInfoProps } from './CheckoutViewWrapper';
+import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
 import { State } from 'app/payment/store/types';
 import { LegacyRef } from 'react';
 import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
@@ -31,6 +31,7 @@ interface CheckoutViewProps {
   userInfo: UserInfoProps;
   isUserAuthenticated: boolean;
   showHardcodedRenewal?: string;
+  upsellManager: UpsellManagerProps;
   showCouponCode: boolean;
   userAuthComponentRef: LegacyRef<HTMLDivElement>;
   checkoutViewVariables: State;
@@ -46,6 +47,7 @@ const CheckoutView = ({
   isUserAuthenticated,
   showCouponCode,
   showHardcodedRenewal,
+  upsellManager,
   userAuthComponentRef,
   checkoutViewVariables,
   checkoutViewManager,
@@ -153,6 +155,7 @@ const CheckoutView = ({
                   showCouponCode={showCouponCode}
                   couponError={error?.coupon}
                   seatsForBusinessSubscription={seatsForBusinessSubscription}
+                  upsellManager={upsellManager}
                   onSeatsChange={checkoutViewManager.onSeatsChange}
                   onCouponInputChange={checkoutViewManager.onCouponInputChange}
                   onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}

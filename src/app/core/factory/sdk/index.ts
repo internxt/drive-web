@@ -131,9 +131,8 @@ export class SdkFactory {
     return Payments.client(process.env.REACT_APP_PAYMENTS_API_URL, appDetails, apiSecurity);
   }
 
-  public async createCheckoutClient(ipAddress?: string): Promise<Checkout> {
-    const optionalHeaders = ipAddress ? { 'X-Real-Ip': ipAddress } : undefined;
-    const appDetails = SdkFactory.getAppDetails(optionalHeaders);
+  public async createCheckoutClient(): Promise<Checkout> {
+    const appDetails = SdkFactory.getAppDetails();
 
     const newToken = this.getNewApiSecurity().token;
 
@@ -179,13 +178,10 @@ export class SdkFactory {
     return this.apiUrl;
   }
 
-  private static getAppDetails(customHeaders?: Record<string, string>): AppDetails {
+  private static getAppDetails(): AppDetails {
     return {
       clientName: packageJson.name,
       clientVersion: packageJson.version,
-      customHeaders: {
-        ...customHeaders,
-      },
     };
   }
 
