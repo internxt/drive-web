@@ -1,10 +1,11 @@
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
-import { AuthMethodTypes, CouponCodeData, PartialErrorState, PlanData, RequestedPlanData } from '../types';
+import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types/types';
+import { AuthMethodTypes, CouponCodeData, PartialErrorState } from '../types';
 import { StripeElementsOptions } from '@stripe/stripe-js';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 
 export interface State {
-  plan: PlanData | null;
-  currentSelectedPlan: RequestedPlanData | null;
+  plan: PriceWithTax | null;
+  currentSelectedPlan: PriceWithTax | null;
   avatarBlob: Blob | null;
   isPaying: boolean;
   isUpsellSwitchActivated: boolean;
@@ -23,8 +24,8 @@ export interface State {
 }
 
 export type Action =
-  | { type: 'SET_PLAN'; payload: PlanData }
-  | { type: 'SET_CURRENT_PLAN_SELECTED'; payload: RequestedPlanData }
+  | { type: 'SET_PLAN'; payload: PriceWithTax }
+  | { type: 'SET_CURRENT_PLAN_SELECTED'; payload: PriceWithTax }
   | { type: 'SET_AVATAR_BLOB'; payload: Blob | null }
   | { type: 'SET_IS_PAYING'; payload: boolean }
   | { type: 'SET_IS_UPSELL_SWITCH_ACTIVATED'; payload: boolean }

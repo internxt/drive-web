@@ -301,7 +301,8 @@
       },
       "apply": "Anwenden",
       "amountSaved": "Sparen ",
-      "withAnnualBilling": "mit jährlicher Abrechnung"
+      "withAnnualBilling": "mit jährlicher Abrechnung",
+      "taxes": "Steuern"
     }
   },
   "general": {

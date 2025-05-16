@@ -226,7 +226,7 @@
       "saving": "Vous économisez {{percent}}%",
       "planDetails": {
         "title": "Détails du plan :",
-         "commingSoon":"Bientôt disponible",
+        "commingSoon":"Bientôt disponible",
         "features": {
           "individuals": {
             "1TB": {
@@ -307,7 +307,8 @@
       },
       "apply": "Appliquer",
       "amountSaved": "Économisez ",
-      "withAnnualBilling": "avec facturation annuelle"
+      "withAnnualBilling": "avec facturation annuelle",
+      "taxes": "Taxes"
     }
   },
   "general": {

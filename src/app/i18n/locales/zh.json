@@ -243,7 +243,7 @@
       "saving": "您节省了 {{percent}}%",
       "planDetails": {
         "title": "计划详情：",
-         "commingSoon":"即将推出",
+        "commingSoon":"即将推出",
         "features": {
           "1TB": {
             "feature1":"1TB 零知识加密存储",
@@ -312,8 +312,8 @@
             "feature11":"最多 10 人會議",
             "feature12":"每用戶 2 個自訂電子郵件地址"
           }
-          
         }
+          
       },
       "total": "总计",
       "totalForBusiness": "总计 {{N}} 用户：",
@@ -323,7 +323,8 @@
       },
       "apply": "应用",
       "amountSaved": "节省 ",
-      "withAnnualBilling": "按年计费"
+      "withAnnualBilling": "按年计费",
+      "taxes": "税费"
     }
   },
   "general": {

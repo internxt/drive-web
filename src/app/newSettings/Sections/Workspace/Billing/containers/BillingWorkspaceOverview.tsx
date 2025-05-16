@@ -5,7 +5,7 @@ import { bytesToString } from '../../../../../drive/services/size.service';
 
 import Card from 'app/shared/components/Card';
 
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { PlanState } from 'app/store/slices/plan';
 import { getNextBillingDate, getSubscriptionData } from '../../../../utils/suscriptionUtils';
 

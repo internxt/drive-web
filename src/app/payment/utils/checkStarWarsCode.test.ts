@@ -1,10 +1,23 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { isStarWarsThemeAvailable, STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY } from './checkStarWarsCode';
 import localStorageService from 'app/core/services/local-storage.service';
 import paymentService from '../services/payment.service';
 import errorService from 'app/core/services/error.service';
 
-vi.mock('app/core/services/local-storage.service');
+vi.mock('app/core/services/local-storage.service', async () => {
+  const actual = await vi.importActual<typeof import('app/core/services/local-storage.service')>(
+    'app/core/services/local-storage.service',
+  );
+
+  return {
+    ...actual,
+    default: {
+      ...actual.default,
+      get: vi.fn(),
+      set: vi.fn(),
+    },
+  };
+});
 vi.mock('../services/payment.service');
 vi.mock('app/core/services/error.service');
 
@@ -15,20 +28,23 @@ describe('isStarWarsThemeAvailable', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
+
+    (localStorageService.get as Mock).mockReset();
+    (localStorageService.set as Mock).mockReset();
   });
 
   it('returns true if localStorage has the key set to "true"', async () => {
-    (localStorageService.get as any).mockReturnValue('true');
+    (localStorageService.get as Mock).mockReturnValue('true');
     const result = await isStarWarsThemeAvailable(planBase as any);
     expect(result).toBe(true);
   });
 
   it('returns true and sets localStorage if coupon is used for subscription', async () => {
-    (localStorageService.get as any).mockReturnValue(undefined);
+    (localStorageService.get as Mock).mockReturnValue(undefined);
     (paymentService.isCouponUsedByUser as any).mockResolvedValue({ couponUsed: true });
     const plan = { ...planBase, individualSubscription: { type: 'subscription' } };
-    const onSuccess = vi.fn();
+    const onSuccess = vi.fn().mockResolvedValue(() => Promise.resolve());
 
     const result = await isStarWarsThemeAvailable(plan as any, onSuccess);
 
@@ -38,7 +54,7 @@ describe('isStarWarsThemeAvailable', () => {
   });
 
   it('returns false if coupon is not used for subscription', async () => {
-    (localStorageService.get as any).mockReturnValue(undefined);
+    (localStorageService.get as Mock).mockReturnValue(undefined);
     (paymentService.isCouponUsedByUser as any).mockResolvedValue({ couponUsed: false });
     const plan = { ...planBase, businessSubscription: { type: 'subscription' } };
 
@@ -49,10 +65,10 @@ describe('isStarWarsThemeAvailable', () => {
   });
 
   it('returns true and sets localStorage if coupon is used for lifetime', async () => {
-    (localStorageService.get as any).mockReturnValue(undefined);
+    (localStorageService.get as Mock).mockReturnValue(undefined);
     (paymentService.isCouponUsedByUser as any).mockResolvedValue({ couponUsed: true });
     const plan = { ...planBase, individualSubscription: { type: 'lifetime' } };
-    const onSuccess = vi.fn();
+    const onSuccess = vi.fn().mockResolvedValue(() => Promise.resolve());
 
     const result = await isStarWarsThemeAvailable(plan as any, onSuccess);
 
@@ -62,7 +78,7 @@ describe('isStarWarsThemeAvailable', () => {
   });
 
   it('returns false if coupon is not used for lifetime', async () => {
-    (localStorageService.get as any).mockReturnValue(undefined);
+    (localStorageService.get as Mock).mockReturnValue(undefined);
     (paymentService.isCouponUsedByUser as any).mockResolvedValue({ couponUsed: false });
     const plan = { ...planBase, businessSubscription: { type: 'lifetime' } };
 
@@ -73,7 +89,7 @@ describe('isStarWarsThemeAvailable', () => {
   });
 
   it('calls errorService.reportError and returns false on error', async () => {
-    (localStorageService.get as any).mockReturnValue(undefined);
+    (localStorageService.get as Mock).mockReturnValue(undefined);
     (paymentService.isCouponUsedByUser as any).mockRejectedValue(new Error('fail'));
     const plan = { ...planBase, individualSubscription: { type: 'subscription' } };
 
@@ -84,7 +100,7 @@ describe('isStarWarsThemeAvailable', () => {
   });
 
   it('returns false if no subscription or lifetime', async () => {
-    (localStorageService.get as any).mockReturnValue(undefined);
+    (localStorageService.get as Mock).mockReturnValue(undefined);
     const plan = { ...planBase };
 
     const result = await isStarWarsThemeAvailable(plan as any);

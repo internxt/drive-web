@@ -1,4 +1,4 @@
-import { Invoice, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { Invoice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { useTranslationContext } from '../../i18n/provider/TranslationProvider';
 import Section from '../Sections/General/components/Section';
 import Card from '../../shared/components/Card';

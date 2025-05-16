@@ -1,4 +1,4 @@
-import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { ArrowRight } from '@phosphor-icons/react';
 import { useSelector } from 'react-redux';
 import { bytesToString } from '../../../../../drive/services/size.service';

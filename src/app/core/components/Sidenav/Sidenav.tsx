@@ -18,7 +18,7 @@ import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
+import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types/types';
 import { t } from 'i18next';
 import { Loader } from '@internxt/ui';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
