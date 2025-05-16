@@ -6,6 +6,7 @@ import {
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
 } from '@internxt/sdk/dist/payments/types';
+import { StripeElementsOptions } from '@stripe/stripe-js';
 
 vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
@@ -44,6 +45,7 @@ vi.mock('../../core/factory/sdk', () => ({
           id: 'py_id',
           invoiceStatus: 'paid',
         }),
+        fetchPrices: vi.fn().mockResolvedValue([{ id: 'price_1', currency: 'eur', amount: 1000 }]),
       }),
     }),
   },
@@ -238,6 +240,75 @@ describe('Checkout Service tests', () => {
         client_secret: 'client_secret',
         paymentIntentId: 'py_id',
         invoiceStatus: 'paid',
+      });
+    });
+  });
+
+  describe('Fetch promotion code by name', () => {
+    it('When a valid promo code is passed, then it returns correct promo data', async () => {
+      vi.spyOn(checkoutService, 'fetchPromotionCodeByName').mockResolvedValue({
+        codeId: 'promo_123',
+        codeName: 'PROMO',
+        amountOff: 500,
+        percentOff: undefined,
+      });
+      const result = await checkoutService.fetchPromotionCodeByName('price_123', 'PROMO');
+      expect(result).toEqual({
+        codeId: 'promo_123',
+        codeName: 'PROMO',
+        amountOff: 500,
+        percentOff: undefined,
+      });
+    });
+  });
+
+  describe('Loading Stripe Elements Options', () => {
+    const plan = {
+      price: {
+        interval: 'lifetime',
+        currency: 'eur',
+      },
+      taxes: {
+        amountWithTax: 1499,
+      },
+    };
+
+    const theme = {
+      backgroundColor: '#ffffff',
+      textColor: '#000000',
+      borderColor: '#cccccc',
+      borderInputColor: '#dddddd',
+      labelTextColor: '#333333',
+    };
+
+    it('When Stripe needs to be initialized, it is loaded using the appropriate environment configuration', async () => {
+      const onLoadElements = vi.fn();
+
+      await checkoutService.loadStripeElements(theme, onLoadElements, plan as any);
+
+      expect(onLoadElements).toHaveBeenCalledTimes(1);
+
+      const options = onLoadElements.mock.calls[0][0] as StripeElementsOptions;
+
+      expect(options).toMatchObject({
+        appearance: expect.objectContaining({
+          labels: 'above',
+          variables: {
+            spacingAccordionItem: '8px',
+            colorPrimary: theme.textColor,
+          },
+          theme: 'flat',
+        }),
+        mode: 'payment',
+        amount: 1499,
+        currency: 'eur',
+        payment_method_types: ['card', 'paypal'],
+      });
+
+      // Opcional: verificar reglas específicas
+      expect(options.appearance?.rules?.['.Input']).toMatchObject({
+        backgroundColor: theme.backgroundColor,
+        color: theme.textColor,
       });
     });
   });
