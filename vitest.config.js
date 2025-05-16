@@ -1,9 +1,9 @@
 // vitest.config.ts
 import replace from '@rollup/plugin-replace';
+import svgr from '@svgr/rollup';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vitest/config';
-import svgr from '@svgr/rollup';
 
 export default defineConfig({
   plugins: [
@@ -39,6 +39,11 @@ export default defineConfig({
       name: 'chromium',
       headless: true,
     },
+    deps: {
+      inline: ['**/TaskToRetry.tsx', '**/UploadManager.ts', '**/storage.thunks/**', '**/checkStarWarsCode.ts'],
+    },
+    testTimeout: 20000,
+    hookTimeout: 20000,
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'lcov'],

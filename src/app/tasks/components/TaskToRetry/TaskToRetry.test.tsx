@@ -1,10 +1,9 @@
-import { render, fireEvent } from '@testing-library/react';
-import { describe, it, vi, expect, beforeEach } from 'vitest';
-import * as reduxActionsHook from 'app/store/slices/storage/hooks/useReduxActions';
+import { fireEvent, render } from '@testing-library/react';
 import * as translationProvider from 'app/i18n/provider/TranslationProvider';
-import TaskToRetry from './TaskToRetry';
 import RetryManager, { RetryableTask } from 'app/network/RetryManager';
-import { Avatar } from '@internxt/ui';
+import * as reduxActionsHook from 'app/store/slices/storage/hooks/useReduxActions';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import TaskToRetry from './TaskToRetry';
 
 vi.mock('app/store/hooks', () => ({
   useAppDispatch: vi.fn(),
