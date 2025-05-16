@@ -1,5 +1,3 @@
-// src/config.ts
-
 function getEnvVar(name: string, required = true): string {
   const value = process.env[name];
   if (!value && required) {

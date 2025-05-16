@@ -1,4 +1,3 @@
-// __tests__/checkoutService.test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import checkoutService from './checkout.service';
 import {

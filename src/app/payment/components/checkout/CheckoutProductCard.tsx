@@ -15,6 +15,7 @@ import { SelectSeatsComponent } from './SelectSeatsComponent';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { UpsellManagerProps } from 'app/payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
+import { formatPrice } from 'app/payment/utils/formatPrice';
 
 interface CheckoutProductCardProps {
   selectedPlan: PriceWithTax;
@@ -246,7 +247,7 @@ export const CheckoutProductCard = ({
             <p>{textContent.totalLabel}</p>
             <p>
               {currencySymbol}
-              {selectedPlan.taxes.decimalAmountWithTax * seatsForBusinessSubscription}
+              {formatPrice(selectedPlan.taxes.decimalAmountWithTax * seatsForBusinessSubscription)}
             </p>
           </div>
 
