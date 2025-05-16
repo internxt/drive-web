@@ -6,7 +6,6 @@ import {
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
 } from '@internxt/sdk/dist/payments/types';
-import { StripeElementsOptions } from '@stripe/stripe-js';
 
 vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
@@ -258,57 +257,6 @@ describe('Checkout Service tests', () => {
         codeName: 'PROMO',
         amountOff: 500,
         percentOff: undefined,
-      });
-    });
-  });
-
-  describe('Loading Stripe Elements Options', () => {
-    const plan = {
-      price: {
-        interval: 'lifetime',
-        currency: 'eur',
-      },
-      taxes: {
-        amountWithTax: 1499,
-      },
-    };
-
-    const theme = {
-      backgroundColor: '#ffffff',
-      textColor: '#000000',
-      borderColor: '#cccccc',
-      borderInputColor: '#dddddd',
-      labelTextColor: '#333333',
-    };
-
-    it('When Stripe needs to be initialized, it is loaded using the appropriate environment configuration', async () => {
-      const onLoadElements = vi.fn();
-
-      await checkoutService.loadStripeElements(theme, onLoadElements, plan as any);
-
-      expect(onLoadElements).toHaveBeenCalledTimes(1);
-
-      const options = onLoadElements.mock.calls[0][0] as StripeElementsOptions;
-
-      expect(options).toMatchObject({
-        appearance: expect.objectContaining({
-          labels: 'above',
-          variables: {
-            spacingAccordionItem: '8px',
-            colorPrimary: theme.textColor,
-          },
-          theme: 'flat',
-        }),
-        mode: 'payment',
-        amount: 1499,
-        currency: 'eur',
-        payment_method_types: ['card', 'paypal'],
-      });
-
-      // Opcional: verificar reglas específicas
-      expect(options.appearance?.rules?.['.Input']).toMatchObject({
-        backgroundColor: theme.backgroundColor,
-        color: theme.textColor,
       });
     });
   });

@@ -190,13 +190,15 @@ export const CheckoutProductCard = ({
             </p>
           </div>
 
-          <div className="flex flex-row items-center justify-between text-gray-100">
-            <p className="font-medium">{translate('checkout.productCard.taxes')}</p>
-            <p className="font-semibold">
-              {currencySymbol}
-              {selectedPlan.taxes.decimalTax}
-            </p>
-          </div>
+          {selectedPlan.taxes.decimalTax > 0 && (
+            <div className="flex flex-row items-center justify-between text-gray-100">
+              <p className="font-medium">{translate('checkout.productCard.taxes')}</p>
+              <p className="font-semibold">
+                {currencySymbol}
+                {selectedPlan.taxes.decimalTax}
+              </p>
+            </div>
+          )}
           {couponCodeData && (
             <div className="flex flex-row items-center justify-between font-semibold">
               <div className="flex flex-row items-center space-x-2 text-green-dark">

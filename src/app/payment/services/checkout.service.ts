@@ -4,7 +4,6 @@ import {
   DisplayPrice,
   UserType,
 } from '@internxt/sdk/dist/drive/payments/types/types';
-import { StripeElementsOptions } from '@stripe/stripe-js';
 import paymentService from '../../payment/services/payment.service';
 import { ClientSecretData, CouponCodeData } from '../types';
 import axios from 'axios';
@@ -16,7 +15,6 @@ import {
   GetPriceByIdPayload,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
-import { userLocation } from 'app/utils/userLocation';
 
 const PAYMENTS_API_URL = process.env.REACT_APP_PAYMENTS_API_URL;
 const BORDER_SHADOW = 'rgb(0 102 255)';
@@ -67,13 +65,20 @@ const getCustomerId = async ({
 const getPriceById = async ({
   priceId,
   promoCodeName,
+  userAddress,
   currency,
   postalCode,
   country,
 }: GetPriceByIdPayload): Promise<PriceWithTax> => {
-  const { ip } = await userLocation();
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient(ip);
-  return checkoutClient.getPriceById({ priceId, promoCodeName, currency, postalCode, country });
+  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
+  return checkoutClient.getPriceById({
+    priceId,
+    userAddress,
+    promoCodeName,
+    currency,
+    postalCode,
+    country,
+  });
 };
 
 const createSubscription = async ({
@@ -295,12 +300,11 @@ const loadStripeElements = async (
     borderInputColor: string;
     labelTextColor: string;
   },
-  onLoadElements: (stripeElementsOptions: StripeElementsOptions) => void,
   plan: PriceWithTax,
 ) => {
   const { backgroundColor, textColor, borderColor, borderInputColor, labelTextColor } = theme;
 
-  const stripeElementsOptions: StripeElementsOptions = {
+  return {
     appearance: {
       labels: 'above',
       variables: {
@@ -355,8 +359,6 @@ const loadStripeElements = async (
     currency: plan.price?.currency,
     payment_method_types: ['card', 'paypal'],
   };
-
-  onLoadElements(stripeElementsOptions);
 };
 
 const checkoutService = {
