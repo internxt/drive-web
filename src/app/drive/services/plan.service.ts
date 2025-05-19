@@ -1,4 +1,4 @@
-import { StoragePlan } from '@internxt/sdk/dist/drive/payments/types/types';
+import { StoragePlan } from '@internxt/sdk/dist/drive/payments/types';
 import httpService from '../../core/services/http.service';
 import { Workspace } from '../../core/types';
 

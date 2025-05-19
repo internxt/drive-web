@@ -1,23 +1,29 @@
-import {
-  CreatedPaymentIntent,
-  CreatedSubscriptionData,
-  DisplayPrice,
-  UserType,
-} from '@internxt/sdk/dist/drive/payments/types/types';
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { StripeElementsOptions } from '@stripe/stripe-js';
 import paymentService from '../../payment/services/payment.service';
-import { ClientSecretData, CouponCodeData } from '../types';
+import { ClientSecretData, CouponCodeData, PlanData, RequestedPlanData } from '../types';
 import axios from 'axios';
 import localStorageService from 'app/core/services/local-storage.service';
-import { SdkFactory } from 'app/core/factory/sdk';
-import {
-  CreatePaymentIntentPayload,
-  CreateSubscriptionPayload,
-  GetPriceByIdPayload,
-  PriceWithTax,
-} from '@internxt/sdk/dist/payments/types';
 
 const PAYMENTS_API_URL = process.env.REACT_APP_PAYMENTS_API_URL;
 const BORDER_SHADOW = 'rgb(0 102 255)';
+
+const fetchPlanById = async (priceId: string, currency?: string): Promise<PlanData> => {
+  const response = await fetch(
+    `${process.env.REACT_APP_PAYMENTS_API_URL}/plan-by-id?planId=${priceId}&currency=${currency}`,
+    {
+      method: 'GET',
+    },
+  );
+
+  if (response.status !== 200) {
+    throw new Error('Plan not found');
+  }
+
+  const data = await response.json();
+
+  return data;
+};
 
 const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: string): Promise<CouponCodeData> => {
   const response = await fetch(
@@ -39,84 +45,6 @@ const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: stri
   };
 };
 
-const getCustomerId = async ({
-  customerName,
-  countryCode,
-  postalCode,
-  vatId,
-}: {
-  customerName: string;
-  countryCode: string;
-  postalCode: string;
-  vatId?: string;
-}): Promise<{
-  customerId: string;
-  token: string;
-}> => {
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
-  return checkoutClient.getCustomerId({
-    customerName,
-    country: countryCode,
-    postalCode,
-    companyVatId: vatId,
-  });
-};
-
-const getPriceById = async ({
-  priceId,
-  promoCodeName,
-  userAddress,
-  currency,
-  postalCode,
-  country,
-}: GetPriceByIdPayload): Promise<PriceWithTax> => {
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
-  return checkoutClient.getPriceById({
-    priceId,
-    userAddress,
-    promoCodeName,
-    currency,
-    postalCode,
-    country,
-  });
-};
-
-const createSubscription = async ({
-  customerId,
-  priceId,
-  token,
-  currency,
-  promoCodeId,
-  quantity,
-}: CreateSubscriptionPayload): Promise<CreatedSubscriptionData> => {
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
-  return checkoutClient.createSubscription({
-    customerId,
-    priceId,
-    token,
-    currency,
-    promoCodeId,
-    quantity,
-  });
-};
-
-export const createPaymentIntent = async ({
-  customerId,
-  priceId,
-  token,
-  currency,
-  promoCodeId,
-}: CreatePaymentIntentPayload): Promise<CreatedPaymentIntent> => {
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
-  return checkoutClient.createPaymentIntent({
-    customerId,
-    priceId,
-    token,
-    currency,
-    promoCodeId,
-  });
-};
-
 const fetchPrices = async (userType: UserType, currency: string): Promise<DisplayPrice[]> => {
   const response = await fetch(
     `${process.env.REACT_APP_PAYMENTS_API_URL}/prices?userType=${userType}&currency=${currency}`,
@@ -134,12 +62,14 @@ const fetchPrices = async (userType: UserType, currency: string): Promise<Displa
 
 const getClientSecretForPaymentIntent = async ({
   customerId,
+  amount,
   priceId,
   token,
   currency,
   promoCode,
 }: {
   customerId: string;
+  amount: number;
   priceId: string;
   token: string;
   currency: string;
@@ -149,7 +79,7 @@ const getClientSecretForPaymentIntent = async ({
     clientSecret: client_secret,
     id,
     invoiceStatus,
-  } = await createPaymentIntent({ customerId, priceId, token, currency, promoCodeId: promoCode });
+  } = await paymentService.createPaymentIntent(customerId, amount, priceId, token, currency, promoCode);
 
   return {
     clientSecretType: 'payment',
@@ -197,14 +127,14 @@ const getClientSecretForSubscriptionIntent = async ({
     clientSecret: client_secret,
     subscriptionId,
     paymentIntentId,
-  } = await checkoutService.createSubscription({
+  } = await paymentService.createSubscription(
     customerId,
     priceId,
     token,
     currency,
     promoCodeId,
-    quantity: seatsForBusinessSubscription,
-  });
+    seatsForBusinessSubscription,
+  );
 
   return {
     clientSecretType: paymentType,
@@ -222,20 +152,21 @@ const getClientSecret = async ({
   promoCodeId,
   seatsForBusinessSubscription = 1,
 }: {
-  selectedPlan: PriceWithTax;
+  selectedPlan: RequestedPlanData;
   token: string;
   mobileToken: string | null;
   customerId: string;
   promoCodeId?: CouponCodeData['codeId'];
   seatsForBusinessSubscription?: number;
 }) => {
-  if (selectedPlan?.price.interval === 'lifetime') {
+  if (selectedPlan?.interval === 'lifetime') {
     const { clientSecretType, client_secret, paymentIntentId, invoiceStatus } =
       await checkoutService.getClientSecretForPaymentIntent({
         customerId,
-        priceId: selectedPlan.price.id,
+        amount: selectedPlan.amount,
+        priceId: selectedPlan.id,
         token,
-        currency: selectedPlan.price.currency,
+        currency: selectedPlan.currency,
         promoCode: promoCodeId,
       });
 
@@ -248,10 +179,10 @@ const getClientSecret = async ({
   } else {
     const response = await checkoutService.getClientSecretForSubscriptionIntent({
       customerId,
-      priceId: selectedPlan.price?.id,
+      priceId: selectedPlan?.id,
       token,
       mobileToken,
-      currency: selectedPlan.price.currency,
+      currency: selectedPlan.currency,
       seatsForBusinessSubscription,
       promoCodeId,
     });
@@ -300,11 +231,12 @@ const loadStripeElements = async (
     borderInputColor: string;
     labelTextColor: string;
   },
-  plan: PriceWithTax,
+  onLoadElements: (stripeElementsOptions: StripeElementsOptions) => void,
+  plan: PlanData,
 ) => {
   const { backgroundColor, textColor, borderColor, borderInputColor, labelTextColor } = theme;
 
-  return {
+  const stripeElementsOptions: StripeElementsOptions = {
     appearance: {
       labels: 'above',
       variables: {
@@ -354,22 +286,21 @@ const loadStripeElements = async (
         },
       },
     },
-    mode: plan.price?.interval === 'lifetime' ? 'payment' : 'subscription',
-    amount: plan.taxes?.amountWithTax,
-    currency: plan.price?.currency,
+    mode: plan?.selectedPlan.interval === 'lifetime' ? 'payment' : 'subscription',
+    amount: plan?.selectedPlan.amount,
+    currency: plan?.selectedPlan.currency,
     payment_method_types: ['card', 'paypal'],
   };
+
+  onLoadElements(stripeElementsOptions);
 };
 
 const checkoutService = {
+  fetchPlanById,
   fetchPromotionCodeByName,
   getClientSecretForPaymentIntent,
   getClientSecretForSubscriptionIntent,
   getClientSecret,
-  getCustomerId,
-  createPaymentIntent,
-  getPriceById,
-  createSubscription,
   loadStripeElements,
   fetchPrices,
   checkoutSetupIntent,

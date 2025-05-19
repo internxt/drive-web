@@ -1,9 +1,8 @@
 import { Dispatch } from 'react';
 import { Action } from 'app/payment/store/types';
-import { AuthMethodTypes, CouponCodeData, ErrorType } from 'app/payment/types';
+import { AuthMethodTypes, CouponCodeData, ErrorType, PlanData } from 'app/payment/types';
 import { StripeElementsOptions } from '@stripe/stripe-js';
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types/types';
-import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 
 export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
   const setUserNameFromElementAddress = (userName: string) =>
@@ -38,7 +37,7 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     dispatchReducer({ type: 'SET_PRICES', payload: prices });
   };
 
-  const setPlan = (plan: PriceWithTax) => {
+  const setPlan = (plan: PlanData) => {
     dispatchReducer({ type: 'SET_PLAN', payload: plan });
   };
 
@@ -46,12 +45,19 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     dispatchReducer({ type: 'SET_SEATS_FOR_BUSINESS_SUBSCRIPTION', payload: seats });
   };
 
-  const setSelectedPlan = (selectedPlan: PriceWithTax) => {
+  const setSelectedPlan = (selectedPlan: PlanData['selectedPlan']) => {
     dispatchReducer({ type: 'SET_CURRENT_PLAN_SELECTED', payload: selectedPlan });
   };
 
   const setPromoCodeData = (promoCodeData: CouponCodeData | undefined) => {
     dispatchReducer({ type: 'SET_COUPON_CODE_DATA', payload: promoCodeData });
+  };
+
+  const setCountry = (country: string) => {
+    dispatchReducer({
+      type: 'SET_COUNTRY',
+      payload: country,
+    });
   };
 
   const setIsUserPaying = (isPaying: boolean) => {
@@ -61,17 +67,17 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     });
   };
 
-  const setIsUpsellSwitchActivated = (isUpsellSwitchActivated: boolean) => {
-    dispatchReducer({
-      type: 'SET_IS_UPSELL_SWITCH_ACTIVATED',
-      payload: isUpsellSwitchActivated,
-    });
-  };
-
   const setIsCheckoutReadyToRender = (isCheckoutReadyToRender: boolean) => {
     dispatchReducer({
       type: 'SET_IS_CHECKOUT_READY_TO_RENDER',
       payload: isCheckoutReadyToRender,
+    });
+  };
+
+  const setIsUpsellSwitchActivated = (isUpsellSwitchActivated: boolean) => {
+    dispatchReducer({
+      type: 'SET_IS_UPSELL_SWITCH_ACTIVATED',
+      payload: isUpsellSwitchActivated,
     });
   };
 
@@ -106,14 +112,15 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     setUserNameFromElementAddress,
     setAvatarBlob,
     setIsUserPaying,
-    setIsUpsellSwitchActivated,
     setPlan,
     setPromoCodeData,
     setSelectedPlan,
     setStripeElementsOptions,
     setSeatsForBusinessSubscription,
     setPrices,
+    setCountry,
     setIsCheckoutReadyToRender,
+    setIsUpsellSwitchActivated,
     setIsUpdateSubscriptionDialogOpen,
     setIsUpdatingSubscription,
   };

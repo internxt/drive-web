@@ -1,13 +1,19 @@
 import { Stripe, loadStripe } from '@stripe/stripe-js';
 import envService from '../../../../../core/services/env.service';
+import errorService from '../../../../../core/services/error.service';
 import paymentService from '../../../../../payment/services/payment.service';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import { userLocation } from 'app/utils/userLocation';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
+const COUNTRY_API = process.env.REACT_APP_COUNTRY_API_URL;
 const productValue = {
   US: 'usd',
   CA: 'usd',
 };
+
+const getCountry = async () =>
+  fetch(`${COUNTRY_API}`, {
+    method: 'GET',
+  });
 
 const getPlanPrices = async ({
   currencyValue = 'eur',
@@ -19,11 +25,14 @@ const getPlanPrices = async ({
 
 const fetchPlanPrices = async (userType: UserType) => {
   try {
-    const { location } = await userLocation();
-    const currencyValue = productValue[location] ?? 'eur';
+    const { country } = await getCountry().then((res) => res.json());
+    const currencyValue = productValue[country] || 'eur';
 
     return getPlanPrices({ currencyValue, userType });
-  } catch {
+  } catch (error) {
+    const errorCasted = errorService.castError(error);
+    errorService.reportError(errorCasted);
+
     // by default in euros
     return getPlanPrices({ currencyValue: 'eur', userType });
   }

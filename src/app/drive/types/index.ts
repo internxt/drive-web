@@ -1,4 +1,4 @@
-import { RenewalPeriod } from '@internxt/sdk/dist/drive/payments/types/types';
+import { RenewalPeriod } from '@internxt/sdk/dist/drive/payments/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { UserResumeData } from '@internxt/sdk/dist/drive/users/types';
 import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';

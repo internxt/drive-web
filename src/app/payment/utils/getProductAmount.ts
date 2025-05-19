@@ -1,6 +1,5 @@
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types/types';
+import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { CouponCodeData } from '../types';
-import { formatPrice } from './formatPrice';
 
 export const getProductAmount = (
   amount: DisplayPrice['amount'],
@@ -18,5 +17,6 @@ export const getProductAmount = (
     finalAmount = amount * users;
   }
 
-  return formatPrice(finalAmount);
+  const formattedAmount = Number(finalAmount.toFixed(2));
+  return Number.isInteger(formattedAmount) ? formattedAmount.toString() : finalAmount.toFixed(2);
 };

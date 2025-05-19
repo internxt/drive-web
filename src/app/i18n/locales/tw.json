@@ -243,7 +243,7 @@
       "saving": "您節省了 {{percent}}%",
       "planDetails": {
         "title": "計劃詳情：",
-        "commingSoon":"即將推出",
+         "commingSoon":"即將推出",
         "features": {
           "individuals": {
             "1TB": {
@@ -324,8 +324,7 @@
       },
       "apply": "應用",
       "amountSaved": "節省 ",
-      "withAnnualBilling": "按年計費",
-      "taxes": "稅金"
+      "withAnnualBilling": "按年計費"
     }
   },
   "general": {
