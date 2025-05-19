@@ -5,6 +5,7 @@ import {
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
 } from '@internxt/sdk/dist/payments/types';
+import paymentService from './payment.service';
 
 vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
@@ -256,6 +257,83 @@ describe('Checkout Service tests', () => {
         codeName: 'PROMO',
         amountOff: 500,
         percentOff: undefined,
+      });
+    });
+  });
+
+  describe('Fetch the client secret for a subscription', () => {
+    it('When mobileToken is provided, then it uses paymentService to create subscription with trial', async () => {
+      vi.spyOn(paymentService, 'createSubscriptionWithTrial').mockResolvedValue({
+        type: 'setup',
+        clientSecret: 'client_secret',
+        subscriptionId: 'sub_id',
+        paymentIntentId: 'pi_id',
+      });
+
+      const result = await checkoutService.getClientSecretForSubscriptionIntent({
+        customerId: 'cus_123',
+        priceId: 'price_123',
+        token: 'token_123',
+        mobileToken: 'mobile_token',
+        currency: 'eur',
+      });
+
+      expect(result).toEqual({
+        clientSecretType: 'setup',
+        client_secret: 'client_secret',
+        subscriptionId: 'sub_id',
+        paymentIntentId: 'pi_id',
+      });
+    });
+
+    it('When mobileToken is not provided, then it uses checkoutService to create subscription', async () => {
+      const result = await checkoutService.getClientSecretForSubscriptionIntent({
+        customerId: 'cus_123',
+        priceId: 'price_123',
+        token: 'token_123',
+        mobileToken: null,
+        currency: 'eur',
+        seatsForBusinessSubscription: 5,
+        promoCodeId: 'promo_1',
+      });
+
+      expect(result).toEqual({
+        clientSecretType: 'payment',
+        client_secret: 'client_secret',
+        subscriptionId: 'sub_123',
+        paymentIntentId: 'py_123',
+      });
+    });
+  });
+
+  describe('Loading Stripe Elements', () => {
+    it('When called, then it returns a configured stripe element options object', async () => {
+      const theme = {
+        backgroundColor: '#000',
+        textColor: '#fff',
+        borderColor: '#ccc',
+        borderInputColor: '#aaa',
+        labelTextColor: '#eee',
+      };
+
+      const plan = {
+        price: {
+          interval: 'lifetime',
+          currency: 'eur',
+        },
+        taxes: {
+          amountWithTax: 1500,
+        },
+      } as any;
+
+      const options = await checkoutService.loadStripeElements(theme, plan);
+
+      expect(options).toMatchObject({
+        appearance: expect.any(Object),
+        mode: 'payment',
+        amount: 1500,
+        currency: 'eur',
+        payment_method_types: ['card', 'paypal'],
       });
     });
   });
