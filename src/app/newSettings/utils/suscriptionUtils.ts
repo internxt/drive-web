@@ -1,4 +1,4 @@
-import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import dateService from 'app/core/services/date.service';
 import { t } from 'i18next';
 import moneyService from '../../payment/services/currency.service';

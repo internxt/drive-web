@@ -226,7 +226,7 @@
       "saving": "Вы экономите {{percent}}%",
       "planDetails": {
         "title": "Детали плана:",
-         "commingSoon":"Скоро",
+        "commingSoon":"Скоро",
         "features": {
           "individuals": {
             "1TB": {
@@ -307,7 +307,8 @@
       },
       "apply": "Применить",
       "amountSaved": "Экономия ",
-      "withAnnualBilling": "при ежегодной оплате"
+      "withAnnualBilling": "при ежегодной оплате",
+      "taxes": "Налоги"
     }
   },
   "general": {
