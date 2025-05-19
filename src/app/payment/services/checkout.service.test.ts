@@ -353,7 +353,7 @@ describe('Checkout Service tests', () => {
   });
 
   describe('Loading Stripe Elements', () => {
-    it('When called, then it returns a configured stripe element options object', async () => {
+    it('When called for a lifetime plan, then it returns a configured stripe element options object', async () => {
       const theme = {
         backgroundColor: '#000',
         textColor: '#fff',
@@ -377,6 +377,36 @@ describe('Checkout Service tests', () => {
       expect(options).toMatchObject({
         appearance: expect.any(Object),
         mode: 'payment',
+        amount: 1500,
+        currency: 'eur',
+        payment_method_types: ['card', 'paypal'],
+      });
+    });
+
+    it('When called for a subscription plan, then it returns a configured stripe element options object', async () => {
+      const theme = {
+        backgroundColor: '#000',
+        textColor: '#fff',
+        borderColor: '#ccc',
+        borderInputColor: '#aaa',
+        labelTextColor: '#eee',
+      };
+
+      const plan = {
+        price: {
+          interval: 'year',
+          currency: 'eur',
+        },
+        taxes: {
+          amountWithTax: 1500,
+        },
+      } as any;
+
+      const options = await checkoutService.loadStripeElements(theme, plan);
+
+      expect(options).toMatchObject({
+        appearance: expect.any(Object),
+        mode: 'subscription',
         amount: 1500,
         currency: 'eur',
         payment_method_types: ['card', 'paypal'],
