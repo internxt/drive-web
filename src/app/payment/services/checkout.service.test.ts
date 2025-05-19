@@ -306,6 +306,52 @@ describe('Checkout Service tests', () => {
     });
   });
 
+  describe('Fetch the user client secret', () => {
+    const selectedPlan = {
+      price: {
+        id: 'price_123',
+        currency: 'eur',
+        interval: 'lifetime',
+      },
+      taxes: { amountWithTax: 1000 },
+    } as any;
+
+    it('When plan is lifetime, then it gets payment intent secret', async () => {
+      const result = await checkoutService.getClientSecret({
+        selectedPlan,
+        token: 'token',
+        mobileToken: null,
+        customerId: 'cus_123',
+      });
+
+      expect(result).toEqual({
+        type: 'payment',
+        clientSecret: 'client_secret',
+        paymentIntentId: 'py_id',
+        invoiceStatus: 'paid',
+      });
+    });
+
+    it('When plan is subscription, then it gets subscription intent secret', async () => {
+      const subPlan = { ...selectedPlan, price: { ...selectedPlan.price, interval: 'year' } };
+
+      const result = await checkoutService.getClientSecret({
+        selectedPlan: subPlan,
+        token: 'token',
+        mobileToken: null,
+        customerId: 'cus_123',
+        promoCodeId: 'promo_123',
+      });
+
+      expect(result).toEqual({
+        type: 'payment',
+        clientSecret: 'client_secret',
+        subscriptionId: 'sub_123',
+        paymentIntentId: 'py_123',
+      });
+    });
+  });
+
   describe('Loading Stripe Elements', () => {
     it('When called, then it returns a configured stripe element options object', async () => {
       const theme = {
