@@ -20,7 +20,7 @@ const getPlanPrices = async ({
 const fetchPlanPrices = async (userType: UserType) => {
   try {
     const { location } = await userLocation();
-    const currencyValue = productValue[location] || 'eur';
+    const currencyValue = productValue[location] ?? 'eur';
 
     return getPlanPrices({ currencyValue, userType });
   } catch {
