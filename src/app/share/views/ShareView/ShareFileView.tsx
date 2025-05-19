@@ -29,6 +29,8 @@ import AppError from '../../../core/types';
 import { Button, Loader } from '@internxt/ui';
 import SendBanner from './SendBanner';
 import ShareItemPwdView from './ShareItemPwdView';
+import { base64UrlSafetoUUID } from '../../../utils/stringUtils';
+import { validate as validateUuidv4 } from 'uuid';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -55,8 +57,13 @@ interface ShareViewState {
 
 export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const { translate } = useTranslationContext();
-  const sharingId = props.match.params.token;
+
   const code = props.match.params.code;
+  let sharingId = props.match.params.token;
+  if (!validateUuidv4(sharingId)) {
+    sharingId = base64UrlSafetoUUID(sharingId);
+  }
+
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [blobProgress, setBlobProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);

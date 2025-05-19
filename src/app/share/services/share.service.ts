@@ -22,7 +22,6 @@ import {
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { downloadFolderAsZip } from '../../drive/services/folder.service';
 import copy from 'copy-to-clipboard';
-import crypto from 'crypto';
 import { t } from 'i18next';
 import { Iterator } from '../../core/collections';
 import { SdkFactory } from '../../core/factory/sdk';
@@ -37,7 +36,7 @@ import { DownloadManager } from '../../network/DownloadManager';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { AdvancedSharedItem } from '../types';
 import { DriveFolderData } from '../../drive/types';
-import { generateRandomStringUrlSafe } from '../../utils/stringUtils';
+import { generateRandomStringUrlSafe, toBase64UrlSafe } from '../../utils/stringUtils';
 
 interface CreateShareResponse {
   created: boolean;
@@ -321,7 +320,7 @@ export const createPublicShareFromOwnerUser = async (
 ): Promise<SharingMeta> => {
   const user = localStorageService.getUser() as UserSettings;
   const { mnemonic } = user;
-  const code = generateRandomStringUrlSafe(16);
+  const code = generateRandomStringUrlSafe(8);
 
   const encryptedMnemonic = aes.encrypt(mnemonic, code);
   const encryptedCode = aes.encrypt(code, mnemonic);
@@ -382,7 +381,11 @@ export const getPublicShareLink = async (
       selectedDomain = window.location.origin;
     }
 
-    const publicShareLink = `${selectedDomain}/sh/${itemType}/${sharingId}/${plainCode}`;
+    const removedUuidDecoration = sharingId.replace(/-/g, '');
+    const base64endoded = Buffer.from(removedUuidDecoration, 'hex').toString('base64');
+    const encodedSharingId = toBase64UrlSafe(base64endoded);
+
+    const publicShareLink = `${selectedDomain}/sh/${itemType}/${encodedSharingId}/${plainCode}`;
 
     await copyTextToClipboard(publicShareLink);
 

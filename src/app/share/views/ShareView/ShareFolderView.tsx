@@ -22,6 +22,8 @@ import SendBanner from './SendBanner';
 import ShareItemPwdView from './ShareItemPwdView';
 import './ShareView.scss';
 import { Loader } from '@internxt/ui';
+import { base64UrlSafetoUUID } from '../../../utils/stringUtils';
+import { validate as validateUuidv4 } from 'uuid';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -43,8 +45,13 @@ const CHROME_IOS_ERROR_MESSAGE = 'Chrome on iOS is not supported. Use Safari to 
 
 export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const { translate } = useTranslationContext();
-  const sharingId = props.match.params.token;
+
   const code = props.match.params.code;
+  let sharingId = props.match.params.token;
+  if (!validateUuidv4(sharingId)) {
+    sharingId = base64UrlSafetoUUID(sharingId);
+  }
+
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [nItems, setNItems] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
