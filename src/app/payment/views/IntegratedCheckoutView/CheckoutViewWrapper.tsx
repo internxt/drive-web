@@ -303,7 +303,7 @@ const CheckoutViewWrapper = () => {
     userAddress?: UserLocation['ip'],
   ): Promise<void> => {
     try {
-      const price = await handleFetchSelectedPlan(planId, currencyValue, userAddress);
+      const price = await handleFetchSelectedPlan(planId, promotionCode, currencyValue, userAddress);
       if (checkoutTheme && price) {
         if (promotionCode) {
           handleFetchPromotionCode(price.price.id, promotionCode).catch(handlePromoCodeError);
@@ -509,8 +509,18 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const handleFetchSelectedPlan = async (priceId: string, currency?: string, ip?: string) => {
-    const plan = await checkoutService.getPriceById({ priceId, userAddress: ip, currency });
+  const handleFetchSelectedPlan = async (
+    priceId: string,
+    promotionCode: string | null,
+    currency?: string,
+    ip?: string,
+  ) => {
+    const plan = await checkoutService.getPriceById({
+      priceId,
+      userAddress: ip,
+      currency,
+      promoCodeName: promotionCode ?? undefined,
+    });
     const amount = mobileToken ? { amount: 0, decimalAmount: 0 } : {};
     setSelectedPlan({ ...plan, ...amount });
     if (plan.price?.minimumSeats) {
