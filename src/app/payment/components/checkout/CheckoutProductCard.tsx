@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Switch, Transition } from '@headlessui/react';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Check, SealPercent, X } from '@phosphor-icons/react';
@@ -32,36 +32,6 @@ interface CheckoutProductCardProps {
 
 const Separator = () => <div className="border border-gray-10" />;
 
-const getTextContent = (
-  users: number,
-  isBusiness: boolean,
-  bytes: string,
-  selectedPlan: PriceWithTax,
-  translate: (key: string, props?: Record<string, unknown>) => string,
-  translateList: (key: string, props?: Record<string, unknown>) => string[],
-) => {
-  const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
-  const totalLabel = isBusiness
-    ? translate('checkout.productCard.totalForBusiness', {
-        N: users,
-      })
-    : translate('checkout.productCard.total');
-  const features = translateList(
-    `checkout.productCard.planDetails.features.${selectedPlan.price.type ?? UserType.Individual}`,
-    {
-      spaceToUpgrade: bytes,
-      minimumSeats: selectedPlan.price?.minimumSeats,
-      maximumSeats: selectedPlan.price?.maximumSeats,
-    },
-  );
-
-  return {
-    perUserLabel,
-    totalLabel,
-    features,
-  };
-};
-
 export const CheckoutProductCard = ({
   selectedPlan,
   couponCodeData,
@@ -84,14 +54,12 @@ export const CheckoutProductCard = ({
 
   const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
   const isBusiness = selectedPlan.price.type === UserType.Business;
-  const textContent = getTextContent(
-    seatsForBusinessSubscription,
-    isBusiness,
-    bytes,
-    selectedPlan,
-    translate,
-    translateList,
-  );
+  const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
+  const totalLabel = isBusiness
+    ? translate('checkout.productCard.totalForBusiness', {
+        N: seatsForBusinessSubscription,
+      })
+    : translate('checkout.productCard.total');
   const renewalPeriodLabel = `${translate('checkout.productCard.renewalPeriod.renewsAt')}
           ${currencySymbol}${normalPriceAmount}/${translate(
             `checkout.productCard.renewalPeriod.${selectedPlan.price.interval}`,
@@ -105,54 +73,18 @@ export const CheckoutProductCard = ({
       ? ((couponCodeData?.amountOff / selectedPlan.taxes.amountWithTax) * 100).toFixed(2)
       : undefined;
 
-  const COMING_SOON_FEATURE_KEYS = ['feature10', 'feature11'];
+  const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
 
-  const getPlanTypeLabels = () => ({
-    FREE: translate('preferences.account.plans.types.free'),
-    ESSENTIAL: translate('preferences.account.plans.types.essential'),
-    STANDARD: translate('preferences.account.plans.types.standard'),
-    PRO: translate('preferences.account.plans.types.pro'),
-    PREMIUM: translate('preferences.account.plans.types.premium'),
-    ULTIMATE: translate('preferences.account.plans.types.ultimate'),
-  });
+  const productLabel = translate(`preferences.account.plans.planFeaturesList.${bytes}.title`) ?? bytes;
+  const featureKeys =
+    translateList(`preferences.account.plans.${planType}.${bytes ?? 'freeFeatures'}.features`, {
+      returnObjects: true,
+    }) ?? translateList('preferences.account.plans.planFeaturesList.1GB.features');
 
-  const getCheckoutFeatures = () => ({
-    ESSENTIAL: translate('checkout.productCard.planDetails.features.individuals.1TB', { returnObjects: true }),
-    STANDARD: translate('checkout.productCard.planDetails.features.business.1TB', { returnObjects: true }),
-    PRO: translate('checkout.productCard.planDetails.features.business.2TB', { returnObjects: true }),
-    PREMIUM: translate('checkout.productCard.planDetails.features.individuals.3TB', { returnObjects: true }),
-    ULTIMATE: translate('checkout.productCard.planDetails.features.individuals.5TB', { returnObjects: true }),
-  });
-
-  const getPlanByBytes = (map: any) => {
-    if (bytes === '1TB') {
-      return isBusiness ? map.STANDARD : map.ESSENTIAL;
-    }
-
-    const capacityToKey = {
-      '2TB': 'PRO',
-      '3TB': 'PREMIUM',
-      '5TB': 'ULTIMATE',
-    };
-
-    return map[capacityToKey[bytes]] || map.FREE;
-  };
-
-  const getPlanLabelFeaturePath = () => {
-    if (couponCodeData?.codeName === 'PCCOMPONENTES') {
-      return bytes;
-    }
-
-    const planLabels = getPlanTypeLabels();
-    return getPlanByBytes(planLabels);
-  };
-
-  const getPlanFeaturesPath = () => {
-    const featureMap = getCheckoutFeatures();
-    return getPlanByBytes(featureMap);
-  };
-
-  const planFeatures = getPlanFeaturesPath();
+  const comingSoonFeatureKeys = useMemo(() => {
+    const result = translateList(`preferences.account.plans.${planType}.${bytes}.comingSoonFeatures`);
+    return Array.isArray(result) ? result : [];
+  }, [planType, bytes, translateList]);
 
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
@@ -166,9 +98,7 @@ export const CheckoutProductCard = ({
         <div className="flex w-full flex-col space-y-5">
           <p>{translate('checkout.productCard.selectedPlan')}</p>
           <p className="text-2xl font-bold text-gray-100">
-            {getPlanLabelFeaturePath() +
-              ' - ' +
-              translate(`checkout.productCard.renewalTitle.${selectedPlan.price.interval}`)}
+            {productLabel + ' - ' + translate(`checkout.productCard.renewalTitle.${selectedPlan.price.interval}`)}
           </p>
           {isBusiness && selectedPlan.price?.maximumSeats && selectedPlan.price?.minimumSeats ? (
             <>
@@ -188,7 +118,7 @@ export const CheckoutProductCard = ({
           <div className="flex flex-row items-center justify-between text-gray-100">
             <p className="font-medium">
               {translate(`checkout.productCard.billed.${selectedPlan.price.interval}`)}
-              {textContent.perUserLabel}
+              {perUserLabel}
             </p>
             <p className="font-semibold">
               {currencySymbol}
@@ -223,28 +153,31 @@ export const CheckoutProductCard = ({
           )}
           <Separator />
           <div className="flex flex-col space-y-5">
-            <p className="font-medium text-gray-100">{translate('checkout.productCard.planDetails.title')}</p>
+            <p className="font-medium text-gray-100">{translate('checkout.productCard.planDetails')}</p>
             <div className="flex flex-col space-y-4">
-              {Object.keys(planFeatures).map((key) => {
-                const shouldShowComingSoon = !isBusiness && COMING_SOON_FEATURE_KEYS.includes(key);
-                const featureText = planFeatures[key];
-                return (
-                  <div key={key} className="flex flex-row items-center space-x-2">
+              {featureKeys.map((feature) => (
+                <div key={feature} className="flex flex-row items-center space-x-2">
+                  <Check className="text-green-dark" size={16} weight="bold" />
+                  <p className="text-gray-100">{feature}</p>
+                </div>
+              ))}
+
+              {comingSoonFeatureKeys.length > 0 &&
+                comingSoonFeatureKeys?.map((feature) => (
+                  <div key={feature} className="flex flex-row items-center space-x-2">
                     <Check className="text-green-dark" size={16} weight="bold" />
-                    <p className="text-gray-100">{featureText}</p>
-                    {shouldShowComingSoon && (
-                      <span className="rounded-md bg-orange/10 px-1 text-center text-orange">
-                        {translate('checkout.productCard.planDetails.commingSoon')}
-                      </span>
-                    )}
+                    <p className="text-gray-100">{feature}</p>
+
+                    <span className="rounded-md bg-orange/10 px-1 text-center text-orange">
+                      {translate('preferences.account.plans.planFeaturesList.comingSoon')}
+                    </span>
                   </div>
-                );
-              })}
+                ))}
             </div>
           </div>
           <Separator />
           <div className="flex flex-row items-center justify-between text-2xl font-semibold text-gray-100">
-            <p>{textContent.totalLabel}</p>
+            <p>{totalLabel}</p>
             <p>
               {currencySymbol}
               {formatPrice(selectedPlan.taxes.decimalAmountWithTax * seatsForBusinessSubscription)}
