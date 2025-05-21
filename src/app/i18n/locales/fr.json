@@ -1830,7 +1830,7 @@
               "Authentification à deux facteurs (2FA)",
               "Support CLI, WebDav et Rclone"
             ],
-            "comingSoonFeatures": ["Nettoyeur d'appareils", "Moniteur du Dark Web"]
+            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web"]
           },
           "5TB": {
             "title": "Ultimate",
@@ -1845,7 +1845,7 @@
               "Authentification à deux facteurs (2FA)",
               "Support CLI, WebDav et Rclone"
             ],
-            "comingSoonFeatures": ["Nettoyeur d'appareils", "Moniteur du Dark Web", "Meet", "Mail"]
+            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web", "Meet", "Mail"]
           },
           "1GB": {
             "title": "Gratuit",
@@ -1869,7 +1869,7 @@
               "Support CLI, WebDav et Rclone",
               "Gérer la facturation et les paiements du compte"
             ],
-            "comingSoonFeatures": ["Nettoyeur d'appareils", "Moniteur du Dark Web"]
+            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web"]
           },
           "2TB": {
             "title": "Pro",
@@ -1885,7 +1885,7 @@
               "Support CLI, WebDav et Rclone",
               "Gérer la facturation et les paiements du compte"
             ],
-            "comingSoonFeatures": ["Nettoyeur d'appareils", "Moniteur du Dark Web", "Meet", "Mail"]
+            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web", "Meet", "Mail"]
           }
         },
         "user": "Utilisateur"
