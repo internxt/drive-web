@@ -174,6 +174,13 @@ export class SdkFactory {
     };
   }
 
+  getHeaders(): any {
+    const workspace = SdkFactory.sdk.localStorage.getWorkspace();
+    return {
+      Authorization: `Bearer ${this.getNewToken(workspace)}`,
+    };
+  }
+
   public getApiUrl(): ApiUrl {
     return this.apiUrl;
   }
