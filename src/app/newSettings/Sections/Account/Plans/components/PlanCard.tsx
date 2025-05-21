@@ -2,6 +2,7 @@ import { Check } from '@phosphor-icons/react';
 import { t } from 'i18next';
 import { Button } from '@internxt/ui';
 import RoleBadge from '../../../Workspace/Members/components/RoleBadge';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export type ChangePlanType = 'upgrade' | 'downgrade' | 'free' | 'manageBilling';
 
@@ -123,11 +124,12 @@ const PlanDetailsList = ({
   isBusiness: boolean;
   planTypeTextPath: string;
 }) => {
+  const { translateList } = useTranslationContext();
   const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
 
-  const featureKeys = Array.from({ length: planTypeTextPath !== 'freeFeatures' ? 8 : 3 }, (_, i) => `feature${i + 1}`);
+  const featureKeys = translateList(`preferences.account.plans.${planType}.${planSpace ?? 'freeFeatures'}.features`);
 
-  const comingSoonFeatureKeys = ['feature1', 'feature2'];
+  const comingSoonFeatureKeys = translateList(`preferences.account.plans.${planType}.${planSpace}.comingSoonFeatures`);
 
   return (
     <div className="flex flex-col space-y-2">
@@ -147,42 +149,27 @@ const PlanDetailsList = ({
           </span>
         </div>
 
-        {featureKeys.map((key) => (
-          <div key={key} className="flex flex-row items-start space-x-2">
+        {featureKeys.map((feature) => (
+          <div key={feature} className="flex flex-row items-start space-x-2">
             <div>
               <Check size={20} className="text-green" />
             </div>
-            <span className="text-base font-normal text-gray-100">
-              {t(`preferences.account.plans.${planType}.${planTypeTextPath}.${key}`)}
-            </span>
+            <span className="text-base font-normal text-gray-100">{feature}</span>
           </div>
         ))}
-
-        {isBusiness && (
-          <div className="flex flex-row space-x-2">
-            <div className="mt-1">
-              <Check size={20} className="text-green" />
-            </div>
-            <span className="text-base font-normal text-gray-100">
-              {t(`preferences.account.plans.${planType}.${planTypeTextPath}.feature9`)}
-            </span>
-          </div>
-        )}
 
         {/* Coming soon features */}
         {planTypeTextPath !== 'essentialFeatures' && planTypeTextPath !== 'freeFeatures' && (
           <>
             <span className="text-sm font-semibold text-gray-100">
-              {t('preferences.account.plans.planFeaturesList.commingSoon')}
+              {t('preferences.account.plans.planFeaturesList.comingSoon')}
             </span>
-            {comingSoonFeatureKeys.map((key) => (
-              <div key={key} className="flex flex-row space-x-2">
+            {comingSoonFeatureKeys.map((feature) => (
+              <div key={feature} className="flex flex-row space-x-2">
                 <div className="mt-1">
                   <Check size={20} className="dark:text-black" />
                 </div>
-                <span className="text-base font-normal text-gray-100">
-                  {t(`preferences.account.plans.${planType}.${planTypeTextPath}.commingSoonFeatures.${key}`)}
-                </span>
+                <span className="text-base font-normal text-gray-100">{feature}</span>
               </div>
             ))}
           </>
