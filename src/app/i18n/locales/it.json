@@ -241,80 +241,7 @@
       },
       "perUser": "/per utente",
       "saving": "Stai risparmiando {{percent}}%",
-      "planDetails": {
-        "title": "Dettagli del piano:",
-        "commingSoon":"Prossimamente",
-        "features": {
-          "individuals": {
-            "1TB": {
-              "feature1":"1TB di archiviazione crittografata a conoscenza zero",
-              "feature2":"Crittografia post-quantistica",
-              "feature3":"VPN ultraveloce illimitata (FR)",
-              "feature4":"Antivirus",
-              "feature5":"Esegui il backup dei tuoi file",
-              "feature6":"Condivisione di file protetta da password",
-              "feature7":"Conformità GDPR",
-              "feature8":"Autenticazione a due fattori (2FA)",
-              "feature9":"Supporto CLI, WebDav e Rclone" },   
-            "3TB": {
-              "feature1":"3TB di archiviazione crittografata a conoscenza zero",
-              "feature2":"Crittografia post-quantistica",
-              "feature3":"VPN ultraveloce illimitata (FR, DE, PL)",
-              "feature4":"Antivirus",
-              "feature5":"Esegui il backup dei tuoi file",
-              "feature6":"Condivisione di file protetta da password",
-              "feature7":"Conformità GDPR",
-              "feature8":"Autenticazione a due fattori (2FA)",
-              "feature9":"Supporto CLI, WebDav e Rclone",
-              "feature10":"Meet (3 partecipanti)",
-              "feature11":  "Mail (3 indirizzi)"
-            },
-            "5TB": {
-              "feature1":"5TB di archiviazione crittografata a conoscenza zero",
-              "feature2":"Crittografia post-quantistica",
-              "feature3":"VPN ultraveloce illimitata (FR, DE, PL, CA, UK)",
-              "feature4":"Antivirus",
-              "feature5":"Esegui il backup dei tuoi file",
-              "feature6":"Condivisione di file protetta da password",
-              "feature7":"Conformità GDPR",
-              "feature8":"Autenticazione a due fattori (2FA)",
-              "feature9":"Supporto CLI, WebDav e Rclone",
-              "feature10":"Meet (5 partecipanti)",
-              "feature11": "Mail (5 indirizzi)"
-            }  
-          },
-          "business": {
-            "1TB": {
-              "feature1":"1TB di archiviazione/utente",
-              "feature2":"Crittografia post-quantistica",
-              "feature3":"VPN ultra veloce e illimitata (FR, DE, PL)",
-              "feature4":"Antivirus",
-              "feature5":"Backup dei tuoi file",
-              "feature6":"Condivisione di file protetta da password",
-              "feature7":"Conformità GDPR",
-              "feature8":"Autenticazione a due fattori (2FA)",
-              "feature9":"Supporto CLI, WebDav & Rclone",
-              "feature10":"Gestisci fatturazione e pagamenti dell'account",
-              "feature11":"Riunioni fino a 10 utenti ",
-              "feature12":"1 indirizzo email personalizzato/utente"
-            },
-            "2TB": {
-              "feature1":"2TB di archiviazione/utente",
-              "feature2":"Crittografia post-quantistica",
-              "feature3":"VPN ultra veloce e illimitata (FR, DE, PL, CA, UK)",
-              "feature4":"Antivirus",
-              "feature5":"Backup dei tuoi file",
-              "feature6":"Condivisione di file protetta da password",
-              "feature7":"Conformità GDPR",
-              "feature8":"Autenticazione a due fattori (2FA)",
-              "feature9":"Supporto CLI, WebDav & Rclone",
-              "feature10":"Gestisci fatturazione e pagamenti dell'account",
-              "feature11":"Riunioni fino a 100 utenti",
-              "feature12":"2 indirizzo email personalizzato/utente"
-            }
-          }
-        }
-      },
+      "planDetails": "Dettagli del piano:",
       "total": "Totale ",
       "totalForBusiness": "Totale per {{N}} utenti: ",
       "addCoupon": {
@@ -1908,84 +1835,90 @@
         },
         "planFeaturesList": {
           "title": "Dettagli del piano",
-          "commingSoon": "Prossimamente",
-          "storage": " di archiviazione ",
-          "essentialFeatures": {
-            "feature1": "Crittografia post-quantistica",
-            "feature2": "VPN ad alta velocità illimitata (FR)",
-            "feature4": "Antivirus",
-            "feature3": "Backup",
-            "feature5": "Condivisione di file protetti da password",
-            "feature6": "Conformità GDPR",
-            "feature7": "Autenticazione a due fattori (2FA)",
-            "feature8": "CLI, WebDav & Rclone"
+          "comingSoon": "Prossimamente",
+          "storage": " archiviazione criptata a conoscenza zero",
+          "1TB": {
+            "title": "Essenziale",
+            "features": [
+              "Crittografia post-quantistica",
+              "VPN illimitata ultraveloce (FR)",
+              "Antivirus",
+              "Backup dei tuoi file",
+              "Condivisione file protetta da password",
+              "Conformità GDPR",
+              "Autenticazione a due fattori (2FA)",
+              "Supporto CLI, WebDav e Rclone"
+            ]
           },
-          "premiumFeatures": {
-            "feature1": "Crittografia post-quantistica",
-            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL)",
-            "feature4": "Antivirus",
-            "feature3": "Backup",
-            "feature5": "Condivisione di file protetti da password",
-            "feature6": "Conformità GDPR",
-            "feature7": "Autenticazione a due fattori (2FA)",
-            "feature8": "CLI, WebDav & Rclone",
-            "commingSoonFeatures": {
-              "feature1": "Meet (3 partecipanti)",
-              "feature2": "Mail (3 email)"
-            }
+          "3TB": {
+            "title": "Premium",
+            "features": [
+              "Crittografia post-quantistica",
+              "VPN illimitata ultraveloce (FR, DE, PL)",
+              "Antivirus",
+              "Backup dei tuoi file",
+              "Condivisione file protetta da password",
+              "Invita, condividi e collabora",
+              "Conformità GDPR",
+              "Autenticazione a due fattori (2FA)",
+              "Supporto CLI, WebDav e Rclone"
+            ],
+            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web"]
           },
-          "ultimateFeatures": {
-            "feature1": "Crittografia post-quantistica",
-            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL, CA, UK)",
-            "feature4": "Antivirus",
-            "feature3": "Backup",
-            "feature5": "Condivisione di file protetti da password",
-            "feature6": "Conformità GDPR",
-            "feature7": "Autenticazione a due fattori (2FA)",
-            "feature8": "CLI, WebDav & Rclone",
-            "commingSoonFeatures": {
-              "feature1": "Meet (5 partecipanti)",
-              "feature2": "Mail (5 email)"
-            }
+          "5TB": {
+            "title": "Ultimate",
+            "features": [
+              "Crittografia post-quantistica",
+              "VPN illimitata ultraveloce (FR, DE, PL)",
+              "Antivirus",
+              "Backup dei tuoi file",
+              "Condivisione file protetta da password",
+              "Invita, condividi e collabora",
+              "Conformità GDPR",
+              "Autenticazione a due fattori (2FA)",
+              "Supporto CLI, WebDav e Rclone"
+            ],
+            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web", "Meet", "Mail"]
           },
-          "freeFeatures": {
-            "feature1": "Crittografia zero-knowledge",
-            "feature2": "VPN standard (FR)",
-            "feature3": "Supporto CLI, WebDav & Rclone"
+          "1GB": {
+            "title": "Gratuito",
+            "features": ["VPN standard gratuita (FR)", "Supporto CLI, WebDav e Rclone"]
           }
         },
         "businessPlanFeaturesList": {
           "title": "Dettagli del piano",
           "storage": " di archiviazione",
-          "standardFeatures": {
-            "feature1": "Crittografia post-quantistica e zero-knowledge",
-            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL)",
-            "feature4": "Antivirus",
-            "feature3": "Backup",
-            "feature5": "Condivisione di file protetti da password",
-            "feature6": "Conformità GDPR",
-            "feature7": "Autenticazione a due fattori (2FA)",
-            "feature8": "CLI/WebDav/Rclone",
-            "feature9": "Gestisci la fatturazione e i pagamenti del tuo account",
-            "commingSoonFeatures": {
-              "feature1": "Riunioni fino a 10 utenti (max. 10 partecipanti)",
-              "feature2": "1 indirizzo email personalizzato/utente"
-            }
+          "1TB": {
+            "title": "Standard",
+            "features": [
+              "Crittografia post-quantistica",
+              "VPN illimitata ultraveloce (FR, DE, PL)",
+              "Antivirus",
+              "Backup dei tuoi file",
+              "Condivisione file protetta da password",
+              "Invita, condividi e collabora",
+              "Conformità GDPR",
+              "Autenticazione a due fattori (2FA)",
+              "Supporto CLI, WebDav e Rclone",
+              "Gestisci fatturazione e pagamenti dell'account"
+            ],
+            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web"]
           },
-          "proFeatures": {
-            "feature1": "Crittografia post-quantistica e zero-knowledge",
-            "feature2": "VPN ad alta velocità illimitata (FR, DE, PL, CA, UK)",
-            "feature4": "Antivirus",
-            "feature3": "Backup",
-            "feature5": "Condivisione di file protetti da password",
-            "feature6": "Conformità GDPR",
-            "feature7": "Autenticazione a due fattori (2FA)",
-            "feature8": "CLI/WebDav/Rclone",
-            "feature9": "Gestisci la fatturazione e i pagamenti del tuo account",
-            "commingSoonFeatures": {
-              "feature1": "Riunioni fino a 10 utenti (max. 10 partecipanti)",
-              "feature2": "1 indirizzo email personalizzato/utente"
-            }
+          "2TB": {
+            "title": "Pro",
+            "features": [
+              "Crittografia post-quantistica",
+              "VPN illimitata ultraveloce (FR, DE, PL)",
+              "Antivirus",
+              "Backup dei tuoi file",
+              "Condivisione file protetta da password",
+              "Invita, condividi e collabora",
+              "Conformità GDPR",
+              "Autenticazione a due fattori (2FA)",
+              "Supporto CLI, WebDav e Rclone",
+              "Gestisci fatturazione e pagamenti dell'account"
+            ],
+            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web", "Meet", "Mail"]
           }
         },
         "user": "Utente",
