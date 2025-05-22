@@ -1,4 +1,9 @@
-import { DisplayPrice, RenewalPeriod, StoragePlan, UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
+import {
+  DisplayPrice,
+  RenewalPeriod,
+  StoragePlan,
+  UserSubscription,
+} from '@internxt/sdk/dist/drive/payments/types/types';
 import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { bytesToString } from 'app/drive/services/size.service';
 import { t } from 'i18next';
