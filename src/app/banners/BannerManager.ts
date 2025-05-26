@@ -8,13 +8,16 @@ const BANNER_NAME_FOR_FREE_USERS = 'show_free_users_banner';
 export class BannerManager {
   private readonly plan: PlanState;
   private readonly offerEndDay: Date;
-  private readonly bannerItemInLocalStorage: string | null;
   private readonly todayDate: string;
+
+  private readonly localStorageKeys = {
+    freeUsers: BANNER_NAME_FOR_FREE_USERS,
+    general: BANNER_NAME_IN_LOCAL_STORAGE,
+  };
 
   constructor(user: UserSettings, plan: PlanState, offerEndDay: Date) {
     this.plan = plan;
     this.offerEndDay = offerEndDay;
-    this.bannerItemInLocalStorage = localStorageService.get(BANNER_NAME_IN_LOCAL_STORAGE);
     this.todayDate = new Date().toISOString().split('T')[0];
   }
 
@@ -22,21 +25,22 @@ export class BannerManager {
     return new Date() > this.offerEndDay;
   }
 
-  private isLocalStorageExpired(): boolean {
-    return (this.bannerItemInLocalStorage ?? '') < this.todayDate;
+  private isLocalStorageExpired(key: string): boolean {
+    const storedDate = localStorageService.get(key) ?? '';
+    return storedDate < this.todayDate;
   }
 
   private clearLocalStorageIfExpired(): void {
-    if (this.isOfferExpired() || this.isLocalStorageExpired()) {
-      localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
-      localStorageService.removeItem(BANNER_NAME_FOR_FREE_USERS);
-    }
+    Object.values(this.localStorageKeys).forEach((key) => {
+      if (this.isOfferExpired() || this.isLocalStorageExpired(key)) {
+        localStorageService.removeItem(key);
+      }
+    });
   }
 
   private shouldShowFreeBanner(): boolean {
-    return (
-      this.plan.individualSubscription?.type === 'free' && !this.bannerItemInLocalStorage && !this.isOfferExpired()
-    );
+    const storedDate = localStorageService.get(this.localStorageKeys.freeUsers);
+    return this.plan.individualSubscription?.type === 'free' && !storedDate && !this.isOfferExpired();
   }
 
   private shouldShowSubscriptionBanner(): boolean {
@@ -67,9 +71,7 @@ export class BannerManager {
     };
   }
 
-  public onCloseBanner(type: 'free' | 'subscription'): void {
-    const key = type === 'free' ? BANNER_NAME_FOR_FREE_USERS : BANNER_NAME_IN_LOCAL_STORAGE;
-
+  public onCloseBannerByKey(key: string): void {
     localStorageService.set(key, this.todayDate);
   }
 }

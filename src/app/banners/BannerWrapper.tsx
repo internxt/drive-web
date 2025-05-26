@@ -19,7 +19,15 @@ const BannerWrapper = (): JSX.Element => {
 
   const bannerManager = useMemo(() => new BannerManager(user, plan, OFFER_END_DAY), [user, plan, isNewAccount]);
 
-  const [bannersToShow, setBannersToShow] = useState({ showFreeBanner: false, showSubscriptionBanner: false });
+  const [bannersToShow, setBannersToShow] = useState({
+    showFreeBanner: false,
+    showSubscriptionBanner: false,
+  });
+
+  const bannerKeyMap: Record<keyof typeof bannersToShow, string> = {
+    showFreeBanner: 'show_free_users_banner',
+    showSubscriptionBanner: 'show_banner',
+  };
 
   useEffect(() => {
     const newBanners = bannerManager.getBannersToShow();
@@ -30,8 +38,8 @@ const BannerWrapper = (): JSX.Element => {
   }, [bannerManager]);
 
   const onCloseBanner = (bannerKey: keyof typeof bannersToShow) => {
-    const type = bannerKey === 'showFreeBanner' ? 'free' : 'subscription';
-    bannerManager.onCloseBanner(type);
+    const localStorageKey = bannerKeyMap[bannerKey];
+    bannerManager.onCloseBannerByKey(localStorageKey);
     setBannersToShow((prev) => ({ ...prev, [bannerKey]: false }));
   };
 
