@@ -31,7 +31,6 @@ export default defineWorkspace([
     resolve: {
       alias: sharedAliases,
     },
-    root: __dirname,
     test: {
       name: 'browser',
       environment: 'jsdom',
