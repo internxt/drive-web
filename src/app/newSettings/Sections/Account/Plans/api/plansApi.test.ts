@@ -1,11 +1,13 @@
 // fetchPlanPrices.test.ts
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock, afterAll } from 'vitest';
 import paymentService from '../../../../../payment/services/payment.service';
 import envService, { envConfig } from '../../../../../core/services/env.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { userLocation } from 'app/utils/userLocation';
 import { loadStripe } from '@stripe/stripe-js';
 import { fetchPlanPrices, getStripe } from './plansApi';
+
+const originalEnv = envConfig;
 
 vi.mock('@stripe/stripe-js', () => ({
   loadStripe: vi.fn(),
@@ -32,6 +34,11 @@ vi.mock('../../../../../core/services/env.service', () => ({
 vi.mock('app/utils/userLocation', () => ({
   userLocation: vi.fn(),
 }));
+
+afterAll(() => {
+  // Restore the original environment configuration after all tests
+  envConfig.stripe = originalEnv.stripe;
+});
 
 describe('Fetching the prices', () => {
   beforeEach(() => {
