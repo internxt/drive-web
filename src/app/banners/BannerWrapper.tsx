@@ -34,9 +34,16 @@ const BannerWrapper = (): JSX.Element => {
     setBannersToShow((prev) => ({ ...prev, [bannerKey]: false }));
   };
 
+  const onCloseFreeBanner = (bannerKey: keyof typeof bannersToShow) => {
+    bannerManager.onCloseFreeBanner();
+    setBannersToShow((prev) => ({ ...prev, [bannerKey]: false }));
+  };
+
   return (
     <>
-      {bannersToShow.showFreeBanner && <FeaturesBanner showBanner onClose={() => onCloseBanner('showFreeBanner')} />}
+      {bannersToShow.showFreeBanner && (
+        <FeaturesBanner showBanner onClose={() => onCloseFreeBanner('showFreeBanner')} />
+      )}
       {bannersToShow.showSubscriptionBanner && (
         <SubscriptionBanner
           showBanner

@@ -70,4 +70,8 @@ export class BannerManager {
   public onCloseBanner(): void {
     localStorageService.set(BANNER_NAME_IN_LOCAL_STORAGE, this.todayDate);
   }
+
+  public onCloseFreeBanner(): void {
+    localStorageService.set(BANNER_NAME_FOR_FREE_USERS, this.todayDate);
+  }
 }
