@@ -41,8 +41,6 @@ export const envConfig = {
     api: getEnvVar('REACT_APP_API_URL'),
     newApi: getEnvVar('REACT_APP_DRIVE_NEW_API_URL'),
     payments: getEnvVar('REACT_APP_PAYMENTS_API_URL'),
-    photos: getEnvVar('REACT_APP_PHOTOS_API_URL'),
-    country: getEnvVar('REACT_APP_COUNTRY_API_URL'),
     location: getEnvVar('REACT_APP_LOCATION_API_URL'),
   },
 
