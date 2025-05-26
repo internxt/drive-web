@@ -5,8 +5,9 @@ import { getCookie } from './utils';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { envConfig } from 'app/core/services/env.service';
 
-const IMPACT_API = process.env.REACT_APP_IMPACT_API as string;
+const IMPACT_API = envConfig.impact.apiUrl;
 
 const anonymousID = getCookie('impactAnonymousId');
 const source = getCookie('impactSource');

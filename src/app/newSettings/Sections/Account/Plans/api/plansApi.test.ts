@@ -1,7 +1,7 @@
 // fetchPlanPrices.test.ts
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import paymentService from '../../../../../payment/services/payment.service';
-import envService from '../../../../../core/services/env.service';
+import envService, { envConfig } from '../../../../../core/services/env.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { userLocation } from 'app/utils/userLocation';
 import { loadStripe } from '@stripe/stripe-js';
@@ -21,13 +21,19 @@ vi.mock('../../../../../core/services/env.service', () => ({
   default: {
     isProduction: vi.fn(),
   },
+  envConfig: {
+    stripe: {
+      testPublicKey: 'pk_test_123',
+      publicKey: 'pk_live_456',
+    },
+  },
 }));
 
 vi.mock('app/utils/userLocation', () => ({
   userLocation: vi.fn(),
 }));
 
-describe('fetchPlanPrices()', () => {
+describe('Fetching the prices', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -64,7 +70,7 @@ describe('fetchPlanPrices()', () => {
   });
 });
 
-describe('getStripe()', () => {
+describe('Getting the stripe SDK', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -75,7 +81,7 @@ describe('getStripe()', () => {
 
     const result = await getStripe(undefined);
 
-    expect(loadStripe).toHaveBeenCalledWith(process.env.REACT_APP_STRIPE_TEST_PK);
+    expect(loadStripe).toHaveBeenCalledWith(envConfig.stripe.testPublicKey);
     expect(result).toBe('mockStripeInstance');
   });
 
@@ -85,7 +91,7 @@ describe('getStripe()', () => {
 
     const result = await getStripe(undefined);
 
-    expect(loadStripe).toHaveBeenCalledWith(process.env.REACT_APP_STRIPE_PK);
+    expect(loadStripe).toHaveBeenCalledWith(envConfig.stripe.publicKey);
     expect(result).toBe('liveStripeInstance');
   });
 

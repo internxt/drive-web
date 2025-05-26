@@ -5,10 +5,11 @@ import * as Sentry from '@sentry/react';
 import { LocalStorageItem, Workspace, AppPlugin } from '../../core/types';
 import localStorageService from '../services/local-storage.service';
 import { userThunks } from '../../store/slices/user';
+import { envConfig } from 'app/core/services/env.service';
 
 const axiosPlugin: AppPlugin = {
   install(store): void {
-    axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+    axios.defaults.baseURL = envConfig.api.api;
 
     axios.interceptors.request.use((requestConfig) => {
       const user = localStorageService.getUser();

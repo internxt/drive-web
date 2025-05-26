@@ -11,8 +11,9 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from '../../core/factory/sdk';
 import envService from 'app/core/services/env.service';
 import localStorageService from 'app/core/services/local-storage.service';
+import { envConfig } from 'app/core/services/env.service';
 
-const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? process.env.REACT_APP_AVATAR_URL : undefined;
+const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? envConfig.services.avatarUrl : undefined;
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
   const usersClient = SdkFactory.getInstance().createUsersClient();

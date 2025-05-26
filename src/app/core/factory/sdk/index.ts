@@ -9,6 +9,7 @@ import { userThunks } from '../../../store/slices/user';
 import { LocalStorageService, STORAGE_KEYS } from '../../services/local-storage.service';
 import { Workspace } from '../../types';
 import { Checkout } from '@internxt/sdk/dist/payments';
+import { envConfig } from 'app/core/services/env.service';
 
 export class SdkFactory {
   private static sdk: {
@@ -27,8 +28,8 @@ export class SdkFactory {
     this.sdk = {
       dispatch,
       localStorage,
-      instance: new SdkFactory(process.env.REACT_APP_API_URL),
-      newApiInstance: new SdkFactory(process.env.REACT_APP_DRIVE_NEW_API_URL),
+      instance: new SdkFactory(envConfig.api.api),
+      newApiInstance: new SdkFactory(envConfig.api.newApi),
     };
   }
 
@@ -128,7 +129,7 @@ export class SdkFactory {
 
     const apiSecurity = { ...this.getApiSecurity(), token: newToken };
 
-    return Payments.client(process.env.REACT_APP_PAYMENTS_API_URL, appDetails, apiSecurity);
+    return Payments.client(envConfig.api.payments, appDetails, apiSecurity);
   }
 
   public async createCheckoutClient(): Promise<Checkout> {
@@ -138,7 +139,7 @@ export class SdkFactory {
 
     const apiSecurity = { ...this.getApiSecurity(), token: newToken ?? '' };
 
-    return Checkout.client(`${process.env.REACT_APP_PAYMENTS_API_URL}`, appDetails, apiSecurity);
+    return Checkout.client(envConfig.api.payments, appDetails, apiSecurity);
   }
 
   public createBackupsClient(): Backups {
