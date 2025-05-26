@@ -72,6 +72,13 @@ export default defineWorkspace([
       name: 'node',
       environment: 'node',
       include: ['src/**/*.node.test.ts'],
+      coverage: {
+        provider: 'istanbul',
+        reporter: ['text', 'lcov'],
+        reportsDirectory: './coverage',
+        include: ['src/**/*.{js,ts,jsx,tsx}'],
+        exclude: ['src/app/drive/components/FileViewer/viewers/FileDocumentViewer/**'],
+      },
     },
   },
 ]);
