@@ -67,11 +67,9 @@ export class BannerManager {
     };
   }
 
-  public onCloseBanner(): void {
-    localStorageService.set(BANNER_NAME_IN_LOCAL_STORAGE, this.todayDate);
-  }
+  public onCloseBanner(type: 'free' | 'subscription'): void {
+    const key = type === 'free' ? BANNER_NAME_FOR_FREE_USERS : BANNER_NAME_IN_LOCAL_STORAGE;
 
-  public onCloseFreeBanner(): void {
-    localStorageService.set(BANNER_NAME_FOR_FREE_USERS, this.todayDate);
+    localStorageService.set(key, this.todayDate);
   }
 }
