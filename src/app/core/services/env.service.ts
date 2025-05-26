@@ -9,7 +9,7 @@ const envService = {
 
 export default envService;
 
-function getEnvVar(name: keyof NodeJS.ProcessEnv, required = true): string {
+function getEnvVar(name: keyof NodeJS.ProcessEnv): string {
   const value = process.env[name];
   return value!;
 }
@@ -17,12 +17,12 @@ function getEnvVar(name: keyof NodeJS.ProcessEnv, required = true): string {
 export const envConfig = {
   app: {
     nodeEnv: getEnvVar('NODE_ENV'),
-    fastRefresh: getEnvVar('FAST_REFRESH', false),
-    debug: getEnvVar('REACT_APP_DEBUG', false),
-    generateSourceMap: getEnvVar('GENERATE_SOURCEMAP', false),
+    fastRefresh: getEnvVar('FAST_REFRESH'),
+    debug: getEnvVar('REACT_APP_DEBUG'),
+    generateSourceMap: getEnvVar('GENERATE_SOURCEMAP'),
     hostname: getEnvVar('REACT_APP_HOSTNAME'),
     websiteUrl: getEnvVar('REACT_APP_WEBSITE_URL'),
-    baseUrl: getEnvVar('REACT_APP_BASE_URL', false),
+    baseUrl: getEnvVar('REACT_APP_BASE_URL'),
   },
 
   crypto: {
@@ -60,7 +60,7 @@ export const envConfig = {
     avatarUrl: getEnvVar('REACT_APP_AVATAR_URL'),
     shareLinksDomain: getEnvVar('REACT_APP_SHARE_LINKS_DOMAIN'),
     proxy: getEnvVar('REACT_APP_PROXY'),
-    dontUseProxy: getEnvVar('REACT_APP_DONT_USE_PROXY', false),
+    dontUseProxy: getEnvVar('REACT_APP_DONT_USE_PROXY'),
     notifications: getEnvVar('REACT_APP_NOTIFICATIONS_URL'),
   },
 
