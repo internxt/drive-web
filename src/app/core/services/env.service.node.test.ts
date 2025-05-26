@@ -76,7 +76,9 @@ describe('Check that env variables are loaded correctly', () => {
     expect(envConfig.api.newApi).toMatch(urlPattern);
     expect(envConfig.api.payments).toMatch(urlPattern);
     expect(envConfig.app.websiteUrl).toMatch(urlPattern);
+    expect(envConfig.services.notifications).toMatch(urlPattern);
     expect(envConfig.services.storjBridge).toMatch(urlPattern);
     expect(envConfig.impact.apiUrl).toMatch(urlPattern);
+    expect(envConfig.api.location).toMatch(urlPattern);
   });
 });

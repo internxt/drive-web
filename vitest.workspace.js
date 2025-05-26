@@ -50,10 +50,7 @@ export default defineWorkspace([
         reporter: ['text', 'lcov'],
         reportsDirectory: './coverage',
         include: ['src/**/*.{js,ts,jsx,tsx}'],
-        exclude: [
-          'src/app/drive/components/FileViewer/viewers/FileDocumentViewer/**',
-          // ⚠️ Eliminado el exclude de los tests
-        ],
+        exclude: ['src/app/drive/components/FileViewer/viewers/FileDocumentViewer/**'],
       },
     },
     optimizeDeps: {
