@@ -27,10 +27,6 @@ const sharedAliases = {
 export default defineWorkspace([
   {
     name: 'browser',
-    plugins: sharedPlugins,
-    resolve: {
-      alias: sharedAliases,
-    },
     test: {
       name: 'browser',
       environment: 'jsdom',
@@ -52,21 +48,10 @@ export default defineWorkspace([
         exclude: ['src/app/drive/components/FileViewer/viewers/FileDocumentViewer/**'],
       },
     },
-    optimizeDeps: {
-      include: ['@internxt/sdk/dist/shared/types/userSettings'],
-      esbuildOptions: {
-        define: {
-          global: 'globalThis',
-        },
-      },
-    },
+    extends: './vitest.shared.js',
   },
   {
     name: 'node',
-    plugins: sharedPlugins,
-    resolve: {
-      alias: sharedAliases,
-    },
     test: {
       name: 'node',
       environment: 'node',
@@ -79,5 +64,6 @@ export default defineWorkspace([
         exclude: ['src/app/drive/components/FileViewer/viewers/FileDocumentViewer/**'],
       },
     },
+    extends: './vitest.shared.js',
   },
 ]);
