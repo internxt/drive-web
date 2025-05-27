@@ -33,7 +33,7 @@ export class SdkFactory {
   }
 
   public static getNewApiInstance(): SdkFactory {
-    if (this.sdk.instance === undefined) {
+    if (this.sdk.newApiInstance === undefined) {
       throw new Error('Factory not initialized');
     }
     return this.sdk.newApiInstance;
