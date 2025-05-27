@@ -9,9 +9,8 @@ import {
 } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from '../../core/factory/sdk';
-import envService from 'app/core/services/env.service';
+import envService, { envConfig } from 'app/core/services/env.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import { envConfig } from 'app/core/services/env.service';
 
 const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? envConfig.services.avatarUrl : undefined;
 
