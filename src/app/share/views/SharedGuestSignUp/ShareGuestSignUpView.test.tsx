@@ -261,7 +261,7 @@ describe('onSubmit', () => {
     envConfig.app.hostname = originalHostName;
   });
 
-  it('when called with new valid data, then user with decypted keys is saved in local storage', async () => {
+  it('when called with new valid data, then user with decrypted keys is saved in local storage', async () => {
     const mockMnemonic = generateMnemonic(256);
     const keys = await keysService.getKeys(mockPassword);
     const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
