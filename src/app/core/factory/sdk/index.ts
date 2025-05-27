@@ -144,7 +144,7 @@ export class SdkFactory {
   public createBackupsClient(): Backups {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getApiSecurity();
+    const apiSecurity = this.getNewApiSecurity();
     return Backups.client(apiUrl, appDetails, apiSecurity);
   }
 
