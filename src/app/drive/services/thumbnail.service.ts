@@ -130,7 +130,7 @@ export const uploadThumbnail = async (
     abortController,
   });
 
-  const storageClient = SdkFactory.getNewApiInstance().createStorageClient();
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   const thumbnailEntry: StorageTypes.CreateThumbnailEntryPayload = {
     bucketFile,
     bucketId,
