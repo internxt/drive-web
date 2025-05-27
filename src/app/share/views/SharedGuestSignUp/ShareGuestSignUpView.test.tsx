@@ -372,7 +372,7 @@ describe('onSubmit', () => {
     expect(spy).toBeCalledWith(mockClearUser);
   });
 
-  it('when called with old valid data, then user with decypted keys is saved in local storage', async () => {
+  it('when called with old valid data, then user with decrypted keys is saved in local storage', async () => {
     const mockMnemonic = generateMnemonic(256);
     const keys = await keysService.getKeys(mockPassword);
     const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
