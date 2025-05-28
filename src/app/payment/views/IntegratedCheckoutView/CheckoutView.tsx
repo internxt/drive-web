@@ -10,7 +10,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
 import { State } from 'app/payment/store/types';
-import { LegacyRef } from 'react';
+import { LegacyRef, useEffect } from 'react';
 import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
@@ -85,6 +85,16 @@ const CheckoutView = ({
     checkoutViewManager.onCheckoutButtonClicked(formData, event, stripeSDK, elements);
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const gclid = params.get('gclid');
+
+    if (gclid) {
+      const expiryDate = new Date();
+      expiryDate.setTime(expiryDate.getTime() + 90 * 24 * 60 * 60 * 1000);
+      document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
+    }
+  }, []);
   return (
     <form
       className="flex h-full overflow-y-scroll bg-gray-1 lg:w-screen xl:px-16"

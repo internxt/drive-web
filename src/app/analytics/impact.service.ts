@@ -43,6 +43,7 @@ export async function trackPaymentConversion() {
     const priceId = localStorageService.get('priceId');
     const currency = localStorageService.get('currency');
     const amount = parseFloat(localStorageService.get('amountPaid') ?? '0');
+    const gclid = getCookie('gclid');
 
     try {
       window.gtag('event', 'purchase', {
@@ -57,6 +58,7 @@ export async function trackPaymentConversion() {
             price: amount,
           },
         ],
+        ...(gclid ? { gclid } : {}),
       });
     } catch (error) {
       //
