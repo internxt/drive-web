@@ -120,8 +120,8 @@ const useDriveItemActions = (item): DriveItemActions => {
       navigationService.pushFolder(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
     } else {
       if (isRecentsView) {
-        dispatch(uiActions.setIsFileViewerOpen(true));
         dispatch(uiActions.setFileViewerItem(item));
+        dispatch(uiActions.setIsFileViewerOpen(true));
       } else {
         navigationService.pushFile(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
       }

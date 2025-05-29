@@ -1,5 +1,5 @@
 import { Button, Modal } from '@internxt/ui';
-import { StoragePlan } from '@internxt/sdk/dist/drive/payments/types';
+import { StoragePlan } from '@internxt/sdk/dist/drive/payments/types/types';
 import { ArrowRight } from '@phosphor-icons/react';
 import { bytesToString } from 'app/drive/services/size.service';
 import { Translate } from 'app/i18n/types';
