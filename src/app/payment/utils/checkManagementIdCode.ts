@@ -19,10 +19,10 @@ export const isManagementIdThemeAvailable = async (plan: PlanState, onSuccess?: 
       localStorageService.set(STORAGE_KEYS.THEMES.ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY, 'true');
       return true;
     }
+
+    return false;
   } catch (err) {
     errorService.reportError(err);
     return false;
   }
-
-  return false;
 };
