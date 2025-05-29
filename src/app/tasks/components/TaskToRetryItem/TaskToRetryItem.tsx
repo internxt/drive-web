@@ -6,32 +6,35 @@ import { formatDefaultDate } from 'app/core/services/date.service';
 import { t } from 'i18next';
 import { TaskLoggerButton } from '../TaskLoggerButton/TaskLoggerButton';
 import { CircleNotch } from '@phosphor-icons/react';
-import { FileToRetry } from 'app/network/RetryManager';
+import { RetryableTask } from 'app/network/RetryManager';
 
 const TaskToRetyItem = ({ index, style, data }: ListChildComponentProps) => {
-  const file: FileToRetry = data.files[index];
+  const file: RetryableTask = data.files[index];
+  const { params, status } = file;
   const { downloadItem } = data;
   const getFileIcon = (type: string) => {
     const IconComponent = iconService.getItemIcon(false, type);
     return <IconComponent className="w-10 h-10 text-gray-600" />;
   };
+  const FolderIcon = iconService.getItemIcon(true);
+  const getFolderIcon = <FolderIcon className="w-12 h-12 drop-shadow-soft" />;
 
   return (
     <div style={style} className="flex items-center justify-between px-4 py-3 border-b border-gray-5">
       <div className="flex items-center gap-4">
-        {getFileIcon(file.params.filecontent.type)}
+        {params?.isFolder ? getFolderIcon : getFileIcon(params?.filecontent?.type ?? params.type)}
         <div>
-          <p className="text-base font-medium text-gray-100 truncate max-w-xs">{file.params.filecontent.name}</p>
+          <p className="text-base font-medium text-gray-100 truncate max-w-xs">
+            {params?.filecontent?.name ?? params.plainName ?? params.name}
+          </p>
           <p className="text-sm font-regular text-gray-50">
-            {bytesToString(file.params.filecontent.size)} -{' '}
-            {formatDefaultDate(file.params.filecontent.content.lastModified, t)}
+            {bytesToString(params?.filecontent?.size ?? params.size)} -{' '}
+            {formatDefaultDate(params?.filecontent?.content.lastModified ?? params.updatedAt, t)}
           </p>
         </div>
       </div>
-      {file.status === 'failed' && <TaskLoggerButton onClick={() => downloadItem(file)} Icon={RestartIcon} />}
-      {file.status === 'uploading' && (
-        <CircleNotch size={24} className="mr-2 animate-spin text-gray-60" weight="bold" />
-      )}
+      {status === 'failed' && <TaskLoggerButton onClick={() => downloadItem(file)} Icon={RestartIcon} />}
+      {status === 'retrying' && <CircleNotch size={24} className="mr-2 animate-spin text-gray-60" weight="bold" />}
     </div>
   );
 };

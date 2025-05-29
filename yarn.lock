@@ -2750,10 +2750,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@=1.9.10":
-  version "1.9.10"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.9.10/52632372b3f192e575638084a10f4730839cece6#52632372b3f192e575638084a10f4730839cece6"
-  integrity sha512-VftyPoNX/VvPEvCeeJs2b8O7bbgieVM22u73hHrTkL2S5MQ2UmyufPd+WBzr3pUlppgM04VUWopECCxl/Vh/GA==
+"@internxt/sdk@=1.9.20":
+  version "1.9.20"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.9.20/30119f6977e06a9ec01483dde7f8b02d90173edb#30119f6977e06a9ec01483dde7f8b02d90173edb"
+  integrity sha512-HdmH5LFZr7L37dgEeMLYdZ7wuHTlX+bZxOfQRQc/H0f26oVgjj77q8Hil5MJnD/9YrAS8rzh0mvrV0cNqEIBzw==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
@@ -9388,9 +9388,9 @@ http-proxy-agent@^4.0.1:
     debug "4"
 
 http-proxy-middleware@^2.0.3:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/http-proxy-middleware/-/http-proxy-middleware-2.0.7.tgz#915f236d92ae98ef48278a95dedf17e991936ec6"
-  integrity sha512-fgVY8AV7qU7z/MmXJ/rxwbrtQH4jBQ9m7kp3llF0liB7glmFeVZFBepQb32T3y8n8k2+AEYuMPCpinYW+/CuRA==
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/http-proxy-middleware/-/http-proxy-middleware-2.0.9.tgz#e9e63d68afaa4eee3d147f39149ab84c0c2815ef"
+  integrity sha512-c1IyJYLYppU574+YI7R4QyX2ystMtVXZwIdzazUIPIJsHuWNd+mho2j+bKoHftndicGj9yh+xjd+l0yj7VeT1Q==
   dependencies:
     "@types/http-proxy" "^1.17.8"
     http-proxy "^1.18.1"
@@ -15493,9 +15493,9 @@ vite-node@2.1.9:
     vite "^5.0.0"
 
 vite@^5.0.0:
-  version "5.4.17"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-5.4.17.tgz#4bf61dd4cdbf64b0d6661f5dba76954cc81d5082"
-  integrity sha512-5+VqZryDj4wgCs55o9Lp+p8GE78TLVg0lasCH5xFZ4jacZjtqZa6JUw9/p0WeAojaOfncSM6v77InkFPGnvPvg==
+  version "5.4.19"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-5.4.19.tgz#20efd060410044b3ed555049418a5e7d1998f959"
+  integrity sha512-qO3aKv3HoQC8QKiNSTuUM1l9o/XX3+c+VTgLHbJWHZGeTPVAg2XwazI9UWzoxjIJCGCV2zU60uqMzjeLZuULqA==
   dependencies:
     esbuild "^0.21.3"
     postcss "^8.4.43"

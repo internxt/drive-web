@@ -1,4 +1,4 @@
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { WorkspaceTeam, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { PencilSimple } from '@phosphor-icons/react';
 import { t } from 'i18next';

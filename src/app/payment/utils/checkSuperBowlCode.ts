@@ -14,7 +14,7 @@ export const isSuperbowlThemeAvailable = async (plan: PlanState, onSuccess?: () 
     const coupons = ['SUPERBOWL80', 'SPECIALX80', 'REDDIT80', 'IGSPECIAL80'];
 
     const couponUsedResults = await Promise.all(coupons.map((code) => paymentService.isCouponUsedByUser(code)));
-    const couponUsed = couponUsedResults.some((result) => result);
+    const couponUsed = couponUsedResults.some((result) => result?.couponUsed === true);
 
     if (couponUsed) {
       onSuccess?.();
