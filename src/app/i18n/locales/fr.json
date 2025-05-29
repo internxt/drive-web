@@ -4,20 +4,21 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Offre 85 %",
-    "title": "Rejoignez le côté de la vie privée",
-    "cta": "Obtenez votre offre",
-    "guarantee": "Garantie de remboursement de 30 jours",
-    "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
-    "specialOfferLabel": "",
-    "specialOfferGift": "Tirage au sort : sac à dos Internxt x Swiss Peak !",
+    "label": "Économisez 80 %",
+    "upperTitle": "Offre pour la Journée mondiale de l'environnement",
+    "title": "Plans annuels et à vie !",
+    "cta": "Profitez de l'offre",
+    "guarantee": "Garantie satisfait ou remboursé de 30 jours",
+    "lastCta": "*Offre réservée aux comptes gratuits ou aux nouveaux clients",
+    "specialOfferLabel":"",
+    "specialOfferGift":"Gagnez un sac à dos Internxt x Swiss Peak",
     "features": [
-      "Internxt Drive, VPN et Antivirus",
-      "Cryptographie post-quantique",
-      "Code source ouvert et audité",
-      "Transferts chiffrés",
-      "Thème spécial pour l’application Web",
-      "L'offre se termine le 26 mai."
+      "Drive, VPN et Antivirus",
+      "Chiffrement post-quantique",
+      "Stockage cloud durable",
+      "Transferts chiffrés de bout en bout",
+      "Aucun accès non autorisé",
+      "L'offre se termine le 27 juin"
     ]
   },
   "susbcriptionsBanner": {
@@ -66,7 +67,8 @@
     "superBowl": "Super Bowl",
     "valentines": "Saint Valentin",
     "stpatricks": "Saint Patrick",
-    "idmanagement": "Gestion de l'identité"
+    "idmanagement": "Gestion de l'identité",
+    "environment": "Journée Mondiale de l'Environnement"
   },
   "auth": {
     "email": "Email",

@@ -10,7 +10,7 @@ import { useEffect, useMemo, useState } from 'react';
 import SubscriptionBanner from './SubscriptionBanner';
 import { userSelectors } from 'app/store/slices/user';
 
-const OFFER_END_DAY = new Date('2025-05-26');
+const OFFER_END_DAY = new Date('2025-06-27');
 
 const BannerWrapper = (): JSX.Element => {
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;

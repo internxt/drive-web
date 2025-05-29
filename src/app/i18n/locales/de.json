@@ -4,20 +4,21 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "85 % Rabatt",
-    "title": "Schließe dich der Privatsphäre-Seite an",
-    "cta": "Sichere dir deinen Plan",
-    "guarantee": "30 Tage Geld-zurück-Garantie",
-    "lastCta": "*Das Angebot gilt für kostenlose Konten oder neue Kunden",
-    "specialOfferLabel": "",
-    "specialOfferGift": "Verlosung: Internxt x Swiss Peak Rucksack!",
+    "label": "Spare 80%",
+    "upperTitle": "Angebot zum Weltumwelttag",
+    "title": "Jahres- und Lifetime-Pläne!",
+    "cta": "Angebot sichern",
+    "guarantee": "30-Tage-Geld-zurück-Garantie",
+    "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
+    "specialOfferLabel":"",
+    "specialOfferGift":"Gewinne einen Internxt x Swiss Peak Rucksack",
     "features": [
-      "Internxt Drive, VPN und Antivirus",
-      "Postquanten-Kryptografie",
-      "Open Source und geprüft",
-      "Verschlüsselte Übertragungen",
-      "Spezielles Web-App-Design",
-      "Das Angebot endet am 26. Mai."
+      "Drive, VPN und Antivirus",
+      "Post-Quanten-Verschlüsselung",
+      "Nachhaltiger Cloud-Speicher",
+      "Ende-zu-Ende-verschlüsselte Übertragungen",
+      "Kein unbefugter Zugriff",
+      "Angebot endet am 27. Juni"
     ]
   },
   "susbcriptionsBanner": {
@@ -66,7 +67,8 @@
     "superBowl": "Super Bowl",
     "sanValentin": "Valentinstag",
     "stpatricks": "St. Patrick's",
-    "idmanagement": "Identitätsmanagement"
+    "idmanagement": "Identitätsmanagement",
+    "environment": "Weltumwelt"
   },
   "auth": {
     "email": "E-Mail",
