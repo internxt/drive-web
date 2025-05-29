@@ -42,6 +42,9 @@ const AUTH_METHOD_VALUES = {
   IS_SIGNED_IN: 'userIsSignedIn',
 };
 
+const GCLID_COOKIE_LIFESPAN_DAYS = 90;
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+
 const CheckoutView = ({
   userInfo,
   isUserAuthenticated,
@@ -91,7 +94,7 @@ const CheckoutView = ({
 
     if (gclid) {
       const expiryDate = new Date();
-      expiryDate.setTime(expiryDate.getTime() + 90 * 24 * 60 * 60 * 1000);
+      expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
       document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
     }
   }, []);
