@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { GetMemberUsageResponse } from '@internxt/sdk/dist/workspaces';
 import workspacesService from 'app/core/services/workspace.service';

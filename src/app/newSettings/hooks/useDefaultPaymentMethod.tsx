@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { PaymentMethod, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { PaymentMethod, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Source } from '@stripe/stripe-js';
 
 import paymentService from 'app/payment/services/payment.service';

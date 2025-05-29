@@ -11,7 +11,6 @@ import { t } from 'i18next';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
-import localStorageService from '../../core/services/local-storage.service';
 import workspacesService from '../../core/services/workspace.service';
 import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData } from '../types';
 import { updateDatabaseFileSourceData } from './database.service';
@@ -19,10 +18,12 @@ import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
 import { addAllFoldersToZip, addAllSharedFoldersToZip } from './foldersZip.service';
 import newStorageService from './new-storage.service';
 import {
+  DownloadFilesType,
   FileIterator,
   FolderIterator,
   SharedFileIterator,
   SharedFolderIterator,
+  isLostConnectionError,
 } from '../../drive/services/downloadManager.service';
 import { DriveItemBlobData } from '../../database/services/database.service';
 import dateService from '../../core/services/date.service';
@@ -298,11 +299,18 @@ export async function downloadFolderAsZip({
   updateNumItems: () => void;
   options: DownloadFolderAsZipOptions;
   abortController?: AbortController;
-}): Promise<void> {
+}): Promise<{
+  totalItems: DownloadFilesType;
+  failedItems: DownloadFilesType;
+  allItemsFailed: boolean;
+}> {
   const folderId: DriveFolderData['id'] = folder.id;
   const folderName: DriveFolderData['name'] = folder.plainName ?? folder.plain_name ?? folder.name;
   const folderUUID: DriveFolderData['uuid'] = folder.uuid;
   const rootFolder: FolderRef = { folderId, name: folderName, folderUuid: folderUUID };
+  const failedItems: DownloadFilesType = [];
+  const totalItems: DownloadFilesType = [];
+  let allItemsFailed = false;
 
   const workspaceId = options.workspaceId;
   let totalSize = 0;
@@ -349,39 +357,55 @@ export async function downloadFolderAsZip({
     }
   }, maxConcurrency);
 
+  const addUniqueItem = (item) => {
+    const isItemAlreadyAdded = totalItems.some((i) => i.id === item.id);
+    if (!isItemAlreadyAdded) {
+      totalItems.push(item);
+    }
+  };
+
   const downloadFolder = async (folderToDownload: FolderRef) => {
     const files = await addAllFilesToZip(
       folderToDownload.name,
       async (file) => {
-        updateNumItems();
-        const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-        const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
-        const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
+        addUniqueItem(file);
+        try {
+          updateNumItems();
+          const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+          const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
+          const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
-        if (cachedFile?.source && !isCachedFileOlder) {
-          return cachedFile.source.stream();
+          if (cachedFile?.source && !isCachedFileOlder) {
+            return cachedFile.source.stream();
+          }
+
+          const downloadedFileStream = await downloadFile({
+            bucketId: file.bucket,
+            fileId: file.fileId,
+            creds: options.credentials,
+            mnemonic: options.mnemonic,
+            options: {
+              notifyProgress: () => {},
+              abortController,
+            },
+          });
+
+          const sourceBlob = await binaryStreamToBlob(downloadedFileStream, file.type || '');
+          await updateDatabaseFileSourceData({
+            folderId: file.folderId,
+            sourceBlob,
+            fileId: file.id,
+            updatedAt: file.updatedAt,
+          });
+
+          return sourceBlob.stream();
+        } catch (error: unknown) {
+          if (isLostConnectionError(error)) {
+            throw error;
+          }
+          failedItems.push(file);
+          return;
         }
-
-        const downloadedFileStream = await downloadFile({
-          bucketId: file.bucket,
-          fileId: file.fileId,
-          creds: options.credentials,
-          mnemonic: options.mnemonic,
-          options: {
-            notifyProgress: () => {},
-            abortController,
-          },
-        });
-
-        const sourceBlob = await binaryStreamToBlob(downloadedFileStream, file.type || '');
-        await updateDatabaseFileSourceData({
-          folderId: file.folderId,
-          sourceBlob,
-          fileId: file.id,
-          updatedAt: file.updatedAt,
-        });
-
-        return sourceBlob.stream();
       },
       (filesIterator as FileIterator)(folderToDownload.folderId, folderToDownload.folderUuid as string, workspaceId),
       zip,
@@ -400,7 +424,7 @@ export async function downloadFolderAsZip({
       },
     );
 
-    totalSize += files.reduce((a, f) => f.size + a, 0);
+    totalSize += files.reduce((a, f) => f?.size + a, 0);
 
     const pendingFolders: FolderRef[] = folders.map((f) => {
       return {
@@ -416,34 +440,43 @@ export async function downloadFolderAsZip({
     const { files, token: fileToken } = await addAllSharedFilesToZip(
       folderToDownload.name,
       async (file) => {
-        const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-        const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
-        const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
+        addUniqueItem(file);
+        try {
+          const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+          const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
+          const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
-        updateNumItems();
+          updateNumItems();
 
-        if (cachedFile?.source && !isCachedFileOlder) {
-          updateProgress(1);
-          return cachedFile.source.stream();
+          if (cachedFile?.source && !isCachedFileOlder) {
+            updateProgress(1);
+            return cachedFile.source.stream();
+          }
+
+          const downloadedFileStream = await downloadFile({
+            bucketId: file.bucket as string,
+            // TODO: TO WORK UNTIL SDK TYPE CORRECT THE field fileiId -> fileId
+            fileId: (file as any).fileId,
+            creds: options.credentials,
+            mnemonic: options.mnemonic,
+          });
+
+          const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
+          await updateDatabaseFileSourceData({
+            folderId: file.folderId,
+            sourceBlob,
+            fileId: file.id,
+            updatedAt: file.updatedAt,
+          });
+
+          return sourceBlob.stream();
+        } catch (error: unknown) {
+          if (isLostConnectionError(error)) {
+            throw error;
+          }
+          failedItems.push(file);
+          return;
         }
-
-        const downloadedFileStream = await downloadFile({
-          bucketId: file.bucket as string,
-          // TODO: TO WORK UNTIL SDK TYPE CORRECT THE field fileiId -> fileId
-          fileId: (file as any).fileId,
-          creds: options.credentials,
-          mnemonic: options.mnemonic,
-        });
-
-        const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
-        await updateDatabaseFileSourceData({
-          folderId: file.folderId,
-          sourceBlob,
-          fileId: file.id,
-          updatedAt: file.updatedAt,
-        });
-
-        return sourceBlob.stream();
       },
       (filesIterator as SharedFileIterator)(
         folderToDownload.folderUuid as string,
@@ -480,17 +513,24 @@ export async function downloadFolderAsZip({
     while (downloadQueue.running() > 0 || downloadQueue.length() > 0) {
       await downloadQueue.drain();
     }
+    allItemsFailed = totalItems.length > 0 && failedItems.length === totalItems.length;
 
     totalSizeIsReady = true;
     if (options.closeWhenFinished === undefined || options.closeWhenFinished === true) {
+      if (allItemsFailed) {
+        zip.abort();
+      }
       updateProgress(1);
       await zip.close();
     }
   } catch (err) {
     const castedError = errorService.castError(err);
     zip.abort();
+    await zip.close();
     throw castedError;
   }
+
+  return { totalItems, failedItems, allItemsFailed };
 }
 
 export const checkIfCachedSourceIsOlder = ({

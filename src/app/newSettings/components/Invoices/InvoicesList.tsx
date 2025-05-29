@@ -1,4 +1,4 @@
-import { Invoice } from '@internxt/sdk/dist/drive/payments/types';
+import { Invoice } from '@internxt/sdk/dist/drive/payments/types/types';
 import { DownloadSimple } from '@phosphor-icons/react';
 import { useState } from 'react';
 import dateService from '../../../core/services/date.service';

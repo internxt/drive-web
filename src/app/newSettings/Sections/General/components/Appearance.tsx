@@ -63,6 +63,7 @@ const Appearance = () => {
           isStarWarsThemeAvailable
         ) {
           setAppearances([...appearances, { theme: 'starwars', img: appearance_dark }]);
+          setAppearances([...appearances, { theme: 'starwars2', img: appearance_dark }]);
         }
       })
       .catch((err) => {

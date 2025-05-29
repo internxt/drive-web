@@ -17,10 +17,11 @@ import { sessionActions } from '../session';
 import { sessionSelectors } from '../session/session.selectors';
 import { storageActions } from '../storage';
 import { uiActions } from '../ui';
-import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
+import { workspacesActions } from '../../../store/slices/workspaces/workspacesStore';
 
 import errorService from '../../../core/services/error.service';
 import { isTokenExpired } from '../../utils';
+import { syncAvatarIfNeeded } from '../../../utils/avatar/avatarUtils';
 
 export interface UserState {
   isInitializing: boolean;
@@ -83,7 +84,8 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
     if (isExpired || forceRefresh) {
       const { user, token } = await userService.refreshUser();
 
-      const { avatar, emailVerified, name, lastname } = user;
+      const { avatar, emailVerified, name, lastname, uuid } = user;
+      await syncAvatarIfNeeded(uuid, avatar);
 
       dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
       dispatch(userActions.setToken(token));
@@ -99,7 +101,8 @@ export const refreshUserDataThunk = createAsyncThunk<void, void, { state: RootSt
 
     try {
       const { user } = await userService.refreshUserData(currentUser.uuid);
-      const { avatar, emailVerified, name, lastname } = user;
+      const { avatar, emailVerified, name, lastname, uuid } = user;
+      await syncAvatarIfNeeded(uuid, avatar);
 
       dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
     } catch (err) {
