@@ -4,20 +4,25 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 85%",
-    "title": "Join the online privacy side",
+
+    "label": "Save 80%",
+    "upperTitle": "World Environment Day deal",
+    "title": "Annual and Lifetime plans!",
     "cta": "Claim deal",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
-    "specialOfferLabel": "",
-    "specialOfferGift": "Win an Internxt x Swiss Peak backpack",
+    "specialOfferLabel":"",
+    "specialOfferGift":"Win an Internxt x Swiss Peak backpack",
+
     "features": [
       "Drive, VPN, and Antivirus",
       "Post-quantum encryption",
-      "Open-source and audited",
+      "Sustainable cloud storage",
       "End-to-end encrypted transfers",
-      "Special theme for Web App",
-      "Offer ends May 26"
+
+      "No unauthorized access",
+      "Offer ends June 27"
+
     ]
   },
   "susbcriptionsBanner": {
@@ -87,7 +92,9 @@
     "superBowl": "Super Bowl",
     "valentines": "Valentine's Day",
     "stpatricks": "St. Patrick's Day",
-    "idmanagement": "Identity Management"
+    "idmanagement": "Identity Management",
+    "environment": "World Environment Day"
+
   },
   "auth": {
     "email": "Email",
