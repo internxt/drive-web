@@ -12,6 +12,7 @@ import { userSelectors } from 'app/store/slices/user';
 
 const OFFER_END_DAY = new Date('2025-06-27');
 
+
 const BannerWrapper = (): JSX.Element => {
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const plan = useSelector<RootState, PlanState>((state) => state.plan);

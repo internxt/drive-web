@@ -1,4 +1,4 @@
-import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
 export enum Currency {
   'eur' = '€',

@@ -1,7 +1,7 @@
 import { t } from 'i18next';
 import { useState } from 'react';
 
-import { CustomerBillingInfo } from '@internxt/sdk/dist/drive/payments/types';
+import { CustomerBillingInfo } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Button, Modal } from '@internxt/ui';
 
 import { PhoneInput } from 'react-international-phone';

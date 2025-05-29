@@ -1,7 +1,9 @@
+
 import { Asterisk, CheckCircle, ShieldCheck, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ShieldIcon from 'assets/images/banner/shield-blue.svg';
 import styles from 'app/banners/FeaturesBanner.module.scss';
+
 interface FeaturesBannerProps {
   showBanner: boolean;
   onClose: () => void;
@@ -27,6 +29,12 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
         flex-col
         overflow-hidden
         rounded-2xl`}
+        style={{
+          backgroundImage: `url(${BackgroundImage})`,
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+        }}
       >
         <button
           id="close-banner"
@@ -39,6 +47,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
 
         <div className="flex max-w-[1000px] px-10 flex-col items-center justify-between py-8 pt-20 md:flex-row md:pb-10 lg:w-screen">
           <div className="flex flex-1 w-full flex-col items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
+
             <div className="flex rounded-xl border-2 border-green-dark bg-green px-3 py-1.5 ">
               <p className="text-2xl font-bold text-white">{translate('featuresBanner.label')}</p>
             </div>
@@ -46,6 +55,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
               {translate('featuresBanner.upperTitle')}
             </p>
             <p className="w-full max-w-[600px] text-white text-5xl font-bold leading-tight ">
+
               {translate('featuresBanner.title')}
             </p>
             <div className="flex flex-col items-center space-y-3 lg:items-start">
@@ -69,12 +79,13 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
               <div className="flex flex-col space-y-8">
                 {features.map((card, index) => (
                   <div className="flex flex-row space-x-1 font-bold " key={index}>
+
                     <div className="flex justify-center items-center">
                       <div className="w-8 h-8 flex items-center justify-center">
-                        {/* <ShieldCheck size={32} className="text-primary " weight="fill" /> */}
                         <img src={ShieldIcon} alt={'Icon'} width={32} height={32} />
                       </div>
                       <p className="text-xl pl-2 font-semibold text-white">{card}</p>
+
                     </div>
                   </div>
                 ))}
