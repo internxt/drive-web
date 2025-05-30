@@ -23,7 +23,7 @@ import { getEnvironmentConfig } from './network.service';
 import { FileToUpload } from './file.service/types';
 
 export interface ThumbnailToUpload {
-  fileId: number;
+  fileId: string;
   size: number;
   max_width: number;
   max_height: number;
@@ -130,19 +130,19 @@ export const uploadThumbnail = async (
     abortController,
   });
 
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const thumbnailEntry: StorageTypes.ThumbnailEntry = {
-    file_id: thumbnailToUpload.fileId,
-    max_width: thumbnailToUpload.max_width,
-    max_height: thumbnailToUpload.max_height,
-    type: thumbnailToUpload.type,
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const thumbnailEntry: StorageTypes.CreateThumbnailEntryPayload = {
+    bucketFile,
+    bucketId,
+    encryptVersion: StorageTypes.EncryptionVersion.Aes03,
+    fileUuid: thumbnailToUpload.fileId,
+    maxHeight: thumbnailToUpload.max_height,
+    maxWidth: thumbnailToUpload.max_width,
     size: thumbnailToUpload.size,
-    bucket_id: bucketId,
-    bucket_file: bucketFile,
-    encrypt_version: StorageTypes.EncryptionVersion.Aes03,
+    type: thumbnailToUpload.type,
   };
 
-  return await storageClient.createThumbnailEntry(thumbnailEntry);
+  return await storageClient.createThumbnailEntryWithUUID(thumbnailEntry);
 };
 
 /**
@@ -176,7 +176,7 @@ export const getThumbnailFrom = async (fileToUpload: FileToUpload): Promise<Thum
 
 export const generateThumbnailFromFile = async (
   fileToUpload: FileToUpload,
-  fileId: number,
+  fileId: string,
   userEmail: string,
   isTeam: boolean,
 ): Promise<{ thumbnail: Thumbnail; thumbnailFile: File } | null> => {
