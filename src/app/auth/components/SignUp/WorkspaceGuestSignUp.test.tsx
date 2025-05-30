@@ -8,12 +8,13 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
 import { Buffer } from 'buffer';
 import { generateMnemonic } from 'bip39';
+import { envConfig } from 'app/core/services/env.service';
 
-const originalEnv = process.env.REACT_APP_CRYPTO_SECRET;
-const originalSalt = process.env.REACT_APP_MAGIC_SALT;
-const originalIV = process.env.REACT_APP_MAGIC_IV;
-const originalURL = process.env.REACT_APP_API_URL;
-const originalHostName = process.env.REACT_APP_HOSTNAME;
+const originalEnv = envConfig.crypto.secret;
+const originalSalt = envConfig.crypto.magicSalt;
+const originalIV = envConfig.crypto.magicIv;
+const originalURL = envConfig.api.api;
+const originalHostName = envConfig.app.hostname;
 
 const mockPassword = 'mock-password';
 const mockEmal = 'mock@email.com';
@@ -22,12 +23,12 @@ let callCount = 0;
 
 describe('onSubmit', () => {
   beforeAll(() => {
-    process.env.REACT_APP_CRYPTO_SECRET = '123456789QWERTY';
-    process.env.REACT_APP_MAGIC_IV = '12345678912345678912345678912345';
-    process.env.REACT_APP_MAGIC_SALT =
+    envConfig.crypto.secret = '123456789QWERTY';
+    envConfig.crypto.magicIv = '12345678912345678912345678912345';
+    envConfig.crypto.magicSalt =
       '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-    process.env.REACT_APP_API_URL = 'https://mock';
-    process.env.REACT_APP_HOSTNAME = 'hostname';
+    envConfig.api.api = 'https://mock';
+    envConfig.app.hostname = 'hostname';
     globalThis.Buffer = Buffer;
 
     vi.spyOn(globalThis, 'decodeURIComponent').mockImplementation((value) => {
@@ -237,11 +238,11 @@ describe('onSubmit', () => {
   });
 
   afterAll(() => {
-    process.env.REACT_APP_CRYPTO_SECRET = originalEnv;
-    process.env.REACT_APP_MAGIC_SALT = originalSalt;
-    process.env.REACT_APP_MAGIC_IV = originalIV;
-    process.env.REACT_APP_API_URL = originalURL;
-    process.env.REACT_APP_HOSTNAME = originalHostName;
+    envConfig.crypto.secret = originalEnv;
+    envConfig.crypto.magicSalt = originalSalt;
+    envConfig.crypto.magicIv = originalIV;
+    envConfig.api.api = originalURL;
+    envConfig.app.hostname = originalHostName;
   });
 
   it('when called with new valid data, then user with decypted keys is saved in local storage', async () => {

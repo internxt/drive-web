@@ -1,5 +1,6 @@
 import io, { Socket } from 'socket.io-client';
 import localStorageService from './local-storage.service';
+import { envConfig } from './env.service';
 
 export const SOCKET_EVENTS = {
   FILE_CREATED: 'FILE_CREATED',
@@ -22,7 +23,7 @@ export default class RealtimeService {
       console.log('[REALTIME]: CONNECTING...');
     }
 
-    this.socket = io(process.env.REACT_APP_NOTIFICATIONS_URL, {
+    this.socket = io(envConfig.services.notifications, {
       auth: {
         token: getToken(),
       },
@@ -87,7 +88,7 @@ export default class RealtimeService {
 }
 
 function isProduction(): boolean {
-  return process.env.NODE_ENV === 'production';
+  return envConfig.app.nodeEnv === 'production';
 }
 
 function getToken(): string {

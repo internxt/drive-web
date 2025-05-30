@@ -1,7 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterAll, Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock, afterAll } from 'vitest';
 import { mapBackupFolder } from './mappers';
 import { aes } from '@internxt/lib';
 import type { DriveFolderData } from '../../drive/types';
+import { envConfig } from 'app/core/services/env.service';
 
 vi.mock('@internxt/lib', () => ({
   aes: {
@@ -10,16 +11,17 @@ vi.mock('@internxt/lib', () => ({
 }));
 
 describe('Mapping backup folder', () => {
-  const secret = 'my-secret';
-  const originalEnv = process.env;
+  const mockedSecret2 = 'my-secret';
+  const originalEnvCryptoSecret2 = envConfig.crypto.secret2;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env = { ...originalEnv, REACT_APP_CRYPTO_SECRET2: secret };
+    envConfig.crypto.secret2 = mockedSecret2;
   });
 
   afterAll(() => {
-    process.env = originalEnv;
+    vi.restoreAllMocks();
+    envConfig.crypto.secret2 = originalEnvCryptoSecret2;
   });
 
   it('When the plainName parameter is returned, then we use this parameter as name', () => {

@@ -11,18 +11,19 @@ import { SdkFactory } from '../../core/factory/sdk';
 import localStorageService from 'app/core/services/local-storage.service';
 import { userActions } from 'app/store/slices/user';
 import * as pgpService from 'app/crypto/services/pgp.service';
+import { envConfig } from 'app/core/services/env.service';
 
-const originalEnv = process.env.REACT_APP_CRYPTO_SECRET;
-const originalSalt = process.env.REACT_APP_MAGIC_SALT;
-const originalIV = process.env.REACT_APP_MAGIC_IV;
-const originalURL = process.env.REACT_APP_API_URL;
+const originalEnv = envConfig.crypto.secret;
+const originalSalt = envConfig.crypto.magicSalt;
+const originalIV = envConfig.crypto.magicIv;
+const originalURL = envConfig.api.api;
 
 beforeAll(() => {
-  process.env.REACT_APP_CRYPTO_SECRET = '123456789QWERTY';
-  process.env.REACT_APP_MAGIC_IV = '12345678912345678912345678912345';
-  process.env.REACT_APP_MAGIC_SALT =
+  envConfig.crypto.secret = '123456789QWERTY';
+  envConfig.crypto.magicIv = '12345678912345678912345678912345';
+  envConfig.crypto.magicSalt =
     '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-  process.env.REACT_APP_API_URL = 'https://mock';
+  envConfig.api.api = 'https://mock';
   globalThis.Buffer = Buffer;
 
   window.gtag = vi.fn();
@@ -142,10 +143,10 @@ beforeEach(() => {
 });
 
 afterAll(() => {
-  process.env.REACT_APP_CRYPTO_SECRET = originalEnv;
-  process.env.REACT_APP_MAGIC_SALT = originalSalt;
-  process.env.REACT_APP_MAGIC_IV = originalIV;
-  process.env.REACT_APP_API_URL = originalURL;
+  envConfig.crypto.secret = originalEnv;
+  envConfig.crypto.magicSalt = originalSalt;
+  envConfig.crypto.magicIv = originalIV;
+  envConfig.api.api = originalURL;
 });
 
 async function getMockUser(password: string, mnemonic: string) {

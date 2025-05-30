@@ -14,6 +14,7 @@ import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/
 import { TaskStatus } from '../tasks/types';
 import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
 import { WORKER_MESSAGE_STATES } from '../../WebWorker';
+import { envConfig } from 'app/core/services/env.service';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -91,8 +92,8 @@ export class NetworkFacade {
         fileHash = hash;
       },
       async (url: string) => {
-        const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
-        const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
+        const useProxy = envConfig.services.dontUseProxy !== 'true' && !new URL(url).hostname.includes('internxt');
+        const fetchUrl = (useProxy ? envConfig.services.proxy + '/' : '') + url;
         const isPaused = options.continueUploadOptions?.isPaused;
 
         postMessage({ result: WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS });

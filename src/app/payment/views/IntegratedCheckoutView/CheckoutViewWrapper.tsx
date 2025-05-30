@@ -9,7 +9,7 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
-import envService from '../../../core/services/env.service';
+import envService, { envConfig } from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
@@ -84,7 +84,7 @@ export interface CheckoutViewManager {
 }
 
 const IS_PRODUCTION = envService.isProduction();
-const RETURN_URL_DOMAIN = IS_PRODUCTION ? process.env.REACT_APP_HOSTNAME : 'http://localhost:3000';
+const RETURN_URL_DOMAIN = IS_PRODUCTION ? envConfig.app.hostname : 'http://localhost:3000';
 const STATUS_CODE_ERROR = {
   USER_EXISTS: 409,
   COUPON_NOT_VALID: 422,

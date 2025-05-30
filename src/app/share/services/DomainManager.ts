@@ -1,4 +1,4 @@
-import envService from '../../core/services/env.service';
+import envService, { envConfig } from '../../core/services/env.service';
 import errorService from '../../core/services/error.service';
 import shareService from './share.service';
 
@@ -18,14 +18,14 @@ class DomainManager {
   async fetchDomains(): Promise<void> {
     try {
       const response = isDevelopment
-        ? { list: [process.env.REACT_APP_SHARE_LINKS_DOMAIN] }
+        ? { list: [envConfig.services.shareLinksDomain] }
         : await shareService.getShareDomains();
 
       const domainsList = response.list;
       this.domains = domainsList;
     } catch (error) {
       errorService.reportError(error);
-      this.domains = [process.env.REACT_APP_SHARE_LINKS_DOMAIN];
+      this.domains = [envConfig.services.shareLinksDomain];
     }
   }
 
