@@ -15,10 +15,11 @@ import { DriveItemData, DriveItemDetails, FolderPath } from '../../../../drive/t
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { uiActions } from '../../../../store/slices/ui';
 import { getAppConfig } from '../../../../core/services/config.service';
-import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { storageActions } from '../../../../store/slices/storage';
 import shareService from '../../../../share/services/share.service';
 import { BreadcrumbsMenuProps, Dropdown } from '@internxt/ui';
+import { DownloadManager } from '../../../../network/DownloadManager';
+import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
 
 const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   const { onItemClicked } = props;
@@ -26,6 +27,8 @@ const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const allItems = useAppSelector((state) => state.storage.levels);
   const namePath = useAppSelector((state) => state.storage.namePath);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const currentBreadcrumb = namePath[namePath.length - 1];
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id;
@@ -54,7 +57,11 @@ const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   };
 
   const onDownloadButtonClicked = () => {
-    dispatch(storageThunks.downloadItemsThunk(currentFolder));
+    DownloadManager.downloadItem({
+      payload: currentFolder,
+      selectedWorkspace,
+      workspaceCredentials,
+    });
   };
 
   const onDetailsItemButtonClicked = async () => {
@@ -89,7 +96,7 @@ const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
 
   return (
     <Dropdown
-      classButton="flex max-w-fit flex-1 cursor-pointer flex-row items-center truncate rounded-md p-1 px-1.5 font-medium text-gray-100 outline-none hover:bg-gray-5 focus-visible:bg-gray-5"
+      classButton="flex w-full overflow-hidden flex-1 cursor-pointer flex-row items-center truncate rounded-md p-1 px-1.5 font-medium text-gray-100 outline-none hover:bg-gray-5 focus-visible:bg-gray-5"
       classMenuItems={`absolute z-10 mt-1 w-56 rounded-md border border-gray-10 bg-surface text-base shadow-subtle-hard outline-none dark:bg-gray-5 ${
         isSharedView && 'hidden'
       }`}

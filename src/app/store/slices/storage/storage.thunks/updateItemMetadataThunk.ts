@@ -30,7 +30,7 @@ export const updateItemMetadataThunk = createAsyncThunk<
     namePathDestinationArray[0] = '';
 
     item.isFolder
-      ? await folderService.updateMetaData(item.uuid, metadata)
+      ? await folderService.updateMetaData(item.uuid, metadata, resourceToken)
       : await fileService.updateMetaData(item.uuid, metadata, resourceToken);
 
     dispatch(

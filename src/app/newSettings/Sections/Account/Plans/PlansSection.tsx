@@ -1,4 +1,4 @@
-import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { AppView } from 'app/core/types';
 import Section from 'app/newSettings/components/Section';
@@ -275,10 +275,31 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     }
   };
 
+  const handleIndividualUserCurrentSubscription = (plan: DisplayPrice) => {
+    switch (individualSubscription?.type) {
+      case 'free':
+        return false;
+      case 'subscription':
+        return (
+          individualSubscription?.productId === plan.productId && individualSubscription.interval === plan.interval
+        );
+      case 'lifetime':
+        return individualSubscription.productId === plan.productId && plan.interval === 'lifetime';
+
+      default:
+        return false;
+    }
+  };
+
   const isCurrentSubscriptionPlan = (plan: DisplayPrice) => {
+    const isBusinessCurrentPlanSelected =
+      businessSubscription?.type === 'subscription' &&
+      businessSubscription?.productId === plan.productId &&
+      businessSubscription.interval === plan.interval;
+
     return isIndividualSubscriptionSelected
-      ? individualSubscription?.type === 'subscription' && individualSubscription?.priceId === plan.id
-      : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === plan.id;
+      ? handleIndividualUserCurrentSubscription(plan)
+      : isBusinessCurrentPlanSelected;
   };
 
   return (
@@ -312,11 +333,13 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
         </div>
         <div className="flex justify-center">
           <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
-            <IntervalSwitch
-              active={selectedInterval === 'month'}
-              text={translate('general.renewal.monthly')}
-              onClick={() => setSelectedInterval('month')}
-            />
+            {!isIndividualSubscriptionSelected && (
+              <IntervalSwitch
+                active={selectedInterval === 'month'}
+                text={translate('general.renewal.monthly')}
+                onClick={() => setSelectedInterval('month')}
+              />
+            )}
             <IntervalSwitch
               active={selectedInterval === 'year'}
               text={translate('general.renewal.annually')}
@@ -356,11 +379,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           onCancelSubscription={setIsCancelSubscriptionModalOpen}
           priceSelected={priceSelected}
           pricesToRender={pricesFilteredAndSorted(selectedSubscriptionType)}
-          isCurrentPlan={
-            isIndividualSubscriptionSelected
-              ? individualSubscription?.type === 'subscription' && individualSubscription?.priceId === priceSelected.id
-              : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === priceSelected.id
-          }
+          isCurrentPlan={isCurrentSubscriptionPlan(priceSelected)}
           isBusinessPlan={isBusinessSubscriptionSelected}
           translate={translate}
           handleOnPlanSelected={handleOnPlanSelected}

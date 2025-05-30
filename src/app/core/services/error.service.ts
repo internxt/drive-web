@@ -8,6 +8,10 @@ interface AxiosErrorResponse {
   message?: string;
 }
 
+interface ErrorWithStatus extends Error {
+  status?: number;
+}
+
 const errorService = {
   /**
    * Reports an error to Sentry
@@ -40,7 +44,7 @@ const errorService = {
     } else if (typeof err === 'string') {
       castedError = new AppError(err);
     } else if (err instanceof Error) {
-      castedError.message = err.message;
+      castedError = new AppError(err.message || 'Unknown error', (err as ErrorWithStatus).status);
     } else {
       const map = err as Record<string, unknown>;
       castedError = map.message ? new AppError(map.message as string, map.status as number) : castedError;

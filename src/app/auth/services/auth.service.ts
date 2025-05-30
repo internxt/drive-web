@@ -42,12 +42,15 @@ import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/u
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
+import envService from '../../core/services/env.service';
 import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
+import vpnAuthService from './vpnAuth.service';
 
 type ProfileInfo = {
   user: UserSettings;
   token: string;
+  newToken: string;
   mnemonic: string;
 };
 
@@ -93,6 +96,7 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
     errorService.reportError(error);
   }
 
+  vpnAuthService.logOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
@@ -102,9 +106,9 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
 }
 
 export function cancelAccount(): Promise<void> {
-  const email = localStorageService.getUser()?.email;
-  const authClient = SdkFactory.getInstance().createAuthClient();
-  return authClient.sendDeactivationEmail(<string>email);
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const token = localStorageService.get('xNewToken') ?? undefined;
+  return authClient.sendUserDeactivationEmail(token);
 }
 
 export const is2FANeeded = async (email: string): Promise<boolean> => {
@@ -192,6 +196,7 @@ export const doLogin = async (
       return {
         user: clearUser,
         token: token,
+        newToken,
         mnemonic: clearMnemonic,
       };
     })
@@ -353,8 +358,9 @@ export const deactivate2FA = (
 export const getNewToken = async (): Promise<string> => {
   const serviceHeaders = httpService.getHeaders(true, false);
   const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
+  const BASE_API_URL = envService.isProduction() ? process.env.REACT_APP_API_URL : 'https://drive.internxt.com/api';
 
-  const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
+  const res = await fetch(`${BASE_API_URL}/new-token`, {
     headers: headers,
   });
   if (!res.ok) {
@@ -497,12 +503,12 @@ export const signUp = async (params: SignUpParams) => {
   if (isNewUser) dispatch(referralsThunks.initializeThunk());
   await trackSignUp(xUser.uuid, email);
 
-  return { token: xToken, user: xUser, mnemonic };
+  return { token: xToken, user: xUser, mnemonic, newToken: xNewToken };
 };
 
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
   const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
-  const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
+  const { token, newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
   dispatch(userActions.setUser(user));
 
   try {
@@ -520,7 +526,7 @@ export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
 
   userActions.setUser(user);
 
-  return { token, user, mnemonic };
+  return { token, user, mnemonic, newToken };
 };
 
 export const authenticateUser = async (params: AuthenticateUserParams): Promise<ProfileInfo> => {

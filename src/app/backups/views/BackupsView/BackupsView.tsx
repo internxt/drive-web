@@ -5,11 +5,9 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { Helmet } from 'react-helmet-async';
 import DeleteBackupDialog from '../../../drive/components/DeleteBackupDialog/DeleteBackupDialog';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
-import Dialog from '../../../shared/components/Dialog/Dialog';
 import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
 import DeviceList from '../../components/DeviceList/DeviceList';
 import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
-import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import { deleteFile } from '../../../drive/services/file.service';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
@@ -21,7 +19,9 @@ import { useBackupDeviceActions } from 'app/backups/hooks/useBackupDeviceActions
 import { useBackupsPagination } from 'app/backups/hooks/useBackupsPagination';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { MenuItemType } from '@internxt/ui';
+import { Dialog, MenuItemType } from '@internxt/ui';
+import { DownloadManager } from '../../../network/DownloadManager';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 
 export default function BackupsView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -29,6 +29,8 @@ export default function BackupsView(): JSX.Element {
   const isLoadingDevices = useAppSelector((state) => state.backups.isLoadingDevices);
   const devices = useAppSelector((state) => state.backups.devices);
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const [foldersInBreadcrumbs, setFoldersInBreadcrumbs] = useState<DriveFolderData[]>([]);
 
   const {
@@ -60,11 +62,21 @@ export default function BackupsView(): JSX.Element {
     useBackupsPagination(folderUuid, clearSelectedItems);
 
   const onDownloadSelectedItems = () => {
-    dispatch(downloadItemsThunk(selectedItems));
+    DownloadManager.downloadItem({
+      payload: selectedItems,
+      selectedWorkspace,
+      workspaceCredentials,
+    });
   };
 
   const onDownloadFileFormFileViewer = () => {
-    if (itemToPreview && isFileViewerOpen) dispatch(downloadItemsThunk([itemToPreview as DriveItemData]));
+    if (itemToPreview && isFileViewerOpen) {
+      DownloadManager.downloadItem({
+        payload: [itemToPreview as DriveItemData],
+        selectedWorkspace,
+        workspaceCredentials,
+      });
+    }
   };
 
   const onDeleteSelectedItems = async () => {

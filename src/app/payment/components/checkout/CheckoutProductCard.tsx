@@ -1,23 +1,27 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Switch, Transition } from '@headlessui/react';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Check, SealPercent, X } from '@phosphor-icons/react';
 
 import { bytesToString } from '../../../drive/services/size.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { UpsellManagerProps } from '../../views/IntegratedCheckoutView/CheckoutViewWrapper';
 import TextInput from '../../../share/components/ShareItemDialog/components/TextInput';
 import { Button } from '@internxt/ui';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guarantee-dark.svg';
 import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
-import { CouponCodeData, Currency, RequestedPlanData } from '../../types';
+import { CouponCodeData, Currency } from '../../types';
 import { SelectSeatsComponent } from './SelectSeatsComponent';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import { UpsellManagerProps } from 'app/payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
+import { formatPrice } from 'app/payment/utils/formatPrice';
 
 interface CheckoutProductCardProps {
-  selectedPlan: RequestedPlanData;
+  selectedPlan: PriceWithTax;
   seatsForBusinessSubscription: number;
+  showCouponCode: boolean;
+  showHardcodedRenewal?: string;
   upsellManager: UpsellManagerProps;
   onSeatsChange: (users: number) => void;
   onRemoveAppliedCouponCode: () => void;
@@ -28,39 +32,11 @@ interface CheckoutProductCardProps {
 
 const Separator = () => <div className="border border-gray-10" />;
 
-const getTextContent = (
-  users: number,
-  isBusiness: boolean,
-  bytes: string,
-  selectedPlan: RequestedPlanData,
-  translate: (key: string, props?: Record<string, unknown>) => string,
-  translateList: (key: string, props?: Record<string, unknown>) => string[],
-) => {
-  const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
-  const totalLabel = isBusiness
-    ? translate('checkout.productCard.totalForBusiness', {
-        N: users,
-      })
-    : translate('checkout.productCard.total');
-  const features = translateList(
-    `checkout.productCard.planDetails.features.${selectedPlan.type ?? UserType.Individual}`,
-    {
-      spaceToUpgrade: bytes,
-      minimumSeats: selectedPlan.minimumSeats,
-      maximumSeats: selectedPlan.maximumSeats,
-    },
-  );
-
-  return {
-    perUserLabel,
-    totalLabel,
-    features,
-  };
-};
-
 export const CheckoutProductCard = ({
   selectedPlan,
   couponCodeData,
+  showCouponCode,
+  showHardcodedRenewal,
   couponError,
   seatsForBusinessSubscription,
   upsellManager,
@@ -72,34 +48,43 @@ export const CheckoutProductCard = ({
   const { checkoutTheme } = useThemeContext();
   const [couponName, setCouponName] = useState<string>('');
   const [openCouponCodeDropdown, setOpenCouponCodeDropdown] = useState<boolean>(false);
-  const bytes = bytesToString(selectedPlan.bytes);
-  const currencySymbol = Currency[selectedPlan.currency];
-  const normalPriceAmount = selectedPlan.decimalAmount;
+  const bytes = bytesToString(selectedPlan.price.bytes);
+  const currencySymbol = Currency[selectedPlan.price.currency];
+  const normalPriceAmount = selectedPlan.price.decimalAmount;
 
   const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
-  const isBusiness = selectedPlan.type === UserType.Business;
-  const textContent = getTextContent(
-    seatsForBusinessSubscription,
-    isBusiness,
-    bytes,
-    selectedPlan,
-    translate,
-    translateList,
-  );
+  const isBusiness = selectedPlan.price.type === UserType.Business;
+  const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
+  const totalLabel = isBusiness
+    ? translate('checkout.productCard.totalForBusiness', {
+        N: seatsForBusinessSubscription,
+      })
+    : translate('checkout.productCard.total');
   const renewalPeriodLabel = `${translate('checkout.productCard.renewalPeriod.renewsAt')}
           ${currencySymbol}${normalPriceAmount}/${translate(
-            `checkout.productCard.renewalPeriod.${selectedPlan.interval}`,
+            `checkout.productCard.renewalPeriod.${selectedPlan.price.interval}`,
           )}`;
 
-  const planAmount = getProductAmount(selectedPlan.decimalAmount, 1, couponCodeData);
-  const totalAmount = getProductAmount(selectedPlan.decimalAmount, seatsForBusinessSubscription, couponCodeData);
+  const planAmountWithoutTaxes = getProductAmount(selectedPlan.price.decimalAmount, 1, couponCodeData);
   const upsellPlanAmount =
     upsellManager.amount && getProductAmount(upsellManager.amount, seatsForBusinessSubscription, couponCodeData);
-
   const discountPercentage =
-    couponCodeData?.amountOff && couponCodeData?.amountOff < selectedPlan.amount
-      ? ((couponCodeData?.amountOff / selectedPlan.amount) * 100).toFixed(2)
+    couponCodeData?.amountOff && couponCodeData?.amountOff < selectedPlan.taxes.amountWithTax
+      ? ((couponCodeData?.amountOff / selectedPlan.taxes.amountWithTax) * 100).toFixed(2)
       : undefined;
+
+  const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
+
+  const productLabel = translate(`preferences.account.plans.planFeaturesList.${bytes}.title`) ?? bytes;
+  const featureKeys =
+    translateList(`preferences.account.plans.${planType}.${bytes ?? 'freeFeatures'}.features`, {
+      returnObjects: true,
+    }) ?? translateList('preferences.account.plans.planFeaturesList.1GB.features');
+
+  const comingSoonFeatureKeys = useMemo(() => {
+    const result = translateList(`preferences.account.plans.${planType}.${bytes}.comingSoonFeatures`);
+    return Array.isArray(result) ? result : [];
+  }, [planType, bytes, translateList]);
 
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
@@ -113,12 +98,9 @@ export const CheckoutProductCard = ({
         <div className="flex w-full flex-col space-y-5">
           <p>{translate('checkout.productCard.selectedPlan')}</p>
           <p className="text-2xl font-bold text-gray-100">
-            {translate(`checkout.productCard.plan.${selectedPlan.interval}`, {
-              spaceToUpgrade: bytes,
-              interval: translate(`checkout.productCard.renewalPeriod.${selectedPlan.interval}`),
-            })}
+            {productLabel + ' - ' + translate(`checkout.productCard.renewalTitle.${selectedPlan.price.interval}`)}
           </p>
-          {isBusiness && selectedPlan.maximumSeats && selectedPlan.minimumSeats ? (
+          {isBusiness && selectedPlan.price?.maximumSeats && selectedPlan.price?.minimumSeats ? (
             <>
               <p className="text-lg font-medium">
                 {translate('checkout.productCard.numberOfUsers', {
@@ -126,8 +108,8 @@ export const CheckoutProductCard = ({
                 })}
               </p>
               <SelectSeatsComponent
-                maxSeats={selectedPlan.maximumSeats}
-                minSeats={selectedPlan.minimumSeats}
+                maxSeats={selectedPlan.price?.maximumSeats}
+                minSeats={selectedPlan.price?.minimumSeats}
                 seats={seatsForBusinessSubscription}
                 onSeatsChange={onSeatsChange}
               />
@@ -135,14 +117,24 @@ export const CheckoutProductCard = ({
           ) : undefined}
           <div className="flex flex-row items-center justify-between text-gray-100">
             <p className="font-medium">
-              {translate(`checkout.productCard.billed.${selectedPlan.interval}`)}
-              {textContent.perUserLabel}
+              {translate(`checkout.productCard.billed.${selectedPlan.price.interval}`)}
+              {perUserLabel}
             </p>
             <p className="font-semibold">
               {currencySymbol}
-              {planAmount}
+              {planAmountWithoutTaxes}
             </p>
           </div>
+
+          {selectedPlan.taxes.decimalTax > 0 && (
+            <div className="flex flex-row items-center justify-between text-gray-100">
+              <p className="font-medium">{translate('checkout.productCard.taxes')}</p>
+              <p className="font-semibold">
+                {currencySymbol}
+                {selectedPlan.taxes.decimalTax}
+              </p>
+            </div>
+          )}
           {couponCodeData && (
             <div className="flex flex-row items-center justify-between font-semibold">
               <div className="flex flex-row items-center space-x-2 text-green-dark">
@@ -161,25 +153,37 @@ export const CheckoutProductCard = ({
           )}
           <Separator />
           <div className="flex flex-col space-y-5">
-            <p className="font-medium text-gray-100">{translate('checkout.productCard.planDetails.title')}</p>
+            <p className="font-medium text-gray-100">{translate('checkout.productCard.planDetails')}</p>
             <div className="flex flex-col space-y-4">
-              {textContent.features.map((feature) => (
+              {featureKeys.map((feature) => (
                 <div key={feature} className="flex flex-row items-center space-x-2">
                   <Check className="text-green-dark" size={16} weight="bold" />
                   <p className="text-gray-100">{feature}</p>
                 </div>
               ))}
+
+              {comingSoonFeatureKeys.length > 0 &&
+                comingSoonFeatureKeys?.map((feature) => (
+                  <div key={feature} className="flex flex-row items-center space-x-2">
+                    <Check className="text-green-dark" size={16} weight="bold" />
+                    <p className="text-gray-100">{feature}</p>
+
+                    <span className="rounded-md bg-orange/10 px-1 text-center text-orange">
+                      {translate('preferences.account.plans.planFeaturesList.comingSoon')}
+                    </span>
+                  </div>
+                ))}
             </div>
           </div>
           <Separator />
           <div className="flex flex-row items-center justify-between text-2xl font-semibold text-gray-100">
-            <p>{textContent.totalLabel}</p>
+            <p>{totalLabel}</p>
             <p>
               {currencySymbol}
-              {totalAmount}
+              {formatPrice(selectedPlan.taxes.decimalAmountWithTax * seatsForBusinessSubscription)}
             </p>
           </div>
-          <Separator />
+
           {showUpsellSwitch && upsellManager.amountSaved && (
             <>
               <div className="flex w-full flex-row items-center justify-between">
@@ -218,86 +222,93 @@ export const CheckoutProductCard = ({
               <Separator />
             </>
           )}
-          {couponCodeData?.codeName ? (
-            <div className="flex w-full flex-row justify-between">
-              <p className={'font-medium text-gray-50'}>{translate('checkout.productCard.addCoupon.inputText')}</p>
-              <div className="flex flex-row items-center gap-2">
-                <p className="text-lg font-medium text-gray-50">{couponCodeData.codeName}</p>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onRemoveAppliedCouponCode();
-                  }}
-                >
-                  <X size={20} className="text-gray-50" />
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-5">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setOpenCouponCodeDropdown(!openCouponCodeDropdown);
-                }}
-                className={'flex rounded-lg text-base transition-all duration-75 ease-in-out hover:underline'}
-              >
-                {translate('checkout.productCard.addCoupon.buttonTitle')}
-              </button>
-              <Transition
-                show={openCouponCodeDropdown}
-                className={'left-0'}
-                enter="transition duration-50 ease-out"
-                enterFrom="scale-98 opacity-0"
-                enterTo="scale-100 opacity-100"
-                leave="transition duration-50 ease-out"
-                leaveFrom="scale-98 opacity-100"
-                leaveTo="scale-100 opacity-0"
-              >
-                <div className="w-full items-center outline-none">
-                  <div className="flex w-full flex-col items-start space-y-1">
-                    <p className="text-sm text-gray-80">{translate('checkout.productCard.addCoupon.inputText')}</p>
-                    <div className="flex w-full flex-row space-x-3">
-                      <TextInput
-                        value={couponName}
-                        onChange={(e) => {
-                          e.preventDefault();
-                          setCouponName(e.target.value);
-                        }}
-                        placeholder={translate('checkout.productCard.addCoupon.inputText')}
-                        min={0}
-                        style={{
-                          textTransform: 'uppercase',
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            onCouponInputChange(couponName.toUpperCase().trim());
-                            setCouponName('');
-                          }
-                        }}
-                        data-cy={'coupon-code-input'}
-                        className={'inxt-input input-primary dark:bg-transparent'}
-                      />
-                      <Button
-                        disabled={!couponName?.length}
-                        onClick={() => {
-                          if (couponName) onCouponInputChange(couponName.toUpperCase().trim());
-                        }}
-                      >
-                        {translate('checkout.productCard.apply')}
-                      </Button>
-                    </div>
-                    {couponError && <p className="text-red-dark">{couponError}</p>}
+          {showCouponCode && (
+            <>
+              {couponCodeData?.codeName ? (
+                <div className="flex w-full flex-row justify-between">
+                  <p className={'font-medium text-gray-50'}>{translate('checkout.productCard.addCoupon.inputText')}</p>
+                  <div className="flex flex-row items-center gap-2">
+                    <p className="text-lg font-medium text-gray-50">{couponCodeData.codeName}</p>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onRemoveAppliedCouponCode();
+                      }}
+                    >
+                      <X size={20} className="text-gray-50" />
+                    </button>
                   </div>
                 </div>
-              </Transition>
-            </div>
+              ) : (
+                <div className="flex flex-col gap-5">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setOpenCouponCodeDropdown(!openCouponCodeDropdown);
+                    }}
+                    className={'flex rounded-lg text-base transition-all duration-75 ease-in-out hover:underline'}
+                  >
+                    {translate('checkout.productCard.addCoupon.buttonTitle')}
+                  </button>
+                  <Transition
+                    show={openCouponCodeDropdown}
+                    className={'left-0'}
+                    enter="transition duration-50 ease-out"
+                    enterFrom="scale-98 opacity-0"
+                    enterTo="scale-100 opacity-100"
+                    leave="transition duration-50 ease-out"
+                    leaveFrom="scale-98 opacity-100"
+                    leaveTo="scale-100 opacity-0"
+                  >
+                    <div className="w-full items-center outline-none">
+                      <div className="flex w-full flex-col items-start space-y-1">
+                        <p className="text-sm text-gray-80">{translate('checkout.productCard.addCoupon.inputText')}</p>
+                        <div className="flex w-full flex-row space-x-3">
+                          <TextInput
+                            value={couponName}
+                            onChange={(e) => {
+                              e.preventDefault();
+                              setCouponName(e.target.value);
+                            }}
+                            placeholder={translate('checkout.productCard.addCoupon.inputText')}
+                            min={0}
+                            style={{
+                              textTransform: 'uppercase',
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onCouponInputChange(couponName.toUpperCase().trim());
+                                setCouponName('');
+                              }
+                            }}
+                            data-cy={'coupon-code-input'}
+                            className={'inxt-input input-primary dark:bg-transparent'}
+                          />
+                          <Button
+                            disabled={!couponName?.length}
+                            onClick={() => {
+                              if (couponName) onCouponInputChange(couponName.toUpperCase().trim());
+                            }}
+                          >
+                            {translate('checkout.productCard.apply')}
+                          </Button>
+                        </div>
+                        {couponError && <p className="text-red-dark">{couponError}</p>}
+                      </div>
+                    </div>
+                  </Transition>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
-      {couponCodeData && selectedPlan.interval !== 'lifetime' && <p className="text-gray-60">{renewalPeriodLabel}</p>}
+      {couponCodeData && selectedPlan.price.interval !== 'lifetime' && (
+        <p className="text-gray-60">{renewalPeriodLabel}</p>
+      )}
+      {showHardcodedRenewal && <p className="text-gray-60">{showHardcodedRenewal}</p>}
     </div>
   );
 };

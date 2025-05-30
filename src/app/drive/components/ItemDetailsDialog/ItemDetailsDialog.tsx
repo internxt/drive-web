@@ -3,20 +3,21 @@ import { useEffect, useState } from 'react';
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
-import Modal from '../../../shared/components/Modal';
 import { X } from '@phosphor-icons/react';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import iconService from '../../../drive/services/icon.service';
-import { Button } from '@internxt/ui';
+import { Button, Modal } from '@internxt/ui';
 import { bytesToString } from '../../../drive/services/size.service';
-import localStorageService from '../../../core/services/local-storage.service';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 import { DriveItemData, DriveItemDetails, ItemDetailsProps } from '../../../drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
-import { getItemPlainName } from 'app/crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
 import { AdvancedSharedItem } from 'app/share/types';
+import { useSelector } from 'react-redux';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import dateService from '../../../core/services/date.service';
+import { getLocation } from 'app/utils/locationUtils';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -83,6 +84,8 @@ const ItemDetailsDialog = ({
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
   const user = localStorageService.getUser();
   const isFolder = item?.isFolder;
+  const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspaceSelected = !!workspaceSelected;
 
   useEffect(() => {
     if (isOpen && item && user) {
@@ -126,22 +129,32 @@ const ItemDetailsDialog = ({
     modified: string,
     email: string,
   ) {
-    const uuid = item.isFolder ? item.uuid : item.folderUuid;
-    const rootPathName = item.view;
+    const itemType = item.isFolder ? 'folder' : 'file';
+    const itemUuid = item.uuid;
+    const itemFolderUuid = item.isFolder ? itemUuid : item.folderUuid;
+    const itemCreatorUuid = item.user?.uuid;
+    const isUserOwner = (itemCreatorUuid && user && user.uuid === itemCreatorUuid) || false;
+    const storageKey = item.isFolder ? STORAGE_KEYS.FOLDER_ACCESS_TOKEN : STORAGE_KEYS.FILE_ACCESS_TOKEN;
+    const token = localStorageService.get(storageKey) || undefined;
 
-    const ancestors = await newStorageService.getFolderAncestors(uuid as string);
+    let location = '';
 
-    const getPathName = ancestors.map((ancestor) => getItemPlainName(ancestor as unknown as DriveItemData)).reverse();
-
-    if (item.isFolder) {
-      getPathName.pop();
+    if (isWorkspaceSelected) {
+      if (item.view === 'Drive' || (item.view === 'Shared' && isUserOwner)) {
+        const ancestors = await newStorageService.getFolderAncestorsInWorkspace(
+          workspaceSelected.workspace.id,
+          itemType,
+          itemUuid,
+          token,
+        );
+        location = getLocation(item, ancestors as unknown as DriveItemData[]);
+      } else {
+        location = '/Shared';
+      }
+    } else {
+      const ancestors = await newStorageService.getFolderAncestors(itemFolderUuid);
+      location = getLocation(item, ancestors as unknown as DriveItemData[]);
     }
-
-    if (item.view === 'Drive') {
-      getPathName.shift();
-    }
-
-    const path = '/' + rootPathName + (getPathName.length > 0 ? '/' + getPathName.join('/') : '');
 
     const details: ItemDetailsProps = {
       name: item.name,
@@ -150,8 +163,8 @@ const ItemDetailsDialog = ({
       size: item.isFolder ? undefined : bytesToString(item.size),
       uploaded: uploaded,
       modified: modified,
-      uploadedBy: item.userEmail ?? email,
-      location: path,
+      uploadedBy: item.user?.email ?? item.userEmail ?? email,
+      location,
     };
 
     return details;

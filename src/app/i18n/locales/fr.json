@@ -4,21 +4,33 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 80% !",
-    "title": "Faites votre jeu pour la confidentialité !",
-    "subtitle": "Thème de l'application Web de Noël + Chance de gagner jusqu'à 10 To de stockage !",
-    "cta": "Choisissez votre plan",
+    "label": "Offre 85 %",
+    "title": "Rejoignez le côté de la vie privée",
+    "cta": "Obtenez votre offre",
     "guarantee": "Garantie de remboursement de 30 jours",
     "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Tirage au sort : sac à dos Internxt x Swiss Peak !",
     "features": [
-      "Économisez gros sur tous les plans premium",
-      "Stockage cloud privé et crypté",
-      "Open source et audité",
-      "Transferts cryptés de bout en bout",
-      "Aucun accès non autorisé",
-      "Thème Super Bowl gratuit pour votre application web",
-      "Offre se termine le 9 février"
+      "Internxt Drive, VPN et Antivirus",
+      "Cryptographie post-quantique",
+      "Code source ouvert et audité",
+      "Transferts chiffrés",
+      "Thème spécial pour l’application Web",
+      "L'offre se termine le 26 mai."
     ]
+  },
+  "susbcriptionsBanner": {
+    "title": "Boostez votre abonnement !",
+    "features": ["Chiffrement post-quantique", "Drive, VPN et Antivirus", "Mail et Meet à venir"],
+    "description": "Renouvelez votre abonnement et profitez de nos nouvelles fonctionnalités !",
+    "cta": "80% de réduction"
+  },
+  "lifetimesBanner": {
+    "title": "Boostez votre abonnement !",
+    "features": ["Chiffrement post-quantique", "Drive, VPN et Antivirus", "Mail et Meet à venir"],
+    "description": "Améliorez votre plan avec nos nouvelles fonctionnalités et augmentez votre stockage !",
+    "cta": "80% de réduction"
   },
   "valentinesBanner": {
     "title": "L'amour sans limites !",
@@ -48,9 +60,13 @@
     "dark": "Sombre",
     "system": "Système",
     "starwars": "Star Wars",
+    "starwars2": "Thème de Star Wars",
     "halloween": "Halloween",
     "christmas": "Noël",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "Saint Valentin",
+    "stpatricks": "Saint Patrick",
+    "idmanagement": "Gestion de l'identité"
   },
   "auth": {
     "email": "Email",
@@ -150,7 +166,7 @@
     }
   },
   "checkout": {
-    "title": "Vous y êtes presque ! Finalisez votre achat en toute sécurité :",
+    "title": "Vous y êtes presque ! Finalisez votre achat en toute sécurité",
     "pay": "Payer",
     "processing": "Traitement en cours...",
     "checkout": "Commander",
@@ -190,6 +206,12 @@
         "year": "annuel",
         "lifetime": "à vie"
       },
+      "renewalTitle": {
+        "month": "mensuel",
+        "year": "annuel",
+        "lifetime": "à vie"
+      },
+      "pcMobileRenews": "* Se renouvelle à 50€ la première année après le période d'essai",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 plan {{interval}}",
         "year": "{{spaceToUpgrade}} - 1 plan {{interval}}",
@@ -202,31 +224,8 @@
       },
       "perUser": "/par utilisateur",
       "saving": "Vous économisez {{percent}}%",
-      "planDetails": {
-        "title": "Détails du plan :",
-        "features": {
-          "individual": [
-            "{{spaceToUpgrade}} de stockage chiffré",
-            "Partage de fichiers et dossiers chiffrés",
-            "Partage de fichiers protégé par mot de passe",
-            "Accédez à vos fichiers depuis n'importe quel appareil",
-            "Accédez à tous nos services",
-            "Authentification à deux facteurs (2FA)",
-            "Support client premium",
-            "Garantie de remboursement de 30 jours"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} stockage/utilisateur",
-            "Partage de fichiers et de dossiers chiffrés",
-            "Créer et gérer des utilisateurs et des équipes",
-            "À partir de {{minimumSeats}} utilisateurs et jusqu'à {{maximumSeats}}",
-            "Conforme au GDPR",
-            "Gérer la facturation et les paiements du compte",
-            "Support client premium"
-          ]
-        }
-      },
-      "total": "Total : ",
+      "planDetails": "Détails du plan :",
+      "total": "Total ",
       "totalForBusiness": "Total pour {{N}} utilisateurs : ",
       "addCoupon": {
         "buttonTitle": "Ajouter un coupon",
@@ -234,7 +233,8 @@
       },
       "apply": "Appliquer",
       "amountSaved": "Économisez ",
-      "withAnnualBilling": "avec facturation annuelle"
+      "withAnnualBilling": "avec facturation annuelle",
+      "taxes": "Taxes"
     }
   },
   "general": {
@@ -406,7 +406,7 @@
               "title": "Modifier les détails du compte",
               "name": "Prénom",
               "lastname": "Nom",
-              "updateProfile": "Profil mis à jour avec succès",
+              "updatedProfile": "Profil mis à jour avec succès",
               "errorUpdatingProfile": "Nous n'avons pas pu mettre à jour votre profil"
             },
             "changeEmail": {
@@ -422,7 +422,7 @@
               "errorSendingVerification": "Erreur d'envoi de la vérification",
               "confirm": "Confirmer"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "Le prénom doit contenir entre un et vingt caractères",
               "lastnameError": "Le nom de famille doit contenir entre un et vingt caractères"
             }
@@ -1104,7 +1104,9 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Tous les processus ont été complétés",
-      "processing": "Traitement {{pending}} de {{finished}}"
+      "processing": "Traitement {{pending}} de {{finished}}",
+      "failedToUpload": "Échec du téléchargement",
+      "failedToDownload": "Échec du téléchargement"
     },
     "waiting": "En attente",
     "paused": "En pause",
@@ -1781,37 +1783,112 @@
       "plans": {
         "title": "Plans",
         "current": "Actuel",
-        "upgrade": "Mettre à niveau",
+        "upgrade": "Améliorer",
         "downgrade": "Rétrograder",
         "free": "Obtenez jusqu'à 10 Go gratuitement",
         "manageBilling": "Gérer la facturation",
-        "freeForever": "Gratuit pour toujours",
-        "year": "An",
+        "freeForever": "Gratuit à vie",
+        "billedAnnually": "facturé annuellement",
+        "year": "Année",
         "month": "Mois",
-        "lifetime": "Lifetime",
+        "lifetime": "À vie",
+        "types": {
+          "essential": "Essential",
+          "premium": "Premium",
+          "ultimate": "Ultimate",
+          "standard": "Standard",
+          "pro": "Pro",
+          "free": "Free"
+        },
         "planFeaturesList": {
           "title": "Détails du plan",
-          "storage": " de stockage",
-          "featureOne": "Partage de fichiers et dossiers chiffrés.",
-          "featureTwo": "Partage de fichiers protégé par mot de passe.",
-          "featureThree": "Accédez à vos fichiers depuis n'importe quel appareil.",
-          "featureFour": "Téléchargez des fichiers jusqu'à 20 Go.",
-          "featureFive": "Authentification à deux facteurs (2FA).",
-          "featureSix": "Support client premium.",
-          "featureSeven": "Garantie de remboursement de 30 jours."
+          "comingSoon": "Bientôt disponible",
+          "storage": " stockage chiffré à connaissance zéro",
+          "1TB": {
+            "title": "Essentiel",
+            "features": [
+              "Chiffrement post-quantique",
+              "VPN illimité ultra rapide (FR)",
+              "Antivirus",
+              "Sauvegarde de vos fichiers",
+              "Partage de fichiers protégés par mot de passe",
+              "Conformité au RGPD",
+              "Authentification à deux facteurs (2FA)",
+              "Support CLI, WebDav et Rclone"
+            ]
+          },
+          "3TB": {
+            "title": "Premium",
+            "features": [
+              "Chiffrement post-quantique",
+              "VPN illimité ultra rapide (FR, DE, PL)",
+              "Antivirus",
+              "Sauvegarde de vos fichiers",
+              "Partage de fichiers protégés par mot de passe",
+              "Inviter, partager et collaborer",
+              "Conformité au RGPD",
+              "Authentification à deux facteurs (2FA)",
+              "Support CLI, WebDav et Rclone"
+            ],
+            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web"]
+          },
+          "5TB": {
+            "title": "Ultimate",
+            "features": [
+              "Chiffrement post-quantique",
+              "VPN illimité ultra rapide (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Sauvegarde de vos fichiers",
+              "Partage de fichiers protégés par mot de passe",
+              "Inviter, partager et collaborer",
+              "Conformité au RGPD",
+              "Authentification à deux facteurs (2FA)",
+              "Support CLI, WebDav et Rclone"
+            ],
+            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web", "Meet", "Mail"]
+          },
+          "1GB": {
+            "title": "Gratuit",
+            "features": ["VPN standard gratuit (FR)", "Support CLI, WebDav et Rclone"]
+          }
         },
         "businessPlanFeaturesList": {
           "title": "Détails du plan",
           "storage": " de stockage",
-          "featureOne": "Partage de fichiers et dossiers chiffrés.",
-          "featureTwo": "Créer et gérer des utilisateurs et des équipes.",
-          "featureThree": "À partir de 3 utilisateurs et jusqu'à 100.",
-          "featureFour": "Conformité au RGPD.",
-          "featureFive": "Téléchargez des fichiers jusqu'à 20 Go.",
-          "featureSix": "Gérer la facturation et les paiements du compte.",
-          "featureSeven": "Support client premium."
+          "1TB": {
+            "title": "Standard",
+            "features": [
+              "Chiffrement post-quantique",
+              "VPN illimité ultra rapide (FR, DE, PL)",
+              "Antivirus",
+              "Sauvegarde de vos fichiers",
+              "Partage de fichiers protégés par mot de passe",
+              "Inviter, partager et collaborer",
+              "Conformité au RGPD",
+              "Authentification à deux facteurs (2FA)",
+              "Support CLI, WebDav et Rclone",
+              "Gérer la facturation et les paiements du compte"
+            ],
+            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web"]
+          },
+          "2TB": {
+            "title": "Pro",
+            "features": [
+              "Chiffrement post-quantique",
+              "VPN illimité ultra rapide (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Sauvegarde de vos fichiers",
+              "Partage de fichiers protégés par mot de passe",
+              "Inviter, partager et collaborer",
+              "Conformité au RGPD",
+              "Authentification à deux facteurs (2FA)",
+              "Support CLI, WebDav et Rclone",
+              "Gérer la facturation et les paiements du compte"
+            ],
+            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web", "Meet", "Mail"]
+          }
         },
-        "user": "utilisateur"
+        "user": "Utilisateur"
       },
       "billing": {
         "title": "Billing"

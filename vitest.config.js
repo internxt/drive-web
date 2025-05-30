@@ -24,6 +24,7 @@ export default defineConfig({
       assets: path.resolve(__dirname, './src/assets'),
       crypto: 'crypto-browserify',
       stream: 'stream-browserify',
+      path: 'path-browserify',
     },
   },
   test: {
@@ -42,8 +43,12 @@ export default defineConfig({
       provider: 'istanbul',
       reporter: ['text', 'lcov'],
       reportsDirectory: './coverage',
-      include: ['src/**/*.{js,ts,jsx,tsx}', 'test/unit/**/*.{js,ts,jsx,tsx}'],
-      exclude: ['src/app/drive/components/FileViewer/viewers/FileDocumentViewer/**'],
+      include: ['src/**/*.{js,ts,jsx,tsx}'],
+      exclude: [
+        'src/app/drive/components/FileViewer/viewers/FileDocumentViewer/**',
+        'src/**/*.test.{js,ts,jsx,tsx}',
+        'test/unit/**/*.{js,ts,jsx,tsx}',
+      ],
     },
   },
   optimizeDeps: {

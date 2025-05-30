@@ -4,21 +4,33 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "節省80%！",
-    "title": "為隱私行動起來！",
-    "subtitle": "聖誕網頁應用主題 + 有機會贏取多達 10TB 的儲存空間！",
-    "cta": "選擇您的方案",
-    "guarantee": "30天退款保證",
-    "lastCta": "*此優惠僅適用於免費帳戶或新客戶",
+    "label": "85% 優惠",
+    "title": "加入隱私守護的一方",
+    "cta": "立即取得方案",
+    "guarantee": "30 天退款保證",
+    "lastCta": "*本優惠僅適用於免費帳號或新用戶",
+    "specialOfferLabel": "",
+    "specialOfferGift": "抽獎活動：Internxt x Swiss Peak 後背包！",
     "features": [
-      "所有高級方案享有巨大的折扣",
-      "私人加密雲端存儲",
-      "開源且經過審查",
-      "端到端加密傳輸",
-      "無未經授權的訪問",
-      "免费超级碗主题适用于您的Web应用",
-      "优惠截止至2月9日"
+      "Internxt 雲端硬碟、VPN 和防毒軟體",
+      "後量子加密技術",
+      "開源且經過審核的程式碼",
+      "加密傳輸",
+      "網頁版專屬主題",
+      "優惠截止至5月26日。"
     ]
+  },
+  "susbcriptionsBanner": {
+    "title": "升級您的計畫！",
+    "features": ["後量子加密", "雲端硬碟、VPN 和防毒軟體", "即將推出郵件和會議"],
+    "description": "續訂您的訂閱，即可享受我們的新功能！",
+    "cta": "8折優惠"
+  },
+  "lifetimesBanner": {
+    "title": "升級您的計畫！",
+    "features": ["後量子加密", "雲端硬碟、VPN 和防毒軟體", "即將推出郵件和會議"],
+    "description": "升級您的計畫，享受我們的新功能，並擴展您的存儲空間！",
+    "cta": "8折優惠"
   },
   "valentinesBanner": {
     "title": "愛無極限！",
@@ -69,9 +81,13 @@
     "dark": "深色",
     "system": "系統",
     "starwars": "星際大戰",
+    "starwars2": "星際大戰主題",
     "halloween": "Halloween",
     "christmas": "聖誕節",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "情人節",
+    "stpatricks": "St. Patrick's",
+    "idmanagement": "Identity Management"
   },
   "auth": {
     "email": "電子郵件",
@@ -167,7 +183,7 @@
     }
   },
   "checkout": {
-    "title": "您快完成了！請安全結帳：",
+    "title": "您快完成了！請安全結帳",
     "pay": "支付",
     "processing": "處理中...",
     "checkout": "結帳",
@@ -207,6 +223,12 @@
         "year": "每年",
         "lifetime": "終身"
       },
+      "renewalTitle": {
+        "month": "每月",
+        "year": "每年",
+        "lifetime": "終身"
+      },
+      "pcMobileRenews": "* 試用期後第一年以 50€ 續訂",
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",
         "year": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",
@@ -219,31 +241,8 @@
       },
       "perUser": "/每用戶",
       "saving": "您節省了 {{percent}}%",
-      "planDetails": {
-        "title": "計劃詳情：",
-        "features": {
-          "individual": [
-            "{{spaceToUpgrade}} 加密存儲",
-            "加密文件和文件夾共享",
-            "密碼保護的文件共享",
-            "從任何設備訪問您的文件",
-            "訪問我們所有的服務",
-            "雙因素認證（2FA）",
-            "高級客戶支持",
-            "30 天退款保證"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} 儲存/用戶",
-            "加密檔案和資料夾共享",
-            "創建和管理用戶及團隊",
-            "從 {{minimumSeats}} 用戶到 {{maximumSeats}}",
-            "符合GDPR",
-            "管理帳戶計費與支付",
-            "高級客戶支持"
-          ]
-        }
-      },
-      "total": "總計：",
+      "planDetails": "計劃詳情：",
+      "total": "總計d",
       "totalForBusiness": "總計 {{N}} 用戶：",
       "addCoupon": {
         "buttonTitle": "添加優惠券",
@@ -251,7 +250,8 @@
       },
       "apply": "應用",
       "amountSaved": "節省 ",
-      "withAnnualBilling": "按年計費"
+      "withAnnualBilling": "按年計費",
+      "taxes": "稅金"
     }
   },
   "general": {
@@ -439,7 +439,7 @@
               "errorSendingVerification": "發送驗證時出錯",
               "confirm": "確認"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "姓名必須在1到20個字符之間",
               "lastnameError": "姓氏必須在1到20個字符之間"
             }
@@ -1107,7 +1107,9 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "所有進程已完成",
-      "processing": "處理中 {{pending}} 個，共 {{finished}} 個"
+      "processing": "處理中 {{pending}} 個，共 {{finished}} 個",
+      "failedToUpload": "上傳失敗",
+      "failedToDownload": "下載失敗"
     },
     "waiting": "等待中",
     "paused": "已暫停",
@@ -1784,37 +1786,112 @@
       "emptyTrash": "清空垃圾桶",
       "emptyTrashDescription": "垃圾桶中的項目將被永久刪除",
       "plans": {
-        "title": "計劃",
+        "title": "方案",
         "current": "當前",
         "upgrade": "升級",
         "downgrade": "降級",
-        "free": "免費獲得最多10 GB",
-        "manageBilling": "管理計費",
+        "free": "免費獲取最多 10GB",
+        "manageBilling": "管理帳單",
         "freeForever": "永久免費",
+        "billedAnnually": "按年計費",
         "year": "年",
         "month": "月",
         "lifetime": "終身",
+        "types": {
+          "essential": "基礎版",
+          "premium": "高級版",
+          "ultimate": "終極版",
+          "standard": "標準版",
+          "pro": "專業版",
+          "free": "免費版"
+        },
         "planFeaturesList": {
-          "title": "計劃詳情",
-          "storage": " 的儲存空間",
-          "featureOne": "加密文件和文件夾共享。",
-          "featureTwo": "密碼保護的文件共享。",
-          "featureThree": "從任何設備訪問您的文件。",
-          "featureFour": "上傳文件最大可達20GB。",
-          "featureFive": "雙重身份驗證 (2FA)。",
-          "featureSix": "高級客戶支持。",
-          "featureSeven": "30天退款保證。"
+          "title": "方案詳情",
+          "comingSoon": "即將推出",
+          "storage": " 零知識加密儲存",
+          "1TB": {
+            "title": "基本版",
+            "features": [
+              "後量子加密",
+              "超快無限制VPN（法國）",
+              "防毒",
+              "檔案備份",
+              "密碼保護檔案共享",
+              "符合GDPR",
+              "雙因素認證（2FA）",
+              "支援CLI、WebDav和Rclone"
+            ]
+          },
+          "3TB": {
+            "title": "進階版",
+            "features": [
+              "後量子加密",
+              "超快無限制VPN（法國、德國、波蘭）",
+              "防毒",
+              "檔案備份",
+              "密碼保護檔案共享",
+              "邀請、共享和協作",
+              "符合GDPR",
+              "雙因素認證（2FA）",
+              "支援CLI、WebDav和Rclone"
+            ],
+            "comingSoonFeatures": ["裝置清理器", "暗網監控"]
+          },
+          "5TB": {
+            "title": "旗艦版",
+            "features": [
+              "後量子加密",
+              "超快無限制VPN（法國、德國、波蘭）",
+              "防毒",
+              "檔案備份",
+              "密碼保護檔案共享",
+              "邀請、共享和協作",
+              "符合GDPR",
+              "雙因素認證（2FA）",
+              "支援CLI、WebDav和Rclone"
+            ],
+            "comingSoonFeatures": ["裝置清理器", "暗網監控", "視訊會議", "郵件"]
+          },
+          "1GB": {
+            "title": "免費版",
+            "features": ["免費標準VPN（法國）", "支援CLI、WebDav和Rclone"]
+          }
         },
         "businessPlanFeaturesList": {
-          "title": "計劃詳情",
-          "storage": " 的儲存空間",
-          "featureOne": "加密文件和文件夾共享。",
-          "featureTwo": "創建和管理用戶及團隊。",
-          "featureThree": "從3名用戶起至多100名用戶。",
-          "featureFour": "符合GDPR規範。",
-          "featureFive": "上傳文件最大可達20GB。",
-          "featureSix": "管理帳戶帳單和付款。",
-          "featureSeven": "高級客戶支持。"
+          "title": "方案詳情",
+          "storage": " 儲存空間",
+          "1TB": {
+            "title": "標準版",
+            "features": [
+              "後量子加密",
+              "超快無限制VPN（法國、德國、波蘭）",
+              "防毒",
+              "檔案備份",
+              "密碼保護檔案共享",
+              "邀請、共享和協作",
+              "符合GDPR",
+              "雙因素認證（2FA）",
+              "支援CLI、WebDav和Rclone",
+              "管理帳戶帳單和支付"
+            ],
+            "comingSoonFeatures": ["裝置清理器", "暗網監控"]
+          },
+          "2TB": {
+            "title": "專業版",
+            "features": [
+              "後量子加密",
+              "超快無限制VPN（法國、德國、波蘭）",
+              "防毒",
+              "檔案備份",
+              "密碼保護檔案共享",
+              "邀請、共享和協作",
+              "符合GDPR",
+              "雙因素認證（2FA）",
+              "支援CLI、WebDav和Rclone",
+              "管理帳戶帳單和支付"
+            ],
+            "comingSoonFeatures": ["裝置清理器", "暗網監控", "視訊會議", "郵件"]
+          }
         },
         "user": "用戶"
       },

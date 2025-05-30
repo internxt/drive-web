@@ -1,28 +1,10 @@
 import { useDispatch } from 'react-redux';
-import { createFilesIterator, createFoldersIterator } from '../../../../drive/services/folder.service';
-import { DriveItemData } from '../../../../drive/types';
 import { SharedItemAuthenticationData, UploadFolderData } from '../../../../tasks/types';
-import { downloadItemsAsZipThunk, downloadItemsThunk } from '../storage.thunks/downloadItemsThunk';
 import { uploadFolderThunk } from '../storage.thunks/uploadFolderThunk';
 import { uploadItemsThunk, uploadSharedItemsThunk } from '../storage.thunks/uploadItemsThunk';
 
 export const useReduxActions = () => {
   const dispatch = useDispatch();
-
-  const downloadItemsAsZip = (items: DriveItemData[], existingTaskId: string) => {
-    dispatch(
-      downloadItemsAsZipThunk({
-        items,
-        existingTaskId,
-        fileIterator: createFilesIterator,
-        folderIterator: createFoldersIterator,
-      }),
-    );
-  };
-
-  const downloadItems = (item: DriveItemData, existingTaskId: string) => {
-    dispatch(downloadItemsThunk([{ ...item, taskId: existingTaskId }]));
-  };
 
   const uploadFolder = (data: UploadFolderData & { taskId: string }) => {
     dispatch(
@@ -65,5 +47,17 @@ export const useReduxActions = () => {
     );
   };
 
-  return { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem, uploadSharedItem };
+  const uploadRetryItem = (data: { uploadFile: File; parentFolderId: string; taskId: string; fileType: string }) => {
+    dispatch(
+      uploadItemsThunk({
+        files: [data.uploadFile],
+        parentFolderId: data.parentFolderId,
+        taskId: data.taskId,
+        fileType: data.fileType,
+        isRetry: true,
+      }),
+    );
+  };
+
+  return { uploadFolder, uploadItem, uploadSharedItem, uploadRetryItem };
 };

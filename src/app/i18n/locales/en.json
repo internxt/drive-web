@@ -4,21 +4,33 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 80%!",
-    "title": "Make your privacy play! ",
-    "subtitle": "Christmas Web App Theme + Chance to win up to 10TB of storage!",
-    "cta": "Choose plan",
+    "label": "Save 85%",
+    "title": "Join the online privacy side",
+    "cta": "Claim deal",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Win an Internxt x Swiss Peak backpack",
     "features": [
-      "Save big on all premium plans",
-      "Private, encrypted cloud storage",
+      "Drive, VPN, and Antivirus",
+      "Post-quantum encryption",
       "Open-source and audited",
       "End-to-end encrypted transfers",
-      "No unauthorized access",
-      "Free Super Bowl Wep App theme",
-      "Offer ends February 9th"
+      "Special theme for Web App",
+      "Offer ends May 26"
     ]
+  },
+  "susbcriptionsBanner": {
+    "title": "Supercharge your plan!",
+    "features": ["Post-quantum encryption", "Drive, VPN and Antivirus", "Upcoming Mail and Meet"],
+    "description": "Renew your subscription and get our new features!",
+    "cta": "80% OFF"
+  },
+  "lifetimesBanner": {
+    "title": "Supercharge your plan!",
+    "features": ["Post-quantum encryption", "Drive, VPN and Antivirus", "Upcoming Mail and Meet"],
+    "description": "Upgrade your plan with our new features and stack your storage!",
+    "cta": "80% OFF"
   },
   "valentinesBanner": {
     "title": "Love without limits!",
@@ -69,9 +81,13 @@
     "dark": "Dark",
     "system": "System",
     "starwars": "Star Wars",
+    "starwars2": "Star Wars Theme",
     "halloween": "Halloween",
     "christmas": "Christmas",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "Valentine's Day",
+    "stpatricks": "St. Patrick's Day",
+    "idmanagement": "Identity Management"
   },
   "auth": {
     "email": "Email",
@@ -167,7 +183,7 @@
     }
   },
   "checkout": {
-    "title": "You're almost there! Checkout securely:",
+    "title": "You're almost there! Checkout securely",
     "pay": "Pay",
     "processing": "Processing...",
     "checkout": "Checkout",
@@ -204,6 +220,12 @@
         "year": "year",
         "lifetime": "lifetime"
       },
+      "renewalTitle": {
+        "month": "monthly",
+        "year": "annually",
+        "lifetime": "lifetime"
+      },
+      "pcMobileRenews": "* Renews at 50€ first year after trial period",
       "title": "Order summary",
       "selectedPlan": "Selected plan",
       "numberOfUsers": "Number of users: {{seats}}",
@@ -219,31 +241,8 @@
       },
       "perUser": "/per user",
       "saving": "You're saving {{percent}}%",
-      "planDetails": {
-        "title": "Plan details:",
-        "features": {
-          "individual": [
-            "{{spaceToUpgrade}} encrypted storage",
-            "Encrypted file and folder sharing",
-            "Password-protected file sharing",
-            "Access your files from any device",
-            "Get access to all our services",
-            "Two-factor authentication (2FA)",
-            "Premium customer support",
-            "30-day money-back guarantee"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} storage/user",
-            "Encrypted file and folder sharing",
-            "Create and manage users & teams",
-            "Starting at {{minimumSeats}} users and up to {{maximumSeats}}",
-            "GDPR compliant",
-            "Manage account billing & payments",
-            "Premium customer support"
-          ]
-        }
-      },
-      "total": "Total: ",
+      "planDetails": "Plan details:",
+      "total": "Total ",
       "totalForBusiness": "Total for {{N}} users: ",
       "addCoupon": {
         "buttonTitle": "Add coupon",
@@ -251,7 +250,8 @@
       },
       "amountSaved": "Save ",
       "apply": "Apply",
-      "withAnnualBilling": "with annual billing"
+      "withAnnualBilling": "with annual billing",
+      "taxes": "Taxes"
     }
   },
   "general": {
@@ -296,7 +296,7 @@
     },
     "renewal": {
       "monthly": "Monthly",
-      "annually": "Annually",
+      "annually": "Annual",
       "lifetime": "Lifetime"
     },
     "workspaces": {
@@ -439,7 +439,7 @@
               "errorSendingVerification": "Error sending verification",
               "confirm": "Confirm"
             },
-            "errorMsg" : {
+            "errorMsg": {
               "nameError": "The name must be between one and twenty characters",
               "lastnameError": "The last name must be between one and twenty characters"
             }
@@ -1145,7 +1145,9 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "All processes have finished",
-      "processing": "Processing {{pending}} of {{finished}}"
+      "processing": "Processing {{pending}} of {{finished}}",
+      "failedToUpload": "Failed to upload",
+      "failedToDownload": "Failed to download"
     },
     "waiting": "Waiting",
     "paused": "Paused",
@@ -1661,7 +1663,7 @@
           "remove": "Remove member",
           "passwordChange": "Request password change"
         },
-        "leaveModal":{
+        "leaveModal": {
           "title": "Leave",
           "description": "You will lose access to the Workspace and your content will be transferred to the owner",
           "leave": "Leave",
@@ -1841,30 +1843,105 @@
         "free": "Get up to 10 GB for free",
         "manageBilling": "Manage billing",
         "freeForever": "Free forever",
+        "billedAnnually": "billed annually",
         "year": "Year",
         "month": "Month",
         "lifetime": "Lifetime",
+        "types": {
+          "essential": "Essential",
+          "premium": "Premium",
+          "ultimate": "Ultimate",
+          "standard": "Standard",
+          "pro": "Pro",
+          "free": "Free"
+        },
         "planFeaturesList": {
           "title": "Plan details",
-          "storage": " of storage",
-          "featureOne": "Encrypted file and folder sharing.",
-          "featureTwo": "Password-protected file sharing.",
-          "featureThree": "Access your files from any device.",
-          "featureFour": "Upload files up to 40GB.",
-          "featureFive": "Two-factor authentication (2FA).",
-          "featureSix": "Premium customer support.",
-          "featureSeven": "30-day money-back guarantee."
+          "comingSoon": "Coming soon",
+          "storage": " zero-knowledge encrypted storage",
+          "1TB": {
+            "title": "Essential",
+            "features": [
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support"
+            ]
+          },
+          "3TB": {
+            "title": "Premium",
+            "features": [
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR, DE, PL)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "Invite, share & collaborate",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support"
+            ],
+            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
+          },
+          "5TB": {
+            "title": "Ultimate",
+            "features": [
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "Invite, share & collaborate",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support"
+            ],
+            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
+          },
+          "1GB": {
+            "title": "Free",
+            "features": ["Free Standard VPN (FR)", "CLI, WebDav & Rclone support"]
+          }
         },
         "businessPlanFeaturesList": {
           "title": "Plan details",
           "storage": " of storage",
-          "featureOne": "Encrypted file and folder sharing.",
-          "featureTwo": "Create and manage users & teams.",
-          "featureThree": "Starting at 3 users and up to 100.",
-          "featureFour": "GDPR compliant.",
-          "featureFive": "Upload files of up to 40GB.",
-          "featureSix": "Manage account billing & payments.",
-          "featureSeven": "Premium customer support."
+          "1TB": {
+            "title": "Standard",
+            "features": [
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR, DE, PL)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "Invite, share & collaborate",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support",
+              "Manage account billing & payments"
+            ],
+            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
+          },
+          "2TB": {
+            "title": "Pro",
+            "features": [
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "Invite, share & collaborate",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support",
+              "Manage account billing & payments"
+            ],
+            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
+          }
         },
         "user": "user"
       },

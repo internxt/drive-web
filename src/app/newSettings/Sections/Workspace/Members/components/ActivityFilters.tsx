@@ -2,8 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { t } from 'i18next';
 import { FunnelSimple } from '@phosphor-icons/react';
 
-import { Button, RadioButton } from '@internxt/ui';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import { Button, Checkbox, RadioButton } from '@internxt/ui';
 
 interface ActivityFiltersProps {
   isSelectedRoles: string[];
@@ -91,7 +90,7 @@ const ActivityFilters = ({ isSelectedRoles, setIsSelectedRoles }: ActivityFilter
 
               return (
                 <div key={role.name} className="flex items-center py-1.5">
-                  <BaseCheckbox checked={isSelected} onClick={() => onFilteredRoles(role.type)} />
+                  <Checkbox checked={isSelected} onClick={() => onFilteredRoles(role.type)} />
                   <p className="font-regular ml-2 text-base">{role.name}</p>
                 </div>
               );

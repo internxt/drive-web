@@ -306,7 +306,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
             ) : isDownloading ? (
               <>
                 {/* Download in progress */}
-                <Loader classNameContainer="h-5 w-5 text-white" />
+                <Loader size={24} classNameLoader="h-5 w-5 text-white" />
                 <span>{translate('actions.downloading')}</span>
                 <span className="text-white/50">{progress}%</span>
               </>
@@ -328,16 +328,18 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   return (
     <>
       <SendBanner sendBannerVisible={sendBannerVisible} setIsSendBannerVisible={setIsSendBannerVisible} />
-      <FileViewer
-        show={openPreview}
-        file={info!['item']}
-        onClose={closePreview}
-        onDownload={onDownloadFromPreview}
-        progress={blobProgress}
-        blob={blob}
-        isAuthenticated={isAuthenticated}
-        isShareView
-      />
+      {openPreview && info['item'] && (
+        <FileViewer
+          show={openPreview}
+          file={info['item']}
+          onClose={closePreview}
+          onDownload={onDownloadFromPreview}
+          progress={blobProgress}
+          blob={blob}
+          isAuthenticated={isAuthenticated}
+          isShareView
+        />
+      )}
       {body}
     </>
   );

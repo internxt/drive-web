@@ -10,11 +10,13 @@ export const prepareFilesToUpload = async ({
   parentFolderId,
   disableDuplicatedNamesCheck = false,
   fileType,
+  disableExistenceCheck = false,
 }: {
   files: File[];
   parentFolderId: string;
   disableDuplicatedNamesCheck?: boolean;
   fileType?: string;
+  disableExistenceCheck?: boolean;
 }): Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }> => {
   let filesToUpload: FileToUpload[] = [];
   let zeroLengthFilesNumber = 0;
@@ -38,13 +40,17 @@ export const prepareFilesToUpload = async ({
   };
 
   const processFilesBatch = async (filesBatch: File[]) => {
-    const { duplicatedFilesResponse, filesWithoutDuplicates, filesWithDuplicates } = await checkDuplicatedFiles(
-      filesBatch,
-      parentFolderId,
-    );
+    if (disableExistenceCheck) {
+      await processFiles(filesBatch, true);
+    } else {
+      const { duplicatedFilesResponse, filesWithoutDuplicates, filesWithDuplicates } = await checkDuplicatedFiles(
+        filesBatch,
+        parentFolderId,
+      );
 
-    await processFiles(filesWithoutDuplicates as File[], true);
-    await processFiles(filesWithDuplicates as File[], disableDuplicatedNamesCheck, duplicatedFilesResponse);
+      await processFiles(filesWithoutDuplicates as File[], true);
+      await processFiles(filesWithDuplicates as File[], disableDuplicatedNamesCheck, duplicatedFilesResponse);
+    }
   };
 
   for (let i = 0; i < files.length; i += BATCH_SIZE) {

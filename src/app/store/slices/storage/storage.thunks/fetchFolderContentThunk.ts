@@ -17,7 +17,7 @@ const filterFilesItems = (item: DriveItemData) => !item.isFolder;
 
 export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, { state: RootState }>(
   'storage/fetchFolderContent',
-  async (folderId, { getState, dispatch }) => {
+  async (folderId, { getState, dispatch, rejectWithValue }) => {
     const storageState = getState().storage;
     const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(getState());
 
@@ -114,7 +114,8 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
       }
     } catch (error) {
       errorService.reportError(error, { extra: { folderId, foldersOffset, filesOffset } });
-      throw error;
+      const castedError = errorService.castError(error);
+      throw rejectWithValue(castedError);
     }
   },
 );
@@ -129,6 +130,11 @@ export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBu
     })
     .addCase(fetchPaginatedFolderContentThunk.rejected, (state, action) => {
       state.loadingFolders[action.meta.arg] = false;
-      notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
+      const isUnauthorizedError = (payload: unknown): payload is { status: number } =>
+        typeof payload === 'object' && payload !== null && 'status' in payload && payload.status === 401;
+
+      if (!isUnauthorizedError(action.payload)) {
+        notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
+      }
     });
 };

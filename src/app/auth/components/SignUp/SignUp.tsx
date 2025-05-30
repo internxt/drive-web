@@ -23,6 +23,7 @@ import paymentService from '../../../payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import { Button } from '@internxt/ui';
 import { AuthMethodTypes } from 'app/payment/types';
+import vpnAuthService from 'app/auth/services/vpnAuth.service';
 
 export interface SignUpProps {
   location: {
@@ -156,9 +157,9 @@ function SignUp(props: SignUpProps): JSX.Element {
         doSignUp: isNewUser ? doRegister : updateInfo,
       };
 
-      const { token: xToken, user: xUser } = await authenticateUser(authParams);
+      const { token: xToken, newToken: xNewToken } = await authenticateUser(authParams);
 
-      await redirectTheUserAfterRegistration(xToken, redeemCodeObject);
+      await redirectTheUserAfterRegistration(xToken, xNewToken, redeemCodeObject);
     } catch (err: unknown) {
       setIsLoading(false);
       errorService.reportError(err);
@@ -171,6 +172,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
   const redirectTheUserAfterRegistration = async (
     xToken: string,
+    xNewToken: string,
     redeemCodeObject?: {
       code: string;
       provider: string;
@@ -179,6 +181,11 @@ function SignUp(props: SignUpProps): JSX.Element {
     const urlParams = new URLSearchParams(window.location.search);
     const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
     const redirectUrl = authService.getRedirectUrl(urlParams, xToken);
+    const isVPNAuth = urlParams.get('vpnAuth');
+
+    if (isVPNAuth && xNewToken) {
+      vpnAuthService.logIn(xNewToken);
+    }
 
     if (redirectUrl) {
       window.location.replace(redirectUrl);

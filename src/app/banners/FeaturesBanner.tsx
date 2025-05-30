@@ -1,7 +1,6 @@
-import { CheckCircle, Football, SealPercent, Snowflake, X } from '@phosphor-icons/react';
+import { Asterisk, CheckCircle, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import GrassImage from '../../assets/images/banner/grass.webp';
-
+import BackgroundImage from 'assets/images/banner/star-wars-bg.webp';
 interface FeaturesBannerProps {
   showBanner: boolean;
   onClose: () => void;
@@ -18,17 +17,20 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
   };
 
   return (
-    //Background
     <div
       className={`${showBanner ? 'flex' : 'hidden'} 
       fixed bottom-0 left-0 right-0 top-0 z-50 h-screen bg-black bg-opacity-50 px-10 lg:px-0`}
     >
       <div
-        className={
-          'fixed left-1/2 top-1/2 flex h-auto -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden rounded-2xl px-10'
-        }
+        className={`fixed  left-1/2 top-1/2 flex h-max -translate-x-[50%] -translate-y-[50%] 
+        flex-col
+        overflow-hidden
+        rounded-2xl`}
         style={{
-          backgroundImage: `url(${GrassImage})`,
+          backgroundImage: `url(${BackgroundImage})`,
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
         }}
       >
         <button
@@ -39,54 +41,49 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
         >
           <X size={32} />
         </button>
-        <div className="flex max-w-[800px] flex-col items-center justify-between py-16 md:flex-row md:pb-20 lg:w-screen">
-          <div className="flex h-max w-full flex-col items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
-            <div className="flex rounded-lg border-2 border-primary bg-gray-10 px-3 py-1.5">
+
+        <div className="flex max-w-[800px] px-10 flex-col items-center justify-between py-8 md:flex-row md:pb-10 lg:w-screen">
+          <div className="flex flex-1 w-full flex-col items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
+            <div className="flex rounded-lg border-2 bg-[#18181B] px-3 py-1.5 " style={{ borderColor: '#0066FF' }}>
               <p className="text-2xl font-bold text-white">{translate('featuresBanner.label')}</p>
             </div>
-            <p className="w-full max-w-[400px] text-5xl font-bold leading-tight text-white">
+            <p className="w-full max-w-[400px] text-white text-4xl font-bold leading-tight ">
               {translate('featuresBanner.title')}
             </p>
-
             <div className="flex flex-col items-center space-y-3 lg:items-start">
               <button
                 onClick={handleOnClick}
-                className="flex w-max items-center rounded-lg bg-primary px-5 py-3 text-lg font-medium text-white"
+                className="flex w-max items-center rounded-lg bg-primary px-5 py-3 text-lg font-medium text-white dark:text-white"
               >
                 {translate('featuresBanner.cta')}
               </button>
-              <div className="flex flex-row items-center space-x-3 pt-2">
-                <CheckCircle size={24} className="text-primary" />
+              <div className="flex flex-row items-center space-x-3 pt-8">
+                <CheckCircle size={24} className="text-green" weight="fill" />
                 <p className="whitespace-nowrap font-medium text-white lg:text-lg">
                   {translate('featuresBanner.guarantee')}
                 </p>
               </div>
-              <p className="text-sm font-medium dark:text-gray-10 text-gray-90">
-                {translate('featuresBanner.lastCta')}
-              </p>
+              <p className="text-sm font-medium text-gray-30">{translate('featuresBanner.lastCta')}</p>
             </div>
           </div>
-          <div className="hidden w-full items-center lg:flex">
+          <div className="hidden w-full flex-1 items-center h-[360px] lg:flex">
             <div className="flex flex-col">
               <div className="flex flex-col space-y-8">
-                {features.map((card, index) =>
-                  index === features.length - 2 ? (
-                    <div className="flex flex-row space-x-1 font-bold " key={index}>
-                      <div className="flex">
-                        <Football size={32} className="mr-4 text-primary" weight="fill" />
-                        <p className="text-lg font-semibold text-primary">{card}</p>
-                      </div>
+                {features.map((card, index) => (
+                  <div className="flex flex-row space-x-1 font-bold " key={index}>
+                    <div className="flex">
+                      <Asterisk size={32} className="mr-4 text-primary" weight="fill" />
+                      <p className="text-xl font-semibold text-white">{card}</p>
                     </div>
-                  ) : (
-                    <div className="flex flex-row space-x-4" key={index}>
-                      <Football size={32} className="text-primary" weight="fill" />
-                      <p className="text-lg font-semibold text-white">{card}</p>
-                    </div>
-                  ),
-                )}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+        </div>
+        <div className="bg-primary py-4 w-full flex flex-row justify-center items-center text-lg font-medium text-white">
+          <p className="font-bold">{translate('featuresBanner.specialOfferLabel')}</p>
+          <p className="ml-2">{translate('featuresBanner.specialOfferGift')}</p>
         </div>
       </div>
     </div>

@@ -1,10 +1,23 @@
 import StarWarsBG from 'assets/images/banner/star-wars-bg.webp';
+import StarWarsBG2 from 'assets/images/banner/internxt_SW_theme.webp';
 import HalloweenBG from 'assets/images/banner/Ghosties-bg.webp';
 import ChristmasBG from 'assets/images/banner/christmas_theme.webp';
 import SuperBowlBG from 'assets/images/banner/superbowl_theme.webp';
+import StPaticksBG from 'assets/images/banner/StPatrick-bg.png';
+import IdManagementBG from 'assets/images/banner/IdManagement-bg.png';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-export type Theme = 'system' | 'light' | 'dark' | 'starwars' | 'halloween' | 'christmas' | 'superbowl';
+export type Theme =
+  | 'system'
+  | 'light'
+  | 'dark'
+  | 'starwars'
+  | 'starwars2'
+  | 'halloween'
+  | 'christmas'
+  | 'superbowl'
+  | 'stpatricks'
+  | 'idmanagement';
 
 interface ThemeContextProps {
   currentTheme: Theme | undefined;
@@ -56,6 +69,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         root.style.backgroundImage = `url(${StarWarsBG})`;
         document.documentElement.classList.add('dark');
         setCheckoutTheme('dark');
+      } else if (currentTheme === 'starwars2') {
+        root.style.backgroundImage = `url(${StarWarsBG2})`;
+        root.style.backgroundSize = 'cover';
+        root.style.backgroundPosition = 'center';
+        root.style.backgroundRepeat = 'no-repeat';
+        document.documentElement.classList.add('dark');
+        setCheckoutTheme('dark');
       } else if (currentTheme === 'halloween') {
         root.style.backgroundImage = `url(${HalloweenBG})`;
         document.documentElement.classList.add('dark');
@@ -64,8 +84,22 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         root.style.backgroundImage = `url(${ChristmasBG})`;
         document.documentElement.classList.add('dark');
         setCheckoutTheme('dark');
+      } else if (currentTheme === 'stpatricks') {
+        root.style.backgroundImage = `url(${StPaticksBG})`;
+        root.style.backgroundSize = 'cover';
+        root.style.backgroundPosition = 'center';
+        root.style.backgroundRepeat = 'no-repeat';
+        document.documentElement.classList.add('dark');
+        setCheckoutTheme('dark');
       } else if (currentTheme === 'superbowl') {
         root.style.backgroundImage = `url(${SuperBowlBG})`;
+        root.style.backgroundSize = 'cover';
+        root.style.backgroundPosition = 'center';
+        root.style.backgroundRepeat = 'no-repeat';
+        document.documentElement.classList.add('dark');
+        setCheckoutTheme('dark');
+      } else if (currentTheme === 'idmanagement') {
+        root.style.backgroundImage = `url(${IdManagementBG})`;
         root.style.backgroundSize = 'cover';
         root.style.backgroundPosition = 'center';
         root.style.backgroundRepeat = 'no-repeat';
