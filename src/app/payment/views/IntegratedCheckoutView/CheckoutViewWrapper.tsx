@@ -93,26 +93,6 @@ const STATUS_CODE_ERROR = {
   INTERNAL_SERVER_ERROR: 500,
 };
 
-function savePaymentDataInLocalStorage(
-  subscriptionId: string | undefined,
-  paymentIntentId: string | undefined,
-  selectedPlan: PriceWithTax | undefined,
-  users: number,
-  couponCodeData: CouponCodeData | undefined,
-) {
-  if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
-  if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
-  if (selectedPlan) {
-    const planName = bytesToString(selectedPlan.price.bytes) + selectedPlan.price.interval;
-    const amountToPay = getProductAmount(selectedPlan.price.decimalAmount, users, couponCodeData);
-
-    localStorageService.set('productName', planName);
-    localStorageService.set('amountPaid', amountToPay);
-    localStorageService.set('priceId', selectedPlan.price.id);
-    localStorageService.set('currency', selectedPlan.price.currency);
-  }
-}
-
 let stripeSdk: Stripe;
 
 const CheckoutViewWrapper = () => {
@@ -459,7 +439,7 @@ const CheckoutViewWrapper = () => {
             seatsForBusinessSubscription,
           });
 
-        // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API
+        // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API once the payment is done
         savePaymentDataInLocalStorage(
           subscriptionId,
           paymentIntentId,
