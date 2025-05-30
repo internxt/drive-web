@@ -163,23 +163,25 @@ export const encryptMessageWithPublicKey = async ({
   return encryptedMessage;
 };
 
-// TODO: once all users start storing private key without Base64, remove decoding part
+// TODO: once all users start storing private key without Base64, remove decodedKey part
 export async function smartKeyDecode(key: string): Promise<PrivateKey> {
   const openpgp = await getOpenpgp();
 
-  try {
-    return await openpgp.readPrivateKey({ armoredKey: key });
-  } catch (error) {
-    console.warn('Direct key parsing failed, trying base64 decoding...', error);
-
+  const tryReadKey = async (key) => {
     try {
-      const decodedKey = Buffer.from(key, 'base64').toString();
-      return await openpgp.readPrivateKey({ armoredKey: decodedKey });
-    } catch (base64Error) {
-      console.error('Both direct and base64 decoding failed.', base64Error);
-      throw new Error('Invalid private key format');
+      return await openpgp.readPrivateKey({ armoredKey: key });
+    } catch {
+      return null;
     }
-  }
+  };
+  const originalKey = await tryReadKey(key);
+  if (originalKey) return originalKey;
+
+  const decoded = Buffer.from(key, 'base64').toString();
+  const decodedKey = await tryReadKey(decoded);
+  if (decodedKey) return decodedKey;
+
+  throw new Error('Invalid private key format');
 }
 
 export const decryptMessageWithPrivateKey = async ({

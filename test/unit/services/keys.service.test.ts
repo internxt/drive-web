@@ -41,7 +41,7 @@ describe('Generate keys', () => {
     expect(keys).toHaveProperty('kyber.publicKey');
   });
 
-  it('Should not decrypt null, empry, underfined or short private key', async () => {
+  it('Should not decrypt null, empty, undefined or short private key', async () => {
     const password = 'pwd';
 
     const emptyResult = decryptPrivateKey('', password);
@@ -51,8 +51,8 @@ describe('Generate keys', () => {
     const nullResult = decryptPrivateKey(nullKey as unknown as string, password);
     expect(nullResult).toBe('');
 
-    const underfinedResult = decryptPrivateKey(undefined as unknown as string, password);
-    expect(underfinedResult).toBe('');
+    const undefinedResult = decryptPrivateKey(undefined as unknown as string, password);
+    expect(undefinedResult).toBe('');
 
     const shortKey = 'MISSING_KEY';
     const shortResult = decryptPrivateKey(shortKey, password);
