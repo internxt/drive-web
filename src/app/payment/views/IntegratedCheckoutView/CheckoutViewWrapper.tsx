@@ -5,8 +5,6 @@ import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useStat
 import { useSelector } from 'react-redux';
 
 import { Loader } from '@internxt/ui';
-import { bytesToString } from 'app/drive/services/size.service';
-import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
 import envService from '../../../core/services/env.service';
@@ -29,7 +27,7 @@ import { planThunks } from '../../../store/slices/plan';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
-import { AuthMethodTypes, CouponCodeData } from '../../types';
+import { AuthMethodTypes } from '../../types';
 import CheckoutView from './CheckoutView';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { userLocation } from 'app/utils/userLocation';
