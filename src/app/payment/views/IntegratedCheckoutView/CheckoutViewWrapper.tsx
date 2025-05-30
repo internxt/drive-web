@@ -32,6 +32,7 @@ import CheckoutView from './CheckoutView';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { userLocation } from 'app/utils/userLocation';
 import { UserLocation } from '@internxt/sdk';
+import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
 
 export const THEME_STYLES = {
   dark: {
