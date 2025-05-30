@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import localStorageService, { STORAGE_KEYS } from './local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Workspace } from '../types';
@@ -113,12 +113,36 @@ const mockWorkspaceData: WorkspaceData = {
   },
 };
 
+const localStorageKey = 'ITEM_EXISTS';
+const localStorageValue = 'item-exists';
+const tutorialCompletedId = 'id_1234';
+const userLocalStorageKey = 'xUser';
+const workspaceKey = 'workspace';
+
+const stringifyMockedUser = JSON.stringify(mockUserSettings);
+const stringifyMockCredentials = JSON.stringify(mockWorkspaceCredentialsDetails);
+const stringifyWorkspaceData = JSON.stringify(mockWorkspaceData);
+const workspaceValueInLocalStorage = Workspace.Business;
+
+beforeEach(() => {
+  localStorage.setItem(localStorageKey, localStorageValue);
+  localStorage.setItem(userLocalStorageKey, stringifyMockedUser);
+  localStorage.setItem(workspaceKey, workspaceValueInLocalStorage);
+  localStorage.setItem(STORAGE_KEYS.TUTORIAL_COMPLETED_ID, tutorialCompletedId);
+  localStorage.setItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS, stringifyMockCredentials);
+  localStorage.setItem(STORAGE_KEYS.B2B_WORKSPACE, stringifyWorkspaceData);
+  localStorage.setItem('theme', 'starwars');
+});
+
+afterAll(() => {
+  localStorage.clear();
+  vi.resetAllMocks();
+});
+
 describe('Testing the local storage service', () => {
   describe('Get a value from local storage', () => {
     it('When the requested key exists, then the value is returned', () => {
-      const localStorageKey = 'ITEM_EXISTS';
-      const localStorageValue = 'item-exists';
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(localStorageValue);
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
       const localStorageItem = localStorageService.get(localStorageKey);
 
@@ -129,7 +153,7 @@ describe('Testing the local storage service', () => {
 
     it('When the requested key does not exist, then nothing (null) is returned', () => {
       const localStorageKey = 'ITEM_DOES_NOT_EXIST';
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
       const localStorageItem = localStorageService.get(localStorageKey);
 
@@ -143,7 +167,7 @@ describe('Testing the local storage service', () => {
     it('When the key and its value is given, then they are set correctly', () => {
       const localStorageKey = 'SET_KEY';
       const localStorageValue = 'new-value';
-      const setToLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem').mockReturnValue();
+      const setToLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
 
       localStorageService.set(localStorageKey, localStorageValue);
 
@@ -153,32 +177,36 @@ describe('Testing the local storage service', () => {
   });
 
   describe('Remove item from local storage', () => {
-    it('When an item is requested to be deleted from local storage, then it is removed correctly', () => {
-      const localStorageKey = 'ITEM_TO_REMOVE';
-      const removeFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'removeItem').mockReturnValue();
+    const removeLocalStorageKey = 'ITEM_TO_REMOVE';
+    beforeEach(() => {
+      localStorage.setItem(removeLocalStorageKey, 'item-to-remove');
+    });
 
-      localStorageService.removeItem(localStorageKey);
+    it('When an item is requested to be deleted from local storage, then it is removed correctly', () => {
+      const removeFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'removeItem');
+
+      localStorageService.removeItem(removeLocalStorageKey);
+      const nonExistentItem = localStorageService.get(removeLocalStorageKey);
 
       expect(removeFromLocalStorageSpy).toHaveBeenCalled();
-      expect(removeFromLocalStorageSpy).toHaveBeenCalledWith(localStorageKey);
+      expect(removeFromLocalStorageSpy).toHaveBeenCalledWith(removeLocalStorageKey);
+      expect(nonExistentItem).toBeNull();
     });
   });
 
   describe('Check if an item exists in local storage', () => {
     it('When the item exists, then true is returned', () => {
-      const existingLocalStorageKey = 'ITEM_EXISTS';
-      const existingLocalStorageValue = 'value-exists';
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(existingLocalStorageValue);
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
-      const itemExists = localStorageService.exists(existingLocalStorageKey);
+      const itemExists = localStorageService.exists(localStorageKey);
 
-      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(existingLocalStorageKey);
+      expect(getFromLocalStorageSpy).toHaveBeenCalledWith(localStorageKey);
       expect(itemExists).toBeTruthy();
     });
 
     it('When the item does not exist, then false is returned', () => {
       const existingLocalStorageKey = 'ITEM_DOES_NOT_EXIST';
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
       const itemExists = localStorageService.exists(existingLocalStorageKey);
 
@@ -189,8 +217,7 @@ describe('Testing the local storage service', () => {
 
   describe('Check if user completed the tutorial', () => {
     it('When the user completed the tutorial, a value indicating so is returned (true)', () => {
-      const tutorialCompletedId = 'id_1234';
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(tutorialCompletedId);
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
       const tutorialCompleted = localStorageService.hasCompletedTutorial(tutorialCompletedId);
 
@@ -200,9 +227,9 @@ describe('Testing the local storage service', () => {
     });
 
     it('When the user did not completed the tutorial, a value indicating so is returned (false)', () => {
-      const tutorialCompletedId = 'id_1234';
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
+      localStorage.removeItem(STORAGE_KEYS.TUTORIAL_COMPLETED_ID);
       const tutorialCompleted = localStorageService.hasCompletedTutorial(tutorialCompletedId);
 
       expect(getFromLocalStorageSpy).toHaveBeenCalled();
@@ -213,9 +240,7 @@ describe('Testing the local storage service', () => {
 
   describe('Fetching user data from local storage', () => {
     it('When the user data exists in local storage, then the user is returned', () => {
-      const stringifyMockedUser = JSON.stringify(mockUserSettings);
-      const userLocalStorageKey = 'xUser';
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(stringifyMockedUser);
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
       const userFromLocalStorage = localStorageService.getUser();
 
@@ -224,9 +249,9 @@ describe('Testing the local storage service', () => {
     });
 
     it('When the user data does not exist in local storage, then nothing (null) is returned', () => {
-      const userLocalStorageKey = 'xUser';
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
+      localStorage.removeItem(userLocalStorageKey);
       const userFromLocalStorage = localStorageService.getUser();
 
       expect(getFromLocalStorageSpy).toHaveBeenCalledWith(userLocalStorageKey);
@@ -235,13 +260,8 @@ describe('Testing the local storage service', () => {
   });
 
   describe('Workspaces', () => {
-    const workspaceKey = 'workspace';
-
     it('When the workspace item exists, then it is returned', () => {
-      const workspaceValueInLocalStorage = Workspace.Business;
-      const getFromLocalStorageSpy = vi
-        .spyOn(Storage.prototype, 'getItem')
-        .mockReturnValue(workspaceValueInLocalStorage);
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
       const workspace = localStorageService.getWorkspace();
 
@@ -252,8 +272,9 @@ describe('Testing the local storage service', () => {
 
     it('When the workspace item does not exist, then it is returned', () => {
       const workspaceValueInLocalStorage = Workspace.Individuals;
-      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
+      const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
+      localStorage.removeItem(workspaceKey);
       const workspace = localStorageService.getWorkspace();
 
       expect(getFromLocalStorageSpy).toHaveBeenCalled();
@@ -263,8 +284,7 @@ describe('Testing the local storage service', () => {
 
     describe('Get workspace credentials', () => {
       it('When there are credentials from a workspace, then the credentials are returned', () => {
-        const stringifyMockCredentials = JSON.stringify(mockWorkspaceCredentialsDetails);
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(stringifyMockCredentials);
+        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
         const workspaceCredentials = localStorageService.getWorkspaceCredentials();
 
@@ -274,8 +294,9 @@ describe('Testing the local storage service', () => {
       });
 
       it('When there are not credentials from a workspace, then a value indicating so is returned (null)', () => {
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
+        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
+        localStorage.removeItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS);
         const workspaceCredentials = localStorageService.getWorkspaceCredentials();
 
         expect(getFromLocalStorageSpy).toHaveBeenCalled();
@@ -286,8 +307,7 @@ describe('Testing the local storage service', () => {
 
     describe('Get workspace item data', () => {
       it('When a workspace object exists, then the object is returned', () => {
-        const stringifyWorkspaceData = JSON.stringify(mockWorkspaceData);
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(stringifyWorkspaceData);
+        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
         const workspaceCredentials = localStorageService.getB2BWorkspace();
 
@@ -297,8 +317,9 @@ describe('Testing the local storage service', () => {
       });
 
       it('When a workspace object does not exist, then a value indicating so is returned (null)', () => {
-        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
+        const getFromLocalStorageSpy = vi.spyOn(Storage.prototype, 'getItem');
 
+        localStorage.removeItem(STORAGE_KEYS.B2B_WORKSPACE);
         const workspaceCredentials = localStorageService.getB2BWorkspace();
 
         expect(getFromLocalStorageSpy).toHaveBeenCalled();
@@ -310,7 +331,7 @@ describe('Testing the local storage service', () => {
 
   describe('Clearing local storage', () => {
     it('When clear storage is requested, then removes all keys', () => {
-      const getItemSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('starwars');
+      const getItemSpy = vi.spyOn(Storage.prototype, 'getItem');
       const expectedKeysToRemove = [
         'xUser',
         'xMnemonic',
@@ -329,8 +350,8 @@ describe('Testing the local storage service', () => {
         STORAGE_KEYS.WORKSPACE_CREDENTIALS,
       ];
 
-      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockReturnValue();
-      const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem').mockReturnValue();
+      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
+      const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
 
       localStorageService.clear();
 
