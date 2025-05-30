@@ -19,7 +19,7 @@ export interface DriveFolderData {
   name: string;
   plain_name: string;
   plainName?: string | null;
-  parentId: number;
+  parentId: number | null;
   parentUuid: string;
   parent_id: number | null;
   updatedAt: string;
