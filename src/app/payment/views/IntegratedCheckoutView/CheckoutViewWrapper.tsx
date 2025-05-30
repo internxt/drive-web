@@ -104,7 +104,7 @@ function savePaymentDataInLocalStorage(
   if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
   if (selectedPlan) {
     const planName = bytesToString(selectedPlan.price.bytes) + selectedPlan.price.interval;
-    const amountToPay = getProductAmount(selectedPlan.taxes.decimalAmountWithTax, users, couponCodeData);
+    const amountToPay = getProductAmount(selectedPlan.price.decimalAmount, users, couponCodeData);
 
     localStorageService.set('productName', planName);
     localStorageService.set('amountPaid', amountToPay);
