@@ -7,6 +7,7 @@ import {
 import * as Sentry from '@sentry/react';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import { Avatar } from '@internxt/ui';
+import userService from 'app/auth/services/user.service';
 
 export const extractAvatarURLID = (url: string): string | null => {
   const regex = /internxt\.com\/(.*?)[?&]/;
@@ -67,10 +68,9 @@ const AvatarWrapper = memo(
     }, [avatarSrcURL]);
 
     const downloadAndSaveAvatar = async (url: string) => {
-      const response = await fetch(url);
-      const data = await response.blob();
-      setAvatarBlob(data);
-      await saveAvatarToDatabase(url, data);
+      const avatar = await userService.downloadAvatar(url);
+      setAvatarBlob(avatar);
+      await saveAvatarToDatabase(url, avatar);
     };
 
     const handleDownload = async (url: string) => {

@@ -8,17 +8,13 @@ const BANNER_NAME_FOR_FREE_USERS = 'show_free_users_banner';
 export class BannerManager {
   private readonly plan: PlanState;
   private readonly offerEndDay: Date;
-  private readonly isTutorialCompleted: boolean;
-  private readonly isNewAccount: boolean;
   private readonly bannerItemInLocalStorage: string | null;
   private readonly todayDate: string;
 
-  constructor(user: UserSettings, plan: PlanState, offerEndDay: Date, isNewAccount: boolean) {
+  constructor(user: UserSettings, plan: PlanState, offerEndDay: Date) {
     this.plan = plan;
     this.offerEndDay = offerEndDay;
-    this.isTutorialCompleted = localStorageService.hasCompletedTutorial(user.userId);
     this.bannerItemInLocalStorage = localStorageService.get(BANNER_NAME_IN_LOCAL_STORAGE);
-    this.isNewAccount = isNewAccount;
     this.todayDate = new Date().toISOString().split('T')[0];
   }
 
@@ -39,20 +35,28 @@ export class BannerManager {
 
   private shouldShowFreeBanner(): boolean {
     return (
-      this.plan.individualSubscription?.type === 'free' &&
-      !this.bannerItemInLocalStorage &&
-      !this.isOfferExpired() &&
-      (this.isNewAccount ? this.isTutorialCompleted : true)
+      this.plan.individualSubscription?.type === 'free' && !this.bannerItemInLocalStorage && !this.isOfferExpired()
     );
   }
 
   private shouldShowSubscriptionBanner(): boolean {
-    return (
-      (this.plan.individualSubscription?.type === 'subscription' ||
-        this.plan.individualSubscription?.type === 'lifetime') &&
-      !this.bannerItemInLocalStorage &&
-      !this.isOfferExpired()
-    );
+    const plansToShow = [
+      'price_1PNxYtFAOdcgaBMQzkimr6OU',
+      'price_1PNxZkFAOdcgaBMQi0UCtXBj',
+      'price_1PNxaDFAOdcgaBMQnKXWQRs0',
+      'price_1OQ3MDFAOdcgaBMQ3he4Xqed',
+      'price_1OQ3LKFAOdcgaBMQMK2UHHRM',
+      'price_1OQ3IzFAOdcgaBMQqVd6kLyH',
+      'price_1OQ3JbFAOdcgaBMQsawuy1PI',
+      'price_1OQ3H6FAOdcgaBMQERw3KUuO',
+      'price_1OQ3H5FAOdcgaBMQwMJ734rd',
+      'price_1OQ3CtFAOdcgaBMQtqfzjX2M',
+      'price_1OQ3CtFAOdcgaBMQFq2xX79Q',
+    ];
+
+    const planId = this.plan.individualPlan?.planId;
+
+    return planId !== undefined && plansToShow.includes(planId);
   }
 
   public getBannersToShow(): { showFreeBanner: boolean; showSubscriptionBanner: boolean } {

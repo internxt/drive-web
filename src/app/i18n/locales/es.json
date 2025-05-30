@@ -3,38 +3,32 @@
     "title": "Gestiona tus archivos, la cuenta y la suscripción en la app",
     "logOut": "Cerrar sesión"
   },
- "featuresBanner": {
-    "label": "¡Ahorra un 80%!",
-    "title": " ¡Descubre los nuevos planes de Internxt!",
-    "cta": "Elige tu plan",
+  "featuresBanner": {
+    "label": "Oferta 85%",
+    "title": "Únete al lado de privacidad",
+    "cta": "Consigue tu plan",
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Sorteo mochila Internxt x Swiss Peak!",
     "features": [
-      "VPN y Antivirus Premium",
+      "Internxt Drive, VPN, y Antivirus ",
       "Criptografía postcuántica",
       "Código abierto y auditado",
       "Transferencias cifradas",
-      "Cumple con RGPD",
-      "La oferta finaliza el 17 de marzo"
+      "Tema especial para Web app",
+      "La oferta finaliza el 26 de mayo"
     ]
   },
   "susbcriptionsBanner": {
     "title": "¡Mejora tu plan!",
-    "features": [
-      "Cifrado postcuántico",
-      "Drive, VPN y Antivirus",
-      "Mail y Meet próximamente"
-    ],
+    "features": ["Cifrado postcuántico", "Drive, VPN y Antivirus", "Mail y Meet próximamente"],
     "description": "¡Renueva tu suscripción y obtén nuestras nuevas funciones!",
     "cta": "80% de descuento"
   },
   "lifetimesBanner": {
     "title": "¡Mejora tu plan!",
-    "features": [
-      "Cifrado postcuántico",
-      "Drive, VPN y Antivirus",
-      "Mail y Meet próximamente"
-    ],
+    "features": ["Cifrado postcuántico", "Drive, VPN y Antivirus", "Mail y Meet próximamente"],
     "description": "¡Mejora tu plan con nuestras nuevas funciones y aumenta tu almacenamiento!",
     "cta": "80% de descuento"
   },
@@ -66,9 +60,13 @@
     "dark": "Oscuro",
     "system": "Sistema",
     "starwars": "Star Wars",
+    "starwars2": "Tema de Star Wars",
     "halloween": "Halloween",
     "christmas": "Navidad",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "San Valentín",
+    "stpatricks": "San Patricio",
+    "idmanagement": "Gestión de Identidad"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -223,30 +221,7 @@
       },
       "perUser": "/por usuario",
       "saving": "Estás ahorrando un {{percent}}%",
-      "planDetails": {
-        "title": "Detalles del plan:",
-        "features": {
-          "individual": [
-            "{{spaceToUpgrade}} de almacenamiento encriptado",
-            "Compartir archivos y carpetas encriptados",
-            "Compartir archivos con protección por contraseña",
-            "Acceda a sus archivos desde cualquier dispositivo",
-            "Acceso a todos nuestros servicios",
-            "Autenticación de dos factores (2FA)",
-            "Soporte al cliente premium",
-            "Garantía de devolución de dinero de 30 días"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} almacenamiento/usuario",
-            "Compartir archivos y carpetas cifrados",
-            "Crear y gestionar usuarios y equipos",
-            "Desde {{minimumSeats}} usuarios y hasta {{maximumSeats}}",
-            "Cumple con el GDPR",
-            "Gestionar facturación y pagos de la cuenta",
-            "Soporte al cliente premium"
-          ]
-        }
-      },
+      "planDetails": "Detalles del plan:",
       "total": "Total",
       "totalForBusiness": "Total para {{N}} usuarios: ",
       "addCoupon": {
@@ -255,7 +230,8 @@
       },
       "apply": "Aplicar",
       "amountSaved": "Ahorre ",
-      "withAnnualBilling": "con facturación anual"
+      "withAnnualBilling": "con facturación anual",
+      "taxes": "Impuestos"
     }
   },
 
@@ -431,7 +407,7 @@
             "editProfile": {
               "name": "Nombre",
               "lastname": "Apellido",
-              "updateProfile": "Perfil actualizado correctamente",
+              "updatedProfile": "Perfil actualizado correctamente",
               "errorUpdatingProfile": "No hemos podido actualizar su perfil"
             },
             "changeEmail": {
@@ -1148,7 +1124,9 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "Todos los procesos han finalizado",
-      "processing": "Procesando {{pending}} de {{finished}}"
+      "processing": "Procesando {{pending}} de {{finished}}",
+      "failedToUpload": "Error al subir",
+      "failedToDownload": "Error al descargar"
     },
     "waiting": "Esperando",
     "paused": "Pausado",
@@ -1838,95 +1816,101 @@
         "year": "Año",
         "month": "Mes",
         "lifetime": "Lifetime",
-        "billedAnnually":"facturado anualmente",
+        "billedAnnually": "facturado anualmente",
         "types": {
           "essential": "Essential",
           "premium": "Premium",
           "ultimate": "Ultimate",
           "standard": "Standard",
           "pro": "Pro",
-          "free":"Free"
+          "free": "Free"
         },
         "planFeaturesList": {
           "title": "Detalles del plan",
-          "commingSoon": "Muy Pronto",
-          "storage": " de almacenamiento ",
-          "essentialFeatures":{
-            "feature1": "Criptografía postcuántica",
-            "feature2":"VPN de alta velocidad ilimitado (FR)",
-            "feature4": "Antivirus" ,
-            "feature3": "Copias de seguridad",
-            "feature5": "Comparte archivos protegidos con contraseña",
-            "feature6":"Cumple con RGPD" ,
-            "feature7": "Autenticación de dos factores (2FA)",
-            "feature8":"CLI, WebDav & Rclone" 
+          "comingSoon": "Muy pronto",
+          "storage": " almacenamiento cifrado con conocimiento cero",
+          "1TB": {
+            "title": "Esencial",
+            "features": [
+              "Cifrado post-cuántico",
+              "VPN ilimitada ultrarrápida (FR)",
+              "Antivirus",
+              "Copia de seguridad de tus archivos",
+              "Compartir archivos protegidos con contraseña",
+              "Cumplimiento del RGPD",
+              "Autenticación de dos factores (2FA)",
+              "Soporte para CLI, WebDav y Rclone"
+            ]
           },
-          "premiumFeatures":{
-            "feature1": "Criptografía postcuántica",
-            "feature2":"VPN de alta velocidad ilimitado (FR, DE, PL)",
-            "feature4": "Antivirus" ,
-            "feature3": "Copias de seguridad",
-            "feature5": "Comparte archivos protegidos con contraseña",
-            "feature6":"Cumple con RGPD" ,
-            "feature7": "Autenticación de dos factores (2FA)",
-            "feature8":"CLI, WebDav & Rclone",
-            "commingSoonFeatures": {
-              "feature1": "Meet (3 participantes)",
-              "feature2": "Mail (3 correos)"
-            }
+          "3TB": {
+            "title": "Premium",
+            "features": [
+              "Cifrado post-cuántico",
+              "VPN ilimitada ultrarrápida (FR, DE, PL)",
+              "Antivirus",
+              "Copia de seguridad de tus archivos",
+              "Compartir archivos protegidos con contraseña",
+              "Invitar, compartir y colaborar",
+              "Cumplimiento del RGPD",
+              "Autenticación de dos factores (2FA)",
+              "Soporte para CLI, WebDav y Rclone"
+            ],
+            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web"]
           },
-          "ultimateFeatures":{
-            "feature1": "Criptografía postcuántica",
-            "feature2":"VPN de alta velocidad ilimitado (FR, DE, PL, CA, UK)",
-            "feature4": "Antivirus" ,
-            "feature3": "Copias de seguridad",
-            "feature5": "Comparte archivos protegidos con contraseña",
-            "feature6":"Cumple con RGPD" ,
-            "feature7": "Autenticación de dos factores (2FA)",
-            "feature8":"CLI, WebDav & Rclone",
-            "commingSoonFeatures": {
-              "feature1": "Meet (5 participantes)",
-              "feature2": "Mail (5 correos)"
-            }
+          "5TB": {
+            "title": "Ultimate",
+            "features": [
+              "Cifrado post-cuántico",
+              "VPN ilimitada ultrarrápida (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Copia de seguridad de tus archivos",
+              "Compartir archivos protegidos con contraseña",
+              "Invitar, compartir y colaborar",
+              "Cumplimiento del RGPD",
+              "Autenticación de dos factores (2FA)",
+              "Soporte para CLI, WebDav y Rclone"
+            ],
+            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web", "Meet", "Mail"]
           },
-          "freeFeatures": {
-            "feature1": "Cifrado de conocimiento cero",
-            "feature2": "VPN estandard (FR)",
-            "feature3": "CLI, WebDav & Rclone support"
+          "1GB": {
+            "title": "Gratis",
+            "features": ["VPN estándar gratuita (FR)", "Soporte para CLI, WebDav y Rclone"]
           }
         },
         "businessPlanFeaturesList": {
           "title": "Detalles del plan",
           "storage": " de almacenamiento",
-          "standardFeatures":{
-            "feature1": "Cifrado postcuántico y conocimiento cero",
-            "feature2": "VPN de alta velocidad ilimitado (FR, DE, PL)",
-            "feature4": "Antivirus",
-            "feature3":"Copias de seguridad" ,
-            "feature5": "Comparte archivos protegidos con contraseña",
-            "feature6":"Cumple con RGPD" ,
-            "feature7":"Autenticación de dos factores (2FA)" ,
-            "feature8": "CLI/WebDav/Rclone",
-            "feature9":"Gestiona la facturación y los pagos de la cuenta",
-            "commingSoonFeatures": {
-              "feature1": "Reuniones de hasta 10 usuarios (máx. 10 participantes)",
-              "feature2": "1 correo electrónico personalizado/usuario "
-            }
+          "1TB": {
+            "title": "Estándar",
+            "features": [
+              "Cifrado post-cuántico",
+              "VPN ilimitada ultrarrápida (FR, DE, PL)",
+              "Antivirus",
+              "Copia de seguridad de tus archivos",
+              "Compartir archivos protegidos con contraseña",
+              "Invitar, compartir y colaborar",
+              "Cumplimiento del RGPD",
+              "Autenticación de dos factores (2FA)",
+              "Soporte para CLI, WebDav y Rclone",
+              "Gestionar facturación y pagos de la cuenta"
+            ],
+            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web"]
           },
-          "proFeatures":{
-            "feature1": "Cifrado postcuántico y conocimiento cero",
-            "feature2": "VPN de alta velocidad ilimitado (FR, DE, PL, CA, UK)",
-            "feature4": "Antivirus",
-            "feature3":"Copias de seguridad" ,
-            "feature5": "Comparte archivos protegidos con contraseña",
-            "feature6":"Cumple con RGPD" ,
-            "feature7":"Autenticación de dos factores (2FA)" ,
-            "feature8": "CLI/WebDav/Rclone",
-            "feature9":"Gestiona la facturación y los pagos de la cuenta",
-            "commingSoonFeatures": {
-              "feature1": "Reuniones de hasta 10 usuarios (máx. 10 participantes)",
-              "feature2": "1 correo electrónico personalizado/usuario "
-            }
+          "2TB": {
+            "title": "Pro",
+            "features": [
+              "Cifrado post-cuántico",
+              "VPN ilimitada ultrarrápida (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Copia de seguridad de tus archivos",
+              "Compartir archivos protegidos con contraseña",
+              "Invitar, compartir y colaborar",
+              "Cumplimiento del RGPD",
+              "Autenticación de dos factores (2FA)",
+              "Soporte para CLI, WebDav y Rclone",
+              "Gestionar facturación y pagos de la cuenta"
+            ],
+            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web", "Meet", "Mail"]
           }
         },
         "user": "usuario"

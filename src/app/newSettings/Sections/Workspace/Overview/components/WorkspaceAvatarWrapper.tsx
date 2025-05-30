@@ -7,6 +7,7 @@ import {
 import * as Sentry from '@sentry/react';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import { Avatar } from '@internxt/ui';
+import userService from 'app/auth/services/user.service';
 
 const showUpdateWorkspaceAvatarErrorToast = () =>
   notificationsService.show({
@@ -66,10 +67,9 @@ const WorkspaceAvatarWrapper = memo(
     }, [avatarSrcURL]);
 
     const downloadAndSaveAvatar = async (url: string) => {
-      const response = await fetch(url);
-      const data = await response.blob();
-      setAvatarBlob(data);
-      await saveWorkspaceAvatarToDatabase(workspaceId, url, data);
+      const avatar = await userService.downloadAvatar(url);
+      setAvatarBlob(avatar);
+      await saveWorkspaceAvatarToDatabase(workspaceId, url, avatar);
     };
 
     const handleDownload = async (url: string) => {

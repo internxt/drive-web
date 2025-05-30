@@ -17,22 +17,19 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
 import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
 import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
-import { Avatar, Button, Loader } from '@internxt/ui';
-import Modal from 'app/shared/components/Modal';
+import { Avatar, Button, Checkbox, Loader, Modal } from '@internxt/ui';
 import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { Role } from 'app/store/slices/sharedLinks/types';
 import { uiActions } from 'app/store/slices/ui';
-import copy from 'copy-to-clipboard';
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-tooltip';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import shareService, { getSharingRoles } from '../../../share/services/share.service';
+import shareService, { copyTextToClipboard, getSharingRoles } from '../../../share/services/share.service';
 import { AdvancedSharedItem } from '../../../share/types';
 import { isUserItemOwner } from '../../../share/views/SharedLinksView/sharedViewUtils';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
@@ -310,9 +307,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     dispatch(uiActions.setIsShareDialogOpen(false));
   };
 
-  const getPrivateShareLink = () => {
+  const getPrivateShareLink = async () => {
     try {
-      copy(`${process.env.REACT_APP_HOSTNAME}/shared/?folderuuid=${itemToShare?.item.uuid}`);
+      await copyTextToClipboard(`${process.env.REACT_APP_HOSTNAME}/shared/?folderuuid=${itemToShare?.item.uuid}`);
       notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
     } catch (error) {
       notificationsService.show({
@@ -324,7 +321,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const onCopyLink = async (): Promise<void> => {
     if (accessMode === 'restricted') {
-      getPrivateShareLink();
+      await getPrivateShareLink();
       closeSelectedUserPopover();
       return;
     }
@@ -611,7 +608,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
             <div className="flex items-center justify-between">
               <div className="flex flex-col space-y-2.5">
                 <div className="flex items-center">
-                  <BaseCheckbox checked={isPasswordProtected} onClick={onPasswordCheckboxChange} />
+                  <Checkbox checked={isPasswordProtected} onClick={onPasswordCheckboxChange} />
                   <p className="ml-2 select-none text-base font-medium">
                     {translate('modals.shareModal.protectSharingModal.protect')}
                   </p>

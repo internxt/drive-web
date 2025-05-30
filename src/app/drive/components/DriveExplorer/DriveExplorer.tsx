@@ -639,7 +639,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       )}
       <BannerWrapper />
 
-      <div className="z-0 flex h-full w-full max-w-full grow">
+      <div className="flex h-full w-full max-w-full grow">
         {!isTrash && isOpen && (
           <ContextMenu
             item={'item'}
@@ -685,7 +685,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         <div className="flex w-1 grow flex-col">
           <div className="z-10 flex flex-wrap min-h-14 max-w-full shrink-0 justify-between px-5 py-2 ">
             <div
-              className={`mr-20 ${isTrash ? 'min-w-0' : 'min-w-[200px]'} flex w-full flex-1 flex-row flex-wrap items-center text-lg ${titleClassName ?? ''}`}
+              className={`mr-20 ${isTrash ? 'min-w-0' : 'min-w-[200px]'} flex w-full z-20 flex-1 flex-row flex-wrap items-center text-lg ${titleClassName ?? ''}`}
             >
               {title}
             </div>
@@ -735,7 +735,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             />
           )}
 
-          <div className="z-0 flex h-full grow flex-col justify-between overflow-y-hidden">
+          <div className="flex h-full grow flex-col justify-between overflow-y-hidden">
             <WarningMessageWrapper />
 
             <div className="flex grow flex-col justify-between overflow-hidden">

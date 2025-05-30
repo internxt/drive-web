@@ -1,8 +1,8 @@
-import { NavLink } from 'react-router-dom';
 import { Transition } from '@headlessui/react';
-import { CheckCircle, Info, Warning, WarningOctagon, X } from '@phosphor-icons/react';
-import { ToastShowProps, ToastType } from '../../services/notifications.service';
 import { Loader } from '@internxt/ui';
+import { CheckCircle, Info, Warning, WarningOctagon, X } from '@phosphor-icons/react';
+import { NavLink } from 'react-router-dom';
+import { ToastShowProps, ToastType } from '../../services/notifications.service';
 
 const NotificationToast = ({
   text,

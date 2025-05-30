@@ -11,9 +11,9 @@ import { DriveItemData, DriveItemDetails } from '../../../../../drive/types';
 import shareService from '../../../../../share/services/share.service';
 import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
 import { storageActions } from '../../../../../store/slices/storage';
-import storageThunks from '../../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../../store/slices/ui';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import workspacesSelectors from '../../../../../store/slices/workspaces/workspaces.selectors';
+import { DownloadManager } from '../../../../../network/DownloadManager';
 
 export interface DriveItemActions {
   nameInputRef: React.RefObject<HTMLInputElement>;
@@ -38,6 +38,7 @@ const useDriveItemActions = (item): DriveItemActions => {
   const dispatch = useAppDispatch();
   const nameInputRef = useMemo(() => createRef<HTMLInputElement>(), []);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const isWorkspace = !!selectedWorkspace;
 
   const onRenameItemButtonClicked = () => {
@@ -95,7 +96,11 @@ const useDriveItemActions = (item): DriveItemActions => {
   };
 
   const onDownloadItemButtonClicked = () => {
-    dispatch(storageThunks.downloadItemsThunk([item as DriveItemData]));
+    DownloadManager.downloadItem({
+      payload: [item as DriveItemData],
+      selectedWorkspace,
+      workspaceCredentials,
+    });
   };
 
   const onMoveToTrashButtonClicked = () => {
@@ -115,8 +120,8 @@ const useDriveItemActions = (item): DriveItemActions => {
       navigationService.pushFolder(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
     } else {
       if (isRecentsView) {
-        dispatch(uiActions.setIsFileViewerOpen(true));
         dispatch(uiActions.setFileViewerItem(item));
+        dispatch(uiActions.setIsFileViewerOpen(true));
       } else {
         navigationService.pushFile(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
       }

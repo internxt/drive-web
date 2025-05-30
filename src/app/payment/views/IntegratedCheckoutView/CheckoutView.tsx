@@ -12,7 +12,7 @@ import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './Checko
 import { State } from 'app/payment/store/types';
 import { LegacyRef } from 'react';
 import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -31,8 +31,8 @@ interface CheckoutViewProps {
   userInfo: UserInfoProps;
   isUserAuthenticated: boolean;
   showHardcodedRenewal?: string;
-  showCouponCode: boolean;
   upsellManager: UpsellManagerProps;
+  showCouponCode: boolean;
   userAuthComponentRef: LegacyRef<HTMLDivElement>;
   checkoutViewVariables: State;
   checkoutViewManager: CheckoutViewManager;
@@ -116,6 +116,7 @@ const CheckoutView = ({
                         onChange={(e) => {
                           checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
                           checkoutViewManager.onCountryChange(e.value.address.country);
+                          checkoutViewManager.onPostalCodeChange(e.value.address.postal_code);
                         }}
                         options={{
                           mode: 'billing',
@@ -125,7 +126,7 @@ const CheckoutView = ({
                         }}
                       />
                     </div>
-                    {currentSelectedPlan.type === UserType.Business ? (
+                    {currentSelectedPlan.price.type === UserType.Business ? (
                       <OptionalB2BDropdown errors={errors} register={register} translate={translate} />
                     ) : undefined}
                   </div>

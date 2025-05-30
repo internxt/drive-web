@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Elements } from '@stripe/react-stripe-js';
-import { Stripe, StripeElements, StripeElementsOptionsMode } from '@stripe/stripe-js';
+import { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js';
 import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -14,11 +14,12 @@ import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import RealtimeService from '../../../core/services/socket.service';
-import { AppView, IFormValues } from '../../../core/types';
+import AppError, { AppView, IFormValues } from '../../../core/types';
 import databaseService from '../../../database/services/database.service';
 import { getDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
+import longNotificationsService from '../../../notifications/services/longNotification.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import checkoutService from '../../../payment/services/checkout.service';
 import paymentService from '../../../payment/services/payment.service';
@@ -28,8 +29,11 @@ import { planThunks } from '../../../store/slices/plan';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
-import { AuthMethodTypes, CouponCodeData, RequestedPlanData } from '../../types';
+import { AuthMethodTypes, CouponCodeData } from '../../types';
 import CheckoutView from './CheckoutView';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import { userLocation } from 'app/utils/userLocation';
+import { UserLocation } from '@internxt/sdk';
 
 export const THEME_STYLES = {
   dark: {
@@ -66,6 +70,7 @@ export interface CheckoutViewManager {
   onCouponInputChange: (coupon: string) => void;
   onLogOut: () => Promise<void>;
   onCountryChange: (country: string) => void;
+  onPostalCodeChange: (postalCode: string) => void;
   onCheckoutButtonClicked: (
     formData: IFormValues,
     event: BaseSyntheticEvent<object, any, any> | undefined,
@@ -78,7 +83,6 @@ export interface CheckoutViewManager {
   onSeatsChange: (seat: number) => void;
 }
 
-const ONE_YEAR_IN_MONTHS = 12;
 const IS_PRODUCTION = envService.isProduction();
 const RETURN_URL_DOMAIN = IS_PRODUCTION ? process.env.REACT_APP_HOSTNAME : 'http://localhost:3000';
 const STATUS_CODE_ERROR = {
@@ -86,25 +90,26 @@ const STATUS_CODE_ERROR = {
   COUPON_NOT_VALID: 422,
   PROMO_CODE_BY_NAME_NOT_FOUND: 404,
   BAD_REQUEST: 400,
+  INTERNAL_SERVER_ERROR: 500,
 };
 
 function savePaymentDataInLocalStorage(
   subscriptionId: string | undefined,
   paymentIntentId: string | undefined,
-  selectedPlan: RequestedPlanData | undefined,
+  selectedPlan: PriceWithTax | undefined,
   users: number,
   couponCodeData: CouponCodeData | undefined,
 ) {
   if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
   if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
   if (selectedPlan) {
-    const planName = bytesToString(selectedPlan.bytes) + selectedPlan.interval;
-    const amountToPay = getProductAmount(selectedPlan.decimalAmount, users, couponCodeData);
+    const planName = bytesToString(selectedPlan.price.bytes) + selectedPlan.price.interval;
+    const amountToPay = getProductAmount(selectedPlan.taxes.decimalAmountWithTax, users, couponCodeData);
 
     localStorageService.set('productName', planName);
     localStorageService.set('amountPaid', amountToPay);
-    localStorageService.set('priceId', selectedPlan.id);
-    localStorageService.set('currency', selectedPlan.currency);
+    localStorageService.set('priceId', selectedPlan.price.id);
+    localStorageService.set('currency', selectedPlan.price.currency);
   }
 }
 
@@ -115,11 +120,14 @@ const CheckoutViewWrapper = () => {
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const [mobileToken, setMobileToken] = useState<string | null>(null);
+  const [postalCode, setPostalCode] = useState<string>('');
+  const [country, setCountry] = useState<string>('');
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const { doRegister } = useSignUp('activate');
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
+  const [userLocationData, setUserLocationData] = useState<UserLocation>();
 
   const name = user?.name ?? '';
   const lastName = user?.lastname ?? '';
@@ -134,35 +142,30 @@ const CheckoutViewWrapper = () => {
     setCouponCodeName,
     setError,
     setIsUserPaying,
-    setPlan,
     setPromoCodeData,
     setSelectedPlan,
     setStripeElementsOptions,
     setUserNameFromElementAddress,
     setSeatsForBusinessSubscription,
-    setCountry,
     setPrices,
     setIsCheckoutReadyToRender,
     setIsUpdateSubscriptionDialogOpen,
     setIsUpdatingSubscription,
-    setIsUpsellSwitchActivated,
   } = useCheckout(dispatchReducer);
 
   const {
     authMethod,
     currentSelectedPlan,
-    plan,
     avatarBlob,
     userNameFromAddressElement,
     couponCodeData,
     elementsOptions,
     promoCodeName,
     seatsForBusinessSubscription,
-    country,
+    isUpsellSwitchActivated,
     isCheckoutReadyToRender,
     isUpdateSubscriptionDialogOpen,
     isUpdatingSubscription,
-    isUpsellSwitchActivated,
     prices,
   } = state;
 
@@ -176,73 +179,29 @@ const CheckoutViewWrapper = () => {
     email: user?.email ?? '',
   };
 
+  // TODO: Remove dead code
   const upsellManager = {
-    onUpsellSwitchButtonClicked: () => {
-      setIsUpsellSwitchActivated(!isUpsellSwitchActivated);
-      const planType = isUpsellSwitchActivated ? 'selectedPlan' : 'upsellPlan';
-      const stripeElementsOptions = {
-        ...(elementsOptions as StripeElementsOptionsMode),
-        amount: plan![planType].amount,
-      };
-      setSelectedPlan(plan![planType]);
-      setStripeElementsOptions(stripeElementsOptions);
-    },
+    onUpsellSwitchButtonClicked: () => {},
     isUpsellSwitchActivated,
-    showUpsellSwitch: !!plan?.upsellPlan,
-    amountSaved: plan?.upsellPlan
-      ? (plan?.selectedPlan.amount * ONE_YEAR_IN_MONTHS - plan?.upsellPlan.amount) / 100
-      : undefined,
-    amount: plan?.upsellPlan?.decimalAmount,
+    showUpsellSwitch: false,
+    amountSaved: undefined,
+    amount: undefined,
   };
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const planId = params.get('planId');
-    const promotionCode = params.get('couponCode');
-    const currency = params.get('currency');
-    const paramMobileToken = params.get('mobileToken');
+    const { planId, promotionCode, currency, paramMobileToken } = getCheckoutQueryParams();
     setMobileToken(paramMobileToken);
-
     const currencyValue = currency ?? 'eur';
 
     if (!planId) {
-      navigationService.push(AppView.Drive);
+      redirectToFallbackPage();
       return;
     }
 
-    paymentService
-      .getStripe()
-      .then((stripe) => (stripeSdk = stripe))
-      .catch((error) => {
-        errorService.reportError(error);
-        if (user) {
-          navigationService.push(AppView.Drive);
-        } else {
-          navigationService.push(AppView.Signup);
-        }
-      });
-
-    handleFetchSelectedPlan(planId, currencyValue)
-      .then(async (plan) => {
-        if (checkoutTheme && plan) {
-          if (promotionCode) {
-            handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch(handlePromoCodeError);
-          }
-
-          checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], setStripeElementsOptions, plan);
-          const prices = await checkoutService.fetchPrices(plan.selectedPlan.type, currencyValue);
-          setPrices(prices);
-          setIsCheckoutReadyToRender(true);
-        }
-      })
-      .catch((error) => {
-        errorService.reportError(error);
-        if (user) {
-          navigationService.push(AppView.Drive);
-        } else {
-          navigationService.push(AppView.Signup);
-        }
-      });
+    initializeStripe()
+      .then(() => fetchUserLocationAndStore())
+      .then((location) => loadCheckoutData(planId, currencyValue, promotionCode, location?.ip))
+      .catch(() => redirectToFallbackPage());
   }, [checkoutTheme, mobileToken]);
 
   useEffect(() => {
@@ -257,10 +216,36 @@ const CheckoutViewWrapper = () => {
   }, [isAuthenticated, user]);
 
   useEffect(() => {
-    if (promoCodeName && currentSelectedPlan) {
-      handleFetchPromotionCode(currentSelectedPlan?.id, promoCodeName).catch(handlePromoCodeError);
+    if (currentSelectedPlan) {
+      promoCodeName &&
+        handleFetchPromotionCode(currentSelectedPlan.price.id, promoCodeName).catch(handlePromoCodeError);
+
+      checkoutService
+        .getPriceById({ priceId: currentSelectedPlan.price.id, userAddress: userLocationData?.ip, promoCodeName })
+        .then((priceWithTaxes: PriceWithTax) => {
+          setSelectedPlan(priceWithTaxes);
+        })
+        .catch(() => {
+          if (user) {
+            navigationService.push(AppView.Drive);
+          } else {
+            navigationService.push(AppView.Signup);
+          }
+        });
     }
   }, [promoCodeName]);
+
+  useEffect(() => {
+    if (userLocationData?.location !== country && postalCode && currentSelectedPlan) {
+      recalculatePrice(
+        currentSelectedPlan.price.id,
+        currentSelectedPlan.price.currency,
+        promoCodeName,
+        postalCode,
+        country,
+      );
+    }
+  }, [country, postalCode]);
 
   useEffect(() => {
     if (thereIsAnyError) {
@@ -272,7 +257,70 @@ const CheckoutViewWrapper = () => {
     }
   }, [state.error]);
 
-  const onChangePlanClicked = async (priceId: string, currency: string) => {
+  const getCheckoutQueryParams = () => {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      planId: params.get('planId'),
+      promotionCode: params.get('couponCode'),
+      currency: params.get('currency'),
+      paramMobileToken: params.get('mobileToken'),
+    };
+  };
+
+  const redirectToFallbackPage = () => {
+    if (user) {
+      navigationService.push(AppView.Drive);
+    } else {
+      navigationService.push(AppView.Signup);
+    }
+  };
+
+  const initializeStripe = async (): Promise<void> => {
+    try {
+      const stripe = await paymentService.getStripe();
+      stripeSdk = stripe;
+    } catch {
+      redirectToFallbackPage();
+      throw new Error('Stripe failed to load');
+    }
+  };
+
+  const fetchUserLocationAndStore = async (): Promise<UserLocation | undefined> => {
+    try {
+      const location = await userLocation();
+      setUserLocationData(location);
+      return location;
+    } catch {
+      // NO OP
+      return undefined;
+    }
+  };
+
+  const loadCheckoutData = async (
+    planId: string,
+    currencyValue: string,
+    promotionCode: string | null,
+    userAddress?: UserLocation['ip'],
+  ): Promise<void> => {
+    try {
+      const price = await handleFetchSelectedPlan(planId, promotionCode, currencyValue, userAddress);
+      if (checkoutTheme && price) {
+        if (promotionCode) {
+          handleFetchPromotionCode(price.price.id, promotionCode).catch(handlePromoCodeError);
+        }
+
+        const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], price);
+        setStripeElementsOptions(stripeElements as StripeElementsOptions);
+        const prices = await checkoutService.fetchPrices(price.price.type, currencyValue);
+        setPrices(prices);
+        setIsCheckoutReadyToRender(true);
+      }
+    } catch {
+      redirectToFallbackPage();
+    }
+  };
+
+  const onChangePlanClicked = async (priceId: string) => {
     setIsUpdatingSubscription(true);
     await handleSubscriptionPayment(priceId);
     setIsUpdateSubscriptionDialogOpen(false);
@@ -285,18 +333,23 @@ const CheckoutViewWrapper = () => {
     [translate],
   );
 
-  const showCancelSubscriptionErrorNotification = useCallback(
-    () =>
-      notificationsService.show({
-        text: translate('notificationMessages.errorCancelSubscription'),
-        type: ToastType.Error,
-      }),
-    [translate],
-  );
-
   const handlePaymentSuccess = () => {
     showSuccessSubscriptionNotification();
     dispatch(planThunks.initializeThunk()).unwrap();
+  };
+
+  const handleErrorMessage = (error: AppError, defaultErrorMessage: string) => {
+    if (error?.status && error?.status >= STATUS_CODE_ERROR.INTERNAL_SERVER_ERROR) {
+      notificationsService.show({
+        text: defaultErrorMessage,
+        type: ToastType.Error,
+      });
+    } else {
+      longNotificationsService.show({
+        type: ToastType.Error,
+        text: error?.message,
+      });
+    }
   };
 
   const handleSubscriptionPayment = async (priceId: string) => {
@@ -305,7 +358,7 @@ const CheckoutViewWrapper = () => {
     try {
       const updatedSubscription = await paymentService.updateSubscriptionPrice({
         priceId,
-        userType: currentSelectedPlan.type,
+        userType: currentSelectedPlan.price.type,
       });
       if (updatedSubscription.request3DSecure) {
         stripeSdk
@@ -322,16 +375,14 @@ const CheckoutViewWrapper = () => {
           })
           .catch((err) => {
             const error = errorService.castError(err);
-            errorService.reportError(error);
-            showCancelSubscriptionErrorNotification();
+            handleErrorMessage(error, translate('notificationMessages.errorCancelSubscription'));
           });
       } else {
         handlePaymentSuccess();
       }
     } catch (err) {
       const error = errorService.castError(err);
-      errorService.reportError(error);
-      showCancelSubscriptionErrorNotification();
+      handleErrorMessage(error, translate('notificationMessages.errorCancelSubscription'));
     }
   };
 
@@ -372,25 +423,25 @@ const CheckoutViewWrapper = () => {
         throw new Error(elementsError.message);
       }
 
-      const { customerId, token } = await paymentService.getCustomerId(
+      const { customerId, token } = await checkoutService.getCustomerId({
         customerName,
-        email ?? user?.email,
-        country,
-        companyVatId,
-      );
+        countryCode: country,
+        postalCode,
+        vatId: companyVatId,
+      });
 
       if (mobileToken) {
         const setupIntent = await checkoutService.checkoutSetupIntent(customerId);
         localStorageService.set('customerId', customerId);
         localStorageService.set('token', token);
-        localStorageService.set('priceId', currentSelectedPlan?.id as string);
+        localStorageService.set('priceId', currentSelectedPlan?.price?.id as string);
         localStorageService.set('customerToken', token);
         localStorageService.set('mobileToken', mobileToken);
         const { error: confirmIntentError } = await stripeSDK.confirmSetup({
           elements,
           clientSecret: setupIntent.clientSecret,
           confirmParams: {
-            return_url: `${RETURN_URL_DOMAIN}/checkout/pcCloud-success?mobileToken=${mobileToken}&priceId=${currentSelectedPlan?.id}`,
+            return_url: `${RETURN_URL_DOMAIN}/checkout/pcCloud-success?mobileToken=${mobileToken}&priceId=${currentSelectedPlan?.price?.id}`,
           },
         });
 
@@ -400,7 +451,7 @@ const CheckoutViewWrapper = () => {
       } else {
         const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
           await checkoutService.getClientSecret({
-            selectedPlan: currentSelectedPlan as RequestedPlanData,
+            selectedPlan: currentSelectedPlan as PriceWithTax,
             token,
             mobileToken,
             customerId,
@@ -412,7 +463,7 @@ const CheckoutViewWrapper = () => {
         savePaymentDataInLocalStorage(
           subscriptionId,
           paymentIntentId,
-          plan?.selectedPlan,
+          currentSelectedPlan as PriceWithTax,
           seatsForBusinessSubscription,
           couponCodeData,
         );
@@ -441,13 +492,9 @@ const CheckoutViewWrapper = () => {
       }
     } catch (err) {
       const statusCode = (err as any).status;
+      const castedError = errorService.castError(err);
 
-      if (statusCode === STATUS_CODE_ERROR.BAD_REQUEST) {
-        notificationsService.show({
-          text: translate('notificationMessages.invalidTaxIdIsProvided'),
-          type: ToastType.Error,
-        });
-      } else if (statusCode === STATUS_CODE_ERROR.USER_EXISTS) {
+      if (statusCode === STATUS_CODE_ERROR.USER_EXISTS) {
         setIsUpdateSubscriptionDialogOpen(true);
       } else if (statusCode === STATUS_CODE_ERROR.COUPON_NOT_VALID) {
         notificationsService.show({
@@ -455,25 +502,29 @@ const CheckoutViewWrapper = () => {
           type: ToastType.Error,
         });
       } else {
-        notificationsService.show({
-          text: translate('notificationMessages.errorCreatingSubscription'),
-          type: ToastType.Error,
-        });
+        handleErrorMessage(castedError, translate('notificationMessages.errorCreatingSubscription'));
       }
-
-      errorService.reportError(err);
     } finally {
       setIsUserPaying(false);
     }
   };
 
-  const handleFetchSelectedPlan = async (planId: string, currency?: string) => {
-    const plan = await checkoutService.fetchPlanById(planId, currency);
-    setPlan(plan);
+  const handleFetchSelectedPlan = async (
+    priceId: string,
+    promotionCode: string | null,
+    currency?: string,
+    ip?: string,
+  ) => {
+    const plan = await checkoutService.getPriceById({
+      priceId,
+      userAddress: ip,
+      currency,
+      promoCodeName: promotionCode ?? undefined,
+    });
     const amount = mobileToken ? { amount: 0, decimalAmount: 0 } : {};
-    setSelectedPlan({ ...plan.selectedPlan, ...amount });
-    if (plan.selectedPlan.minimumSeats) {
-      setSeatsForBusinessSubscription(plan.selectedPlan.minimumSeats);
+    setSelectedPlan({ ...plan, ...amount });
+    if (plan.price?.minimumSeats) {
+      setSeatsForBusinessSubscription(plan.price?.minimumSeats);
     }
 
     return plan;
@@ -487,6 +538,7 @@ const CheckoutViewWrapper = () => {
       amountOff: promoCodeData.amountOff,
       percentOff: promoCodeData.percentOff,
     };
+
     setPromoCodeData(promoCode);
   };
 
@@ -495,6 +547,17 @@ const CheckoutViewWrapper = () => {
     localStorageService.clear();
     RealtimeService.getInstance().stop();
     setAuthMethod('signUp');
+  };
+
+  const recalculatePrice = async (
+    priceId: string,
+    currency: string,
+    promoCodeName?: string,
+    postalCode?: string,
+    country?: string,
+  ) => {
+    const price = await checkoutService.getPriceById({ priceId, currency, promoCodeName, postalCode, country });
+    setSelectedPlan(price);
   };
 
   const handlePromoCodeError = (err: unknown, showNotification?: boolean) => {
@@ -525,9 +588,13 @@ const CheckoutViewWrapper = () => {
     setCountry(country);
   };
 
+  const onPostalCodeChange = (postalCode: string) => {
+    setPostalCode(postalCode);
+  };
+
   const onSeatsChange = (seats: number) => {
-    const minSeats = currentSelectedPlan?.minimumSeats;
-    const maxSeats = currentSelectedPlan?.maximumSeats;
+    const minSeats = currentSelectedPlan?.price?.minimumSeats;
+    const maxSeats = currentSelectedPlan?.price?.maximumSeats;
 
     if (maxSeats && seats > maxSeats) {
       setSeatsForBusinessSubscription(maxSeats);
@@ -544,6 +611,7 @@ const CheckoutViewWrapper = () => {
     onCheckoutButtonClicked,
     onRemoveAppliedCouponCode,
     onCountryChange,
+    onPostalCodeChange,
     handleAuthMethodChange: setAuthMethod,
     onUserNameFromAddressElementChange: setUserNameFromElementAddress,
     onSeatsChange,
@@ -558,9 +626,9 @@ const CheckoutViewWrapper = () => {
             userAuthComponentRef={userAuthComponentRef}
             showCouponCode={!mobileToken}
             userInfo={userInfo}
+            upsellManager={upsellManager}
             isUserAuthenticated={isUserAuthenticated}
             showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
-            upsellManager={upsellManager}
             checkoutViewManager={checkoutViewManager}
           />
           {canChangePlanDialogBeOpened ? (
@@ -569,9 +637,9 @@ const CheckoutViewWrapper = () => {
               isDialogOpen={isUpdateSubscriptionDialogOpen}
               setIsDialogOpen={setIsUpdateSubscriptionDialogOpen}
               onPlanClick={onChangePlanClicked}
-              priceIdSelected={currentSelectedPlan.id}
+              priceIdSelected={currentSelectedPlan.price.id}
               isUpdatingSubscription={isUpdatingSubscription}
-              subscriptionSelected={currentSelectedPlan.type}
+              subscriptionSelected={currentSelectedPlan.price.type}
             />
           ) : undefined}
         </Elements>

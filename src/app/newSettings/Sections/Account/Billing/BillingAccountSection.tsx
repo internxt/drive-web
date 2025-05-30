@@ -11,7 +11,7 @@ import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCa
 import Invoices from '../../../containers/InvoicesContainer';
 import CancelSubscription from './components/CancelSubscription';
 import BillingAccountOverview from './containers/BillingAccountOverview';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { getCurrentUsage, getPlanInfo, getPlanName } from '../Plans/utils/planUtils';
 
 interface BillingAccountSectionProps {

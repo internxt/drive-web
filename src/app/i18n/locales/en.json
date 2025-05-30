@@ -4,37 +4,31 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 80%!",
-    "title": "Brand new pricing plans!",
-    "cta": "Choose plan",
+    "label": "Save 85%",
+    "title": "Join the online privacy side",
+    "cta": "Claim deal",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Win an Internxt x Swiss Peak backpack",
     "features": [
-      "Premium VPN and Antivirus ",
+      "Drive, VPN, and Antivirus",
       "Post-quantum encryption",
       "Open-source and audited",
       "End-to-end encrypted transfers",
-      "No unauthorized access",
-      "Offer ends March 17"
+      "Special theme for Web App",
+      "Offer ends May 26"
     ]
   },
   "susbcriptionsBanner": {
     "title": "Supercharge your plan!",
-    "features":[
-      "Post-quantum encryption",
-      "Drive, VPN and Antivirus",
-      "Upcoming Mail and Meet"
-    ],
+    "features": ["Post-quantum encryption", "Drive, VPN and Antivirus", "Upcoming Mail and Meet"],
     "description": "Renew your subscription and get our new features!",
     "cta": "80% OFF"
   },
   "lifetimesBanner": {
     "title": "Supercharge your plan!",
-    "features":[
-      "Post-quantum encryption",
-      "Drive, VPN and Antivirus",
-      "Upcoming Mail and Meet"
-    ],
+    "features": ["Post-quantum encryption", "Drive, VPN and Antivirus", "Upcoming Mail and Meet"],
     "description": "Upgrade your plan with our new features and stack your storage!",
     "cta": "80% OFF"
   },
@@ -87,9 +81,13 @@
     "dark": "Dark",
     "system": "System",
     "starwars": "Star Wars",
+    "starwars2": "Star Wars Theme",
     "halloween": "Halloween",
     "christmas": "Christmas",
-    "superBowl": "Super Bowl"
+    "superBowl": "Super Bowl",
+    "valentines": "Valentine's Day",
+    "stpatricks": "St. Patrick's Day",
+    "idmanagement": "Identity Management"
   },
   "auth": {
     "email": "Email",
@@ -243,30 +241,7 @@
       },
       "perUser": "/per user",
       "saving": "You're saving {{percent}}%",
-      "planDetails": {
-        "title": "Plan details:",
-        "features": {
-          "individual": [
-            "{{spaceToUpgrade}} encrypted storage",
-            "Encrypted file and folder sharing",
-            "Password-protected file sharing",
-            "Access your files from any device",
-            "Get access to all our services",
-            "Two-factor authentication (2FA)",
-            "Premium customer support",
-            "30-day money-back guarantee"
-          ],
-          "business": [
-            "{{spaceToUpgrade}} storage/user",
-            "Encrypted file and folder sharing",
-            "Create and manage users & teams",
-            "Starting at {{minimumSeats}} users and up to {{maximumSeats}}",
-            "GDPR compliant",
-            "Manage account billing & payments",
-            "Premium customer support"
-          ]
-        }
-      },
+      "planDetails": "Plan details:",
       "total": "Total ",
       "totalForBusiness": "Total for {{N}} users: ",
       "addCoupon": {
@@ -275,7 +250,8 @@
       },
       "amountSaved": "Save ",
       "apply": "Apply",
-      "withAnnualBilling": "with annual billing"
+      "withAnnualBilling": "with annual billing",
+      "taxes": "Taxes"
     }
   },
   "general": {
@@ -1169,7 +1145,9 @@
   "tasks": {
     "messages": {
       "allProcessesHaveFinished": "All processes have finished",
-      "processing": "Processing {{pending}} of {{finished}}"
+      "processing": "Processing {{pending}} of {{finished}}",
+      "failedToUpload": "Failed to upload",
+      "failedToDownload": "Failed to download"
     },
     "waiting": "Waiting",
     "paused": "Paused",
@@ -1865,7 +1843,7 @@
         "free": "Get up to 10 GB for free",
         "manageBilling": "Manage billing",
         "freeForever": "Free forever",
-        "billedAnnually":"billed annually",
+        "billedAnnually": "billed annually",
         "year": "Year",
         "month": "Month",
         "lifetime": "Lifetime",
@@ -1875,88 +1853,94 @@
           "ultimate": "Ultimate",
           "standard": "Standard",
           "pro": "Pro",
-          "free":"Free"
+          "free": "Free"
         },
         "planFeaturesList": {
           "title": "Plan details",
-          "commingSoon": "Coming soon",
+          "comingSoon": "Coming soon",
           "storage": " zero-knowledge encrypted storage",
-          "essentialFeatures":{
-            "feature1": "Post-quantum encryption",
-            "feature2":"Ultra fast unlimited VPN (FR)",
-            "feature4":"Antivirus",
-            "feature3":"Backup your files",
-            "feature5":"Password-protected file sharing",
-            "feature6":"GDPR compliance",
-            "feature7":"Two-factor authentication (2FA)",
-            "feature8": "CLI, WebDav & Rclone support"
+          "1TB": {
+            "title": "Essential",
+            "features": [
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support"
+            ]
           },
-          "premiumFeatures":{
-            "feature1": "Post-quantum encryption",
-            "feature2": "Ultra fast unlimited VPN (FR, DE, PL)",
-            "feature4": "Antivirus",
-            "feature3":"Backup your files" ,
-            "feature5": "Password-protected file sharing",
-            "feature6":"GDPR compliance" ,
-            "feature7":"Two-factor authentication (2FA)" ,
-            "feature8": "CLI, WebDav & Rclone support",
-            "commingSoonFeatures": {
-              "feature1": "Meet (3 participants)",
-              "feature2": "Mail (3 addresses)"
-            }
+          "3TB": {
+            "title": "Premium",
+            "features": [
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR, DE, PL)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "Invite, share & collaborate",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support"
+            ],
+            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
           },
-          "ultimateFeatures":{
-            "feature1": "Post-quantum encryption",
-            "feature2": "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
-            "feature4": "Antivirus",
-            "feature3":"Backup your files" ,
-            "feature5": "Password-protected file sharing",
-            "feature6":"GDPR compliance" ,
-            "feature7":"Two-factor authentication (2FA)" ,
-            "feature8": "CLI, WebDav & Rclone support",
-            "commingSoonFeatures": {
-              "feature1": "Meet (5 participants)",
-              "feature2": "Mail (5 addresses)"
-            }
+          "5TB": {
+            "title": "Ultimate",
+            "features": [
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "Invite, share & collaborate",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support"
+            ],
+            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
           },
-          "freeFeatures": {
-            "feature1": "Zero-knowledge encryption",
-            "feature2": "Free Standard VPN (FR)",
-            "feature3": "CLI, WebDav & Rclone support"
+          "1GB": {
+            "title": "Free",
+            "features": ["Free Standard VPN (FR)", "CLI, WebDav & Rclone support"]
           }
         },
         "businessPlanFeaturesList": {
           "title": "Plan details",
           "storage": " of storage",
-          "standardFeatures":{
-            "feature1": "Post-quantum encryption",
-            "feature2": "Ultra fast unlimited VPN (FR, DE, PL)",
-            "feature4": "Antivirus",
-            "feature3":"Backup your files" ,
-            "feature5": "Password-protected file sharing",
-            "feature6":"GDPR compliance" ,
-            "feature7":"Two-factor authentication (2FA)" ,
-            "feature8": "CLI, WebDav & Rclone support",
-            "feature9":"Manage account billing & payments",
-            "commingSoonFeatures": {
-              "feature1": "Meet up to 10 users (max. 10 participants)",
-              "feature2": "1 custom email address/user"
-            }
-            },
-          "proFeatures":{
-            "feature1": "Post-quantum encryption",
-            "feature2": "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
-            "feature4": "Antivirus",
-            "feature3":"Backup your files" ,
-            "feature5": "Password-protected file sharing",
-            "feature6":"GDPR compliance" ,
-            "feature7":"Two-factor authentication (2FA)" ,
-            "feature8": "CLI, WebDav & Rclone support",
-            "feature9":"Manage account billing & payments",
-            "commingSoonFeatures": {
-              "feature1": "Meet up to 100 users (max. 10 participants)",
-              "feature2": "2 custom email address/user"
-            }
+          "1TB": {
+            "title": "Standard",
+            "features": [
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR, DE, PL)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "Invite, share & collaborate",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support",
+              "Manage account billing & payments"
+            ],
+            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
+          },
+          "2TB": {
+            "title": "Pro",
+            "features": [
+              "Post-quantum encryption",
+              "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
+              "Antivirus",
+              "Backup your files",
+              "Password-protected file sharing",
+              "Invite, share & collaborate",
+              "GDPR compliance",
+              "Two-factor authentication (2FA)",
+              "CLI, WebDav & Rclone support",
+              "Manage account billing & payments"
+            ],
+            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
           }
         },
         "user": "user"
