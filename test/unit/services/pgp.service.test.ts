@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-import { Buffer } from 'buffer';
 import { describe, expect, it } from 'vitest';
 import {
   decryptMessageWithPrivateKey,
@@ -10,7 +9,26 @@ import {
   XORhex,
   hybridEncryptMessageWithPublicKey,
   hybridDecryptMessageWithPrivateKey,
+  smartKeyDecode,
 } from '../../../src/app/crypto/services/pgp.service';
+import { Buffer } from 'buffer';
+
+describe('Smart decoding should work', () => {
+  it('should not decode if key is not encoded', async () => {
+    const keys = await generateNewKeys();
+
+    const privateKey = keys.privateKeyArmored;
+    const privateKeyBase64 = Buffer.from(privateKey).toString('base64');
+
+    const resultEncoded = await smartKeyDecode(privateKeyBase64);
+    const resultNotEncoded = await smartKeyDecode(privateKey);
+
+    expect(resultEncoded).toStrictEqual(resultNotEncoded);
+
+    const privateKeyDoubleBase64 = Buffer.from(privateKeyBase64).toString('base64');
+    await expect(smartKeyDecode(privateKeyDoubleBase64)).rejects.toThrowError('Invalid private key format');
+  });
+});
 
 describe('Encryption and Decryption', () => {
   it('should generate new keys', async () => {
@@ -92,7 +110,7 @@ describe('Encryption and Decryption', () => {
 
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
       privateKyberKeyInBase64: keys.privateKyberKeyBase64,
     });
 
@@ -117,7 +135,7 @@ describe('Encryption and Decryption', () => {
     await expect(
       hybridDecryptMessageWithPrivateKey({
         encryptedMessageInBase64,
-        privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+        privateKeyInBase64: keys.privateKeyArmored,
       }),
     ).rejects.toThrowError('Attempted to decrypt hybrid ciphertex without Kyber key');
   });
@@ -137,7 +155,7 @@ describe('Encryption and Decryption', () => {
 
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64: encryptedMessageStr,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
     });
 
     expect(decryptedMessage).toEqual(originalMessage);
@@ -156,12 +174,12 @@ describe('Encryption and Decryption', () => {
 
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
     });
 
     const oldDecryptedMessage = await decryptMessageWithPrivateKey({
       encryptedMessage: atob(encryptedMessageInBase64),
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
     });
 
     expect(decryptedMessage).toEqual(oldDecryptedMessage);
@@ -181,13 +199,13 @@ describe('Encryption and Decryption', () => {
 
     const decryptedMessage = await hybridDecryptMessageWithPrivateKey({
       encryptedMessageInBase64,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
       privateKyberKeyInBase64: keys.privateKyberKeyBase64,
     });
 
     const oldDecryptedMessage = await decryptMessageWithPrivateKey({
       encryptedMessage: atob(encryptedMessageInBase64),
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
     });
 
     expect(decryptedMessage).toEqual(oldDecryptedMessage);
@@ -223,7 +241,7 @@ describe('Encryption and Decryption', () => {
     // Step 4: Decrypt the message using the private key
     const decryptedMessage = await decryptMessageWithPrivateKey({
       encryptedMessage,
-      privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      privateKeyInBase64: keys.privateKeyArmored,
     });
 
     // Step 5: Assert that the decrypted message matches the original message
