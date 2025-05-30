@@ -43,10 +43,6 @@ vi.mock('app/notifications/services/notifications.service', () => ({
   },
 }));
 
-beforeAll(() => {
-  localStorage.clear();
-});
-
 describe('downloadManager', () => {
   beforeAll(() => {
     vi.mock('app/drive/services/database.service', () => ({
