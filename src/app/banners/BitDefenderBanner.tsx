@@ -31,16 +31,19 @@ const BitdefenderBanner = ({ showBanner, onClose }: BitdeFenderBannerProps): JSX
           <X size={32} className="text-white" />
         </button>
 
-        <div className="w-[450px] lg:w-[750px] ">
-          <img
-            src={BitDefenderBanner}
-            alt="BitDefender Banner"
-            width={900}
-            height={160}
-            style={{ cursor: 'pointer' }}
+       <div className="w-[450px] lg:w-[750px]">
+          <button
             onClick={handleOnClick}
-          />
+            style={{ border: 'none', padding: 0, background: 'none', cursor: 'pointer' }}
+          >
+            <img
+              src={BitDefenderBanner}
+              alt="BitDefender Banner"
+              className="w-full h-auto"
+            />
+          </button>
         </div>
+
       </div>
     </div>
   );
