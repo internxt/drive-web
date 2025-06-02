@@ -3,14 +3,13 @@ import { PlanState } from '../store/slices/plan';
 import { useSelector } from 'react-redux';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-
-import FeaturesBanner from './FeaturesBanner';
 import { BannerManager } from './BannerManager';
 import { useEffect, useMemo, useState } from 'react';
-import SubscriptionBanner from './SubscriptionBanner';
 import { userSelectors } from 'app/store/slices/user';
+import BitdefenderBanner from './BitDefenderBanner';
 
-const OFFER_END_DAY = new Date('2025-05-26');
+const OFFER_END_DAY = new Date('2025-06-09');
+const TIME_TO_SHOW = 8000;
 
 const BannerWrapper = (): JSX.Element => {
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
@@ -36,14 +35,7 @@ const BannerWrapper = (): JSX.Element => {
 
   return (
     <>
-      {bannersToShow.showFreeBanner && <FeaturesBanner showBanner onClose={() => onCloseBanner('showFreeBanner')} />}
-      {bannersToShow.showSubscriptionBanner && (
-        <SubscriptionBanner
-          showBanner
-          onClose={() => onCloseBanner('showSubscriptionBanner')}
-          isLifetimeUser={plan.individualSubscription?.type === 'lifetime'}
-        />
-      )}
+      {bannersToShow.showFreeBanner && <BitdefenderBanner onClose={() => onCloseBanner('showFreeBanner')} showBanner />}
     </>
   );
 };
