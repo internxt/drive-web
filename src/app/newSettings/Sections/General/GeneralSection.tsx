@@ -5,7 +5,7 @@ import Section from 'app/newSettings/components/Section';
 
 const GeneralSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   return (
-    <Section title="General" className="" onClosePreferences={onClosePreferences}>
+    <Section className="max-w-[672px]" title="General" onClosePreferences={onClosePreferences}>
       <Appearance />
       <Language />
       <ContactSupport />
