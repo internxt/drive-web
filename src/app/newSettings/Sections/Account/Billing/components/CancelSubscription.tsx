@@ -1,7 +1,7 @@
 import { t } from 'i18next';
 import { Button } from '@internxt/ui';
 import CancelSubscriptionModal from '../../../Workspace/Billing/CancelSubscriptionModal';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
 interface CancelSubscriptionProps {
   isCancelSubscriptionModalOpen: boolean;

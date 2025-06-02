@@ -10,9 +10,9 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
 import { State } from 'app/payment/store/types';
-import { LegacyRef } from 'react';
+import { LegacyRef, useEffect } from 'react';
 import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -31,8 +31,8 @@ interface CheckoutViewProps {
   userInfo: UserInfoProps;
   isUserAuthenticated: boolean;
   showHardcodedRenewal?: string;
-  showCouponCode: boolean;
   upsellManager: UpsellManagerProps;
+  showCouponCode: boolean;
   userAuthComponentRef: LegacyRef<HTMLDivElement>;
   checkoutViewVariables: State;
   checkoutViewManager: CheckoutViewManager;
@@ -41,6 +41,9 @@ interface CheckoutViewProps {
 const AUTH_METHOD_VALUES = {
   IS_SIGNED_IN: 'userIsSignedIn',
 };
+
+const GCLID_COOKIE_LIFESPAN_DAYS = 90;
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const CheckoutView = ({
   userInfo,
@@ -85,6 +88,16 @@ const CheckoutView = ({
     checkoutViewManager.onCheckoutButtonClicked(formData, event, stripeSDK, elements);
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const gclid = params.get('gclid');
+
+    if (gclid) {
+      const expiryDate = new Date();
+      expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
+      document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
+    }
+  }, []);
   return (
     <form
       className="flex h-full overflow-y-scroll bg-gray-1 lg:w-screen xl:px-16"
@@ -116,6 +129,7 @@ const CheckoutView = ({
                         onChange={(e) => {
                           checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
                           checkoutViewManager.onCountryChange(e.value.address.country);
+                          checkoutViewManager.onPostalCodeChange(e.value.address.postal_code);
                         }}
                         options={{
                           mode: 'billing',
@@ -125,7 +139,7 @@ const CheckoutView = ({
                         }}
                       />
                     </div>
-                    {currentSelectedPlan.type === UserType.Business ? (
+                    {currentSelectedPlan.price.type === UserType.Business ? (
                       <OptionalB2BDropdown errors={errors} register={register} translate={translate} />
                     ) : undefined}
                   </div>

@@ -58,8 +58,8 @@ describe('TaskToRetyItem', () => {
     expect(mockDownloadItem).toHaveBeenCalledWith(mockFile);
   });
 
-  it('should render a spinner when the file status is "uploading"', () => {
-    const uploadingFile = { ...mockFile, status: 'uploading' };
+  it('should render a spinner when the file status is "retrying"', () => {
+    const uploadingFile = { ...mockFile, status: 'retrying' };
     const uploadingProps = { ...defaultProps, data: { files: [uploadingFile], downloadItem: mockDownloadItem } };
     const { container } = render(<TaskToRetyItem {...uploadingProps} />);
     const spinner = container.querySelector('.animate-spin');
