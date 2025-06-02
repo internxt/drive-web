@@ -125,35 +125,30 @@ const Appearance = () => {
         const error = err as Error;
         errorService.reportError(error);
       });
-    isManagementIdThemeAvailable(plan)
-      .then((isManagementIdThemeAvailable) => {
-        if (
-          !appearances.some(
-            (appearance) => appearance.theme === 'idmanagement' && appearance.img === appearance_dark,
-          ) &&
-          isManagementIdThemeAvailable
-        ) {
-          setAppearances([...appearances, { theme: 'idmanagement', img: appearance_dark }]);
-        }
-      })
-      .catch((err) => {
-        const error = err as Error;
-        errorService.reportError(error);
-      });
+    isManagementIdThemeAvailable(plan).then((isManagementIdThemeAvailable) => {
+      if (
+        !appearances.some((appearance) => appearance.theme === 'idmanagement' && appearance.img === appearance_dark) &&
+        isManagementIdThemeAvailable
+      ) {
+        setAppearances([...appearances, { theme: 'idmanagement', img: appearance_dark }]);
+      }
+    });
   }, []);
 
   return (
-    <Section className="" title={translate('theme.title')}>
-      <div className="flex flex-row">
-        {appearances.map((themeInfo) => (
-          <ThemeButton
-            key={themeInfo.theme}
-            theme={themeInfo.theme}
-            toggleTheme={toggleTheme}
-            isSelected={currentTheme === themeInfo.theme}
-            img={themeInfo.img}
-          />
-        ))}
+    <Section title={translate('theme.title')}>
+      <div className="flex flex-col w-full h-max overflow-x-auto">
+        <div className="flex flex-row w-max h-max pb-2">
+          {appearances.map((themeInfo) => (
+            <ThemeButton
+              key={themeInfo.theme}
+              theme={themeInfo.theme}
+              toggleTheme={toggleTheme}
+              isSelected={currentTheme === themeInfo.theme}
+              img={themeInfo.img}
+            />
+          ))}
+        </div>
       </div>
     </Section>
   );

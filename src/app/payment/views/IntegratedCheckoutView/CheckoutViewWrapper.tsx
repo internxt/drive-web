@@ -5,8 +5,6 @@ import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useStat
 import { useSelector } from 'react-redux';
 
 import { Loader } from '@internxt/ui';
-import { bytesToString } from 'app/drive/services/size.service';
-import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
 import envService from '../../../core/services/env.service';
@@ -29,11 +27,12 @@ import { planThunks } from '../../../store/slices/plan';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
-import { AuthMethodTypes, CouponCodeData } from '../../types';
+import { AuthMethodTypes } from '../../types';
 import CheckoutView from './CheckoutView';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { userLocation } from 'app/utils/userLocation';
 import { UserLocation } from '@internxt/sdk';
+import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
 
 export const THEME_STYLES = {
   dark: {
@@ -92,26 +91,6 @@ const STATUS_CODE_ERROR = {
   BAD_REQUEST: 400,
   INTERNAL_SERVER_ERROR: 500,
 };
-
-function savePaymentDataInLocalStorage(
-  subscriptionId: string | undefined,
-  paymentIntentId: string | undefined,
-  selectedPlan: PriceWithTax | undefined,
-  users: number,
-  couponCodeData: CouponCodeData | undefined,
-) {
-  if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
-  if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
-  if (selectedPlan) {
-    const planName = bytesToString(selectedPlan.price.bytes) + selectedPlan.price.interval;
-    const amountToPay = getProductAmount(selectedPlan.taxes.decimalAmountWithTax, users, couponCodeData);
-
-    localStorageService.set('productName', planName);
-    localStorageService.set('amountPaid', amountToPay);
-    localStorageService.set('priceId', selectedPlan.price.id);
-    localStorageService.set('currency', selectedPlan.price.currency);
-  }
-}
 
 let stripeSdk: Stripe;
 
@@ -459,7 +438,7 @@ const CheckoutViewWrapper = () => {
             seatsForBusinessSubscription,
           });
 
-        // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API
+        // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API once the payment is done
         savePaymentDataInLocalStorage(
           subscriptionId,
           paymentIntentId,
