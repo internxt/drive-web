@@ -8,7 +8,7 @@ interface BitdeFenderBannerProps {
 
 const BitdefenderBanner = ({ showBanner, onClose }: BitdeFenderBannerProps): JSX.Element => {
   const handleOnClick = () => {
-    window.open('https://www.bitdefender.com/pages/consumer/en/new/trial/ts-trial-3m/internxt/', '_blank');
+    window.open('https://www.bitdefender.com/pages/consumer/en/new/trial/ts-trial-3m/internxt/', '_blank' , 'noopener');
   };
 
   return (
