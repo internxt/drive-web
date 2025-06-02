@@ -1,20 +1,16 @@
 import replace from '@rollup/plugin-replace';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { defineConfig } from 'vitest/config';
-import svgr from '@svgr/rollup';
+import svgr from 'vite-plugin-svgr';
 
-export default defineConfig({
+export default {
   plugins: [
     react(),
     replace({
       preventAssignment: true,
       'process.browser': true,
     }),
-    svgr({
-      svgrOptions: { native: true },
-      include: '**/*.svg',
-    }),
+    svgr(),
   ],
   resolve: {
     alias: {
@@ -33,4 +29,4 @@ export default defineConfig({
       },
     },
   },
-});
+};
