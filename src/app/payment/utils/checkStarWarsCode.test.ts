@@ -29,7 +29,6 @@ describe('isStarWarsThemeAvailable', () => {
   });
 
   it('returns true and sets localStorage if coupon is used for subscription', async () => {
-
     const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
     vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     vi.spyOn(paymentService, 'isCouponUsedByUser').mockResolvedValue({ couponUsed: true });
@@ -83,7 +82,6 @@ describe('isStarWarsThemeAvailable', () => {
   });
 
   it('calls errorService.reportError and returns false on error', async () => {
-
     vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     vi.spyOn(paymentService, 'isCouponUsedByUser').mockRejectedValue(new Error('Unexpected error'));
 
@@ -96,7 +94,6 @@ describe('isStarWarsThemeAvailable', () => {
   });
 
   it('returns false if no subscription or lifetime', async () => {
-
     vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     const plan = { ...planBase };
 
