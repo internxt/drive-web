@@ -86,9 +86,12 @@
   "scripts": {
     "preinstall": "node scripts/use-yarn.js",
     "prepare": "husky install",
-    "dev": "vite",
+    "dev": "craco start",
+    "dev:vite": "vite",
     "start": "craco start",
     "build": "craco build",
+    "build:vite": "vite build",
+    "build:staging:vite": "vite build --mode staging",
     "vercel:install": "yarn run add:npmrc && yarn install",
     "test:unit": "vitest run test/unit && vitest run src/ ",
     "test:coverage": "vitest run --coverage",

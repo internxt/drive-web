@@ -1,6 +1,6 @@
 function isProduction(): boolean {
-  if (import.meta.env.VITE_NODE_ENV === 'staging') return false;
-  return import.meta.env.MODE === 'production' || import.meta.env.VITE_NODE_ENV === 'production';
+  if (import.meta.env.REACT_APP_NODE_ENV === 'staging') return false;
+  return import.meta.env.MODE === 'production' || import.meta.env.REACT_APP_NODE_ENV === 'production';
 }
 
 const envService = {
@@ -17,7 +17,8 @@ function getEnvVar(name: keyof NodeJS.ProcessEnv): string {
 export const envConfig = {
   app: {
     nodeEnv: getEnvVar('NODE_ENV'),
-    debug: getEnvVar('VITE_DEBUG'),
+    mode: getEnvVar('MODE'),
+    debug: getEnvVar('REACT_APP_DEBUG'),
     generateSourceMap: getEnvVar('GENERATE_SOURCEMAP'),
     hostname: getEnvVar('REACT_APP_HOSTNAME'),
     websiteUrl: getEnvVar('REACT_APP_WEBSITE_URL'),
