@@ -20,7 +20,6 @@ export default defineConfig({
   ],
   envPrefix: ['REACT_APP_'],
   build: {
-    sourcemap: true,
     outDir: 'build',
   },
   server: {
