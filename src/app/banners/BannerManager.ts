@@ -22,21 +22,19 @@ export class BannerManager {
     return new Date() > this.offerEndDay;
   }
 
-  private isLocalStorageExpired(): boolean {
-    return (this.bannerItemInLocalStorage ?? '') > this.todayDate;
+  private isBannerExpired(): boolean {
+    return !this.bannerItemInLocalStorage || this.bannerItemInLocalStorage <= this.todayDate;
   }
 
   private clearLocalStorageIfExpired(): void {
-    if (this.isOfferExpired()) {
+    if (this.isOfferExpired() || this.isBannerExpired()) {
       localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
       localStorageService.removeItem(BANNER_NAME_FOR_FREE_USERS);
     }
   }
 
   private shouldShowFreeBanner(): boolean {
-    return (
-      this.plan.individualSubscription?.type === 'free' && !this.bannerItemInLocalStorage && !this.isOfferExpired()
-    );
+    return this.plan.individualSubscription?.type === 'free' && this.isBannerExpired() && !this.isOfferExpired();
   }
 
   private shouldShowSubscriptionBanner(): boolean {
