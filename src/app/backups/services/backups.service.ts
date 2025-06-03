@@ -4,6 +4,7 @@ import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
 import { mapBackupFolder } from '../utils/mappers';
+import { envConfig } from 'app/core/services/env.service';
 
 const backupsService = {
   async getAllDevices(): Promise<Device[]> {
@@ -15,7 +16,7 @@ const backupsService = {
   async getAllDevicesAsFolders(): Promise<DriveFolderData[]> {
     const serviceHeaders = httpService.getHeaders(true, false);
     const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/backup/deviceAsFolder`, {
+    const res = await fetch(`${envConfig.api.api}/backup/deviceAsFolder`, {
       headers: headers,
     });
     if (res.ok) {
@@ -28,7 +29,7 @@ const backupsService = {
     const backupsClient = SdkFactory.getInstance().createBackupsClient();
     const backups = await backupsClient.getAllBackups(mac);
     return backups.map((backup) => {
-      const path = aes.decrypt(backup.path, `${process.env.REACT_APP_CRYPTO_SECRET2}-${backup.bucket}`);
+      const path = aes.decrypt(backup.path, `${envConfig.crypto.secret2}-${backup.bucket}`);
       const name = path.split(/[/\\]/).pop() as string;
       return {
         ...backup,

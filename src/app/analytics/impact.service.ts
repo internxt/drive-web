@@ -5,13 +5,61 @@ import { getCookie } from './utils';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { envConfig } from 'app/core/services/env.service';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import { CouponCodeData } from 'app/payment/types';
+import { bytesToString } from 'app/drive/services/size.service';
+import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
-const IMPACT_API = process.env.REACT_APP_IMPACT_API as string;
+const IMPACT_API = envConfig.impact.apiUrl;
 
 const anonymousID = getCookie('impactAnonymousId');
 const source = getCookie('impactSource');
 
-export async function trackSignUp(uuid, email) {
+/**
+ * Stores relevant payment data in local storage to be retrieved later,
+ * particularly after a successful checkout (e.g., in CheckoutSuccessView).
+ * This enables tracking and analytics with accurate purchase context.
+ *
+ * Depending on the type of plan (subscription vs lifetime), the function stores:
+ * - `subscriptionId` for subscription-based plans (non-lifetime)
+ * - `paymentIntentId` for lifetime plans
+ *
+ * Additionally, it stores metadata such as product name, amount paid, price ID, and currency.
+ * The `amountPaid` value is computed based on:
+ * - The raw price (pre-tax and before any discounts)
+ * - Number of users
+ * - Coupon code data (if any)
+ *
+ * @param subscriptionId - Stripe subscription ID (only for recurring plans)
+ * @param paymentIntentId - Stripe payment intent ID (only for lifetime plans)
+ * @param selectedPlan - The pricing plan selected by the user
+ * @param users - Number of users for the purchase (1 for individual, >1 for B2B)
+ * @param couponCodeData - Optional coupon code information applied to the purchase
+ */
+export function savePaymentDataInLocalStorage(
+  subscriptionId: string | undefined,
+  paymentIntentId: string | undefined,
+  selectedPlan: PriceWithTax | undefined,
+  users: number,
+  couponCodeData: CouponCodeData | undefined,
+) {
+  if (subscriptionId && selectedPlan?.price.interval !== 'lifetime')
+    localStorageService.set('subscriptionId', subscriptionId);
+  if (paymentIntentId && selectedPlan?.price.interval === 'lifetime')
+    localStorageService.set('paymentIntentId', paymentIntentId);
+  if (selectedPlan) {
+    const planName = bytesToString(selectedPlan.price.bytes) + selectedPlan.price.interval;
+    const amountToPay = getProductAmount(selectedPlan.price.decimalAmount, users, couponCodeData);
+
+    localStorageService.set('productName', planName);
+    localStorageService.set('amountPaid', amountToPay);
+    localStorageService.set('priceId', selectedPlan.price.id);
+    localStorageService.set('currency', selectedPlan.price.currency);
+  }
+}
+
+export async function trackSignUp(uuid: string, email: string) {
   try {
     window.rudderanalytics.identify(uuid, { email, uuid: uuid });
     window.rudderanalytics.track('User Signup', { email });
@@ -43,6 +91,7 @@ export async function trackPaymentConversion() {
     const priceId = localStorageService.get('priceId');
     const currency = localStorageService.get('currency');
     const amount = parseFloat(localStorageService.get('amountPaid') ?? '0');
+    const gclid = getCookie('gclid');
 
     try {
       window.gtag('event', 'purchase', {
@@ -57,6 +106,7 @@ export async function trackPaymentConversion() {
             price: amount,
           },
         ],
+        ...(gclid ? { gclid } : {}),
       });
     } catch (error) {
       //

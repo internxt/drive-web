@@ -3,13 +3,14 @@ import ROUTES from '../../routes/paths.json';
 import { DatabaseProvider } from '../../database/services/database.service';
 import { AppConfig, AppViewConfig, AppViewLayout } from '../types';
 import { DownloadFolderMethod } from '../../drive/types';
+import { envConfig } from 'app/core/services/env.service';
 
 export function getAppConfig(): AppConfig {
   const getPath = (pathId: string, path) => {
     if (pathId == 'auth') {
-      return `/${process.env.REACT_APP_AUTH_URL}`;
+      return `/${envConfig.auth.authUrl}`;
     } else if (pathId == 'buttonAuth') {
-      return `/${process.env.REACT_APP_BUTTON_AUTH_URL}`;
+      return `/${envConfig.auth.buttonAuthUrl}`;
     } else {
       return path;
     }
