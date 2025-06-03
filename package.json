@@ -88,6 +88,7 @@
     "prepare": "husky install",
     "dev": "vite",
     "build": "vite build",
+    "start": "vite",
     "build:staging": "vite build --mode staging",
     "vercel:install": "yarn run add:npmrc && yarn install",
     "test:unit": "vitest run test/unit && vitest run src/ ",
