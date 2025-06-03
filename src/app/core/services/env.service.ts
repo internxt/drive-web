@@ -1,6 +1,6 @@
 function isProduction(): boolean {
   if (import.meta.env.VITE_NODE_ENV === 'staging') return false;
-  return import.meta.env.NODE_ENV === 'production' || import.meta.env.VITE_NODE_ENV === 'production';
+  return import.meta.env.MODE === 'production' || import.meta.env.VITE_NODE_ENV === 'production';
 }
 
 const envService = {
