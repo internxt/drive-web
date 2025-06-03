@@ -61,8 +61,6 @@ export function savePaymentDataInLocalStorage(
 
 export async function trackSignUp(uuid: string, email: string) {
   try {
-    window.rudderanalytics.identify(uuid, { email, uuid: uuid });
-    window.rudderanalytics.track('User Signup', { email });
     window.gtag('event', 'User Signup');
 
     if (source && source !== 'direct') {
@@ -108,7 +106,7 @@ export async function trackPaymentConversion() {
         ],
         ...(gclid ? { gclid } : {}),
       });
-    } catch (error) {
+    } catch {
       //
     }
 
@@ -131,7 +129,7 @@ export async function trackPaymentConversion() {
           errorService.reportError(error);
         });
     }
-  } catch (err) {
+  } catch {
     //
   }
 }
