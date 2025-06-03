@@ -1,4 +1,4 @@
-import { Asterisk, CheckCircle, ShieldCheck, X } from '@phosphor-icons/react';
+import {CheckCircle, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ShieldIcon from 'assets/images/banner/shield-blue.svg';
 import styles from 'app/banners/FeaturesBanner.module.scss';
