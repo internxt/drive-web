@@ -1,12 +1,12 @@
 import { aes } from '@internxt/lib';
 import { DriveFolderData } from '../../drive/types';
+import { envConfig } from 'app/core/services/env.service';
 
 export const mapBackupFolder = (backupFolder: DriveFolderData) => {
   return {
     ...backupFolder,
     name:
-      backupFolder.plainName ??
-      aes.decrypt(backupFolder.name, `${process.env.REACT_APP_CRYPTO_SECRET2}-${backupFolder.bucket}`),
+      backupFolder.plainName ?? aes.decrypt(backupFolder.name, `${envConfig.crypto.secret2}-${backupFolder.bucket}`),
     isFolder: true,
   };
 };

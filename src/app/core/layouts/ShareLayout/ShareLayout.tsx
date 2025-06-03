@@ -13,6 +13,7 @@ import ReportButton from '../../../share/views/ShareView/ReportButon';
 import { ShieldCheck, Password, Key, Eye } from '@phosphor-icons/react';
 import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 import { Avatar, Button } from '@internxt/ui';
+import { envConfig } from 'app/core/services/env.service';
 
 interface ShareLayoutProps {
   children: JSX.Element;
@@ -183,7 +184,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   <Button
                     variant="secondary"
                     onClick={() => {
-                      window.location.href = process.env.REACT_APP_HOSTNAME + '/login';
+                      window.location.href = envConfig.app.hostname + '/login';
                     }}
                   >
                     {translate('shareLayout.topBar.login')}
@@ -192,7 +193,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   <Button
                     variant="primary"
                     onClick={() => {
-                      window.location.href = process.env.REACT_APP_HOSTNAME + '/new';
+                      window.location.href = envConfig.app.hostname + '/new';
                     }}
                   >
                     {translate('shareLayout.topBar.createAccount')}

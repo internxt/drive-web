@@ -30,6 +30,7 @@ import dateService from '../../core/services/date.service';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { queue, QueueObject } from 'async';
 import { QueueUtilsService } from 'app/utils/queueUtils';
+import { envConfig } from 'app/core/services/env.service';
 
 export interface IFolders {
   bucket: string;
@@ -575,7 +576,7 @@ async function fetchFolderTree(folderUUID: string): Promise<{
     folderDecryptedNames[currentTree.id] = currentTree.plainName;
 
     for (const file of files) {
-      fileDecryptedNames[file.id] = aes.decrypt(file.name, `${process.env.REACT_APP_CRYPTO_SECRET2}-${file.folderId}`);
+      fileDecryptedNames[file.id] = aes.decrypt(file.name, `${envConfig.crypto.secret2}-${file.folderId}`);
     }
 
     pendingFolders.shift();
