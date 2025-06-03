@@ -18,32 +18,6 @@ export function updateMetaData(
   return storageClient.updateFileNameWithUUID(payload, resourcesToken);
 }
 
-export async function moveFile(
-  fileId: string,
-  destination: number,
-  bucketId: string,
-): Promise<StorageTypes.MoveFileResponse> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const payload: StorageTypes.MoveFilePayload = {
-    fileId: fileId,
-    destination: destination,
-    bucketId: bucketId,
-    destinationPath: uuid.v4(),
-  };
-  return storageClient
-    .moveFile(payload)
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      const castedError = errorService.castError(error);
-      if (castedError.status) {
-        castedError.message = t(`tasks.move-file.errors.${castedError.status}`);
-      }
-      throw castedError;
-    });
-}
-
 export async function moveFileByUuid(fileUuid: string, destinationFolderUuid: string): Promise<StorageTypes.FileMeta> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   const payload: StorageTypes.MoveFileUuidPayload = {
@@ -94,7 +68,6 @@ export function getFile(uuid: string, workspacesToken?: string): Promise<FileMet
 
 const fileService = {
   updateMetaData,
-  moveFile,
   moveFileByUuid,
   fetchRecents,
   uploadFile,
