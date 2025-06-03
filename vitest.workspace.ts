@@ -6,7 +6,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineWorkspace([
   {
-    name: 'browser',
     test: {
       name: 'browser',
       environment: 'jsdom',
@@ -24,7 +23,6 @@ export default defineWorkspace([
     extends: './vitest.shared.ts',
   },
   {
-    name: 'node',
     test: {
       name: 'node',
       environment: 'node',

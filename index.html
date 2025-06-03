@@ -1,20 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="icon" href="./favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
       content="Stand for privacy, switch to Internxt. Internxt's open-source cloud storage services, Internxt Drive, Send, and more, protect your right to privacy."
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="apple-touch-icon" href="./logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="manifest" href="./manifest.json" />
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -105,18 +105,20 @@
     <!-- < !--End MailerLite Universal-->
 
     <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','%REACT_APP_GOOGLE_TAG_MANAGER%');</script>
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', '%REACT_APP_GOOGLE_TAG_MANAGER%');
+    </script>
     <!-- End Google Tag Manager -->
 
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=%REACT_APP_GOOGLE_TAG_MANAGER%"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
-     
     <script type="text/javascript">
       window.NREUM || (NREUM = {});
       NREUM.init = {
@@ -265,8 +267,8 @@
                         u(t)
                           ? (e.mask_selector = ''.concat(t, ',').concat(f))
                           : '' === t || null === t
-                          ? (e.mask_selector = f)
-                          : (0, l.Z)("An invalid session_replay.mask_selector was provided. '*' will be used.", t);
+                            ? (e.mask_selector = f)
+                            : (0, l.Z)("An invalid session_replay.mask_selector was provided. '*' will be used.", t);
                       },
                       get block_class() {
                         return 'nr-block';
@@ -406,8 +408,8 @@
                         Array.isArray(e[o]) && Array.isArray(t[o])
                           ? (r[o] = Array.from(new Set([...e[o], ...t[o]])))
                           : 'object' == typeof e[o] && 'object' == typeof t[o]
-                          ? (r[o] = i(e[o], t[o]))
-                          : (r[o] = e[o]);
+                            ? (r[o] = i(e[o], t[o]))
+                            : (r[o] = e[o]);
                       } catch (e) {
                         (0, n.Z)('An error occurred while setting a property of a Configurable', e);
                       }
@@ -1555,14 +1557,14 @@
                     return e;
                   })(t)
                 : t
-                ? (t.c || (t = y(t.t)),
-                  (t.c += 1),
-                  (t.t += e),
-                  (t.sos += e * e),
-                  e > t.max && (t.max = e),
-                  e < t.min && (t.min = e),
-                  t)
-                : { t: e };
+                  ? (t.c || (t = y(t.t)),
+                    (t.c += 1),
+                    (t.t += e),
+                    (t.sos += e * e),
+                    e > t.max && (t.max = e),
+                    e < t.min && (t.min = e),
+                    t)
+                  : { t: e };
             }
             function y(e) {
               return { t: e, min: e, max: e, sos: e * e, c: 1 };
@@ -1688,8 +1690,18 @@
   </head>
 
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=%VITE_GOOGLE_TAG_MANAGER%"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <div id="root"></div>
+    <script type="module" src="./src/index.tsx"></script>
     <!--
         This HTML file is a template.
         If you open it directly in the browser, you will see an empty page.
