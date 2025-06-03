@@ -23,7 +23,7 @@ export class BannerManager {
   }
 
   private isBannerExpired(): boolean {
-    return !this.bannerItemInLocalStorage || this.bannerItemInLocalStorage <= this.todayDate;
+    return !this.bannerItemInLocalStorage || this.bannerItemInLocalStorage < this.todayDate;
   }
 
   private clearLocalStorageIfExpired(): void {
