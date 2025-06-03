@@ -86,9 +86,9 @@
   "scripts": {
     "preinstall": "node scripts/use-yarn.js",
     "prepare": "husky install",
-    "dev:vite": "vite",
-    "build:vite": "vite build",
-    "build:staging:vite": "vite build --mode staging",
+    "dev": "vite",
+    "build": "vite build",
+    "build:staging": "vite build --mode staging",
     "vercel:install": "yarn run add:npmrc && yarn install",
     "test:unit": "vitest run test/unit && vitest run src/ ",
     "test:coverage": "vitest run --coverage",
