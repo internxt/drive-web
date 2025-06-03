@@ -65,8 +65,8 @@ export async function moveFileByUuid(fileUuid: string, destinationFolderUuid: st
 }
 
 export async function deleteFile(fileData: DriveFileData): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  await storageClient.deleteFile({ fileId: fileData.id, folderId: fileData.folderId });
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  await storageClient.deleteFileByUuid(fileData.uuid);
 }
 
 async function fetchRecents(limit: number): Promise<StorageTypes.DriveFileData[]> {
