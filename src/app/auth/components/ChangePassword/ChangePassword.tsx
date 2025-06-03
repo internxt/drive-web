@@ -11,7 +11,7 @@ import { CaretLeft, FileArrowUp, Warning, WarningCircle, CheckCircle } from '@ph
 import { validateMnemonic } from 'bip39';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
-
+import { BackupData } from 'app/utils/backupKeyUtils';
 interface ChangePasswordProps {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;
 }
@@ -64,15 +64,25 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
 
   const onUploadBackupKeyInputChanged = async (e) => {
     const file = e.target.files[0];
-    const backupKey = await file.text();
-    const isValidBackupKey = validateMnemonic(backupKey);
+    const uploadedBackupKeyContent = await file.text();
 
-    isValidBackupKey
-      ? setBackupKeyContent(backupKey)
-      : notificationsService.show({
-          text: translate('auth.recoverAccount.changePassword.backupKeyError'),
-          type: ToastType.Error,
-        });
+    try {
+      const backupData = JSON.parse(uploadedBackupKeyContent);
+      if (backupData.mnemonic && validateMnemonic(backupData.mnemonic)) {
+        setBackupKeyContent(uploadedBackupKeyContent);
+        return;
+      }
+    } catch (err) {
+      if (validateMnemonic(uploadedBackupKeyContent)) {
+        setBackupKeyContent(uploadedBackupKeyContent);
+        return;
+      }
+    }
+
+    notificationsService.show({
+      text: translate('auth.recoverAccount.changePassword.backupKeyError'),
+      type: ToastType.Error,
+    });
   };
 
   const onChangeHandler = (input: string) => {
@@ -113,17 +123,35 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
 
     const token = window.location.pathname.split('/').pop();
     const password = newPassword;
-    const mnemonic = backupKeyContent;
+
+    let mnemonic = backupKeyContent;
+    let backupData: BackupData | undefined;
+
+    try {
+      backupData = JSON.parse(backupKeyContent) as BackupData;
+      if (backupData?.mnemonic) {
+        mnemonic = backupData.mnemonic;
+      }
+    } catch (err) {
+      // plain mnemonic
+    }
 
     if (!token) {
       notificationsService.show({
         text: translate('auth.recoverAccount.changePassword.tokenError'),
         type: ToastType.Error,
       });
+      setIsLoading(false);
+      return;
     }
 
     try {
-      await authService.updateCredentialsWithToken(token, password, mnemonic);
+      if (backupData && (backupData.privateKey || backupData.keys)) {
+        await authService.updateCredentialsWithToken(token, password, mnemonic, backupData);
+      } else {
+        await authService.updateCredentialsWithToken(token, password, mnemonic);
+      }
+
       localStorageService.clear();
       setIsEmailSent(true);
     } catch (error) {
