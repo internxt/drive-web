@@ -6,10 +6,10 @@ import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../type
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import { backupsThunks } from 'app/store/slices/backups';
-import { SdkFactory } from '../../../core/factory/sdk';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Dialog } from '@internxt/ui';
+import newStorageService from 'app/drive/services/new-storage.service';
 
 interface DeleteBackupDialogProps {
   backupsAsFoldersPath: DriveFolderData[];
@@ -45,8 +45,7 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
       }
     } else {
       try {
-        const storageClient = SdkFactory.getInstance().createStorageClient();
-        await storageClient.deleteFolder(currentBackupsAsFoldersPath.id);
+        await newStorageService.deleteFolderByUuid(currentBackupsAsFoldersPath.uuid);
         await dispatch(backupsThunks.fetchDevicesThunk());
         onClose();
         props.goToFolder(previousBackupsAsFoldersPath.id);
