@@ -8,20 +8,21 @@ import { isValid } from '../../../src/app/crypto/services/utilspgp';
 
 import { describe, expect, it, afterAll, beforeAll } from 'vitest';
 import { Buffer } from 'buffer';
+import { envConfig } from '../../../src/app/core/services/env.service';
 
 describe('Generate keys', () => {
   globalThis.Buffer = Buffer;
 
-  const originalIV = process.env.REACT_APP_MAGIC_IV;
-  const originalSalt = process.env.REACT_APP_MAGIC_SALT;
+  const originalIV = envConfig.crypto.magicIv;
+  const originalSalt = envConfig.crypto.magicSalt;
 
   beforeAll(() => {
-    process.env.REACT_APP_MAGIC_IV = 'test_magic_iv';
-    process.env.REACT_APP_MAGIC_SALT = 'test_magic_salt';
+    envConfig.crypto.magicIv = 'test_magic_iv';
+    envConfig.crypto.magicSalt = 'test_magic_salt';
   });
   afterAll(() => {
-    process.env.REACT_APP_MAGIC_IV = originalIV;
-    process.env.REACT_APP_MAGIC_SALT = originalSalt;
+    envConfig.crypto.magicIv = originalIV;
+    envConfig.crypto.magicSalt = originalSalt;
   });
 
   it('should generate new keys', async () => {

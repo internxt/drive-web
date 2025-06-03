@@ -9,7 +9,7 @@ import { userSelectors } from 'app/store/slices/user';
 import BitdefenderBanner from './BitDefenderBanner';
 
 const OFFER_END_DAY = new Date('2025-06-09');
-const TIME_TO_SHOW = 8000;
+const TIMEOUT = 8000;
 
 const BannerWrapper = (): JSX.Element => {
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
@@ -19,6 +19,12 @@ const BannerWrapper = (): JSX.Element => {
   const bannerManager = useMemo(() => new BannerManager(user, plan, OFFER_END_DAY), [user, plan, isNewAccount]);
 
   const [bannersToShow, setBannersToShow] = useState({ showFreeBanner: false, showSubscriptionBanner: false });
+  const [showDelayedBanner, setShowDelayedBanner] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setShowDelayedBanner(true), TIMEOUT);
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     const newBanners = bannerManager.getBannersToShow();
@@ -35,7 +41,9 @@ const BannerWrapper = (): JSX.Element => {
 
   return (
     <>
-      {bannersToShow.showFreeBanner && <BitdefenderBanner onClose={() => onCloseBanner('showFreeBanner')} showBanner />}
+      {bannersToShow.showFreeBanner && showDelayedBanner && (
+        <BitdefenderBanner onClose={() => onCloseBanner('showFreeBanner')} showBanner />
+      )}
     </>
   );
 };

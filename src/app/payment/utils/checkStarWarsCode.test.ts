@@ -122,12 +122,14 @@ describe('isStarWarsThemeAvailable', () => {
   });
 
   it('returns false if no subscription or lifetime', async () => {
+
     (localStorageService.get as Mock).mockReturnValue(undefined);
 
     const plan = {
       individualSubscription: null,
       businessSubscription: null,
     };
+
 
     const result = await isStarWarsThemeAvailable(plan as any);
 
