@@ -10,7 +10,6 @@
     "@internxt/inxt-js": "2.1.1",
     "@internxt/lib": "^1.2.0",
     "@internxt/sdk": "=1.9.20",
-    "@internxt/ui": "internxt/ui#v0.0.23",
     "@phosphor-icons/react": "^2.1.7",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.6.0",
@@ -108,7 +107,7 @@
     "lint:fix": "yarn run lint:ts:fix && yarn run lint:scss:fix",
     "analyze": "cross-env ANALYZE=true yarn build",
     "add:npmrc": "echo \"registry=https://registry.yarnpkg.com/\" >> .npmrc && echo \"@internxt:registry=https://npm.pkg.github.com\" >> .npmrc && echo \"//npm.pkg.github.com/:_authToken=$NPM_TOKEN\" >> .npmrc && echo \"always-auth=true\" >> .npmrc",
-    "postinstall": "bash -c 'echo \"@internxt:registry=https://npm.pkg.github.com\" >> .npmrc && echo \"//npm.pkg.github.com/:_authToken=${NPM_TOKEN}\" >> .npmrc && yarn add @internxt/ui@internxt/ui#v0.0.23 @internxt/prettier-config@internxt/prettier-config#v1.0.2 --dev'"
+    "postinstall": "bash -c 'echo \"@internxt:registry=https://npm.pkg.github.com\" >> .npmrc && echo \"//npm.pkg.github.com/:_authToken=${NPM_TOKEN}\" >> .npmrc && yarn add @internxt/ui@^0.0.23 @internxt/prettier-config@internxt/prettier-config#v1.0.2 --dev'"
   },
   "browserslist": {
     "production": [
@@ -128,6 +127,7 @@
     "@faker-js/faker": "^9.0.0",
     "@internxt/eslint-config-internxt": "^1.0.3",
     "@internxt/prettier-config": "internxt/prettier-config#v1.0.2",
+    "@internxt/ui": "^0.0.23",
     "@playwright/test": "^1.44.1",
     "@svgr/rollup": "^8.1.0",
     "@testing-library/dom": "^7.26.0",
