@@ -3,7 +3,12 @@
  */
 
 import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
-import { getKeys, decryptPrivateKey, parseAndDecryptUserKeys } from '../../../src/app/crypto/services/keys.service';
+import {
+  getKeys,
+  decryptPrivateKey,
+  parseAndDecryptUserKeys,
+  getAesInitFromEnv,
+} from '../../../src/app/crypto/services/keys.service';
 import { isValid } from '../../../src/app/crypto/services/utilspgp';
 import { aes } from '@internxt/lib';
 import { describe, expect, it, afterAll, beforeAll } from 'vitest';
@@ -13,17 +18,30 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 describe('Generate keys', () => {
   globalThis.Buffer = Buffer;
 
+  const testSalt =
+    '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+  const testIV = '12345678912345678912345678912345';
   const originalIV = process.env.REACT_APP_MAGIC_IV;
   const originalSalt = process.env.REACT_APP_MAGIC_SALT;
 
   beforeAll(() => {
-    process.env.REACT_APP_MAGIC_SALT =
-      '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-    process.env.REACT_APP_MAGIC_IV = '12345678912345678912345678912345';
+    process.env.REACT_APP_MAGIC_SALT = testSalt;
+    process.env.REACT_APP_MAGIC_IV = testIV;
   });
   afterAll(() => {
     process.env.REACT_APP_MAGIC_IV = originalIV;
     process.env.REACT_APP_MAGIC_SALT = originalSalt;
+  });
+
+  it('aes encrypt/decrypt should work', async () => {
+    const password = 'test pwd';
+    const key = 'test key';
+    const iv = getAesInitFromEnv();
+    const expectedIv = { iv: testIV, salt: testSalt };
+    const encrypted = aes.encrypt(key, password, getAesInitFromEnv());
+    const result = aes.decrypt(encrypted, password);
+    expect(result).toBe(key);
+    expect(iv).toStrictEqual(expectedIv);
   });
 
   it('should generate new keys', async () => {
