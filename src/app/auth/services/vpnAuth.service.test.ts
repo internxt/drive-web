@@ -1,13 +1,14 @@
 // vpnAuthService.test.ts
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import { logIn, logOut, postMessageToVpn } from './vpnAuth.service';
+import { envConfig } from 'app/core/services/env.service';
 
 describe('Tests for VPN auth', () => {
   const originalPostMessage = window.postMessage;
   let postMessageSpy: ReturnType<typeof vi.spyOn>;
 
   beforeAll(() => {
-    process.env.REACT_APP_HOSTNAME = 'https://example.com';
+    envConfig.app.hostname = 'https://example.com';
   });
 
   beforeEach(() => {
@@ -32,7 +33,7 @@ describe('Tests for VPN auth', () => {
           source: 'drive-web',
           payload: { key: 'value' },
         },
-        process.env.REACT_APP_HOSTNAME,
+        envConfig.app.hostname,
       );
     });
 
@@ -45,7 +46,7 @@ describe('Tests for VPN auth', () => {
           source: 'custom-source',
           payload: { foo: 'bar' },
         },
-        process.env.REACT_APP_HOSTNAME,
+        envConfig.app.hostname,
       );
     });
   });
@@ -64,7 +65,7 @@ describe('Tests for VPN auth', () => {
             token: testToken,
           },
         },
-        process.env.REACT_APP_HOSTNAME,
+        envConfig.app.hostname,
       );
     });
   });
@@ -81,7 +82,7 @@ describe('Tests for VPN auth', () => {
             message: 'user-logged-out',
           },
         },
-        process.env.REACT_APP_HOSTNAME,
+        envConfig.app.hostname,
       );
     });
   });
