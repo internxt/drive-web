@@ -17,7 +17,6 @@ import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/
 import { ConnectionLostError } from './requests';
 import errorService from 'app/core/services/error.service';
 import { TaskData, TaskStatus } from 'app/tasks/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import retryManager, { RetryableTask } from './RetryManager';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -33,19 +32,6 @@ vi.mock('src/app/network/NetworkFacade.ts', () => ({
   })),
 }));
 
-vi.mock('app/core/services/local-storage.service', () => ({
-  default: {
-    getUser: vi.fn().mockReturnValue({
-      userId: 'user-id',
-      bridgeUser: 'user-bridge',
-      mnemonic: 'mnemonic',
-    } as UserSettings),
-    getUserId: vi.fn().mockReturnValue('user-id'),
-    getBridgeUser: vi.fn().mockReturnValue('user-bridge'),
-    getMnemonic: vi.fn().mockReturnValue('mnemonic'),
-  },
-}));
-
 vi.mock('i18next', () => ({ t: (_) => MOCK_TRANSLATION_MESSAGE }));
 
 vi.mock('app/notifications/services/notifications.service', () => ({
@@ -54,13 +40,6 @@ vi.mock('app/notifications/services/notifications.service', () => ({
   },
   ToastType: {
     Error: 'ERROR',
-  },
-}));
-
-vi.mock('app/core/services/error.service', () => ({
-  default: {
-    castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
-    reportError: vi.fn(),
   },
 }));
 
