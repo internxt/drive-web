@@ -60,8 +60,9 @@ beforeEach(() => {
 
 describe('Testing Impact Service', () => {
   describe('Store necessary data to track it later', () => {
-    it('When wants to store the data, then the price to convert is the correct one', () => {
+    it('When wants to store the data, then the price to track is the correct one', () => {
       const setToLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
+
       savePaymentDataInLocalStorage(subId, paymentIntentId, product as PriceWithTax, 1, promoCode);
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('amountPaid', expectedAmount);
