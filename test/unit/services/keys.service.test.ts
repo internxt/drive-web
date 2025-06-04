@@ -14,26 +14,27 @@ import { aes } from '@internxt/lib';
 import { describe, expect, it, afterAll, beforeAll } from 'vitest';
 import { Buffer } from 'buffer';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { envConfig } from '../../../src/app/core/services/env.service';
 
-describe('Generate keys', () => {
+describe('Test keys', () => {
   globalThis.Buffer = Buffer;
 
   const testSalt =
     '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
   const testIV = '12345678912345678912345678912345';
-  const originalIV = process.env.REACT_APP_MAGIC_IV;
-  const originalSalt = process.env.REACT_APP_MAGIC_SALT;
+  const originalIV = envConfig.crypto.magicIv;
+  const originalSalt = envConfig.crypto.magicSalt;
 
   beforeAll(() => {
-    process.env.REACT_APP_MAGIC_SALT = testSalt;
-    process.env.REACT_APP_MAGIC_IV = testIV;
+    envConfig.crypto.magicIv = testIV;
+    envConfig.crypto.magicSalt = testSalt;
   });
   afterAll(() => {
-    process.env.REACT_APP_MAGIC_IV = originalIV;
-    process.env.REACT_APP_MAGIC_SALT = originalSalt;
+    envConfig.crypto.magicIv = originalIV;
+    envConfig.crypto.magicSalt = originalSalt;
   });
 
-  it('aes encrypt/decrypt should work', async () => {
+  it('aes encrypt and decrypt should work', async () => {
     const password = 'test pwd';
     const key = 'test key';
     const iv = getAesInitFromEnv();

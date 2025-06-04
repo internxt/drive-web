@@ -1,11 +1,11 @@
 import { Network } from '@internxt/sdk/dist/network';
 import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 import * as Sentry from '@sentry/react';
-
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosProgressEvent } from 'axios';
 import { getSha256 } from '../crypto/services/utils';
 import { NetworkFacade } from './NetworkFacade';
 import { ConnectionLostError } from './requests';
+import { envConfig } from 'app/core/services/env.service';
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
@@ -43,8 +43,8 @@ export async function uploadFileBlob(
       headers: {
         'content-type': 'application/octet-stream',
       },
-      onUploadProgress: (progress: ProgressEvent) => {
-        opts.progressCallback(progress.total, progress.loaded);
+      onUploadProgress: (progress: AxiosProgressEvent) => {
+        opts.progressCallback(progress.total ?? 0, progress.loaded);
       },
       cancelToken: new axios.CancelToken((canceler) => {
         opts.abortController?.signal.addEventListener('abort', () => {
@@ -86,7 +86,7 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
 
   const facade = new NetworkFacade(
     Network.client(
-      process.env.REACT_APP_STORJ_BRIDGE as string,
+      envConfig.services.storjBridge,
       {
         clientName: 'drive-web',
         clientVersion: '1.0',
