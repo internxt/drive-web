@@ -2602,6 +2602,11 @@
     lodash.isundefined "^3.0.1"
     lodash.uniq "^4.5.0"
 
+"@fastify/busboy@^2.0.0":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-2.1.1.tgz#b9da6a878a371829a0502c9b6c1c143ef6663f4d"
+  integrity sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==
+
 "@floating-ui/core@^1.4.2":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.5.0.tgz#5c05c60d5ae2d05101c3021c1a2a350ddc027f8c"
@@ -2729,15 +2734,17 @@
     "@typescript-eslint/parser" "^5.4.0"
     eslint-config-prettier "^8.3.0"
 
-"@internxt/inxt-js@=1.2.21":
-  version "1.2.21"
-  resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/1.2.21/bc9bbc18fbedaf030254856de7da283fb03a46b5#bc9bbc18fbedaf030254856de7da283fb03a46b5"
-  integrity sha512-VqnEhB17/w1+u+kQN0WJ0ljSYdL5OYfY0QBwrogaJWbP/3Q2YbW28i9qFhxePJF1NSYltasvkIXVdoXLode1aw==
+"@internxt/inxt-js@2.0.11":
+  version "2.1.1"
+  resolved "https://npm.pkg.github.com/download/@internxt/inxt-js/2.1.1/33371ac8358e3429b5a965337410f894e6513cf9#33371ac8358e3429b5a965337410f894e6513cf9"
+  integrity sha512-yd4I4epRpHuYsOCj1pb7B7hcRyTozd5j0zv5AgP2HIYsEiL2gD1jV+RbKVhc6BNbc8Y/uT3nwGRx/cS3cTeWzQ==
   dependencies:
     "@internxt/lib" "^1.1.6"
+    "@internxt/sdk" "^1.4.27"
     async "^3.2.0"
     axios "^0.23.0"
     bip39 "^3.0.2"
+    undici "^5.5.1"
     winston "^3.3.3"
 
 "@internxt/lib@^1.1.6", "@internxt/lib@^1.2.0":
@@ -2754,6 +2761,15 @@
   version "1.9.20"
   resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.9.20/30119f6977e06a9ec01483dde7f8b02d90173edb#30119f6977e06a9ec01483dde7f8b02d90173edb"
   integrity sha512-HdmH5LFZr7L37dgEeMLYdZ7wuHTlX+bZxOfQRQc/H0f26oVgjj77q8Hil5MJnD/9YrAS8rzh0mvrV0cNqEIBzw==
+  dependencies:
+    axios "^0.24.0"
+    query-string "^7.1.0"
+    uuid "^8.3.2"
+
+"@internxt/sdk@^1.4.27":
+  version "1.9.25"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.9.25/1f0953fc029239c27aa1d0e96699e1d5fd9951cf#1f0953fc029239c27aa1d0e96699e1d5fd9951cf"
+  integrity sha512-gkxeeFsFaJzYVRj4ThTSOwueXZkXZ4cbG/383d1Z8P5Hmk04PKfxj/aO3S+s2KK8qSYbyRgRkassQ9E+2shoWw==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
@@ -15280,6 +15296,13 @@ undici-types@~6.20.0:
   version "6.20.0"
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.20.0.tgz#8171bf22c1f588d1554d55bf204bc624af388433"
   integrity sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==
+
+undici@^5.5.1:
+  version "5.29.0"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-5.29.0.tgz#419595449ae3f2cdcba3580a2e8903399bd1f5a3"
+  integrity sha512-raqeBD6NQK4SkWhQzeYKd1KmIG6dllBOTt55Rmkt4HtI9mwdWtJljnrXjAFUBLTSN67HWrOIZ3EPF4kjUw80Bg==
+  dependencies:
+    "@fastify/busboy" "^2.0.0"
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"

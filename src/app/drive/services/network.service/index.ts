@@ -1,12 +1,12 @@
 import { Environment } from '@internxt/inxt-js';
 import { ActionState, FileInfo } from '@internxt/inxt-js/build/api';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { envConfig } from 'app/core/services/env.service';
 import { Abortable } from 'app/network/Abortable';
 import { Readable } from 'stream';
 import { createUploadWebWorker } from '../../../../WebWorker';
 import localStorageService from '../../../core/services/local-storage.service';
 import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
-import { envConfig } from 'app/core/services/env.service';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 40 * 1024 * 1024 * 1024;
 
@@ -184,7 +184,7 @@ export class Network {
           },
         },
         {
-          label: 'OneStreamOnly',
+          label: 'Dynamic',
           params: {
             useProxy: envConfig.services.dontUseProxy !== 'true',
             concurrency: 6,
