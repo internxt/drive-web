@@ -2774,10 +2774,9 @@
     query-string "^7.1.0"
     uuid "^8.3.2"
 
-"@internxt/ui@^0.0.23":
+"@internxt/ui@internxt/ui#v0.0.23":
   version "0.0.23"
-  resolved "https://npm.pkg.github.com/download/@internxt/ui/0.0.23/c3598a1d212405391dbde35d2836f43668c23aa6#c3598a1d212405391dbde35d2836f43668c23aa6"
-  integrity sha512-5AHV78h8tUb2FOq19U6VtsmMHqwmQhojsV4Y8Jx9nOldZd2jDlYpayN+U8kqCMVgMWdczhbHr7ah56CTadvwlg==
+  resolved "https://codeload.github.com/internxt/ui/tar.gz/f9da8e10e8acdf908e23204271469fc8440cb37a"
   dependencies:
     "@internxt/css-config" "^1.0.2"
     "@phosphor-icons/react" "^2.1.7"
