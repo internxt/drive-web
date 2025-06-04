@@ -14,7 +14,7 @@ vi.mock('uuid', () => ({
 }));
 
 vi.mock('./utils', () => ({
-  getCookie: vi.fn((key: string) => {
+  getCookie: vi.fn((key) => {
     if (key === 'impactAnonymousId') return 'anon_id';
     if (key === 'impactSource') return 'ads';
     return '';
