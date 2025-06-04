@@ -107,7 +107,8 @@
     "lint": "yarn run lint:ts && yarn run lint:scss",
     "lint:fix": "yarn run lint:ts:fix && yarn run lint:scss:fix",
     "analyze": "cross-env ANALYZE=true yarn build",
-    "add:npmrc": "echo \"registry=https://registry.yarnpkg.com/\" >> .npmrc && echo \"@internxt:registry=https://npm.pkg.github.com\" >> .npmrc && echo \"//npm.pkg.github.com/:_authToken=$NPM_TOKEN\" >> .npmrc && echo \"always-auth=true\" >> .npmrc"
+    "add:npmrc": "echo \"registry=https://registry.yarnpkg.com/\" >> .npmrc && echo \"@internxt:registry=https://npm.pkg.github.com\" >> .npmrc && echo \"//npm.pkg.github.com/:_authToken=$NPM_TOKEN\" >> .npmrc && echo \"always-auth=true\" >> .npmrc",
+    "postinstall": "bash -c 'echo \"@internxt:registry=https://npm.pkg.github.com\" >> .npmrc && echo \"//npm.pkg.github.com/:_authToken=${NPM_TOKEN}\" >> .npmrc && yarn add @internxt/ui@internxt/ui#v0.0.23 @internxt/prettier-config@internxt/prettier-config#v1.0.2 --dev'"
   },
   "browserslist": {
     "production": [
