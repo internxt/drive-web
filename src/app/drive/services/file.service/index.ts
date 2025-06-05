@@ -1,7 +1,6 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { FileMeta } from '@internxt/sdk/dist/drive/storage/types';
 import { t } from 'i18next';
-import * as uuid from 'uuid';
 import { SdkFactory } from '../../../core/factory/sdk';
 import errorService from '../../../core/services/error.service';
 import { DriveFileData, DriveFileMetadataPayload } from '../../types';
