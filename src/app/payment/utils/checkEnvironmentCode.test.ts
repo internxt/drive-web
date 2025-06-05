@@ -1,15 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { isEnvironmentThemeAvailable } from './checkEnvironmentCode';
-import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
+import { isEnvironmentThemeAvailable, ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY } from './checkEnvironmentCode';
+import localStorageService from 'app/core/services/local-storage.service';
 import paymentService from '../services/payment.service';
 import errorService from 'app/core/services/error.service';
 
-vi.spyOn(localStorageService, 'get');
-vi.spyOn(localStorageService, 'set');
-vi.spyOn(paymentService, 'isCouponUsedByUser');
-vi.spyOn(errorService, 'reportError');
-
-const planMock = {} as any;
+const COUPON='PLANET85';
 
 describe('isEnvironmentThemeAvailable', () => {
   beforeEach(() => {
@@ -17,44 +12,49 @@ describe('isEnvironmentThemeAvailable', () => {
   });
 
   it('returns true if localStorage has the key set to "true"', async () => {
-    (localStorageService.get as any).mockReturnValue('true');
-    const result = await isEnvironmentThemeAvailable(planMock);
+    const getSpy = vi.spyOn(localStorageService, 'get').mockReturnValue('true');
+
+    const result = await isEnvironmentThemeAvailable();
+
     expect(result).toBe(true);
-    expect(localStorageService.get).toHaveBeenCalledWith(
-      STORAGE_KEYS.THEMES.ENVIRONMENT_THEME_ENABLED_LOCAL_STORAGE_KEY,
-    );
+    expect(getSpy).toHaveBeenCalledWith(ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
   });
 
   it('returns true, calls onSuccess, and sets localStorage if the coupon is used', async () => {
-    (localStorageService.get as any).mockReturnValue(undefined);
-    (paymentService.isCouponUsedByUser as any).mockResolvedValueOnce({ couponUsed: true });
+    const getSpy = vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    const setSpy = vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+    const couponSpy = vi.spyOn(paymentService, 'isCouponUsedByUser').mockResolvedValueOnce({ couponUsed: true });
 
     const onSuccess = vi.fn();
-    const result = await isEnvironmentThemeAvailable(planMock, onSuccess);
+    const result = await isEnvironmentThemeAvailable( onSuccess);
 
     expect(result).toBe(true);
     expect(onSuccess).toHaveBeenCalled();
-    expect(localStorageService.set).toHaveBeenCalledWith(
-      STORAGE_KEYS.THEMES.ENVIRONMENT_THEME_ENABLED_LOCAL_STORAGE_KEY,
-      'true',
-    );
+    expect(couponSpy).toHaveBeenCalledWith(COUPON);
+    expect(setSpy).toHaveBeenCalledWith(ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY, 'true');
   });
 
   it('returns false if the coupon is not used', async () => {
-    (localStorageService.get as any).mockReturnValue(undefined);
-    (paymentService.isCouponUsedByUser as any).mockResolvedValue({ couponUsed: false });
+    const getSpy = vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    const setSpy = vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+    const couponSpy = vi.spyOn(paymentService, 'isCouponUsedByUser').mockResolvedValue({ couponUsed: false });
 
-    const result = await isEnvironmentThemeAvailable(planMock);
+    const result = await isEnvironmentThemeAvailable();
+
     expect(result).toBe(false);
-    expect(localStorageService.set).not.toHaveBeenCalled();
+    expect(couponSpy).toHaveBeenCalledWith(COUPON);
+    expect(setSpy).not.toHaveBeenCalled();
   });
 
   it('returns false and reports error if paymentService throws', async () => {
-    (localStorageService.get as any).mockReturnValue(undefined);
-    (paymentService.isCouponUsedByUser as any).mockRejectedValue(new Error('fail'));
+    const getSpy = vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    const couponSpy = vi.spyOn(paymentService, 'isCouponUsedByUser').mockRejectedValue(new Error('fail'));
+    const errorSpy = vi.spyOn(errorService, 'reportError').mockImplementation(() => {});
 
-    const result = await isEnvironmentThemeAvailable(planMock);
+    const result = await isEnvironmentThemeAvailable();
+
     expect(result).toBe(false);
-    expect(errorService.reportError).toHaveBeenCalled();
+    expect(couponSpy).toHaveBeenCalledWith(COUPON);
+    expect(errorSpy).toHaveBeenCalled();
   });
 });
