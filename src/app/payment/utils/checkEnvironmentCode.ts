@@ -1,11 +1,9 @@
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 import paymentService from '../services/payment.service';
 import errorService from 'app/core/services/error.service';
 
-export const ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY = 'environment_theme_enabled';
-
 export const isEnvironmentThemeAvailable = async (onSuccess?: () => void): Promise<boolean> => {
-  const environmentInLocalStorage = localStorageService.get(ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
+  const environmentInLocalStorage = localStorageService.get(STORAGE_KEYS.THEMES.ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
 
   if (environmentInLocalStorage === 'true') return true;
   try {
@@ -16,7 +14,7 @@ export const isEnvironmentThemeAvailable = async (onSuccess?: () => void): Promi
 
     if (couponUsed) {
       onSuccess?.();
-      localStorageService.set(ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY, 'true');
+      localStorageService.set(STORAGE_KEYS.THEMES.ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY, 'true');
       return true;
     }
 
