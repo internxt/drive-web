@@ -11,7 +11,7 @@ export const STORAGE_KEYS = {
   THEMES: {
     MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'managementid_theme_enabled',
     ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'id_management_theme_enabled',
-    ENVIRONMENT_THEME_ENABLED_LOCAL_STORAGE_KEY: 'environment_theme_enabled',
+    ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'environment_theme_enabled',
   },
 };
 
