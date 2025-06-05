@@ -34,7 +34,7 @@ export class SdkFactory {
   }
 
   public static getNewApiInstance(): SdkFactory {
-    if (this.sdk.instance === undefined) {
+    if (this.sdk.newApiInstance === undefined) {
       throw new Error('Factory not initialized');
     }
     return this.sdk.newApiInstance;
@@ -138,7 +138,7 @@ export class SdkFactory {
   public createBackupsClient(): Backups {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getApiSecurity();
+    const apiSecurity = this.getNewApiSecurity();
     return Backups.client(apiUrl, appDetails, apiSecurity);
   }
 
