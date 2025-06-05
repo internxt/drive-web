@@ -141,7 +141,7 @@ const Appearance = () => {
         const error = err as Error;
         errorService.reportError(error);
       });
-    isEnvironmentThemeAvailable(plan)
+    isEnvironmentThemeAvailable()
       .then((isEnvironmentThemeAvailable) => {
         if (
           !appearances.some((appearance) => appearance.theme === 'environment' && appearance.img === appearance_dark) &&
