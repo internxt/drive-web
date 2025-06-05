@@ -7,12 +7,10 @@ export const isEnvironmentThemeAvailable = async (onSuccess?: () => void): Promi
 
   if (environmentInLocalStorage === 'true') return true;
   try {
-    const coupons = ['PLANET85'];
 
-    const couponUsedResults = await Promise.all(coupons.map((code) => paymentService.isCouponUsedByUser(code)));
-    const couponUsed = couponUsedResults.some((result) => result?.couponUsed === true);
+    const couponUsedResult = await paymentService.isCouponUsedByUser('PLANET85');
 
-    if (couponUsed) {
+    if (couponUsedResult.couponUsed) {
       onSuccess?.();
       localStorageService.set(STORAGE_KEYS.THEMES.ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY, 'true');
       return true;
