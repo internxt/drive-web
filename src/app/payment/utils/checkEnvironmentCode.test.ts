@@ -1,25 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { isEnvironmentThemeAvailable, ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY } from './checkEnvironmentCode';
-import localStorageService from 'app/core/services/local-storage.service';
+import { isEnvironmentThemeAvailable } from './checkEnvironmentCode';
+import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 import paymentService from '../services/payment.service';
 import errorService from 'app/core/services/error.service';
 
-vi.mock('app/core/services/local-storage.service', () => ({
-  default: {
-    get: vi.fn(),
-    set: vi.fn(),
-  },
-}));
-vi.mock('../services/payment.service', () => ({
-  default: {
-    isCouponUsedByUser: vi.fn(),
-  },
-}));
-vi.mock('app/core/services/error.service', () => ({
-  default: {
-    reportError: vi.fn(),
-  },
-}));
+vi.spyOn(localStorageService, 'get');
+vi.spyOn(localStorageService, 'set');
+vi.spyOn(paymentService, 'isCouponUsedByUser');
+vi.spyOn(errorService, 'reportError');
 
 const planMock = {} as any;
 
@@ -32,7 +20,9 @@ describe('isEnvironmentThemeAvailable', () => {
     (localStorageService.get as any).mockReturnValue('true');
     const result = await isEnvironmentThemeAvailable(planMock);
     expect(result).toBe(true);
-    expect(localStorageService.get).toHaveBeenCalledWith(ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
+    expect(localStorageService.get).toHaveBeenCalledWith(
+      STORAGE_KEYS.THEMES.ENVIRONMENT_THEME_ENABLED_LOCAL_STORAGE_KEY,
+    );
   });
 
   it('returns true, calls onSuccess, and sets localStorage if the coupon is used', async () => {
@@ -44,7 +34,10 @@ describe('isEnvironmentThemeAvailable', () => {
 
     expect(result).toBe(true);
     expect(onSuccess).toHaveBeenCalled();
-    expect(localStorageService.set).toHaveBeenCalledWith(ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY, 'true');
+    expect(localStorageService.set).toHaveBeenCalledWith(
+      STORAGE_KEYS.THEMES.ENVIRONMENT_THEME_ENABLED_LOCAL_STORAGE_KEY,
+      'true',
+    );
   });
 
   it('returns false if the coupon is not used', async () => {
