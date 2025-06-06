@@ -19,6 +19,9 @@ export default defineWorkspace([
         name: 'chromium',
         headless: true,
       },
+      sequence: {
+        hooks: 'list',
+      },
     },
     extends: './vitest.shared.ts',
   },
