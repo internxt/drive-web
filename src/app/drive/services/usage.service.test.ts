@@ -9,7 +9,9 @@ vi.mock('../../core/factory/sdk', () => ({
   },
 }));
 
-vi.mock('../../core/services/error.service');
+vi.mock('../../core/services/error.service', () => ({
+  reportError: vi.fn(),
+}));
 
 describe('usageService', () => {
   describe('fetchUsage', () => {
@@ -49,7 +51,7 @@ describe('usageService', () => {
       });
 
       const result = await usageService.getUsageDetails();
-
+      expect(errorService.reportError).toHaveBeenCalledWith(expect.any(Error));
       expect(mockSpaceUsageV2).toHaveBeenCalled();
       expect(errorService.reportError).toHaveBeenCalledWith(new Error('API error'));
       expect(result).toEqual({ drive: 0, photos: 0, backups: 0 });
