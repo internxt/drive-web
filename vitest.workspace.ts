@@ -1,13 +1,16 @@
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
 import { defineWorkspace } from 'vitest/config';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineWorkspace([
   {
-    name: 'browser',
     test: {
       name: 'browser',
       environment: 'jsdom',
       globals: true,
-      setupFiles: './src/setupTests.ts',
+      setupFiles: resolve(__dirname, 'src/setupTests.ts'),
       include: ['src/**/*.test.{ts,tsx,js,jsx}', 'test/unit/**/*.test.{ts,tsx,js,jsx}'],
       exclude: ['node_modules', 'dist', 'src/**/*.node.test.ts'],
       browser: {
@@ -16,16 +19,18 @@ export default defineWorkspace([
         name: 'chromium',
         headless: true,
       },
+      sequence: {
+        hooks: 'list',
+      },
     },
-    extends: './vitest.shared.js',
+    extends: './vitest.shared.ts',
   },
   {
-    name: 'node',
     test: {
       name: 'node',
       environment: 'node',
       include: ['src/**/*.node.test.ts'],
     },
-    extends: './vitest.shared.js',
+    extends: './vitest.shared.ts',
   },
 ]);

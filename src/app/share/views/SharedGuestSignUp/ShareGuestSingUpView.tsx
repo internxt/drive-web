@@ -23,7 +23,7 @@ import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { userActions, userThunks } from 'app/store/slices/user';
-import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
+import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import queryString from 'query-string';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';

@@ -1,5 +1,5 @@
 import { ListChildComponentProps } from 'react-window';
-import { ReactComponent as RestartIcon } from '../../../../assets/icons/tasklogger/circle-arrow.svg';
+import RestartIcon from '../../../../assets/icons/tasklogger/circle-arrow.svg?react';
 import iconService from 'app/drive/services/icon.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import { formatDefaultDate } from 'app/core/services/date.service';

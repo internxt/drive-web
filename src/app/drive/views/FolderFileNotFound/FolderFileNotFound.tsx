@@ -1,5 +1,5 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
+import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import navigationService from 'app/core/services/navigation.service';
 import { WarningCircle } from '@phosphor-icons/react';
 

@@ -1,4 +1,4 @@
-import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
+import InternxtLogo from 'assets/icons/big-logo.svg?react';
 
 import './AuthSideInfo.scss';
 

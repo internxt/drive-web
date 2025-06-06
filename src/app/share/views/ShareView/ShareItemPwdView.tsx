@@ -10,7 +10,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import PasswordInput from 'app/share/components/ShareItemDialog/components/PasswordInput';
 import { Button } from '@internxt/ui';
-import { ReactComponent as LockLogo } from 'assets/icons/Lock.svg';
+import LockLogo from 'assets/icons/Lock.svg?react';
 import { useState } from 'react';
 
 export interface ShareItemPwdViewProps {
