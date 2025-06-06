@@ -22,10 +22,13 @@ export default defineConfig({
   build: {
     outDir: 'build',
   },
+  preview: {
+    port: 3000,
+    open: true,
+  },
   server: {
     port: 3000,
     open: true,
-    host: true,
   },
   resolve: {
     alias: {

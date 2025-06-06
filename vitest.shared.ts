@@ -1,17 +1,9 @@
-import replace from '@rollup/plugin-replace';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import svgr from 'vite-plugin-svgr';
 
 export default {
-  plugins: [
-    react(),
-    replace({
-      preventAssignment: true,
-      'process.browser': true,
-    }),
-    svgr(),
-  ],
+  plugins: [react(), svgr()],
   resolve: {
     alias: {
       app: path.resolve(__dirname, './src/app'),
