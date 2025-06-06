@@ -1,7 +1,6 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { FileMeta } from '@internxt/sdk/dist/drive/storage/types';
 import { t } from 'i18next';
-import * as uuid from 'uuid';
 import { SdkFactory } from '../../../core/factory/sdk';
 import errorService from '../../../core/services/error.service';
 import { DriveFileData, DriveFileMetadataPayload } from '../../types';
@@ -16,32 +15,6 @@ export function updateMetaData(
   const payload = { fileUuid: fileId, name: metadata.itemName };
 
   return storageClient.updateFileNameWithUUID(payload, resourcesToken);
-}
-
-export async function moveFile(
-  fileId: string,
-  destination: number,
-  bucketId: string,
-): Promise<StorageTypes.MoveFileResponse> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const payload: StorageTypes.MoveFilePayload = {
-    fileId: fileId,
-    destination: destination,
-    bucketId: bucketId,
-    destinationPath: uuid.v4(),
-  };
-  return storageClient
-    .moveFile(payload)
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      const castedError = errorService.castError(error);
-      if (castedError.status) {
-        castedError.message = t(`tasks.move-file.errors.${castedError.status}`);
-      }
-      throw castedError;
-    });
 }
 
 export async function moveFileByUuid(fileUuid: string, destinationFolderUuid: string): Promise<StorageTypes.FileMeta> {
@@ -65,8 +38,8 @@ export async function moveFileByUuid(fileUuid: string, destinationFolderUuid: st
 }
 
 export async function deleteFile(fileData: DriveFileData): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  await storageClient.deleteFile({ fileId: fileData.id, folderId: fileData.folderId });
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  await storageClient.deleteFileByUuid(fileData.uuid);
 }
 
 async function fetchRecents(limit: number): Promise<StorageTypes.DriveFileData[]> {
@@ -94,7 +67,6 @@ export function getFile(uuid: string, workspacesToken?: string): Promise<FileMet
 
 const fileService = {
   updateMetaData,
-  moveFile,
   moveFileByUuid,
   fetchRecents,
   uploadFile,

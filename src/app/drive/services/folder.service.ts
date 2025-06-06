@@ -95,28 +95,6 @@ export interface DownloadFolderAsZipOptions {
   workspaceId?: string;
 }
 
-export function createFolder(
-  currentFolderId: number,
-  folderName: string,
-): [Promise<StorageTypes.CreateFolderResponse>, RequestCanceler] {
-  const payload: StorageTypes.CreateFolderPayload = {
-    parentFolderId: currentFolderId,
-    folderName: folderName,
-  };
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const [createdFolderPromise, requestCanceler] = storageClient.createFolder(payload);
-
-  const finalPromise = createdFolderPromise
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      throw errorService.castError(error);
-    });
-
-  return [finalPromise, requestCanceler];
-}
-
 export function createFolderByUuid(
   parentFolderUuid: string,
   plainName: string,
@@ -159,9 +137,8 @@ export async function deleteFolder(folderData: DriveFolderData): Promise<void> {
   await trashClient.deleteFolder(folderData.id);
 }
 
-export async function deleteBackupDeviceAsFolder(folderData: DriveFolderData): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  await storageClient.deleteFolder(folderData.id);
+export function deleteBackupDeviceAsFolder(folderData: DriveFolderData) {
+  return newStorageService.deleteFolderByUuid(folderData.uuid);
 }
 
 interface GetDirectoryFoldersResponse {
@@ -588,27 +565,6 @@ async function fetchFolderTree(folderUUID: string): Promise<{
   return { tree, folderDecryptedNames, fileDecryptedNames, size };
 }
 
-export async function moveFolder(folderId: number, destination: number): Promise<StorageTypes.MoveFolderResponse> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const payload: StorageTypes.MoveFolderPayload = {
-    folderId: folderId,
-    destinationFolderId: destination,
-  };
-
-  return storageClient
-    .moveFolder(payload)
-    .then((response) => {
-      return response;
-    })
-    .catch((err) => {
-      const castedError = errorService.castError(err);
-      if (castedError.status) {
-        castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
-      }
-      throw castedError;
-    });
-}
-
 export async function moveFolderByUuid(
   folderUuid: string,
   destinationFolderUuid: string,
@@ -629,10 +585,8 @@ export async function moveFolderByUuid(
 }
 
 const folderService = {
-  createFolder,
   createFolderByUuid,
   updateMetaData,
-  moveFolder,
   moveFolderByUuid,
   fetchFolderTree,
   downloadFolderAsZip,
