@@ -6,6 +6,7 @@ import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthInd
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import { Helmet } from 'react-helmet-async';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
+import { envConfig } from 'app/core/services/env.service';
 
 const CreateAccountForm = ({
   handleSubmit,
@@ -30,7 +31,7 @@ const CreateAccountForm = ({
 
       <div className={'flex h-full flex-col items-center justify-center'}>
         <Helmet>
-          <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/shared-guest`} />
+          <link rel="canonical" href={`${envConfig.app.hostname}/shared-guest`} />
         </Helmet>
         <div className={'flex h-fit w-96 flex-col items-center justify-center rounded-2xl px-8 py-10'}>
           <div className="flex flex-col items-start space-y-5">
