@@ -14,10 +14,10 @@ import TxtFile from '../../../assets/icons/file-types/txt.svg?react';
 import VideoFile from '../../../assets/icons/file-types/video.svg?react';
 import WordFile from '../../../assets/icons/file-types/word.svg?react';
 import XlsFile from '../../../assets/icons/file-types/excel.svg?react';
-import XmlFile from '../../../assets/icons/file-types/code.svg?react';
 import CsvFile from '../../../assets/icons/file-types/csv.svg?react';
 import ZipFile from '../../../assets/icons/file-types/zip.svg?react';
 import fileExtensionService from './file-extension.service';
+const XmlFile = CodeFile;
 
 const iconsByFileExtensionGroup = {
   [FileExtensionGroup.Audio]: AudioFile,
