@@ -3,21 +3,25 @@
     "title": "Gestiona tus archivos, la cuenta y la suscripción en la app",
     "logOut": "Cerrar sesión"
   },
-  "featuresBanner": {
-    "label": "Oferta 85%",
-    "title": "Únete al lado de privacidad",
+
+ "featuresBanner": {
+    "label": "Oferta 80%",
+    "upperTitle": "Día Mundial del Medio Ambiente",
+    "title": "Protege tus datos, protege el planeta",
     "cta": "Consigue tu plan",
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
-    "specialOfferLabel": "",
-    "specialOfferGift": "Sorteo mochila Internxt x Swiss Peak!",
+    "specialOfferLabel":"",
+    "specialOfferGift":"Entra en el sorteo de una mochila Internxt x Swiss Peak",
+
     "features": [
       "Internxt Drive, VPN, y Antivirus ",
-      "Criptografía postcuántica",
-      "Código abierto y auditado",
+      "Cifrado post-cuántico",
+      "Nube sostenible",
       "Transferencias cifradas",
-      "Tema especial para Web app",
-      "La oferta finaliza el 26 de mayo"
+      "Sin accesos no autorizados",
+      "La oferta termina el 27 de Junio"      
+
     ]
   },
   "susbcriptionsBanner": {
@@ -66,7 +70,8 @@
     "superBowl": "Super Bowl",
     "valentines": "San Valentín",
     "stpatricks": "San Patricio",
-    "idmanagement": "Gestión de Identidad"
+    "idmanagement": "Gestión de Identidad",
+    "environment": "Día Mundial del Medio Ambiente"
   },
   "auth": {
     "email": "Correo electrónico",
