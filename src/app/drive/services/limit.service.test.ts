@@ -9,7 +9,11 @@ vi.mock('./size.service', () => ({
   bytesToString: vi.fn(),
 }));
 
-vi.mock('../../core/factory/sdk');
+vi.mock('../../core/factory/sdk', () => ({
+  SdkFactory: {
+    getNewApiInstance: vi.fn(),
+  },
+}));
 
 describe('limitService', () => {
   describe('fetchLimit', () => {

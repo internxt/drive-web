@@ -3,7 +3,12 @@ import usageService from './usage.service';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 
-vi.mock('../../core/factory/sdk');
+vi.mock('../../core/factory/sdk', () => ({
+  SdkFactory: {
+    getNewApiInstance: vi.fn(),
+  },
+}));
+
 vi.mock('../../core/services/error.service');
 
 describe('usageService', () => {
