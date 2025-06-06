@@ -437,7 +437,8 @@ const CheckoutViewWrapper = () => {
             promoCodeId: couponCodeData?.codeId,
             seatsForBusinessSubscription,
           });
-
+          
+        const gclid = localStorage.getItem('gclid');
         // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API once the payment is done
         savePaymentDataInLocalStorage(
           subscriptionId,
@@ -446,6 +447,16 @@ const CheckoutViewWrapper = () => {
           seatsForBusinessSubscription,
           couponCodeData,
         );
+
+        if (gclid) {
+          sendConversionToSheet({
+            gclid,
+            name: `Checkout - ${currentSelectedPlan.price.type}`,
+            value: currentSelectedPlan.price.amount,
+            currency: currentSelectedPlan.price.currency,
+            timestamp: new Date(),
+          });
+        }
 
         // !DO NOT REMOVE THIS
         // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
