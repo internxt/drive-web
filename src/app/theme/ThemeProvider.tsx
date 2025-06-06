@@ -5,6 +5,7 @@ import ChristmasBG from 'assets/images/banner/christmas_theme.webp';
 import SuperBowlBG from 'assets/images/banner/superbowl_theme.webp';
 import StPaticksBG from 'assets/images/banner/StPatrick-bg.png';
 import IdManagementBG from 'assets/images/banner/IdManagement-bg.png';
+import EnvironmentBG from 'assets/images/banner/environment_theme.png';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 export type Theme =
@@ -17,7 +18,8 @@ export type Theme =
   | 'christmas'
   | 'superbowl'
   | 'stpatricks'
-  | 'idmanagement';
+  | 'idmanagement'
+  | 'environment';
 
 interface ThemeContextProps {
   currentTheme: Theme | undefined;
@@ -100,6 +102,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         setCheckoutTheme('dark');
       } else if (currentTheme === 'idmanagement') {
         root.style.backgroundImage = `url(${IdManagementBG})`;
+        root.style.backgroundSize = 'cover';
+        root.style.backgroundPosition = 'center';
+        root.style.backgroundRepeat = 'no-repeat';
+        document.documentElement.classList.add('dark');
+        setCheckoutTheme('dark');
+      } else if (currentTheme === 'environment') {
+        root.style.backgroundImage = `url(${EnvironmentBG})`;
         root.style.backgroundSize = 'cover';
         root.style.backgroundPosition = 'center';
         root.style.backgroundRepeat = 'no-repeat';
