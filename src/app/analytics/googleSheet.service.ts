@@ -1,20 +1,16 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet';
-import dotenv from 'dotenv';
-dotenv.config();
+import fs from 'fs';
+import path from 'path';
 
 const SPREADSHEET_ID = '16KKMYDbLtgcvSyRu5SFf6oNSfBulaUAj5HhzuFKFEks';
-const creds = {
-  client_email: process.env.GS_CLIENT_EMAIL,
-  private_key: process.env.GS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-};
 
 function formatDateToCustomTimezoneString(date: Date, offsetHours: number): string {
   const adjusted = new Date(date.getTime() + offsetHours * 60 * 60 * 1000);
 
   const year = adjusted.getFullYear();
-const month = String(adjusted.getMonth() + 1).padStart(2, '0');
-const day = String(adjusted.getDate()).padStart(2, '0');
-const hours = String(adjusted.getHours()).padStart(2, '0');
+  const month = String(adjusted.getMonth() + 1).padStart(2, '0');
+  const day = String(adjusted.getDate()).padStart(2, '0');
+  const hours = String(adjusted.getHours()).padStart(2, '0');
   const minutes = String(adjusted.getUTCMinutes()).padStart(2, '0');
   const seconds = String(adjusted.getUTCSeconds()).padStart(2, '0');
 
@@ -33,7 +29,10 @@ async function sendConversionToSheet(conversion: {
   timestamp?: Date;
 }) {
   try {
-    const adjustedTime = formatDateToCustomTimezoneString(conversion.timestamp ?? new Date(), 2); // UTC+2
+    const credentialsPath = path.join(process.cwd(), 'src', 'credentials', 'service-account.json');
+    const creds = JSON.parse(fs.readFileSync(credentialsPath, 'utf-8'));
+
+    const adjustedTime = formatDateToCustomTimezoneString(conversion.timestamp ?? new Date(), 2); 
 
     const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
     await doc.useServiceAccountAuth(creds);
@@ -47,6 +46,7 @@ async function sendConversionToSheet(conversion: {
       'Conversion Value': conversion.value,
       'Conversion Currency': conversion.currency?.toUpperCase() || 'EUR',
     });
+
   } catch (error) {
     console.error('❌ Error al enviar conversión a Google Sheets:', error);
   }
