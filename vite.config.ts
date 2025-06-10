@@ -3,9 +3,12 @@ import svgr from 'vite-plugin-svgr';
 import path from 'path';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { defineConfig } from 'vite';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export default defineConfig({
-  base: '/',
+  base: process.env.PUBLIC_URL ?? '/',
   plugins: [
     react(),
     svgr(),
