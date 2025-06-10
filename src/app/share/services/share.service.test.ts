@@ -15,6 +15,7 @@ import { decryptMnemonic, encodeSharingId, getSharingIdFromParam } from './share
 
 describe('Encryption and Decryption', () => {
   beforeAll(() => {
+    globalThis.Buffer = Buffer;
     vi.mock('app/drive/services/folder.service', () => ({
       default: {},
       downloadFolderAsZip: vi.fn(),
@@ -209,6 +210,7 @@ describe('Encryption and Decryption', () => {
     const expectedEncodedString = '8yqR2seZThOqF4xNngMjyQ';
 
     const result = encodeSharingId(validUuid);
+
     expect(result).toBe(expectedEncodedString);
   });
 
