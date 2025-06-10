@@ -36,7 +36,8 @@ import { DownloadManager } from '../../network/DownloadManager';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { AdvancedSharedItem } from '../types';
 import { DriveFolderData } from '../../drive/types';
-import { generateRandomStringUrlSafe, toBase64UrlSafe } from '../../utils/stringUtils';
+import { base64UrlSafetoUUID, generateRandomStringUrlSafe, toBase64UrlSafe } from '../../utils/stringUtils';
+import { validate as validateUuidv4 } from 'uuid';
 
 interface CreateShareResponse {
   created: boolean;
@@ -351,6 +352,20 @@ const getRandomElement = (list: string[]) => {
   const randomIndex = Math.floor(Math.random() * list.length);
 
   return list[randomIndex];
+};
+
+/**
+ * Extracts a sharing ID from the provided parameter. If the parameter is not a valid UUIDv4,
+ * it converts the parameter from a Base64 URL-safe string to a UUID.
+ *
+ * @param param - The input parameter, which can be either a UUIDv4 or a Base64 URL-safe string.
+ * @returns The sharing ID as a UUID string.
+ */
+export const getSharingIdFromParam = (param: string) => {
+  if (!validateUuidv4(param)) {
+    return base64UrlSafetoUUID(param);
+  }
+  return param;
 };
 
 export const getPublicShareLink = async (

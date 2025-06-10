@@ -9,7 +9,7 @@ import sizeService from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import shareService, { downloadPublicSharedFolder, getPublicSharingMeta } from 'app/share/services/share.service';
+import shareService, { downloadPublicSharedFolder, getPublicSharingMeta, getSharingIdFromParam } from 'app/share/services/share.service';
 import { TaskProgress } from 'app/tasks/types';
 import { useEffect, useState } from 'react';
 import { match } from 'react-router';
@@ -22,8 +22,6 @@ import SendBanner from './SendBanner';
 import ShareItemPwdView from './ShareItemPwdView';
 import './ShareView.scss';
 import { Loader } from '@internxt/ui';
-import { base64UrlSafetoUUID } from '../../../utils/stringUtils';
-import { validate as validateUuidv4 } from 'uuid';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -47,10 +45,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const { translate } = useTranslationContext();
 
   const code = props.match.params.code;
-  let sharingId = props.match.params.token;
-  if (!validateUuidv4(sharingId)) {
-    sharingId = base64UrlSafetoUUID(sharingId);
-  }
+  const sharingId = getSharingIdFromParam(props.match.params.token);
 
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [nItems, setNItems] = useState(0);
