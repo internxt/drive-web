@@ -9,11 +9,32 @@ dotenv.config();
 
 const mediaExtensionsType = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'woff', 'woff2', 'ttf', 'otf', 'eot'];
 
+function removeCrossOrigin() {
+  return {
+    name: 'use-credentials',
+    transformIndexHtml(html: string) {
+      return html.replace('crossorigin', '');
+    },
+  };
+}
+
 export default defineConfig({
   base: process.env.PUBLIC_URL ?? '/',
   plugins: [
     react(),
     svgr(),
+    removeCrossOrigin(),
+    {
+      name: 'generate-bundle',
+      generateBundle(options, bundle) {
+        for (const url in bundle) {
+          if (bundle[url].name === 'helper') {
+            //@ts-ignore
+            bundle[url].code = bundle[url].code.replace('crossOrigin', '');
+          }
+        }
+      },
+    },
     nodePolyfills({
       globals: {
         process: true,
@@ -29,6 +50,11 @@ export default defineConfig({
     assetsDir: 'static',
     rollupOptions: {
       output: {
+        manualChunks(id) {
+          if (id.startsWith('\u0000vite')) {
+            return 'helper';
+          }
+        },
         entryFileNames: 'static/js/[name].js',
         chunkFileNames: 'static/js/[name].js',
         assetFileNames: (assetInfo) => {
@@ -50,6 +76,9 @@ export default defineConfig({
     open: true,
   },
   server: {
+    cors: {
+      origin: '*',
+    },
     port: 3000,
     open: true,
   },
