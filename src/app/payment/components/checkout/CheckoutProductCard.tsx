@@ -75,7 +75,7 @@ export const CheckoutProductCard = ({
 
   const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
 
-  const productLabel = translate(`preferences.account.plans.planFeaturesList.${bytes}.title`) ?? bytes;
+  const productLabel = translate(`preferences.account.plans.${planType}.${bytes}.title`) ?? bytes;
   const featureKeys =
     translateList(`preferences.account.plans.${planType}.${bytes ?? 'freeFeatures'}.features`, {
       returnObjects: true,
