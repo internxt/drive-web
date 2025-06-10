@@ -17,13 +17,13 @@ export default defineConfig({
     {
       name: 'vite:crossorigin-use-credentials',
       transformIndexHtml(html) {
-        return html.replace(/crossorigin/g, 'crossorigin="use-credentials"');
+        return html.replace(/crossorigin/g, '');
       },
       generateBundle(_, bundle) {
         for (const url in bundle) {
           if (bundle[url].name === 'preload-helper') {
             // @ts-ignore
-            bundle[url].code = bundle[url].code.replace('crossOrigin = ""', 'crossOrigin = "use-credentials"');
+            bundle[url].code = bundle[url].code.replace('crossOrigin', '');
           }
         }
       },
