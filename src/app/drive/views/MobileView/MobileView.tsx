@@ -4,7 +4,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { getDatabaseProfileAvatar } from '../../services/database.service';
 import { userThunks } from '../../../store/slices/user';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import InternxtLogo from 'assets/icons/big-logo.svg?react';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import devices from 'assets/images/mobile-app/devices.png';
 import appStore from 'assets/images/mobile-app/app-store.jpg';
 import googlePlay from 'assets/images/mobile-app/google-play.jpg';

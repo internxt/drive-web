@@ -1,7 +1,7 @@
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import InternxtLogo from 'assets/icons/big-logo.svg?react';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 
 interface HeaderComponentProps {
   isUserAuthenticated: boolean;

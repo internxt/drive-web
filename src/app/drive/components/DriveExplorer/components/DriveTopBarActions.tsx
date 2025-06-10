@@ -9,7 +9,7 @@ import {
   Trash,
   Users,
 } from '@phosphor-icons/react';
-import MoveActionIcon from 'assets/icons/move.svg?react';
+import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
 import { useSelector } from 'react-redux';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import errorService from '../../../../core/services/error.service';

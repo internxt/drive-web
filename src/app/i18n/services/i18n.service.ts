@@ -15,15 +15,6 @@ import tw from 'dayjs/locale/zh-tw';
 import localStorageService from 'app/core/services/local-storage.service';
 import envService from 'app/core/services/env.service';
 
-import enJson from '../locales/en.json';
-import esJson from '../locales/es.json';
-import frJson from '../locales/fr.json';
-import itJson from '../locales/it.json';
-import zhJson from '../locales/zh.json';
-import ruJson from '../locales/ru.json';
-import deJson from '../locales/de.json';
-import twJson from '../locales/tw.json';
-
 const dayJsLocale = {
   es,
   en,
@@ -41,17 +32,33 @@ dayjs.locale(dayJsLocale[deviceLang] || 'en');
 
 export default i18next
   .use(LanguageDetector)
-  .use(initReactI18next)
+  .use(initReactI18next) // passes i18n down to react-i18next
   .init({
     resources: {
-      en: { translation: enJson },
-      es: { translation: esJson },
-      fr: { translation: frJson },
-      it: { translation: itJson },
-      zh: { translation: zhJson },
-      ru: { translation: ruJson },
-      de: { translation: deJson },
-      'zh-TW': { translation: twJson },
+      en: {
+        translation: require('../locales/en.json'),
+      },
+      es: {
+        translation: require('../locales/es.json'),
+      },
+      fr: {
+        translation: require('../locales/fr.json'),
+      },
+      it: {
+        translation: require('../locales/it.json'),
+      },
+      zh: {
+        translation: require('../locales/zh.json'),
+      },
+      ru: {
+        translation: require('../locales/ru.json'),
+      },
+      de: {
+        translation: require('../locales/de.json'),
+      },
+      'zh-TW': {
+        translation: require('../locales/tw.json'),
+      },
     },
     debug: !envService.isProduction(),
     fallbackLng: 'en',
@@ -62,6 +69,6 @@ export default i18next
     defaultNS: 'translation',
     ns: ['translation'],
     interpolation: {
-      escapeValue: false,
+      escapeValue: false, // not needed for react as it escapes by default
     },
   });

@@ -10,7 +10,7 @@ import { planSelectors } from 'app/store/slices/plan';
 import { AppView } from '../../types';
 
 import SidenavItem from './SidenavItem/SidenavItem';
-import InternxtLogo from 'assets/icons/big-logo.svg?react';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';

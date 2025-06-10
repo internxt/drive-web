@@ -1,7 +1,7 @@
 import { MutableRefObject, memo } from 'react';
 import { Button } from '@internxt/ui';
 import { FolderSimplePlus, UploadSimple } from '@phosphor-icons/react';
-import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg?react';
+import { ReactComponent as FolderSimpleArrowUp } from 'assets/icons/FolderSimpleArrowUp.svg';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 import { t } from 'i18next';
 

@@ -2,22 +2,22 @@ import { FunctionComponent, SVGProps } from 'react';
 
 import { FileExtensionGroup } from '../types/file-types';
 
-import LightFolder from '../../../assets/icons/light/folder.svg?react';
-import DefaultFile from '../../../assets/icons/file-types/default.svg?react';
-import AudioFile from '../../../assets/icons/file-types/audio.svg?react';
-import CodeFile from '../../../assets/icons/file-types/code.svg?react';
-import FigmaFile from '../../../assets/icons/file-types/figma.svg?react';
-import ImageFile from '../../../assets/icons/file-types/image.svg?react';
-import PdfFile from '../../../assets/icons/file-types/pdf.svg?react';
-import PptFile from '../../../assets/icons/file-types/ppt.svg?react';
-import TxtFile from '../../../assets/icons/file-types/txt.svg?react';
-import VideoFile from '../../../assets/icons/file-types/video.svg?react';
-import WordFile from '../../../assets/icons/file-types/word.svg?react';
-import XlsFile from '../../../assets/icons/file-types/excel.svg?react';
-import CsvFile from '../../../assets/icons/file-types/csv.svg?react';
-import ZipFile from '../../../assets/icons/file-types/zip.svg?react';
+import { ReactComponent as LightFolder } from '../../../assets/icons/light/folder.svg';
+import { ReactComponent as DefaultFile } from '../../../assets/icons/file-types/default.svg';
+import { ReactComponent as AudioFile } from '../../../assets/icons/file-types/audio.svg';
+import { ReactComponent as CodeFile } from '../../../assets/icons/file-types/code.svg';
+import { ReactComponent as FigmaFile } from '../../../assets/icons/file-types/figma.svg';
+import { ReactComponent as ImageFile } from '../../../assets/icons/file-types/image.svg';
+import { ReactComponent as PdfFile } from '../../../assets/icons/file-types/pdf.svg';
+import { ReactComponent as PptFile } from '../../../assets/icons/file-types/ppt.svg';
+import { ReactComponent as TxtFile } from '../../../assets/icons/file-types/txt.svg';
+import { ReactComponent as VideoFile } from '../../../assets/icons/file-types/video.svg';
+import { ReactComponent as WordFile } from '../../../assets/icons/file-types/word.svg';
+import { ReactComponent as XlsFile } from '../../../assets/icons/file-types/excel.svg';
+import { ReactComponent as XmlFile } from '../../../assets/icons/file-types/code.svg';
+import { ReactComponent as CsvFile } from '../../../assets/icons/file-types/csv.svg';
+import { ReactComponent as ZipFile } from '../../../assets/icons/file-types/zip.svg';
 import fileExtensionService from './file-extension.service';
-const XmlFile = CodeFile;
 
 const iconsByFileExtensionGroup = {
   [FileExtensionGroup.Audio]: AudioFile,

@@ -40,7 +40,6 @@ describe('checkManagementIdCode', () => {
 
   it('should return true if theme is enabled in localStorage', async () => {
     const getFromLocalStorageSpy = vi.spyOn(localStorageService, 'get').mockReturnValue('true');
-    const isCouponUsedByUserSpy = vi.spyOn(paymentService, 'isCouponUsedByUser');
 
     const result = await isManagementIdThemeAvailable(mockPlan);
 
@@ -48,12 +47,11 @@ describe('checkManagementIdCode', () => {
     expect(getFromLocalStorageSpy).toHaveBeenCalledWith(
       STORAGE_KEYS.THEMES.ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
     );
-    expect(isCouponUsedByUserSpy).not.toHaveBeenCalled();
+    expect(paymentService.isCouponUsedByUser).not.toHaveBeenCalled();
   });
 
   it('should check coupons if not enabled in localStorage', async () => {
     const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
-    const isCouponUsedByUserSpy = vi.spyOn(paymentService, 'isCouponUsedByUser');
     vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     vi.mocked(paymentService.isCouponUsedByUser)
       .mockResolvedValueOnce({ couponUsed: false })
@@ -62,9 +60,9 @@ describe('checkManagementIdCode', () => {
     const result = await isManagementIdThemeAvailable(mockPlan);
 
     expect(result).toBe(true);
-    expect(isCouponUsedByUserSpy).toHaveBeenCalledTimes(2);
-    expect(isCouponUsedByUserSpy).toHaveBeenCalledWith('IDENTITY82');
-    expect(isCouponUsedByUserSpy).toHaveBeenCalledWith('IDENTITY82AFF');
+    expect(paymentService.isCouponUsedByUser).toHaveBeenCalledTimes(2);
+    expect(paymentService.isCouponUsedByUser).toHaveBeenCalledWith('IDENTITY82');
+    expect(paymentService.isCouponUsedByUser).toHaveBeenCalledWith('IDENTITY82AFF');
     expect(setToLocalStorageSpy).toHaveBeenCalledWith(
       STORAGE_KEYS.THEMES.ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
       'true',
@@ -73,14 +71,13 @@ describe('checkManagementIdCode', () => {
 
   it('should return false if no coupons were used', async () => {
     const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
-    const isCouponUsedByUserSpy = vi.spyOn(paymentService, 'isCouponUsedByUser');
     vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     vi.mocked(paymentService.isCouponUsedByUser).mockResolvedValue({ couponUsed: false });
 
     const result = await isManagementIdThemeAvailable(mockPlan);
 
     expect(result).toBe(false);
-    expect(isCouponUsedByUserSpy).toHaveBeenCalledTimes(2);
+    expect(paymentService.isCouponUsedByUser).toHaveBeenCalledTimes(2);
     expect(setToLocalStorageSpy).not.toHaveBeenCalled();
   });
 
@@ -99,7 +96,7 @@ describe('checkManagementIdCode', () => {
   it('should handle errors and report them', async () => {
     vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     const error = new Error('Test error');
-    vi.spyOn(paymentService, 'isCouponUsedByUser').mockRejectedValue(error);
+    vi.mocked(paymentService.isCouponUsedByUser).mockRejectedValue(error);
 
     const result = await isManagementIdThemeAvailable(mockPlan);
 

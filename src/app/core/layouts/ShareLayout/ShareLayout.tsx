@@ -1,12 +1,12 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-import Logo from 'assets/icons/logo.svg?react';
+import { ReactComponent as Logo } from 'assets/icons/logo.svg';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { userThunks } from '../../../store/slices/user';
 import desktopService from '../../../core/services/desktop.service';
 import '../../../share/views/ShareView/ShareView.scss';
-import InternxtLogo from 'assets/icons/big-logo.svg?react';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ReportButton from '../../../share/views/ShareView/ReportButon';

@@ -8,7 +8,7 @@ interface BitdeFenderBannerProps {
 
 const BitdefenderBanner = ({ showBanner, onClose }: BitdeFenderBannerProps): JSX.Element => {
   const handleOnClick = () => {
-    window.open('https://www.bitdefender.com/pages/consumer/en/new/trial/ts-trial-3m/internxt/', '_blank', 'noopener');
+    window.open('https://www.bitdefender.com/pages/consumer/en/new/trial/ts-trial-3m/internxt/', '_blank' , 'noopener');
   };
 
   return (
@@ -31,11 +31,19 @@ const BitdefenderBanner = ({ showBanner, onClose }: BitdeFenderBannerProps): JSX
           <X size={32} className="text-white" />
         </button>
 
-        <div className="w-[450px] lg:w-[750px]">
-          <button onClick={handleOnClick} style={{ border: 'none', padding: 0, background: 'none', cursor: 'pointer' }}>
-            <img src={BitDefenderBanner} alt="BitDefender Banner" className="w-full h-auto" />
+       <div className="w-[450px] lg:w-[750px]">
+          <button
+            onClick={handleOnClick}
+            style={{ border: 'none', padding: 0, background: 'none', cursor: 'pointer' }}
+          >
+            <img
+              src={BitDefenderBanner}
+              alt="BitDefender Banner"
+              className="w-full h-auto"
+            />
           </button>
         </div>
+
       </div>
     </div>
   );

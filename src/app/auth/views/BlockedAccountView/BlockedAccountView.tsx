@@ -1,6 +1,6 @@
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import InternxtLogo from 'assets/icons/big-logo.svg?react';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import { ShieldWarning } from '@phosphor-icons/react';
 import { Button, Loader } from '@internxt/ui';
 import { AppView } from 'app/core/types';

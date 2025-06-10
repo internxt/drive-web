@@ -3,7 +3,7 @@ import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import { Button } from '@internxt/ui';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
-import InternxtLogo from 'assets/icons/big-logo.svg?react';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import { Helmet } from 'react-helmet-async';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import { envConfig } from 'app/core/services/env.service';

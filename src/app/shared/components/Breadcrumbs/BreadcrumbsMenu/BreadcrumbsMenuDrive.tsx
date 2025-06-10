@@ -8,7 +8,7 @@ import {
   Users,
   Info,
 } from '@phosphor-icons/react';
-import MoveActionIcon from 'assets/icons/move.svg?react';
+import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
 import { DriveItemData, DriveItemDetails, FolderPath } from '../../../../drive/types';

@@ -18,9 +18,8 @@
     "jsx": "react-jsx",
     "noImplicitAny": false,
     "downlevelIteration": true,
-    "incremental": true,
-    "types": ["vite/client", "vite-plugin-svgr/client"]
+    "incremental": true
   },
   "types": ["filesystem", "@types/react"],
-  "include": ["src", "vite-env.d.ts"]
+  "include": ["src"]
 }

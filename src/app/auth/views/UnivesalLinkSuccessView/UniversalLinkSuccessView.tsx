@@ -5,7 +5,7 @@ import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button } from '@internxt/ui';
-import InternxtLogo from 'assets/icons/big-logo.svg?react';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import { useEffect, useMemo } from 'react';
 
 const DEEPLINK_SUCCESS_REDIRECT_BASE = 'internxt://login-success';

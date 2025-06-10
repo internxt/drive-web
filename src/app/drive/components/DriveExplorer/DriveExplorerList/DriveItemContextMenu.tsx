@@ -11,7 +11,7 @@ import {
   Trash,
   Users,
 } from '@phosphor-icons/react';
-import MoveActionIcon from 'assets/icons/move.svg?react';
+import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
 import { t } from 'i18next';
 import { Device } from '../../../../backups/types';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
