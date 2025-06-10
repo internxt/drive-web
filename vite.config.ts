@@ -17,7 +17,7 @@ export default defineConfig({
     {
       name: 'vite:remove-crossorigin',
       transformIndexHtml(html) {
-        return html.replace(/crossorigin/g, '');
+        return html.replace(/crossorigin/g, '').replace(/type="module"/g, 'defer="defer"');
       },
     },
     nodePolyfills({
