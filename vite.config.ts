@@ -5,7 +5,7 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/',
+  base: './',
   plugins: [
     react(),
     svgr(),
