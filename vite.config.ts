@@ -15,7 +15,7 @@ export default defineConfig({
     react(),
     svgr(),
     {
-      name: 'vite:crossorigin-use-credentials',
+      name: 'vite:remove-crossorigin',
       transformIndexHtml(html) {
         return html.replace(/crossorigin/g, '');
       },
@@ -23,7 +23,7 @@ export default defineConfig({
         for (const url in bundle) {
           if (bundle[url].name === 'preload-helper') {
             // @ts-ignore
-            bundle[url].code = bundle[url].code.replace('crossOrigin', '');
+            bundle[url].code = bundle[url].code.replace('crossOrigin=""', '');
           }
         }
       },
