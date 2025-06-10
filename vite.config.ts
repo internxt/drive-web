@@ -9,28 +9,21 @@ dotenv.config();
 
 const mediaExtensionsType = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'woff', 'woff2', 'ttf', 'otf', 'eot'];
 
-function removeCrossOrigin() {
-  return {
-    name: 'use-credentials',
-    transformIndexHtml(html: string) {
-      return html.replace('crossorigin', '');
-    },
-  };
-}
-
 export default defineConfig({
   base: process.env.PUBLIC_URL ?? '/',
   plugins: [
     react(),
     svgr(),
-    removeCrossOrigin(),
     {
-      name: 'generate-bundle',
-      generateBundle(options, bundle) {
+      name: 'vite:crossorigin-use-credentials',
+      transformIndexHtml(html) {
+        return html.replace(/crossorigin/g, 'crossorigin="use-credentials"');
+      },
+      generateBundle(_, bundle) {
         for (const url in bundle) {
-          if (bundle[url].name === 'helper') {
-            //@ts-ignore
-            bundle[url].code = bundle[url].code.replace('crossOrigin', '');
+          if (bundle[url].name === 'preload-helper') {
+            // @ts-ignore
+            bundle[url].code = bundle[url].code.replace('crossOrigin = ""', 'crossOrigin = "use-credentials"');
           }
         }
       },
@@ -51,8 +44,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.startsWith('\u0000vite')) {
-            return 'helper';
+          // Extract virtual module
+          if (id === '\0vite/preload-helper.js') {
+            return 'preload-helper';
           }
         },
         entryFileNames: 'static/js/[name].js',
