@@ -368,6 +368,23 @@ export const getSharingIdFromParam = (param: string) => {
   return param;
 };
 
+/**
+ * Encodes a sharing ID by removing hyphens, converting it from hexadecimal to Base64,
+ * and then making it URL-safe.
+ *
+ * @param sharingId - The sharing ID to be encoded, expected to be a UUID string.
+ * @returns The encoded sharing ID as a URL-safe Base64 string.
+ */
+export const encodeSharingId = (sharingId: string) => {
+  if (!validateUuidv4(sharingId)) {
+    throw new Error('Sharing id is not valid');
+  }
+  const removedUuidDecoration = sharingId.replace(/-/g, '');
+  const base64endoded = Buffer.from(removedUuidDecoration, 'hex').toString('base64');
+  const encodedSharingId = toBase64UrlSafe(base64endoded);
+  return encodedSharingId;
+};
+
 export const getPublicShareLink = async (
   uuid: string,
   itemType: 'folder' | 'file',
@@ -396,9 +413,7 @@ export const getPublicShareLink = async (
       selectedDomain = window.location.origin;
     }
 
-    const removedUuidDecoration = sharingId.replace(/-/g, '');
-    const base64endoded = Buffer.from(removedUuidDecoration, 'hex').toString('base64');
-    const encodedSharingId = toBase64UrlSafe(base64endoded);
+    const encodedSharingId = encodeSharingId(sharingId);
 
     const publicShareLink = `${selectedDomain}/sh/${itemType}/${encodedSharingId}/${plainCode}`;
 
