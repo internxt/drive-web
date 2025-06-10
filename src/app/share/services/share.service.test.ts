@@ -11,7 +11,7 @@ import {
 } from '../../crypto/services/pgp.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { decryptMnemonic, getSharingIdFromParam } from './share.service';
+import { decryptMnemonic, encodeSharingId, getSharingIdFromParam } from './share.service';
 
 describe('Encryption and Decryption', () => {
   beforeAll(() => {
@@ -202,5 +202,18 @@ describe('Encryption and Decryption', () => {
 
     const result = getSharingIdFromParam(base64UrlSafeString);
     expect(result).toBe(expectedUuid);
+  });
+
+  it('should encode a valid UUID to a Base64 URL-safe string', () => {
+    const validUuid = 'f32a91da-c799-4e13-aa17-8c4d9e0323c9';
+    const expectedEncodedString = '8yqR2seZThOqF4xNngMjyQ';
+
+    const result = encodeSharingId(validUuid);
+    expect(result).toBe(expectedEncodedString);
+  });
+
+  it('should throw an error for an invalid UUID format', () => {
+    const invalidUuid = 'invalid-uuid-string';
+    expect(() => encodeSharingId(invalidUuid)).toThrowError();
   });
 });
