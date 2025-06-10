@@ -11,7 +11,7 @@ import {
 } from '../../crypto/services/pgp.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { decryptMnemonic, encodeSharingId, getSharingIdFromParam } from './share.service';
+import { decryptMnemonic, encodeSharingId, decodeSharingId } from './share.service';
 
 describe('Encryption and Decryption', () => {
   beforeAll(() => {
@@ -193,7 +193,7 @@ describe('Encryption and Decryption', () => {
 
   it('should return the same UUID if the input is a valid UUIDv4', () => {
     const validUuid = 'f32a91da-c799-4e13-aa17-8c4d9e0323c9';
-    const result = getSharingIdFromParam(validUuid);
+    const result = decodeSharingId(validUuid);
     expect(result).toBe(validUuid);
   });
 
@@ -201,7 +201,7 @@ describe('Encryption and Decryption', () => {
     const base64UrlSafeString = '8yqR2seZThOqF4xNngMjyQ';
     const expectedUuid = 'f32a91da-c799-4e13-aa17-8c4d9e0323c9';
 
-    const result = getSharingIdFromParam(base64UrlSafeString);
+    const result = decodeSharingId(base64UrlSafeString);
     expect(result).toBe(expectedUuid);
   });
 

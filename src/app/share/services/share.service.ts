@@ -361,7 +361,7 @@ const getRandomElement = (list: string[]) => {
  * @param param - The input parameter, which can be either a UUIDv4 or a Base64 URL-safe string.
  * @returns The sharing ID as a UUID string.
  */
-export const getSharingIdFromParam = (param: string) => {
+export const decodeSharingId = (param: string) => {
   if (!validateUuidv4(param)) {
     return base64UrlSafetoUUID(param);
   }

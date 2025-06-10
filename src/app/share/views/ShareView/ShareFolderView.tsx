@@ -9,7 +9,7 @@ import sizeService from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import shareService, { downloadPublicSharedFolder, getPublicSharingMeta, getSharingIdFromParam } from 'app/share/services/share.service';
+import shareService, { downloadPublicSharedFolder, getPublicSharingMeta, decodeSharingId } from 'app/share/services/share.service';
 import { TaskProgress } from 'app/tasks/types';
 import { useEffect, useState } from 'react';
 import { match } from 'react-router';
@@ -45,7 +45,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const { translate } = useTranslationContext();
 
   const code = props.match.params.code;
-  const sharingId = getSharingIdFromParam(props.match.params.token);
+  const sharingId = decodeSharingId(props.match.params.token);
 
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [nItems, setNItems] = useState(0);
