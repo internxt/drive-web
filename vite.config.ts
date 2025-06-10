@@ -35,12 +35,6 @@ export default defineConfig({
     assetsDir: 'static',
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          // Extract virtual module
-          if (id === '\0vite/preload-helper.js') {
-            return 'preload-helper';
-          }
-        },
         entryFileNames: 'static/js/[name].js',
         chunkFileNames: 'static/js/[name].js',
         assetFileNames: (assetInfo) => {
@@ -62,9 +56,6 @@ export default defineConfig({
     open: true,
   },
   server: {
-    cors: {
-      origin: '*',
-    },
     port: 3000,
     open: true,
   },
