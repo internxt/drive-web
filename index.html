@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -105,20 +105,13 @@
     <!-- < !--End MailerLite Universal-->
 
     <!-- Google Tag Manager -->
-    <script>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', '%REACT_APP_GOOGLE_TAG_MANAGER%');
-    </script>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','%REACT_APP_GOOGLE_TAG_MANAGER%');</script>
     <!-- End Google Tag Manager -->
-
+     
     <script type="text/javascript">
       window.NREUM || (NREUM = {});
       NREUM.init = {
@@ -267,8 +260,8 @@
                         u(t)
                           ? (e.mask_selector = ''.concat(t, ',').concat(f))
                           : '' === t || null === t
-                            ? (e.mask_selector = f)
-                            : (0, l.Z)("An invalid session_replay.mask_selector was provided. '*' will be used.", t);
+                          ? (e.mask_selector = f)
+                          : (0, l.Z)("An invalid session_replay.mask_selector was provided. '*' will be used.", t);
                       },
                       get block_class() {
                         return 'nr-block';
@@ -408,8 +401,8 @@
                         Array.isArray(e[o]) && Array.isArray(t[o])
                           ? (r[o] = Array.from(new Set([...e[o], ...t[o]])))
                           : 'object' == typeof e[o] && 'object' == typeof t[o]
-                            ? (r[o] = i(e[o], t[o]))
-                            : (r[o] = e[o]);
+                          ? (r[o] = i(e[o], t[o]))
+                          : (r[o] = e[o]);
                       } catch (e) {
                         (0, n.Z)('An error occurred while setting a property of a Configurable', e);
                       }
@@ -1557,14 +1550,14 @@
                     return e;
                   })(t)
                 : t
-                  ? (t.c || (t = y(t.t)),
-                    (t.c += 1),
-                    (t.t += e),
-                    (t.sos += e * e),
-                    e > t.max && (t.max = e),
-                    e < t.min && (t.min = e),
-                    t)
-                  : { t: e };
+                ? (t.c || (t = y(t.t)),
+                  (t.c += 1),
+                  (t.t += e),
+                  (t.sos += e * e),
+                  e > t.max && (t.max = e),
+                  e < t.min && (t.min = e),
+                  t)
+                : { t: e };
             }
             function y(e) {
               return { t: e, min: e, max: e, sos: e * e, c: 1 };
