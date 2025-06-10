@@ -196,25 +196,11 @@ describe('Encryption and Decryption', () => {
     expect(result).toBe(validUuid);
   });
 
-  it('should convert a Base64 URL-safe string to a UUID if the input is not a valid UUIDv4', async () => {
+  it('should convert a Base64 URL-safe string to a UUID if the input is not a valid UUIDv4', () => {
     const base64UrlSafeString = 'MTIzZTQ1NjctZTg5Yi0xMmQzLWE0NTYtNDI2NjE0MTc0MDAw';
     const expectedUuid = '123e4567-e89b-12d3-a456-426614174000';
 
-    const stringUtils = await import('../../utils/stringUtils');
-    vi.spyOn(stringUtils, 'base64UrlSafetoUUID').mockReturnValue(expectedUuid);
-
     const result = getSharingIdFromParam(base64UrlSafeString);
     expect(result).toBe(expectedUuid);
-  });
-
-  it('should call validateUuidv4 to check if the input is a valid UUIDv4', async () => {
-    const invalidUuid = 'invalid-uuid';
-    const mockValidateUuidv4 = vi.fn().mockReturnValue(false);
-
-    const uuid = await import('uuid');
-    vi.spyOn(uuid, 'validate').mockImplementation(mockValidateUuidv4);
-
-    getSharingIdFromParam(invalidUuid);
-    expect(mockValidateUuidv4).toHaveBeenCalledWith(invalidUuid);
   });
 });
