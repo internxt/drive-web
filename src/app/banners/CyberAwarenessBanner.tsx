@@ -1,6 +1,6 @@
 import { X } from '@phosphor-icons/react';
 import BackgroundImage from 'assets/images/banner/banner_internal_cs_month_800x450_bg.webp';
-import { ReactComponent as InternxtLogo } from 'assets/images/banner/inxt-logo.svg';
+import InternxtLogo from 'assets/images/banner/inxt-logo.svg?react';
 
 const redirectURL = 'https://internxt.com/pricing#priceTable';
 
