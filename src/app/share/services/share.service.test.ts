@@ -191,14 +191,14 @@ describe('Encryption and Decryption', () => {
   });
 
   it('should return the same UUID if the input is a valid UUIDv4', () => {
-    const validUuid = '123e4567-e89b-12d3-a456-426614174000';
+    const validUuid = 'f32a91da-c799-4e13-aa17-8c4d9e0323c9';
     const result = getSharingIdFromParam(validUuid);
     expect(result).toBe(validUuid);
   });
 
   it('should convert a Base64 URL-safe string to a UUID if the input is not a valid UUIDv4', () => {
-    const base64UrlSafeString = 'MTIzZTQ1NjctZTg5Yi0xMmQzLWE0NTYtNDI2NjE0MTc0MDAw';
-    const expectedUuid = '123e4567-e89b-12d3-a456-426614174000';
+    const base64UrlSafeString = '8yqR2seZThOqF4xNngMjyQ';
+    const expectedUuid = 'f32a91da-c799-4e13-aa17-8c4d9e0323c9';
 
     const result = getSharingIdFromParam(base64UrlSafeString);
     expect(result).toBe(expectedUuid);
