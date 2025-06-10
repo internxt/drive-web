@@ -7,6 +7,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const mediaExtensionsType = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'woff', 'woff2', 'ttf', 'otf', 'eot'];
+
 export default defineConfig({
   base: process.env.PUBLIC_URL ?? '/',
   plugins: [
@@ -24,6 +26,24 @@ export default defineConfig({
   envPrefix: ['REACT_APP_'],
   build: {
     outDir: 'build',
+    assetsDir: 'static',
+    rollupOptions: {
+      output: {
+        entryFileNames: 'static/js/[name].js',
+        chunkFileNames: 'static/js/[name].js',
+        assetFileNames: (assetInfo) => {
+          const ext = assetInfo.name?.split('.').pop();
+
+          if (ext === 'css') {
+            return 'static/css/[name]-[hash][extname]';
+          } else if (ext && mediaExtensionsType.includes(ext)) {
+            return 'static/media/[name]-[hash][extname]';
+          }
+
+          return 'static/media/[name]-[hash][extname]';
+        },
+      },
+    },
   },
   preview: {
     port: 3000,
