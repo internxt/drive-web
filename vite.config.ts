@@ -19,14 +19,6 @@ export default defineConfig({
       transformIndexHtml(html) {
         return html.replace(/crossorigin/g, '');
       },
-      generateBundle(_, bundle) {
-        for (const url in bundle) {
-          if (bundle[url].name === 'preload-helper') {
-            // @ts-ignore
-            bundle[url].code = bundle[url].code.replace('crossOrigin=""', '');
-          }
-        }
-      },
     },
     nodePolyfills({
       globals: {
