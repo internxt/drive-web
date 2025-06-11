@@ -13,14 +13,15 @@ function formatDateToCustomTimezoneString(date: Date, offsetHours: number): stri
   const minutes = String(adjusted.getMinutes()).padStart(2, '0');
   const seconds = String(adjusted.getSeconds()).padStart(2, '0');
 
-  const offset = offsetHours >= 0
-    ? `+${String(offsetHours).padStart(2, '0')}00`
-    : `-${String(Math.abs(offsetHours)).padStart(2, '0')}00`;
+  const offset =
+    offsetHours >= 0
+      ? `+${String(offsetHours).padStart(2, '0')}00`
+      : `-${String(Math.abs(offsetHours)).padStart(2, '0')}00`;
 
   return `${month}-${day}-${year} ${hours}:${minutes}:${seconds}${offset}`;
 }
 
-async function sendConversionToAPI(conversion: {
+export async function sendConversionToAPI(conversion: {
   gclid: string;
   name: string;
   value: number;
@@ -28,22 +29,16 @@ async function sendConversionToAPI(conversion: {
   timestamp?: Date;
 }) {
   try {
-    const formattedTimestamp = formatDateToCustomTimezoneString(
-      conversion.timestamp ?? new Date(),
-      2
-    );
+    const formattedTimestamp = formatDateToCustomTimezoneString(conversion.timestamp ?? new Date(), 2);
 
-   await axios.post(`${GSHEET_API}/google-sheet`, {
+    await axios.post(`${GSHEET_API}/google-sheet`, {
       gclid: conversion.gclid,
       name: conversion.name,
       value: conversion.value,
-      currency: conversion.currency || 'EUR',
+      currency: conversion.currency ?? 'EUR',
       timestamp: formattedTimestamp,
     });
-
   } catch (error) {
-     console.error('❌ Error sending conversion:', error);
+    console.error('Error sending conversion:', error);
   }
 }
-
-export { sendConversionToAPI };

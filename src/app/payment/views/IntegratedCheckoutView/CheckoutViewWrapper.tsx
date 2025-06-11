@@ -33,6 +33,7 @@ import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { userLocation } from 'app/utils/userLocation';
 import { UserLocation } from '@internxt/sdk';
 import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
+import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
 
 export const THEME_STYLES = {
   dark: {
@@ -437,7 +438,7 @@ const CheckoutViewWrapper = () => {
             promoCodeId: couponCodeData?.codeId,
             seatsForBusinessSubscription,
           });
-          
+
         const gclid = localStorage.getItem('gclid');
         // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API once the payment is done
         savePaymentDataInLocalStorage(
@@ -449,11 +450,11 @@ const CheckoutViewWrapper = () => {
         );
 
         if (gclid) {
-          sendConversionToSheet({
+          sendConversionToAPI({
             gclid,
-            name: `Checkout - ${currentSelectedPlan.price.type}`,
-            value: currentSelectedPlan.price.amount,
-            currency: currentSelectedPlan.price.currency,
+            name: `Checkout - ${currentSelectedPlan?.price.type}`,
+            value: currentSelectedPlan?.price.amount ?? 0.01,
+            currency: currentSelectedPlan?.price.currency,
             timestamp: new Date(),
           });
         }
