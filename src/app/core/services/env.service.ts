@@ -73,4 +73,8 @@ export const envConfig = {
   impact: {
     apiUrl: getEnvVar('REACT_APP_IMPACT_API'),
   },
+  
+  gsheet:{
+    apiUrl: getEnvVar('REACT_APP_GSHEET_API'),
+  }
 };
