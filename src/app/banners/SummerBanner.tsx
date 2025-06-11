@@ -1,6 +1,6 @@
 import { X } from '@phosphor-icons/react';
 import BackgroundImage from 'assets/images/banner/BannerInternal-SummerCampaign-800x450-EN.svg';
-import { ReactComponent as InternxtLogo } from 'assets/images/banner/inxt-logo.svg';
+import InternxtLogo from 'assets/images/banner/inxt-logo.svg?react';
 
 const SummerBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }) => {
   return (
