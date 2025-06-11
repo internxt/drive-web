@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { sendConversionToSheet } from './googleSheet.service';
+import { sendConversionToAPI } from './googleSheet.service';
 
 describe('Google Sheets Conversion Logger', () => {
   test('should send a test conversion to the sheet', async () => {
@@ -10,6 +10,6 @@ describe('Google Sheets Conversion Logger', () => {
       currency: 'EUR',
     };
 
-    await expect(sendConversionToSheet(testConversion)).resolves.toBeUndefined();
+    await expect(sendConversionToAPI(testConversion)).resolves.toBeUndefined();
   });
 });
