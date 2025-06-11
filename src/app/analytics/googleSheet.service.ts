@@ -1,4 +1,7 @@
+import { envConfig } from 'app/core/services/env.service';
 import axios from 'axios';
+
+const GSHEET_API = envConfig.gsheet.apiUrl;
 
 function formatDateToCustomTimezoneString(date: Date, offsetHours: number): string {
   const adjusted = new Date(date.getTime() + offsetHours * 60 * 60 * 1000);
@@ -30,15 +33,16 @@ async function sendConversionToAPI(conversion: {
       2
     );
 
-    await axios.post('https://dag582.internxt.com/', {
+   await axios.post(`${GSHEET_API}/google-sheet`, {
       gclid: conversion.gclid,
       name: conversion.name,
       value: conversion.value,
       currency: conversion.currency || 'EUR',
       timestamp: formattedTimestamp,
     });
+
   } catch (error) {
-     //
+     console.error('❌ Error sending conversion:', error);
   }
 }
 
