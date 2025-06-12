@@ -13,6 +13,7 @@ import { State } from 'app/payment/store/types';
 import { LegacyRef, useEffect } from 'react';
 import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import localStorageService from 'app/core/services/local-storage.service';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -96,6 +97,7 @@ const CheckoutView = ({
       const expiryDate = new Date();
       expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
       document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
+      localStorageService.set('gclid', gclid);
     }
   }, []);
   return (
