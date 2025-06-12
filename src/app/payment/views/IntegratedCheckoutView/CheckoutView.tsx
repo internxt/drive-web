@@ -13,7 +13,7 @@ import { State } from 'app/payment/store/types';
 import { LegacyRef, useEffect } from 'react';
 import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
