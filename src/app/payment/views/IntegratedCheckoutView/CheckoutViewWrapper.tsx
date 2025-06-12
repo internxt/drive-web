@@ -9,7 +9,7 @@ import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
 import envService, { envConfig } from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
-import localStorageService from '../../../core/services/local-storage.service';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import RealtimeService from '../../../core/services/socket.service';
 import AppError, { AppView, IFormValues } from '../../../core/types';
@@ -114,6 +114,8 @@ const CheckoutViewWrapper = () => {
   const fullName = name + ' ' + lastName;
   const isUserAuthenticated = !!user;
   const thereIsAnyError = state.error?.coupon || state.error?.auth || state.error?.stripe;
+
+  const gclid = localStorage.getItem(STORAGE_KEYS.GCLID);
 
   const {
     onRemoveAppliedCouponCode,
@@ -439,7 +441,7 @@ const CheckoutViewWrapper = () => {
             seatsForBusinessSubscription,
           });
 
-        const gclid = localStorage.getItem('gclid');
+        
         // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API once the payment is done
         savePaymentDataInLocalStorage(
           subscriptionId,
