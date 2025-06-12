@@ -455,7 +455,7 @@ const CheckoutViewWrapper = () => {
           sendConversionToAPI({
             gclid,
             name: `Checkout - ${currentSelectedPlan?.price.type}`,
-            value: currentSelectedPlan?.price.amount ?? 0.01,
+            value: currentSelectedPlan?.price.decimalAmount ?? 0.01,
             currency: currentSelectedPlan?.price.currency,
             timestamp: new Date(),
           });
