@@ -45,7 +45,7 @@ export async function sendConversionToAPI(conversion: {
     );
 
     await axios.post(
-      `${GSHEET_API}/collect/sheet`,
+      `${GSHEET_API}/api/collect/sheet`,
       {
         gclid: conversion.gclid,
         name: conversion.name,
