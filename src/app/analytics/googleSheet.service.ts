@@ -1,4 +1,7 @@
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { envConfig } from 'app/core/services/env.service';
+import { CouponCodeData } from 'app/payment/types';
+import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import axios from 'axios';
 
 const GSHEET_API = envConfig.gsheet.apiUrl;
@@ -24,17 +27,25 @@ function formatDateToCustomTimezoneString(date: Date, offsetHours: number): stri
 export async function sendConversionToAPI(conversion: {
   gclid: string;
   name: string;
-  value: number;
+  value:  PriceWithTax | undefined;
   currency?: string;
   timestamp?: Date;
+  users: number,
+  couponCodeData: CouponCodeData | undefined,
 }) {
   try {
     const formattedTimestamp = formatDateToCustomTimezoneString(conversion.timestamp ?? new Date(), 2);
+    const amountToPay = getProductAmount(
+      conversion.value?.price.amount ?? 0,
+      conversion.users,
+      conversion.couponCodeData
+    );
+
 
     await axios.post(`${GSHEET_API}/google-sheet`, {
       gclid: conversion.gclid,
       name: conversion.name,
-      value: conversion.value,
+      value: amountToPay,
       currency: conversion.currency ?? 'EUR',
       timestamp: formattedTimestamp,
     });
