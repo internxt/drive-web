@@ -97,7 +97,7 @@ const CheckoutView = ({
       const expiryDate = new Date();
       expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
       document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
-       localStorageService.set('gclid', STORAGE_KEYS.GCLID);
+       localStorageService.set(STORAGE_KEYS.GCLID, gclid);
     }
   }, []);
   return (
