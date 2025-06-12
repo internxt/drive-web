@@ -137,10 +137,6 @@ export async function deleteFolder(folderData: DriveFolderData): Promise<void> {
   await trashClient.deleteFolder(folderData.id);
 }
 
-export function deleteBackupDeviceAsFolder(folderData: DriveFolderData) {
-  return newStorageService.deleteFolderByUuid(folderData.uuid);
-}
-
 interface GetDirectoryFoldersResponse {
   folders: DriveFolderData[];
   last: boolean;
