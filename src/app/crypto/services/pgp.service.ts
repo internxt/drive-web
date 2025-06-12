@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { Data, MaybeStream, WebStream } from 'openpgp';
+import { Data, MaybeStream, WebStream, PrivateKey } from 'openpgp';
 import kemBuilder from '@dashlane/pqc-kem-kyber512-browser';
 import { extendSecret } from './utils';
 
@@ -163,6 +163,27 @@ export const encryptMessageWithPublicKey = async ({
   return encryptedMessage;
 };
 
+// TODO: once all users start storing private key without Base64, remove decodedKey part
+export async function smartKeyDecode(key: string): Promise<PrivateKey> {
+  const openpgp = await getOpenpgp();
+
+  const tryReadKey = async (key) => {
+    try {
+      return await openpgp.readPrivateKey({ armoredKey: key });
+    } catch {
+      return null;
+    }
+  };
+  const originalKey = await tryReadKey(key);
+  if (originalKey) return originalKey;
+
+  const decoded = Buffer.from(key, 'base64').toString();
+  const decodedKey = await tryReadKey(decoded);
+  if (decodedKey) return decodedKey;
+
+  throw new Error('Invalid private key format');
+}
+
 export const decryptMessageWithPrivateKey = async ({
   encryptedMessage,
   privateKeyInBase64,
@@ -172,8 +193,7 @@ export const decryptMessageWithPrivateKey = async ({
 }): Promise<MaybeStream<Data> & WebStream<Uint8Array>> => {
   const openpgp = await getOpenpgp();
 
-  const privateKeyArmored = Buffer.from(privateKeyInBase64, 'base64').toString();
-  const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyArmored });
+  const privateKey = await smartKeyDecode(privateKeyInBase64);
 
   const message = await openpgp.readMessage({
     armoredMessage: encryptedMessage,
