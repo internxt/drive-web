@@ -455,9 +455,11 @@ const CheckoutViewWrapper = () => {
           sendConversionToAPI({
             gclid,
             name: `Checkout - ${currentSelectedPlan?.price.type}`,
-            value: currentSelectedPlan?.price.decimalAmount ?? 0.01,
+            value: currentSelectedPlan as PriceWithTax,
             currency: currentSelectedPlan?.price.currency,
             timestamp: new Date(),
+            users:seatsForBusinessSubscription,
+            couponCodeData:couponCodeData,
           });
         }
 
