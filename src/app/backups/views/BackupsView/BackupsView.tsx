@@ -11,7 +11,7 @@ import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWr
 import newStorageService from '../../../drive/services/new-storage.service';
 import { deleteFile } from '../../../drive/services/file.service';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
-import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
+import { DriveItemData } from '../../../drive/types';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import { useBackupListActions } from 'app/backups/hooks/useBackupListActions';
