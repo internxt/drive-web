@@ -36,7 +36,7 @@ export async function sendConversionToAPI(conversion: {
   try {
     const formattedTimestamp = formatDateToCustomTimezoneString(conversion.timestamp ?? new Date(), 2);
     const amountToPay = getProductAmount(
-      conversion.value?.price.decimalAmount??0,
+      conversion.value?.price.decimalAmount ?? 0,
       conversion.users,
       conversion.couponCodeData
     );
