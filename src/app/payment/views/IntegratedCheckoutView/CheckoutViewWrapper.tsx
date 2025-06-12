@@ -9,7 +9,7 @@ import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
 import envService, { envConfig } from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
-import localStorageService from '../../../core/services/local-storage.service';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import RealtimeService from '../../../core/services/socket.service';
 import AppError, { AppView, IFormValues } from '../../../core/types';
@@ -33,6 +33,7 @@ import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { userLocation } from 'app/utils/userLocation';
 import { UserLocation } from '@internxt/sdk';
 import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
+import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
 
 export const THEME_STYLES = {
   dark: {
@@ -113,6 +114,8 @@ const CheckoutViewWrapper = () => {
   const fullName = name + ' ' + lastName;
   const isUserAuthenticated = !!user;
   const thereIsAnyError = state.error?.coupon || state.error?.auth || state.error?.stripe;
+
+  const gclid = localStorage.getItem(STORAGE_KEYS.GCLID);
 
   const {
     onRemoveAppliedCouponCode,
@@ -438,6 +441,7 @@ const CheckoutViewWrapper = () => {
             seatsForBusinessSubscription,
           });
 
+        
         // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API once the payment is done
         savePaymentDataInLocalStorage(
           subscriptionId,
@@ -446,6 +450,18 @@ const CheckoutViewWrapper = () => {
           seatsForBusinessSubscription,
           couponCodeData,
         );
+
+        if (gclid) {
+          sendConversionToAPI({
+            gclid,
+            name: `Checkout - ${currentSelectedPlan?.price.type}`,
+            value: currentSelectedPlan as PriceWithTax,
+            currency: currentSelectedPlan?.price.currency,
+            timestamp: new Date(),
+            users:seatsForBusinessSubscription,
+            couponCodeData:couponCodeData,
+          });
+        }
 
         // !DO NOT REMOVE THIS
         // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
