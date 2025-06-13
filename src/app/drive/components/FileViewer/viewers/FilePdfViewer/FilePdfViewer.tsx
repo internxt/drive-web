@@ -57,7 +57,7 @@ const DEFAULT_ZOOM = 1;
 
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [fileUrl] = useState(URL.createObjectURL(props.blob));
+  const [fileUrl] = useState(URL.createObjectURL(new Blob([props.blob], { type: 'application/pdf' })));
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
@@ -92,7 +92,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   }, [currentPage, numPages]);
 
   return (
-    <div className="flex max-h-full w-full items-center justify-center pt-20">
+    <div className="flex max-h-full w-full items-center justify-center">
       <div>
         <div className="flex items-center justify-center">
           <Document file={fileUrl} loading="" onLoadSuccess={onDocumentLoadSuccess}>

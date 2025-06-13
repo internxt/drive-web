@@ -3,7 +3,6 @@ import { ActionReducerMapBuilder, AnyAction, ThunkDispatch, createAsyncThunk } f
 import { t } from 'i18next';
 import storageThunks from '.';
 import { RootState } from '../../..';
-import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
@@ -19,6 +18,7 @@ import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
 import { IRoot } from '../types';
 import { wait } from '../../../../utils/timeUtils';
+import newStorageService from '../../../../drive/services/new-storage.service';
 
 interface UploadFolderThunkPayload {
   root: IRoot;
@@ -63,8 +63,7 @@ const stopUploadTask = async (
   // Deletes the root folder
   if (rootFolderItem) {
     promises.push(dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
-    const storageClient = SdkFactory.getInstance().createStorageClient();
-    promises.push(storageClient.deleteFolder(rootFolderItem.id) as Promise<void>);
+    promises.push(newStorageService.deleteFolderByUuid(rootFolderItem.uuid));
   }
   await Promise.all(promises);
 };

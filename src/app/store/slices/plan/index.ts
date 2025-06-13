@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
+import { UsageResponseV2 } from '@internxt/sdk/dist/drive/storage/types';
 import { GetMemberUsageResponse } from '@internxt/sdk/dist/workspaces';
 import workspacesService from 'app/core/services/workspace.service';
 import limitService from 'app/drive/services/limit.service';
@@ -20,12 +20,12 @@ export interface PlanState {
   teamPlan: StoragePlan | null;
   planLimit: number;
   planUsage: number;
-  usageDetails: UsageResponse | null;
+  usageDetails: UsageResponseV2 | null;
   individualSubscription: UserSubscription | null;
   businessSubscription: UserSubscription | null;
   businessPlanLimit: number;
   businessPlanUsage: number;
-  businessPlanUsageDetails: UsageResponse | null;
+  businessPlanUsageDetails: UsageResponseV2 | null;
 }
 
 const initialState: PlanState = {
@@ -77,7 +77,7 @@ export const fetchLimitThunk = createAsyncThunk<number, void, { state: RootState
   },
 );
 
-export const fetchUsageThunk = createAsyncThunk<UsageResponse | null, void, { state: RootState }>(
+export const fetchUsageThunk = createAsyncThunk<UsageResponseV2 | null, void, { state: RootState }>(
   'plan/fetchUsage',
   async (payload: void, { getState }) => {
     const isAuthenticated = getState().user.isAuthenticated;
@@ -201,9 +201,10 @@ export const planSlice = createSlice({
         state.businessPlanLimit = spaceLimit;
         state.businessPlanUsage = driveUsage + backupsUsage;
         state.businessPlanUsageDetails = {
-          driveUsage,
-          backupsUsage,
-        } as unknown as UsageResponse;
+          drive: driveUsage,
+          backups: backupsUsage,
+          total: driveUsage + backupsUsage,
+        };
       })
       .addCase(fetchBusinessLimitUsageThunk.rejected, () => undefined);
   },

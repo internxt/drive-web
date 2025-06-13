@@ -4,12 +4,11 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../types';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
-import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import { backupsThunks } from 'app/store/slices/backups';
-import { SdkFactory } from '../../../core/factory/sdk';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Dialog } from '@internxt/ui';
+import backupsService from 'app/backups/services/backups.service';
 
 interface DeleteBackupDialogProps {
   backupsAsFoldersPath: DriveFolderData[];
@@ -35,7 +34,7 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
         if (currentDevice && 'mac' in currentDevice) dispatch(backupsThunks.deleteDeviceThunk(currentDevice));
         else {
           await dispatch(deleteItemsThunk([currentDevice as DriveItemData])).unwrap();
-          await deleteBackupDeviceAsFolder(currentDevice as DriveWebFolderData);
+          await backupsService.deleteBackupDeviceAsFolder((currentDevice as DriveWebFolderData).uuid);
           await dispatch(backupsThunks.fetchDevicesThunk());
         }
         onClose();
@@ -45,8 +44,7 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
       }
     } else {
       try {
-        const storageClient = SdkFactory.getInstance().createStorageClient();
-        await storageClient.deleteFolder(currentBackupsAsFoldersPath.id);
+        await backupsService.deleteBackupDeviceAsFolder(currentBackupsAsFoldersPath.uuid);
         await dispatch(backupsThunks.fetchDevicesThunk());
         onClose();
         props.goToFolder(previousBackupsAsFoldersPath.id);

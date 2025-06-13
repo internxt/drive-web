@@ -7,7 +7,6 @@ import { queue, QueueObject } from 'async';
 import { t } from 'i18next';
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-import { SdkFactory } from '../core/factory/sdk';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { planThunks } from '../store/slices/plan';
 import { uploadItemsParallelThunk } from '../store/slices/storage/storage.thunks/uploadItemsThunk';
@@ -18,6 +17,7 @@ import { getUniqueFolderName } from '../store/slices/storage/folderUtils/getUniq
 import { ConnectionLostError } from './requests';
 import { QueueUtilsService } from '../utils/queueUtils';
 import { wait } from '../utils/timeUtils';
+import newStorageService from '../drive/services/new-storage.service';
 
 interface UploadFolderPayload {
   root: IRoot;
@@ -300,8 +300,7 @@ export class UploadFoldersManager {
     const rootFolderItem = this.tasksInfo[taskId].rootFolderItem;
     if (rootFolderItem) {
       promises.push(this.dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
-      const storageClient = SdkFactory.getInstance().createStorageClient();
-      promises.push(storageClient.deleteFolder(rootFolderItem.id) as Promise<void>);
+      promises.push(newStorageService.deleteFolderByUuid(rootFolderItem.uuid));
     }
     await Promise.allSettled(promises);
   };

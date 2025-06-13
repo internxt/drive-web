@@ -84,6 +84,11 @@ export function getFolderContentByUuid({
   });
 }
 
+export function deleteFolderByUuid(folderId: string) {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  return storageClient.deleteFolderByUuid(folderId);
+}
+
 const newStorageService = {
   searchItemsByName,
   getFolderAncestors,
@@ -93,6 +98,7 @@ const newStorageService = {
   checkDuplicatedFiles,
   checkDuplicatedFolders,
   getFolderContentByUuid,
+  deleteFolderByUuid,
 };
 
 export default newStorageService;
