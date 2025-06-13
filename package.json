@@ -149,7 +149,6 @@
     "@types/wicg-file-system-access": "^2020.9.4",
     "@vitejs/plugin-react": "=4.5.2",
     "@vitest/coverage-istanbul": "^2.1.6",
-    "asmcrypto.js": "git+https://github.com/asmcrypto/asmcrypto.js.git",
     "autoprefixer": "^10.4.16",
     "buffer": "^6.0.3",
     "cross-env": "^7.0.3",
