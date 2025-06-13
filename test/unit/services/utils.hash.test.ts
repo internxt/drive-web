@@ -11,7 +11,6 @@ import {
 } from '../../../src/app/crypto/services/utils';
 
 import { describe, expect, it } from 'vitest';
-import { Sha256 } from 'asmcrypto.js';
 import CryptoJS from 'crypto-js';
 import { Buffer } from 'buffer';
 import crypto from 'crypto';
@@ -78,26 +77,6 @@ describe('Test getSha256Hasher', () => {
     const result = hasher.digest();
     const expectedResult = await getSha256(messageArray.join(''));
     expect(result).toBe(expectedResult);
-  });
-
-  it('getSha256 should return the same result as asmcrypto.js', async () => {
-    const messageArray = ['Test message 1', 'Test message 2', 'Test message 3', 'Test message 4'];
-    const hasher = await getSha256Hasher();
-    hasher.init();
-    for (const message of messageArray) {
-      hasher.update(Buffer.from(message));
-    }
-    const hashWasnResultStr = hasher.digest();
-    const hashWasnResult = new Uint8Array(Buffer.from(hashWasnResultStr, 'hex'));
-
-    const asmcryptoHasher = new Sha256();
-    for (const message of messageArray) {
-      asmcryptoHasher.process(Buffer.from(message));
-    }
-    asmcryptoHasher.finish();
-    const asmcryptoResult = asmcryptoHasher.result;
-
-    expect(hashWasnResult).toStrictEqual(asmcryptoResult);
   });
 });
 describe('Test getSha512 with NIST test vectors', () => {
