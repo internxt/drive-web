@@ -12,6 +12,7 @@ import {
 } from './crypto';
 import { Buffer } from 'buffer';
 import crypto from 'crypto';
+import { Sha256 } from 'asmcrypto.js';
 import { getSha256 } from '../crypto/services/utils';
 import { Aes256gcmEncrypter, sha512HmacBufferFromHex } from '@internxt/inxt-js/build/lib/utils/crypto';
 import { mnemonicToSeed } from 'bip39';
@@ -111,6 +112,52 @@ describe('Test crypto.ts functions', () => {
     expect(hash).toBe('422dab11a4f44c2ceab1f8ef39827109989607d6');
   });
 
+  it('getEncryptedFile should return the same result as before', async () => {
+    const encryptionKey = Buffer.from('d82fc82d9265a60aa0d7e703e11809ba60b45038aec705f77d5f84630043b118', 'hex');
+    const iv = Buffer.from('0b68dcbb255a4e654bbf361e73cf1b98', 'hex');
+    const file = createMockFile('file.txt', 13, 'text/plain');
+    const cipher = crypto.createCipheriv('aes-256-ctr', encryptionKey, iv);
+    const [encryptedFile, hash] = await getEncryptedFile(file, cipher);
+
+    async function oldGetEncryptedFile(
+      plainFile: { stream(): ReadableStream<Uint8Array> },
+      cipher: crypto.Cipher,
+    ): Promise<[Blob, string]> {
+      const readable = encryptReadable(plainFile.stream(), cipher).getReader();
+      const hasher = new Sha256();
+      const blobParts: Uint8Array[] = [];
+
+      let done = false;
+
+      while (!done) {
+        const status = await readable.read();
+
+        if (!status.done) {
+          hasher.process(status.value);
+          blobParts.push(status.value);
+        }
+
+        done = status.done;
+      }
+
+      hasher.finish();
+
+      return [
+        new Blob(blobParts, { type: 'application/octet-stream' }),
+        crypto
+          .createHash('ripemd160')
+          .update(Buffer.from(hasher.result as Uint8Array))
+          .digest('hex'),
+      ];
+    }
+
+    const oldFile = createMockFile('file.txt', 13, 'text/plain');
+    const oldCipher = crypto.createCipheriv('aes-256-ctr', encryptionKey, iv);
+    const [oldEncryptedFile, oldHash] = await oldGetEncryptedFile(oldFile, oldCipher);
+    expect(encryptedFile).toStrictEqual(oldEncryptedFile);
+    expect(hash).toBe(oldHash);
+  });
+
   function getReadableStream() {
     return new ReadableStream({
       async start(controller) {
@@ -133,6 +180,55 @@ describe('Test crypto.ts functions', () => {
     const hash = await processEveryFileBlobReturnHash(chunkedFileReadable, onEveryBlob);
     expect(hash).toBe('64cb6df86e542fde414f3e80624bb174151d9740');
     expect(receivedBlobs.length).toBe(3);
+  });
+
+  it('processEveryFileBlobReturnHash should generate the same hash as before', async () => {
+    const chunkedFileReadable = getReadableStream();
+
+    const receivedBlobs: unknown[] = [];
+    const onEveryBlob = async <T>(blob: T) => {
+      receivedBlobs.push(blob);
+    };
+    const hash = await processEveryFileBlobReturnHash(chunkedFileReadable, onEveryBlob);
+
+    async function oldProcessEveryFileBlobReturnHash(
+      chunkedFileReadable: ReadableStream<Uint8Array>,
+      onEveryBlob: (blob: Blob) => Promise<void>,
+    ): Promise<string> {
+      const reader = chunkedFileReadable.getReader();
+      const hasher = new Sha256();
+
+      let done = false;
+
+      while (!done) {
+        const status = await reader.read();
+        if (!status.done) {
+          const value = status.value;
+          hasher.process(value);
+          const blob = new Blob([value], { type: 'application/octet-stream' });
+          await onEveryBlob(blob);
+        }
+
+        done = status.done;
+      }
+
+      hasher.finish();
+
+      return crypto
+        .createHash('ripemd160')
+        .update(Buffer.from(hasher.result as Uint8Array))
+        .digest('hex');
+    }
+
+    const oldReceivedBlobs: unknown[] = [];
+    const oldOnEveryBlob = async <T>(blob: T) => {
+      oldReceivedBlobs.push(blob);
+    };
+    const oldChunkedFileReadable = getReadableStream();
+    const oldHash = await oldProcessEveryFileBlobReturnHash(oldChunkedFileReadable, oldOnEveryBlob);
+
+    expect(hash).toBe(oldHash);
+    expect(receivedBlobs).toStrictEqual(oldReceivedBlobs);
   });
 
   it('getSha256 should generate the same result as sha256 from crypto', async () => {
