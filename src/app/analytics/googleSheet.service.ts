@@ -2,6 +2,7 @@ import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { envConfig } from 'app/core/services/env.service';
 import { CouponCodeData } from 'app/payment/types';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
+import axios from 'axios';
 
 const GSHEET_API = envConfig.app.websiteUrl;
 
@@ -45,16 +46,16 @@ export async function sendConversionToAPI(conversion: {
       conversion.couponCodeData,
     );
 
-    return fetch(`${GSHEET_API}/api/collect/sheet`, {
+    return axios.post(`${GSHEET_API}/api/collect/sheet`, {
       method: 'POST',
-      body: JSON.stringify({
+      body: {
         gclid: conversion.gclid,
         name: conversion.name,
         value: amountToPay,
         currency: conversion.currency ?? 'EUR',
         timestamp: formattedTimestamp,
         captcha: token,
-      }),
+      },
     });
   } catch (error) {
     console.error('Error sending conversion:', error);
