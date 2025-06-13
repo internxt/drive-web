@@ -47,15 +47,12 @@ export async function sendConversionToAPI(conversion: {
     );
 
     return axios.post(`${GSHEET_API}/api/collect/sheet`, {
-      method: 'POST',
-      body: {
-        gclid: conversion.gclid,
-        name: conversion.name,
-        value: amountToPay,
-        currency: conversion.currency ?? 'EUR',
-        timestamp: formattedTimestamp,
-        captcha: token,
-      },
+      gclid: conversion.gclid,
+      name: conversion.name,
+      value: amountToPay,
+      currency: conversion.currency ?? 'EUR',
+      timestamp: formattedTimestamp,
+      captcha: token,
     });
   } catch (error) {
     console.error('Error sending conversion:', error);
