@@ -2,7 +2,6 @@ import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { envConfig } from 'app/core/services/env.service';
 import { CouponCodeData } from 'app/payment/types';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
-import axios from 'axios';
 
 const GSHEET_API = envConfig.app.websiteUrl;
 
@@ -34,7 +33,9 @@ export async function sendConversionToAPI(conversion: {
   couponCodeData: CouponCodeData | undefined;
 }) {
   try {
-    const token = await window.grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, {
+    await new Promise<void>((r) => window.grecaptcha.ready(r));
+
+    const token = await window.grecaptcha.execute(envConfig.services.recaptchaV3, {
       action: 'conversion',
     });
     const formattedTimestamp = formatDateToCustomTimezoneString(conversion.timestamp ?? new Date(), 2);
@@ -44,21 +45,19 @@ export async function sendConversionToAPI(conversion: {
       conversion.couponCodeData,
     );
 
-    await axios.post(
-      `${GSHEET_API}/api/collect/sheet`,
-      {
+    console.log('CAPTCHA TOKEN: ', token);
+
+    return fetch(`${GSHEET_API}/api/collect/sheet`, {
+      method: 'POST',
+      body: JSON.stringify({
         gclid: conversion.gclid,
         name: conversion.name,
         value: amountToPay,
         currency: conversion.currency ?? 'EUR',
         timestamp: formattedTimestamp,
-      },
-      {
-        headers: {
-          recaptcha: token,
-        },
-      },
-    );
+        captcha: token,
+      }),
+    });
   } catch (error) {
     console.error('Error sending conversion:', error);
   }
