@@ -462,8 +462,6 @@ const CheckoutViewWrapper = () => {
           couponCodeData,
         );
 
-        console.log('GCLID stored:', gclidStored);
-
         if (gclidStored) {
           await sendConversionToAPI({
             gclid: gclidStored,

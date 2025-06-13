@@ -45,8 +45,6 @@ export async function sendConversionToAPI(conversion: {
       conversion.couponCodeData,
     );
 
-    console.log('CAPTCHA TOKEN: ', token);
-
     return fetch(`${GSHEET_API}/api/collect/sheet`, {
       method: 'POST',
       body: JSON.stringify({
