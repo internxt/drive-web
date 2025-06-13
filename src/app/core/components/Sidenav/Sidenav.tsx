@@ -77,24 +77,22 @@ const LoadingSpinner = ({ text }: { text: string }) => (
 );
 
 const SideNavItems = ({ sideNavItems }: { sideNavItems: SideNavItemsProps[] }) => (
-  <>
-    {sideNavItems.map((item) => (
-      <>
-        {item.isVisible && (
-          <SidenavItem
-            label={item.label}
-            to={item.to}
-            Icon={item.icon}
-            iconDataCy={item.iconDataCy}
-            isActive={item.isActive}
-            notifications={item.notifications}
-            onClick={item.onClick}
-          />
-        )}
-      </>
-    ))}
-  </>
+  sideNavItems.map((item, index) => (
+    item.isVisible && (
+      <SidenavItem
+        key={index}
+        label={item.label}
+        to={item.to}
+        Icon={item.icon}
+        iconDataCy={item.iconDataCy}
+        isActive={item.isActive}
+        notifications={item.notifications}
+        onClick={item.onClick}
+      />
+    )
+  ))
 );
+
 const getItemNavigationPath = (path: string, workspaceUuid?: string) => {
   return workspaceUuid ? `${path}?workspaceid=${workspaceUuid}` : `${path}`;
 };
