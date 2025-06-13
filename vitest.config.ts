@@ -12,6 +12,12 @@ export default defineConfig({
   },
   test: {
     workspace: './vitest.workspace.ts',
+    retry: 1,
+    bail: 3,
+    sequence: {
+      concurrent: false,
+      shuffle: false,
+    },
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'lcov'],
