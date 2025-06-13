@@ -201,9 +201,10 @@ export const planSlice = createSlice({
         state.businessPlanLimit = spaceLimit;
         state.businessPlanUsage = driveUsage + backupsUsage;
         state.businessPlanUsageDetails = {
-          driveUsage,
-          backupsUsage,
-        } as unknown as UsageResponseV2;
+          drive: driveUsage,
+          backups: backupsUsage,
+          total: driveUsage + backupsUsage,
+        };
       })
       .addCase(fetchBusinessLimitUsageThunk.rejected, () => undefined);
   },
