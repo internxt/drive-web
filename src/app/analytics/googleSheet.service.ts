@@ -4,7 +4,7 @@ import { CouponCodeData } from 'app/payment/types';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import axios from 'axios';
 
-const GSHEET_API = envConfig.gsheet.apiUrl;
+const GSHEET_API = envConfig.app.websiteUrl;
 
 function formatDateToCustomTimezoneString(date: Date, offsetHours: number): string {
   const adjusted = new Date(date.getTime() + offsetHours * 60 * 60 * 1000);
@@ -27,27 +27,32 @@ function formatDateToCustomTimezoneString(date: Date, offsetHours: number): stri
 export async function sendConversionToAPI(conversion: {
   gclid: string;
   name: string;
-  value:  PriceWithTax | undefined;
+  value: PriceWithTax | undefined;
   currency?: string;
   timestamp?: Date;
-  users: number,
-  couponCodeData: CouponCodeData | undefined,
+  users: number;
+  couponCodeData: CouponCodeData | undefined;
 }) {
   try {
+    await new Promise<void>((r) => window.grecaptcha.ready(r));
+
+    const token = await window.grecaptcha.execute(envConfig.services.recaptchaV3, {
+      action: 'conversion',
+    });
     const formattedTimestamp = formatDateToCustomTimezoneString(conversion.timestamp ?? new Date(), 2);
     const amountToPay = getProductAmount(
       conversion.value?.price.decimalAmount ?? 0,
       conversion.users,
-      conversion.couponCodeData
+      conversion.couponCodeData,
     );
 
-
-    await axios.post(`${GSHEET_API}/google-sheet`, {
+    return axios.post(`${GSHEET_API}/api/collect/sheet`, {
       gclid: conversion.gclid,
       name: conversion.name,
       value: amountToPay,
       currency: conversion.currency ?? 'EUR',
       timestamp: formattedTimestamp,
+      captcha: token,
     });
   } catch (error) {
     console.error('Error sending conversion:', error);
