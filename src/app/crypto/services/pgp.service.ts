@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { Data, MaybeStream, WebStream } from 'openpgp';
+import { Data, MaybeStream, WebStream, PrivateKey, PublicKey, Message } from 'openpgp';
 import kemBuilder from '@dashlane/pqc-kem-kyber512-browser';
 import { extendSecret } from './utils';
 
@@ -8,6 +8,25 @@ const WORDS_HYBRID_MODE_IN_BASE64 = 'SHlicmlkTW9kZQ=='; // 'HybridMode' in BASE6
 export async function getOpenpgp(): Promise<typeof import('openpgp')> {
   return import('openpgp');
 }
+
+export function comparePrivateKeyCiphertextIDs(privateKey: PrivateKey, encryptedMessage: Message<string>): boolean {
+  const messageKeyID = encryptedMessage.getEncryptionKeyIDs()[0].toHex();
+  const privateKeyID = privateKey.getSubkeys()[0].getKeyID().toHex();
+  return messageKeyID === privateKeyID;
+}
+
+export function comparePublicKeyCiphertextIDs(publicKey: PublicKey, encryptedMessage: Message<string>): boolean {
+  const messageKeyID = encryptedMessage.getEncryptionKeyIDs()[0].toHex();
+  const publiKeyID = publicKey.getSubkeys()[0].getKeyID().toHex();
+  return messageKeyID === publiKeyID;
+}
+
+export function compareKeyPairIDs(privateKey: PrivateKey, publicKey: PublicKey): boolean {
+  const publiKeyID = publicKey.getSubkeys()[0].getKeyID().toHex();
+  const privateKeyID = privateKey.getSubkeys()[0].getKeyID().toHex();
+  return publiKeyID === privateKeyID;
+}
+
 export async function generateNewKeys(): Promise<{
   privateKeyArmored: string;
   publicKeyArmored: string;

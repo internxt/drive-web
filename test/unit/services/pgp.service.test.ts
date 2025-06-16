@@ -10,7 +10,14 @@ import {
   XORhex,
   hybridEncryptMessageWithPublicKey,
   hybridDecryptMessageWithPrivateKey,
+  comparePrivateKeyCiphertextIDs,
+  comparePublicKeyCiphertextIDs,
+  compareKeyPairIDs,
 } from '../../../src/app/crypto/services/pgp.service';
+
+export async function getOpenpgp(): Promise<typeof import('openpgp')> {
+  return import('openpgp');
+}
 
 describe('Encryption and Decryption', () => {
   it('should generate new keys', async () => {
@@ -231,5 +238,44 @@ describe('Encryption and Decryption', () => {
     expect(keys).toHaveProperty('publicKeyArmored');
     expect(encryptedMessage).not.toEqual(originalMessage);
     expect(decryptedMessage).toEqual(originalMessage);
+  });
+
+  it('keys and ciphertext from openPGP should have the same key ID', async () => {
+    const keys = await generateNewKeys();
+    const originalMessage = 'Test message!';
+
+    const encryptedMessage = await encryptMessageWithPublicKey({
+      message: originalMessage,
+      publicKeyInBase64: keys.publicKeyArmored,
+    });
+
+    const openpgp = await getOpenpgp();
+
+    const privateKey = await openpgp.readPrivateKey({ armoredKey: keys.privateKeyArmored });
+    const message = await openpgp.readMessage({
+      armoredMessage: encryptedMessage,
+    });
+    const privateKeyArmored = Buffer.from(keys.publicKeyArmored, 'base64').toString();
+    const publicKey = await openpgp.readKey({ armoredKey: privateKeyArmored });
+
+    expect(comparePrivateKeyCiphertextIDs(privateKey, message)).toBeTruthy();
+    expect(comparePublicKeyCiphertextIDs(publicKey, message)).toBeTruthy();
+    expect(compareKeyPairIDs(privateKey, publicKey)).toBeTruthy();
+  });
+
+  it('should decrypt a pre-defined message', async () => {
+    const privateKeyInBase64 =
+      'LS0tLS1CRUdJTiBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQoKeFZnRVoyTGRKQllKS3dZQkJBSGFSdzhCQVFkQUlSN1JIV1NzdDh5S2JRZkZSZFNJaDVSZ0lTZWVhTDE5ClpNcDdteWlzSUFVQUFQOTZ0bXQ4VUc3M2JvQ0hvYjJ1dkcySDVLTkNuZ0JmZy8renJTYUlrd0cySGhHNgp6UTg4YVc1NGRFQnBibmgwTG1OdmJUN0NqQVFRRmdvQVBnV0NaMkxkSkFRTENRY0lDWkFVZjJISUYwMG0KeWdNVkNBb0VGZ0FDQVFJWkFRS2JBd0llQVJZaEJDSUo4aXZPZm1zeTh1em5sUlIvWWNnWFRTYktBQUFoCnlnRUFrNjV3U2tCWEhFWm4rMXdIV1VhWFNra1U5WnNBZXJjTXFIZVZUVmZibDhBQS8zRGRxL1M3Nmljdgoxd3JqSVNwQVFCZE55a0JoSkszWEdha0ZvaHQzT2ZNT3gxMEVaMkxkSkJJS0t3WUJCQUdYVlFFRkFRRUgKUUFGR3VFek1ka2o1ZjNjUnlFMFhacXdCYU1XZU1pN2J4SEV3MjVkR1AwWUJBd0VJQndBQS8yZjZ5VFd6CnlOc05qbU9vVkJ6VEVid1lDUDZCM0xiWG9FbzhocHdqWkJrSUVHTENlQVFZRmdnQUtnV0NaMkxkSkFtUQpGSDloeUJkTkpzb0Ntd3dXSVFRaUNmSXJ6bjVyTXZMczU1VVVmMkhJRjAwbXlnQUFDb2tBL2pZS0dMZnAKa1NMakx1cmZFbDQ2VHhyNVlyTXRLV1VVSTdQYWN2WG10RDEyQVA5TFVPQlJRSWJmZXo5TWFBanp1dlNKCjBuTE9ZcExXQnZtaVFDWFcvU2x0QlE9PQo9V0orTwotLS0tLUVORCBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQo=';
+    const encryptedMessageInBase64 =
+      'LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tCgp3VjREYmRBbHRVRmNHaGtTQVFkQTNDQkMwYlBPTUR4ZkFHNFhlODVsc0UvWDZPODJMQ2xkL0d2NC9LL1AKWENndzFMdDUvVllKcDhNcUxlSWMyNnV1dkg5ajcxd0Z0NEdtc21meXFlYXNPcllNcS9pam90VjVsY0F3ClVORHhxeHAyMHNBTEFmdG5OSkMzeVpyMml6aHgwYzYwWWovVmtZMGJJTEd4MXlSbHU0Nzd2QStJb29CSAowVTBSSkVhSjRoUktWd0o3ZEVjUzNoVmZxN3NxM2xEVTVXc0JDdkJUR2pITWJENTRkamRxMFVVbzRhcDUKYmpIdklReGRHM2xlT1o5WjZLbys0NmIrbjBxSE94U0Jka1hHNWhzK0E0M09DNzhlakQzSGZ0MncwM29wCnhHUlgxRGYxZ1lzb2R2RE5NN0pwMWkyNUlhT29yT1BwMVByVm5lL1FCYXp3OUdqZjhWRXd3WnZycjlsdgo2T0lpbElKUmVNQ0R4V1BSeVprTnVuU2xJTENGUk9QRDlyc0lVR0VvazdFPQo9M2RrZQotLS0tLUVORCBQR1AgTUVTU0FHRS0tLS0tCg==';
+    const testMnemonic =
+      'december fame egg planet busy measure beef curtain ankle brisk romance snap rookie window soft verb lawsuit juice crane envelope stereo theory glass rural';
+
+    const decryptedMnemonic = await decryptMessageWithPrivateKey({
+      encryptedMessage: atob(encryptedMessageInBase64),
+      privateKeyInBase64,
+    });
+
+    expect(decryptedMnemonic).toEqual(testMnemonic);
   });
 });
