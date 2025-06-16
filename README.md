@@ -145,9 +145,6 @@ src/
 │   │   │   └── styles.css
 │   │   ├── styles.css    # General styles for Home
 │   │   └── Home.tsx      # Main component for the Home view
-│   └── NotFound/         # 404 or nonexistent route view
-│       ├── NotFound.tsx
-│       └── styles.css
 ├── hooks/                # Custom React hooks
 │   ├── useAuth.ts
 │   ├── useTheme.ts
