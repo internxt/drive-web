@@ -1,9 +1,11 @@
 import react from '@vitejs/plugin-react';
-import svgr from 'vite-plugin-svgr';
 import path from 'path';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { defineConfig } from 'vite';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
+import svgr from 'vite-plugin-svgr';
 import dotenv from 'dotenv';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -22,6 +24,33 @@ export default defineConfig({
       },
       protocolImports: true,
     }),
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'node_modules/@dashlane/pqc-kem-kyber512-browser/dist/pqc-kem-kyber512.wasm',
+          dest: ASSETS_DIR,
+        },
+      ],
+    }),
+    {
+      name: 'serve-wasm-on-dev',
+      apply: 'serve',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url?.endsWith('pqc-kem-kyber512.wasm')) {
+            const wasmPath = path.resolve(
+              __dirname,
+              'node_modules/@dashlane/pqc-kem-kyber512-browser/dist/pqc-kem-kyber512.wasm',
+            );
+            const wasm = fs.readFileSync(wasmPath);
+            res.setHeader('Content-Type', 'application/wasm');
+            res.end(wasm);
+            return;
+          }
+          next();
+        });
+      },
+    },
   ],
   envPrefix: ['REACT_APP_'],
   build: {
