@@ -4,9 +4,9 @@ import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-stora
 import paymentService from '../services/payment.service';
 import errorService from 'app/core/services/error.service';
 
-const COUPON='PLANET85';
-
 describe('isEnvironmentThemeAvailable', () => {
+  const COUPON = 'PLANET85';
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -21,12 +21,12 @@ describe('isEnvironmentThemeAvailable', () => {
   });
 
   it('returns true, calls onSuccess, and sets localStorage if the coupon is used', async () => {
-    const getSpy = vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     const setSpy = vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
     const couponSpy = vi.spyOn(paymentService, 'isCouponUsedByUser').mockResolvedValueOnce({ couponUsed: true });
 
     const onSuccess = vi.fn();
-    const result = await isEnvironmentThemeAvailable( onSuccess);
+    const result = await isEnvironmentThemeAvailable(onSuccess);
 
     expect(result).toBe(true);
     expect(onSuccess).toHaveBeenCalled();
@@ -35,7 +35,7 @@ describe('isEnvironmentThemeAvailable', () => {
   });
 
   it('returns false if the coupon is not used', async () => {
-    const getSpy = vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     const setSpy = vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
     const couponSpy = vi.spyOn(paymentService, 'isCouponUsedByUser').mockResolvedValue({ couponUsed: false });
 
@@ -47,7 +47,7 @@ describe('isEnvironmentThemeAvailable', () => {
   });
 
   it('returns false and reports error if paymentService throws', async () => {
-    const getSpy = vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     const couponSpy = vi.spyOn(paymentService, 'isCouponUsedByUser').mockRejectedValue(new Error('fail'));
     const errorSpy = vi.spyOn(errorService, 'reportError').mockImplementation(() => {});
 

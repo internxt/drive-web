@@ -10,66 +10,65 @@ import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { ComponentType } from 'react';
 
-vi.mock('i18next', () => ({
-  t: vi.fn((key, params) => `${key} ${params?.reason || ''}`),
-}));
-
-vi.mock('app/store/slices/storage/storage.thunks', () => ({
-  default: {
-    uploadItemsThunk: vi.fn(),
-    fetchPaginatedFolderContentThunk: vi.fn(),
-    deleteItemsThunk: vi.fn(),
-    uploadSharedItemsThunk: vi.fn(),
-  },
-  storageExtraReducers: vi.fn(),
-}));
-
-vi.mock('../fileUtils/prepareFilesToUpload', () => ({
-  prepareFilesToUpload: vi.fn(),
-}));
-
-vi.mock('app/notifications/services/notifications.service', () => ({
-  default: {
-    show: vi.fn(),
-  },
-  ToastType: {
-    Warning: 'warning',
-    Error: 'error',
-  },
-}));
-
-vi.mock('react-redux', () => ({
-  useSelector: vi.fn(),
-  useDispatch: vi.fn(() => vi.fn()),
-  connect: vi.fn(() => (Component: ComponentType<unknown>) => Component),
-}));
-
-vi.mock('../../../../network/UploadManager', () => ({
-  uploadFileWithManager: vi.fn(),
-}));
-
-vi.mock('app/store/slices/storage/folderUtils/createFolder', () => ({
-  createFolder: vi.fn(),
-}));
-
-vi.mock('../../workspaces/workspaces.selectors', () => ({
-  default: {
-    getSelectedWorkspace: vi.fn(),
-    getWorkspaceCredentials: vi.fn(),
-  },
-}));
-
-vi.mock('app/drive/services/download.service/downloadFolder', () => ({
-  default: {
-    fetchFileBlob: vi.fn(),
-    downloadFileFromBlob: vi.fn(),
-    downloadFile: vi.fn(),
-    downloadFolder: vi.fn(),
-    downloadBackup: vi.fn(),
-  },
-}));
-
 describe('uploadItemsThunk', () => {
+  vi.mock('i18next', () => ({
+    t: vi.fn((key, params) => `${key} ${params?.reason || ''}`),
+  }));
+
+  vi.mock('app/store/slices/storage/storage.thunks', () => ({
+    default: {
+      uploadItemsThunk: vi.fn(),
+      fetchPaginatedFolderContentThunk: vi.fn(),
+      deleteItemsThunk: vi.fn(),
+      uploadSharedItemsThunk: vi.fn(),
+    },
+    storageExtraReducers: vi.fn(),
+  }));
+
+  vi.mock('../fileUtils/prepareFilesToUpload', () => ({
+    prepareFilesToUpload: vi.fn(),
+  }));
+
+  vi.mock('app/notifications/services/notifications.service', () => ({
+    default: {
+      show: vi.fn(),
+    },
+    ToastType: {
+      Warning: 'warning',
+      Error: 'error',
+    },
+  }));
+
+  vi.mock('react-redux', () => ({
+    useSelector: vi.fn(),
+    useDispatch: vi.fn(() => vi.fn()),
+    connect: vi.fn(() => (Component: ComponentType<unknown>) => Component),
+  }));
+
+  vi.mock('../../../../network/UploadManager', () => ({
+    uploadFileWithManager: vi.fn(),
+  }));
+
+  vi.mock('app/store/slices/storage/folderUtils/createFolder', () => ({
+    createFolder: vi.fn(),
+  }));
+
+  vi.mock('../../workspaces/workspaces.selectors', () => ({
+    default: {
+      getSelectedWorkspace: vi.fn(),
+      getWorkspaceCredentials: vi.fn(),
+    },
+  }));
+
+  vi.mock('app/drive/services/download.service/downloadFolder', () => ({
+    default: {
+      fetchFileBlob: vi.fn(),
+      downloadFileFromBlob: vi.fn(),
+      downloadFile: vi.fn(),
+      downloadFolder: vi.fn(),
+      downloadBackup: vi.fn(),
+    },
+  }));
   const dispatch = vi.fn();
   const getState = () => {
     return { user: { user: { email: 'test@test.com' } } };
@@ -80,7 +79,6 @@ describe('uploadItemsThunk', () => {
     (useDispatch as Mock).mockReturnValue(dispatch);
 
     vi.clearAllMocks();
-    vi.restoreAllMocks();
   });
 
   afterEach(() => {
@@ -163,7 +161,6 @@ describe('uploadItemsThunkExtraReducers', () => {
     RetryManager.clearTasks();
 
     vi.clearAllMocks();
-    vi.restoreAllMocks();
   });
 
   it('should handle rejected case and call RetryManager and notificationsService', () => {

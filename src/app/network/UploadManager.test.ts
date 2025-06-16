@@ -10,42 +10,6 @@ import RetryManager from './RetryManager';
 import { ErrorMessages } from 'app/drive/services/downloadManager.service';
 import { TaskStatus } from 'app/tasks/types';
 
-vi.mock('app/store/slices/storage/storage.thunks', () => ({
-  default: {
-    uploadItemsThunk: vi.fn(),
-    fetchPaginatedFolderContentThunk: vi.fn(),
-    deleteItemsThunk: vi.fn(),
-    uploadSharedItemsThunk: vi.fn(),
-  },
-  storageExtraReducers: vi.fn(),
-}));
-
-vi.mock('../drive/services/file.service/uploadFile', () => ({
-  default: vi.fn(),
-}));
-
-vi.mock('app/repositories/DatabaseUploadRepository', () => {
-  const uploadState: Record<string, TaskStatus> = {};
-
-  return {
-    default: {
-      getInstance: vi.fn(() => ({
-        setUploadState: vi.fn(async (id: string, status: TaskStatus) => {
-          uploadState[id] = status;
-        }),
-        getUploadState: vi.fn(async (id: string) => uploadState[id]),
-        removeUploadState: vi.fn(async (id: string) => {
-          delete uploadState[id];
-        }),
-      })),
-    },
-  };
-});
-
-vi.mock('i18next', () => ({ t: (_) => 'Translation message' }));
-
-const openMaxSpaceOccupiedDialogMock = vi.fn();
-
 const mockFile1 = {
   id: 1,
   uuid: 'file-uuid1',
@@ -57,6 +21,7 @@ const mockFile1 = {
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 } as unknown as DriveFileData;
+
 const mockFile2 = {
   id: 2,
   uuid: 'file-uuid2',
@@ -71,6 +36,32 @@ const mockFile2 = {
 const taskId = 'task-id';
 
 describe('checkUploadFiles', () => {
+  vi.mock('../drive/services/file.service/uploadFile', () => ({
+    default: vi.fn(),
+  }));
+
+  vi.mock('app/repositories/DatabaseUploadRepository', () => {
+    const uploadState: Record<string, TaskStatus> = {};
+
+    return {
+      default: {
+        getInstance: vi.fn(() => ({
+          setUploadState: vi.fn(async (id: string, status: TaskStatus) => {
+            uploadState[id] = status;
+          }),
+          getUploadState: vi.fn(async (id: string) => uploadState[id]),
+          removeUploadState: vi.fn(async (id: string) => {
+            delete uploadState[id];
+          }),
+        })),
+      },
+    };
+  });
+
+  vi.mock('i18next', () => ({ t: (_) => 'Translation message' }));
+
+  const openMaxSpaceOccupiedDialogMock = vi.fn();
+
   beforeEach(() => {
     RetryManager.clearTasks();
     vi.clearAllMocks();
@@ -353,7 +344,7 @@ describe('checkUploadFiles', () => {
     (uploadFile as Mock).mockRejectedValueOnce(lostConnectionError);
 
     const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
-    vi.spyOn(errorService, 'reportError').mockReturnValue();
+    const errorServiceSpy = vi.spyOn(errorService, 'reportError');
 
     await expect(
       uploadFileWithManager(
@@ -385,7 +376,7 @@ describe('checkUploadFiles', () => {
       ),
     ).rejects.toThrow(lostConnectionError);
 
-    expect(errorService.reportError).toHaveBeenCalledWith(lostConnectionError, expect.any(Object));
+    expect(errorServiceSpy).toHaveBeenCalledWith(lostConnectionError, expect.any(Object));
     expect(updateTaskSpy).toHaveBeenCalledWith({
       taskId: 'taskId',
       merge: { status: TaskStatus.Error, subtitle: expect.any(String) },

@@ -5,17 +5,6 @@ import paymentService from '../services/payment.service';
 import errorService from '../../core/services/error.service';
 import { PlanState } from '../../store/slices/plan';
 
-vi.mock('../services/payment.service', () => ({
-  default: {
-    isCouponUsedByUser: vi.fn(),
-  },
-}));
-vi.mock('app/core/services/error.service', () => ({
-  default: {
-    reportError: vi.fn(),
-  },
-}));
-
 describe('checkManagementIdCode', () => {
   const mockPlan: PlanState = {
     isLoadingPlans: false,
@@ -44,24 +33,22 @@ describe('checkManagementIdCode', () => {
 
     const result = await isManagementIdThemeAvailable(mockPlan);
 
-    expect(result).toBe(true);
     expect(getFromLocalStorageSpy).toHaveBeenCalledWith(
       STORAGE_KEYS.THEMES.ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
     );
     expect(isCouponUsedByUserSpy).not.toHaveBeenCalled();
+    expect(result).toBe(true);
   });
 
   it('should check coupons if not enabled in localStorage', async () => {
     const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
-    const isCouponUsedByUserSpy = vi.spyOn(paymentService, 'isCouponUsedByUser');
-    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
-    vi.mocked(paymentService.isCouponUsedByUser)
+    const isCouponUsedByUserSpy = vi
+      .spyOn(paymentService, 'isCouponUsedByUser')
       .mockResolvedValueOnce({ couponUsed: false })
       .mockResolvedValueOnce({ couponUsed: true });
-
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     const result = await isManagementIdThemeAvailable(mockPlan);
 
-    expect(result).toBe(true);
     expect(isCouponUsedByUserSpy).toHaveBeenCalledTimes(2);
     expect(isCouponUsedByUserSpy).toHaveBeenCalledWith('IDENTITY82');
     expect(isCouponUsedByUserSpy).toHaveBeenCalledWith('IDENTITY82AFF');
@@ -69,24 +56,26 @@ describe('checkManagementIdCode', () => {
       STORAGE_KEYS.THEMES.ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
       'true',
     );
+    expect(result).toBe(true);
   });
 
   it('should return false if no coupons were used', async () => {
     const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
-    const isCouponUsedByUserSpy = vi.spyOn(paymentService, 'isCouponUsedByUser');
+    const isCouponUsedByUserSpy = vi
+      .spyOn(paymentService, 'isCouponUsedByUser')
+      .mockResolvedValue({ couponUsed: false });
     vi.spyOn(localStorageService, 'get').mockReturnValue(null);
-    vi.mocked(paymentService.isCouponUsedByUser).mockResolvedValue({ couponUsed: false });
 
     const result = await isManagementIdThemeAvailable(mockPlan);
 
-    expect(result).toBe(false);
     expect(isCouponUsedByUserSpy).toHaveBeenCalledTimes(2);
     expect(setToLocalStorageSpy).not.toHaveBeenCalled();
+    expect(result).toBe(false);
   });
 
   it('should call onSuccess callback when coupons are used', async () => {
     vi.spyOn(localStorageService, 'get').mockReturnValue(null);
-    vi.mocked(paymentService.isCouponUsedByUser)
+    vi.spyOn(paymentService, 'isCouponUsedByUser')
       .mockResolvedValueOnce({ couponUsed: false })
       .mockResolvedValueOnce({ couponUsed: true });
     const onSuccess = vi.fn();
@@ -97,13 +86,16 @@ describe('checkManagementIdCode', () => {
   });
 
   it('should handle errors and report them', async () => {
-    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    const getFromLocalStorageSpy = vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     const error = new Error('Test error');
-    vi.spyOn(paymentService, 'isCouponUsedByUser').mockRejectedValue(error);
+    const isCouponUsedByUserSpy = vi.spyOn(paymentService, 'isCouponUsedByUser').mockRejectedValue(error);
+    const errorServiceSpy = vi.spyOn(errorService, 'reportError');
 
     const result = await isManagementIdThemeAvailable(mockPlan);
 
+    expect(getFromLocalStorageSpy).toHaveBeenCalledTimes(1);
+    expect(isCouponUsedByUserSpy).toHaveBeenCalledTimes(2);
+    expect(errorServiceSpy).toHaveBeenCalledWith(error);
     expect(result).toBe(false);
-    expect(errorService.reportError).toHaveBeenCalledWith(error);
   });
 });

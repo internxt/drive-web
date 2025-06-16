@@ -1,74 +1,72 @@
-import errorService from 'app/core/services/error.service';
-import AppError from 'app/core/types';
-import { DriveFolderData } from 'app/drive/types';
-import { createFolder } from 'app/store/slices/storage/folderUtils/createFolder';
-import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/checkFolderDuplicated';
-import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUniqueFolderName';
-import tasksService from 'app/tasks/services/tasks.service';
+import errorService from '../core/services/error.service';
+import AppError from '../core/types';
+import { DriveFolderData } from '../drive/types';
+import { createFolder } from '../store/slices/storage/folderUtils/createFolder';
+import { checkFolderDuplicated } from '../store/slices/storage/folderUtils/checkFolderDuplicated';
+import { getUniqueFolderName } from '../store/slices/storage/folderUtils/getUniqueFolderName';
+import tasksService from '../tasks/services/tasks.service';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { TaskFolder, UploadFoldersManager, uploadFoldersWithManager } from './UploadFolderManager';
 
-vi.mock('app/store/slices/storage/storage.thunks', () => ({
-  default: {
-    initializeThunk: vi.fn(),
-    resetNamePathThunk: vi.fn(),
-    uploadItemsThunk: vi.fn(),
-    fetchPaginatedFolderContentThunk: vi.fn(),
-    deleteItemsThunk: vi.fn(),
-    goToFolderThunk: vi.fn(),
-    uploadFolderThunk: vi.fn(),
-    updateItemMetadataThunk: vi.fn(),
-    fetchRecentsThunk: vi.fn(),
-    createFolderThunk: vi.fn(),
-    moveItemsThunk: vi.fn(),
-    fetchDeletedThunk: vi.fn(),
-    renameItemsThunk: vi.fn(),
-    uploadSharedItemsThunk: vi.fn(),
-  },
-  storageExtraReducers: vi.fn(),
-}));
-
-vi.mock('app/store/slices/plan', () => ({
-  default: {
-    initializeThunk: vi.fn(),
-    fetchLimitThunk: vi.fn(),
-    fetchUsageThunk: vi.fn(),
-    fetchSubscriptionThunk: vi.fn(),
-    fetchBusinessLimitUsageThunk: vi.fn(),
-  },
-  planThunks: {
-    initializeThunk: vi.fn(),
-    fetchLimitThunk: vi.fn(),
-    fetchUsageThunk: vi.fn(),
-    fetchSubscriptionThunk: vi.fn(),
-    fetchBusinessLimitUsageThunk: vi.fn(),
-  },
-}));
-
-vi.mock('app/drive/services/download.service/downloadFolder', () => ({
-  default: {
-    fetchFileBlob: vi.fn(),
-    downloadFileFromBlob: vi.fn(),
-    downloadFile: vi.fn(),
-    downloadFolder: vi.fn(),
-    downloadBackup: vi.fn(),
-  },
-}));
-
-vi.mock('app/store/slices/storage/folderUtils/createFolder', () => ({
-  createFolder: vi.fn(),
-}));
-
-vi.mock('app/store/slices/storage/folderUtils/checkFolderDuplicated', () => ({
-  checkFolderDuplicated: vi.fn(),
-}));
-
-vi.mock('app/store/slices/storage/folderUtils/getUniqueFolderName', () => ({
-  getUniqueFolderName: vi.fn(),
-}));
-
 describe('checkUploadFolders', () => {
   const mockDispatch = vi.fn();
+
+  vi.mock('app/core/factory/sdk', () => ({
+    SdkFactory: {
+      getInstance: vi.fn().mockReturnValue({
+        createStorageClient: vi.fn(),
+      }),
+    },
+  }));
+
+  vi.mock('../store/slices/storage/storage.thunks', () => ({
+    default: {
+      initializeThunk: vi.fn(),
+      resetNamePathThunk: vi.fn(),
+      uploadItemsThunk: vi.fn(),
+      fetchPaginatedFolderContentThunk: vi.fn(),
+      deleteItemsThunk: vi.fn(),
+      goToFolderThunk: vi.fn(),
+      uploadFolderThunk: vi.fn(),
+      updateItemMetadataThunk: vi.fn(),
+      fetchRecentsThunk: vi.fn(),
+      createFolderThunk: vi.fn(),
+      moveItemsThunk: vi.fn(),
+      fetchDeletedThunk: vi.fn(),
+      renameItemsThunk: vi.fn(),
+      uploadSharedItemsThunk: vi.fn(),
+    },
+    storageExtraReducers: vi.fn(),
+  }));
+
+  vi.mock('../store/slices/plan', () => ({
+    default: {
+      initializeThunk: vi.fn(),
+      fetchLimitThunk: vi.fn(),
+      fetchUsageThunk: vi.fn(),
+      fetchSubscriptionThunk: vi.fn(),
+      fetchBusinessLimitUsageThunk: vi.fn(),
+    },
+    planThunks: {
+      initializeThunk: vi.fn(),
+      fetchLimitThunk: vi.fn(),
+      fetchUsageThunk: vi.fn(),
+      fetchSubscriptionThunk: vi.fn(),
+      fetchBusinessLimitUsageThunk: vi.fn(),
+    },
+  }));
+
+  vi.mock('../store/slices/storage/folderUtils/createFolder', () => ({
+    createFolder: vi.fn(),
+  }));
+
+  vi.mock('../store/slices/storage/folderUtils/checkFolderDuplicated', () => ({
+    checkFolderDuplicated: vi.fn(),
+  }));
+
+  vi.mock('../store/slices/storage/folderUtils/getUniqueFolderName', () => ({
+    getUniqueFolderName: vi.fn(),
+  }));
 
   beforeEach(() => {
     vi.clearAllMocks();

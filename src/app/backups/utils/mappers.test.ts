@@ -4,15 +4,15 @@ import { aes } from '@internxt/lib';
 import type { DriveFolderData } from '../../drive/types';
 import { envConfig } from 'app/core/services/env.service';
 
-vi.mock('@internxt/lib', () => ({
-  aes: {
-    decrypt: vi.fn(),
-  },
-}));
-
 describe('Mapping backup folder', () => {
   const mockedSecret2 = 'my-secret';
   const originalEnvCryptoSecret2 = envConfig.crypto.secret2;
+
+  vi.mock('@internxt/lib', () => ({
+    aes: {
+      decrypt: vi.fn(),
+    },
+  }));
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -20,7 +20,6 @@ describe('Mapping backup folder', () => {
   });
 
   afterAll(() => {
-    vi.restoreAllMocks();
     envConfig.crypto.secret2 = originalEnvCryptoSecret2;
   });
 
