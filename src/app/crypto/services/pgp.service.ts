@@ -1,7 +1,10 @@
 import { Buffer } from 'buffer';
 import { Data, MaybeStream, WebStream } from 'openpgp';
 import kemBuilder from '@dashlane/pqc-kem-kyber512-browser';
-import pqcKemKyberWasmUrl from '@dashlane/pqc-kem-kyber512-browser/dist/pqc-kem-kyber512.wasm?url';
+
+import pqcKemKyberWasm from '@dashlane/pqc-kem-kyber512-browser/dist/pqc-kem-kyber512.wasm?raw';
+const blob = new Blob([pqcKemKyberWasm], { type: 'application/wasm' });
+const pqcKemKyberWasmUrl = URL.createObjectURL(blob);
 
 import { extendSecret } from './utils';
 
