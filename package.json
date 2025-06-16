@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.461",
+  "version": "v1.0.462",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -44,7 +44,7 @@
     "jszip": "=3.2.2",
     "lint-staged": "^13.1.0",
     "lodash": "^4.17.21",
-    "openpgp": "^5.9.0",
+    "openpgp": "^5.11.3",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "prettysize": "^2.0.0",
