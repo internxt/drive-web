@@ -45,7 +45,7 @@ export async function sendConversionToAPI(conversion: {
       conversion.couponCodeData,
     );
 
-    return fetch(`${GSHEET_API}/api/collect/sheet`, {
+    const res = await fetch(`${GSHEET_API}/api/collect/sheet`, {
       method: 'POST',
       body: JSON.stringify({
         gclid: conversion.gclid,
@@ -56,6 +56,12 @@ export async function sendConversionToAPI(conversion: {
         captcha: token,
       }),
     });
+
+    const body = await res.json();
+
+    if (!res.ok) {
+      console.error('Error While Sending event:', body);
+    }
   } catch (error) {
     console.error('Error sending conversion:', error);
   }
