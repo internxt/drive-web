@@ -47,6 +47,7 @@
     "openpgp": "^5.11.3",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
+    "pdfjs-dist": "=4.8.69",
     "prettysize": "^2.0.0",
     "query-string": "^6.13.8",
     "react": "^18.2.0",
@@ -66,7 +67,7 @@
     "react-international-phone": "^4.3.0",
     "react-live-chat-loader": "^2.8.2",
     "react-loading-skeleton": "^2.2.0",
-    "react-pdf": "^7.7.3",
+    "react-pdf": "=9.2.1",
     "react-popper": "^2.3.0",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.3.4",
@@ -148,8 +149,8 @@
     "@types/wicg-file-system-access": "^2020.9.4",
     "@vitejs/plugin-react": "=4.5.1",
     "@vitest/coverage-istanbul": "^2.1.6",
-    "asmcrypto.js": "git+https://github.com/asmcrypto/asmcrypto.js.git",
     "autoprefixer": "^10.4.16",
+    "browserslist": "^4.25.0",
     "buffer": "^6.0.3",
     "cross-env": "^7.0.3",
     "crypto": "npm:crypto-browserify",
@@ -173,7 +174,7 @@
     "webpack-bundle-analyzer": "^4.9.1"
   },
   "engines": {
-    "node": ">=14.17.0 < 21"
+    "node": ">=14.17.0"
   },
   "lint-staged": {
     "*.{js,jsx,tsx,ts}": [

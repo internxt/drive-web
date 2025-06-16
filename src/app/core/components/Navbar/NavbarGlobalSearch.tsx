@@ -298,7 +298,7 @@ const Navbar = (props: NavbarProps) => {
               onMouseLeave={() => setPreventBlur(false)}
             >
               <div className="flex w-full shrink-0 items-center justify-between border-b border-gray-5 px-2.5 py-2.5 dark:border-gray-10">
-                <button type="button" className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2">
                   {filterItems.map((item) => (
                     <FilterItem
                       key={item.id}
@@ -309,7 +309,7 @@ const Navbar = (props: NavbarProps) => {
                       setFilters={setFilters}
                     />
                   ))}
-                </button>
+                </div>
 
                 <button
                   type="button"
