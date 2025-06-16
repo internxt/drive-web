@@ -45,8 +45,9 @@ import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
 import useVpnAuth from './hooks/useVpnAuth';
 
-import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?raw';
+const blob = new Blob([workerUrl], { type: 'application/javascript' });
+pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
 
 interface AppProps {
   isAuthenticated: boolean;
