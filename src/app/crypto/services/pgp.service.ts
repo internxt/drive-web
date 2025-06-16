@@ -1,6 +1,8 @@
 import { Buffer } from 'buffer';
 import { Data, MaybeStream, WebStream } from 'openpgp';
 import kemBuilder from '@dashlane/pqc-kem-kyber512-browser';
+import pqcKemKyberWasmUrl from '@dashlane/pqc-kem-kyber512-browser/dist/pqc-kem-kyber512.wasm?url';
+
 import { extendSecret } from './utils';
 
 const WORDS_HYBRID_MODE_IN_BASE64 = 'SHlicmlkTW9kZQ=='; // 'HybridMode' in BASE64 format
@@ -22,7 +24,7 @@ export async function generateNewKeys(): Promise<{
     curve: 'ed25519',
   });
 
-  const kem = await kemBuilder();
+  const kem = await kemBuilder(undefined, pqcKemKyberWasmUrl);
   const { publicKey: publicKyberKey, privateKey: privateKyberKey } = await kem.keypair();
 
   return {
@@ -70,7 +72,7 @@ export const hybridEncryptMessageWithPublicKey = async ({
   let result = '';
   let plaintext = message;
   if (publicKyberKeyBase64) {
-    const kem = await kemBuilder();
+    const kem = await kemBuilder(undefined, pqcKemKyberWasmUrl);;
 
     const publicKyberKey = Buffer.from(publicKyberKeyBase64, 'base64');
     const { ciphertext, sharedSecret: secret } = await kem.encapsulate(new Uint8Array(publicKyberKey));
@@ -118,7 +120,7 @@ export const hybridDecryptMessageWithPrivateKey = async ({
     if (!privateKyberKeyInBase64) {
       return Promise.reject(new Error('Attempted to decrypt hybrid ciphertex without Kyber key'));
     }
-    const kem = await kemBuilder();
+    const kem = await kemBuilder(undefined, pqcKemKyberWasmUrl);;
 
     const kyberCiphertextBase64 = ciphertexts[1];
     eccCiphertextStr = ciphertexts[2];

@@ -1,9 +1,8 @@
 import react from '@vitejs/plugin-react';
-import path from 'path';
-import { defineConfig } from 'vite';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
+import path from 'path';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import { defineConfig } from 'vite';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -22,14 +21,6 @@ export default defineConfig({
         global: true,
       },
       protocolImports: true,
-    }),
-    viteStaticCopy({
-      targets: [
-        {
-          src: 'node_modules/@dashlane/pqc-kem-kyber512-browser/dist/pqc-kem-kyber512.wasm',
-          dest: ASSETS_DIR,
-        },
-      ],
     }),
   ],
   envPrefix: ['REACT_APP_'],
