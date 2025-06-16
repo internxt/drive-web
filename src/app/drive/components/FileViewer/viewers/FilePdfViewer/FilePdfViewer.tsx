@@ -1,8 +1,12 @@
-import { Document, Page } from 'react-pdf';
+import { Document, Page, pdfjs } from 'react-pdf';
 import { useState, useEffect } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
 import { MagnifyingGlassMinus, MagnifyingGlassPlus } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+
+import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?raw';
+const blob = new Blob([workerUrl], { type: 'application/javascript' });
+pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
 
 interface PageWithObserverProps {
   pageNumber: number;
@@ -57,7 +61,7 @@ const DEFAULT_ZOOM = 1;
 
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [fileUrl] = useState(URL.createObjectURL(props.blob));
+  const [fileUrl] = useState(URL.createObjectURL(new Blob([props.blob], { type: 'application/pdf' })));
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
@@ -92,7 +96,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   }, [currentPage, numPages]);
 
   return (
-    <div className="flex max-h-full w-full items-center justify-center pt-20">
+    <div className="flex max-h-full w-full items-center justify-center">
       <div>
         <div className="flex items-center justify-center">
           <Document file={fileUrl} loading="" onLoadSuccess={onDocumentLoadSuccess}>
