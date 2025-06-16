@@ -45,7 +45,7 @@ export async function sendConversionToAPI(conversion: {
       conversion.couponCodeData,
     );
 
-    return await fetch(`${GSHEET_API}/api/collect/sheet`, {
+    return fetch(`${GSHEET_API}/api/collect/sheet`, {
       method: 'POST',
       body: JSON.stringify({
         gclid: conversion.gclid,

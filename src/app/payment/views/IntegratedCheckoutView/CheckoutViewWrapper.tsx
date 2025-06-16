@@ -463,7 +463,7 @@ const CheckoutViewWrapper = () => {
         );
 
         if (gclidStored) {
-          sendConversionToAPI({
+          await sendConversionToAPI({
             gclid: gclidStored,
             name: `Checkout - ${currentSelectedPlan?.price.type}`,
             value: currentSelectedPlan as PriceWithTax,
