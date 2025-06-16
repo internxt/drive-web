@@ -5,13 +5,11 @@ import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useStat
 import { useSelector } from 'react-redux';
 
 import { Loader } from '@internxt/ui';
-import { bytesToString } from 'app/drive/services/size.service';
-import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
-import envService from '../../../core/services/env.service';
+import envService, { envConfig } from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
-import localStorageService from '../../../core/services/local-storage.service';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import RealtimeService from '../../../core/services/socket.service';
 import AppError, { AppView, IFormValues } from '../../../core/types';
@@ -29,11 +27,13 @@ import { planThunks } from '../../../store/slices/plan';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
-import { AuthMethodTypes, CouponCodeData } from '../../types';
+import { AuthMethodTypes } from '../../types';
 import CheckoutView from './CheckoutView';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { userLocation } from 'app/utils/userLocation';
 import { UserLocation } from '@internxt/sdk';
+import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
+import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
 
 export const THEME_STYLES = {
   dark: {
@@ -84,7 +84,7 @@ export interface CheckoutViewManager {
 }
 
 const IS_PRODUCTION = envService.isProduction();
-const RETURN_URL_DOMAIN = IS_PRODUCTION ? process.env.REACT_APP_HOSTNAME : 'http://localhost:3000';
+const RETURN_URL_DOMAIN = IS_PRODUCTION ? envConfig.app.hostname : 'http://localhost:3000';
 const STATUS_CODE_ERROR = {
   USER_EXISTS: 409,
   COUPON_NOT_VALID: 422,
@@ -92,26 +92,6 @@ const STATUS_CODE_ERROR = {
   BAD_REQUEST: 400,
   INTERNAL_SERVER_ERROR: 500,
 };
-
-function savePaymentDataInLocalStorage(
-  subscriptionId: string | undefined,
-  paymentIntentId: string | undefined,
-  selectedPlan: PriceWithTax | undefined,
-  users: number,
-  couponCodeData: CouponCodeData | undefined,
-) {
-  if (subscriptionId) localStorageService.set('subscriptionId', subscriptionId);
-  if (paymentIntentId) localStorageService.set('paymentIntentId', paymentIntentId);
-  if (selectedPlan) {
-    const planName = bytesToString(selectedPlan.price.bytes) + selectedPlan.price.interval;
-    const amountToPay = getProductAmount(selectedPlan.taxes.decimalAmountWithTax, users, couponCodeData);
-
-    localStorageService.set('productName', planName);
-    localStorageService.set('amountPaid', amountToPay);
-    localStorageService.set('priceId', selectedPlan.price.id);
-    localStorageService.set('currency', selectedPlan.price.currency);
-  }
-}
 
 let stripeSdk: Stripe;
 
@@ -134,6 +114,8 @@ const CheckoutViewWrapper = () => {
   const fullName = name + ' ' + lastName;
   const isUserAuthenticated = !!user;
   const thereIsAnyError = state.error?.coupon || state.error?.auth || state.error?.stripe;
+
+  const gclid = localStorage.getItem(STORAGE_KEYS.GCLID);
 
   const {
     onRemoveAppliedCouponCode,
@@ -459,7 +441,8 @@ const CheckoutViewWrapper = () => {
             seatsForBusinessSubscription,
           });
 
-        // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API
+        
+        // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API once the payment is done
         savePaymentDataInLocalStorage(
           subscriptionId,
           paymentIntentId,
@@ -467,6 +450,18 @@ const CheckoutViewWrapper = () => {
           seatsForBusinessSubscription,
           couponCodeData,
         );
+
+        if (gclid) {
+          sendConversionToAPI({
+            gclid,
+            name: `Checkout - ${currentSelectedPlan?.price.type}`,
+            value: currentSelectedPlan as PriceWithTax,
+            currency: currentSelectedPlan?.price.currency,
+            timestamp: new Date(),
+            users:seatsForBusinessSubscription,
+            couponCodeData:couponCodeData,
+          });
+        }
 
         // !DO NOT REMOVE THIS
         // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and

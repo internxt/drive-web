@@ -10,9 +10,10 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
 import { State } from 'app/payment/store/types';
-import { LegacyRef } from 'react';
+import { LegacyRef, useEffect } from 'react';
 import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -41,6 +42,9 @@ interface CheckoutViewProps {
 const AUTH_METHOD_VALUES = {
   IS_SIGNED_IN: 'userIsSignedIn',
 };
+
+const GCLID_COOKIE_LIFESPAN_DAYS = 90;
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const CheckoutView = ({
   userInfo,
@@ -85,6 +89,17 @@ const CheckoutView = ({
     checkoutViewManager.onCheckoutButtonClicked(formData, event, stripeSDK, elements);
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const gclid = params.get('gclid');
+
+    if (gclid) {
+      const expiryDate = new Date();
+      expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
+      document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
+       localStorageService.set(STORAGE_KEYS.GCLID, gclid);
+    }
+  }, []);
   return (
     <form
       className="flex h-full overflow-y-scroll bg-gray-1 lg:w-screen xl:px-16"

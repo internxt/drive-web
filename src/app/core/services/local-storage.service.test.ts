@@ -4,7 +4,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Workspace } from '../types';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 
-const mockUserSettings: UserSettings = {
+export const mockUserSettings: UserSettings = {
   userId: 'user_123',
   uuid: 'uuid-1234-5678',
   email: 'test.user@example.com',

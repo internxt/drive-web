@@ -3,14 +3,13 @@ import { PlanState } from '../store/slices/plan';
 import { useSelector } from 'react-redux';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-
-import FeaturesBanner from './FeaturesBanner';
 import { BannerManager } from './BannerManager';
 import { useEffect, useMemo, useState } from 'react';
-import SubscriptionBanner from './SubscriptionBanner';
 import { userSelectors } from 'app/store/slices/user';
+import FeaturesBanner from './FeaturesBanner';
 
-const OFFER_END_DAY = new Date('2025-05-26');
+const OFFER_END_DAY = new Date('2025-06-27');
+const TIMEOUT = 8000;
 
 const BannerWrapper = (): JSX.Element => {
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
@@ -20,6 +19,12 @@ const BannerWrapper = (): JSX.Element => {
   const bannerManager = useMemo(() => new BannerManager(user, plan, OFFER_END_DAY), [user, plan, isNewAccount]);
 
   const [bannersToShow, setBannersToShow] = useState({ showFreeBanner: false, showSubscriptionBanner: false });
+  const [showDelayedBanner, setShowDelayedBanner] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setShowDelayedBanner(true), TIMEOUT);
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     const newBanners = bannerManager.getBannersToShow();
@@ -36,13 +41,8 @@ const BannerWrapper = (): JSX.Element => {
 
   return (
     <>
-      {bannersToShow.showFreeBanner && <FeaturesBanner showBanner onClose={() => onCloseBanner('showFreeBanner')} />}
-      {bannersToShow.showSubscriptionBanner && (
-        <SubscriptionBanner
-          showBanner
-          onClose={() => onCloseBanner('showSubscriptionBanner')}
-          isLifetimeUser={plan.individualSubscription?.type === 'lifetime'}
-        />
+      {bannersToShow.showFreeBanner && showDelayedBanner && (
+        <FeaturesBanner onClose={() => onCloseBanner('showFreeBanner')} showBanner />
       )}
     </>
   );

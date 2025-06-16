@@ -8,9 +8,11 @@ export const STORAGE_KEYS = {
   WORKSPACE_CREDENTIALS: 'workspace_credentials',
   FOLDER_ACCESS_TOKEN: 'folderAccessToken',
   FILE_ACCESS_TOKEN: 'fileAccessToken',
+  GCLID: 'gclid',
   THEMES: {
     MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'managementid_theme_enabled',
     ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'id_management_theme_enabled',
+    ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'environment_theme_enabled',
   },
 };
 
@@ -82,6 +84,7 @@ function clear(): void {
   localStorage.removeItem(STORAGE_KEYS.THEMES.ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
   localStorage.removeItem(STORAGE_KEYS.B2B_WORKSPACE);
   localStorage.removeItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS);
+  localStorage.removeItem(STORAGE_KEYS.GCLID);
 }
 
 const localStorageService = {

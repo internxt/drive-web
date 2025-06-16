@@ -15,13 +15,14 @@ import {
   GetPriceByIdPayload,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
+import { envConfig } from 'app/core/services/env.service';
 
-const PAYMENTS_API_URL = process.env.REACT_APP_PAYMENTS_API_URL;
+const PAYMENTS_API_URL = envConfig.api.payments;
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
 const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: string): Promise<CouponCodeData> => {
   const response = await fetch(
-    `${process.env.REACT_APP_PAYMENTS_API_URL}/promo-code-by-name?priceId=${priceId}&promotionCode=${promotionCodeName}`,
+    `${PAYMENTS_API_URL}/promo-code-by-name?priceId=${priceId}&promotionCode=${promotionCodeName}`,
   );
 
   if (response.status !== 200) {
@@ -118,9 +119,7 @@ export const createPaymentIntent = async ({
 };
 
 const fetchPrices = async (userType: UserType, currency: string): Promise<DisplayPrice[]> => {
-  const response = await fetch(
-    `${process.env.REACT_APP_PAYMENTS_API_URL}/prices?userType=${userType}&currency=${currency}`,
-  );
+  const response = await fetch(`${PAYMENTS_API_URL}/prices?userType=${userType}&currency=${currency}`);
 
   if (response.status !== 200) {
     const message = await response.text();

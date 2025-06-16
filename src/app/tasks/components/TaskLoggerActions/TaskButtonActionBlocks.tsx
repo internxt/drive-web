@@ -1,14 +1,14 @@
-import { ReactComponent as UploadIcon } from '../../../../assets/icons/tasklogger/upload-icon.svg';
-import { ReactComponent as DownloadIcon } from '../../../../assets/icons/tasklogger/download-icon.svg';
-import { ReactComponent as Cross } from '../../../../assets/icons/tasklogger/cross.svg';
-import { ReactComponent as Pause } from '../../../../assets/icons/tasklogger/pause.svg';
-import { ReactComponent as Play } from '../../../../assets/icons/tasklogger/play.svg';
-import { ReactComponent as Success } from '../../../../assets/icons/tasklogger/success-check.svg';
-import { ReactComponent as ErrorIcon } from '../../../../assets/icons/tasklogger/error.svg';
-import { ReactComponent as MagnifyingGlass } from '../../../../assets/icons/tasklogger/magnifying-glass.svg';
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/tasklogger/info.svg';
-import { ReactComponent as RestartIcon } from '../../../../assets/icons/tasklogger/circle-arrow.svg';
-import { ReactComponent as WarningIcon } from '../../../../assets/icons/tasklogger/warning.svg';
+import UploadIcon from '../../../../assets/icons/tasklogger/upload-icon.svg?react';
+import DownloadIcon from '../../../../assets/icons/tasklogger/download-icon.svg?react';
+import Cross from '../../../../assets/icons/tasklogger/cross.svg?react';
+import Pause from '../../../../assets/icons/tasklogger/pause.svg?react';
+import Play from '../../../../assets/icons/tasklogger/play.svg?react';
+import Success from '../../../../assets/icons/tasklogger/success-check.svg?react';
+import ErrorIcon from '../../../../assets/icons/tasklogger/error.svg?react';
+import MagnifyingGlass from '../../../../assets/icons/tasklogger/magnifying-glass.svg?react';
+import InfoIcon from '../../../../assets/icons/tasklogger/info.svg?react';
+import RestartIcon from '../../../../assets/icons/tasklogger/circle-arrow.svg?react';
+import WarningIcon from '../../../../assets/icons/tasklogger/warning.svg?react';
 import { TaskLoggerButton } from '../TaskLoggerButton/TaskLoggerButton';
 import { t } from 'i18next';
 
