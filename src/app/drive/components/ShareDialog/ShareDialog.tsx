@@ -246,11 +246,19 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
     const isItemNotSharedYet = !isAdvancedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length;
 
+    const sharingInfo = await shareService.getSharingInfo(itemId, itemType).catch((error) => {
+      if (error?.code === 'SHARING_NOT_FOUND') {
+        return null;
+      }
+      errorService.reportError(error);
+    });
+
+    sharingType = sharingInfo?.type ?? 'public';
+    isAlreadyPasswordProtected = sharingInfo?.publicSharing.isPasswordProtected ?? false;
+
     if (!isItemNotSharedYet) {
       try {
         const sharingData = await shareService.getSharingType(itemId, itemType);
-        sharingType = sharingData.type;
-        isAlreadyPasswordProtected = sharingData.encryptedPassword !== null;
         setSharingMeta(sharingData);
       } catch (error) {
         errorService.reportError(error);
