@@ -6,10 +6,9 @@ import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
 describe('formatDateToCustomTimezoneString', () => {
   test('should format date in UTC+1 with correct structure and offset', () => {
-    const inputDate = new Date('2025-06-17T12:00:00Z'); // UTC
+    const inputDate = new Date('2025-06-17T12:00:00Z');
     const formatted = formatDateToCustomTimezoneString(inputDate);
-
-    expect(formatted).toBe('06-17-2025 13:00:00+0100'); // +1h, ignore DST
+    expect(formatted).toBe('06-17-2025 13:00:00+0100');
   });
 });
 
@@ -63,9 +62,14 @@ describe('sendConversionToAPI', () => {
       couponCodeData: undefined,
     });
 
-    const fetchCall = (window.fetch as any).mock.calls[0];
-    const requestBody = JSON.parse(fetchCall[1].body);
+    const fetchMock = window.fetch as unknown as { mock: { calls: any[][] } };
+    expect(fetchMock.mock.calls.length).toBeGreaterThan(0);
 
+    const [url, options] = fetchMock.mock.calls[0];
+    const requestBody = JSON.parse(options.body);
+
+    expect(url).toContain('/api/collect/sheet');
+    expect(options.method).toBe('POST');
     expect(requestBody.timestamp).toBe('06-17-2025 13:00:00+0100');
     expect(requestBody.captcha).toBe('mock-token');
   });
