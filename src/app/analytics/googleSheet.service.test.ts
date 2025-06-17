@@ -1,39 +1,72 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
 import { sendConversionToAPI } from './googleSheet.service';
+import { formatDateToCustomTimezoneString } from './googleSheet.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
-describe('Google Sheets Conversion Logger', () => {
-  test('should send a test conversion to the sheet', async () => {
-      const mockValue: PriceWithTax = {
-      price: {
-        id: 'price_001',
-        currency: 'EUR',
-        amount: 9999,
-        bytes: 10737418240,
-        interval: 'year',
-        decimalAmount: 99.99,
-        type: 'personal' as UserType,
-        product: 'cloud-storage',
-      },
-      taxes: {
-        tax: 0,
-        decimalTax: 0,
-        amountWithTax: 9999,
-        decimalAmountWithTax: 99.99,
-      },
-    };
+describe('formatDateToCustomTimezoneString', () => {
+  test('should format date in UTC+1 with correct structure and offset', () => {
+    const inputDate = new Date('2025-06-17T12:00:00Z'); // UTC
+    const formatted = formatDateToCustomTimezoneString(inputDate);
 
-    const testConversion = {
-      gclid: 'EAIaIQobChMI9wD6TnqjAMVDCZDbz1kqSsgEAAQYAyAAEgIDAPD_BwE',
-      name: 'Compra test',
+    expect(formatted).toBe('06-17-2025 13:00:00+0100'); // +1h, ignore DST
+  });
+});
+
+describe('sendConversionToAPI', () => {
+  const mockValue: PriceWithTax = {
+    price: {
+      id: 'price_001',
+      currency: 'EUR',
+      amount: 9999,
+      bytes: 10737418240,
+      interval: 'year',
+      decimalAmount: 99.99,
+      type: 'personal' as UserType,
+      product: 'cloud-storage',
+    },
+    taxes: {
+      tax: 0,
+      decimalTax: 0,
+      amountWithTax: 9999,
+      decimalAmountWithTax: 99.99,
+    },
+  };
+
+  const mockRecaptcha = {
+    ready: (cb: () => void) => cb(),
+    execute: vi.fn().mockResolvedValue('mock-token'),
+  };
+
+  beforeEach(() => {
+    vi.stubGlobal('grecaptcha', mockRecaptcha as any);
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({}),
+    }));
+  });
+
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
+
+  test('should send timestamp in correct UTC+1 format', async () => {
+    const testDate = new Date('2025-06-17T12:00:00Z');
+
+    await sendConversionToAPI({
+      gclid: 'test-gclid',
+      name: 'Test Name',
       value: mockValue,
       currency: 'EUR',
-      timestamp: new Date(),
+      timestamp: testDate,
       users: 1,
       couponCodeData: undefined,
-    };
+    });
 
-    await expect(sendConversionToAPI(testConversion)).resolves.toBeUndefined();
+    const fetchCall = (window.fetch as any).mock.calls[0];
+    const requestBody = JSON.parse(fetchCall[1].body);
+
+    expect(requestBody.timestamp).toBe('06-17-2025 13:00:00+0100');
+    expect(requestBody.captcha).toBe('mock-token');
   });
 });
