@@ -4,7 +4,7 @@ import {
   StoragePlan,
   UserSubscription,
 } from '@internxt/sdk/dist/drive/payments/types/types';
-import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
+import { UsageResponseV2 } from '@internxt/sdk/dist/drive/storage/types';
 import { bytesToString } from 'app/drive/services/size.service';
 import { t } from 'i18next';
 import { FreeStoragePlan } from '../../../../../drive/types';
@@ -86,7 +86,7 @@ const getPlanName = (storagePlan: StoragePlan | null, limit?: number) => {
   if (limit) return bytesToString(limit, false);
   return FreeStoragePlan.simpleName;
 };
-const getCurrentUsage = (usage: UsageResponse | null) => {
+const getCurrentUsage = (usage: UsageResponseV2 | null) => {
   return usage?.total ?? -1;
 };
 
