@@ -7,7 +7,7 @@ import axios from 'axios';
 const GSHEET_API = envConfig.gsheet.apiUrl;
 const WINTER_TIME_OFFSET_HOURS = 1;
 
-function formatDateToCustomTimezoneString(date: Date): string {
+export function formatDateToCustomTimezoneString(date: Date): string {
   const offsetHours = WINTER_TIME_OFFSET_HOURS;                
   const adjusted = new Date(date.getTime() + offsetHours * 3_600_000);
 
