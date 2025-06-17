@@ -5,18 +5,20 @@ import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import axios from 'axios';
 
 const GSHEET_API = envConfig.gsheet.apiUrl;
+const WINTER_TIME_OFFSET_HOURS = 1;
 
-function formatDateToCustomTimezoneString(date: Date, offsetHours: number): string {
-  const adjusted = new Date(date.getTime() + offsetHours * 60 * 60 * 1000);
+function formatDateToCustomTimezoneString(date: Date): string {
+  const offsetHours = WINTER_TIME_OFFSET_HOURS;                
+  const adjusted = new Date(date.getTime() + offsetHours * 3_600_000);
 
-  const year = adjusted.getFullYear();
-  const month = String(adjusted.getMonth() + 1).padStart(2, '0');
-  const day = String(adjusted.getDate()).padStart(2, '0');
-  const hours = String(adjusted.getHours()).padStart(2, '0');
-  const minutes = String(adjusted.getMinutes()).padStart(2, '0');
-  const seconds = String(adjusted.getSeconds()).padStart(2, '0');
+  const year    = adjusted.getUTCFullYear();
+  const month   = String(adjusted.getUTCMonth() + 1).padStart(2, '0');
+  const day     = String(adjusted.getUTCDate()).padStart(2, '0');
+  const hours   = String(adjusted.getUTCHours()).padStart(2, '0');
+  const minutes = String(adjusted.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(adjusted.getUTCSeconds()).padStart(2, '0');
 
-  const offset = '+0100';
+  const offset = `+${String(offsetHours).padStart(2, '0')}00`;
 
   return `${month}-${day}-${year} ${hours}:${minutes}:${seconds}${offset}`;
 }
