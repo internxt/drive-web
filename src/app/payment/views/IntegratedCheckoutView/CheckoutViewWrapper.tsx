@@ -35,6 +35,9 @@ import { UserLocation } from '@internxt/sdk';
 import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
 import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
 
+const GCLID_COOKIE_LIFESPAN_DAYS = 90;
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+
 export const THEME_STYLES = {
   dark: {
     backgroundColor: 'rgb(17 17 17)',
@@ -115,7 +118,7 @@ const CheckoutViewWrapper = () => {
   const isUserAuthenticated = !!user;
   const thereIsAnyError = state.error?.coupon || state.error?.auth || state.error?.stripe;
 
-  const gclid = localStorage.getItem(STORAGE_KEYS.GCLID);
+  const gclidStored = localStorageService.get(STORAGE_KEYS.GCLID);
 
   const {
     onRemoveAppliedCouponCode,
@@ -171,13 +174,20 @@ const CheckoutViewWrapper = () => {
   };
 
   useEffect(() => {
-    const { planId, promotionCode, currency, paramMobileToken } = getCheckoutQueryParams();
+    const { planId, promotionCode, currency, paramMobileToken, gclid } = getCheckoutQueryParams();
     setMobileToken(paramMobileToken);
     const currencyValue = currency ?? 'eur';
 
     if (!planId) {
       redirectToFallbackPage();
       return;
+    }
+
+    if (gclid) {
+      const expiryDate = new Date();
+      expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
+      document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
+      localStorageService.set(STORAGE_KEYS.GCLID, gclid);
     }
 
     initializeStripe()
@@ -241,11 +251,13 @@ const CheckoutViewWrapper = () => {
 
   const getCheckoutQueryParams = () => {
     const params = new URLSearchParams(window.location.search);
+
     return {
       planId: params.get('planId'),
       promotionCode: params.get('couponCode'),
       currency: params.get('currency'),
       paramMobileToken: params.get('mobileToken'),
+      gclid: params.get('gclid') ?? '',
     };
   };
 
@@ -441,7 +453,6 @@ const CheckoutViewWrapper = () => {
             seatsForBusinessSubscription,
           });
 
-        
         // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API once the payment is done
         savePaymentDataInLocalStorage(
           subscriptionId,
@@ -451,15 +462,15 @@ const CheckoutViewWrapper = () => {
           couponCodeData,
         );
 
-        if (gclid) {
-          sendConversionToAPI({
-            gclid,
+        if (gclidStored) {
+          await sendConversionToAPI({
+            gclid: gclidStored,
             name: `Checkout - ${currentSelectedPlan?.price.type}`,
             value: currentSelectedPlan as PriceWithTax,
             currency: currentSelectedPlan?.price.currency,
             timestamp: new Date(),
-            users:seatsForBusinessSubscription,
-            couponCodeData:couponCodeData,
+            users: seatsForBusinessSubscription,
+            couponCodeData: couponCodeData,
           });
         }
 
