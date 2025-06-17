@@ -3,12 +3,10 @@ import { envConfig } from 'app/core/services/env.service';
 import { CouponCodeData } from 'app/payment/types';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
-const GSHEET_API = envConfig.gsheet.apiUrl;
-const WINTER_TIME_OFFSET_HOURS = 1;
-
-
+const GSHEET_API = envConfig.app.websiteUrl;
+const WINTER_OFFSET_HOUR = 1;
 export function formatDateToCustomTimezoneString(date: Date): string {
-  const offsetHours = WINTER_TIME_OFFSET_HOURS;                
+  const offsetHours = WINTER_OFFSET_HOUR;                
   const adjusted = new Date(date.getTime() + offsetHours * 3_600_000);
 
   const year    = adjusted.getUTCFullYear();
