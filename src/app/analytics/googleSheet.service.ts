@@ -66,9 +66,9 @@ export async function sendConversionToAPI({
     const body = await res.json();
 
     if (!res.ok) {
-      console.error('Error While Sending event:', body);
+      console.error('There was an error sending the event:', body);
     }
   } catch (error) {
-    console.error('Error sending conversion:', error);
+    console.error('Something went wrong while sending an event to sheet API: ', error);
   }
 }
