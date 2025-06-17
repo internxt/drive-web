@@ -1,9 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterAll } from 'vitest';
 import checkoutService from './checkout.service';
 import {
   CreatePaymentIntentPayload,
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
+  PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
 import paymentService from './payment.service';
 
@@ -50,11 +51,29 @@ vi.mock('../../core/factory/sdk', () => ({
   },
 }));
 
+vi.mock('../../payment/services/payment.service', () => ({
+  default: {
+    createSubscriptionWithTrial: vi.fn(),
+  },
+}));
+
 vi.mock('../../utils/userLocation', () => ({
   userLocation: vi.fn().mockResolvedValue({
     ip: '123.12.12.12',
     location: 'ES',
   }),
+}));
+
+vi.mock('app/core/services/local-storage.service', () => ({
+  default: {
+    get: vi.fn(),
+  },
+}));
+
+vi.mock('axios', () => ({
+  default: {
+    post: vi.fn(),
+  },
 }));
 
 describe('Checkout Service tests', () => {
@@ -314,7 +333,7 @@ describe('Checkout Service tests', () => {
         interval: 'lifetime',
       },
       taxes: { amountWithTax: 1000 },
-    } as any;
+    } as PriceWithTax;
 
     it('When plan is lifetime, then it gets payment intent secret', async () => {
       const result = await checkoutService.getClientSecret({
@@ -333,7 +352,7 @@ describe('Checkout Service tests', () => {
     });
 
     it('When plan is subscription, then it gets subscription intent secret', async () => {
-      const subPlan = { ...selectedPlan, price: { ...selectedPlan.price, interval: 'year' } };
+      const subPlan = { ...selectedPlan, price: { ...selectedPlan.price, interval: 'year' } } as PriceWithTax;
 
       const result = await checkoutService.getClientSecret({
         selectedPlan: subPlan,
@@ -370,7 +389,7 @@ describe('Checkout Service tests', () => {
         taxes: {
           amountWithTax: 1500,
         },
-      } as any;
+      } as PriceWithTax;
 
       const options = await checkoutService.loadStripeElements(theme, plan);
 
@@ -400,7 +419,7 @@ describe('Checkout Service tests', () => {
         taxes: {
           amountWithTax: 1500,
         },
-      } as any;
+      } as PriceWithTax;
 
       const options = await checkoutService.loadStripeElements(theme, plan);
 

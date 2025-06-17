@@ -1,10 +1,36 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+vi.mock('app/core/services/local-storage.service', () => ({
+  default: {
+    get: vi.fn(),
+    set: vi.fn(),
+  },
+  STORAGE_KEYS: {
+    THEMES: {
+      ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: vi.fn(),
+    },
+  },
+}));
+
+vi.mock('../services/payment.service', () => ({
+  default: {
+    isCouponUsedByUser: vi.fn(),
+  },
+}));
+
+vi.mock('app/core/services/error.service', () => ({
+  default: {
+    castError: vi.fn().mockReturnValue({ message: 'Default error message' }),
+    reportError: vi.fn(),
+  },
+}));
+
 import { isEnvironmentThemeAvailable } from './checkEnvironmentCode';
 import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 import paymentService from '../services/payment.service';
 import errorService from 'app/core/services/error.service';
 
-const COUPON='PLANET85';
+const COUPON = 'PLANET85';
 
 describe('isEnvironmentThemeAvailable', () => {
   beforeEach(() => {
@@ -21,12 +47,12 @@ describe('isEnvironmentThemeAvailable', () => {
   });
 
   it('returns true, calls onSuccess, and sets localStorage if the coupon is used', async () => {
-    const getSpy = vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     const setSpy = vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
     const couponSpy = vi.spyOn(paymentService, 'isCouponUsedByUser').mockResolvedValueOnce({ couponUsed: true });
 
     const onSuccess = vi.fn();
-    const result = await isEnvironmentThemeAvailable( onSuccess);
+    const result = await isEnvironmentThemeAvailable(onSuccess);
 
     expect(result).toBe(true);
     expect(onSuccess).toHaveBeenCalled();
@@ -35,7 +61,7 @@ describe('isEnvironmentThemeAvailable', () => {
   });
 
   it('returns false if the coupon is not used', async () => {
-    const getSpy = vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     const setSpy = vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
     const couponSpy = vi.spyOn(paymentService, 'isCouponUsedByUser').mockResolvedValue({ couponUsed: false });
 
@@ -47,7 +73,7 @@ describe('isEnvironmentThemeAvailable', () => {
   });
 
   it('returns false and reports error if paymentService throws', async () => {
-    const getSpy = vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
     const couponSpy = vi.spyOn(paymentService, 'isCouponUsedByUser').mockRejectedValue(new Error('fail'));
     const errorSpy = vi.spyOn(errorService, 'reportError').mockImplementation(() => {});
 

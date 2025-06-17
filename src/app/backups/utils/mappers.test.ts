@@ -20,7 +20,6 @@ describe('Mapping backup folder', () => {
   });
 
   afterAll(() => {
-    vi.restoreAllMocks();
     envConfig.crypto.secret2 = originalEnvCryptoSecret2;
   });
 

@@ -13,7 +13,7 @@ describe('Check that env variables are loaded correctly', () => {
       throw result.error;
     }
 
-    vi.resetModules();
+    vi.clearAllMocks();
   });
 
   it('When an env variable are requested, then their value is successfully returned', async () => {

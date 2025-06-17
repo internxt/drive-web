@@ -1,135 +1,138 @@
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { isStarWarsThemeAvailable, STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY } from './checkStarWarsCode';
 import localStorageService from 'app/core/services/local-storage.service';
 import paymentService from '../services/payment.service';
 import errorService from 'app/core/services/error.service';
+import { PlanState } from 'app/store/slices/plan';
 
-vi.mock('app/core/services/local-storage.service', async () => {
-  const actual = await vi.importActual<typeof import('app/core/services/local-storage.service')>(
-    'app/core/services/local-storage.service',
-  );
-
-  return {
-    ...actual,
-    default: {
-      ...actual.default,
-      get: vi.fn(),
-      set: vi.fn(),
-    },
-  };
-});
-vi.mock('../services/payment.service');
-vi.mock('app/core/services/error.service');
+vi.mock('../services/payment.service', () => ({
+  default: {
+    isCouponUsedByUser: vi.fn(),
+  },
+}));
+vi.mock('app/core/services/error.service', () => ({
+  default: {
+    reportError: vi.fn(),
+  },
+}));
+vi.mock('app/core/services/local-storage.service', () => ({
+  default: {
+    get: vi.fn(),
+    set: vi.fn(),
+  },
+}));
 
 describe('isStarWarsThemeAvailable', () => {
-  const planBase = {
-    individualSubscription: null,
-    businessSubscription: null,
-  };
-
   beforeEach(() => {
-    vi.resetAllMocks();
-
-    (localStorageService.get as Mock).mockReset();
-    (localStorageService.set as Mock).mockReset();
+    vi.clearAllMocks();
   });
 
   it('returns true if localStorage has the key set to "true"', async () => {
-    (localStorageService.get as Mock).mockReturnValue('true');
-    const result = await isStarWarsThemeAvailable(planBase as any);
+    const planBase = {
+      individualSubscription: null,
+      businessSubscription: null,
+    } as PlanState;
+
+    vi.spyOn(localStorageService, 'get').mockReturnValue('true');
+    const result = await isStarWarsThemeAvailable(planBase);
     expect(result).toBe(true);
   });
 
   it('returns true and sets localStorage if coupon is used for subscription', async () => {
-    (localStorageService.get as Mock).mockReturnValue(undefined);
-    (paymentService.isCouponUsedByUser as any).mockResolvedValue({ couponUsed: true });
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    const localStorageSetSpy = vi.spyOn(localStorageService, 'set');
+    vi.spyOn(paymentService, 'isCouponUsedByUser').mockResolvedValue({ couponUsed: true });
 
     const plan = {
       individualSubscription: { type: 'subscription' },
       businessSubscription: null,
-    };
+    } as PlanState;
 
-    const onSuccess = vi.fn().mockResolvedValue(() => Promise.resolve());
+    const onSuccess = vi.fn();
 
-    const result = await isStarWarsThemeAvailable(plan as any, onSuccess);
+    const result = await isStarWarsThemeAvailable(plan, onSuccess);
 
-    expect(result).toBe(true);
     expect(onSuccess).toHaveBeenCalled();
-    expect(localStorageService.set).toHaveBeenCalledWith(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY, 'true');
+    expect(localStorageSetSpy).toHaveBeenCalledWith(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY, 'true');
+    expect(result).toBe(true);
   });
 
   it('returns false if coupon is not used for subscription', async () => {
-    (localStorageService.get as Mock).mockReturnValue(undefined);
-    (paymentService.isCouponUsedByUser as any).mockResolvedValue({ couponUsed: false });
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    const localStorageSetSpy = vi.spyOn(localStorageService, 'set');
+    vi.spyOn(paymentService, 'isCouponUsedByUser').mockResolvedValue({ couponUsed: false });
 
     const plan = {
       individualSubscription: null,
       businessSubscription: { type: 'subscription' },
-    };
+    } as PlanState;
 
-    const result = await isStarWarsThemeAvailable(plan as any);
+    const result = await isStarWarsThemeAvailable(plan);
 
     expect(result).toBe(false);
-    expect(localStorageService.set).not.toHaveBeenCalled();
+    expect(localStorageSetSpy).not.toHaveBeenCalled();
   });
 
   it('returns true and sets localStorage if coupon is used for lifetime', async () => {
-    (localStorageService.get as Mock).mockReturnValue(undefined);
-    (paymentService.isCouponUsedByUser as any).mockResolvedValue({ couponUsed: true });
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    const localStorageSetSpy = vi.spyOn(localStorageService, 'set');
+    vi.spyOn(paymentService, 'isCouponUsedByUser').mockResolvedValue({ couponUsed: true });
 
     const plan = {
       individualSubscription: { type: 'lifetime' },
       businessSubscription: null,
-    };
+    } as PlanState;
 
-    const onSuccess = vi.fn().mockResolvedValue(() => Promise.resolve());
+    const onSuccess = vi.fn();
 
-    const result = await isStarWarsThemeAvailable(plan as any, onSuccess);
+    const result = await isStarWarsThemeAvailable(plan, onSuccess);
 
     expect(result).toBe(true);
     expect(onSuccess).toHaveBeenCalled();
-    expect(localStorageService.set).toHaveBeenCalledWith(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY, 'true');
+    expect(localStorageSetSpy).toHaveBeenCalledWith(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY, 'true');
   });
 
   it('returns false if coupon is not used for lifetime', async () => {
-    (localStorageService.get as Mock).mockReturnValue(undefined);
-    (paymentService.isCouponUsedByUser as any).mockResolvedValue({ couponUsed: false });
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    const localStorageSetSpy = vi.spyOn(localStorageService, 'set');
+    vi.spyOn(paymentService, 'isCouponUsedByUser').mockResolvedValue({ couponUsed: false });
 
     const plan = {
       individualSubscription: null,
       businessSubscription: { type: 'lifetime' },
-    };
+    } as PlanState;
 
-    const result = await isStarWarsThemeAvailable(plan as any);
+    const result = await isStarWarsThemeAvailable(plan);
 
+    expect(localStorageSetSpy).not.toHaveBeenCalled();
     expect(result).toBe(false);
-    expect(localStorageService.set).not.toHaveBeenCalled();
   });
 
   it('calls errorService.reportError and returns false on error', async () => {
-    (localStorageService.get as Mock).mockReturnValue(undefined);
-    (paymentService.isCouponUsedByUser as any).mockRejectedValue(new Error('fail'));
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    vi.spyOn(paymentService, 'isCouponUsedByUser').mockRejectedValue(new Error('fail'));
+    const errorServiceSpy = vi.spyOn(errorService, 'reportError');
 
     const plan = {
       individualSubscription: { type: 'subscription' },
       businessSubscription: null,
-    };
+    } as PlanState;
 
-    const result = await isStarWarsThemeAvailable(plan as any);
+    const result = await isStarWarsThemeAvailable(plan);
 
+    expect(errorServiceSpy).toHaveBeenCalled();
     expect(result).toBe(false);
-    expect(errorService.reportError).toHaveBeenCalled();
   });
 
   it('returns false if no subscription or lifetime', async () => {
-    (localStorageService.get as Mock).mockReturnValue(undefined);
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
 
     const plan = {
       individualSubscription: null,
       businessSubscription: null,
-    };
+    } as PlanState;
 
-    const result = await isStarWarsThemeAvailable(plan as any);
+    const result = await isStarWarsThemeAvailable(plan);
 
     expect(result).toBe(false);
   });

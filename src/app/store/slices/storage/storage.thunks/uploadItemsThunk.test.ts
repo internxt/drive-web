@@ -1,7 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach, Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { uploadItemsParallelThunk, uploadItemsThunk, uploadItemsThunkExtraReducers } from './uploadItemsThunk';
 import { RootState } from '../../..';
-import { useDispatch } from 'react-redux';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { uploadFileWithManager, UploadManagerFileParams } from '../../../../network/UploadManager';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -11,7 +10,10 @@ import { StorageState } from '../storage.model';
 import { ComponentType } from 'react';
 
 vi.mock('i18next', () => ({
-  t: vi.fn((key, params) => `${key} ${params?.reason || ''}`),
+  t: vi.fn((key, params) => {
+    const reason = params?.reason ?? '';
+    return `${key} ${String(reason)}`;
+  }),
 }));
 
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
@@ -77,13 +79,6 @@ describe('uploadItemsThunk', () => {
   const mockFile = new File(['content'], 'file.txt', { type: 'text/plain' });
 
   beforeEach(() => {
-    (useDispatch as Mock).mockReturnValue(dispatch);
-
-    vi.clearAllMocks();
-    vi.restoreAllMocks();
-  });
-
-  afterEach(() => {
     vi.clearAllMocks();
   });
 
@@ -163,7 +158,6 @@ describe('uploadItemsThunkExtraReducers', () => {
     RetryManager.clearTasks();
 
     vi.clearAllMocks();
-    vi.restoreAllMocks();
   });
 
   it('should handle rejected case and call RetryManager and notificationsService', () => {
@@ -187,7 +181,7 @@ describe('uploadItemsThunkExtraReducers', () => {
 
     RetryManager.addTask({
       type: 'upload',
-      taskId: sampleFile.taskId || 'task1',
+      taskId: sampleFile.taskId ?? 'task1',
       params: sampleFile,
     });
 

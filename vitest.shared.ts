@@ -4,6 +4,9 @@ import svgr from 'vite-plugin-svgr';
 
 export default {
   plugins: [react(), svgr()],
+  test: {
+    isolate: true,
+  },
   resolve: {
     alias: {
       app: path.resolve(__dirname, './src/app'),

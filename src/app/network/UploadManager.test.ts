@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, vi, afterAll } from 'vitest';
 import { uploadFileWithManager } from './UploadManager';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'app/core/services/error.service';
@@ -9,6 +9,16 @@ import { DriveFileData } from 'app/drive/types';
 import RetryManager from './RetryManager';
 import { ErrorMessages } from 'app/drive/services/downloadManager.service';
 import { TaskStatus } from 'app/tasks/types';
+
+vi.mock('app/tasks/services/tasks.service', () => ({
+  default: {
+    findTask: vi.fn(),
+    updateTask: vi.fn(),
+    create: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+  },
+}));
 
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
@@ -79,9 +89,6 @@ describe('checkUploadFiles', () => {
   it('should upload file using an async queue', async () => {
     const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
     vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
 
     await uploadFileWithManager(
@@ -119,7 +126,6 @@ describe('checkUploadFiles', () => {
     const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1).mockResolvedValueOnce(mockFile2);
 
     vi.spyOn(tasksService, 'create').mockReturnValue(taskId);
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
 
     await uploadFileWithManager(
@@ -207,9 +213,6 @@ describe('checkUploadFiles', () => {
     const RetrRemoveFileSpy = vi.spyOn(RetryManager, 'removeTask');
 
     vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
-    vi.spyOn(tasksService, 'updateTask').mockReturnValueOnce();
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
 
     await uploadFileWithManager(
@@ -254,9 +257,6 @@ describe('checkUploadFiles', () => {
     const RetryAddFilesSpy = vi.spyOn(RetryManager, 'addTasks');
 
     vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
 
     await uploadFileWithManager(
@@ -312,9 +312,6 @@ describe('checkUploadFiles', () => {
     const RetryChangeStatusSpy = vi.spyOn(RetryManager, 'changeStatus');
 
     vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
 
     await uploadFileWithManager(

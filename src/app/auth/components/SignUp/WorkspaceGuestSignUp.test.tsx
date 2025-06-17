@@ -85,7 +85,7 @@ describe('onSubmit', () => {
 
     vi.mock('app/core/services/error.service', () => ({
       default: {
-        castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
+        castError: vi.fn().mockReturnValue({ message: 'Default error message' }),
         reportError: vi.fn(),
       },
     }));
@@ -140,7 +140,7 @@ describe('onSubmit', () => {
         useEffect: vi.fn(),
         useState: vi.fn().mockImplementation((initial) => {
           callCount++;
-          const value = callCount === 1 ? true : false;
+          const value = callCount === 1;
           if (initial === false) initial = value;
           if (
             initial &&

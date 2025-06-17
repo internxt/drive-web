@@ -11,40 +11,68 @@ import { createFilesIterator, createFoldersIterator } from 'app/drive/services/f
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import { QueueUtilsService } from 'app/utils/queueUtils';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi, afterAll } from 'vitest';
 import { DownloadManager } from './DownloadManager';
 import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { ConnectionLostError } from './requests';
 import errorService from 'app/core/services/error.service';
 import { TaskData, TaskStatus } from 'app/tasks/types';
-import { FlatFolderZip } from 'app/core/services/zip.service';
 import retryManager, { RetryableTask } from './RetryManager';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 const MOCK_TRANSLATION_MESSAGE = 'Test translation message';
 
-vi.mock('src/app/network/NetworkFacade.ts', () => ({
-  NetworkFacade: vi.fn().mockImplementation(() => ({
-    downloadFile: vi.fn(),
-    downloadFolder: vi.fn(),
-    downloadItems: vi.fn(),
-    generateTasksForItem: vi.fn(),
-  })),
-}));
-
-vi.mock('i18next', () => ({ t: (_) => MOCK_TRANSLATION_MESSAGE }));
-
-vi.mock('app/notifications/services/notifications.service', () => ({
-  default: {
-    show: vi.fn(),
-  },
-  ToastType: {
-    Error: 'ERROR',
-  },
-}));
-
 describe('downloadManager', () => {
   beforeAll(() => {
+    vi.mock('./RetryManager', () => ({
+      default: {
+        removeTaskByIdAndParams: vi.fn(),
+        getTasksById: vi.fn().mockReturnValue([]),
+        addTasks: vi.fn(),
+      },
+      RetryableTask: vi.fn(),
+    }));
+
+    vi.mock('app/core/services/zip.service', () => ({
+      abort: vi.fn().mockImplementation(() => {}),
+    }));
+
+    vi.mock('app/tasks/services/tasks.service', () => ({
+      default: {
+        findTask: vi.fn(),
+        updateTask: vi.fn(),
+        create: vi.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+      },
+    }));
+
+    vi.mock('app/core/services/error.service', () => ({
+      default: {
+        castError: vi.fn().mockReturnValue({ message: 'Default error message' }),
+        reportError: vi.fn(),
+      },
+    }));
+
+    vi.mock('src/app/network/NetworkFacade.ts', () => ({
+      NetworkFacade: vi.fn().mockImplementation(() => ({
+        downloadFile: vi.fn(),
+        downloadFolder: vi.fn(),
+        downloadItems: vi.fn(),
+        generateTasksForItem: vi.fn(),
+      })),
+    }));
+
+    vi.mock('i18next', () => ({ t: (_) => MOCK_TRANSLATION_MESSAGE }));
+
+    vi.mock('app/notifications/services/notifications.service', () => ({
+      default: {
+        show: vi.fn(),
+      },
+      ToastType: {
+        Error: 'ERROR',
+      },
+    }));
     vi.mock('app/drive/services/database.service', () => ({
       canFileBeCached: vi.fn(),
       deleteDatabaseItems: vi.fn(),
@@ -112,7 +140,6 @@ describe('downloadManager', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
   });
 
   it('should generate task for a folder and download it using the queue', async () => {
@@ -164,9 +191,9 @@ describe('downloadManager', () => {
 
     vi.spyOn(DownloadManagerService.instance, 'generateTasksForItem').mockResolvedValue(mockTask);
     vi.spyOn(QueueUtilsService.instance, 'getConcurrencyUsingPerfomance').mockReturnValue(6);
-    vi.spyOn(tasksService, 'addListener').mockReturnValue();
-    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
-    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener');
+    vi.spyOn(tasksService, 'removeListener');
+    vi.spyOn(tasksService, 'updateTask');
     vi.spyOn(tasksService, 'findTask').mockReturnValue(undefined);
 
     const downloadFolderSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFolder').mockResolvedValue();
@@ -974,6 +1001,11 @@ describe('downloadManager', () => {
         options: { showErrors: true },
       } as DownloadTask;
 
+      vi.spyOn(errorService, 'castError').mockReturnValue({
+        message: ErrorMessages.ServerUnavailable,
+        status: 503,
+        name: 'ServerError',
+      });
       const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
       const retryTaskSpy = vi.spyOn(retryManager, 'getTasksById').mockReturnValueOnce([]);
 

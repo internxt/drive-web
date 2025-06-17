@@ -11,6 +11,7 @@ export default defineConfig({
     },
   },
   test: {
+    isolate: true,
     workspace: './vitest.workspace.ts',
     coverage: {
       provider: 'istanbul',
