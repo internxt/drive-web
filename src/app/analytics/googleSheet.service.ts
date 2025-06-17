@@ -10,10 +10,10 @@ export function formatDateToCustomTimezoneString(date: Date): string {
   const offsetHours = WINTER_OFFSET_HOUR;                
   const adjusted = new Date(date.getTime() + offsetHours * 3_600_000);
 
-  const year    = adjusted.getUTCFullYear();
-  const month   = String(adjusted.getUTCMonth() + 1).padStart(2, '0');
-  const day     = String(adjusted.getUTCDate()).padStart(2, '0');
-  const hours   = String(adjusted.getUTCHours()).padStart(2, '0');
+  const year = adjusted.getUTCFullYear();
+  const month = String(adjusted.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(adjusted.getUTCDate()).padStart(2, '0');
+  const hours = String(adjusted.getUTCHours() + 2).padStart(2, '0');
   const minutes = String(adjusted.getUTCMinutes()).padStart(2, '0');
   const seconds = String(adjusted.getUTCSeconds()).padStart(2, '0');
 
