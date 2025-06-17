@@ -13,7 +13,7 @@ export function formatDateToCustomTimezoneString(date: Date): string {
   const year = adjusted.getUTCFullYear();
   const month = String(adjusted.getUTCMonth() + 1).padStart(2, '0');
   const day = String(adjusted.getUTCDate()).padStart(2, '0');
-  const hours = String(adjusted.getUTCHours() + 2).padStart(2, '0');
+  const hours = String(adjusted.getUTCHours() + 1).padStart(2, '0');
   const minutes = String(adjusted.getUTCMinutes()).padStart(2, '0');
   const seconds = String(adjusted.getUTCSeconds()).padStart(2, '0');
 
