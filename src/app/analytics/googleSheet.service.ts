@@ -23,35 +23,41 @@ function formatDateToCustomTimezoneString(date: Date, offsetHours: number): stri
   return `${month}-${day}-${year} ${hours}:${minutes}:${seconds}${offset}`;
 }
 
-export async function sendConversionToAPI(conversion: {
+interface SendConversionToAPIPayload {
   gclid: string;
   name: string;
   value: PriceWithTax | undefined;
   currency?: string;
   timestamp?: Date;
   users: number;
-  couponCodeData: CouponCodeData | undefined;
-}) {
+  couponCodeData?: CouponCodeData;
+}
+
+export async function sendConversionToAPI({
+  gclid,
+  name,
+  value,
+  currency,
+  timestamp,
+  users,
+  couponCodeData,
+}: SendConversionToAPIPayload) {
   try {
     await new Promise<void>((r) => window.grecaptcha.ready(r));
 
     const token = await window.grecaptcha.execute(envConfig.services.recaptchaV3, {
       action: 'conversion',
     });
-    const formattedTimestamp = formatDateToCustomTimezoneString(conversion.timestamp ?? new Date(), 2);
-    const amountToPay = getProductAmount(
-      conversion.value?.price.decimalAmount ?? 0,
-      conversion.users,
-      conversion.couponCodeData,
-    );
+    const formattedTimestamp = formatDateToCustomTimezoneString(timestamp ?? new Date(), 2);
+    const amountToPay = getProductAmount(value?.price.decimalAmount ?? 0, users, couponCodeData);
 
     const res = await fetch(`${GSHEET_API}/api/collect/sheet`, {
       method: 'POST',
       body: JSON.stringify({
-        gclid: conversion.gclid,
-        name: conversion.name,
+        gclid: gclid,
+        name: name,
         value: amountToPay,
-        currency: conversion.currency ?? 'EUR',
+        currency: currency ?? 'EUR',
         timestamp: formattedTimestamp,
         captcha: token,
       }),
