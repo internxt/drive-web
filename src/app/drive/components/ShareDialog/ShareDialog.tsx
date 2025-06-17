@@ -293,11 +293,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     );
   };
 
-  const onDenyrequest = (email: string) => {
-    // TODO -> Deny user access request
-    removeRequest(email);
-  };
-
   const handleDenyRequest = (email: string) => {
     setAccessRequests((prevRequests) =>
       prevRequests.map((request) => {
