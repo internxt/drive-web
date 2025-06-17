@@ -32,17 +32,22 @@ describe('sendConversionToAPI', () => {
     },
   };
 
-  const mockRecaptcha = {
-    ready: (cb: () => void) => cb(),
-    execute: vi.fn().mockResolvedValue('mock-token'),
-  };
-
   beforeEach(() => {
-    vi.stubGlobal('grecaptcha', mockRecaptcha as any);
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({}),
-    }));
+    Object.defineProperty(window, 'grecaptcha', {
+      value: {
+        ready: (cb: () => void) => cb(),
+        execute: vi.fn().mockResolvedValue('mock-token'),
+      },
+      configurable: true,
+    });
+
+    Object.defineProperty(window, 'fetch', {
+      value: vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({}),
+      }),
+      configurable: true,
+    });
   });
 
   afterEach(() => {
