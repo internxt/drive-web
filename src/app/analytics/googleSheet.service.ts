@@ -5,6 +5,7 @@ import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
 const GSHEET_API = envConfig.app.websiteUrl;
 const WINTER_OFFSET_HOUR = 1;
+
 export function formatDateToCustomTimezoneString(date: Date): string {
   const offsetHours = WINTER_OFFSET_HOUR;                
   const adjusted = new Date(date.getTime() + offsetHours * 3_600_000);
@@ -46,7 +47,7 @@ export async function sendConversionToAPI({
     const token = await window.grecaptcha.execute(envConfig.services.recaptchaV3, {
       action: 'conversion',
     });
-    const formattedTimestamp = formatDateToCustomTimezoneString(timestamp ?? new Date(), 2);
+    const formattedTimestamp = formatDateToCustomTimezoneString(timestamp ?? new Date());
     const amountToPay = getProductAmount(value?.price.decimalAmount ?? 0, users, couponCodeData);
 
     const res = await fetch(`${GSHEET_API}/api/collect/sheet`, {
