@@ -15,7 +15,7 @@ const backupsService = {
   async getAllDevicesAsFolders(): Promise<DriveFolderData[]> {
     const backupsClient = SdkFactory.getNewApiInstance().createBackupsClient();
     const encryptedFolders = await backupsClient.getAllDevicesAsFolder();
-    return encryptedFolders.map(mapBackupFolder);
+    return encryptedFolders.filter((folder) => !folder.deleted).map(mapBackupFolder);
   },
 
   async getAllBackups(mac: string): Promise<DeviceBackup[]> {
@@ -40,6 +40,11 @@ const backupsService = {
   deleteDevice(device: Device): Promise<void> {
     const backupsClient = SdkFactory.getNewApiInstance().createBackupsClient();
     return backupsClient.deleteBackupDevice(device.id);
+  },
+
+  deleteBackupDeviceAsFolder(folderId: string) {
+    const backupsClient = SdkFactory.getNewApiInstance().createBackupsClient();
+    return backupsClient.deleteBackupDeviceAsFolder(folderId);
   },
 };
 

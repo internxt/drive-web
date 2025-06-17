@@ -1,13 +1,15 @@
 import react from '@vitejs/plugin-react';
-import svgr from 'vite-plugin-svgr';
 import path from 'path';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { defineConfig } from 'vite';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
+import svgr from 'vite-plugin-svgr';
 import dotenv from 'dotenv';
+import fs from 'fs';
 
 dotenv.config();
 
-const mediaExtensionsType = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'woff', 'woff2', 'ttf', 'otf', 'eot'];
+const ASSETS_DIR = 'static';
 
 export default defineConfig({
   base: process.env.PUBLIC_URL ?? '/',
@@ -22,28 +24,38 @@ export default defineConfig({
       },
       protocolImports: true,
     }),
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'node_modules/@dashlane/pqc-kem-kyber512-browser/dist/pqc-kem-kyber512.wasm',
+          dest: ASSETS_DIR,
+        },
+      ],
+    }),
+    {
+      name: 'serve-wasm-on-dev',
+      apply: 'serve',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url?.endsWith('pqc-kem-kyber512.wasm')) {
+            const wasmPath = path.resolve(
+              __dirname,
+              'node_modules/@dashlane/pqc-kem-kyber512-browser/dist/pqc-kem-kyber512.wasm',
+            );
+            const wasm = fs.readFileSync(wasmPath);
+            res.setHeader('Content-Type', 'application/wasm');
+            res.end(wasm);
+            return;
+          }
+          next();
+        });
+      },
+    },
   ],
   envPrefix: ['REACT_APP_'],
   build: {
     outDir: 'build',
-    assetsDir: 'static',
-    rollupOptions: {
-      output: {
-        entryFileNames: 'static/js/[name].js',
-        chunkFileNames: 'static/js/[name].js',
-        assetFileNames: (assetInfo) => {
-          const ext = assetInfo.name?.split('.').pop();
-
-          if (ext === 'css') {
-            return 'static/css/[name]-[hash][extname]';
-          } else if (ext && mediaExtensionsType.includes(ext)) {
-            return 'static/media/[name]-[hash][extname]';
-          }
-
-          return 'static/media/[name]-[hash][extname]';
-        },
-      },
-    },
+    assetsDir: ASSETS_DIR,
   },
   preview: {
     port: 3000,

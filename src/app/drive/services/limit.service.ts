@@ -3,8 +3,8 @@ import { SdkFactory } from '../../core/factory/sdk';
 import { HUNDRED_TB } from 'app/core/components/Sidenav/Sidenav';
 
 async function fetchLimit(): Promise<number> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  return storageClient.spaceLimit().then((response) => {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  return storageClient.spaceLimitV2().then((response) => {
     return response.maxSpaceBytes;
   });
 }
