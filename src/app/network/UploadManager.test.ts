@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
 import { TaskStatus } from 'app/tasks/types';
 
 vi.mock('../drive/services/file.service/uploadFile', () => ({
@@ -56,12 +56,13 @@ import { uploadFileWithManager } from './UploadManager';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'app/core/services/error.service';
 import AppError from 'app/core/types';
-import uploadFile from '../drive/services/file.service/uploadFile';
 import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
 import { DriveFileData } from 'app/drive/types';
 import RetryManager from './RetryManager';
 import { ErrorMessages } from 'app/drive/services/downloadManager.service';
+import uploadFile from '../drive/services/file.service/uploadFile';
 
+const uploadFileMock = uploadFile as Mock;
 const openMaxSpaceOccupiedDialogMock = vi.fn();
 
 const mockFile1 = {
@@ -91,13 +92,15 @@ const taskId = 'task-id';
 describe('checkUploadFiles', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
+    uploadFileMock.mockReset();
   });
 
   it('should upload file using an async queue', async () => {
-    const uploadFileSpy = (uploadFile as ReturnType<typeof vi.fn>).mockResolvedValueOnce(mockFile1);
+    uploadFileMock.mockResolvedValueOnce(mockFile1).mockResolvedValue({});
     vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
-
+    const openMaxSpaceOccupiedDialogMock = vi.fn();
     await uploadFileWithManager(
       [
         {
@@ -126,13 +129,11 @@ describe('checkUploadFiles', () => {
       },
     );
 
-    expect(uploadFileSpy).toHaveBeenCalledOnce();
+    expect(uploadFileMock).toHaveBeenCalledOnce();
   });
 
   it('should upload multiple files using an async queue', async () => {
-    const uploadFileSpy = (uploadFile as ReturnType<typeof vi.fn>)
-      .mockResolvedValueOnce(mockFile1)
-      .mockResolvedValueOnce(mockFile2);
+    uploadFileMock.mockResolvedValueOnce(mockFile1).mockResolvedValueOnce(mockFile2).mockResolvedValue({});
 
     vi.spyOn(tasksService, 'create').mockReturnValue(taskId);
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
@@ -177,7 +178,7 @@ describe('checkUploadFiles', () => {
       },
     );
 
-    expect(uploadFileSpy).toHaveBeenCalledTimes(2);
+    expect(uploadFileMock).toHaveBeenCalledTimes(2);
   });
 
   it('should abort the file upload if abortController is called', async () => {
@@ -216,7 +217,7 @@ describe('checkUploadFiles', () => {
   });
 
   it('should not add files to RetryManager if upload is successful and remove from RetryManager', async () => {
-    (uploadFile as ReturnType<typeof vi.fn>).mockResolvedValueOnce(mockFile1);
+    uploadFileMock.mockResolvedValueOnce(mockFile1);
     vi.spyOn(Promise, 'all').mockResolvedValueOnce([mockFile1]);
     const RetryAddFilesSpy = vi.spyOn(RetryManager, 'addTasks');
     const RetrRemoveFileSpy = vi.spyOn(RetryManager, 'removeTask');
@@ -258,7 +259,7 @@ describe('checkUploadFiles', () => {
 
   it('should add files to RetryManager if any upload fails', async () => {
     //needs to fail twice because MAX_UPLOAD_ATTEMPTS = 2
-    (uploadFile as ReturnType<typeof vi.fn>)
+    uploadFileMock
       .mockResolvedValueOnce(mockFile1)
       .mockRejectedValueOnce(new AppError('Retryable file'))
       .mockRejectedValueOnce(new AppError('Retryable file'));
@@ -314,7 +315,7 @@ describe('checkUploadFiles', () => {
 
   it('should change status to failed if cannot retry successfully', async () => {
     //needs to fail twice because MAX_UPLOAD_ATTEMPTS = 2
-    (uploadFile as ReturnType<typeof vi.fn>)
+    uploadFileMock
       .mockRejectedValueOnce(new AppError('Retryable file'))
       .mockRejectedValueOnce(new AppError('Retryable file'));
     vi.spyOn(Promise, 'all').mockResolvedValueOnce([undefined]);
@@ -356,7 +357,7 @@ describe('checkUploadFiles', () => {
 
   it('should handle lost connection error during upload', async () => {
     const lostConnectionError = new AppError(ErrorMessages.NetworkError);
-    (uploadFile as ReturnType<typeof vi.fn>).mockRejectedValueOnce(lostConnectionError);
+    uploadFileMock.mockRejectedValueOnce(lostConnectionError);
 
     const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
     vi.spyOn(errorService, 'reportError').mockReturnValue();

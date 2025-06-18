@@ -81,6 +81,7 @@ describe('uploadItemsThunk', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should upload files successfully', async () => {

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const expectedLimit = 50000;
 const spaceLimitV2Mock = vi.fn().mockResolvedValue({ maxSpaceBytes: expectedLimit });
@@ -15,6 +15,10 @@ vi.mock('../../core/factory/sdk', () => ({
 import limitService from './limit.service';
 
 describe('limitService', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
   it('should fetch the space limit from the storage client', async () => {
     const result = await limitService.fetchLimit();
 
