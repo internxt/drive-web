@@ -2,9 +2,8 @@ import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { envConfig } from 'app/core/services/env.service';
 import { CouponCodeData } from 'app/payment/types';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
-import axios from 'axios';
 
-const GSHEET_API = envConfig.gsheet.apiUrl;
+const GSHEET_API = envConfig.app.websiteUrl;
 
 function formatDateToCustomTimezoneString(date: Date, offsetHours: number): string {
   const adjusted = new Date(date.getTime() + offsetHours * 60 * 60 * 1000);
@@ -24,32 +23,52 @@ function formatDateToCustomTimezoneString(date: Date, offsetHours: number): stri
   return `${month}-${day}-${year} ${hours}:${minutes}:${seconds}${offset}`;
 }
 
-export async function sendConversionToAPI(conversion: {
+interface SendConversionToAPIPayload {
   gclid: string;
   name: string;
-  value:  PriceWithTax | undefined;
+  value: PriceWithTax | undefined;
   currency?: string;
   timestamp?: Date;
-  users: number,
-  couponCodeData: CouponCodeData | undefined,
-}) {
+  users: number;
+  couponCodeData?: CouponCodeData;
+}
+
+export async function sendConversionToAPI({
+  gclid,
+  name,
+  value,
+  currency,
+  timestamp,
+  users,
+  couponCodeData,
+}: SendConversionToAPIPayload) {
   try {
-    const formattedTimestamp = formatDateToCustomTimezoneString(conversion.timestamp ?? new Date(), 2);
-    const amountToPay = getProductAmount(
-      conversion.value?.price.decimalAmount ?? 0,
-      conversion.users,
-      conversion.couponCodeData
-    );
+    await new Promise<void>((r) => window.grecaptcha.ready(r));
 
-
-    await axios.post(`${GSHEET_API}/google-sheet`, {
-      gclid: conversion.gclid,
-      name: conversion.name,
-      value: amountToPay,
-      currency: conversion.currency ?? 'EUR',
-      timestamp: formattedTimestamp,
+    const token = await window.grecaptcha.execute(envConfig.services.recaptchaV3, {
+      action: 'conversion',
     });
+    const formattedTimestamp = formatDateToCustomTimezoneString(timestamp ?? new Date(), 2);
+    const amountToPay = getProductAmount(value?.price.decimalAmount ?? 0, users, couponCodeData);
+
+    const res = await fetch(`${GSHEET_API}/api/collect/sheet`, {
+      method: 'POST',
+      body: JSON.stringify({
+        gclid: gclid,
+        name: name,
+        value: amountToPay,
+        currency: currency ?? 'EUR',
+        timestamp: formattedTimestamp,
+        captcha: token,
+      }),
+    });
+
+    const body = await res.json();
+
+    if (!res.ok) {
+      console.error('There was an error sending the event:', body);
+    }
   } catch (error) {
-    console.error('Error sending conversion:', error);
+    console.error('Something went wrong while sending an event to sheet API: ', error);
   }
 }

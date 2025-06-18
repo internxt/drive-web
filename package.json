@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.464",
+  "version": "v1.0.468",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -9,7 +9,7 @@
     "@internxt/css-config": "^1.0.3",
     "@internxt/inxt-js": "=1.2.21",
     "@internxt/lib": "^1.2.0",
-    "@internxt/sdk": "=1.9.23",
+    "@internxt/sdk": "=1.9.28",
     "@internxt/ui": "^0.0.23",
     "@phosphor-icons/react": "^2.1.7",
     "@popperjs/core": "^2.11.6",
@@ -41,7 +41,6 @@
     "i18next-browser-languagedetector": "^7.2.0",
     "idb": "^6.1.5",
     "js-file-download": "^0.4.12",
-    "jszip": "=3.2.2",
     "lint-staged": "^13.1.0",
     "lodash": "^4.17.21",
     "openpgp": "^5.11.3",
@@ -135,7 +134,6 @@
     "@types/async": "^3.2.7",
     "@types/file-saver": "^2.0.3",
     "@types/filesystem": "^0.0.36",
-    "@types/jszip": "^3.4.1",
     "@types/lodash": "^4.14.172",
     "@types/node": "^22.9.0",
     "@types/openpgp": "^4.4.22",
@@ -169,6 +167,7 @@
     "typescript": "^4.4.2",
     "vite": "=6.3.5",
     "vite-plugin-node-polyfills": "=0.23.0",
+    "vite-plugin-static-copy": "^3.0.2",
     "vite-plugin-svgr": "^4.3.0",
     "vitest": "^2.1.9",
     "webpack-bundle-analyzer": "^4.9.1"
