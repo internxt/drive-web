@@ -12,6 +12,7 @@ export default defineConfig({
   },
   test: {
     isolate: true,
+    pool: 'forks',
     workspace: './vitest.workspace.ts',
     coverage: {
       provider: 'istanbul',

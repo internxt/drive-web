@@ -1,8 +1,4 @@
-import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
-import userService from './user.service';
-
-const testToken = 'testToken';
-const testEmail = 'test@initnxt.com';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const usersClientMock = {
   initialize: vi.fn(),
@@ -19,34 +15,37 @@ const usersClientMock = {
   verifyEmailChange: vi.fn(),
   checkChangeEmailExpiration: vi.fn(),
 };
+vi.mock('app/core/services/local-storage.service', () => ({
+  default: {
+    get: vi.fn(() => testToken),
+  },
+}));
+vi.mock('../../core/factory/sdk', () => ({
+  SdkFactory: {
+    getNewApiInstance: vi.fn(() => ({
+      createDesktopAuthClient: vi.fn(() => ({
+        login: vi.fn(),
+      })),
+      createNewUsersClient: vi.fn(() => usersClientMock),
+      createAuthClient: vi.fn(() => authClientMock),
+      createUsersClient: vi.fn(() => usersClientMock),
+    })),
+    getInstance: vi.fn(() => ({
+      createUsersClient: vi.fn(() => usersClientMock),
+    })),
+  },
+}));
+
+import userService from './user.service';
+
+const testToken = 'testToken';
+const testEmail = 'test@initnxt.com';
 
 const authClientMock = {
   sendUserDeactivationEmail: vi.fn(),
 };
 
 describe('userService', () => {
-  beforeAll(() => {
-    vi.mock('app/core/services/local-storage.service', () => ({
-      default: {
-        get: vi.fn(() => testToken),
-      },
-    }));
-    vi.mock('../../core/factory/sdk', () => ({
-      SdkFactory: {
-        getNewApiInstance: vi.fn(() => ({
-          createDesktopAuthClient: vi.fn(() => ({
-            login: vi.fn(),
-          })),
-          createNewUsersClient: vi.fn(() => usersClientMock),
-          createAuthClient: vi.fn(() => authClientMock),
-          createUsersClient: vi.fn(() => usersClientMock),
-        })),
-        getInstance: vi.fn(() => ({
-          createUsersClient: vi.fn(() => usersClientMock),
-        })),
-      },
-    }));
-  });
   beforeEach(() => {
     vi.clearAllMocks();
   });

@@ -1,13 +1,113 @@
-import * as authService from './auth.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import * as keysService from 'app/crypto/services/keys.service';
 import { vi, describe, it, beforeAll, beforeEach, expect } from 'vitest';
-import { Buffer } from 'buffer';
-import { encryptTextWithKey, encryptText } from 'app/crypto/services/utils';
-import { SdkFactory } from '../../core/factory/sdk';
-import localStorageService from 'app/core/services/local-storage.service';
-import { userActions } from 'app/store/slices/user';
-import * as pgpService from 'app/crypto/services/pgp.service';
+vi.mock('app/core/services/navigation.service', () => ({
+  default: {
+    isCurrentPath: vi.fn(),
+    push: vi.fn(),
+  },
+}));
+vi.mock('app/analytics/impact.service', () => ({
+  trackSignUp: vi.fn(),
+}));
+vi.mock('app/core/types', () => ({
+  default: {
+    AppError: vi.fn(),
+  },
+  AppView: vi.fn(),
+}));
+vi.mock('app/database/services/database.service', () => ({
+  default: {
+    clear: vi.fn(),
+  },
+}));
+vi.mock('../../core/factory/sdk', () => ({
+  SdkFactory: {
+    getNewApiInstance: vi.fn(() => ({
+      createAuthClient: vi.fn(() => ({
+        login: vi.fn(),
+      })),
+      createDesktopAuthClient: vi.fn(() => ({
+        login: vi.fn(),
+      })),
+    })),
+    getInstance: vi.fn(() => ({
+      createDesktopAuthClient: vi.fn(() => ({
+        login: vi.fn(),
+      })),
+    })),
+  },
+}));
+vi.mock('app/payment/types', () => ({
+  AuthMethodTypes: vi.fn(),
+}));
+vi.mock('app/store', () => ({
+  AppDispatch: vi.fn(),
+}));
+vi.mock('app/store/slices/plan', () => ({
+  planThunks: {
+    initializeThunk: vi.fn(),
+  },
+}));
+vi.mock('app/store/slices/products', () => ({
+  productsThunks: {
+    initializeThunk: vi.fn(),
+  },
+}));
+
+vi.mock('app/store/slices/referrals', () => ({
+  referralsThunks: {
+    initializeThunk: vi.fn(),
+  },
+}));
+
+vi.mock('app/store/slices/user', () => ({
+  initializeUserThunk: vi.fn(),
+  userActions: {
+    setUser: vi.fn(),
+  },
+  userThunks: {
+    initializeUserThunk: vi.fn(),
+  },
+}));
+
+vi.mock('app/store/slices/workspaces/workspacesStore', () => ({
+  workspaceThunks: vi.fn(),
+}));
+
+vi.mock('../../core/services/http.service', () => ({
+  default: {
+    getHeaders: vi.fn(),
+    convertHeadersToNativeHeaders: vi.fn(),
+  },
+}));
+
+vi.mock('app/core/services/socket.service', () => ({
+  default: {
+    getInstance: vi.fn(),
+  },
+}));
+
+vi.mock('app/analytics/utils', () => ({
+  getCookie: vi.fn(),
+  setCookie: vi.fn(),
+}));
+
+vi.mock('app/core/services/local-storage.service', () => ({
+  default: {
+    get: vi.fn(),
+    clear: vi.fn(),
+    getUser: vi.fn(),
+    set: vi.fn(),
+  },
+}));
+vi.mock('app/core/services/error.service', () => ({
+  default: {
+    castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
+    reportError: vi.fn(),
+  },
+}));
+vi.mock('@sentry/react', () => ({
+  setUser: vi.fn(),
+}));
 
 vi.mock('app/core/services/env.service', () => ({
   default: {
@@ -26,119 +126,20 @@ vi.mock('app/core/services/env.service', () => ({
   },
 }));
 
+import * as authService from './auth.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import * as keysService from 'app/crypto/services/keys.service';
+import { Buffer } from 'buffer';
+import { encryptTextWithKey, encryptText } from 'app/crypto/services/utils';
+import { SdkFactory } from '../../core/factory/sdk';
+import localStorageService from 'app/core/services/local-storage.service';
+import { userActions } from 'app/store/slices/user';
+import * as pgpService from 'app/crypto/services/pgp.service';
+
 beforeAll(() => {
   globalThis.Buffer = Buffer;
 
   window.gtag = vi.fn();
-  vi.mock('app/core/services/navigation.service', () => ({
-    default: {
-      isCurrentPath: vi.fn(),
-      push: vi.fn(),
-    },
-  }));
-  vi.mock('app/analytics/impact.service', () => ({
-    trackSignUp: vi.fn(),
-  }));
-  vi.mock('app/core/types', () => ({
-    default: {
-      AppError: vi.fn(),
-    },
-    AppView: vi.fn(),
-  }));
-  vi.mock('app/database/services/database.service', () => ({
-    default: {
-      clear: vi.fn(),
-    },
-  }));
-  vi.mock('../../core/factory/sdk', () => ({
-    SdkFactory: {
-      getNewApiInstance: vi.fn(() => ({
-        createAuthClient: vi.fn(() => ({
-          login: vi.fn(),
-        })),
-        createDesktopAuthClient: vi.fn(() => ({
-          login: vi.fn(),
-        })),
-      })),
-      getInstance: vi.fn(() => ({
-        createDesktopAuthClient: vi.fn(() => ({
-          login: vi.fn(),
-        })),
-      })),
-    },
-  }));
-  vi.mock('app/payment/types', () => ({
-    AuthMethodTypes: vi.fn(),
-  }));
-  vi.mock('app/store', () => ({
-    AppDispatch: vi.fn(),
-  }));
-  vi.mock('app/store/slices/plan', () => ({
-    planThunks: {
-      initializeThunk: vi.fn(),
-    },
-  }));
-  vi.mock('app/store/slices/products', () => ({
-    productsThunks: {
-      initializeThunk: vi.fn(),
-    },
-  }));
-
-  vi.mock('app/store/slices/referrals', () => ({
-    referralsThunks: {
-      initializeThunk: vi.fn(),
-    },
-  }));
-
-  vi.mock('app/store/slices/user', () => ({
-    initializeUserThunk: vi.fn(),
-    userActions: {
-      setUser: vi.fn(),
-    },
-    userThunks: {
-      initializeUserThunk: vi.fn(),
-    },
-  }));
-
-  vi.mock('app/store/slices/workspaces/workspacesStore', () => ({
-    workspaceThunks: vi.fn(),
-  }));
-
-  vi.mock('../../core/services/http.service', () => ({
-    default: {
-      getHeaders: vi.fn(),
-      convertHeadersToNativeHeaders: vi.fn(),
-    },
-  }));
-
-  vi.mock('app/core/services/socket.service', () => ({
-    default: {
-      getInstance: vi.fn(),
-    },
-  }));
-
-  vi.mock('app/analytics/utils', () => ({
-    getCookie: vi.fn(),
-    setCookie: vi.fn(),
-  }));
-
-  vi.mock('app/core/services/local-storage.service', () => ({
-    default: {
-      get: vi.fn(),
-      clear: vi.fn(),
-      getUser: vi.fn(),
-      set: vi.fn(),
-    },
-  }));
-  vi.mock('app/core/services/error.service', () => ({
-    default: {
-      castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
-      reportError: vi.fn(),
-    },
-  }));
-  vi.mock('@sentry/react', () => ({
-    setUser: vi.fn(),
-  }));
 });
 
 beforeEach(() => {

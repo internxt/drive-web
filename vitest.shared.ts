@@ -6,6 +6,7 @@ export default {
   plugins: [react(), svgr()],
   test: {
     isolate: true,
+    pool: 'forks',
   },
   resolve: {
     alias: {

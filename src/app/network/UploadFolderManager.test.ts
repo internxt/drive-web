@@ -1,12 +1,4 @@
-import errorService from 'app/core/services/error.service';
-import AppError from 'app/core/types';
-import { DriveFolderData } from 'app/drive/types';
-import { createFolder } from 'app/store/slices/storage/folderUtils/createFolder';
-import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/checkFolderDuplicated';
-import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUniqueFolderName';
-import tasksService from 'app/tasks/services/tasks.service';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import { TaskFolder, UploadFoldersManager, uploadFoldersWithManager } from './UploadFolderManager';
 
 vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
@@ -66,6 +58,15 @@ vi.mock('app/store/slices/storage/folderUtils/checkFolderDuplicated', () => ({
 vi.mock('app/store/slices/storage/folderUtils/getUniqueFolderName', () => ({
   getUniqueFolderName: vi.fn(),
 }));
+
+import errorService from 'app/core/services/error.service';
+import AppError from 'app/core/types';
+import { DriveFolderData } from 'app/drive/types';
+import { createFolder } from 'app/store/slices/storage/folderUtils/createFolder';
+import { checkFolderDuplicated } from 'app/store/slices/storage/folderUtils/checkFolderDuplicated';
+import { getUniqueFolderName } from 'app/store/slices/storage/folderUtils/getUniqueFolderName';
+import tasksService from 'app/tasks/services/tasks.service';
+import { TaskFolder, UploadFoldersManager, uploadFoldersWithManager } from './UploadFolderManager';
 
 describe('checkUploadFolders', () => {
   const mockDispatch = vi.fn();

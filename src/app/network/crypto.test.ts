@@ -1,15 +1,5 @@
-/**
- * @jest-environment jdom
- */
-
 import { describe, expect, it, vi } from 'vitest';
-import {
-  encryptFilename,
-  generateHMAC,
-  getEncryptedFile,
-  processEveryFileBlobReturnHash,
-  encryptReadable,
-} from './crypto';
+import { encryptFilename, generateHMAC, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
 import { Buffer } from 'buffer';
 import crypto from 'crypto';
 import { getSha256 } from '../crypto/services/utils';

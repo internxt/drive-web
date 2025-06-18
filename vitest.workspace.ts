@@ -8,6 +8,7 @@ export default defineWorkspace([
   {
     test: {
       isolate: true,
+      pool: 'forks',
       name: 'browser',
       environment: 'jsdom',
       globals: true,

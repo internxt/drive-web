@@ -1,19 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { uploadFileWithManager } from './UploadManager';
-import tasksService from 'app/tasks/services/tasks.service';
-import errorService from 'app/core/services/error.service';
-import AppError from 'app/core/types';
+import { TaskStatus } from 'app/tasks/types';
 
 vi.mock('../drive/services/file.service/uploadFile', () => ({
   default: vi.fn(),
 }));
-
-import uploadFile from '../drive/services/file.service/uploadFile';
-import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
-import { DriveFileData } from 'app/drive/types';
-import RetryManager from './RetryManager';
-import { ErrorMessages } from 'app/drive/services/downloadManager.service';
-import { TaskStatus } from 'app/tasks/types';
 
 vi.mock('app/tasks/services/tasks.service', () => ({
   default: {
@@ -61,6 +51,16 @@ vi.mock('app/repositories/DatabaseUploadRepository', () => {
 });
 
 vi.mock('i18next', () => ({ t: () => 'Translation message' }));
+
+import { uploadFileWithManager } from './UploadManager';
+import tasksService from 'app/tasks/services/tasks.service';
+import errorService from 'app/core/services/error.service';
+import AppError from 'app/core/types';
+import uploadFile from '../drive/services/file.service/uploadFile';
+import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
+import { DriveFileData } from 'app/drive/types';
+import RetryManager from './RetryManager';
+import { ErrorMessages } from 'app/drive/services/downloadManager.service';
 
 const openMaxSpaceOccupiedDialogMock = vi.fn();
 

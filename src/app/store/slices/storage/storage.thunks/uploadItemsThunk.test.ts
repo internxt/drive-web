@@ -1,12 +1,4 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import { uploadItemsParallelThunk, uploadItemsThunk, uploadItemsThunkExtraReducers } from './uploadItemsThunk';
-import { RootState } from '../../..';
-import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
-import { uploadFileWithManager, UploadManagerFileParams } from '../../../../network/UploadManager';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import RetryManager from 'app/network/RetryManager';
-import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
-import { StorageState } from '../storage.model';
 import { ComponentType } from 'react';
 
 vi.mock('i18next', () => ({
@@ -70,6 +62,15 @@ vi.mock('app/drive/services/download.service/downloadFolder', () => ({
     downloadBackup: vi.fn(),
   },
 }));
+
+import { uploadItemsParallelThunk, uploadItemsThunk, uploadItemsThunkExtraReducers } from './uploadItemsThunk';
+import { RootState } from '../../..';
+import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
+import { uploadFileWithManager, UploadManagerFileParams } from '../../../../network/UploadManager';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import RetryManager from 'app/network/RetryManager';
+import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
+import { StorageState } from '../storage.model';
 
 describe('uploadItemsThunk', () => {
   const dispatch = vi.fn();

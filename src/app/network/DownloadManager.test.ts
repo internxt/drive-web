@@ -1,3 +1,117 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('./RetryManager', () => ({
+  default: {
+    removeTaskByIdAndParams: vi.fn(),
+    getTasksById: vi.fn().mockReturnValue([]),
+    addTasks: vi.fn(),
+  },
+  RetryableTask: vi.fn(),
+}));
+
+vi.mock('app/core/services/zip.service', () => ({
+  abort: vi.fn().mockImplementation(() => {}),
+}));
+
+vi.mock('app/tasks/services/tasks.service', () => ({
+  default: {
+    findTask: vi.fn(),
+    updateTask: vi.fn(),
+    create: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+  },
+}));
+
+vi.mock('app/core/services/error.service', () => ({
+  default: {
+    castError: vi.fn().mockReturnValue({ message: 'Default error message' }),
+    reportError: vi.fn(),
+  },
+}));
+
+vi.mock('src/app/network/NetworkFacade.ts', () => ({
+  NetworkFacade: vi.fn().mockImplementation(() => ({
+    downloadFile: vi.fn(),
+    downloadFolder: vi.fn(),
+    downloadItems: vi.fn(),
+    generateTasksForItem: vi.fn(),
+  })),
+}));
+
+vi.mock('i18next', () => ({ t: () => MOCK_TRANSLATION_MESSAGE }));
+
+vi.mock('app/notifications/services/notifications.service', () => ({
+  default: {
+    show: vi.fn(),
+  },
+  ToastType: {
+    Error: 'ERROR',
+  },
+}));
+vi.mock('app/drive/services/database.service', () => ({
+  canFileBeCached: vi.fn(),
+  deleteDatabaseItems: vi.fn(),
+  deleteDatabaseProfileAvatar: vi.fn(),
+  deleteDatabaseWorkspaceAvatar: vi.fn(),
+  getDatabaseFilePreviewData: vi.fn(),
+  getDatabaseFileSourceData: vi.fn(),
+  getDatabaseProfileAvatar: vi.fn(),
+  getDatabaseWorkspaceAvatar: vi.fn(),
+  updateDatabaseFilePreviewData: vi.fn(),
+  updateDatabaseFileSourceData: vi.fn(),
+  updateDatabaseProfileAvatar: vi.fn(),
+  updateDatabaseWorkspaceAvatar: vi.fn(),
+}));
+
+vi.mock('app/drive/services/folder.service', () => ({
+  default: {},
+  downloadFolderAsZip: vi.fn(),
+  createFilesIterator: vi.fn(),
+  createFoldersIterator: vi.fn(),
+  checkIfCachedSourceIsOlder: vi.fn(),
+}));
+
+vi.mock('app/network/download', () => ({
+  downloadFile: vi.fn(),
+  loadWritableStreamPonyfill: vi.fn(),
+  getDecryptedStream: vi.fn(),
+}));
+
+vi.mock('app/core/services/stream.service', () => ({
+  binaryStreamToBlob: vi.fn(),
+  streamFileIntoChunks: vi.fn(),
+  buildProgressStream: vi.fn(),
+}));
+
+vi.mock('app/drive/services/downloadManager.service', () => ({
+  DownloadManagerService: {
+    instance: {
+      generateTasksForItem: vi.fn(),
+      downloadFolder: vi.fn(),
+      downloadFile: vi.fn(),
+      downloadItems: vi.fn(),
+    },
+  },
+  ErrorMessages: {
+    ServerUnavailable: 'Server Unavailable',
+    ServerError: 'Server Error',
+    InternalServerError: 'Internal Server Error',
+    NetworkError: 'Network Error',
+    ConnectionLost: 'Connection lost',
+    FilePickerCancelled: 'File picker was canceled or failed',
+  },
+  isLostConnectionError: vi.fn(),
+  areItemArraysEqual: vi.fn(),
+}));
+
+vi.mock('app/utils/queueUtils', () => ({
+  QueueUtilsService: {
+    instance: {
+      getConcurrencyUsingPerfomance: vi.fn(),
+    },
+  },
+}));
 import {
   areItemArraysEqual,
   DownloadItem,
@@ -11,7 +125,6 @@ import { createFilesIterator, createFoldersIterator } from 'app/drive/services/f
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import { QueueUtilsService } from 'app/utils/queueUtils';
-import { beforeAll, beforeEach, describe, expect, it, vi, afterAll } from 'vitest';
 import { DownloadManager } from './DownloadManager';
 import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { ConnectionLostError } from './requests';
@@ -23,121 +136,6 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 const MOCK_TRANSLATION_MESSAGE = 'Test translation message';
 
 describe('downloadManager', () => {
-  beforeAll(() => {
-    vi.mock('./RetryManager', () => ({
-      default: {
-        removeTaskByIdAndParams: vi.fn(),
-        getTasksById: vi.fn().mockReturnValue([]),
-        addTasks: vi.fn(),
-      },
-      RetryableTask: vi.fn(),
-    }));
-
-    vi.mock('app/core/services/zip.service', () => ({
-      abort: vi.fn().mockImplementation(() => {}),
-    }));
-
-    vi.mock('app/tasks/services/tasks.service', () => ({
-      default: {
-        findTask: vi.fn(),
-        updateTask: vi.fn(),
-        create: vi.fn(),
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-      },
-    }));
-
-    vi.mock('app/core/services/error.service', () => ({
-      default: {
-        castError: vi.fn().mockReturnValue({ message: 'Default error message' }),
-        reportError: vi.fn(),
-      },
-    }));
-
-    vi.mock('src/app/network/NetworkFacade.ts', () => ({
-      NetworkFacade: vi.fn().mockImplementation(() => ({
-        downloadFile: vi.fn(),
-        downloadFolder: vi.fn(),
-        downloadItems: vi.fn(),
-        generateTasksForItem: vi.fn(),
-      })),
-    }));
-
-    vi.mock('i18next', () => ({ t: (_) => MOCK_TRANSLATION_MESSAGE }));
-
-    vi.mock('app/notifications/services/notifications.service', () => ({
-      default: {
-        show: vi.fn(),
-      },
-      ToastType: {
-        Error: 'ERROR',
-      },
-    }));
-    vi.mock('app/drive/services/database.service', () => ({
-      canFileBeCached: vi.fn(),
-      deleteDatabaseItems: vi.fn(),
-      deleteDatabaseProfileAvatar: vi.fn(),
-      deleteDatabaseWorkspaceAvatar: vi.fn(),
-      getDatabaseFilePreviewData: vi.fn(),
-      getDatabaseFileSourceData: vi.fn(),
-      getDatabaseProfileAvatar: vi.fn(),
-      getDatabaseWorkspaceAvatar: vi.fn(),
-      updateDatabaseFilePreviewData: vi.fn(),
-      updateDatabaseFileSourceData: vi.fn(),
-      updateDatabaseProfileAvatar: vi.fn(),
-      updateDatabaseWorkspaceAvatar: vi.fn(),
-    }));
-
-    vi.mock('app/drive/services/folder.service', () => ({
-      default: {},
-      downloadFolderAsZip: vi.fn(),
-      createFilesIterator: vi.fn(),
-      createFoldersIterator: vi.fn(),
-      checkIfCachedSourceIsOlder: vi.fn(),
-    }));
-
-    vi.mock('app/network/download', () => ({
-      downloadFile: vi.fn(),
-      loadWritableStreamPonyfill: vi.fn(),
-      getDecryptedStream: vi.fn(),
-    }));
-
-    vi.mock('app/core/services/stream.service', () => ({
-      binaryStreamToBlob: vi.fn(),
-      streamFileIntoChunks: vi.fn(),
-      buildProgressStream: vi.fn(),
-    }));
-
-    vi.mock('app/drive/services/downloadManager.service', () => ({
-      DownloadManagerService: {
-        instance: {
-          generateTasksForItem: vi.fn(),
-          downloadFolder: vi.fn(),
-          downloadFile: vi.fn(),
-          downloadItems: vi.fn(),
-        },
-      },
-      ErrorMessages: {
-        ServerUnavailable: 'Server Unavailable',
-        ServerError: 'Server Error',
-        InternalServerError: 'Internal Server Error',
-        NetworkError: 'Network Error',
-        ConnectionLost: 'Connection lost',
-        FilePickerCancelled: 'File picker was canceled or failed',
-      },
-      isLostConnectionError: vi.fn(),
-      areItemArraysEqual: vi.fn(),
-    }));
-
-    vi.mock('app/utils/queueUtils', () => ({
-      QueueUtilsService: {
-        instance: {
-          getConcurrencyUsingPerfomance: vi.fn(),
-        },
-      },
-    }));
-  });
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
