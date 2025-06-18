@@ -336,7 +336,7 @@ describe('onSubmit', () => {
     const mockClearUser: UserSettings = {
       uuid: 'mock-uuid',
       email: 'mock@email.com',
-      privateKey: Buffer.from(decryptedPrivateKey).toString('base64'),
+      privateKey: decryptedPrivateKey,
       mnemonic: encryptedMockMnemonic,
       userId: 'mock-userId',
       name: 'mock-name',
@@ -355,7 +355,7 @@ describe('onSubmit', () => {
       keys: {
         ecc: {
           publicKey: keys.ecc.publicKey,
-          privateKey: Buffer.from(decryptedPrivateKey).toString('base64'),
+          privateKey: decryptedPrivateKey,
         },
         kyber: {
           publicKey: keys.kyber.publicKey ?? '',
@@ -433,7 +433,7 @@ describe('onSubmit', () => {
     const mockClearUser: UserSettings = {
       uuid: 'mock-uuid',
       email: 'mock@email.com',
-      privateKey: Buffer.from(decryptedPrivateKey).toString('base64'),
+      privateKey: decryptedPrivateKey,
       mnemonic: encryptedMockMnemonic,
       userId: 'mock-userId',
       name: 'mock-name',
@@ -452,7 +452,7 @@ describe('onSubmit', () => {
       keys: {
         ecc: {
           publicKey: keys.ecc.publicKey,
-          privateKey: Buffer.from(decryptedPrivateKey).toString('base64'),
+          privateKey: decryptedPrivateKey,
         },
         kyber: {
           publicKey: '',
