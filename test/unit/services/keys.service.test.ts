@@ -6,23 +6,30 @@ import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
 import { getKeys, decryptPrivateKey } from '../../../src/app/crypto/services/keys.service';
 import { isValid } from '../../../src/app/crypto/services/utilspgp';
 
-import { describe, expect, it, afterAll, beforeAll } from 'vitest';
+import { describe, expect, it, afterAll, beforeAll, vi } from 'vitest';
 import { Buffer } from 'buffer';
-import { envConfig } from '../../../src/app/core/services/env.service';
+
+vi.mock('app/core/services/env.service', () => ({
+  default: {
+    isProduction: vi.fn(() => false),
+  },
+  envConfig: {
+    crypto: {
+      magicIv: 'test_magic_iv',
+      magicSalt: 'test_magic_salt',
+    },
+    api: {
+      api: 'https://mock',
+      hostname: 'hostname',
+    },
+  },
+}));
 
 describe('Generate keys', () => {
   globalThis.Buffer = Buffer;
 
-  const originalIV = envConfig.crypto.magicIv;
-  const originalSalt = envConfig.crypto.magicSalt;
-
   beforeAll(() => {
-    envConfig.crypto.magicIv = 'test_magic_iv';
-    envConfig.crypto.magicSalt = 'test_magic_salt';
-  });
-  afterAll(() => {
-    envConfig.crypto.magicIv = originalIV;
-    envConfig.crypto.magicSalt = originalSalt;
+    vi.clearAllMocks();
   });
 
   it('should generate new keys', async () => {
