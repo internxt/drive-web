@@ -60,7 +60,7 @@ export const Tutorial: FC<TutorialProps> = ({ show, steps, children, currentStep
 
   return (
     <div className="flex h-full grow" onClick={handleNextStep} onKeyDown={() => {}}>
-      <div className="fixed inset-0 z-10 flex bg-black/40" />
+      <div className="fixed inset-0 z-40 flex bg-black/40" />
       {children}
       <div ref={popperRef} className="z-50" style={existsRef ? styles.popper : centeredStyle} {...attributes.popper}>
         <div>{content}</div>
