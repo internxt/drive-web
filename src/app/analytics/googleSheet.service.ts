@@ -4,21 +4,20 @@ import { CouponCodeData } from 'app/payment/types';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
 const GSHEET_API = envConfig.app.websiteUrl;
+const WINTER_OFFSET_HOUR = 1;
 
-function formatDateToCustomTimezoneString(date: Date, offsetHours: number): string {
-  const adjusted = new Date(date.getTime() + offsetHours * 60 * 60 * 1000);
+export function formatDateToCustomTimezoneString(date: Date): string {
+  const offsetHours = WINTER_OFFSET_HOUR;                
+  const adjusted = new Date(date.getTime() + offsetHours * 3_600_000);
 
-  const year = adjusted.getFullYear();
-  const month = String(adjusted.getMonth() + 1).padStart(2, '0');
-  const day = String(adjusted.getDate()).padStart(2, '0');
-  const hours = String(adjusted.getHours()).padStart(2, '0');
-  const minutes = String(adjusted.getMinutes()).padStart(2, '0');
-  const seconds = String(adjusted.getSeconds()).padStart(2, '0');
+  const year = adjusted.getUTCFullYear();
+  const month = String(adjusted.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(adjusted.getUTCDate()).padStart(2, '0');
+  const hours = String(adjusted.getUTCHours() + 1).padStart(2, '0');
+  const minutes = String(adjusted.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(adjusted.getUTCSeconds()).padStart(2, '0');
 
-  const offset =
-    offsetHours >= 0
-      ? `+${String(offsetHours).padStart(2, '0')}00`
-      : `-${String(Math.abs(offsetHours)).padStart(2, '0')}00`;
+  const offset = `+${String(offsetHours).padStart(2, '0')}00`;
 
   return `${month}-${day}-${year} ${hours}:${minutes}:${seconds}${offset}`;
 }
@@ -48,7 +47,7 @@ export async function sendConversionToAPI({
     const token = await window.grecaptcha.execute(envConfig.services.recaptchaV3, {
       action: 'conversion',
     });
-    const formattedTimestamp = formatDateToCustomTimezoneString(timestamp ?? new Date(), 2);
+    const formattedTimestamp = formatDateToCustomTimezoneString(timestamp ?? new Date());
     const amountToPay = getProductAmount(value?.price.decimalAmount ?? 0, users, couponCodeData);
 
     const res = await fetch(`${GSHEET_API}/api/collect/sheet`, {
