@@ -1,4 +1,4 @@
-import { beforeEach, afterAll, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
+import { beforeEach, beforeAll, describe, expect, it, vi, Mock, afterAll } from 'vitest';
 import { screen, fireEvent, render } from '@testing-library/react';
 import ShareGuestSingUpView from './ShareGuestSingUpView';
 import { userActions } from 'app/store/slices/user';
@@ -8,13 +8,6 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
 import { Buffer } from 'buffer';
 import { generateMnemonic } from 'bip39';
-import { envConfig } from 'app/core/services/env.service';
-
-const originalEnv = envConfig.crypto.secret;
-const originalSalt = envConfig.crypto.magicSalt;
-const originalIV = envConfig.crypto.magicIv;
-const originalURL = envConfig.api.api;
-const originalHostName = envConfig.app.hostname;
 
 const mockPassword = 'mock-password';
 const mockEmal = 'mock@email.com';
@@ -23,13 +16,28 @@ let callCount = 0;
 
 describe('onSubmit', () => {
   beforeAll(() => {
-    envConfig.crypto.secret = '123456789QWERTY';
-    envConfig.crypto.magicIv = '12345678912345678912345678912345';
-    envConfig.crypto.magicSalt =
-      '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-    envConfig.api.api = 'https://mock';
-    envConfig.app.hostname = 'hostname';
     globalThis.Buffer = Buffer;
+
+    vi.mock('app/core/services/env.service', () => ({
+      default: {
+        isProduction: vi.fn(() => false),
+      },
+      envConfig: {
+        crypto: {
+          secret: '123456789QWERTY',
+          magicIv: '12345678912345678912345678912345',
+          magicSalt:
+            '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+        },
+        api: {
+          api: 'https://mock',
+          hostname: 'hostname',
+        },
+        app: {
+          hostname: 'app-hostname',
+        },
+      },
+    }));
 
     vi.spyOn(globalThis, 'decodeURIComponent').mockImplementation((value) => {
       return value;
@@ -102,7 +110,7 @@ describe('onSubmit', () => {
 
     vi.mock('app/core/services/error.service', () => ({
       default: {
-        castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
+        castError: vi.fn().mockImplementation((e) => ({ message: e.message ?? 'Default error message' })),
         reportError: vi.fn(),
       },
     }));
@@ -157,7 +165,7 @@ describe('onSubmit', () => {
         useEffect: vi.fn(),
         useState: vi.fn().mockImplementation((initial) => {
           callCount++;
-          const value = callCount === 1 ? true : false;
+          const value = callCount === 1;
           if (initial === false) initial = value;
           if (
             initial &&
@@ -254,11 +262,7 @@ describe('onSubmit', () => {
   });
 
   afterAll(() => {
-    envConfig.crypto.secret = originalEnv;
-    envConfig.crypto.magicSalt = originalSalt;
-    envConfig.crypto.magicIv = originalIV;
-    envConfig.api.api = originalURL;
-    envConfig.app.hostname = originalHostName;
+    vi.restoreAllMocks();
   });
 
   it('when called with new valid data, then user with decrypted keys is saved in local storage', async () => {
