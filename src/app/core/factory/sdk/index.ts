@@ -105,26 +105,13 @@ export class SdkFactory {
 
   public async createPaymentsClient(): Promise<Payments> {
     const appDetails = SdkFactory.getAppDetails();
-
-    let newToken = SdkFactory.sdk.localStorage.get('xNewToken');
-
-    if (!newToken) {
-      newToken = await authService.getNewToken();
-      SdkFactory.sdk.localStorage.set('xNewToken', newToken);
-    }
-
-    const apiSecurity = { ...this.getApiSecurity(), token: newToken };
-
+    const apiSecurity = this.getNewApiSecurity();
     return Payments.client(envConfig.api.payments, appDetails, apiSecurity);
   }
 
   public async createCheckoutClient(): Promise<Checkout> {
     const appDetails = SdkFactory.getAppDetails();
-
-    const newToken = this.getNewApiSecurity().token;
-
-    const apiSecurity = { ...this.getApiSecurity(), token: newToken ?? '' };
-
+    const apiSecurity = this.getNewApiSecurity();
     return Checkout.client(envConfig.api.payments, appDetails, apiSecurity);
   }
 
