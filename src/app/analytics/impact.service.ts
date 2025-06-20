@@ -5,13 +5,11 @@ import { getCookie } from './utils';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { CouponCodeData } from 'app/payment/types';
 import { bytesToString } from 'app/drive/services/size.service';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
-
-const IMPACT_API = envConfig.impact.apiUrl;
 
 const anonymousID = getCookie('impactAnonymousId');
 const source = getCookie('impactSource');
@@ -61,6 +59,7 @@ export function savePaymentDataInLocalStorage(
 
 export async function trackSignUp(uuid: string, email: string) {
   try {
+    const IMPACT_API = envService.getVaribale('impactApiUrl');
     const gclid = getCookie('gclid');
 
     window.gtag('event', 'User Signup');
@@ -84,6 +83,7 @@ export async function trackSignUp(uuid: string, email: string) {
 
 export async function trackPaymentConversion() {
   try {
+    const IMPACT_API = envService.getVaribale('impactApiUrl');
     const { uuid } = localStorageService.getUser() as UserSettings;
 
     const subscription = localStorageService.get('subscriptionId');
