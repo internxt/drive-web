@@ -54,7 +54,7 @@ const getCustomerId = async ({
   customerId: string;
   token: string;
 }> => {
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
+  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.getCustomerId({
     customerName,
     country: countryCode,
@@ -71,7 +71,7 @@ const getPriceById = async ({
   postalCode,
   country,
 }: GetPriceByIdPayload): Promise<PriceWithTax> => {
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
+  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.getPriceById({
     priceId,
     userAddress,
@@ -90,7 +90,7 @@ const createSubscription = async ({
   promoCodeId,
   quantity,
 }: CreateSubscriptionPayload): Promise<CreatedSubscriptionData> => {
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
+  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.createSubscription({
     customerId,
     priceId,
@@ -108,7 +108,7 @@ export const createPaymentIntent = async ({
   currency,
   promoCodeId,
 }: CreatePaymentIntentPayload): Promise<CreatedPaymentIntent> => {
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
+  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.createPaymentIntent({
     customerId,
     priceId,
