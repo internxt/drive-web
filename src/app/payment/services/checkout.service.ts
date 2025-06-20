@@ -15,9 +15,9 @@ import {
   GetPriceByIdPayload,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
-const PAYMENTS_API_URL = envConfig.api.payments;
+const PAYMENTS_API_URL = envService.getVaribale('payments');
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
 const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: string): Promise<CouponCodeData> => {

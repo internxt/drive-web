@@ -2,7 +2,7 @@ import { SignupComponent } from './AuthView';
 import InternxtDevices from '../../../../assets/images/banner/internxt_secure_cloud_storage.webp';
 import { Helmet } from 'react-helmet-async';
 import { useEffect, useState } from 'react';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 const textContent = {
   en: {
@@ -68,8 +68,8 @@ export default function SignupBlog(): JSX.Element {
   return (
     <>
       <Helmet>
-        <link rel="canonical" href={`${envConfig.app.hostname}/signup-blog`} />
-        <script src={`https://www.googletagmanager.com/gtag/js?id=${envConfig.analytics.gaBlogId}`}></script>
+        <link rel="canonical" href={`${envService.getVaribale('hostname')}/signup-blog`} />
+        <script src={`https://www.googletagmanager.com/gtag/js?id=${envService.getVaribale('gaBlogId')}`}></script>
       </Helmet>
 
       <div className="flex flex-col items-center justify-center overflow-hidden bg-white">

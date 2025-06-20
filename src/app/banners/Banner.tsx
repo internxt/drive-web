@@ -1,7 +1,7 @@
 import { CheckCircle, X } from '@phosphor-icons/react';
 import LifetimeBig from 'assets/images/banner/lifetime_big.png';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -31,7 +31,7 @@ const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => v
                 className="relative flex w-max flex-row items-center space-x-4 rounded-lg bg-white px-7 py-3 text-base font-medium text-primary transition duration-100 focus:outline-none focus-visible:bg-gray-1 active:bg-gray-1 sm:text-lg"
                 onClick={() => {
                   onClose();
-                  window.open(`${envConfig.app.websiteUrl}/lifetime`, '_blank', 'noopener noreferrer');
+                  window.open(`${envService.getVaribale('websiteUrl')}/lifetime`, '_blank', 'noopener noreferrer');
                 }}
               >
                 {translate('banner.cta')}

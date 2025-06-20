@@ -6,7 +6,7 @@ import { Readable } from 'stream';
 import { createUploadWebWorker } from '../../../../WebWorker';
 import localStorageService from '../../../core/services/local-storage.service';
 import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 40 * 1024 * 1024 * 1024;
 
@@ -66,7 +66,7 @@ export class Network {
       bridgePass,
       bridgeUser,
       encryptionKey,
-      bridgeUrl: envConfig.services.storjBridge,
+      bridgeUrl: envService.getVaribale('storjBridge'),
     });
   }
 
@@ -186,7 +186,7 @@ export class Network {
         {
           label: 'OneStreamOnly',
           params: {
-            useProxy: envConfig.services.dontUseProxy !== 'true',
+            useProxy: envService.getVaribale('dontUseProxy') !== 'true',
             concurrency: 6,
           },
         },
@@ -222,7 +222,7 @@ export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
       // decrypted mnemonic
       encryptionKey: workspace.workspaceUser.key,
       bucketId: workspaceCredentials?.bucket,
-      useProxy: envConfig.services.dontUseProxy !== 'true',
+      useProxy: envService.getVaribale('dontUseProxy') !== 'true',
     };
   }
 
@@ -233,7 +233,7 @@ export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
     bridgePass: user.userId,
     encryptionKey: user.mnemonic,
     bucketId: user.bucket,
-    useProxy: envConfig.services.dontUseProxy !== 'true',
+    useProxy: envService.getVaribale('dontUseProxy') !== 'true',
   };
 }
 

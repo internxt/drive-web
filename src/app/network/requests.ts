@@ -2,10 +2,9 @@ import errorService from '../core/services/error.service';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
 import { encryptFilename, generateHMAC } from './crypto';
 import { getSha256 } from '../crypto/services/utils';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 // TODO: Make this injectable
-const networkApiUrl = envConfig.services.storjBridge;
 
 interface FileInfo {
   bucket: string;
@@ -58,6 +57,7 @@ async function getAuthFromCredentials(creds: NetworkCredentials): Promise<AxiosB
 }
 
 function getFileInfo(bucketId: string, fileId: string, opts?: AxiosRequestConfig): Promise<FileInfo> {
+  const networkApiUrl = envService.getVaribale('storjBridge');
   const defaultOpts: AxiosRequestConfig = {
     method: 'GET',
     url: `${networkApiUrl}/buckets/${bucketId}/files/${fileId}/info`,
@@ -116,6 +116,7 @@ function getFileMirrors(
   excludeNodes: string[] = [],
   opts?: AxiosRequestConfig,
 ): Promise<Mirror[]> {
+  const networkApiUrl = envService.getVaribale('storjBridge');
   const excludeNodeIds: string = excludeNodes.join(',');
   const path = `${networkApiUrl}/buckets/${bucketId}/files/${fileId}`;
   const queryParams = `?limit=${limit}&skip=${skip}&exclude=${excludeNodeIds}`;
@@ -254,6 +255,7 @@ interface BucketEntry {
 }
 
 export async function checkBucketExistence(bucketId: string, creds: NetworkCredentials): Promise<boolean> {
+  const networkApiUrl = envService.getVaribale('storjBridge');
   const options: AxiosRequestConfig = {
     method: 'GET',
     auth: await getAuthFromCredentials(creds),
@@ -267,6 +269,7 @@ export async function checkBucketExistence(bucketId: string, creds: NetworkCrede
 }
 
 export async function createFrame(creds: NetworkCredentials): Promise<Frame> {
+  const networkApiUrl = envService.getVaribale('storjBridge');
   const options: AxiosRequestConfig = {
     method: 'POST',
     auth: await getAuthFromCredentials(creds),
@@ -283,6 +286,7 @@ export async function addShardToFrame(
   body: LegacyShardMeta,
   creds: NetworkCredentials,
 ): Promise<Contract> {
+  const networkApiUrl = envService.getVaribale('storjBridge');
   const options: AxiosRequestConfig = {
     method: 'PUT',
     auth: await getAuthFromCredentials(creds),
@@ -300,6 +304,7 @@ export async function createEntryFromFrame(
   body: CreateEntryFromFramePayload,
   creds: NetworkCredentials,
 ): Promise<BucketEntry> {
+  const networkApiUrl = envService.getVaribale('storjBridge');
   const options: AxiosRequestConfig = {
     method: 'POST',
     auth: await getAuthFromCredentials(creds),
