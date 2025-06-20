@@ -3,7 +3,6 @@ import { Backups, Payments, Referrals, Share, Storage, Trash, Users } from '@int
 import { ApiSecurity, ApiUrl, AppDetails } from '@internxt/sdk/dist/shared';
 import { WorkspaceCredentialsDetails, Workspaces } from '@internxt/sdk/dist/workspaces';
 import packageJson from '../../../../../package.json';
-import authService from '../../../auth/services/auth.service';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { LocalStorageService, STORAGE_KEYS } from '../../services/local-storage.service';
@@ -15,7 +14,6 @@ export class SdkFactory {
   private static sdk: {
     dispatch: AppDispatch;
     localStorage: LocalStorageService;
-    instance: SdkFactory;
     newApiInstance: SdkFactory;
   };
   private readonly apiUrl: ApiUrl;
@@ -28,7 +26,6 @@ export class SdkFactory {
     this.sdk = {
       dispatch,
       localStorage,
-      instance: new SdkFactory(envConfig.api.api),
       newApiInstance: new SdkFactory(envConfig.api.newApi),
     };
   }
@@ -40,24 +37,17 @@ export class SdkFactory {
     return this.sdk.newApiInstance;
   }
 
-  public static getInstance(): SdkFactory {
-    if (this.sdk.instance === undefined) {
-      throw new Error('Factory not initialized');
-    }
-    return this.sdk.instance;
-  }
-
   public createAuthClient(): Auth {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getApiSecurity();
+    const apiSecurity = this.getNewApiSecurity();
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
 
   public createDesktopAuthClient(): Auth {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getDesktopAppDetails();
-    const apiSecurity = this.getApiSecurity();
+    const apiSecurity = this.getNewApiSecurity();
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
 
@@ -123,18 +113,6 @@ export class SdkFactory {
   }
 
   /** Helpers **/
-
-  private getApiSecurity(): ApiSecurity {
-    const workspace = SdkFactory.sdk.localStorage.getWorkspace();
-    const workspaceToken = this.getWorkspaceToken();
-    return {
-      token: this.getToken(workspace),
-      workspaceToken,
-      unauthorizedCallback: async () => {
-        SdkFactory.sdk.dispatch(userThunks.logoutThunk());
-      },
-    };
-  }
 
   private getNewApiSecurity(): ApiSecurity {
     const workspace = SdkFactory.sdk.localStorage.getWorkspace();

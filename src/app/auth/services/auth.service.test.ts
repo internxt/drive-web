@@ -57,11 +57,6 @@ beforeAll(() => {
           login: vi.fn(),
         })),
       })),
-      getInstance: vi.fn(() => ({
-        createDesktopAuthClient: vi.fn(() => ({
-          login: vi.fn(),
-        })),
-      })),
     },
   }));
   vi.mock('app/payment/types', () => ({
