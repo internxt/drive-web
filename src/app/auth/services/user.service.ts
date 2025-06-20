@@ -49,11 +49,6 @@ const updateUserProfile = (payload: Required<UpdateProfilePayload>): Promise<voi
   return usersClient.updateUserProfile(payload, token);
 };
 
-const getFriendInvites = (): Promise<FriendInvite[]> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
-  return usersClient.getFriendInvites();
-};
-
 const updateUserAvatar = (payload: { avatar: Blob }): Promise<{ avatar: string }> => {
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient(TEMPORAL_AVATAR_API_URL);
   const token = localStorageService.get('xNewToken') ?? undefined;
@@ -103,7 +98,6 @@ const userService = {
   refreshUser,
   sendDeactivationEmail,
   updateUserProfile,
-  getFriendInvites,
   updateUserAvatar,
   deleteUserAvatar,
   sendVerificationEmail,

@@ -10,7 +10,6 @@ const usersClientMock = {
   refreshUser: vi.fn(),
   getUserData: vi.fn(),
   updateUserProfile: vi.fn(),
-  getFriendInvites: vi.fn(),
   //updateUserAvatar: vi.fn(),
   deleteUserAvatar: vi.fn(),
   sendVerificationEmail: vi.fn(),
@@ -84,13 +83,6 @@ describe('userService', () => {
       { name: 'New Name', lastname: 'New Lastname' },
       testToken,
     );
-  });
-
-  it('should get friend invites', async () => {
-    usersClientMock.getFriendInvites.mockResolvedValue([{ id: 1 }]);
-    const result = await userService.getFriendInvites();
-    expect(result).toEqual([{ id: 1 }]);
-    expect(usersClientMock.getFriendInvites).toHaveBeenCalled();
   });
 
   /*it('should update user avatar', async () => {
