@@ -1,18 +1,10 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { sendConversionToAPI } from './googleSheet.service';
-import { envConfig } from 'app/core/services/env.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import envService from 'app/core/services/env.service';
 
-vi.mock('app/core/services/env.service', () => ({
-  envConfig: {
-    app: {
-      websiteUrl: 'https://mocked-api.internxt.com',
-    },
-    services: {
-      recaptchaV3: 'mocked-recaptcha-key',
-    },
-  },
-}));
+const mockWebsiteUrl = 'https://mocked-api.internxt.com';
+const mockedRecaptchaV3 = 'mocked-recaptcha-key';
 
 describe('Google Sheets Conversion Logger', () => {
   const mockGrecaptchaReady = vi.fn((cb) => cb());
@@ -28,12 +20,16 @@ describe('Google Sheets Conversion Logger', () => {
       ready: mockGrecaptchaReady,
       execute: mockGrecaptchaExecute,
     };
+    vi.spyOn(envService, 'getVaribale').mockImplementation((key) => {
+      if (key === 'websiteUrl') return mockWebsiteUrl;
+      if (key === 'recaptchaV3') return mockedRecaptchaV3;
+      else return 'no mock implementation';
+    });
   });
 
   afterAll(() => {
     globalThis.window.grecaptcha = originalGrecaptcha;
     globalThis.fetch = originalFetch;
-    errorSpy.mockRestore();
   });
 
   it('When the correct data is provided, then should send event correctly', async () => {
@@ -58,7 +54,7 @@ describe('Google Sheets Conversion Logger', () => {
     });
 
     expect(fetchSpy).toHaveBeenCalledWith(
-      `${envConfig.app.websiteUrl}/api/collect/sheet`,
+      `${mockWebsiteUrl}/api/collect/sheet`,
       expect.objectContaining({
         method: 'POST',
         body: JSON.stringify({
