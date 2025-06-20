@@ -55,8 +55,9 @@ const getFriendInvites = (): Promise<FriendInvite[]> => {
 };
 
 const updateUserAvatar = (payload: { avatar: Blob }): Promise<{ avatar: string }> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient(TEMPORAL_AVATAR_API_URL);
-  return usersClient.updateAvatar(payload);
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient(TEMPORAL_AVATAR_API_URL);
+  const token = localStorageService.get('xNewToken') ?? undefined;
+  return usersClient.updateUserAvatar(payload, token);
 };
 
 const deleteUserAvatar = (): Promise<void> => {
