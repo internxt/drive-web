@@ -6,7 +6,6 @@ const testToken = 'testToken';
 const testEmail = 'test@initnxt.com';
 
 const usersClientMock = {
-  refreshUser: vi.fn(),
   getUserData: vi.fn(),
   updateUserProfile: vi.fn(),
   //updateUserAvatar: vi.fn(),
@@ -30,11 +29,7 @@ vi.mock('../../core/factory/sdk', () => ({
       createDesktopAuthClient: vi.fn(() => ({
         login: vi.fn(),
       })),
-      createNewUsersClient: vi.fn(() => usersClientMock),
       createAuthClient: vi.fn(() => authClientMock),
-      createUsersClient: vi.fn(() => usersClientMock),
-    })),
-    getInstance: vi.fn(() => ({
       createUsersClient: vi.fn(() => usersClientMock),
     })),
   },
@@ -56,13 +51,6 @@ describe('userService', () => {
     usersClientMock.preRegister.mockResolvedValue('mockPreCreate');
     const response = await userService.preCreateUser(testEmail);
     expect(response).toBe('mockPreCreate');
-  });
-
-  it('should refresh user data', async () => {
-    usersClientMock.refreshUser.mockResolvedValue({ user: {}, token: 'newToken' });
-    const result = await userService.refreshUser();
-    expect(result).toEqual({ user: {}, token: 'newToken' });
-    expect(usersClientMock.refreshUser).toHaveBeenCalled();
   });
 
   it('should update user profile', async () => {

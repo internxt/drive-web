@@ -23,15 +23,13 @@ const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
   return usersClient.preRegister(email);
 };
 
-/**
- * ! This endpoint accepts a body but is using GET method
- */
-const refreshUser = async (): Promise<{ user: UserSettings; token: string }> => {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
-  return usersClient.refreshUser();
-};
-
-const refreshUserData = async (userUUID: string): Promise<{ user: UserSettings }> => {
+const refreshUserData = async (
+  userUUID: string,
+): Promise<{
+  newToken: string;
+  oldToken: string;
+  user: UserSettings;
+}> => {
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
   return usersClient.getUserData({ userUuid: userUUID });
 };
@@ -87,7 +85,6 @@ const downloadAvatar = async (url: string): Promise<Blob> => {
 };
 
 const userService = {
-  refreshUser,
   sendDeactivationEmail,
   updateUserProfile,
   updateUserAvatar,
