@@ -1,27 +1,27 @@
-import { describe, expect, it, Mock, vi } from 'vitest';
+import { describe, expect, it, beforeEach, vi } from 'vitest';
 import backupsService from './backups.service';
 import { SdkFactory } from '../../core/factory/sdk';
 
-vi.mock('../../core/factory/sdk', () => ({
-    SdkFactory: {
-        getNewApiInstance: vi.fn(),
-    },
-}));
-
 describe('backupsService', () => {
-    describe('deleteBackupDeviceAsFolder', () => {
-        const mockFolderId = 'test-folder-id';
+  const deleteBackupDeviceAsFolderSpy = vi.fn();
 
-        it('should call deleteBackupDeviceAsFolder with the correct folderId', async () => {
-            const mockResponse = vi.fn().mockResolvedValue({});
-            const mockStorageClient = { deleteBackupDeviceAsFolder: mockResponse };
-            (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-                createBackupsClient: () => mockStorageClient,
-            });
+  beforeEach(() => {
+    const mockStorageClient = {
+      deleteBackupDeviceAsFolder: deleteBackupDeviceAsFolderSpy,
+    };
 
-            await backupsService.deleteBackupDeviceAsFolder(mockFolderId);
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createBackupsClient: () => mockStorageClient,
+    } as any);
+  });
 
-            expect(mockStorageClient.deleteBackupDeviceAsFolder).toHaveBeenCalledWith(mockFolderId);
-        });
+  describe('deleteBackupDeviceAsFolder', () => {
+    const mockFolderId = 'test-folder-id';
+
+    it('should call deleteBackupDeviceAsFolder with the correct folderId', async () => {
+      await backupsService.deleteBackupDeviceAsFolder(mockFolderId);
+
+      expect(deleteBackupDeviceAsFolderSpy).toHaveBeenCalledWith(mockFolderId);
     });
+  });
 });

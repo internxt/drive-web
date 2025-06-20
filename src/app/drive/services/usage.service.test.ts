@@ -1,61 +1,50 @@
-import { describe, expect, it, Mock, vi } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import usageService from './usage.service';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 
-vi.mock('../../core/factory/sdk', () => ({
-  SdkFactory: {
-    getNewApiInstance: vi.fn(),
-  },
-}));
-
-vi.mock('../../core/services/error.service', () => ({
-  default: {
-    reportError: vi.fn(),
-  }
-}));
-
 describe('usageService', () => {
+  const spaceUsageV2Spy = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    const mockStorageClient = {
+      spaceUsageV2: spaceUsageV2Spy,
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createNewStorageClient: () => mockStorageClient,
+    } as any);
+  });
   describe('fetchUsage', () => {
     it('should fetch usage data successfully', async () => {
-      const mockSpaceUsageV2 = vi.fn().mockResolvedValue({ drive: 100, backups: 50 });
-      const mockStorageClient = { spaceUsageV2: mockSpaceUsageV2 };
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createNewStorageClient: () => mockStorageClient,
-      });
+      spaceUsageV2Spy.mockResolvedValue({ drive: 100, backups: 50 });
 
       const result = await usageService.fetchUsage();
 
-      expect(mockSpaceUsageV2).toHaveBeenCalled();
+      expect(spaceUsageV2Spy).toHaveBeenCalled();
       expect(result).toEqual({ drive: 100, backups: 50 });
     });
   });
 
   describe('getUsageDetails', () => {
     it('should return usage details successfully', async () => {
-      const mockSpaceUsageV2 = vi.fn().mockResolvedValue({ drive: 200, backups: 100 });
-      const mockStorageClient = { spaceUsageV2: mockSpaceUsageV2 };
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createNewStorageClient: () => mockStorageClient,
-      });
+      spaceUsageV2Spy.mockResolvedValue({ drive: 200, backups: 100 });
 
       const result = await usageService.getUsageDetails();
 
-      expect(mockSpaceUsageV2).toHaveBeenCalled();
+      expect(spaceUsageV2Spy).toHaveBeenCalled();
       expect(result).toEqual({ drive: 200, photos: 0, backups: 100 });
     });
 
     it('should handle errors and return default values', async () => {
-      const mockSpaceUsageV2 = vi.fn().mockRejectedValue(new Error('API error'));
-      const mockStorageClient = { spaceUsageV2: mockSpaceUsageV2 };
-      (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-        createNewStorageClient: () => mockStorageClient,
-      });
+      spaceUsageV2Spy.mockRejectedValue(new Error('API error'));
+      const reportErrorSpy = vi.spyOn(errorService, 'reportError');
 
       const result = await usageService.getUsageDetails();
-      expect(errorService.reportError).toHaveBeenCalledWith(expect.any(Error));
-      expect(mockSpaceUsageV2).toHaveBeenCalled();
-      expect(errorService.reportError).toHaveBeenCalledWith(new Error('API error'));
+      expect(reportErrorSpy).toHaveBeenCalledWith(expect.any(Error));
+      expect(spaceUsageV2Spy).toHaveBeenCalled();
+      expect(reportErrorSpy).toHaveBeenCalledWith(new Error('API error'));
       expect(result).toEqual({ drive: 0, photos: 0, backups: 0 });
     });
   });

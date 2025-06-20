@@ -1,27 +1,26 @@
-import { describe, expect, it, Mock, vi } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import newStorageService from './new-storage.service';
 import { SdkFactory } from '../../core/factory/sdk';
 
-vi.mock('../../core/factory/sdk', () => ({
-    SdkFactory: {
-        getNewApiInstance: vi.fn(),
-    },
-}));
-
 describe('backupsService', () => {
-    describe('deleteFolderByUuid', () => {
-        const mockFolderId = 'test-folder-id';
+  const deleteFolderByUuidSpy = vi.fn();
 
-        it('should call deleteFolderByUuid with the correct folderId', async () => {
-            const mockResponse = vi.fn().mockResolvedValue({});
-            const mockStorageClient = { deleteFolderByUuid: mockResponse };
-            (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
-                createNewStorageClient: () => mockStorageClient,
-            });
+  beforeEach(() => {
+    const mockStorageClient = {
+      deleteFolderByUuid: deleteFolderByUuidSpy,
+    };
 
-            await newStorageService.deleteFolderByUuid(mockFolderId);
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createNewStorageClient: () => mockStorageClient,
+    } as any);
+  });
 
-            expect(mockStorageClient.deleteFolderByUuid).toHaveBeenCalledWith(mockFolderId);
-        });
+  describe('deleteFolderByUuid', () => {
+    const mockFolderId = 'test-folder-id';
+
+    it('should call deleteFolderByUuid with the correct folderId', async () => {
+      await newStorageService.deleteFolderByUuid(mockFolderId);
+      expect(deleteFolderByUuidSpy).toHaveBeenCalledWith(mockFolderId);
     });
+  });
 });

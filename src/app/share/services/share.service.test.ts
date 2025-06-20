@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { describe, expect, it, vi, Mock, beforeEach, beforeAll } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import localStorageService from '../../core/services/local-storage.service';
 import { Buffer } from 'buffer';
 import {
@@ -14,43 +14,6 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { decryptMnemonic } from './share.service';
 
 describe('Encryption and Decryption', () => {
-  beforeAll(() => {
-    vi.mock('app/drive/services/folder.service', () => ({
-      default: {},
-      downloadFolderAsZip: vi.fn(),
-      createFilesIterator: vi.fn(),
-      createFoldersIterator: vi.fn(),
-      checkIfCachedSourceIsOlder: vi.fn(),
-    }));
-    vi.mock('../../core/factory/sdk', () => ({ SdkFactory: vi.fn() }));
-    vi.mock('../../core/services/error.service', () => ({
-      default: {
-        castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
-        reportError: vi.fn(),
-      },
-    }));
-    vi.mock('../../core/services/local-storage.service', () => ({
-      default: {
-        getUser: vi.fn(),
-      },
-    }));
-    vi.mock('../../core/services/workspace.service', () => ({
-      default: {
-        getAllWorkspaceTeamSharedFolderFolders: vi.fn(),
-        getAllWorkspaceTeamSharedFolderFiles: vi.fn(),
-      },
-    }));
-    vi.mock('../../notifications/services/notifications.service', () => ({
-      default: {
-        show: vi.fn(),
-      },
-      ToastType: {
-        Error: 'ERROR',
-      },
-    }));
-    vi.mock('./DomainManager', () => ({ domainManager: vi.fn() }));
-  });
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -115,11 +78,10 @@ describe('Encryption and Decryption', () => {
 
     const mockUser = await getMockUser(keys, encryptedMnemonicInBase64);
 
-    (localStorageService.getUser as Mock).mockReturnValue(mockUser);
-    expect(localStorageService.getUser() as UserSettings).toEqual(mockUser);
+    const getUserSpy = vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
 
     const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
-    expect(localStorageService.getUser).toHaveBeenCalled();
+    expect(getUserSpy).toHaveBeenCalled();
     expect(ownerMnemonic).toEqual(mnemonic);
   });
 
@@ -135,11 +97,10 @@ describe('Encryption and Decryption', () => {
 
     const mockUser = await getMockUser(keys, encriptedMnemonic);
 
-    (localStorageService.getUser as Mock).mockReturnValue(mockUser);
-    expect(localStorageService.getUser() as UserSettings).toEqual(mockUser);
+    const getUserSpy = vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
 
     const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
-    expect(localStorageService.getUser).toHaveBeenCalled();
+    expect(getUserSpy).toHaveBeenCalled();
     expect(ownerMnemonic).toEqual(mnemonic);
   });
 
@@ -182,11 +143,10 @@ describe('Encryption and Decryption', () => {
 
     const mockUser = mockOldUser as UserSettings;
 
-    (localStorageService.getUser as Mock).mockReturnValue(mockUser);
-    expect(localStorageService.getUser() as UserSettings).toEqual(mockUser);
+    const getUserSpy = vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
 
     const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
-    expect(localStorageService.getUser).toHaveBeenCalled();
+    expect(getUserSpy).toHaveBeenCalled();
     expect(ownerMnemonic).toEqual(mnemonic);
   });
 });
