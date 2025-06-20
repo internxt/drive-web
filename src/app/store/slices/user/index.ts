@@ -50,21 +50,6 @@ export const initializeUserThunk = createAsyncThunk<
   payload = { ...defaultPayload, ...payload };
 
   if (user && isAuthenticated) {
-    if (!user.root_folder_id) {
-      const initializeUserBody = (await userService.initializeUser(
-        user.email,
-        user.mnemonic,
-      )) as InitializeUserResponse;
-
-      dispatch(
-        userActions.setUser({
-          ...user,
-          root_folder_id: initializeUserBody.root_folder_id,
-          bucket: initializeUserBody.bucket,
-        }),
-      );
-    }
-
     dispatch(refreshUserThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {

@@ -1,7 +1,5 @@
 import {
   CheckChangeEmailExpirationResponse,
-  FriendInvite,
-  InitializeUserResponse,
   PreCreateUserResponse,
   UpdateProfilePayload,
   UserPublicKeyResponse,
@@ -13,11 +11,6 @@ import envService, { envConfig } from 'app/core/services/env.service';
 import localStorageService from 'app/core/services/local-storage.service';
 
 const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? envConfig.services.avatarUrl : undefined;
-
-export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
-  const usersClient = SdkFactory.getInstance().createUsersClient();
-  return usersClient.initialize(email, mnemonic);
-}
 
 export const sendDeactivationEmail = (): Promise<void> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
@@ -94,7 +87,6 @@ const downloadAvatar = async (url: string): Promise<Blob> => {
 };
 
 const userService = {
-  initializeUser,
   refreshUser,
   sendDeactivationEmail,
   updateUserProfile,

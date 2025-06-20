@@ -6,7 +6,6 @@ const testToken = 'testToken';
 const testEmail = 'test@initnxt.com';
 
 const usersClientMock = {
-  initialize: vi.fn(),
   refreshUser: vi.fn(),
   getUserData: vi.fn(),
   updateUserProfile: vi.fn(),
@@ -44,13 +43,6 @@ vi.mock('../../core/factory/sdk', () => ({
 describe('userService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  it('should initialize a user', async () => {
-    usersClientMock.initialize.mockResolvedValue({ success: true });
-    const result = await userService.initializeUser(testEmail, 'mnemonic');
-    expect(result).toEqual({ success: true });
-    expect(usersClientMock.initialize).toHaveBeenCalledWith(testEmail, 'mnemonic');
   });
 
   it('should send a deactivation email', async () => {
