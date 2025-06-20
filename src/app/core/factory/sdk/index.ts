@@ -99,7 +99,7 @@ export class SdkFactory {
   public createReferralsClient(): Referrals {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getApiSecurity();
+    const apiSecurity = this.getNewApiSecurity();
     return Referrals.client(apiUrl, appDetails, apiSecurity);
   }
 
