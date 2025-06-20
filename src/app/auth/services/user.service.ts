@@ -19,7 +19,7 @@ export const sendDeactivationEmail = (): Promise<void> => {
 };
 
 const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
-  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
   return usersClient.preRegister(email);
 };
 
@@ -32,7 +32,7 @@ const refreshUser = async (): Promise<{ user: UserSettings; token: string }> => 
 };
 
 const refreshUserData = async (userUUID: string): Promise<{ user: UserSettings }> => {
-  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
   return usersClient.getUserData({ userUuid: userUUID });
 };
 
@@ -61,22 +61,22 @@ const sendVerificationEmail = (): Promise<void> => {
 };
 
 const getPublicKeyByEmail = (email: string): Promise<UserPublicKeyResponse> => {
-  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
   return usersClient.getPublicKeyByEmail({ email });
 };
 
 const changeEmail = (newEmail: string): Promise<void> => {
-  const authClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  const authClient = SdkFactory.getNewApiInstance().createUsersClient();
   return authClient.changeUserEmail(newEmail);
 };
 
 const verifyEmailChange = (verifyToken: string): Promise<VerifyEmailChangeResponse> => {
-  const authClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  const authClient = SdkFactory.getNewApiInstance().createUsersClient();
   return authClient.verifyEmailChange(verifyToken);
 };
 
 const checkChangeEmailLinkExpiration = (verifyToken: string): Promise<CheckChangeEmailExpirationResponse> => {
-  const authClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  const authClient = SdkFactory.getNewApiInstance().createUsersClient();
   return authClient.checkChangeEmailExpiration(verifyToken);
 };
 

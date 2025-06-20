@@ -307,7 +307,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     privateKyberKeyEncrypted = aes.encrypt(user.keys.kyber.privateKey, newPassword, getAesInitFromEnv());
   }
 
-  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
 
   return usersClient
     .changePassword(<ChangePasswordPayloadNew>{

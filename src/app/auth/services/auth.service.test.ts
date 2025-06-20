@@ -580,7 +580,7 @@ describe('Change password', () => {
         changePassword: changePasswordMock,
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
       }),
-      createNewUsersClient: vi.fn().mockReturnValue({
+      createUsersClient: vi.fn().mockReturnValue({
         changePassword: changePasswordMock,
       }),
     } as any);
@@ -632,7 +632,7 @@ describe('Change password', () => {
         changePassword: changePasswordMock,
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
       }),
-      createNewUsersClient: vi.fn().mockReturnValue({
+      createUsersClient: vi.fn().mockReturnValue({
         changePassword: changePasswordMock,
       }),
     } as any);
