@@ -10,7 +10,7 @@ import httpService from '../../../core/services/http.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import BaseButton from '../../../shared/components/forms/BaseButton';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 export default function GuestAcceptInvitationView(): JSX.Element {
   const [loading, setLoading] = useState(false);
@@ -30,7 +30,7 @@ export default function GuestAcceptInvitationView(): JSX.Element {
     const serviceHeaders = httpService.getHeaders(false, false);
     const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
 
-    return fetch(`${envConfig.api.api}/access`, {
+    return fetch(`${envService.getVaribale('api')}/access`, {
       method: 'post',
       headers: headers,
       body,

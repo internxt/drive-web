@@ -1,7 +1,7 @@
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 export const postMessageToVpn = (payload: Record<string, any>, source = 'drive-web') => {
-  const targetUrl = envConfig.app.hostname;
+  const targetUrl = envService.getVaribale('hostname');
   window.postMessage({ source: source, payload }, targetUrl);
 };
 

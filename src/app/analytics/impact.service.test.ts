@@ -21,6 +21,13 @@ vi.mock('./utils', () => ({
   }),
 }));
 
+vi.mock('app/core/services/error.service', () => ({
+  default: {
+    castError: vi.fn().mockImplementation((e) => e),
+    reportError: vi.fn(),
+  },
+}));
+
 const subId = 'sub_123';
 const paymentIntentId = 'py_123';
 const mockedUserUuid = '00000000-0000-0000-0000-0000000000';
@@ -61,7 +68,7 @@ beforeEach(() => {
 describe('Testing Impact Service', () => {
   describe('Store necessary data to track it later', () => {
     it('When wants to store the data, then the price to track is the correct one', () => {
-      const setToLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
+      const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage(subId, paymentIntentId, product as PriceWithTax, 1, promoCode);
 

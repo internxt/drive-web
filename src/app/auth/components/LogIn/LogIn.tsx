@@ -28,7 +28,7 @@ import PasswordInput from '../PasswordInput/PasswordInput';
 import TextInput from '../TextInput/TextInput';
 import { AuthMethodTypes } from 'app/payment/types';
 import vpnAuthService from 'app/auth/services/vpnAuth.service';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -195,7 +195,7 @@ export default function LogIn(): JSX.Element {
   return (
     <>
       <Helmet>
-        <link rel="canonical" href={`${envConfig.app.hostname}/login`} />
+        <link rel="canonical" href={`${envService.getVaribale('hostname')}/login`} />
       </Helmet>
       <div className="flex h-fit w-96 flex-col items-start justify-center space-y-5 px-8 py-10">
         <h1 data-cy="loginTitle" className="text-3xl font-medium">

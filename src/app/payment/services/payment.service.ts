@@ -14,7 +14,7 @@ import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@s
 import { loadStripe } from '@stripe/stripe-js/pure';
 import axios from 'axios';
 import { SdkFactory } from '../../core/factory/sdk';
-import envService, { envConfig } from '../../core/services/env.service';
+import envService from '../../core/services/env.service';
 import localStorageService from '../../core/services/local-storage.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
 
@@ -37,7 +37,7 @@ export interface CreateTeamsPaymentSessionPayload {
   canceledUrl?: string;
 }
 
-const PAYMENTS_API_URL = envConfig.api.payments;
+const PAYMENTS_API_URL = envService.getVaribale('payments');
 
 export interface ValidateCheckoutSessionResponse {
   valid: boolean;
@@ -53,7 +53,7 @@ const paymentService = {
   async getStripe(): Promise<Stripe> {
     if (!stripe) {
       stripe = (await loadStripe(
-        envService.isProduction() ? envConfig.stripe.publicKey : envConfig.stripe.testPublicKey,
+        envService.isProduction() ? envService.getVaribale('publicKey') : envService.getVaribale('testPublicKey'),
       )) as Stripe;
     }
 

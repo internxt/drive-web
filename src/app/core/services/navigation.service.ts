@@ -9,14 +9,14 @@ import { AppDispatch } from 'app/store';
 import localStorageService from './local-storage.service';
 import { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
-import { envConfig } from './env.service';
+import envService from './env.service';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
 };
 
-if (envConfig.app.baseUrl) {
-  browserHistoryConfig.basename = envConfig.app.baseUrl;
+if (envService.getVaribale('baseUrl')) {
+  browserHistoryConfig.basename = envService.getVaribale('baseUrl');
 }
 
 const instance = createBrowserHistory(browserHistoryConfig);

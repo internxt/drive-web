@@ -5,7 +5,7 @@ import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { userActions, userThunks } from 'app/store/slices/user';
 import { CampaignLinks } from 'app/core/types';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 const postMessage = (data: Record<string, unknown>) => {
   window.top?.postMessage(data, CampaignLinks.PcComponentes);
@@ -38,7 +38,7 @@ const signup = async (data, dispatch, doRegister, setLoading, appRedirect?, setE
     localStorage.removeItem('email');
     localStorage.removeItem('password');
     setLoading(false);
-    window.open(`${envConfig.app.hostname}`, '_parent', 'noopener');
+    window.open(`${envService.getVaribale('hostname')}`, '_parent', 'noopener');
   } catch (err: unknown) {
     setError(errorService.castError(err).message);
     setLoading(false);

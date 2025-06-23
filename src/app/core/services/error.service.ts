@@ -2,7 +2,7 @@ import { addBreadcrumb, captureException } from '@sentry/react';
 import { Breadcrumb } from '@sentry/types';
 import { AxiosError } from 'axios';
 import AppError from '../types';
-import { envConfig } from './env.service';
+import envService from './env.service';
 
 interface AxiosErrorResponse {
   error?: string;
@@ -21,7 +21,7 @@ const errorService = {
    * @param context Context to attach to the exception
    */
   reportError(exception: unknown, context?: Parameters<typeof captureException>[1]): void {
-    if (envConfig.app.nodeEnv === 'development') {
+    if (envService.getVaribale('nodeEnv') === 'development') {
       console.error('[ERROR_CATCHED]: This error has been catched and is being reported to Sentry', exception);
     }
     captureException(exception, context);

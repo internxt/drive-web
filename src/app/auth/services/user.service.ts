@@ -9,10 +9,10 @@ import {
 } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from '../../core/factory/sdk';
-import envService, { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 import localStorageService from 'app/core/services/local-storage.service';
 
-const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? envConfig.services.avatarUrl : undefined;
+const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? envService.getVaribale('avatarUrl') : undefined;
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
   const usersClient = SdkFactory.getInstance().createUsersClient();

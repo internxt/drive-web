@@ -38,7 +38,7 @@ import { DriveItemData } from '../../types';
 import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
 import './ShareDialog.scss';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -310,7 +310,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const getPrivateShareLink = async () => {
     try {
-      await copyTextToClipboard(`${envConfig.app.hostname}/shared/?folderuuid=${itemToShare?.item.uuid}`);
+      await copyTextToClipboard(`${envService.getVaribale('hostname')}/shared/?folderuuid=${itemToShare?.item.uuid}`);
       notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
     } catch (error) {
       notificationsService.show({

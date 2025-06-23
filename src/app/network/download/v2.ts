@@ -1,7 +1,7 @@
 import { Network } from '@internxt/sdk/dist/network';
 import { getSha256 } from '../../crypto/services/utils';
 import { NetworkFacade } from '../NetworkFacade';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 type FileStream = ReadableStream<Uint8Array>;
@@ -41,7 +41,7 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
 
   return new NetworkFacade(
     Network.client(
-      envConfig.services.storjBridge,
+      envService.getVaribale('storjBridge'),
       {
         clientName: 'drive-web',
         clientVersion: '1.0',
@@ -72,7 +72,7 @@ const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
 
   return new NetworkFacade(
     Network.client(
-      envConfig.services.storjBridge,
+      envService.getVaribale('storjBridge'),
       {
         clientName: 'drive-web',
         clientVersion: '1.0',

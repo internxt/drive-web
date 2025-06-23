@@ -1,9 +1,7 @@
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 import { CouponCodeData } from 'app/payment/types';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
-
-const GSHEET_API = envConfig.app.websiteUrl;
 
 function formatDateToCustomTimezoneString(date: Date, offsetHours: number): string {
   const adjusted = new Date(date.getTime() + offsetHours * 60 * 60 * 1000);
@@ -45,12 +43,12 @@ export async function sendConversionToAPI({
   try {
     await new Promise<void>((r) => window.grecaptcha.ready(r));
 
-    const token = await window.grecaptcha.execute(envConfig.services.recaptchaV3, {
+    const token = await window.grecaptcha.execute(envService.getVaribale('recaptchaV3'), {
       action: 'conversion',
     });
     const formattedTimestamp = formatDateToCustomTimezoneString(timestamp ?? new Date(), 2);
     const amountToPay = getProductAmount(value?.price.decimalAmount ?? 0, users, couponCodeData);
-
+    const GSHEET_API = envService.getVaribale('websiteUrl');
     const res = await fetch(`${GSHEET_API}/api/collect/sheet`, {
       method: 'POST',
       body: JSON.stringify({

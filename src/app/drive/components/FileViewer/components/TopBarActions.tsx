@@ -7,7 +7,7 @@ import { Button, Dropdown, MenuItemType } from '@internxt/ui';
 import { t } from 'i18next';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../../shared/components/Tooltip/Tooltip';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 interface TopBarActionsProps {
   background?: string;
@@ -81,7 +81,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
           variant="secondary"
           type="button"
           onClick={() => {
-            window.location.href = envConfig.app.hostname + '/login';
+            window.location.href = envService.getVaribale('hostname') + '/login';
           }}
           className="px-5"
         >
