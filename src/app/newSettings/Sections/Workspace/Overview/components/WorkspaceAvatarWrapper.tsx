@@ -1,13 +1,13 @@
+import { Avatar } from '@internxt/ui';
+import * as Sentry from '@sentry/react';
+import userService from 'app/auth/services/user.service';
 import { memo, useEffect, useState } from 'react';
 import {
   deleteDatabaseWorkspaceAvatar,
   getDatabaseWorkspaceAvatar,
   updateDatabaseWorkspaceAvatar,
 } from '../../../../../drive/services/database.service';
-import * as Sentry from '@sentry/react';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
-import { Avatar } from '@internxt/ui';
-import userService from 'app/auth/services/user.service';
 
 const showUpdateWorkspaceAvatarErrorToast = () =>
   notificationsService.show({
