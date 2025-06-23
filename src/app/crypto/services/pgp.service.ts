@@ -199,7 +199,7 @@ export const decryptMessageWithPrivateKey = async ({
   });
 
   if (!comparePrivateKeyCiphertextIDs(privateKey, message)) {
-    return Promise.reject(new Error('Private key does not correspond to the ciphertext'));
+    return Promise.reject(new Error('The key does not correspond to the ciphertext'));
   }
   const { data: decryptedMessage } = await openpgp.decrypt({
     message,

@@ -215,25 +215,20 @@ describe('Encryption and Decryption', () => {
   });
 
   it('should generate keys, encrypt and decrypt a message successfully', async () => {
-    // Step 1: Generate new keys
-    const keys = await generateNewKeys();
 
-    // Step 2: Prepare the message to be encrypted
+    const keys = await generateNewKeys();
     const originalMessage = 'This is a secret message!';
 
-    // Step 3: Encrypt the message using the public key
     const encryptedMessage = await encryptMessageWithPublicKey({
       message: originalMessage,
       publicKeyInBase64: keys.publicKeyArmored,
     });
 
-    // Step 4: Decrypt the message using the private key
     const decryptedMessage = await decryptMessageWithPrivateKey({
       encryptedMessage,
       privateKeyInBase64: Buffer.from(keys.privateKeyArmored).toString('base64'),
     });
 
-    // Step 5: Assert that the decrypted message matches the original message
     expect(keys).toHaveProperty('privateKeyArmored');
     expect(keys).toHaveProperty('publicKeyArmored');
     expect(encryptedMessage).not.toEqual(originalMessage);
@@ -261,6 +256,27 @@ describe('Encryption and Decryption', () => {
     expect(comparePrivateKeyCiphertextIDs(privateKey, message)).toBeTruthy();
     expect(comparePublicKeyCiphertextIDs(publicKey, message)).toBeTruthy();
     expect(compareKeyPairIDs(privateKey, publicKey)).toBeTruthy();
+  });
+
+  it('should fail if key and ciphertext do not match', async () => {
+    const keys = await generateNewKeys();
+    const originalMessage = 'Test message!';
+
+    const encryptedMessage = await encryptMessageWithPublicKey({
+      message: originalMessage,
+      publicKeyInBase64: keys.publicKeyArmored,
+    });
+
+
+    const keys_different = await generateNewKeys();
+
+    await expect(
+    decryptMessageWithPrivateKey({
+      encryptedMessage,
+      privateKeyInBase64: Buffer.from(keys_different.privateKeyArmored).toString('base64'),
+    })
+  ).rejects.toThrow('The key does not correspond to the ciphertext');
+
   });
 
   it('should decrypt a pre-defined message', async () => {
