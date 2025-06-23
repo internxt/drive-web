@@ -53,7 +53,7 @@ const Appearance = () => {
 
   const fetchUserThemes = async () => {
     try {
-      const { usedCoupons: userPromoCodes } = await paymentService.getUsedUserPromoCodes();
+      const { usedCoupons: userPromoCodes } = await paymentService.getPromoCodesUsedByUser();
       const availableThemesService = new AvailableThemesService(userPromoCodes);
 
       const allAvailableThemesForUSer = await availableThemesService.getAllAvailableThemes();
@@ -61,9 +61,15 @@ const Appearance = () => {
         theme,
         img: appearance_dark,
       }));
-      setAppearances((prev) => [...prev, ...newAppearances]);
+
+      setAppearances((prev) => {
+        const filteredNew = newAppearances.filter(
+          (newAppearance) => !prev.some((appearance) => appearance.theme === newAppearance.theme),
+        );
+        return [...prev, ...filteredNew];
+      });
     } catch (error) {
-      console.error('Something went wrong while fetching available themes for user');
+      console.error(`Something went wrong while fetching available themes for user. ERROR: ${error}`);
       errorService.reportError(error);
     }
   };

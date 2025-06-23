@@ -42,43 +42,38 @@ const THEME_DEFINITIONS: Record<Exclude<Theme, 'light' | 'dark' | 'system'>, The
   },
 };
 
+type ThemedCoupon = keyof typeof THEME_DEFINITIONS;
+
 export class AvailableThemesService {
-  private readonly usedCouponCodes: string[];
+  constructor(private readonly usedCouponCodes: string[]) {}
 
-  constructor(usedCouponCodes: string[]) {
-    this.usedCouponCodes = usedCouponCodes;
-  }
+  private async isThemeAvailable(theme: ThemedCoupon): Promise<boolean> {
+    const { key, promoCodes } = THEME_DEFINITIONS[theme];
 
-  private async isThemeAvailable(theme: string): Promise<boolean> {
-    const definition = THEME_DEFINITIONS[theme];
-    if (!definition) return false;
-
-    const cached = localStorageService.get(definition.key);
+    const cached = localStorageService.get(key);
     if (cached === 'true') return true;
 
     try {
-      const hasUsedCoupon = definition.promoCodes.some((code) => this.usedCouponCodes.includes(code));
-
+      const hasUsedCoupon = promoCodes.some((code) => this.usedCouponCodes.includes(code));
       if (hasUsedCoupon) {
-        localStorageService.set(definition.key, 'true');
+        localStorageService.set(key, 'true');
         return true;
       }
-
-      return false;
     } catch (error) {
       errorService.reportError(error);
-      return false;
     }
+
+    return false;
   }
 
-  async getAllAvailableThemes(): Promise<string[]> {
-    const entries = await Promise.all(
-      Object.keys(THEME_DEFINITIONS).map(async (theme) => ({
-        theme,
-        available: await this.isThemeAvailable(theme),
-      })),
+  async getAllAvailableThemes(): Promise<ThemedCoupon[]> {
+    const themes = await Promise.all(
+      (Object.keys(THEME_DEFINITIONS) as ThemedCoupon[]).map(async (theme) => {
+        const available = await this.isThemeAvailable(theme);
+        return available ? theme : null;
+      }),
     );
 
-    return entries.filter((entry) => entry.available).map((entry) => entry.theme);
+    return themes.filter((t): t is ThemedCoupon => t !== null);
   }
 }

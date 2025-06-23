@@ -9,7 +9,6 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-
     "label": "Risparmia l'80%",
     "upperTitle": "Offerta per la Giornata Mondiale dell'Ambiente",
     "title": "Piani annuali e a vita!",
@@ -27,7 +26,6 @@
       "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
       "L'offerta termina il 27 giugno"
-
     ]
   },
   "susbcriptionsBanner": {
@@ -85,14 +83,14 @@
     "light": "Chiaro",
     "dark": "Scuro",
     "system": "Sistema",
-    "starwars": "Star Wars",
-    "starwars2": "Tema di Star Wars",
+    "starWars": "Star Wars",
+    "starWars2": "Tema di Star Wars",
     "halloween": "Halloween",
     "christmas": "Natale",
     "superBowl": "Super Bowl",
     "valentines": "San Valentino",
-    "stpatricks": "San Patrizio",
-    "idmanagement": "Gestione dell'identità",
+    "stPatricks": "San Patrizio",
+    "idManagement": "Gestione dell'identità",
     "environment": "Giornata Mondiale dell'Ambiente"
   },
   "auth": {

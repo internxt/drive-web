@@ -4,15 +4,14 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-
     "label": "Save 80%",
     "upperTitle": "World Environment Day deal",
     "title": "Annual and Lifetime plans!",
     "cta": "Claim deal",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
-    "specialOfferLabel":"",
-    "specialOfferGift":"Win an Internxt x Swiss Peak backpack",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Win an Internxt x Swiss Peak backpack",
 
     "features": [
       "Drive, VPN, and Antivirus",
@@ -22,7 +21,6 @@
 
       "No unauthorized access",
       "Offer ends June 27"
-
     ]
   },
   "susbcriptionsBanner": {
@@ -85,16 +83,15 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System",
-    "starwars": "Star Wars",
-    "starwars2": "Star Wars Theme",
+    "starWars": "Star Wars",
+    "starWars2": "Star Wars Theme",
     "halloween": "Halloween",
     "christmas": "Christmas",
     "superBowl": "Super Bowl",
     "valentines": "Valentine's Day",
-    "stpatricks": "St. Patrick's Day",
-    "idmanagement": "Identity Management",
+    "stPatricks": "St. Patrick's Day",
+    "idManagement": "Identity Management",
     "environment": "World Environment Day"
-
   },
   "auth": {
     "email": "Email",

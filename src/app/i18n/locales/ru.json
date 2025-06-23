@@ -9,23 +9,21 @@
     "cta": "Получить скидку"
   },
   "featuresBanner": {
-
     "label": "Скидка 80%",
     "upperTitle": "Всемирный день окружающей среды",
     "title": "Защитите свои данные, защитите планету",
     "cta": "Получите свой план",
     "guarantee": "Гарантия возврата денег в течение 30 дней",
     "lastCta": "*Предложение действует для бесплатных аккаунтов или новых клиентов",
-    "specialOfferLabel":"",
-    "specialOfferGift":"Участвуйте в розыгрыше рюкзака Internxt x Swiss Peak",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Участвуйте в розыгрыше рюкзака Internxt x Swiss Peak",
     "features": [
       "Internxt Drive, VPN и Антивирус",
       "Пост-квантовое шифрование",
       "Устойчивое облачное хранилище",
       "Шифрованные передачи",
       "Без несанкционированного доступа",
-      "Предложение действует до 27 июня"      
-
+      "Предложение действует до 27 июня"
     ]
   },
   "susbcriptionsBanner": {
@@ -62,14 +60,14 @@
     "light": "Светлый",
     "dark": "Темный",
     "system": "Система",
-    "starwars": "Star Wars",
-    "starwars2": "Тема Star Wars",
+    "starWars": "Star Wars",
+    "starWars2": "Тема Star Wars",
     "halloween": "Halloween",
     "christmas": "Christmas",
     "superBowl": "Super Bowl",
     "valentines": "Valentines",
     "stPatricks": "St. Patrick's",
-    "idmanagement": "Identity Management",
+    "idManagement": "Identity Management",
     "environment": "World Environment Day"
   },
   "auth": {
