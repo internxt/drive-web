@@ -6,11 +6,11 @@ import { AppPlugin } from '../../core/types';
 const sentryPlugin: AppPlugin = {
   install(): void {
     Sentry.init({
-      dsn: envService.getVaribale('sentryDsn'),
+      dsn: envService.getVariable('sentryDsn'),
       integrations: [Sentry.browserTracingIntegration()],
       tracesSampleRate: 0.3,
-      debug: envService.getVaribale('nodeEnv') !== 'production' && envService.getVaribale('debug') === 'true',
-      environment: envService.getVaribale('nodeEnv'),
+      debug: envService.getVariable('nodeEnv') !== 'production' && envService.getVariable('debug') === 'true',
+      environment: envService.getVariable('nodeEnv'),
       release: packageJson.name + '@' + packageJson.version,
     });
   },

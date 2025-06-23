@@ -66,7 +66,7 @@ export class Network {
       bridgePass,
       bridgeUser,
       encryptionKey,
-      bridgeUrl: envService.getVaribale('storjBridge'),
+      bridgeUrl: envService.getVariable('storjBridge'),
     });
   }
 
@@ -186,7 +186,7 @@ export class Network {
         {
           label: 'OneStreamOnly',
           params: {
-            useProxy: envService.getVaribale('dontUseProxy') !== 'true',
+            useProxy: envService.getVariable('dontUseProxy') !== 'true',
             concurrency: 6,
           },
         },
@@ -222,7 +222,7 @@ export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
       // decrypted mnemonic
       encryptionKey: workspace.workspaceUser.key,
       bucketId: workspaceCredentials?.bucket,
-      useProxy: envService.getVaribale('dontUseProxy') !== 'true',
+      useProxy: envService.getVariable('dontUseProxy') !== 'true',
     };
   }
 
@@ -233,7 +233,7 @@ export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
     bridgePass: user.userId,
     encryptionKey: user.mnemonic,
     bucketId: user.bucket,
-    useProxy: envService.getVaribale('dontUseProxy') !== 'true',
+    useProxy: envService.getVariable('dontUseProxy') !== 'true',
   };
 }
 

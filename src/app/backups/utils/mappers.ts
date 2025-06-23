@@ -8,7 +8,7 @@ export const mapBackupFolder = (backupFolder: DriveFolderDataSDK): DriveFolderDa
     ...backupFolder,
     name:
       backupFolder.plainName ??
-      aes.decrypt(backupFolder.name, `${envService.getVaribale('secret2')}-${backupFolder.bucket}`),
+      aes.decrypt(backupFolder.name, `${envService.getVariable('secret2')}-${backupFolder.bucket}`),
     isFolder: true,
   };
 };

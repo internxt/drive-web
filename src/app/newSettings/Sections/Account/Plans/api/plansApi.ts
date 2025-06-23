@@ -33,8 +33,8 @@ const getStripe = async (stripe): Promise<Stripe> => {
   if (!stripe) {
     stripe = (await loadStripe(
       envService.isProduction()
-        ? envService.getVaribale('stripePublicKey')
-        : envService.getVaribale('stripeTestPublicKey'),
+        ? envService.getVariable('stripePublicKey')
+        : envService.getVariable('stripeTestPublicKey'),
     )) as Stripe;
   }
 

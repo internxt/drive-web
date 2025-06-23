@@ -245,7 +245,7 @@ describe('onSubmit', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(envService, 'getVaribale').mockImplementation((key) => {
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       if (key === 'magicIv') return mockMagicIv;
       if (key === 'magicSalt') return mockMagicSalt;
       if (key === 'api') return mockApi;

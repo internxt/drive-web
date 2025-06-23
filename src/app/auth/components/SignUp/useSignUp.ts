@@ -118,7 +118,7 @@ export function useSignUp(
     const serviceHeaders = httpService.getHeaders(true, false);
     const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
 
-    const raw = await fetch(`${envService.getVaribale('api')}/${registerSource}/update`, {
+    const raw = await fetch(`${envService.getVariable('api')}/${registerSource}/update`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(registerUserPayload),

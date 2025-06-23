@@ -15,8 +15,8 @@ const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
 };
 
-if (envService.getVaribale('baseUrl')) {
-  browserHistoryConfig.basename = envService.getVaribale('baseUrl');
+if (envService.getVariable('baseUrl')) {
+  browserHistoryConfig.basename = envService.getVariable('baseUrl');
 }
 
 const instance = createBrowserHistory(browserHistoryConfig);

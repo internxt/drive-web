@@ -98,12 +98,12 @@ function passToHash(passObject: PassObjectInterface): { salt: string; hash: stri
 
 // AES Plain text encryption method
 function encryptText(textToEncrypt: string): string {
-  return encryptTextWithKey(textToEncrypt, envService.getVaribale('secret'));
+  return encryptTextWithKey(textToEncrypt, envService.getVariable('secret'));
 }
 
 // AES Plain text decryption method
 function decryptText(encryptedText: string): string {
-  return decryptTextWithKey(encryptedText, envService.getVaribale('secret'));
+  return decryptTextWithKey(encryptedText, envService.getVariable('secret'));
 }
 
 // AES Plain text encryption method with enc. key
@@ -140,9 +140,9 @@ const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
   }
   try {
     if (item.isFolder || item.type === 'folder') {
-      return aes.decrypt(item.name, `${envService.getVaribale('secret2')}-${item.parentId}`);
+      return aes.decrypt(item.name, `${envService.getVariable('secret2')}-${item.parentId}`);
     } else {
-      return aes.decrypt(item.name, `${envService.getVaribale('secret2')}-${item.folderId}`);
+      return aes.decrypt(item.name, `${envService.getVariable('secret2')}-${item.folderId}`);
     }
   } catch (err) {
     //Decrypt has failed because item.name is not encrypted

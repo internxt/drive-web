@@ -105,8 +105,8 @@ async function getFileDownloadStream(
 
   for (const downloadUrl of downloadUrls) {
     const useProxy =
-      envService.getVaribale('dontUseProxy') !== 'true' && !new URL(downloadUrl).hostname.includes('internxt');
-    const fetchUrl = (useProxy ? envService.getVaribale('proxy') + '/' : '') + downloadUrl;
+      envService.getVariable('dontUseProxy') !== 'true' && !new URL(downloadUrl).hostname.includes('internxt');
+    const fetchUrl = (useProxy ? envService.getVariable('proxy') + '/' : '') + downloadUrl;
     const encryptedStream = await fetch(fetchUrl, { signal: abortController?.signal }).then((res) => {
       if (!res.body) {
         throw new Error('No content received');

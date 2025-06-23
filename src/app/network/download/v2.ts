@@ -41,7 +41,7 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
 
   return new NetworkFacade(
     Network.client(
-      envService.getVaribale('storjBridge'),
+      envService.getVariable('storjBridge'),
       {
         clientName: 'drive-web',
         clientVersion: '1.0',
@@ -72,7 +72,7 @@ const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
 
   return new NetworkFacade(
     Network.client(
-      envService.getVaribale('storjBridge'),
+      envService.getVariable('storjBridge'),
       {
         clientName: 'drive-web',
         clientVersion: '1.0',

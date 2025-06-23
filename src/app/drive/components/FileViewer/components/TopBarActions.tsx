@@ -81,7 +81,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
           variant="secondary"
           type="button"
           onClick={() => {
-            window.location.href = envService.getVaribale('hostname') + '/login';
+            window.location.href = envService.getVariable('hostname') + '/login';
           }}
           className="px-5"
         >

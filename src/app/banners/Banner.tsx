@@ -31,7 +31,7 @@ const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => v
                 className="relative flex w-max flex-row items-center space-x-4 rounded-lg bg-white px-7 py-3 text-base font-medium text-primary transition duration-100 focus:outline-none focus-visible:bg-gray-1 active:bg-gray-1 sm:text-lg"
                 onClick={() => {
                   onClose();
-                  window.open(`${envService.getVaribale('websiteUrl')}/lifetime`, '_blank', 'noopener noreferrer');
+                  window.open(`${envService.getVariable('websiteUrl')}/lifetime`, '_blank', 'noopener noreferrer');
                 }}
               >
                 {translate('banner.cta')}

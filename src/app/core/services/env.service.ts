@@ -5,7 +5,7 @@ function isProduction(): boolean {
 
 const envService = {
   isProduction,
-  getVaribale: getVariable,
+  getVariable,
 };
 const variableList = {
   secret: 'REACT_APP_CRYPTO_SECRET',

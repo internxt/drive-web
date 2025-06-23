@@ -20,7 +20,7 @@ describe('Google Sheets Conversion Logger', () => {
       ready: mockGrecaptchaReady,
       execute: mockGrecaptchaExecute,
     };
-    vi.spyOn(envService, 'getVaribale').mockImplementation((key) => {
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       if (key === 'websiteUrl') return mockWebsiteUrl;
       if (key === 'recaptchaV3') return mockedRecaptchaV3;
       else return 'no mock implementation';

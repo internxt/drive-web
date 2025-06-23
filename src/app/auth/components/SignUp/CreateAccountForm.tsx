@@ -31,7 +31,7 @@ const CreateAccountForm = ({
 
       <div className={'flex h-full flex-col items-center justify-center'}>
         <Helmet>
-          <link rel="canonical" href={`${envService.getVaribale('hostname')}/shared-guest`} />
+          <link rel="canonical" href={`${envService.getVariable('hostname')}/shared-guest`} />
         </Helmet>
         <div className={'flex h-fit w-96 flex-col items-center justify-center rounded-2xl px-8 py-10'}>
           <div className="flex flex-col items-start space-y-5">

@@ -310,7 +310,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const getPrivateShareLink = async () => {
     try {
-      await copyTextToClipboard(`${envService.getVaribale('hostname')}/shared/?folderuuid=${itemToShare?.item.uuid}`);
+      await copyTextToClipboard(`${envService.getVariable('hostname')}/shared/?folderuuid=${itemToShare?.item.uuid}`);
       notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
     } catch (error) {
       notificationsService.show({

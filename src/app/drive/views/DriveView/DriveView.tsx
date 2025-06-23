@@ -155,7 +155,7 @@ const DriveView = (props: DriveViewProps) => {
     <>
       <Helmet>
         <title>{title}</title>
-        <link rel="canonical" href={`${envService.getVaribale('hostname')}`} />
+        <link rel="canonical" href={`${envService.getVariable('hostname')}`} />
       </Helmet>
       <DriveExplorer title={<BreadcrumbsDriveView namePath={namePath} />} isLoading={isLoading} items={items} />
     </>

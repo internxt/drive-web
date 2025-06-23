@@ -86,8 +86,6 @@ export interface CheckoutViewManager {
   onSeatsChange: (seat: number) => void;
 }
 
-const IS_PRODUCTION = envService.isProduction();
-const RETURN_URL_DOMAIN = IS_PRODUCTION ? envService.getVaribale('hostname') : 'http://localhost:3000';
 const STATUS_CODE_ERROR = {
   USER_EXISTS: 409,
   COUPON_NOT_VALID: 422,
@@ -431,6 +429,8 @@ const CheckoutViewWrapper = () => {
         localStorageService.set('priceId', currentSelectedPlan?.price?.id as string);
         localStorageService.set('customerToken', token);
         localStorageService.set('mobileToken', mobileToken);
+        const IS_PRODUCTION = envService.isProduction();
+        const RETURN_URL_DOMAIN = IS_PRODUCTION ? envService.getVariable('hostname') : 'http://localhost:3000';
         const { error: confirmIntentError } = await stripeSDK.confirmSetup({
           elements,
           clientSecret: setupIntent.clientSecret,
@@ -483,7 +483,8 @@ const CheckoutViewWrapper = () => {
         }
 
         const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
-
+        const IS_PRODUCTION = envService.isProduction();
+        const RETURN_URL_DOMAIN = IS_PRODUCTION ? envService.getVariable('hostname') : 'http://localhost:3000';
         const { error: confirmIntentError } = await confirmIntent({
           elements,
           clientSecret,

@@ -22,7 +22,7 @@ describe('Generate keys', () => {
 
   it('should generate new keys', async () => {
     const password = 'test pwd';
-    vi.spyOn(envService, 'getVaribale').mockImplementation((key) => {
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       if (key === 'magicIv') return mockMagicIv;
       if (key === 'magicSalt') return mockMagicSalt;
       else return 'no mock implementation';

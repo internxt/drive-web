@@ -184,7 +184,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   <Button
                     variant="secondary"
                     onClick={() => {
-                      window.location.href = envService.getVaribale('hostname') + '/login';
+                      window.location.href = envService.getVariable('hostname') + '/login';
                     }}
                   >
                     {translate('shareLayout.topBar.login')}
@@ -193,7 +193,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   <Button
                     variant="primary"
                     onClick={() => {
-                      window.location.href = envService.getVaribale('hostname') + '/new';
+                      window.location.href = envService.getVariable('hostname') + '/new';
                     }}
                   >
                     {translate('shareLayout.topBar.createAccount')}

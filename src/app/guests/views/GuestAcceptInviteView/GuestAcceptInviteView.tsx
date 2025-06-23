@@ -30,7 +30,7 @@ export default function GuestAcceptInvitationView(): JSX.Element {
     const serviceHeaders = httpService.getHeaders(false, false);
     const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
 
-    return fetch(`${envService.getVaribale('api')}/access`, {
+    return fetch(`${envService.getVariable('api')}/access`, {
       method: 'post',
       headers: headers,
       body,

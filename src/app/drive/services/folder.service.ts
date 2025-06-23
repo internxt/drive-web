@@ -549,7 +549,7 @@ async function fetchFolderTree(folderUUID: string): Promise<{
     folderDecryptedNames[currentTree.id] = currentTree.plainName;
 
     for (const file of files) {
-      fileDecryptedNames[file.id] = aes.decrypt(file.name, `${envService.getVaribale('secret2')}-${file.folderId}`);
+      fileDecryptedNames[file.id] = aes.decrypt(file.name, `${envService.getVariable('secret2')}-${file.folderId}`);
     }
 
     pendingFolders.shift();

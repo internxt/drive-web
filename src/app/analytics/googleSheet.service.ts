@@ -43,12 +43,12 @@ export async function sendConversionToAPI({
   try {
     await new Promise<void>((r) => window.grecaptcha.ready(r));
 
-    const token = await window.grecaptcha.execute(envService.getVaribale('recaptchaV3'), {
+    const token = await window.grecaptcha.execute(envService.getVariable('recaptchaV3'), {
       action: 'conversion',
     });
     const formattedTimestamp = formatDateToCustomTimezoneString(timestamp ?? new Date(), 2);
     const amountToPay = getProductAmount(value?.price.decimalAmount ?? 0, users, couponCodeData);
-    const GSHEET_API = envService.getVaribale('websiteUrl');
+    const GSHEET_API = envService.getVariable('websiteUrl');
     const res = await fetch(`${GSHEET_API}/api/collect/sheet`, {
       method: 'POST',
       body: JSON.stringify({

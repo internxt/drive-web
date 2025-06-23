@@ -209,7 +209,7 @@ function SignUp(props: SignUpProps): JSX.Element {
   return (
     <>
       <Helmet>
-        <link rel="canonical" href={`${envService.getVaribale('hostname')}/new`} />
+        <link rel="canonical" href={`${envService.getVariable('hostname')}/new`} />
       </Helmet>
       <div
         className={`flex ${

@@ -28,8 +28,8 @@ export class SdkFactory {
     this.sdk = {
       dispatch,
       localStorage,
-      instance: new SdkFactory(envService.getVaribale('api')),
-      newApiInstance: new SdkFactory(envService.getVaribale('newApi')),
+      instance: new SdkFactory(envService.getVariable('api')),
+      newApiInstance: new SdkFactory(envService.getVariable('newApi')),
     };
   }
 
@@ -122,7 +122,7 @@ export class SdkFactory {
 
     const apiSecurity = { ...this.getApiSecurity(), token: newToken };
 
-    return Payments.client(envService.getVaribale('payments'), appDetails, apiSecurity);
+    return Payments.client(envService.getVariable('payments'), appDetails, apiSecurity);
   }
 
   public async createCheckoutClient(): Promise<Checkout> {
@@ -132,7 +132,7 @@ export class SdkFactory {
 
     const apiSecurity = { ...this.getApiSecurity(), token: newToken ?? '' };
 
-    return Checkout.client(envService.getVaribale('payments'), appDetails, apiSecurity);
+    return Checkout.client(envService.getVariable('payments'), appDetails, apiSecurity);
   }
 
   public createBackupsClient(): Backups {

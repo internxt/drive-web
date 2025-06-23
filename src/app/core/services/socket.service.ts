@@ -23,7 +23,7 @@ export default class RealtimeService {
       console.log('[REALTIME]: CONNECTING...');
     }
 
-    this.socket = io(envService.getVaribale('notifications'), {
+    this.socket = io(envService.getVariable('notifications'), {
       auth: {
         token: getToken(),
       },
@@ -88,7 +88,7 @@ export default class RealtimeService {
 }
 
 function isProduction(): boolean {
-  return envService.getVaribale('nodeEnv') === 'production';
+  return envService.getVariable('nodeEnv') === 'production';
 }
 
 function getToken(): string {

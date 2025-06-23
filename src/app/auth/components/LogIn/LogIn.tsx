@@ -195,7 +195,7 @@ export default function LogIn(): JSX.Element {
   return (
     <>
       <Helmet>
-        <link rel="canonical" href={`${envService.getVaribale('hostname')}/login`} />
+        <link rel="canonical" href={`${envService.getVariable('hostname')}/login`} />
       </Helmet>
       <div className="flex h-fit w-96 flex-col items-start justify-center space-y-5 px-8 py-10">
         <h1 data-cy="loginTitle" className="text-3xl font-medium">

@@ -67,7 +67,7 @@ describe('Getting the stripe SDK', () => {
   });
 
   it('When not in production, then loads test stripe key', async () => {
-    vi.spyOn(envService, 'getVaribale').mockImplementation((key) => {
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       if (key === 'stripePublicKey') return mockPublicKey;
       if (key === 'stripeTestPublicKey') return mockTestPublicKey;
       else return 'no implementation';
@@ -82,7 +82,7 @@ describe('Getting the stripe SDK', () => {
   });
 
   it('When in production, then loads live stripe key', async () => {
-    vi.spyOn(envService, 'getVaribale').mockImplementation((key) => {
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       if (key === 'stripePublicKey') return mockPublicKey;
       if (key === 'stripeTestPublicKey') return mockTestPublicKey;
       else return 'no implementation';

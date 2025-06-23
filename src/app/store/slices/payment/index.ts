@@ -29,7 +29,7 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
       test: envService.isProduction() ? undefined : true,
       // eslint-disable-next-line max-len
       successUrl:
-        envService.getVaribale('hostname') +
+        envService.getVariable('hostname') +
         `/checkout/success?price_id=${payload.product.price.id}&cs_id={CHECKOUT_SESSION_ID}`,
       mode:
         payload.product.price.type === ProductPriceType.OneTime

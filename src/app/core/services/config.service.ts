@@ -8,9 +8,9 @@ import envService from 'app/core/services/env.service';
 export function getAppConfig(): AppConfig {
   const getPath = (pathId: string, path) => {
     if (pathId == 'auth') {
-      return `/${envService.getVaribale('authUrl')}`;
+      return `/${envService.getVariable('authUrl')}`;
     } else if (pathId == 'buttonAuth') {
-      return `/${envService.getVaribale('buttonAuthUrl')}`;
+      return `/${envService.getVariable('buttonAuthUrl')}`;
     } else {
       return path;
     }

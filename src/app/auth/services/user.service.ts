@@ -12,7 +12,7 @@ import { SdkFactory } from '../../core/factory/sdk';
 import envService from 'app/core/services/env.service';
 import localStorageService from 'app/core/services/local-storage.service';
 
-const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? envService.getVaribale('avatarUrl') : undefined;
+const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? envService.getVariable('avatarUrl') : undefined;
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
   const usersClient = SdkFactory.getInstance().createUsersClient();

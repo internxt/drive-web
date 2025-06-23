@@ -22,7 +22,7 @@ const backupsService = {
     const backupsClient = SdkFactory.getNewApiInstance().createBackupsClient();
     const backups = await backupsClient.getAllBackups(mac);
     return backups.map((backup) => {
-      const path = aes.decrypt(backup.path, `${envService.getVaribale('secret2')}-${backup.bucket}`);
+      const path = aes.decrypt(backup.path, `${envService.getVariable('secret2')}-${backup.bucket}`);
       const name = path.split(/[/\\]/).pop() as string;
       return {
         ...backup,

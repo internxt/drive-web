@@ -5,7 +5,7 @@ import { getSha256 } from '../crypto/services/utils';
 import envService from 'app/core/services/env.service';
 
 // TODO: Make this injectable
-const networkApiUrl = envService.getVaribale('storjBridge');
+const networkApiUrl = envService.getVariable('storjBridge');
 
 interface FileInfo {
   bucket: string;

@@ -57,7 +57,7 @@ export function savePaymentDataInLocalStorage(
 export async function trackSignUp(uuid: string, email: string) {
   try {
     const gclid = getCookie('gclid');
-    const IMPACT_API = envService.getVaribale('impactApiUrl');
+    const IMPACT_API = envService.getVariable('impactApiUrl');
     const anonymousID = getCookie('impactAnonymousId');
     const source = getCookie('impactSource');
 
@@ -110,7 +110,7 @@ export async function trackPaymentConversion() {
     } catch {
       //
     }
-    const IMPACT_API = envService.getVaribale('impactApiUrl');
+    const IMPACT_API = envService.getVariable('impactApiUrl');
     const anonymousID = getCookie('impactAnonymousId');
     const source = getCookie('impactSource');
 

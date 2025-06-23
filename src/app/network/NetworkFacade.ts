@@ -93,8 +93,8 @@ export class NetworkFacade {
       },
       async (url: string) => {
         const useProxy =
-          envService.getVaribale('dontUseProxy') !== 'true' && !new URL(url).hostname.includes('internxt');
-        const fetchUrl = (useProxy ? envService.getVaribale('proxy') + '/' : '') + url;
+          envService.getVariable('dontUseProxy') !== 'true' && !new URL(url).hostname.includes('internxt');
+        const fetchUrl = (useProxy ? envService.getVariable('proxy') + '/' : '') + url;
         const isPaused = options.continueUploadOptions?.isPaused;
 
         postMessage({ result: WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS });

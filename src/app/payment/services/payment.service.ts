@@ -37,8 +37,6 @@ export interface CreateTeamsPaymentSessionPayload {
   canceledUrl?: string;
 }
 
-const PAYMENTS_API_URL = envService.getVaribale('payments');
-
 export interface ValidateCheckoutSessionResponse {
   valid: boolean;
   customerId?: string;
@@ -53,7 +51,7 @@ const paymentService = {
   async getStripe(): Promise<Stripe> {
     if (!stripe) {
       stripe = (await loadStripe(
-        envService.isProduction() ? envService.getVaribale('publicKey') : envService.getVaribale('testPublicKey'),
+        envService.isProduction() ? envService.getVariable('publicKey') : envService.getVariable('testPublicKey'),
       )) as Stripe;
     }
 
@@ -198,6 +196,7 @@ const paymentService = {
       if (!newToken) {
         throw new Error('No authentication token available');
       }
+      const PAYMENTS_API_URL = envService.getVariable('payments');
       const response = await axios.post<CreatedSubscriptionData>(
         `${PAYMENTS_API_URL}/create-subscription-with-trial?trialToken=${mobileToken}`,
         {

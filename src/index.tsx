@@ -43,7 +43,7 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <HelmetProvider>
-      <LiveChatLoaderProvider provider="intercom" providerKey={envService.getVaribale('intercomProviderKey')}>
+      <LiveChatLoaderProvider provider="intercom" providerKey={envService.getVariable('intercomProviderKey')}>
         <Provider store={store}>
           <DialogManagerProvider>
             <ThemeProvider>

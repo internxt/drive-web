@@ -21,7 +21,7 @@ const errorService = {
    * @param context Context to attach to the exception
    */
   reportError(exception: unknown, context?: Parameters<typeof captureException>[1]): void {
-    if (envService.getVaribale('nodeEnv') === 'development') {
+    if (envService.getVariable('nodeEnv') === 'development') {
       console.error('[ERROR_CATCHED]: This error has been catched and is being reported to Sentry', exception);
     }
     captureException(exception, context);

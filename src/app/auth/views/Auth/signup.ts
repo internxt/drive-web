@@ -38,7 +38,7 @@ const signup = async (data, dispatch, doRegister, setLoading, appRedirect?, setE
     localStorage.removeItem('email');
     localStorage.removeItem('password');
     setLoading(false);
-    window.open(`${envService.getVaribale('hostname')}`, '_parent', 'noopener');
+    window.open(`${envService.getVariable('hostname')}`, '_parent', 'noopener');
   } catch (err: unknown) {
     setError(errorService.castError(err).message);
     setLoading(false);

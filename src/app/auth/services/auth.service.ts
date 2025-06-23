@@ -362,7 +362,7 @@ export const deactivate2FA = (
 export const getNewToken = async (): Promise<string> => {
   const serviceHeaders = httpService.getHeaders(true, false);
   const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
-  const BASE_API_URL = envService.isProduction() ? envService.getVaribale('api') : 'https://drive.internxt.com/api';
+  const BASE_API_URL = envService.isProduction() ? envService.getVariable('api') : 'https://drive.internxt.com/api';
 
   const res = await fetch(`${BASE_API_URL}/new-token`, {
     headers: headers,

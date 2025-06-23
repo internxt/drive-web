@@ -145,5 +145,5 @@ export async function assertValidateKeys(privateKey: string, publicKey: string):
 }
 
 export function getAesInitFromEnv(): { iv: string; salt: string } {
-  return { iv: envService.getVaribale('magicIv'), salt: envService.getVaribale('magicSalt') };
+  return { iv: envService.getVariable('magicIv'), salt: envService.getVariable('magicSalt') };
 }

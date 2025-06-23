@@ -86,7 +86,7 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
 
   const facade = new NetworkFacade(
     Network.client(
-      envService.getVaribale('storjBridge'),
+      envService.getVariable('storjBridge'),
       {
         clientName: 'drive-web',
         clientVersion: '1.0',
