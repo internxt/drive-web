@@ -40,7 +40,7 @@ const WorkspaceCard = ({
   const handleOnClick = () => {
     onClick(workspace);
   };
-  console.log('workspace', workspace);
+
   return (
     <button className="w-full px-2 py-3 text-left hover:bg-gray-5 dark:hover:bg-gray-10" onClick={handleOnClick}>
       <div className="flex w-full flex-row items-center justify-between space-x-2">
