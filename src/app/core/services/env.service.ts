@@ -68,13 +68,10 @@ export const envConfig = {
     errorReportingKey: getEnvVar('REACT_APP_ANALYTICS_ERROR_REPORTING_WRITE_KEY'),
     cdpDataPlane: getEnvVar('REACT_APP_CDP_DATA_PLANE'),
   },
+
   vpnId: getEnvVar('REACT_APP_VPN_ID'),
 
   impact: {
     apiUrl: getEnvVar('REACT_APP_IMPACT_API'),
   },
-  
-  gsheet:{
-    apiUrl: getEnvVar('REACT_APP_GSHEET_API'),
-  }
 };
