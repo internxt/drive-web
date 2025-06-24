@@ -2,13 +2,6 @@ import { describe, it, expect, vi, Mock } from 'vitest';
 import { SdkFactory } from '../../core/factory/sdk';
 import limitService from './limit.service';
 
-vi.mock('./size.service', () => ({
-  default: {
-    bytesToString: vi.fn(),
-  },
-  bytesToString: vi.fn(),
-}));
-
 vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(),

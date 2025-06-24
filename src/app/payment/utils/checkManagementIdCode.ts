@@ -1,4 +1,5 @@
-import localStorageService, { STORAGE_KEYS } from '../../core/services/local-storage.service';
+import localStorageService from '../../core/services/local-storage.service';
+import { STORAGE_KEYS } from '../../core/services/storage-keys';
 import { PlanState } from '../../store/slices/plan';
 import paymentService from '../services/payment.service';
 import errorService from '../../core/services/error.service';

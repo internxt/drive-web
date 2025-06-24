@@ -26,7 +26,8 @@ import { IRoot } from '../../../store/slices/storage/types';
 import { DriveFileData, DriveFolderData, DriveItemData, FolderPathDialog } from '../../types';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
-import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import { STORAGE_KEYS } from '../../../core/services/storage-keys';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;

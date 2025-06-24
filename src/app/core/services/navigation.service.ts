@@ -7,7 +7,7 @@ import configService from './config.service';
 import errorService from './error.service';
 import { AppDispatch } from 'app/store';
 import localStorageService from './local-storage.service';
-import { STORAGE_KEYS } from 'app/core/services/local-storage.service';
+import { STORAGE_KEYS } from 'app/core/services/storage-keys';
 import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
 import { envConfig } from './env.service';
 
