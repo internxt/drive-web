@@ -1,5 +1,4 @@
 import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
-import errorService from 'app/core/services/error.service';
 import { Theme } from './ThemeProvider';
 
 interface ThemeDefinition {
@@ -7,7 +6,7 @@ interface ThemeDefinition {
   promoCodes: string[];
 }
 
-const THEME_DEFINITIONS: Record<Exclude<Theme, 'light' | 'dark' | 'system'>, ThemeDefinition> = {
+export const THEME_DEFINITIONS: Record<Exclude<Theme, 'light' | 'dark' | 'system'>, ThemeDefinition> = {
   starWars: {
     key: STORAGE_KEYS.THEMES.STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
     promoCodes: ['STARWARS80', 'SPECIALX80'],
@@ -42,38 +41,30 @@ const THEME_DEFINITIONS: Record<Exclude<Theme, 'light' | 'dark' | 'system'>, The
   },
 };
 
-type ThemedCoupon = keyof typeof THEME_DEFINITIONS;
-
 export class AvailableThemesService {
   constructor(private readonly usedCouponCodes: string[]) {}
 
-  private async isThemeAvailable(theme: ThemedCoupon): Promise<boolean> {
+  private isThemeAvailable(theme: Theme): boolean {
     const { key, promoCodes } = THEME_DEFINITIONS[theme];
 
     const cached = localStorageService.get(key);
     if (cached === 'true') return true;
 
-    try {
-      const hasUsedCoupon = promoCodes.some((code) => this.usedCouponCodes.includes(code));
-      if (hasUsedCoupon) {
-        localStorageService.set(key, 'true');
-        return true;
-      }
-    } catch (error) {
-      errorService.reportError(error);
+    const hasUsedCoupon = promoCodes.some((code: string) => this.usedCouponCodes.includes(code));
+    if (hasUsedCoupon) {
+      localStorageService.set(key, 'true');
+      return true;
     }
 
     return false;
   }
 
-  async getAllAvailableThemes(): Promise<ThemedCoupon[]> {
-    const themes = await Promise.all(
-      (Object.keys(THEME_DEFINITIONS) as ThemedCoupon[]).map(async (theme) => {
-        const available = await this.isThemeAvailable(theme);
-        return available ? theme : null;
-      }),
-    );
+  public getAllAvailableThemes(): Theme[] {
+    const themes = (Object.keys(THEME_DEFINITIONS) as Theme[]).map((theme) => {
+      const available = this.isThemeAvailable(theme);
+      return available ? theme : null;
+    });
 
-    return themes.filter((t): t is ThemedCoupon => t !== null);
+    return themes.filter((t): t is Theme => t !== null);
   }
 }
