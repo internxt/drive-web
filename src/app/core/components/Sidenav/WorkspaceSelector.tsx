@@ -47,7 +47,7 @@ const WorkspaceCard = ({
         <WorkspaceAvatarWrapper
           diameter={28}
           workspaceId={workspace.uuid}
-          fullName={workspace.name}
+          fullName={workspace?.name ?? ''}
           avatarSrcURL={workspace.avatar}
         />
         <div className="flex grow flex-col truncate">
@@ -145,7 +145,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
           <WorkspaceCard
             key={`${userWorkspace.name}-${userWorkspace.type}`}
             workspace={{
-              name: userWorkspace.name,
+              name: userWorkspace.name ?? '',
               uuid: userWorkspace.uuid,
               type: 'Personal',
               avatar: userWorkspace.avatar,
@@ -159,7 +159,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
             <WorkspaceCard
               key={`${workspace.name}-${workspace.type}`}
               workspace={{
-                name: workspace.name,
+                name: workspace.name ?? '',
                 uuid: workspace.uuid,
                 type: workspace.type,
                 avatar: workspace.avatar,
