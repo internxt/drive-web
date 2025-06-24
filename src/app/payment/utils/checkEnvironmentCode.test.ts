@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { isEnvironmentThemeAvailable } from './checkEnvironmentCode';
-import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
+import localStorageService from 'app/core/services/local-storage.service';
 import paymentService from '../services/payment.service';
 import errorService from 'app/core/services/error.service';
+import { STORAGE_KEYS } from 'app/core/services/storage-keys';
 
-const COUPON='PLANET85';
+const COUPON = 'PLANET85';
 
 describe('isEnvironmentThemeAvailable', () => {
   beforeEach(() => {
@@ -26,7 +27,7 @@ describe('isEnvironmentThemeAvailable', () => {
     const couponSpy = vi.spyOn(paymentService, 'isCouponUsedByUser').mockResolvedValueOnce({ couponUsed: true });
 
     const onSuccess = vi.fn();
-    const result = await isEnvironmentThemeAvailable( onSuccess);
+    const result = await isEnvironmentThemeAvailable(onSuccess);
 
     expect(result).toBe(true);
     expect(onSuccess).toHaveBeenCalled();
