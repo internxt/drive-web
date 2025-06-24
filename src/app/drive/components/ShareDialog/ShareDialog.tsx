@@ -238,8 +238,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setIsLoading(true);
     // Change object type of itemToShare to AdvancedSharedItem
     let shareAccessMode: AccessMode = 'public';
-    let sharingType = 'public';
-    let isAlreadyPasswordProtected = false;
 
     const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
     const itemId = itemToShare?.item.uuid ?? '';
@@ -250,8 +248,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       return null;
     });
 
-    sharingType = sharingInfo?.type ?? 'public';
-    isAlreadyPasswordProtected = sharingInfo?.publicSharing.isPasswordProtected ?? false;
+    const sharingType = sharingInfo?.type ?? 'public';
+    const isAlreadyPasswordProtected = sharingInfo?.publicSharing.isPasswordProtected ?? false;
 
     if (!isItemNotSharedYet) {
       try {
@@ -275,10 +273,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const removeRequest = (email: string) => {
-    setAccessRequests((request) => request.filter((request) => request.email !== email));
   };
 
   const onAcceptRequest = (email: string, roleName: UserRole) => {
