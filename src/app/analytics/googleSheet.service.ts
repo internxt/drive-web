@@ -5,19 +5,19 @@ import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
 const GSHEET_API = envConfig.app.websiteUrl;
 const WINTER_OFFSET_HOUR = 1;
+const MILLISECONDS_PER_HOUR = 60 * 60 * 1000; 
 
-export function formatDateToCustomTimezoneString(date: Date): string {
-  const offsetHours = WINTER_OFFSET_HOUR;                
-  const adjusted = new Date(date.getTime() + offsetHours * 3_600_000);
+export function formatDateAsUtcPlusOne(date: Date): string {         
+  const adjusted = new Date(date.getTime() + WINTER_OFFSET_HOUR * MILLISECONDS_PER_HOUR);
 
   const year = adjusted.getUTCFullYear();
   const month = String(adjusted.getUTCMonth() + 1).padStart(2, '0');
   const day = String(adjusted.getUTCDate()).padStart(2, '0');
-  const hours = String(adjusted.getUTCHours() + 1).padStart(2, '0');
+  const hours = String(adjusted.getUTCHours()).padStart(2, '0');
   const minutes = String(adjusted.getUTCMinutes()).padStart(2, '0');
   const seconds = String(adjusted.getUTCSeconds()).padStart(2, '0');
 
-  const offset = `+${String(offsetHours).padStart(2, '0')}00`;
+  const offset = `+${String(WINTER_OFFSET_HOUR).padStart(2, '0')}00`;
 
   return `${month}-${day}-${year} ${hours}:${minutes}:${seconds}${offset}`;
 }
@@ -47,7 +47,7 @@ export async function sendConversionToAPI({
     const token = await window.grecaptcha.execute(envConfig.services.recaptchaV3, {
       action: 'conversion',
     });
-    const formattedTimestamp = formatDateToCustomTimezoneString(timestamp ?? new Date());
+    const formattedTimestamp = formatDateAsUtcPlusOne(timestamp ?? new Date());
     const amountToPay = getProductAmount(value?.price.decimalAmount ?? 0, users, couponCodeData);
 
     const res = await fetch(`${GSHEET_API}/api/collect/sheet`, {
