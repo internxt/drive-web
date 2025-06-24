@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { AvailableThemesService, THEME_DEFINITIONS } from './availableThemes.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from '../core/services/local-storage.service';
 
 const mockedCoupons = ['PROMOCODE'];
 

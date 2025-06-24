@@ -1,4 +1,5 @@
-import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import { STORAGE_KEYS } from 'app/core/services/storage-keys';
 import { Theme } from './ThemeProvider';
 
 interface ThemeDefinition {
