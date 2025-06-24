@@ -1,20 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { Workspace } from '../types';
-
-export const STORAGE_KEYS = {
-  TUTORIAL_COMPLETED_ID: 'signUpTutorialCompleted',
-  B2B_WORKSPACE: 'b2bWorkspace',
-  WORKSPACE_CREDENTIALS: 'workspace_credentials',
-  FOLDER_ACCESS_TOKEN: 'folderAccessToken',
-  FILE_ACCESS_TOKEN: 'fileAccessToken',
-  GCLID: 'gclid',
-  THEMES: {
-    MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'managementid_theme_enabled',
-    ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'id_management_theme_enabled',
-    ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'environment_theme_enabled',
-  },
-};
+import { STORAGE_KEYS } from './storage-keys';
 
 function get(key: string): string | null {
   return localStorage.getItem(key);
