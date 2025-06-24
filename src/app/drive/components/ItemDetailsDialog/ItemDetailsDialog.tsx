@@ -8,7 +8,8 @@ import { useTranslationContext } from '../../../i18n/provider/TranslationProvide
 import iconService from '../../../drive/services/icon.service';
 import { Button, Modal } from '@internxt/ui';
 import { bytesToString } from '../../../drive/services/size.service';
-import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import { STORAGE_KEYS } from '../../../core/services/storage-keys';
 import { DriveItemData, DriveItemDetails, ItemDetailsProps } from '../../../drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
