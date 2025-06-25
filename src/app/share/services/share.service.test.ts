@@ -40,14 +40,6 @@ describe('Encryption and Decryption', () => {
         getAllWorkspaceTeamSharedFolderFiles: vi.fn(),
       },
     }));
-    vi.mock('../../notifications/services/notifications.service', () => ({
-      default: {
-        show: vi.fn(),
-      },
-      ToastType: {
-        Error: 'ERROR',
-      },
-    }));
     vi.mock('./DomainManager', () => ({ domainManager: vi.fn() }));
   });
 
