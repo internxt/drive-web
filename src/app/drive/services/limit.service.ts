@@ -1,6 +1,6 @@
 import { bytesToString } from './size.service';
 import { SdkFactory } from '../../core/factory/sdk';
-import { HUNDRED_TB } from 'app/core/components/Sidenav/Sidenav';
+import { HUNDRED_TB } from 'app/core/constants';
 
 async function fetchLimit(): Promise<number> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();

@@ -38,14 +38,6 @@ describe('Encryption and Decryption', () => {
       },
     }));
 
-    vi.mock('../../../notifications/services/notifications.service', () => ({
-      default: {
-        show: vi.fn(),
-      },
-      ToastType: {
-        Error: 'ERROR',
-      },
-    }));
     vi.mock('app/core/services/error.service', () => ({
       default: {
         castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
