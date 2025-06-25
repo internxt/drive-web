@@ -2,7 +2,7 @@
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import network from 'app/network';
-import shareService from 'app/share/services/share.service';
+import shareService, { decodeSharingId } from 'app/share/services/share.service';
 import { TaskProgress } from 'app/tasks/types';
 import { useEffect, useState } from 'react';
 import { match } from 'react-router';
@@ -55,8 +55,10 @@ interface ShareViewState {
 
 export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const { translate } = useTranslationContext();
-  const sharingId = props.match.params.token;
+
   const code = props.match.params.code;
+  const sharingId = decodeSharingId(props.match.params.token);
+
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [blobProgress, setBlobProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
