@@ -249,7 +249,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     });
 
     const sharingType = sharingInfo?.type ?? 'public';
-    const isAlreadyPasswordProtected = sharingInfo?.publicSharing.isPasswordProtected ?? false;
+    const isAlreadyPasswordProtected = sharingInfo?.publicSharing?.isPasswordProtected ?? false;
 
     if (!isItemNotSharedYet) {
       try {
