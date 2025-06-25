@@ -5,10 +5,11 @@ import { WorkspaceCredentialsDetails, Workspaces } from '@internxt/sdk/dist/work
 import packageJson from '../../../../../package.json';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
-import { LocalStorageService, STORAGE_KEYS } from '../../services/local-storage.service';
+import { LocalStorageService } from '../../services/local-storage.service';
 import { Workspace } from '../../types';
 import { Checkout } from '@internxt/sdk/dist/payments';
 import { envConfig } from 'app/core/services/env.service';
+import { STORAGE_KEYS } from '../../services/storage-keys';
 
 export class SdkFactory {
   private static sdk: {
