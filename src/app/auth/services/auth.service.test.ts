@@ -36,12 +36,6 @@ beforeAll(() => {
   vi.mock('app/analytics/impact.service', () => ({
     trackSignUp: vi.fn(),
   }));
-  vi.mock('app/core/types', () => ({
-    default: {
-      AppError: vi.fn(),
-    },
-    AppView: vi.fn(),
-  }));
   vi.mock('app/database/services/database.service', () => ({
     default: {
       clear: vi.fn(),
@@ -63,9 +57,6 @@ beforeAll(() => {
         })),
       })),
     },
-  }));
-  vi.mock('app/payment/types', () => ({
-    AuthMethodTypes: vi.fn(),
   }));
   vi.mock('app/store', () => ({
     AppDispatch: vi.fn(),
