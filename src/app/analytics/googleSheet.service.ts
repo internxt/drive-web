@@ -5,10 +5,10 @@ import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
 const GSHEET_API = envConfig.app.websiteUrl;
 const WINTER_OFFSET_HOUR = 1;
-const MILLISECONDS_PER_HOUR = 60 * 60 * 1000; 
+const TWO_EXTRA_HOURS_IN_MS  = 2 * 60 * 60 * 1000; 
 
 export function formatDateAsUtcPlusOne(date: Date): string {         
-  const adjusted = new Date(date.getTime() + WINTER_OFFSET_HOUR * MILLISECONDS_PER_HOUR);
+  const adjusted = new Date(date.getTime() + TWO_EXTRA_HOURS_IN_MS);
 
   const year = adjusted.getUTCFullYear();
   const month = String(adjusted.getUTCMonth() + 1).padStart(2, '0');
