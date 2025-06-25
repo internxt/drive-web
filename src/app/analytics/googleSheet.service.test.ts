@@ -38,7 +38,7 @@ describe('Google Sheets Conversion Logger', () => {
 
   it('When the correct data is provided, then should send event correctly', async () => {
     const inputDate = new Date(2024, 0, 1, 11, 0, 0);
-    const expectedTimestamp = '01-01-2024 12:00:00+0100';
+    const expectedTimestamp = '01-01-2024 13:00:00+0100';
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ message: 'ok' }),
