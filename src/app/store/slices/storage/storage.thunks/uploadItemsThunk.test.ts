@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach, Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { uploadItemsParallelThunk, uploadItemsThunk, uploadItemsThunkExtraReducers } from './uploadItemsThunk';
 import { RootState } from '../../..';
 import { useDispatch } from 'react-redux';
@@ -69,11 +69,6 @@ describe('uploadItemsThunk', () => {
   beforeEach(() => {
     (useDispatch as Mock).mockReturnValue(dispatch);
 
-    vi.clearAllMocks();
-    vi.restoreAllMocks();
-  });
-
-  afterEach(() => {
     vi.clearAllMocks();
   });
 
@@ -155,7 +150,6 @@ describe('uploadItemsThunkExtraReducers', () => {
     RetryManager.clearTasks();
 
     vi.clearAllMocks();
-    vi.restoreAllMocks();
   });
 
   it('should handle rejected case and call RetryManager and notificationsService', () => {
