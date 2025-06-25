@@ -56,7 +56,7 @@ const Appearance = () => {
       const { usedCoupons: userPromoCodes } = await paymentService.getPromoCodesUsedByUser();
       const availableThemesService = new UserThemesService(userPromoCodes);
 
-      const allAvailableThemesForUSer = await availableThemesService.getAllAvailableThemes();
+      const allAvailableThemesForUSer = availableThemesService.getAllAvailableThemes();
       const newAppearances = allAvailableThemesForUSer.map((theme) => ({
         theme,
         img: appearance_dark,
