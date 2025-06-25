@@ -8,7 +8,7 @@ import appearance_light from 'assets/light.svg';
 import appearance_system from 'assets/system.svg';
 import { useEffect, useState } from 'react';
 import paymentService from 'app/payment/services/payment.service';
-import { AvailableThemesService } from 'app/theme/availableThemes.service';
+import { UserThemesService } from 'app/theme/userThemes.service';
 import errorService from 'app/core/services/error.service';
 
 function ThemeButton({ theme, toggleTheme, isSelected, img }) {
@@ -54,7 +54,7 @@ const Appearance = () => {
   const fetchUserThemes = async () => {
     try {
       const { usedCoupons: userPromoCodes } = await paymentService.getPromoCodesUsedByUser();
-      const availableThemesService = new AvailableThemesService(userPromoCodes);
+      const availableThemesService = new UserThemesService(userPromoCodes);
 
       const allAvailableThemesForUSer = await availableThemesService.getAllAvailableThemes();
       const newAppearances = allAvailableThemesForUSer.map((theme) => ({

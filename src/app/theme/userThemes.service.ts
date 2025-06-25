@@ -10,19 +10,19 @@ interface ThemeDefinition {
 export const THEME_DEFINITIONS: Record<Exclude<Theme, 'light' | 'dark' | 'system'>, ThemeDefinition> = {
   starWars: {
     key: STORAGE_KEYS.THEMES.STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
-    promoCodes: ['STARWARS80', 'SPECIALX80'],
+    promoCodes: ['STARWARS85', 'SPECIALX80'],
   },
   starWars2: {
     key: STORAGE_KEYS.THEMES.STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
-    promoCodes: ['STARWARS80', 'SPECIALX80'],
+    promoCodes: ['STARWARS85', 'SPECIALX80'],
   },
   halloween: {
     key: STORAGE_KEYS.THEMES.HALLOWEEN_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
-    promoCodes: ['HALLOWEEN80'],
+    promoCodes: ['HORROR80'],
   },
   christmas: {
     key: STORAGE_KEYS.THEMES.CHRISTMAS_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
-    promoCodes: ['CHRISTMAS80'],
+    promoCodes: ['SECRETSANTA80'],
   },
   superBowl: {
     key: STORAGE_KEYS.THEMES.SUPERBOWL_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
@@ -30,7 +30,7 @@ export const THEME_DEFINITIONS: Record<Exclude<Theme, 'light' | 'dark' | 'system
   },
   stPatricks: {
     key: STORAGE_KEYS.THEMES.STPATRICKS_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
-    promoCodes: ['PADDY80'],
+    promoCodes: ['STPADDYS80'],
   },
   idManagement: {
     key: STORAGE_KEYS.THEMES.ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
@@ -42,7 +42,7 @@ export const THEME_DEFINITIONS: Record<Exclude<Theme, 'light' | 'dark' | 'system
   },
 };
 
-export class AvailableThemesService {
+export class UserThemesService {
   constructor(private readonly usedCouponCodes: string[]) {}
 
   private isThemeAvailable(theme: Theme): boolean {

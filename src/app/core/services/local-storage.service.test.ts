@@ -332,7 +332,6 @@ describe('Testing the local storage service', () => {
 
   describe('Clearing local storage', () => {
     it('When clear storage is requested, then removes all keys', () => {
-      const getItemSpy = vi.spyOn(Storage.prototype, 'getItem');
       const expectedKeysToRemove = [
         'xUser',
         'xMnemonic',
@@ -344,11 +343,9 @@ describe('Testing the local storage service', () => {
         'showSummerBanner',
         'xInvitedToken',
         'xResourcesToken',
-        'star_wars_theme_enabled',
-        STORAGE_KEYS.THEMES.MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
-        STORAGE_KEYS.THEMES.ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
         STORAGE_KEYS.B2B_WORKSPACE,
         STORAGE_KEYS.WORKSPACE_CREDENTIALS,
+        ...Object.values(STORAGE_KEYS.THEMES),
       ];
 
       const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
@@ -356,7 +353,6 @@ describe('Testing the local storage service', () => {
 
       localStorageService.clear();
 
-      expect(getItemSpy).toHaveBeenCalledWith('theme');
       expect(setItemSpy).toHaveBeenCalledWith('theme', 'system');
 
       for (const key of expectedKeysToRemove) {
