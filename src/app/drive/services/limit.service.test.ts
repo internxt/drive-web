@@ -2,10 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SdkFactory } from '../../core/factory/sdk';
 import limitService from './limit.service';
 
-vi.mock('app/core/components/Sidenav/Sidenav', () => ({
-  HUNDRED_TB: 109951162777600,
-}));
-
 vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(),
