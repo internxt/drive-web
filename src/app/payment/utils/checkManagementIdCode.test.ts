@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { isManagementIdThemeAvailable } from './checkManagementIdCode';
-import localStorageService, { STORAGE_KEYS } from '../../core/services/local-storage.service';
+import localStorageService from '../../core/services/local-storage.service';
+import { STORAGE_KEYS } from '../../core/services/storage-keys';
 import paymentService from '../services/payment.service';
 import errorService from '../../core/services/error.service';
 import { PlanState } from '../../store/slices/plan';

@@ -4,20 +4,14 @@ import localStorageService from 'app/core/services/local-storage.service';
 import paymentService from '../services/payment.service';
 import errorService from 'app/core/services/error.service';
 
-vi.mock('app/core/services/local-storage.service', async () => {
-  const actual = await vi.importActual<typeof import('app/core/services/local-storage.service')>(
-    'app/core/services/local-storage.service',
-  );
-
-  return {
-    ...actual,
-    default: {
-      ...actual.default,
-      get: vi.fn(),
-      set: vi.fn(),
-    },
-  };
-});
+vi.mock('app/core/services/local-storage.service', () => ({
+  default: {
+    get: vi.fn(),
+    clear: vi.fn(),
+    getUser: vi.fn(),
+    set: vi.fn(),
+  },
+}));
 vi.mock('../services/payment.service');
 vi.mock('app/core/services/error.service');
 
