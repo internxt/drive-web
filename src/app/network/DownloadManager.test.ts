@@ -32,16 +32,13 @@ vi.mock('src/app/network/NetworkFacade.ts', () => ({
   })),
 }));
 
-vi.mock('i18next', () => ({ t: (_) => MOCK_TRANSLATION_MESSAGE }));
-
-vi.mock('app/notifications/services/notifications.service', () => ({
+vi.mock('../../core/services/error.service', () => ({
   default: {
-    show: vi.fn(),
-  },
-  ToastType: {
-    Error: 'ERROR',
+    reportError: vi.fn(),
   },
 }));
+
+vi.mock('i18next', () => ({ t: () => MOCK_TRANSLATION_MESSAGE }));
 
 describe('downloadManager', () => {
   beforeAll(() => {
@@ -1092,10 +1089,11 @@ describe('downloadManager', () => {
         items: mockItems,
         options: { showErrors: true },
       } as DownloadTask;
+      const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
 
       DownloadManager['reportError'](mockError, mockDownloadTask);
 
-      expect(notificationsService.show).toHaveBeenCalledWith({
+      expect(notificationsServiceSpy).toHaveBeenCalledWith({
         text: MOCK_TRANSLATION_MESSAGE,
         type: ToastType.Error,
       });
