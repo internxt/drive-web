@@ -23,8 +23,7 @@ import workspacesSelectors from '../../../store/slices/workspaces/workspaces.sel
 import SidenavItem from './SidenavItem/SidenavItem';
 import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
 import { STORAGE_KEYS } from '../../../core/services/storage-keys';
-
-export const HUNDRED_TB = 109951162777600;
+import { HUNDRED_TB } from '../../../core/constants';
 
 interface SidenavProps {
   user: UserSettings | undefined;
