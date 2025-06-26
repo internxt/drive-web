@@ -7,6 +7,17 @@ import errorService from '../../../../core/services/error.service';
 import AppError from '../../../../core/types';
 import { DriveFolderData } from '../../../../drive/types';
 
+vi.mock('..', () => ({
+  storageActions: vi.fn(),
+  storageSelectors: vi.fn(),
+}));
+
+vi.mock('../../../../core/services/workspace.service', () => ({
+  default: {
+    createFolder: vi.fn(),
+  },
+}));
+
 vi.mock('../../../../tasks/services/tasks.service', () => ({
   default: {
     create: vi.fn(),
@@ -23,19 +34,8 @@ vi.mock('../../../../core/services/error.service', () => ({
 
 vi.mock('../../../../drive/services/folder.service', () => ({
   default: {
-    createFolder: vi.fn(),
     createFolderByUuid: vi.fn(),
-    updateMetaData: vi.fn(),
-    moveFolder: vi.fn(),
-    moveFolderByUuid: vi.fn(),
-    fetchFolderTree: vi.fn(),
-    addAllFoldersToZip: vi.fn(),
-    addAllFilesToZip: vi.fn(),
   },
-  downloadFolderAsZip: vi.fn(),
-  createFilesIterator: vi.fn(),
-  createFoldersIterator: vi.fn(),
-  checkIfCachedSourceIsOlder: vi.fn(),
 }));
 
 describe('checkCreateFolder', () => {
