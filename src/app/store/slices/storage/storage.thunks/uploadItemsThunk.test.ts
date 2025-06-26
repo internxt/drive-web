@@ -198,7 +198,7 @@ describe('uploadItemsThunkExtraReducers', () => {
     });
   });
 
-  it.skip('should handle rejected case and not call RetryManager if file is not retrying', () => {
+  it('should handle rejected case and not call RetryManager if file is not retrying', () => {
     const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
     const cases = new Map();
     const builder = {
@@ -232,7 +232,7 @@ describe('uploadItemsThunkExtraReducers', () => {
     rejectedHandler(state, action);
 
     expect(RetryIsRetryingFileSpy).toHaveBeenCalledWith('task1');
-    expect(RetryChangeStatusSpy).not.toBeCalled();
+    expect(RetryChangeStatusSpy).toHaveBeenCalledWith('task1', 'failed');
     expect(notificationsServiceSpy).toHaveBeenCalledWith({
       text: expect.stringContaining('Test Error'),
       type: ToastType.Error,
