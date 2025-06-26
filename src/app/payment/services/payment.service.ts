@@ -140,7 +140,7 @@ const paymentService = {
   async getPromoCodesUsedByUser(): Promise<{
     usedCoupons: string[];
   }> {
-    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
     return paymentsClient.getPromoCodesUsedByUser();
   },
 
