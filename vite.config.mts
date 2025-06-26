@@ -1,11 +1,12 @@
 import react from '@vitejs/plugin-react';
+import dotenv from 'dotenv';
+import fs from 'fs';
 import path from 'path';
 import { defineConfig } from 'vite';
+import obfuscator from 'vite-plugin-bundle-obfuscator';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
-import dotenv from 'dotenv';
-import fs from 'fs';
 
 dotenv.config();
 
@@ -15,6 +16,12 @@ export default defineConfig({
   base: process.env.PUBLIC_URL ?? '/',
   plugins: [
     react(),
+    obfuscator({
+      log: false,
+      enable: true,
+      autoExcludeNodeModules: true,
+      threadPool: true,
+    }),
     svgr(),
     nodePolyfills({
       globals: {
