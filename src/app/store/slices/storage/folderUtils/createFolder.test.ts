@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createFolder } from './createFolder';
 import { CreateFolderResponse, EncryptionVersion } from '@internxt/sdk/dist/drive/storage/types';
 import folderService from '../../../../drive/services/folder.service';
@@ -7,31 +7,17 @@ import errorService from '../../../../core/services/error.service';
 import AppError from '../../../../core/types';
 import { DriveFolderData } from '../../../../drive/types';
 
-//StorageActions mock
-vi.mock('..', () => ({
+vi.mock('../../../../tasks/services/tasks.service', () => ({
   default: {
-    pushItems: vi.fn(),
+    create: vi.fn(),
+    updateTask: vi.fn(),
   },
-  storageActions: vi.fn(),
-  storageSelectors: vi.fn(),
 }));
 
-vi.mock('../storage.thunks', () => ({
+vi.mock('../../../../core/services/error.service', () => ({
   default: {
-    initializeThunk: vi.fn(),
-    resetNamePathThunk: vi.fn(),
-    uploadItemsThunk: vi.fn(),
-    fetchPaginatedFolderContentThunk: vi.fn(),
-    deleteItemsThunk: vi.fn(),
-    goToFolderThunk: vi.fn(),
-    uploadFolderThunk: vi.fn(),
-    updateItemMetadataThunk: vi.fn(),
-    fetchRecentsThunk: vi.fn(),
-    createFolderThunk: vi.fn(),
-    moveItemsThunk: vi.fn(),
-    fetchDeletedThunk: vi.fn(),
-    renameItemsThunk: vi.fn(),
-    uploadSharedItemsThunk: vi.fn(),
+    castError: vi.fn().mockImplementation((e) => e),
+    reportError: vi.fn(),
   },
 }));
 
@@ -82,7 +68,7 @@ describe('checkCreateFolder', () => {
       uuid: 'uuid',
     };
 
-    (folderService.createFolderByUuid as Mock).mockReturnValue([Promise.resolve(mockFolder), { cancel: vi.fn() }]);
+    vi.spyOn(folderService, 'createFolderByUuid').mockReturnValue([Promise.resolve(mockFolder), { cancel: vi.fn() }]);
     vi.spyOn(tasksService, 'create').mockReturnValue('task-id');
     vi.spyOn(tasksService, 'updateTask').mockReturnValue();
     vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
