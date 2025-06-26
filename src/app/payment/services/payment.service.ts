@@ -137,6 +137,13 @@ const paymentService = {
     return paymentsClient.isCouponUsedByUser({ couponCode: couponCode });
   },
 
+  async getPromoCodesUsedByUser(): Promise<{
+    usedCoupons: string[];
+  }> {
+    const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
+    return paymentsClient.getPromoCodesUsedByUser();
+  },
+
   async requestPreventCancellation(): Promise<FreeTrialAvailable> {
     const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
     return paymentsClient.requestPreventCancellation();

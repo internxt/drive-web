@@ -4,15 +4,14 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-
     "label": "Spare 80%",
     "upperTitle": "Angebot zum Weltumwelttag",
     "title": "Jahres- und Lifetime-Pläne!",
     "cta": "Angebot sichern",
     "guarantee": "30-Tage-Geld-zurück-Garantie",
     "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
-    "specialOfferLabel":"",
-    "specialOfferGift":"Gewinne einen Internxt x Swiss Peak Rucksack",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Gewinne einen Internxt x Swiss Peak Rucksack",
     "features": [
       "Drive, VPN und Antivirus",
       "Post-Quanten-Verschlüsselung",
@@ -20,7 +19,6 @@
       "Ende-zu-Ende-verschlüsselte Übertragungen",
       "Kein unbefugter Zugriff",
       "Angebot endet am 27. Juni"
-
     ]
   },
   "susbcriptionsBanner": {
@@ -62,14 +60,14 @@
     "light": "Hell",
     "dark": "Dunkel",
     "system": "System",
-    "starwars": "Star Wars",
-    "starwars2": "Star Wars Thema",
+    "starWars": "Star Wars",
+    "starWars2": "Star Wars Thema",
     "halloween": "Halloween",
     "christmas": "Weihnachten",
     "superBowl": "Super Bowl",
     "sanValentin": "Valentinstag",
-    "stpatricks": "St. Patrick's",
-    "idmanagement": "Identitätsmanagement",
+    "stPatricks": "St. Patrick's",
+    "idManagement": "Identitätsmanagement",
     "environment": "Weltumwelt"
   },
   "auth": {
