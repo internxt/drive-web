@@ -238,19 +238,22 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setIsLoading(true);
     // Change object type of itemToShare to AdvancedSharedItem
     let shareAccessMode: AccessMode = 'public';
-    let sharingType = 'public';
-    let isAlreadyPasswordProtected = false;
 
     const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
     const itemId = itemToShare?.item.uuid ?? '';
 
     const isItemNotSharedYet = !isAdvancedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length;
 
+    const sharingInfo = await shareService.getSharingInfo(itemId, itemType).catch(() => {
+      return null;
+    });
+
+    const sharingType = sharingInfo?.type ?? 'public';
+    const isAlreadyPasswordProtected = sharingInfo?.publicSharing?.isPasswordProtected ?? false;
+
     if (!isItemNotSharedYet) {
       try {
         const sharingData = await shareService.getSharingType(itemId, itemType);
-        sharingType = sharingData.type;
-        isAlreadyPasswordProtected = sharingData.encryptedPassword !== null;
         setSharingMeta(sharingData);
       } catch (error) {
         errorService.reportError(error);
@@ -272,10 +275,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
   };
 
-  const removeRequest = (email: string) => {
-    setAccessRequests((request) => request.filter((request) => request.email !== email));
-  };
-
   const onAcceptRequest = (email: string, roleName: UserRole) => {
     // TODO -> Accept user access request
     setAccessRequests((prevRequests) =>
@@ -286,11 +285,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         return request;
       }),
     );
-  };
-
-  const onDenyrequest = (email: string) => {
-    // TODO -> Deny user access request
-    removeRequest(email);
   };
 
   const handleDenyRequest = (email: string) => {

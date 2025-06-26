@@ -4,15 +4,15 @@
     "logOut": "Cerrar sesión"
   },
 
- "featuresBanner": {
+  "featuresBanner": {
     "label": "Oferta 80%",
     "upperTitle": "Día Mundial del Medio Ambiente",
     "title": "Protege tus datos, protege el planeta",
     "cta": "Consigue tu plan",
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
-    "specialOfferLabel":"",
-    "specialOfferGift":"Entra en el sorteo de una mochila Internxt x Swiss Peak",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Entra en el sorteo de una mochila Internxt x Swiss Peak",
 
     "features": [
       "Internxt Drive, VPN, y Antivirus ",
@@ -20,8 +20,7 @@
       "Nube sostenible",
       "Transferencias cifradas",
       "Sin accesos no autorizados",
-      "La oferta termina el 27 de Junio"      
-
+      "La oferta termina el 27 de Junio"
     ]
   },
   "susbcriptionsBanner": {
@@ -63,14 +62,14 @@
     "light": "Claro",
     "dark": "Oscuro",
     "system": "Sistema",
-    "starwars": "Star Wars",
-    "starwars2": "Tema de Star Wars",
+    "starWars": "Star Wars",
+    "starWars2": "Tema de Star Wars",
     "halloween": "Halloween",
     "christmas": "Navidad",
     "superBowl": "Super Bowl",
     "valentines": "San Valentín",
-    "stpatricks": "San Patricio",
-    "idmanagement": "Gestión de Identidad",
+    "stPatricks": "San Patricio",
+    "idManagement": "Gestión de Identidad",
     "environment": "Día Mundial del Medio Ambiente"
   },
   "auth": {

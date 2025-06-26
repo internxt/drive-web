@@ -4,15 +4,14 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-
     "label": "Économisez 80 %",
     "upperTitle": "Offre pour la Journée mondiale de l'environnement",
     "title": "Plans annuels et à vie !",
     "cta": "Profitez de l'offre",
     "guarantee": "Garantie satisfait ou remboursé de 30 jours",
     "lastCta": "*Offre réservée aux comptes gratuits ou aux nouveaux clients",
-    "specialOfferLabel":"",
-    "specialOfferGift":"Gagnez un sac à dos Internxt x Swiss Peak",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Gagnez un sac à dos Internxt x Swiss Peak",
     "features": [
       "Drive, VPN et Antivirus",
       "Chiffrement post-quantique",
@@ -20,7 +19,6 @@
       "Transferts chiffrés de bout en bout",
       "Aucun accès non autorisé",
       "L'offre se termine le 27 juin"
-
     ]
   },
   "susbcriptionsBanner": {
@@ -62,14 +60,14 @@
     "light": "Clair",
     "dark": "Sombre",
     "system": "Système",
-    "starwars": "Star Wars",
-    "starwars2": "Thème de Star Wars",
+    "starWars": "Star Wars",
+    "starWars2": "Thème de Star Wars",
     "halloween": "Halloween",
     "christmas": "Noël",
     "superBowl": "Super Bowl",
     "valentines": "Saint Valentin",
-    "stpatricks": "Saint Patrick",
-    "idmanagement": "Gestion de l'identité",
+    "stPatricks": "Saint Patrick",
+    "idManagement": "Gestion de l'identité",
     "environment": "Journée Mondiale de l'Environnement"
   },
   "auth": {

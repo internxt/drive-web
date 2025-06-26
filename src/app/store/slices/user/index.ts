@@ -50,21 +50,6 @@ export const initializeUserThunk = createAsyncThunk<
   payload = { ...defaultPayload, ...payload };
 
   if (user && isAuthenticated) {
-    if (!user.root_folder_id) {
-      const initializeUserBody = (await userService.initializeUser(
-        user.email,
-        user.mnemonic,
-      )) as InitializeUserResponse;
-
-      dispatch(
-        userActions.setUser({
-          ...user,
-          root_folder_id: initializeUserBody.root_folder_id,
-          bucket: initializeUserBody.bucket,
-        }),
-      );
-    }
-
     dispatch(refreshUserThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
@@ -81,32 +66,18 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
     const currentUser = getState().user.user;
     if (!currentUser) throw new Error('Current user is not defined');
 
-    if (isExpired || forceRefresh) {
-      const { user, token } = await userService.refreshUser();
-
-      const { avatar, emailVerified, name, lastname, uuid } = user;
-      await syncAvatarIfNeeded(uuid, avatar);
-
-      dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
-      dispatch(userActions.setToken(token));
-    }
-  },
-);
-
-export const refreshUserDataThunk = createAsyncThunk<void, void, { state: RootState }>(
-  'user/refreshUser',
-  async (_, { dispatch, getState }) => {
-    const currentUser = getState().user.user;
-    if (!currentUser) throw new Error('Current user is not defined');
-
     try {
-      const { user } = await userService.refreshUserData(currentUser.uuid);
-      const { avatar, emailVerified, name, lastname, uuid } = user;
-      await syncAvatarIfNeeded(uuid, avatar);
+      if (isExpired || forceRefresh) {
+        const { user, newToken } = await userService.refreshUserData(currentUser.uuid);
 
-      dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
+        const { avatar, emailVerified, name, lastname, uuid } = user;
+        await syncAvatarIfNeeded(uuid, avatar);
+
+        dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
+        dispatch(userActions.setToken(newToken));
+      }
     } catch (err) {
-      errorService.reportError(err, { extra: { thunk: 'refreshUserData' } });
+      errorService.reportError(err, { extra: { thunk: 'refreshUser' } });
     }
   },
 );
@@ -263,7 +234,6 @@ export const userActions = userSlice.actions;
 export const userThunks = {
   initializeUserThunk,
   refreshUserThunk,
-  refreshUserDataThunk,
   logoutThunk,
   updateUserEmailCredentialsThunk,
 };

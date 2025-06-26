@@ -6,11 +6,8 @@ const testToken = 'testToken';
 const testEmail = 'test@initnxt.com';
 
 const usersClientMock = {
-  initialize: vi.fn(),
-  refreshUser: vi.fn(),
   getUserData: vi.fn(),
   updateUserProfile: vi.fn(),
-  getFriendInvites: vi.fn(),
   //updateUserAvatar: vi.fn(),
   deleteUserAvatar: vi.fn(),
   sendVerificationEmail: vi.fn(),
@@ -32,11 +29,7 @@ vi.mock('../../core/factory/sdk', () => ({
       createDesktopAuthClient: vi.fn(() => ({
         login: vi.fn(),
       })),
-      createNewUsersClient: vi.fn(() => usersClientMock),
       createAuthClient: vi.fn(() => authClientMock),
-      createUsersClient: vi.fn(() => usersClientMock),
-    })),
-    getInstance: vi.fn(() => ({
       createUsersClient: vi.fn(() => usersClientMock),
     })),
   },
@@ -45,13 +38,6 @@ vi.mock('../../core/factory/sdk', () => ({
 describe('userService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  it('should initialize a user', async () => {
-    usersClientMock.initialize.mockResolvedValue({ success: true });
-    const result = await userService.initializeUser(testEmail, 'mnemonic');
-    expect(result).toEqual({ success: true });
-    expect(usersClientMock.initialize).toHaveBeenCalledWith(testEmail, 'mnemonic');
   });
 
   it('should send a deactivation email', async () => {
@@ -67,13 +53,6 @@ describe('userService', () => {
     expect(response).toBe('mockPreCreate');
   });
 
-  it('should refresh user data', async () => {
-    usersClientMock.refreshUser.mockResolvedValue({ user: {}, token: 'newToken' });
-    const result = await userService.refreshUser();
-    expect(result).toEqual({ user: {}, token: 'newToken' });
-    expect(usersClientMock.refreshUser).toHaveBeenCalled();
-  });
-
   it('should update user profile', async () => {
     usersClientMock.updateUserProfile.mockResolvedValue({ success: true });
     await userService.updateUserProfile({
@@ -84,13 +63,6 @@ describe('userService', () => {
       { name: 'New Name', lastname: 'New Lastname' },
       testToken,
     );
-  });
-
-  it('should get friend invites', async () => {
-    usersClientMock.getFriendInvites.mockResolvedValue([{ id: 1 }]);
-    const result = await userService.getFriendInvites();
-    expect(result).toEqual([{ id: 1 }]);
-    expect(usersClientMock.getFriendInvites).toHaveBeenCalled();
   });
 
   /*it('should update user avatar', async () => {
