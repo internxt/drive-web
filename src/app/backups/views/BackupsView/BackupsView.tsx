@@ -8,10 +8,10 @@ import WarningMessageWrapper from '../../../drive/components/WarningMessage/Warn
 import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
 import DeviceList from '../../components/DeviceList/DeviceList';
 import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
-import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
+import newStorageService from '../../../drive/services/new-storage.service';
 import { deleteFile } from '../../../drive/services/file.service';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
-import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
+import { DriveItemData } from '../../../drive/types';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import { useBackupListActions } from 'app/backups/hooks/useBackupListActions';
@@ -84,7 +84,7 @@ export default function BackupsView(): JSX.Element {
     const filteredCurrentItems = currentItems.filter((item) => !selectedItemsIDs.has(item.id));
     try {
       const deletePromises = selectedItems.map((item) =>
-        item.isFolder ? deleteBackupDeviceAsFolder(item as DriveWebFolderData) : deleteFile(item),
+        item.isFolder ? newStorageService.deleteFolderByUuid(item.uuid) : deleteFile(item),
       );
       await Promise.all(deletePromises);
       dispatch(deleteItemsThunk(selectedItems));

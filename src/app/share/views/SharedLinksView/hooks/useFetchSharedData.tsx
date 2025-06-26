@@ -25,7 +25,8 @@ import { removeDuplicates } from '../../../../utils/driveItemsUtils';
 import shareService from '../../../services/share.service';
 import { AdvancedSharedItem, SharedNetworkCredentials } from '../../../types';
 import { useShareViewContext } from '../context/SharedViewContextProvider';
-import localStorageService, { STORAGE_KEYS } from '../../../../core/services/local-storage.service';
+import localStorageService from '../../../../core/services/local-storage.service';
+import { STORAGE_KEYS } from '../../../../core/services/storage-keys';
 
 const ITEMS_PER_PAGE = 30;
 

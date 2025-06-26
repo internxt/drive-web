@@ -61,6 +61,8 @@ export function savePaymentDataInLocalStorage(
 
 export async function trackSignUp(uuid: string, email: string) {
   try {
+    const gclid = getCookie('gclid');
+
     window.gtag('event', 'User Signup');
 
     if (source && source !== 'direct') {
@@ -71,6 +73,7 @@ export async function trackSignUp(uuid: string, email: string) {
         userId: uuid,
         type: 'track',
         event: 'User Signup',
+        ...(gclid ? { gclid } : {}),
       });
     }
   } catch (e) {
