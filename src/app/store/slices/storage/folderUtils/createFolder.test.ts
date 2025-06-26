@@ -8,6 +8,9 @@ import AppError from '../../../../core/types';
 import { DriveFolderData } from '../../../../drive/types';
 
 vi.mock('..', () => ({
+  default: {
+    pushItems: vi.fn(),
+  },
   storageActions: vi.fn(),
   storageSelectors: vi.fn(),
 }));
