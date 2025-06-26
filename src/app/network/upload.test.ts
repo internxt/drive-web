@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { uploadFile } from './upload';
 import { ConnectionLostError } from './requests';
 
-const uploadMock = vi.fn();
+const uploadMock = vi.hoisted(() => vi.fn());
 
 const uploadParams = {
   filesize: 50000,
