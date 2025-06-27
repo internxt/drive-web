@@ -25,13 +25,25 @@ We aim to have:
 
 ## Scripts
 
-### `yarn start` / `yarn run dev`
+### `yarn run dev`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
+
+### `yarn run preview`
+
+Serves the built application locally to preview the production output.
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+- Useful for testing the result of a production build.
+- No hot reloading or development tools included.
+
+> Before running `yarn run preview`, make sure you have already built the application using:
+> `yarn run build`
+> The preview command serves the latest build output, so if you haven't run build beforehand, it will either fail or serve outdated files.
 
 ### `yarn run lint` (`yarn run lint:ts` && `yarn run lint:scss`)
 
@@ -133,9 +145,6 @@ src/
 │   │   │   └── styles.css
 │   │   ├── styles.css    # General styles for Home
 │   │   └── Home.tsx      # Main component for the Home view
-│   └── NotFound/         # 404 or nonexistent route view
-│       ├── NotFound.tsx
-│       └── styles.css
 ├── hooks/                # Custom React hooks
 │   ├── useAuth.ts
 │   ├── useTheme.ts

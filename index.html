@@ -2,19 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
       content="Stand for privacy, switch to Internxt. Internxt's open-source cloud storage services, Internxt Drive, Send, and more, protect your right to privacy."
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="apple-touch-icon" href="/logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -26,7 +26,7 @@
     -->
     <title>Internxt Drive – Private & Secure Cloud Storage</title>
 
-    <!-- <script src="https://www.google.com/recaptcha/api.js?render=%REACT_APP_RECAPTCHA_V3%"></script> -->
+    <script src="https://www.google.com/recaptcha/api.js?render=%REACT_APP_RECAPTCHA_V3%"></script>
     <script src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_ID%"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -111,11 +111,6 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','%REACT_APP_GOOGLE_TAG_MANAGER%');</script>
     <!-- End Google Tag Manager -->
-
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=%REACT_APP_GOOGLE_TAG_MANAGER%"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
      
     <script type="text/javascript">
       window.NREUM || (NREUM = {});
@@ -1689,7 +1684,18 @@
 
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=%REACT_APP_GOOGLE_TAG_MANAGER%"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <div id="root"></div>
+    <script type="module" src="./src/index.tsx"></script>
     <!--
         This HTML file is a template.
         If you open it directly in the browser, you will see an empty page.

@@ -16,6 +16,7 @@ import { isSuperbowlThemeAvailable } from '../../../../payment/utils/checkSuperB
 import { iStPatricksThemeAvailable } from '../../../../payment/utils/checkStPatrciksCode';
 import { isManagementIdThemeAvailable } from '../../../../payment/utils/checkManagementIdCode';
 import { RootState } from '../../../../store';
+import { isEnvironmentThemeAvailable } from 'app/payment/utils/checkEnvironmentCode';
 
 function ThemeButton({ theme, toggleTheme, isSelected, img }) {
   const { translate } = useTranslationContext();
@@ -125,14 +126,34 @@ const Appearance = () => {
         const error = err as Error;
         errorService.reportError(error);
       });
-    isManagementIdThemeAvailable(plan).then((isManagementIdThemeAvailable) => {
-      if (
-        !appearances.some((appearance) => appearance.theme === 'idmanagement' && appearance.img === appearance_dark) &&
-        isManagementIdThemeAvailable
-      ) {
-        setAppearances([...appearances, { theme: 'idmanagement', img: appearance_dark }]);
-      }
-    });
+    isManagementIdThemeAvailable(plan)
+      .then((isManagementIdThemeAvailable) => {
+        if (
+          !appearances.some(
+            (appearance) => appearance.theme === 'idmanagement' && appearance.img === appearance_dark,
+          ) &&
+          isManagementIdThemeAvailable
+        ) {
+          setAppearances([...appearances, { theme: 'idmanagement', img: appearance_dark }]);
+        }
+      })
+      .catch((err) => {
+        const error = err as Error;
+        errorService.reportError(error);
+      });
+    isEnvironmentThemeAvailable()
+      .then((isEnvironmentThemeAvailable) => {
+        if (
+          !appearances.some((appearance) => appearance.theme === 'environment' && appearance.img === appearance_dark) &&
+          isEnvironmentThemeAvailable
+        ) {
+          setAppearances([...appearances, { theme: 'environment', img: appearance_dark }]);
+        }
+      })
+      .catch((err) => {
+        const error = err as Error;
+        errorService.reportError(error);
+      });
   }, []);
 
   return (

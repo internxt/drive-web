@@ -5,12 +5,13 @@ import { getCookie } from './utils';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { envConfig } from 'app/core/services/env.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { CouponCodeData } from 'app/payment/types';
 import { bytesToString } from 'app/drive/services/size.service';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 
-const IMPACT_API = process.env.REACT_APP_IMPACT_API as string;
+const IMPACT_API = envConfig.impact.apiUrl;
 
 const anonymousID = getCookie('impactAnonymousId');
 const source = getCookie('impactSource');
@@ -60,8 +61,8 @@ export function savePaymentDataInLocalStorage(
 
 export async function trackSignUp(uuid: string, email: string) {
   try {
-    window.rudderanalytics.identify(uuid, { email, uuid: uuid });
-    window.rudderanalytics.track('User Signup', { email });
+    const gclid = getCookie('gclid');
+
     window.gtag('event', 'User Signup');
 
     if (source && source !== 'direct') {
@@ -72,6 +73,7 @@ export async function trackSignUp(uuid: string, email: string) {
         userId: uuid,
         type: 'track',
         event: 'User Signup',
+        ...(gclid ? { gclid } : {}),
       });
     }
   } catch (e) {
@@ -107,7 +109,7 @@ export async function trackPaymentConversion() {
         ],
         ...(gclid ? { gclid } : {}),
       });
-    } catch (error) {
+    } catch {
       //
     }
 
@@ -130,7 +132,7 @@ export async function trackPaymentConversion() {
           errorService.reportError(error);
         });
     }
-  } catch (err) {
+  } catch {
     //
   }
 }

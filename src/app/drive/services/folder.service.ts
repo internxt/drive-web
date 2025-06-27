@@ -30,6 +30,7 @@ import dateService from '../../core/services/date.service';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { queue, QueueObject } from 'async';
 import { QueueUtilsService } from 'app/utils/queueUtils';
+import { envConfig } from 'app/core/services/env.service';
 
 export interface IFolders {
   bucket: string;
@@ -94,28 +95,6 @@ export interface DownloadFolderAsZipOptions {
   workspaceId?: string;
 }
 
-export function createFolder(
-  currentFolderId: number,
-  folderName: string,
-): [Promise<StorageTypes.CreateFolderResponse>, RequestCanceler] {
-  const payload: StorageTypes.CreateFolderPayload = {
-    parentFolderId: currentFolderId,
-    folderName: folderName,
-  };
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const [createdFolderPromise, requestCanceler] = storageClient.createFolder(payload);
-
-  const finalPromise = createdFolderPromise
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      throw errorService.castError(error);
-    });
-
-  return [finalPromise, requestCanceler];
-}
-
 export function createFolderByUuid(
   parentFolderUuid: string,
   plainName: string,
@@ -156,11 +135,6 @@ export async function updateMetaData(
 export async function deleteFolder(folderData: DriveFolderData): Promise<void> {
   const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
   await trashClient.deleteFolder(folderData.id);
-}
-
-export async function deleteBackupDeviceAsFolder(folderData: DriveFolderData): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  await storageClient.deleteFolder(folderData.id);
 }
 
 interface GetDirectoryFoldersResponse {
@@ -575,7 +549,7 @@ async function fetchFolderTree(folderUUID: string): Promise<{
     folderDecryptedNames[currentTree.id] = currentTree.plainName;
 
     for (const file of files) {
-      fileDecryptedNames[file.id] = aes.decrypt(file.name, `${process.env.REACT_APP_CRYPTO_SECRET2}-${file.folderId}`);
+      fileDecryptedNames[file.id] = aes.decrypt(file.name, `${envConfig.crypto.secret2}-${file.folderId}`);
     }
 
     pendingFolders.shift();
@@ -585,27 +559,6 @@ async function fetchFolderTree(folderUUID: string): Promise<{
   }
 
   return { tree, folderDecryptedNames, fileDecryptedNames, size };
-}
-
-export async function moveFolder(folderId: number, destination: number): Promise<StorageTypes.MoveFolderResponse> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const payload: StorageTypes.MoveFolderPayload = {
-    folderId: folderId,
-    destinationFolderId: destination,
-  };
-
-  return storageClient
-    .moveFolder(payload)
-    .then((response) => {
-      return response;
-    })
-    .catch((err) => {
-      const castedError = errorService.castError(err);
-      if (castedError.status) {
-        castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
-      }
-      throw castedError;
-    });
 }
 
 export async function moveFolderByUuid(
@@ -628,10 +581,8 @@ export async function moveFolderByUuid(
 }
 
 const folderService = {
-  createFolder,
   createFolderByUuid,
   updateMetaData,
-  moveFolder,
   moveFolderByUuid,
   fetchFolderTree,
   downloadFolderAsZip,

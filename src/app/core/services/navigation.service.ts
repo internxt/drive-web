@@ -7,15 +7,16 @@ import configService from './config.service';
 import errorService from './error.service';
 import { AppDispatch } from 'app/store';
 import localStorageService from './local-storage.service';
-import { STORAGE_KEYS } from 'app/core/services/local-storage.service';
+import { STORAGE_KEYS } from 'app/core/services/storage-keys';
 import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
+import { envConfig } from './env.service';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
 };
 
-if (process.env.REACT_APP_BASE_URL) {
-  browserHistoryConfig.basename = process.env.REACT_APP_BASE_URL;
+if (envConfig.app.baseUrl) {
+  browserHistoryConfig.basename = envConfig.app.baseUrl;
 }
 
 const instance = createBrowserHistory(browserHistoryConfig);

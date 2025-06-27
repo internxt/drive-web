@@ -4,10 +4,11 @@ import packageJson from '../../../../package.json';
 import { AppPlugin, LocalStorageItem, Workspace } from '../../core/types';
 import { userThunks } from '../../store/slices/user';
 import localStorageService from '../services/local-storage.service';
+import { envConfig } from 'app/core/services/env.service';
 
 const axiosPlugin: AppPlugin = {
   install(store): void {
-    axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+    axios.defaults.baseURL = envConfig.api.api;
 
     axios.interceptors.request.use((requestConfig) => {
       const user = localStorageService.getUser();

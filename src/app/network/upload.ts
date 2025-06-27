@@ -5,6 +5,7 @@ import axios, { AxiosError, AxiosProgressEvent } from 'axios';
 import { getSha256 } from '../crypto/services/utils';
 import { NetworkFacade } from './NetworkFacade';
 import { ConnectionLostError } from './requests';
+import { envConfig } from 'app/core/services/env.service';
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
@@ -85,7 +86,7 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
 
   const facade = new NetworkFacade(
     Network.client(
-      process.env.REACT_APP_STORJ_BRIDGE as string,
+      envConfig.services.storjBridge,
       {
         clientName: 'drive-web',
         clientVersion: '1.0',
