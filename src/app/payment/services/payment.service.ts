@@ -51,7 +51,9 @@ const paymentService = {
   async getStripe(): Promise<Stripe> {
     if (!stripe) {
       stripe = (await loadStripe(
-        envService.isProduction() ? envService.getVariable('publicKey') : envService.getVariable('testPublicKey'),
+        envService.isProduction()
+          ? envService.getVariable('stripePublicKey')
+          : envService.getVariable('stripeTestPublicKey'),
       )) as Stripe;
     }
 
