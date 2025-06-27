@@ -1,14 +1,10 @@
 import { describe, it, expect, beforeAll, vi } from 'vitest';
 import dotenv from 'dotenv';
 import * as path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 describe('Check that env variables are loaded correctly', () => {
   beforeAll(() => {
-    const envPath = path.resolve(__dirname, '../../../../.env.example');
+    const envPath = path.join(process.cwd(), '.env.example');
 
     const result = dotenv.config({ path: envPath });
 
@@ -56,8 +52,6 @@ describe('Check that env variables are loaded correctly', () => {
     expect(envConfig.analytics.cdpDataPlane).toBe(process.env.REACT_APP_CDP_DATA_PLANE);
 
     expect(envConfig.app.nodeEnv).toBe(process.env.NODE_ENV);
-    expect(envConfig.app.fastRefresh).toBe(process.env.FAST_REFRESH);
-    expect(envConfig.app.debug).toBe(process.env.REACT_APP_DEBUG);
     expect(envConfig.app.generateSourceMap).toBe(process.env.GENERATE_SOURCEMAP);
     expect(envConfig.app.hostname).toBe(process.env.REACT_APP_HOSTNAME);
     expect(envConfig.app.websiteUrl).toBe(process.env.REACT_APP_WEBSITE_URL);

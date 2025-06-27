@@ -1,6 +1,6 @@
 function isProduction(): boolean {
-  if (process.env.REACT_APP_NODE_ENV === 'staging') return false;
-  return process.env.NODE_ENV === 'production' || process.env.REACT_APP_NODE_ENV === 'production';
+  if (import.meta.env.REACT_APP_NODE_ENV === 'staging') return false;
+  return import.meta.env.MODE === 'production' || import.meta.env.REACT_APP_NODE_ENV === 'production';
 }
 
 const envService = {
@@ -10,14 +10,14 @@ const envService = {
 export default envService;
 
 function getEnvVar(name: keyof NodeJS.ProcessEnv): string {
-  const value = process.env[name];
+  const value = import.meta.env[name];
   return value!;
 }
 
 export const envConfig = {
   app: {
     nodeEnv: getEnvVar('NODE_ENV'),
-    fastRefresh: getEnvVar('FAST_REFRESH'),
+    mode: getEnvVar('MODE'),
     debug: getEnvVar('REACT_APP_DEBUG'),
     generateSourceMap: getEnvVar('GENERATE_SOURCEMAP'),
     hostname: getEnvVar('REACT_APP_HOSTNAME'),
@@ -68,6 +68,7 @@ export const envConfig = {
     errorReportingKey: getEnvVar('REACT_APP_ANALYTICS_ERROR_REPORTING_WRITE_KEY'),
     cdpDataPlane: getEnvVar('REACT_APP_CDP_DATA_PLANE'),
   },
+
   vpnId: getEnvVar('REACT_APP_VPN_ID'),
 
   impact: {
