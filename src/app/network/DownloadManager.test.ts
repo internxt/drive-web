@@ -30,6 +30,15 @@ vi.mock('app/core/services/error.service', () => ({
   },
 }));
 
+vi.mock('app/tasks/services/tasks.service', () => ({
+  default: {
+    updateTask: vi.fn(),
+    findTask: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+  },
+}));
+
 vi.mock('i18next', () => ({ t: () => MOCK_TRANSLATION_MESSAGE }));
 
 describe('downloadManager', () => {

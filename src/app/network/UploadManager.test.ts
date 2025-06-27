@@ -14,6 +14,16 @@ vi.mock('../drive/services/file.service/uploadFile', () => ({
   default: vi.fn(() => Promise.resolve({} as DriveFileData)),
 }));
 
+vi.mock('app/tasks/services/tasks.service', () => ({
+  default: {
+    create: vi.fn(),
+    updateTask: vi.fn(),
+    findTask: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+  },
+}));
+
 vi.mock('app/core/services/error.service', () => ({
   default: {
     castError: vi.fn().mockImplementation((e) => e),
