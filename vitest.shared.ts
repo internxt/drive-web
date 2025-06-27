@@ -1,9 +1,10 @@
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import svgr from 'vite-plugin-svgr';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default {
-  plugins: [react(), svgr()],
+  plugins: [react(), nodePolyfills(), svgr()],
   resolve: {
     alias: {
       app: path.resolve(__dirname, './src/app'),
