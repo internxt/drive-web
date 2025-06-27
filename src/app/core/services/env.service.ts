@@ -45,8 +45,8 @@ const variableList = {
   impactApiUrl: 'REACT_APP_IMPACT_API',
 };
 
-function getVariable(variable: string): string {
-  const envKey = variableList[variable as keyof typeof variableList];
+function getVariable(variable: keyof typeof variableList): string {
+  const envKey = variableList[variable];
   if (!envKey) {
     throw new Error(`Unknown variable name: "${variable}"`);
   }
