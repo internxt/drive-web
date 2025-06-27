@@ -1,8 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import localStorageService from 'app/core/services/local-storage.service';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userService from './user.service';
 
-const testToken = 'testToken';
 const testEmail = 'test@initnxt.com';
 
 const usersClientMock = {
@@ -25,7 +24,6 @@ const authClientMock = {
   sendUserDeactivationEmail: vi.fn(),
 };
 
-vi.spyOn(localStorageService, 'get').mockReturnValue(testToken);
 vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(() => ({
@@ -43,6 +41,9 @@ vi.mock('../../core/factory/sdk', () => ({
 }));
 
 describe('userService', () => {
+  const testToken = 'testToken';
+  vi.spyOn(localStorageService, 'get').mockReturnValue(testToken);
+
   beforeEach(() => {
     vi.clearAllMocks();
   });

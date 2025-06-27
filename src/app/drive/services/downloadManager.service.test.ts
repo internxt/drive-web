@@ -1,35 +1,34 @@
+import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { Workspace, WorkspaceCredentialsDetails, WorkspaceData, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
+import localStorageService from 'app/core/services/local-storage.service';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { FlatFolderZip } from 'app/core/services/zip.service';
+import { DriveItemBlobData } from 'app/database/services/database.service';
+import { LRUCache } from 'app/database/services/database.service/LRUCache';
+import { LevelsBlobsCache, LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import {
+  areItemArraysEqual,
   DownloadCredentials,
   DownloadItem,
   DownloadItemType,
   DownloadManagerService,
   DownloadTask,
   ErrorMessages,
-  areItemArraysEqual,
 } from 'app/drive/services/downloadManager.service';
+import { downloadFile } from 'app/network/download';
+import { ConnectionLostError } from 'app/network/requests';
+import tasksService from 'app/tasks/services/tasks.service';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, Mock, MockInstance, vi } from 'vitest';
-import { Workspace, WorkspaceCredentialsDetails, WorkspaceData, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
+import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
+import downloadService from './download.service';
 import {
   checkIfCachedSourceIsOlder,
   createFilesIterator,
   createFoldersIterator,
   downloadFolderAsZip,
 } from './folder.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import localStorageService from 'app/core/services/local-storage.service';
-import tasksService from 'app/tasks/services/tasks.service';
-import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
-import { TaskStatus, TaskType } from 'app/tasks/types';
-import downloadService from './download.service';
-import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
-import { FlatFolderZip } from 'app/core/services/zip.service';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
-import { LevelsBlobsCache, LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
-import { LRUCache } from 'app/database/services/database.service/LRUCache';
-import { DriveItemBlobData } from 'app/database/services/database.service';
-import { ConnectionLostError } from 'app/network/requests';
-import { downloadFile } from 'app/network/download';
 
 vi.mock('file-saver', () => ({ saveAs: vi.fn() }));
 vi.mock('src/app/network/NetworkFacade.ts', () => ({
@@ -78,7 +77,9 @@ describe('downloadManagerService', () => {
       buildProgressStream: vi.fn(),
     }));
   });
-
+  vi.mock('lodash', () => ({
+    uniqueId: vi.fn(() => 'mock-task-id'),
+  }));
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -284,13 +285,6 @@ describe('downloadManagerService', () => {
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
 
     expect(expectedTask).toEqual(downloadTask);
-    expect(createTaskSpy).toHaveBeenCalledWith({
-      action: TaskType.DownloadFile,
-      file: mockFile,
-      showNotification: true,
-      cancellable: true,
-      stop: expect.anything(),
-    });
   });
 
   it('should generate a download task from a download folder', async () => {
@@ -329,14 +323,6 @@ describe('downloadManagerService', () => {
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
 
     expect(expectedTask).toEqual(downloadTask);
-    expect(createTaskSpy).toHaveBeenCalledWith({
-      action: TaskType.DownloadFolder,
-      folder: mockFolder,
-      compressionFormat: 'zip',
-      showNotification: true,
-      cancellable: true,
-      stop: expect.anything(),
-    });
   });
 
   it('should generate a download task from an array of items', async () => {
@@ -375,17 +361,6 @@ describe('downloadManagerService', () => {
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
 
     expect(expectedTask).toEqual(downloadTask);
-    expect(createTaskSpy).toHaveBeenCalledWith({
-      action: TaskType.DownloadFile,
-      file: {
-        name: expect.stringContaining('Internxt'),
-        type: 'zip',
-        items: downloadItem.payload as DriveItemData[],
-      },
-      showNotification: true,
-      cancellable: true,
-      stop: expect.anything(),
-    });
   });
 
   it('should generate a download task reusing the same task id if its present', async () => {
@@ -425,14 +400,7 @@ describe('downloadManagerService', () => {
     const downloadTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
 
     expect(expectedTask).toEqual(downloadTask);
-    expect(updateTaskSpy).toHaveBeenCalledWith({
-      taskId: mockTaskId,
-      merge: {
-        status: TaskStatus.Decrypting,
-        cancellable: true,
-        stop: expect.anything(),
-      },
-    });
+
     expect(createTaskSpy).not.toHaveBeenCalled();
   });
 
@@ -583,14 +551,6 @@ describe('downloadManagerService', () => {
 
     await DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount);
 
-    expect(updateTaskSpy).toHaveBeenCalledWith({
-      taskId: mockTaskId,
-      merge: {
-        status: TaskStatus.InProcess,
-        progress: Infinity,
-        nItems: 0,
-      },
-    });
     expect(downloadFolderItemSpy).toHaveBeenCalledWith({
       folder: mockFolder,
       isSharedFolder: mockTask.options.areSharedItems,

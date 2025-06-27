@@ -1,11 +1,17 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import checkoutService from './checkout.service';
 import {
   CreatePaymentIntentPayload,
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
 } from '@internxt/sdk/dist/payments/types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import checkoutService from './checkout.service';
 import paymentService from './payment.service';
+
+vi.mock('./payment.service', () => ({
+  default: {
+    createSubscriptionWithTrial: vi.fn(),
+  },
+}));
 
 vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
@@ -263,7 +269,7 @@ describe('Checkout Service tests', () => {
 
   describe('Fetch the client secret for a subscription', () => {
     it('When mobileToken is provided, then it uses paymentService to create subscription with trial', async () => {
-      vi.spyOn(paymentService, 'createSubscriptionWithTrial').mockResolvedValue({
+      const createSubscriptionWithTrialSpy = vi.spyOn(paymentService, 'createSubscriptionWithTrial').mockResolvedValue({
         type: 'setup',
         clientSecret: 'client_secret',
         subscriptionId: 'sub_id',
@@ -277,6 +283,14 @@ describe('Checkout Service tests', () => {
         mobileToken: 'mobile_token',
         currency: 'eur',
       });
+
+      expect(createSubscriptionWithTrialSpy).toHaveBeenCalledWith(
+        'cus_123',
+        'price_123',
+        'token_123',
+        'mobile_token',
+        'eur',
+      );
 
       expect(result).toEqual({
         clientSecretType: 'setup',
