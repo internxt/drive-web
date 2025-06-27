@@ -4,15 +4,14 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-
     "label": "Spare 80%",
     "upperTitle": "Angebot zum Weltumwelttag",
     "title": "Jahres- und Lifetime-Pläne!",
     "cta": "Angebot sichern",
     "guarantee": "30-Tage-Geld-zurück-Garantie",
     "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
-    "specialOfferLabel":"",
-    "specialOfferGift":"Gewinne einen Internxt x Swiss Peak Rucksack",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Gewinne einen Internxt x Swiss Peak Rucksack",
     "features": [
       "Drive, VPN und Antivirus",
       "Post-Quanten-Verschlüsselung",
@@ -20,7 +19,6 @@
       "Ende-zu-Ende-verschlüsselte Übertragungen",
       "Kein unbefugter Zugriff",
       "Angebot endet am 27. Juni"
-
     ]
   },
   "susbcriptionsBanner": {
@@ -833,6 +831,7 @@
         "editor": "Redakteur",
         "reader": "Betrachter",
         "listUsers": "einzuladende Benutzer",
+        "emailValidity": "Stellen Sie sicher, dass die E-Mail gültig und mit einem aktiven Konto verknüpft ist",
         "successSentInvitation": "Erfolgreiche Freigabe mit {{email}}",
         "acceptedSuccessfully": "Einladung zum freigegebenen Ordner erfolgreich angenommen",
         "declinedSuccessfully": "Einladung zu gemeinsamem Ordner erfolgreich abgelehnt",

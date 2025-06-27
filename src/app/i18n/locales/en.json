@@ -4,15 +4,14 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-
     "label": "Save 80%",
     "upperTitle": "World Environment Day deal",
     "title": "Annual and Lifetime plans!",
     "cta": "Claim deal",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
-    "specialOfferLabel":"",
-    "specialOfferGift":"Win an Internxt x Swiss Peak backpack",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Win an Internxt x Swiss Peak backpack",
 
     "features": [
       "Drive, VPN, and Antivirus",
@@ -22,7 +21,6 @@
 
       "No unauthorized access",
       "Offer ends June 27"
-
     ]
   },
   "susbcriptionsBanner": {
@@ -94,7 +92,6 @@
     "stpatricks": "St. Patrick's Day",
     "idmanagement": "Identity Management",
     "environment": "World Environment Day"
-
   },
   "auth": {
     "email": "Email",
@@ -909,6 +906,7 @@
         "editor": "Editor",
         "reader": "Viewer",
         "listUsers": "Users to invite",
+        "emailValidity": "Make sure that the email is valid and that it has an active Internxt account",
         "successSentInvitation": "Successful sharing with {{email}}",
         "acceptedSuccessfully": "Shared folder invitation successfully accepted",
         "declinedSuccessfully": "Shared folder invitation successfully declined",

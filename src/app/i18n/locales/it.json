@@ -9,7 +9,6 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-
     "label": "Risparmia l'80%",
     "upperTitle": "Offerta per la Giornata Mondiale dell'Ambiente",
     "title": "Piani annuali e a vita!",
@@ -27,7 +26,6 @@
       "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
       "L'offerta termina il 27 giugno"
-
     ]
   },
   "susbcriptionsBanner": {
@@ -975,6 +973,7 @@
         "editor": "Editore",
         "reader": "Visualizzatore",
         "listUsers": "Utenti da invitare",
+        "emailValidity": "Assicurati che l'email sia valida e collegata a un account attivo",
         "successSentInvitation": "Condivisione riuscita con {{email}}",
         "acceptedSuccessfully": "Invito a cartella condivisa accettato con successo",
         "declinedSuccessfully": "Invito a cartella condivisa rifiutato con successo",

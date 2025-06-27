@@ -14,7 +14,6 @@ import { Button, Avatar, Checkbox, Input } from '@internxt/ui';
 import { RootState } from '../../../store';
 import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sharedLinks';
 import { Role } from '../../../store/slices/sharedLinks/types';
-import ShareUserNotRegistered from '../ShareUserNotRegistered/ShareUserNotRegistered';
 import './ShareInviteDialog.scss';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
@@ -42,8 +41,6 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState<string>('');
   const [emailAccent, setEmailAccent] = useState<string>('');
-  const [openNewUsersModal, setOpenNewUsersModal] = useState<boolean>(false);
-  const [newUsersExists, setNewUsersExists] = useState<boolean>(false);
   const [userRole, setUserRole] = useState<string>(props.roles[0]?.name);
   const [usersToInvite, setUsersToInvite] = useState<Array<UsersToInvite>>([]);
   const [notifyUser, setNotifyUser] = useState<boolean>(false);
@@ -79,7 +76,6 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
 
       if (markUserAsNew) {
         userInvited.isNewUser = true;
-        setNewUsersExists(true);
       }
 
       const unique: Array<UsersToInvite> = [...usersToInvite];
@@ -156,16 +152,12 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   };
 
   //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG
-  const onInvite = async ({ preCreateUsers = false }) => {
+  const onInvite = async () => {
     setIsAnyInviteLoading(true);
     const usersList = [...usersToInvite];
-    let isThereAnyNewUser = newUsersExists;
 
     if (usersList.length === 0 && isValidEmail(email)) {
       const { publicKey, keys } = await getUserPublicKey(email);
-      if (!publicKey && !preCreateUsers) {
-        isThereAnyNewUser = true;
-      }
       usersList.push({
         email,
         userRole,
@@ -173,11 +165,6 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
         publicKey,
         keys,
       });
-    }
-
-    if (isThereAnyNewUser && !preCreateUsers) {
-      setOpenNewUsersModal(true);
-      return;
     }
 
     await processInvites(usersList);
@@ -297,30 +284,12 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
               <Checkbox checked={notifyUser} />
               <p className="ml-2 text-base font-medium">{translate('modals.shareModal.invite.notifyUsers')}</p>
             </div>
-            <Button
-              variant="primary"
-              onClick={() => {
-                onInvite({ preCreateUsers: false });
-              }}
-              disabled={isInviteButtonDisabled}
-              loading={isAnyInviteLoading}
-            >
+            <Button variant="primary" onClick={onInvite} disabled={isInviteButtonDisabled} loading={isAnyInviteLoading}>
               <span>{translate('modals.shareModal.invite.invite')}</span>
             </Button>
           </div>
         </div>
       </div>
-      <ShareUserNotRegistered
-        isOpen={openNewUsersModal}
-        onClose={() => {
-          setOpenNewUsersModal(false);
-          setIsAnyInviteLoading(false);
-        }}
-        onAccept={() => {
-          setOpenNewUsersModal(false);
-          onInvite({ preCreateUsers: true });
-        }}
-      />
     </>
   );
 };

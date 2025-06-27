@@ -4,23 +4,21 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-
     "label": "优惠 80%",
     "upperTitle": "世界环境日",
     "title": "保护您的数据，保护地球",
     "cta": "获取您的方案",
     "guarantee": "30 天退款保证",
     "lastCta": "*优惠适用于免费账户或新客户",
-    "specialOfferLabel":"",
-    "specialOfferGift":"参加 Internxt x Swiss Peak 背包抽奖",
+    "specialOfferLabel": "",
+    "specialOfferGift": "参加 Internxt x Swiss Peak 背包抽奖",
     "features": [
       "Internxt 云盘、VPN 和杀毒软件",
       "后量子加密",
       "可持续云存储",
       "加密传输",
       "无未授权访问",
-      "优惠截止日期：6 月 27 日"      
-
+      "优惠截止日期：6 月 27 日"
     ]
   },
   "susbcriptionsBanner": {
@@ -905,6 +903,7 @@
         "editor": "编辑",
         "reader": "浏览者",
         "listUsers": "要邀请的用户",
+        "emailValidity": "请确认邮箱有效且关联活跃账户",
         "successSentInvitation": "與 {{email}} 成功分享",
         "acceptedSuccessfully": "成功接受共享文件夹邀请",
         "declinedSuccessfully": "成功拒绝共享文件夹邀请",

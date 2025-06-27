@@ -95,7 +95,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       });
 
       notificationsService.show({
-        text: t('modals.shareModal.invite.successSentInvitation', { email: payload.sharedWith }),
+        text: t('modals.shareModal.invite.emailValidity'),
         type: ToastType.Success,
       });
     } catch (err: unknown) {

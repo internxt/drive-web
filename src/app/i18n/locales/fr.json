@@ -4,15 +4,14 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-
     "label": "Économisez 80 %",
     "upperTitle": "Offre pour la Journée mondiale de l'environnement",
     "title": "Plans annuels et à vie !",
     "cta": "Profitez de l'offre",
     "guarantee": "Garantie satisfait ou remboursé de 30 jours",
     "lastCta": "*Offre réservée aux comptes gratuits ou aux nouveaux clients",
-    "specialOfferLabel":"",
-    "specialOfferGift":"Gagnez un sac à dos Internxt x Swiss Peak",
+    "specialOfferLabel": "",
+    "specialOfferGift": "Gagnez un sac à dos Internxt x Swiss Peak",
     "features": [
       "Drive, VPN et Antivirus",
       "Chiffrement post-quantique",
@@ -20,7 +19,6 @@
       "Transferts chiffrés de bout en bout",
       "Aucun accès non autorisé",
       "L'offre se termine le 27 juin"
-
     ]
   },
   "susbcriptionsBanner": {
@@ -866,6 +864,7 @@
         "editor": "Éditeur",
         "reader": "Visualiseur",
         "listUsers": "Utilisateurs à inviter",
+        "emailValidity": "Assurez-vous que l'email est valide et lié à un compte actif",
         "successSentInvitation": "Partage réussi avec {{email}}",
         "acceptedSuccessfully": "Invitation à un dossier partagé acceptée avec succès",
         "declinedSuccessfully": "Invitation à un dossier partagé refusée avec succès",
