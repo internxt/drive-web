@@ -23,17 +23,9 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 
 const MOCK_TRANSLATION_MESSAGE = 'Test translation message';
 
-vi.mock('src/app/network/NetworkFacade.ts', () => ({
-  NetworkFacade: vi.fn().mockImplementation(() => ({
-    downloadFile: vi.fn(),
-    downloadFolder: vi.fn(),
-    downloadItems: vi.fn(),
-    generateTasksForItem: vi.fn(),
-  })),
-}));
-
-vi.mock('../../core/services/error.service', () => ({
+vi.mock('app/core/services/error.service', () => ({
   default: {
+    castError: vi.fn().mockImplementation((e) => e),
     reportError: vi.fn(),
   },
 }));
@@ -42,41 +34,6 @@ vi.mock('i18next', () => ({ t: () => MOCK_TRANSLATION_MESSAGE }));
 
 describe('downloadManager', () => {
   beforeAll(() => {
-    vi.mock('app/drive/services/database.service', () => ({
-      canFileBeCached: vi.fn(),
-      deleteDatabaseItems: vi.fn(),
-      deleteDatabaseProfileAvatar: vi.fn(),
-      deleteDatabaseWorkspaceAvatar: vi.fn(),
-      getDatabaseFilePreviewData: vi.fn(),
-      getDatabaseFileSourceData: vi.fn(),
-      getDatabaseProfileAvatar: vi.fn(),
-      getDatabaseWorkspaceAvatar: vi.fn(),
-      updateDatabaseFilePreviewData: vi.fn(),
-      updateDatabaseFileSourceData: vi.fn(),
-      updateDatabaseProfileAvatar: vi.fn(),
-      updateDatabaseWorkspaceAvatar: vi.fn(),
-    }));
-
-    vi.mock('app/drive/services/folder.service', () => ({
-      default: {},
-      downloadFolderAsZip: vi.fn(),
-      createFilesIterator: vi.fn(),
-      createFoldersIterator: vi.fn(),
-      checkIfCachedSourceIsOlder: vi.fn(),
-    }));
-
-    vi.mock('app/network/download', () => ({
-      downloadFile: vi.fn(),
-      loadWritableStreamPonyfill: vi.fn(),
-      getDecryptedStream: vi.fn(),
-    }));
-
-    vi.mock('app/core/services/stream.service', () => ({
-      binaryStreamToBlob: vi.fn(),
-      streamFileIntoChunks: vi.fn(),
-      buildProgressStream: vi.fn(),
-    }));
-
     vi.mock('app/drive/services/downloadManager.service', () => ({
       DownloadManagerService: {
         instance: {
