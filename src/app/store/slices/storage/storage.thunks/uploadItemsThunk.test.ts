@@ -21,7 +21,9 @@ vi.mock('../../../../core/services/workspace.service', () => ({
 }));
 
 vi.mock('../../plan', () => ({
-  planThunks: vi.fn(),
+  planThunks: {
+    fetchUsageThunk: vi.fn(),
+  },
 }));
 vi.mock('..', () => ({
   default: {
