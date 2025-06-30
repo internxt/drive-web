@@ -59,16 +59,16 @@
     "light": "Светлый",
     "dark": "Темный",
     "system": "Система",
-    "starwars": "Star Wars",
-    "starwars2": "Тема Star Wars",
+    "starWars": "Star Wars",
+    "starWars2": "Тема Star Wars",
     "halloween": "Halloween",
     "christmas": "Christmas",
     "superBowl": "Super Bowl",
     "valentines": "Valentines",
     "stPatricks": "St. Patrick's",
-    "idmanagement": "Identity Management",
-    "environment": "World Environment Day",
     "summer": "лето"
+    "idManagement": "Identity Management",
+    "environment": "World Environment Day"
   },
   "auth": {
     "email": "Email",

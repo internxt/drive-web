@@ -80,15 +80,12 @@
     "light": "明亮",
     "dark": "暗",
     "system": "系统",
-    "starwars": "Star Wars",
-    "starwars2": "星球大战主题",
+    "starWars": "Star Wars",
+    "starWars2": "星球大战主题",
     "halloween": "Halloween",
     "christmas": "圣诞节",
     "superBowl": "Super Bowl",
     "valentines": "Valentine's Day",
-    "stpatricks": "St. Patrick's Day",
-    "idmanagement": "Identity Management",
-    "environment": "World Environment Day",
     "summer": "夏天"
   },
   "auth": {

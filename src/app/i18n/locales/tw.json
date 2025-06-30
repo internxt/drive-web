@@ -80,15 +80,15 @@
     "light": "淺色",
     "dark": "深色",
     "system": "系統",
-    "starwars": "星際大戰",
-    "starwars2": "星際大戰主題",
+    "starWars": "星際大戰",
+    "starWars2": "星際大戰主題",
     "halloween": "Halloween",
     "christmas": "聖誕節",
     "superBowl": "Super Bowl",
     "valentines": "情人節",
-    "stpatricks": "St. Patrick's",
-    "idmanagement": "Identity Management",
     "summer": "夏天"
+    "stPatricks": "St. Patrick's",
+    "idManagement": "Identity Management"
   },
   "auth": {
     "email": "電子郵件",

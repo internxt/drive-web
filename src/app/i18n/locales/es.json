@@ -60,16 +60,16 @@
     "light": "Claro",
     "dark": "Oscuro",
     "system": "Sistema",
-    "starwars": "Star Wars",
-    "starwars2": "Tema de Star Wars",
+    "starWars": "Star Wars",
+    "starWars2": "Tema de Star Wars",
     "halloween": "Halloween",
     "christmas": "Navidad",
     "superBowl": "Super Bowl",
     "valentines": "San Valentín",
-    "stpatricks": "San Patricio",
-    "idmanagement": "Gestión de Identidad",
-    "environment": "Día Mundial del Medio Ambiente",
     "summer": "Verano"
+    "stPatricks": "San Patricio",
+    "idManagement": "Gestión de Identidad",
+    "environment": "Día Mundial del Medio Ambiente"
   },
   "auth": {
     "email": "Correo electrónico",
