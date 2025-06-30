@@ -88,7 +88,8 @@
     "valentines": "Valentine's Day",
     "stpatricks": "St. Patrick's Day",
     "idmanagement": "Identity Management",
-    "environment": "World Environment Day"
+    "environment": "World Environment Day",
+    "summer": "夏天"
   },
   "auth": {
     "email": "电子邮件",

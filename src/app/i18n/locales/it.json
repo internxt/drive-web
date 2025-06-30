@@ -88,7 +88,8 @@
     "valentines": "San Valentino",
     "stpatricks": "San Patrizio",
     "idmanagement": "Gestione dell'identità",
-    "environment": "Giornata Mondiale dell'Ambiente"
+    "environment": "Giornata Mondiale dell'Ambiente",
+    "summer": "estate"
   },
   "auth": {
     "email": "Email",
