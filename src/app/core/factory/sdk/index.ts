@@ -80,8 +80,8 @@ export class SdkFactory {
     return Trash.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createUsersClient(): Users {
-    const apiUrl = this.getApiUrl();
+  public createUsersClient(optionalApiUrl?: string): Users {
+    const apiUrl = optionalApiUrl ?? this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
     const apiSecurity = this.getNewApiSecurity();
     return Users.client(apiUrl, appDetails, apiSecurity);
