@@ -30,7 +30,7 @@ import { Helmet } from 'react-helmet-async';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 function ShareGuestSingUpView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -220,7 +220,7 @@ function ShareGuestSingUpView(): JSX.Element {
 
       <div className={'flex h-full flex-col items-center justify-center'}>
         <Helmet>
-          <link rel="canonical" href={`${envConfig.app.hostname}/shared-guest`} />
+          <link rel="canonical" href={`${envService.getVariable('hostname')}/shared-guest`} />
         </Helmet>
         <div className={'flex h-fit w-96 flex-col items-center justify-center rounded-2xl px-8 py-10'}>
           {view === 'downloadBackupKey' ? (

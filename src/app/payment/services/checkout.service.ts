@@ -15,12 +15,12 @@ import {
   GetPriceByIdPayload,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
-const PAYMENTS_API_URL = envConfig.api.payments;
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
 const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: string): Promise<CouponCodeData> => {
+  const PAYMENTS_API_URL = envService.getVariable('payments');
   const response = await fetch(
     `${PAYMENTS_API_URL}/promo-code-by-name?priceId=${priceId}&promotionCode=${promotionCodeName}`,
   );
@@ -119,6 +119,7 @@ export const createPaymentIntent = async ({
 };
 
 const fetchPrices = async (userType: UserType, currency: string): Promise<DisplayPrice[]> => {
+  const PAYMENTS_API_URL = envService.getVariable('payments');
   const response = await fetch(`${PAYMENTS_API_URL}/prices?userType=${userType}&currency=${currency}`);
 
   if (response.status !== 200) {
@@ -272,6 +273,7 @@ const checkoutSetupIntent = async (customerId: string) => {
     if (!newToken) {
       throw new Error('No authentication token available');
     }
+    const PAYMENTS_API_URL = envService.getVariable('payments');
     const response = await axios.post<{ clientSecret: string }>(
       `${PAYMENTS_API_URL}/setup-intent`,
       {

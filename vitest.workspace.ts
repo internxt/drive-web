@@ -20,7 +20,13 @@ export default defineWorkspace([
         headless: true,
       },
       sequence: {
-        hooks: 'list',
+        concurrent: false,
+      },
+      pool: 'forks',
+      poolOptions: {
+        forks: {
+          singleFork: true,
+        },
       },
     },
     extends: './vitest.shared.ts',

@@ -57,7 +57,7 @@ jobs:
       - name: Install Playwright Browsers
         run: yarn playwright install
       - name: Unit test run
-        run: yarn test:unit
+        run: yarn test
   build:
     runs-on: ubuntu-latest
     strategy:

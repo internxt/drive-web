@@ -8,7 +8,7 @@ import Finish from './finish/Finish';
 
 import httpService from '../../../core/services/http.service';
 import './PayForm.scss';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 interface PayTokenProps {
   match: match<{ token: string }>;
@@ -111,7 +111,7 @@ class PayToken extends React.Component<PayTokenProps, PayTokenState> {
     const serviceHeaders = httpService.getHeaders(true, false);
     const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
 
-    return fetch(`${envConfig.api.api}/token/buy`, {
+    return fetch(`${envService.getVariable('api')}/token/buy`, {
       method: 'post',
       headers: headers,
       body: json,

@@ -1,18 +1,21 @@
 // vpnAuthService.test.ts
-import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import { logIn, logOut, postMessageToVpn } from './vpnAuth.service';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
+
+const mockHostname = 'https://example.com';
 
 describe('Tests for VPN auth', () => {
   const originalPostMessage = window.postMessage;
   let postMessageSpy: ReturnType<typeof vi.spyOn>;
 
-  beforeAll(() => {
-    envConfig.app.hostname = 'https://example.com';
-  });
-
   beforeEach(() => {
     postMessageSpy = vi.spyOn(window, 'postMessage').mockImplementation(() => {});
+    vi.clearAllMocks();
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
+      if (key === 'hostname') return mockHostname;
+      else return 'no implementation';
+    });
   });
 
   afterEach(() => {
@@ -33,7 +36,7 @@ describe('Tests for VPN auth', () => {
           source: 'drive-web',
           payload: { key: 'value' },
         },
-        envConfig.app.hostname,
+        mockHostname,
       );
     });
 
@@ -46,7 +49,7 @@ describe('Tests for VPN auth', () => {
           source: 'custom-source',
           payload: { foo: 'bar' },
         },
-        envConfig.app.hostname,
+        mockHostname,
       );
     });
   });
@@ -65,7 +68,7 @@ describe('Tests for VPN auth', () => {
             token: testToken,
           },
         },
-        envConfig.app.hostname,
+        mockHostname,
       );
     });
   });
@@ -82,7 +85,7 @@ describe('Tests for VPN auth', () => {
             message: 'user-logged-out',
           },
         },
-        envConfig.app.hostname,
+        mockHostname,
       );
     });
   });

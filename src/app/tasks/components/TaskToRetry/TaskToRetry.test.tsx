@@ -1,46 +1,42 @@
 import { render, fireEvent } from '@testing-library/react';
 import { describe, it, vi, expect, beforeEach } from 'vitest';
-import * as reduxActionsHook from 'app/store/slices/storage/hooks/useReduxActions';
-import * as translationProvider from 'app/i18n/provider/TranslationProvider';
 import TaskToRetry from './TaskToRetry';
-import RetryManager, { RetryableTask } from 'app/network/RetryManager';
-import { Avatar } from '@internxt/ui';
+import RetryManager, { RetryableTask } from '../../../network/RetryManager';
 
-vi.mock('app/store/hooks', () => ({
+vi.mock('../../../store/hooks', () => ({
   useAppDispatch: vi.fn(),
   useAppSelector: vi.fn(),
 }));
 
+vi.mock('../../../network/DownloadManager', () => ({
+  DownloadManager: vi.fn().mockImplementation(() => ({
+    downloadItem: vi.fn(),
+  })),
+}));
+
+vi.mock('../../workspaces/workspaces.selectors', () => ({
+  default: {
+    getSelectedWorkspace: vi.fn(),
+    getWorkspaceCredentials: vi.fn(),
+  },
+}));
+
 vi.mock('app/i18n/provider/TranslationProvider', () => ({
-  useTranslationContext: vi.fn(),
+  useTranslationContext: vi.fn().mockReturnValue({
+    translate: vi.fn().mockImplementation((value: string) => {
+      return value;
+    }),
+  }),
 }));
 
+const mockUploadRetryItem = vi.hoisted(() => vi.fn());
 vi.mock('app/store/slices/storage/hooks/useReduxActions', () => ({
-  useReduxActions: vi.fn(),
-}));
-
-vi.mock('@internxt/ui', () => ({
-  Modal: vi.fn(({ isOpen, onClose, children }) =>
-    isOpen ? (
-      <div data-testid="modal">
-        <button data-testid="close-button" onClick={onClose} />
-        {children}
-      </div>
-    ) : null,
-  ),
-  Loader: vi.fn(() => <div data-testid="loader" />),
-  Avatar: vi.fn(() => <div data-testid="avatar" />),
-  Button: vi.fn(({ onClick, children }) => (
-    <button data-testid="button" onClick={onClick}>
-      {children}
-    </button>
-  )),
+  useReduxActions: vi.fn().mockReturnValue({ uploadRetryItem: mockUploadRetryItem }),
 }));
 
 describe('TaskToRetry', () => {
   const mockOnClose = vi.fn();
-  const mockUploadRetryItem = vi.fn();
-  const mockTranslate = vi.fn();
+
   const mockChangeStatus = vi.spyOn(RetryManager, 'changeStatus');
 
   const files: RetryableTask[] = [
@@ -65,8 +61,6 @@ describe('TaskToRetry', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (reduxActionsHook.useReduxActions as any).mockReturnValue({ uploadRetryItem: mockUploadRetryItem });
-    (translationProvider.useTranslationContext as any).mockReturnValue({ translate: mockTranslate });
   });
 
   it('renders the modal when isOpen is true', () => {

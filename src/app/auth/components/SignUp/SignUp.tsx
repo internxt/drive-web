@@ -24,7 +24,7 @@ import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import { Button } from '@internxt/ui';
 import { AuthMethodTypes } from 'app/payment/types';
 import vpnAuthService from 'app/auth/services/vpnAuth.service';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 export interface SignUpProps {
   location: {
@@ -209,7 +209,7 @@ function SignUp(props: SignUpProps): JSX.Element {
   return (
     <>
       <Helmet>
-        <link rel="canonical" href={`${envConfig.app.hostname}/new`} />
+        <link rel="canonical" href={`${envService.getVariable('hostname')}/new`} />
       </Helmet>
       <div
         className={`flex ${

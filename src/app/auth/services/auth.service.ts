@@ -46,7 +46,6 @@ import envService from '../../core/services/env.service';
 import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
 import vpnAuthService from './vpnAuth.service';
-import { envConfig } from 'app/core/services/env.service';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -363,7 +362,7 @@ export const deactivate2FA = (
 export const getNewToken = async (): Promise<string> => {
   const serviceHeaders = httpService.getHeaders(true, false);
   const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
-  const BASE_API_URL = envService.isProduction() ? envConfig.api.api : 'https://drive.internxt.com/api';
+  const BASE_API_URL = envService.isProduction() ? envService.getVariable('api') : 'https://drive.internxt.com/api';
 
   const res = await fetch(`${BASE_API_URL}/new-token`, {
     headers: headers,

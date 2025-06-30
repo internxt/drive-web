@@ -22,7 +22,7 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { STORAGE_KEYS } from 'app/core/services/storage-keys';
 import workspacesService from 'app/core/services/workspace.service';
 import { useHistory } from 'react-router-dom';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -156,7 +156,7 @@ const DriveView = (props: DriveViewProps) => {
     <>
       <Helmet>
         <title>{title}</title>
-        <link rel="canonical" href={`${envConfig.app.hostname}`} />
+        <link rel="canonical" href={`${envService.getVariable('hostname')}`} />
       </Helmet>
       <DriveExplorer title={<BreadcrumbsDriveView namePath={namePath} />} isLoading={isLoading} items={items} />
     </>

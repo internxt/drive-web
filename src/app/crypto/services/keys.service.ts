@@ -3,7 +3,7 @@ import { Keys } from '@internxt/sdk';
 import { getOpenpgp, generateNewKeys } from './pgp.service';
 import { isValid } from './utilspgp';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 const MINIMAL_ENCRYPTED_KEY_LEN = 129;
 
 export async function getKeys(password: string): Promise<Keys> {
@@ -145,5 +145,5 @@ export async function assertValidateKeys(privateKey: string, publicKey: string):
 }
 
 export function getAesInitFromEnv(): { iv: string; salt: string } {
-  return { iv: envConfig.crypto.magicIv, salt: envConfig.crypto.magicSalt };
+  return { iv: envService.getVariable('magicIv'), salt: envService.getVariable('magicSalt') };
 }
