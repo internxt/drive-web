@@ -201,10 +201,7 @@ const StorageSelectionCard = ({
   handleSliderChange: (newStorage: number) => void;
   translate: (key: string, props?: Record<string, unknown>) => string;
 }) => (
-  <div
-    className="flex w-full flex-col gap-6 rounded-xl border border-gray-10 bg-surface p-6"
-    onClick={(e) => e.stopPropagation()}
-  >
+  <div className="flex w-full flex-col gap-6 rounded-xl border border-gray-10 bg-surface p-6">
     <div className="flex h-full w-full flex-row justify-center gap-8">
       <div className="flex w-full max-w-[165px] flex-col items-start gap-0.5">
         <p className="text-3xl font-medium text-gray-100">{formattedAssignedStorage}</p>
