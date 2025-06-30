@@ -9,7 +9,7 @@ import paymentService from './payment.service';
 
 vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
-    getInstance: vi.fn().mockReturnValue({
+    getNewApiInstance: vi.fn().mockReturnValue({
       createCheckoutClient: vi.fn().mockResolvedValue({
         getCustomerId: vi.fn().mockResolvedValue({
           customerId: 'cus_123',

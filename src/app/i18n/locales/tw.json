@@ -4,23 +4,21 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-
     "label": "優惠 80%",
     "upperTitle": "世界環境日",
     "title": "保護您的數據，保護地球",
     "cta": "獲取您的方案",
     "guarantee": "30 天退款保證",
     "lastCta": "*優惠適用於免費帳戶或新客戶",
-    "specialOfferLabel":"",
-    "specialOfferGift":"參加 Internxt x Swiss Peak 背包抽獎",
+    "specialOfferLabel": "",
+    "specialOfferGift": "參加 Internxt x Swiss Peak 背包抽獎",
     "features": [
       "Internxt 雲端硬碟、VPN 和防毒軟體",
       "後量子加密",
       "永續雲端存儲",
       "加密傳輸",
       "無未授權訪問",
-      "優惠截止日期：6 月 27 日"      
-
+      "優惠截止日期：6 月 27 日"
     ]
   },
   "susbcriptionsBanner": {
@@ -83,14 +81,14 @@
     "light": "淺色",
     "dark": "深色",
     "system": "系統",
-    "starwars": "星際大戰",
-    "starwars2": "星際大戰主題",
+    "starWars": "星際大戰",
+    "starWars2": "星際大戰主題",
     "halloween": "Halloween",
     "christmas": "聖誕節",
     "superBowl": "Super Bowl",
     "valentines": "情人節",
-    "stpatricks": "St. Patrick's",
-    "idmanagement": "Identity Management"
+    "stPatricks": "St. Patrick's",
+    "idManagement": "Identity Management"
   },
   "auth": {
     "email": "電子郵件",
