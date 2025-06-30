@@ -6,6 +6,7 @@ import SuperBowlBG from 'assets/images/banner/superbowl_theme.webp';
 import StPaticksBG from 'assets/images/banner/StPatrick-bg.png';
 import IdManagementBG from 'assets/images/banner/IdManagement-bg.png';
 import EnvironmentBG from 'assets/images/banner/environment_theme.png';
+import SummerBG from 'assets/images/banner/SummerTheme.png';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 export type Theme =
@@ -19,7 +20,8 @@ export type Theme =
   | 'superbowl'
   | 'stpatricks'
   | 'idmanagement'
-  | 'environment';
+  | 'environment'
+  | 'summer';
 
 interface ThemeContextProps {
   currentTheme: Theme | undefined;
@@ -109,6 +111,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         setCheckoutTheme('dark');
       } else if (currentTheme === 'environment') {
         root.style.backgroundImage = `url(${EnvironmentBG})`;
+        root.style.backgroundSize = 'cover';
+        root.style.backgroundPosition = 'center';
+        root.style.backgroundRepeat = 'no-repeat';
+        document.documentElement.classList.add('dark');
+        setCheckoutTheme('dark');
+      } else if (currentTheme === 'summer') {
+        root.style.backgroundImage = `url(${SummerBG})`;
         root.style.backgroundSize = 'cover';
         root.style.backgroundPosition = 'center';
         root.style.backgroundRepeat = 'no-repeat';

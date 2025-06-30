@@ -17,6 +17,7 @@ import { iStPatricksThemeAvailable } from '../../../../payment/utils/checkStPatr
 import { isManagementIdThemeAvailable } from '../../../../payment/utils/checkManagementIdCode';
 import { RootState } from '../../../../store';
 import { isEnvironmentThemeAvailable } from 'app/payment/utils/checkEnvironmentCode';
+import { isSummerThemeAvailable } from 'app/payment/utils/checkSummerCode';
 
 function ThemeButton({ theme, toggleTheme, isSelected, img }) {
   const { translate } = useTranslationContext();
@@ -148,6 +149,19 @@ const Appearance = () => {
           isEnvironmentThemeAvailable
         ) {
           setAppearances([...appearances, { theme: 'environment', img: appearance_dark }]);
+        }
+      })
+      .catch((err) => {
+        const error = err as Error;
+        errorService.reportError(error);
+      });
+    isSummerThemeAvailable()
+      .then((isSummerThemeAvailable) => {
+        if (
+          !appearances.some((appearance) => appearance.theme === 'summer' && appearance.img === appearance_dark) &&
+          isSummerThemeAvailable
+        ) {
+          setAppearances([...appearances, { theme: 'summer', img: appearance_dark }]);
         }
       })
       .catch((err) => {
