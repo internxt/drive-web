@@ -27,7 +27,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
     >
       <div
         className={
-          'left-1/2 top-1/2 flex h-[508px] w-[917px] rounded-3xl -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden absolute inset-0 bg-center bg-no-repeat bg-cover '
+          'left-1/2 top-1/2 flex h-[508px] w-[1200px] rounded-3xl -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden absolute inset-0 bg-center bg-no-repeat bg-cover '
         }
         style={{ backgroundImage: `url(${BgImage})` }}
       >
