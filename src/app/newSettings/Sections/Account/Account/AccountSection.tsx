@@ -38,7 +38,7 @@ const AccountSection = ({ changeSection, onClosePreferences }: AccountSectionPro
   const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState(false);
 
   useEffect(() => {
-    dispatch(userThunks.refreshUserDataThunk());
+    dispatch(userThunks.refreshUserThunk());
   }, []);
 
   const onResendEmailVerification = async () => {
