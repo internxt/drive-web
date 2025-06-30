@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.472",
+  "version": "v1.0.473",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -98,7 +98,6 @@
     "test:safari": "yarn playwright test --project=webkit",
     "test:edge": "yarn playwright test --project=edge",
     "test": "vitest run",
-    "eject": "react-scripts eject",
     "format": "prettier \"{src,test}/**/*.{ts,tsx}\" --write",
     "lint:ts": "eslint \"./{src,test}/**/*.{ts,tsx}\"",
     "lint:ts:fix": "yarn run lint:ts --fix",
