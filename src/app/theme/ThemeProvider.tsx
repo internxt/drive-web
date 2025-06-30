@@ -7,7 +7,7 @@ import SuperBowlBG from 'assets/images/banner/superbowl_theme.webp';
 import StPaticksBG from 'assets/images/banner/StPatrick-bg.png';
 import IdManagementBG from 'assets/images/banner/IdManagement-bg.png';
 import EnvironmentBG from 'assets/images/banner/environment_theme.png';
-
+import SummerBG from 'assets/images/banner/SummerBanner.png';
 import localStorageService from 'app/core/services/local-storage.service';
 
 export type Theme =
@@ -57,6 +57,7 @@ const THEME_CONFIG: Record<
   superBowl: { background: SuperBowlBG, darkMode: true, customStyle: true },
   idManagement: { background: IdManagementBG, darkMode: true, customStyle: true },
   environment: { background: EnvironmentBG, darkMode: true, customStyle: true },
+  summer: { background: SummerBG, darkMode: true, customStyle: true },
 };
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
