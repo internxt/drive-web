@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { Button, Modal, RangeSlider } from '@internxt/ui';
 import { X } from '@phosphor-icons/react';
-import { Button, RangeSlider, Modal } from '@internxt/ui';
-import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import UserCard from './UserCard';
-import { MemberRole } from '../../../../../newSettings/types/types';
-import { bytesToString } from '../../../../../drive/services/size.service';
-import { ActionDialog } from '../../../../../contexts/dialog-manager/ActionDialogManager.context';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
+import { useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { ActionDialog } from '../../../../../contexts/dialog-manager/ActionDialogManager.context';
+import { bytesToString } from '../../../../../drive/services/size.service';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
+
+import { MemberRole } from '../../../../../newSettings/types/types';
+import UserCard from './UserCard';
 
 const MINIMUM_BYTES_TO_ASSIGN = 100 * 1024 * 1024;
 const MODIFY_STORAGE_DIALOG_KEY = ActionDialog.ModifyStorage;
@@ -200,7 +201,10 @@ const StorageSelectionCard = ({
   handleSliderChange: (newStorage: number) => void;
   translate: (key: string, props?: Record<string, unknown>) => string;
 }) => (
-  <div className="flex w-full flex-col gap-6 rounded-xl border border-gray-10 bg-surface p-6">
+  <div
+    className="flex w-full flex-col gap-6 rounded-xl border border-gray-10 bg-surface p-6"
+    onClick={(e) => e.stopPropagation()}
+  >
     <div className="flex h-full w-full flex-row justify-center gap-8">
       <div className="flex w-full max-w-[165px] flex-col items-start gap-0.5">
         <p className="text-3xl font-medium text-gray-100">{formattedAssignedStorage}</p>
@@ -212,16 +216,25 @@ const StorageSelectionCard = ({
         <p className="text-gray-60">{translate('preferences.workspace.members.modifyStorageModal.spaceLeft')}</p>
       </div>
     </div>
-
-    <RangeSlider
-      value={newStorage}
-      min={minimumUserStorage}
-      max={maxStorageForWorkspaceMember + minimumUserStorage}
-      step={100 * 1024 * 1024}
-      onChange={handleSliderChange}
-      disabled={isLoading}
-      ariaLabel="Modify storage"
-      className="flex w-full flex-col"
-    />
+    <div style={{ pointerEvents: 'auto', zIndex: 10000, position: 'relative' }}>
+      <div
+        style={{ pointerEvents: 'auto' }}
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        <RangeSlider
+          value={newStorage}
+          min={minimumUserStorage}
+          max={maxStorageForWorkspaceMember + minimumUserStorage}
+          step={100 * 1024 * 1024}
+          onChange={handleSliderChange}
+          disabled={isLoading}
+          ariaLabel="Modify storage"
+          className="flex w-full flex-col"
+        />
+      </div>
+    </div>
   </div>
 );
