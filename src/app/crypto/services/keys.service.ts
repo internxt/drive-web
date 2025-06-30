@@ -1,6 +1,6 @@
 import { aes } from '@internxt/lib';
 import { Keys } from '@internxt/sdk';
-import { getOpenpgp, generateNewKeys } from './pgp.service';
+import { getOpenpgp, generateNewKeys, compareKeyPairIDs } from './pgp.service';
 import { isValid } from './utilspgp';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { envConfig } from 'app/core/services/env.service';
@@ -123,6 +123,10 @@ export async function assertValidateKeys(privateKey: string, publicKey: string):
   const openpgp = await getOpenpgp();
   const publicKeyArmored = await openpgp.readKey({ armoredKey: publicKey });
   const privateKeyArmored = await openpgp.readPrivateKey({ armoredKey: privateKey });
+
+  if (!compareKeyPairIDs(privateKeyArmored, publicKeyArmored)) {
+    throw new KeysDoNotMatchError();
+  }
 
   const plainMessage = 'validate-keys';
   const originalText = await openpgp.createMessage({ text: plainMessage });
