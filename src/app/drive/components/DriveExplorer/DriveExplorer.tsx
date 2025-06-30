@@ -75,6 +75,7 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
+import newStorageService from 'app/drive/services/new-storage.service';
 
 export const UPLOAD_ITEMS_LIMIT = 3000;
 
@@ -208,10 +209,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // ONBOARDING TUTORIAL STATES
+  const [hasAnyUploadedFile, setHasAnyUploadedFile] = useState<boolean | undefined>();
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
   const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
   const uploadFileButtonRef = useRef(null);
-  const isSignUpTutorialCompleted = localStorageService.hasCompletedTutorial(user?.userId);
   const successNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Success],
   });
@@ -219,9 +220,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasSignedToday = useAppSelector(userSelectors.hasSignedToday);
 
   const showTutorial =
+    hasAnyUploadedFile !== undefined &&
+    !hasAnyUploadedFile &&
     envService.isProduction() &&
     hasSignedToday &&
-    !isSignUpTutorialCompleted &&
     (showSecondTutorialStep || currentTutorialStep === 0);
   const signupSteps = getSignUpSteps(
     {
@@ -274,7 +276,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, [currentFolderId]);
 
   useEffect(() => {
-    if (!isSignUpTutorialCompleted && currentTutorialStep === 1 && successNotifications.length > 0) {
+    if (!hasAnyItemSelected && currentTutorialStep === 1 && successNotifications.length > 0) {
       setShowSecondTutorialStep(true);
     }
   }, [successNotifications]);
@@ -318,18 +320,17 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       });
     }
   }, []);
-  /*
+
   useEffect(() => {
-    const handleContextmenu = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsOpen((prev) => !prev);
-    };
-    document.addEventListener('mousedown', handleContextmenu);
-    return function cleanup() {
-      document.removeEventListener('mousedown', handleContextmenu);
-    };
-  }, []);*/
+    newStorageService
+      .hasUploadedFiles()
+      .then(({ hasUploadedFiles }) => {
+        setHasAnyUploadedFile(hasUploadedFiles);
+      })
+      .catch((error) => {
+        errorService.reportError(error);
+      });
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
