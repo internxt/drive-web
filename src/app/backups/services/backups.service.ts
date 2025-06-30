@@ -45,7 +45,7 @@ const backupsService = {
   deleteBackupDeviceAsFolder(folderId: string) {
     const backupsClient = SdkFactory.getNewApiInstance().createBackupsClient();
     return backupsClient.deleteBackupDeviceAsFolder(folderId);
-  }
+  },
 };
 
 export default backupsService;

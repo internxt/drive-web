@@ -12,7 +12,7 @@ vi.mock('../../core/factory/sdk', () => ({
 vi.mock('../../core/services/error.service', () => ({
   default: {
     reportError: vi.fn(),
-  }
+  },
 }));
 
 describe('usageService', () => {
