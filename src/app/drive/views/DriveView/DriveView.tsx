@@ -18,7 +18,8 @@ import workspacesSelectors from '../../../store/slices/workspaces/workspaces.sel
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
 import { workspacesActions, workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import { STORAGE_KEYS } from 'app/core/services/storage-keys';
 import workspacesService from 'app/core/services/workspace.service';
 import { useHistory } from 'react-router-dom';
 import { envConfig } from 'app/core/services/env.service';

@@ -110,13 +110,6 @@ describe('onSubmit', () => {
       },
     }));
 
-    vi.mock('app/core/types', () => ({
-      AppView: {
-        Drive: vi.fn(),
-        Signup: vi.fn(),
-      },
-    }));
-
     vi.mock('app/i18n/provider/TranslationProvider', () => ({
       useTranslationContext: vi.fn().mockReturnValue({
         translate: vi.fn().mockImplementation((value: string) => {

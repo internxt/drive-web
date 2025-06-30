@@ -1,4 +1,4 @@
-import { HUNDRED_TB } from 'app/core/components/Sidenav/Sidenav';
+import { HUNDRED_TB } from 'app/core/constants';
 import { bytesToString } from '../../../drive/services/size.service';
 import { Button } from '@internxt/ui';
 

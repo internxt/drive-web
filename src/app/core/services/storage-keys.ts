@@ -10,5 +10,6 @@ export const STORAGE_KEYS = {
     ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'id_management_theme_enabled',
     ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'environment_theme_enabled',
     SUMMER_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'summer_theme_enabled',
+
   },
 };
