@@ -18,7 +18,7 @@ export type Theme =
   | 'starWars2'
   | 'halloween'
   | 'christmas'
-  | 'summer';
+  | 'summer',
   | 'superBowl'
   | 'stPatricks'
   | 'idManagement'
