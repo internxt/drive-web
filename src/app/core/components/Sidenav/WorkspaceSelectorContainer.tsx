@@ -9,7 +9,8 @@ import workspacesService from '../../../core/services/workspace.service';
 import { RootState } from '../../../store';
 import { workspaceThunks } from '../../../store/slices/workspaces/workspacesStore';
 import WorkspaceSelector, { Workspace } from './WorkspaceSelector';
-import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import { STORAGE_KEYS } from '../../../core/services/storage-keys';
 
 const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }) => {
   const dispatch = useDispatch();

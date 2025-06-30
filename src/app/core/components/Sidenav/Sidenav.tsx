@@ -18,12 +18,12 @@ import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsW
 import { useAppSelector } from 'app/store/hooks';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { t } from 'i18next';
-import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
+import localStorageService from '../../../core/services/local-storage.service';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import SidenavItem from './SidenavItem/SidenavItem';
 import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
-
-export const HUNDRED_TB = 109951162777600;
+import { STORAGE_KEYS } from '../../../core/services/storage-keys';
+import { HUNDRED_TB } from '../../../core/constants';
 
 interface SidenavProps {
   user: UserSettings | undefined;

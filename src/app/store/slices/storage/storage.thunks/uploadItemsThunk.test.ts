@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach, Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { uploadItemsParallelThunk, uploadItemsThunk, uploadItemsThunkExtraReducers } from './uploadItemsThunk';
 import { RootState } from '../../..';
 import { useDispatch } from 'react-redux';
@@ -26,16 +26,6 @@ vi.mock('app/store/slices/storage/storage.thunks', () => ({
 
 vi.mock('../fileUtils/prepareFilesToUpload', () => ({
   prepareFilesToUpload: vi.fn(),
-}));
-
-vi.mock('app/notifications/services/notifications.service', () => ({
-  default: {
-    show: vi.fn(),
-  },
-  ToastType: {
-    Warning: 'warning',
-    Error: 'error',
-  },
 }));
 
 vi.mock('react-redux', () => ({
@@ -80,11 +70,6 @@ describe('uploadItemsThunk', () => {
     (useDispatch as Mock).mockReturnValue(dispatch);
 
     vi.clearAllMocks();
-    vi.restoreAllMocks();
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
   });
 
   it('should upload files successfully', async () => {
@@ -103,6 +88,7 @@ describe('uploadItemsThunk', () => {
   });
 
   it('should show notification for empty files', async () => {
+    const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
     (prepareFilesToUpload as Mock).mockResolvedValue({
       filesToUpload: [],
       zeroLengthFilesNumber: 1,
@@ -113,7 +99,7 @@ describe('uploadItemsThunk', () => {
       parentFolderId: 'parent1',
     })(dispatch, getState as () => RootState, {});
 
-    expect(notificationsService.show).toHaveBeenCalledWith({
+    expect(notificationsServiceSpy).toHaveBeenCalledWith({
       text: 'Empty files are not supported.\n1 empty file not uploaded.',
       type: ToastType.Warning,
     });
@@ -124,6 +110,7 @@ describe('uploadItemsThunk', () => {
       filesToUpload: [mockFile],
       zeroLengthFilesNumber: 0,
     });
+    const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
     (uploadFileWithManager as Mock).mockRejectedValue(new Error('Upload failed'));
 
     await uploadItemsThunk({
@@ -131,7 +118,7 @@ describe('uploadItemsThunk', () => {
       parentFolderId: 'parent1',
     })(dispatch, getState as () => RootState, {});
 
-    expect(notificationsService.show).toHaveBeenCalledWith({
+    expect(notificationsServiceSpy).toHaveBeenCalledWith({
       text: 'Upload failed',
       type: ToastType.Error,
     });
@@ -163,10 +150,10 @@ describe('uploadItemsThunkExtraReducers', () => {
     RetryManager.clearTasks();
 
     vi.clearAllMocks();
-    vi.restoreAllMocks();
   });
 
   it('should handle rejected case and call RetryManager and notificationsService', () => {
+    const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
     const cases = new Map();
     const builder = {
       addCase: (action, reducer) => {
@@ -187,7 +174,7 @@ describe('uploadItemsThunkExtraReducers', () => {
 
     RetryManager.addTask({
       type: 'upload',
-      taskId: sampleFile.taskId || 'task1',
+      taskId: sampleFile.taskId ?? 'task1',
       params: sampleFile,
     });
 
@@ -206,13 +193,14 @@ describe('uploadItemsThunkExtraReducers', () => {
 
     expect(RetryIsRetryingFileSpy).toHaveBeenCalledWith('task1');
     expect(RetryChangeStatusSpy).toHaveBeenCalledWith('task1', 'failed');
-    expect(notificationsService.show).toHaveBeenCalledWith({
+    expect(notificationsServiceSpy).toHaveBeenCalledWith({
       text: expect.stringContaining('Upload failed'),
       type: ToastType.Error,
     });
   });
 
   it('should handle rejected case and not call RetryManager if file is not retrying', () => {
+    const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
     const cases = new Map();
     const builder = {
       addCase: (action, reducer) => {
@@ -246,7 +234,7 @@ describe('uploadItemsThunkExtraReducers', () => {
 
     expect(RetryIsRetryingFileSpy).toHaveBeenCalledWith('task1');
     expect(RetryChangeStatusSpy).not.toBeCalled();
-    expect(notificationsService.show).toHaveBeenCalledWith({
+    expect(notificationsServiceSpy).toHaveBeenCalledWith({
       text: expect.stringContaining('Test Error'),
       type: ToastType.Error,
     });
