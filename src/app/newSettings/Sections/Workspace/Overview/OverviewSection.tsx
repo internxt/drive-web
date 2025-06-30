@@ -1,5 +1,6 @@
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { WorkspaceTeam, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
+import { Button, Dropdown, Loader, Modal } from '@internxt/ui';
 import { PencilSimple } from '@phosphor-icons/react';
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
@@ -10,7 +11,6 @@ import workspacesService from '../../../../core/services/workspace.service';
 import { UsageDetailsProps } from '../../../../drive/services/usage.service';
 import Section from '../../../../newSettings/components/Section';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import { Button, Dropdown, Loader, Modal } from '@internxt/ui';
 import Card from '../../../../shared/components/Card';
 import { RootState } from '../../../../store';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
@@ -390,7 +390,7 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
                 <WorkspaceAvatarWrapper
                   diameter={128}
                   workspaceId={workspaceId}
-                  fullName={companyName}
+                  fullName={companyName ?? ''}
                   avatarSrcURL={avatarSrcURL}
                 />
                 {
@@ -414,7 +414,7 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
           <WorkspaceAvatarWrapper
             diameter={128}
             workspaceId={workspaceId}
-            fullName={companyName}
+            fullName={companyName ?? ''}
             avatarSrcURL={avatarSrcURL}
           />
         )}
