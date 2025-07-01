@@ -6,9 +6,9 @@ import {
   VerifyEmailChangeResponse,
 } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { SdkFactory } from '../../core/factory/sdk';
 import envService, { envConfig } from 'app/core/services/env.service';
 import localStorageService from 'app/core/services/local-storage.service';
+import { SdkFactory } from '../../core/factory/sdk';
 
 const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? envConfig.services.avatarUrl : undefined;
 
@@ -41,8 +41,8 @@ const updateUserProfile = (payload: Required<UpdateProfilePayload>): Promise<voi
 };
 
 const updateUserAvatar = (payload: { avatar: Blob }): Promise<{ avatar: string }> => {
-  const usersClient = SdkFactory.getNewApiInstance().createUsersClient(TEMPORAL_AVATAR_API_URL);
-  const token = localStorageService.get('xNewToken') ?? undefined;
+  const token = localStorageService.get('xToken') ?? undefined;
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient(TEMPORAL_AVATAR_API_URL, token);
   return usersClient.updateAvatar(payload);
 };
 
