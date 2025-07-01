@@ -7,6 +7,12 @@ import {
 } from '@internxt/sdk/dist/payments/types';
 import paymentService from './payment.service';
 
+vi.mock('./payment.service', () => ({
+  default: {
+    createSubscriptionWithTrial: vi.fn(),
+  },
+}));
+
 vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn().mockReturnValue({
