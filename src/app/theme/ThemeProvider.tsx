@@ -7,7 +7,7 @@ import SuperBowlBG from 'assets/images/banner/superbowl_theme.webp';
 import StPaticksBG from 'assets/images/banner/StPatrick-bg.png';
 import IdManagementBG from 'assets/images/banner/IdManagement-bg.png';
 import EnvironmentBG from 'assets/images/banner/environment_theme.png';
-import SummerBG from 'assets/images/banner/SummerBanner.png';
+import SummerBG from 'assets/images/banner/SummerBanner.webp';
 import localStorageService from 'app/core/services/local-storage.service';
 
 export type Theme =
@@ -23,7 +23,6 @@ export type Theme =
   | 'stPatricks'
   | 'idManagement'
   | 'environment';
-
 
 interface ThemeContextProps {
   currentTheme: Theme | undefined;

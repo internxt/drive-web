@@ -1,7 +1,7 @@
 import { X, Backpack } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ShieldIcon from 'assets/images/banner/shield-blue.svg';
-import BgImage from 'assets/images/banner/SummerBanner.png';
+import BgImage from 'assets/images/banner/SummerBanner.webp';
 
 interface FeaturesBannerProps {
   showBanner: boolean;
