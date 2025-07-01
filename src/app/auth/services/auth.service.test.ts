@@ -4,26 +4,22 @@
 import * as authService from './auth.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as keysService from 'app/crypto/services/keys.service';
-import { vi, describe, it, beforeAll, beforeEach, expect, afterAll } from 'vitest';
+import { vi, describe, it, beforeAll, beforeEach, expect } from 'vitest';
 import { Buffer } from 'buffer';
 import { encryptTextWithKey, encryptText } from 'app/crypto/services/utils';
 import { SdkFactory } from '../../core/factory/sdk';
 import localStorageService from 'app/core/services/local-storage.service';
 import { userActions } from 'app/store/slices/user';
 import * as pgpService from 'app/crypto/services/pgp.service';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
-const originalEnv = envConfig.crypto.secret;
-const originalSalt = envConfig.crypto.magicSalt;
-const originalIV = envConfig.crypto.magicIv;
-const originalURL = envConfig.api.api;
+const mockSecret = '123456789QWERTY';
+const mockMagicIv = '12345678912345678912345678912345';
+const mockMagicSalt =
+  '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+const mockApi = 'https://mock';
 
 beforeAll(() => {
-  envConfig.crypto.secret = '123456789QWERTY';
-  envConfig.crypto.magicIv = '12345678912345678912345678912345';
-  envConfig.crypto.magicSalt =
-    '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-  envConfig.api.api = 'https://mock';
   globalThis.Buffer = Buffer;
 
   window.gtag = vi.fn();
@@ -47,11 +43,6 @@ beforeAll(() => {
         createAuthClient: vi.fn(() => ({
           login: vi.fn(),
         })),
-        createDesktopAuthClient: vi.fn(() => ({
-          login: vi.fn(),
-        })),
-      })),
-      getInstance: vi.fn(() => ({
         createDesktopAuthClient: vi.fn(() => ({
           login: vi.fn(),
         })),
@@ -131,13 +122,13 @@ beforeAll(() => {
 
 beforeEach(() => {
   vi.clearAllMocks();
-});
-
-afterAll(() => {
-  envConfig.crypto.secret = originalEnv;
-  envConfig.crypto.magicSalt = originalSalt;
-  envConfig.crypto.magicIv = originalIV;
-  envConfig.api.api = originalURL;
+  vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
+    if (key === 'magicIv') return mockMagicIv;
+    if (key === 'magicSalt') return mockMagicSalt;
+    if (key === 'api') return mockApi;
+    if (key === 'secret') return mockSecret;
+    else return 'no mock implementation';
+  });
 });
 
 async function getMockUser(password: string, mnemonic: string) {
@@ -571,7 +562,7 @@ describe('Change password', () => {
         changePassword: changePasswordMock,
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
       }),
-      createNewUsersClient: vi.fn().mockReturnValue({
+      createUsersClient: vi.fn().mockReturnValue({
         changePassword: changePasswordMock,
       }),
     } as any);
@@ -623,7 +614,7 @@ describe('Change password', () => {
         changePassword: changePasswordMock,
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
       }),
-      createNewUsersClient: vi.fn().mockReturnValue({
+      createUsersClient: vi.fn().mockReturnValue({
         changePassword: changePasswordMock,
       }),
     } as any);

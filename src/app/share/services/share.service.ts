@@ -14,6 +14,7 @@ import {
   SharedFolderSize,
   SharedFolders,
   SharedFoldersInvitationsAsInvitedUserResponse,
+  SharingInfo,
   SharingInvite,
   SharingMeta,
   UpdateUserRolePayload,
@@ -815,6 +816,13 @@ export function getSharingType(itemId: string, itemType: 'file' | 'folder'): Pro
   });
 }
 
+export function getSharingInfo(itemId: string, itemType: 'file' | 'folder'): Promise<SharingInfo> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSharingInfo({ itemId, itemType }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function saveSharingPassword(
   sharingId: string,
   plainPassword: string,
@@ -854,6 +862,7 @@ const shareService = {
   getAllSharedFolders,
   getAllSharedFiles,
   getSharingType,
+  getSharingInfo,
   getShareDomains,
   stopSharingItem,
   removeUserRole,
