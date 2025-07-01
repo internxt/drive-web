@@ -10,22 +10,19 @@
   },
   "featuresBanner": {
     "label": "Risparmia l'80%",
-    "upperTitle": "Offerta per la Giornata Mondiale dell'Ambiente",
-    "title": "Piani annuali e a vita!",
-    "cta": "Richiedi l'offerta",
-    "guarantee": "Garanzia di rimborso entro 30 giorni",
-    "lastCta": "*Offerta valida per account gratuiti o nuovi clienti",
-    "specialOfferLabel": "",
-    "specialOfferGift": "Vinci uno zaino Internxt x Swiss Peak",
-
+    "title": "Sconto su tutti i piani",
+    "upperTitle": "Offerta estiva",
+    "cta": "Ottieni l'offerta",
+    "guarantee": "Garanzia di rimborso di 30 giorni",
+    "specialOfferGift": "Estrazione di uno zaino Internxt x Swiss Peak",
+    "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
     "features": [
       "Drive, VPN e Antivirus",
-      "Crittografia post-quantistica",
-
       "Archiviazione cloud sostenibile",
+      "Crittografia post-quantistica",
       "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
-      "L'offerta termina il 27 giugno"
+      "Tema estivo gratuito"
     ]
   },
   "susbcriptionsBanner": {
@@ -89,6 +86,7 @@
     "christmas": "Natale",
     "superBowl": "Super Bowl",
     "valentines": "San Valentino",
+    "summer": "estate",
     "stPatricks": "San Patrizio",
     "idManagement": "Gestione dell'identità",
     "environment": "Giornata Mondiale dell'Ambiente"

@@ -55,6 +55,7 @@ export const envConfig = {
     intercomProviderKey: getEnvVar('REACT_APP_INTERCOM_PROVIDER_KEY'),
     sentryDsn: getEnvVar('REACT_APP_SENTRY_DSN'),
     recaptchaV3: getEnvVar('REACT_APP_RECAPTCHA_V3'),
+    avatarUrl: getEnvVar('REACT_APP_AVATAR_URL'),
     shareLinksDomain: getEnvVar('REACT_APP_SHARE_LINKS_DOMAIN'),
     proxy: getEnvVar('REACT_APP_PROXY'),
     dontUseProxy: getEnvVar('REACT_APP_DONT_USE_PROXY'),
