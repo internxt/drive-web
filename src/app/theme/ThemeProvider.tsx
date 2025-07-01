@@ -1,3 +1,4 @@
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import StarWarsBG from 'assets/images/banner/star-wars-bg.webp';
 import StarWarsBG2 from 'assets/images/banner/internxt_SW_theme.webp';
 import HalloweenBG from 'assets/images/banner/Ghosties-bg.webp';
@@ -6,25 +7,25 @@ import SuperBowlBG from 'assets/images/banner/superbowl_theme.webp';
 import StPaticksBG from 'assets/images/banner/StPatrick-bg.png';
 import IdManagementBG from 'assets/images/banner/IdManagement-bg.png';
 import EnvironmentBG from 'assets/images/banner/environment_theme.png';
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import localStorageService from 'app/core/services/local-storage.service';
 
 export type Theme =
   | 'system'
   | 'light'
   | 'dark'
-  | 'starwars'
-  | 'starwars2'
+  | 'starWars'
+  | 'starWars2'
   | 'halloween'
   | 'christmas'
-  | 'superbowl'
-  | 'stpatricks'
-  | 'idmanagement'
+  | 'superBowl'
+  | 'stPatricks'
+  | 'idManagement'
   | 'environment';
 
 interface ThemeContextProps {
   currentTheme: Theme | undefined;
   checkoutTheme: 'light' | 'dark' | undefined;
-  toggleTheme: (string: Theme) => void;
+  toggleTheme: (theme: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextProps>({
@@ -37,100 +38,87 @@ interface ThemeProviderProps {
   children: React.ReactNode;
 }
 
+const THEME_CONFIG: Record<
+  Exclude<Theme, 'system' | 'light' | 'dark'>,
+  {
+    background: string;
+    darkMode: boolean;
+    customStyle?: boolean;
+  }
+> = {
+  starWars: { background: StarWarsBG, darkMode: true },
+  starWars2: { background: StarWarsBG2, darkMode: true, customStyle: true },
+  halloween: { background: HalloweenBG, darkMode: true },
+  christmas: { background: ChristmasBG, darkMode: true },
+  stPatricks: { background: StPaticksBG, darkMode: true, customStyle: true },
+  superBowl: { background: SuperBowlBG, darkMode: true, customStyle: true },
+  idManagement: { background: IdManagementBG, darkMode: true, customStyle: true },
+  environment: { background: EnvironmentBG, darkMode: true, customStyle: true },
+};
+
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const root = document.getElementById('root');
   const [currentTheme, setCurrentTheme] = useState<Theme>();
   const [checkoutTheme, setCheckoutTheme] = useState<'light' | 'dark'>();
 
-  const toggleTheme = (theme: Theme) => {
-    setCurrentTheme(theme);
-  };
+  const toggleTheme = (theme: Theme) => setCurrentTheme(theme);
 
   useEffect(() => {
-    if (localStorage.getItem('theme')) {
-      setCurrentTheme(localStorage.getItem('theme') as Theme);
-      window.matchMedia('(prefers-color-scheme: dark)').matches ? setCheckoutTheme('dark') : setCheckoutTheme('light');
-    } else {
-      setCurrentTheme('system');
-      window.matchMedia('(prefers-color-scheme: dark)').matches ? setCheckoutTheme('dark') : setCheckoutTheme('light');
-    }
+    const stored = localStorageService.get('theme') as Theme | null;
+    const defaultTheme = stored ?? 'system';
+    setCurrentTheme(defaultTheme);
+
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setCheckoutTheme(prefersDark ? 'dark' : 'light');
   }, []);
 
   useEffect(() => {
-    if (!root) return;
+    if (!root || currentTheme === undefined) return;
 
     const updateTheme = () => {
-      if (
-        currentTheme === 'dark' ||
-        (currentTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-      ) {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      localStorageService.set('theme', currentTheme);
+
+      if (currentTheme === 'dark' || (currentTheme === 'system' && prefersDark)) {
         root.style.backgroundImage = 'none';
         document.documentElement.classList.add('dark');
         setCheckoutTheme('dark');
-      } else if (currentTheme === 'starwars') {
-        root.style.backgroundImage = `url(${StarWarsBG})`;
-        document.documentElement.classList.add('dark');
-        setCheckoutTheme('dark');
-      } else if (currentTheme === 'starwars2') {
-        root.style.backgroundImage = `url(${StarWarsBG2})`;
-        root.style.backgroundSize = 'cover';
-        root.style.backgroundPosition = 'center';
-        root.style.backgroundRepeat = 'no-repeat';
-        document.documentElement.classList.add('dark');
-        setCheckoutTheme('dark');
-      } else if (currentTheme === 'halloween') {
-        root.style.backgroundImage = `url(${HalloweenBG})`;
-        document.documentElement.classList.add('dark');
-        setCheckoutTheme('dark');
-      } else if (currentTheme === 'christmas') {
-        root.style.backgroundImage = `url(${ChristmasBG})`;
-        document.documentElement.classList.add('dark');
-        setCheckoutTheme('dark');
-      } else if (currentTheme === 'stpatricks') {
-        root.style.backgroundImage = `url(${StPaticksBG})`;
-        root.style.backgroundSize = 'cover';
-        root.style.backgroundPosition = 'center';
-        root.style.backgroundRepeat = 'no-repeat';
-        document.documentElement.classList.add('dark');
-        setCheckoutTheme('dark');
-      } else if (currentTheme === 'superbowl') {
-        root.style.backgroundImage = `url(${SuperBowlBG})`;
-        root.style.backgroundSize = 'cover';
-        root.style.backgroundPosition = 'center';
-        root.style.backgroundRepeat = 'no-repeat';
-        document.documentElement.classList.add('dark');
-        setCheckoutTheme('dark');
-      } else if (currentTheme === 'idmanagement') {
-        root.style.backgroundImage = `url(${IdManagementBG})`;
-        root.style.backgroundSize = 'cover';
-        root.style.backgroundPosition = 'center';
-        root.style.backgroundRepeat = 'no-repeat';
-        document.documentElement.classList.add('dark');
-        setCheckoutTheme('dark');
-      } else if (currentTheme === 'environment') {
-        root.style.backgroundImage = `url(${EnvironmentBG})`;
-        root.style.backgroundSize = 'cover';
-        root.style.backgroundPosition = 'center';
-        root.style.backgroundRepeat = 'no-repeat';
-        document.documentElement.classList.add('dark');
-        setCheckoutTheme('dark');
-      } else {
-        root.style.backgroundImage = 'none';
-        document.documentElement.classList.remove('dark');
-        setCheckoutTheme('light');
+        return;
       }
+
+      const config = THEME_CONFIG[currentTheme as keyof typeof THEME_CONFIG];
+
+      if (config) {
+        root.style.backgroundImage = `url(${config.background})`;
+
+        if (config.customStyle) {
+          root.style.backgroundSize = 'cover';
+          root.style.backgroundPosition = 'center';
+          root.style.backgroundRepeat = 'no-repeat';
+        }
+
+        if (config.darkMode) {
+          document.documentElement.classList.add('dark');
+          setCheckoutTheme('dark');
+        }
+
+        return;
+      }
+
+      // fallback to light theme
+      root.style.backgroundImage = 'none';
+      document.documentElement.classList.remove('dark');
+      setCheckoutTheme('light');
     };
 
-    if (currentTheme !== undefined) {
-      localStorage.setItem('theme', currentTheme);
-      updateTheme();
-    }
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateTheme);
+    updateTheme();
 
-    return () => {
-      window.removeEventListener('change', updateTheme);
-    };
-  }, [currentTheme]);
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', updateTheme);
+
+    return () => mediaQuery.removeEventListener('change', updateTheme);
+  }, [currentTheme, root]);
 
   const themeContextValue = useMemo(
     () => ({
@@ -138,12 +126,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       checkoutTheme,
       toggleTheme,
     }),
-    [currentTheme, checkoutTheme, toggleTheme],
+    [currentTheme, checkoutTheme],
   );
 
   return <ThemeContext.Provider value={themeContextValue}>{children}</ThemeContext.Provider>;
 };
 
-export const useThemeContext = (): ThemeContextProps => {
-  return useContext(ThemeContext);
-};
+export const useThemeContext = (): ThemeContextProps => useContext(ThemeContext);

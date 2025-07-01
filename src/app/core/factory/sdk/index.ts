@@ -3,7 +3,6 @@ import { Backups, Payments, Referrals, Share, Storage, Trash, Users } from '@int
 import { ApiSecurity, ApiUrl, AppDetails } from '@internxt/sdk/dist/shared';
 import { WorkspaceCredentialsDetails, Workspaces } from '@internxt/sdk/dist/workspaces';
 import packageJson from '../../../../../package.json';
-import authService from '../../../auth/services/auth.service';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { LocalStorageService } from '../../services/local-storage.service';
@@ -16,7 +15,6 @@ export class SdkFactory {
   private static sdk: {
     dispatch: AppDispatch;
     localStorage: LocalStorageService;
-    instance: SdkFactory;
     newApiInstance: SdkFactory;
   };
   private readonly apiUrl: ApiUrl;
@@ -29,7 +27,6 @@ export class SdkFactory {
     this.sdk = {
       dispatch,
       localStorage,
-      instance: new SdkFactory(envService.getVariable('api')),
       newApiInstance: new SdkFactory(envService.getVariable('newApi')),
     };
   }
@@ -41,24 +38,17 @@ export class SdkFactory {
     return this.sdk.newApiInstance;
   }
 
-  public static getInstance(): SdkFactory {
-    if (this.sdk.instance === undefined) {
-      throw new Error('Factory not initialized');
-    }
-    return this.sdk.instance;
-  }
-
   public createAuthClient(): Auth {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getApiSecurity();
+    const apiSecurity = this.getNewApiSecurity();
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
 
   public createDesktopAuthClient(): Auth {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getDesktopAppDetails();
-    const apiSecurity = this.getApiSecurity();
+    const apiSecurity = this.getNewApiSecurity();
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
 
@@ -90,49 +80,29 @@ export class SdkFactory {
     return Trash.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createUsersClient(optionalApiUrl?: string): Users {
+  public createUsersClient(optionalApiUrl?: string, token?: string): Users {
     const apiUrl = optionalApiUrl ?? this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getApiSecurity();
-    return Users.client(apiUrl, appDetails, apiSecurity);
-  }
-
-  public createNewUsersClient(): Users {
-    const apiUrl = this.getApiUrl();
-    const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getNewApiSecurity();
+    const apiSecurity = this.getNewApiSecurity(token);
     return Users.client(apiUrl, appDetails, apiSecurity);
   }
 
   public createReferralsClient(): Referrals {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getApiSecurity();
+    const apiSecurity = this.getNewApiSecurity();
     return Referrals.client(apiUrl, appDetails, apiSecurity);
   }
 
   public async createPaymentsClient(): Promise<Payments> {
     const appDetails = SdkFactory.getAppDetails();
-
-    let newToken = SdkFactory.sdk.localStorage.get('xNewToken');
-
-    if (!newToken) {
-      newToken = await authService.getNewToken();
-      SdkFactory.sdk.localStorage.set('xNewToken', newToken);
-    }
-
-    const apiSecurity = { ...this.getApiSecurity(), token: newToken };
-
+    const apiSecurity = this.getNewApiSecurity();
     return Payments.client(envService.getVariable('payments'), appDetails, apiSecurity);
   }
 
   public async createCheckoutClient(): Promise<Checkout> {
     const appDetails = SdkFactory.getAppDetails();
-
-    const newToken = this.getNewApiSecurity().token;
-
-    const apiSecurity = { ...this.getApiSecurity(), token: newToken ?? '' };
-
+    const apiSecurity = this.getNewApiSecurity();
     return Checkout.client(envService.getVariable('payments'), appDetails, apiSecurity);
   }
 
@@ -145,23 +115,11 @@ export class SdkFactory {
 
   /** Helpers **/
 
-  private getApiSecurity(): ApiSecurity {
+  private getNewApiSecurity(token?: string): ApiSecurity {
     const workspace = SdkFactory.sdk.localStorage.getWorkspace();
     const workspaceToken = this.getWorkspaceToken();
     return {
-      token: this.getToken(workspace),
-      workspaceToken,
-      unauthorizedCallback: async () => {
-        SdkFactory.sdk.dispatch(userThunks.logoutThunk());
-      },
-    };
-  }
-
-  private getNewApiSecurity(): ApiSecurity {
-    const workspace = SdkFactory.sdk.localStorage.getWorkspace();
-    const workspaceToken = this.getWorkspaceToken();
-    return {
-      token: this.getNewToken(workspace),
+      token: token ?? this.getNewToken(workspace),
       workspaceToken,
       unauthorizedCallback: async () => {
         SdkFactory.sdk.dispatch(userThunks.logoutThunk());

@@ -52,10 +52,9 @@ function hasCompletedTutorial(id?: string): boolean {
 }
 
 function clear(): void {
-  if (localStorage.getItem('theme') === 'starwars') {
-    localStorage.setItem('theme', 'system');
-  }
+  localStorage.setItem('theme', 'system');
 
+  Object.values(STORAGE_KEYS.THEMES).forEach((key) => localStorage.removeItem(key));
   localStorage.removeItem('xUser');
   localStorage.removeItem('xMnemonic');
   localStorage.removeItem('xToken');
@@ -66,9 +65,6 @@ function clear(): void {
   localStorage.removeItem('showSummerBanner');
   localStorage.removeItem('xInvitedToken');
   localStorage.removeItem('xResourcesToken');
-  localStorage.removeItem('star_wars_theme_enabled');
-  localStorage.removeItem(STORAGE_KEYS.THEMES.MANAGEMENTID_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
-  localStorage.removeItem(STORAGE_KEYS.THEMES.ID_MANAGEMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
   localStorage.removeItem(STORAGE_KEYS.B2B_WORKSPACE);
   localStorage.removeItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS);
   localStorage.removeItem(STORAGE_KEYS.GCLID);
