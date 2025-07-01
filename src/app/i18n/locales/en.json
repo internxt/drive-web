@@ -5,22 +5,19 @@
   },
   "featuresBanner": {
     "label": "Save 80%",
-    "upperTitle": "World Environment Day deal",
-    "title": "Annual and Lifetime plans!",
+    "title": "Annual and lifetime plans!",
+    "upperTitle":"Hot summer savings",
     "cta": "Claim deal",
     "guarantee": "30-day money-back guarantee",
+    "specialOfferGift":"Chance to win an Internxt backpack",
     "lastCta": "*Offer is for free accounts or new customers",
-    "specialOfferLabel": "",
-    "specialOfferGift": "Win an Internxt x Swiss Peak backpack",
-
     "features": [
       "Drive, VPN, and Antivirus",
-      "Post-quantum encryption",
       "Sustainable cloud storage",
+      "Post-quantum encryption",
       "End-to-end encrypted transfers",
-
       "No unauthorized access",
-      "Offer ends June 27"
+      "Free summer theme for Web App"
     ]
   },
   "susbcriptionsBanner": {
@@ -89,6 +86,7 @@
     "christmas": "Christmas",
     "superBowl": "Super Bowl",
     "valentines": "Valentine's Day",
+    "summer": "Summer",
     "stPatricks": "St. Patrick's Day",
     "idManagement": "Identity Management",
     "environment": "World Environment Day"
