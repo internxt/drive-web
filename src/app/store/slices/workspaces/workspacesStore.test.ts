@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach, beforeAll, afterAll } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { workspaceThunks } from './workspacesStore';
 const { setupWorkspace } = workspaceThunks;
 import { PendingWorkspace } from '@internxt/sdk/dist/workspaces';
@@ -11,71 +11,64 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Buffer } from 'buffer';
 import notificationsService from 'app/notifications/services/notifications.service';
 
-describe('Encryption and Decryption', () => {
-  beforeAll(() => {
-    vi.mock('../../../core/types', () => ({
-      AppView: vi.fn(),
-    }));
-    vi.mock('../../../share/services/share.service', () => ({
-      decryptMnemonic: vi.fn(),
-    }));
-    vi.mock('../plan', () => ({
-      planThunks: vi.fn(),
-    }));
-    vi.mock('../session/session.thunks', () => ({
-      default: {
-        changeWorkspaceThunk: vi.fn(),
-      },
-    }));
-    vi.mock('../../../newSettings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper', () => ({
-      deleteWorkspaceAvatarFromDatabase: vi.fn(),
-      saveWorkspaceAvatarToDatabase: vi.fn(),
-    }));
-    vi.mock('../../../core/services/navigation.service', () => ({
-      default: { push: vi.fn() },
-    }));
-    vi.mock('./workspaces.selectors', () => ({
-      default: {
-        getSelectedWorkspace: vi.fn(),
-      },
-    }));
-    vi.mock('../../../core/services/workspace.service', () => ({
-      default: {
-        setupWorkspace: vi.fn(),
-        getWorkspaces: vi.fn(),
-        updateWorkspaceAvatar: vi.fn(),
-        deleteWorkspaceAvatar: vi.fn(),
-        editWorkspace: vi.fn(),
-        getWorkspaceCredentials: vi.fn(),
-      },
-    }));
-    vi.mock('../../../core/services/local-storage.service', () => ({
-      default: {
-        set: vi.fn(),
-        getB2BWorkspace: vi.fn(),
-      },
-      STORAGE_KEYS: {
-        TUTORIAL_COMPLETED_ID: 'signUpTutorialCompleted',
-        B2B_WORKSPACE: 'b2bWorkspace',
-        WORKSPACE_CREDENTIALS: 'workspace_credentials',
-      },
-    }));
-    vi.mock('../../../notifications/services/notifications.service', () => ({
-      default: {
-        show: vi.fn(),
-      },
-      ToastType: {
-        Error: 'ERROR',
-      },
-    }));
-  });
+vi.mock('i18next', () => ({
+  t: vi.fn((key, params) => `${key} ${params?.reason ?? ''}`),
+}));
 
+vi.mock('../../../core/types', () => ({
+  AppView: vi.fn(),
+}));
+vi.mock('../../../share/services/share.service', () => ({
+  decryptMnemonic: vi.fn(),
+}));
+vi.mock('../plan', () => ({
+  planThunks: vi.fn(),
+}));
+vi.mock('../session/session.thunks', () => ({
+  default: {
+    changeWorkspaceThunk: vi.fn(),
+  },
+}));
+vi.mock('../../../newSettings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper', () => ({
+  deleteWorkspaceAvatarFromDatabase: vi.fn(),
+  saveWorkspaceAvatarToDatabase: vi.fn(),
+}));
+vi.mock('../../../core/services/navigation.service', () => ({
+  default: { push: vi.fn() },
+}));
+vi.mock('./workspaces.selectors', () => ({
+  default: {
+    getSelectedWorkspace: vi.fn(),
+  },
+}));
+vi.mock('../../../core/services/workspace.service', () => ({
+  default: {
+    setupWorkspace: vi.fn(),
+    getWorkspaces: vi.fn(),
+    updateWorkspaceAvatar: vi.fn(),
+    deleteWorkspaceAvatar: vi.fn(),
+    editWorkspace: vi.fn(),
+    getWorkspaceCredentials: vi.fn(),
+  },
+}));
+vi.mock('../../../core/services/local-storage.service', () => ({
+  default: {
+    set: vi.fn(),
+    getB2BWorkspace: vi.fn(),
+  },
+}));
+vi.mock('../../../notifications/services/notifications.service', () => ({
+  default: {
+    show: vi.fn(),
+  },
+  ToastType: {
+    Error: 'ERROR',
+  },
+}));
+
+describe('Encryption and Decryption', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  afterAll(()=> {
-    vi.resetAllMocks();
   });
 
   function getMockPendingWorkspace() {
@@ -100,8 +93,8 @@ describe('Encryption and Decryption', () => {
     const mockUser: Partial<UserSettings> = {
       mnemonic:
         'truck arch rather sell tilt return warm nurse rack vacuum rubber tribe unfold scissors copper sock panel ozone harsh ahead danger soda legal state',
-       publicKey: keys.publicKeyArmored,
-       privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
+      publicKey: keys.publicKeyArmored,
+      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
     };
 
     const mockRootState: Partial<RootState> = {
@@ -172,7 +165,7 @@ describe('Encryption and Decryption', () => {
     expect(mockWorkspaceService.setupWorkspace).not.toHaveBeenCalled();
 
     expect(notificationsService.show).toHaveBeenCalledWith({
-      text: 'Error setting up workspace',
+      text: 'Error setting up workspace ',
       type: 'ERROR',
     });
   });

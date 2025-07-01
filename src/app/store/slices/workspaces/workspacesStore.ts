@@ -188,8 +188,8 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
           dispatch(sessionThunks.changeWorkspaceThunk());
         }
       }, 1000);
-    } catch (error) {
-      notificationsService.show({ text: 'Error setting up workspace', type: ToastType.Error });
+    } catch (e) {
+      notificationsService.show({ text: t('Error setting up workspace', { error: e }), type: ToastType.Error });
     }
   },
 );
@@ -283,7 +283,7 @@ export const workspacesSlice = createSlice({
         state.isLoadingWorkspaces = false;
       })
       .addCase(fetchWorkspaces.rejected, (state, action) => {
-        const errorMsg = action.payload ? action.payload : '';
+        const errorMsg = action.payload ?? '';
 
         state.isLoadingWorkspaces = false;
         notificationsService.show({
@@ -300,11 +300,11 @@ export const workspacesSlice = createSlice({
         state.isLoadingWorkspaces = false;
       })
       .addCase(setSelectedWorkspace.rejected, (state, action) => {
-        const errorMsg = action.payload ? action.payload : '';
+        const errorMsg = action.payload ?? '';
 
         state.isLoadingWorkspaces = false;
         notificationsService.show({
-          text: 'Changing workspace error ' + errorMsg,
+          text: t('Changing workspace error ', { error: errorMsg }),
           type: ToastType.Warning,
         });
       })
@@ -315,7 +315,7 @@ export const workspacesSlice = createSlice({
         state.isLoadingWorkspaces = false;
       })
       .addCase(fetchCredentials.rejected, (state, action) => {
-        const errorMsg = action.payload ? action.payload : '';
+        const errorMsg = action.payload ?? '';
 
         state.isLoadingCredentials = false;
         state.isLoadingWorkspaces = false;
@@ -333,7 +333,7 @@ export const workspacesSlice = createSlice({
         state.isLoadingWorkspaces = false;
       })
       .addCase(setupWorkspace.rejected, (state, action) => {
-        const errorMsg = action.payload ? action.payload : '';
+        const errorMsg = action.payload ?? '';
 
         state.isLoadingWorkspaces = false;
         notificationsService.show({
@@ -348,7 +348,7 @@ export const workspacesSlice = createSlice({
         state.isLoadingWorkspaces = false;
       })
       .addCase(checkAndSetLocalWorkspace.rejected, (state, action) => {
-        const errorMsg = action.payload ? action.payload : '';
+        const errorMsg = action.payload ?? '';
 
         state.isLoadingWorkspaces = false;
         notificationsService.show({
