@@ -80,10 +80,10 @@ export class SdkFactory {
     return Trash.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createUsersClient(optionalApiUrl?: string, token?: string): Users {
-    const apiUrl = optionalApiUrl ?? this.getApiUrl();
+  public createUsersClient(): Users {
+    const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getNewApiSecurity(token);
+    const apiSecurity = this.getNewApiSecurity();
     return Users.client(apiUrl, appDetails, apiSecurity);
   }
 
@@ -115,11 +115,11 @@ export class SdkFactory {
 
   /** Helpers **/
 
-  private getNewApiSecurity(token?: string): ApiSecurity {
+  private getNewApiSecurity(): ApiSecurity {
     const workspace = SdkFactory.sdk.localStorage.getWorkspace();
     const workspaceToken = this.getWorkspaceToken();
     return {
-      token: token ?? this.getNewToken(workspace),
+      token: this.getNewToken(workspace),
       workspaceToken,
       unauthorizedCallback: async () => {
         SdkFactory.sdk.dispatch(userThunks.logoutThunk());

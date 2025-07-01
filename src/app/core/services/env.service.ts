@@ -32,7 +32,6 @@ const variableList = {
   intercomProviderKey: 'REACT_APP_INTERCOM_PROVIDER_KEY',
   sentryDsn: 'REACT_APP_SENTRY_DSN',
   recaptchaV3: 'REACT_APP_RECAPTCHA_V3',
-  avatarUrl: 'REACT_APP_AVATAR_URL',
   shareLinksDomain: 'REACT_APP_SHARE_LINKS_DOMAIN',
   proxy: 'REACT_APP_PROXY',
   dontUseProxy: 'REACT_APP_DONT_USE_PROXY',
