@@ -20,6 +20,11 @@ export async function searchItemsByName(name: string): Promise<DriveFileData[]> 
   return result;
 }
 
+export async function hasUploadedFiles(): Promise<{ hasUploadedFiles: boolean }> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  return storageClient.hasUploadedFiles();
+}
+
 export async function getFolderAncestors(uuid: string): Promise<FolderAncestor[]> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   return storageClient.getFolderAncestors(uuid);
@@ -99,6 +104,7 @@ const newStorageService = {
   checkDuplicatedFolders,
   getFolderContentByUuid,
   deleteFolderByUuid,
+  hasUploadedFiles,
 };
 
 export default newStorageService;

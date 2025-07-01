@@ -115,7 +115,7 @@ export async function trackPaymentConversion() {
     const source = getCookie('impactSource');
 
     if (source && source !== 'direct') {
-      axios
+      await axios
         .post(IMPACT_API, {
           anonymousId: anonymousID,
           timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),

@@ -24,10 +24,7 @@ import { ContextMenu } from '@internxt/ui';
 import { t } from 'i18next';
 import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
-import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
-import localStorageService from '../../../core/services/local-storage.service';
-import { STORAGE_KEYS } from '../../../core/services/storage-keys';
 import navigationService from '../../../core/services/navigation.service';
 import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.service';
 import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
@@ -75,6 +72,8 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
+import newStorageService from 'app/drive/services/new-storage.service';
+import envService from 'app/core/services/env.service';
 
 export const UPLOAD_ITEMS_LIMIT = 3000;
 
@@ -208,10 +207,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // ONBOARDING TUTORIAL STATES
+  const [hasAnyUploadedFile, setHasAnyUploadedFile] = useState<boolean | undefined>();
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
   const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
   const uploadFileButtonRef = useRef(null);
-  const isSignUpTutorialCompleted = localStorageService.hasCompletedTutorial(user?.userId);
   const successNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Success],
   });
@@ -219,9 +218,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasSignedToday = useAppSelector(userSelectors.hasSignedToday);
 
   const showTutorial =
+    hasAnyUploadedFile !== undefined &&
+    !hasAnyUploadedFile &&
     envService.isProduction() &&
     hasSignedToday &&
-    !isSignUpTutorialCompleted &&
     (showSecondTutorialStep || currentTutorialStep === 0);
   const signupSteps = getSignUpSteps(
     {
@@ -237,10 +237,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     {
       onNextStepClicked: () => {
         passToNextStep();
-        localStorageService.set(STORAGE_KEYS.TUTORIAL_COMPLETED_ID, user?.userId as string);
       },
     },
   );
+
+  useEffect(() => {
+    if (!hasAnyUploadedFile && currentTutorialStep === 1 && successNotifications[0]?.status === TaskStatus.Success) {
+      setShowSecondTutorialStep(true);
+    }
+  }, [currentTutorialStep, successNotifications]);
 
   const realtimeService = RealtimeService.getInstance();
   const handleFileCreatedEvent = (data) => {
@@ -272,12 +277,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       errorService.reportError(err);
     }
   }, [currentFolderId]);
-
-  useEffect(() => {
-    if (!isSignUpTutorialCompleted && currentTutorialStep === 1 && successNotifications.length > 0) {
-      setShowSecondTutorialStep(true);
-    }
-  }, [successNotifications]);
 
   useEffect(() => {
     deviceService.redirectForMobile();
@@ -318,18 +317,19 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       });
     }
   }, []);
-  /*
+
   useEffect(() => {
-    const handleContextmenu = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsOpen((prev) => !prev);
-    };
-    document.addEventListener('mousedown', handleContextmenu);
-    return function cleanup() {
-      document.removeEventListener('mousedown', handleContextmenu);
-    };
-  }, []);*/
+    if (hasSignedToday) {
+      newStorageService
+        .hasUploadedFiles()
+        .then(({ hasUploadedFiles }) => {
+          setHasAnyUploadedFile(hasUploadedFiles);
+        })
+        .catch((error) => {
+          errorService.reportError(error);
+        });
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
