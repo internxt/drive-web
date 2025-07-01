@@ -68,6 +68,7 @@ const Appearance = () => {
         );
         return [...prev, ...filteredNew];
       });
+
     } catch (error) {
       console.error(`Something went wrong while fetching available themes for user. ERROR: ${error}`);
       errorService.reportError(error);

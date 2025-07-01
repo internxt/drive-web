@@ -1,4 +1,4 @@
-import { beforeEach, afterAll, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
+import { beforeEach, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
 import { screen, fireEvent, render } from '@testing-library/react';
 import WorkspaceGuestSingUpView from './WorkspaceGuestSignUp';
 import { userActions } from 'app/store/slices/user';
@@ -8,13 +8,14 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
 import { Buffer } from 'buffer';
 import { generateMnemonic } from 'bip39';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
-const originalEnv = envConfig.crypto.secret;
-const originalSalt = envConfig.crypto.magicSalt;
-const originalIV = envConfig.crypto.magicIv;
-const originalURL = envConfig.api.api;
-const originalHostName = envConfig.app.hostname;
+const mockSecret = '123456789QWERTY';
+const mockMagicIv = '12345678912345678912345678912345';
+const mockMagicSalt =
+  '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+const mockApi = 'https://mock';
+const mockHostname = 'hostname';
 
 const mockPassword = 'mock-password';
 const mockEmal = 'mock@email.com';
@@ -23,12 +24,6 @@ let callCount = 0;
 
 describe('onSubmit', () => {
   beforeAll(() => {
-    envConfig.crypto.secret = '123456789QWERTY';
-    envConfig.crypto.magicIv = '12345678912345678912345678912345';
-    envConfig.crypto.magicSalt =
-      '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-    envConfig.api.api = 'https://mock';
-    envConfig.app.hostname = 'hostname';
     globalThis.Buffer = Buffer;
 
     vi.spyOn(globalThis, 'decodeURIComponent').mockImplementation((value) => {
@@ -228,14 +223,14 @@ describe('onSubmit', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  afterAll(() => {
-    envConfig.crypto.secret = originalEnv;
-    envConfig.crypto.magicSalt = originalSalt;
-    envConfig.crypto.magicIv = originalIV;
-    envConfig.api.api = originalURL;
-    envConfig.app.hostname = originalHostName;
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
+      if (key === 'magicIv') return mockMagicIv;
+      if (key === 'magicSalt') return mockMagicSalt;
+      if (key === 'api') return mockApi;
+      if (key === 'secret') return mockSecret;
+      if (key === 'hostname') return mockHostname;
+      else return 'no mock implementation';
+    });
   });
 
   it('when called with new valid data, then user with decypted keys is saved in local storage', async () => {

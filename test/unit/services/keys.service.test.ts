@@ -3,30 +3,35 @@
  */
 
 import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
-import { getKeys, decryptPrivateKey } from '../../../src/app/crypto/services/keys.service';
+import {
+  getKeys,
+  decryptPrivateKey,
+  assertValidateKeys,
+  KeysDoNotMatchError,
+} from '../../../src/app/crypto/services/keys.service';
 import { isValid } from '../../../src/app/crypto/services/utilspgp';
 
-import { describe, expect, it, afterAll, beforeAll } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Buffer } from 'buffer';
-import { envConfig } from '../../../src/app/core/services/env.service';
+import envService from '../../../src/app/core/services/env.service';
+
+const mockMagicIv = 'test_magic_iv';
+const mockMagicSalt = 'test_magic_salt';
 
 describe('Generate keys', () => {
   globalThis.Buffer = Buffer;
 
-  const originalIV = envConfig.crypto.magicIv;
-  const originalSalt = envConfig.crypto.magicSalt;
-
-  beforeAll(() => {
-    envConfig.crypto.magicIv = 'test_magic_iv';
-    envConfig.crypto.magicSalt = 'test_magic_salt';
-  });
-  afterAll(() => {
-    envConfig.crypto.magicIv = originalIV;
-    envConfig.crypto.magicSalt = originalSalt;
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
   it('should generate new keys', async () => {
     const password = 'test pwd';
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
+      if (key === 'magicIv') return mockMagicIv;
+      if (key === 'magicSalt') return mockMagicSalt;
+      else return 'no mock implementation';
+    });
     const keys = await getKeys(password);
 
     expect(keys).toHaveProperty('privateKeyEncrypted');
@@ -47,6 +52,21 @@ describe('# keys service tests', () => {
     const plainPrivateKey = keys.privateKeyArmored;
 
     expect(isValid(plainPrivateKey)).toBeTruthy();
+  });
+  it('should fail if public and private keys do not match', async () => {
+    const keys = await generateNewKeys();
+    const keys_different = await generateNewKeys();
+
+    await expect(
+      assertValidateKeys(keys.privateKeyArmored, Buffer.from(keys_different.publicKeyArmored, 'base64').toString()),
+    ).rejects.toThrow(new KeysDoNotMatchError());
+  });
+  it('should validate public and private keys', async () => {
+    const keys = await generateNewKeys();
+
+    await expect(
+      assertValidateKeys(keys.privateKeyArmored, Buffer.from(keys.publicKeyArmored, 'base64').toString()),
+    ).resolves.toBeUndefined();
   });
 });
 

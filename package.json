@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.475",
+  "version": "v1.0.479",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -9,7 +9,7 @@
     "@internxt/css-config": "^1.0.3",
     "@internxt/inxt-js": "=1.2.21",
     "@internxt/lib": "^1.2.0",
-    "@internxt/sdk": "=1.9.30",
+    "@internxt/sdk": "=1.10.1",
     "@internxt/ui": "^0.0.23",
     "@phosphor-icons/react": "^2.1.7",
     "@popperjs/core": "^2.11.6",
@@ -90,7 +90,6 @@
     "start": "vite preview",
     "build:staging": "vite build --mode staging",
     "vercel:install": "yarn run add:npmrc && yarn install",
-    "test:unit": "vitest run test/unit && vitest run src/ ",
     "test:coverage": "vitest run --coverage",
     "test:playwright": "yarn playwright test",
     "test:chromium": "yarn playwright test --project=chromium",
