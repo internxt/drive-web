@@ -319,14 +319,16 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    newStorageService
-      .hasUploadedFiles()
-      .then(({ hasUploadedFiles }) => {
-        setHasAnyUploadedFile(hasUploadedFiles);
-      })
-      .catch((error) => {
-        errorService.reportError(error);
-      });
+    if (hasSignedToday) {
+      newStorageService
+        .hasUploadedFiles()
+        .then(({ hasUploadedFiles }) => {
+          setHasAnyUploadedFile(hasUploadedFiles);
+        })
+        .catch((error) => {
+          errorService.reportError(error);
+        });
+    }
   }, []);
 
   useEffect(() => {
