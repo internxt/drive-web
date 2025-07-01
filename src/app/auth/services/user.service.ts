@@ -6,11 +6,11 @@ import {
   VerifyEmailChangeResponse,
 } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import envService, { envConfig } from 'app/core/services/env.service';
-import localStorageService from 'app/core/services/local-storage.service';
 import { SdkFactory } from '../../core/factory/sdk';
+import envService from 'app/core/services/env.service';
+import localStorageService from 'app/core/services/local-storage.service';
 
-const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? envConfig.services.avatarUrl : undefined;
+const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? envService.getVariable('avatarUrl') : undefined;
 
 export const sendDeactivationEmail = (): Promise<void> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();

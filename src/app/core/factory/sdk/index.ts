@@ -1,15 +1,15 @@
 import { Auth, Token } from '@internxt/sdk/dist/auth';
 import { Backups, Payments, Referrals, Share, Storage, Trash, Users } from '@internxt/sdk/dist/drive';
-import { Checkout } from '@internxt/sdk/dist/payments';
 import { ApiSecurity, ApiUrl, AppDetails } from '@internxt/sdk/dist/shared';
 import { WorkspaceCredentialsDetails, Workspaces } from '@internxt/sdk/dist/workspaces';
-import { envConfig } from 'app/core/services/env.service';
 import packageJson from '../../../../../package.json';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import { LocalStorageService } from '../../services/local-storage.service';
-import { STORAGE_KEYS } from '../../services/storage-keys';
 import { Workspace } from '../../types';
+import { Checkout } from '@internxt/sdk/dist/payments';
+import envService from 'app/core/services/env.service';
+import { STORAGE_KEYS } from '../../services/storage-keys';
 
 export class SdkFactory {
   private static sdk: {
@@ -27,7 +27,7 @@ export class SdkFactory {
     this.sdk = {
       dispatch,
       localStorage,
-      newApiInstance: new SdkFactory(envConfig.api.newApi),
+      newApiInstance: new SdkFactory(envService.getVariable('newApi')),
     };
   }
 
@@ -97,13 +97,13 @@ export class SdkFactory {
   public async createPaymentsClient(): Promise<Payments> {
     const appDetails = SdkFactory.getAppDetails();
     const apiSecurity = this.getNewApiSecurity();
-    return Payments.client(envConfig.api.payments, appDetails, apiSecurity);
+    return Payments.client(envService.getVariable('payments'), appDetails, apiSecurity);
   }
 
   public async createCheckoutClient(): Promise<Checkout> {
     const appDetails = SdkFactory.getAppDetails();
     const apiSecurity = this.getNewApiSecurity();
-    return Checkout.client(envConfig.api.payments, appDetails, apiSecurity);
+    return Checkout.client(envService.getVariable('payments'), appDetails, apiSecurity);
   }
 
   public createBackupsClient(): Backups {

@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.476",
+  "version": "v1.0.477",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -90,7 +90,6 @@
     "start": "vite preview",
     "build:staging": "vite build --mode staging",
     "vercel:install": "yarn run add:npmrc && yarn install",
-    "test:unit": "vitest run test/unit && vitest run src/ ",
     "test:coverage": "vitest run --coverage",
     "test:playwright": "yarn playwright test",
     "test:chromium": "yarn playwright test --project=chromium",

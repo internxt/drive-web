@@ -22,7 +22,6 @@ const authClientMock = {
   sendUserDeactivationEmail: vi.fn(),
 };
 
-vi.spyOn(localStorageService, 'get').mockReturnValue(testToken);
 vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(() => ({
@@ -38,6 +37,7 @@ vi.mock('../../core/factory/sdk', () => ({
 describe('userService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(localStorageService, 'get').mockReturnValue(testToken);
   });
 
   it('should send a deactivation email', async () => {

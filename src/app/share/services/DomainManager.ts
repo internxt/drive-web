@@ -1,8 +1,6 @@
-import envService, { envConfig } from '../../core/services/env.service';
+import envService from '../../core/services/env.service';
 import errorService from '../../core/services/error.service';
 import shareService from './share.service';
-
-const isDevelopment = !envService.isProduction();
 
 class DomainManager {
   private static instance: DomainManager;
@@ -17,15 +15,16 @@ class DomainManager {
 
   async fetchDomains(): Promise<void> {
     try {
+      const isDevelopment = !envService.isProduction();
       const response = isDevelopment
-        ? { list: [envConfig.services.shareLinksDomain] }
+        ? { list: [envService.getVariable('shareLinksDomain')] }
         : await shareService.getShareDomains();
 
       const domainsList = response.list;
       this.domains = domainsList;
     } catch (error) {
       errorService.reportError(error);
-      this.domains = [envConfig.services.shareLinksDomain];
+      this.domains = [envService.getVariable('shareLinksDomain')];
     }
   }
 
