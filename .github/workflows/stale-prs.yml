@@ -2,7 +2,7 @@ name: Mark stale PRs
 
 on:
   schedule:
-    - cron: '0 7 * * *' # Runs daily at 08:00 UTC
+    - cron: '0 7 * * *'
   workflow_dispatch:
 
 permissions:
@@ -27,7 +27,9 @@ jobs:
             This pull request was closed automatically due to prolonged inactivity.
           # Labels
           stale-pr-label: stalled
-          exempt-pr-labels: no-stalled
+          exempt-pr-labels: 'dependencies,blocked'
+          exempt-draft-pr: true
+          ascending: true
           # Do not touch issues
           days-before-issue-stale: -1
           days-before-issue-close: -1
