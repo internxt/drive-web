@@ -24,10 +24,7 @@ import { ContextMenu } from '@internxt/ui';
 import { t } from 'i18next';
 import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
-import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
-import localStorageService from '../../../core/services/local-storage.service';
-import { STORAGE_KEYS } from '../../../core/services/storage-keys';
 import navigationService from '../../../core/services/navigation.service';
 import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.service';
 import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
@@ -76,6 +73,7 @@ import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
 import newStorageService from 'app/drive/services/new-storage.service';
+import envService from 'app/core/services/env.service';
 
 export const UPLOAD_ITEMS_LIMIT = 3000;
 
@@ -239,10 +237,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     {
       onNextStepClicked: () => {
         passToNextStep();
-        localStorageService.set(STORAGE_KEYS.TUTORIAL_COMPLETED_ID, user?.userId as string);
       },
     },
   );
+
+  useEffect(() => {
+    if (!hasAnyUploadedFile && currentTutorialStep === 1 && successNotifications[0]?.status === TaskStatus.Success) {
+      setShowSecondTutorialStep(true);
+    }
+  }, [currentTutorialStep, successNotifications]);
 
   const realtimeService = RealtimeService.getInstance();
   const handleFileCreatedEvent = (data) => {
@@ -274,12 +277,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       errorService.reportError(err);
     }
   }, [currentFolderId]);
-
-  useEffect(() => {
-    if (!hasAnyItemSelected && currentTutorialStep === 1 && successNotifications.length > 0) {
-      setShowSecondTutorialStep(true);
-    }
-  }, [successNotifications]);
 
   useEffect(() => {
     deviceService.redirectForMobile();
