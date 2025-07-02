@@ -4,9 +4,9 @@ import {
   DownloadItemType,
   DownloadManagerService,
   DownloadTask,
-  ErrorMessages,
   areItemArraysEqual,
 } from 'app/drive/services/downloadManager.service';
+import { ErrorMessages } from 'app/core/constants';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, Mock, MockInstance, vi } from 'vitest';
 import { Workspace, WorkspaceCredentialsDetails, WorkspaceData, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';

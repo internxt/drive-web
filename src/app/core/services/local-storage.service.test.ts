@@ -137,7 +137,6 @@ beforeEach(() => {
 
 afterAll(() => {
   localStorage.clear();
-  vi.resetAllMocks();
 });
 
 describe('Testing the local storage service', () => {

@@ -4,9 +4,9 @@ import {
   DownloadItemType,
   DownloadManagerService,
   DownloadTask,
-  ErrorMessages,
   isLostConnectionError,
 } from 'app/drive/services/downloadManager.service';
+import { ErrorMessages } from 'app/core/constants';
 import { createFilesIterator, createFoldersIterator } from 'app/drive/services/folder.service';
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import tasksService from 'app/tasks/services/tasks.service';
@@ -51,14 +51,6 @@ describe('downloadManager', () => {
           downloadFile: vi.fn(),
           downloadItems: vi.fn(),
         },
-      },
-      ErrorMessages: {
-        ServerUnavailable: 'Server Unavailable',
-        ServerError: 'Server Error',
-        InternalServerError: 'Internal Server Error',
-        NetworkError: 'Network Error',
-        ConnectionLost: 'Connection lost',
-        FilePickerCancelled: 'File picker was canceled or failed',
       },
       isLostConnectionError: vi.fn(),
       areItemArraysEqual: vi.fn(),

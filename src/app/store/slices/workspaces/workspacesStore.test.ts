@@ -57,14 +57,6 @@ vi.mock('../../../core/services/local-storage.service', () => ({
     getB2BWorkspace: vi.fn(),
   },
 }));
-vi.mock('../../../notifications/services/notifications.service', () => ({
-  default: {
-    show: vi.fn(),
-  },
-  ToastType: {
-    Error: 'ERROR',
-  },
-}));
 
 describe('Encryption and Decryption', () => {
   beforeEach(() => {
@@ -159,14 +151,15 @@ describe('Encryption and Decryption', () => {
     vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
     vi.spyOn(workspacesService, 'setupWorkspace').mockImplementation(mockWorkspaceService.setupWorkspace);
     vi.spyOn(workspacesService, 'getWorkspaces').mockImplementation(mockWorkspaceService.getWorkspaces);
+    const showSpy = vi.spyOn(notificationsService, 'show');
 
     await setupWorkspace({ pendingWorkspace: mockPendingWorkspace })(dispatchMock, getStateMock, undefined);
 
     expect(mockWorkspaceService.setupWorkspace).not.toHaveBeenCalled();
 
-    expect(notificationsService.show).toHaveBeenCalledWith({
+    expect(showSpy).toHaveBeenCalledWith({
       text: 'Error setting up workspace ',
-      type: 'ERROR',
+      type: 'error',
     });
   });
 });

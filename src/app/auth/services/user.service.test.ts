@@ -22,6 +22,12 @@ const authClientMock = {
   sendUserDeactivationEmail: vi.fn(),
 };
 
+vi.mock('app/core/services/local-storage.service', () => ({
+  default: {
+    get: vi.fn(),
+  },
+}));
+
 vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(() => ({
