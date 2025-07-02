@@ -8,6 +8,7 @@ import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository'
 import { DriveFileData } from 'app/drive/types';
 import RetryManager from './RetryManager';
 import { TaskStatus } from 'app/tasks/types';
+import { ErrorMessages } from 'app/core/constants';
 
 vi.mock('../drive/services/file.service/uploadFile', () => ({
   default: vi.fn(() => Promise.resolve({} as DriveFileData)),
@@ -356,7 +357,7 @@ describe('checkUploadFiles', () => {
   });
 
   it('should handle lost connection error during upload', async () => {
-    const lostConnectionError = new AppError('Network Error');
+    const lostConnectionError = new AppError(ErrorMessages.NetworkError);
     (uploadFile as Mock).mockRejectedValueOnce(lostConnectionError);
 
     const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
