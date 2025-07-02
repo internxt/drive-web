@@ -1,6 +1,7 @@
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import { t } from 'i18next';
 import { MAX_PASSWORD_LENGTH } from '../shared/components/ValidPassword';
+import envConfig from 'app/core/services/env.service';
 
 const onChangePasswordHandler = ({
   password,
@@ -37,4 +38,11 @@ const onChangePasswordHandler = ({
   }
 };
 
-export { onChangePasswordHandler };
+const generateCaptchaToken = async (): Promise<string> => {
+  await new Promise<void>((r) => window.grecaptcha.ready(r));
+  return window.grecaptcha.execute(envConfig.getVariable('recaptchaV3'), {
+    action: 'authentication',
+  });
+};
+
+export { onChangePasswordHandler, generateCaptchaToken };

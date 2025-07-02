@@ -29,6 +29,7 @@ import TextInput from '../TextInput/TextInput';
 import { AuthMethodTypes } from 'app/payment/types';
 import vpnAuthService from 'app/auth/services/vpnAuth.service';
 import envService from 'app/core/services/env.service';
+import { generateCaptchaToken } from 'app/auth/utils';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -133,6 +134,8 @@ export default function LogIn(): JSX.Element {
     try {
       const isTfaEnabled = await is2FANeeded(email);
 
+      const captchaToken = await generateCaptchaToken();
+
       if (!isTfaEnabled || showTwoFactor) {
         const loginType: 'desktop' | 'web' = isUniversalLinkMode ? 'desktop' : 'web';
         const authParams = {
@@ -142,6 +145,7 @@ export default function LogIn(): JSX.Element {
           twoFactorCode,
           dispatch,
           loginType,
+          captchaToken,
         };
 
         const { token, user, mnemonic } = await authenticateUser(authParams);

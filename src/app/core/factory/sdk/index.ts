@@ -38,9 +38,15 @@ export class SdkFactory {
     return this.sdk.newApiInstance;
   }
 
-  public createAuthClient(): Auth {
+  public createAuthClient(captchaToken?: string): Auth {
+    const customHeaders: Record<string, string> = {};
+
+    if (captchaToken) {
+      customHeaders['x-internxt-captcha'] = captchaToken;
+    }
+
     const apiUrl = this.getApiUrl();
-    const appDetails = SdkFactory.getAppDetails();
+    const appDetails = SdkFactory.getAppDetails({ ...customHeaders });
     const apiSecurity = this.getNewApiSecurity();
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
@@ -131,10 +137,11 @@ export class SdkFactory {
     return this.apiUrl;
   }
 
-  private static getAppDetails(): AppDetails {
+  private static getAppDetails(customHeaders?: Record<string, string>): AppDetails {
     return {
       clientName: packageJson.name,
       clientVersion: packageJson.version,
+      customHeaders,
     };
   }
 
