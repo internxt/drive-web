@@ -1,12 +1,11 @@
 import react from '@vitejs/plugin-react';
-import dotenv from 'dotenv';
-import fs from 'fs';
 import path from 'path';
 import { defineConfig } from 'vite';
-import obfuscator from 'vite-plugin-bundle-obfuscator';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
+import dotenv from 'dotenv';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -52,31 +51,6 @@ export default defineConfig({
         });
       },
     },
-    obfuscator({
-      log: false,
-      enable: true,
-      autoExcludeNodeModules: true,
-      threadPool: true,
-      options: {
-        compact: true,
-        stringArray: true,
-        stringArrayThreshold: 1,
-        stringArrayCallsTransform: true,
-        stringArrayCallsTransformThreshold: 1,
-        stringArrayEncoding: ['base64', 'rc4'],
-        stringArrayIndexShift: true,
-        stringArrayRotate: true,
-        stringArrayShuffle: true,
-        stringArrayWrappersCount: 5,
-        stringArrayWrappersChainedCalls: true,
-        stringArrayWrappersParametersMaxCount: 5,
-        transformObjectKeys: true,
-        identifierNamesGenerator: 'hexadecimal',
-        splitStrings: true,
-        splitStringsChunkLength: 5,
-        unicodeEscapeSequence: true,
-      },
-    }),
   ],
   envPrefix: ['REACT_APP_'],
   build: {
