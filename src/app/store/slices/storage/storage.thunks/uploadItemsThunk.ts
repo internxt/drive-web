@@ -22,10 +22,10 @@ import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
+import RetryManager from 'app/network/RetryManager';
+import { FileToUpload } from '../../../../drive/services/file.service/types';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
-import { FileToUpload } from '../../../../drive/services/file.service/types';
-import RetryManager from 'app/network/RetryManager';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -37,6 +37,7 @@ interface UploadItemsThunkOptions {
   disableDuplicatedNamesCheck?: boolean;
   disableExistenceCheck?: boolean;
   isUploadedFromFolder?: boolean;
+  notUploadHiddenFiles?: boolean;
 }
 
 interface UploadItemsPayload {
@@ -117,7 +118,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
   ) => {
     const user = getState().user.user as UserSettings;
     const errors: Error[] = [];
-
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
     const state = getState();
@@ -431,6 +431,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       disableExistenceCheck: options.disableExistenceCheck,
+      notUploadHiddenFiles: options.notUploadHiddenFiles,
     });
 
     showEmptyFilesNotification(zeroLengthFilesNumber);
