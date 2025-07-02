@@ -4,21 +4,20 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "优惠 80%",
-    "upperTitle": "世界环境日",
-    "title": "保护您的数据，保护地球",
-    "cta": "获取您的方案",
+    "label": "立省 80%",
+    "title": "所有套餐均可享受折扣",
+    "upperTitle": "夏季优惠",
+    "cta": "获取优惠",
     "guarantee": "30 天退款保证",
-    "lastCta": "*优惠适用于免费账户或新客户",
-    "specialOfferLabel": "",
-    "specialOfferGift": "参加 Internxt x Swiss Peak 背包抽奖",
+    "specialOfferGift": "抽奖赠送 Internxt x Swiss Peak 背包",
+    "lastCta": "*仅限免费账户或新客户享受此优惠",
     "features": [
-      "Internxt 云盘、VPN 和杀毒软件",
+      "Drive、VPN 和防病毒软件",
+      "可持续的云存储",
       "后量子加密",
-      "可持续云存储",
-      "加密传输",
-      "无未授权访问",
-      "优惠截止日期：6 月 27 日"
+      "端到端加密传输",
+      "无未经授权的访问",
+      "免费夏季主题"
     ]
   },
   "susbcriptionsBanner": {
@@ -87,9 +86,7 @@
     "christmas": "圣诞节",
     "superBowl": "Super Bowl",
     "valentines": "Valentine's Day",
-    "stPatricks": "St. Patrick's Day",
-    "idManagement": "Identity Management",
-    "environment": "World Environment Day"
+    "summer": "夏天"
   },
   "auth": {
     "email": "电子邮件",

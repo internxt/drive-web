@@ -6,11 +6,8 @@ import {
   VerifyEmailChangeResponse,
 } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import envService, { envConfig } from 'app/core/services/env.service';
-import localStorageService from 'app/core/services/local-storage.service';
 import { SdkFactory } from '../../core/factory/sdk';
-
-const TEMPORAL_AVATAR_API_URL = envService.isProduction() ? envConfig.services.avatarUrl : undefined;
+import localStorageService from 'app/core/services/local-storage.service';
 
 export const sendDeactivationEmail = (): Promise<void> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
@@ -41,9 +38,8 @@ const updateUserProfile = (payload: Required<UpdateProfilePayload>): Promise<voi
 };
 
 const updateUserAvatar = (payload: { avatar: Blob }): Promise<{ avatar: string }> => {
-  const token = localStorageService.get('xToken') ?? undefined;
-  const usersClient = SdkFactory.getNewApiInstance().createUsersClient(TEMPORAL_AVATAR_API_URL, token);
-  return usersClient.updateAvatar(payload);
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+  return usersClient.updateUserAvatar(payload);
 };
 
 const deleteUserAvatar = (): Promise<void> => {

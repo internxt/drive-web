@@ -1,18 +1,10 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { sendConversionToAPI } from './googleSheet.service';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 
-vi.mock('app/core/services/env.service', () => ({
-  envConfig: {
-    app: {
-      websiteUrl: 'https://mocked-api.internxt.com',
-    },
-    services: {
-      recaptchaV3: 'mocked-recaptcha-key',
-    },
-  },
-}));
+const mockWebsiteUrl = 'https://mocked-api.internxt.com';
+const mockedRecaptchaV3 = 'mocked-recaptcha-key';
 
 describe('Google Sheets Conversion Logger', () => {
   const mockGrecaptchaReady = vi.fn((cb) => cb());
@@ -28,6 +20,11 @@ describe('Google Sheets Conversion Logger', () => {
       ready: mockGrecaptchaReady,
       execute: mockGrecaptchaExecute,
     };
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
+      if (key === 'websiteUrl') return mockWebsiteUrl;
+      if (key === 'recaptchaV3') return mockedRecaptchaV3;
+      else return 'no mock implementation';
+    });
   });
 
   afterAll(() => {
@@ -37,8 +34,8 @@ describe('Google Sheets Conversion Logger', () => {
   });
 
   it('When the correct data is provided, then should send event correctly', async () => {
-    const inputDate = new Date(2024, 0, 1, 11, 0, 0);
-    const expectedTimestamp = '01-01-2024 13:00:00+0100';
+    const inputDate = new Date(Date.UTC(2024, 0, 1, 10, 0, 0));
+    const expectedTimestamp = '01-01-2024 12:00:00+0100';
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ message: 'ok' }),
@@ -58,7 +55,7 @@ describe('Google Sheets Conversion Logger', () => {
     });
 
     expect(fetchSpy).toHaveBeenCalledWith(
-      `${envConfig.app.websiteUrl}/api/collect/sheet`,
+      `${mockWebsiteUrl}/api/collect/sheet`,
       expect.objectContaining({
         method: 'POST',
         body: JSON.stringify({

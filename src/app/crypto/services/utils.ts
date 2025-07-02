@@ -4,7 +4,7 @@ import { aes, items as itemUtils } from '@internxt/lib';
 import { AdvancedSharedItem } from '../../share/types';
 import { createSHA512, createHMAC, sha256, createSHA256, sha512, ripemd160, blake3 } from 'hash-wasm';
 import { Buffer } from 'buffer';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 /**
  * Computes hmac-sha512
  * @param {string} encryptionKeyHex - The hmac key in HEX format
@@ -98,12 +98,12 @@ function passToHash(passObject: PassObjectInterface): { salt: string; hash: stri
 
 // AES Plain text encryption method
 function encryptText(textToEncrypt: string): string {
-  return encryptTextWithKey(textToEncrypt, envConfig.crypto.secret);
+  return encryptTextWithKey(textToEncrypt, envService.getVariable('secret'));
 }
 
 // AES Plain text decryption method
 function decryptText(encryptedText: string): string {
-  return decryptTextWithKey(encryptedText, envConfig.crypto.secret);
+  return decryptTextWithKey(encryptedText, envService.getVariable('secret'));
 }
 
 // AES Plain text encryption method with enc. key
@@ -140,9 +140,9 @@ const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
   }
   try {
     if (item.isFolder || item.type === 'folder') {
-      return aes.decrypt(item.name, `${envConfig.crypto.secret2}-${item.parentId}`);
+      return aes.decrypt(item.name, `${envService.getVariable('secret2')}-${item.parentId}`);
     } else {
-      return aes.decrypt(item.name, `${envConfig.crypto.secret2}-${item.folderId}`);
+      return aes.decrypt(item.name, `${envService.getVariable('secret2')}-${item.folderId}`);
     }
   } catch (err) {
     //Decrypt has failed because item.name is not encrypted
