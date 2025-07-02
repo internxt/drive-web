@@ -3,7 +3,12 @@
  */
 
 import { generateNewKeys } from '../../../src/app/crypto/services/pgp.service';
-import { getKeys, decryptPrivateKey } from '../../../src/app/crypto/services/keys.service';
+import {
+  getKeys,
+  decryptPrivateKey,
+  assertValidateKeys,
+  KeysDoNotMatchError,
+} from '../../../src/app/crypto/services/keys.service';
 import { isValid } from '../../../src/app/crypto/services/utilspgp';
 
 import { describe, expect, it, vi, beforeEach } from 'vitest';
@@ -47,6 +52,21 @@ describe('# keys service tests', () => {
     const plainPrivateKey = keys.privateKeyArmored;
 
     expect(isValid(plainPrivateKey)).toBeTruthy();
+  });
+  it('should fail if public and private keys do not match', async () => {
+    const keys = await generateNewKeys();
+    const keys_different = await generateNewKeys();
+
+    await expect(
+      assertValidateKeys(keys.privateKeyArmored, Buffer.from(keys_different.publicKeyArmored, 'base64').toString()),
+    ).rejects.toThrow(new KeysDoNotMatchError());
+  });
+  it('should validate public and private keys', async () => {
+    const keys = await generateNewKeys();
+
+    await expect(
+      assertValidateKeys(keys.privateKeyArmored, Buffer.from(keys.publicKeyArmored, 'base64').toString()),
+    ).resolves.toBeUndefined();
   });
 });
 

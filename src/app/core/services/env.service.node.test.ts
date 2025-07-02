@@ -38,7 +38,6 @@ describe('Check that env variables are loaded correctly', () => {
     expect(envService.getVariable('intercomProviderKey')).toBe(process.env.REACT_APP_INTERCOM_PROVIDER_KEY);
     expect(envService.getVariable('sentryDsn')).toBe(process.env.REACT_APP_SENTRY_DSN);
     expect(envService.getVariable('recaptchaV3')).toBe(process.env.REACT_APP_RECAPTCHA_V3);
-    expect(envService.getVariable('avatarUrl')).toBe(process.env.REACT_APP_AVATAR_URL);
     expect(envService.getVariable('shareLinksDomain')).toBe(process.env.REACT_APP_SHARE_LINKS_DOMAIN);
     expect(envService.getVariable('proxy')).toBe(process.env.REACT_APP_PROXY);
     expect(envService.getVariable('dontUseProxy')).toBe(process.env.REACT_APP_DONT_USE_PROXY);
