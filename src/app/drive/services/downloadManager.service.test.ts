@@ -690,7 +690,6 @@ describe('downloadManagerService', () => {
       taskId: mockTaskId,
       failedItems: [],
     };
-    const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
 
     const mockUpdateProgress = vi.fn((progress: number) => progress);
     const mockIncrementItemCount = vi.fn(() => 0);
@@ -1237,7 +1236,7 @@ describe('downloadManagerService', () => {
 
       const levelsBlobsCache = new LevelsBlobsCache();
       const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
-      const lruCacheSpy = vi.spyOn(lruCache, 'get').mockResolvedValueOnce({
+      vi.spyOn(lruCache, 'get').mockResolvedValueOnce({
         id: mockFile.id,
         parentId: mockFile.folderId,
         source: undefined,
@@ -1292,8 +1291,7 @@ describe('downloadManagerService', () => {
 
       const levelsBlobsCache = new LevelsBlobsCache();
       const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
-      const lruCacheSpy = vi
-        .spyOn(lruCache, 'get')
+      vi.spyOn(lruCache, 'get')
         .mockRejectedValueOnce(() => {
           throw new Error('File error 1');
         })
@@ -1624,8 +1622,8 @@ describe('downloadManagerService', () => {
 
       it('should throw ConnectionLostError if connectionLost is true and there is a zip value', async () => {
         const connectionLost = true;
-        const zip = new FlatFolderZip('any-path', {} as any);
-        const spyAbort = vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementationOnce(() => {});
+        const zip = new FlatFolderZip('any-path', {});
+        const spyAbort = vi.spyOn(FlatFolderZip.prototype, 'abort');
         const spyClose = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValueOnce();
         await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(connectionLost, zip)).rejects.toThrow(
           ConnectionLostError,
@@ -1655,7 +1653,7 @@ describe('downloadManagerService', () => {
 
       it('should call checkConnection after timeout', async () => {
         navigatorOnLineSpy.mockReturnValue(false);
-        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const warnSpy = vi.spyOn(console, 'warn');
 
         const { cleanup } = DownloadManagerService.instance.handleConnectionLost(1000);
         vi.advanceTimersByTime(1000);
@@ -1677,7 +1675,7 @@ describe('downloadManagerService', () => {
       it('should update connectionLost when offline event is triggered', () => {
         const { cleanup } = DownloadManagerService.instance.handleConnectionLost(1000);
         const offlineListener = addEventListenerSpy.mock.calls[0][1];
-        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const warnSpy = vi.spyOn(console, 'warn');
 
         offlineListener();
         expect(warnSpy).toHaveBeenCalledWith('Offline event detected');
