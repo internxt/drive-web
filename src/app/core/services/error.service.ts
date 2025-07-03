@@ -9,8 +9,9 @@ interface AxiosErrorResponse {
   message?: string;
 }
 
-interface ErrorWithStatus extends Error {
+interface ErrorWithStatusAndCode extends Error {
   status?: number;
+  code?: string;
 }
 
 const errorService = {
@@ -41,11 +42,16 @@ const errorService = {
       castedError = new AppError(
         responseData?.error || responseData?.message || 'Unknown error',
         axiosError.response?.status,
+        axiosError.code,
       );
     } else if (typeof err === 'string') {
       castedError = new AppError(err);
     } else if (err instanceof Error) {
-      castedError = new AppError(err.message || 'Unknown error', (err as ErrorWithStatus).status);
+      castedError = new AppError(
+        err.message || 'Unknown error',
+        (err as ErrorWithStatusAndCode).status,
+        (err as ErrorWithStatusAndCode).code,
+      );
     } else {
       const map = err as Record<string, unknown>;
       castedError = map.message ? new AppError(map.message as string, map.status as number) : castedError;
