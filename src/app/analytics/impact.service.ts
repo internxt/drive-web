@@ -5,16 +5,11 @@ import { getCookie } from './utils';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { CouponCodeData } from 'app/payment/types';
 import { bytesToString } from 'app/drive/services/size.service';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
-
-const IMPACT_API = envConfig.impact.apiUrl;
-
-const anonymousID = getCookie('impactAnonymousId');
-const source = getCookie('impactSource');
 
 /**
  * Stores relevant payment data in local storage to be retrieved later,
@@ -62,6 +57,9 @@ export function savePaymentDataInLocalStorage(
 export async function trackSignUp(uuid: string, email: string) {
   try {
     const gclid = getCookie('gclid');
+    const IMPACT_API = envService.getVariable('impactApiUrl');
+    const anonymousID = getCookie('impactAnonymousId');
+    const source = getCookie('impactSource');
 
     window.gtag('event', 'User Signup');
 
@@ -112,9 +110,12 @@ export async function trackPaymentConversion() {
     } catch {
       //
     }
+    const IMPACT_API = envService.getVariable('impactApiUrl');
+    const anonymousID = getCookie('impactAnonymousId');
+    const source = getCookie('impactSource');
 
     if (source && source !== 'direct') {
-      axios
+      await axios
         .post(IMPACT_API, {
           anonymousId: anonymousID,
           timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
