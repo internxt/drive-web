@@ -465,7 +465,7 @@ const CheckoutViewWrapper = () => {
       } else {
         const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
           await checkoutService.getClientSecret({
-            selectedPlan: currentSelectedPlan as PriceWithTax,
+            selectedPlan: currentSelectedPlan,
             token,
             mobileToken,
             customerId,
@@ -477,7 +477,7 @@ const CheckoutViewWrapper = () => {
         savePaymentDataInLocalStorage(
           subscriptionId,
           paymentIntentId,
-          currentSelectedPlan as PriceWithTax,
+          currentSelectedPlan,
           seatsForBusinessSubscription,
           couponCodeData,
         );
@@ -486,7 +486,7 @@ const CheckoutViewWrapper = () => {
           await sendConversionToAPI({
             gclid: gclidStored,
             name: `Checkout - ${currentSelectedPlan.price.type}`,
-            value: currentSelectedPlan as PriceWithTax,
+            value: currentSelectedPlan,
             currency: currentSelectedPlan.price.currency,
             timestamp: new Date(),
             users: seatsForBusinessSubscription,
@@ -653,8 +653,7 @@ const CheckoutViewWrapper = () => {
       {isCheckoutReadyToRender &&
       elementsOptions &&
       stripeSdk &&
-      currentSelectedPlan &&
-      currentSelectedPlan.price &&
+      currentSelectedPlan?.price &&
       currentSelectedPlan.taxes ? (
         <Elements stripe={stripeSdk} options={{ ...elementsOptions }}>
           <CheckoutView
