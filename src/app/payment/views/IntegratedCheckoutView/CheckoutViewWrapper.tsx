@@ -4,15 +4,20 @@ import { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js
 import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
+import { UserLocation } from '@internxt/sdk';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Loader } from '@internxt/ui';
+import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
+import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
+import { userLocation } from 'app/utils/userLocation';
 import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
 import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
-import { STORAGE_KEYS } from '../../../core/services/storage-keys';
 import navigationService from '../../../core/services/navigation.service';
 import RealtimeService from '../../../core/services/socket.service';
+import { STORAGE_KEYS } from '../../../core/services/storage-keys';
 import AppError, { AppView, IFormValues } from '../../../core/types';
 import databaseService from '../../../database/services/database.service';
 import { getDatabaseProfileAvatar } from '../../../drive/services/database.service';
@@ -30,11 +35,6 @@ import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
 import { AuthMethodTypes } from '../../types';
 import CheckoutView from './CheckoutView';
-import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { userLocation } from 'app/utils/userLocation';
-import { UserLocation } from '@internxt/sdk';
-import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
-import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -155,7 +155,7 @@ const CheckoutViewWrapper = () => {
 
   const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
 
-  const canChangePlanDialogBeOpened = prices && currentSelectedPlan && isUpdateSubscriptionDialogOpen;
+  const canChangePlanDialogBeOpened = prices && currentSelectedPlan?.price && isUpdateSubscriptionDialogOpen;
 
   const userInfo: UserInfoProps = {
     name: fullName,
@@ -207,27 +207,38 @@ const CheckoutViewWrapper = () => {
   }, [isAuthenticated, user]);
 
   useEffect(() => {
-    if (currentSelectedPlan) {
-      promoCodeName &&
-        handleFetchPromotionCode(currentSelectedPlan.price.id, promoCodeName).catch(handlePromoCodeError);
-
-      checkoutService
-        .getPriceById({ priceId: currentSelectedPlan.price.id, userAddress: userLocationData?.ip, promoCodeName })
-        .then((priceWithTaxes: PriceWithTax) => {
-          setSelectedPlan(priceWithTaxes);
-        })
-        .catch(() => {
-          if (user) {
-            navigationService.push(AppView.Drive);
-          } else {
-            navigationService.push(AppView.Signup);
-          }
-        });
+    if (!currentSelectedPlan?.price?.id) {
+      return;
     }
-  }, [promoCodeName]);
+
+    if (promoCodeName) {
+      handleFetchPromotionCode(currentSelectedPlan.price.id, promoCodeName).catch(handlePromoCodeError);
+    }
+
+    checkoutService
+      .getPriceById({
+        priceId: currentSelectedPlan.price.id,
+        userAddress: userLocationData?.ip,
+        promoCodeName,
+      })
+      .then((priceWithTaxes: PriceWithTax) => {
+        setSelectedPlan(priceWithTaxes);
+      })
+      .catch(() => {
+        if (user) {
+          navigationService.push(AppView.Drive);
+        } else {
+          navigationService.push(AppView.Signup);
+        }
+      });
+  }, [promoCodeName, currentSelectedPlan?.price?.id]);
 
   useEffect(() => {
-    if (userLocationData?.location !== country && postalCode && currentSelectedPlan) {
+    if (!currentSelectedPlan?.price?.id || !currentSelectedPlan?.price?.currency) {
+      return;
+    }
+
+    if (userLocationData?.location !== country && postalCode) {
       recalculatePrice(
         currentSelectedPlan.price.id,
         currentSelectedPlan.price.currency,
@@ -236,7 +247,7 @@ const CheckoutViewWrapper = () => {
         country,
       );
     }
-  }, [country, postalCode]);
+  }, [country, postalCode, currentSelectedPlan?.price?.id, currentSelectedPlan?.price?.currency]);
 
   useEffect(() => {
     if (thereIsAnyError) {
@@ -346,7 +357,10 @@ const CheckoutViewWrapper = () => {
   };
 
   const handleSubscriptionPayment = async (priceId: string) => {
-    if (!currentSelectedPlan) return;
+    if (!currentSelectedPlan?.price?.type) {
+      console.error('No selected plan available for subscription payment');
+      return;
+    }
 
     try {
       const updatedSubscription = await paymentService.updateSubscriptionPrice({
@@ -386,6 +400,12 @@ const CheckoutViewWrapper = () => {
     elements: StripeElements | null,
   ) => {
     event?.preventDefault();
+
+    if (!currentSelectedPlan?.price?.id) {
+      console.error('No selected plan available for checkout');
+      setIsUserPaying(false);
+      return;
+    }
 
     setIsUserPaying(true);
 
@@ -427,7 +447,7 @@ const CheckoutViewWrapper = () => {
         const setupIntent = await checkoutService.checkoutSetupIntent(customerId);
         localStorageService.set('customerId', customerId);
         localStorageService.set('token', token);
-        localStorageService.set('priceId', currentSelectedPlan?.price?.id as string);
+        localStorageService.set('priceId', currentSelectedPlan.price.id);
         localStorageService.set('customerToken', token);
         localStorageService.set('mobileToken', mobileToken);
         const RETURN_URL_DOMAIN = envService.getVariable('hostname');
@@ -435,7 +455,7 @@ const CheckoutViewWrapper = () => {
           elements,
           clientSecret: setupIntent.clientSecret,
           confirmParams: {
-            return_url: `${RETURN_URL_DOMAIN}/checkout/pcCloud-success?mobileToken=${mobileToken}&priceId=${currentSelectedPlan?.price?.id}`,
+            return_url: `${RETURN_URL_DOMAIN}/checkout/pcCloud-success?mobileToken=${mobileToken}&priceId=${currentSelectedPlan.price.id}`,
           },
         });
 
@@ -465,9 +485,9 @@ const CheckoutViewWrapper = () => {
         if (gclidStored) {
           await sendConversionToAPI({
             gclid: gclidStored,
-            name: `Checkout - ${currentSelectedPlan?.price.type}`,
+            name: `Checkout - ${currentSelectedPlan.price.type}`,
             value: currentSelectedPlan as PriceWithTax,
-            currency: currentSelectedPlan?.price.currency,
+            currency: currentSelectedPlan.price.currency,
             timestamp: new Date(),
             users: seatsForBusinessSubscription,
             couponCodeData: couponCodeData,
@@ -529,8 +549,8 @@ const CheckoutViewWrapper = () => {
     });
     const amount = mobileToken ? { amount: 0, decimalAmount: 0 } : {};
     setSelectedPlan({ ...plan, ...amount });
-    if (plan.price?.minimumSeats) {
-      setSeatsForBusinessSubscription(plan.price?.minimumSeats);
+    if (plan?.price?.minimumSeats) {
+      setSeatsForBusinessSubscription(plan.price.minimumSeats);
     }
 
     return plan;
@@ -599,8 +619,13 @@ const CheckoutViewWrapper = () => {
   };
 
   const onSeatsChange = (seats: number) => {
-    const minSeats = currentSelectedPlan?.price?.minimumSeats;
-    const maxSeats = currentSelectedPlan?.price?.maximumSeats;
+    if (!currentSelectedPlan?.price) {
+      console.warn('Cannot change seats: no selected plan available');
+      return;
+    }
+
+    const minSeats = currentSelectedPlan.price.minimumSeats;
+    const maxSeats = currentSelectedPlan.price.maximumSeats;
 
     if (maxSeats && seats > maxSeats) {
       setSeatsForBusinessSubscription(maxSeats);
@@ -625,7 +650,12 @@ const CheckoutViewWrapper = () => {
 
   return (
     <>
-      {isCheckoutReadyToRender && elementsOptions && stripeSdk ? (
+      {isCheckoutReadyToRender &&
+      elementsOptions &&
+      stripeSdk &&
+      currentSelectedPlan &&
+      currentSelectedPlan.price &&
+      currentSelectedPlan.taxes ? (
         <Elements stripe={stripeSdk} options={{ ...elementsOptions }}>
           <CheckoutView
             checkoutViewVariables={state}
@@ -650,7 +680,9 @@ const CheckoutViewWrapper = () => {
           ) : undefined}
         </Elements>
       ) : (
-        <Loader type="pulse" />
+        <div className="flex h-full items-center justify-center bg-gray-1">
+          <Loader type="pulse" />
+        </div>
       )}
     </>
   );

@@ -1,18 +1,18 @@
-import { CheckoutProductCard } from '../../components/checkout/CheckoutProductCard';
-import { HeaderComponent } from '../../components/checkout/Header';
-import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Button, Loader } from '@internxt/ui';
-import { useForm } from 'react-hook-form';
-import { IFormValues } from 'app/core/types';
-import { AuthMethodTypes } from '../../types';
-import { CheckoutUserAuth } from '../../components/checkout/CheckoutUserAuth';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
-import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
+import { IFormValues } from 'app/core/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
 import { State } from 'app/payment/store/types';
 import { LegacyRef } from 'react';
-import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { useForm } from 'react-hook-form';
+import { CheckoutProductCard } from '../../components/checkout/CheckoutProductCard';
+import { CheckoutUserAuth } from '../../components/checkout/CheckoutUserAuth';
+import { HeaderComponent } from '../../components/checkout/Header';
+import { AuthMethodTypes } from '../../types';
+import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -61,6 +61,15 @@ const CheckoutView = ({
   const { isPaying, error, authMethod, couponCodeData, seatsForBusinessSubscription, currentSelectedPlan } =
     checkoutViewVariables;
 
+  if (!currentSelectedPlan || !currentSelectedPlan.price || !currentSelectedPlan.taxes) {
+    console.log('🔍 CheckoutView: Showing loader because of missing data');
+    return (
+      <div className="flex h-full items-center justify-center bg-gray-1">
+        <Loader type="pulse" />
+      </div>
+    );
+  }
+
   const {
     register,
     formState: { errors, isValid },
@@ -85,6 +94,8 @@ const CheckoutView = ({
     checkoutViewManager.onCheckoutButtonClicked(formData, event, stripeSDK, elements);
   };
 
+  const isBusinessPlan = currentSelectedPlan.price.type === UserType.Business;
+
   return (
     <form
       className="flex h-full overflow-y-scroll bg-gray-1 lg:w-screen xl:px-16"
@@ -96,78 +107,69 @@ const CheckoutView = ({
           <p className="text-xl font-bold text-gray-100 md:text-center lg:text-left lg:text-3xl">
             {translate('checkout.title')}
           </p>
-          {currentSelectedPlan ? (
-            <div className="flex flex-col items-center justify-center gap-10 lg:flex-row lg:items-start lg:justify-between">
-              <div className="flex w-full max-w-xl flex-col space-y-14" ref={userAuthComponentRef}>
-                <CheckoutUserAuth
-                  errors={errors}
-                  authError={error?.auth}
-                  register={register}
-                  authMethod={authMethod}
-                  onAuthMethodToggled={onAuthMethodToggled}
-                  userData={userInfo}
-                  onLogOut={checkoutViewManager.onLogOut}
-                />
-                <div className="flex flex-col space-y-8 pb-20">
-                  <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.addressBillingTitle')}</p>
-                  <div className="flex w-full flex-col items-center gap-10">
-                    <div className="flex w-full flex-col rounded-2xl border border-gray-10 bg-surface p-5">
-                      <AddressElement
-                        onChange={(e) => {
-                          checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
-                          checkoutViewManager.onCountryChange(e.value.address.country);
-                          checkoutViewManager.onPostalCodeChange(e.value.address.postal_code);
-                        }}
-                        options={{
-                          mode: 'billing',
-                          autocomplete: {
-                            mode: 'automatic',
-                          },
-                        }}
-                      />
-                    </div>
-                    {currentSelectedPlan.price.type === UserType.Business ? (
-                      <OptionalB2BDropdown errors={errors} register={register} translate={translate} />
-                    ) : undefined}
+          <div className="flex flex-col items-center justify-center gap-10 lg:flex-row lg:items-start lg:justify-between">
+            <div className="flex w-full max-w-xl flex-col space-y-14" ref={userAuthComponentRef}>
+              <CheckoutUserAuth
+                errors={errors}
+                authError={error?.auth}
+                register={register}
+                authMethod={authMethod}
+                onAuthMethodToggled={onAuthMethodToggled}
+                userData={userInfo}
+                onLogOut={checkoutViewManager.onLogOut}
+              />
+              <div className="flex flex-col space-y-8 pb-20">
+                <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.addressBillingTitle')}</p>
+                <div className="flex w-full flex-col items-center gap-10">
+                  <div className="flex w-full flex-col rounded-2xl border border-gray-10 bg-surface p-5">
+                    <AddressElement
+                      onChange={(e) => {
+                        checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
+                        checkoutViewManager.onCountryChange(e.value.address.country);
+                        checkoutViewManager.onPostalCodeChange(e.value.address.postal_code);
+                      }}
+                      options={{
+                        mode: 'billing',
+                        autocomplete: {
+                          mode: 'automatic',
+                        },
+                      }}
+                    />
                   </div>
-                  <p className="text-2xl font-semibold text-gray-100">3. {translate('checkout.paymentTitle')}</p>
-                  <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
-                  {error?.stripe && (
-                    <div id="stripeError" className="text-red-dark">
-                      {error.stripe}
-                    </div>
-                  )}
-                  <Button
-                    type="submit"
-                    id="submit-create-account"
-                    className="hidden lg:flex"
-                    disabled={isButtonDisabled}
-                  >
-                    {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
-                  </Button>
+                  {isBusinessPlan ? (
+                    <OptionalB2BDropdown errors={errors} register={register} translate={translate} />
+                  ) : undefined}
                 </div>
-              </div>
-              <div className="top-5 flex w-full max-w-xl flex-col gap-5 pb-10 lg:sticky lg:max-w-lg">
-                <CheckoutProductCard
-                  selectedPlan={currentSelectedPlan}
-                  couponCodeData={couponCodeData}
-                  showHardcodedRenewal={showHardcodedRenewal}
-                  showCouponCode={showCouponCode}
-                  couponError={error?.coupon}
-                  seatsForBusinessSubscription={seatsForBusinessSubscription}
-                  upsellManager={upsellManager}
-                  onSeatsChange={checkoutViewManager.onSeatsChange}
-                  onCouponInputChange={checkoutViewManager.onCouponInputChange}
-                  onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
-                />
-                <Button type="submit" id="submit" className="flex lg:hidden" disabled={isButtonDisabled}>
+                <p className="text-2xl font-semibold text-gray-100">3. {translate('checkout.paymentTitle')}</p>
+                <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
+                {error?.stripe && (
+                  <div id="stripeError" className="text-red-dark">
+                    {error.stripe}
+                  </div>
+                )}
+                <Button type="submit" id="submit-create-account" className="hidden lg:flex" disabled={isButtonDisabled}>
                   {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
                 </Button>
               </div>
             </div>
-          ) : (
-            <Loader type="pulse" />
-          )}
+            <div className="top-5 flex w-full max-w-xl flex-col gap-5 pb-10 lg:sticky lg:max-w-lg">
+              <CheckoutProductCard
+                selectedPlan={currentSelectedPlan}
+                couponCodeData={couponCodeData}
+                showHardcodedRenewal={showHardcodedRenewal}
+                showCouponCode={showCouponCode}
+                couponError={error?.coupon}
+                seatsForBusinessSubscription={seatsForBusinessSubscription}
+                upsellManager={upsellManager}
+                onSeatsChange={checkoutViewManager.onSeatsChange}
+                onCouponInputChange={checkoutViewManager.onCouponInputChange}
+                onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}
+              />
+              <Button type="submit" id="submit" className="flex lg:hidden" disabled={isButtonDisabled}>
+                {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </form>
