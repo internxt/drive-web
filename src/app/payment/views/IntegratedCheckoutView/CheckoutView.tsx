@@ -62,7 +62,6 @@ const CheckoutView = ({
     checkoutViewVariables;
 
   if (!currentSelectedPlan || !currentSelectedPlan.price || !currentSelectedPlan.taxes) {
-    console.log('🔍 CheckoutView: Showing loader because of missing data');
     return (
       <div className="flex h-full items-center justify-center bg-gray-1">
         <Loader type="pulse" />
