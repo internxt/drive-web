@@ -61,14 +61,6 @@ const CheckoutView = ({
   const { isPaying, error, authMethod, couponCodeData, seatsForBusinessSubscription, currentSelectedPlan } =
     checkoutViewVariables;
 
-  if (!currentSelectedPlan || !currentSelectedPlan.price || !currentSelectedPlan.taxes) {
-    return (
-      <div className="flex h-full items-center justify-center bg-gray-1">
-        <Loader type="pulse" />
-      </div>
-    );
-  }
-
   const {
     register,
     formState: { errors, isValid },
@@ -77,6 +69,14 @@ const CheckoutView = ({
   } = useForm<IFormValues>({
     mode: 'onChange',
   });
+
+  if (!currentSelectedPlan || !currentSelectedPlan.price || !currentSelectedPlan.taxes) {
+    return (
+      <div className="flex h-full items-center justify-center bg-gray-1">
+        <Loader type="pulse" />
+      </div>
+    );
+  }
 
   const isButtonDisabled = authMethod === AUTH_METHOD_VALUES.IS_SIGNED_IN ? isPaying : isPaying && isValid;
 

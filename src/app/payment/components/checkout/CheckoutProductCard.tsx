@@ -1,7 +1,7 @@
 import { Switch, Transition } from '@headlessui/react';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Check, SealPercent, X } from '@phosphor-icons/react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Button } from '@internxt/ui';
@@ -90,10 +90,10 @@ export const CheckoutProductCard = ({
       returnObjects: true,
     }) ?? translateList('preferences.account.plans.planFeaturesList.1GB.features');
 
-  const comingSoonFeatureKeys = useMemo(() => {
-    const result = translateList(`preferences.account.plans.${planType}.${bytes}.comingSoonFeatures`);
-    return Array.isArray(result) ? result : [];
-  }, [planType, bytes, translateList]);
+  const featuresList = Array.isArray(
+    translateList(`preferences.account.plans.${planType}.${bytes}.comingSoonFeatures`),
+  );
+  const comingSoonFeatureKeys = Array.isArray(featuresList) ? featuresList : [];
 
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
