@@ -1,20 +1,20 @@
 /**
  * @jest-environment jsdom
  */
-import { describe, expect, it, vi, beforeEach, beforeAll } from 'vitest';
-import { sharedThunks, ShareFileWithUserPayload, HYBRID_ALGORITHM, STANDARD_ALGORITHM } from './index';
-const { shareItemWithUser } = sharedThunks;
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import navigationService from 'app/core/services/navigation.service';
+import shareService from 'app/share/services/share.service';
+import { Buffer } from 'buffer';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { RootState } from '../..';
+import userService from '../../../auth/services/user.service';
 import {
+  decryptMessageWithPrivateKey,
   generateNewKeys,
   hybridDecryptMessageWithPrivateKey,
-  decryptMessageWithPrivateKey,
 } from '../../../crypto/services/pgp.service';
-import navigationService from 'app/core/services/navigation.service';
-import { RootState } from '../..';
-import { Buffer } from 'buffer';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import userService from '../../../auth/services/user.service';
-import shareService from 'app/share/services/share.service';
+import { HYBRID_ALGORITHM, sharedThunks, ShareFileWithUserPayload, STANDARD_ALGORITHM } from './index';
+const { shareItemWithUser } = sharedThunks;
 
 describe('Encryption and Decryption', () => {
   beforeAll(() => {
@@ -30,8 +30,7 @@ describe('Encryption and Decryption', () => {
     }));
     vi.mock('../../../auth/services/user.service', () => ({
       default: {
-        getPublicKeyByEmail: vi.fn(),
-        preCreateUser: vi.fn(),
+        getPublicKeyWithPrecreation: vi.fn(),
       },
     }));
 
@@ -50,12 +49,6 @@ describe('Encryption and Decryption', () => {
   it('shareItemWithUser encrypts with kyber for an existing user', async () => {
     const keys = await generateNewKeys();
     const mockPayload: ShareFileWithUserPayload = {
-      publicKey: keys.publicKeyArmored,
-      keys: {
-        ecc: keys.publicKeyArmored,
-        kyber: keys.publicKyberKeyBase64,
-      },
-      isNewUser: false,
       itemId: 'mock-itemId',
       itemType: 'file',
       notifyUser: false,
@@ -87,6 +80,10 @@ describe('Encryption and Decryption', () => {
     );
     vi.spyOn(shareService, 'getSharingRoles').mockImplementation(mockShareService.getSharingRoles);
     vi.spyOn(shareService, 'inviteUserToSharedFolder').mockImplementation(mockShareService.inviteUserToSharedFolder);
+    vi.spyOn(userService, 'getPublicKeyWithPrecreation').mockResolvedValue({
+      publicKey: keys.publicKeyArmored,
+      publicKyberKey: keys.publicKyberKeyBase64,
+    });
 
     const getStateMock = vi.fn(() => mockRootState as RootState);
     const dispatchMock = vi.fn();
@@ -123,8 +120,6 @@ describe('Encryption and Decryption', () => {
   it('shareItemWithUser encrypts without kyber for an existing user', async () => {
     const keys = await generateNewKeys();
     const mockPayload: ShareFileWithUserPayload = {
-      publicKey: keys.publicKeyArmored,
-      isNewUser: false,
       itemId: 'mock-itemId',
       itemType: 'file',
       notifyUser: false,
@@ -150,6 +145,11 @@ describe('Encryption and Decryption', () => {
       getSharedFolderInvitationsAsInvitedUser: vi.fn(),
       getSharingRoles: vi.fn(),
     };
+
+    vi.spyOn(userService, 'getPublicKeyWithPrecreation').mockResolvedValue({
+      publicKey: keys.publicKeyArmored,
+      publicKyberKey: '',
+    });
 
     vi.spyOn(shareService, 'getSharedFolderInvitationsAsInvitedUser').mockImplementation(
       mockShareService.getSharedFolderInvitationsAsInvitedUser,
@@ -191,12 +191,6 @@ describe('Encryption and Decryption', () => {
   it('shareItemWithUser encrypts with kyber for an new user', async () => {
     const keys = await generateNewKeys();
     const mockPayload: ShareFileWithUserPayload = {
-      publicKey: '',
-      keys: {
-        ecc: '',
-        kyber: '',
-      },
-      isNewUser: true,
       itemId: 'mock-itemId',
       itemType: 'file',
       notifyUser: false,
@@ -230,17 +224,10 @@ describe('Encryption and Decryption', () => {
     vi.spyOn(shareService, 'getSharingRoles').mockImplementation(mockShareService.getSharingRoles);
     vi.spyOn(shareService, 'inviteUserToSharedFolder').mockImplementation(mockShareService.inviteUserToSharedFolder);
 
-    vi.spyOn(userService, 'preCreateUser').mockReturnValue(
+    vi.spyOn(userService, 'getPublicKeyWithPrecreation').mockReturnValue(
       Promise.resolve({
         publicKey: keys.publicKeyArmored,
-        keys: {
-          kyber: keys.publicKyberKeyBase64,
-          ecc: keys.publicKeyArmored,
-        },
-        user: {
-          uuid: user.userId,
-          email: user.email,
-        },
+        publicKyberKey: keys.publicKyberKeyBase64,
       }),
     );
 
@@ -279,8 +266,6 @@ describe('Encryption and Decryption', () => {
   it('shareItemWithUser encrypts without kyber for an new user', async () => {
     const keys = await generateNewKeys();
     const mockPayload: ShareFileWithUserPayload = {
-      publicKey: '',
-      isNewUser: true,
       itemId: 'mock-itemId',
       itemType: 'file',
       notifyUser: false,
@@ -299,7 +284,6 @@ describe('Encryption and Decryption', () => {
       user: { user: mockUser as UserSettings, isInitializing: false, isAuthenticated: false, isInitialized: false },
     };
 
-    const user = mockUser as UserSettings;
     vi.spyOn(navigationService, 'push').mockImplementation(() => {});
 
     const mockShareService = {
@@ -314,15 +298,10 @@ describe('Encryption and Decryption', () => {
     vi.spyOn(shareService, 'getSharingRoles').mockImplementation(mockShareService.getSharingRoles);
     vi.spyOn(shareService, 'inviteUserToSharedFolder').mockImplementation(mockShareService.inviteUserToSharedFolder);
 
-    vi.spyOn(userService, 'preCreateUser').mockReturnValue(
-      Promise.resolve({
-        publicKey: keys.publicKeyArmored,
-        user: {
-          uuid: user.userId,
-          email: user.email,
-        },
-      }),
-    );
+    vi.spyOn(userService, 'getPublicKeyWithPrecreation').mockResolvedValue({
+      publicKey: keys.publicKeyArmored,
+      publicKyberKey: undefined,
+    });
 
     const getStateMock = vi.fn(() => mockRootState as RootState);
     const dispatchMock = vi.fn();
@@ -359,12 +338,6 @@ describe('Encryption and Decryption', () => {
   it('shareItemWithUser encrypts with kyber, keys obtained via getPublicKeyByEmail ', async () => {
     const keys = await generateNewKeys();
     const mockPayload: ShareFileWithUserPayload = {
-      publicKey: '',
-      keys: {
-        ecc: '',
-        kyber: '',
-      },
-      isNewUser: false,
       itemId: 'mock-itemId',
       itemType: 'file',
       notifyUser: false,
@@ -397,12 +370,10 @@ describe('Encryption and Decryption', () => {
     vi.spyOn(shareService, 'getSharingRoles').mockImplementation(mockShareService.getSharingRoles);
     vi.spyOn(shareService, 'inviteUserToSharedFolder').mockImplementation(mockShareService.inviteUserToSharedFolder);
 
-    vi.spyOn(userService, 'getPublicKeyByEmail').mockReturnValue(
-      Promise.resolve({
-        publicKey: keys.publicKeyArmored,
-        keys: { kyber: keys.publicKyberKeyBase64, ecc: keys.publicKeyArmored },
-      }),
-    );
+    vi.spyOn(userService, 'getPublicKeyWithPrecreation').mockResolvedValue({
+      publicKey: keys.publicKeyArmored,
+      publicKyberKey: keys.publicKyberKeyBase64,
+    });
 
     const getStateMock = vi.fn(() => mockRootState as RootState);
     const dispatchMock = vi.fn();
@@ -439,8 +410,6 @@ describe('Encryption and Decryption', () => {
   it('shareItemWithUser encrypts without kyber, keys obtained via getPublicKeyByEmail ', async () => {
     const keys = await generateNewKeys();
     const mockPayload: ShareFileWithUserPayload = {
-      publicKey: '',
-      isNewUser: false,
       itemId: 'mock-itemId',
       itemType: 'file',
       notifyUser: false,
@@ -473,8 +442,10 @@ describe('Encryption and Decryption', () => {
     vi.spyOn(shareService, 'getSharingRoles').mockImplementation(mockShareService.getSharingRoles);
     vi.spyOn(shareService, 'inviteUserToSharedFolder').mockImplementation(mockShareService.inviteUserToSharedFolder);
 
-    vi.spyOn(userService, 'getPublicKeyByEmail').mockReturnValue(Promise.resolve({ publicKey: keys.publicKeyArmored }));
-
+    vi.spyOn(userService, 'getPublicKeyWithPrecreation').mockResolvedValue({
+      publicKey: keys.publicKeyArmored,
+      publicKyberKey: '',
+    });
     const getStateMock = vi.fn(() => mockRootState as RootState);
     const dispatchMock = vi.fn();
 

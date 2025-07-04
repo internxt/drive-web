@@ -39,12 +39,6 @@ export interface ShareFileWithUserPayload {
   sharedWith: string;
   encryptionAlgorithm: string;
   roleId: string;
-  publicKey?: string;
-  keys?: {
-    ecc: string;
-    kyber: string;
-  };
-  isNewUser?: boolean;
 }
 
 const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPayload, { state: RootState }>(
@@ -52,6 +46,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
   async (payload: ShareFileWithUserPayload, { getState }): Promise<string | void> => {
     const rootState = getState();
     const user = rootState.user.user;
+
     try {
       if (!user) {
         navigationService.push(AppView.Login);
@@ -59,20 +54,10 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       }
       const { mnemonic } = user;
 
-      let publicKey = payload.keys?.ecc ?? payload.publicKey;
-      let publicKyberKey = payload.keys?.kyber ?? '';
+      const publicKeyResponse = await userService.getPublicKeyWithPrecreation(payload.sharedWith);
 
-      if (payload.isNewUser && !publicKey) {
-        const prCreatedUserResponse = await userService.preCreateUser(payload.sharedWith);
-        publicKey = prCreatedUserResponse.keys?.ecc ?? prCreatedUserResponse.publicKey;
-        publicKyberKey = prCreatedUserResponse.keys?.kyber ?? '';
-      }
-
-      if ((!publicKey && !payload.isNewUser) || !publicKey) {
-        const publicKeyResponse = await userService.getPublicKeyByEmail(payload.sharedWith);
-        publicKey = publicKeyResponse.keys?.ecc ?? publicKeyResponse.publicKey;
-        publicKyberKey = publicKeyResponse.keys?.kyber ?? '';
-      }
+      const publicKey = publicKeyResponse.publicKey;
+      const publicKyberKey = publicKeyResponse?.publicKyberKey ?? '';
 
       const encryptedMnemonicInBase64 = await hybridEncryptMessageWithPublicKey({
         message: mnemonic,
@@ -80,7 +65,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         publicKyberKeyBase64: publicKyberKey,
       });
 
-      const encryptionAlgorithm = publicKyberKey !== '' ? HYBRID_ALGORITHM : STANDARD_ALGORITHM;
+      const encryptionAlgorithm = publicKyberKey !== '' && publicKyberKey ? HYBRID_ALGORITHM : STANDARD_ALGORITHM;
 
       await shareService.inviteUserToSharedFolder({
         itemId: payload.itemId,
