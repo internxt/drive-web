@@ -715,7 +715,6 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.clearAllMocks();
-vi.resetModules();
 });
 
 describe('logIn', () => {
