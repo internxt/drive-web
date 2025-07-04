@@ -22,6 +22,7 @@ vi.mock('./NetworkFacade', () => ({
 describe('uploadFile', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should successfully upload a file', async () => {

@@ -81,6 +81,7 @@ describe('filesZip', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
     iterator = {
       next: vi
         .fn()

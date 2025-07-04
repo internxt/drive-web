@@ -7,8 +7,8 @@ import uploadFile from '../drive/services/file.service/uploadFile';
 import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
 import { DriveFileData } from 'app/drive/types';
 import RetryManager from './RetryManager';
-import { ErrorMessages } from 'app/drive/services/downloadManager.service';
 import { TaskStatus } from 'app/tasks/types';
+import { ErrorMessages } from 'app/core/constants';
 
 vi.mock('../drive/services/file.service/uploadFile', () => ({
   default: vi.fn(() => Promise.resolve({} as DriveFileData)),
@@ -82,6 +82,7 @@ describe('checkUploadFiles', () => {
   beforeEach(() => {
     RetryManager.clearTasks();
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should upload file using an async queue', async () => {

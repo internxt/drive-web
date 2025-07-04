@@ -133,11 +133,12 @@ beforeEach(() => {
   localStorage.setItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS, stringifyMockCredentials);
   localStorage.setItem(STORAGE_KEYS.B2B_WORKSPACE, stringifyWorkspaceData);
   localStorage.setItem('theme', 'starwars');
+  vi.clearAllMocks();
+  vi.resetModules();
 });
 
 afterAll(() => {
   localStorage.clear();
-  vi.resetAllMocks();
 });
 
 describe('Testing the local storage service', () => {

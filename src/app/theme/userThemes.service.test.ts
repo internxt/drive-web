@@ -2,7 +2,14 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { UserThemesService, THEME_DEFINITIONS } from './userThemes.service';
 import localStorageService from '../core/services/local-storage.service';
 
-const mockedCoupons = ['PROMOCODE'];
+const mockedCoupons = ['STARWARS85'];
+
+vi.mock('../core/services/local-storage.service', () => ({
+  default: {
+    get: vi.fn(),
+    set: vi.fn(),
+  },
+}));
 
 describe('Checking available themes', () => {
   afterEach(() => {
@@ -25,10 +32,6 @@ describe('Checking available themes', () => {
 
     it('When at least one matching coupon is found and no cache exists, then it caches the theme and returns true', () => {
       const mockedKey = THEME_DEFINITIONS.starWars.key;
-      const promoCodeSpy = vi.spyOn(THEME_DEFINITIONS, 'starWars', 'get').mockReturnValue({
-        key: mockedKey,
-        promoCodes: [mockedCoupons[0]],
-      });
 
       const setFromStorageSpy = vi.spyOn(localStorageService, 'set');
 
@@ -37,12 +40,12 @@ describe('Checking available themes', () => {
       const isThemeAvailable = availableThemeService['isThemeAvailable']('starWars');
 
       expect(isThemeAvailable).toBe(true);
-      expect(setFromStorageSpy).toHaveBeenCalledWith(THEME_DEFINITIONS.starWars.key, 'true');
-      promoCodeSpy.mockRestore();
+      expect(setFromStorageSpy).toHaveBeenCalledWith(mockedKey, 'true');
     });
 
     it('When the theme does not match, then false is returned indicating that the theme is not available', () => {
-      const availableThemeService = new UserThemesService(mockedCoupons);
+      const noMatchingCoupons = ['UNRELATED_COUPON'];
+      const availableThemeService = new UserThemesService(noMatchingCoupons);
 
       const isThemeAvailable = availableThemeService['isThemeAvailable']('starWars');
 

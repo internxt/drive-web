@@ -15,6 +15,7 @@ describe('getUniqueFilename', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
     renameIfNeededSpy = vi.spyOn(internxtLib.items, 'renameIfNeeded');
   });
 

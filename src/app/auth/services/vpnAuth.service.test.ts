@@ -12,6 +12,7 @@ describe('Tests for VPN auth', () => {
   beforeEach(() => {
     postMessageSpy = vi.spyOn(window, 'postMessage').mockImplementation(() => {});
     vi.clearAllMocks();
+    vi.resetModules();
     vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       if (key === 'hostname') return mockHostname;
       else return 'no implementation';

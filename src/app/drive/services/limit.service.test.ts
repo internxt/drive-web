@@ -11,6 +11,7 @@ const spaceLimitMock = vi.fn();
 describe('limitService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
     const storageClientMock = {
       spaceLimitV2: spaceLimitMock,
     };

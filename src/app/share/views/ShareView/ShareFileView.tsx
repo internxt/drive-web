@@ -24,7 +24,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import errorService from 'app/core/services/error.service';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { HTTP_CODES } from '../../../core/services/http.service';
+import { HTTP_CODES } from '../../../core/constants';
 import AppError from '../../../core/types';
 import { Button, Loader } from '@internxt/ui';
 import SendBanner from './SendBanner';

@@ -73,6 +73,7 @@ describe('uploadItemsThunk', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should upload files successfully', async () => {
@@ -151,6 +152,7 @@ describe('uploadItemsThunkExtraReducers', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should handle rejected case and call RetryManager and notificationsService', () => {

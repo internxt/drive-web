@@ -50,6 +50,7 @@ describe('useBackupsPagination', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('Should not fetch more items as there are less than 50 items in total', async () => {

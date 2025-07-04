@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import userService from '../../../auth/services/user.service';
 import errorService from '../../../core/services/error.service';
-import { HTTP_CODES } from '../../../core/services/http.service';
+import { HTTP_CODES } from '../../../core/constants';
 import AppError, { IFormValues } from '../../../core/types';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { Button, Avatar, Checkbox, Input } from '@internxt/ui';

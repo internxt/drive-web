@@ -15,6 +15,7 @@ describe('Mapping backup folder', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
     vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       if (key === 'secret2') return mockedSecret2;
       else return 'no mock implementation';

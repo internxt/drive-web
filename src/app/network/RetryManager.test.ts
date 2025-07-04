@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { RetryableTask } from './RetryManager';
-import RetryManager from './RetryManager';
+import RetryManager, { RetryableTask } from './RetryManager';
 
 describe('RetryManager', () => {
   const sampleTask: RetryableTask = { taskId: 'task1', type: 'upload', params: {} };

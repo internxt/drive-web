@@ -61,6 +61,7 @@ describe('TaskToRetry', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('renders the modal when isOpen is true', () => {

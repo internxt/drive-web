@@ -28,6 +28,7 @@ describe('useTrashPagination', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should call getMoreTrashItems when isTrash is true on mount', async () => {

@@ -47,6 +47,7 @@ describe('checkCreateFolder', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should create folder via folderService', async () => {

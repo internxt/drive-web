@@ -27,6 +27,7 @@ vi.mock('app/utils/userLocation', () => ({
 describe('Fetching the prices', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('When user location is US, then it fetches prices in USD', async () => {
@@ -64,6 +65,7 @@ describe('Fetching the prices', () => {
 describe('Getting the stripe SDK', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('When not in production, then loads test stripe key', async () => {
