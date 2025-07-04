@@ -1,6 +1,4 @@
 import streamSaver from 'streamsaver';
-
-import { loadWritableStreamPonyfill } from 'app/network/download';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
 import { DriveFileData } from '../../types';
@@ -95,7 +93,7 @@ export default async function downloadFile(
   let support: DownloadSupport;
 
   if (isCypress) {
-    support = DownloadSupport.PatchedStreamApi;
+    support = DownloadSupport.PartialStreamApi;
   } else if (isBrave) {
     support = DownloadSupport.Blob;
   } else if (writeToFsIsSupported) {
@@ -103,7 +101,7 @@ export default async function downloadFile(
   } else if (writableIsSupported) {
     support = DownloadSupport.PartialStreamApi;
   } else {
-    support = DownloadSupport.PatchedStreamApi;
+    support = DownloadSupport.PartialStreamApi;
   }
 
   const fileStreamPromise = !sharingOptions
@@ -153,14 +151,14 @@ function downloadFileUsingStreamApi(
   abortController?: AbortController,
 ): Promise<void> {
   return (
-    (source.pipeTo && source.pipeTo(destination, { signal: abortController?.signal })) || pipe(source, destination)
+    (source.pipeTo && source.pipeTo(destination, { signal: abortController?.signal })) ||
+    pipe(source, destination as BlobWritable)
   );
 }
 
 enum DownloadSupport {
   StreamApi = 'StreamApi',
   PartialStreamApi = 'PartialStreamApi',
-  PatchedStreamApi = 'PartialStreamApi',
   Blob = 'Blob',
 }
 
@@ -178,7 +176,7 @@ async function downloadToFs(
   switch (supports) {
     case DownloadSupport.StreamApi:
       // eslint-disable-next-line no-case-declarations
-      const fsHandle = await window.showSaveFilePicker({ suggestedName: filename }).catch((_) => {
+      const fsHandle = await (window as any).showSaveFilePicker({ suggestedName: filename }).catch((_) => {
         abortController?.abort();
         throw new Error(ErrorMessages.FilePickerCancelled);
       });
@@ -186,12 +184,6 @@ async function downloadToFs(
       const destination = await fsHandle.createWritable({ keepExistingData: false });
 
       return downloadFileUsingStreamApi(await source, destination, abortController);
-    case DownloadSupport.PatchedStreamApi:
-      await loadWritableStreamPonyfill();
-
-      streamSaver.WritableStream = window.WritableStream;
-
-      return downloadFileUsingStreamApi(await source, streamSaver.createWriteStream(filename), abortController);
     case DownloadSupport.PartialStreamApi:
       return downloadFileUsingStreamApi(await source, streamSaver.createWriteStream(filename), abortController);
 
