@@ -907,7 +907,7 @@
         "successSentInvitation": "Successful sharing with {{email}}",
         "acceptedSuccessfully": "Shared folder invitation successfully accepted",
         "declinedSuccessfully": "Shared folder invitation successfully declined",
-        "inviteNewUsersBody": "In case the person doesn't have an Internxt account, they will receive an email",
+        "inviteNewUsersBody": "In case the added emails don't correspond to an Internxt account, they will receive an email",
         "inviteNewUsersTitle": "Invite users?",
         "accept": "Accept",
         "cancel": "Cancel",

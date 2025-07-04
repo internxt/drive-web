@@ -887,7 +887,7 @@
         "successSentInvitation": "Compartido con éxito con {{email}}",
         "acceptedSuccessfully": "Invitación a carpeta compartida aceptada con éxito",
         "declinedSuccessfully": "Invitación a carpeta compartida rechazada con éxito",
-        "inviteNewUsersBody": "En caso de que la persona no tenga cuenta en Internxt, recibirán un correo electrónico",
+        "inviteNewUsersBody": "En caso de que los emails añadidos no correspondan a una cuenta de Internxt, recibirán un correo electrónico",
         "inviteNewUsersTitle": "¿Invitar usuarios?",
         "accept": "Aceptar",
         "cancel": "Cancelar",

@@ -60,7 +60,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     const emailToAdd = splitEmail[0];
     const userInvitedEmail = emailToAdd;
     const userInvitedRole = userRole;
-    const userInvited = { email: userInvitedEmail, userRole: userInvitedRole, isNewUser: true };
+    const userInvited = { email: userInvitedEmail, userRole: userInvitedRole };
     const isDuplicated = usersToInvite.find((user) => user.email === userInvited.email);
 
     if (!isDuplicated && isValidEmail(userInvitedEmail)) {

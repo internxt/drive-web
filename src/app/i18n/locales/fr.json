@@ -867,7 +867,7 @@
         "successSentInvitation": "Partage réussi avec {{email}}",
         "acceptedSuccessfully": "Invitation à un dossier partagé acceptée avec succès",
         "declinedSuccessfully": "Invitation à un dossier partagé refusée avec succès",
-        "inviteNewUsersBody": "Si la personne n'a pas de compte Internxt, elle recevra un e-mail",
+        "inviteNewUsersBody": "Si les e-mails ajoutés ne correspondent pas à un compte Internxt, ils recevront un e-mail",
         "inviteNewUsersTitle": "Inviter des utilisateurs?",
         "accept": "Accepter",
         "cancel": "Annuler",
