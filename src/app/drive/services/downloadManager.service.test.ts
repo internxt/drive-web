@@ -80,6 +80,7 @@ vi.mock('./folder.service', () => ({
 vi.mock('app/network/download', () => ({
   downloadFile: vi.fn(),
   NetworkCredentials: vi.fn(),
+  loadWritableStreamPonyfill: vi.fn(),
 }));
 
 vi.mock('app/core/services/stream.service', () => ({

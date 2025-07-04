@@ -1,4 +1,6 @@
 import streamSaver from 'streamsaver';
+
+import { loadWritableStreamPonyfill } from 'app/network/download';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
 import { DriveFileData } from '../../types';
@@ -88,17 +90,20 @@ export default async function downloadFile(
   const isCypress = window['Cypress'] !== undefined;
 
   const writeToFsIsSupported = 'showSaveFilePicker' in window;
+  const writableIsSupported = 'WritableStream' in window && streamSaver.WritableStream;
 
   let support: DownloadSupport;
 
   if (isCypress) {
-    support = DownloadSupport.PartialStreamApi;
+    support = DownloadSupport.PatchedStreamApi;
   } else if (isBrave) {
     support = DownloadSupport.Blob;
   } else if (writeToFsIsSupported) {
     support = DownloadSupport.StreamApi;
-  } else {
+  } else if (writableIsSupported) {
     support = DownloadSupport.PartialStreamApi;
+  } else {
+    support = DownloadSupport.PatchedStreamApi;
   }
 
   const fileStreamPromise = !sharingOptions
@@ -148,14 +153,14 @@ function downloadFileUsingStreamApi(
   abortController?: AbortController,
 ): Promise<void> {
   return (
-    (source.pipeTo && source.pipeTo(destination, { signal: abortController?.signal })) ||
-    pipe(source, destination as BlobWritable)
+    (source.pipeTo && source.pipeTo(destination, { signal: abortController?.signal })) || pipe(source, destination)
   );
 }
 
 enum DownloadSupport {
   StreamApi = 'StreamApi',
   PartialStreamApi = 'PartialStreamApi',
+  PatchedStreamApi = 'PartialStreamApi',
   Blob = 'Blob',
 }
 
@@ -173,7 +178,7 @@ async function downloadToFs(
   switch (supports) {
     case DownloadSupport.StreamApi:
       // eslint-disable-next-line no-case-declarations
-      const fsHandle = await (window as any).showSaveFilePicker({ suggestedName: filename }).catch((_) => {
+      const fsHandle = await window.showSaveFilePicker({ suggestedName: filename }).catch((_) => {
         abortController?.abort();
         throw new Error(ErrorMessages.FilePickerCancelled);
       });
@@ -181,7 +186,12 @@ async function downloadToFs(
       const destination = await fsHandle.createWritable({ keepExistingData: false });
 
       return downloadFileUsingStreamApi(await source, destination, abortController);
+    case DownloadSupport.PatchedStreamApi:
+      await loadWritableStreamPonyfill();
 
+      streamSaver.WritableStream = window.WritableStream;
+
+      return downloadFileUsingStreamApi(await source, streamSaver.createWriteStream(filename), abortController);
     case DownloadSupport.PartialStreamApi:
       return downloadFileUsingStreamApi(await source, streamSaver.createWriteStream(filename), abortController);
 
