@@ -150,6 +150,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [openPasswordInput, setOpenPasswordInput] = useState(false);
   const [openPasswordDisableDialog, setOpenPasswordDisableDialog] = useState(false);
   const [sharingMeta, setSharingMeta] = useState<SharingMeta | null>(null);
+  const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
 
   const [accessRequests, setAccessRequests] = useState<RequestProps[]>([]);
   const [userOptionsEmail, setUserOptionsEmail] = useState<InvitedUserProps>();
@@ -180,8 +181,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     onCloseDialog?.();
   };
 
-  const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
-
   const downloadAndSaveAvatar = async (url: string) => {
     const avatar = await userService.downloadAvatar(url);
     setAvatarBlob(avatar);
@@ -192,8 +191,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     const databaseAvatarData = await getDatabaseProfileAvatar();
 
     if (!databaseAvatarData) {
-      downloadAndSaveAvatar(url);
-      return;
+      return downloadAndSaveAvatar(url);
     }
 
     const existsNewAvatar = databaseAvatarData.uuid !== extractAvatarURLID(url);
