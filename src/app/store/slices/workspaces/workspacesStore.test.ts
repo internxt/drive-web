@@ -61,6 +61,7 @@ vi.mock('../../../core/services/local-storage.service', () => ({
 describe('Encryption and Decryption', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   function getMockPendingWorkspace() {

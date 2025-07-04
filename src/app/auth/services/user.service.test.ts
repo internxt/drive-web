@@ -43,6 +43,7 @@ vi.mock('../../core/factory/sdk', () => ({
 describe('userService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
     vi.spyOn(localStorageService, 'get').mockReturnValue(testToken);
   });
 

@@ -74,6 +74,7 @@ describe('checkUploadFolders', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should upload folder using an async queue', async () => {

@@ -94,6 +94,7 @@ vi.mock('app/core/services/local-storage.service', () => ({
 describe('downloadManagerService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   const mockUser: UserSettings = {

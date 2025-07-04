@@ -62,6 +62,7 @@ vi.mock('app/drive/services/downloadManager.service', () => ({
 describe('downloadManager', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should generate task for a folder and download it using the queue', async () => {

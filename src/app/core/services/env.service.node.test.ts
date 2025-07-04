@@ -14,6 +14,7 @@ describe('Check that env variables are loaded correctly', () => {
       throw result.error;
     }
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('When an env variable are requested, then their value is successfully returned', async () => {

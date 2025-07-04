@@ -4,6 +4,13 @@ import localStorageService from '../core/services/local-storage.service';
 
 const mockedCoupons = ['STARWARS85'];
 
+vi.mock('../core/services/local-storage.service', () => ({
+  default: {
+    get: vi.fn(),
+    set: vi.fn(),
+  },
+}));
+
 describe('Checking available themes', () => {
   afterEach(() => {
     vi.clearAllMocks();

@@ -82,6 +82,7 @@ describe('checkUploadFiles', () => {
   beforeEach(() => {
     RetryManager.clearTasks();
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should upload file using an async queue', async () => {
