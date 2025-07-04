@@ -15,6 +15,7 @@ export interface PlanState {
   isLoadingPlans: boolean;
   isLoadingPlanLimit: boolean;
   isLoadingPlanUsage: boolean;
+  isLoadingBusinessLimitAndUsage: boolean;
   individualPlan: StoragePlan | null;
   businessPlan: StoragePlan | null;
   teamPlan: StoragePlan | null;
@@ -32,6 +33,7 @@ const initialState: PlanState = {
   isLoadingPlans: false,
   isLoadingPlanLimit: false,
   isLoadingPlanUsage: false,
+  isLoadingBusinessLimitAndUsage: false,
   individualPlan: null,
   businessPlan: null,
   teamPlan: null,
@@ -192,7 +194,9 @@ export const planSlice = createSlice({
     });
 
     builder
-      .addCase(fetchBusinessLimitUsageThunk.pending, () => undefined)
+      .addCase(fetchBusinessLimitUsageThunk.pending, (state) => {
+        state.isLoadingBusinessLimitAndUsage = true;
+      })
       .addCase(fetchBusinessLimitUsageThunk.fulfilled, (state, action) => {
         const spaceLimit = Number(action.payload?.spaceLimit) || 0;
         const driveUsage = Number(action.payload?.driveUsage) || 0;
@@ -205,8 +209,11 @@ export const planSlice = createSlice({
           backups: backupsUsage,
           total: driveUsage + backupsUsage,
         };
+        state.isLoadingBusinessLimitAndUsage = false;
       })
-      .addCase(fetchBusinessLimitUsageThunk.rejected, () => undefined);
+      .addCase(fetchBusinessLimitUsageThunk.rejected, (state) => {
+        state.isLoadingBusinessLimitAndUsage = false;
+      });
   },
 });
 
