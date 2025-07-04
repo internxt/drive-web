@@ -39,6 +39,14 @@ import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
 import './ShareDialog.scss';
 import envService from 'app/core/services/env.service';
+import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
+import {
+  extractAvatarURLID,
+  saveAvatarToDatabase,
+} from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
+import userService from 'app/auth/services/user.service';
+import { User } from './components/User';
+import { InvitedUsersSkeletonLoader } from './components/InvitedUsersSkeletonLoader';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -51,7 +59,7 @@ const REQUEST_STATUS = {
   DENIED: 'denied' as RequestStatus,
 };
 
-interface InvitedUserProps {
+export interface InvitedUserProps {
   avatar: string | null;
   name: string;
   lastname: string;
@@ -171,6 +179,35 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setSharingMeta(null);
     onCloseDialog?.();
   };
+
+  const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
+
+  const downloadAndSaveAvatar = async (url: string) => {
+    const avatar = await userService.downloadAvatar(url);
+    setAvatarBlob(avatar);
+    await saveAvatarToDatabase(url, avatar);
+  };
+
+  const handleDownload = useCallback(async (url: string) => {
+    const databaseAvatarData = await getDatabaseProfileAvatar();
+
+    if (!databaseAvatarData) {
+      downloadAndSaveAvatar(url);
+      return;
+    }
+
+    const existsNewAvatar = databaseAvatarData.uuid !== extractAvatarURLID(url);
+
+    if (existsNewAvatar) {
+      return downloadAndSaveAvatar(url);
+    }
+
+    setAvatarBlob(databaseAvatarData.avatarBlob);
+  }, []);
+
+  useEffect(() => {
+    if (props.user.avatar) handleDownload(props.user.avatar);
+  }, [props.user.avatar, handleDownload]);
 
   useEffect(() => {
     const OWNER_ROLE = { id: 'NONE', name: 'owner' };
@@ -581,6 +618,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     <User
                       user={user}
                       key={user.email}
+                      avatarSrc={avatarBlob ? URL.createObjectURL(avatarBlob) : user.avatar}
                       listPosition={index}
                       translate={translate}
                       openUserOptions={openUserOptions}
@@ -890,197 +928,3 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 export default connect((state: RootState) => ({
   user: state.user.user as UserSettings,
 }))(ShareDialog);
-
-export const UserOptions = ({
-  listPosition,
-  selectedUserListIndex,
-  userOptionsY,
-  translate,
-  onRemoveUser,
-  userOptionsEmail,
-  selectedRole,
-  onChangeRole,
-  disableRoleChange,
-}): JSX.Element => {
-  const isUserSelected = selectedUserListIndex === listPosition;
-
-  return isUserSelected ? (
-    <Popover
-      className="absolute z-10 h-0 max-h-0 w-full"
-      style={{
-        top: `${userOptionsY}px`,
-        right: 0,
-        minWidth: '160px',
-      }}
-    >
-      <Popover.Panel
-        className={`absolute right-0 z-10 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5 ${
-          isUserSelected ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
-        }`}
-        style={{
-          top: '44px',
-          minWidth: '160px',
-        }}
-        static
-      >
-        {disableRoleChange ? (
-          <></>
-        ) : (
-          <>
-            {/* Editor */}
-            <button
-              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
-              onClick={() => {
-                onChangeRole('editor');
-              }}
-            >
-              <p className="w-full text-left text-base font-medium leading-none">
-                {translate('modals.shareModal.list.userItem.roles.editor')}
-              </p>
-              {selectedRole === 'editor' && <Check size={20} />}
-            </button>
-
-            {/* Reader */}
-            <button
-              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
-              onClick={() => {
-                onChangeRole('reader');
-              }}
-            >
-              <p className="w-full text-left text-base font-medium leading-none">
-                {translate('modals.shareModal.list.userItem.roles.reader')}
-              </p>
-              {selectedRole === 'reader' && <Check size={20} />}
-            </button>
-
-            <div className="mx-3 my-0.5 flex h-px bg-gray-10" />
-          </>
-        )}
-        {/* Remove */}
-        <button
-          className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
-          onClick={() => {
-            onRemoveUser(userOptionsEmail);
-          }}
-        >
-          <p className="w-full text-left text-base font-medium leading-none">
-            {translate('modals.shareModal.list.userItem.remove')}
-          </p>
-        </button>
-      </Popover.Panel>
-    </Popover>
-  ) : (
-    <></>
-  );
-};
-
-const User = ({
-  user,
-  listPosition,
-  translate,
-  openUserOptions,
-  selectedUserListIndex,
-  userOptionsY,
-  onRemoveUser,
-  userOptionsEmail,
-  onChangeRole,
-  disableUserOptionsPanel,
-  disableRoleChange,
-}: {
-  user: InvitedUserProps;
-  listPosition: number | null;
-  translate: (key: string, props?: Record<string, unknown>) => string;
-  openUserOptions: (
-    event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>,
-    user: InvitedUserProps,
-    listPosition: number | null,
-  ) => void;
-  selectedUserListIndex;
-  userOptionsY;
-  onRemoveUser;
-  userOptionsEmail;
-  onChangeRole: (email: string, roleName: string) => void;
-  disableUserOptionsPanel: boolean;
-  disableRoleChange: boolean;
-}) => (
-  <div
-    className={`group flex h-14 shrink-0 items-center space-x-2.5 border-t ${
-      user.roleName === 'owner' ? 'border-transparent' : 'border-gray-5'
-    }`}
-  >
-    <Avatar src={user.avatar} fullName={`${user.name} ${user.lastname}`} diameter={40} />
-
-    <div className="flex flex-1 flex-col overflow-hidden">
-      <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap font-medium leading-tight">
-        {user.name}&nbsp;{user.lastname}
-      </p>
-      <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
-        {user.email}
-      </p>
-    </div>
-
-    {user.roleName === 'owner' || disableUserOptionsPanel ? (
-      <div className="px-3 text-gray-50">{translate(`modals.shareModal.list.userItem.roles.${user.roleName}`)}</div>
-    ) : (
-      <>
-        <div
-          className="relative flex h-9 cursor-pointer select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg border border-gray-10 bg-surface px-3 text-base font-medium text-gray-80 outline-none ring-2 ring-primary/0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out hover:border-gray-20 focus-visible:shadow-sm focus-visible:ring-primary/50 active:bg-gray-1 group-hover:border-gray-20 group-hover:shadow-sm dark:bg-gray-5 dark:active:bg-gray-10"
-          onMouseUpCapture={(event) => openUserOptions(event, user, listPosition)}
-          tabIndex={-1}
-        >
-          <span className="pointer-events-none">
-            {translate(`modals.shareModal.list.userItem.roles.${user.roleName}`)}
-          </span>
-          <CaretDown size={16} weight="bold" className="pointer-events-none" />
-        </div>
-        <UserOptions
-          listPosition={listPosition}
-          selectedUserListIndex={selectedUserListIndex}
-          userOptionsY={userOptionsY}
-          translate={translate}
-          onRemoveUser={onRemoveUser}
-          userOptionsEmail={userOptionsEmail}
-          selectedRole={user.roleName}
-          onChangeRole={(roleName) => onChangeRole(user.email, roleName)}
-          disableRoleChange={disableRoleChange}
-        />
-      </>
-    )}
-  </div>
-);
-
-const InvitedUsersSkeletonLoader = () => {
-  const skinSkeleton = [
-    <div className="flex flex-row items-center space-x-4">
-      <div className="h-9 w-9 rounded-md bg-gray-5" />
-    </div>,
-    <div className="h-4 w-72 rounded bg-gray-5" />,
-    <div className="ml-3 h-4 w-24 rounded bg-gray-5" />,
-  ];
-
-  const columnsWidth = [
-    {
-      width: 'flex w-1/12 cursor-pointer items-center',
-    },
-    {
-      width: 'flex grow cursor-pointer items-center pl-4',
-    },
-    {
-      width: 'hidden w-3/12 lg:flex pl-4',
-    },
-  ].map((column) => column.width);
-
-  return (
-    <div className="group relative flex h-14 w-full shrink-0 animate-pulse flex-row items-center pl-2 pr-2">
-      {new Array(5).fill(0).map((col, i) => (
-        <div
-          key={`${col}-${i}`}
-          className={`relative flex h-full shrink-0 flex-row items-center overflow-hidden whitespace-nowrap border-b border-gray-5 ${columnsWidth[i]}`}
-        >
-          {skinSkeleton?.[i]}
-        </div>
-      ))}
-      <div className="h-full w-12" />
-    </div>
-  );
-};
