@@ -181,6 +181,7 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
       <WorkspaceOverviewDetails
         members={members?.length || 0}
         teams={teams?.length || 0}
+        planUsage={plan.businessPlanUsage}
         planLimit={plan.businessPlanLimit}
         products={products}
         isOwner={isOwner}
@@ -216,7 +217,7 @@ const EditWorkspaceDetailsModal = ({
   onSave: (editedCompanyName: string, editedAbout: string) => void;
   isLoading: boolean;
 }) => {
-  const MAX_NAME_LENGHT = 50;
+  const MAX_NAME_LENGTH = 50;
   const MAX_ABOUT_NAME = 150;
   const [editedCompanyName, setEditedCompanyName] = useState(companyName);
   const [aboutCompany, setAboutCompany] = useState(aboutText);
@@ -232,7 +233,7 @@ const EditWorkspaceDetailsModal = ({
             label="Name"
             textValue={editedCompanyName}
             onChangeTextValue={setEditedCompanyName}
-            maxLength={MAX_NAME_LENGHT}
+            maxLength={MAX_NAME_LENGTH}
             disabled={isLoading}
           />
           <div>
@@ -269,6 +270,7 @@ const EditWorkspaceDetailsModal = ({
 interface WorkspaceOverviewDetailsProps {
   members: number;
   teams: number;
+  planUsage: number;
   planLimit: number;
   products: Parameters<typeof UsageContainer>[0]['products'] | null;
   isOwner: boolean;
@@ -281,6 +283,7 @@ interface WorkspaceOverviewDetailsProps {
 const WorkspaceOverviewDetails = ({
   members,
   teams,
+  planUsage,
   planLimit,
   products,
   isOwner,
@@ -333,7 +336,7 @@ const WorkspaceOverviewDetails = ({
         <div className="flex flex-row">
           <Card className="flex grow">
             {products && planLimit ? (
-              <UsageContainer planLimitInBytes={planLimit} products={products} />
+              <UsageContainer planUsage={planUsage} planLimitInBytes={planLimit} products={products} />
             ) : (
               <div className="flex h-36 w-full items-center justify-center">
                 <Loader classNameLoader="h-7 w-7 text-primary" />
