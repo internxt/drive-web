@@ -6,10 +6,10 @@
   "featuresBanner": {
     "label": "Save 80%",
     "title": "Annual and lifetime plans!",
-    "upperTitle":"Hot summer savings",
+    "upperTitle": "Hot summer savings",
     "cta": "Claim deal",
     "guarantee": "30-day money-back guarantee",
-    "specialOfferGift":"Chance to win an Internxt backpack",
+    "specialOfferGift": "Chance to win an Internxt backpack",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
       "Drive, VPN, and Antivirus",
@@ -907,8 +907,8 @@
         "successSentInvitation": "Successful sharing with {{email}}",
         "acceptedSuccessfully": "Shared folder invitation successfully accepted",
         "declinedSuccessfully": "Shared folder invitation successfully declined",
-        "inviteNewUsersBody": "People without an Internxt account will be sent a signup invitation email.",
-        "inviteNewUsersTitle": "Invite new users?",
+        "inviteNewUsersBody": "In case the person doesn't have an Internxt account, they will receive an email",
+        "inviteNewUsersTitle": "Invite users?",
         "accept": "Accept",
         "cancel": "Cancel",
         "error": {

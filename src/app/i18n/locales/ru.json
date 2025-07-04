@@ -880,8 +880,8 @@
         "successSentInvitation": "Успешное совместное использование c {{email}}",
         "acceptedSuccessfully": "Приглашение к общей папке успешно принято",
         "declinedSuccessfully": "Приглашение к общей папке успешно отклонено",
-        "inviteNewUsersBody": "Людям без учетной записи Internxt будет отправлено электронное письмо с приглашением к регистрации.",
-        "inviteNewUsersTitle": "Пригласить новых пользователей?",
+        "inviteNewUsersBody": "В случае если у человека нет учетной записи Internxt, он получит электронное письмо",
+        "inviteNewUsersTitle": "Пригласить пользователей?",
         "accept": "Принять",
         "cancel": "Отмена",
         "error": {
