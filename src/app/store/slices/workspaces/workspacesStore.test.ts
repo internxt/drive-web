@@ -44,7 +44,7 @@ vi.mock('./workspaces.selectors', () => ({
 vi.mock('../../../core/services/workspace.service', () => ({
   default: {
     setupWorkspace: vi.fn(),
-    getWorkspaces: vi.fn(),
+    getWorkspaces: vi.fn(async () => []),
     updateWorkspaceAvatar: vi.fn(),
     deleteWorkspaceAvatar: vi.fn(),
     editWorkspace: vi.fn(),
