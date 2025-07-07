@@ -30,7 +30,7 @@ vi.mock('app/drive/services/folder.service', () => ({
 
 vi.mock('app/core/services/error.service', () => ({
   default: {
-    castError: vi.fn().mockImplementation((e) => e),
+    castError: vi.fn().mockImplementation((e) => ({ message: e.message ?? 'Default error message' })),
     reportError: vi.fn(),
   },
 }));
