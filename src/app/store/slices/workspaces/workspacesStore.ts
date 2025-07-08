@@ -304,7 +304,7 @@ export const workspacesSlice = createSlice({
 
         state.isLoadingWorkspaces = false;
         notificationsService.show({
-          text: t('Changing workspace error ', { error: errorMsg }),
+          text: 'Changing workspace error ' + errorMsg,
           type: ToastType.Warning,
         });
       })
