@@ -10,11 +10,11 @@ import {
   DownloadItemType,
   DownloadManagerService,
   DownloadTask,
-  ErrorMessages,
   isLostConnectionError,
   areItemArraysEqual,
 } from 'app/drive/services/downloadManager.service';
 import RetryManager, { RetryableTask } from './RetryManager';
+import { ErrorMessages } from 'app/core/constants';
 
 /**
  * DownloadManager class handles file and folder downloads with queue management
