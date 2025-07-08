@@ -44,7 +44,12 @@ vi.mock('./workspaces.selectors', () => ({
 vi.mock('../../../core/services/workspace.service', () => ({
   default: {
     setupWorkspace: vi.fn(),
-    getWorkspaces: vi.fn(async () => []),
+    getWorkspaces: vi.fn(() =>
+      Promise.resolve({
+        availableWorkspaces: [],
+        pendingWorkspaces: [],
+      }),
+    ),
     updateWorkspaceAvatar: vi.fn(),
     deleteWorkspaceAvatar: vi.fn(),
     editWorkspace: vi.fn(),
@@ -159,7 +164,7 @@ describe('Encryption and Decryption', () => {
     expect(mockWorkspaceService.setupWorkspace).not.toHaveBeenCalled();
 
     expect(showSpy).toHaveBeenCalledWith({
-      text: 'Error setting up workspace ',
+      text: 'Error setting up workspace',
       type: 'error',
     });
   });
