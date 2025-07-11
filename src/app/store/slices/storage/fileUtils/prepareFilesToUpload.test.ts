@@ -24,6 +24,7 @@ describe('prepareFilesToUpload', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should process files without duplicates correctly', async () => {

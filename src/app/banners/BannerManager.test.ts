@@ -94,6 +94,7 @@ describe('BannerManager - showFreeBanner', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('returns true for free banner when conditions are met', () => {

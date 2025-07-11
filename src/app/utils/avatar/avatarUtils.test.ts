@@ -66,6 +66,7 @@ describe('Sync avatar if needed', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('When no avatar URL is provided, then it should not update the database', async () => {
