@@ -11,10 +11,11 @@ import {
 } from '../../crypto/services/pgp.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { decryptMnemonic } from './share.service';
+import { decryptMnemonic, encodeSharingId, decodeSharingId } from './share.service';
 
 describe('Encryption and Decryption', () => {
   beforeAll(() => {
+    globalThis.Buffer = Buffer;
     vi.mock('app/drive/services/folder.service', () => ({
       default: {},
       downloadFolderAsZip: vi.fn(),
@@ -181,5 +182,33 @@ describe('Encryption and Decryption', () => {
     const ownerMnemonic = await decryptMnemonic(mockUser.mnemonic);
     expect(localStorageService.getUser).toHaveBeenCalled();
     expect(ownerMnemonic).toEqual(mnemonic);
+  });
+
+  it('should return the same UUID if the input is a valid UUIDv4', () => {
+    const validUuid = 'f32a91da-c799-4e13-aa17-8c4d9e0323c9';
+    const result = decodeSharingId(validUuid);
+    expect(result).toBe(validUuid);
+  });
+
+  it('should convert a Base64 URL-safe string to a UUID if the input is not a valid UUIDv4', () => {
+    const base64UrlSafeString = '8yqR2seZThOqF4xNngMjyQ';
+    const expectedUuid = 'f32a91da-c799-4e13-aa17-8c4d9e0323c9';
+
+    const result = decodeSharingId(base64UrlSafeString);
+    expect(result).toBe(expectedUuid);
+  });
+
+  it('should encode a valid UUID to a Base64 URL-safe string', () => {
+    const validUuid = 'f32a91da-c799-4e13-aa17-8c4d9e0323c9';
+    const expectedEncodedString = '8yqR2seZThOqF4xNngMjyQ';
+
+    const result = encodeSharingId(validUuid);
+
+    expect(result).toBe(expectedEncodedString);
+  });
+
+  it('should throw an error for an invalid UUID format', () => {
+    const invalidUuid = 'invalid-uuid-string';
+    expect(() => encodeSharingId(invalidUuid)).toThrowError();
   });
 });
