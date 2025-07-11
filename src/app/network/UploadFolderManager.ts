@@ -1,23 +1,23 @@
-import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFolderTask } from '../tasks/types';
-import { DriveFolderData, DriveItemData } from '../drive/types';
-import { IRoot } from '../store/slices/storage/types';
-import tasksService from '../tasks/services/tasks.service';
-import errorService from '../core/services/error.service';
+import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { queue, QueueObject } from 'async';
 import { t } from 'i18next';
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
+import errorService from '../core/services/error.service';
+import newStorageService from '../drive/services/new-storage.service';
+import { DriveFolderData, DriveItemData } from '../drive/types';
 import { RootState } from '../store';
-import { SdkFactory } from '../core/factory/sdk';
-import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { planThunks } from '../store/slices/plan';
-import { uploadItemsParallelThunk } from '../store/slices/storage/storage.thunks/uploadItemsThunk';
-import { createFolder } from '../store/slices/storage/folderUtils/createFolder';
-import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
 import { checkFolderDuplicated } from '../store/slices/storage/folderUtils/checkFolderDuplicated';
+import { createFolder } from '../store/slices/storage/folderUtils/createFolder';
 import { getUniqueFolderName } from '../store/slices/storage/folderUtils/getUniqueFolderName';
-import { ConnectionLostError } from './requests';
+import { deleteItemsThunk } from '../store/slices/storage/storage.thunks/deleteItemsThunk';
+import { uploadItemsParallelThunk } from '../store/slices/storage/storage.thunks/uploadItemsThunk';
+import { IRoot } from '../store/slices/storage/types';
+import tasksService from '../tasks/services/tasks.service';
+import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFolderTask } from '../tasks/types';
 import { QueueUtilsService } from '../utils/queueUtils';
 import { wait } from '../utils/timeUtils';
+import { ConnectionLostError } from './requests';
 
 interface UploadFolderPayload {
   root: IRoot;
@@ -251,6 +251,7 @@ export class UploadFoldersManager {
             disableDuplicatedNamesCheck: true,
             disableExistenceCheck: true,
             isUploadedFromFolder: true,
+            notUploadHiddenFiles: true,
           },
           onFileUploadCallback: () => {
             this.tasksInfo[taskId].progress.itemsUploaded += 1;
@@ -300,8 +301,7 @@ export class UploadFoldersManager {
     const rootFolderItem = this.tasksInfo[taskId].rootFolderItem;
     if (rootFolderItem) {
       promises.push(this.dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
-      const storageClient = SdkFactory.getInstance().createStorageClient();
-      promises.push(storageClient.deleteFolder(rootFolderItem.id) as Promise<void>);
+      promises.push(newStorageService.deleteFolderByUuid(rootFolderItem.uuid));
     }
     await Promise.allSettled(promises);
   };

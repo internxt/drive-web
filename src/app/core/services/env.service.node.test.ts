@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, vi } from 'vitest';
 import dotenv from 'dotenv';
 import * as path from 'path';
+import envService from './env.service';
 
 describe('Check that env variables are loaded correctly', () => {
   beforeAll(() => {
@@ -12,69 +13,62 @@ describe('Check that env variables are loaded correctly', () => {
       console.error('Error loading .env.example:', result.error);
       throw result.error;
     }
-
+    vi.clearAllMocks();
     vi.resetModules();
   });
 
   it('When an env variable are requested, then their value is successfully returned', async () => {
-    const { envConfig } = await import('./env.service');
+    expect(envService.getVariable('stripePublicKey')).toBe(process.env.REACT_APP_STRIPE_PK);
+    expect(envService.getVariable('stripeTestPublicKey')).toBe(process.env.REACT_APP_STRIPE_TEST_PK);
 
-    expect(envConfig.stripe.publicKey).toBe(process.env.REACT_APP_STRIPE_PK);
-    expect(envConfig.stripe.testPublicKey).toBe(process.env.REACT_APP_STRIPE_TEST_PK);
+    expect(envService.getVariable('secret')).toBe(process.env.REACT_APP_CRYPTO_SECRET);
+    expect(envService.getVariable('secret2')).toBe(process.env.REACT_APP_CRYPTO_SECRET2);
+    expect(envService.getVariable('magicIv')).toBe(process.env.REACT_APP_MAGIC_IV);
+    expect(envService.getVariable('magicSalt')).toBe(process.env.REACT_APP_MAGIC_SALT);
 
-    expect(envConfig.crypto.secret).toBe(process.env.REACT_APP_CRYPTO_SECRET);
-    expect(envConfig.crypto.secret2).toBe(process.env.REACT_APP_CRYPTO_SECRET2);
-    expect(envConfig.crypto.magicIv).toBe(process.env.REACT_APP_MAGIC_IV);
-    expect(envConfig.crypto.magicSalt).toBe(process.env.REACT_APP_MAGIC_SALT);
+    expect(envService.getVariable('api')).toBe(process.env.REACT_APP_API_URL);
+    expect(envService.getVariable('newApi')).toBe(process.env.REACT_APP_DRIVE_NEW_API_URL);
+    expect(envService.getVariable('payments')).toBe(process.env.REACT_APP_PAYMENTS_API_URL);
+    expect(envService.getVariable('location')).toBe(process.env.REACT_APP_LOCATION_API_URL);
 
-    expect(envConfig.api.api).toBe(process.env.REACT_APP_API_URL);
-    expect(envConfig.api.newApi).toBe(process.env.REACT_APP_DRIVE_NEW_API_URL);
-    expect(envConfig.api.payments).toBe(process.env.REACT_APP_PAYMENTS_API_URL);
-    expect(envConfig.api.location).toBe(process.env.REACT_APP_LOCATION_API_URL);
+    expect(envService.getVariable('authUrl')).toBe(process.env.REACT_APP_AUTH_URL);
+    expect(envService.getVariable('buttonAuthUrl')).toBe(process.env.REACT_APP_BUTTON_AUTH_URL);
 
-    expect(envConfig.auth.authUrl).toBe(process.env.REACT_APP_AUTH_URL);
-    expect(envConfig.auth.buttonAuthUrl).toBe(process.env.REACT_APP_BUTTON_AUTH_URL);
+    expect(envService.getVariable('storjBridge')).toBe(process.env.REACT_APP_STORJ_BRIDGE);
+    expect(envService.getVariable('segmentKey')).toBe(process.env.REACT_APP_SEGMENT_KEY);
+    expect(envService.getVariable('intercomProviderKey')).toBe(process.env.REACT_APP_INTERCOM_PROVIDER_KEY);
+    expect(envService.getVariable('sentryDsn')).toBe(process.env.REACT_APP_SENTRY_DSN);
+    expect(envService.getVariable('recaptchaV3')).toBe(process.env.REACT_APP_RECAPTCHA_V3);
+    expect(envService.getVariable('shareLinksDomain')).toBe(process.env.REACT_APP_SHARE_LINKS_DOMAIN);
+    expect(envService.getVariable('proxy')).toBe(process.env.REACT_APP_PROXY);
+    expect(envService.getVariable('dontUseProxy')).toBe(process.env.REACT_APP_DONT_USE_PROXY);
+    expect(envService.getVariable('notifications')).toBe(process.env.REACT_APP_NOTIFICATIONS_URL);
 
-    expect(envConfig.services.storjBridge).toBe(process.env.REACT_APP_STORJ_BRIDGE);
-    expect(envConfig.services.segmentKey).toBe(process.env.REACT_APP_SEGMENT_KEY);
-    expect(envConfig.services.intercomProviderKey).toBe(process.env.REACT_APP_INTERCOM_PROVIDER_KEY);
-    expect(envConfig.services.sentryDsn).toBe(process.env.REACT_APP_SENTRY_DSN);
-    expect(envConfig.services.recaptchaV3).toBe(process.env.REACT_APP_RECAPTCHA_V3);
-    expect(envConfig.services.avatarUrl).toBe(process.env.REACT_APP_AVATAR_URL);
-    expect(envConfig.services.shareLinksDomain).toBe(process.env.REACT_APP_SHARE_LINKS_DOMAIN);
-    expect(envConfig.services.proxy).toBe(process.env.REACT_APP_PROXY);
-    expect(envConfig.services.dontUseProxy).toBe(process.env.REACT_APP_DONT_USE_PROXY);
-    expect(envConfig.services.notifications).toBe(process.env.REACT_APP_NOTIFICATIONS_URL);
+    expect(envService.getVariable('gaId')).toBe(process.env.REACT_APP_GA_ID);
+    expect(envService.getVariable('gaBlogId')).toBe(process.env.REACT_APP_GA_BLOG_ID);
+    expect(envService.getVariable('errorReportingKey')).toBe(process.env.REACT_APP_ANALYTICS_ERROR_REPORTING_WRITE_KEY);
+    expect(envService.getVariable('cdpDataPlane')).toBe(process.env.REACT_APP_CDP_DATA_PLANE);
 
-    expect(envConfig.analytics.gaId).toBe(process.env.REACT_APP_GA_ID);
-    expect(envConfig.analytics.gaBlogId).toBe(process.env.REACT_APP_GA_BLOG_ID);
-    expect(envConfig.analytics.errorReportingKey).toBe(process.env.REACT_APP_ANALYTICS_ERROR_REPORTING_WRITE_KEY);
-    expect(envConfig.analytics.cdpDataPlane).toBe(process.env.REACT_APP_CDP_DATA_PLANE);
+    expect(envService.getVariable('nodeEnv')).toBe(process.env.NODE_ENV);
+    expect(envService.getVariable('generateSourceMap')).toBe(process.env.GENERATE_SOURCEMAP);
+    expect(envService.getVariable('hostname')).toBe(process.env.REACT_APP_HOSTNAME);
+    expect(envService.getVariable('websiteUrl')).toBe(process.env.REACT_APP_WEBSITE_URL);
+    expect(envService.getVariable('baseUrl')).toBe(process.env.REACT_APP_BASE_URL);
 
-    expect(envConfig.app.nodeEnv).toBe(process.env.NODE_ENV);
-    expect(envConfig.app.fastRefresh).toBe(process.env.FAST_REFRESH);
-    expect(envConfig.app.debug).toBe(process.env.REACT_APP_DEBUG);
-    expect(envConfig.app.generateSourceMap).toBe(process.env.GENERATE_SOURCEMAP);
-    expect(envConfig.app.hostname).toBe(process.env.REACT_APP_HOSTNAME);
-    expect(envConfig.app.websiteUrl).toBe(process.env.REACT_APP_WEBSITE_URL);
-    expect(envConfig.app.baseUrl).toBe(process.env.REACT_APP_BASE_URL);
-
-    expect(envConfig.vpnId).toBe(process.env.REACT_APP_VPN_ID);
-    expect(envConfig.impact.apiUrl).toBe(process.env.REACT_APP_IMPACT_API);
+    expect(envService.getVariable('vpnId')).toBe(process.env.REACT_APP_VPN_ID);
+    expect(envService.getVariable('impactApiUrl')).toBe(process.env.REACT_APP_IMPACT_API);
   });
 
   it('When the endpoints variables are requested, then the value is actually an endpoint variable', async () => {
-    const { envConfig } = await import('./env.service');
-
     const urlPattern = /^https?:\/\/.+/;
 
-    expect(envConfig.api.api).toMatch(urlPattern);
-    expect(envConfig.api.newApi).toMatch(urlPattern);
-    expect(envConfig.api.payments).toMatch(urlPattern);
-    expect(envConfig.app.websiteUrl).toMatch(urlPattern);
-    expect(envConfig.services.notifications).toMatch(urlPattern);
-    expect(envConfig.services.storjBridge).toMatch(urlPattern);
-    expect(envConfig.impact.apiUrl).toMatch(urlPattern);
-    expect(envConfig.api.location).toMatch(urlPattern);
+    expect(envService.getVariable('api')).toMatch(urlPattern);
+    expect(envService.getVariable('newApi')).toMatch(urlPattern);
+    expect(envService.getVariable('payments')).toMatch(urlPattern);
+    expect(envService.getVariable('websiteUrl')).toMatch(urlPattern);
+    expect(envService.getVariable('notifications')).toMatch(urlPattern);
+    expect(envService.getVariable('storjBridge')).toMatch(urlPattern);
+    expect(envService.getVariable('impactApiUrl')).toMatch(urlPattern);
+    expect(envService.getVariable('location')).toMatch(urlPattern);
   });
 });

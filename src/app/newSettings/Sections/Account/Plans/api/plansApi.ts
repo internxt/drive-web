@@ -1,5 +1,5 @@
 import { Stripe, loadStripe } from '@stripe/stripe-js';
-import envService, { envConfig } from '../../../../../core/services/env.service';
+import envService from '../../../../../core/services/env.service';
 import paymentService from '../../../../../payment/services/payment.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { userLocation } from 'app/utils/userLocation';
@@ -32,7 +32,9 @@ const fetchPlanPrices = async (userType: UserType) => {
 const getStripe = async (stripe): Promise<Stripe> => {
   if (!stripe) {
     stripe = (await loadStripe(
-      envService.isProduction() ? envConfig.stripe.publicKey : envConfig.stripe.testPublicKey,
+      envService.isProduction()
+        ? envService.getVariable('stripePublicKey')
+        : envService.getVariable('stripeTestPublicKey'),
     )) as Stripe;
   }
 

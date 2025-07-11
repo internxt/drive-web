@@ -7,16 +7,16 @@ import configService from './config.service';
 import errorService from './error.service';
 import { AppDispatch } from 'app/store';
 import localStorageService from './local-storage.service';
-import { STORAGE_KEYS } from 'app/core/services/local-storage.service';
+import { STORAGE_KEYS } from 'app/core/services/storage-keys';
 import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
-import { envConfig } from './env.service';
+import envService from './env.service';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
 };
 
-if (envConfig.app.baseUrl) {
-  browserHistoryConfig.basename = envConfig.app.baseUrl;
+if (envService.getVariable('baseUrl')) {
+  browserHistoryConfig.basename = envService.getVariable('baseUrl');
 }
 
 const instance = createBrowserHistory(browserHistoryConfig);

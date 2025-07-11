@@ -4,26 +4,28 @@ import { matchPath } from 'react-router-dom';
 
 import desktopService from 'app/core/services/desktop.service';
 import PlanUsage from 'app/drive/components/PlanUsage/PlanUsage';
-import navigationService from '../../services/navigation.service';
 import { RootState } from 'app/store';
 import { planSelectors } from 'app/store/slices/plan';
+import navigationService from '../../services/navigation.service';
 import { AppView } from '../../types';
 
-import SidenavItem from './SidenavItem/SidenavItem';
-import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
-import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
+import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { Loader } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { useAppSelector } from 'app/store/hooks';
-import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
-import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types/types';
+import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { t } from 'i18next';
-import { Loader } from '@internxt/ui';
-import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
-
-export const HUNDRED_TB = 109951162777600;
+import localStorageService from '../../../core/services/local-storage.service';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import SidenavItem from './SidenavItem/SidenavItem';
+import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
+import { STORAGE_KEYS } from '../../../core/services/storage-keys';
+import { HUNDRED_TB } from '../../../core/constants';
+import { useEffect } from 'react';
+import { sharedThunks } from 'app/store/slices/sharedLinks';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -78,23 +80,23 @@ const LoadingSpinner = ({ text }: { text: string }) => (
 
 const SideNavItems = ({ sideNavItems }: { sideNavItems: SideNavItemsProps[] }) => (
   <>
-    {sideNavItems.map((item) => (
-      <>
-        {item.isVisible && (
-          <SidenavItem
-            label={item.label}
-            to={item.to}
-            Icon={item.icon}
-            iconDataCy={item.iconDataCy}
-            isActive={item.isActive}
-            notifications={item.notifications}
-            onClick={item.onClick}
-          />
-        )}
-      </>
-    ))}
+    {sideNavItems.map((item, index) =>
+      item.isVisible ? (
+        <SidenavItem
+          key={index}
+          label={item.label}
+          to={item.to}
+          Icon={item.icon}
+          iconDataCy={item.iconDataCy}
+          isActive={item.isActive}
+          notifications={item.notifications}
+          onClick={item.onClick}
+        />
+      ) : null,
+    )}
   </>
 );
+
 const getItemNavigationPath = (path: string, workspaceUuid?: string) => {
   return workspaceUuid ? `${path}?workspaceid=${workspaceUuid}` : `${path}`;
 };
@@ -108,11 +110,16 @@ const Sidenav = ({
   isLoadingPlanUsage,
 }: SidenavProps) => {
   const { translate } = useTranslationContext();
+  const dispatch = useAppDispatch();
   const isB2BWorkspace = !!useSelector(workspacesSelectors.getSelectedWorkspace);
   const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceUuid = selectedWorkspace?.workspaceUser.workspaceId;
+
+  useEffect(() => {
+    dispatch(sharedThunks.getPendingInvitations());
+  }, []);
 
   const itemsNavigation: SideNavItemsProps[] = [
     {

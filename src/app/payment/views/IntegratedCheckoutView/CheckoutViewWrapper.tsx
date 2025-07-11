@@ -7,9 +7,10 @@ import { useSelector } from 'react-redux';
 import { Loader } from '@internxt/ui';
 import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
-import envService, { envConfig } from '../../../core/services/env.service';
+import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
+import { STORAGE_KEYS } from '../../../core/services/storage-keys';
 import navigationService from '../../../core/services/navigation.service';
 import RealtimeService from '../../../core/services/socket.service';
 import AppError, { AppView, IFormValues } from '../../../core/types';
@@ -33,6 +34,10 @@ import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { userLocation } from 'app/utils/userLocation';
 import { UserLocation } from '@internxt/sdk';
 import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
+import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
+
+const GCLID_COOKIE_LIFESPAN_DAYS = 90;
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 export const THEME_STYLES = {
   dark: {
@@ -82,8 +87,6 @@ export interface CheckoutViewManager {
   onSeatsChange: (seat: number) => void;
 }
 
-const IS_PRODUCTION = envService.isProduction();
-const RETURN_URL_DOMAIN = IS_PRODUCTION ? envConfig.app.hostname : 'http://localhost:3000';
 const STATUS_CODE_ERROR = {
   USER_EXISTS: 409,
   COUPON_NOT_VALID: 422,
@@ -113,6 +116,8 @@ const CheckoutViewWrapper = () => {
   const fullName = name + ' ' + lastName;
   const isUserAuthenticated = !!user;
   const thereIsAnyError = state.error?.coupon || state.error?.auth || state.error?.stripe;
+
+  const gclidStored = localStorageService.get(STORAGE_KEYS.GCLID);
 
   const {
     onRemoveAppliedCouponCode,
@@ -168,13 +173,20 @@ const CheckoutViewWrapper = () => {
   };
 
   useEffect(() => {
-    const { planId, promotionCode, currency, paramMobileToken } = getCheckoutQueryParams();
+    const { planId, promotionCode, currency, paramMobileToken, gclid } = getCheckoutQueryParams();
     setMobileToken(paramMobileToken);
     const currencyValue = currency ?? 'eur';
 
     if (!planId) {
       redirectToFallbackPage();
       return;
+    }
+
+    if (gclid) {
+      const expiryDate = new Date();
+      expiryDate.setTime(expiryDate.getTime() + GCLID_COOKIE_LIFESPAN_DAYS * MILLISECONDS_PER_DAY);
+      document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
+      localStorageService.set(STORAGE_KEYS.GCLID, gclid);
     }
 
     initializeStripe()
@@ -238,11 +250,13 @@ const CheckoutViewWrapper = () => {
 
   const getCheckoutQueryParams = () => {
     const params = new URLSearchParams(window.location.search);
+
     return {
       planId: params.get('planId'),
       promotionCode: params.get('couponCode'),
       currency: params.get('currency'),
       paramMobileToken: params.get('mobileToken'),
+      gclid: params.get('gclid') ?? '',
     };
   };
 
@@ -416,6 +430,7 @@ const CheckoutViewWrapper = () => {
         localStorageService.set('priceId', currentSelectedPlan?.price?.id as string);
         localStorageService.set('customerToken', token);
         localStorageService.set('mobileToken', mobileToken);
+        const RETURN_URL_DOMAIN = envService.getVariable('hostname');
         const { error: confirmIntentError } = await stripeSDK.confirmSetup({
           elements,
           clientSecret: setupIntent.clientSecret,
@@ -447,6 +462,18 @@ const CheckoutViewWrapper = () => {
           couponCodeData,
         );
 
+        if (gclidStored) {
+          await sendConversionToAPI({
+            gclid: gclidStored,
+            name: `Checkout - ${currentSelectedPlan?.price.type}`,
+            value: currentSelectedPlan as PriceWithTax,
+            currency: currentSelectedPlan?.price.currency,
+            timestamp: new Date(),
+            users: seatsForBusinessSubscription,
+            couponCodeData: couponCodeData,
+          });
+        }
+
         // !DO NOT REMOVE THIS
         // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
         // no client secret will be provided.
@@ -456,7 +483,7 @@ const CheckoutViewWrapper = () => {
         }
 
         const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
-
+        const RETURN_URL_DOMAIN = envService.getVariable('hostname');
         const { error: confirmIntentError } = await confirmIntent({
           elements,
           clientSecret,

@@ -3,10 +3,10 @@ import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import { Button } from '@internxt/ui';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
-import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
+import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { Helmet } from 'react-helmet-async';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 const CreateAccountForm = ({
   handleSubmit,
@@ -31,7 +31,7 @@ const CreateAccountForm = ({
 
       <div className={'flex h-full flex-col items-center justify-center'}>
         <Helmet>
-          <link rel="canonical" href={`${envConfig.app.hostname}/shared-guest`} />
+          <link rel="canonical" href={`${envService.getVariable('hostname')}/shared-guest`} />
         </Helmet>
         <div className={'flex h-fit w-96 flex-col items-center justify-center rounded-2xl px-8 py-10'}>
           <div className="flex flex-col items-start space-y-5">

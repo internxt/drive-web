@@ -6,9 +6,9 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { BannerManager } from './BannerManager';
 import { useEffect, useMemo, useState } from 'react';
 import { userSelectors } from 'app/store/slices/user';
-import BitdefenderBanner from './BitDefenderBanner';
+import FeaturesBanner from './FeaturesBanner';
 
-const OFFER_END_DAY = new Date('2025-06-09');
+const OFFER_END_DAY = new Date('2025-07-27');
 const TIMEOUT = 8000;
 
 const BannerWrapper = (): JSX.Element => {
@@ -42,7 +42,7 @@ const BannerWrapper = (): JSX.Element => {
   return (
     <>
       {bannersToShow.showFreeBanner && showDelayedBanner && (
-        <BitdefenderBanner onClose={() => onCloseBanner('showFreeBanner')} showBanner />
+        <FeaturesBanner onClose={() => onCloseBanner('showFreeBanner')} showBanner />
       )}
     </>
   );

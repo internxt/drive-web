@@ -132,8 +132,6 @@ function SharedView({
   const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;
 
   useLayoutEffect(() => {
-    dispatch(sharedThunks.getPendingInvitations());
-
     if (page === 0 && !folderUUID) {
       fetchRootFolders(workspaceId);
       dispatch(storageActions.resetSharedNamePath());

@@ -18,6 +18,7 @@ describe('getUniqueFolderName', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should return the original name if no duplicates exist', async () => {

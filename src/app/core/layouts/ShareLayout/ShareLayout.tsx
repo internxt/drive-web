@@ -1,19 +1,19 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-import { ReactComponent as Logo } from 'assets/icons/logo.svg';
+import Logo from 'assets/icons/logo.svg?react';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { userThunks } from '../../../store/slices/user';
 import desktopService from '../../../core/services/desktop.service';
 import '../../../share/views/ShareView/ShareView.scss';
-import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
+import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ReportButton from '../../../share/views/ShareView/ReportButon';
 import { ShieldCheck, Password, Key, Eye } from '@phosphor-icons/react';
 import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 import { Avatar, Button } from '@internxt/ui';
-import { envConfig } from 'app/core/services/env.service';
+import envService from 'app/core/services/env.service';
 
 interface ShareLayoutProps {
   children: JSX.Element;
@@ -184,7 +184,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   <Button
                     variant="secondary"
                     onClick={() => {
-                      window.location.href = envConfig.app.hostname + '/login';
+                      window.location.href = envService.getVariable('hostname') + '/login';
                     }}
                   >
                     {translate('shareLayout.topBar.login')}
@@ -193,7 +193,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   <Button
                     variant="primary"
                     onClick={() => {
-                      window.location.href = envConfig.app.hostname + '/new';
+                      window.location.href = envService.getVariable('hostname') + '/new';
                     }}
                   >
                     {translate('shareLayout.topBar.createAccount')}
