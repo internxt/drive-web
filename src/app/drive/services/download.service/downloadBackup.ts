@@ -8,12 +8,12 @@ export default async function downloadBackup(
     progressCallback,
     finishedCallback,
     errorCallback,
-    abortController
+    abortController,
   }: {
     progressCallback: (progress: number) => void;
     finishedCallback: () => void;
     errorCallback: (err: Error) => void;
-    abortController?: AbortController
+    abortController?: AbortController;
   },
 ): Promise<void> {
   if (!('showSaveFilePicker' in window)) {
@@ -26,7 +26,7 @@ export default async function downloadBackup(
     throw new Error('This backup has not been uploaded yet');
   }
 
-  const handle = await window.showSaveFilePicker({
+  const handle = await (window as any).showSaveFilePicker({
     suggestedName: `${backup.name}.zip`,
     types: [{ accept: { 'application/zip': ['.zip'] } }],
   });
@@ -39,20 +39,23 @@ export default async function downloadBackup(
     fileId: backup.fileId,
     creds: {
       pass: bridgePass,
-      user: bridgeUser
+      user: bridgeUser,
     },
     mnemonic: encryptionKey,
     options: {
       notifyProgress: (totalBytes, downloadedBytes) => {
         progressCallback(downloadedBytes / totalBytes);
       },
-      abortController
-    }
+      abortController,
+    },
   });
 
-  downloadStream.pipeTo(writable).then(() => {
-    finishedCallback();
-  }).catch((err) => {
-    errorCallback(err);
-  });
+  downloadStream
+    .pipeTo(writable)
+    .then(() => {
+      finishedCallback();
+    })
+    .catch((err) => {
+      errorCallback(err);
+    });
 }

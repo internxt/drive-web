@@ -122,6 +122,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.resetModules();
   vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
     if (key === 'magicIv') return mockMagicIv;
     if (key === 'magicSalt') return mockMagicSalt;
