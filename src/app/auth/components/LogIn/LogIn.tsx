@@ -31,6 +31,8 @@ import vpnAuthService from 'app/auth/services/vpnAuth.service';
 import envService from 'app/core/services/env.service';
 import { generateCaptchaToken } from 'app/auth/utils';
 
+const CAPTCHA_FLOW_ERROR_CODES = ['WebLoginRequired', 'CaptchaRequired'];
+
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
     text,
@@ -178,7 +180,7 @@ export default function LogIn(): JSX.Element {
 
       setLoginError([castedError.message]);
       setShowErrors(true);
-      if (castedError?.status === 403 && castedError?.code !== 'CaptchaRequired') {
+      if (castedError?.status === 403 && castedError?.code && !CAPTCHA_FLOW_ERROR_CODES.includes(castedError?.code)) {
         await sendUnblockAccountEmail(email);
         navigationService.history.push({
           pathname: AppView.BlockedAccount,
