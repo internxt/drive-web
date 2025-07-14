@@ -1,13 +1,13 @@
 import { Avatar } from '@internxt/ui';
-import * as Sentry from '@sentry/react';
 import userService from 'app/auth/services/user.service';
-import { memo, useEffect, useState } from 'react';
+import { memo } from 'react';
 import {
   deleteDatabaseWorkspaceAvatar,
   getDatabaseWorkspaceAvatar,
   updateDatabaseWorkspaceAvatar,
 } from '../../../../../drive/services/database.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
+import { useAvatar } from 'hooks/useAvatar';
 
 const showUpdateWorkspaceAvatarErrorToast = () =>
   notificationsService.show({
@@ -41,53 +41,13 @@ const WorkspaceAvatarWrapper = memo(
     diameter: number;
     style?: Record<string, string | number>;
   }): JSX.Element => {
-    const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
-
-    useEffect(() => {
-      const handleAvatarData = async () => {
-        try {
-          if (avatarSrcURL) {
-            await handleDownload(avatarSrcURL);
-            return;
-          }
-          if (avatarSrcURL && avatarSrcURL.length > 0) deleteDatabaseWorkspaceAvatar(workspaceId);
-          setAvatarBlob(null);
-        } catch (error) {
-          Sentry.captureException(error, {
-            extra: {
-              workspaceAvatarURL: avatarSrcURL,
-            },
-          });
-          showUpdateWorkspaceAvatarErrorToast();
-          setAvatarBlob(null);
-        }
-      };
-
-      handleAvatarData();
-    }, [avatarSrcURL]);
-
-    const downloadAndSaveAvatar = async (url: string) => {
-      const avatar = await userService.downloadAvatar(url);
-      setAvatarBlob(avatar);
-      await saveWorkspaceAvatarToDatabase(workspaceId, url, avatar);
-    };
-
-    const handleDownload = async (url: string) => {
-      const databaseAvatarData = await getDatabaseWorkspaceAvatar(workspaceId).catch();
-
-      if (!databaseAvatarData) {
-        downloadAndSaveAvatar(url);
-        return;
-      }
-
-      const existsNewAvatar = databaseAvatarData.srcURL !== url;
-
-      if (existsNewAvatar) {
-        return downloadAndSaveAvatar(url);
-      }
-
-      setAvatarBlob(databaseAvatarData.avatarBlob);
-    };
+    const { avatarBlob } = useAvatar({
+      avatarSrcURL,
+      getDatabaseAvatar: () => getDatabaseWorkspaceAvatar(workspaceId),
+      saveAvatarToDatabase: (url, blob) => saveWorkspaceAvatarToDatabase(workspaceId, url, blob),
+      deleteDatabaseAvatar: () => deleteDatabaseWorkspaceAvatar(workspaceId),
+      downloadAvatar: userService.downloadAvatar,
+    });
 
     return (
       <Avatar

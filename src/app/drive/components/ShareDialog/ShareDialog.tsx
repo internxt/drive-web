@@ -39,14 +39,12 @@ import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
 import './ShareDialog.scss';
 import envService from 'app/core/services/env.service';
-import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
-import {
-  extractAvatarURLID,
-  saveAvatarToDatabase,
-} from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
-import userService from 'app/auth/services/user.service';
 import { User } from './components/User';
 import { InvitedUsersSkeletonLoader } from './components/InvitedUsersSkeletonLoader';
+import { useAvatar } from 'hooks/useAvatar';
+import { deleteDatabaseProfileAvatar, getDatabaseProfileAvatar } from 'app/drive/services/database.service';
+import userService from 'app/auth/services/user.service';
+import { saveAvatarToDatabase } from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -130,12 +128,20 @@ const filterEditorAndReader = (users: Role[]): Role[] => {
 };
 
 const ShareDialog = (props: ShareDialogProps): JSX.Element => {
+  const { onCloseDialog } = props;
+
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
-  const { onCloseDialog } = props;
+  const { avatarBlob } = useAvatar({
+    avatarSrcURL: props?.user?.avatar,
+    deleteDatabaseAvatar: deleteDatabaseProfileAvatar,
+    downloadAvatar: userService.downloadAvatar,
+    getDatabaseAvatar: getDatabaseProfileAvatar,
+    saveAvatarToDatabase: saveAvatarToDatabase,
+  });
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [inviteDialogRoles, setInviteDialogRoles] = useState<Role[]>([]);
@@ -150,7 +156,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [openPasswordInput, setOpenPasswordInput] = useState(false);
   const [openPasswordDisableDialog, setOpenPasswordDisableDialog] = useState(false);
   const [sharingMeta, setSharingMeta] = useState<SharingMeta | null>(null);
-  const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
 
   const [accessRequests, setAccessRequests] = useState<RequestProps[]>([]);
   const [userOptionsEmail, setUserOptionsEmail] = useState<InvitedUserProps>();
@@ -180,32 +185,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setSharingMeta(null);
     onCloseDialog?.();
   };
-
-  const downloadAndSaveAvatar = async (url: string) => {
-    const avatar = await userService.downloadAvatar(url);
-    setAvatarBlob(avatar);
-    await saveAvatarToDatabase(url, avatar);
-  };
-
-  const handleDownload = useCallback(async (url: string) => {
-    const databaseAvatarData = await getDatabaseProfileAvatar();
-
-    if (!databaseAvatarData) {
-      return downloadAndSaveAvatar(url);
-    }
-
-    const existsNewAvatar = databaseAvatarData.uuid !== extractAvatarURLID(url);
-
-    if (existsNewAvatar) {
-      return downloadAndSaveAvatar(url);
-    }
-
-    setAvatarBlob(databaseAvatarData.avatarBlob);
-  }, []);
-
-  useEffect(() => {
-    if (props.user.avatar) handleDownload(props.user.avatar);
-  }, [props.user.avatar, handleDownload]);
 
   useEffect(() => {
     const OWNER_ROLE = { id: 'NONE', name: 'owner' };
