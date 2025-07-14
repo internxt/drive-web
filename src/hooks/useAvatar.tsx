@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useState } from 'react';
 import { AvatarBlobData } from 'app/database/services/database.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { t } from 'i18next';
 
 type UseAvatarManagerProps = {
   avatarSrcURL: string | null;
@@ -12,7 +13,7 @@ type UseAvatarManagerProps = {
 
 const showUpdateAvatarErrorToast = () =>
   notificationsService.show({
-    text: 'Error updating avatar',
+    text: t('error.updateAvatarError'),
     type: ToastType.Error,
   });
 
