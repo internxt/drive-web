@@ -45,6 +45,7 @@ describe('Encryption and Decryption', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   async function getMockUser(

@@ -33,6 +33,7 @@ describe('useReduxActions', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should dispatch uploadFolderThunk with correct arguments', () => {
