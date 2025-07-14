@@ -63,7 +63,7 @@ export const useAvatar = ({
 
         await deleteDatabaseAvatar();
         setAvatarBlob(null);
-      } catch (error) {
+      } catch {
         showUpdateAvatarErrorToast();
         setAvatarBlob(null);
       }
