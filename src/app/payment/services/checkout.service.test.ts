@@ -66,6 +66,7 @@ vi.mock('../../utils/userLocation', () => ({
 describe('Checkout Service tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   describe('Get Customer ID function', () => {

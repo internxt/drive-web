@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   canItemDrop,
   getFolderPath,
@@ -87,10 +87,7 @@ const mockDispatch = vi.fn() as unknown as AppDispatch;
 
 beforeEach(() => {
   vi.clearAllMocks();
-});
-
-afterEach(() => {
-  vi.clearAllMocks();
+  vi.resetModules();
 });
 
 describe('getFolderPath', () => {
