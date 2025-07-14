@@ -107,6 +107,7 @@ vi.mock('app/crypto/services/utils', () => ({
 describe('useSignUp', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('When the custom hook is called, then returns the correct functions', () => {
