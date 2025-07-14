@@ -113,6 +113,9 @@ const Sidenav = ({
   const dispatch = useAppDispatch();
   const isB2BWorkspace = !!useSelector(workspacesSelectors.getSelectedWorkspace);
   const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
+  const isLoadingBusinessLimitAndUsage = useAppSelector(
+    (state: RootState) => state.plan.isLoadingBusinessLimitAndUsage,
+  );
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceUuid = selectedWorkspace?.workspaceUser.workspaceId;
@@ -208,7 +211,7 @@ const Sidenav = ({
             limit={planLimit}
             usage={planUsage}
             isUpgradeAvailable={isUpgradeAvailable}
-            isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
+            isLoading={isLoadingPlanUsage || isLoadingPlanLimit || isLoadingBusinessLimitAndUsage}
           />
         </div>
       </div>
