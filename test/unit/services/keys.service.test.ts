@@ -23,6 +23,7 @@ describe('Generate keys', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should generate new keys', async () => {
