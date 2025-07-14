@@ -58,7 +58,8 @@ export const useAvatar = ({
     const handleAvatarData = async () => {
       try {
         if (avatarSrcURL) {
-          return handleDownload(avatarSrcURL);
+          await handleDownload(avatarSrcURL);
+          return;
         }
 
         await deleteDatabaseAvatar();
