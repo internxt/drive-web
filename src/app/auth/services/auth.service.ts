@@ -40,13 +40,13 @@ import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'app/utils/backupKeyUtils';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import envService from '../../core/services/env.service';
 import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
 import vpnAuthService from './vpnAuth.service';
-import { BackupData } from 'app/utils/backupKeyUtils';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -237,6 +237,52 @@ export const getPasswordDetails = async (
   return { salt, hashedCurrentPassword, encryptedCurrentPassword };
 };
 
+/**
+ * Recover account using backup key content
+ * This function detects the backup key format and uses appropriate recovery method
+ *
+ * @param token - The recovery token
+ * @param password - The new password
+ * @param backupKeyContent - The content of the backup key file
+ * @returns Promise<void>
+ */
+export const recoverAccountWithBackupKey = async (
+  token: string,
+  password: string,
+  backupKeyContent: string,
+): Promise<void> => {
+  try {
+    const { type, mnemonic, backupData } = detectBackupKeyFormat(backupKeyContent);
+
+    if (type === 'old') {
+      return recoveryOldBackuptWithToken(token, password, mnemonic);
+    } else {
+      return updateCredentialsWithToken(token, password, mnemonic, backupData);
+    }
+  } catch (error) {
+    console.error('Error recovering account with backup key:', error);
+    throw error;
+  }
+};
+
+/**
+ * Recovery method for old backup keys format (mnemonic only)
+ */
+export const recoveryOldBackuptWithToken = async (token: string, password: string, mnemonic: string): Promise<void> => {
+  try {
+    const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+    const recoverPayload = await prepareOldBackupRecoverPayloadForBackend({ mnemonic, password, token });
+
+    return authClient.legacyRecoverAccount(recoverPayload);
+  } catch (error) {
+    console.error('Error updating credentials with token:', error);
+    throw error;
+  }
+};
+
+/**
+ * Updates credentials with token (used for new backup format)
+ */
 export const updateCredentialsWithToken = async (
   token: string | undefined,
   newPassword: string,
@@ -605,6 +651,7 @@ const authService = {
   requestUnblockAccount,
   unblockAccount,
   authenticateUser,
+  recoverAccountWithBackupKey,
 };
 
 export default authService;
