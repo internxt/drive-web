@@ -45,40 +45,16 @@ import { useAvatar } from 'hooks/useAvatar';
 import { deleteDatabaseProfileAvatar, getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 import userService from 'app/auth/services/user.service';
 import { saveAvatarToDatabase } from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
-
-type AccessMode = 'public' | 'restricted';
-type UserRole = 'owner' | 'editor' | 'reader';
-type Views = 'general' | 'invite' | 'requests';
-type RequestStatus = 'pending' | 'accepted' | 'denied';
-
-const REQUEST_STATUS = {
-  PENDING: 'pending' as RequestStatus,
-  ACCEPTED: 'accepted' as RequestStatus,
-  DENIED: 'denied' as RequestStatus,
-};
-
-export interface InvitedUserProps {
-  avatar: string | null;
-  name: string;
-  lastname: string;
-  email: string;
-  roleName: UserRole;
-  uuid: string;
-  sharingId: string;
-}
-
-interface RequestProps {
-  avatar: string;
-  name: string;
-  lastname: string;
-  email: string;
-  message?: string;
-  status: RequestStatus;
-}
-
-interface ViewProps {
-  view: Views;
-}
+import {
+  AccessMode,
+  InvitedUserProps,
+  REQUEST_STATUS,
+  RequestProps,
+  RequestStatus,
+  UserRole,
+  ViewProps,
+  Views,
+} from './types';
 
 const isRequestPending = (status: RequestStatus): boolean =>
   status !== REQUEST_STATUS.DENIED && status !== REQUEST_STATUS.ACCEPTED;

@@ -1,8 +1,8 @@
 import { CaretDown } from '@phosphor-icons/react';
-import { InvitedUserProps } from '../ShareDialog';
 import { Avatar } from '@internxt/ui';
 import { MouseEvent } from 'react';
 import { UserOptions } from './UserOptions';
+import { InvitedUserProps } from '../types';
 
 export const User = ({
   user,

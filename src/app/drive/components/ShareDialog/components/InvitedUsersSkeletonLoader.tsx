@@ -1,10 +1,10 @@
 export const InvitedUsersSkeletonLoader = () => {
   const skinSkeleton = [
-    <div className="flex flex-row items-center space-x-4">
+    <div key={'skin-skeleton-1'} className="flex flex-row items-center space-x-4">
       <div className="h-9 w-9 rounded-md bg-gray-5" />
     </div>,
-    <div className="h-4 w-72 rounded bg-gray-5" />,
-    <div className="ml-3 h-4 w-24 rounded bg-gray-5" />,
+    <div key={'skin-skeleton-2'} className="h-4 w-72 rounded bg-gray-5" />,
+    <div key={'skin-skeleton-3'} className="ml-3 h-4 w-24 rounded bg-gray-5" />,
   ];
 
   const columnsWidth = [
@@ -20,7 +20,10 @@ export const InvitedUsersSkeletonLoader = () => {
   ].map((column) => column.width);
 
   return (
-    <div className="group relative flex h-14 w-full shrink-0 animate-pulse flex-row items-center pl-2 pr-2">
+    <div
+      data-testid="invited-users-skeleton-loader"
+      className="group relative flex h-14 w-full shrink-0 animate-pulse flex-row items-center pl-2 pr-2"
+    >
       {new Array(5).fill(0).map((col, i) => (
         <div
           key={`${col}-${i}`}
