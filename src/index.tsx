@@ -23,6 +23,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from 'app/theme/ThemeProvider';
 import { LiveChatLoaderProvider } from 'react-live-chat-loader';
 import { DialogManagerProvider } from 'app/contexts/dialog-manager/ActionDialogManager.context';
+import envService from 'app/core/services/env.service';
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));
@@ -42,7 +43,7 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <HelmetProvider>
-      <LiveChatLoaderProvider provider="intercom" providerKey={process.env.REACT_APP_INTERCOM_PROVIDER_KEY as string}>
+      <LiveChatLoaderProvider provider="intercom" providerKey={envService.getVariable('intercomProviderKey')}>
         <Provider store={store}>
           <DialogManagerProvider>
             <ThemeProvider>

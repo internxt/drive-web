@@ -1,4 +1,4 @@
-import { beforeEach, afterAll, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
+import { beforeEach, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
 import { screen, fireEvent, render } from '@testing-library/react';
 import ShareGuestSingUpView from './ShareGuestSingUpView';
 import { userActions } from 'app/store/slices/user';
@@ -8,13 +8,14 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
 import { Buffer } from 'buffer';
 import { generateMnemonic } from 'bip39';
+import envService from 'app/core/services/env.service';
 
-const originalEnv = process.env.REACT_APP_CRYPTO_SECRET;
-const originalSalt = process.env.REACT_APP_MAGIC_SALT;
-const originalIV = process.env.REACT_APP_MAGIC_IV;
-const originalURL = process.env.REACT_APP_API_URL;
-const originalHostName = process.env.REACT_APP_HOSTNAME;
-
+const mockSecret = '123456789QWERTY';
+const mockMagicIv = '12345678912345678912345678912345';
+const mockMagicSalt =
+  '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+const mockApi = 'https://mock';
+const mockHostname = 'hostname';
 const mockPassword = 'mock-password';
 const mockEmal = 'mock@email.com';
 const mockToken = 'mock-token';
@@ -22,12 +23,6 @@ let callCount = 0;
 
 describe('onSubmit', () => {
   beforeAll(() => {
-    process.env.REACT_APP_CRYPTO_SECRET = '123456789QWERTY';
-    process.env.REACT_APP_MAGIC_IV = '12345678912345678912345678912345';
-    process.env.REACT_APP_MAGIC_SALT =
-      '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-    process.env.REACT_APP_API_URL = 'https://mock';
-    process.env.REACT_APP_HOSTNAME = 'hostname';
     globalThis.Buffer = Buffer;
 
     vi.spyOn(globalThis, 'decodeURIComponent').mockImplementation((value) => {
@@ -125,14 +120,6 @@ describe('onSubmit', () => {
       },
     }));
 
-    vi.mock('app/core/types', () => ({
-      AppView: {
-        Drive: vi.fn(),
-        Signup: vi.fn(),
-      },
-      IFormValues: vi.fn(),
-    }));
-
     vi.mock('app/i18n/provider/TranslationProvider', () => ({
       useTranslationContext: vi.fn().mockReturnValue({
         translate: vi.fn().mockImplementation((value: string) => {
@@ -156,7 +143,7 @@ describe('onSubmit', () => {
         useEffect: vi.fn(),
         useState: vi.fn().mockImplementation((initial) => {
           callCount++;
-          const value = callCount === 1 ? true : false;
+          const value = callCount === 1;
           if (initial === false) initial = value;
           if (
             initial &&
@@ -250,17 +237,18 @@ describe('onSubmit', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
+      if (key === 'magicIv') return mockMagicIv;
+      if (key === 'magicSalt') return mockMagicSalt;
+      if (key === 'api') return mockApi;
+      if (key === 'secret') return mockSecret;
+      if (key === 'hostname') return mockHostname;
+      else return 'no mock implementation';
+    });
   });
 
-  afterAll(() => {
-    process.env.REACT_APP_CRYPTO_SECRET = originalEnv;
-    process.env.REACT_APP_MAGIC_SALT = originalSalt;
-    process.env.REACT_APP_MAGIC_IV = originalIV;
-    process.env.REACT_APP_API_URL = originalURL;
-    process.env.REACT_APP_HOSTNAME = originalHostName;
-  });
-
-  it('when called with new valid data, then user with decypted keys is saved in local storage', async () => {
+  it('when called with new valid data, then user with decrypted keys is saved in local storage', async () => {
     const mockMnemonic = generateMnemonic(256);
     const keys = await keysService.getKeys(mockPassword);
     const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
@@ -371,7 +359,7 @@ describe('onSubmit', () => {
     expect(spy).toBeCalledWith(mockClearUser);
   });
 
-  it('when called with old valid data, then user with decypted keys is saved in local storage', async () => {
+  it('when called with old valid data, then user with decrypted keys is saved in local storage', async () => {
     const mockMnemonic = generateMnemonic(256);
     const keys = await keysService.getKeys(mockPassword);
     const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);

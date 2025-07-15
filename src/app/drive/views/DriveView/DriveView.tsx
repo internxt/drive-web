@@ -18,9 +18,11 @@ import workspacesSelectors from '../../../store/slices/workspaces/workspaces.sel
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
 import { workspacesActions, workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import { STORAGE_KEYS } from 'app/core/services/storage-keys';
 import workspacesService from 'app/core/services/workspace.service';
 import { useHistory } from 'react-router-dom';
+import envService from 'app/core/services/env.service';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -154,7 +156,7 @@ const DriveView = (props: DriveViewProps) => {
     <>
       <Helmet>
         <title>{title}</title>
-        <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}`} />
+        <link rel="canonical" href={`${envService.getVariable('hostname')}`} />
       </Helmet>
       <DriveExplorer title={<BreadcrumbsDriveView namePath={namePath} />} isLoading={isLoading} items={items} />
     </>

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
+import { UsageResponseV2 } from '@internxt/sdk/dist/drive/storage/types';
 import { GetMemberUsageResponse } from '@internxt/sdk/dist/workspaces';
 import workspacesService from 'app/core/services/workspace.service';
 import limitService from 'app/drive/services/limit.service';
@@ -15,23 +15,25 @@ export interface PlanState {
   isLoadingPlans: boolean;
   isLoadingPlanLimit: boolean;
   isLoadingPlanUsage: boolean;
+  isLoadingBusinessLimitAndUsage: boolean;
   individualPlan: StoragePlan | null;
   businessPlan: StoragePlan | null;
   teamPlan: StoragePlan | null;
   planLimit: number;
   planUsage: number;
-  usageDetails: UsageResponse | null;
+  usageDetails: UsageResponseV2 | null;
   individualSubscription: UserSubscription | null;
   businessSubscription: UserSubscription | null;
   businessPlanLimit: number;
   businessPlanUsage: number;
-  businessPlanUsageDetails: UsageResponse | null;
+  businessPlanUsageDetails: UsageResponseV2 | null;
 }
 
 const initialState: PlanState = {
   isLoadingPlans: false,
   isLoadingPlanLimit: false,
   isLoadingPlanUsage: false,
+  isLoadingBusinessLimitAndUsage: false,
   individualPlan: null,
   businessPlan: null,
   teamPlan: null,
@@ -77,7 +79,7 @@ export const fetchLimitThunk = createAsyncThunk<number, void, { state: RootState
   },
 );
 
-export const fetchUsageThunk = createAsyncThunk<UsageResponse | null, void, { state: RootState }>(
+export const fetchUsageThunk = createAsyncThunk<UsageResponseV2 | null, void, { state: RootState }>(
   'plan/fetchUsage',
   async (payload: void, { getState }) => {
     const isAuthenticated = getState().user.isAuthenticated;
@@ -192,7 +194,9 @@ export const planSlice = createSlice({
     });
 
     builder
-      .addCase(fetchBusinessLimitUsageThunk.pending, () => undefined)
+      .addCase(fetchBusinessLimitUsageThunk.pending, (state) => {
+        state.isLoadingBusinessLimitAndUsage = true;
+      })
       .addCase(fetchBusinessLimitUsageThunk.fulfilled, (state, action) => {
         const spaceLimit = Number(action.payload?.spaceLimit) || 0;
         const driveUsage = Number(action.payload?.driveUsage) || 0;
@@ -201,11 +205,15 @@ export const planSlice = createSlice({
         state.businessPlanLimit = spaceLimit;
         state.businessPlanUsage = driveUsage + backupsUsage;
         state.businessPlanUsageDetails = {
-          driveUsage,
-          backupsUsage,
-        } as unknown as UsageResponse;
+          drive: driveUsage,
+          backups: backupsUsage,
+          total: driveUsage + backupsUsage,
+        };
+        state.isLoadingBusinessLimitAndUsage = false;
       })
-      .addCase(fetchBusinessLimitUsageThunk.rejected, () => undefined);
+      .addCase(fetchBusinessLimitUsageThunk.rejected, (state) => {
+        state.isLoadingBusinessLimitAndUsage = false;
+      });
   },
 });
 

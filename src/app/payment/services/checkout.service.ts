@@ -15,13 +15,14 @@ import {
   GetPriceByIdPayload,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
+import envService from 'app/core/services/env.service';
 
-const PAYMENTS_API_URL = process.env.REACT_APP_PAYMENTS_API_URL;
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
 const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: string): Promise<CouponCodeData> => {
+  const PAYMENTS_API_URL = envService.getVariable('payments');
   const response = await fetch(
-    `${process.env.REACT_APP_PAYMENTS_API_URL}/promo-code-by-name?priceId=${priceId}&promotionCode=${promotionCodeName}`,
+    `${PAYMENTS_API_URL}/promo-code-by-name?priceId=${priceId}&promotionCode=${promotionCodeName}`,
   );
 
   if (response.status !== 200) {
@@ -53,7 +54,7 @@ const getCustomerId = async ({
   customerId: string;
   token: string;
 }> => {
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
+  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.getCustomerId({
     customerName,
     country: countryCode,
@@ -70,7 +71,7 @@ const getPriceById = async ({
   postalCode,
   country,
 }: GetPriceByIdPayload): Promise<PriceWithTax> => {
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
+  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.getPriceById({
     priceId,
     userAddress,
@@ -89,7 +90,7 @@ const createSubscription = async ({
   promoCodeId,
   quantity,
 }: CreateSubscriptionPayload): Promise<CreatedSubscriptionData> => {
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
+  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.createSubscription({
     customerId,
     priceId,
@@ -107,7 +108,7 @@ export const createPaymentIntent = async ({
   currency,
   promoCodeId,
 }: CreatePaymentIntentPayload): Promise<CreatedPaymentIntent> => {
-  const checkoutClient = await SdkFactory.getInstance().createCheckoutClient();
+  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.createPaymentIntent({
     customerId,
     priceId,
@@ -118,9 +119,8 @@ export const createPaymentIntent = async ({
 };
 
 const fetchPrices = async (userType: UserType, currency: string): Promise<DisplayPrice[]> => {
-  const response = await fetch(
-    `${process.env.REACT_APP_PAYMENTS_API_URL}/prices?userType=${userType}&currency=${currency}`,
-  );
+  const PAYMENTS_API_URL = envService.getVariable('payments');
+  const response = await fetch(`${PAYMENTS_API_URL}/prices?userType=${userType}&currency=${currency}`);
 
   if (response.status !== 200) {
     const message = await response.text();
@@ -273,6 +273,7 @@ const checkoutSetupIntent = async (customerId: string) => {
     if (!newToken) {
       throw new Error('No authentication token available');
     }
+    const PAYMENTS_API_URL = envService.getVariable('payments');
     const response = await axios.post<{ clientSecret: string }>(
       `${PAYMENTS_API_URL}/setup-intent`,
       {

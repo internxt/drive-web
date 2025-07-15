@@ -9,20 +9,20 @@
     "cta": "Получить скидку"
   },
   "featuresBanner": {
-    "label": "Скидка 85%",
-    "title": "Присоединяйтесь на сторону конфиденциальности",
-    "cta": "Получить план",
+    "label": "Сэкономьте 80 %",
+    "title": "Скидка на все тарифы",
+    "upperTitle": "Летнее предложение",
+    "cta": "Получить предложение",
     "guarantee": "30-дневная гарантия возврата денег",
-    "lastCta": "*Предложение действительно для бесплатных аккаунтов или новых клиентов",
-    "specialOfferLabel": "",
-    "specialOfferGift": "Розыгрыш рюкзака Internxt x Swiss Peak!",
+    "specialOfferGift": "Розыгрыш рюкзака Internxt x Swiss Peak",
+    "lastCta": "*Предложение действительно для бесплатных аккаунтов и новых клиентов",
     "features": [
-      "Internxt Drive, VPN и Антивирус",
+      "Диск, VPN и Антивирус",
+      "Экологичное облачное хранилище",
       "Постквантовое шифрование",
-      "Открытый и проверенный исходный код",
-      "Зашифрованные передачи",
-      "Специальная тема для веб-приложения",
-      "Предложение заканчивается 26 мая"
+      "Сквозное шифрование при передаче",
+      "Без несанкционированного доступа",
+      "Бесплатная летняя тема"
     ]
   },
   "susbcriptionsBanner": {
@@ -59,14 +59,16 @@
     "light": "Светлый",
     "dark": "Темный",
     "system": "Система",
-    "starwars": "Star Wars",
-    "starwars2": "Тема Star Wars",
+    "starWars": "Star Wars",
+    "starWars2": "Тема Star Wars",
     "halloween": "Halloween",
     "christmas": "Christmas",
     "superBowl": "Super Bowl",
     "valentines": "Valentines",
     "stPatricks": "St. Patrick's",
-    "idmanagement": "Identity Management"
+    "summer": "лето",
+    "idManagement": "Identity Management",
+    "environment": "World Environment Day"
   },
   "auth": {
     "email": "Email",

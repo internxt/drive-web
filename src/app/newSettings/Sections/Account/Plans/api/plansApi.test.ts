@@ -7,6 +7,9 @@ import { userLocation } from 'app/utils/userLocation';
 import { loadStripe } from '@stripe/stripe-js';
 import { fetchPlanPrices, getStripe } from './plansApi';
 
+const mockTestPublicKey = 'pk_test_123';
+const mockPublicKey = 'pk_live_456';
+
 vi.mock('@stripe/stripe-js', () => ({
   loadStripe: vi.fn(),
 }));
@@ -17,19 +20,14 @@ vi.mock('../../../../../payment/services/payment.service', () => ({
   },
 }));
 
-vi.mock('../../../../../core/services/env.service', () => ({
-  default: {
-    isProduction: vi.fn(),
-  },
-}));
-
 vi.mock('app/utils/userLocation', () => ({
   userLocation: vi.fn(),
 }));
 
-describe('fetchPlanPrices()', () => {
+describe('Fetching the prices', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('When user location is US, then it fetches prices in USD', async () => {
@@ -64,28 +62,39 @@ describe('fetchPlanPrices()', () => {
   });
 });
 
-describe('getStripe()', () => {
+describe('Getting the stripe SDK', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('When not in production, then loads test stripe key', async () => {
-    (envService.isProduction as Mock).mockReturnValue(false);
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
+      if (key === 'stripePublicKey') return mockPublicKey;
+      if (key === 'stripeTestPublicKey') return mockTestPublicKey;
+      else return 'no implementation';
+    });
+    vi.spyOn(envService, 'isProduction').mockReturnValue(false);
     (loadStripe as Mock).mockResolvedValue('mockStripeInstance');
 
     const result = await getStripe(undefined);
 
-    expect(loadStripe).toHaveBeenCalledWith(process.env.REACT_APP_STRIPE_TEST_PK);
+    expect(loadStripe).toHaveBeenCalledWith(mockTestPublicKey);
     expect(result).toBe('mockStripeInstance');
   });
 
   it('When in production, then loads live stripe key', async () => {
-    (envService.isProduction as Mock).mockReturnValue(true);
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
+      if (key === 'stripePublicKey') return mockPublicKey;
+      if (key === 'stripeTestPublicKey') return mockTestPublicKey;
+      else return 'no implementation';
+    });
+    vi.spyOn(envService, 'isProduction').mockReturnValue(true);
     (loadStripe as Mock).mockResolvedValue('liveStripeInstance');
 
     const result = await getStripe(undefined);
 
-    expect(loadStripe).toHaveBeenCalledWith(process.env.REACT_APP_STRIPE_PK);
+    expect(loadStripe).toHaveBeenCalledWith(mockPublicKey);
     expect(result).toBe('liveStripeInstance');
   });
 

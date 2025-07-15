@@ -32,7 +32,9 @@ const fetchPlanPrices = async (userType: UserType) => {
 const getStripe = async (stripe): Promise<Stripe> => {
   if (!stripe) {
     stripe = (await loadStripe(
-      envService.isProduction() ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK,
+      envService.isProduction()
+        ? envService.getVariable('stripePublicKey')
+        : envService.getVariable('stripeTestPublicKey'),
     )) as Stripe;
   }
 

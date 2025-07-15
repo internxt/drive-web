@@ -2,8 +2,6 @@ import envService from '../../core/services/env.service';
 import errorService from '../../core/services/error.service';
 import shareService from './share.service';
 
-const isDevelopment = !envService.isProduction();
-
 class DomainManager {
   private static instance: DomainManager;
   private domains: string[] = [];
@@ -17,15 +15,16 @@ class DomainManager {
 
   async fetchDomains(): Promise<void> {
     try {
+      const isDevelopment = !envService.isProduction();
       const response = isDevelopment
-        ? { list: [process.env.REACT_APP_SHARE_LINKS_DOMAIN] }
+        ? { list: [envService.getVariable('shareLinksDomain')] }
         : await shareService.getShareDomains();
 
       const domainsList = response.list;
       this.domains = domainsList;
     } catch (error) {
       errorService.reportError(error);
-      this.domains = [process.env.REACT_APP_SHARE_LINKS_DOMAIN];
+      this.domains = [envService.getVariable('shareLinksDomain')];
     }
   }
 

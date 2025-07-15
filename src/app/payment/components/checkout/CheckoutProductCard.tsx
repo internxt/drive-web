@@ -8,8 +8,8 @@ import { useTranslationContext } from '../../../i18n/provider/TranslationProvide
 import TextInput from '../../../share/components/ShareItemDialog/components/TextInput';
 import { Button } from '@internxt/ui';
 import { useThemeContext } from '../../../theme/ThemeProvider';
-import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guarantee-dark.svg';
-import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
+import GuaranteeDarkDays from 'assets/icons/checkout/guarantee-dark.svg?react';
+import GuaranteeWhiteDays from 'assets/icons/checkout/guarantee-white.svg?react';
 import { CouponCodeData, Currency } from '../../types';
 import { SelectSeatsComponent } from './SelectSeatsComponent';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
@@ -75,7 +75,7 @@ export const CheckoutProductCard = ({
 
   const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
 
-  const productLabel = translate(`preferences.account.plans.planFeaturesList.${bytes}.title`) ?? bytes;
+  const productLabel = translate(`preferences.account.plans.${planType}.${bytes}.title`) ?? bytes;
   const featureKeys =
     translateList(`preferences.account.plans.${planType}.${bytes ?? 'freeFeatures'}.features`, {
       returnObjects: true,

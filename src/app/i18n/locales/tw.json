@@ -4,20 +4,20 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "85% 優惠",
-    "title": "加入隱私守護的一方",
-    "cta": "立即取得方案",
+    "label": "省下 80%",
+    "title": "所有方案享有折扣",
+    "upperTitle": "夏季優惠",
+    "cta": "獲取優惠",
     "guarantee": "30 天退款保證",
-    "lastCta": "*本優惠僅適用於免費帳號或新用戶",
-    "specialOfferLabel": "",
-    "specialOfferGift": "抽獎活動：Internxt x Swiss Peak 後背包！",
+    "specialOfferGift": "抽獎贈送 Internxt x Swiss Peak 背包",
+    "lastCta": "*優惠僅適用於免費帳戶或新客戶",
     "features": [
-      "Internxt 雲端硬碟、VPN 和防毒軟體",
+      "Drive、VPN 與防毒軟體",
+      "永續雲端儲存",
       "後量子加密技術",
-      "開源且經過審核的程式碼",
-      "加密傳輸",
-      "網頁版專屬主題",
-      "優惠截止至5月26日。"
+      "端對端加密傳輸",
+      "無未授權存取",
+      "免費夏季主題"
     ]
   },
   "susbcriptionsBanner": {
@@ -80,14 +80,15 @@
     "light": "淺色",
     "dark": "深色",
     "system": "系統",
-    "starwars": "星際大戰",
-    "starwars2": "星際大戰主題",
+    "starWars": "星際大戰",
+    "starWars2": "星際大戰主題",
     "halloween": "Halloween",
     "christmas": "聖誕節",
     "superBowl": "Super Bowl",
     "valentines": "情人節",
-    "stpatricks": "St. Patrick's",
-    "idmanagement": "Identity Management"
+    "summer": "夏天",
+    "stPatricks": "St. Patrick's",
+    "idManagement": "Identity Management"
   },
   "auth": {
     "email": "電子郵件",

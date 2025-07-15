@@ -8,12 +8,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useTrashPagination } from './useTrashPagination';
 
 vi.mock('app/core/services/error.service', () => ({
-  castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
-  reportError: vi.fn(),
-}));
-
-vi.mock('app/core/services/error.service', () => ({
   default: {
+    castError: vi.fn().mockImplementation((e) => ({ message: e.message ?? 'Default error message' })),
     reportError: vi.fn(),
   },
 }));
@@ -32,6 +28,7 @@ describe('useTrashPagination', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should call getMoreTrashItems when isTrash is true on mount', async () => {

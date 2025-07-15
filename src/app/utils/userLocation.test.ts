@@ -23,6 +23,7 @@ describe('User location function', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
     (sdk.getUserLocation as Mock).mockResolvedValue(mockedLocation);
   });
 

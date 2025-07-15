@@ -384,7 +384,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
     privateKyberKeyEncrypted = aes.encrypt(user.keys.kyber.privateKey, newPassword, getAesInitFromEnv());
   }
 
-  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
 
   return usersClient
     .changePassword(<ChangePasswordPayloadNew>{
@@ -440,7 +440,7 @@ export const deactivate2FA = (
 export const getNewToken = async (): Promise<string> => {
   const serviceHeaders = httpService.getHeaders(true, false);
   const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
-  const BASE_API_URL = envService.isProduction() ? process.env.REACT_APP_API_URL : 'https://drive.internxt.com/api';
+  const BASE_API_URL = envService.isProduction() ? envService.getVariable('api') : 'https://drive.internxt.com/api';
 
   const res = await fetch(`${BASE_API_URL}/new-token`, {
     headers: headers,

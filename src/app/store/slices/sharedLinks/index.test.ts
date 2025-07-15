@@ -18,9 +18,6 @@ import shareService from 'app/share/services/share.service';
 
 describe('Encryption and Decryption', () => {
   beforeAll(() => {
-    vi.mock('app/core/types', () => ({
-      AppView: vi.fn(),
-    }));
     vi.mock('app/core/services/navigation.service', () => ({
       default: { push: vi.fn() },
     }));
@@ -38,14 +35,6 @@ describe('Encryption and Decryption', () => {
       },
     }));
 
-    vi.mock('../../../notifications/services/notifications.service', () => ({
-      default: {
-        show: vi.fn(),
-      },
-      ToastType: {
-        Error: 'ERROR',
-      },
-    }));
     vi.mock('app/core/services/error.service', () => ({
       default: {
         castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
@@ -56,6 +45,7 @@ describe('Encryption and Decryption', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('shareItemWithUser encrypts with kyber for an existing user', async () => {

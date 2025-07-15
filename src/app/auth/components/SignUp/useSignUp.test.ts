@@ -11,15 +11,6 @@ vi.mock('@internxt/lib', () => ({
   },
 }));
 
-vi.mock('@internxt/sdk', () => ({
-  Keys: vi.fn(),
-  RegisterDetails: vi.fn(),
-}));
-
-vi.mock('@internxt/sdk/dist/shared/types/userSettings', () => ({
-  UserSettings: vi.fn(),
-}));
-
 vi.mock('bip39', () => ({
   generateMnemonic: vi.fn().mockReturnValue('mock-mnemonic'),
 }));
@@ -116,6 +107,7 @@ vi.mock('app/crypto/services/utils', () => ({
 describe('useSignUp', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('When the custom hook is called, then returns the correct functions', () => {

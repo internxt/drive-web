@@ -7,6 +7,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import httpService from 'app/core/services/http.service';
 import { getKeys } from 'app/crypto/services/keys.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
+import envService from 'app/core/services/env.service';
 
 export type UpdateInfoFunction = (
   email: string,
@@ -117,7 +118,7 @@ export function useSignUp(
     const serviceHeaders = httpService.getHeaders(true, false);
     const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
 
-    const raw = await fetch(`${process.env.REACT_APP_API_URL}/${registerSource}/update`, {
+    const raw = await fetch(`${envService.getVariable('api')}/${registerSource}/update`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(registerUserPayload),

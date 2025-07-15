@@ -2,9 +2,10 @@ import errorService from '../core/services/error.service';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
 import { encryptFilename, generateHMAC } from './crypto';
 import { getSha256 } from '../crypto/services/utils';
+import envService from 'app/core/services/env.service';
 
 // TODO: Make this injectable
-const networkApiUrl = process.env.REACT_APP_STORJ_BRIDGE;
+const networkApiUrl = envService.getVariable('storjBridge');
 
 interface FileInfo {
   bucket: string;

@@ -7,6 +7,7 @@ import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from '.
 
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
 import downloadFileV2 from './download/v2';
+import envService from 'app/core/services/env.service';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string; bucketId: string };
@@ -104,8 +105,8 @@ async function getFileDownloadStream(
 
   for (const downloadUrl of downloadUrls) {
     const useProxy =
-      process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(downloadUrl).hostname.includes('internxt');
-    const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + downloadUrl;
+      envService.getVariable('dontUseProxy') !== 'true' && !new URL(downloadUrl).hostname.includes('internxt');
+    const fetchUrl = (useProxy ? envService.getVariable('proxy') + '/' : '') + downloadUrl;
     const encryptedStream = await fetch(fetchUrl, { signal: abortController?.signal }).then((res) => {
       if (!res.body) {
         throw new Error('No content received');

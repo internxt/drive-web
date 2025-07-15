@@ -4,7 +4,7 @@
 import * as authService from './auth.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as keysService from 'app/crypto/services/keys.service';
-import { vi, describe, it, beforeAll, beforeEach, expect, afterAll } from 'vitest';
+import { vi, describe, it, beforeAll, beforeEach, expect } from 'vitest';
 import { Buffer } from 'buffer';
 import { encryptTextWithKey, encryptText } from 'app/crypto/services/utils';
 import { SdkFactory } from '../../core/factory/sdk';
@@ -14,18 +14,15 @@ import * as pgpService from 'app/crypto/services/pgp.service';
 import { validateMnemonic } from 'bip39';
 import { BackupData } from 'app/utils/backupKeyUtils';
 import { aes } from '@internxt/lib';
+import envService from 'app/core/services/env.service';
 
-const originalEnv = process.env.REACT_APP_CRYPTO_SECRET;
-const originalSalt = process.env.REACT_APP_MAGIC_SALT;
-const originalIV = process.env.REACT_APP_MAGIC_IV;
-const originalURL = process.env.REACT_APP_API_URL;
+const mockSecret = '123456789QWERTY';
+const mockMagicIv = '12345678912345678912345678912345';
+const mockMagicSalt =
+  '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+const mockApi = 'https://mock';
 
 beforeAll(() => {
-  process.env.REACT_APP_CRYPTO_SECRET = '123456789QWERTY';
-  process.env.REACT_APP_MAGIC_IV = '12345678912345678912345678912345';
-  process.env.REACT_APP_MAGIC_SALT =
-    '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-  process.env.REACT_APP_API_URL = 'https://mock';
   globalThis.Buffer = Buffer;
 
   window.gtag = vi.fn();
@@ -37,12 +34,6 @@ beforeAll(() => {
   }));
   vi.mock('app/analytics/impact.service', () => ({
     trackSignUp: vi.fn(),
-  }));
-  vi.mock('app/core/types', () => ({
-    default: {
-      AppError: vi.fn(),
-    },
-    AppView: vi.fn(),
   }));
   vi.mock('app/database/services/database.service', () => ({
     default: {
@@ -59,15 +50,7 @@ beforeAll(() => {
           login: vi.fn(),
         })),
       })),
-      getInstance: vi.fn(() => ({
-        createDesktopAuthClient: vi.fn(() => ({
-          login: vi.fn(),
-        })),
-      })),
     },
-  }));
-  vi.mock('app/payment/types', () => ({
-    AuthMethodTypes: vi.fn(),
   }));
   vi.mock('app/store', () => ({
     AppDispatch: vi.fn(),
@@ -147,13 +130,14 @@ beforeAll(() => {
 
 beforeEach(() => {
   vi.clearAllMocks();
-});
-
-afterAll(() => {
-  process.env.REACT_APP_CRYPTO_SECRET = originalEnv;
-  process.env.REACT_APP_MAGIC_SALT = originalSalt;
-  process.env.REACT_APP_MAGIC_IV = originalIV;
-  process.env.REACT_APP_API_URL = originalURL;
+  vi.resetModules();
+  vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
+    if (key === 'magicIv') return mockMagicIv;
+    if (key === 'magicSalt') return mockMagicSalt;
+    if (key === 'api') return mockApi;
+    if (key === 'secret') return mockSecret;
+    else return 'no mock implementation';
+  });
 });
 
 async function getMockUser(password: string, mnemonic: string) {
@@ -587,7 +571,7 @@ describe('Change password', () => {
         changePassword: changePasswordMock,
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
       }),
-      createNewUsersClient: vi.fn().mockReturnValue({
+      createUsersClient: vi.fn().mockReturnValue({
         changePassword: changePasswordMock,
       }),
     } as any);
@@ -639,7 +623,7 @@ describe('Change password', () => {
         changePassword: changePasswordMock,
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
       }),
-      createNewUsersClient: vi.fn().mockReturnValue({
+      createUsersClient: vi.fn().mockReturnValue({
         changePassword: changePasswordMock,
       }),
     } as any);

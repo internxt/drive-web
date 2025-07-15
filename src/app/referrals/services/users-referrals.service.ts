@@ -1,16 +1,20 @@
 import { UserReferral, ReferralKey } from '@internxt/sdk/dist/drive/referrals/types';
-import { SdkFactory } from '../../core/factory/sdk';
-
 
 const usersReferralsService = {
   fetch(): Promise<UserReferral[]> {
-    const referralsClient = SdkFactory.getInstance().createReferralsClient();
-    return referralsClient.getReferrals();
+    // If referral functionality is re-enabled, a new backend endpoint will be required to fetch the data.
+    /*const referralsClient = SdkFactory.getNewApiInstance().createReferralsClient();
+    return referralsClient.getReferrals();*/
+    return Promise.resolve([]);
   },
   hasClickAction(referralKey: ReferralKey): boolean {
-    return [ReferralKey.SubscribeToNewsletter, ReferralKey.InstallDesktopApp, ReferralKey.InviteFriends, ReferralKey.Invite2Friends, ReferralKey.CompleteSurvey].includes(
-      referralKey,
-    );
+    return [
+      ReferralKey.SubscribeToNewsletter,
+      ReferralKey.InstallDesktopApp,
+      ReferralKey.InviteFriends,
+      ReferralKey.Invite2Friends,
+      ReferralKey.CompleteSurvey,
+    ].includes(referralKey);
   },
 };
 

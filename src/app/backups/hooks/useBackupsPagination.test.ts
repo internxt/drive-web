@@ -14,15 +14,6 @@ import { DriveItemData } from '../../drive/types';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { useBackupsPagination } from './useBackupsPagination';
 
-vi.mock('../../notifications/services/notifications.service', () => ({
-  default: {
-    show: vi.fn(),
-  },
-  ToastType: {
-    Error: 'ERROR',
-  },
-}));
-
 vi.mock('../../drive/services/new-storage.service', () => ({
   default: {
     getFolderContentByUuid: vi.fn(),
@@ -59,6 +50,7 @@ describe('useBackupsPagination', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('Should not fetch more items as there are less than 50 items in total', async () => {
@@ -167,6 +159,7 @@ describe('useBackupsPagination', () => {
   });
 
   it('should show a notification when there is an error fetching items', async () => {
+    const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
     (newStorageService.getFolderContentByUuid as Mock).mockReturnValueOnce([
       Promise.reject(new Error('Error fetching items')),
       { cancel: vi.fn() },
@@ -179,7 +172,7 @@ describe('useBackupsPagination', () => {
     });
 
     await waitFor(() => {
-      expect(notificationsService.show).toHaveBeenCalledWith({
+      expect(notificationsServiceSpy).toHaveBeenCalledWith({
         type: ToastType.Error,
       });
     });
