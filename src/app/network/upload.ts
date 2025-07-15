@@ -100,7 +100,7 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
 
   const minimumMultipartThreshold = 100 * 1024 * 1024;
   const useMultipart = params.filesize > minimumMultipartThreshold;
-  const partSize = 5 * 1024 * 1024;
+  const partSize = 30 * 1024 * 1024;
 
   console.time('multipart-upload');
   const uploadAbortController = new AbortController();
@@ -140,6 +140,7 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
             uploadingCallback: params.progressCallback,
             abortController: uploadAbortController,
             parts: Math.ceil(params.filesize / partSize),
+            uploadChunkSize: partSize,
             continueUploadOptions: params?.continueUploadOptions,
           });
         } else {
