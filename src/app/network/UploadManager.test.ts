@@ -7,21 +7,29 @@ import uploadFile from '../drive/services/file.service/uploadFile';
 import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
 import { DriveFileData } from 'app/drive/types';
 import RetryManager from './RetryManager';
-import { ErrorMessages } from 'app/drive/services/downloadManager.service';
 import { TaskStatus } from 'app/tasks/types';
-
-vi.mock('app/store/slices/storage/storage.thunks', () => ({
-  default: {
-    uploadItemsThunk: vi.fn(),
-    fetchPaginatedFolderContentThunk: vi.fn(),
-    deleteItemsThunk: vi.fn(),
-    uploadSharedItemsThunk: vi.fn(),
-  },
-  storageExtraReducers: vi.fn(),
-}));
+import { ErrorMessages } from 'app/core/constants';
 
 vi.mock('../drive/services/file.service/uploadFile', () => ({
-  default: vi.fn(),
+  default: vi.fn(() => Promise.resolve({} as DriveFileData)),
+}));
+
+vi.mock('app/tasks/services/tasks.service', () => ({
+  default: {
+    create: vi.fn(),
+    updateTask: vi.fn(),
+    findTask: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+  },
+}));
+
+vi.mock('app/core/services/error.service', () => ({
+  default: {
+    castError: vi.fn().mockImplementation((e) => e),
+    reportError: vi.fn(),
+    addBreadcrumb: vi.fn(),
+  },
 }));
 
 vi.mock('app/repositories/DatabaseUploadRepository', () => {
@@ -42,7 +50,7 @@ vi.mock('app/repositories/DatabaseUploadRepository', () => {
   };
 });
 
-vi.mock('i18next', () => ({ t: (_) => 'Translation message' }));
+vi.mock('i18next', () => ({ t: () => 'Translation message' }));
 
 const openMaxSpaceOccupiedDialogMock = vi.fn();
 
@@ -74,6 +82,7 @@ describe('checkUploadFiles', () => {
   beforeEach(() => {
     RetryManager.clearTasks();
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should upload file using an async queue', async () => {

@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { prepareFilesToUpload } from './prepareFilesToUpload';
-import { checkDuplicatedFiles } from './checkDuplicatedFiles';
-import { processDuplicateFiles } from './processDuplicateFiles';
 import { DriveFileData } from 'app/drive/types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { checkDuplicatedFiles } from './checkDuplicatedFiles';
+import { prepareFilesToUpload } from './prepareFilesToUpload';
+import { processDuplicateFiles } from './processDuplicateFiles';
 
 const BATCH_SIZE = 200;
 
@@ -24,6 +24,7 @@ describe('prepareFilesToUpload', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should process files without duplicates correctly', async () => {
@@ -255,5 +256,133 @@ describe('prepareFilesToUpload', () => {
         fileType,
       }),
     );
+  });
+
+  it('should filter hidden files when notUploadHiddenFiles is true', async () => {
+    const mockFilesWithHidden = [
+      new File(['content'], 'file1.txt', { type: 'text/plain' }),
+      new File(['content'], '.hidden-file', { type: 'text/plain' }),
+      new File(['content'], '.DS_Store', { type: 'text/plain' }),
+      new File(['content'], 'normal-file.txt', { type: 'text/plain' }),
+    ];
+
+    const visibleFiles = [mockFilesWithHidden[0], mockFilesWithHidden[3]];
+
+    vi.mocked(checkDuplicatedFiles).mockResolvedValue({
+      duplicatedFilesResponse: [],
+      filesWithoutDuplicates: visibleFiles,
+      filesWithDuplicates: [],
+    });
+
+    vi.mocked(processDuplicateFiles).mockResolvedValue({
+      zeroLengthFiles: 0,
+      newFilesToUpload: visibleFiles.map((file) => ({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        parentFolderId,
+        content: file,
+      })),
+    });
+
+    const result = await prepareFilesToUpload({
+      files: mockFilesWithHidden,
+      parentFolderId,
+      notUploadHiddenFiles: true,
+    });
+
+    expect(result.filesToUpload).toHaveLength(2);
+    expect(result.filesToUpload[0].name).toBe('file1.txt');
+    expect(result.filesToUpload[1].name).toBe('normal-file.txt');
+
+    expect(checkDuplicatedFiles).toHaveBeenCalledWith(visibleFiles, parentFolderId);
+  });
+
+  it('should not filter hidden files when notUploadHiddenFiles is false', async () => {
+    const mockFilesWithHidden = [
+      new File(['content'], 'file1.txt', { type: 'text/plain' }),
+      new File(['content'], '.hidden-file', { type: 'text/plain' }),
+      new File(['content'], '.DS_Store', { type: 'text/plain' }),
+    ];
+
+    vi.mocked(checkDuplicatedFiles).mockResolvedValue({
+      duplicatedFilesResponse: [],
+      filesWithoutDuplicates: mockFilesWithHidden,
+      filesWithDuplicates: [],
+    });
+
+    vi.mocked(processDuplicateFiles).mockResolvedValue({
+      zeroLengthFiles: 0,
+      newFilesToUpload: mockFilesWithHidden.map((file) => ({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        parentFolderId,
+        content: file,
+      })),
+    });
+
+    const result = await prepareFilesToUpload({
+      files: mockFilesWithHidden,
+      parentFolderId,
+      notUploadHiddenFiles: false,
+    });
+
+    expect(result.filesToUpload).toHaveLength(3);
+    expect(result.filesToUpload.map((f) => f.name)).toEqual(['file1.txt', '.hidden-file', '.DS_Store']);
+
+    expect(checkDuplicatedFiles).toHaveBeenCalledWith(mockFilesWithHidden, parentFolderId);
+  });
+
+  it('should not filter hidden files when notUploadHiddenFiles is undefined', async () => {
+    const mockFilesWithHidden = [
+      new File(['content'], 'file1.txt', { type: 'text/plain' }),
+      new File(['content'], '.hidden-file', { type: 'text/plain' }),
+    ];
+
+    vi.mocked(checkDuplicatedFiles).mockResolvedValue({
+      duplicatedFilesResponse: [],
+      filesWithoutDuplicates: mockFilesWithHidden,
+      filesWithDuplicates: [],
+    });
+
+    vi.mocked(processDuplicateFiles).mockResolvedValue({
+      zeroLengthFiles: 0,
+      newFilesToUpload: mockFilesWithHidden.map((file) => ({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        parentFolderId,
+        content: file,
+      })),
+    });
+
+    const result = await prepareFilesToUpload({
+      files: mockFilesWithHidden,
+      parentFolderId,
+    });
+
+    expect(result.filesToUpload).toHaveLength(2);
+    expect(result.filesToUpload.map((f) => f.name)).toEqual(['file1.txt', '.hidden-file']);
+
+    expect(checkDuplicatedFiles).toHaveBeenCalledWith(mockFilesWithHidden, parentFolderId);
+  });
+
+  it('should handle empty array when all files are hidden and notUploadHiddenFiles is true', async () => {
+    const mockHiddenFiles = [
+      new File(['content'], '.hidden1', { type: 'text/plain' }),
+      new File(['content'], '.hidden2', { type: 'text/plain' }),
+    ];
+
+    const result = await prepareFilesToUpload({
+      files: mockHiddenFiles,
+      parentFolderId,
+      notUploadHiddenFiles: true,
+    });
+
+    expect(result.filesToUpload).toHaveLength(0);
+    expect(result.zeroLengthFilesNumber).toBe(0);
+    expect(checkDuplicatedFiles).not.toHaveBeenCalled();
+    expect(processDuplicateFiles).not.toHaveBeenCalled();
   });
 });

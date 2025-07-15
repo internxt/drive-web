@@ -15,6 +15,7 @@ describe('checkFolderDuplicated', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should return empty results when there are no folders', async () => {

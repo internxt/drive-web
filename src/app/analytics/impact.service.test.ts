@@ -8,7 +8,16 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { bytesToString } from 'app/drive/services/size.service';
 import errorService from 'app/core/services/error.service';
 import dayjs from 'dayjs';
+import envService from 'app/core/services/env.service';
 
+vi.mock('app/core/services/local-storage.service', () => ({
+  default: {
+    get: vi.fn(),
+    clear: vi.fn(),
+    getUser: vi.fn(),
+    set: vi.fn(),
+  },
+}));
 vi.mock('uuid', () => ({
   v4: vi.fn(() => mockedUserUuid),
 }));
@@ -21,9 +30,17 @@ vi.mock('./utils', () => ({
   }),
 }));
 
+vi.mock('app/core/services/error.service', () => ({
+  default: {
+    castError: vi.fn().mockImplementation((e) => e),
+    reportError: vi.fn(),
+  },
+}));
+
 const subId = 'sub_123';
 const paymentIntentId = 'py_123';
 const mockedUserUuid = '00000000-0000-0000-0000-0000000000';
+const mockImpactApiUrl = 'mock-impact-api-url';
 
 const promoCode = {
   amountOff: undefined,
@@ -56,12 +73,30 @@ const planName = bytesToString(product.price.bytes) + product.price.interval;
 
 beforeEach(() => {
   globalThis.window.gtag = vi.fn();
+  vi.clearAllMocks();
+  vi.resetModules();
+  vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
+    if (key === 'impactApiUrl') return mockImpactApiUrl;
+    else return 'no mock implementation';
+  });
+  vi.spyOn(localStorageService, 'getUser').mockReturnValue({
+    uuid: mockedUserUuid,
+  } as unknown as UserSettings);
+  vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
+    if (key === 'paymentIntentId') return paymentIntentId;
+    if (key === 'subscriptionId') return subId;
+    if (key === 'productName') return planName;
+    if (key === 'priceId') return product.price.id;
+    if (key === 'currency') return product.price.currency;
+    if (key === 'amountPaid') return expectedAmount;
+    else return 'mock underfined';
+  });
 });
 
 describe('Testing Impact Service', () => {
   describe('Store necessary data to track it later', () => {
     it('When wants to store the data, then the price to track is the correct one', () => {
-      const setToLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
+      const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage(subId, paymentIntentId, product as PriceWithTax, 1, promoCode);
 

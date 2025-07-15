@@ -28,6 +28,7 @@ vi.mock('app/core/services/error.service', () => ({
 describe('useAccessLogs', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('fetches logs on mount', async () => {

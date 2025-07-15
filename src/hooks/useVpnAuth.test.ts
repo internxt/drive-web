@@ -15,6 +15,7 @@ vi.mock('app/auth/services/vpnAuth.service', () => ({
 describe('VPN authentication management', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   describe('VPN auth is enabled', () => {

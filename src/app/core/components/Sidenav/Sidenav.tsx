@@ -15,7 +15,7 @@ import { Loader } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
-import { useAppSelector } from 'app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { t } from 'i18next';
 import localStorageService from '../../../core/services/local-storage.service';
@@ -24,6 +24,8 @@ import SidenavItem from './SidenavItem/SidenavItem';
 import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
 import { STORAGE_KEYS } from '../../../core/services/storage-keys';
 import { HUNDRED_TB } from '../../../core/constants';
+import { useEffect } from 'react';
+import { sharedThunks } from 'app/store/slices/sharedLinks';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -108,11 +110,19 @@ const Sidenav = ({
   isLoadingPlanUsage,
 }: SidenavProps) => {
   const { translate } = useTranslationContext();
+  const dispatch = useAppDispatch();
   const isB2BWorkspace = !!useSelector(workspacesSelectors.getSelectedWorkspace);
   const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
+  const isLoadingBusinessLimitAndUsage = useAppSelector(
+    (state: RootState) => state.plan.isLoadingBusinessLimitAndUsage,
+  );
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceUuid = selectedWorkspace?.workspaceUser.workspaceId;
+
+  useEffect(() => {
+    dispatch(sharedThunks.getPendingInvitations());
+  }, []);
 
   const itemsNavigation: SideNavItemsProps[] = [
     {
@@ -201,7 +211,7 @@ const Sidenav = ({
             limit={planLimit}
             usage={planUsage}
             isUpgradeAvailable={isUpgradeAvailable}
-            isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
+            isLoading={isLoadingPlanUsage || isLoadingPlanLimit || isLoadingBusinessLimitAndUsage}
           />
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { describe, expect, it, Mock, vi } from 'vitest';
+import { describe, expect, it, Mock, vi, beforeEach } from 'vitest';
 import { deleteFile } from '.';
 import { SdkFactory } from '../../../core/factory/sdk';
 import { DriveFileData } from '../../../drive/types';
@@ -11,6 +11,14 @@ vi.mock('../../../core/factory/sdk', () => ({
 }));
 
 describe('fileService', () => {
+  vi.mock('./uploadFile', () => ({
+    default: vi.fn(),
+  }));
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
   describe('deleteFileByUuid', () => {
     const mockFile: DriveFileData = {
       id: 0,
