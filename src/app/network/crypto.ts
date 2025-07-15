@@ -103,7 +103,6 @@ export function encryptReadablePull(readable: ReadableStream<Uint8Array>, cipher
 
   return new ReadableStream({
     async pull(controller) {
-      console.log('2ND_STEP: PULLING');
       const status = await reader.read();
 
       if (!status.done) {

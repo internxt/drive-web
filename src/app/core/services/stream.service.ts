@@ -81,13 +81,6 @@ export function joinReadableBinaryStreams(streams: BinaryStream[]): ReadableStre
   return stream;
 }
 
-function mergeBuffers(buffer1: Uint8Array, buffer2: Uint8Array): Uint8Array {
-  const mergedBuffer = new Uint8Array(buffer1.length + buffer2.length);
-  mergedBuffer.set(buffer1);
-  mergedBuffer.set(buffer2, buffer1.length);
-  return mergedBuffer;
-}
-
 /**
  * Given a stream of a file, it will read it and enqueue its parts in chunkSizes
  * @param readable Readable stream
@@ -110,23 +103,19 @@ export function streamFileIntoChunks(
         return controller.close();
       }
 
-      const status = await reader.read();
-
-      if (status.done) return handleDone();
-
-      const chunk = status.value;
-      buffer = mergeBuffers(buffer, chunk);
-
       while (buffer.byteLength < chunkSize) {
         const status = await reader.read();
 
         if (status.done) return handleDone();
 
-        buffer = mergeBuffers(buffer, status.value);
+        const newBuffer = new Uint8Array(buffer.byteLength + status.value.byteLength);
+        newBuffer.set(buffer);
+        newBuffer.set(status.value, buffer.byteLength);
+        buffer = newBuffer;
       }
 
       controller.enqueue(buffer.slice(0, chunkSize));
-      buffer = new Uint8Array(buffer.slice(chunkSize));
+      buffer = buffer.slice(chunkSize);
     },
   });
 }
