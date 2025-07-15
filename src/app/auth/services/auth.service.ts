@@ -284,7 +284,7 @@ export const updateCredentialsWithToken = async (
         }
       : undefined;
 
-  return authClient.changePasswordWithLink(
+  return authClient.changePasswordWithLinkV2(
     token,
     encryptedHashedNewPassword,
     encryptedHashedNewPasswordSalt,

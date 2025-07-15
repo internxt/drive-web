@@ -671,7 +671,7 @@ describe('updateCredentialsWithToken', () => {
     const mockChangePasswordWithLink = vi.fn().mockResolvedValue({ success: true });
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: vi.fn().mockReturnValue({
-        changePasswordWithLink: mockChangePasswordWithLink,
+        changePasswordWithLinkV2: mockChangePasswordWithLink,
       }),
     } as any);
 
@@ -708,7 +708,7 @@ describe('updateCredentialsWithToken', () => {
     const mockChangePasswordWithLink = vi.fn().mockResolvedValue({ success: true });
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: vi.fn().mockReturnValue({
-        changePasswordWithLink: mockChangePasswordWithLink,
+        changePasswordWithLinkV2: mockChangePasswordWithLink,
       }),
     } as any);
 
@@ -748,7 +748,7 @@ describe('updateCredentialsWithToken', () => {
     const mockChangePasswordWithLink = vi.fn().mockResolvedValue({ success: true });
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: vi.fn().mockReturnValue({
-        changePasswordWithLink: mockChangePasswordWithLink,
+        changePasswordWithLinkV2: mockChangePasswordWithLink,
       }),
     } as any);
 
@@ -791,7 +791,7 @@ describe('updateCredentialsWithToken', () => {
     const mockChangePasswordWithLink = vi.fn().mockRejectedValue(mockError);
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: vi.fn().mockReturnValue({
-        changePasswordWithLink: mockChangePasswordWithLink,
+        changePasswordWithLinkV2: mockChangePasswordWithLink,
       }),
     } as any);
 
