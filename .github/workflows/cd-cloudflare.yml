@@ -1,7 +1,7 @@
 name: Drive Web Cloudflare CD
 on:
   push:
-    branches: [master]
+    branches: [feature/IN-57-migrate-drive-web-to-cloudflare]
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -41,8 +41,6 @@ jobs:
       - run: echo REACT_APP_NODE_ENV=production >> ./.env
       - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
       - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
-      # You cannot read packages from other private repos with GITHUB_TOKEN
-      # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
       - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
       - run: echo "always-auth=true" >> .npmrc
 
@@ -96,12 +94,15 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: drive-web
           directory: build
-          # Optional: Enable this if you want to have GitHub Deployments triggered
-          # gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          # Optional: Change the working directory
-          # workingDirectory: my-site
-          # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
+
+      - name: Show deployment info
+        run: |
+          echo "🚀 Deployment completed!"
+          echo "📱 Preview URL: ${{ steps.cloudflare.outputs.url }}"
+          echo "🌐 Drive Domain: https://beta.drive.internxt.com"
+          echo "📤 Share Domain: https://beta.share.internxt.com"
 
       - name: Find existing comment
         if: github.event_name == 'pull_request'
@@ -122,6 +123,8 @@ jobs:
             🚀 **Preview Deploy Ready!**
 
             📱 **Preview URL:** ${{ steps.cloudflare.outputs.url }}
+            🌐 **Production Drive:** https://beta.drive.internxt.com
+            📤 **Production Share:** https://beta.share.internxt.com
 
             Built from commit: `${{ github.sha }}`
 
