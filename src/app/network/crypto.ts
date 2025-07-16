@@ -99,22 +99,35 @@ export function encryptStreamInParts(
   const readable = plainFile.stream();
 
   const reader = readable.getReader();
-  const buffer = new Uint8Array(uploadChunkSize * 2);
+  const extra = 64 * 1024;
+  const preAllocated = uploadChunkSize + extra;
+  let buffer = new Uint8Array(preAllocated);
   let bufferLength = 0;
 
   return new ReadableStream<Uint8Array>({
     async pull(controller) {
       while (bufferLength < uploadChunkSize) {
         const status = await reader.read();
-        if (!status.done) {
-          const encryptedChunk = cipher.update(status.value);
-          buffer.set(encryptedChunk, bufferLength);
-          bufferLength += encryptedChunk.length;
-        } else {
-          const finalChunk = cipher.final();
-          buffer.set(finalChunk, bufferLength);
-          bufferLength += finalChunk.length;
 
+        let encryptedChunk;
+        if (!status.done) {
+          encryptedChunk = cipher.update(status.value);
+        } else {
+          encryptedChunk = cipher.final();
+        }
+
+        if (bufferLength + encryptedChunk.length > buffer.length) {
+          const newBuffer = new Uint8Array(bufferLength + encryptedChunk.length);
+          if (bufferLength > 0) {
+            newBuffer.set(buffer.subarray(0, bufferLength), 0);
+          }
+          buffer = newBuffer;
+        }
+
+        buffer.set(encryptedChunk, bufferLength);
+        bufferLength += encryptedChunk.length;
+
+        if (status.done) {
           if (bufferLength > 0) {
             controller.enqueue(buffer.slice(0, bufferLength));
           }
@@ -122,8 +135,7 @@ export function encryptStreamInParts(
           return;
         }
       }
-      const chunkSize = bufferLength;
-      const uploadChunk = buffer.slice(0, chunkSize);
+      const uploadChunk = buffer.slice(0, bufferLength);
       bufferLength = 0;
       controller.enqueue(uploadChunk);
     },
