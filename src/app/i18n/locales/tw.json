@@ -1814,48 +1814,50 @@
             "title": "基本版",
             "features": [
               "後量子加密",
-              "超快無限制VPN（法國）",
-              "防毒",
+              "無限超高速 VPN（法國）",
+              "防毒軟體",
               "檔案備份",
-              "密碼保護檔案共享",
-              "符合GDPR",
-              "雙因素認證（2FA）",
-              "支援CLI、WebDav和Rclone"
-            ]
+              "密碼保護的檔案分享",
+              "符合 GDPR",
+              "雙重驗證（2FA）",
+              "支援 CLI、WebDav 和 Rclone"
+            ],
+            "comingSoonFeatures": ["挖礦賺錢"]
           },
           "3TB": {
             "title": "進階版",
             "features": [
               "後量子加密",
-              "超快無限制VPN（法國、德國、波蘭）",
-              "防毒",
+              "無限超高速 VPN（法國、德國、波蘭）",
+              "防毒軟體",
               "檔案備份",
-              "密碼保護檔案共享",
-              "邀請、共享和協作",
-              "符合GDPR",
-              "雙因素認證（2FA）",
-              "支援CLI、WebDav和Rclone"
+              "密碼保護的檔案分享",
+              "邀請、分享與協作",
+              "符合 GDPR",
+              "雙重驗證（2FA）",
+              "支援 CLI、WebDav 和 Rclone"
             ],
-            "comingSoonFeatures": ["裝置清理器", "暗網監控"]
+            "comingSoonFeatures": ["裝置清理器", "挖礦賺錢"]
           },
           "5TB": {
             "title": "旗艦版",
             "features": [
               "後量子加密",
-              "超快無限制VPN（法國、德國、波蘭）",
-              "防毒",
+              "無限超高速 VPN（法國、德國、波蘭、加拿大、英國）",
+              "防毒軟體",
               "檔案備份",
-              "密碼保護檔案共享",
-              "邀請、共享和協作",
-              "符合GDPR",
-              "雙因素認證（2FA）",
-              "支援CLI、WebDav和Rclone"
+              "密碼保護的檔案分享",
+              "邀請、分享與協作",
+              "符合 GDPR",
+              "雙重驗證（2FA）",
+              "支援 CLI、WebDav 和 Rclone"
             ],
-            "comingSoonFeatures": ["裝置清理器", "暗網監控", "視訊會議", "郵件"]
+            "comingSoonFeatures": ["裝置清理器", "挖礦賺錢", "Meet", "Mail"]
           },
           "1GB": {
             "title": "免費版",
-            "features": ["免費標準VPN（法國）", "支援CLI、WebDav和Rclone"]
+            "features": ["免費標準VPN（法國）", "支援CLI、WebDav和Rclone"],
+             "comingSoonFeatures": ["挖礦賺錢"]
           }
         },
         "businessPlanFeaturesList": {
@@ -1875,7 +1877,7 @@
               "支援CLI、WebDav和Rclone",
               "管理帳戶帳單和支付"
             ],
-            "comingSoonFeatures": ["裝置清理器", "暗網監控"]
+            "comingSoonFeatures": ["裝置清理器"]
           },
           "2TB": {
             "title": "專業版",
@@ -1891,7 +1893,7 @@
               "支援CLI、WebDav和Rclone",
               "管理帳戶帳單和支付"
             ],
-            "comingSoonFeatures": ["裝置清理器", "暗網監控", "視訊會議", "郵件"]
+            "comingSoonFeatures": ["裝置清理器", "視訊會議", "郵件"]
           }
         },
         "user": "用戶"

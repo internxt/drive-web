@@ -1795,51 +1795,53 @@
           "comingSoon": "Demnächst verfügbar",
           "storage": " Zero-Knowledge verschlüsselter Speicher",
           "1TB": {
-            "title": "Essential",
+            "title": "Essentiell",
             "features": [
-              "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR)",
+              "Postquanten-Verschlüsselung",
+              "Unbegrenztes, ultraschnelles VPN (FR)",
               "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
+              "Dateisicherung",
+              "Passwortgeschütztes Teilen von Dateien",
               "DSGVO-Konformität",
               "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI, WebDav & Rclone Unterstützung"
-            ]
+              "Unterstützung für CLI, WebDav und Rclone"
+            ],
+            "comingSoonFeatures": ["Mining und Verdienen"]
           },
           "3TB": {
             "title": "Premium",
             "features": [
-              "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
+              "Postquanten-Verschlüsselung",
+              "Unbegrenztes, ultraschnelles VPN (FR, DE, PL)",
               "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "Einladen, Teilen & Zusammenarbeiten",
+              "Dateisicherung",
+              "Passwortgeschütztes Teilen von Dateien",
+              "Einladen, Teilen und Zusammenarbeiten",
               "DSGVO-Konformität",
               "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI, WebDav & Rclone Unterstützung"
+              "Unterstützung für CLI, WebDav und Rclone"
             ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor"]
+            "comingSoonFeatures": ["Gerätebereiniger", "Mining und Verdienen"]
           },
           "5TB": {
             "title": "Ultimate",
             "features": [
-              "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
+              "Postquanten-Verschlüsselung",
+              "Unbegrenztes, ultraschnelles VPN (FR, DE, PL, CA, UK)",
               "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "Einladen, Teilen & Zusammenarbeiten",
+              "Dateisicherung",
+              "Passwortgeschütztes Teilen von Dateien",
+              "Einladen, Teilen und Zusammenarbeiten",
               "DSGVO-Konformität",
               "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI, WebDav & Rclone Unterstützung"
+              "Unterstützung für CLI, WebDav und Rclone"
             ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor", "Meet", "Mail"]
+            "comingSoonFeatures": ["Gerätebereiniger", "Mining und Verdienen", "Meet", "Mail"]
           },
           "1GB": {
             "title": "Kostenlos",
-            "features": ["Kostenloses Standard-VPN (FR)", "CLI, WebDav & Rclone Unterstützung"]
+            "features": ["Kostenloses Standard-VPN (FR)", "CLI, WebDav & Rclone Unterstützung"],
+             "comingSoonFeatures": ["Mining und Verdienen"]
           }
         },
         "businessPlanFeaturesList": {
@@ -1859,7 +1861,7 @@
               "CLI, WebDav & Rclone Unterstützung",
               "Kontoverwaltung für Abrechnung & Zahlungen"
             ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor"]
+            "comingSoonFeatures": ["Gerätereiniger"]
           },
           "2TB": {
             "title": "Pro",
@@ -1875,7 +1877,7 @@
               "CLI, WebDav & Rclone Unterstützung",
               "Kontoverwaltung für Abrechnung & Zahlungen"
             ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor", "Meet", "Mail"]
+            "comingSoonFeatures": ["Gerätereiniger", "Meet", "Mail"]
           }
         },
         "user": "Benutzer"

@@ -1843,7 +1843,8 @@
               "Cumplimiento del RGPD",
               "Autenticación de dos factores (2FA)",
               "Soporte para CLI, WebDav y Rclone"
-            ]
+            ],
+            "comingSoonFeatures": ["Mina y gana"]
           },
           "3TB": {
             "title": "Premium",
@@ -1858,7 +1859,7 @@
               "Autenticación de dos factores (2FA)",
               "Soporte para CLI, WebDav y Rclone"
             ],
-            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web"]
+            "comingSoonFeatures": ["Limpiador de dispositivos", "Mina y gana"]
           },
           "5TB": {
             "title": "Ultimate",
@@ -1873,11 +1874,12 @@
               "Autenticación de dos factores (2FA)",
               "Soporte para CLI, WebDav y Rclone"
             ],
-            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web", "Meet", "Mail"]
+            "comingSoonFeatures": ["Limpiador de dispositivos", "Mina y gana", "Meet", "Mail"]
           },
           "1GB": {
             "title": "Gratis",
-            "features": ["VPN estándar gratuita (FR)", "Soporte para CLI, WebDav y Rclone"]
+            "features": ["VPN estándar gratuita (FR)", "Soporte para CLI, WebDav y Rclone"],
+            "comingSoonFeatures": ["Mina y gana"]
           }
         },
         "businessPlanFeaturesList": {
@@ -1897,7 +1899,7 @@
               "Soporte para CLI, WebDav y Rclone",
               "Gestionar facturación y pagos de la cuenta"
             ],
-            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web"]
+            "comingSoonFeatures": ["Limpiador de dispositivos"]
           },
           "2TB": {
             "title": "Pro",
@@ -1913,7 +1915,7 @@
               "Soporte para CLI, WebDav y Rclone",
               "Gestionar facturación y pagos de la cuenta"
             ],
-            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web", "Meet", "Mail"]
+            "comingSoonFeatures": ["Limpiador de dispositivos", "Meet", "Mail"]
           }
         },
         "user": "usuario"
