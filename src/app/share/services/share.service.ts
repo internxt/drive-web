@@ -379,7 +379,7 @@ export const getPublicShareLink = async (
 
     // const publicShareLink = `${selectedDomain}/d/sh/${itemType}/${sharingId}/${plainCode}`;
     // Temporary for testing purposes - REMOVE BEFORE MERGE!
-    const publicShareLink = `https://beta.share.internxt.com/d/sh/${itemType}/${sharingId}/${plainCode}`;
+    const publicShareLink = `https://beta.share.internxt.com/sh/${itemType}/${sharingId}/${plainCode}`;
 
     await copyTextToClipboard(publicShareLink);
 
