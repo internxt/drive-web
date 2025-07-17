@@ -103,7 +103,6 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
   const partSize = 30 * 1024 * 1024;
 
   console.time('multipart-upload');
-
   const uploadAbortController = new AbortController();
   const context = typeof window === 'undefined' ? self : window;
 
@@ -141,6 +140,7 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
             uploadingCallback: params.progressCallback,
             abortController: uploadAbortController,
             parts: Math.ceil(params.filesize / partSize),
+            uploadChunkSize: partSize,
             continueUploadOptions: params?.continueUploadOptions,
           });
         } else {
