@@ -1810,48 +1810,50 @@
             "title": "Essentiel",
             "features": [
               "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR)",
+              "VPN illimitée ultra-rapide (FR)",
               "Antivirus",
               "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
+              "Partage de fichiers protégé par mot de passe",
               "Conformité au RGPD",
               "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav et Rclone"
-            ]
+              "Prise en charge CLI, WebDav et Rclone"
+            ],
+            "comingSoonFeatures": ["Miner et gagner"]
           },
           "3TB": {
             "title": "Premium",
             "features": [
               "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL)",
+              "VPN illimitée ultra-rapide (FR, DE, PL)",
               "Antivirus",
               "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
+              "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
               "Conformité au RGPD",
               "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav et Rclone"
+              "Prise en charge CLI, WebDav et Rclone"
             ],
-            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web"]
+            "comingSoonFeatures": ["Nettoyeur d’appareils", "Miner et gagner"]
           },
           "5TB": {
             "title": "Ultimate",
             "features": [
               "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL, CA, UK)",
+              "VPN illimitée ultra-rapide (FR, DE, PL, CA, UK)",
               "Antivirus",
               "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
+              "Partage de fichiers protégé par mot de passe",
               "Inviter, partager et collaborer",
               "Conformité au RGPD",
               "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav et Rclone"
+              "Prise en charge CLI, WebDav et Rclone"
             ],
-            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web", "Meet", "Mail"]
+            "comingSoonFeatures": ["Nettoyeur d’appareils", "Miner et gagner", "Meet", "Mail"]
           },
           "1GB": {
             "title": "Gratuit",
-            "features": ["VPN standard gratuit (FR)", "Support CLI, WebDav et Rclone"]
+            "features": ["VPN standard gratuit (FR)", "Support CLI, WebDav et Rclone"],
+            "comingSoonFeatures": ["Miner et gagner"]
           }
         },
         "businessPlanFeaturesList": {
@@ -1871,7 +1873,7 @@
               "Support CLI, WebDav et Rclone",
               "Gérer la facturation et les paiements du compte"
             ],
-            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web"]
+            "comingSoonFeatures": ["Nettoyage de l’appareil"]
           },
           "2TB": {
             "title": "Pro",
@@ -1887,7 +1889,7 @@
               "Support CLI, WebDav et Rclone",
               "Gérer la facturation et les paiements du compte"
             ],
-            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web", "Meet", "Mail"]
+            "comingSoonFeatures": ["Nettoyage de l’appareil", "Meet", "Mail"]
           }
         },
         "user": "Utilisateur"
