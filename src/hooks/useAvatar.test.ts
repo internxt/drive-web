@@ -1,14 +1,20 @@
+// useAvatar.test.ts
 import { renderHook, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { useAvatar } from './useAvatar';
+import { isAvatarExpired } from 'app/utils/avatar/avatarUtils';
+
+vi.mock('app/utils/avatar/avatarUtils', () => ({
+  isAvatarExpired: vi.fn(),
+}));
 
 describe('Tests for useAvatar custom hook', () => {
-  // Stable mock functions
   let deleteDatabaseAvatarMock: ReturnType<typeof vi.fn>;
   let downloadAvatarMock: ReturnType<typeof vi.fn>;
   let getDatabaseAvatarMock: ReturnType<typeof vi.fn>;
   let saveAvatarToDatabaseMock: ReturnType<typeof vi.fn>;
   let onErrorMock: ReturnType<typeof vi.fn>;
+  let isAvatarExpiredMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -17,10 +23,12 @@ describe('Tests for useAvatar custom hook', () => {
     getDatabaseAvatarMock = vi.fn();
     saveAvatarToDatabaseMock = vi.fn();
     onErrorMock = vi.fn();
+    isAvatarExpiredMock = isAvatarExpired as ReturnType<typeof vi.fn>;
+    isAvatarExpiredMock.mockReturnValue(false);
   });
 
   it('When the avatar URL is null, then should delete the avatar from the database and reset avatarBlob to null', async () => {
-    deleteDatabaseAvatarMock.mockResolvedValue(null);
+    deleteDatabaseAvatarMock.mockResolvedValue(undefined);
 
     renderHook(() =>
       useAvatar({
@@ -45,7 +53,7 @@ describe('Tests for useAvatar custom hook', () => {
     downloadAvatarMock.mockResolvedValue(testBlob);
     saveAvatarToDatabaseMock.mockResolvedValue(undefined);
 
-    renderHook(() =>
+    const { result } = renderHook(() =>
       useAvatar({
         avatarSrcURL: 'testSrcURL',
         deleteDatabaseAvatar: deleteDatabaseAvatarMock,
@@ -59,12 +67,13 @@ describe('Tests for useAvatar custom hook', () => {
     await waitFor(() => {
       expect(getDatabaseAvatarMock).toHaveBeenCalledTimes(1);
       expect(downloadAvatarMock).toHaveBeenCalledTimes(1);
-      expect(downloadAvatarMock).toHaveBeenCalledWith('testSrcURL', expect.any(Object));
-      expect(saveAvatarToDatabaseMock).toHaveBeenCalledTimes(1);
+      expect(downloadAvatarMock).toHaveBeenCalledWith('testSrcURL', expect.any(AbortSignal));
+      expect(saveAvatarToDatabaseMock).toHaveBeenCalledWith('testSrcURL', testBlob);
+      expect(result.current.avatarBlob).toBe(testBlob);
     });
   });
 
-  it('When the DB avatar url and current URL do not match, then it should download the avatar and save it to the database', async () => {
+  it('When the DB avatar is expired, then it should download the avatar and save it to the database', async () => {
     const testBlob = new Blob(['test']);
     getDatabaseAvatarMock.mockResolvedValue({
       srcURL: 'oldSrcURL',
@@ -73,8 +82,9 @@ describe('Tests for useAvatar custom hook', () => {
     });
     downloadAvatarMock.mockResolvedValue(testBlob);
     saveAvatarToDatabaseMock.mockResolvedValue(undefined);
+    isAvatarExpiredMock.mockReturnValue(true);
 
-    renderHook(() =>
+    const { result } = renderHook(() =>
       useAvatar({
         avatarSrcURL: 'newSrcURL',
         deleteDatabaseAvatar: deleteDatabaseAvatarMock,
@@ -87,19 +97,54 @@ describe('Tests for useAvatar custom hook', () => {
 
     await waitFor(() => {
       expect(getDatabaseAvatarMock).toHaveBeenCalledTimes(1);
+      expect(isAvatarExpiredMock).toHaveBeenCalledWith('oldSrcURL');
       expect(downloadAvatarMock).toHaveBeenCalledTimes(1);
       expect(saveAvatarToDatabaseMock).toHaveBeenCalledTimes(1);
+      expect(result.current.avatarBlob).toBe(testBlob);
     });
   });
 
-  it('When the avatar is still valid, then it should not update the database and return de cached one', async () => {
+  it('When the cached avatar is expired, then it should re-download and update the database', async () => {
+    const expiredBlob = new Blob(['expired']);
     getDatabaseAvatarMock.mockResolvedValue({
-      srcURL: 'currentSrcURL',
+      srcURL: 'expiredUrl',
       avatarBlob: new Blob(),
       uuid: 'testUUID',
     });
+    isAvatarExpiredMock.mockReturnValue(true);
+    downloadAvatarMock.mockResolvedValue(expiredBlob);
+    saveAvatarToDatabaseMock.mockResolvedValue(undefined);
 
-    renderHook(() =>
+    const { result } = renderHook(() =>
+      useAvatar({
+        avatarSrcURL: 'expiredUrl',
+        deleteDatabaseAvatar: deleteDatabaseAvatarMock,
+        downloadAvatar: downloadAvatarMock,
+        getDatabaseAvatar: getDatabaseAvatarMock,
+        saveAvatarToDatabase: saveAvatarToDatabaseMock,
+        onError: onErrorMock,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(getDatabaseAvatarMock).toHaveBeenCalled();
+      expect(isAvatarExpiredMock).toHaveBeenCalledWith('expiredUrl');
+      expect(downloadAvatarMock).toHaveBeenCalledWith('expiredUrl', expect.any(AbortSignal));
+      expect(saveAvatarToDatabaseMock).toHaveBeenCalledWith('expiredUrl', expiredBlob);
+      expect(result.current.avatarBlob).toBe(expiredBlob);
+    });
+  });
+
+  it('When the avatar is still valid, then it should not update the database and return the cached one', async () => {
+    const cachedBlob = new Blob(['cached']);
+    getDatabaseAvatarMock.mockResolvedValue({
+      srcURL: 'currentSrcURL',
+      avatarBlob: cachedBlob,
+      uuid: 'testUUID',
+    });
+    // isAvatarExpiredMock returns false by default
+
+    const { result } = renderHook(() =>
       useAvatar({
         avatarSrcURL: 'currentSrcURL',
         deleteDatabaseAvatar: deleteDatabaseAvatarMock,
@@ -112,9 +157,11 @@ describe('Tests for useAvatar custom hook', () => {
 
     await waitFor(() => {
       expect(getDatabaseAvatarMock).toHaveBeenCalled();
+      expect(isAvatarExpiredMock).toHaveBeenCalledWith('currentSrcURL');
+      expect(downloadAvatarMock).not.toHaveBeenCalled();
+      expect(saveAvatarToDatabaseMock).not.toHaveBeenCalled();
+      expect(result.current.avatarBlob).toBe(cachedBlob);
     });
-    expect(downloadAvatarMock).not.toHaveBeenCalled();
-    expect(saveAvatarToDatabaseMock).not.toHaveBeenCalled();
   });
 
   it('When an unexpected error occurs, then a notification is shown', async () => {
