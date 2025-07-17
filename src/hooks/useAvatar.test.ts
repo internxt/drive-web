@@ -73,37 +73,6 @@ describe('Tests for useAvatar custom hook', () => {
     });
   });
 
-  it('When the DB avatar is expired, then it should download the avatar and save it to the database', async () => {
-    const testBlob = new Blob(['test']);
-    getDatabaseAvatarMock.mockResolvedValue({
-      srcURL: 'oldSrcURL',
-      avatarBlob: new Blob(),
-      uuid: 'testUUID',
-    });
-    downloadAvatarMock.mockResolvedValue(testBlob);
-    saveAvatarToDatabaseMock.mockResolvedValue(undefined);
-    isAvatarExpiredMock.mockReturnValue(true);
-
-    const { result } = renderHook(() =>
-      useAvatar({
-        avatarSrcURL: 'newSrcURL',
-        deleteDatabaseAvatar: deleteDatabaseAvatarMock,
-        downloadAvatar: downloadAvatarMock,
-        getDatabaseAvatar: getDatabaseAvatarMock,
-        saveAvatarToDatabase: saveAvatarToDatabaseMock,
-        onError: onErrorMock,
-      }),
-    );
-
-    await waitFor(() => {
-      expect(getDatabaseAvatarMock).toHaveBeenCalledTimes(1);
-      expect(isAvatarExpiredMock).toHaveBeenCalledWith('oldSrcURL');
-      expect(downloadAvatarMock).toHaveBeenCalledTimes(1);
-      expect(saveAvatarToDatabaseMock).toHaveBeenCalledTimes(1);
-      expect(result.current.avatarBlob).toBe(testBlob);
-    });
-  });
-
   it('When the cached avatar is expired, then it should re-download and update the database', async () => {
     const expiredBlob = new Blob(['expired']);
     getDatabaseAvatarMock.mockResolvedValue({
