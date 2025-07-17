@@ -17,7 +17,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WarningCircle } from '@phosphor-icons/react';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
-import AppError, { AppView, IFormValues } from 'app/core/types';
+import { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button } from '@internxt/ui';
 import workspacesService from '../../../core/services/workspace.service';
@@ -29,6 +29,9 @@ import TextInput from '../TextInput/TextInput';
 import { AuthMethodTypes } from 'app/payment/types';
 import vpnAuthService from 'app/auth/services/vpnAuth.service';
 import envService from 'app/core/services/env.service';
+import { generateCaptchaToken } from 'app/auth/utils';
+
+const CAPTCHA_FLOW_ERROR_CODES = ['WebLoginRequired', 'CaptchaRequired'];
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -133,6 +136,8 @@ export default function LogIn(): JSX.Element {
     try {
       const isTfaEnabled = await is2FANeeded(email);
 
+      const captchaToken = await generateCaptchaToken();
+
       if (!isTfaEnabled || showTwoFactor) {
         const loginType: 'desktop' | 'web' = isUniversalLinkMode ? 'desktop' : 'web';
         const authParams = {
@@ -142,6 +147,7 @@ export default function LogIn(): JSX.Element {
           twoFactorCode,
           dispatch,
           loginType,
+          captchaToken,
         };
 
         const { token, user, mnemonic } = await authenticateUser(authParams);
@@ -174,7 +180,7 @@ export default function LogIn(): JSX.Element {
 
       setLoginError([castedError.message]);
       setShowErrors(true);
-      if ((err as AppError)?.status === 403) {
+      if (castedError?.status === 403 && castedError?.code && !CAPTCHA_FLOW_ERROR_CODES.includes(castedError?.code)) {
         await sendUnblockAccountEmail(email);
         navigationService.history.push({
           pathname: AppView.BlockedAccount,
