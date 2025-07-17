@@ -1,7 +1,7 @@
 name: Drive Web Cloudflare CD
 on:
   push:
-    branches: [feature/IN-57-migrate-drive-web-to-cloudflare]
+    branches: [master]
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -99,9 +99,9 @@ jobs:
       - name: Show deployment info
         run: |
           echo "🚀 Deployment completed!"
-          echo "📱 Preview URL: ${{ steps.cloudflare.outputs.url }}"
-          echo "🌐 Drive Domain: https://beta.drive.internxt.com"
-          echo "📤 Share Domain: https://beta.share.internxt.com"
+          echo "📱 Cloudflare URL: ${{ steps.cloudflare.outputs.url }}"
+          echo "🌐 Drive beta Domain: https://beta.drive.internxt.com"
+          echo "📤 Share beta Domain: https://beta.share.internxt.com"
 
       - name: Find existing comment
         if: github.event_name == 'pull_request'
@@ -122,8 +122,8 @@ jobs:
             🚀 **Preview Deploy Ready!**
 
             📱 **Preview URL:** ${{ steps.cloudflare.outputs.url }}
-            🌐 **Production Drive:** https://beta.drive.internxt.com
-            📤 **Production Share:** https://beta.share.internxt.com
+            🌐 **Production beta Drive:** https://beta.drive.internxt.com
+            📤 **Production beta Share:** https://beta.share.internxt.com
 
             Built from commit: `${{ github.sha }}`
 

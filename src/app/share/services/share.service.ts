@@ -377,9 +377,7 @@ export const getPublicShareLink = async (
     const domains = domainManager.getDomainsList();
     const selectedDomain = getRandomElement(domains);
 
-    // const publicShareLink = `${selectedDomain}/d/sh/${itemType}/${sharingId}/${plainCode}`;
-    // Temporary for testing purposes - REMOVE BEFORE MERGE!
-    const publicShareLink = `https://beta.share.internxt.com/sh/${itemType}/${sharingId}/${plainCode}`;
+    const publicShareLink = `${selectedDomain}/d/sh/${itemType}/${sharingId}/${plainCode}`;
 
     await copyTextToClipboard(publicShareLink);
 
