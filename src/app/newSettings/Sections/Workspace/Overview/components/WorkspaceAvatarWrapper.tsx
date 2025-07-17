@@ -8,6 +8,7 @@ import {
 } from '../../../../../drive/services/database.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import { useAvatar } from 'hooks/useAvatar';
+import { showUpdateAvatarErrorToast } from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
 
 const showUpdateWorkspaceAvatarErrorToast = () =>
   notificationsService.show({
@@ -47,6 +48,7 @@ const WorkspaceAvatarWrapper = memo(
       saveAvatarToDatabase: (url, blob) => saveWorkspaceAvatarToDatabase(workspaceId, url, blob),
       deleteDatabaseAvatar: () => deleteDatabaseWorkspaceAvatar(workspaceId),
       downloadAvatar: userService.downloadAvatar,
+      onError: showUpdateAvatarErrorToast,
     });
 
     return (

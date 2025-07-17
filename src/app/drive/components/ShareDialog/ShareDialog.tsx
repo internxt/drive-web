@@ -44,7 +44,10 @@ import { InvitedUsersSkeletonLoader } from './components/InvitedUsersSkeletonLoa
 import { useAvatar } from 'hooks/useAvatar';
 import { deleteDatabaseProfileAvatar, getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 import userService from 'app/auth/services/user.service';
-import { saveAvatarToDatabase } from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
+import {
+  saveAvatarToDatabase,
+  showUpdateAvatarErrorToast,
+} from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
 import {
   AccessMode,
   InvitedUserProps,
@@ -117,6 +120,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     downloadAvatar: userService.downloadAvatar,
     getDatabaseAvatar: getDatabaseProfileAvatar,
     saveAvatarToDatabase: saveAvatarToDatabase,
+    onError: showUpdateAvatarErrorToast,
   });
 
   const [roles, setRoles] = useState<Role[]>([]);

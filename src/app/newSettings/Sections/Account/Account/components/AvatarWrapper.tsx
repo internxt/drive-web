@@ -4,22 +4,23 @@ import {
   getDatabaseProfileAvatar,
   updateDatabaseProfileAvatar,
 } from '../../../../../drive/services/database.service';
-import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import { Avatar } from '@internxt/ui';
 import userService from 'app/auth/services/user.service';
 import { useAvatar } from 'hooks/useAvatar';
+import { t } from 'i18next';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+
+export const showUpdateAvatarErrorToast = () =>
+  notificationsService.show({
+    text: t('error.updateAvatarError'),
+    type: ToastType.Error,
+  });
 
 export const extractAvatarURLID = (url: string): string | null => {
   const regex = /internxt\.com\/(.*?)[?&]/;
   const match = url.match(regex);
   return match ? match[1] : null;
 };
-
-const showUpdateProfilePhotoErrorToast = () =>
-  notificationsService.show({
-    text: 'Error updating profile photo',
-    type: ToastType.Error,
-  });
 
 export const saveAvatarToDatabase = async (url: string, avatar: Blob): Promise<void> => {
   const uuid = extractAvatarURLID(url);
@@ -48,6 +49,7 @@ const AvatarWrapper = memo(
       downloadAvatar: userService.downloadAvatar,
       getDatabaseAvatar: getDatabaseProfileAvatar,
       saveAvatarToDatabase: saveAvatarToDatabase,
+      onError: showUpdateAvatarErrorToast,
     });
 
     return (

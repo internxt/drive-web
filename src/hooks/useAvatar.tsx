@@ -1,21 +1,14 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 import { AvatarBlobData } from 'app/database/services/database.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { t } from 'i18next';
 
 type UseAvatarManagerProps = {
   avatarSrcURL: string | null;
   getDatabaseAvatar: () => Promise<AvatarBlobData | undefined>;
   saveAvatarToDatabase: (url: string, blob: Blob) => Promise<void>;
   deleteDatabaseAvatar: () => Promise<void>;
-  downloadAvatar: (url: string) => Promise<Blob>;
+  downloadAvatar: (url: string, signal?: AbortSignal) => Promise<Blob>;
+  onError: () => void;
 };
-
-const showUpdateAvatarErrorToast = () =>
-  notificationsService.show({
-    text: t('error.updateAvatarError'),
-    type: ToastType.Error,
-  });
 
 export const useAvatar = ({
   avatarSrcURL,
@@ -23,12 +16,14 @@ export const useAvatar = ({
   saveAvatarToDatabase,
   deleteDatabaseAvatar,
   downloadAvatar,
+  onError,
 }: UseAvatarManagerProps) => {
   const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const downloadAndSaveAvatar = useCallback(
-    async (url: string) => {
-      const avatar = await downloadAvatar(url);
+    async (url: string, signal?: AbortSignal) => {
+      const avatar = await downloadAvatar(url, signal);
       setAvatarBlob(avatar);
       await saveAvatarToDatabase(url, avatar);
     },
@@ -36,18 +31,14 @@ export const useAvatar = ({
   );
 
   const handleDownload = useCallback(
-    async (url: string) => {
+    async (url: string, signal?: AbortSignal) => {
       const databaseAvatarData = await getDatabaseAvatar().catch();
 
-      if (!databaseAvatarData) {
-        return downloadAndSaveAvatar(url);
+      if (!databaseAvatarData || databaseAvatarData.srcURL !== url) {
+        return downloadAndSaveAvatar(url, signal);
       }
 
-      const existsNewAvatar = databaseAvatarData.srcURL !== url;
-
-      if (existsNewAvatar) {
-        return downloadAndSaveAvatar(url);
-      }
+      if (signal?.aborted) return;
 
       setAvatarBlob(databaseAvatarData.avatarBlob);
     },
@@ -55,23 +46,37 @@ export const useAvatar = ({
   );
 
   useEffect(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
     const handleAvatarData = async () => {
       try {
         if (avatarSrcURL) {
-          await handleDownload(avatarSrcURL);
+          await handleDownload(avatarSrcURL, abortController.signal);
           return;
         }
 
-        await deleteDatabaseAvatar();
-        setAvatarBlob(null);
-      } catch {
-        showUpdateAvatarErrorToast();
-        setAvatarBlob(null);
+        if (!abortController.signal.aborted) {
+          await deleteDatabaseAvatar();
+          setAvatarBlob(null);
+        }
+      } catch (error) {
+        if (!abortController.signal.aborted) {
+          onError();
+          setAvatarBlob(null);
+        }
       }
     };
 
     handleAvatarData();
-  }, [avatarSrcURL]);
+    return () => {
+      abortController.abort();
+    };
+  }, [avatarSrcURL, handleDownload, deleteDatabaseAvatar]);
 
   return { avatarBlob };
 };
