@@ -122,8 +122,6 @@ jobs:
             🚀 **Preview Deploy Ready!**
 
             📱 **Preview URL:** ${{ steps.cloudflare.outputs.url }}
-            🌐 **Production beta Drive:** https://beta.drive.internxt.com
-            📤 **Production beta Share:** https://beta.share.internxt.com
 
             Built from commit: `${{ github.sha }}`
 
