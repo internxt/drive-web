@@ -4,13 +4,13 @@
     "logOut": "Cerrar sesión"
   },
 
- "featuresBanner": {
+  "featuresBanner": {
     "label": "Ahorra 80%",
     "title": "Descuento en todos los planes",
-    "upperTitle":"Oferta de verano",
+    "upperTitle": "Oferta de verano",
     "cta": "Obtener oferta",
     "guarantee": "Garantía de devolución de 30 días",
-    "specialOfferGift":"Sorteo de una mochila Internxt x Swiss Peak",
+    "specialOfferGift": "Sorteo de una mochila Internxt x Swiss Peak",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
     "features": [
       "Drive, VPN, y Antivirus ",
@@ -18,7 +18,7 @@
       "Cifrado post-cuántico",
       "Transferencias cifradas de extremo a extremo",
       "Sin accesos no autorizados",
-      "Tema de verano gratis"      
+      "Tema de verano gratis"
     ]
   },
   "susbcriptionsBanner": {
@@ -1030,7 +1030,8 @@
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
     "maxSizeUploadLimitError": "File too large (greater than 40GB)",
     "connectionLostError": "Conexión a internet perdida",
-    "errorLoadingTrashItems": "Error al cargar items de la papelera"
+    "errorLoadingTrashItems": "Error al cargar items de la papelera",
+    "updateAvatarError": "Error al actualizar el avatar"
   },
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",

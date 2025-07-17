@@ -1022,7 +1022,8 @@
     "errorDeletingFromTrash": "При удалении элементов из корзины произошла ошибка.",
     "maxSizeUploadLimitError": "Слишком большой файл (более 40 ГБ)",
     "connectionLostError": "Потеряно подключение к Интернету",
-    "errorLoadingTrashItems": "Ошибка при загрузке элементов корзины"
+    "errorLoadingTrashItems": "Ошибка при загрузке элементов корзины",
+    "updateAvatarError": "Ошибка при обновлении аватара"
   },
   "backups": {
     "backups-from": "Резервные копии с {{deviceName}}",

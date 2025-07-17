@@ -1009,7 +1009,8 @@
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
     "maxSizeUploadLimitError": "Fichier trop volumineux (plus de 40GB)",
     "connectionLostError": "Lost Internet connection",
-    "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille"
+    "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille",
+    "updateAvatarError": "Erreur lors de la mise à jour de l'avatar"
   },
   "backups": {
     "backups-from": "Sauvagardes de {{deviceName}}",
