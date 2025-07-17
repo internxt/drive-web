@@ -100,8 +100,6 @@ jobs:
         run: |
           echo "🚀 Deployment completed!"
           echo "📱 Cloudflare URL: ${{ steps.cloudflare.outputs.url }}"
-          echo "🌐 Drive beta Domain: https://beta.drive.internxt.com"
-          echo "📤 Share beta Domain: https://beta.share.internxt.com"
 
       - name: Find existing comment
         if: github.event_name == 'pull_request'
