@@ -1,7 +1,7 @@
 name: Drive Web Cloudflare CD
 on:
   push:
-    branches: [master, feature/IN-57-migrate-drive-web-to-cloudflare]
+    branches: ['*']
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
