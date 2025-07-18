@@ -1,13 +1,13 @@
 import { ShardMeta } from '@internxt/inxt-js/build/lib/models';
 import { Aes256gcmEncrypter } from '@internxt/inxt-js/build/lib/utils/crypto';
-import { streamFileIntoChunks } from '../core/services/stream.service';
 import { mnemonicToSeed } from 'bip39';
-import { Cipher, CipherCCM, createCipheriv } from 'crypto';
+import { Cipher, CipherGCM, createCipheriv } from 'crypto';
+import { streamFileIntoChunks } from '../core/services/stream.service';
 import {
-  getHmacSha512FromHexKey,
   getHmacSha512,
-  getSha256Hasher,
+  getHmacSha512FromHexKey,
   getRipemd160FromHex,
+  getSha256Hasher,
   getSha512FromHex,
 } from '../crypto/services/utils';
 
@@ -47,7 +47,7 @@ async function getBucketKey(mnemonic: string, bucketId: string): Promise<string>
 }
 
 export function encryptMeta(fileMeta: string, key: Buffer, iv: Buffer): string {
-  const cipher: CipherCCM = Aes256gcmEncrypter(key, iv);
+  const cipher: CipherGCM = Aes256gcmEncrypter(key, iv);
   const cipherTextBuf = Buffer.concat([cipher.update(fileMeta, 'utf8'), cipher.final()]);
   const digest = cipher.getAuthTag();
 

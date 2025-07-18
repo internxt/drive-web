@@ -1,5 +1,5 @@
 export const createUploadWebWorker = (): Worker => {
-  return new Worker(new URL('./upload.worker', import.meta.url), { type: 'module' });
+  return new Worker(new URL('./upload.worker.ts', import.meta.url), { type: 'module' });
 };
 
 export const WORKER_MESSAGE_STATES = {
