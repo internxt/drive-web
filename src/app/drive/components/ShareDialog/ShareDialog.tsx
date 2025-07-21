@@ -82,14 +82,14 @@ const isAdvancedShareItem = (item: DriveItemData | AdvancedSharedItem): item is 
   return item['encryptionKey'];
 };
 
-const getLocalUserData = () => {
+const getLocalUserData = (avatarBlob?: string) => {
   const user = localStorageService.getUser() as UserSettings;
-  const onwerData = {
+  const ownerData = {
     name: user.name,
     lastname: user.lastname,
     email: user.email,
     sharingId: '',
-    avatar: user.avatar,
+    avatar: avatarBlob ?? user.avatar,
     uuid: user.uuid,
     role: {
       id: 'NONE',
@@ -98,7 +98,7 @@ const getLocalUserData = () => {
       updatedAt: '',
     },
   };
-  return onwerData;
+  return ownerData;
 };
 
 // TODO: THIS IS TEMPORARY, REMOVE WHEN NEED TO SHOW OTHER ROLES
@@ -220,8 +220,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       // the server throws an error when there are no users with shared item,
       // that means that the local user is the owner as there is nobody else with this shared file.
       if (isUserOwner) {
-        const onwerData = getLocalUserData();
-        setInvitedUsers([{ ...onwerData, roleName: 'owner' }]);
+        const ownerAvatar = avatarBlob ? URL.createObjectURL(avatarBlob) : undefined;
+        const ownerData = getLocalUserData(ownerAvatar);
+        setInvitedUsers([{ ...ownerData, roleName: 'owner' }]);
       }
     }
   }, [itemToShare, roles]);
@@ -575,7 +576,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     <User
                       user={user}
                       key={user.email}
-                      avatarSrc={avatarBlob ? URL.createObjectURL(avatarBlob) : user.avatar}
                       listPosition={index}
                       translate={translate}
                       openUserOptions={openUserOptions}

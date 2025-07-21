@@ -9,7 +9,6 @@ export const User = ({
   listPosition,
   translate,
   openUserOptions,
-  avatarSrc,
   selectedUserListIndex,
   userOptionsY,
   onRemoveUser,
@@ -20,7 +19,6 @@ export const User = ({
 }: {
   user: InvitedUserProps;
   listPosition: number | null;
-  avatarSrc: string | null;
   translate: (key: string, props?: Record<string, unknown>) => string;
   openUserOptions: (
     event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>,
@@ -40,7 +38,7 @@ export const User = ({
       user.roleName === 'owner' ? 'border-transparent' : 'border-gray-5'
     }`}
   >
-    <Avatar src={avatarSrc} fullName={`${user.name} ${user.lastname}`} diameter={40} />
+    <Avatar src={user.avatar} fullName={`${user.name} ${user.lastname}`} diameter={40} />
 
     <div className="flex flex-1 flex-col overflow-hidden">
       <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap font-medium leading-tight">
