@@ -13,7 +13,7 @@ const ASSETS_DIR = 'static';
 
 const nodeCompatPlugin = {
   name: 'node-compat-plugin',
-  resolveId(id, importer) {
+  resolveId(id) {
     if (id === 'util/types') {
       return 'virtual:util-types';
     }
@@ -93,8 +93,6 @@ export default defineConfig({
     svgr(),
     nodeCompatPlugin,
     nodePolyfills({
-      include: ['stream', 'util', 'buffer', 'crypto', 'events', 'string_decoder', 'assert'],
-      exclude: ['fs', 'http', 'https'],
       globals: {
         process: true,
         Buffer: true,
