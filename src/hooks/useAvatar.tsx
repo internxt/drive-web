@@ -65,7 +65,7 @@ export const useAvatar = ({
           await deleteDatabaseAvatar();
           setAvatarBlob(null);
         }
-      } catch (error) {
+      } catch {
         if (!abortController.signal.aborted) {
           onError();
           setAvatarBlob(null);
