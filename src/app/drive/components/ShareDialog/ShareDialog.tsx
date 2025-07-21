@@ -82,14 +82,14 @@ const isAdvancedShareItem = (item: DriveItemData | AdvancedSharedItem): item is 
   return item['encryptionKey'];
 };
 
-const getLocalUserData = (avatarBlob?: string) => {
+const getLocalUserData = (avatarSrc?: string) => {
   const user = localStorageService.getUser() as UserSettings;
   const ownerData = {
     name: user.name,
     lastname: user.lastname,
     email: user.email,
     sharingId: '',
-    avatar: avatarBlob ?? user.avatar,
+    avatar: avatarSrc ?? user.avatar,
     uuid: user.uuid,
     role: {
       id: 'NONE',
