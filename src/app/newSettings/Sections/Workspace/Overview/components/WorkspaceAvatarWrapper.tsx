@@ -1,6 +1,5 @@
 import { Avatar } from '@internxt/ui';
 import userService from 'app/auth/services/user.service';
-import { memo } from 'react';
 import {
   deleteDatabaseWorkspaceAvatar,
   getDatabaseWorkspaceAvatar,
@@ -28,38 +27,36 @@ export const deleteWorkspaceAvatarFromDatabase = async (workspaceId: string): Pr
   return await deleteDatabaseWorkspaceAvatar(workspaceId);
 };
 
-const WorkspaceAvatarWrapper = memo(
-  ({
-    workspaceId,
+const WorkspaceAvatarWrapper = ({
+  workspaceId,
+  avatarSrcURL,
+  fullName,
+  diameter,
+  style,
+}: {
+  workspaceId: string;
+  avatarSrcURL: string | null;
+  fullName: string;
+  diameter: number;
+  style?: Record<string, string | number>;
+}): JSX.Element => {
+  const { avatarBlob } = useAvatar({
     avatarSrcURL,
-    fullName,
-    diameter,
-    style,
-  }: {
-    workspaceId: string;
-    avatarSrcURL: string | null;
-    fullName: string;
-    diameter: number;
-    style?: Record<string, string | number>;
-  }): JSX.Element => {
-    const { avatarBlob } = useAvatar({
-      avatarSrcURL,
-      getDatabaseAvatar: () => getDatabaseWorkspaceAvatar(workspaceId),
-      saveAvatarToDatabase: (url, blob) => saveWorkspaceAvatarToDatabase(workspaceId, url, blob),
-      deleteDatabaseAvatar: () => deleteDatabaseWorkspaceAvatar(workspaceId),
-      downloadAvatar: userService.downloadAvatar,
-      onError: showUpdateAvatarErrorToast,
-    });
+    getDatabaseAvatar: () => getDatabaseWorkspaceAvatar(workspaceId),
+    saveAvatarToDatabase: (url, blob) => saveWorkspaceAvatarToDatabase(workspaceId, url, blob),
+    deleteDatabaseAvatar: () => deleteDatabaseWorkspaceAvatar(workspaceId),
+    downloadAvatar: userService.downloadAvatar,
+    onError: showUpdateAvatarErrorToast,
+  });
 
-    return (
-      <Avatar
-        diameter={diameter}
-        fullName={fullName}
-        src={avatarBlob ? URL.createObjectURL(avatarBlob) : null}
-        style={style}
-      />
-    );
-  },
-);
+  return (
+    <Avatar
+      diameter={diameter}
+      fullName={fullName}
+      src={avatarBlob ? URL.createObjectURL(avatarBlob) : null}
+      style={style}
+    />
+  );
+};
 
 export default WorkspaceAvatarWrapper;
