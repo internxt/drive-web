@@ -1,19 +1,13 @@
 import { Avatar } from '@internxt/ui';
 import userService from 'app/auth/services/user.service';
+import { memo } from 'react';
 import {
   deleteDatabaseWorkspaceAvatar,
   getDatabaseWorkspaceAvatar,
   updateDatabaseWorkspaceAvatar,
 } from '../../../../../drive/services/database.service';
-import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import { useAvatar } from 'hooks/useAvatar';
 import { showUpdateAvatarErrorToast } from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
-
-const showUpdateWorkspaceAvatarErrorToast = () =>
-  notificationsService.show({
-    text: 'Error updating workspace avatar photo',
-    type: ToastType.Error,
-  });
 
 export const saveWorkspaceAvatarToDatabase = async (workspaceId: string, url: string, avatar: Blob): Promise<void> => {
   return await updateDatabaseWorkspaceAvatar({
@@ -27,36 +21,38 @@ export const deleteWorkspaceAvatarFromDatabase = async (workspaceId: string): Pr
   return await deleteDatabaseWorkspaceAvatar(workspaceId);
 };
 
-const WorkspaceAvatarWrapper = ({
-  workspaceId,
-  avatarSrcURL,
-  fullName,
-  diameter,
-  style,
-}: {
-  workspaceId: string;
-  avatarSrcURL: string | null;
-  fullName: string;
-  diameter: number;
-  style?: Record<string, string | number>;
-}): JSX.Element => {
-  const { avatarBlob } = useAvatar({
+const WorkspaceAvatarWrapper = memo(
+  ({
+    workspaceId,
     avatarSrcURL,
-    getDatabaseAvatar: () => getDatabaseWorkspaceAvatar(workspaceId),
-    saveAvatarToDatabase: (url, blob) => saveWorkspaceAvatarToDatabase(workspaceId, url, blob),
-    deleteDatabaseAvatar: () => deleteDatabaseWorkspaceAvatar(workspaceId),
-    downloadAvatar: userService.downloadAvatar,
-    onError: showUpdateAvatarErrorToast,
-  });
+    fullName,
+    diameter,
+    style,
+  }: {
+    workspaceId: string;
+    avatarSrcURL: string | null;
+    fullName: string;
+    diameter: number;
+    style?: Record<string, string | number>;
+  }): JSX.Element => {
+    const { avatarBlob } = useAvatar({
+      avatarSrcURL,
+      getDatabaseAvatar: () => getDatabaseWorkspaceAvatar(workspaceId),
+      saveAvatarToDatabase: (url, blob) => saveWorkspaceAvatarToDatabase(workspaceId, url, blob),
+      deleteDatabaseAvatar: () => deleteDatabaseWorkspaceAvatar(workspaceId),
+      downloadAvatar: userService.downloadAvatar,
+      onError: showUpdateAvatarErrorToast,
+    });
 
-  return (
-    <Avatar
-      diameter={diameter}
-      fullName={fullName}
-      src={avatarBlob ? URL.createObjectURL(avatarBlob) : null}
-      style={style}
-    />
-  );
-};
+    return (
+      <Avatar
+        diameter={diameter}
+        fullName={fullName}
+        src={avatarBlob ? URL.createObjectURL(avatarBlob) : null}
+        style={style}
+      />
+    );
+  },
+);
 
 export default WorkspaceAvatarWrapper;
