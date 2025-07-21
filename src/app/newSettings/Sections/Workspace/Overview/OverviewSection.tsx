@@ -383,7 +383,7 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
     <div className="flex w-full flex-col items-center justify-center space-y-4">
       <div className="flex flex-col justify-center">
         {isOwner ? (
-          <>
+          <div className="relative flex z-50">
             <Dropdown
               options={isOwner ? dropdownOptions : undefined}
               classMenuItems={'-left-6 mt-1 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5'}
@@ -412,7 +412,7 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
               }
               onSavingAvatarError={errorService.reportError}
             />
-          </>
+          </div>
         ) : (
           <WorkspaceAvatarWrapper
             diameter={128}
