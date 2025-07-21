@@ -1,12 +1,11 @@
-import { Environment } from '@internxt/inxt-js';
-import { ActionState, FileInfo } from '@internxt/inxt-js/build/api';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import envService from 'app/core/services/env.service';
 import { Abortable } from 'app/network/Abortable';
-import { Readable } from 'stream';
+import { mnemonicToSeed } from 'bip39';
+import * as crypto from 'crypto';
 import { createUploadWebWorker } from '../../../../WebWorker';
 import localStorageService from '../../../core/services/local-storage.service';
 import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
-import envService from 'app/core/services/env.service';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 40 * 1024 * 1024 * 1024;
 
@@ -33,8 +32,6 @@ interface EnvironmentConfig {
 }
 
 export class Network {
-  private environment: Environment;
-
   private mnemonic: string;
 
   private creds: {
@@ -61,13 +58,6 @@ export class Network {
     };
 
     this.mnemonic = encryptionKey;
-
-    this.environment = new Environment({
-      bridgePass,
-      bridgeUser,
-      encryptionKey,
-      bridgeUrl: envService.getVariable('storjBridge'),
-    });
   }
 
   /**
@@ -112,100 +102,8 @@ export class Network {
 
     return createWorkerMessageHandlerPromise(worker, params, continueUploadOptions);
   }
-
-  /**
-   * Downloads a file from the Internxt Network
-   * @param bucketId Bucket where file is uploaded
-   * @param fileId Id of the file to be downloaded
-   * @param params Required params for downloading a file
-   * @returns
-   */
-  downloadFile(bucketId: string, fileId: string, params: IDownloadParams): [Promise<Blob>, ActionState] {
-    const [downloadStreamPromise, actionState] = this.getFileDownloadStream(bucketId, fileId, params);
-
-    let errored = false;
-
-    const promise = new Promise<Blob>((resolve, reject) => {
-      downloadStreamPromise
-        .then((downloadStream) => {
-          const chunks: Buffer[] = [];
-          downloadStream
-            .on('data', (chunk: Buffer) => {
-              chunks.push(chunk);
-            })
-            .once('error', (err) => {
-              errored = true;
-              reject(err);
-            })
-            .once('end', () => {
-              if (errored) {
-                return;
-              }
-              const uploadedBytes = chunks.reduce((acumm, chunk) => acumm + chunk.length, 0);
-
-              params.progressCallback(1, uploadedBytes, uploadedBytes);
-              resolve(new Blob(chunks, { type: 'application/octet-stream' }));
-            });
-        })
-        .catch(reject);
-    });
-
-    return [promise, actionState];
-  }
-
-  getFileDownloadStream(bucketId: string, fileId: string, params: IDownloadParams): [Promise<Readable>, ActionState] {
-    let actionState!: ActionState;
-
-    if (!bucketId) {
-      throw new Error('Bucket id not provided');
-    }
-
-    if (!fileId) {
-      throw new Error('File id not provided');
-    }
-
-    const promise = new Promise<Readable>((resolve, reject) => {
-      actionState = this.environment.download(
-        bucketId,
-        fileId,
-        {
-          ...params,
-          finishedCallback: (err, downloadStream) => {
-            if (err) {
-              //STATUS: ERROR DOWNLOAD FILE
-              return reject(err);
-            }
-
-            if (!downloadStream) {
-              return reject(Error('Download stream is empty'));
-            }
-
-            resolve(downloadStream);
-          },
-        },
-        {
-          label: 'OneStreamOnly',
-          params: {
-            useProxy: envService.getVariable('dontUseProxy') !== 'true',
-            concurrency: 6,
-          },
-        },
-      );
-    });
-
-    return [promise, actionState];
-  }
-
-  getFileInfo(bucketId: string, fileId: string): Promise<FileInfo> {
-    return this.environment.getFileInfo(bucketId, fileId);
-  }
-
-  createFileToken(bucketId: string, fileId: string, operation: 'PULL' | 'PUSH'): Promise<string> {
-    return this.environment.createFileToken(bucketId, fileId, operation);
-  }
 }
 
-// MIRAR DE AÑADIR AQUI EL WORKSPACE TOKEN
 /**
  * Returns required config to upload files to the Internxt Network
  * @param isTeam Flag to indicate if is a team or not
@@ -237,4 +135,22 @@ export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
   };
 }
 
-export const generateFileKey = Environment.utils.generateFileKey;
+// ENCRYPTION FOR FILE KEY
+export async function generateFileKey(mnemonic: string, bucketId: string, index: Buffer | string): Promise<Buffer> {
+  const bucketKey = await generateFileBucketKey(mnemonic, bucketId);
+
+  return getFileDeterministicKey(bucketKey.slice(0, 32), index).slice(0, 32);
+}
+
+async function generateFileBucketKey(mnemonic: string, bucketId: string): Promise<Buffer> {
+  const seed = await mnemonicToSeed(mnemonic);
+
+  return getFileDeterministicKey(seed, Buffer.from(bucketId, 'hex'));
+}
+
+function getFileDeterministicKey(key: Buffer | string, data: Buffer | string): Buffer {
+  const hash = crypto.createHash('sha512');
+  hash.update(key).update(data);
+
+  return hash.digest();
+}

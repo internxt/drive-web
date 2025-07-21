@@ -1,15 +1,15 @@
-import { ShardMeta } from '@internxt/inxt-js/build/lib/models';
-import { Aes256gcmEncrypter } from '@internxt/inxt-js/build/lib/utils/crypto';
-import { streamFileIntoChunks } from '../core/services/stream.service';
 import { mnemonicToSeed } from 'bip39';
+import * as crypto from 'crypto';
 import { Cipher, CipherCCM, createCipheriv } from 'crypto';
+import { streamFileIntoChunks } from '../core/services/stream.service';
 import {
-  getHmacSha512FromHexKey,
   getHmacSha512,
-  getSha256Hasher,
+  getHmacSha512FromHexKey,
   getRipemd160FromHex,
+  getSha256Hasher,
   getSha512FromHex,
 } from '../crypto/services/utils';
+import { LegacyShardMeta } from './requests';
 
 const BUCKET_META_MAGIC = [
   66, 150, 71, 16, 50, 114, 88, 160, 163, 35, 154, 65, 162, 213, 226, 215, 70, 138, 57, 61, 52, 19, 210, 170, 38, 164,
@@ -20,8 +20,20 @@ export function createAES256Cipher(key: Buffer, iv: Buffer): Cipher {
   return createCipheriv('aes-256-ctr', key, iv);
 }
 
+export function Aes256gcmEncrypter(key: Buffer, iv: Buffer): crypto.CipherGCM {
+  return crypto.createCipheriv('aes-256-gcm', key, iv);
+}
+
+export function sha512HmacBufferFromHex(key: string): crypto.Hmac {
+  return crypto.createHmac('sha512', Buffer.from(key, 'hex'));
+}
+
+export function sha512HmacBuffer(key: Buffer | string): crypto.Hmac {
+  return crypto.createHmac('sha512', key);
+}
+
 export function generateHMAC(
-  shardMetas: Omit<ShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
+  shardMetas: Omit<LegacyShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
   encryptionKey: Buffer,
 ): Promise<string> {
   const shardHashesSorted = [...shardMetas].sort((sA, sB) => sA.index - sB.index);
