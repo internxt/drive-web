@@ -1884,10 +1884,9 @@
   resolved "https://npm.pkg.github.com/download/@internxt/lib/1.2.0/172d7929abb3dc34fda044ad9977875791f7a471#172d7929abb3dc34fda044ad9977875791f7a471"
   integrity sha512-14byNxSU0S0KSc3g+BWiJb7/fcHUfqxkHQRz9fwJhAHNmgOo+Bhx13xXk07KKUzeNX1JymSGEZkVCk0AOQiM+Q==
 
-"@internxt/prettier-config@^1.0.1":
+"@internxt/prettier-config@internxt/prettier-config#v1.0.2":
   version "1.0.2"
-  resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
-  integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
+  resolved "https://codeload.github.com/internxt/prettier-config/tar.gz/9fa74e9a2805e1538b50c3809324f1c9d0f3e4f9"
 
 "@internxt/sdk@=1.10.3":
   version "1.10.3"
