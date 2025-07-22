@@ -17,6 +17,7 @@ vi.mock('./uploadFile', () => ({
 describe('fileService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
   describe('deleteFileByUuid', () => {
     const mockFile: DriveFileData = {
