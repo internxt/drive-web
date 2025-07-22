@@ -8,24 +8,21 @@ import tasksService from 'app/tasks/services/tasks.service';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { TaskFolder, UploadFoldersManager, uploadFoldersWithManager } from './UploadFolderManager';
 
-vi.mock('app/store/slices/storage/storage.thunks', () => ({
+vi.mock('../drive/services/new-storage.service', () => ({
   default: {
-    initializeThunk: vi.fn(),
-    resetNamePathThunk: vi.fn(),
-    uploadItemsThunk: vi.fn(),
-    fetchPaginatedFolderContentThunk: vi.fn(),
-    deleteItemsThunk: vi.fn(),
-    goToFolderThunk: vi.fn(),
-    uploadFolderThunk: vi.fn(),
-    updateItemMetadataThunk: vi.fn(),
-    fetchRecentsThunk: vi.fn(),
-    createFolderThunk: vi.fn(),
-    moveItemsThunk: vi.fn(),
-    fetchDeletedThunk: vi.fn(),
-    renameItemsThunk: vi.fn(),
-    uploadSharedItemsThunk: vi.fn(),
+    deleteFolderByUuid: vi.fn(),
   },
-  storageExtraReducers: vi.fn(),
+}));
+
+vi.mock('app/tasks/services/tasks.service', () => ({
+  default: {
+    create: vi.fn(),
+    updateTask: vi.fn(),
+    getTasks: vi.fn(),
+    findTask: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+  },
 }));
 
 vi.mock('app/store/slices/plan', () => ({
@@ -45,16 +42,6 @@ vi.mock('app/store/slices/plan', () => ({
   },
 }));
 
-vi.mock('app/drive/services/download.service/downloadFolder', () => ({
-  default: {
-    fetchFileBlob: vi.fn(),
-    downloadFileFromBlob: vi.fn(),
-    downloadFile: vi.fn(),
-    downloadFolder: vi.fn(),
-    downloadBackup: vi.fn(),
-  },
-}));
-
 vi.mock('app/store/slices/storage/folderUtils/createFolder', () => ({
   createFolder: vi.fn(),
 }));
@@ -63,8 +50,23 @@ vi.mock('app/store/slices/storage/folderUtils/checkFolderDuplicated', () => ({
   checkFolderDuplicated: vi.fn(),
 }));
 
+vi.mock('../store/slices/storage/storage.thunks/deleteItemsThunk', () => ({
+  deleteItemsThunk: vi.fn(),
+}));
+
+vi.mock('../store/slices/storage/storage.thunks/uploadItemsThunk', () => ({
+  uploadItemsParallelThunk: vi.fn(),
+}));
+
 vi.mock('app/store/slices/storage/folderUtils/getUniqueFolderName', () => ({
   getUniqueFolderName: vi.fn(),
+}));
+
+vi.mock('app/core/services/error.service', () => ({
+  default: {
+    castError: vi.fn().mockImplementation((e) => e),
+    reportError: vi.fn(),
+  },
 }));
 
 describe('checkUploadFolders', () => {
@@ -72,6 +74,7 @@ describe('checkUploadFolders', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('should upload folder using an async queue', async () => {

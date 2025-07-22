@@ -1,20 +1,18 @@
-import { RootState } from 'app/store';
-import { useAppSelector } from 'app/store/hooks';
 import { DriveProduct } from '../types/types';
 import Usage from '../components/Usage/Usage';
 import { Loader } from '@internxt/ui';
 
 const UsageContainer = ({
   className = '',
+  planUsage,
   planLimitInBytes,
   products,
 }: Readonly<{
   className?: string;
+  planUsage: number;
   planLimitInBytes: number;
   products: DriveProduct[];
 }>): JSX.Element => {
-  const planUsage = useAppSelector((state: RootState) => state.plan.planUsage);
-
   const driveProduct = products.find((product) => product.name === 'Drive');
   const backupsProduct = products.find((product) => product.name === 'Backups');
   const driveUsage = driveProduct ? driveProduct?.usageInBytes : 0;

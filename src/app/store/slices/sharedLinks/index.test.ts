@@ -44,6 +44,7 @@ describe('Encryption and Decryption', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('shareItemWithUser encrypts with kyber for an existing user', async () => {

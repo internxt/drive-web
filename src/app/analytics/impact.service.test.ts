@@ -74,6 +74,7 @@ const planName = bytesToString(product.price.bytes) + product.price.interval;
 beforeEach(() => {
   globalThis.window.gtag = vi.fn();
   vi.clearAllMocks();
+  vi.resetModules();
   vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
     if (key === 'impactApiUrl') return mockImpactApiUrl;
     else return 'no mock implementation';
