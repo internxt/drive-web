@@ -51,19 +51,6 @@ export class SdkFactory {
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createDesktopAuthClient(captchaToken?: string): Auth {
-    const customHeaders: Record<string, string> = {};
-
-    if (captchaToken) {
-      customHeaders['x-internxt-captcha'] = captchaToken;
-    }
-
-    const apiUrl = this.getApiUrl();
-    const appDetails = SdkFactory.getDesktopAppDetails(customHeaders);
-    const apiSecurity = this.getNewApiSecurity();
-    return Auth.client(apiUrl, appDetails, apiSecurity);
-  }
-
   public createNewStorageClient(): Storage {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
@@ -149,22 +136,6 @@ export class SdkFactory {
       clientVersion: packageJson.version,
       customHeaders,
     };
-  }
-
-  private static getDesktopAppDetails(customHeaders?: Record<string, string>): AppDetails {
-    return {
-      clientName: 'drive-desktop',
-      clientVersion: packageJson.version,
-      customHeaders,
-    };
-  }
-
-  private getToken(workspace: string): Token {
-    const tokenByWorkspace: { [key in Workspace]: string } = {
-      [Workspace.Individuals]: SdkFactory.sdk.localStorage.get('xToken') || '',
-      [Workspace.Business]: SdkFactory.sdk.localStorage.get('xTokenTeam') || '',
-    };
-    return tokenByWorkspace[workspace];
   }
 
   private getNewToken(workspace: string): Token {

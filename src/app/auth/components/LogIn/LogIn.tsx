@@ -139,14 +139,12 @@ export default function LogIn(): JSX.Element {
       const captchaToken = await generateCaptchaToken();
 
       if (!isTfaEnabled || showTwoFactor) {
-        const loginType: 'desktop' | 'web' = isUniversalLinkMode ? 'desktop' : 'web';
         const authParams = {
           email,
           password,
           authMethod: 'signIn' as AuthMethodTypes,
           twoFactorCode,
           dispatch,
-          loginType,
           captchaToken,
         };
 

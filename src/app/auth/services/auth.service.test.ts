@@ -43,9 +43,6 @@ beforeAll(() => {
         createAuthClient: vi.fn(() => ({
           login: vi.fn(),
         })),
-        createDesktopAuthClient: vi.fn(() => ({
-          login: vi.fn(),
-        })),
       })),
     },
   }));
@@ -196,13 +193,6 @@ describe('logIn', () => {
           newToken: mockNewToken,
         }),
       }),
-      createDesktopAuthClient: vi.fn().mockReturnValue({
-        login: vi.fn().mockResolvedValue({
-          user: mockUser,
-          token: mockToken,
-          newToken: mockNewToken,
-        }),
-      }),
     } as any);
 
     const result = await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockLoginType);
@@ -285,13 +275,6 @@ describe('logIn', () => {
           newToken: mockNewToken,
         }),
       }),
-      createDesktopAuthClient: vi.fn().mockReturnValue({
-        login: vi.fn().mockResolvedValue({
-          user: mockUser,
-          token: mockToken,
-          newToken: mockNewToken,
-        }),
-      }),
     } as any);
 
     const result = await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockLoginType);
@@ -328,8 +311,6 @@ describe('logIn', () => {
     const mockedCaptchaToken = 'captcha-token';
     const mockToken = 'test-token';
     const mockNewToken = 'test-new-token';
-    const mockLoginType = 'web';
-
     const mockPassword = 'password123';
     const mockMnemonic =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
@@ -363,7 +344,6 @@ describe('logIn', () => {
       emailVerified: false,
     };
     const mockTwoFactorCode = '123456';
-
     const mockUser = mockOlsUser as UserSettings;
 
     const createAuthClientSpy = vi.fn().mockReturnValue({
@@ -376,16 +356,9 @@ describe('logIn', () => {
 
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: createAuthClientSpy,
-      createDesktopAuthClient: vi.fn().mockReturnValue({
-        login: vi.fn().mockResolvedValue({
-          user: mockUser,
-          token: mockToken,
-          newToken: mockNewToken,
-        }),
-      }),
     } as any);
 
-    await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockLoginType, mockedCaptchaToken);
+    await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockedCaptchaToken);
 
     expect(createAuthClientSpy).toHaveBeenCalledWith(mockedCaptchaToken);
   });
@@ -625,10 +598,6 @@ describe('Change password', () => {
         changePassword: changePasswordMock,
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
       }),
-      createDesktopAuthClient: vi.fn().mockReturnValue({
-        changePassword: changePasswordMock,
-        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
-      }),
       createUsersClient: vi.fn().mockReturnValue({
         changePassword: changePasswordMock,
       }),
@@ -674,10 +643,6 @@ describe('Change password', () => {
       .mockReturnValue(Promise.resolve({ newToken: 'newMockToken', token: 'mockToken' }));
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: vi.fn().mockReturnValue({
-        changePassword: changePasswordMock,
-        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
-      }),
-      createDesktopAuthClient: vi.fn().mockReturnValue({
         changePassword: changePasswordMock,
         securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
       }),
