@@ -51,9 +51,15 @@ export class SdkFactory {
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public createDesktopAuthClient(): Auth {
+  public createDesktopAuthClient(captchaToken?: string): Auth {
+    const customHeaders: Record<string, string> = {};
+
+    if (captchaToken) {
+      customHeaders['x-internxt-captcha'] = captchaToken;
+    }
+
     const apiUrl = this.getApiUrl();
-    const appDetails = SdkFactory.getDesktopAppDetails();
+    const appDetails = SdkFactory.getDesktopAppDetails(customHeaders);
     const apiSecurity = this.getNewApiSecurity();
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
@@ -145,10 +151,11 @@ export class SdkFactory {
     };
   }
 
-  private static getDesktopAppDetails(): AppDetails {
+  private static getDesktopAppDetails(customHeaders?: Record<string, string>): AppDetails {
     return {
       clientName: 'drive-desktop',
       clientVersion: packageJson.version,
+      customHeaders,
     };
   }
 

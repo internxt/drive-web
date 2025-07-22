@@ -125,7 +125,7 @@ export const is2FANeeded = async (email: string): Promise<boolean> => {
 const getAuthClient = (authType: 'web' | 'desktop', captchaToken?: string) => {
   const AUTH_CLIENT = {
     web: SdkFactory.getNewApiInstance().createAuthClient(captchaToken),
-    desktop: SdkFactory.getNewApiInstance().createDesktopAuthClient(),
+    desktop: SdkFactory.getNewApiInstance().createDesktopAuthClient(captchaToken),
   };
 
   return AUTH_CLIENT[authType];
