@@ -383,26 +383,28 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
     <div className="flex w-full flex-col items-center justify-center space-y-4">
       <div className="flex flex-col justify-center">
         {isOwner ? (
-          <div className="relative flex z-50">
-            <Dropdown
-              options={isOwner ? dropdownOptions : undefined}
-              classMenuItems={'-left-6 mt-1 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5'}
-              openDirection={'right'}
-            >
-              <div className="relative">
-                <WorkspaceAvatarWrapper
-                  diameter={128}
-                  workspaceId={workspaceId}
-                  fullName={companyName ?? ''}
-                  avatarSrcURL={avatarSrcURL}
-                />
-                {
-                  <div className="absolute -bottom-1.5 -right-0.5 flex h-8 w-8 items-center justify-center rounded-full border-3 border-surface bg-gray-5 text-gray-60 dark:bg-gray-10">
-                    <PencilSimple size={16} />
-                  </div>
-                }
-              </div>
-            </Dropdown>
+          <>
+            <div className="relative flex z-50">
+              <Dropdown
+                options={isOwner ? dropdownOptions : undefined}
+                classMenuItems={'-left-6 mt-1 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5'}
+                openDirection={'right'}
+              >
+                <div className="relative">
+                  <WorkspaceAvatarWrapper
+                    diameter={128}
+                    workspaceId={workspaceId}
+                    fullName={companyName ?? ''}
+                    avatarSrcURL={avatarSrcURL}
+                  />
+                  {
+                    <div className="absolute -bottom-1.5 -right-0.5 flex h-8 w-8 items-center justify-center rounded-full border-3 border-surface bg-gray-5 text-gray-60 dark:bg-gray-10">
+                      <PencilSimple size={16} />
+                    </div>
+                  }
+                </div>
+              </Dropdown>
+            </div>
             <UploadAvatarModal
               isOpen={openEditAvatarModal}
               onClose={() => setOpenEditAvatarModal(false)}
@@ -412,7 +414,7 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
               }
               onSavingAvatarError={errorService.reportError}
             />
-          </div>
+          </>
         ) : (
           <WorkspaceAvatarWrapper
             diameter={128}

@@ -107,8 +107,6 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
     };
   });
 
-  console.log(selectedWorkspace);
-
   return (
     <div className="relative mb-2 inline-block w-full" ref={dropdownRef}>
       {/* TOGGLE BUTTON */}
