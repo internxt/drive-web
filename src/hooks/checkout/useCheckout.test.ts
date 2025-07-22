@@ -25,6 +25,7 @@ describe('useCheckout hook actions', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('When setAuthMethod is called, then it dispatches SET_AUTH_METHOD with the provided method', () => {

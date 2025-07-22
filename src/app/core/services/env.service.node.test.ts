@@ -13,7 +13,7 @@ describe('Check that env variables are loaded correctly', () => {
       console.error('Error loading .env.example:', result.error);
       throw result.error;
     }
-
+    vi.clearAllMocks();
     vi.resetModules();
   });
 
