@@ -68,7 +68,7 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
 
     try {
       const backupData = JSON.parse(uploadedBackupKeyContent);
-      console.log({ backupData });
+
       if (backupData.mnemonic && validateMnemonic(backupData.mnemonic)) {
         setBackupKeyContent(uploadedBackupKeyContent);
         return;
