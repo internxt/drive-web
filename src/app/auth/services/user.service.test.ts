@@ -8,7 +8,6 @@ const testEmail = 'test@initnxt.com';
 const usersClientMock = {
   getUserData: vi.fn(),
   updateUserProfile: vi.fn(),
-  //updateUserAvatar: vi.fn(),
   deleteUserAvatar: vi.fn(),
   sendVerificationEmail: vi.fn(),
   getPublicKeyByEmail: vi.fn(),
@@ -72,13 +71,6 @@ describe('userService', () => {
     );
   });
 
-  /*it('should update user avatar', async () => {
-    usersClientMock.updateUserAvatar.mockResolvedValue({ avatar: 'avatar-url' });
-    const result = await userService.updateUserAvatar({ avatar: new Blob() });
-    expect(result).toEqual({ avatar: 'avatar-url' });
-    expect(usersClientMock.updateUserAvatar).toHaveBeenCalled();
-  });*/
-
   it('should delete user avatar', async () => {
     usersClientMock.deleteUserAvatar.mockResolvedValue({ success: true });
     await userService.deleteUserAvatar();
@@ -113,5 +105,14 @@ describe('userService', () => {
     usersClientMock.checkChangeEmailExpiration.mockResolvedValue('mockExpirationResponse');
     const response = await userService.checkChangeEmailLinkExpiration('verifyToken');
     expect(response).toBe('mockExpirationResponse');
+  });
+
+  it('should download the avatar', async () => {
+    const downloadAvatarSpy = vi.spyOn(userService, 'downloadAvatar');
+    const abortController = new AbortController();
+
+    await userService.downloadAvatar('testSrcURL', abortController.signal);
+
+    expect(downloadAvatarSpy).toHaveBeenCalledWith('testSrcURL', expect.any(AbortSignal));
   });
 });

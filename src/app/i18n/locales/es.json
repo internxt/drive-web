@@ -1030,7 +1030,8 @@
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
     "maxSizeUploadLimitError": "File too large (greater than 40GB)",
     "connectionLostError": "Conexión a internet perdida",
-    "errorLoadingTrashItems": "Error al cargar items de la papelera"
+    "errorLoadingTrashItems": "Error al cargar items de la papelera",
+    "updateAvatarError": "Error al actualizar el avatar"
   },
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",

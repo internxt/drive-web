@@ -80,8 +80,8 @@ const checkChangeEmailLinkExpiration = (verifyToken: string): Promise<CheckChang
   return authClient.checkChangeEmailExpiration(verifyToken);
 };
 
-const downloadAvatar = async (url: string): Promise<Blob> => {
-  const response = await fetch(url);
+const downloadAvatar = async (url: string, signal?: AbortSignal): Promise<Blob> => {
+  const response = await fetch(url, { signal });
   const data = await response.blob();
   return data;
 };
