@@ -119,6 +119,8 @@ src/
 │   │   ├── SocialLoginButtons.tsx
 │   │   ├── styles.css
 │   │   └── Login.tsx
+│   └── hooks/            # Custom Login React hooks
+│       └── useAuth.ts
 │   ├── Signup/           # Signup view and its internal components
 │   │   ├── SignupForm.tsx
 │   │   ├── TermsCheckbox.tsx
@@ -136,7 +138,6 @@ src/
 │   │   ├── styles.css    # General styles for Home
 │   │   └── Home.tsx      # Main component for the Home view
 ├── hooks/                # Custom React hooks
-│   ├── useAuth.ts
 │   ├── useTheme.ts
 │   └── useFetch.ts
 ├── services/             # Logic for interacting with external APIs or services
