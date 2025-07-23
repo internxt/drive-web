@@ -1000,7 +1000,8 @@
     "errorMovingToTrash": "Beim Verschieben der Elemente in den Papierkorb ist ein Fehler aufgetreten.",
     "errorDeletingFromTrash": "Beim Löschen der Elemente aus dem Papierkorb ist ein Fehler aufgetreten.",
     "maxSizeUploadLimitError": "Datei zu groß (größer als 40 GB)",
-    "braveNotSupportMultiplePhotosDowload": "Brave unterstützt nicht das Herunterladen mehrerer Fotos."
+    "braveNotSupportMultiplePhotosDowload": "Brave unterstützt nicht das Herunterladen mehrerer Fotos.",
+    "updateAvatarError": "Fehler beim Aktualisieren des Avatars"
   },
   "backups": {
     "backups-from": "Backups von {{deviceName}}",
