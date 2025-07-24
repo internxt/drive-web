@@ -54,7 +54,7 @@ export function savePaymentDataInLocalStorage(
   }
 }
 
-export async function trackSignUp(uuid: string, email: string) {
+export async function trackSignUp(uuid: string) {
   try {
     const gclid = getCookie('gclid');
     const IMPACT_API = envService.getVariable('impactApiUrl');
