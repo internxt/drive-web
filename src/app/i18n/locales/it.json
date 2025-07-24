@@ -1922,12 +1922,11 @@
               "VPN illimitata ultraveloce (FR)",
               "Antivirus",
               "Backup dei tuoi file",
-              "Condivisione protetta da password",
-              "Conformità al GDPR",
+              "Condivisione file protetta da password",
+              "Conformità GDPR",
               "Autenticazione a due fattori (2FA)",
-              "Supporto per CLI, WebDav e Rclone"
-            ],
-            "comingSoonFeatures": ["Mina e guadagna"]
+              "Supporto CLI, WebDav e Rclone"
+            ]
           },
           "3TB": {
             "title": "Premium",
@@ -1936,13 +1935,13 @@
               "VPN illimitata ultraveloce (FR, DE, PL)",
               "Antivirus",
               "Backup dei tuoi file",
-              "Condivisione protetta da password",
+              "Condivisione file protetta da password",
               "Invita, condividi e collabora",
-              "Conformità al GDPR",
+              "Conformità GDPR",
               "Autenticazione a due fattori (2FA)",
-              "Supporto per CLI, WebDav e Rclone"
+              "Supporto CLI, WebDav e Rclone"
             ],
-            "comingSoonFeatures": ["Pulitore dispositivo", "Mina e guadagna"]
+            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web"]
           },
           "5TB": {
             "title": "Ultimate",
@@ -1951,18 +1950,17 @@
               "VPN illimitata ultraveloce (FR, DE, PL, CA, UK)",
               "Antivirus",
               "Backup dei tuoi file",
-              "Condivisione protetta da password",
+              "Condivisione file protetta da password",
               "Invita, condividi e collabora",
-              "Conformità al GDPR",
+              "Conformità GDPR",
               "Autenticazione a due fattori (2FA)",
-              "Supporto per CLI, WebDav e Rclone"
+              "Supporto CLI, WebDav e Rclone"
             ],
-            "comingSoonFeatures": ["Pulitore dispositivo", "Mina e guadagna", "Meet", "Mail"]
+            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web", "Meet", "Mail"]
           },
           "1GB": {
             "title": "Gratuito",
-            "features": ["VPN standard gratuita (FR)", "Supporto CLI, WebDav e Rclone"],
-            "comingSoonFeatures": ["Mina e guadagna"]
+            "features": ["VPN standard gratuita (FR)", "Supporto CLI, WebDav e Rclone"]
           }
         },
         "businessPlanFeaturesList": {
@@ -1982,7 +1980,7 @@
               "Supporto CLI, WebDav e Rclone",
               "Gestisci fatturazione e pagamenti dell'account"
             ],
-            "comingSoonFeatures": ["Pulitore dispositivi"]
+            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web"]
           },
           "2TB": {
             "title": "Pro",
@@ -1998,7 +1996,7 @@
               "Supporto CLI, WebDav e Rclone",
               "Gestisci fatturazione e pagamenti dell'account"
             ],
-            "comingSoonFeatures": ["Pulitore dispositivi", "Meet", "Mail"]
+            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web", "Meet", "Mail"]
           }
         },
         "user": "Utente",
