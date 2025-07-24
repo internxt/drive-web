@@ -1873,8 +1873,7 @@
               "GDPR compliance",
               "Two-factor authentication (2FA)",
               "CLI, WebDav & Rclone support"
-            ],
-            "comingSoonFeatures": ["Mine & Earn"]
+            ]
           },
           "3TB": {
             "title": "Premium",
@@ -1889,7 +1888,7 @@
               "Two-factor authentication (2FA)",
               "CLI, WebDav & Rclone support"
             ],
-            "comingSoonFeatures": ["Device Cleaner", "Mine & Earn"]
+            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
           },
           "5TB": {
             "title": "Ultimate",
@@ -1904,12 +1903,11 @@
               "Two-factor authentication (2FA)",
               "CLI, WebDav & Rclone support"
             ],
-            "comingSoonFeatures": ["Device Cleaner",  "Mine & Earn", "Meet", "Mail"]
+            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
           },
           "1GB": {
             "title": "Free",
-            "features": ["Free Standard VPN (FR)", "CLI, WebDav & Rclone support"],
-            "comingSoonFeatures": ["Mine & Earn"]
+            "features": ["Free Standard VPN (FR)", "CLI, WebDav & Rclone support"]
           }
         },
         "businessPlanFeaturesList": {
@@ -1929,7 +1927,7 @@
               "CLI, WebDav & Rclone support",
               "Manage account billing & payments"
             ],
-            "comingSoonFeatures": ["Device Cleaner"]
+            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
           },
           "2TB": {
             "title": "Pro",
@@ -1945,7 +1943,7 @@
               "CLI, WebDav & Rclone support",
               "Manage account billing & payments"
             ],
-            "comingSoonFeatures": ["Device Cleaner", "Meet", "Mail"]
+            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
           }
         },
         "user": "user"
