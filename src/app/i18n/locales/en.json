@@ -6,10 +6,10 @@
   "featuresBanner": {
     "label": "Save 80%",
     "title": "Annual and lifetime plans!",
-    "upperTitle":"Hot summer savings",
+    "upperTitle": "Hot summer savings",
     "cta": "Claim deal",
     "guarantee": "30-day money-back guarantee",
-    "specialOfferGift":"Chance to win an Internxt backpack",
+    "specialOfferGift": "Chance to win an Internxt backpack",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
       "Drive, VPN, and Antivirus",
@@ -1050,7 +1050,8 @@
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
     "maxSizeUploadLimitError": "File too large (greater than 40GB)",
     "connectionLostError": "Internet connection lost",
-    "errorLoadingTrashItems": "Error loading trash items"
+    "errorLoadingTrashItems": "Error loading trash items",
+    "updateAvatarError": "Error updating avatar"
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",
