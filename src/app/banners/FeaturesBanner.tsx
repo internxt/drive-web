@@ -27,7 +27,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
     >
       <div
         className={
-          'left-1/2 top-1/2 flex w-[1000px] rounded-3xl -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden absolute inset-0 bg-center bg-no-repeat bg-cover '
+          'left-1/2 top-1/2 flex h-[508px] w-[1200px] rounded-3xl -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden absolute inset-0 bg-center bg-no-repeat bg-cover '
         }
         style={{ backgroundImage: `url(${BgImage})` }}
       >
@@ -40,24 +40,24 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
           <X size={32} />
         </button>
 
-        <div className="flex pt-16 pb-20 px-10 flex-col items-start justify-start md:flex-row md:pb-10">
+        <div className="flex pt-20 px-10 flex-col items-start justify-start md:flex-row md:pb-10">
           <div
-            className="flex flex-1 rounded-2xl px-6 flex-col items-start justify-around py-10 text-start"
+            className="flex flex-1 h-[351px] rounded-2xl px-6 flex-col items-start justify-center text-start"
             style={{ backgroundImage: bgColor }}
           >
-            <div className="flex flex-row gap-3 ">
+            <div className="flex flex-row gap-3">
               <div className="flex px-1 bg-white/30 rounded-sm">
                 <p className="text-lg font-semibold text-primary">{translate('featuresBanner.label')}</p>
               </div>
-              <p className="text-gray-100 text-xl px-1 pt-0.5 text-regular leading-tight dark:text-gray-10">
+              <p className="text-gray-100 text-xl px-1 text-regular leading-tight dark:text-gray-10">
                 {translate('featuresBanner.title')}
               </p>
             </div>
-            <p className="text-gray-100 w-[384px] text-4xl pt-4 font-bold leading-tight dark:text-gray-10">
+            <p className="text-gray-100 w-[384px] text-4xl pt-2 font-bold leading-tight dark:text-gray-10">
               {translate('featuresBanner.upperTitle')}
             </p>
             <div className="flex flex-col w-full items-start space-y-3">
-              <div className="flex flex-row items-center space-x-3 pt-4">
+              <div className="flex flex-row items-center space-x-3 pt-8">
                 <img src={ShieldIcon} alt="Icon" width={24} height={20} />
                 <p className="whitespace-nowrap font-medium text-gray-100 dark:text-gray-10 lg:text-base">
                   {translate('featuresBanner.guarantee')}
@@ -79,13 +79,15 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
+          <div className="flex flex-1 h-[351px] flex-col items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
             <div className="flex flex-col">
               <div className="flex flex-col space-y-8 pl-8">
                 {features.map((card, index) => (
                   <div className="flex flex-row space-x-1 font-bold " key={index}>
                     <div className="flex justify-center items-center">
-                      <img src={ShieldIcon} alt={'Icon'} width={32} height={32} />
+                      <div className="w-8 h-8 flex items-center justify-center">
+                        <img src={ShieldIcon} alt={'Icon'} width={32} height={32} />
+                      </div>
                       <p className="text-xl pl-2 pt-0.5 font-semibold text-gray-100 dark:text-gray-10">{card}</p>
                     </div>
                   </div>
