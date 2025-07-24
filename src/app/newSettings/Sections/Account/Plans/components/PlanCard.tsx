@@ -159,17 +159,21 @@ const PlanDetailsList = ({
         ))}
 
         {/* Coming soon features */}
-        <span className="text-sm font-semibold text-gray-100">
-          {t('preferences.account.plans.planFeaturesList.comingSoon')}
-        </span>
-        {comingSoonFeatureKeys.map((feature) => (
-          <div key={feature} className="flex flex-row space-x-2">
-            <div className="mt-1">
-              <Check size={20} className="text-green" />
-            </div>
-            <span className="text-base font-normal text-gray-100">{feature}</span>
-          </div>
-        ))}
+        {planTypeTextPath !== 'essentialFeatures' && planTypeTextPath !== 'freeFeatures' && (
+          <>
+            <span className="text-sm font-semibold text-gray-100">
+              {t('preferences.account.plans.planFeaturesList.comingSoon')}
+            </span>
+            {comingSoonFeatureKeys.map((feature) => (
+              <div key={feature} className="flex flex-row space-x-2">
+                <div className="mt-1">
+                  <Check size={20} className="text-green" />
+                </div>
+                <span className="text-base font-normal text-gray-100">{feature}</span>
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );
