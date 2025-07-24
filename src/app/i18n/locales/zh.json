@@ -1854,50 +1854,48 @@
             "title": "基础版",
             "features": [
               "后量子加密",
-              "无限超高速 VPN（法国）",
-              "杀毒软件",
+              "超快无限制VPN（法国）",
+              "防病毒",
               "文件备份",
-              "密码保护的文件共享",
-              "符合 GDPR",
-              "双重身份验证（2FA）",
-              "支持 CLI、WebDav 和 Rclone"
-            ],
-            "comingSoonFeatures": ["挖矿赚钱"]
+              "密码保护文件共享",
+              "符合GDPR",
+              "双因素认证（2FA）",
+              "支持CLI、WebDav和Rclone"
+            ]
           },
           "3TB": {
             "title": "高级版",
             "features": [
               "后量子加密",
-              "无限超高速 VPN（法国、德国、波兰）",
-              "杀毒软件",
+              "超快无限制VPN（法国、德国、波兰）",
+              "防病毒",
               "文件备份",
-              "密码保护的文件共享",
-              "邀请、共享与协作",
-              "符合 GDPR",
-              "双重身份验证（2FA）",
-              "支持 CLI、WebDav 和 Rclone"
+              "密码保护文件共享",
+              "邀请、共享和协作",
+              "符合GDPR",
+              "双因素认证（2FA）",
+              "支持CLI、WebDav和Rclone"
             ],
-            "comingSoonFeatures": ["设备清理器", "挖矿赚钱"]
+            "comingSoonFeatures": ["设备清理器", "暗网监控"]
           },
           "5TB": {
             "title": "旗舰版",
             "features": [
               "后量子加密",
-              "无限超高速 VPN（法国、德国、波兰、加拿大、英国）",
-              "杀毒软件",
+              "超快无限制VPN（法国、德国、波兰、加拿大、英国）",
+              "防病毒",
               "文件备份",
-              "密码保护的文件共享",
-              "邀请、共享与协作",
-              "符合 GDPR",
-              "双重身份验证（2FA）",
-              "支持 CLI、WebDav 和 Rclone"
+              "密码保护文件共享",
+              "邀请、共享和协作",
+              "符合GDPR",
+              "双因素认证（2FA）",
+              "支持CLI、WebDav和Rclone"
             ],
-            "comingSoonFeatures": ["设备清理器", "挖矿赚钱", "Meet", "Mail"]
+            "comingSoonFeatures": ["设备清理器", "暗网监控", "视频会议", "邮件"]
           },
           "1GB": {
             "title": "免费版",
-            "features": ["免费标准VPN（法国）", "支持CLI、WebDav和Rclone"],
-            "comingSoonFeatures": ["挖矿赚钱"]
+            "features": ["免费标准VPN（法国）", "支持CLI、WebDav和Rclone"]
           }
         },
         "businessPlanFeaturesList": {
@@ -1917,7 +1915,7 @@
               "支持CLI、WebDav和Rclone",
               "管理账户账单和支付"
             ],
-            "comingSoonFeatures": ["设备清理器"]
+            "comingSoonFeatures": ["设备清理器", "暗网监控"]
           },
           "2TB": {
             "title": "专业版",
@@ -1933,7 +1931,7 @@
               "支持CLI、WebDav和Rclone",
               "管理账户账单和支付"
             ],
-            "comingSoonFeatures": ["设备清理器", "视频会议", "邮件"]
+            "comingSoonFeatures": ["设备清理器", "暗网监控", "视频会议", "邮件"]
           }
         },
         "user": "用户"
