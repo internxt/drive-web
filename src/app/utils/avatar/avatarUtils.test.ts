@@ -114,8 +114,7 @@ describe('refreshAvatar', () => {
     const dateStr = now
       .toISOString()
       .replace(/[:-]/g, '')
-      .replace(/\.\d{3}Z$/, '')
-      .replace('T', 'T');
+      .replace(/\.\d{3}Z$/, '');
 
     const validUrl = `https://avatar-url.com/file.png?X-Amz-Date=${dateStr}Z&X-Amz-Expires=3600`;
 
