@@ -40,7 +40,7 @@ export const THEME_DEFINITIONS: Record<Exclude<Theme, 'light' | 'dark' | 'system
     key: STORAGE_KEYS.THEMES.ENVIRONMENT_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
     promoCodes: ['PLANET85'],
   },
-   summer: {
+  summer: {
     key: STORAGE_KEYS.THEMES.SUMMER_THEME_AVAILABLE_LOCAL_STORAGE_KEY,
     promoCodes: ['SUMMER80'],
   },
