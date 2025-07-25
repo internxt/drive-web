@@ -1,5 +1,5 @@
-import { Abortable } from '@internxt/inxt-js/build/api';
 import { WORKER_MESSAGE_STATES } from '../../../../WebWorker';
+import { Abortable } from '../../../network/Abortable';
 import DatabaseUploadRepository from '../../../repositories/DatabaseUploadRepository';
 import { TaskStatus } from '../../../tasks/types';
 import { IUploadParams } from '../network.service';

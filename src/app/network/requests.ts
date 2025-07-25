@@ -1,8 +1,8 @@
-import errorService from '../core/services/error.service';
-import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
-import { encryptFilename, generateHMAC } from './crypto';
-import { getSha256 } from '../crypto/services/utils';
 import envService from 'app/core/services/env.service';
+import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
+import errorService from '../core/services/error.service';
+import { getSha256 } from '../crypto/services/utils';
+import { encryptFilename, generateHMAC } from './crypto';
 
 // TODO: Make this injectable
 const networkApiUrl = envService.getVariable('storjBridge');
@@ -190,7 +190,7 @@ interface NetworkCredentials {
   pass: string;
 }
 
-interface LegacyShardMeta {
+export interface LegacyShardMeta {
   hash: string;
   size: number;
   index: number;

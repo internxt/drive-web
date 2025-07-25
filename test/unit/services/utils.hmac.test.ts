@@ -5,10 +5,11 @@
 import { getHmacSha512FromHexKey } from '../../../src/app/crypto/services/utils';
 
 import { describe, expect, it } from 'vitest';
-import { sha512HmacBuffer, sha512HmacBufferFromHex } from '@internxt/inxt-js/build/lib/utils/crypto';
-import { generateHMAC } from '../../../src/app/network/crypto';
-import { ShardMeta } from '@internxt/inxt-js/build/lib/models';
+
+import { generateHMAC, sha512HmacBuffer, sha512HmacBufferFromHex } from '../../../src/app/network/crypto';
+
 import { Buffer } from 'buffer';
+import { LegacyShardMeta } from '../../../src/app/network/requests';
 
 describe('HMAC should work as before', () => {
   globalThis.Buffer = Buffer;
@@ -47,7 +48,7 @@ describe('HMAC should work as before', () => {
     const result = await generateHMAC([shardMeta], encryptionKey);
 
     function oldGenerateHMAC(
-      shardMetas: Omit<ShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
+      shardMetas: Omit<LegacyShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
       encryptionKey: Buffer,
     ): Buffer {
       const shardHashesSorted = [...shardMetas].sort((sA, sB) => sA.index - sB.index);
