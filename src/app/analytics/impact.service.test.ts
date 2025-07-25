@@ -109,7 +109,7 @@ describe('Testing Impact Service', () => {
       it('When the G Tag event is triggered, then the event is sent', async () => {
         const gTagSpy = vi.spyOn(globalThis.window, 'gtag');
 
-        await trackSignUp(mockedUserUuid, '');
+        await trackSignUp(mockedUserUuid);
 
         expect(gTagSpy).toHaveBeenCalled();
         expect(gTagSpy).toHaveBeenCalledWith('event', 'User Signup');
@@ -122,7 +122,7 @@ describe('Testing Impact Service', () => {
         });
         const reportErrorSpy = vi.spyOn(errorService, 'reportError');
 
-        await trackSignUp(mockedUserUuid, '');
+        await trackSignUp(mockedUserUuid);
 
         expect(gTagSpy).toHaveBeenCalled();
         expect(gTagSpy).toHaveBeenCalledWith('event', 'User Signup');
@@ -138,7 +138,7 @@ describe('Testing Impact Service', () => {
           uuid: mockedUserUuid,
         } as unknown as UserSettings);
 
-        await trackSignUp(mockedUserUuid, '');
+        await trackSignUp(mockedUserUuid);
 
         expect(axiosSpy).toHaveBeenCalledTimes(1);
 
