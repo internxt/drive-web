@@ -1,22 +1,20 @@
 import { Listbox } from '@headlessui/react';
 import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
+import { Avatar, Button, Checkbox, Input } from '@internxt/ui';
 import { CaretDown, Check } from '@phosphor-icons/react';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import userService from '../../../auth/services/user.service';
-import errorService from '../../../core/services/error.service';
-import { HTTP_CODES } from '../../../core/constants';
-import AppError, { IFormValues } from '../../../core/types';
+import { IFormValues } from '../../../core/types';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { Button, Avatar, Checkbox, Input } from '@internxt/ui';
 import { RootState } from '../../../store';
 import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sharedLinks';
 import { Role } from '../../../store/slices/sharedLinks/types';
 import ShareUserNotRegistered from '../ShareUserNotRegistered/ShareUserNotRegistered';
 import './ShareInviteDialog.scss';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface ShareInviteDialogProps {
   onInviteUser: () => void;
@@ -28,12 +26,6 @@ interface ShareInviteDialogProps {
 interface UsersToInvite {
   email: string;
   userRole: string;
-  publicKey: string;
-  keys?: {
-    ecc: string;
-    kyber: string;
-  };
-  isNewUser: boolean;
 }
 
 const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
@@ -43,7 +35,6 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   const [email, setEmail] = useState<string>('');
   const [emailAccent, setEmailAccent] = useState<string>('');
   const [openNewUsersModal, setOpenNewUsersModal] = useState<boolean>(false);
-  const [newUsersExists, setNewUsersExists] = useState<boolean>(false);
   const [userRole, setUserRole] = useState<string>(props.roles[0]?.name);
   const [usersToInvite, setUsersToInvite] = useState<Array<UsersToInvite>>([]);
   const [notifyUser, setNotifyUser] = useState<boolean>(false);
@@ -69,21 +60,12 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     const emailToAdd = splitEmail[0];
     const userInvitedEmail = emailToAdd;
     const userInvitedRole = userRole;
-    const userInvited = { email: userInvitedEmail, userRole: userInvitedRole, isNewUser: false };
+    const userInvited = { email: userInvitedEmail, userRole: userInvitedRole };
     const isDuplicated = usersToInvite.find((user) => user.email === userInvited.email);
 
     if (!isDuplicated && isValidEmail(userInvitedEmail)) {
-      const { publicKey, keys } = await getUserPublicKey(email);
-
-      const markUserAsNew = !publicKey;
-
-      if (markUserAsNew) {
-        userInvited.isNewUser = true;
-        setNewUsersExists(true);
-      }
-
       const unique: Array<UsersToInvite> = [...usersToInvite];
-      unique.push({ ...userInvited, publicKey, keys });
+      unique.push(userInvited);
       setUsersToInvite(unique);
       setEmail('');
     } else {
@@ -108,25 +90,6 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     setUsersToInvite(newUserToInvite);
   };
 
-  const getUserPublicKey = async (
-    email: string,
-  ): Promise<{ publicKey: string; keys: { kyber: string; ecc: string } }> => {
-    let publicKey = '';
-    let keys = { kyber: '', ecc: '' };
-    try {
-      const publicKeyResponse = await userService.getPublicKeyByEmail(email);
-      publicKey = publicKeyResponse.publicKey;
-      if (publicKeyResponse.keys) {
-        keys = publicKeyResponse.keys;
-      }
-    } catch (error) {
-      if ((error as AppError)?.status !== HTTP_CODES.NOT_FOUND) {
-        errorService.reportError(error);
-      }
-    }
-    return { publicKey, keys };
-  };
-
   const processInvites = async (usersToInvite: UsersToInvite[]) => {
     const sharingPromises = [] as AsyncThunkAction<string | void, ShareFileWithUserPayload, { state: RootState }>[];
 
@@ -144,9 +107,6 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
             sharedWith: user.email,
             notifyUser,
             notificationMessage: messageText,
-            publicKey: user.publicKey,
-            keys: user.keys,
-            isNewUser: user.isNewUser,
           }),
         ),
       );
@@ -155,31 +115,16 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     await Promise.all(sharingPromises);
   };
 
-  //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG
-  const onInvite = async ({ preCreateUsers = false }) => {
+  const onInvite = async () => {
     setIsAnyInviteLoading(true);
     const usersList = [...usersToInvite];
-    let isThereAnyNewUser = newUsersExists;
 
-    if (usersList.length === 0 && isValidEmail(email)) {
-      const { publicKey, keys } = await getUserPublicKey(email);
-      if (!publicKey && !preCreateUsers) {
-        isThereAnyNewUser = true;
-      }
+    if (isValidEmail(email)) {
       usersList.push({
         email,
         userRole,
-        isNewUser: !publicKey,
-        publicKey,
-        keys,
       });
     }
-
-    if (isThereAnyNewUser && !preCreateUsers) {
-      setOpenNewUsersModal(true);
-      return;
-    }
-
     await processInvites(usersList);
     setIsAnyInviteLoading(false);
     props.onClose();
@@ -300,7 +245,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
             <Button
               variant="primary"
               onClick={() => {
-                onInvite({ preCreateUsers: false });
+                setOpenNewUsersModal(true);
               }}
               disabled={isInviteButtonDisabled}
               loading={isAnyInviteLoading}
@@ -310,17 +255,20 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
           </div>
         </div>
       </div>
-      <ShareUserNotRegistered
-        isOpen={openNewUsersModal}
-        onClose={() => {
-          setOpenNewUsersModal(false);
-          setIsAnyInviteLoading(false);
-        }}
-        onAccept={() => {
-          setOpenNewUsersModal(false);
-          onInvite({ preCreateUsers: true });
-        }}
-      />
+      {createPortal(
+        <ShareUserNotRegistered
+          isOpen={openNewUsersModal}
+          onClose={() => {
+            setOpenNewUsersModal(false);
+            setIsAnyInviteLoading(false);
+          }}
+          onAccept={() => {
+            setOpenNewUsersModal(false);
+            onInvite();
+          }}
+        />,
+        document.body,
+      )}
     </>
   );
 };
