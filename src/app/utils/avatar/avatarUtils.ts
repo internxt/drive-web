@@ -55,22 +55,28 @@ function isAvatarExpired(url: string): boolean {
   return new Date().toISOString() > expirationDate.toISOString();
 }
 
-async function syncAvatarIfNeeded(uuid: string, avatarUrl: string | null): Promise<void> {
+async function refreshAvatar(uuid: string, avatarUrl: string | null): Promise<string | undefined> {
   if (!avatarUrl) return;
 
   const storedUserAvatar = await getDatabaseProfileAvatar();
 
   const shouldUpdate = !storedUserAvatar?.srcURL || isAvatarExpired(storedUserAvatar.srcURL);
 
-  if (!shouldUpdate) return;
+  if (!shouldUpdate) return storedUserAvatar?.srcURL;
 
-  const avatarBlob = await userService.downloadAvatar(avatarUrl);
+  const { avatar: updatedUserAvatar } = await userService.refreshAvatarUser();
+
+  if (!updatedUserAvatar) return;
+
+  const avatarBlob = await userService.downloadAvatar(updatedUserAvatar);
 
   await updateDatabaseProfileAvatar({
     sourceURL: avatarUrl,
     avatarBlob,
     uuid,
   });
+
+  return updatedUserAvatar;
 }
 
-export { getAvatarExpiration, isAvatarExpired, syncAvatarIfNeeded };
+export { getAvatarExpiration, isAvatarExpired, refreshAvatar };

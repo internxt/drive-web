@@ -26,13 +26,6 @@ import { STORAGE_KEYS } from '../../../core/services/storage-keys';
 import { HUNDRED_TB } from '../../../core/constants';
 import { useEffect } from 'react';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
-import { useAvatar } from 'hooks/useAvatar';
-import { deleteDatabaseProfileAvatar, getDatabaseProfileAvatar } from 'app/drive/services/database.service';
-import userService from 'app/auth/services/user.service';
-import {
-  saveAvatarToDatabase,
-  showUpdateAvatarErrorToast,
-} from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -126,14 +119,6 @@ const Sidenav = ({
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceUuid = selectedWorkspace?.workspaceUser.workspaceId;
-  const { avatarBlob } = useAvatar({
-    avatarSrcURL: user?.avatar || null,
-    deleteDatabaseAvatar: deleteDatabaseProfileAvatar,
-    downloadAvatar: userService.downloadAvatar,
-    getDatabaseAvatar: getDatabaseProfileAvatar,
-    saveAvatarToDatabase: saveAvatarToDatabase,
-    onError: showUpdateAvatarErrorToast,
-  });
 
   useEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
@@ -219,7 +204,7 @@ const Sidenav = ({
             <WorkspaceSelectorContainer
               user={{
                 ...user,
-                avatar: avatarBlob ? URL.createObjectURL(avatarBlob) : user.avatar,
+                avatar: user.avatar,
               }}
             />
           )}

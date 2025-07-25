@@ -31,6 +31,13 @@ const refreshUserData = async (
   return usersClient.getUserData({ userUuid: userUUID });
 };
 
+const refreshAvatarUser = async (): Promise<{
+  avatar: string | null;
+}> => {
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+  return usersClient.refreshAvatarUser();
+};
+
 const updateUserProfile = (payload: Required<UpdateProfilePayload>): Promise<void> => {
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
   const token = localStorageService.get('xNewToken') ?? undefined;
@@ -92,6 +99,7 @@ const userService = {
   checkChangeEmailLinkExpiration,
   preCreateUser,
   refreshUserData,
+  refreshAvatarUser,
   downloadAvatar,
 };
 
