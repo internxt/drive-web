@@ -69,7 +69,7 @@ type LogInParams = {
   password: string;
   twoFactorCode: string;
   dispatch: AppDispatch;
-  loginType?: 'web' | 'desktop';
+  captchaToken?: string;
 };
 
 export type AuthenticateUserParams = {
@@ -78,10 +78,10 @@ export type AuthenticateUserParams = {
   authMethod: AuthMethodTypes;
   twoFactorCode: string;
   dispatch: AppDispatch;
-  loginType?: 'web' | 'desktop';
   token?: string;
   isNewUser?: boolean;
   redeemCodeObject?: boolean;
+  captchaToken?: string;
   doSignUp?: RegisterFunction | UpdateInfoFunction;
 };
 
@@ -120,22 +120,13 @@ export const is2FANeeded = async (email: string): Promise<boolean> => {
   return securityDetails.tfaEnabled;
 };
 
-const getAuthClient = (authType: 'web' | 'desktop') => {
-  const AUTH_CLIENT = {
-    web: SdkFactory.getNewApiInstance().createAuthClient(),
-    desktop: SdkFactory.getNewApiInstance().createDesktopAuthClient(),
-  };
-
-  return AUTH_CLIENT[authType];
-};
-
 export const doLogin = async (
   email: string,
   password: string,
   twoFactorCode: string,
-  loginType: 'web' | 'desktop' | undefined = 'web',
+  captchaToken?: string,
 ): Promise<ProfileInfo> => {
-  const authClient = getAuthClient(loginType);
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient(captchaToken);
   const loginDetails: LoginDetails = {
     email: email.toLowerCase(),
     password: password,
@@ -511,8 +502,8 @@ export const signUp = async (params: SignUpParams) => {
 };
 
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
-  const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
-  const { token, newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
+  const { email, password, twoFactorCode, dispatch, captchaToken } = params;
+  const { token, newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, captchaToken);
   dispatch(userActions.setUser(user));
 
   try {
@@ -540,14 +531,14 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
     authMethod,
     twoFactorCode,
     dispatch,
-    loginType = 'web',
     token = '',
     isNewUser = true,
     redeemCodeObject = false,
+    captchaToken,
     doSignUp,
   } = params;
   if (authMethod === 'signIn') {
-    const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, loginType });
+    const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, captchaToken });
     window.gtag('event', 'User Signin', { method: 'email' });
     return profileInfo;
   } else if (authMethod === 'signUp' && doSignUp) {
