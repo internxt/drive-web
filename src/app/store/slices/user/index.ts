@@ -1,4 +1,4 @@
-import { InitializeUserResponse, UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
+import { UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
@@ -51,6 +51,7 @@ export const initializeUserThunk = createAsyncThunk<
 
   if (user && isAuthenticated) {
     dispatch(refreshUserThunk());
+    dispatch(refreshAvatarThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
     navigationService.push(AppView.Login);
@@ -78,6 +79,26 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
       }
     } catch (err) {
       errorService.reportError(err, { extra: { thunk: 'refreshUser' } });
+    }
+  },
+);
+
+export const refreshAvatarThunk = createAsyncThunk<void, { forceRefresh?: boolean } | undefined, { state: RootState }>(
+  'user/avatar-refresh',
+  async (_, { dispatch, getState }) => {
+    const currentUser = getState().user.user;
+    if (!currentUser) throw new Error('Current user is not defined');
+
+    try {
+      if (currentUser) {
+        const { avatar, uuid } = currentUser;
+        await syncAvatarIfNeeded(uuid, avatar);
+
+        dispatch(userActions.setUser({ ...currentUser, avatar }));
+        localStorageService.set(LocalStorageItem.User, JSON.stringify({ ...currentUser, avatar }));
+      }
+    } catch (err) {
+      errorService.reportError(err, { extra: { thunk: 'refreshAvatarUser' } });
     }
   },
 );
