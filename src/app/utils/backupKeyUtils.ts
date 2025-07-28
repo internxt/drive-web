@@ -150,6 +150,8 @@ export const prepareOldBackupRecoverPayloadForBackend = async ({
       publicKeyInBase64: generatedKeys.publicKey,
     });
 
+    const base64EccEncryptedMnemonic = btoa(eccEncryptedMnemonic as string);
+
     const hybridEncryptedMnemonic = await hybridEncryptMessageWithPublicKey({
       message: mnemonic,
       publicKeyInBase64: eccPublicKeyInBase64,
@@ -161,8 +163,8 @@ export const prepareOldBackupRecoverPayloadForBackend = async ({
       encryptedPassword: encryptedPassword,
       encryptedSalt: encryptedSalt,
       encryptedMnemonic: encryptedMnemonic,
-      eccEncryptedMnemonic: eccEncryptedMnemonic as string,
-      kyberEncryptedMnemonic: hybridEncryptedMnemonic as string,
+      eccEncryptedMnemonic: base64EccEncryptedMnemonic,
+      kyberEncryptedMnemonic: hybridEncryptedMnemonic,
       keys: {
         ecc: {
           public: generatedKeys.ecc?.publicKey,
