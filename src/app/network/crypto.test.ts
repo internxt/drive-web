@@ -166,11 +166,12 @@ describe('Test crypto.ts functions', () => {
   it('encryptStreamInParts should give the same result as the entier file encryption', async () => {
     const uploadChunkSize = 10;
     const chunkSize = 5;
+    const extraSpace = 1;
     const fileSize = 7 * 10;
     const streamCipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
 
-    const encryptedStream = encryptStreamInParts(file, streamCipher, uploadChunkSize);
+    const encryptedStream = encryptStreamInParts(file, streamCipher, uploadChunkSize, extraSpace);
     const { encryptedFile } = await processStreamToCompletion(encryptedStream);
     const flatEncryptedFile = Uint8Array.from(encryptedFile.flatMap((a) => [...a]));
 
@@ -184,11 +185,12 @@ describe('Test crypto.ts functions', () => {
   it('encryptStreamInParts should correctly encrypt file when chunkSize < uploadChunkSize', async () => {
     const uploadChunkSize = 10;
     const chunkSize = 5;
+    const extraSpace = 1;
     const fileSize = 7 * uploadChunkSize + 1;
     const cipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
 
-    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize);
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, extraSpace);
     const result = await processStreamToCompletion(encryptedStream);
 
     const expectedEncryptedFile = [
@@ -210,11 +212,12 @@ describe('Test crypto.ts functions', () => {
   it('encryptStreamInParts should correctly encrypt file even if chunkSize > uploadChunkSize', async () => {
     const uploadChunkSize = 10;
     const chunkSize = 13;
+    const extraSpace = 1;
     const fileSize = 7 * uploadChunkSize;
     const cipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
 
-    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize);
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, extraSpace);
     const result = await processStreamToCompletion(encryptedStream);
 
     const expectedEncryptedFile = [

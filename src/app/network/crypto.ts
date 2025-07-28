@@ -95,12 +95,12 @@ export function encryptStreamInParts(
   plainFile: { size: number; stream(): ReadableStream<Uint8Array> },
   cipher: Cipher,
   uploadChunkSize: number,
+  extraPreAllocatedSpace: number,
 ): ReadableStream<Uint8Array> {
   const readable = plainFile.stream();
 
   const reader = readable.getReader();
-  const extra = 64 * 1024;
-  const preAllocated = uploadChunkSize + extra;
+  const preAllocated = uploadChunkSize + extraPreAllocatedSpace;
   let buffer = new Uint8Array(preAllocated);
   let bufferLength = 0;
 

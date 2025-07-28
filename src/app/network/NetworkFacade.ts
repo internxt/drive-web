@@ -28,6 +28,7 @@ interface UploadOptions {
 interface UploadMultipartOptions extends UploadOptions {
   parts: number;
   uploadChunkSize: number;
+  extraPreAllocatedSpace: number;
 }
 
 interface DownloadOptions {
@@ -139,7 +140,7 @@ export class NetworkFacade {
 
     const encryptFile: EncryptFileFunction = async (algorithm, key, iv) => {
       const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
-      fileReadable = encryptStreamInParts(file, cipher, options.uploadChunkSize);
+      fileReadable = encryptStreamInParts(file, cipher, options.uploadChunkSize, options.extraPreAllocatedSpace);
     };
 
     addEventListener('message', this.handleWorkerMessage);
