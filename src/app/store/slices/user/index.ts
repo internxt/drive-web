@@ -100,13 +100,6 @@ export const refreshAvatarThunk = createAsyncThunk<void, { forceRefresh?: boolea
             avatar: refreshedAvatar ?? userAvatar,
           }),
         );
-        localStorageService.set(
-          LocalStorageItem.User,
-          JSON.stringify({
-            ...currentUser,
-            avatar: refreshedAvatar ?? userAvatar,
-          }),
-        );
       }
     } catch (err) {
       errorService.reportError(err, { extra: { thunk: 'refreshAvatarUser' } });
