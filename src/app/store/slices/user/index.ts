@@ -1,4 +1,4 @@
-import { InitializeUserResponse, UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
+import { UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
@@ -21,7 +21,7 @@ import { workspacesActions } from '../../../store/slices/workspaces/workspacesSt
 
 import errorService from '../../../core/services/error.service';
 import { isTokenExpired } from '../../utils';
-import { syncAvatarIfNeeded } from '../../../utils/avatar/avatarUtils';
+import { refreshAvatar } from '../../../utils/avatar/avatarUtils';
 
 export interface UserState {
   isInitializing: boolean;
@@ -51,6 +51,7 @@ export const initializeUserThunk = createAsyncThunk<
 
   if (user && isAuthenticated) {
     dispatch(refreshUserThunk());
+    dispatch(refreshAvatarThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
     navigationService.push(AppView.Login);
@@ -71,13 +72,37 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
         const { user, newToken } = await userService.refreshUserData(currentUser.uuid);
 
         const { avatar, emailVerified, name, lastname, uuid } = user;
-        await syncAvatarIfNeeded(uuid, avatar);
+        await refreshAvatar(uuid, avatar);
 
         dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
         dispatch(userActions.setToken(newToken));
       }
     } catch (err) {
       errorService.reportError(err, { extra: { thunk: 'refreshUser' } });
+    }
+  },
+);
+
+export const refreshAvatarThunk = createAsyncThunk<void, { forceRefresh?: boolean } | undefined, { state: RootState }>(
+  'user/avatarRefresh',
+  async (_, { dispatch, getState }) => {
+    const currentUser = getState().user.user;
+    if (!currentUser) throw new Error('Current user is not defined');
+
+    try {
+      if (currentUser) {
+        const { avatar: userAvatar, uuid } = currentUser;
+        const refreshedAvatar = await refreshAvatar(uuid, userAvatar);
+
+        dispatch(
+          userActions.setUser({
+            ...currentUser,
+            avatar: refreshedAvatar ?? userAvatar,
+          }),
+        );
+      }
+    } catch (err) {
+      errorService.reportError(err, { extra: { thunk: 'refreshAvatarUser' } });
     }
   },
 );

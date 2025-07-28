@@ -41,13 +41,6 @@ import './ShareDialog.scss';
 import envService from 'app/core/services/env.service';
 import { User } from './components/User';
 import { InvitedUsersSkeletonLoader } from './components/InvitedUsersSkeletonLoader';
-import { useAvatar } from 'hooks/useAvatar';
-import { deleteDatabaseProfileAvatar, getDatabaseProfileAvatar } from 'app/drive/services/database.service';
-import userService from 'app/auth/services/user.service';
-import {
-  saveAvatarToDatabase,
-  showUpdateAvatarErrorToast,
-} from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
 import {
   AccessMode,
   InvitedUserProps,
@@ -82,14 +75,14 @@ const isAdvancedShareItem = (item: DriveItemData | AdvancedSharedItem): item is 
   return item['encryptionKey'];
 };
 
-const getLocalUserData = (avatarSrc?: string) => {
+const getLocalUserData = () => {
   const user = localStorageService.getUser() as UserSettings;
   const ownerData = {
     name: user.name,
     lastname: user.lastname,
     email: user.email,
     sharingId: '',
-    avatar: avatarSrc ?? user.avatar,
+    avatar: user.avatar,
     uuid: user.uuid,
     role: {
       id: 'NONE',
@@ -114,14 +107,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
-  const { avatarBlob } = useAvatar({
-    avatarSrcURL: props?.user?.avatar,
-    deleteDatabaseAvatar: deleteDatabaseProfileAvatar,
-    downloadAvatar: userService.downloadAvatar,
-    getDatabaseAvatar: getDatabaseProfileAvatar,
-    saveAvatarToDatabase: saveAvatarToDatabase,
-    onError: showUpdateAvatarErrorToast,
-  });
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [inviteDialogRoles, setInviteDialogRoles] = useState<Role[]>([]);
@@ -220,8 +205,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       // the server throws an error when there are no users with shared item,
       // that means that the local user is the owner as there is nobody else with this shared file.
       if (isUserOwner) {
-        const ownerAvatar = avatarBlob ? URL.createObjectURL(avatarBlob) : undefined;
-        const ownerData = getLocalUserData(ownerAvatar);
+        const ownerData = getLocalUserData();
         setInvitedUsers([{ ...ownerData, roleName: 'owner' }]);
       }
     }
