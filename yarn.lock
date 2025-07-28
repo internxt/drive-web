@@ -1905,10 +1905,10 @@
   version "1.0.2"
   resolved "https://codeload.github.com/internxt/prettier-config/tar.gz/9fa74e9a2805e1538b50c3809324f1c9d0f3e4f9"
 
-"@internxt/sdk@=1.10.9":
+"@internxt/sdk@1.10.9":
   version "1.10.9"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.10.9/0c019f19795675f5e41bbf5a0ac3dda28da1a942#0c019f19795675f5e41bbf5a0ac3dda28da1a942"
-  integrity sha512-OF99TRv6iKZ44mydVsJH7rit8GQJj9Yg/UJcFjHO+rLMeJjmR956LJVv/QpiQv/LFUh8e+QF3iYqnoO/XSyI6w==
+  resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.10.9.tgz#6a6d3f4148e4c4b108cc7384ebefd9f7fd957813"
+  integrity sha512-xqRCkFPQ/EOM8eS3+AZoAVTH9hYoSUwkorJ1Ic0wXEET2M265GVapqZXoF5TixhpMZycAF4ubnTo+IQNkaFxwQ==
   dependencies:
     axios "1.10.0"
     uuid "11.1.0"
