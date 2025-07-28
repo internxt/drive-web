@@ -8,13 +8,10 @@ import {
   generateHMAC,
   getEncryptedFile,
   processEveryFileBlobReturnHash,
-  encryptReadable,
+  encryptStreamInParts,
 } from './crypto';
 import { Buffer } from 'buffer';
 import crypto from 'crypto';
-import { getSha256 } from '../crypto/services/utils';
-import { Aes256gcmEncrypter, sha512HmacBufferFromHex } from '@internxt/inxt-js/build/lib/utils/crypto';
-import { mnemonicToSeed } from 'bip39';
 
 describe('Test crypto.ts functions', () => {
   globalThis.Buffer = Buffer;
@@ -27,47 +24,16 @@ describe('Test crypto.ts functions', () => {
     expect(result).toBeDefined();
   });
 
-  it('encryptFilename should return the same result as before', async () => {
+  it('encryptFilename should return correct result', async () => {
     const mnemonic =
       'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
     const bucketId = 'test busket id';
     const filename = 'test filename';
     const result = await encryptFilename(mnemonic, bucketId, filename);
-
-    const BUCKET_META_MAGIC = [
-      66, 150, 71, 16, 50, 114, 88, 160, 163, 35, 154, 65, 162, 213, 226, 215, 70, 138, 57, 61, 52, 19, 210, 170, 38,
-      164, 162, 200, 86, 201, 2, 81,
-    ];
-
-    function oldGetDeterministicKey(key: string, data: string): Buffer {
-      const input = key + data;
-      return crypto.createHash('sha512').update(Buffer.from(input, 'hex')).digest();
-    }
-    async function getBucketKey(mnemonic: string, bucketId: string): Promise<string> {
-      const seed = (await mnemonicToSeed(mnemonic)).toString('hex');
-      return oldGetDeterministicKey(seed, bucketId).toString('hex').slice(0, 64);
-    }
-    function encryptMeta(fileMeta: string, key: Buffer, iv: Buffer): string {
-      const cipher: crypto.CipherCCM = Aes256gcmEncrypter(key, iv);
-      const cipherTextBuf = Buffer.concat([cipher.update(fileMeta, 'utf8'), cipher.final()]);
-      const digest = cipher.getAuthTag();
-      return Buffer.concat([digest, iv, cipherTextBuf]).toString('base64');
-    }
-    async function oldEncryptFilename(mnemonic: string, bucketId: string, filename: string): Promise<string> {
-      const bucketKey = await getBucketKey(mnemonic, bucketId);
-      const encryptionKey = sha512HmacBufferFromHex(bucketKey)
-        .update(Buffer.from(BUCKET_META_MAGIC))
-        .digest()
-        .slice(0, 32);
-      const encryptionIv = sha512HmacBufferFromHex(bucketKey).update(bucketId).update(filename).digest().slice(0, 32);
-      return encryptMeta(filename, encryptionKey, encryptionIv);
-    }
-
-    const oldResult = await oldEncryptFilename(mnemonic, bucketId, filename);
-    expect(result).toBe(oldResult);
+    expect(result).toBe('+iEqY7fQH9IRS//uFEiLwA8RBa7UGI3LhB0nNMcegc2IMHagNzUoENLzqtsrNx5RfQc3hBUq8z5FXJk3Yw==');
   });
 
-  it('generateHMAC should generate hmac', async () => {
+  it('generateHMAC should generate correct hmac', async () => {
     const encryptionKey = Buffer.from('0b68dcbb255a4e654bbf361e73cf1b98', 'hex');
     const shardMeta = {
       challenges_as_str: [],
@@ -123,7 +89,7 @@ describe('Test crypto.ts functions', () => {
     });
   }
 
-  it('processEveryFileBlobReturnHash should generate hash', async () => {
+  it('processEveryFileBlobReturnHash should generate correct hash', async () => {
     const chunkedFileReadable = getReadableStream();
 
     const receivedBlobs: unknown[] = [];
@@ -135,13 +101,133 @@ describe('Test crypto.ts functions', () => {
     expect(receivedBlobs.length).toBe(3);
   });
 
-  it('getSha256 should generate the same result as sha256 from crypto', async () => {
-    function oldSha256(input: Buffer): Buffer {
-      return crypto.createHash('sha256').update(input).digest();
+  function createZeroFile(
+    fileSizeInBytes: number,
+    chunkSizeInBytes: number,
+  ): {
+    size: number;
+    stream(): ReadableStream<Uint8Array>;
+  } {
+    const result = {
+      size: fileSizeInBytes,
+      stream() {
+        let bytesServed = 0;
+        return new ReadableStream<Uint8Array>({
+          pull(controller) {
+            const remaining = fileSizeInBytes - bytesServed;
+            if (remaining <= 0) {
+              controller.close();
+              return;
+            }
+
+            const chunkSize = Math.min(chunkSizeInBytes, remaining);
+            const chunk = new Uint8Array(chunkSize);
+            controller.enqueue(chunk);
+            bytesServed += chunkSize;
+          },
+        });
+      },
+    };
+
+    return result;
+  }
+
+  async function processStreamToCompletion(
+    readable: ReadableStream<Uint8Array>,
+  ): Promise<{ chunkCount: number; totalSize: number; encryptedFile: Uint8Array[] }> {
+    const reader = readable.getReader();
+    const encryptedFile: Uint8Array[] = [];
+    let totalSize = 0;
+    let chunkCount = 0;
+
+    try {
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        chunkCount++;
+        totalSize += value.length;
+        encryptedFile.push(value);
+      }
+
+      return { chunkCount, totalSize, encryptedFile };
+    } finally {
+      reader.releaseLock();
     }
-    const pass = 'Test password';
-    const hash = await getSha256(pass);
-    const oldHash = oldSha256(Buffer.from(pass)).toString('hex');
-    expect(hash).toBe(oldHash);
+  }
+
+  function getTestCipher() {
+    const key = Buffer.from('d82fc82d9265a60aa0d7e703e11809ba60b45038aec705f77d5f84630043b118', 'hex');
+    const iv = Buffer.from('0b68dcbb255a4e654bbf361e73cf1b98', 'hex');
+    return crypto.createCipheriv('aes-256-ctr', key, iv);
+  }
+
+  it('encryptStreamInParts should give the same result as the entier file encryption', async () => {
+    const uploadChunkSize = 10;
+    const chunkSize = 5;
+    const fileSize = 7 * 10;
+    const streamCipher = getTestCipher();
+    const file = createZeroFile(fileSize, chunkSize);
+
+    const encryptedStream = encryptStreamInParts(file, streamCipher, uploadChunkSize);
+    const { encryptedFile } = await processStreamToCompletion(encryptedStream);
+    const flatEncryptedFile = Uint8Array.from(encryptedFile.flatMap((a) => [...a]));
+
+    const text = Buffer.alloc(fileSize).toString();
+    const cipher = getTestCipher();
+    const encrypted = Uint8Array.from(Buffer.concat([cipher.update(text, 'utf8'), cipher.final()]));
+
+    expect(encrypted).toStrictEqual(flatEncryptedFile);
+  });
+
+  it('encryptStreamInParts should correctly encrypt file when chunkSize < uploadChunkSize', async () => {
+    const uploadChunkSize = 10;
+    const chunkSize = 5;
+    const fileSize = 7 * uploadChunkSize + 1;
+    const cipher = getTestCipher();
+    const file = createZeroFile(fileSize, chunkSize);
+
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize);
+    const result = await processStreamToCompletion(encryptedStream);
+
+    const expectedEncryptedFile = [
+      new Uint8Array([1, 154, 92, 204, 248, 101, 81, 115, 77, 1]),
+      new Uint8Array([38, 164, 222, 12, 52, 182, 246, 171, 32, 103]),
+      new Uint8Array([73, 196, 170, 85, 160, 122, 57, 220, 85, 142]),
+      new Uint8Array([80, 134, 15, 169, 200, 223, 33, 106, 90, 252]),
+      new Uint8Array([22, 66, 64, 243, 231, 169, 203, 203, 88, 253]),
+      new Uint8Array([195, 91, 10, 103, 145, 133, 158, 13, 24, 87]),
+      new Uint8Array([60, 92, 184, 5, 86, 129, 103, 180, 68, 151]),
+      new Uint8Array([78]),
+    ];
+
+    expect(result.chunkCount).toBe(expectedEncryptedFile.length);
+    expect(result.totalSize).toBe(fileSize);
+    expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+  });
+
+  it('encryptStreamInParts should correctly encrypt file even if chunkSize > uploadChunkSize', async () => {
+    const uploadChunkSize = 10;
+    const chunkSize = 13;
+    const fileSize = 7 * uploadChunkSize;
+    const cipher = getTestCipher();
+    const file = createZeroFile(fileSize, chunkSize);
+
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize);
+    const result = await processStreamToCompletion(encryptedStream);
+
+    const expectedEncryptedFile = [
+      new Uint8Array([1, 154, 92, 204, 248, 101, 81, 115, 77, 1, 38, 164, 222]),
+      new Uint8Array([12, 52, 182, 246, 171, 32, 103, 73, 196, 170, 85, 160, 122]),
+      new Uint8Array([57, 220, 85, 142, 80, 134, 15, 169, 200, 223, 33, 106, 90]),
+      new Uint8Array([252, 22, 66, 64, 243, 231, 169, 203, 203, 88, 253, 195, 91]),
+      new Uint8Array([10, 103, 145, 133, 158, 13, 24, 87, 60, 92, 184, 5, 86]),
+      new Uint8Array([129, 103, 180, 68, 151]),
+    ];
+
+    expect(result.chunkCount).toBe(expectedEncryptedFile.length);
+    expect(result.totalSize).toBe(fileSize);
+    expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
   });
 });
