@@ -107,27 +107,21 @@ export function encryptStreamInParts(
   return new ReadableStream<Uint8Array>({
     async pull(controller) {
       while (bufferLength < uploadChunkSize) {
-        const status = await reader.read();
+        const { value, done } = await reader.read();
 
-        let encryptedChunk;
-        if (!status.done) {
-          encryptedChunk = cipher.update(status.value);
-        } else {
-          encryptedChunk = cipher.final();
-        }
+        const encryptedChunk = done ? cipher.final() : cipher.update(value);
 
-        if (bufferLength + encryptedChunk.length > buffer.length) {
-          const newBuffer = new Uint8Array(bufferLength + encryptedChunk.length);
-          if (bufferLength > 0) {
-            newBuffer.set(buffer.subarray(0, bufferLength), 0);
-          }
+        const requiredLength = bufferLength + encryptedChunk.length;
+        if (requiredLength > buffer.length) {
+          const newBuffer = new Uint8Array(requiredLength);
+          newBuffer.set(buffer.subarray(0, bufferLength), 0);
           buffer = newBuffer;
         }
 
         buffer.set(encryptedChunk, bufferLength);
         bufferLength += encryptedChunk.length;
 
-        if (status.done) {
+        if (done) {
           if (bufferLength > 0) {
             controller.enqueue(buffer.slice(0, bufferLength));
           }
@@ -135,9 +129,9 @@ export function encryptStreamInParts(
           return;
         }
       }
-      const uploadChunk = buffer.slice(0, bufferLength);
+
+      controller.enqueue(buffer.slice(0, bufferLength));
       bufferLength = 0;
-      controller.enqueue(uploadChunk);
     },
   });
 }
