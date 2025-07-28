@@ -10,6 +10,7 @@ import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { CouponCodeData } from 'app/payment/types';
 import { bytesToString } from 'app/drive/services/size.service';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
+import { sendAddShoppersConversion } from './addShoppers.services';
 
 /**
  * Stores relevant payment data in local storage to be retrieved later,
@@ -54,7 +55,7 @@ export function savePaymentDataInLocalStorage(
   }
 }
 
-export async function trackSignUp(uuid: string, email: string) {
+export async function trackSignUp(uuid: string) {
   try {
     const gclid = getCookie('gclid');
     const IMPACT_API = envService.getVariable('impactApiUrl');
@@ -110,6 +111,14 @@ export async function trackPaymentConversion() {
     } catch {
       //
     }
+
+    sendAddShoppersConversion({
+      orderId: uuid,
+      value: amount,
+      currency: currency ?? 'EUR',
+
+      offerCode: localStorageService.get('couponCode') ?? '',
+    });
     const IMPACT_API = envService.getVariable('impactApiUrl');
     const anonymousID = getCookie('impactAnonymousId');
     const source = getCookie('impactSource');

@@ -583,7 +583,7 @@ export const signUp = async (params: SignUpParams) => {
 
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
   if (isNewUser) dispatch(referralsThunks.initializeThunk());
-  await trackSignUp(xUser.uuid, email);
+  await trackSignUp(xUser.uuid);
 
   return { token: xToken, user: xUser, mnemonic, newToken: xNewToken };
 };
