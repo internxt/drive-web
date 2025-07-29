@@ -1,8 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import envService from 'app/core/services/env.service';
 import { Abortable } from 'app/network/Abortable';
-import { mnemonicToSeed } from 'bip39';
-import * as crypto from 'crypto';
 import { createUploadWebWorker } from '../../../../WebWorker';
 import localStorageService from '../../../core/services/local-storage.service';
 import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
@@ -133,24 +131,4 @@ export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
     bucketId: user.bucket,
     useProxy: envService.getVariable('dontUseProxy') !== 'true',
   };
-}
-
-// ENCRYPTION FOR FILE KEY
-export async function generateFileKey(mnemonic: string, bucketId: string, index: Buffer | string): Promise<Buffer> {
-  const bucketKey = await generateFileBucketKey(mnemonic, bucketId);
-
-  return getFileDeterministicKey(bucketKey.slice(0, 32), index).slice(0, 32);
-}
-
-async function generateFileBucketKey(mnemonic: string, bucketId: string): Promise<Buffer> {
-  const seed = await mnemonicToSeed(mnemonic);
-
-  return getFileDeterministicKey(seed, Buffer.from(bucketId, 'hex'));
-}
-
-function getFileDeterministicKey(key: Buffer | string, data: Buffer | string): Buffer {
-  const hash = crypto.createHash('sha512');
-  hash.update(key).update(data);
-
-  return hash.digest();
 }

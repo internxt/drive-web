@@ -7,6 +7,7 @@ import {
   getHmacSha512FromHexKey,
   getRipemd160FromHex,
   getSha256Hasher,
+  getSha512Combined,
   getSha512FromHex,
 } from '../crypto/services/utils';
 import { LegacyShardMeta } from './requests';
@@ -191,4 +192,22 @@ export async function processEveryFileBlobReturnHash(
 
   const sha256Result = hasher.digest();
   return await getRipemd160FromHex(sha256Result);
+}
+
+// ENCRYPTION FOR FILE KEY
+export async function generateFileKey(mnemonic: string, bucketId: string, index: Buffer): Promise<Buffer> {
+  const bucketKey = await generateFileBucketKey(mnemonic, bucketId);
+
+  return (await getFileDeterministicKey(bucketKey.slice(0, 32), index)).slice(0, 32);
+}
+
+async function generateFileBucketKey(mnemonic: string, bucketId: string): Promise<Buffer> {
+  const seed = await mnemonicToSeed(mnemonic);
+
+  return getFileDeterministicKey(seed, Buffer.from(bucketId, 'hex'));
+}
+
+async function getFileDeterministicKey(key: Buffer, data: Buffer): Promise<Buffer> {
+  const hashHex = await getSha512Combined(key, data);
+  return Buffer.from(hashHex, 'hex');
 }

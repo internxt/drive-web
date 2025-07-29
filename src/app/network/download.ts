@@ -6,7 +6,8 @@ import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from '.
 
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
 import envService from 'app/core/services/env.service';
-import { generateFileKey } from '../drive/services/network.service';
+
+import { generateFileKey } from './crypto';
 import downloadFileV2 from './download/v2';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
