@@ -71,24 +71,19 @@ export async function encryptFilename(mnemonic: string, bucketId: string, filena
 export function encryptReadable(readable: ReadableStream<Uint8Array>, cipher: Cipher): ReadableStream<Uint8Array> {
   const reader = readable.getReader();
 
-  const encryptedFileReadable = new ReadableStream({
+  return new ReadableStream({
     async start(controller) {
-      let done = false;
-
-      while (!done) {
-        const status = await reader.read();
-
-        if (!status.done) {
-          controller.enqueue(cipher.update(status.value));
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          controller.close();
+          break;
         }
-
-        done = status.done;
+        controller.enqueue(cipher.update(value));
       }
-      controller.close();
     },
   });
-
-  return encryptedFileReadable;
 }
 
 export function encryptStreamInParts(
@@ -139,33 +134,33 @@ export function encryptStreamInParts(
 export async function getEncryptedFile(
   plainFile: { stream(): ReadableStream<Uint8Array> },
   cipher: Cipher,
-): Promise<[Blob, string]> {
+  fileLength: number,
+): Promise<[Uint8Array, string]> {
   const readable = encryptReadable(plainFile.stream(), cipher).getReader();
   const hasher = await getSha256Hasher();
   hasher.init();
-  const blobParts: Uint8Array[] = [];
+  const fileParts: Uint8Array = new Uint8Array(fileLength);
 
-  let done = false;
+  let offset = 0;
 
-  while (!done) {
-    const status = await readable.read();
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const { done, value } = await readable.read();
+    if (done) break;
 
-    if (!status.done) {
-      hasher.update(status.value);
-      blobParts.push(status.value);
-    }
-
-    done = status.done;
+    hasher.update(value);
+    fileParts.set(value, offset);
+    offset += value.length;
   }
 
   const sha256Result = hasher.digest();
 
-  return [new Blob(blobParts, { type: 'application/octet-stream' }), await getRipemd160FromHex(sha256Result)];
+  return [fileParts, await getRipemd160FromHex(sha256Result)];
 }
 
 export async function processEveryFileBlobReturnHash(
   chunkedFileReadable: ReadableStream<Uint8Array>,
-  onEveryBlob: (blob: Blob) => Promise<void>,
+  onEveryChunk: (part: Uint8Array) => Promise<void>,
 ): Promise<string> {
   const reader = chunkedFileReadable.getReader();
   const hasher = await getSha256Hasher();
@@ -178,8 +173,7 @@ export async function processEveryFileBlobReturnHash(
     if (!status.done) {
       const value = status.value;
       hasher.update(value);
-      const blob = new Blob([value], { type: 'application/octet-stream' });
-      await onEveryBlob(blob);
+      await onEveryChunk(value);
     }
 
     done = status.done;

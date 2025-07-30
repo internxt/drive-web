@@ -7,7 +7,7 @@ import { downloadFile } from '@internxt/sdk/dist/network/download';
 
 import { getEncryptedFile, encryptStreamInParts, processEveryFileBlobReturnHash } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
-import { uploadFileBlob, UploadProgressCallback } from './upload';
+import { uploadFileUint8Array, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
@@ -39,7 +39,7 @@ interface DownloadOptions {
 }
 
 interface UploadTask {
-  contentToUpload: Blob;
+  contentToUpload: Uint8Array;
   urlToUpload: string;
   index: number;
 }
@@ -77,7 +77,7 @@ export class NetworkFacade {
   };
 
   upload(bucketId: string, mnemonic: string, file: File, options: UploadOptions): Promise<string> {
-    let fileToUpload: Blob;
+    let fileToUpload: Uint8Array;
     let fileHash: string;
 
     return uploadFile(
@@ -88,7 +88,7 @@ export class NetworkFacade {
       file.size,
       async (algorithm, key, iv) => {
         const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
-        const [encryptedFile, hash] = await getEncryptedFile(file, cipher);
+        const [encryptedFile, hash] = await getEncryptedFile(file, cipher, file.size);
 
         fileToUpload = encryptedFile;
         fileHash = hash;
@@ -103,7 +103,7 @@ export class NetworkFacade {
         if (isPaused && options?.continueUploadOptions?.taskId)
           await waitForContinueUploadSignal(options?.continueUploadOptions?.taskId);
 
-        await uploadFileBlob(fileToUpload, fetchUrl, {
+        await uploadFileUint8Array(fileToUpload, fetchUrl, {
           progressCallback: options.uploadingCallback,
           abortController: options.abortController,
         });
@@ -112,7 +112,7 @@ export class NetworkFacade {
          * TODO: Memory leak here, probably due to closures usage with this variable.
          * Pending to be solved, do not remove this line unless the leak is solved.
          */
-        fileToUpload = new Blob([]);
+        fileToUpload = new Uint8Array();
 
         return fileHash;
       },
@@ -155,7 +155,7 @@ export class NetworkFacade {
           await waitForContinueUploadSignal(options.continueUploadOptions.taskId);
         }
 
-        const { etag } = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
+        const { etag } = await uploadFileUint8Array(upload.contentToUpload, upload.urlToUpload, {
           progressCallback: (_, uploadedBytes) => {
             notifyProgress(upload.index, uploadedBytes);
           },
@@ -183,7 +183,7 @@ export class NetworkFacade {
           });
       }, limitConcurrency);
 
-      const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
+      const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (part: Uint8Array) => {
         if (uploadQueue.running() === limitConcurrency) {
           await uploadQueue.unsaturated();
         }
@@ -197,7 +197,7 @@ export class NetworkFacade {
 
         uploadQueue
           .pushAsync({
-            contentToUpload: blob,
+            contentToUpload: part,
             urlToUpload: urls[partIndex],
             index: partIndex++,
           })
@@ -218,7 +218,7 @@ export class NetworkFacade {
           });
 
         // TODO: Remove
-        blob = new Blob([]);
+        part = new Uint8Array();
       });
 
       while (uploadQueue.running() > 0 || uploadQueue.length() > 0) {
