@@ -197,6 +197,7 @@ describe('backupKeyUtils', () => {
       const mockBackupData: BackupData = {
         mnemonic: 'test mnemonic',
         privateKey: 'test-private-key',
+        userUuid: 'test-user-uuid',
         keys: {
           ecc: 'test-ecc-key',
           kyber: 'test-kyber-key',

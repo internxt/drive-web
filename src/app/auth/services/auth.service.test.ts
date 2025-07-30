@@ -695,6 +695,7 @@ describe('updateCredentialsWithToken', () => {
     const mockBackupData: BackupData = {
       privateKey: 'test-private-key',
       mnemonic: '',
+      userUuid: 'test-user-uuid',
       keys: {
         ecc: '',
         kyber: '',
@@ -735,6 +736,7 @@ describe('updateCredentialsWithToken', () => {
     const mockBackupData: BackupData = {
       privateKey: '',
       mnemonic: '',
+      userUuid: 'test-user-uuid',
       keys: {
         ecc: 'test-ecc-private-key',
         kyber: 'test-kyber-private-key',
