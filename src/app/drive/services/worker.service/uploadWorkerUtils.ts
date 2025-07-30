@@ -2,7 +2,7 @@ import { WORKER_MESSAGE_STATES } from '../../../../WebWorker';
 import { Abortable } from '../../../network/Abortable';
 import DatabaseUploadRepository from '../../../repositories/DatabaseUploadRepository';
 import { TaskStatus } from '../../../tasks/types';
-import { IUploadParams } from '../network.service';
+import { IUploadParams } from '../network.service/types';
 
 /**
  * Checks the upload progress for the specified task.
