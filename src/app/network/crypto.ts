@@ -201,13 +201,13 @@ export async function generateFileKey(mnemonic: string, bucketId: string, index:
   return (await getFileDeterministicKey(bucketKey.slice(0, 32), index)).slice(0, 32);
 }
 
-async function generateFileBucketKey(mnemonic: string, bucketId: string): Promise<Buffer> {
+export async function generateFileBucketKey(mnemonic: string, bucketId: string): Promise<Buffer> {
   const seed = await mnemonicToSeed(mnemonic);
 
   return getFileDeterministicKey(seed, Buffer.from(bucketId, 'hex'));
 }
 
-async function getFileDeterministicKey(key: Buffer, data: Buffer): Promise<Buffer> {
+export async function getFileDeterministicKey(key: Buffer, data: Buffer): Promise<Buffer> {
   const hashHex = await getSha512Combined(key, data);
   return Buffer.from(hashHex, 'hex');
 }

@@ -9,8 +9,11 @@ import { getSha256 } from '../crypto/services/utils';
 import {
   Aes256gcmEncrypter,
   encryptFilename,
+  generateFileBucketKey,
+  generateFileKey,
   generateHMAC,
   getEncryptedFile,
+  getFileDeterministicKey,
   processEveryFileBlobReturnHash,
   sha512HmacBufferFromHex,
 } from './crypto';
@@ -144,5 +147,40 @@ describe('Test crypto.ts functions', () => {
     const hash = await getSha256(pass);
     const oldHash = oldSha256(Buffer.from(pass)).toString('hex');
     expect(hash).toBe(oldHash);
+  });
+});
+
+describe('File key generation functions', () => {
+  globalThis.Buffer = Buffer;
+
+  it('generateFileKey should return 32-byte buffer', async () => {
+    const mnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+    const bucketId = 'test';
+    const index = Buffer.from([0, 0, 0, 1]);
+
+    const result = await generateFileKey(mnemonic, bucketId, index);
+
+    expect(result).toBeInstanceOf(Buffer);
+    expect(result.length).toBe(32);
+  });
+
+  it('generateFileBucketKey should return 64-byte buffer', async () => {
+    const mnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+    const bucketId = 'test';
+
+    const result = await generateFileBucketKey(mnemonic, bucketId);
+
+    expect(result).toBeInstanceOf(Buffer);
+    expect(result.length).toBe(64);
+  });
+
+  it('getFileDeterministicKey should return 64-byte buffer', async () => {
+    const key = Buffer.from('test_key');
+    const data = Buffer.from('test_data');
+
+    const result = await getFileDeterministicKey(key, data);
+
+    expect(result).toBeInstanceOf(Buffer);
+    expect(result.length).toBe(64);
   });
 });
