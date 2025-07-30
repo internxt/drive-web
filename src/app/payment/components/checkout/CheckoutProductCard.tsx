@@ -52,6 +52,9 @@ export const CheckoutProductCard = ({
   const currencySymbol = Currency[selectedPlan.price.currency];
   const normalPriceAmount = selectedPlan.price.decimalAmount;
 
+  const oldPlanIds = ['price_1PNxZkFAOdcgaBMQi0UCtXBj', 'price_1OQ3H5FAOdcgaBMQwMJ734rd'];
+  const isOldPlan = oldPlanIds.includes(selectedPlan.price.id);
+
   const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
   const isBusiness = selectedPlan.price.type === UserType.Business;
   const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
@@ -75,15 +78,18 @@ export const CheckoutProductCard = ({
 
   const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
 
-  const productLabel = translate(`preferences.account.plans.${planType}.${bytes}.title`) ?? bytes;
+  const productLabel =
+    translate(`preferences.account.plans.${planType}.${bytes}.${isOldPlan ? 'oldTitle' : 'title'}`) ?? bytes;
+
   const featureKeys =
-    translateList(`preferences.account.plans.${planType}.${bytes ?? 'freeFeatures'}.features`, {
-      returnObjects: true,
-    }) ?? translateList('preferences.account.plans.planFeaturesList.1GB.features');
+    translateList(
+      `preferences.account.plans.${planType}.${bytes ?? 'freeFeatures'}.${isOldPlan ? 'oldFeatures' : 'features'}`,
+      { returnObjects: true },
+    ) ?? translateList('preferences.account.plans.planFeaturesList.1GB.features');
 
   const comingSoonFeatureKeys = useMemo(() => {
     const result = translateList(`preferences.account.plans.${planType}.${bytes}.comingSoonFeatures`);
-    return Array.isArray(result) ? result : [];
+    return !isOldPlan && Array.isArray(result) ? result : [];
   }, [planType, bytes, translateList]);
 
   return (
