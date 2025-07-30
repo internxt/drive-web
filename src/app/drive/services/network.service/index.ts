@@ -4,30 +4,9 @@ import { Abortable } from 'app/network/Abortable';
 import { createUploadWebWorker } from '../../../../WebWorker';
 import localStorageService from '../../../core/services/local-storage.service';
 import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
+import { EnvironmentConfig, IUploadParams } from './types';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 40 * 1024 * 1024 * 1024;
-
-type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
-export interface IUploadParams {
-  filesize: number;
-  filecontent: File;
-  isUploadedFromFolder?: boolean;
-  progressCallback: ProgressCallback;
-}
-
-export interface IDownloadParams {
-  fileToken?: string;
-  fileEncryptionKey?: Buffer;
-  progressCallback: ProgressCallback;
-}
-
-interface EnvironmentConfig {
-  bridgeUser: string;
-  bridgePass: string;
-  encryptionKey: string;
-  bucketId: string;
-  useProxy: boolean;
-}
 
 export class Network {
   private mnemonic: string;

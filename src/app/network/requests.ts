@@ -3,6 +3,7 @@ import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
 import errorService from '../core/services/error.service';
 import { getSha256 } from '../crypto/services/utils';
 import { encryptFilename, generateHMAC } from './crypto';
+import { LegacyShardMeta, ShardMeta } from './types';
 
 // TODO: Make this injectable
 const networkApiUrl = envService.getVariable('storjBridge');
@@ -189,18 +190,6 @@ interface NetworkCredentials {
   user: string;
   pass: string;
 }
-
-export interface LegacyShardMeta {
-  hash: string;
-  size: number;
-  index: number;
-  parity: boolean;
-  challenges?: Buffer[];
-  challenges_as_str: string[];
-  tree: string[];
-}
-
-export type ShardMeta = Omit<LegacyShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>;
 
 interface Contract {
   hash: string;

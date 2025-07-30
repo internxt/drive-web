@@ -10,7 +10,7 @@ import {
   getSha512Combined,
   getSha512FromHex,
 } from '../crypto/services/utils';
-import { LegacyShardMeta } from './requests';
+import { LegacyShardMeta } from './types';
 
 const BUCKET_META_MAGIC = [
   66, 150, 71, 16, 50, 114, 88, 160, 163, 35, 154, 65, 162, 213, 226, 215, 70, 138, 57, 61, 52, 19, 210, 170, 38, 164,
