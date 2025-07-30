@@ -2,7 +2,7 @@ import { getHmacSha512FromHexKey, getSha512Combined } from '../../../src/app/cry
 
 import { describe, expect, it } from 'vitest';
 
-import { generateHMAC, sha512HmacBuffer, sha512HmacBufferFromHex } from '../../../src/app/network/crypto';
+import { generateHMAC } from '../../../src/app/network/crypto';
 
 import { Buffer } from 'buffer';
 import * as crypto from 'crypto';
@@ -18,7 +18,11 @@ describe('HMAC should work as before', () => {
     const bucketKey = 'f5cbcc2687293589d504e0f723adf62ed07f8f20f429e82a9576e7322978c245';
     const resultHex = await getHmacSha512FromHexKey(bucketKey, [Buffer.from(BUCKET_META_MAGIC)]);
     const result = Buffer.from(resultHex, 'hex').subarray(0, 32);
-    const oldResult = sha512HmacBufferFromHex(bucketKey).update(Buffer.from(BUCKET_META_MAGIC)).digest().slice(0, 32);
+    const oldResult = crypto
+      .createHmac('sha512', Buffer.from(bucketKey, 'hex'))
+      .update(Buffer.from(BUCKET_META_MAGIC))
+      .digest()
+      .slice(0, 32);
     expect(result).toStrictEqual(oldResult);
   });
 
@@ -28,7 +32,12 @@ describe('HMAC should work as before', () => {
     const filename = 'Test filename';
     const resultHex = await getHmacSha512FromHexKey(bucketKey, [bucketId, filename]);
     const result = Buffer.from(resultHex, 'hex').subarray(0, 32);
-    const oldResult = sha512HmacBufferFromHex(bucketKey).update(bucketId).update(filename).digest().slice(0, 32);
+    const oldResult = crypto
+      .createHmac('sha512', Buffer.from(bucketKey, 'hex'))
+      .update(bucketId)
+      .update(filename)
+      .digest()
+      .slice(0, 32);
     expect(result).toStrictEqual(oldResult);
   });
 
@@ -49,7 +58,7 @@ describe('HMAC should work as before', () => {
       encryptionKey: Buffer,
     ): Buffer {
       const shardHashesSorted = [...shardMetas].sort((sA, sB) => sA.index - sB.index);
-      const hmac = sha512HmacBuffer(encryptionKey);
+      const hmac = crypto.createHmac('sha512', encryptionKey);
 
       for (const shardMeta of shardHashesSorted) {
         hmac.update(Buffer.from(shardMeta.hash, 'hex'));

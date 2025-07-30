@@ -25,14 +25,6 @@ export function Aes256gcmEncrypter(key: Buffer, iv: Buffer): crypto.CipherGCM {
   return crypto.createCipheriv('aes-256-gcm', key, iv);
 }
 
-export function sha512HmacBufferFromHex(key: string): crypto.Hmac {
-  return crypto.createHmac('sha512', Buffer.from(key, 'hex'));
-}
-
-export function sha512HmacBuffer(key: Buffer | string): crypto.Hmac {
-  return crypto.createHmac('sha512', key);
-}
-
 export function generateHMAC(
   shardMetas: Omit<LegacyShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
   encryptionKey: Buffer,
