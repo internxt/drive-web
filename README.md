@@ -12,7 +12,7 @@ We aim to have:
 
 - An 'A' score on Maintainability Rating
 - An 'A' score on Security Rating
-- A 3% of duplicated lines
+- Less than 3% duplicated lines
 - A 50% tests coverage
 
 # Getting Started
