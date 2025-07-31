@@ -126,7 +126,7 @@ beforeEach(() => {
   vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
     if (key === 'magicIv') return mockMagicIv;
     if (key === 'magicSalt') return mockMagicSalt;
-    if (key === 'api') return mockApi;
+    if (key === 'newApi') return mockApi;
     if (key === 'secret') return mockSecret;
     else return 'no mock implementation';
   });
