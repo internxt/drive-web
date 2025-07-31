@@ -70,6 +70,7 @@ const product = {
 
 const expectedAmount = getProductAmount(product.price.decimalAmount, 1, promoCode);
 const planName = bytesToString(product.price.bytes) + product.price.interval;
+const email = 'example@example.com';
 
 beforeEach(() => {
   globalThis.window.gtag = vi.fn();
@@ -89,6 +90,8 @@ beforeEach(() => {
     if (key === 'priceId') return product.price.id;
     if (key === 'currency') return product.price.currency;
     if (key === 'amountPaid') return expectedAmount;
+    if (key === 'email') return email;
+    if (key === 'couponCode') return email;
     else return 'mock underfined';
   });
 });
@@ -98,7 +101,7 @@ describe('Testing Impact Service', () => {
     it('When wants to store the data, then the price to track is the correct one', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
-      savePaymentDataInLocalStorage(subId, paymentIntentId, product as PriceWithTax, 1, promoCode);
+      savePaymentDataInLocalStorage(subId, paymentIntentId, product as PriceWithTax, 1, promoCode, email);
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('amountPaid', expectedAmount);
     });
