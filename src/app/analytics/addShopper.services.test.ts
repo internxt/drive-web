@@ -14,18 +14,6 @@ describe('sendAddShoppersConversion', () => {
     expect((window as any).AddShoppersConversion).toBeUndefined();
   });
 
-  it('should not execute if offerCode is not "welcome"', () => {
-    sendAddShoppersConversion({
-      orderId: 'order999',
-      value: 10,
-      currency: 'usd',
-      offerCode: 'blackfriday',
-    });
-
-    expect(document.head.querySelector('#AddShoppers')).toBeNull();
-    expect((window as any).AddShoppersConversion).toBeUndefined();
-  });
-
   it('should set AddShoppersConversion and inject script if offerCode is "welcome"', () => {
     const input = {
       orderId: 'order123',

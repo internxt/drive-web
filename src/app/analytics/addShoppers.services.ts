@@ -12,7 +12,7 @@ export function sendAddShoppersConversion({
   const isMissingRequiredFields = !orderId || !value || !currency;
   const isInvalidOfferCode = offerCode.toLowerCase() !== 'welcome';
 
-  if (isMissingRequiredFields || isInvalidOfferCode) return;
+  if (isMissingRequiredFields) return;
 
   try {
     (window as any).AddShoppersConversion = {
