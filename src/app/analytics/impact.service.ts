@@ -32,6 +32,7 @@ import { sendAddShoppersConversion } from './addShoppers.services';
  * @param selectedPlan - The pricing plan selected by the user
  * @param users - Number of users for the purchase (1 for individual, >1 for B2B)
  * @param couponCodeData - Optional coupon code information applied to the purchase
+ * @param email - Email introduced by the user who makes the purchase
  */
 export function savePaymentDataInLocalStorage(
   subscriptionId: string | undefined,
@@ -39,6 +40,7 @@ export function savePaymentDataInLocalStorage(
   selectedPlan: PriceWithTax | undefined,
   users: number,
   couponCodeData: CouponCodeData | undefined,
+  email: string | undefined,
 ) {
   if (subscriptionId && selectedPlan?.price.interval !== 'lifetime')
     localStorageService.set('subscriptionId', subscriptionId);
@@ -52,6 +54,12 @@ export function savePaymentDataInLocalStorage(
     localStorageService.set('amountPaid', amountToPay);
     localStorageService.set('priceId', selectedPlan.price.id);
     localStorageService.set('currency', selectedPlan.price.currency);
+  }
+  if (email !== undefined) {
+    localStorageService.set('email', email);
+  }
+  if (couponCodeData?.codeName !== undefined) {
+    localStorageService.set('couponCode', couponCodeData.codeName);
   }
 }
 
@@ -91,6 +99,8 @@ export async function trackPaymentConversion() {
     const priceId = localStorageService.get('priceId');
     const currency = localStorageService.get('currency');
     const amount = parseFloat(localStorageService.get('amountPaid') ?? '0');
+    const userEmail = localStorageService.get('email') ?? undefined;
+    const couponCode = localStorageService.get('couponCode') ?? undefined;
     const gclid = getCookie('gclid');
 
     try {
@@ -116,10 +126,9 @@ export async function trackPaymentConversion() {
       orderId: uuid,
       value: amount,
       currency: currency ?? 'EUR',
-      offerCode: localStorageService.get('couponCode') ?? '',
+      couponCodeData: couponCode,
+      email: userEmail,
     });
-
-    console.log('Conersion');
 
     const IMPACT_API = envService.getVariable('impactApiUrl');
     const anonymousID = getCookie('impactAnonymousId');

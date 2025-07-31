@@ -1,36 +1,36 @@
+declare global {
+  interface Window {
+    dataLayer: Record<string, any>[];
+  }
+}
+
 export function sendAddShoppersConversion({
   orderId,
   value,
   currency,
-  offerCode = '',
+  couponCodeData,
+  email,
 }: {
-  orderId: string;
+  orderId: string | undefined;
   value: number;
-  currency: string;
-  offerCode?: string;
+  currency: string | undefined;
+  couponCodeData: string | undefined;
+  email: string | undefined;
 }) {
-  const isMissingRequiredFields = !orderId || !value || !currency;
-  const isInvalidOfferCode = offerCode.toLowerCase() !== 'welcome';
+  const isMissingRequiredFields = !orderId || !value || !currency || !couponCodeData || !email;
+  const isInvalidOfferCode = couponCodeData?.toLowerCase() !== 'welcome';
 
-  if (isMissingRequiredFields) return;
-
+  if (isMissingRequiredFields || isInvalidOfferCode) return;
   try {
-    (window as any).AddShoppersConversion = {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'addshoppers_conversion',
       order_id: orderId,
-      value: value,
+      value,
       currency: currency.toUpperCase(),
-      offer_code: offerCode,
-    };
-
-    if (!document.getElementById('AddShoppers')) {
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.async = true;
-      script.id = 'AddShoppers';
-      script.src = 'https://shop.pe/widget/widget_async.js#686e92fe5eacb3be0df9b1d8';
-
-      document.head.appendChild(script);
-    }
+      email,
+      offer_code: couponCodeData,
+    });
   } catch {
     //
   }

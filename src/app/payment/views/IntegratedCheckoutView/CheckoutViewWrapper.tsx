@@ -480,6 +480,7 @@ const CheckoutViewWrapper = () => {
           currentSelectedPlan,
           seatsForBusinessSubscription,
           couponCodeData,
+          email,
         );
 
         if (gclidStored) {
