@@ -2,18 +2,21 @@
  * @jest-environment jdom
  */
 
-import { describe, expect, it, vi } from 'vitest';
-import {
-  encryptFilename,
-  generateHMAC,
-  getEncryptedFile,
-  processEveryFileBlobReturnHash,
-  encryptReadable,
-} from './crypto';
 import { Buffer } from 'buffer';
 import crypto from 'crypto';
+import { describe, expect, it, vi } from 'vitest';
 import { getSha256 } from '../crypto/services/utils';
-import { Aes256gcmEncrypter, sha512HmacBufferFromHex } from '@internxt/inxt-js/build/lib/utils/crypto';
+import {
+  Aes256gcmEncrypter,
+  encryptFilename,
+  generateFileBucketKey,
+  generateFileKey,
+  generateHMAC,
+  getEncryptedFile,
+  getFileDeterministicKey,
+  processEveryFileBlobReturnHash,
+} from './crypto';
+
 import { mnemonicToSeed } from 'bip39';
 
 describe('Test crypto.ts functions', () => {
@@ -55,11 +58,17 @@ describe('Test crypto.ts functions', () => {
     }
     async function oldEncryptFilename(mnemonic: string, bucketId: string, filename: string): Promise<string> {
       const bucketKey = await getBucketKey(mnemonic, bucketId);
-      const encryptionKey = sha512HmacBufferFromHex(bucketKey)
+      const encryptionKey = crypto
+        .createHmac('sha512', Buffer.from(bucketKey, 'hex'))
         .update(Buffer.from(BUCKET_META_MAGIC))
         .digest()
         .slice(0, 32);
-      const encryptionIv = sha512HmacBufferFromHex(bucketKey).update(bucketId).update(filename).digest().slice(0, 32);
+      const encryptionIv = crypto
+        .createHmac('sha512', Buffer.from(bucketKey, 'hex'))
+        .update(bucketId)
+        .update(filename)
+        .digest()
+        .slice(0, 32);
       return encryptMeta(filename, encryptionKey, encryptionIv);
     }
 
@@ -143,5 +152,89 @@ describe('Test crypto.ts functions', () => {
     const hash = await getSha256(pass);
     const oldHash = oldSha256(Buffer.from(pass)).toString('hex');
     expect(hash).toBe(oldHash);
+  });
+});
+
+describe('File key generation functions', () => {
+  globalThis.Buffer = Buffer;
+
+  it('generateFileKey should return 32-byte buffer', async () => {
+    const mnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+    const bucketId = 'test';
+    const index = Buffer.from([0, 0, 0, 1]);
+
+    const result = await generateFileKey(mnemonic, bucketId, index);
+
+    expect(result).toBeInstanceOf(Buffer);
+    expect(result.length).toBe(32);
+  });
+
+  it('generateFileBucketKey should return 64-byte buffer', async () => {
+    const mnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+    const bucketId = 'test';
+
+    const result = await generateFileBucketKey(mnemonic, bucketId);
+
+    expect(result).toBeInstanceOf(Buffer);
+    expect(result.length).toBe(64);
+  });
+
+  it('getFileDeterministicKey should return 64-byte buffer', async () => {
+    const key = Buffer.from('test_key');
+    const data = Buffer.from('test_data');
+
+    const result = await getFileDeterministicKey(key, data);
+
+    expect(result).toBeInstanceOf(Buffer);
+    expect(result.length).toBe(64);
+  });
+  describe('Comparison with old functions', () => {
+    globalThis.Buffer = Buffer;
+    async function oldGenerateFileKey(mnemonic: string, bucketId: string, index: Buffer | string): Promise<Buffer> {
+      const bucketKey = await oldGenerateFileBucketKey(mnemonic, bucketId);
+      return oldGetFileDeterministicKey(bucketKey.slice(0, 32), index).slice(0, 32);
+    }
+
+    async function oldGenerateFileBucketKey(mnemonic: string, bucketId: string): Promise<Buffer> {
+      const seed = await mnemonicToSeed(mnemonic);
+      return oldGetFileDeterministicKey(seed, Buffer.from(bucketId, 'hex'));
+    }
+
+    function oldGetFileDeterministicKey(key: Buffer | string, data: Buffer | string): Buffer {
+      const hash = crypto.createHash('sha512');
+      hash.update(key).update(data);
+      return hash.digest();
+    }
+
+    it('generateFileKey should produce same result as old GenerateFileKey', async () => {
+      const mnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+      const bucketId = 'test';
+      const index = Buffer.from([0, 0, 0, 1]);
+
+      const newResult = await generateFileKey(mnemonic, bucketId, index);
+      const oldResult = await oldGenerateFileKey(mnemonic, bucketId, index);
+
+      expect(newResult.equals(oldResult)).toBe(true);
+    });
+
+    it('generateFileBucketKey should produce same result as old GenerateFileBucketKey', async () => {
+      const mnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+      const bucketId = 'test';
+
+      const newResult = await generateFileBucketKey(mnemonic, bucketId);
+      const oldResult = await oldGenerateFileBucketKey(mnemonic, bucketId);
+
+      expect(newResult.equals(oldResult)).toBe(true);
+    });
+
+    it('getFileDeterministicKey should produce same result as old GetFileDeterministicKey', async () => {
+      const key = Buffer.from('test_key');
+      const data = Buffer.from('test_data');
+
+      const newResult = await getFileDeterministicKey(key, data);
+      const oldResult = oldGetFileDeterministicKey(key, data);
+
+      expect(newResult.equals(oldResult)).toBe(true);
+    });
   });
 });

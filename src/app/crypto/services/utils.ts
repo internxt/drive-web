@@ -1,10 +1,11 @@
-import CryptoJS from 'crypto-js';
-import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
-import { AdvancedSharedItem } from '../../share/types';
-import { createSHA512, createHMAC, sha256, createSHA256, sha512, ripemd160, blake3 } from 'hash-wasm';
-import { Buffer } from 'buffer';
 import envService from 'app/core/services/env.service';
+import { Buffer } from 'buffer';
+import CryptoJS from 'crypto-js';
+import { blake3, createHMAC, createSHA256, createSHA512, ripemd160, sha256, sha512 } from 'hash-wasm';
+import { DriveItemData } from '../../drive/types';
+import { AdvancedSharedItem } from '../../share/types';
+
 /**
  * Computes hmac-sha512
  * @param {string} encryptionKeyHex - The hmac key in HEX format
@@ -14,6 +15,17 @@ import envService from 'app/core/services/env.service';
 function getHmacSha512FromHexKey(encryptionKeyHex: string, dataArray: string[] | Buffer[]): Promise<string> {
   const encryptionKey = Buffer.from(encryptionKeyHex, 'hex');
   return getHmacSha512(encryptionKey, dataArray);
+}
+
+/**
+ * Computes sha512 from combined key and data
+ * @param {Buffer} key - The key
+ * @param {Buffer } data - The data
+ * @returns {Promise<string>} The result of applying sha512 to the combined key and data.
+ */
+async function getSha512Combined(key: Buffer, data: Buffer): Promise<string> {
+  const hash = await createSHA512();
+  return hash.init().update(key).update(data).digest();
 }
 
 /**
@@ -151,19 +163,20 @@ const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
 };
 
 export {
-  passToHash,
-  encryptText,
   decryptText,
-  encryptTextWithKey,
   decryptTextWithKey,
+  encryptText,
+  encryptTextWithKey,
   excludeHiddenItems,
-  renameFile,
-  getItemPlainName,
-  getHmacSha512FromHexKey,
+  extendSecret,
   getHmacSha512,
+  getHmacSha512FromHexKey,
+  getItemPlainName,
+  getRipemd160FromHex,
   getSha256,
   getSha256Hasher,
+  getSha512Combined,
   getSha512FromHex,
-  getRipemd160FromHex,
-  extendSecret,
+  passToHash,
+  renameFile,
 };
