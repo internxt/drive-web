@@ -116,9 +116,11 @@ export async function trackPaymentConversion() {
       orderId: uuid,
       value: amount,
       currency: currency ?? 'EUR',
-
       offerCode: localStorageService.get('couponCode') ?? '',
     });
+
+    console.log('Conersion');
+
     const IMPACT_API = envService.getVariable('impactApiUrl');
     const anonymousID = getCookie('impactAnonymousId');
     const source = getCookie('impactSource');
