@@ -26,7 +26,6 @@ describe('Check that env variables are loaded correctly', () => {
     expect(envService.getVariable('magicIv')).toBe(process.env.REACT_APP_MAGIC_IV);
     expect(envService.getVariable('magicSalt')).toBe(process.env.REACT_APP_MAGIC_SALT);
 
-    expect(envService.getVariable('api')).toBe(process.env.REACT_APP_API_URL);
     expect(envService.getVariable('newApi')).toBe(process.env.REACT_APP_DRIVE_NEW_API_URL);
     expect(envService.getVariable('payments')).toBe(process.env.REACT_APP_PAYMENTS_API_URL);
     expect(envService.getVariable('location')).toBe(process.env.REACT_APP_LOCATION_API_URL);
@@ -62,7 +61,6 @@ describe('Check that env variables are loaded correctly', () => {
   it('When the endpoints variables are requested, then the value is actually an endpoint variable', async () => {
     const urlPattern = /^https?:\/\/.+/;
 
-    expect(envService.getVariable('api')).toMatch(urlPattern);
     expect(envService.getVariable('newApi')).toMatch(urlPattern);
     expect(envService.getVariable('payments')).toMatch(urlPattern);
     expect(envService.getVariable('websiteUrl')).toMatch(urlPattern);

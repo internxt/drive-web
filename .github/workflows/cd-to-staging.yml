@@ -11,7 +11,6 @@ jobs:
       - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> ./infrastructure/staging/staging.env
       - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> ./infrastructure/staging/staging.env
       - run: echo REACT_APP_STRIPE_TEST_PK=${{ secrets.REACT_APP_STRIPE_TEST_PK }} >> ./infrastructure/staging/staging.env
-      - run: echo REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }} >> ./infrastructure/staging/staging.env
       - run: echo REACT_APP_SEGMENT_KEY=${{ secrets.REACT_APP_SEGMENT_KEY }} >> ./infrastructure/staging/staging.env
       - run: echo REACT_APP_MAGIC_IV=${{ secrets.REACT_APP_MAGIC_IV }} >> ./infrastructure/staging/staging.env
       - run: echo REACT_APP_MAGIC_SALT=${{ secrets.REACT_APP_MAGIC_SALT }} >> ./infrastructure/staging/staging.env
