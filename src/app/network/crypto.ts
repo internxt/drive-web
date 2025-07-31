@@ -1,6 +1,5 @@
 import { ShardMeta } from '@internxt/inxt-js/build/lib/models';
 import { Aes256gcmEncrypter } from '@internxt/inxt-js/build/lib/utils/crypto';
-import { streamFileIntoChunks } from '../core/services/stream.service';
 import { mnemonicToSeed } from 'bip39';
 import { Cipher, CipherCCM, createCipheriv } from 'crypto';
 import {
@@ -92,40 +91,49 @@ export function encryptReadable(readable: ReadableStream<Uint8Array>, cipher: Ci
   return encryptedFileReadable;
 }
 
-/**
- * Given a stream and a cipher, encrypt its content on pull
- * @param readable Readable stream
- * @param cipher Cipher used to encrypt the content
- * @returns A readable whose output is the encrypted content of the source stream
- */
-export function encryptReadablePull(readable: ReadableStream<Uint8Array>, cipher: Cipher): ReadableStream<Uint8Array> {
-  const reader = readable.getReader();
-
-  return new ReadableStream({
-    async pull(controller) {
-      console.log('2ND_STEP: PULLING');
-      const status = await reader.read();
-
-      if (!status.done) {
-        controller.enqueue(cipher.update(status.value));
-      } else {
-        controller.close();
-      }
-    },
-  });
-}
-
 export function encryptStreamInParts(
   plainFile: { size: number; stream(): ReadableStream<Uint8Array> },
   cipher: Cipher,
-  parts: number,
+  uploadChunkSize: number,
+  extraPreAllocatedSpace: number,
 ): ReadableStream<Uint8Array> {
-  // We include a marginChunkSize because if we split the chunk directly, there will always be one more chunk left, this will cause a mismatch with the urls provided
-  const marginChunkSize = 1024;
-  const chunkSize = plainFile.size / parts + marginChunkSize;
-  const readableFileChunks = streamFileIntoChunks(plainFile.stream(), chunkSize);
+  const readable = plainFile.stream();
 
-  return encryptReadablePull(readableFileChunks, cipher);
+  const reader = readable.getReader();
+  const preAllocated = uploadChunkSize + extraPreAllocatedSpace;
+  let buffer = new Uint8Array(preAllocated);
+  let bufferLength = 0;
+
+  return new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      while (bufferLength < uploadChunkSize) {
+        const { value, done } = await reader.read();
+
+        const encryptedChunk = done ? cipher.final() : cipher.update(value);
+
+        const requiredLength = bufferLength + encryptedChunk.length;
+        if (requiredLength > buffer.length) {
+          const newBuffer = new Uint8Array(requiredLength);
+          newBuffer.set(buffer.subarray(0, bufferLength), 0);
+          buffer = newBuffer;
+        }
+
+        buffer.set(encryptedChunk, bufferLength);
+        bufferLength += encryptedChunk.length;
+
+        if (done) {
+          if (bufferLength > 0) {
+            controller.enqueue(buffer.slice(0, bufferLength));
+          }
+          controller.close();
+          return;
+        }
+      }
+
+      controller.enqueue(buffer.slice(0, bufferLength));
+      bufferLength = 0;
+    },
+  });
 }
 
 export async function getEncryptedFile(
