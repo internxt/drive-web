@@ -40,7 +40,7 @@ const views: Array<{
   component: FunctionComponent<any> | ComponentClass<any>;
   componentProps?: Record<string, unknown>;
 }> = [
-  { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },
+  { id: AppView.Signup, component: SignUpView },
   { id: AppView.AppSumo, component: SignInView },
   { id: AppView.BlockedAccount, component: BlockedAccountView },
   { id: AppView.Login, component: SignInView },

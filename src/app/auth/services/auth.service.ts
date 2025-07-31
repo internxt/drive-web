@@ -13,7 +13,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
-import { RegisterFunction, UpdateInfoFunction } from 'app/auth/components/SignUp/useSignUp';
+import { RegisterFunction } from 'app/auth/components/SignUp/useSignUp';
 import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import RealtimeService from 'app/core/services/socket.service';
@@ -54,12 +54,11 @@ type ProfileInfo = {
   mnemonic: string;
 };
 
-type SignUpParams = {
-  doSignUp: RegisterFunction | UpdateInfoFunction;
+export type SignUpParams = {
+  doSignUp: RegisterFunction;
   email: string;
   password: string;
   token: string;
-  isNewUser: boolean;
   redeemCodeObject: boolean;
   dispatch: AppDispatch;
 };
@@ -80,9 +79,8 @@ export type AuthenticateUserParams = {
   dispatch: AppDispatch;
   loginType?: 'web' | 'desktop';
   token?: string;
-  isNewUser?: boolean;
   redeemCodeObject?: boolean;
-  doSignUp?: RegisterFunction | UpdateInfoFunction;
+  doSignUp?: RegisterFunction;
 };
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
@@ -469,10 +467,8 @@ export const unblockAccount = (token: string): Promise<void> => {
 };
 
 export const signUp = async (params: SignUpParams) => {
-  const { doSignUp, email, password, token, isNewUser, redeemCodeObject, dispatch } = params;
-  const { xUser, xToken, mnemonic } = isNewUser
-    ? await (doSignUp as RegisterFunction)(email, password, token)
-    : await (doSignUp as UpdateInfoFunction)(email, password);
+  const { doSignUp, email, password, token, redeemCodeObject, dispatch } = params;
+  const { xUser, xToken, mnemonic } = await doSignUp(email, password, token);
 
   localStorageService.clear();
 
@@ -504,7 +500,7 @@ export const signUp = async (params: SignUpParams) => {
   dispatch(productsThunks.initializeThunk());
 
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
-  if (isNewUser) dispatch(referralsThunks.initializeThunk());
+  dispatch(referralsThunks.initializeThunk());
   await trackSignUp(xUser.uuid);
 
   return { token: xToken, user: xUser, mnemonic, newToken: xNewToken };
@@ -542,7 +538,6 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
     dispatch,
     loginType = 'web',
     token = '',
-    isNewUser = true,
     redeemCodeObject = false,
     doSignUp,
   } = params;
@@ -551,7 +546,7 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
     window.gtag('event', 'User Signin', { method: 'email' });
     return profileInfo;
   } else if (authMethod === 'signUp' && doSignUp) {
-    const profileInfo = await signUp({ doSignUp, email, password, token, isNewUser, redeemCodeObject, dispatch });
+    const profileInfo = await signUp({ doSignUp, email, password, token, redeemCodeObject, dispatch });
     return profileInfo;
   } else {
     throw new Error(`Unknown authMethod: ${authMethod}`);

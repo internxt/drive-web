@@ -350,7 +350,6 @@ describe('signUp', () => {
       email: mockEmail,
       password: mockPassword,
       token: mockToken,
-      isNewUser: true,
       redeemCodeObject: false,
       dispatch: vi.fn(),
     };
@@ -461,7 +460,6 @@ describe('signUp', () => {
       email: mockEmail,
       password: mockPassword,
       token: mockToken,
-      isNewUser: true,
       redeemCodeObject: false,
       dispatch: vi.fn(),
     };
@@ -755,7 +753,6 @@ describe('signIn', () => {
       email: mockEmail,
       password: mockPassword,
       token: mockSignUpToken,
-      isNewUser: true,
       redeemCodeObject: false,
       dispatch: mockDispatch,
     };
@@ -785,7 +782,6 @@ describe('signIn', () => {
       email: mockEmail,
       password: mockPassword,
       token: mockSignUpToken,
-      isNewUser: true,
       redeemCodeObject: false,
       dispatch: mockDispatch,
     };
@@ -804,7 +800,6 @@ describe('authMethod', () => {
       twoFactorCode: mockTwoFactorCode,
       dispatch: mockDispatch,
       loginType: mockLoginType,
-      isNewUser: false,
     };
 
     const result = await authService.authenticateUser(mockParams);
@@ -830,7 +825,6 @@ describe('authMethod', () => {
       twoFactorCode: mockTwoFactorCode,
       dispatch: mockDispatch,
       loginType: mockLoginType,
-      isNewUser: false,
       doSignUp: mockSignUpFunction,
     };
 
@@ -854,7 +848,6 @@ describe('authMethod', () => {
       twoFactorCode: mockTwoFactorCode,
       dispatch: mockDispatch,
       loginType: mockLoginType,
-      isNewUser: false,
       doSignUp: mockSignUpFunction,
     };
 

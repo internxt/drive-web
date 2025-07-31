@@ -4,19 +4,9 @@ import * as bip39 from 'bip39';
 
 import { readReferalCookie } from 'app/auth/services/auth.service';
 import { SdkFactory } from 'app/core/factory/sdk';
-import httpService from 'app/core/services/http.service';
 import { getKeys } from 'app/crypto/services/keys.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
-import envService from 'app/core/services/env.service';
 
-export type UpdateInfoFunction = (
-  email: string,
-  password: string,
-) => Promise<{
-  xUser: UserSettings;
-  xToken: string;
-  mnemonic: string;
-}>;
 export type RegisterFunction = (
   email: string,
   password: string,
@@ -79,62 +69,10 @@ export function parseUserSettingsEnsureKyberKeysAdded(user: UserSettings): UserS
   };
 }
 
-export function useSignUp(
-  registerSource: 'activate' | 'appsumo',
-  referrer?: string,
-): {
-  updateInfo: UpdateInfoFunction;
+export function useSignUp(referrer?: string): {
   doRegister: RegisterFunction;
   doRegisterPreCreatedUser: RegisterPreCreatedUser;
 } {
-  const updateInfo: UpdateInfoFunction = async (email: string, password: string) => {
-    // Setup hash and salt
-    const hashObj = passToHash({ password });
-    const encPass = encryptText(hashObj.hash);
-    const encSalt = encryptText(hashObj.salt);
-
-    // Setup mnemonic
-    const mnemonic = bip39.generateMnemonic(256);
-    const encMnemonic = encryptTextWithKey(mnemonic, password);
-
-    const registerUserPayload = {
-      email: email.toLowerCase(),
-      password: encPass,
-      mnemonic: encMnemonic,
-      salt: encSalt,
-      referral: readReferalCookie(),
-    };
-
-    const fetchHandler = async (res: Response) => {
-      const body = await res.text();
-
-      try {
-        return { res, body: JSON.parse(body) };
-      } catch {
-        return { res, body };
-      }
-    };
-
-    const serviceHeaders = httpService.getHeaders(true, false);
-    const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
-
-    const raw = await fetch(`${envService.getVariable('api')}/${registerSource}/update`, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(registerUserPayload),
-    });
-    const { res, body } = await fetchHandler(raw);
-
-    if (res.status !== 200) {
-      throw Error('Email adress already used');
-    }
-    const { token: xToken, user: xUser } = body;
-
-    xUser.mnemonic = mnemonic;
-
-    return { xUser, xToken, mnemonic };
-  };
-
   const doRegister = async (email: string, password: string, captcha: string) => {
     const hashObj = passToHash({ password });
     const encPass = encryptText(hashObj.hash);
@@ -222,5 +160,5 @@ export function useSignUp(
     return registerDetails;
   };
 
-  return { updateInfo, doRegister, doRegisterPreCreatedUser };
+  return { doRegister, doRegisterPreCreatedUser };
 }
