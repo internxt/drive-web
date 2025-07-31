@@ -146,16 +146,19 @@ export async function getEncryptedFile(
   hasher.init();
   const fileParts: Uint8Array = new Uint8Array(fileLength);
 
+  let done = false;
   let offset = 0;
 
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const { done, value } = await readable.read();
-    if (done) break;
+  while (!done) {
+    const status = await readable.read();
 
-    hasher.update(value);
-    fileParts.set(value, offset);
-    offset += value.length;
+    if (!status.done) {
+      hasher.update(status.value);
+      fileParts.set(status.value, offset);
+      offset += status.value.length;
+    }
+
+    done = status.done;
   }
 
   const sha256Result = hasher.digest();
