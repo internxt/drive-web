@@ -139,20 +139,23 @@ export function encryptStreamInParts(
 export async function getEncryptedFile(
   plainFile: { stream(): ReadableStream<Uint8Array> },
   cipher: Cipher,
-): Promise<[Blob, string]> {
+  fileLength: number,
+): Promise<[Uint8Array, string]> {
   const readable = encryptReadable(plainFile.stream(), cipher).getReader();
   const hasher = await getSha256Hasher();
   hasher.init();
-  const blobParts: Uint8Array[] = [];
+  const fileParts: Uint8Array = new Uint8Array(fileLength);
 
   let done = false;
+  let offset = 0;
 
   while (!done) {
     const status = await readable.read();
 
     if (!status.done) {
       hasher.update(status.value);
-      blobParts.push(status.value);
+      fileParts.set(status.value, offset);
+      offset += status.value.length;
     }
 
     done = status.done;
@@ -160,12 +163,12 @@ export async function getEncryptedFile(
 
   const sha256Result = hasher.digest();
 
-  return [new Blob(blobParts, { type: 'application/octet-stream' }), await getRipemd160FromHex(sha256Result)];
+  return [fileParts, await getRipemd160FromHex(sha256Result)];
 }
 
 export async function processEveryFileBlobReturnHash(
   chunkedFileReadable: ReadableStream<Uint8Array>,
-  onEveryBlob: (blob: Blob) => Promise<void>,
+  onEveryChunk: (part: Uint8Array) => Promise<void>,
 ): Promise<string> {
   const reader = chunkedFileReadable.getReader();
   const hasher = await getSha256Hasher();
@@ -178,8 +181,7 @@ export async function processEveryFileBlobReturnHash(
     if (!status.done) {
       const value = status.value;
       hasher.update(value);
-      const blob = new Blob([value], { type: 'application/octet-stream' });
-      await onEveryBlob(blob);
+      await onEveryChunk(value);
     }
 
     done = status.done;
