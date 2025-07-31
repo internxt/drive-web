@@ -10,7 +10,6 @@ import { useEffect, useState } from 'react';
 import paymentService from 'app/payment/services/payment.service';
 import { UserThemesService } from 'app/theme/userThemes.service';
 import errorService from 'app/core/services/error.service';
-import { sendAddShoppersConversion } from 'app/analytics/addShoppers.services';
 
 function ThemeButton({ theme, toggleTheme, isSelected, img }) {
   const { translate } = useTranslationContext();
@@ -50,13 +49,6 @@ const Appearance = () => {
 
   useEffect(() => {
     fetchUserThemes();
-    sendAddShoppersConversion({
-      orderId: 'ORD-982734',
-      value: 59.99,
-      currency: 'EUR',
-      couponCodeData: 'WELCOME',
-      email: 'cliente@ejemplo.com',
-    });
   }, []);
 
   const fetchUserThemes = async () => {
