@@ -71,19 +71,24 @@ export async function encryptFilename(mnemonic: string, bucketId: string, filena
 export function encryptReadable(readable: ReadableStream<Uint8Array>, cipher: Cipher): ReadableStream<Uint8Array> {
   const reader = readable.getReader();
 
-  return new ReadableStream({
+  const encryptedFileReadable = new ReadableStream({
     async start(controller) {
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          controller.close();
-          break;
+      let done = false;
+
+      while (!done) {
+        const status = await reader.read();
+
+        if (!status.done) {
+          controller.enqueue(cipher.update(status.value));
         }
-        controller.enqueue(cipher.update(value));
+
+        done = status.done;
       }
+      controller.close();
     },
   });
+
+  return encryptedFileReadable;
 }
 
 export function encryptStreamInParts(
