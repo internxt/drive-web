@@ -745,7 +745,6 @@ describe('logIn', () => {
 
 describe('signIn', () => {
   it('should sign up a new user and set user details', async () => {
-    vi.spyOn(authService, 'getNewToken').mockResolvedValueOnce(mockNewToken);
     vi.spyOn(keysService, 'decryptPrivateKey').mockImplementation(() => mockPrivateKeyDecript);
 
     const mockParams = {
@@ -816,7 +815,6 @@ describe('authMethod', () => {
 
   it('should sign up the user when authMethod is signUp', async () => {
     vi.spyOn(authService, 'signUp');
-    vi.spyOn(authService, 'getNewToken').mockResolvedValueOnce(mockNewToken);
 
     const mockParams: AuthenticateUserParams = {
       email: mockEmail,

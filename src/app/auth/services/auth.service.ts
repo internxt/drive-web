@@ -42,9 +42,7 @@ import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/u
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
-import envService from '../../core/services/env.service';
 import errorService from '../../core/services/error.service';
-import httpService from '../../core/services/http.service';
 import vpnAuthService from './vpnAuth.service';
 
 type ProfileInfo = {
@@ -357,22 +355,6 @@ export const deactivate2FA = (
   return authClient.disableTwoFactorAuth(encPass, deactivationCode, token);
 };
 
-export const getNewToken = async (): Promise<string> => {
-  const serviceHeaders = httpService.getHeaders(true, false);
-  const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
-  const BASE_API_URL = envService.isProduction() ? envService.getVariable('api') : 'https://drive.internxt.com/api';
-
-  const res = await fetch(`${BASE_API_URL}/new-token`, {
-    headers: headers,
-  });
-  if (!res.ok) {
-    throw new Error('Bad response while getting new token');
-  }
-  const { newToken } = await res.json();
-
-  return newToken;
-};
-
 export async function areCredentialsCorrect(password: string): Promise<boolean> {
   const salt = await getSalt();
   const { hash: hashedPassword } = passToHash({ password, salt });
@@ -468,14 +450,12 @@ export const unblockAccount = (token: string): Promise<void> => {
 
 export const signUp = async (params: SignUpParams) => {
   const { doSignUp, email, password, token, redeemCodeObject, dispatch } = params;
-  const { xUser, xToken, mnemonic } = await doSignUp(email, password, token);
+  const { xUser, xToken, xNewToken, mnemonic } = await doSignUp(email, password, token);
 
   localStorageService.clear();
 
   localStorageService.set('xToken', xToken);
   localStorageService.set('xMnemonic', mnemonic);
-
-  const xNewToken = await authService.getNewToken();
   localStorageService.set('xNewToken', xNewToken);
 
   const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
@@ -560,7 +540,6 @@ const authService = {
   cancelAccount,
   store2FA,
   extractOneUseCredentialsForAutoSubmit,
-  getNewToken,
   getRedirectUrl,
   sendChangePasswordEmail,
   updateCredentialsWithToken,

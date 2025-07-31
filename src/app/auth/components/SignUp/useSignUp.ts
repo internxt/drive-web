@@ -14,6 +14,7 @@ export type RegisterFunction = (
 ) => Promise<{
   xUser: UserSettings;
   xToken: string;
+  xNewToken: string;
   mnemonic: string;
 }>;
 
@@ -25,6 +26,7 @@ type RegisterPreCreatedUser = (
 ) => Promise<{
   xUser: UserSettings;
   xToken: string;
+  xNewToken: string;
   mnemonic: string;
 }>;
 
@@ -98,14 +100,14 @@ export function useSignUp(referrer?: string): {
     };
 
     const data = await authClient.register(registerDetails);
-    const { token } = data;
+    const { token, newToken } = data;
     // TODO: need to update user type of register to include bucket field
     const user = data.user as unknown as UserSettings;
     // TODO: Remove or modify this when the backend is updated to add kyber keys
     const parsedUser = parseUserSettingsEnsureKyberKeysAdded(user);
     parsedUser.mnemonic = decryptTextWithKey(parsedUser.mnemonic, password);
 
-    return { xUser: parsedUser, xToken: token, mnemonic: user.mnemonic };
+    return { xUser: parsedUser, xToken: token, xNewToken: newToken, mnemonic: user.mnemonic };
   };
 
   const doRegisterPreCreatedUser = async (email: string, password: string, invitationId: string, captcha: string) => {
@@ -114,7 +116,7 @@ export function useSignUp(referrer?: string): {
     const registerDetails = await generateRegisterDetails(email, password, captcha);
 
     const data = await authClient.registerPreCreatedUser({ ...registerDetails, invitationId });
-    const { token } = data;
+    const { token, newToken } = data;
     const user = data.user as UserSettings;
 
     // TODO: Remove or modify this when the backend is updated to add kyber keys
@@ -128,6 +130,7 @@ export function useSignUp(referrer?: string): {
         rootFolderId: parsedUser.rootFolderUuid ?? parsedUser.rootFolderId,
       },
       xToken: token,
+      xNewToken: newToken,
       mnemonic: parsedUser.mnemonic,
     };
   };

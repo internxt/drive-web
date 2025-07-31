@@ -74,10 +74,6 @@ describe('onSubmit', () => {
       },
     }));
 
-    vi.mock('app/auth/services/auth.service', () => ({
-      getNewToken: vi.fn(),
-    }));
-
     vi.mock('app/core/services/error.service', () => ({
       default: {
         castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
@@ -227,7 +223,7 @@ describe('onSubmit', () => {
     vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       if (key === 'magicIv') return mockMagicIv;
       if (key === 'magicSalt') return mockMagicSalt;
-      if (key === 'api') return mockApi;
+      if (key === 'newApi') return mockApi;
       if (key === 'secret') return mockSecret;
       if (key === 'hostname') return mockHostname;
       else return 'no mock implementation';
