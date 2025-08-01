@@ -2,7 +2,6 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import backupsReducer from './slices/backups';
 import fileViewerReducer from './slices/fileViewer';
-import newsletterReducer from './slices/newsletter';
 import paymentReducer from './slices/payment';
 import planReducer from './slices/plan';
 import productsReducer from './slices/products';
@@ -28,7 +27,6 @@ export const store = configureStore({
     fileViewer: fileViewerReducer,
     taskManager: taskManagerReducer,
     referrals: referralsReducer,
-    newsletter: newsletterReducer,
     shared: sharedReducer,
     workspaces: workspacesReducer,
   },
