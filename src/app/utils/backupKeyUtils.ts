@@ -20,6 +20,7 @@ import { encryptMessageWithPublicKey, hybridEncryptMessageWithPublicKey } from '
 export interface BackupData {
   mnemonic: string;
   privateKey: string;
+  userUuid?: string;
   keys: {
     ecc: string;
     kyber: string;
@@ -45,6 +46,7 @@ export function handleExportBackupKey(translate) {
     const backupData: BackupData = {
       mnemonic,
       privateKey: user.privateKey,
+      userUuid: user.uuid,
       keys: {
         ecc: user.keys?.ecc?.privateKey || user.privateKey,
         kyber: user.keys?.kyber?.privateKey || '',
@@ -87,6 +89,7 @@ export const detectBackupKeyFormat = (
       const backupData: BackupData = {
         mnemonic: parsedData.mnemonic,
         privateKey: parsedData.privateKey,
+        userUuid: parsedData.userUuid || undefined,
         keys: {
           ecc: parsedData.keys.ecc,
           kyber: parsedData.keys.kyber,
