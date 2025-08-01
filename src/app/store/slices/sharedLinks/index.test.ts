@@ -210,7 +210,6 @@ describe('Encryption and Decryption', () => {
       user: { user: mockUser as UserSettings, isInitializing: false, isAuthenticated: false, isInitialized: false },
     };
 
-    const user = mockUser as UserSettings;
     vi.spyOn(navigationService, 'push').mockImplementation(() => {});
 
     const mockShareService = {
@@ -336,7 +335,7 @@ describe('Encryption and Decryption', () => {
     );
   });
 
-  it('shareItemWithUser encrypts with kyber, keys obtained via getPublicKeyByEmail ', async () => {
+  it('shareItemWithUser encrypts with kyber, keys obtained via getPublicKeyWithPrecreation ', async () => {
     const keys = await generateNewKeys();
     const mockPayload: ShareFileWithUserPayload = {
       itemId: 'mock-itemId',
