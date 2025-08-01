@@ -81,6 +81,13 @@ export default function AccountPopover({
           </p>
         </div>
       </div>
+
+      {user && user.sharedWorkspace && (
+        <div className="flex items-center justify-between px-3 pb-1">
+          <p className="text-sm text-gray-50">Shared Workspace</p>
+        </div>
+      )}
+
       <div className="flex items-center justify-between px-3 pb-1">
         <p className="text-sm text-gray-50">
           {translate('views.account.popover.spaceUsed', { space: percentageUsed })}
