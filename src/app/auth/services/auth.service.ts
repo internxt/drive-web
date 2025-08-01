@@ -335,7 +335,7 @@ export const updateCredentialsWithToken = async (
     encryptedHashedNewPassword,
     encryptedHashedNewPasswordSalt,
     encryptedMnemonic,
-    backupData?.userUuid,
+    backupData?.userUuid || undefined,
     keys,
   );
 };
