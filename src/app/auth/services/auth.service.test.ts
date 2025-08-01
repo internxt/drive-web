@@ -342,6 +342,7 @@ describe('signUp', () => {
         mnemonic: mockMnemonicNotEnc,
       },
       xToken: mockToken,
+      xNewToken: mockNewToken,
       mnemonic: mockMnemonicNotEnc,
     };
 
@@ -452,6 +453,7 @@ describe('signUp', () => {
         mnemonic: mockMnemonicNotEnc,
       },
       xToken: mockToken,
+      xNewToken: mockNewToken,
       mnemonic: mockMnemonicNotEnc,
     };
 
