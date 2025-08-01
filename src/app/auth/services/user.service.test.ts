@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import localStorageService from 'app/core/services/local-storage.service';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userService from './user.service';
 
 const testToken = 'testToken';
@@ -15,6 +15,7 @@ const usersClientMock = {
   changeUserEmail: vi.fn(),
   verifyEmailChange: vi.fn(),
   checkChangeEmailExpiration: vi.fn(),
+  getPublicKeyWithPrecreation: vi.fn(),
 };
 
 const authClientMock = {
@@ -114,5 +115,18 @@ describe('userService', () => {
     await userService.downloadAvatar('testSrcURL', abortController.signal);
 
     expect(downloadAvatarSpy).toHaveBeenCalledWith('testSrcURL', expect.any(AbortSignal));
+  });
+
+  it('should get public key with precreation with given email', async () => {
+    const mockResponse = {
+      publicKey: 'key123',
+      publicKyberKey: 'kyberKey456',
+    };
+    usersClientMock.getPublicKeyWithPrecreation.mockResolvedValue(mockResponse);
+
+    const result = await userService.getPublicKeyWithPrecreation(testEmail);
+
+    expect(result).toEqual(mockResponse);
+    expect(usersClientMock.getPublicKeyWithPrecreation).toHaveBeenCalledWith({ email: testEmail });
   });
 });
