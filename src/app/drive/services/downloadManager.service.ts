@@ -63,16 +63,8 @@ export type DownloadTask = {
   failedItems: DownloadItemType[];
 };
 
-export type FolderIterator = (
-  directoryId: number,
-  directoryUUID: string,
-  workspaceId?: string,
-) => Iterator<DriveFolderData>;
-export type FileIterator = (
-  directoryId: number,
-  directoryUUID: string,
-  workspaceId?: string,
-) => Iterator<DriveFileData>;
+export type FolderIterator = (directoryUUID: string, workspaceId?: string) => Iterator<DriveFolderData>;
+export type FileIterator = (directoryUUID: string, workspaceId?: string) => Iterator<DriveFileData>;
 
 export type SharedFolderIterator = (directoryId: string, resourcesToken?: string) => Iterator<SharedFolders>;
 export type SharedFileIterator = (directoryId: string, resourcesToken?: string) => Iterator<SharedFiles>;
