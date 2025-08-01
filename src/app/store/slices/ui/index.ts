@@ -24,7 +24,6 @@ interface UISliceState {
   isShareItemDialogOpenInPreviewView: boolean;
   isUploadItemsFailsDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
-  isGuestInviteDialogOpen: boolean;
   isDeleteBackupDialogOpen: boolean;
   isFileViewerOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
@@ -58,7 +57,6 @@ const initialState: UISliceState = {
   isShareItemDialogOpenInPreviewView: false,
   isUploadItemsFailsDialogOpen: false,
   isDriveItemInfoMenuOpen: false,
-  isGuestInviteDialogOpen: false,
   isDeleteBackupDialogOpen: false,
   isFileViewerOpen: false,
   fileViewerItem: null,
@@ -131,9 +129,6 @@ export const uiSlice = createSlice({
     setIsShareItemDialogOpenInPreviewView: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isShareItemDialogOpenInPreviewView = action.payload;
     },
-    setIsGuestInvitationDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isGuestInviteDialogOpen = action.payload;
-    },
     setIsDeleteBackupDialog: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDeleteBackupDialogOpen = action.payload;
     },
@@ -197,7 +192,6 @@ export const {
   setIsFileViewerOpen,
   setFileViewerItem,
   setFileInfoItem,
-  setIsGuestInvitationDialogOpen,
   setCurrentEditingNameDriveItem,
   setCurrentEditingNameDirty,
   setIsEditFolderNameDialog,
