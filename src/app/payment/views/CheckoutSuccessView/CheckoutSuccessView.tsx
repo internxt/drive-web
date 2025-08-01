@@ -20,7 +20,6 @@ export function removePaymentsStorage() {
   localStorageService.removeItem('customerToken');
   localStorageService.removeItem('mobileToken');
   localStorageService.removeItem('couponCode');
-  localStorageService.removeItem('email');
 }
 
 const CheckoutSuccessView = (): JSX.Element => {

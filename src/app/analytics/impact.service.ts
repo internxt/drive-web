@@ -40,7 +40,6 @@ export function savePaymentDataInLocalStorage(
   selectedPlan: PriceWithTax | undefined,
   users: number,
   couponCodeData: CouponCodeData | undefined,
-  email: string | undefined,
 ) {
   if (subscriptionId && selectedPlan?.price.interval !== 'lifetime')
     localStorageService.set('subscriptionId', subscriptionId);
@@ -54,9 +53,6 @@ export function savePaymentDataInLocalStorage(
     localStorageService.set('amountPaid', amountToPay);
     localStorageService.set('priceId', selectedPlan.price.id);
     localStorageService.set('currency', selectedPlan.price.currency);
-  }
-  if (email !== undefined) {
-    localStorageService.set('email', email);
   }
   if (couponCodeData?.codeName !== undefined) {
     localStorageService.set('couponCode', couponCodeData.codeName);
@@ -92,6 +88,7 @@ export async function trackSignUp(uuid: string) {
 export async function trackPaymentConversion() {
   try {
     const { uuid } = localStorageService.getUser() as UserSettings;
+    const userSettings = localStorageService.getUser() as UserSettings;
 
     const subscription = localStorageService.get('subscriptionId');
     const paymentIntent = localStorageService.get('paymentIntentId');
@@ -99,7 +96,7 @@ export async function trackPaymentConversion() {
     const priceId = localStorageService.get('priceId');
     const currency = localStorageService.get('currency');
     const amount = parseFloat(localStorageService.get('amountPaid') ?? '0');
-    const userEmail = localStorageService.get('email') ?? undefined;
+    const userEmail = userSettings.email;
     const couponCode = localStorageService.get('couponCode') ?? undefined;
     const gclid = getCookie('gclid');
 
