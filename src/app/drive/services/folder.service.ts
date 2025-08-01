@@ -490,43 +490,6 @@ export const checkIfCachedSourceIsOlder = ({
   return isCachedFileOlder;
 };
 
-// NEED TO REVIEW THIS FUNCTION BEFORE MERGE, FOR NOW IS NOT WORKING WITH WORKSPACES FILES
-async function fetchFolderTree(folderUUID: string): Promise<{
-  tree: FolderTree;
-  folderDecryptedNames: Record<number, string>;
-  fileDecryptedNames: Record<number, string>;
-  size: number;
-}> {
-  // const { tree, size } = await httpService.get<{ tree: FolderTree; size: number }>(`/storage/tree/${folderId}`);
-  const { tree } = await newStorageService.getFolderTree(folderUUID);
-  const size = tree.size;
-  const folderDecryptedNames: Record<number, string> = {};
-  const fileDecryptedNames: Record<number, string> = {};
-
-  // ! Decrypts folders and files names
-  const pendingFolders = [tree];
-  while (pendingFolders.length > 0) {
-    const currentTree = pendingFolders[0];
-    const { folders, files } = {
-      folders: currentTree.children,
-      files: currentTree.files,
-    };
-
-    folderDecryptedNames[currentTree.id] = currentTree.plainName;
-
-    for (const file of files) {
-      fileDecryptedNames[file.id] = aes.decrypt(file.name, `${envService.getVariable('secret2')}-${file.folderId}`);
-    }
-
-    pendingFolders.shift();
-
-    // * Adds current folder folders to pending
-    pendingFolders.push(...folders);
-  }
-
-  return { tree, folderDecryptedNames, fileDecryptedNames, size };
-}
-
 export async function moveFolderByUuid(
   folderUuid: string,
   destinationFolderUuid: string,
@@ -550,7 +513,6 @@ const folderService = {
   createFolderByUuid,
   updateMetaData,
   moveFolderByUuid,
-  fetchFolderTree,
   downloadFolderAsZip,
   addAllFoldersToZip,
   addAllFilesToZip,
