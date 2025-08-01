@@ -302,6 +302,7 @@ describe('backupKeyUtils', () => {
           publicKey: 'test-kyber-public-key',
           privateKeyEncrypted: 'test-kyber-private-key-encrypted',
         },
+        userUuid: 'test-user-uuid',
       };
       vi.mocked(getKeys).mockResolvedValue(mockGeneratedKeys);
 
@@ -336,7 +337,7 @@ describe('backupKeyUtils', () => {
         encryptedPassword: 'encrypted-test-hash',
         encryptedSalt: 'encrypted-test-salt',
         encryptedMnemonic: 'encrypted-with-key-' + mockMnemonic,
-        eccEncryptedMnemonic: 'ecc-encrypted-mnemonic',
+        eccEncryptedMnemonic: 'ZWNjLWVuY3J5cHRlZC1tbmVtb25pYw==',
         kyberEncryptedMnemonic: 'hybrid-encrypted-mnemonic',
         keys: {
           ecc: {

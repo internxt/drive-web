@@ -678,12 +678,14 @@ describe('updateCredentialsWithToken', () => {
     await authService.updateCredentialsWithToken(mockToken, mockNewPassword, mockMnemonic);
 
     expect(mockChangePasswordWithLink).toHaveBeenCalled();
-    const [token, encryptedPassword, encryptedSalt, encryptedMnemonic, keys] = mockChangePasswordWithLink.mock.calls[0];
+    const [token, encryptedPassword, encryptedSalt, encryptedMnemonic, uuid, keys] =
+      mockChangePasswordWithLink.mock.calls[0];
 
     expect(token).toBe(mockToken);
     expect(encryptedPassword).toBeDefined();
     expect(encryptedSalt).toBeDefined();
     expect(encryptedMnemonic).toBeDefined();
+    expect(uuid).toBeUndefined();
     expect(keys).toBeUndefined();
   });
 
@@ -716,12 +718,14 @@ describe('updateCredentialsWithToken', () => {
     await authService.updateCredentialsWithToken(mockToken, mockNewPassword, mockMnemonic, mockBackupData);
 
     expect(mockChangePasswordWithLink).toHaveBeenCalled();
-    const [token, encryptedPassword, encryptedSalt, encryptedMnemonic, keys] = mockChangePasswordWithLink.mock.calls[0];
+    const [token, encryptedPassword, encryptedSalt, encryptedMnemonic, uuid, keys] =
+      mockChangePasswordWithLink.mock.calls[0];
 
     expect(token).toBe(mockToken);
     expect(encryptedPassword).toBeDefined();
     expect(encryptedSalt).toBeDefined();
     expect(encryptedMnemonic).toBeDefined();
+    expect(uuid).toBe('test-user-uuid');
     expect(keys).toBeDefined();
 
     expect(keys.ecc).toBe('mock-encrypted-data');
@@ -757,12 +761,14 @@ describe('updateCredentialsWithToken', () => {
     await authService.updateCredentialsWithToken(mockToken, mockNewPassword, mockMnemonic, mockBackupData);
 
     expect(mockChangePasswordWithLink).toHaveBeenCalled();
-    const [token, encryptedPassword, encryptedSalt, encryptedMnemonic, keys] = mockChangePasswordWithLink.mock.calls[0];
+    const [token, encryptedPassword, encryptedSalt, encryptedMnemonic, uuid, keys] =
+      mockChangePasswordWithLink.mock.calls[0];
 
     expect(token).toBe(mockToken);
     expect(encryptedPassword).toBeDefined();
     expect(encryptedSalt).toBeDefined();
     expect(encryptedMnemonic).toBeDefined();
+    expect(uuid).toBe('test-user-uuid');
     expect(keys).toBeDefined();
 
     expect(keys.ecc).toBe('mock-encrypted-data');
