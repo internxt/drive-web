@@ -86,7 +86,8 @@
     "christmas": "圣诞节",
     "superBowl": "Super Bowl",
     "valentines": "Valentine's Day",
-    "summer": "夏天"
+    "summer": "週年",
+    "anniversary":"Anniversary"
   },
   "auth": {
     "email": "电子邮件",
