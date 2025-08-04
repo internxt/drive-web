@@ -8,6 +8,7 @@ import StPaticksBG from 'assets/images/banner/StPatrick-bg.png';
 import IdManagementBG from 'assets/images/banner/IdManagement-bg.png';
 import EnvironmentBG from 'assets/images/banner/environment_theme.png';
 import SummerBG from 'assets/images/banner/SummerBanner.webp';
+import AnniversaryBG from 'assets/images/banner/5th_anniversary_theme.webp';
 import localStorageService from 'app/core/services/local-storage.service';
 
 export type Theme =
@@ -22,7 +23,8 @@ export type Theme =
   | 'superBowl'
   | 'stPatricks'
   | 'idManagement'
-  | 'environment';
+  | 'environment'
+  | 'anniversary';
 
 interface ThemeContextProps {
   currentTheme: Theme | undefined;
@@ -46,6 +48,9 @@ const THEME_CONFIG: Record<
     background: string;
     darkMode: boolean;
     customStyle?: boolean;
+    backgroundSize?: string;
+    backgroundPosition?: string;
+    backgroundRepeat?: string;
   }
 > = {
   starWars: { background: StarWarsBG, darkMode: true },
@@ -57,6 +62,12 @@ const THEME_CONFIG: Record<
   idManagement: { background: IdManagementBG, darkMode: true, customStyle: true },
   environment: { background: EnvironmentBG, darkMode: true, customStyle: true },
   summer: { background: SummerBG, darkMode: true, customStyle: true },
+  anniversary: {
+    background: AnniversaryBG,
+    darkMode: true,
+    customStyle: true,
+    backgroundPosition: 'center right',
+  },
 };
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
@@ -96,11 +107,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         root.style.backgroundImage = `url(${config.background})`;
 
         if (config.customStyle) {
-          root.style.backgroundSize = 'cover';
-          root.style.backgroundPosition = 'center';
-          root.style.backgroundRepeat = 'no-repeat';
+          root.style.backgroundSize = config.backgroundSize || 'cover';
+          root.style.backgroundPosition = config.backgroundPosition || 'center';
+          root.style.backgroundRepeat = config.backgroundRepeat || 'no-repeat';
         }
-
         if (config.darkMode) {
           document.documentElement.classList.add('dark');
           setCheckoutTheme('dark');

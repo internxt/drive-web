@@ -4,20 +4,20 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "立省 80%",
-    "title": "所有套餐均可享受折扣",
-    "upperTitle": "夏季优惠",
-    "cta": "获取优惠",
-    "guarantee": "30 天退款保证",
-    "specialOfferGift": "抽奖赠送 Internxt x Swiss Peak 背包",
-    "lastCta": "*仅限免费账户或新客户享受此优惠",
+    "label": "立省85%",
+    "title": "適用所有方案",
+    "upperTitle": "我們5歲了！",
+    "cta": "選擇你的方案",
+    "guarantee": "30天退費保證",
+    "specialOfferGift": "抽獎：Valencia CF簽名球衣",
+    "lastCta": "*限免費帳戶或新用戶",
     "features": [
-      "Drive、VPN 和防病毒软件",
-      "可持续的云存储",
-      "后量子加密",
-      "端到端加密传输",
-      "无未经授权的访问",
-      "免费夏季主题"
+      "雲端、VPN、防毒",
+      "永續儲存空間",
+      "後量子加密技術",
+      "加密檔案傳輸",
+      "無未授權存取",
+      "免費夏日主題"
     ]
   },
   "susbcriptionsBanner": {
