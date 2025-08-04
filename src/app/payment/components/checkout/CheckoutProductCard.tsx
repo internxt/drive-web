@@ -1,4 +1,4 @@
-import { Switch, Transition } from '@headlessui/react';
+import { Transition } from '@headlessui/react';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Check, SealPercent, X } from '@phosphor-icons/react';
 import { useState } from 'react';
@@ -7,7 +7,6 @@ import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Button } from '@internxt/ui';
 import { formatPrice } from 'app/payment/utils/formatPrice';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
-import { UpsellManagerProps } from 'app/payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
 import GuaranteeDarkDays from 'assets/icons/checkout/guarantee-dark.svg?react';
 import GuaranteeWhiteDays from 'assets/icons/checkout/guarantee-white.svg?react';
 import { bytesToString } from '../../../drive/services/size.service';
@@ -22,7 +21,6 @@ interface CheckoutProductCardProps {
   seatsForBusinessSubscription: number;
   showCouponCode: boolean;
   showHardcodedRenewal?: string;
-  upsellManager: UpsellManagerProps;
   onSeatsChange: (users: number) => void;
   onRemoveAppliedCouponCode: () => void;
   onCouponInputChange: (promoCode: string) => void;
@@ -39,7 +37,6 @@ export const CheckoutProductCard = ({
   showHardcodedRenewal,
   couponError,
   seatsForBusinessSubscription,
-  upsellManager,
   onSeatsChange,
   onRemoveAppliedCouponCode,
   onCouponInputChange,
@@ -61,7 +58,6 @@ export const CheckoutProductCard = ({
   const currencySymbol = Currency[priceData.currency];
   const normalPriceAmount = priceData.decimalAmount;
 
-  const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
   const isBusiness = priceData.type === UserType.Business;
   const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
   const totalLabel = isBusiness
@@ -75,8 +71,7 @@ export const CheckoutProductCard = ({
           )}`;
 
   const planAmountWithoutTaxes = getProductAmount(priceData.decimalAmount, 1, couponCodeData);
-  const upsellPlanAmount =
-    upsellManager.amount && getProductAmount(upsellManager.amount, seatsForBusinessSubscription, couponCodeData);
+
   const discountPercentage =
     couponCodeData?.amountOff && couponCodeData?.amountOff < taxesData.amountWithTax
       ? ((couponCodeData?.amountOff / taxesData.amountWithTax) * 100).toFixed(2)
@@ -193,44 +188,6 @@ export const CheckoutProductCard = ({
             </p>
           </div>
 
-          {showUpsellSwitch && upsellManager.amountSaved && (
-            <>
-              <div className="flex w-full flex-row items-center justify-between">
-                <div className="flex flex-row items-center gap-4">
-                  <Switch
-                    checked={isUpsellSwitchActivated}
-                    onChange={onUpsellSwitchButtonClicked}
-                    className={`${
-                      isUpsellSwitchActivated ? 'bg-green' : 'bg-gray-10'
-                    } relative inline-flex h-6 w-11 items-center rounded-full`}
-                  >
-                    <span
-                      id="switchButton"
-                      className={`${
-                        isUpsellSwitchActivated ? 'translate-x-6' : 'translate-x-1'
-                      } inline-block h-4 w-4 transform rounded-full bg-white transition`}
-                    />
-                  </Switch>
-
-                  <div className="flex h-full rounded-lg bg-green/10 px-3 py-1">
-                    <p className="text-sm text-green">
-                      {translate('checkout.productCard.amountSaved')}
-                      {currencySymbol}
-                      {upsellManager.amountSaved}
-                    </p>
-                  </div>
-                  <p className="font-medium text-gray-80">{translate('checkout.productCard.withAnnualBilling')}</p>
-                </div>
-                <div className="flex flex-row items-center">
-                  <p className="text-sm text-gray-80">
-                    {currencySymbol}
-                    {upsellPlanAmount}/{translate('views.account.tabs.account.view.subscription.yearly')}
-                  </p>
-                </div>
-              </div>
-              <Separator />
-            </>
-          )}
           {showCouponCode && (
             <>
               {couponCodeData?.codeName ? (
