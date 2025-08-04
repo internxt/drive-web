@@ -62,12 +62,7 @@ const THEME_CONFIG: Record<
   idManagement: { background: IdManagementBG, darkMode: true, customStyle: true },
   environment: { background: EnvironmentBG, darkMode: true, customStyle: true },
   summer: { background: SummerBG, darkMode: true, customStyle: true },
-  anniversary: {
-    background: AnniversaryBG,
-    darkMode: true,
-    customStyle: true,
-    backgroundPosition: 'center right',
-  },
+  anniversary: { background: AnniversaryBG, darkMode: true, customStyle: true },
 };
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
@@ -107,9 +102,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         root.style.backgroundImage = `url(${config.background})`;
 
         if (config.customStyle) {
-          root.style.backgroundSize = config.backgroundSize || 'cover';
-          root.style.backgroundPosition = config.backgroundPosition || 'center';
-          root.style.backgroundRepeat = config.backgroundRepeat || 'no-repeat';
+          root.style.backgroundSize = 'cover';
+          root.style.backgroundPosition = 'center';
+          root.style.backgroundRepeat = 'no-repeat';
         }
         if (config.darkMode) {
           document.documentElement.classList.add('dark');
