@@ -13,7 +13,6 @@ describe('useCheckout hook actions', () => {
     setUserNameFromElementAddress,
     setAvatarBlob,
     setIsUserPaying,
-    setIsUpsellSwitchActivated,
     setPlan,
     setSelectedPlan,
     setStripeElementsOptions,
