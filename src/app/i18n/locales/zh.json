@@ -609,9 +609,9 @@
         "security": {
           "label": "安全",
           "lock": {
-            "title": "输入你的密码以继续",
-            "description": "出于安全考虑，你必须先输入密码才能对该页面进行修改。",
-            "inputLabel": "密码",
+            "title": "輸入你的密碼以繼續",
+            "description": "輸入你的密碼以繼續 出於安全考慮，你必須先輸入密碼才能對該頁面進行修改。",
+            "inputLabel": "密碼",
             "errors": {
               "incorrect": "再次输入密码",
               "notVerified": "我们无法验证您的密码"
@@ -1046,7 +1046,8 @@
     "errorDeletingFromTrash": "从垃圾箱中删除项目时出错。",
     "maxSizeUploadLimitError": "文件太大（大于40GB）",
     "connectionLostError": "互联网连接丢失",
-    "errorLoadingTrashItems": "加载垃圾箱内的项目时出错"
+    "errorLoadingTrashItems": "加载垃圾箱内的项目时出错",
+    "updateAvatarError": "更新头像时出错"
   },
   "backups": {
     "backups-from": "来自 {{deviceName}} 的备份",

@@ -2,7 +2,7 @@ import { queue, QueueObject } from 'async';
 import { randomBytes } from 'crypto';
 import { t } from 'i18next';
 import errorService from '../core/services/error.service';
-import { HTTP_CODES } from '../core/services/http.service';
+import { HTTP_CODES } from '../core/constants';
 import uploadFile from '../drive/services/file.service/uploadFile';
 import { DriveFileData } from '../drive/types';
 import { PersistUploadRepository } from '../repositories/DatabaseUploadRepository';
@@ -11,7 +11,7 @@ import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../ta
 import { ConnectionLostError } from './requests';
 import { FileToUpload } from '../drive/services/file.service/types';
 import RetryManager, { RetryableTask } from './RetryManager';
-import { ErrorMessages } from 'app/drive/services/downloadManager.service';
+import { ErrorMessages } from 'app/core/constants';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;

@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, test, vi } from 'vitest';
 import userService from '../../auth/services/user.service';
-import { getAvatarExpiration, isAvatarExpired, syncAvatarIfNeeded } from './avatarUtils';
+import { getAvatarExpiration, isAvatarExpired, refreshAvatar } from './avatarUtils';
 import { getDatabaseProfileAvatar, updateDatabaseProfileAvatar } from '../../drive/services/database.service';
 
 vi.mock('../../drive/services/database.service', async () => {
@@ -18,6 +18,7 @@ vi.mock('../../drive/services/database.service', async () => {
 vi.mock('../../auth/services/user.service', () => ({
   default: {
     downloadAvatar: vi.fn(),
+    refreshAvatarUser: vi.fn(),
   },
 }));
 
@@ -60,61 +61,69 @@ describe('Check if avatar URL is expired or not', () => {
   });
 });
 
-describe('Sync avatar if needed', () => {
+describe('refreshAvatar', () => {
   const uuid = 'mocked-user-id';
-  const avatarUrl = 'https://avatar-url.com/file.png?X-Amz-Date=20200101T000000Z&X-Amz-Expires=60';
+  const expiredAvatarUrl = 'https://avatar-url.com/file.png?X-Amz-Date=20200101T000000Z&X-Amz-Expires=60';
+  const newAvatarUrl = 'https://avatar.new-url.com/avatar.png';
+  const avatarBlob = new Blob(['mocked-avatar']);
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('When no avatar URL is provided, then it should not update the database', async () => {
-    await syncAvatarIfNeeded(uuid, '');
+  test('When no avatar URL is provided, then it should not update the database', async () => {
+    await refreshAvatar(uuid, null);
     expect(getDatabaseProfileAvatar).not.toHaveBeenCalled();
     expect(updateDatabaseProfileAvatar).not.toHaveBeenCalled();
   });
 
-  it('When no avatar is stored, then it should download and update the database with the new one', async () => {
+  test('When no avatar is stored, then it should download and update the database with the new one', async () => {
     (getDatabaseProfileAvatar as Mock).mockResolvedValue(undefined);
-    vi.spyOn(userService, 'downloadAvatar').mockResolvedValue(new Blob(['data']));
+    vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: newAvatarUrl });
+    vi.spyOn(userService, 'downloadAvatar').mockResolvedValue(avatarBlob);
 
-    await syncAvatarIfNeeded(uuid, avatarUrl);
+    const result = await refreshAvatar(uuid, expiredAvatarUrl);
 
-    expect(updateDatabaseProfileAvatar).toHaveBeenCalledWith(
-      expect.objectContaining({
-        sourceURL: avatarUrl,
-        uuid,
-      }),
-    );
+    expect(result).toBe(newAvatarUrl);
+    expect(userService.refreshAvatarUser).toHaveBeenCalled();
+    expect(userService.downloadAvatar).toHaveBeenCalledWith(newAvatarUrl);
+    expect(updateDatabaseProfileAvatar).toHaveBeenCalledWith({
+      sourceURL: expiredAvatarUrl,
+      avatarBlob,
+      uuid,
+    });
   });
 
-  it('When the stored avatar is expired, then it should update the database', async () => {
-    (getDatabaseProfileAvatar as Mock).mockResolvedValueOnce({ srcURL: avatarUrl });
-    vi.spyOn(userService, 'downloadAvatar').mockResolvedValue(new Blob(['data']));
+  test('When the stored avatar is expired, then it should update the database', async () => {
+    (getDatabaseProfileAvatar as Mock).mockResolvedValueOnce({ srcURL: expiredAvatarUrl });
+    vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: newAvatarUrl });
+    vi.spyOn(userService, 'downloadAvatar').mockResolvedValue(avatarBlob);
 
-    await syncAvatarIfNeeded(uuid, avatarUrl);
+    const result = await refreshAvatar(uuid, expiredAvatarUrl);
 
-    expect(updateDatabaseProfileAvatar).toHaveBeenCalledWith(
-      expect.objectContaining({
-        sourceURL: avatarUrl,
-        uuid,
-      }),
-    );
+    expect(result).toBe(newAvatarUrl);
+    expect(updateDatabaseProfileAvatar).toHaveBeenCalledWith({
+      sourceURL: expiredAvatarUrl,
+      avatarBlob,
+      uuid,
+    });
   });
 
-  it('When the stored avatar is still valid, then it should not update the database', async () => {
+  test('When the stored avatar is still valid, then it should not update the database', async () => {
     const now = new Date();
     const dateStr = now
       .toISOString()
       .replace(/[:-]/g, '')
-      .replace(/\.\d{3}Z$/, 'Z')
-      .replace('Z', '');
+      .replace(/\.\d{3}Z$/, '');
 
-    const url = `https://avatar-url.com/file.png?X-Amz-Date=${dateStr}Z&X-Amz-Expires=3600`;
-    (getDatabaseProfileAvatar as Mock).mockResolvedValueOnce({ srcURL: url });
+    const validUrl = `https://avatar-url.com/file.png?X-Amz-Date=${dateStr}Z&X-Amz-Expires=3600`;
 
-    await syncAvatarIfNeeded(uuid, url);
+    (getDatabaseProfileAvatar as Mock).mockResolvedValueOnce({ srcURL: validUrl });
 
+    const result = await refreshAvatar(uuid, validUrl);
+
+    expect(result).toBe(validUrl);
     expect(updateDatabaseProfileAvatar).not.toHaveBeenCalled();
+    expect(userService.refreshAvatarUser).not.toHaveBeenCalled();
   });
 });

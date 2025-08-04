@@ -31,6 +31,13 @@ const refreshUserData = async (
   return usersClient.getUserData({ userUuid: userUUID });
 };
 
+const refreshAvatarUser = async (): Promise<{
+  avatar: string | null;
+}> => {
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+  return usersClient.refreshAvatarUser();
+};
+
 const updateUserProfile = (payload: Required<UpdateProfilePayload>): Promise<void> => {
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
   const token = localStorageService.get('xNewToken') ?? undefined;
@@ -74,8 +81,8 @@ const checkChangeEmailLinkExpiration = (verifyToken: string): Promise<CheckChang
   return authClient.checkChangeEmailExpiration(verifyToken);
 };
 
-const downloadAvatar = async (url: string): Promise<Blob> => {
-  const response = await fetch(url);
+const downloadAvatar = async (url: string, signal?: AbortSignal): Promise<Blob> => {
+  const response = await fetch(url, { signal });
   const data = await response.blob();
   return data;
 };
@@ -92,6 +99,7 @@ const userService = {
   checkChangeEmailLinkExpiration,
   preCreateUser,
   refreshUserData,
+  refreshAvatarUser,
   downloadAvatar,
 };
 

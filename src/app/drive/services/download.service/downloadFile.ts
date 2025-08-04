@@ -5,7 +5,7 @@ import { DriveFileData } from '../../types';
 import downloadFileFromBlob from './downloadFileFromBlob';
 import fetchFileStream from './fetchFileStream';
 import fetchFileStreamWithCreds from './fetchFileStreamWithCreds';
-import { ErrorMessages } from '../downloadManager.service';
+import { ErrorMessages } from 'app/core/constants';
 
 interface BlobWritable {
   getWriter: () => {
