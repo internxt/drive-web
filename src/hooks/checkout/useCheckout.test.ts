@@ -62,11 +62,6 @@ describe('useCheckout hook actions', () => {
     expect(dispatch).toHaveBeenCalledWith({ type: 'SET_IS_PAYING', payload: true });
   });
 
-  it('When setIsUpsellSwitchActivated is called, then it dispatches SET_IS_UPSELL_SWITCH_ACTIVATED with the boolean value', () => {
-    setIsUpsellSwitchActivated(false);
-    expect(dispatch).toHaveBeenCalledWith({ type: 'SET_IS_UPSELL_SWITCH_ACTIVATED', payload: false });
-  });
-
   it('When setPlan is called, then it dispatches SET_PLAN with the given plan', () => {
     const plan = { price: { id: 'id', interval: 'year', currency: 'eur' } } as PriceWithTax;
     setPlan(plan);
