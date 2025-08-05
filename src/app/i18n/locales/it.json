@@ -9,20 +9,20 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia l'80%",
-    "title": "Sconto su tutti i piani",
-    "upperTitle": "Offerta estiva",
-    "cta": "Ottieni l'offerta",
-    "guarantee": "Garanzia di rimborso di 30 giorni",
-    "specialOfferGift": "Estrazione di uno zaino Internxt x Swiss Peak",
-    "lastCta": "*L'offerta è valida per account gratuiti o nuovi clienti",
+    "label": "Spare 85 %",
+    "title": "Auf alle Pläne",
+    "upperTitle": "Wir feiern 5 Jahre!",
+    "cta": "Wähle deinen Plan",
+    "guarantee": "30 Tage Geld-zurück-Garantie",
+    "specialOfferGift": "Verlosung: signiertes Valencia-CF-Trikot",
+    "lastCta": "*Angebot für Gratisnutzer oder Neukunden",
     "features": [
-      "Drive, VPN e Antivirus",
-      "Archiviazione cloud sostenibile",
-      "Crittografia post-quantistica",
-      "Trasferimenti crittografati end-to-end",
-      "Nessun accesso non autorizzato",
-      "Tema estivo gratuito"
+      "Drive, VPN und Antivirus",
+      "Nachhaltiger Speicher",
+      "Post-quanten Verschlüsselung",
+      "Verschlüsselte Transfers",
+      "Keine unbefugten Zugriffe",
+      "Gratis Sommer-Theme"
     ]
   },
   "susbcriptionsBanner": {
@@ -87,6 +87,7 @@
     "superBowl": "Super Bowl",
     "valentines": "San Valentino",
     "summer": "estate",
+    "anniversary": "anniversario",
     "stPatricks": "San Patrizio",
     "idManagement": "Gestione dell'identità",
     "environment": "Giornata Mondiale dell'Ambiente"
