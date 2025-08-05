@@ -1,7 +1,7 @@
 import { X, TShirt } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ShieldIcon from 'assets/images/banner/shield-blue.svg';
-import BgImage from 'assets/images/banner/5th_anniversary_theme.webp';
+import BgImage from 'assets/images/banner/5th_anniversary_theme.avif';
 
 interface FeaturesBannerProps {
   showBanner: boolean;
@@ -27,7 +27,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
     >
       <div
         className={
-          'left-1/2 top-1/2 flex h-[508px] w-[917px] rounded-3xl -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden absolute inset-0 bg-center bg-no-repeat bg-cover '
+          'left-1/2 top-1/2 flex h-[50h8px] w-[917px] rounded-3xl -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden absolute inset-0 bg-center bg-no-repeat bg-cover '
         }
         style={{
           backgroundImage: `url(${BgImage})`,

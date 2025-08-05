@@ -8,7 +8,7 @@ import StPaticksBG from 'assets/images/banner/StPatrick-bg.png';
 import IdManagementBG from 'assets/images/banner/IdManagement-bg.png';
 import EnvironmentBG from 'assets/images/banner/environment_theme.png';
 import SummerBG from 'assets/images/banner/SummerBanner.webp';
-import AnniversaryBG from 'assets/images/banner/5th_anniversary_theme.webp';
+import AnniversaryBG from 'assets/images/banner/5th_anniversary_theme.avif';
 import localStorageService from 'app/core/services/local-storage.service';
 
 export type Theme =
