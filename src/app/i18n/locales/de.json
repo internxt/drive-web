@@ -4,18 +4,18 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Spare 80 %",
-    "title": "Rabatt auf alle Pläne",
-    "upperTitle": "Sommerangebot",
-    "cta": "Angebot sichern",
+    "label": "Spare 85 %",
+    "title": "Bei allen Plänen",
+    "upperTitle": "Wir feiern 5 Jahre!",
+    "cta": "Wähle deinen Plan",
     "guarantee": "30 Tage Geld-zurück-Garantie",
-    "specialOfferGift": "Verlosung eines Internxt x Swiss Peak Rucksacks",
-    "lastCta": "*Das Angebot gilt für kostenlose Konten oder neue Kunden",
+    "specialOfferGift": "Verlosung eines signierten Valencia-CF-Trikots",
+    "lastCta": "*Angebot gilt für Gratisnutzer oder neue Kunden",
     "features": [
       "Drive, VPN und Antivirus",
-      "Nachhaltiger Cloud-Speicher",
+      "Nachhaltiger Speicher",
       "Postquanten-Verschlüsselung",
-      "Ende-zu-Ende-verschlüsselte Übertragungen",
+      "Verschlüsselte Übertragungen",
       "Kein unbefugter Zugriff",
       "Kostenloses Sommerdesign"
     ]
