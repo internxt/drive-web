@@ -568,8 +568,6 @@ const CheckoutViewWrapper = () => {
     };
 
     setPromoCodeData(promoCode);
-
-    return promoCode;
   };
 
   const onLogOut = async () => {
