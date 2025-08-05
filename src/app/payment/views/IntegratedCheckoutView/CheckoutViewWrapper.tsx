@@ -5,7 +5,6 @@ import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useStat
 import { useSelector } from 'react-redux';
 
 import { UserLocation } from '@internxt/sdk';
-import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Loader } from '@internxt/ui';
 import { userLocation } from 'app/utils/userLocation';
 import { useCheckout } from 'hooks/checkout/useCheckout';
@@ -70,7 +69,7 @@ export interface UserInfoProps {
 }
 
 export interface CheckoutViewManager {
-  onCouponInputChange: (coupon: string) => void;
+  onCouponInputChange: (coupon?: string) => Promise<void>;
   onLogOut: () => Promise<void>;
   onCountryChange: (country: string) => void;
   onPostalCodeChange: (postalCode: string) => void;
@@ -207,33 +206,6 @@ const CheckoutViewWrapper = () => {
   }, [isAuthenticated, user]);
 
   useEffect(() => {
-    if (!currentSelectedPlan?.price?.id) {
-      return;
-    }
-
-    if (promoCodeName) {
-      handleFetchPromotionCode(currentSelectedPlan.price.id, promoCodeName).catch(handlePromoCodeError);
-    }
-
-    checkoutService
-      .getPriceById({
-        priceId: currentSelectedPlan.price.id,
-        userAddress: userLocationData?.ip,
-        promoCodeName,
-      })
-      .then((priceWithTaxes: PriceWithTax) => {
-        setSelectedPlan(priceWithTaxes);
-      })
-      .catch(() => {
-        if (user) {
-          navigationService.push(AppView.Drive);
-        } else {
-          navigationService.push(AppView.Signup);
-        }
-      });
-  }, [promoCodeName, currentSelectedPlan?.price?.id]);
-
-  useEffect(() => {
     if (!currentSelectedPlan?.price?.id || !currentSelectedPlan?.price?.currency) {
       return;
     }
@@ -258,6 +230,37 @@ const CheckoutViewWrapper = () => {
       }, 8000);
     }
   }, [state.error]);
+
+  const onCheckoutCouponChanges = async (promoCodeName?: string) => {
+    if (!currentSelectedPlan?.price?.id) {
+      return;
+    }
+
+    try {
+      if (promoCodeName) {
+        setCouponCodeName(promoCodeName);
+        await handleFetchPromotionCode(currentSelectedPlan.price.id, promoCodeName);
+      }
+    } catch (error) {
+      handlePromoCodeError(error);
+    }
+
+    try {
+      const priceWithTaxes = await checkoutService.getPriceById({
+        priceId: currentSelectedPlan.price.id,
+        userAddress: userLocationData?.ip,
+        promoCodeName,
+      });
+      setSelectedPlan(priceWithTaxes);
+    } catch (error) {
+      console.error('Error fetching price with taxes', error);
+      if (user) {
+        navigationService.push(AppView.Drive);
+      } else {
+        navigationService.push(AppView.Signup);
+      }
+    }
+  };
 
   const getCheckoutQueryParams = () => {
     const params = new URLSearchParams(window.location.search);
@@ -598,7 +601,7 @@ const CheckoutViewWrapper = () => {
   };
 
   const checkoutViewManager: CheckoutViewManager = {
-    onCouponInputChange: setCouponCodeName,
+    onCouponInputChange: onCheckoutCouponChanges,
     onLogOut,
     onCheckoutButtonClicked,
     onRemoveAppliedCouponCode,
