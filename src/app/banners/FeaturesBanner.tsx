@@ -1,7 +1,7 @@
-import { X, Backpack } from '@phosphor-icons/react';
+import { X, TShirt } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ShieldIcon from 'assets/images/banner/shield-blue.svg';
-import BgImage from 'assets/images/banner/SummerBanner.webp';
+import BgImage from 'assets/images/banner/5th_anniversary_theme.avif';
 
 interface FeaturesBannerProps {
   showBanner: boolean;
@@ -18,7 +18,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
     onClose();
   };
 
-  const bgColor = 'linear-gradient(115.95deg, rgba(239, 239, 239, 0.6) 10.92%, rgba(255, 255, 255, 0.08) 96.4%)';
+  const bgColor = 'linear-gradient(115.95deg, rgba(239, 239, 239, 0.25) 10.92%, rgba(255, 255, 255, 0.08) 96.4%)';
 
   return (
     <div
@@ -27,14 +27,19 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
     >
       <div
         className={
-          'left-1/2 top-1/2 flex h-[508px] w-[1200px] rounded-3xl -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden absolute inset-0 bg-center bg-no-repeat bg-cover '
+          'left-1/2 top-1/2 flex h-[508px] w-[917px] rounded-3xl -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden absolute inset-0 bg-center bg-no-repeat bg-cover '
         }
-        style={{ backgroundImage: `url(${BgImage})` }}
+        style={{
+          backgroundImage: `url(${BgImage})`,
+          backgroundPosition: 'top left',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '150%',
+        }}
       >
         <button
           id="close-banner"
           aria-label="close-banner"
-          className="absolute right-0 m-7 flex rounded-md text-black hover:bg-gray-1/10"
+          className="absolute right-0 m-7 flex border-[0.1px] border-white text-white hover:bg-gray-1/10"
           onClick={onClose}
         >
           <X size={32} />
@@ -46,26 +51,24 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
             style={{ backgroundImage: bgColor }}
           >
             <div className="flex flex-row gap-3">
-              <div className="flex px-1 bg-white/30 rounded-sm">
+              <div className="flex px-1 bg-gray-90 dark:bg-gray-10 rounded-sm">
                 <p className="text-lg font-semibold text-primary">{translate('featuresBanner.label')}</p>
               </div>
-              <p className="text-gray-100 text-xl px-1 text-regular leading-tight dark:text-gray-10">
-                {translate('featuresBanner.title')}
-              </p>
+              <p className="text-white text-xl px-1 text-regular leading-tight ">{translate('featuresBanner.title')}</p>
             </div>
-            <p className="text-gray-100 w-[384px] text-4xl pt-2 font-bold leading-tight dark:text-gray-10">
+            <p className="text-white w-[384px] text-4xl pt-2 font-bold leading-tight ">
               {translate('featuresBanner.upperTitle')}
             </p>
             <div className="flex flex-col w-full items-start space-y-3">
               <div className="flex flex-row items-center space-x-3 pt-8">
                 <img src={ShieldIcon} alt="Icon" width={24} height={20} />
-                <p className="whitespace-nowrap font-medium text-gray-100 dark:text-gray-10 lg:text-base">
+                <p className="whitespace-nowrap font-medium text-white  lg:text-base">
                   {translate('featuresBanner.guarantee')}
                 </p>
               </div>
               <div className="flex flex-row items-center space-x-3 pb-4">
-                <Backpack className="text-primary" weight="fill" width={24} height={24} />
-                <p className="whitespace-nowrap font-medium text-gray-100 dark:text-gray-10 lg:text-base">
+                <TShirt className="text-primary" weight="fill" width={24} height={24} />
+                <p className="whitespace-nowrap font-medium text-white  lg:text-base">
                   {translate('featuresBanner.specialOfferGift')}
                 </p>
               </div>
@@ -88,7 +91,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
                       <div className="w-8 h-8 flex items-center justify-center">
                         <img src={ShieldIcon} alt={'Icon'} width={32} height={32} />
                       </div>
-                      <p className="text-xl pl-2 pt-0.5 font-semibold text-gray-100 dark:text-gray-10">{card}</p>
+                      <p className="text-lg pl-2 pt-0.5 font-semibold text-white ">{card}</p>
                     </div>
                   </div>
                 ))}
