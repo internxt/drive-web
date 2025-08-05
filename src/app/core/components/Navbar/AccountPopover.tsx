@@ -84,7 +84,7 @@ export default function AccountPopover({
 
       {user && user.sharedWorkspace && (
         <div className="flex items-center justify-between px-3 pb-1">
-          <p className="text-sm text-gray-50">Shared Workspace</p>
+          <p className="text-sm text-gray-50">{translate('workspaces.sharedWorkspace')}</p>
         </div>
       )}
 
