@@ -70,7 +70,7 @@ export interface UserInfoProps {
 }
 
 export interface CheckoutViewManager {
-  onCouponInputChange: (coupon?: string) => void;
+  onCouponInputChange: (coupon?: string) => Promise<void>;
   onLogOut: () => Promise<void>;
   onCountryChange: (country: string) => void;
   onPostalCodeChange: (postalCode: string) => void;
@@ -253,6 +253,7 @@ const CheckoutViewWrapper = () => {
       });
       setSelectedPlan(priceWithTaxes);
     } catch (error) {
+      console.error('Error fetching price with taxes', error);
       if (user) {
         navigationService.push(AppView.Drive);
       } else {
