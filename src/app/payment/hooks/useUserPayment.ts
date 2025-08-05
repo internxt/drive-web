@@ -2,65 +2,20 @@ import { Stripe, StripeElements } from '@stripe/stripe-js';
 
 import { savePaymentDataInLocalStorage } from '../../analytics/impact.service';
 import checkoutService from '../services/checkout.service';
-import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { CouponCodeData } from '../types';
 import envService from '../../core/services/env.service';
 import { sendConversionToAPI } from '../../analytics/googleSheet.service';
 import navigationService from '../../core/services/navigation.service';
 import { AppView } from '../../core/types';
 import paymentService from '../services/payment.service';
-
-interface CommonPaymentIntentPayload {
-  customerId: string;
-  priceId: string;
-  currency: string;
-  token: string;
-  promoCodeId?: string;
-}
-
-interface GetSubscriptionPaymentIntentPayload extends CommonPaymentIntentPayload {
-  mobileToken: string | null;
-  seatsForBusinessSubscription?: number;
-}
-
-interface CommonPaymentHandlerPayload {
-  elements: StripeElements;
-  customerId: string;
-  priceId: string;
-  token: string;
-  currency: string;
-  currentSelectedPlan: PriceWithTax;
-  couponCodeData?: CouponCodeData;
-  confirmPayment: Stripe['confirmPayment'];
-}
-
-interface HandleSubscriptionPaymentPayload extends CommonPaymentHandlerPayload {
-  seatsForBusinessSubscription?: number;
-  mobileToken: string | null;
-}
-
-export interface HandleUserPaymentPayload {
-  selectedPlan: PriceWithTax;
-  token: string;
-  customerId: string;
-  priceId: string;
-  currency: string;
-  elements: StripeElements;
-  mobileToken: string | null;
-  gclidStored: string | null;
-  couponCodeData?: CouponCodeData;
-  seatsForBusinessSubscription?: number;
-  confirmPayment: Stripe['confirmPayment'];
-}
-
-enum PlanInterval {
-  YEAR = 'year',
-  LIFETIME = 'lifetime',
-}
-
-enum InvoiceStatus {
-  PAID = 'paid',
-}
+import {
+  GetSubscriptionPaymentIntentPayload,
+  HandleSubscriptionPaymentPayload,
+  HandleUserPaymentPayload,
+  InvoiceStatus,
+  PaymentHandlerData,
+  PaymentIntentData,
+  PlanInterval,
+} from '../types';
 
 export const useUserPayment = () => {
   const getSubscriptionPaymentIntent = async ({
@@ -110,13 +65,7 @@ export const useUserPayment = () => {
     }
   };
 
-  const getLifetimePaymentIntent = async ({
-    customerId,
-    priceId,
-    currency,
-    token,
-    promoCodeId,
-  }: CommonPaymentIntentPayload) => {
+  const getLifetimePaymentIntent = async ({ customerId, priceId, currency, token, promoCodeId }: PaymentIntentData) => {
     const paymentIntentResponse = await checkoutService.createPaymentIntent({
       customerId,
       priceId,
@@ -194,7 +143,7 @@ export const useUserPayment = () => {
     couponCodeData,
     elements,
     confirmPayment,
-  }: CommonPaymentHandlerPayload) => {
+  }: PaymentHandlerData) => {
     const invoice = await getLifetimePaymentIntent({
       customerId,
       priceId,
