@@ -27,21 +27,9 @@ export class FlatFolderZip {
     // TODO: check why opts.progress is causing zip corruption
     this.passThrough = this.zip.stream;
 
-    if (browserService.isBrave()) return;
-
-    if (browserService.isFirefox()) {
-      loadWritableStreamPonyfill().then(() => {
-        streamSaver.WritableStream = window.WritableStream;
-
-        this.finished = this.passThrough.pipeTo(streamSaver.createWriteStream(folderName + '.zip'), {
-          signal: opts.abortController?.signal,
-        });
-      });
-    } else {
-      this.finished = this.passThrough.pipeTo(streamSaver.createWriteStream(folderName + '.zip'), {
-        signal: opts.abortController?.signal,
-      });
-    }
+    this.finished = this.passThrough.pipeTo(streamSaver.createWriteStream(folderName + '.zip'), {
+      signal: opts.abortController?.signal,
+    });
   }
 
   addFile(name: string, source: ReadableStream<Uint8Array>): void {
@@ -76,19 +64,6 @@ export class FlatFolderZip {
     this.abortController?.abort('Zip aborted');
   }
 }
-
-export function loadWritableStreamPonyfill(): Promise<void> {
-  const script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/npm/web-streams-polyfill@2.0.2/dist/ponyfill.min.js';
-  document.head.appendChild(script);
-
-  return new Promise((resolve) => {
-    script.onload = function () {
-      resolve();
-    };
-  });
-}
-
 type AddFileToZipFunction = (name: string, source: ReadableStream<Uint8Array>) => void;
 type AddFolderToZipFunction = (name: string) => void;
 export interface ZipStream {
