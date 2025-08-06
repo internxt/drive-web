@@ -1,6 +1,4 @@
-import { aes } from '@internxt/lib';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { FolderTree } from '@internxt/sdk/dist/drive/storage/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import { Iterator } from 'app/core/collections';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
@@ -29,7 +27,6 @@ import dateService from '../../core/services/date.service';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { queue, QueueObject } from 'async';
 import { QueueUtilsService } from 'app/utils/queueUtils';
-import envService from 'app/core/services/env.service';
 
 export interface IFolders {
   bucket: string;
