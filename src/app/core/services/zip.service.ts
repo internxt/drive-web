@@ -27,6 +27,8 @@ export class FlatFolderZip {
     // TODO: check why opts.progress is causing zip corruption
     this.passThrough = this.zip.stream;
 
+    if (browserService.isBrave()) return;
+
     this.finished = this.passThrough.pipeTo(streamSaver.createWriteStream(folderName + '.zip'), {
       signal: opts.abortController?.signal,
     });
