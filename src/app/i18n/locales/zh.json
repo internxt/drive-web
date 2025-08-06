@@ -204,6 +204,7 @@
       "privacyGuarantee": "隐私保证：我们不会分享您的信息，并且只会在提供服务时与您联系。"
     },
     "addressBillingTitle": "账单地址",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "可选",

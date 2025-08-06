@@ -206,6 +206,7 @@
       "privacyGuarantee": "隱私保證：我們不會分享您的信息，並且只會在提供服務時與您聯繫。"
     },
     "addressBillingTitle": "帳單地址",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "可選",

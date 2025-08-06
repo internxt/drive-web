@@ -1,3 +1,6 @@
+import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
+import { SdkFactory } from 'app/core/factory/sdk';
+
 enum CurrencySymbol {
   USD = '$', // US Dollar
   EUR = '€', // Euro
@@ -19,6 +22,11 @@ enum CurrencySymbol {
 const currencyService = {
   getCurrencySymbol(currency: string): string {
     return currency ? CurrencySymbol[currency.toUpperCase()] : CurrencySymbol.EUR;
+  },
+
+  async getAvailableCryptoCurrencies(): Promise<CryptoCurrency[]> {
+    const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
+    return checkoutClient.getAvailableCryptoCurrencies();
   },
 };
 

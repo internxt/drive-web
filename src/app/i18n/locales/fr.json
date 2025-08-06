@@ -190,6 +190,7 @@
       "privacyGuarantee": "Garantie de confidentialité : Nous ne partageons pas vos informations et ne vous contacterons que si nécessaire pour fournir notre service."
     },
     "addressBillingTitle": "Facturation d'Adresse",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "Optionnel",

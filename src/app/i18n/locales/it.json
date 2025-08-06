@@ -207,6 +207,7 @@
       "privacyGuarantee": "Garanzia di privacy: Non condividiamo le tue informazioni e ti contatteremo solo se necessario per fornire il nostro servizio."
     },
     "addressBillingTitle": "Indirizzo di Fatturazione",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "Opzionale",

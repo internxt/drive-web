@@ -184,6 +184,7 @@
       "privacyGuarantee": "Datenschutzgarantie: Wir teilen Ihre Informationen nicht und werden Sie nur kontaktieren, wenn es notwendig ist, um unseren Service zu bieten."
     },
     "addressBillingTitle": "Rechnungsadresse",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "Optional",
