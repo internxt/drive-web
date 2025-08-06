@@ -1,7 +1,7 @@
 import { Transition } from '@headlessui/react';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Check, SealPercent, X } from '@phosphor-icons/react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Button } from '@internxt/ui';
@@ -15,7 +15,7 @@ import TextInput from '../../../share/components/ShareItemDialog/components/Text
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import { CouponCodeData, Currency } from '../../types';
 import { SelectSeatsComponent } from './SelectSeatsComponent';
-import { getPlanFeatures, getPlanTitle } from 'app/payment/utils/utils';
+import { getPlanCommingFeatures, getPlanFeatures, getPlanTitle } from 'app/payment/utils/utils';
 
 interface CheckoutProductCardProps {
   selectedPlan: PriceWithTax;
@@ -84,11 +84,8 @@ export const CheckoutProductCard = ({
 
   const productLabel = getPlanTitle(planType, bytes, isOldPlan, translate);
   const featureKeys = getPlanFeatures(planType, bytes, isOldPlan, translateList);
-
-  const comingSoonFeatureKeys = useMemo(() => {
-    const result = translateList(`preferences.account.plans.${planType}.${bytes}.comingSoonFeatures`);
-    return !isOldPlan && Array.isArray(result) ? result : [];
-  }, [planType, bytes, translateList]);
+  const commingFeatureKeys = getPlanCommingFeatures(planType, bytes, isOldPlan, translateList);
+  const comingSoonFeatureKeys = Array.isArray(commingFeatureKeys) ? commingFeatureKeys : [];
 
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">

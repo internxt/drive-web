@@ -1,21 +1,14 @@
-interface TranslateFunction {
-  (key: string, options?: { returnObjects?: boolean }): string | string[] | undefined;
-}
+type TranslateFunction = (key: string, options?: { returnObjects?: boolean }) => string | string[] | undefined;
 
-interface TranslateListFunction {
-  (key: string, options?: { returnObjects?: boolean }): string[] | undefined;
-}
-
-type PlanType = string;
-type StorageSize = string;
+type TranslateListFunction = (key: string, options?: { returnObjects?: boolean }) => string[] | undefined;
 
 const STORAGE_PLACEHOLDER = '{{storage}}';
 const VPN_PLACEHOLDER = '{{VPN}}';
 const LARGE_STORAGE_SIZE = '5TB';
 
 export const getPlanFeatures = (
-  planType: PlanType,
-  bytes: StorageSize,
+  planType: string,
+  bytes: string,
   isOldPlan: boolean,
   translateList: TranslateListFunction,
 ): string[] => {
@@ -26,7 +19,7 @@ export const getPlanFeatures = (
   return getNewPlanFeatures(planType, bytes, translateList);
 };
 
-const getOldPlanFeatures = (planType: PlanType, bytes: StorageSize, translateList: TranslateListFunction): string[] => {
+const getOldPlanFeatures = (planType: string, bytes: string, translateList: TranslateListFunction): string[] => {
   const featureKeys = translateList(`preferences.account.plans.${planType}.plans.default.features`, {
     returnObjects: true,
   });
@@ -38,7 +31,7 @@ const getOldPlanFeatures = (planType: PlanType, bytes: StorageSize, translateLis
   return featureKeys.map((feature: string) => feature.replace(new RegExp(STORAGE_PLACEHOLDER, 'g'), bytes));
 };
 
-const getNewPlanFeatures = (planType: PlanType, bytes: StorageSize, translateList: TranslateListFunction): string[] => {
+const getNewPlanFeatures = (planType: string, bytes: string, translateList: TranslateListFunction): string[] => {
   const baseFeatures = translateList(`preferences.account.plans.${planType}.baseFeatures`, { returnObjects: true });
 
   const vpnFeatures = translateList(`preferences.account.plans.${planType}.plans.${bytes}.features`, {
@@ -54,9 +47,23 @@ const getNewPlanFeatures = (planType: PlanType, bytes: StorageSize, translateLis
   return baseFeatures.map((feature: string) => feature.replace(new RegExp(VPN_PLACEHOLDER, 'g'), vpnFeatureString));
 };
 
+export const getPlanCommingFeatures = (
+  planType: string,
+  bytes: string,
+  isOldPlan: boolean,
+  translateList: TranslateListFunction,
+): string[] => {
+  const result =
+    translateList(`preferences.account.plans.${planType}.plans.${bytes}.comingSoonFeatures`, {
+      returnObjects: true,
+    }) ?? [];
+
+  return !isOldPlan ? result : [];
+};
+
 export const getPlanTitle = (
-  planType: PlanType,
-  bytes: StorageSize,
+  planType: string,
+  bytes: string,
   isOldPlan: boolean,
   translate: TranslateFunction,
 ): string => {
@@ -71,14 +78,14 @@ export const getPlanTitle = (
   return getFallbackTitle(planType, bytes, translate);
 };
 
-const buildTitleKey = (planType: PlanType, bytes: StorageSize, isOldPlan: boolean): string => {
+const buildTitleKey = (planType: string, bytes: string, isOldPlan: boolean): string => {
   const planIdentifier = isOldPlan ? 'default' : bytes;
   const titleType = bytes === LARGE_STORAGE_SIZE ? 'oldTitle' : 'title';
 
   return `preferences.account.plans.${planType}.plans.${planIdentifier}.${titleType}`;
 };
 
-const getFallbackTitle = (planType: PlanType, bytes: StorageSize, translate: TranslateFunction): string => {
+const getFallbackTitle = (planType: string, bytes: string, translate: TranslateFunction): string => {
   const defaultTitle = translate(`preferences.account.plans.${planType}.plans.default.title`) as string;
 
   if (defaultTitle) {
