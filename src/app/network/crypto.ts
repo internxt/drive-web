@@ -1,14 +1,16 @@
-import { ShardMeta } from '@internxt/inxt-js/build/lib/models';
-import { Aes256gcmEncrypter } from '@internxt/inxt-js/build/lib/utils/crypto';
 import { mnemonicToSeed } from 'bip39';
+import * as crypto from 'crypto';
 import { Cipher, CipherCCM, createCipheriv } from 'crypto';
+
 import {
-  getHmacSha512FromHexKey,
   getHmacSha512,
-  getSha256Hasher,
+  getHmacSha512FromHexKey,
   getRipemd160FromHex,
+  getSha256Hasher,
+  getSha512Combined,
   getSha512FromHex,
 } from '../crypto/services/utils';
+import { LegacyShardMeta } from './types';
 
 const BUCKET_META_MAGIC = [
   66, 150, 71, 16, 50, 114, 88, 160, 163, 35, 154, 65, 162, 213, 226, 215, 70, 138, 57, 61, 52, 19, 210, 170, 38, 164,
@@ -19,8 +21,12 @@ export function createAES256Cipher(key: Buffer, iv: Buffer): Cipher {
   return createCipheriv('aes-256-ctr', key, iv);
 }
 
+export function Aes256gcmEncrypter(key: Buffer, iv: Buffer): crypto.CipherGCM {
+  return crypto.createCipheriv('aes-256-gcm', key, iv);
+}
+
 export function generateHMAC(
-  shardMetas: Omit<ShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
+  shardMetas: Omit<LegacyShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
   encryptionKey: Buffer,
 ): Promise<string> {
   const shardHashesSorted = [...shardMetas].sort((sA, sB) => sA.index - sB.index);
@@ -189,4 +195,22 @@ export async function processEveryFileBlobReturnHash(
 
   const sha256Result = hasher.digest();
   return await getRipemd160FromHex(sha256Result);
+}
+
+// ENCRYPTION FOR FILE KEY
+export async function generateFileKey(mnemonic: string, bucketId: string, index: Buffer): Promise<Buffer> {
+  const bucketKey = await generateFileBucketKey(mnemonic, bucketId);
+
+  return (await getFileDeterministicKey(bucketKey.subarray(0, 32), index)).subarray(0, 32);
+}
+
+export async function generateFileBucketKey(mnemonic: string, bucketId: string): Promise<Buffer> {
+  const seed = await mnemonicToSeed(mnemonic);
+
+  return getFileDeterministicKey(seed, Buffer.from(bucketId, 'hex'));
+}
+
+export async function getFileDeterministicKey(key: Buffer, data: Buffer): Promise<Buffer> {
+  const hashHex = await getSha512Combined(key, data);
+  return Buffer.from(hashHex, 'hex');
 }

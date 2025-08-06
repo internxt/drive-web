@@ -4,12 +4,12 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 80%",
-    "title": "Annual and lifetime plans!",
-    "upperTitle": "Hot summer savings",
+    "label": "Save 85%",
+    "title": "All Internxt Plans!",
+    "upperTitle": "Internxt turns 5!",
     "cta": "Claim deal",
     "guarantee": "30-day money-back guarantee",
-    "specialOfferGift": "Chance to win an Internxt backpack",
+    "specialOfferGift": "Chance to win a signed Valencia CF T-shirt",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
       "Drive, VPN, and Antivirus",
@@ -17,7 +17,7 @@
       "Post-quantum encryption",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Free summer theme for Web App"
+      "Free anniversary theme for Web App"
     ]
   },
   "susbcriptionsBanner": {
@@ -87,6 +87,7 @@
     "superBowl": "Super Bowl",
     "valentines": "Valentine's Day",
     "summer": "Summer",
+    "anniversary":"Anniversary",
     "stPatricks": "St. Patrick's Day",
     "idManagement": "Identity Management",
     "environment": "World Environment Day"
@@ -250,9 +251,7 @@
         "buttonTitle": "Add coupon",
         "inputText": "Coupon code"
       },
-      "amountSaved": "Save ",
       "apply": "Apply",
-      "withAnnualBilling": "with annual billing",
       "taxes": "Taxes"
     }
   },

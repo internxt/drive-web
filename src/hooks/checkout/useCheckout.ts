@@ -61,13 +61,6 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     });
   };
 
-  const setIsUpsellSwitchActivated = (isUpsellSwitchActivated: boolean) => {
-    dispatchReducer({
-      type: 'SET_IS_UPSELL_SWITCH_ACTIVATED',
-      payload: isUpsellSwitchActivated,
-    });
-  };
-
   const setIsCheckoutReadyToRender = (isCheckoutReadyToRender: boolean) => {
     dispatchReducer({
       type: 'SET_IS_CHECKOUT_READY_TO_RENDER',
@@ -106,7 +99,6 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     setUserNameFromElementAddress,
     setAvatarBlob,
     setIsUserPaying,
-    setIsUpsellSwitchActivated,
     setPlan,
     setPromoCodeData,
     setSelectedPlan,

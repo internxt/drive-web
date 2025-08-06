@@ -15,5 +15,6 @@ export const STORAGE_KEYS = {
     CHRISTMAS_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'christmas_theme_enabled',
     SUPERBOWL_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'superbowl_theme_enabled',
     STPATRICKS_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'stpatricks_theme_enabled',
+    ANNIVERSARY_THEME_AVAILABLE_LOCAL_STORAGE_KEY: 'anniversary_theme_enabled',
   },
 };
