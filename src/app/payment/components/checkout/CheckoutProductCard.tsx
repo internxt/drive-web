@@ -23,7 +23,7 @@ interface CheckoutProductCardProps {
   showHardcodedRenewal?: string;
   onSeatsChange: (users: number) => void;
   onRemoveAppliedCouponCode: () => void;
-  onCouponInputChange: (promoCode: string) => void;
+  onCouponInputChange: (promoCode?: string) => void;
   couponCodeData?: CouponCodeData;
   couponError?: string;
 }
@@ -199,6 +199,7 @@ export const CheckoutProductCard = ({
                       onClick={(e) => {
                         e.preventDefault();
                         onRemoveAppliedCouponCode();
+                        onCouponInputChange();
                       }}
                     >
                       <X size={20} className="text-gray-50" />
