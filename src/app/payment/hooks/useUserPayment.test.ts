@@ -263,7 +263,6 @@ describe('Custom hook to handle payments', () => {
         customerId: 'customer_id',
         priceId: 'price_id',
         token: 'token',
-        mobileToken: null,
         currency: 'currency',
         seatsForBusinessSubscription: 1,
         elements: {
@@ -359,7 +358,6 @@ describe('Custom hook to handle payments', () => {
         customerId: 'customer_id',
         priceId: 'price_id',
         token: 'token',
-        mobileToken: null,
         currency: 'currency',
         seatsForBusinessSubscription: 1,
         elements: {
