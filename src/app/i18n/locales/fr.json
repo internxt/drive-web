@@ -4,20 +4,20 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 80 %",
-    "title": "Réduction sur tous les forfaits",
-    "upperTitle": "Offre d'été",
-    "cta": "Obtenir l'offre",
-    "guarantee": "Garantie de remboursement de 30 jours",
-    "specialOfferGift": "Tirage au sort d’un sac à dos Internxt x Swiss Peak",
-    "lastCta": "*Offre valable pour les comptes gratuits ou les nouveaux clients",
+    "label": "Économisez 85%",
+    "title": "Sur tous les forfaits",
+    "upperTitle": "On fête nos 5 ans !",
+    "cta": "Choisissez un plan",
+    "guarantee": "Garantie 30 jours remboursée",
+    "specialOfferGift": "Tirage d’un maillot signé du Valencia CF",
+    "lastCta": "*Offre valable pour comptes gratuits ou nouveaux clients",
     "features": [
       "Drive, VPN et Antivirus",
-      "Stockage cloud durable",
+      "Stockage durable",
       "Chiffrement post-quantique",
-      "Transferts chiffrés de bout en bout",
+      "Transferts chiffrés",
       "Aucun accès non autorisé",
-      "Thème d'été gratuit"
+      "Thème d’été gratuit"
     ]
   },
   "susbcriptionsBanner": {
@@ -66,6 +66,7 @@
     "superBowl": "Super Bowl",
     "valentines": "Saint Valentin",
     "summer": "été",
+    "anniversary":"Anniversaire",
     "stPatricks": "Saint Patrick",
     "idManagement": "Gestion de l'identité",
     "environment": "Journée Mondiale de l'Environnement"
@@ -234,8 +235,6 @@
         "inputText": "Code de coupon"
       },
       "apply": "Appliquer",
-      "amountSaved": "Économisez ",
-      "withAnnualBilling": "avec facturation annuelle",
       "taxes": "Taxes"
     }
   },
@@ -1009,7 +1008,8 @@
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
     "maxSizeUploadLimitError": "Fichier trop volumineux (plus de 40GB)",
     "connectionLostError": "Lost Internet connection",
-    "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille"
+    "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille",
+    "updateAvatarError": "Erreur lors de la mise à jour de l'avatar"
   },
   "backups": {
     "backups-from": "Sauvagardes de {{deviceName}}",

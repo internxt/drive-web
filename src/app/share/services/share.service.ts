@@ -21,7 +21,7 @@ import {
   UpdateUserRoleResponse,
 } from '@internxt/sdk/dist/drive/share/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { downloadFolderAsZip } from '../../drive/services/folder.service';
+import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import copy from 'copy-to-clipboard';
 import { t } from 'i18next';
 import { Iterator } from '../../core/collections';
@@ -31,12 +31,12 @@ import httpService from '../../core/services/http.service';
 import localStorageService from '../../core/services/local-storage.service';
 import workspacesService from '../../core/services/workspace.service';
 import { hybridDecryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
-import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
-import { domainManager } from './DomainManager';
-import { DownloadManager } from '../../network/DownloadManager';
-import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { AdvancedSharedItem } from '../types';
+import { downloadFolderAsZip } from '../../drive/services/folder.service';
 import { DriveFolderData } from '../../drive/types';
+import { DownloadManager } from '../../network/DownloadManager';
+import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
+import { AdvancedSharedItem } from '../types';
+import { domainManager } from './DomainManager';
 import { base64UrlSafetoUUID, generateRandomStringUrlSafe, toBase64UrlSafe } from '../../utils/stringUtils';
 import { validate as validateUuidv4 } from 'uuid';
 

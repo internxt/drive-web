@@ -4,20 +4,20 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "立省 80%",
-    "title": "所有套餐均可享受折扣",
-    "upperTitle": "夏季优惠",
-    "cta": "获取优惠",
-    "guarantee": "30 天退款保证",
-    "specialOfferGift": "抽奖赠送 Internxt x Swiss Peak 背包",
-    "lastCta": "*仅限免费账户或新客户享受此优惠",
+    "label": "立省85%",
+    "title": "適用所有方案",
+    "upperTitle": "我們5歲了！",
+    "cta": "選擇你的方案",
+    "guarantee": "30天退費保證",
+    "specialOfferGift": "抽獎：Valencia CF簽名球衣",
+    "lastCta": "*限免費帳戶或新用戶",
     "features": [
-      "Drive、VPN 和防病毒软件",
-      "可持续的云存储",
-      "后量子加密",
-      "端到端加密传输",
-      "无未经授权的访问",
-      "免费夏季主题"
+      "雲端、VPN、防毒",
+      "永續儲存空間",
+      "後量子加密技術",
+      "加密檔案傳輸",
+      "無未授權存取",
+      "免費夏日主題"
     ]
   },
   "susbcriptionsBanner": {
@@ -86,7 +86,8 @@
     "christmas": "圣诞节",
     "superBowl": "Super Bowl",
     "valentines": "Valentine's Day",
-    "summer": "夏天"
+    "summer": "週年",
+    "anniversary":"Anniversary"
   },
   "auth": {
     "email": "电子邮件",
@@ -248,8 +249,6 @@
         "inputText": "优惠券代码"
       },
       "apply": "应用",
-      "amountSaved": "节省 ",
-      "withAnnualBilling": "按年计费",
       "taxes": "税费"
     }
   },
@@ -609,9 +608,9 @@
         "security": {
           "label": "安全",
           "lock": {
-            "title": "输入你的密码以继续",
-            "description": "出于安全考虑，你必须先输入密码才能对该页面进行修改。",
-            "inputLabel": "密码",
+            "title": "輸入你的密碼以繼續",
+            "description": "輸入你的密碼以繼續 出於安全考慮，你必須先輸入密碼才能對該頁面進行修改。",
+            "inputLabel": "密碼",
             "errors": {
               "incorrect": "再次输入密码",
               "notVerified": "我们无法验证您的密码"
@@ -1046,7 +1045,8 @@
     "errorDeletingFromTrash": "从垃圾箱中删除项目时出错。",
     "maxSizeUploadLimitError": "文件太大（大于40GB）",
     "connectionLostError": "互联网连接丢失",
-    "errorLoadingTrashItems": "加载垃圾箱内的项目时出错"
+    "errorLoadingTrashItems": "加载垃圾箱内的项目时出错",
+    "updateAvatarError": "更新头像时出错"
   },
   "backups": {
     "backups-from": "来自 {{deviceName}} 的备份",

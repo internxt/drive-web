@@ -4,17 +4,17 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "省下 80%",
-    "title": "所有方案享有折扣",
-    "upperTitle": "夏季優惠",
-    "cta": "獲取優惠",
+    "label": "立省 85%",
+    "title": "適用於所有方案",
+    "upperTitle": "我們滿 5 歲了！",
+    "cta": "選擇你的方案",
     "guarantee": "30 天退款保證",
-    "specialOfferGift": "抽獎贈送 Internxt x Swiss Peak 背包",
-    "lastCta": "*優惠僅適用於免費帳戶或新客戶",
+    "specialOfferGift": "瓦倫西亞 CF 球衣抽獎",
+    "lastCta": "*僅限免費帳戶或新用戶",
     "features": [
-      "Drive、VPN 與防毒軟體",
+      "Drive、VPN 和防毒",
       "永續雲端儲存",
-      "後量子加密技術",
+      "後量子加密",
       "端對端加密傳輸",
       "無未授權存取",
       "免費夏季主題"
@@ -87,6 +87,7 @@
     "superBowl": "Super Bowl",
     "valentines": "情人節",
     "summer": "夏天",
+    "anniversary":"Anniversary",
     "stPatricks": "St. Patrick's",
     "idManagement": "Identity Management"
   },
@@ -250,8 +251,6 @@
         "inputText": "優惠券代碼"
       },
       "apply": "應用",
-      "amountSaved": "節省 ",
-      "withAnnualBilling": "按年計費",
       "taxes": "稅金"
     }
   },
@@ -1011,7 +1010,8 @@
     "errorDeletingFromTrash": "從垃圾桶中刪除項目時出錯。",
     "maxSizeUploadLimitError": "文件過大（大於40GB）",
     "connectionLostError": "網絡連接已丟失",
-    "errorLoadingTrashItems": "加載垃圾桶項目時出錯"
+    "errorLoadingTrashItems": "加載垃圾桶項目時出錯",
+    "updateAvatarError": "更新頭像時發生錯誤"
   },
   "backups": {
     "backups-from": "來自{{deviceName}}的備份",

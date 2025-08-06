@@ -1,7 +1,9 @@
 name: Drive Web Cloudflare CD
 on:
   push:
-    branches: [master, feature/IN-57-migrate-drive-web-to-cloudflare]
+    branches: ['*']
+  pull_request:
+    types: [opened, synchronize, reopened]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,11 +36,10 @@ jobs:
       - run: echo REACT_APP_SENTRY_DSN=${{ secrets.REACT_APP_SENTRY_DSN }} >> ./.env
       - run: echo REACT_APP_PAYMENTS_API_URL=${{ secrets.REACT_APP_PAYMENTS_API_URL }} >> ./.env
       - run: echo REACT_APP_DRIVE_NEW_API_URL=${{ secrets.REACT_APP_DRIVE_NEW_API_URL }} >> ./.env
+      - run: echo REACT_APP_LOCATION_API_URL=${{ secrets.REACT_APP_LOCATION_API_URL }} >> ./.env
       - run: echo REACT_APP_NODE_ENV=production >> ./.env
       - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
       - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
-      # You cannot read packages from other private repos with GITHUB_TOKEN
-      # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
       - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
       - run: echo "always-auth=true" >> .npmrc
 
@@ -60,7 +61,7 @@ jobs:
 
       # Upload build directory as an artifact
       - name: Upload build directory
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build
           path: build/
@@ -71,6 +72,7 @@ jobs:
     permissions:
       contents: read
       deployments: write
+      pull-requests: write
     name: Publish to Cloudflare Pages
     steps:
       - name: Checkout repo
@@ -78,24 +80,49 @@ jobs:
 
       # Download the build artifact
       - name: Download build artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build
           path: build
 
       - name: Publish to Cloudflare Pages
+        id: cloudflare
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: drive-web
           directory: build
-          # Optional: Enable this if you want to have GitHub Deployments triggered
-          # gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          # Optional: Switch what branch you are publishing to.
-          # By default this will be the branch which triggered this workflow
-          branch: feature/IN-57-migrate-drive-web-to-cloudflare
-          # Optional: Change the working directory
-          # workingDirectory: my-site
-          # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
+
+      - name: Show deployment info
+        run: |
+          echo "🚀 Deployment completed!"
+          echo "📱 Cloudflare URL: ${{ steps.cloudflare.outputs.url }}"
+
+      - name: Find existing comment
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/find-comment@v3
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Preview Deploy Ready!'
+
+      - name: Create or update comment
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            🚀 **Preview Deploy Ready!**
+
+            📱 **Preview URL:** ${{ steps.cloudflare.outputs.url }}
+
+            Built from commit: `${{ github.sha }}`
+
+            ---
+            This preview will be automatically updated when you push new commits to this PR.
+          edit-mode: replace

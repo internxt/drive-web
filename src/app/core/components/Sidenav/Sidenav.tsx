@@ -113,6 +113,9 @@ const Sidenav = ({
   const dispatch = useAppDispatch();
   const isB2BWorkspace = !!useSelector(workspacesSelectors.getSelectedWorkspace);
   const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
+  const isLoadingBusinessLimitAndUsage = useAppSelector(
+    (state: RootState) => state.plan.isLoadingBusinessLimitAndUsage,
+  );
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceUuid = selectedWorkspace?.workspaceUser.workspaceId;
@@ -197,7 +200,14 @@ const Sidenav = ({
       </button>
       <div className="flex grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2 flex w-full flex-col">
-          {user && <WorkspaceSelectorContainer user={user} />}
+          {user && (
+            <WorkspaceSelectorContainer
+              user={{
+                ...user,
+                avatar: user.avatar,
+              }}
+            />
+          )}
           <SideNavItems sideNavItems={itemsNavigation} />
         </div>
 
@@ -208,7 +218,7 @@ const Sidenav = ({
             limit={planLimit}
             usage={planUsage}
             isUpgradeAvailable={isUpgradeAvailable}
-            isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
+            isLoading={isLoadingPlanUsage || isLoadingPlanLimit || isLoadingBusinessLimitAndUsage}
           />
         </div>
       </div>
