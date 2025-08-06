@@ -27,8 +27,8 @@ interface IUploadParams {
   };
 }
 
-export async function uploadFileBlob(
-  content: Blob,
+export async function uploadFileUint8Array(
+  content: Uint8Array,
   url: string,
   opts: {
     progressCallback: UploadProgressCallback;
@@ -46,11 +46,7 @@ export async function uploadFileBlob(
       onUploadProgress: (progress: AxiosProgressEvent) => {
         opts.progressCallback(progress.total ?? 0, progress.loaded);
       },
-      cancelToken: new axios.CancelToken((canceler) => {
-        opts.abortController?.signal.addEventListener('abort', () => {
-          canceler();
-        });
-      }),
+      signal: opts.abortController?.signal,
     });
 
     return { etag: res.headers.etag };

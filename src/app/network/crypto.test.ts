@@ -72,7 +72,7 @@ describe('Test crypto.ts functions', () => {
     const iv = Buffer.from('0b68dcbb255a4e654bbf361e73cf1b98', 'hex');
     const file = createMockFile('file.txt', 13, 'text/plain');
     const cipher = crypto.createCipheriv('aes-256-ctr', encryptionKey, iv);
-    const [encryptedFile, hash] = await getEncryptedFile(file, cipher);
+    const [encryptedFile, hash] = await getEncryptedFile(file, cipher, file.size);
     expect(encryptedFile).toBeDefined();
     expect(hash).toBe('422dab11a4f44c2ceab1f8ef39827109989607d6');
   });
