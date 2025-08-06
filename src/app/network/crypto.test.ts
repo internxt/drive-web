@@ -5,9 +5,7 @@
 import { Buffer } from 'buffer';
 import crypto from 'crypto';
 import { describe, expect, it, vi } from 'vitest';
-import { getSha256 } from '../crypto/services/utils';
 import {
-  Aes256gcmEncrypter,
   encryptFilename,
   generateFileBucketKey,
   generateFileKey,
@@ -17,8 +15,7 @@ import {
   processEveryFileBlobReturnHash,
   encryptStreamInParts,
 } from './crypto';
-import { Buffer } from 'buffer';
-import crypto from 'crypto';
+import { mnemonicToSeed } from 'bip39';
 
 describe('Test crypto.ts functions', () => {
   globalThis.Buffer = Buffer;
