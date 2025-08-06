@@ -1833,89 +1833,91 @@
         "planFeaturesList": {
           "title": "Detalles del plan",
           "comingSoon": "Muy pronto",
-          "storage": " almacenamiento cifrado con conocimiento cero",
-          "1TB": {
-            "title": "Esencial",
-            "features": [
-              "Cifrado post-cuántico",
-              "VPN ilimitada ultrarrápida (FR)",
-              "Antivirus",
-              "Copia de seguridad de tus archivos",
-              "Compartir archivos protegidos con contraseña",
-              "Cumplimiento del RGPD",
-              "Autenticación de dos factores (2FA)",
-              "Soporte para CLI, WebDav y Rclone"
-            ]
-          },
-          "3TB": {
-            "title": "Premium",
-            "features": [
-              "Cifrado post-cuántico",
-              "VPN ilimitada ultrarrápida (FR, DE, PL)",
-              "Antivirus",
-              "Copia de seguridad de tus archivos",
-              "Compartir archivos protegidos con contraseña",
-              "Invitar, compartir y colaborar",
-              "Cumplimiento del RGPD",
-              "Autenticación de dos factores (2FA)",
-              "Soporte para CLI, WebDav y Rclone"
-            ],
-            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web"]
-          },
-          "5TB": {
-            "title": "Ultimate",
-            "features": [
-              "Cifrado post-cuántico",
-              "VPN ilimitada ultrarrápida (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Copia de seguridad de tus archivos",
-              "Compartir archivos protegidos con contraseña",
-              "Invitar, compartir y colaborar",
-              "Cumplimiento del RGPD",
-              "Autenticación de dos factores (2FA)",
-              "Soporte para CLI, WebDav y Rclone"
-            ],
-            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web", "Meet", "Mail"]
-          },
-          "1GB": {
-            "title": "Gratis",
-            "features": ["VPN estándar gratuita (FR)", "Soporte para CLI, WebDav y Rclone"]
+          "baseFeatures": [
+            "Cifrado post-cuántico",
+            "{{VPN}}",
+            "Antivirus",
+            "Copia de seguridad de tus archivos",
+            "Compartir archivos protegidos con contraseña",
+            "Cumplimiento del RGPD",
+            "Autenticación de dos factores (2FA)",
+            "Compatibilidad con CLI, WebDav y Rclone"
+          ],
+          "plans": {
+            "1GB": {
+              "title": "Gratis",
+              "features": ["VPN estándar gratuita"],
+              "vpnLocations": ["FR"]
+            },
+            "1TB": {
+              "title": "Essential",
+              "features": ["VPN ultrarrápida e ilimitada (FR)"]
+            },
+            "3TB": {
+              "title": "Premium",
+              "features": ["VPN ultrarrápida e ilimitada (FR, DE, PL)"],
+              "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de la Dark Web"]
+            },
+            "5TB": {
+              "title": "Ultimate",
+              "oldTitle": "5TB",
+              "features": ["VPN ultrarrápida e ilimitada (FR, DE, PL, CA, UK)"],
+              "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de la Dark Web", "Meet", "Mail"]
+            },
+            "default": {
+              "title": "{{storage}}",
+              "features": [
+                "Almacenamiento cifrado de conocimiento cero de {{storage}}",
+                "Cifrado de conocimiento cero",
+                "Compartir archivos protegidos con contraseña",
+                "Cifrado post-cuántico",
+                "Accede a tus archivos desde cualquier dispositivo",
+                "Cumplimiento del RGPD garantizado",
+                "Autenticación de dos factores (2FA)",
+                "Atención al cliente premium",
+                "Garantía de reembolso de 30 días"
+              ]
+            }
           }
         },
         "businessPlanFeaturesList": {
           "title": "Detalles del plan",
           "storage": " de almacenamiento",
-          "1TB": {
-            "title": "Estándar",
-            "features": [
-              "Cifrado post-cuántico",
-              "VPN ilimitada ultrarrápida (FR, DE, PL)",
-              "Antivirus",
-              "Copia de seguridad de tus archivos",
-              "Compartir archivos protegidos con contraseña",
-              "Invitar, compartir y colaborar",
-              "Cumplimiento del RGPD",
-              "Autenticación de dos factores (2FA)",
-              "Soporte para CLI, WebDav y Rclone",
-              "Gestionar facturación y pagos de la cuenta"
-            ],
-            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web"]
-          },
-          "2TB": {
-            "title": "Pro",
-            "features": [
-              "Cifrado post-cuántico",
-              "VPN ilimitada ultrarrápida (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Copia de seguridad de tus archivos",
-              "Compartir archivos protegidos con contraseña",
-              "Invitar, compartir y colaborar",
-              "Cumplimiento del RGPD",
-              "Autenticación de dos factores (2FA)",
-              "Soporte para CLI, WebDav y Rclone",
-              "Gestionar facturación y pagos de la cuenta"
-            ],
-            "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web", "Meet", "Mail"]
+          "baseFeatures": [
+            "Cifrado post-cuántico",
+            "{{VPN}}",
+            "Antivirus",
+            "Copia de seguridad de tus archivos",
+            "Compartir archivos protegidos con contraseña",
+            "Invitar, compartir y colaborar",
+            "Cumplimiento del RGPD",
+            "Autenticación de dos factores (2FA)",
+            "Soporte para CLI, WebDav y Rclone",
+            "Gestionar facturación y pagos de la cuenta"
+          ],
+          "plans":{
+            "1TB": {
+              "title": "Estándar",
+              "features": [
+                "VPN ilimitada ultrarrápida (FR, DE, PL)"
+              ],
+              "comingSoonFeatures": [
+                "Limpiador de dispositivos",
+                "Monitor de Dark Web"
+              ]
+            },
+            "2TB": {
+              "title": "Pro",
+              "features": [
+                "VPN ilimitada ultrarrápida (FR, DE, PL, CA, UK)"
+              ],
+              "comingSoonFeatures": [
+                "Limpiador de dispositivos",
+                "Monitor de Dark Web",
+                "Meet",
+                "Mail"
+              ]
+            }
           }
         },
         "user": "usuario"

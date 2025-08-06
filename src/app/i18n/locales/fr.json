@@ -1805,91 +1805,93 @@
           "free": "Free"
         },
         "planFeaturesList": {
-          "title": "Détails du plan",
-          "comingSoon": "Bientôt disponible",
-          "storage": " stockage chiffré à connaissance zéro",
-          "1TB": {
-            "title": "Essentiel",
-            "features": [
-              "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav et Rclone"
-            ]
-          },
-          "3TB": {
-            "title": "Premium",
-            "features": [
-              "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
-              "Inviter, partager et collaborer",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav et Rclone"
-            ],
-            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web"]
-          },
-          "5TB": {
-            "title": "Ultimate",
-            "features": [
-              "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
-              "Inviter, partager et collaborer",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav et Rclone"
-            ],
-            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web", "Meet", "Mail"]
-          },
-          "1GB": {
-            "title": "Gratuit",
-            "features": ["VPN standard gratuit (FR)", "Support CLI, WebDav et Rclone"]
+          "title": "Détails du forfait",
+          "comingSoon": "Très bientôt",
+          "baseFeatures": [
+            "Chiffrement post-quantique",
+            "{{VPN}}",
+            "Antivirus",
+            "Sauvegarde de vos fichiers",
+            "Partage de fichiers protégé par mot de passe",
+            "Conformité au RGPD",
+            "Authentification à deux facteurs (2FA)",
+            "Compatibilité avec CLI, WebDav et Rclone"
+          ],
+          "plans": {
+            "1GB": {
+              "title": "Gratuit",
+              "features": ["VPN standard gratuit"],
+              "vpnLocations": ["FR"]
+            },
+            "1TB": {
+              "title": "Essential",
+              "features": ["VPN ultra-rapide et illimité (FR)"]
+            },
+            "3TB": {
+              "title": "Premium",
+              "features": ["VPN ultra-rapide et illimité (FR, DE, PL)"],
+              "comingSoonFeatures": ["Nettoyeur d'appareil", "Monitor de la Dark Web"]
+            },
+            "5TB": {
+              "title": "Ultimate",
+              "oldTitle": "5TB",
+              "features": ["VPN ultra-rapide et illimité (FR, DE, PL, CA, UK)"],
+              "comingSoonFeatures": ["Nettoyeur d'appareil", "Monitor de la Dark Web", "Meet", "Mail"]
+            },
+            "default": {
+              "title": "{{storage}}",
+              "features": [
+                "Stockage chiffré en connaissance zéro de {{storage}}",
+                "Chiffrement en connaissance zéro",
+                "Partage de fichiers protégé par mot de passe",
+                "Chiffrement post-quantique",
+                "Accédez à vos fichiers depuis n'importe quel appareil",
+                "Conformité au RGPD garantie",
+                "Authentification à deux facteurs (2FA)",
+                "Support client premium",
+                "Garantie de remboursement de 30 jours"
+              ]
+            }
           }
         },
         "businessPlanFeaturesList": {
           "title": "Détails du plan",
           "storage": " de stockage",
-          "1TB": {
-            "title": "Standard",
-            "features": [
-              "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
-              "Inviter, partager et collaborer",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav et Rclone",
-              "Gérer la facturation et les paiements du compte"
-            ],
-            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web"]
-          },
-          "2TB": {
-            "title": "Pro",
-            "features": [
-              "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
-              "Inviter, partager et collaborer",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav et Rclone",
-              "Gérer la facturation et les paiements du compte"
-            ],
-            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web", "Meet", "Mail"]
+          "baseFeatures": [
+            "Chiffrement post-quantique",
+            "{{VPN}}",
+            "Antivirus",
+            "Sauvegarde de vos fichiers",
+            "Partage de fichiers protégé par mot de passe",
+            "Inviter, partager et collaborer",
+            "Conformité au RGPD",
+            "Authentification à deux facteurs (2FA)",
+            "Compatibilité avec CLI, WebDav et Rclone",
+            "Gérer la facturation et les paiements du compte"
+          ],
+          "plans": {
+            "1TB": {
+              "title": "Standard",
+              "features": [
+                "VPN illimité ultra-rapide (FR, DE, PL)"
+              ],
+              "comingSoonFeatures": [
+                "Nettoyeur d'appareil",
+                "Monitor de la Dark Web"
+              ]
+            },
+            "2TB": {
+              "title": "Pro",
+              "features": [
+                "VPN illimité ultra-rapide (FR, DE, PL, CA, UK)"
+              ],
+              "comingSoonFeatures": [
+                "Nettoyeur d'appareil",
+                "Monitor de la Dark Web",
+                "Meet",
+                "Mail"
+              ]
+            }
           }
         },
         "user": "Utilisateur"

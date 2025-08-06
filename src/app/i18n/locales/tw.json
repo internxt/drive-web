@@ -1811,89 +1811,91 @@
         "planFeaturesList": {
           "title": "方案詳情",
           "comingSoon": "即將推出",
-          "storage": " 零知識加密儲存",
-          "1TB": {
-            "title": "基本版",
-            "features": [
-              "後量子加密",
-              "超快無限制VPN（法國）",
-              "防毒",
-              "檔案備份",
-              "密碼保護檔案共享",
-              "符合GDPR",
-              "雙因素認證（2FA）",
-              "支援CLI、WebDav和Rclone"
-            ]
-          },
-          "3TB": {
-            "title": "進階版",
-            "features": [
-              "後量子加密",
-              "超快無限制VPN（法國、德國、波蘭）",
-              "防毒",
-              "檔案備份",
-              "密碼保護檔案共享",
-              "邀請、共享和協作",
-              "符合GDPR",
-              "雙因素認證（2FA）",
-              "支援CLI、WebDav和Rclone"
-            ],
-            "comingSoonFeatures": ["裝置清理器", "暗網監控"]
-          },
-          "5TB": {
-            "title": "旗艦版",
-            "features": [
-              "後量子加密",
-              "超快無限制VPN（法國、德國、波蘭）",
-              "防毒",
-              "檔案備份",
-              "密碼保護檔案共享",
-              "邀請、共享和協作",
-              "符合GDPR",
-              "雙因素認證（2FA）",
-              "支援CLI、WebDav和Rclone"
-            ],
-            "comingSoonFeatures": ["裝置清理器", "暗網監控", "視訊會議", "郵件"]
-          },
-          "1GB": {
-            "title": "免費版",
-            "features": ["免費標準VPN（法國）", "支援CLI、WebDav和Rclone"]
+          "baseFeatures": [
+            "後量子加密",
+            "{{VPN}}",
+            "防毒軟體",
+            "備份您的檔案",
+            "受密碼保護的檔案分享",
+            "符合 GDPR 規範",
+            "雙重驗證（2FA）",
+            "支援 CLI、WebDav 與 Rclone"
+          ],
+          "plans": {
+            "1GB": {
+              "title": "免費",
+              "features": ["免費標準 VPN"],
+              "vpnLocations": ["FR"]
+            },
+            "1TB": {
+              "title": "Essential",
+              "features": ["超高速無限 VPN（FR）"]
+            },
+            "3TB": {
+              "title": "Premium",
+              "features": ["超高速無限 VPN（FR、DE、PL）"],
+              "comingSoonFeatures": ["裝置清理工具", "Monitor de la Dark Web"]
+            },
+            "5TB": {
+              "title": "Ultimate",
+              "oldTitle": "5TB",
+              "features": ["超高速無限 VPN（FR、DE、PL、CA、UK）"],
+              "comingSoonFeatures": ["裝置清理工具", "Monitor de la Dark Web", "Meet", "Mail"]
+            },
+            "default": {
+              "title": "{{storage}}",
+              "features": [
+                "{{storage}} 零知識加密儲存空間",
+                "零知識加密",
+                "受密碼保護的檔案分享",
+                "後量子加密",
+                "可從任意裝置存取檔案",
+                "保證符合 GDPR",
+                "雙重驗證（2FA）",
+                "高級客戶支援",
+                "30 天內退款保證"
+              ]
+            }
           }
         },
         "businessPlanFeaturesList": {
-          "title": "方案詳情",
-          "storage": " 儲存空間",
-          "1TB": {
-            "title": "標準版",
-            "features": [
-              "後量子加密",
-              "超快無限制VPN（法國、德國、波蘭）",
-              "防毒",
-              "檔案備份",
-              "密碼保護檔案共享",
-              "邀請、共享和協作",
-              "符合GDPR",
-              "雙因素認證（2FA）",
-              "支援CLI、WebDav和Rclone",
-              "管理帳戶帳單和支付"
-            ],
-            "comingSoonFeatures": ["裝置清理器", "暗網監控"]
-          },
-          "2TB": {
-            "title": "專業版",
-            "features": [
-              "後量子加密",
-              "超快無限制VPN（法國、德國、波蘭）",
-              "防毒",
-              "檔案備份",
-              "密碼保護檔案共享",
-              "邀請、共享和協作",
-              "符合GDPR",
-              "雙因素認證（2FA）",
-              "支援CLI、WebDav和Rclone",
-              "管理帳戶帳單和支付"
-            ],
-            "comingSoonFeatures": ["裝置清理器", "暗網監控", "視訊會議", "郵件"]
+          "title": "套餐详情",
+          "storage": " 存储空间",
+          "baseFeatures": [
+            "后量子加密",
+            "{{VPN}}",
+            "杀毒软件",
+            "备份你的文件",
+            "受密码保护的文件共享",
+            "邀请、共享与协作",
+            "符合 GDPR 要求",
+            "双重身份验证（2FA）",
+            "支持 CLI、WebDav 和 Rclone",
+            "管理账户账单与付款"
+          ],
+          "plans": {
+            "1TB": {
+              "title": "标准版",
+              "features": [
+                "超高速无限 VPN（FR、DE、PL）"
+              ],
+              "comingSoonFeatures": [
+                "设备清理工具",
+                "Monitor de la Dark Web"
+              ]
+            },
+            "2TB": {
+              "title": "Pro",
+              "features": [
+                "超高速无限 VPN（FR、DE、PL、CA、UK）"
+              ],
+              "comingSoonFeatures": [
+                "设备清理工具",
+                "Monitor de la Dark Web",
+                "Meet",
+                "Mail"
+              ]
+            }
           }
         },
         "user": "用戶"

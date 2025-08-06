@@ -1862,130 +1862,91 @@
         "planFeaturesList": {
           "title": "Plan details",
           "comingSoon": "Coming soon",
-          "storage": " zero-knowledge encrypted storage",
-          "1TB": {
-            "title": "Essential",
-            "features": [
-              "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR)",
-              "Antivirus",
-              "Backup your files",
-              "Password-protected file sharing",
-              "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support"
-            ]
-          },
-          "3TB": {
-            "title": "Premium",
-            "features": [
-              "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL)",
-              "Antivirus",
-              "Backup your files",
-              "Password-protected file sharing",
-              "Invite, share & collaborate",
-              "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support"
-            ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
-          },
-          "5TB": {
-            "title": "Ultimate",
-            "oldTitle":"5TB",
-            "oldFeatures": [
-              "5TB encrypted storage",
-              "Zero-knowledge encryption",
-              "Password-protected file sharing",
-              "Post-quantum cryptography",
-              "Access your files from any device",
-              "Guaranteed GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "Premium customer support",
-            " 30-day money-back guarantee"
-            ],
-            "features": [
-              "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Backup your files",
-              "Password-protected file sharing",
-              "Invite, share & collaborate",
-              "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support"
-            ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
-          },
-          "2TB": {
-              "title": "2TB",
+          "baseFeatures": [
+            "Post-quantum encryption",
+            "{{VPN}}",
+            "Antivirus",
+            "Backup your files", 
+            "Password-protected file sharing",
+            "GDPR compliance",
+            "Two-factor authentication (2FA)",
+            "CLI, WebDav & Rclone support"
+          ],
+          "plans": {
+            "1GB": {
+              "title": "Free",
+              "features": ["Free Standard VPN"],
+              "vpnLocations": ["FR"]
+            },
+            "1TB": {
+              "title": "Essential",
+              "features": ["Ultra fast unlimited VPN (FR)"]
+            },
+            "3TB": {
+              "title": "Premium",
+              "features": ["Ultra fast unlimited VPN (FR, DE, PL)"],
+              "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
+            },
+            "5TB": {
+              "title": "Ultimate",
+              "oldTitle":"5TB",
+              "features": ["Ultra fast unlimited VPN (FR, DE, PL, CA, UK)"],
+              "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
+            },
+            "default": {
+              "title": "{{storage}}",
               "features": [
-                "2TB encrypted storage",
+                "{{storage}} zero-knowledge encrypted storage",
                 "Zero-knowledge encryption",
                 "Password-protected file sharing",
-                "Post-quantum cryptography",
+                "Post-quantum cryptography", 
                 "Access your files from any device",
                 "Guaranteed GDPR compliance",
                 "Two-factor authentication (2FA)",
                 "Premium customer support",
-              " 30-day money-back guarantee"
+                "30-day money-back guarantee"
               ]
-          },
-          "10TB": {
-              "title": "10TB",
-              "features": [
-                "10TB encrypted storage",
-                "Zero-knowledge encryption",
-                "Password-protected file sharing",
-                "Post-quantum cryptography",
-                "Access your files from any device",
-                "Guaranteed GDPR compliance",
-                "Two-factor authentication (2FA)",
-                "Premium customer support",
-              " 30-day money-back guarantee"
-              ]
-          },
-          
-          "1GB": {
-            "title": "Free",
-            "features": ["Free Standard VPN (FR)", "CLI, WebDav & Rclone support"]
+            }
           }
         },
         "businessPlanFeaturesList": {
           "title": "Plan details",
           "storage": " of storage",
-          "1TB": {
-            "title": "Standard",
-            "features": [
-              "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL)",
-              "Antivirus",
-              "Backup your files",
-              "Password-protected file sharing",
-              "Invite, share & collaborate",
-              "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support",
-              "Manage account billing & payments"
-            ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
-          },
-          "2TB": {
-            "title": "Pro",
-            "features": [
-              "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Backup your files",
-              "Password-protected file sharing",
-              "Invite, share & collaborate",
-              "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support",
-              "Manage account billing & payments"
-            ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
+          "baseFeatures": [
+            "Post-quantum encryption",
+            "{{VPN}}",
+            "Antivirus",
+            "Backup your files",
+            "Password-protected file sharing",
+            "Invite, share and collaborate",
+            "GDPR compliance",
+            "Two-factor authentication (2FA)",
+            "CLI, WebDav & Rclone support",
+            "Manage account billing and payments"
+          ],
+          "plans": {
+            "1TB": {
+              "title": "Standard",
+              "features": [
+                "Ultra fast unlimited VPN (FR, DE, PL)"
+              ],
+              "comingSoonFeatures": [
+                "Device Cleaner",
+                "Dark Web Monitor"
+              ]
+            },
+            "2TB": {
+              "title": "Pro",
+              "features": [
+                "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)"
+              ],
+              "comingSoonFeatures": [
+                "Device Cleaner",
+                "Dark Web Monitor",
+                "Meet",
+                "Mail"
+              ]
+            }
           }
         },
         "user": "user"
