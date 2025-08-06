@@ -235,8 +235,6 @@
         "inputText": "Code de coupon"
       },
       "apply": "Appliquer",
-      "amountSaved": "Économisez ",
-      "withAnnualBilling": "avec facturation annuelle",
       "taxes": "Taxes"
     }
   },
