@@ -2,21 +2,10 @@ import { RegisterDetails } from '@internxt/sdk';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as bip39 from 'bip39';
 
-import { readReferalCookie } from 'app/auth/services/auth.service';
+import { readReferalCookie, RegisterFunction } from 'app/auth/services/auth.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { getKeys } from 'app/crypto/services/keys.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
-
-export type RegisterFunction = (
-  email: string,
-  password: string,
-  captcha: string,
-) => Promise<{
-  xUser: UserSettings;
-  xToken: string;
-  xNewToken: string;
-  mnemonic: string;
-}>;
 
 type RegisterPreCreatedUser = (
   email: string,

@@ -13,7 +13,6 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
-import { RegisterFunction } from 'app/auth/components/SignUp/useSignUp';
 import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import RealtimeService from 'app/core/services/socket.service';
@@ -51,6 +50,17 @@ type ProfileInfo = {
   newToken: string;
   mnemonic: string;
 };
+
+export type RegisterFunction = (
+  email: string,
+  password: string,
+  captcha: string,
+) => Promise<{
+  xUser: UserSettings;
+  xToken: string;
+  xNewToken: string;
+  mnemonic: string;
+}>;
 
 export type SignUpParams = {
   doSignUp: RegisterFunction;
