@@ -150,7 +150,9 @@ function downloadFileUsingStreamApi(
   destination: WritableStream,
   abortController?: AbortController,
 ): Promise<void> {
-  return source.pipeTo?.(destination, { signal: abortController?.signal }) || pipe(source, destination as BlobWritable);
+  return source.pipeTo
+    ? source.pipeTo(destination, { signal: abortController?.signal })
+    : pipe(source, destination as BlobWritable);
 }
 
 enum DownloadSupport {
