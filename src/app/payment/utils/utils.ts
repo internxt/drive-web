@@ -4,7 +4,7 @@ type TranslateListFunction = (key: string, options?: { returnObjects?: boolean }
 
 const STORAGE_PLACEHOLDER = '{{storage}}';
 const VPN_PLACEHOLDER = '{{VPN}}';
-const LARGE_STORAGE_SIZE = '5TB';
+const SHARED_STORAGE_SIZE = '5TB';
 
 export const getPlanFeatures = (
   planType: string,
@@ -58,7 +58,7 @@ export const getPlanCommingFeatures = (
       returnObjects: true,
     }) ?? [];
 
-  return !isOldPlan ? result : [];
+  return !isOldPlan && bytes !== SHARED_STORAGE_SIZE ? result : [];
 };
 
 export const getPlanTitle = (
@@ -80,7 +80,7 @@ export const getPlanTitle = (
 
 const buildTitleKey = (planType: string, bytes: string, isOldPlan: boolean): string => {
   const planIdentifier = isOldPlan ? 'default' : bytes;
-  const titleType = bytes === LARGE_STORAGE_SIZE ? 'oldTitle' : 'title';
+  const titleType = bytes === SHARED_STORAGE_SIZE ? 'oldTitle' : 'title';
 
   return `preferences.account.plans.${planType}.plans.${planIdentifier}.${titleType}`;
 };
