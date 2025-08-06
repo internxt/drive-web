@@ -11,7 +11,7 @@ type FlatFolderZipOpts = {
 };
 
 export class FlatFolderZip {
-  private finished!: Promise<void>;
+  private readonly finished!: Promise<void>;
   private zip: ZipStream;
   private passThrough: ReadableStream<Uint8Array>;
   private folderName: string;
