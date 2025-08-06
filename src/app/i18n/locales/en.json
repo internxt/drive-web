@@ -252,9 +252,7 @@
         "buttonTitle": "Add coupon",
         "inputText": "Coupon code"
       },
-      "amountSaved": "Save ",
       "apply": "Apply",
-      "withAnnualBilling": "with annual billing",
       "taxes": "Taxes"
     }
   },

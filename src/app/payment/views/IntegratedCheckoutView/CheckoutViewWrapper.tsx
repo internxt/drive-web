@@ -58,14 +58,6 @@ export const THEME_STYLES = {
   },
 };
 
-export type UpsellManagerProps = {
-  isUpsellSwitchActivated: boolean;
-  showUpsellSwitch: boolean;
-  onUpsellSwitchButtonClicked: () => void;
-  amountSaved: number | undefined;
-  amount: number | undefined;
-};
-
 export interface UserInfoProps {
   avatar: Blob | null;
   name: string;
@@ -153,7 +145,6 @@ const CheckoutViewWrapper = () => {
     elementsOptions,
     promoCodeName,
     seatsForBusinessSubscription,
-    isUpsellSwitchActivated,
     isCheckoutReadyToRender,
     isUpdateSubscriptionDialogOpen,
     isUpdatingSubscription,
@@ -168,15 +159,6 @@ const CheckoutViewWrapper = () => {
     name: fullName,
     avatar: avatarBlob,
     email: user?.email ?? '',
-  };
-
-  // TODO: Remove dead code
-  const upsellManager = {
-    onUpsellSwitchButtonClicked: () => {},
-    isUpsellSwitchActivated,
-    showUpsellSwitch: false,
-    amountSaved: undefined,
-    amount: undefined,
   };
 
   useEffect(() => {
@@ -645,7 +627,6 @@ const CheckoutViewWrapper = () => {
             userAuthComponentRef={userAuthComponentRef}
             showCouponCode={!mobileToken}
             userInfo={userInfo}
-            upsellManager={upsellManager}
             isUserAuthenticated={isUserAuthenticated}
             showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
             checkoutViewManager={checkoutViewManager}

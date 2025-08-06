@@ -12,7 +12,7 @@ import { CheckoutProductCard } from '../../components/checkout/CheckoutProductCa
 import { CheckoutUserAuth } from '../../components/checkout/CheckoutUserAuth';
 import { HeaderComponent } from '../../components/checkout/Header';
 import { AuthMethodTypes, PaymentType } from '../../types';
-import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
+import { CheckoutViewManager, UserInfoProps } from './CheckoutViewWrapper';
 import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
 import { AvailableCryptoCurrenciesDropdown } from 'app/payment/components/checkout/AvailableCryptoCurrenciesDropdown';
 
@@ -33,7 +33,6 @@ interface CheckoutViewProps {
   userInfo: UserInfoProps;
   isUserAuthenticated: boolean;
   showHardcodedRenewal?: string;
-  upsellManager: UpsellManagerProps;
   showCouponCode: boolean;
   userAuthComponentRef: LegacyRef<HTMLDivElement>;
   checkoutViewVariables: State & {
@@ -53,7 +52,6 @@ const CheckoutView = ({
   isUserAuthenticated,
   showCouponCode,
   showHardcodedRenewal,
-  upsellManager,
   userAuthComponentRef,
   checkoutViewVariables,
   checkoutViewManager,
@@ -209,7 +207,6 @@ const CheckoutView = ({
                 showCouponCode={showCouponCode}
                 couponError={error?.coupon}
                 seatsForBusinessSubscription={seatsForBusinessSubscription}
-                upsellManager={upsellManager}
                 onSeatsChange={checkoutViewManager.onSeatsChange}
                 onCouponInputChange={checkoutViewManager.onCouponInputChange}
                 onRemoveAppliedCouponCode={checkoutViewManager.onRemoveAppliedCouponCode}

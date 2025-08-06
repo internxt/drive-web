@@ -236,8 +236,6 @@
         "inputText": "Код купона"
       },
       "apply": "Применить",
-      "amountSaved": "Экономия ",
-      "withAnnualBilling": "при ежегодной оплате",
       "taxes": "Налоги"
     }
   },
