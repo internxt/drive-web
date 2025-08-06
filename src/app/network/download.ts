@@ -1,4 +1,3 @@
-import { Environment } from '@internxt/inxt-js';
 import { createDecipheriv, Decipher } from 'crypto';
 
 import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
@@ -6,8 +5,10 @@ import { Abortable } from './Abortable';
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
-import downloadFileV2 from './download/v2';
 import envService from 'app/core/services/env.service';
+
+import { generateFileKey } from './crypto';
+import downloadFileV2 from './download/v2';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string; bucketId: string };
@@ -32,8 +33,6 @@ export async function binaryStreamToBlob(stream: BinaryStream): Promise<Blob> {
 
   return new Blob(slices);
 }
-
-const generateFileKey = Environment.utils.generateFileKey;
 
 interface FileInfo {
   bucket: string;
