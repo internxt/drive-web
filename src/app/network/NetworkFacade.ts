@@ -14,7 +14,7 @@ import { waitForContinueUploadSignal } from '../drive/services/worker.service/up
 import { TaskStatus } from '../tasks/types';
 import { encryptStreamInParts, generateFileKey, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
-import { uploadFileBlob, UploadProgressCallback } from './upload';
+import { uploadFileUint8Array, UploadProgressCallback } from './upload';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -216,9 +216,6 @@ export class NetworkFacade {
               }
             }
           });
-
-        // TODO: Remove
-        part = new Uint8Array();
       });
 
       while (uploadQueue.running() > 0 || uploadQueue.length() > 0) {
