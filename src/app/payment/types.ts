@@ -132,19 +132,16 @@ export interface PaymentHandlerData extends BasePaymentData {
 }
 
 export interface GetSubscriptionPaymentIntentPayload extends PaymentIntentData {
-  mobileToken: string | null;
   seatsForBusinessSubscription?: number;
 }
 
 export interface HandleSubscriptionPaymentPayload extends PaymentHandlerData {
-  mobileToken: string | null;
   seatsForBusinessSubscription?: number;
 }
 
 export interface HandleUserPaymentPayload extends BasePaymentData {
   selectedPlan: PriceWithTax;
   elements: StripeElements;
-  mobileToken: string | null;
   gclidStored: string | null;
   couponCodeData?: CouponCodeData;
   seatsForBusinessSubscription?: number;
@@ -158,4 +155,9 @@ export enum PlanInterval {
 
 export enum InvoiceStatus {
   PAID = 'paid',
+}
+
+export enum PaymentType {
+  FIAT = 'fiat',
+  CRYPTO = 'crypto',
 }

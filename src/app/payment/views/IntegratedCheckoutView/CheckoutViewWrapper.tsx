@@ -5,6 +5,7 @@ import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useStat
 import { useSelector } from 'react-redux';
 
 import { UserLocation } from '@internxt/sdk';
+import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
 import { Loader } from '@internxt/ui';
 import { userLocation } from 'app/utils/userLocation';
 import { useCheckout } from 'hooks/checkout/useCheckout';
@@ -30,12 +31,15 @@ import { planThunks } from '../../../store/slices/plan';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
-import { AuthMethodTypes } from '../../types';
+import { AuthMethodTypes, PaymentType, PlanInterval } from '../../types';
 import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'app/payment/hooks/useUserPayment';
+import currencyService from 'app/payment/services/currency.service';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+
+const IS_CRYPTO_PAYMENT_ENABLED = false;
 
 export const THEME_STYLES = {
   dark: {
@@ -75,6 +79,7 @@ export interface CheckoutViewManager {
   handleAuthMethodChange: (method: AuthMethodTypes) => void;
   onUserNameFromAddressElementChange: (userName: string) => void;
   onSeatsChange: (seat: number) => void;
+  onCurrencyChange: (currency: string) => void;
 }
 
 const STATUS_CODE_ERROR = {
@@ -101,6 +106,9 @@ const CheckoutViewWrapper = () => {
   const { handleUserPayment } = useUserPayment();
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
   const [userLocationData, setUserLocationData] = useState<UserLocation>();
+  const [availableCryptoCurrencies, setAvailableCryptoCurrencies] = useState<CryptoCurrency[] | undefined>(undefined);
+  const [selectedCurrency, setSelectedCurrency] = useState<string>('eur');
+  const [currencyType, setCurrencyType] = useState<PaymentType>();
 
   const name = user?.name ?? '';
   const lastName = user?.lastname ?? '';
@@ -297,6 +305,12 @@ const CheckoutViewWrapper = () => {
         if (promotionCode) {
           handleFetchPromotionCode(price.price.id, promotionCode).catch(handlePromoCodeError);
         }
+        setSelectedCurrency(price.price.currency);
+
+        if (price.price.interval === PlanInterval.LIFETIME && IS_CRYPTO_PAYMENT_ENABLED) {
+          const availableCryptoCurrencies = await currencyService.getAvailableCryptoCurrencies();
+          setAvailableCryptoCurrencies(availableCryptoCurrencies);
+        }
 
         const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], price);
         setStripeElementsOptions(stripeElements as StripeElementsOptions);
@@ -415,10 +429,12 @@ const CheckoutViewWrapper = () => {
         return;
       }
 
-      const { error: elementsError } = await elements.submit();
+      if (currencyType === PaymentType['FIAT']) {
+        const { error: elementsError } = await elements.submit();
 
-      if (elementsError) {
-        throw new Error(elementsError.message);
+        if (elementsError) {
+          throw new Error(elementsError.message);
+        }
       }
 
       const { customerId, token } = await checkoutService.getCustomerId({
@@ -451,11 +467,10 @@ const CheckoutViewWrapper = () => {
         await handleUserPayment({
           confirmPayment: stripeSDK.confirmPayment,
           couponCodeData: couponCodeData,
-          currency: currentSelectedPlan.price.currency,
+          currency: selectedCurrency ?? currentSelectedPlan.price.currency,
           priceId: currentSelectedPlan.price.id,
           customerId,
           elements,
-          mobileToken,
           selectedPlan: currentSelectedPlan,
           token,
           gclidStored,
@@ -582,6 +597,10 @@ const CheckoutViewWrapper = () => {
     }
   };
 
+  const onCurrencyTypeChanges = (currency: PaymentType) => {
+    setCurrencyType(currency);
+  };
+
   const checkoutViewManager: CheckoutViewManager = {
     onCouponInputChange: onCheckoutCouponChanges,
     onLogOut,
@@ -592,6 +611,7 @@ const CheckoutViewWrapper = () => {
     handleAuthMethodChange: setAuthMethod,
     onUserNameFromAddressElementChange: setUserNameFromElementAddress,
     onSeatsChange,
+    onCurrencyChange: setSelectedCurrency,
   };
 
   return (
@@ -603,13 +623,15 @@ const CheckoutViewWrapper = () => {
       currentSelectedPlan.taxes ? (
         <Elements stripe={stripeSdk} options={{ ...elementsOptions }}>
           <CheckoutView
-            checkoutViewVariables={state}
+            checkoutViewVariables={{ ...state, selectedCurrency }}
             userAuthComponentRef={userAuthComponentRef}
             showCouponCode={!mobileToken}
             userInfo={userInfo}
             isUserAuthenticated={isUserAuthenticated}
             showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
             checkoutViewManager={checkoutViewManager}
+            availableCryptoCurrencies={availableCryptoCurrencies}
+            onCurrencyTypeChanges={onCurrencyTypeChanges}
           />
           {canChangePlanDialogBeOpened ? (
             <ChangePlanDialog
