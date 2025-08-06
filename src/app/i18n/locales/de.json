@@ -229,8 +229,6 @@
         "inputText": "Gutscheincode"
       },
       "apply": "Anwenden",
-      "amountSaved": "Sparen ",
-      "withAnnualBilling": "mit jährlicher Abrechnung",
       "taxes": "Steuern"
     }
   },
