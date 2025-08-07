@@ -377,7 +377,7 @@ export const getPublicShareLink = async (
     const domains = domainManager.getDomainsList();
     const selectedDomain = getRandomElement(domains);
 
-    const publicShareLink = `${selectedDomain}/d/sh/${itemType}/${sharingId}/${plainCode}`;
+    const publicShareLink = `${selectedDomain}/sh/${itemType}/${sharingId}/${plainCode}`;
 
     await copyTextToClipboard(publicShareLink);
 
