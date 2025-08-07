@@ -8,7 +8,7 @@ import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import shareService, { downloadPublicSharedFolder, getPublicSharingMeta } from 'app/share/services/share.service';
+import shareService, { downloadPublicSharedFolder, getPublicSharingMeta, decodeSharingId } from 'app/share/services/share.service';
 import { TaskProgress } from 'app/tasks/types';
 import { useEffect, useState } from 'react';
 import { match } from 'react-router';
@@ -41,8 +41,10 @@ const CHROME_IOS_ERROR_MESSAGE = 'Chrome on iOS is not supported. Use Safari to 
 
 export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const { translate } = useTranslationContext();
-  const sharingId = props.match.params.token;
+
   const code = props.match.params.code;
+  const sharingId = decodeSharingId(props.match.params.token);
+
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [nItems, setNItems] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);

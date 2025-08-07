@@ -23,7 +23,6 @@ import {
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import copy from 'copy-to-clipboard';
-import crypto from 'crypto';
 import { t } from 'i18next';
 import { Iterator } from '../../core/collections';
 import { SdkFactory } from '../../core/factory/sdk';
@@ -38,6 +37,8 @@ import { DownloadManager } from '../../network/DownloadManager';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { AdvancedSharedItem } from '../types';
 import { domainManager } from './DomainManager';
+import { base64UrlSafetoUUID, generateRandomStringUrlSafe, toBase64UrlSafe } from '../../utils/stringUtils';
+import { validate as validateUuidv4 } from 'uuid';
 
 interface CreateShareResponse {
   created: boolean;
@@ -321,7 +322,7 @@ export const createPublicShareFromOwnerUser = async (
 ): Promise<SharingMeta> => {
   const user = localStorageService.getUser() as UserSettings;
   const { mnemonic } = user;
-  const code = crypto.randomBytes(32).toString('hex');
+  const code = generateRandomStringUrlSafe(8);
 
   const encryptedMnemonic = aes.encrypt(mnemonic, code);
   const encryptedCode = aes.encrypt(code, mnemonic);
@@ -354,6 +355,37 @@ const getRandomElement = (list: string[]) => {
   return list[randomIndex];
 };
 
+/**
+ * Extracts a sharing ID from the provided parameter. If the parameter is not a valid UUIDv4,
+ * it converts the parameter from a Base64 URL-safe string to a UUID.
+ *
+ * @param param - The input parameter, which can be either a UUIDv4 or a Base64 URL-safe string.
+ * @returns The sharing ID as a UUID string.
+ */
+export const decodeSharingId = (param: string) => {
+  if (!validateUuidv4(param)) {
+    return base64UrlSafetoUUID(param);
+  }
+  return param;
+};
+
+/**
+ * Encodes a sharing ID by removing hyphens, converting it from hexadecimal to Base64,
+ * and then making it URL-safe.
+ *
+ * @param sharingId - The sharing ID to be encoded, expected to be a UUID string.
+ * @returns The encoded sharing ID as a URL-safe Base64 string.
+ */
+export const encodeSharingId = (sharingId: string) => {
+  if (!validateUuidv4(sharingId)) {
+    throw new Error('Sharing id is not valid');
+  }
+  const removedUuidDecoration = sharingId.replace(/-/g, '');
+  const base64endoded = Buffer.from(removedUuidDecoration, 'hex').toString('base64');
+  const encodedSharingId = toBase64UrlSafe(base64endoded);
+  return encodedSharingId;
+};
+
 export const getPublicShareLink = async (
   uuid: string,
   itemType: 'folder' | 'file',
@@ -361,7 +393,6 @@ export const getPublicShareLink = async (
 ): Promise<SharingMeta | void> => {
   const user = localStorageService.getUser() as UserSettings;
   let { mnemonic } = user;
-  const code = crypto.randomBytes(32).toString('hex');
 
   try {
     const publicSharingItemData = await createPublicShareFromOwnerUser(uuid, itemType);
@@ -372,12 +403,18 @@ export const getPublicShareLink = async (
       const ownerMnemonic = await decryptMnemonic(encriptedMnemonic);
       if (ownerMnemonic) mnemonic = ownerMnemonic;
     }
-    const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
+    const plainCode = aes.decrypt(encryptedCodeFromResponse, mnemonic);
 
     const domains = domainManager.getDomainsList();
-    const selectedDomain = getRandomElement(domains);
+    let selectedDomain = getRandomElement(domains);
 
-    const publicShareLink = `${selectedDomain}/sh/${itemType}/${sharingId}/${plainCode}`;
+    if (!selectedDomain) {
+      selectedDomain = window.location.origin;
+    }
+
+    const encodedSharingId = encodeSharingId(sharingId);
+
+    const publicShareLink = `${selectedDomain}/sh/${itemType}/${encodedSharingId}/${plainCode}`;
 
     await copyTextToClipboard(publicShareLink);
 
