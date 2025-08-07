@@ -189,40 +189,7 @@ function SharedView({
       },
     });
   };
-  const handleDirectFolderAccess = (shareItem: AdvancedSharedItem) => {
-    if (shareItem.isFolder) {
-      dispatch(
-        storageActions.pushSharedNamePath({
-          id: shareItem.id,
-          name: shareItem.plainName,
-          token: nextFolderLevelResourcesToken,
-          uuid: shareItem.uuid,
-        }),
-      );
 
-      const sharedFolderId = shareItem.uuid;
-
-      if (shareItem.user) {
-        actionDispatch(setClickedShareItemUser(shareItem.user));
-      }
-
-      if (shareItem.encryptionKey) {
-        actionDispatch(setClickedShareItemEncryptionKey(shareItem.encryptionKey));
-      }
-
-      actionDispatch(setCurrentFolderLevelResourcesToken(nextFolderLevelResourcesToken));
-      actionDispatch(setNextFolderLevelResourcesToken(''));
-      actionDispatch(setPage(0));
-      resetSharedItems();
-      actionDispatch(setHasMoreFolders(true));
-      actionDispatch(setHasMoreFiles(true));
-      actionDispatch(setCurrentFolderId(sharedFolderId));
-      actionDispatch(setCurrentParentFolderId(shareItem.uuid));
-      actionDispatch(setCurrentShareOwnerAvatar(shareItem?.user?.avatar ?? ''));
-      actionDispatch(setSelectedItems([]));
-      actionDispatch(setIsLoading(false));
-    }
-  };
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: [NativeTypes.FILE],
@@ -275,41 +242,52 @@ function SharedView({
     dispatch(uiActions.setIsInvitationsDialogOpen(false));
   };
 
+  const navigateToSharedFolder = (shareItem: AdvancedSharedItem) => {
+    dispatch(
+      storageActions.pushSharedNamePath({
+        id: shareItem.id,
+        name: shareItem.plainName,
+        token: nextFolderLevelResourcesToken,
+        uuid: shareItem.uuid,
+      }),
+    );
+
+    const sharedFolderId = shareItem.uuid;
+
+    if (shareItem.user) {
+      actionDispatch(setClickedShareItemUser(shareItem.user));
+    }
+
+    if (shareItem.encryptionKey) {
+      actionDispatch(setClickedShareItemEncryptionKey(shareItem.encryptionKey));
+    }
+
+    actionDispatch(setCurrentFolderLevelResourcesToken(nextFolderLevelResourcesToken));
+    actionDispatch(setNextFolderLevelResourcesToken(''));
+    actionDispatch(setPage(0));
+    resetSharedItems();
+    actionDispatch(setHasMoreFolders(true));
+    actionDispatch(setHasMoreFiles(true));
+    actionDispatch(setCurrentFolderId(sharedFolderId));
+    actionDispatch(setCurrentParentFolderId(shareItem.uuid));
+    actionDispatch(setCurrentShareOwnerAvatar(shareItem?.user?.avatar ?? ''));
+    actionDispatch(setSelectedItems([]));
+  };
+  const handleDirectFolderAccess = (shareItem: AdvancedSharedItem) => {
+    if (shareItem.isFolder) {
+      navigateToSharedFolder(shareItem);
+      actionDispatch(setIsLoading(false));
+    }
+  };
+
   const handleOnItemDoubleClick = (shareItem: AdvancedSharedItem) => {
-    if (!isLoading)
+    if (!isLoading) {
       if (shareItem.isFolder) {
-        dispatch(
-          storageActions.pushSharedNamePath({
-            id: shareItem.id,
-            name: shareItem.plainName,
-            token: nextFolderLevelResourcesToken,
-            uuid: shareItem.uuid,
-          }),
-        );
-
-        const sharedFolderId = shareItem.uuid;
-
-        if (shareItem.user) {
-          actionDispatch(setClickedShareItemUser(shareItem.user));
-        }
-
-        if (shareItem.encryptionKey) {
-          actionDispatch(setClickedShareItemEncryptionKey(shareItem.encryptionKey));
-        }
-
-        actionDispatch(setCurrentFolderLevelResourcesToken(nextFolderLevelResourcesToken));
-        actionDispatch(setNextFolderLevelResourcesToken(''));
-        actionDispatch(setPage(0));
-        resetSharedItems();
-        actionDispatch(setHasMoreFolders(true));
-        actionDispatch(setHasMoreFiles(true));
-        actionDispatch(setCurrentFolderId(sharedFolderId));
-        actionDispatch(setCurrentParentFolderId(shareItem.uuid));
-        actionDispatch(setCurrentShareOwnerAvatar(shareItem?.user?.avatar ?? ''));
-        actionDispatch(setSelectedItems([]));
+        navigateToSharedFolder(shareItem);
       } else {
         openPreview(shareItem);
       }
+    }
   };
 
   const closeConfirmDelete = () => {
