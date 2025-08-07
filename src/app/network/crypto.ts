@@ -109,10 +109,11 @@ export function encryptStreamInParts(
   const preAllocated = uploadChunkSize + extraPreAllocatedSpace;
   let buffer = new Uint8Array(preAllocated);
   let bufferLength = 0;
+  let finished = false;
 
   return new ReadableStream<Uint8Array>({
     async pull(controller) {
-      while (bufferLength < uploadChunkSize) {
+      while (bufferLength < uploadChunkSize && !finished) {
         const { value, done } = await reader.read();
 
         const encryptedChunk = done ? cipher.final() : cipher.update(value);
@@ -127,17 +128,17 @@ export function encryptStreamInParts(
         buffer.set(encryptedChunk, bufferLength);
         bufferLength += encryptedChunk.length;
 
-        if (done) {
-          if (bufferLength > 0) {
-            controller.enqueue(buffer.slice(0, bufferLength));
-          }
-          controller.close();
-          return;
-        }
+        if (done) finished = true;
       }
 
-      controller.enqueue(buffer.slice(0, bufferLength));
-      bufferLength = 0;
+      if (bufferLength > 0) {
+        controller.enqueue(buffer.slice(0, bufferLength));
+        bufferLength = 0;
+      }
+
+      if (finished && bufferLength === 0) {
+        controller.close();
+      }
     },
   });
 }
