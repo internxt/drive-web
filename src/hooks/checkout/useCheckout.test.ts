@@ -13,7 +13,6 @@ describe('useCheckout hook actions', () => {
     setUserNameFromElementAddress,
     setAvatarBlob,
     setIsUserPaying,
-    setIsUpsellSwitchActivated,
     setPlan,
     setSelectedPlan,
     setStripeElementsOptions,
@@ -60,11 +59,6 @@ describe('useCheckout hook actions', () => {
   it('When setIsUserPaying is called, then it dispatches SET_IS_PAYING with the boolean value', () => {
     setIsUserPaying(true);
     expect(dispatch).toHaveBeenCalledWith({ type: 'SET_IS_PAYING', payload: true });
-  });
-
-  it('When setIsUpsellSwitchActivated is called, then it dispatches SET_IS_UPSELL_SWITCH_ACTIVATED with the boolean value', () => {
-    setIsUpsellSwitchActivated(false);
-    expect(dispatch).toHaveBeenCalledWith({ type: 'SET_IS_UPSELL_SWITCH_ACTIVATED', payload: false });
   });
 
   it('When setPlan is called, then it dispatches SET_PLAN with the given plan', () => {

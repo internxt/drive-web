@@ -5,7 +5,6 @@ import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useStat
 import { useSelector } from 'react-redux';
 
 import { UserLocation } from '@internxt/sdk';
-import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Loader } from '@internxt/ui';
 import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
 import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
@@ -56,14 +55,6 @@ export const THEME_STYLES = {
   },
 };
 
-export type UpsellManagerProps = {
-  isUpsellSwitchActivated: boolean;
-  showUpsellSwitch: boolean;
-  onUpsellSwitchButtonClicked: () => void;
-  amountSaved: number | undefined;
-  amount: number | undefined;
-};
-
 export interface UserInfoProps {
   avatar: Blob | null;
   name: string;
@@ -71,7 +62,7 @@ export interface UserInfoProps {
 }
 
 export interface CheckoutViewManager {
-  onCouponInputChange: (coupon: string) => void;
+  onCouponInputChange: (coupon?: string) => Promise<void>;
   onLogOut: () => Promise<void>;
   onCountryChange: (country: string) => void;
   onPostalCodeChange: (postalCode: string) => void;
@@ -146,7 +137,6 @@ const CheckoutViewWrapper = () => {
     elementsOptions,
     promoCodeName,
     seatsForBusinessSubscription,
-    isUpsellSwitchActivated,
     isCheckoutReadyToRender,
     isUpdateSubscriptionDialogOpen,
     isUpdatingSubscription,
@@ -161,15 +151,6 @@ const CheckoutViewWrapper = () => {
     name: fullName,
     avatar: avatarBlob,
     email: user?.email ?? '',
-  };
-
-  // TODO: Remove dead code
-  const upsellManager = {
-    onUpsellSwitchButtonClicked: () => {},
-    isUpsellSwitchActivated,
-    showUpsellSwitch: false,
-    amountSaved: undefined,
-    amount: undefined,
   };
 
   useEffect(() => {
@@ -207,33 +188,6 @@ const CheckoutViewWrapper = () => {
   }, [isAuthenticated, user]);
 
   useEffect(() => {
-    if (!currentSelectedPlan?.price?.id) {
-      return;
-    }
-
-    if (promoCodeName) {
-      handleFetchPromotionCode(currentSelectedPlan.price.id, promoCodeName).catch(handlePromoCodeError);
-    }
-
-    checkoutService
-      .getPriceById({
-        priceId: currentSelectedPlan.price.id,
-        userAddress: userLocationData?.ip,
-        promoCodeName,
-      })
-      .then((priceWithTaxes: PriceWithTax) => {
-        setSelectedPlan(priceWithTaxes);
-      })
-      .catch(() => {
-        if (user) {
-          navigationService.push(AppView.Drive);
-        } else {
-          navigationService.push(AppView.Signup);
-        }
-      });
-  }, [promoCodeName, currentSelectedPlan?.price?.id]);
-
-  useEffect(() => {
     if (!currentSelectedPlan?.price?.id || !currentSelectedPlan?.price?.currency) {
       return;
     }
@@ -258,6 +212,37 @@ const CheckoutViewWrapper = () => {
       }, 8000);
     }
   }, [state.error]);
+
+  const onCheckoutCouponChanges = async (promoCodeName?: string) => {
+    if (!currentSelectedPlan?.price?.id) {
+      return;
+    }
+
+    try {
+      if (promoCodeName) {
+        setCouponCodeName(promoCodeName);
+        await handleFetchPromotionCode(currentSelectedPlan.price.id, promoCodeName);
+      }
+    } catch (error) {
+      handlePromoCodeError(error);
+    }
+
+    try {
+      const priceWithTaxes = await checkoutService.getPriceById({
+        priceId: currentSelectedPlan.price.id,
+        userAddress: userLocationData?.ip,
+        promoCodeName,
+      });
+      setSelectedPlan(priceWithTaxes);
+    } catch (error) {
+      console.error('Error fetching price with taxes', error);
+      if (user) {
+        navigationService.push(AppView.Drive);
+      } else {
+        navigationService.push(AppView.Signup);
+      }
+    }
+  };
 
   const getCheckoutQueryParams = () => {
     const params = new URLSearchParams(window.location.search);
@@ -637,7 +622,7 @@ const CheckoutViewWrapper = () => {
   };
 
   const checkoutViewManager: CheckoutViewManager = {
-    onCouponInputChange: setCouponCodeName,
+    onCouponInputChange: onCheckoutCouponChanges,
     onLogOut,
     onCheckoutButtonClicked,
     onRemoveAppliedCouponCode,
@@ -661,7 +646,6 @@ const CheckoutViewWrapper = () => {
             userAuthComponentRef={userAuthComponentRef}
             showCouponCode={!mobileToken}
             userInfo={userInfo}
-            upsellManager={upsellManager}
             isUserAuthenticated={isUserAuthenticated}
             showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
             checkoutViewManager={checkoutViewManager}

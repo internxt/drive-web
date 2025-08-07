@@ -8,7 +8,6 @@ export interface State {
   currentSelectedPlan: PriceWithTax | null;
   avatarBlob: Blob | null;
   isPaying: boolean;
-  isUpsellSwitchActivated: boolean;
   isCheckoutReadyToRender: boolean;
   isUpdateSubscriptionDialogOpen: boolean;
   isUpdatingSubscription: boolean;
@@ -28,7 +27,6 @@ export type Action =
   | { type: 'SET_CURRENT_PLAN_SELECTED'; payload: PriceWithTax }
   | { type: 'SET_AVATAR_BLOB'; payload: Blob | null }
   | { type: 'SET_IS_PAYING'; payload: boolean }
-  | { type: 'SET_IS_UPSELL_SWITCH_ACTIVATED'; payload: boolean }
   | { type: 'SET_IS_CHECKOUT_READY_TO_RENDER'; payload: boolean }
   | { type: 'SET_IS_UPDATE_SUBSCRIPTION_DIALOG_OPEN'; payload: boolean }
   | { type: 'SET_IS_UPDATING_SUBSCRIPTION'; payload: boolean }
