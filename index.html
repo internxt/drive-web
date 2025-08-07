@@ -115,7 +115,7 @@
         j.async = true;
         j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
         f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', 'GTM-5GWZKXKB');
+      })(window, document, 'script', 'dataLayer', '%REACT_APP_GOOGLE_TAG_MANAGER%');
       
       (function (w, d, s, l, i) {
         w[l] = w[l] || [];
@@ -126,7 +126,7 @@
         j.async = true;
         j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
         f.parentNode.insertBefore(j, f);
-       })(window, document, 'script', 'dataLayer', '%REACT_APP_GOOGLE_TAG_MANAGER%');
+       })(window, document, 'script', 'dataLayer', '%REACT_APP_GOOGLE_TAG_MANAGER_2"%');
     </script>
     <!-- End Google Tag Manager -->
 
@@ -1706,6 +1706,14 @@
     <noscript
       ><iframe
         src="https://www.googletagmanager.com/ns.html?id=%REACT_APP_GOOGLE_TAG_MANAGER%"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=%REACT_APP_GOOGLE_TAG_MANAGER_2%"
         height="0"
         width="0"
         style="display: none; visibility: hidden"
