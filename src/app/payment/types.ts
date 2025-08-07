@@ -1,4 +1,6 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import { Stripe, StripeElements } from '@stripe/stripe-js';
 
 export enum Currency {
   'eur' = '€',
@@ -110,3 +112,50 @@ export interface ErrorStates {
 export type ErrorType = 'auth' | 'stripe' | 'coupon';
 
 export type PartialErrorState = Partial<Record<ErrorType, string>>;
+
+export interface BasePaymentData {
+  customerId: string;
+  priceId: string;
+  token: string;
+  currency: string;
+}
+
+export interface PaymentIntentData extends BasePaymentData {
+  promoCodeId?: string;
+}
+
+export interface PaymentHandlerData extends BasePaymentData {
+  elements: StripeElements;
+  currentSelectedPlan: PriceWithTax;
+  couponCodeData?: CouponCodeData;
+  confirmPayment: Stripe['confirmPayment'];
+}
+
+export interface GetSubscriptionPaymentIntentPayload extends PaymentIntentData {
+  mobileToken: string | null;
+  seatsForBusinessSubscription?: number;
+}
+
+export interface HandleSubscriptionPaymentPayload extends PaymentHandlerData {
+  mobileToken: string | null;
+  seatsForBusinessSubscription?: number;
+}
+
+export interface HandleUserPaymentPayload extends BasePaymentData {
+  selectedPlan: PriceWithTax;
+  elements: StripeElements;
+  mobileToken: string | null;
+  gclidStored: string | null;
+  couponCodeData?: CouponCodeData;
+  seatsForBusinessSubscription?: number;
+  confirmPayment: Stripe['confirmPayment'];
+}
+
+export enum PlanInterval {
+  YEAR = 'year',
+  LIFETIME = 'lifetime',
+}
+
+export enum InvoiceStatus {
+  PAID = 'paid',
+}
