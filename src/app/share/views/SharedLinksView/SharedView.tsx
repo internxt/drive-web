@@ -12,11 +12,11 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageActions } from '../../../store/slices/storage';
 import { uiActions } from '../../../store/slices/ui';
 
+import { Dialog as DeleteDialog } from '@internxt/ui';
 import BreadcrumbsSharedView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsSharedView';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';
-import { Dialog as DeleteDialog } from '@internxt/ui';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import errorService from '../../../core/services/error.service';
 import { UPLOAD_ITEMS_LIMIT } from '../../../drive/components/DriveExplorer/DriveExplorer';
@@ -145,7 +145,7 @@ function SharedView({
 
       handlePrivateSharedFolderAccess({
         folderUUID,
-        navigateToFolder: handleOnItemDoubleClick,
+        navigateToFolder: handleDirectFolderAccess,
         history,
         onError: onRedirectionToFolderError,
         workspaceItemData: { workspaceId, teamId: defaultTeamId },
@@ -189,7 +189,40 @@ function SharedView({
       },
     });
   };
+  const handleDirectFolderAccess = (shareItem: AdvancedSharedItem) => {
+    if (shareItem.isFolder) {
+      dispatch(
+        storageActions.pushSharedNamePath({
+          id: shareItem.id,
+          name: shareItem.plainName,
+          token: nextFolderLevelResourcesToken,
+          uuid: shareItem.uuid,
+        }),
+      );
 
+      const sharedFolderId = shareItem.uuid;
+
+      if (shareItem.user) {
+        actionDispatch(setClickedShareItemUser(shareItem.user));
+      }
+
+      if (shareItem.encryptionKey) {
+        actionDispatch(setClickedShareItemEncryptionKey(shareItem.encryptionKey));
+      }
+
+      actionDispatch(setCurrentFolderLevelResourcesToken(nextFolderLevelResourcesToken));
+      actionDispatch(setNextFolderLevelResourcesToken(''));
+      actionDispatch(setPage(0));
+      resetSharedItems();
+      actionDispatch(setHasMoreFolders(true));
+      actionDispatch(setHasMoreFiles(true));
+      actionDispatch(setCurrentFolderId(sharedFolderId));
+      actionDispatch(setCurrentParentFolderId(shareItem.uuid));
+      actionDispatch(setCurrentShareOwnerAvatar(shareItem?.user?.avatar ?? ''));
+      actionDispatch(setSelectedItems([]));
+      actionDispatch(setIsLoading(false));
+    }
+  };
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: [NativeTypes.FILE],
