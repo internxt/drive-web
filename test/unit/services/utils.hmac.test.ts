@@ -1,14 +1,12 @@
-/**
- * @jest-environment jsdom
- */
-
-import { getHmacSha512FromHexKey } from '../../../src/app/crypto/services/utils';
+import { getHmacSha512FromHexKey, getSha512Combined } from '../../../src/app/crypto/services/utils';
 
 import { describe, expect, it } from 'vitest';
-import { sha512HmacBuffer, sha512HmacBufferFromHex } from '@internxt/inxt-js/build/lib/utils/crypto';
+
 import { generateHMAC } from '../../../src/app/network/crypto';
-import { ShardMeta } from '@internxt/inxt-js/build/lib/models';
+
 import { Buffer } from 'buffer';
+import * as crypto from 'crypto';
+import { LegacyShardMeta } from '../../../src/app/network/types';
 
 describe('HMAC should work as before', () => {
   globalThis.Buffer = Buffer;
@@ -20,7 +18,11 @@ describe('HMAC should work as before', () => {
     const bucketKey = 'f5cbcc2687293589d504e0f723adf62ed07f8f20f429e82a9576e7322978c245';
     const resultHex = await getHmacSha512FromHexKey(bucketKey, [Buffer.from(BUCKET_META_MAGIC)]);
     const result = Buffer.from(resultHex, 'hex').subarray(0, 32);
-    const oldResult = sha512HmacBufferFromHex(bucketKey).update(Buffer.from(BUCKET_META_MAGIC)).digest().slice(0, 32);
+    const oldResult = crypto
+      .createHmac('sha512', Buffer.from(bucketKey, 'hex'))
+      .update(Buffer.from(BUCKET_META_MAGIC))
+      .digest()
+      .slice(0, 32);
     expect(result).toStrictEqual(oldResult);
   });
 
@@ -30,7 +32,12 @@ describe('HMAC should work as before', () => {
     const filename = 'Test filename';
     const resultHex = await getHmacSha512FromHexKey(bucketKey, [bucketId, filename]);
     const result = Buffer.from(resultHex, 'hex').subarray(0, 32);
-    const oldResult = sha512HmacBufferFromHex(bucketKey).update(bucketId).update(filename).digest().slice(0, 32);
+    const oldResult = crypto
+      .createHmac('sha512', Buffer.from(bucketKey, 'hex'))
+      .update(bucketId)
+      .update(filename)
+      .digest()
+      .slice(0, 32);
     expect(result).toStrictEqual(oldResult);
   });
 
@@ -47,11 +54,11 @@ describe('HMAC should work as before', () => {
     const result = await generateHMAC([shardMeta], encryptionKey);
 
     function oldGenerateHMAC(
-      shardMetas: Omit<ShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
+      shardMetas: Omit<LegacyShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
       encryptionKey: Buffer,
     ): Buffer {
       const shardHashesSorted = [...shardMetas].sort((sA, sB) => sA.index - sB.index);
-      const hmac = sha512HmacBuffer(encryptionKey);
+      const hmac = crypto.createHmac('sha512', encryptionKey);
 
       for (const shardMeta of shardHashesSorted) {
         hmac.update(Buffer.from(shardMeta.hash, 'hex'));
@@ -148,5 +155,81 @@ describe('Test HMAC with RFC 4231 test vectors', () => {
     const rfcResult =
       'e37b6a775dc87dbaa4dfa9f96e5e3ffddebd71f8867289865df5a32d20cdc944b6022cac3c4982b10d5eeb55c3e4de15134676fb6de0446065c97440fa8c6a58';
     expect(result).toBe(rfcResult);
+  });
+});
+
+describe('getSha512Combined tests', () => {
+  globalThis.Buffer = Buffer;
+
+  it('should generate SHA512 hash from combined key and data', async () => {
+    const key = Buffer.from('test_key_data');
+    const data = Buffer.from('test_data_content');
+
+    const result = await getSha512Combined(key, data);
+
+    expect(result).toMatch(/^[a-f0-9]{128}$/);
+    expect(result.length).toBe(128);
+  });
+
+  it('should generate consistent results for same inputs', async () => {
+    const key = Buffer.from('consistent_key');
+    const data = Buffer.from('consistent_data');
+
+    const result1 = await getSha512Combined(key, data);
+    const result2 = await getSha512Combined(key, data);
+
+    expect(result1).toBe(result2);
+  });
+
+  it('should generate different results for different keys', async () => {
+    const key1 = Buffer.from('key_one');
+    const key2 = Buffer.from('key_two');
+    const data = Buffer.from('same_data');
+
+    const result1 = await getSha512Combined(key1, data);
+    const result2 = await getSha512Combined(key2, data);
+
+    expect(result1).not.toBe(result2);
+  });
+
+  it('should generate different results for different data', async () => {
+    const key = Buffer.from('same_key');
+    const data1 = Buffer.from('data_one');
+    const data2 = Buffer.from('data_two');
+
+    const result1 = await getSha512Combined(key, data1);
+    const result2 = await getSha512Combined(key, data2);
+
+    expect(result1).not.toBe(result2);
+  });
+
+  it('should handle empty buffers', async () => {
+    const key = Buffer.alloc(0);
+    const data = Buffer.alloc(0);
+
+    const result = await getSha512Combined(key, data);
+
+    expect(result).toMatch(/^[a-f0-9]{128}$/);
+  });
+
+  it('should produce same result as crypto.createHash for combined data', async () => {
+    const key = Buffer.from('test_key');
+    const data = Buffer.from('test_data');
+
+    const result = await getSha512Combined(key, data);
+
+    const expectedHash = crypto.createHash('sha512').update(key).update(data).digest('hex');
+
+    expect(result).toBe(expectedHash);
+  });
+
+  it('should handle large buffers', async () => {
+    const key = Buffer.alloc(1024, 'a');
+    const data = Buffer.alloc(2048, 'b');
+
+    const result = await getSha512Combined(key, data);
+
+    expect(result).toMatch(/^[a-f0-9]{128}$/);
+    expect(result.length).toBe(128);
   });
 });
