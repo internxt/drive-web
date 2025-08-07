@@ -408,9 +408,7 @@ export const getPublicShareLink = async (
     const domains = domainManager.getDomainsList();
     let selectedDomain = getRandomElement(domains);
 
-    if (selectedDomain) {
-      selectedDomain = `${selectedDomain}/d`;
-    } else {
+    if (!selectedDomain) {
       selectedDomain = window.location.origin;
     }
 
