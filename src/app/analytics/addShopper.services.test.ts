@@ -8,12 +8,12 @@ describe('sendAddShoppersConversion', () => {
     }
   });
 
-  it('should push event to dataLayer if all fields are valid and couponCodeData is "welcome"', () => {
+  it('should push event to dataLayer if all fields are valid and couponCodeName is "welcome"', () => {
     sendAddShoppersConversion({
       orderId: 'order-123',
       value: 50,
       currency: 'eur',
-      couponCodeData: 'WELCOME',
+      couponCodeName: 'WELCOME',
       email: 'user@example.com',
     });
 
@@ -33,7 +33,7 @@ describe('sendAddShoppersConversion', () => {
       orderId: 'order-123',
       value: 50,
       currency: 'eur',
-      couponCodeData: 'WELCOME',
+      couponCodeName: 'WELCOME',
       email: 'user@example.com',
     };
 
@@ -41,7 +41,7 @@ describe('sendAddShoppersConversion', () => {
       { ...baseInput, orderId: undefined },
       { ...baseInput, value: 0 },
       { ...baseInput, currency: undefined },
-      { ...baseInput, couponCodeData: undefined },
+      { ...baseInput, couponCodeName: undefined },
       { ...baseInput, email: undefined },
     ];
 
@@ -52,12 +52,12 @@ describe('sendAddShoppersConversion', () => {
     });
   });
 
-  it('should not push event if couponCodeData is not "welcome"', () => {
+  it('should not push event if couponCodeName is not "welcome"', () => {
     sendAddShoppersConversion({
       orderId: 'order-123',
       value: 50,
       currency: 'eur',
-      couponCodeData: 'DISCOUNT10',
+      couponCodeName: 'DISCOUNT10',
       email: 'user@example.com',
     });
 
@@ -75,7 +75,7 @@ describe('sendAddShoppersConversion', () => {
         orderId: 'order-123',
         value: 50,
         currency: 'eur',
-        couponCodeData: 'welcome',
+        couponCodeName: 'welcome',
         email: 'user@example.com',
       }),
     ).not.toThrow();
