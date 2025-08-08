@@ -6,7 +6,7 @@ import { getSha256 } from '../crypto/services/utils';
 import { NetworkFacade } from './NetworkFacade';
 import { ConnectionLostError } from './requests';
 import envService from 'app/core/services/env.service';
-import { MAX_TRIES, RETRY_DELAY, UPLOAD_CHUNK_SIZE } from './networkConstants';
+import { MAX_TRIES, RETRY_DELAY, UPLOAD_CHUNK_SIZE, MIN_MULTIPART_SIZE } from './networkConstants';
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
@@ -95,7 +95,7 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
     ),
   );
 
-  const useMultipart = params.filesize > UPLOAD_CHUNK_SIZE;
+  const useMultipart = params.filesize > MIN_MULTIPART_SIZE;
   const partSize = UPLOAD_CHUNK_SIZE;
 
   console.time('multipart-upload');
