@@ -11,11 +11,7 @@ import {
   getSha512FromHex,
 } from '../crypto/services/utils';
 import { LegacyShardMeta } from './types';
-
-const BUCKET_META_MAGIC = [
-  66, 150, 71, 16, 50, 114, 88, 160, 163, 35, 154, 65, 162, 213, 226, 215, 70, 138, 57, 61, 52, 19, 210, 170, 38, 164,
-  162, 200, 86, 201, 2, 81,
-];
+import { BUCKET_META_MAGIC } from './networkConstants';
 
 export function createAES256Cipher(key: Buffer, iv: Buffer): Cipher {
   return createCipheriv('aes-256-ctr', key, iv);
@@ -101,13 +97,13 @@ export function encryptStreamInParts(
   plainFile: { size: number; stream(): ReadableStream<Uint8Array> },
   cipher: Cipher,
   uploadChunkSize: number,
-  extraPreAllocatedSpace: number,
+  allowedChunkOverhead: number,
 ): ReadableStream<Uint8Array> {
   const readable = plainFile.stream();
 
   const reader = readable.getReader();
-  const preAllocated = uploadChunkSize + extraPreAllocatedSpace;
-  let buffer = new Uint8Array(preAllocated);
+  const bufferSize = uploadChunkSize + allowedChunkOverhead;
+  let buffer = new Uint8Array(bufferSize);
   let bufferLength = 0;
   let finished = false;
 
@@ -118,6 +114,8 @@ export function encryptStreamInParts(
 
         const encryptedChunk = done ? cipher.final() : cipher.update(value);
 
+        // Buffer overflow protection
+        // Should never happen with AES-CTR (1:1 ratio output/input) but prevents crashes if cipher is changed
         const requiredLength = bufferLength + encryptedChunk.length;
         if (requiredLength > buffer.length) {
           const newBuffer = new Uint8Array(requiredLength);
@@ -139,6 +137,9 @@ export function encryptStreamInParts(
       if (finished && bufferLength === 0) {
         controller.close();
       }
+    },
+    cancel() {
+      reader.cancel();
     },
   });
 }

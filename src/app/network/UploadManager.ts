@@ -12,11 +12,7 @@ import { ConnectionLostError } from './requests';
 import { FileToUpload } from '../drive/services/file.service/types';
 import RetryManager, { RetryableTask } from './RetryManager';
 import { ErrorMessages } from 'app/core/constants';
-
-const TWENTY_MEGABYTES = 20 * 1024 * 1024;
-const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
-
-const MAX_UPLOAD_ATTEMPTS = 2;
+import { MAX_UPLOAD_ATTEMPTS, TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from './networkConstants';
 
 enum FileSizeType {
   Big = 'big',

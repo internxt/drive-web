@@ -6,6 +6,7 @@ import { getSha256 } from '../crypto/services/utils';
 import { NetworkFacade } from './NetworkFacade';
 import { ConnectionLostError } from './requests';
 import envService from 'app/core/services/env.service';
+import { MAX_TRIES, RETRY_DELAY, UPLOAD_CHUNK_SIZE } from './networkConstants';
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
@@ -94,10 +95,8 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
     ),
   );
 
-  const minimumMultipartThreshold = 100 * 1024 * 1024;
-  const useMultipart = params.filesize > minimumMultipartThreshold;
-  const partSize = 30 * 1024 * 1024;
-  const extraPreAllocatedSpace = 64 * 1024;
+  const useMultipart = params.filesize > UPLOAD_CHUNK_SIZE;
+  const partSize = UPLOAD_CHUNK_SIZE;
 
   console.time('multipart-upload');
   const uploadAbortController = new AbortController();
@@ -125,8 +124,6 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
   params.abortController?.signal.addEventListener('abort', onAbort);
 
   async function retryUpload(): Promise<string> {
-    const MAX_TRIES = 3;
-    const RETRY_DELAY = 1000;
     let uploadPromise: Promise<string>;
     let lastTryError: unknown;
 
@@ -137,8 +134,6 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
             uploadingCallback: params.progressCallback,
             abortController: uploadAbortController,
             parts: Math.ceil(params.filesize / partSize),
-            uploadChunkSize: partSize,
-            extraPreAllocatedSpace,
             continueUploadOptions: params?.continueUploadOptions,
           });
         } else {

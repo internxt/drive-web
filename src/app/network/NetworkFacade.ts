@@ -15,6 +15,7 @@ import { TaskStatus } from '../tasks/types';
 import { encryptStreamInParts, generateFileKey, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileUint8Array, UploadProgressCallback } from './upload';
+import { UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD } from './networkConstants';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -27,8 +28,6 @@ interface UploadOptions {
 
 interface UploadMultipartOptions extends UploadOptions {
   parts: number;
-  uploadChunkSize: number;
-  extraPreAllocatedSpace: number;
 }
 
 interface DownloadOptions {
@@ -140,7 +139,7 @@ export class NetworkFacade {
 
     const encryptFile: EncryptFileFunction = async (algorithm, key, iv) => {
       const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
-      fileReadable = encryptStreamInParts(file, cipher, options.uploadChunkSize, options.extraPreAllocatedSpace);
+      fileReadable = encryptStreamInParts(file, cipher, UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD);
     };
 
     addEventListener('message', this.handleWorkerMessage);
