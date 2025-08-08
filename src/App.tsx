@@ -30,7 +30,6 @@ import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapp
 import Mobile from './app/drive/views/MobileView/MobileView';
 import PreferencesDialog from './app/newSettings/PreferencesDialog';
 import { usePreferencesParamsChange } from './app/newSettings/hooks/usePreferencesParamsChange';
-import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
 import SharingRedirect from './app/routes/Share/ShareRedirection';
 import WorkspacesRedirect from './app/routes/Workspaces/WorkspacesRedirection';
 import { getRoutes } from './app/routes/routes';
@@ -53,7 +52,6 @@ interface AppProps {
   isAuthenticated: boolean;
   isInitialized: boolean;
   isFileViewerOpen: boolean;
-  isNewsletterDialogOpen: boolean;
   isPreferencesDialogOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
   user: UserSettings | undefined;
@@ -62,15 +60,7 @@ interface AppProps {
 }
 
 const App = (props: AppProps): JSX.Element => {
-  const {
-    isInitialized,
-    isAuthenticated,
-    isFileViewerOpen,
-    isNewsletterDialogOpen,
-    isPreferencesDialogOpen,
-    fileViewerItem,
-    dispatch,
-  } = props;
+  const { isInitialized, isAuthenticated, isFileViewerOpen, isPreferencesDialogOpen, fileViewerItem, dispatch } = props;
 
   const { isDialogOpen } = useActionDialog();
   const isOpen = isDialogOpen(ActionDialog.ModifyStorage);
@@ -226,7 +216,6 @@ const App = (props: AppProps): JSX.Element => {
 
           {isOpen && <ModifyStorageModal />}
 
-          <NewsletterDialog isOpen={isNewsletterDialogOpen} />
           {isFileViewerOpen && fileViewerItem && (
             <FileViewerWrapper file={fileViewerItem} onClose={onCloseFileViewer} showPreview={isFileViewerOpen} />
           )}
@@ -242,7 +231,6 @@ export default connect((state: RootState) => ({
   isAuthenticated: state.user.isAuthenticated,
   isInitialized: state.user.isInitialized,
   isFileViewerOpen: state.ui.isFileViewerOpen,
-  isNewsletterDialogOpen: state.ui.isNewsletterDialogOpen,
   isPreferencesDialogOpen: state.ui.isPreferencesDialogOpen,
   fileViewerItem: state.ui.fileViewerItem,
   user: state.user.user,

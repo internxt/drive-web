@@ -126,7 +126,7 @@ beforeEach(() => {
   vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
     if (key === 'magicIv') return mockMagicIv;
     if (key === 'magicSalt') return mockMagicSalt;
-    if (key === 'api') return mockApi;
+    if (key === 'newApi') return mockApi;
     if (key === 'secret') return mockSecret;
     else return 'no mock implementation';
   });
@@ -342,6 +342,7 @@ describe('signUp', () => {
         mnemonic: mockMnemonicNotEnc,
       },
       xToken: mockToken,
+      xNewToken: mockNewToken,
       mnemonic: mockMnemonicNotEnc,
     };
 
@@ -350,7 +351,6 @@ describe('signUp', () => {
       email: mockEmail,
       password: mockPassword,
       token: mockToken,
-      isNewUser: true,
       redeemCodeObject: false,
       dispatch: vi.fn(),
     };
@@ -453,6 +453,7 @@ describe('signUp', () => {
         mnemonic: mockMnemonicNotEnc,
       },
       xToken: mockToken,
+      xNewToken: mockNewToken,
       mnemonic: mockMnemonicNotEnc,
     };
 
@@ -461,7 +462,6 @@ describe('signUp', () => {
       email: mockEmail,
       password: mockPassword,
       token: mockToken,
-      isNewUser: true,
       redeemCodeObject: false,
       dispatch: vi.fn(),
     };
@@ -747,7 +747,6 @@ describe('logIn', () => {
 
 describe('signIn', () => {
   it('should sign up a new user and set user details', async () => {
-    vi.spyOn(authService, 'getNewToken').mockResolvedValueOnce(mockNewToken);
     vi.spyOn(keysService, 'decryptPrivateKey').mockImplementation(() => mockPrivateKeyDecript);
 
     const mockParams = {
@@ -755,7 +754,6 @@ describe('signIn', () => {
       email: mockEmail,
       password: mockPassword,
       token: mockSignUpToken,
-      isNewUser: true,
       redeemCodeObject: false,
       dispatch: mockDispatch,
     };
@@ -785,7 +783,6 @@ describe('signIn', () => {
       email: mockEmail,
       password: mockPassword,
       token: mockSignUpToken,
-      isNewUser: true,
       redeemCodeObject: false,
       dispatch: mockDispatch,
     };
@@ -804,7 +801,6 @@ describe('authMethod', () => {
       twoFactorCode: mockTwoFactorCode,
       dispatch: mockDispatch,
       loginType: mockLoginType,
-      isNewUser: false,
     };
 
     const result = await authService.authenticateUser(mockParams);
@@ -821,7 +817,6 @@ describe('authMethod', () => {
 
   it('should sign up the user when authMethod is signUp', async () => {
     vi.spyOn(authService, 'signUp');
-    vi.spyOn(authService, 'getNewToken').mockResolvedValueOnce(mockNewToken);
 
     const mockParams: AuthenticateUserParams = {
       email: mockEmail,
@@ -830,7 +825,6 @@ describe('authMethod', () => {
       twoFactorCode: mockTwoFactorCode,
       dispatch: mockDispatch,
       loginType: mockLoginType,
-      isNewUser: false,
       doSignUp: mockSignUpFunction,
     };
 
@@ -854,7 +848,6 @@ describe('authMethod', () => {
       twoFactorCode: mockTwoFactorCode,
       dispatch: mockDispatch,
       loginType: mockLoginType,
-      isNewUser: false,
       doSignUp: mockSignUpFunction,
     };
 

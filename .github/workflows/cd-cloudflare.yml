@@ -21,7 +21,6 @@ jobs:
       - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> ./.env
       - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> ./.env
       - run: echo REACT_APP_STRIPE_TEST_PK=${{ secrets.REACT_APP_STRIPE_TEST_PK }} >> ./.env
-      - run: echo REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}/api >> ./.env
       - run: echo REACT_APP_SEGMENT_KEY=${{ secrets.REACT_APP_SEGMENT_KEY }} >> ./.env
       - run: echo REACT_APP_MAGIC_IV=${{ secrets.REACT_APP_MAGIC_IV }} >> ./.env
       - run: echo REACT_APP_MAGIC_SALT=${{ secrets.REACT_APP_MAGIC_SALT }} >> ./.env

@@ -2,30 +2,10 @@ import { RegisterDetails } from '@internxt/sdk';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as bip39 from 'bip39';
 
-import { readReferalCookie } from 'app/auth/services/auth.service';
+import { readReferalCookie, RegisterFunction } from 'app/auth/services/auth.service';
 import { SdkFactory } from 'app/core/factory/sdk';
-import httpService from 'app/core/services/http.service';
 import { getKeys } from 'app/crypto/services/keys.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
-import envService from 'app/core/services/env.service';
-
-export type UpdateInfoFunction = (
-  email: string,
-  password: string,
-) => Promise<{
-  xUser: UserSettings;
-  xToken: string;
-  mnemonic: string;
-}>;
-export type RegisterFunction = (
-  email: string,
-  password: string,
-  captcha: string,
-) => Promise<{
-  xUser: UserSettings;
-  xToken: string;
-  mnemonic: string;
-}>;
 
 type RegisterPreCreatedUser = (
   email: string,
@@ -35,6 +15,7 @@ type RegisterPreCreatedUser = (
 ) => Promise<{
   xUser: UserSettings;
   xToken: string;
+  xNewToken: string;
   mnemonic: string;
 }>;
 
@@ -79,62 +60,10 @@ export function parseUserSettingsEnsureKyberKeysAdded(user: UserSettings): UserS
   };
 }
 
-export function useSignUp(
-  registerSource: 'activate' | 'appsumo',
-  referrer?: string,
-): {
-  updateInfo: UpdateInfoFunction;
+export function useSignUp(referrer?: string): {
   doRegister: RegisterFunction;
   doRegisterPreCreatedUser: RegisterPreCreatedUser;
 } {
-  const updateInfo: UpdateInfoFunction = async (email: string, password: string) => {
-    // Setup hash and salt
-    const hashObj = passToHash({ password });
-    const encPass = encryptText(hashObj.hash);
-    const encSalt = encryptText(hashObj.salt);
-
-    // Setup mnemonic
-    const mnemonic = bip39.generateMnemonic(256);
-    const encMnemonic = encryptTextWithKey(mnemonic, password);
-
-    const registerUserPayload = {
-      email: email.toLowerCase(),
-      password: encPass,
-      mnemonic: encMnemonic,
-      salt: encSalt,
-      referral: readReferalCookie(),
-    };
-
-    const fetchHandler = async (res: Response) => {
-      const body = await res.text();
-
-      try {
-        return { res, body: JSON.parse(body) };
-      } catch {
-        return { res, body };
-      }
-    };
-
-    const serviceHeaders = httpService.getHeaders(true, false);
-    const headers = httpService.convertHeadersToNativeHeaders(serviceHeaders);
-
-    const raw = await fetch(`${envService.getVariable('api')}/${registerSource}/update`, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(registerUserPayload),
-    });
-    const { res, body } = await fetchHandler(raw);
-
-    if (res.status !== 200) {
-      throw Error('Email adress already used');
-    }
-    const { token: xToken, user: xUser } = body;
-
-    xUser.mnemonic = mnemonic;
-
-    return { xUser, xToken, mnemonic };
-  };
-
   const doRegister = async (email: string, password: string, captcha: string) => {
     const hashObj = passToHash({ password });
     const encPass = encryptText(hashObj.hash);
@@ -160,14 +89,14 @@ export function useSignUp(
     };
 
     const data = await authClient.register(registerDetails);
-    const { token } = data;
+    const { token, newToken } = data;
     // TODO: need to update user type of register to include bucket field
     const user = data.user as unknown as UserSettings;
     // TODO: Remove or modify this when the backend is updated to add kyber keys
     const parsedUser = parseUserSettingsEnsureKyberKeysAdded(user);
     parsedUser.mnemonic = decryptTextWithKey(parsedUser.mnemonic, password);
 
-    return { xUser: parsedUser, xToken: token, mnemonic: user.mnemonic };
+    return { xUser: parsedUser, xToken: token, xNewToken: newToken, mnemonic: user.mnemonic };
   };
 
   const doRegisterPreCreatedUser = async (email: string, password: string, invitationId: string, captcha: string) => {
@@ -176,7 +105,7 @@ export function useSignUp(
     const registerDetails = await generateRegisterDetails(email, password, captcha);
 
     const data = await authClient.registerPreCreatedUser({ ...registerDetails, invitationId });
-    const { token } = data;
+    const { token, newToken } = data;
     const user = data.user as UserSettings;
 
     // TODO: Remove or modify this when the backend is updated to add kyber keys
@@ -190,6 +119,7 @@ export function useSignUp(
         rootFolderId: parsedUser.rootFolderUuid ?? parsedUser.rootFolderId,
       },
       xToken: token,
+      xNewToken: newToken,
       mnemonic: parsedUser.mnemonic,
     };
   };
@@ -222,5 +152,5 @@ export function useSignUp(
     return registerDetails;
   };
 
-  return { updateInfo, doRegister, doRegisterPreCreatedUser };
+  return { doRegister, doRegisterPreCreatedUser };
 }

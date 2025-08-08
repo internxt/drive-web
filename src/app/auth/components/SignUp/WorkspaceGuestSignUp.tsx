@@ -1,7 +1,6 @@
 import { auth } from '@internxt/lib';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
-import { getNewToken } from 'app/auth/services/auth.service';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
@@ -121,14 +120,17 @@ function WorkspaceGuestSingUpView(): JSX.Element {
 
     try {
       const { email, password, token } = formData;
-      const { xUser, xToken, mnemonic } = await doRegisterPreCreatedUser(email, password, invitationId ?? '', token);
+      const { xUser, xToken, xNewToken, mnemonic } = await doRegisterPreCreatedUser(
+        email,
+        password,
+        invitationId ?? '',
+        token,
+      );
 
       localStorageService.clear();
 
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
-
-      const xNewToken = await getNewToken();
       localStorageService.set('xNewToken', xNewToken);
 
       const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);

@@ -16,7 +16,6 @@ interface UISliceState {
   isMoveItemsDialogOpen: boolean;
   isClearTrashDialogOpen: boolean;
   isEditFolderNameDialog: boolean;
-  isNewsletterDialogOpen: boolean;
   isPreferencesDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
   isSharedFolderTooBigDialogOpen: boolean;
@@ -24,7 +23,6 @@ interface UISliceState {
   isShareItemDialogOpenInPreviewView: boolean;
   isUploadItemsFailsDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
-  isGuestInviteDialogOpen: boolean;
   isDeleteBackupDialogOpen: boolean;
   isFileViewerOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
@@ -50,7 +48,6 @@ const initialState: UISliceState = {
   isMoveItemsDialogOpen: false,
   isClearTrashDialogOpen: false,
   isEditFolderNameDialog: false,
-  isNewsletterDialogOpen: false,
   isPreferencesDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
   isSharedFolderTooBigDialogOpen: false,
@@ -58,7 +55,6 @@ const initialState: UISliceState = {
   isShareItemDialogOpenInPreviewView: false,
   isUploadItemsFailsDialogOpen: false,
   isDriveItemInfoMenuOpen: false,
-  isGuestInviteDialogOpen: false,
   isDeleteBackupDialogOpen: false,
   isFileViewerOpen: false,
   fileViewerItem: null,
@@ -113,9 +109,6 @@ export const uiSlice = createSlice({
     setIsEditFolderNameDialog: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isEditFolderNameDialog = action.payload;
     },
-    setIsNewsletterDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isNewsletterDialogOpen = action.payload;
-    },
     setIsPreferencesDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isPreferencesDialogOpen = action.payload;
     },
@@ -130,9 +123,6 @@ export const uiSlice = createSlice({
     },
     setIsShareItemDialogOpenInPreviewView: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isShareItemDialogOpenInPreviewView = action.payload;
-    },
-    setIsGuestInvitationDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isGuestInviteDialogOpen = action.payload;
     },
     setIsDeleteBackupDialog: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDeleteBackupDialogOpen = action.payload;
@@ -184,7 +174,6 @@ export const {
   setIsCreateFolderDialogOpen,
   setIsDeleteItemsDialogOpen,
   setIsMoveItemsDialogOpen,
-  setIsNewsletterDialogOpen,
   setIsPreferencesDialogOpen,
   setIsFileLoggerOpen,
   setIsFileInfoMenuOpen,
@@ -197,7 +186,6 @@ export const {
   setIsFileViewerOpen,
   setFileViewerItem,
   setFileInfoItem,
-  setIsGuestInvitationDialogOpen,
   setCurrentEditingNameDriveItem,
   setCurrentEditingNameDirty,
   setIsEditFolderNameDialog,
