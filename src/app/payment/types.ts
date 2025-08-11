@@ -124,7 +124,7 @@ export interface PaymentIntentData extends BasePaymentData {
   promoCodeId?: string;
 }
 
-export interface PaymentHandlerData extends BasePaymentData {
+export interface PaymentHandlerPayload extends BasePaymentData {
   elements: StripeElements;
   currentSelectedPlan: PriceWithTax;
   couponCodeData?: CouponCodeData;
@@ -135,7 +135,7 @@ export interface GetSubscriptionPaymentIntentPayload extends PaymentIntentData {
   seatsForBusinessSubscription?: number;
 }
 
-export interface HandleSubscriptionPaymentPayload extends PaymentHandlerData {
+export interface HandleSubscriptionPaymentPayload extends PaymentHandlerPayload {
   seatsForBusinessSubscription?: number;
 }
 

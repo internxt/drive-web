@@ -11,7 +11,7 @@ import {
   HandleSubscriptionPaymentPayload,
   HandleUserPaymentPayload,
   InvoiceStatus,
-  PaymentHandlerData,
+  PaymentHandlerPayload,
   PaymentIntentData,
   PlanInterval,
 } from '../types';
@@ -124,7 +124,7 @@ export const useUserPayment = () => {
     couponCodeData,
     elements,
     confirmPayment,
-  }: PaymentHandlerData) => {
+  }: PaymentHandlerPayload) => {
     const invoice = await getLifetimePaymentIntent({
       customerId,
       priceId,
