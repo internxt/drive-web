@@ -1,6 +1,14 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { sendAddShoppersConversion } from './addShoppers.services';
 
+const baseOrder = {
+  orderId: 'order-123',
+  value: 50,
+  currency: 'eur',
+  couponCodeName: 'WELCOME',
+  email: 'user@example.com',
+};
+
 describe('sendAddShoppersConversion', () => {
   beforeEach(() => {
     if (typeof window !== 'undefined') {
@@ -9,59 +17,34 @@ describe('sendAddShoppersConversion', () => {
   });
 
   it('should push event to dataLayer if all fields are valid and couponCodeName is "welcome"', () => {
-    sendAddShoppersConversion({
-      orderId: 'order-123',
-      value: 50,
-      currency: 'eur',
-      couponCodeName: 'WELCOME',
-      email: 'user@example.com',
-    });
+    sendAddShoppersConversion(baseOrder);
 
-    expect(window.dataLayer.length).toBe(1);
-    expect(window.dataLayer[0]).toEqual({
-      event: 'addshoppers_conversion',
-      order_id: 'order-123',
-      value: 50,
-      currency: 'EUR',
-      email: 'user@example.com',
-      offer_code: 'WELCOME',
-    });
+    expect(window.dataLayer).toStrictEqual([
+      {
+        event: 'addshoppers_conversion',
+        order_id: 'order-123',
+        value: 50,
+        currency: 'EUR',
+        email: 'user@example.com',
+        offer_code: 'WELCOME',
+      },
+    ]);
   });
 
-  it('should not push event if any required field is missing', () => {
-    const baseInput = {
-      orderId: 'order-123',
-      value: 50,
-      currency: 'eur',
-      couponCodeName: 'WELCOME',
-      email: 'user@example.com',
-    };
-
-    const testCases = [
-      { ...baseInput, orderId: undefined },
-      { ...baseInput, value: 0 },
-      { ...baseInput, currency: undefined },
-      { ...baseInput, couponCodeName: undefined },
-      { ...baseInput, email: undefined },
-    ];
-
-    testCases.forEach((input) => {
-      window.dataLayer = [];
-      sendAddShoppersConversion(input);
-      expect(window.dataLayer.length).toBe(0);
-    });
+  it.each([
+    ['missing orderId', { ...baseOrder, orderId: undefined }],
+    ['zero value', { ...baseOrder, value: 0 }],
+    ['missing currency', { ...baseOrder, currency: undefined }],
+    ['missing couponCodeName', { ...baseOrder, couponCodeName: undefined }],
+    ['missing email', { ...baseOrder, email: undefined }],
+  ])('should not push event if %s', (_, input) => {
+    sendAddShoppersConversion(input);
+    expect(window.dataLayer).toStrictEqual([]);
   });
 
   it('should not push event if couponCodeName is not "welcome"', () => {
-    sendAddShoppersConversion({
-      orderId: 'order-123',
-      value: 50,
-      currency: 'eur',
-      couponCodeName: 'DISCOUNT10',
-      email: 'user@example.com',
-    });
-
-    expect(window.dataLayer.length).toBe(0);
+    sendAddShoppersConversion({ ...baseOrder, couponCodeName: 'DISCOUNT10' });
+    expect(window.dataLayer).toStrictEqual([]);
   });
 
   it('should not throw if window.dataLayer.push fails', () => {
@@ -70,14 +53,6 @@ describe('sendAddShoppersConversion', () => {
       throw new Error('Simulated error');
     };
 
-    expect(() =>
-      sendAddShoppersConversion({
-        orderId: 'order-123',
-        value: 50,
-        currency: 'eur',
-        couponCodeName: 'welcome',
-        email: 'user@example.com',
-      }),
-    ).not.toThrow();
+    expect(() => sendAddShoppersConversion({ ...baseOrder, couponCodeName: 'welcome' })).not.toThrow();
   });
 });
