@@ -7,13 +7,11 @@ import { sendConversionToAPI } from '../../analytics/googleSheet.service';
 import navigationService from '../../core/services/navigation.service';
 import { AppView } from '../../core/types';
 import {
-  GetSubscriptionPaymentIntentPayload,
-  HandleSubscriptionPaymentPayload,
-  HandleUserPaymentPayload,
+  CreatePaymentIntentPayload,
   InvoiceStatus,
-  PaymentHandlerPayload,
-  PaymentIntentData,
   PlanInterval,
+  ProcessPurchasePayload,
+  UseUserPaymentPayload,
 } from '../types';
 import notificationsService from 'app/notifications/services/notifications.service';
 
@@ -25,7 +23,7 @@ export const useUserPayment = () => {
     currency,
     seatsForBusinessSubscription,
     promoCodeId,
-  }: GetSubscriptionPaymentIntentPayload) => {
+  }: CreatePaymentIntentPayload) => {
     const {
       type: paymentType,
       clientSecret: client_secret,
@@ -48,7 +46,13 @@ export const useUserPayment = () => {
     };
   };
 
-  const getLifetimePaymentIntent = async ({ customerId, priceId, currency, token, promoCodeId }: PaymentIntentData) => {
+  const getLifetimePaymentIntent = async ({
+    customerId,
+    priceId,
+    currency,
+    token,
+    promoCodeId,
+  }: CreatePaymentIntentPayload) => {
     const paymentIntentResponse = await checkoutService.createPaymentIntent({
       customerId,
       priceId,
@@ -94,7 +98,7 @@ export const useUserPayment = () => {
     couponCodeData,
     elements,
     confirmPayment,
-  }: HandleSubscriptionPaymentPayload) => {
+  }: ProcessPurchasePayload) => {
     const subscription = await getSubscriptionPaymentIntent({
       customerId,
       priceId,
@@ -124,7 +128,7 @@ export const useUserPayment = () => {
     couponCodeData,
     elements,
     confirmPayment,
-  }: PaymentHandlerPayload) => {
+  }: ProcessPurchasePayload) => {
     const invoice = await getLifetimePaymentIntent({
       customerId,
       priceId,
@@ -158,7 +162,7 @@ export const useUserPayment = () => {
     seatsForBusinessSubscription = 1,
     translate,
     confirmPayment,
-  }: HandleUserPaymentPayload) => {
+  }: UseUserPaymentPayload) => {
     if (gclidStored) {
       await sendConversionToAPI({
         gclid: gclidStored,
