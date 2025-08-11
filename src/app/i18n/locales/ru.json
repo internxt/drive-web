@@ -1831,21 +1831,25 @@
           "plans": {
             "1GB": {
               "title": "Бесплатно",
+              "storageFeature":"Хранилище с нулевым знанием объёмом 1GB",
               "features": ["Бесплатный стандартный VPN"],
               "vpnLocations": ["FR"]
             },
             "1TB": {
               "title": "Essential",
+              "storageFeature":"Хранилище с нулевым знанием объёмом 1TB",
               "features": ["Безлимитный ультрабыстрый VPN (FR)"]
             },
             "3TB": {
               "title": "Premium",
+              "storageFeature":"Хранилище с нулевым знанием объёмом 3TB",
               "features": ["Безлимитный ультрабыстрый VPN (FR, DE, PL)"],
               "comingSoonFeatures": ["Очистка устройства", "Monitor de la Dark Web"]
             },
             "5TB": {
               "title": "Ultimate",
               "oldTitle": "5TB",
+              "storageFeature":"Хранилище с нулевым знанием объёмом 5TB",
               "features": ["Безлимитный ультрабыстрый VPN (FR, DE, PL, CA, UK)"],
               "comingSoonFeatures": ["Очистка устройства", "Monitor de la Dark Web", "Meet", "Mail"]
             },
@@ -1883,6 +1887,7 @@
           "plans": {
             "1TB": {
               "title": "Стандарт",
+              "storageFeature":"Хранилище с нулевым знанием объёмом 1TB",
               "features": [
                 "Безлимитный ультрабыстрый VPN (FR, DE, PL)"
               ],
@@ -1893,6 +1898,7 @@
             },
             "2TB": {
               "title": "Pro",
+              "storageFeature":"Хранилище с нулевым знанием объёмом 2TB",
               "features": [
                 "Безлимитный ультрабыстрый VPN (FR, DE, PL, CA, UK)"
               ],

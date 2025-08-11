@@ -1822,21 +1822,25 @@
           "plans": {
             "1GB": {
               "title": "免費",
+              "storageFeature":"1GB 零知識加密儲存空間",
               "features": ["免費標準 VPN"],
               "vpnLocations": ["FR"]
             },
             "1TB": {
               "title": "Essential",
+              "storageFeature":"1TB 零知識加密儲存空間",
               "features": ["超高速無限 VPN（FR）"]
             },
             "3TB": {
               "title": "Premium",
+              "storageFeature":"3TB 零知識加密儲存空間",
               "features": ["超高速無限 VPN（FR、DE、PL）"],
               "comingSoonFeatures": ["裝置清理工具", "Monitor de la Dark Web"]
             },
             "5TB": {
               "title": "Ultimate",
               "oldTitle": "5TB",
+              "storageFeature":"5TB 零知識加密儲存空間",
               "features": ["超高速無限 VPN（FR、DE、PL、CA、UK）"],
               "comingSoonFeatures": ["裝置清理工具", "Monitor de la Dark Web", "Meet", "Mail"]
             },
@@ -1874,6 +1878,7 @@
           "plans": {
             "1TB": {
               "title": "标准版",
+              "storageFeature":"1TB 零知識加密儲存空間",
               "features": [
                 "超高速无限 VPN（FR、DE、PL）"
               ],
@@ -1884,6 +1889,7 @@
             },
             "2TB": {
               "title": "Pro",
+              "storageFeature":"2TB 零知識加密儲存空間",
               "features": [
                 "超高速无限 VPN（FR、DE、PL、CA、UK）"
               ],

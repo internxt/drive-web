@@ -1861,21 +1861,25 @@
           "plans": {
             "1GB": {
               "title": "免费",
+              "storageFeature":"1GB 零知识加密存储",
               "features": ["免费标准 VPN"],
               "vpnLocations": ["FR"]
             },
             "1TB": {
               "title": "Essential",
+              "storageFeature":"1TB 零知识加密存储",
               "features": ["超高速无限 VPN（FR）"]
             },
             "3TB": {
               "title": "Premium",
+              "storageFeature":"3TB 零知识加密存储",
               "features": ["超高速无限 VPN（FR、DE、PL）"],
               "comingSoonFeatures": ["设备清理工具", "Monitor de la Dark Web"]
             },
             "5TB": {
               "title": "Ultimate",
               "oldTitle": "5TB",
+              "storageFeature":"5TB 零知识加密存储",
               "features": ["超高速无限 VPN（FR、DE、PL、CA、UK）"],
               "comingSoonFeatures": ["设备清理工具", "Monitor de la Dark Web", "Meet", "Mail"]
             },
@@ -1900,6 +1904,7 @@
           "storage": " 存储空间",
           "1TB": {
             "title": "标准版",
+            "storageFeature":"1TB 零知识加密存储",
             "features": [
               "后量子加密",
               "超快无限制VPN（法国、德国、波兰）",
@@ -1916,6 +1921,7 @@
           },
           "2TB": {
             "title": "专业版",
+            "storageFeature":"2TB 零知识加密存储",
             "features": [
               "后量子加密",
               "超快无限制VPN（法国、德国、波兰、加拿大、英国）",

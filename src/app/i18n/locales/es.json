@@ -1844,21 +1844,25 @@
           "plans": {
             "1GB": {
               "title": "Gratis",
+              "storageFeature":"Almacenamiento cifrado de conocimiento cero de 1GB",
               "features": ["VPN estándar gratuita"],
               "vpnLocations": ["FR"]
             },
             "1TB": {
               "title": "Essential",
+              "storageFeature":"Almacenamiento cifrado de conocimiento cero de 1TB",
               "features": ["VPN ultrarrápida e ilimitada (FR)"]
             },
             "3TB": {
               "title": "Premium",
+              "storageFeature":"Almacenamiento cifrado de conocimiento cero de 2TB",
               "features": ["VPN ultrarrápida e ilimitada (FR, DE, PL)"],
               "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de la Dark Web"]
             },
             "5TB": {
               "title": "Ultimate",
               "oldTitle": "5TB",
+              "storageFeature":"Almacenamiento cifrado de conocimiento cero de 5TB",
               "features": ["VPN ultrarrápida e ilimitada (FR, DE, PL, CA, UK)"],
               "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de la Dark Web", "Meet", "Mail"]
             },
@@ -1896,6 +1900,7 @@
           "plans":{
             "1TB": {
               "title": "Estándar",
+              "storageFeature":"Almacenamiento cifrado de conocimiento cero de 1TB",
               "features": [
                 "VPN ilimitada ultrarrápida (FR, DE, PL)"
               ],
@@ -1906,6 +1911,7 @@
             },
             "2TB": {
               "title": "Pro",
+              "storageFeature":"Almacenamiento cifrado de conocimiento cero de 2TB",
               "features": [
                 "VPN ilimitada ultrarrápida (FR, DE, PL, CA, UK)"
               ],

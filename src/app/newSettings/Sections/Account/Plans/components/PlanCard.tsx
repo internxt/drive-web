@@ -3,6 +3,7 @@ import { t } from 'i18next';
 import { Button } from '@internxt/ui';
 import RoleBadge from '../../../Workspace/Members/components/RoleBadge';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { getPlanCommingFeatures, getPlanFeatures } from 'app/payment/utils/utils';
 
 export type ChangePlanType = 'upgrade' | 'downgrade' | 'free' | 'manageBilling';
 
@@ -126,10 +127,10 @@ const PlanDetailsList = ({
 }) => {
   const { translateList } = useTranslationContext();
   const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
+  const isOldPlan = planSpace === '2TB' || planSpace === '10TB';
 
-  const featureKeys = translateList(`preferences.account.plans.${planType}.${planSpace ?? 'freeFeatures'}.features`);
-
-  const comingSoonFeatureKeys = translateList(`preferences.account.plans.${planType}.${planSpace}.comingSoonFeatures`);
+  const featureKeys = getPlanFeatures(planType, planSpace, isOldPlan, translateList);
+  const commingFeatureKeys = getPlanCommingFeatures(planType, planSpace, isOldPlan, translateList, true);
 
   return (
     <div className="flex flex-col space-y-2">
@@ -142,9 +143,8 @@ const PlanDetailsList = ({
             <Check size={20} className="text-green" />
           </div>
           <span className="text-base text-gray-100">
-            {planSpace}
             <span className="text-base font-normal text-gray-100">
-              {t('preferences.account.plans.planFeaturesList.storage')}
+              {t(`preferences.account.plans.${planType}.plans.${planSpace}.storageFeature`)}
             </span>
           </span>
         </div>
@@ -158,13 +158,12 @@ const PlanDetailsList = ({
           </div>
         ))}
 
-        {/* Coming soon features */}
-        {planTypeTextPath !== 'essentialFeatures' && planTypeTextPath !== 'freeFeatures' && (
+        {commingFeatureKeys.length > 0 && (
           <>
             <span className="text-sm font-semibold text-gray-100">
               {t('preferences.account.plans.planFeaturesList.comingSoon')}
             </span>
-            {comingSoonFeatureKeys.map((feature) => (
+            {commingFeatureKeys.map((feature) => (
               <div key={feature} className="flex flex-row space-x-2">
                 <div className="mt-1">
                   <Check size={20} className="text-green" />

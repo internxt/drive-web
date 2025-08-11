@@ -1927,20 +1927,24 @@
             "1GB": {
               "title": "Gratuito",
               "features": ["VPN standard gratuita"],
+              "storageFeature":"Archiviazione crittografata a conoscenza zero di 1GB",
               "vpnLocations": ["FR"]
             },
             "1TB": {
               "title": "Essential",
-              "features": ["VPN ultraveloce e illimitata (FR)"]
+              "features": ["VPN ultraveloce e illimitata (FR)"],
+              "storageFeature":"Archiviazione crittografata a conoscenza zero di 1TB"
             },
             "3TB": {
               "title": "Premium",
               "features": ["VPN ultraveloce e illimitata (FR, DE, PL)"],
+              "storageFeature":"Archiviazione crittografata a conoscenza zero di 3TB",
               "comingSoonFeatures": ["Pulizia del dispositivo", "Monitor de la Dark Web"]
             },
             "5TB": {
               "title": "Ultimate",
               "oldTitle": "5TB",
+              "storageFeature":"Archiviazione crittografata a conoscenza zero di 5TB",
               "features": ["VPN ultraveloce e illimitata (FR, DE, PL, CA, UK)"],
               "comingSoonFeatures": ["Pulizia del dispositivo", "Monitor de la Dark Web", "Meet", "Mail"]
             },
@@ -1978,6 +1982,7 @@
           "plans": {
             "1TB": {
               "title": "Standard",
+              "storageFeature":"Archiviazione crittografata a conoscenza zero di 1TB",
               "features": [
                 "VPN illimitata ultraveloce (FR, DE, PL)"
               ],
@@ -1988,6 +1993,7 @@
             },
             "2TB": {
               "title": "Pro",
+              "storageFeature":"Archiviazione crittografata a conoscenza zero di 2TB",
               "features": [
                 "VPN illimitata ultraveloce (FR, DE, PL, CA, UK)"
               ],

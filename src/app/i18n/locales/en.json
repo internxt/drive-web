@@ -1873,21 +1873,25 @@
           "plans": {
             "1GB": {
               "title": "Free",
+              "storageFeature":"1GB zero-knowledge encrypted storage",
               "features": ["Free Standard VPN"],
               "vpnLocations": ["FR"]
             },
             "1TB": {
               "title": "Essential",
+              "storageFeature":"1TB zero-knowledge encrypted storage",
               "features": ["Ultra fast unlimited VPN (FR)"]
             },
             "3TB": {
               "title": "Premium",
+              "storageFeature":"2TB zero-knowledge encrypted storage",
               "features": ["Ultra fast unlimited VPN (FR, DE, PL)"],
               "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
             },
             "5TB": {
               "title": "Ultimate",
               "oldTitle":"5TB",
+              "storageFeature":"5TB zero-knowledge encrypted storage",
               "features": ["Ultra fast unlimited VPN (FR, DE, PL, CA, UK)"],
               "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
             },
@@ -1925,6 +1929,7 @@
           "plans": {
             "1TB": {
               "title": "Standard",
+              "storageFeature":"1TB zero-knowledge encrypted storage",
               "features": [
                 "Ultra fast unlimited VPN (FR, DE, PL)"
               ],
@@ -1935,6 +1940,7 @@
             },
             "2TB": {
               "title": "Pro",
+              "storageFeature":"2TB zero-knowledge encrypted storage",
               "features": [
                 "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)"
               ],

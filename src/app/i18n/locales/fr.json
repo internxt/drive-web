@@ -1818,21 +1818,25 @@
           "plans": {
             "1GB": {
               "title": "Gratuit",
+              "storageFeature":"Stockage chiffré en connaissance zéro de 1GB",
               "features": ["VPN standard gratuit"],
               "vpnLocations": ["FR"]
             },
             "1TB": {
               "title": "Essential",
+              "storageFeature":"Stockage chiffré en connaissance zéro de 1TB",
               "features": ["VPN ultra-rapide et illimité (FR)"]
             },
             "3TB": {
               "title": "Premium",
+               "storageFeature":"Stockage chiffré en connaissance zéro de 3TB",
               "features": ["VPN ultra-rapide et illimité (FR, DE, PL)"],
               "comingSoonFeatures": ["Nettoyeur d'appareil", "Monitor de la Dark Web"]
             },
             "5TB": {
               "title": "Ultimate",
               "oldTitle": "5TB",
+              "storageFeature":"Stockage chiffré en connaissance zéro de 5TB",
               "features": ["VPN ultra-rapide et illimité (FR, DE, PL, CA, UK)"],
               "comingSoonFeatures": ["Nettoyeur d'appareil", "Monitor de la Dark Web", "Meet", "Mail"]
             },
@@ -1870,6 +1874,7 @@
           "plans": {
             "1TB": {
               "title": "Standard",
+              "storageFeature":"Stockage chiffré en connaissance zéro de 1TB",
               "features": [
                 "VPN illimité ultra-rapide (FR, DE, PL)"
               ],
@@ -1880,6 +1885,7 @@
             },
             "2TB": {
               "title": "Pro",
+              "storageFeature":"Stockage chiffré en connaissance zéro de 2TB",
               "features": [
                 "VPN illimité ultra-rapide (FR, DE, PL, CA, UK)"
               ],

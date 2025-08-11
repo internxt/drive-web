@@ -12,7 +12,7 @@ export const getPlanFeatures = (
   isOldPlan: boolean,
   translateList: TranslateListFunction,
 ): string[] => {
-  if (isOldPlan) {
+  if (isOldPlan && planType !== 'businessPlanFeaturesList') {
     return getOldPlanFeatures(planType, bytes, translateList);
   }
 
@@ -52,13 +52,16 @@ export const getPlanCommingFeatures = (
   bytes: string,
   isOldPlan: boolean,
   translateList: TranslateListFunction,
+  isPlanCard?: boolean,
 ): string[] => {
-  const result =
+  const raw =
     translateList(`preferences.account.plans.${planType}.plans.${bytes}.comingSoonFeatures`, {
       returnObjects: true,
     }) ?? [];
 
-  return !isOldPlan && bytes !== SHARED_STORAGE_SIZE ? result : [];
+  const result = Array.isArray(raw) ? raw : [];
+
+  return (!isOldPlan && bytes !== SHARED_STORAGE_SIZE) || isPlanCard ? result : [];
 };
 
 export const getPlanTitle = (
