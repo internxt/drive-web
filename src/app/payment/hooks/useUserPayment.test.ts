@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from 'vitest';
-import { HandleUserPaymentPayload, useUserPayment } from './useUserPayment';
+import { useUserPayment } from './useUserPayment';
 import paymentService from '../services/payment.service';
 import checkoutService from '../services/checkout.service';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -7,49 +7,11 @@ import envService from 'app/core/services/env.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
+import { HandleUserPaymentPayload } from '../types';
 
 describe('Custom hook to handle payments', () => {
   describe('Get subscription data to do the payment', () => {
-    test('When a mobile token is received, then a subscription with trial is created', async () => {
-      const createSubscriptionWithTrialSpy = vi.spyOn(paymentService, 'createSubscriptionWithTrial').mockResolvedValue({
-        clientSecret: 'client_secret',
-        type: 'payment',
-        paymentIntentId: 'payment_intent_id',
-        subscriptionId: 'subscription_id',
-      });
-      const createNormalSubscriptionSpy = vi.spyOn(paymentService, 'createSubscription');
-
-      const { getSubscriptionPaymentIntent } = useUserPayment();
-
-      const subscriptionPaymentIntentPayload = {
-        customerId: 'customer_id',
-        priceId: 'price_id',
-        token: 'token',
-        mobileToken: 'mobile_token',
-        currency: 'currency',
-        seatsForBusinessSubscription: 1,
-        promoCodeId: 'promo_code_id',
-      };
-
-      const response = await getSubscriptionPaymentIntent(subscriptionPaymentIntentPayload);
-
-      expect(createSubscriptionWithTrialSpy).toHaveBeenCalledWith(
-        subscriptionPaymentIntentPayload.customerId,
-        subscriptionPaymentIntentPayload.priceId,
-        subscriptionPaymentIntentPayload.token,
-        subscriptionPaymentIntentPayload.mobileToken,
-        subscriptionPaymentIntentPayload.currency,
-      );
-      expect(response).toStrictEqual({
-        clientSecretType: 'payment',
-        clientSecret: 'client_secret',
-        subscriptionId: 'subscription_id',
-        paymentIntentId: 'payment_intent_id',
-      });
-      expect(createNormalSubscriptionSpy).not.toHaveBeenCalled();
-    });
-
-    test('When no mobile token is received, then a normal subscription is created', async () => {
+    test('When the user wants to purchase a subscription, then a normal subscription is created', async () => {
       const createNormalSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
         clientSecret: 'client_secret',
         type: 'payment',
@@ -64,7 +26,7 @@ describe('Custom hook to handle payments', () => {
         customerId: 'customer_id',
         priceId: 'price_id',
         token: 'token',
-        mobileToken: null,
+
         currency: 'currency',
         seatsForBusinessSubscription: 1,
         promoCodeId: 'promo_code_id',
@@ -142,7 +104,7 @@ describe('Custom hook to handle payments', () => {
         customerId: 'customer_id',
         priceId: 'price_id',
         token: 'token',
-        mobileToken: null,
+
         currency: 'currency',
         seatsForBusinessSubscription: 1,
         elements: {
@@ -301,7 +263,7 @@ describe('Custom hook to handle payments', () => {
         customerId: 'customer_id',
         priceId: 'price_id',
         token: 'token',
-        mobileToken: null,
+        translate: vi.fn(),
         currency: 'currency',
         seatsForBusinessSubscription: 1,
         elements: {
@@ -349,7 +311,7 @@ describe('Custom hook to handle payments', () => {
         customerId: 'customer_id',
         priceId: 'price_id',
         token: 'token',
-        mobileToken: null,
+        translate: vi.fn(),
         currency: 'currency',
         seatsForBusinessSubscription: 1,
         elements: {
@@ -398,7 +360,7 @@ describe('Custom hook to handle payments', () => {
         customerId: 'customer_id',
         priceId: 'price_id',
         token: 'token',
-        mobileToken: null,
+        translate: vi.fn(),
         currency: 'currency',
         seatsForBusinessSubscription: 1,
         elements: {

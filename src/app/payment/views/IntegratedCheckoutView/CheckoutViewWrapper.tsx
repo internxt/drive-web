@@ -455,7 +455,7 @@ const CheckoutViewWrapper = () => {
           priceId: currentSelectedPlan.price.id,
           customerId,
           elements,
-          mobileToken,
+          translate,
           selectedPlan: currentSelectedPlan,
           token,
           gclidStored,

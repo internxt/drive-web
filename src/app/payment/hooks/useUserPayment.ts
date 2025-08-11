@@ -6,7 +6,6 @@ import envService from '../../core/services/env.service';
 import { sendConversionToAPI } from '../../analytics/googleSheet.service';
 import navigationService from '../../core/services/navigation.service';
 import { AppView } from '../../core/types';
-import paymentService from '../services/payment.service';
 import {
   GetSubscriptionPaymentIntentPayload,
   HandleSubscriptionPaymentPayload,
@@ -16,53 +15,37 @@ import {
   PaymentIntentData,
   PlanInterval,
 } from '../types';
+import notificationsService from 'app/notifications/services/notifications.service';
 
 export const useUserPayment = () => {
   const getSubscriptionPaymentIntent = async ({
     customerId,
     priceId,
     token,
-    mobileToken,
     currency,
     seatsForBusinessSubscription,
     promoCodeId,
   }: GetSubscriptionPaymentIntentPayload) => {
-    if (mobileToken) {
-      const {
-        type: paymentType,
-        clientSecret: client_secret,
-        subscriptionId,
-        paymentIntentId,
-      } = await paymentService.createSubscriptionWithTrial(customerId, priceId, token, mobileToken, currency);
+    const {
+      type: paymentType,
+      clientSecret: client_secret,
+      subscriptionId,
+      paymentIntentId,
+    } = await checkoutService.createSubscription({
+      customerId,
+      priceId,
+      token,
+      currency,
+      promoCodeId,
+      quantity: seatsForBusinessSubscription,
+    });
 
-      return {
-        clientSecretType: paymentType,
-        clientSecret: client_secret,
-        subscriptionId,
-        paymentIntentId,
-      };
-    } else {
-      const {
-        type: paymentType,
-        clientSecret: client_secret,
-        subscriptionId,
-        paymentIntentId,
-      } = await checkoutService.createSubscription({
-        customerId,
-        priceId,
-        token,
-        currency,
-        promoCodeId,
-        quantity: seatsForBusinessSubscription,
-      });
-
-      return {
-        type: paymentType,
-        clientSecret: client_secret,
-        subscriptionId,
-        paymentIntentId,
-      };
-    }
+    return {
+      type: paymentType,
+      clientSecret: client_secret,
+      subscriptionId,
+      paymentIntentId,
+    };
   };
 
   const getLifetimePaymentIntent = async ({ customerId, priceId, currency, token, promoCodeId }: PaymentIntentData) => {
@@ -105,7 +88,6 @@ export const useUserPayment = () => {
     customerId,
     priceId,
     token,
-    mobileToken,
     currency,
     seatsForBusinessSubscription = 1,
     currentSelectedPlan,
@@ -117,7 +99,6 @@ export const useUserPayment = () => {
       customerId,
       priceId,
       token,
-      mobileToken,
       seatsForBusinessSubscription,
       promoCodeId: couponCodeData?.codeId,
       currency,
@@ -168,7 +149,6 @@ export const useUserPayment = () => {
   const handleUserPayment = async ({
     selectedPlan,
     token,
-    mobileToken,
     customerId,
     priceId,
     currency,
@@ -176,6 +156,7 @@ export const useUserPayment = () => {
     elements,
     gclidStored,
     seatsForBusinessSubscription = 1,
+    translate,
     confirmPayment,
   }: HandleUserPaymentPayload) => {
     if (gclidStored) {
@@ -197,7 +178,6 @@ export const useUserPayment = () => {
           currentSelectedPlan: selectedPlan,
           customerId,
           elements,
-          mobileToken,
           priceId,
           token,
           couponCodeData,
@@ -220,7 +200,9 @@ export const useUserPayment = () => {
         break;
 
       default:
-        console.warn('Unsupported plan interval: ', selectedPlan.price.interval);
+        notificationsService.show({
+          text: translate('checkout.error.invalidPlan'),
+        });
         navigationService.push(AppView.Drive);
         break;
     }

@@ -132,20 +132,18 @@ export interface PaymentHandlerData extends BasePaymentData {
 }
 
 export interface GetSubscriptionPaymentIntentPayload extends PaymentIntentData {
-  mobileToken: string | null;
   seatsForBusinessSubscription?: number;
 }
 
 export interface HandleSubscriptionPaymentPayload extends PaymentHandlerData {
-  mobileToken: string | null;
   seatsForBusinessSubscription?: number;
 }
 
 export interface HandleUserPaymentPayload extends BasePaymentData {
   selectedPlan: PriceWithTax;
   elements: StripeElements;
-  mobileToken: string | null;
   gclidStored: string | null;
+  translate: (key: string) => string;
   couponCodeData?: CouponCodeData;
   seatsForBusinessSubscription?: number;
   confirmPayment: Stripe['confirmPayment'];
