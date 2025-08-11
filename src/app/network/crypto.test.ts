@@ -218,7 +218,7 @@ describe('Test crypto.ts functions', () => {
     const uploadChunkSize = 10;
     const chunkSize = 5;
     const extraSpace = 1;
-    const fileSize = 7 * 10;
+    const fileSize = 7 * uploadChunkSize;
     const streamCipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
 
@@ -264,23 +264,29 @@ describe('Test crypto.ts functions', () => {
     const uploadChunkSize = 10;
     const chunkSize = 13;
     const extraSpace = 1;
-    const fileSize = 7 * uploadChunkSize;
+    const fileSize = 7 * uploadChunkSize + 1;
     const cipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, extraSpace);
     const result = await processStreamToCompletion(encryptedStream);
 
     const expectedEncryptedFile = [
-      new Uint8Array([1, 154, 92, 204, 248, 101, 81, 115, 77, 1, 38, 164, 222]),
-      new Uint8Array([12, 52, 182, 246, 171, 32, 103, 73, 196, 170, 85, 160, 122]),
-      new Uint8Array([57, 220, 85, 142, 80, 134, 15, 169, 200, 223, 33, 106, 90]),
-      new Uint8Array([252, 22, 66, 64, 243, 231, 169, 203, 203, 88, 253, 195, 91]),
-      new Uint8Array([10, 103, 145, 133, 158, 13, 24, 87, 60, 92, 184, 5, 86]),
-      new Uint8Array([129, 103, 180, 68, 151]),
+      new Uint8Array([1, 154, 92, 204, 248, 101, 81, 115, 77, 1]),
+      new Uint8Array([38, 164, 222, 12, 52, 182, 246, 171, 32, 103]),
+      new Uint8Array([73, 196, 170, 85, 160, 122, 57, 220, 85, 142]),
+      new Uint8Array([80, 134, 15, 169, 200, 223, 33, 106, 90, 252]),
+      new Uint8Array([22, 66, 64, 243, 231, 169, 203, 203, 88, 253]),
+      new Uint8Array([195, 91, 10, 103, 145, 133, 158, 13, 24, 87]),
+      new Uint8Array([60, 92, 184, 5, 86, 129, 103, 180, 68, 151]),
+      new Uint8Array([78]),
     ];
 
     expect(result.chunkCount).toBe(expectedEncryptedFile.length);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'Unexpected buffer overflow with AES-CTR - check uploadChunkSize and allowedChunkOverhead sizings',
+    );
     expect(result.totalSize).toBe(fileSize);
     expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
   });

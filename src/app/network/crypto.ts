@@ -102,39 +102,48 @@ export function encryptStreamInParts(
   const readable = plainFile.stream();
 
   const reader = readable.getReader();
+
+  // allowedChunkOverhead ensures encrypted data can be buffered even when its sizes don't align perfectly with uploadChunkSize
   const bufferSize = uploadChunkSize + allowedChunkOverhead;
   let buffer = new Uint8Array(bufferSize);
-  let bufferLength = 0;
+  let offset = 0;
   let finished = false;
 
   return new ReadableStream<Uint8Array>({
     async pull(controller) {
-      while (bufferLength < uploadChunkSize && !finished) {
+      while (offset < uploadChunkSize && !finished) {
         const { value, done } = await reader.read();
 
         const encryptedChunk = done ? cipher.final() : cipher.update(value);
 
         // Buffer overflow protection
         // Should never happen with AES-CTR (1:1 ratio output/input) but prevents crashes if cipher is changed
-        const requiredLength = bufferLength + encryptedChunk.length;
+        const requiredLength = offset + encryptedChunk.length;
         if (requiredLength > buffer.length) {
+          console.warn(
+            'Unexpected buffer overflow with AES-CTR - check uploadChunkSize and allowedChunkOverhead sizings',
+          );
           const newBuffer = new Uint8Array(requiredLength);
-          newBuffer.set(buffer.subarray(0, bufferLength), 0);
+          newBuffer.set(buffer.subarray(0, offset), 0);
           buffer = newBuffer;
         }
 
-        buffer.set(encryptedChunk, bufferLength);
-        bufferLength += encryptedChunk.length;
+        buffer.set(encryptedChunk, offset);
+        offset += encryptedChunk.length;
 
         if (done) finished = true;
       }
 
-      if (bufferLength > 0) {
-        controller.enqueue(buffer.slice(0, bufferLength));
-        bufferLength = 0;
+      if (offset >= uploadChunkSize) {
+        controller.enqueue(buffer.slice(0, uploadChunkSize));
+        buffer.set(buffer.slice(uploadChunkSize, offset), 0);
+        offset = offset - uploadChunkSize;
       }
 
-      if (finished && bufferLength === 0) {
+      if (finished) {
+        if (offset > 0) {
+          controller.enqueue(buffer.slice(0, offset));
+        }
         controller.close();
       }
     },
