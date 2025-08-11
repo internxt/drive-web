@@ -120,9 +120,6 @@ export function encryptStreamInParts(
         // Should never happen with AES-CTR (1:1 ratio output/input) but prevents crashes if cipher is changed
         const requiredLength = offset + encryptedChunk.length;
         if (requiredLength > buffer.length) {
-          console.warn(
-            'Unexpected buffer overflow with AES-CTR - check uploadChunkSize and allowedChunkOverhead sizings',
-          );
           const newBuffer = new Uint8Array(requiredLength);
           newBuffer.set(buffer.subarray(0, offset), 0);
           buffer = newBuffer;
@@ -131,7 +128,7 @@ export function encryptStreamInParts(
         buffer.set(encryptedChunk, offset);
         offset += encryptedChunk.length;
 
-        if (done) finished = true;
+        if (done) finished = done;
       }
 
       if (offset >= uploadChunkSize) {
