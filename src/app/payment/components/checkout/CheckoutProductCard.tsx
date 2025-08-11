@@ -1,31 +1,29 @@
-import { useMemo, useState } from 'react';
-import { Switch, Transition } from '@headlessui/react';
+import { Transition } from '@headlessui/react';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Check, SealPercent, X } from '@phosphor-icons/react';
+import { useState } from 'react';
 
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import { Button } from '@internxt/ui';
+import { formatPrice } from 'app/payment/utils/formatPrice';
+import { getProductAmount } from 'app/payment/utils/getProductAmount';
+import GuaranteeDarkDays from 'assets/icons/checkout/guarantee-dark.svg?react';
+import GuaranteeWhiteDays from 'assets/icons/checkout/guarantee-white.svg?react';
 import { bytesToString } from '../../../drive/services/size.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import TextInput from '../../../share/components/ShareItemDialog/components/TextInput';
-import { Button } from '@internxt/ui';
 import { useThemeContext } from '../../../theme/ThemeProvider';
-import GuaranteeDarkDays from 'assets/icons/checkout/guarantee-dark.svg?react';
-import GuaranteeWhiteDays from 'assets/icons/checkout/guarantee-white.svg?react';
 import { CouponCodeData, Currency } from '../../types';
 import { SelectSeatsComponent } from './SelectSeatsComponent';
-import { getProductAmount } from 'app/payment/utils/getProductAmount';
-import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { UpsellManagerProps } from 'app/payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
-import { formatPrice } from 'app/payment/utils/formatPrice';
 
 interface CheckoutProductCardProps {
   selectedPlan: PriceWithTax;
   seatsForBusinessSubscription: number;
   showCouponCode: boolean;
   showHardcodedRenewal?: string;
-  upsellManager: UpsellManagerProps;
   onSeatsChange: (users: number) => void;
   onRemoveAppliedCouponCode: () => void;
-  onCouponInputChange: (promoCode: string) => void;
+  onCouponInputChange: (promoCode?: string) => void;
   couponCodeData?: CouponCodeData;
   couponError?: string;
 }
@@ -39,7 +37,6 @@ export const CheckoutProductCard = ({
   showHardcodedRenewal,
   couponError,
   seatsForBusinessSubscription,
-  upsellManager,
   onSeatsChange,
   onRemoveAppliedCouponCode,
   onCouponInputChange,
@@ -48,12 +45,20 @@ export const CheckoutProductCard = ({
   const { checkoutTheme } = useThemeContext();
   const [couponName, setCouponName] = useState<string>('');
   const [openCouponCodeDropdown, setOpenCouponCodeDropdown] = useState<boolean>(false);
-  const bytes = bytesToString(selectedPlan.price.bytes);
-  const currencySymbol = Currency[selectedPlan.price.currency];
-  const normalPriceAmount = selectedPlan.price.decimalAmount;
 
-  const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
-  const isBusiness = selectedPlan.price.type === UserType.Business;
+  if (!selectedPlan?.price || !selectedPlan?.taxes) {
+    console.warn('CheckoutProductCard: selectedPlan is missing price or taxes data');
+    return null;
+  }
+
+  const priceData = selectedPlan.price;
+  const taxesData = selectedPlan.taxes;
+
+  const bytes = bytesToString(priceData.bytes);
+  const currencySymbol = Currency[priceData.currency];
+  const normalPriceAmount = priceData.decimalAmount;
+
+  const isBusiness = priceData.type === UserType.Business;
   const perUserLabel = isBusiness ? translate('checkout.productCard.perUser') : undefined;
   const totalLabel = isBusiness
     ? translate('checkout.productCard.totalForBusiness', {
@@ -62,15 +67,14 @@ export const CheckoutProductCard = ({
     : translate('checkout.productCard.total');
   const renewalPeriodLabel = `${translate('checkout.productCard.renewalPeriod.renewsAt')}
           ${currencySymbol}${normalPriceAmount}/${translate(
-            `checkout.productCard.renewalPeriod.${selectedPlan.price.interval}`,
+            `checkout.productCard.renewalPeriod.${priceData.interval}`,
           )}`;
 
-  const planAmountWithoutTaxes = getProductAmount(selectedPlan.price.decimalAmount, 1, couponCodeData);
-  const upsellPlanAmount =
-    upsellManager.amount && getProductAmount(upsellManager.amount, seatsForBusinessSubscription, couponCodeData);
+  const planAmountWithoutTaxes = getProductAmount(priceData.decimalAmount, 1, couponCodeData);
+
   const discountPercentage =
-    couponCodeData?.amountOff && couponCodeData?.amountOff < selectedPlan.taxes.amountWithTax
-      ? ((couponCodeData?.amountOff / selectedPlan.taxes.amountWithTax) * 100).toFixed(2)
+    couponCodeData?.amountOff && couponCodeData?.amountOff < taxesData.amountWithTax
+      ? ((couponCodeData?.amountOff / taxesData.amountWithTax) * 100).toFixed(2)
       : undefined;
 
   const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
@@ -81,10 +85,10 @@ export const CheckoutProductCard = ({
       returnObjects: true,
     }) ?? translateList('preferences.account.plans.planFeaturesList.1GB.features');
 
-  const comingSoonFeatureKeys = useMemo(() => {
-    const result = translateList(`preferences.account.plans.${planType}.${bytes}.comingSoonFeatures`);
-    return Array.isArray(result) ? result : [];
-  }, [planType, bytes, translateList]);
+  const featuresList = Array.isArray(
+    translateList(`preferences.account.plans.${planType}.${bytes}.comingSoonFeatures`),
+  );
+  const comingSoonFeatureKeys = Array.isArray(featuresList) ? featuresList : [];
 
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
@@ -98,9 +102,9 @@ export const CheckoutProductCard = ({
         <div className="flex w-full flex-col space-y-5">
           <p>{translate('checkout.productCard.selectedPlan')}</p>
           <p className="text-2xl font-bold text-gray-100">
-            {productLabel + ' - ' + translate(`checkout.productCard.renewalTitle.${selectedPlan.price.interval}`)}
+            {productLabel + ' - ' + translate(`checkout.productCard.renewalTitle.${priceData.interval}`)}
           </p>
-          {isBusiness && selectedPlan.price?.maximumSeats && selectedPlan.price?.minimumSeats ? (
+          {isBusiness && priceData?.maximumSeats && priceData?.minimumSeats ? (
             <>
               <p className="text-lg font-medium">
                 {translate('checkout.productCard.numberOfUsers', {
@@ -108,8 +112,8 @@ export const CheckoutProductCard = ({
                 })}
               </p>
               <SelectSeatsComponent
-                maxSeats={selectedPlan.price?.maximumSeats}
-                minSeats={selectedPlan.price?.minimumSeats}
+                maxSeats={priceData.maximumSeats}
+                minSeats={priceData.minimumSeats}
                 seats={seatsForBusinessSubscription}
                 onSeatsChange={onSeatsChange}
               />
@@ -117,7 +121,7 @@ export const CheckoutProductCard = ({
           ) : undefined}
           <div className="flex flex-row items-center justify-between text-gray-100">
             <p className="font-medium">
-              {translate(`checkout.productCard.billed.${selectedPlan.price.interval}`)}
+              {translate(`checkout.productCard.billed.${priceData.interval}`)}
               {perUserLabel}
             </p>
             <p className="font-semibold">
@@ -126,12 +130,12 @@ export const CheckoutProductCard = ({
             </p>
           </div>
 
-          {selectedPlan.taxes.decimalTax > 0 && (
+          {taxesData.decimalTax > 0 && (
             <div className="flex flex-row items-center justify-between text-gray-100">
               <p className="font-medium">{translate('checkout.productCard.taxes')}</p>
               <p className="font-semibold">
                 {currencySymbol}
-                {selectedPlan.taxes.decimalTax}
+                {taxesData.decimalTax}
               </p>
             </div>
           )}
@@ -180,48 +184,10 @@ export const CheckoutProductCard = ({
             <p>{totalLabel}</p>
             <p>
               {currencySymbol}
-              {formatPrice(selectedPlan.taxes.decimalAmountWithTax * seatsForBusinessSubscription)}
+              {formatPrice(taxesData.decimalAmountWithTax * seatsForBusinessSubscription)}
             </p>
           </div>
 
-          {showUpsellSwitch && upsellManager.amountSaved && (
-            <>
-              <div className="flex w-full flex-row items-center justify-between">
-                <div className="flex flex-row items-center gap-4">
-                  <Switch
-                    checked={isUpsellSwitchActivated}
-                    onChange={onUpsellSwitchButtonClicked}
-                    className={`${
-                      isUpsellSwitchActivated ? 'bg-green' : 'bg-gray-10'
-                    } relative inline-flex h-6 w-11 items-center rounded-full`}
-                  >
-                    <span
-                      id="switchButton"
-                      className={`${
-                        isUpsellSwitchActivated ? 'translate-x-6' : 'translate-x-1'
-                      } inline-block h-4 w-4 transform rounded-full bg-white transition`}
-                    />
-                  </Switch>
-
-                  <div className="flex h-full rounded-lg bg-green/10 px-3 py-1">
-                    <p className="text-sm text-green">
-                      {translate('checkout.productCard.amountSaved')}
-                      {currencySymbol}
-                      {upsellManager.amountSaved}
-                    </p>
-                  </div>
-                  <p className="font-medium text-gray-80">{translate('checkout.productCard.withAnnualBilling')}</p>
-                </div>
-                <div className="flex flex-row items-center">
-                  <p className="text-sm text-gray-80">
-                    {currencySymbol}
-                    {upsellPlanAmount}/{translate('views.account.tabs.account.view.subscription.yearly')}
-                  </p>
-                </div>
-              </div>
-              <Separator />
-            </>
-          )}
           {showCouponCode && (
             <>
               {couponCodeData?.codeName ? (
@@ -233,6 +199,7 @@ export const CheckoutProductCard = ({
                       onClick={(e) => {
                         e.preventDefault();
                         onRemoveAppliedCouponCode();
+                        onCouponInputChange();
                       }}
                     >
                       <X size={20} className="text-gray-50" />
@@ -305,9 +272,7 @@ export const CheckoutProductCard = ({
           )}
         </div>
       </div>
-      {couponCodeData && selectedPlan.price.interval !== 'lifetime' && (
-        <p className="text-gray-60">{renewalPeriodLabel}</p>
-      )}
+      {couponCodeData && priceData.interval !== 'lifetime' && <p className="text-gray-60">{renewalPeriodLabel}</p>}
       {showHardcodedRenewal && <p className="text-gray-60">{showHardcodedRenewal}</p>}
     </div>
   );

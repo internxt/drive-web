@@ -6,13 +6,13 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=internxt_drive-web&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=internxt_drive-web)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=internxt_drive-web&metric=coverage)](https://sonarcloud.io/summary/new_code?id=internxt_drive-web)
 
-# Project Manteinance
+# Project Maintenance
 
 We aim to have:
 
 - An 'A' score on Maintainability Rating
 - An 'A' score on Security Rating
-- A 3% of duplicated lines
+- Less than 3% duplicated lines
 - A 50% tests coverage
 
 # Getting Started
