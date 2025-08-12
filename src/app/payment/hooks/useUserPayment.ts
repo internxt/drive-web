@@ -7,14 +7,13 @@ import { sendConversionToAPI } from '../../analytics/googleSheet.service';
 import navigationService from '../../core/services/navigation.service';
 import { AppView } from '../../core/types';
 import {
-  GetSubscriptionPaymentIntentPayload,
-  HandleSubscriptionPaymentPayload,
-  HandleUserPaymentPayload,
+  CreatePaymentIntentPayload,
   InvoiceStatus,
-  PaymentHandlerData,
-  PaymentIntentData,
   PlanInterval,
+  ProcessPurchasePayload,
+  UseUserPaymentPayload,
 } from '../types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 export const useUserPayment = () => {
   const getSubscriptionPaymentIntent = async ({
@@ -24,7 +23,7 @@ export const useUserPayment = () => {
     currency,
     seatsForBusinessSubscription,
     promoCodeId,
-  }: GetSubscriptionPaymentIntentPayload) => {
+  }: CreatePaymentIntentPayload) => {
     const {
       type: paymentType,
       clientSecret: client_secret,
@@ -47,7 +46,13 @@ export const useUserPayment = () => {
     };
   };
 
-  const getLifetimePaymentIntent = async ({ customerId, priceId, currency, token, promoCodeId }: PaymentIntentData) => {
+  const getLifetimePaymentIntent = async ({
+    customerId,
+    priceId,
+    currency,
+    token,
+    promoCodeId,
+  }: CreatePaymentIntentPayload) => {
     const paymentIntentResponse = await checkoutService.createPaymentIntent({
       customerId,
       priceId,
@@ -83,6 +88,25 @@ export const useUserPayment = () => {
     }
   };
 
+  const confirmStripeSetupIntent = async (
+    elements: StripeElements,
+    clientSecret: string,
+    setupIntent: Stripe['confirmSetup'],
+  ) => {
+    const RETURN_URL_DOMAIN = envService.getVariable('hostname');
+    const { error: confirmIntentError } = await setupIntent({
+      elements,
+      clientSecret: clientSecret,
+      confirmParams: {
+        return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
+      },
+    });
+
+    if (confirmIntentError) {
+      throw new Error(confirmIntentError.message);
+    }
+  };
+
   const handleSubscriptionPayment = async ({
     customerId,
     priceId,
@@ -92,8 +116,10 @@ export const useUserPayment = () => {
     currentSelectedPlan,
     couponCodeData,
     elements,
+    translate,
     confirmPayment,
-  }: HandleSubscriptionPaymentPayload) => {
+    confirmSetupIntent,
+  }: ProcessPurchasePayload) => {
     const subscription = await getSubscriptionPaymentIntent({
       customerId,
       priceId,
@@ -111,7 +137,22 @@ export const useUserPayment = () => {
       couponCodeData,
     );
 
-    await confirmStripePaymentIntent(elements, subscription.clientSecret, confirmPayment);
+    switch (subscription.type) {
+      case 'payment':
+        await confirmStripePaymentIntent(elements, subscription.clientSecret, confirmPayment);
+        break;
+
+      case 'setup':
+        await confirmStripeSetupIntent(elements, subscription.clientSecret, confirmSetupIntent);
+        break;
+
+      default:
+        notificationsService.show({
+          text: translate('notificationMessages.errorCreatingSubscription'),
+          type: ToastType.Error,
+        });
+        break;
+    }
   };
 
   const handleLifetimePayment = async ({
@@ -123,7 +164,7 @@ export const useUserPayment = () => {
     couponCodeData,
     elements,
     confirmPayment,
-  }: PaymentHandlerData) => {
+  }: ProcessPurchasePayload) => {
     const invoice = await getLifetimePaymentIntent({
       customerId,
       priceId,
@@ -155,8 +196,10 @@ export const useUserPayment = () => {
     elements,
     gclidStored,
     seatsForBusinessSubscription = 1,
+    translate,
     confirmPayment,
-  }: HandleUserPaymentPayload) => {
+    confirmSetupIntent,
+  }: UseUserPaymentPayload) => {
     if (gclidStored) {
       await sendConversionToAPI({
         gclid: gclidStored,
@@ -180,7 +223,9 @@ export const useUserPayment = () => {
           token,
           couponCodeData,
           seatsForBusinessSubscription,
+          translate,
           confirmPayment,
+          confirmSetupIntent,
         });
         break;
 
@@ -193,12 +238,16 @@ export const useUserPayment = () => {
           priceId,
           token,
           couponCodeData,
+          translate,
           confirmPayment,
+          confirmSetupIntent,
         });
         break;
 
       default:
-        console.warn('Unsupported plan interval: ', selectedPlan.price.interval);
+        notificationsService.show({
+          text: translate('checkout.error.invalidPlan'),
+        });
         navigationService.push(AppView.Drive);
         break;
     }

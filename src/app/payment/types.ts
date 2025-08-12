@@ -113,39 +113,42 @@ export type ErrorType = 'auth' | 'stripe' | 'coupon';
 
 export type PartialErrorState = Partial<Record<ErrorType, string>>;
 
-export interface BasePaymentData {
+export interface CreatePaymentIntentPayload {
   customerId: string;
   priceId: string;
   token: string;
   currency: string;
-}
-
-export interface PaymentIntentData extends BasePaymentData {
+  seatsForBusinessSubscription?: number;
   promoCodeId?: string;
 }
 
-export interface PaymentHandlerData extends BasePaymentData {
+export interface ProcessPurchasePayload {
+  customerId: string;
+  priceId: string;
+  token: string;
+  currency: string;
   elements: StripeElements;
-  currentSelectedPlan: PriceWithTax;
-  couponCodeData?: CouponCodeData;
   confirmPayment: Stripe['confirmPayment'];
-}
-
-export interface GetSubscriptionPaymentIntentPayload extends PaymentIntentData {
+  confirmSetupIntent: Stripe['confirmSetup'];
+  translate: (key: string) => string;
+  currentSelectedPlan: PriceWithTax;
   seatsForBusinessSubscription?: number;
+  couponCodeData?: CouponCodeData;
 }
 
-export interface HandleSubscriptionPaymentPayload extends PaymentHandlerData {
-  seatsForBusinessSubscription?: number;
-}
-
-export interface HandleUserPaymentPayload extends BasePaymentData {
+export interface UseUserPaymentPayload {
+  customerId: string;
+  priceId: string;
+  token: string;
+  currency: string;
   selectedPlan: PriceWithTax;
   elements: StripeElements;
+  confirmPayment: Stripe['confirmPayment'];
+  confirmSetupIntent: Stripe['confirmSetup'];
   gclidStored: string | null;
+  translate: (key: string) => string;
   couponCodeData?: CouponCodeData;
   seatsForBusinessSubscription?: number;
-  confirmPayment: Stripe['confirmPayment'];
 }
 
 export enum PlanInterval {

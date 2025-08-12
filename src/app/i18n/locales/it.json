@@ -329,6 +329,9 @@
       },
       "apply": "Applica",
       "taxes": "Tasse"
+    },
+    "error": {
+      "invalidPlan": "Tipo di piano non supportato. Seleziona un piano valido."
     }
   },
   "general": {

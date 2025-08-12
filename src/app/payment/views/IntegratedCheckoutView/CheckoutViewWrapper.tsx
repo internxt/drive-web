@@ -244,11 +244,6 @@ const CheckoutViewWrapper = () => {
       setSelectedPlan(priceWithTaxes);
     } catch (error) {
       console.error('Error fetching price with taxes', error);
-      if (user) {
-        navigationService.push(AppView.Drive);
-      } else {
-        navigationService.push(AppView.Signup);
-      }
     }
   };
 
@@ -466,11 +461,13 @@ const CheckoutViewWrapper = () => {
       } else {
         await handleUserPayment({
           confirmPayment: stripeSDK.confirmPayment,
+          confirmSetupIntent: stripeSDK.confirmSetup,
           couponCodeData: couponCodeData,
           currency: selectedCurrency ?? currentSelectedPlan.price.currency,
           priceId: currentSelectedPlan.price.id,
           customerId,
           elements,
+          translate,
           selectedPlan: currentSelectedPlan,
           token,
           gclidStored,
