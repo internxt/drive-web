@@ -12,7 +12,7 @@ import notificationsService from 'app/notifications/services/notifications.servi
 
 describe('Custom hook to handle payments', () => {
   describe('Get subscription data to do the payment', () => {
-    test('When the user wants to purchase a subscription, then a normal subscription is created', async () => {
+    test('When creating a new subscription, then it is created successfully', async () => {
       const createNormalSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
         clientSecret: 'client_secret',
         type: 'payment',
@@ -58,6 +58,7 @@ describe('Custom hook to handle payments', () => {
       const createPaymentIntentSpy = vi.spyOn(checkoutService, 'createPaymentIntent').mockResolvedValue({
         clientSecret: 'client_secret',
         invoiceStatus: 'open',
+        type: 'fiat',
         id: 'payment_intent_id',
       });
       const { getLifetimePaymentIntent } = useUserPayment();
@@ -75,7 +76,8 @@ describe('Custom hook to handle payments', () => {
       expect(response).toStrictEqual({
         clientSecret: 'client_secret',
         invoiceStatus: 'open',
-        paymentIntentId: 'payment_intent_id',
+        type: 'fiat',
+        id: 'payment_intent_id',
       });
       expect(createPaymentIntentSpy).toHaveBeenCalledWith({
         customerId: lifetimePaymentIntentPayload.customerId,
@@ -258,6 +260,7 @@ describe('Custom hook to handle payments', () => {
       const createPaymentIntentSpy = vi.spyOn(checkoutService, 'createPaymentIntent').mockResolvedValue({
         clientSecret: 'client_secret',
         invoiceStatus: 'open',
+        type: 'fiat',
         id: 'pi_123',
       });
       const confirmPayment = vi.fn().mockResolvedValue({ error: undefined });
@@ -308,6 +311,7 @@ describe('Custom hook to handle payments', () => {
       const createPaymentIntentSpy = vi.spyOn(checkoutService, 'createPaymentIntent').mockResolvedValue({
         clientSecret: 'client_secret',
         invoiceStatus: 'paid',
+        type: 'fiat',
         id: 'pi_123',
       });
       const confirmPayment = vi.fn().mockResolvedValue({ error: undefined });
@@ -361,11 +365,7 @@ describe('Custom hook to handle payments', () => {
         paymentIntentId: 'pi_123',
         subscriptionId: 'sub_123',
       });
-      const createPaymentIntentSpy = vi.spyOn(checkoutService, 'createPaymentIntent').mockResolvedValue({
-        clientSecret: 'client_secret',
-        invoiceStatus: 'open',
-        id: 'pi_123',
-      });
+      const createPaymentIntentSpy = vi.spyOn(checkoutService, 'createPaymentIntent');
       // Spy for savePaymentDataInLocalStorage function
       vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
 
@@ -405,15 +405,11 @@ describe('Custom hook to handle payments', () => {
 
       const confirmPayment = vi.fn().mockResolvedValue({ error: undefined });
       const setupIntent = vi.fn().mockResolvedValue({ error: undefined });
-      const createSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
-        clientSecret: 'client_secret',
-        type: 'payment',
-        paymentIntentId: 'pi_123',
-        subscriptionId: 'sub_123',
-      });
+      const createSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription');
       const createPaymentIntentSpy = vi.spyOn(checkoutService, 'createPaymentIntent').mockResolvedValue({
         clientSecret: 'client_secret',
         invoiceStatus: 'open',
+        type: 'fiat',
         id: 'pi_123',
       });
       // Spy for savePaymentDataInLocalStorage function
@@ -455,17 +451,8 @@ describe('Custom hook to handle payments', () => {
 
       const confirmPayment = vi.fn().mockResolvedValue({ error: undefined });
       const setupIntent = vi.fn().mockResolvedValue({ error: undefined });
-      const createSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
-        clientSecret: 'client_secret',
-        type: 'payment',
-        paymentIntentId: 'pi_123',
-        subscriptionId: 'sub_123',
-      });
-      const createPaymentIntentSpy = vi.spyOn(checkoutService, 'createPaymentIntent').mockResolvedValue({
-        clientSecret: 'client_secret',
-        invoiceStatus: 'open',
-        id: 'pi_123',
-      });
+      const createSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription');
+      const createPaymentIntentSpy = vi.spyOn(checkoutService, 'createPaymentIntent');
       // Spy for savePaymentDataInLocalStorage function
       vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
       const navigationServiceSpy = vi.spyOn(navigationService, 'push').mockImplementation(() => {});

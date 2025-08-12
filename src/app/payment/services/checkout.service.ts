@@ -1,9 +1,4 @@
-import {
-  CreatedPaymentIntent,
-  CreatedSubscriptionData,
-  DisplayPrice,
-  UserType,
-} from '@internxt/sdk/dist/drive/payments/types/types';
+import { CreatedSubscriptionData, DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { CouponCodeData } from '../types';
 import axios from 'axios';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -12,6 +7,7 @@ import {
   CreatePaymentIntentPayload,
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
+  PaymentIntent,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
 import envService from 'app/core/services/env.service';
@@ -106,7 +102,7 @@ export const createPaymentIntent = async ({
   token,
   currency,
   promoCodeId,
-}: CreatePaymentIntentPayload): Promise<CreatedPaymentIntent> => {
+}: CreatePaymentIntentPayload): Promise<PaymentIntent> => {
   const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.createPaymentIntent({
     customerId,
