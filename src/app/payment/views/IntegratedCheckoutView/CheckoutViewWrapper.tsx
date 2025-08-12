@@ -1,8 +1,8 @@
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { Elements } from '@stripe/react-stripe-js';
-import { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js';
 import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 
 import { UserLocation } from '@internxt/sdk';
 import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
@@ -424,12 +424,10 @@ const CheckoutViewWrapper = () => {
         return;
       }
 
-      if (currencyType === PaymentType['FIAT']) {
-        const { error: elementsError } = await elements.submit();
+      const { error: elementsError } = await elements.submit();
 
-        if (elementsError) {
-          throw new Error(elementsError.message);
-        }
+      if (elementsError) {
+        throw new Error(elementsError.message);
       }
 
       const { customerId, token } = await checkoutService.getCustomerId({
@@ -463,7 +461,7 @@ const CheckoutViewWrapper = () => {
           confirmPayment: stripeSDK.confirmPayment,
           confirmSetupIntent: stripeSDK.confirmSetup,
           couponCodeData: couponCodeData,
-          currency: selectedCurrency ?? currentSelectedPlan.price.currency,
+          currency: currentSelectedPlan.price.currency,
           priceId: currentSelectedPlan.price.id,
           customerId,
           elements,
