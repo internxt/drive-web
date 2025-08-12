@@ -25,11 +25,11 @@ export const AvailableCryptoCurrenciesDropdown = ({
   );
 
   return (
-    <div className="flex w-full flex-col items-start gap-3 rounded-xl border border-gray-10 bg-surface py-3 px-1.5">
+    <div className="flex w-full flex-col items-start gap-3 rounded-2xl border border-gray-10 bg-surface p-2.5 px-3.5">
       <Menu>
         <Menu.Button
           onKeyDown={(e) => e.preventDefault()}
-          className={`flex h-full w-full flex-row items-center px-2 justify-between rounded-lg text-base transition-all duration-75 ease-in-out ${isDropdownOpen ? 'text-white' : 'text-[#6D6E78] hover:text-white'}`}
+          className={`flex h-full w-full flex-row items-center justify-between rounded-lg text-base transition-all duration-75 ease-in-out ${isDropdownOpen ? 'text-white' : 'text-[#6D6E78] hover:text-white'}`}
           onClick={onDropdownClicked}
         >
           {cryptoSelected ? (
@@ -65,7 +65,7 @@ export const AvailableCryptoCurrenciesDropdown = ({
                       onCryptoChanges(cryptoCurrency.currencyId.toLowerCase());
                       onDropdownClicked();
                     }}
-                    className={`flex w-full flex-row px-2 items-center rounded-md text-left ${active ? 'bg-gray-10' : ''}`}
+                    className={`flex w-full flex-row items-center rounded-md text-left ${active ? 'bg-gray-10' : ''}`}
                   >
                     <div className="flex flex-row gap-5 py-2 items-center">
                       <img src={cryptoCurrency.imageUrl} alt={cryptoCurrency.name} className="h-5 w-5" />
