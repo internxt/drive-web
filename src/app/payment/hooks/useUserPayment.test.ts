@@ -8,6 +8,7 @@ import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { ProcessPurchasePayload, UseUserPaymentPayload } from '../types';
+import notificationsService from 'app/notifications/services/notifications.service';
 
 describe('Custom hook to handle payments', () => {
   describe('Get subscription data to do the payment', () => {
@@ -195,6 +196,58 @@ describe('Custom hook to handle payments', () => {
           return_url: `${envService.getVariable('hostname')}/checkout/success`,
         },
       });
+    });
+
+    test('When the user attempts to purchase a subscription which has a type different from payment or setup, then a toast notification is displayed indicating something went wrong', async () => {
+      const { handleSubscriptionPayment } = useUserPayment();
+
+      const createSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
+        clientSecret: 'client_secret',
+        type: 'object-storage',
+        paymentIntentId: 'pi_123',
+        subscriptionId: 'sub_123',
+      } as any);
+      const confirmPayment = vi.fn().mockResolvedValue({ error: undefined });
+      const setupIntent = vi.fn().mockResolvedValue({ error: undefined });
+      const translate = vi.fn().mockImplementation(() => {});
+      // Spy for savePaymentDataInLocalStorage function
+      const localStorageServiceSpy = vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+      const notificationsServiceSpy = vi.spyOn(notificationsService, 'show').mockImplementation(() => '');
+
+      const subscriptionPaymentPayload: ProcessPurchasePayload = {
+        customerId: 'customer_id',
+        priceId: 'price_id',
+        token: 'token',
+        currency: 'currency',
+        seatsForBusinessSubscription: 1,
+        elements: vi.fn() as any,
+        currentSelectedPlan: {
+          price: {
+            interval: 'year',
+            type: UserType.Individual,
+          },
+        } as any,
+        confirmPayment,
+        confirmSetupIntent: setupIntent,
+        translate: translate,
+      };
+
+      await handleSubscriptionPayment(subscriptionPaymentPayload);
+
+      expect(createSubscriptionSpy).toHaveBeenCalledWith({
+        customerId: subscriptionPaymentPayload.customerId,
+        priceId: subscriptionPaymentPayload.priceId,
+        token: subscriptionPaymentPayload.token,
+        currency: subscriptionPaymentPayload.currency,
+        promoCodeId: undefined,
+        quantity: subscriptionPaymentPayload.seatsForBusinessSubscription,
+      });
+
+      expect(localStorageServiceSpy).toHaveBeenCalledTimes(5);
+
+      expect(notificationsServiceSpy).toHaveBeenCalled();
+      expect(confirmPayment).not.toHaveBeenCalled();
+      expect(setupIntent).not.toHaveBeenCalled();
     });
   });
 
