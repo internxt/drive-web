@@ -6,6 +6,8 @@ import { useSelector } from 'react-redux';
 
 import { UserLocation } from '@internxt/sdk';
 import { Loader } from '@internxt/ui';
+import { sendConversionToAPI } from 'app/analytics/googleSheet.service';
+import { savePaymentDataInLocalStorage } from 'app/analytics/impact.service';
 import { userLocation } from 'app/utils/userLocation';
 import { useCheckout } from 'hooks/checkout/useCheckout';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
@@ -32,7 +34,6 @@ import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
 import { AuthMethodTypes } from '../../types';
 import CheckoutView from './CheckoutView';
-import { useUserPayment } from 'app/payment/hooks/useUserPayment';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -98,7 +99,6 @@ const CheckoutViewWrapper = () => {
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const { doRegister } = useSignUp('activate');
-  const { handleUserPayment } = useUserPayment();
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
   const [userLocationData, setUserLocationData] = useState<UserLocation>();
 
@@ -448,19 +448,58 @@ const CheckoutViewWrapper = () => {
           throw new Error(confirmIntentError.message);
         }
       } else {
-        await handleUserPayment({
-          confirmPayment: stripeSDK.confirmPayment,
-          couponCodeData: couponCodeData,
-          currency: currentSelectedPlan.price.currency,
-          priceId: currentSelectedPlan.price.id,
-          customerId,
-          elements,
-          translate,
-          selectedPlan: currentSelectedPlan,
-          token,
-          gclidStored,
+        const { clientSecret, type, subscriptionId, paymentIntentId, invoiceStatus } =
+          await checkoutService.getClientSecret({
+            selectedPlan: currentSelectedPlan,
+            token,
+            mobileToken,
+            customerId,
+            promoCodeId: couponCodeData?.codeId,
+            seatsForBusinessSubscription,
+          });
+
+        // Store subscriptionId, paymentIntentId, and amountPaid to send to IMPACT API once the payment is done
+        savePaymentDataInLocalStorage(
+          subscriptionId,
+          paymentIntentId,
+          currentSelectedPlan,
           seatsForBusinessSubscription,
+          couponCodeData,
+        );
+
+        if (gclidStored) {
+          await sendConversionToAPI({
+            gclid: gclidStored,
+            name: `Checkout - ${currentSelectedPlan.price.type}`,
+            value: currentSelectedPlan,
+            currency: currentSelectedPlan.price.currency,
+            timestamp: new Date(),
+            users: seatsForBusinessSubscription,
+            couponCodeData: couponCodeData,
+          });
+        }
+
+        // !DO NOT REMOVE THIS
+        // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
+        // no client secret will be provided.
+        if (invoiceStatus && invoiceStatus === 'paid') {
+          navigationService.push(AppView.CheckoutSuccess);
+          return;
+        }
+
+        const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
+        const RETURN_URL_DOMAIN = envService.getVariable('hostname');
+        const { error: confirmIntentError } = await confirmIntent({
+          elements,
+          clientSecret,
+          confirmParams: {
+            return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
+          },
         });
+
+        if (confirmIntentError) {
+          throw new Error(confirmIntentError.message);
+        }
       }
     } catch (err) {
       const statusCode = (err as any).status;

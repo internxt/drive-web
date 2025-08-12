@@ -87,7 +87,7 @@
     "superBowl": "Super Bowl",
     "valentines": "Valentine's Day",
     "summer": "Summer",
-    "anniversary": "Anniversary",
+    "anniversary":"Anniversary",
     "stPatricks": "St. Patrick's Day",
     "idManagement": "Identity Management",
     "environment": "World Environment Day"
@@ -253,9 +253,6 @@
       },
       "apply": "Apply",
       "taxes": "Taxes"
-    },
-    "error": {
-      "invalidPlan": "Unsupported plan type. Please select a valid plan."
     }
   },
   "general": {

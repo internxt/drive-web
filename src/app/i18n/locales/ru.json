@@ -67,7 +67,7 @@
     "valentines": "Valentines",
     "stPatricks": "St. Patrick's",
     "summer": "годовщина",
-    "anniversary": "Anniversary",
+    "anniversary":"Anniversary",
     "idManagement": "Identity Management",
     "environment": "World Environment Day"
   },
@@ -236,9 +236,6 @@
       },
       "apply": "Применить",
       "taxes": "Налоги"
-    },
-    "error": {
-      "invalidPlan": "Неподдерживаемый тип плана. Пожалуйста, выберите действительный план."
     }
   },
   "general": {

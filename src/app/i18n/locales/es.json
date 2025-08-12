@@ -234,9 +234,6 @@
       },
       "apply": "Aplicar",
       "taxes": "Impuestos"
-    },
-    "error": {
-      "invalidPlan": "Tipo de plan no soportado. Por favor, selecciona un plan válido."
     }
   },
 
