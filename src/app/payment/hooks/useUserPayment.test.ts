@@ -7,7 +7,7 @@ import envService from 'app/core/services/env.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
-import { ProcessPurchasePayload, UseUserPaymentPayload } from '../types';
+import { PaymentType, ProcessPurchasePayload, UseUserPaymentPayload } from '../types';
 import notificationsService from 'app/notifications/services/notifications.service';
 
 describe('Custom hook to handle payments', () => {
@@ -27,8 +27,7 @@ describe('Custom hook to handle payments', () => {
         customerId: 'customer_id',
         priceId: 'price_id',
         token: 'token',
-
-        currency: 'currency',
+        currency: 'eur',
         seatsForBusinessSubscription: 1,
         promoCodeId: 'promo_code_id',
       };
@@ -78,6 +77,53 @@ describe('Custom hook to handle payments', () => {
         invoiceStatus: 'open',
         type: 'fiat',
         id: 'payment_intent_id',
+      });
+      expect(createPaymentIntentSpy).toHaveBeenCalledWith({
+        customerId: lifetimePaymentIntentPayload.customerId,
+        priceId: lifetimePaymentIntentPayload.priceId,
+        currency: lifetimePaymentIntentPayload.currency,
+        token: lifetimePaymentIntentPayload.token,
+        promoCodeId: lifetimePaymentIntentPayload.promoCodeId,
+      });
+    });
+
+    test('When the user attempts to purchase a lifetime plan using crypto currencies, then the necessary data to purchase the plan are returned', async () => {
+      const { getLifetimePaymentIntent } = useUserPayment();
+
+      const lifetimePaymentIntentPayload = {
+        customerId: 'customer_id',
+        priceId: 'price_id',
+        currency: 'BTC',
+        token: 'encoded-customer-id',
+        promoCodeId: 'promo_code_id',
+      };
+      const paymentIntentResponse = {
+        type: PaymentType['CRYPTO'] as const,
+        id: 'payment_intent_id',
+        token: 'encoded-invoice-id',
+        payload: {
+          payAmount: 1,
+          payCurrency: 'BTC',
+          paymentAddress: '0xB112c1820D41A6A0665932D7341f2344802F7bD8',
+          paymentRequestUri: 'ethereum:0xB112c1820D41A6A0665932D7341f2344802F7bD8@1?value=271867590000000000',
+          qrUrl: 'https://qrUrl.example.com',
+          url: 'https://invoice.url.com',
+        },
+      };
+
+      const createPaymentIntentSpy = vi
+        .spyOn(checkoutService, 'createPaymentIntent')
+        .mockResolvedValue(paymentIntentResponse);
+
+      const response = await getLifetimePaymentIntent(lifetimePaymentIntentPayload);
+
+      expect(response).toStrictEqual({
+        id: 'payment_intent_id',
+        type: 'crypto',
+        encodedInvoiceIdToken: 'encoded-invoice-id',
+        payload: {
+          ...paymentIntentResponse.payload,
+        },
       });
       expect(createPaymentIntentSpy).toHaveBeenCalledWith({
         customerId: lifetimePaymentIntentPayload.customerId,
