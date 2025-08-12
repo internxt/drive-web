@@ -13,7 +13,7 @@ import {
   ProcessPurchasePayload,
   UseUserPaymentPayload,
 } from '../types';
-import notificationsService from 'app/notifications/services/notifications.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 export const useUserPayment = () => {
   const getSubscriptionPaymentIntent = async ({
@@ -88,6 +88,25 @@ export const useUserPayment = () => {
     }
   };
 
+  const confirmStripeSetupIntent = async (
+    elements: StripeElements,
+    clientSecret: string,
+    setupIntent: Stripe['confirmSetup'],
+  ) => {
+    const RETURN_URL_DOMAIN = envService.getVariable('hostname');
+    const { error: confirmIntentError } = await setupIntent({
+      elements,
+      clientSecret: clientSecret,
+      confirmParams: {
+        return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
+      },
+    });
+
+    if (confirmIntentError) {
+      throw new Error(confirmIntentError.message);
+    }
+  };
+
   const handleSubscriptionPayment = async ({
     customerId,
     priceId,
@@ -97,7 +116,9 @@ export const useUserPayment = () => {
     currentSelectedPlan,
     couponCodeData,
     elements,
+    translate,
     confirmPayment,
+    confirmSetupIntent,
   }: ProcessPurchasePayload) => {
     const subscription = await getSubscriptionPaymentIntent({
       customerId,
@@ -116,7 +137,22 @@ export const useUserPayment = () => {
       couponCodeData,
     );
 
-    await confirmStripePaymentIntent(elements, subscription.clientSecret, confirmPayment);
+    switch (subscription.type) {
+      case 'payment':
+        await confirmStripePaymentIntent(elements, subscription.clientSecret, confirmPayment);
+        break;
+
+      case 'setup':
+        await confirmStripeSetupIntent(elements, subscription.clientSecret, confirmSetupIntent);
+        break;
+
+      default:
+        notificationsService.show({
+          text: translate('notificationMessages.errorCreatingSubscription'),
+          type: ToastType.Error,
+        });
+        break;
+    }
   };
 
   const handleLifetimePayment = async ({
@@ -162,6 +198,7 @@ export const useUserPayment = () => {
     seatsForBusinessSubscription = 1,
     translate,
     confirmPayment,
+    confirmSetupIntent,
   }: UseUserPaymentPayload) => {
     if (gclidStored) {
       await sendConversionToAPI({
@@ -186,7 +223,9 @@ export const useUserPayment = () => {
           token,
           couponCodeData,
           seatsForBusinessSubscription,
+          translate,
           confirmPayment,
+          confirmSetupIntent,
         });
         break;
 
@@ -199,7 +238,9 @@ export const useUserPayment = () => {
           priceId,
           token,
           couponCodeData,
+          translate,
           confirmPayment,
+          confirmSetupIntent,
         });
         break;
 
