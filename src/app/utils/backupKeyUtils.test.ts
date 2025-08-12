@@ -335,7 +335,7 @@ describe('backupKeyUtils', () => {
         encryptedPassword: 'encrypted-test-hash',
         encryptedSalt: 'encrypted-test-salt',
         encryptedMnemonic: 'encrypted-with-key-' + mockMnemonic,
-        eccEncryptedMnemonic: 'ecc-encrypted-mnemonic',
+        eccEncryptedMnemonic: 'ZWNjLWVuY3J5cHRlZC1tbmVtb25pYw==',
         kyberEncryptedMnemonic: 'hybrid-encrypted-mnemonic',
         keys: {
           ecc: {
