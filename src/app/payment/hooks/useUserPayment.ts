@@ -67,7 +67,7 @@ export const useUserPayment = () => {
       return {
         id: paymentIntentResponse.id,
         type: paymentIntentResponse.type,
-        token: paymentIntentResponse.token,
+        encodedInvoiceIdToken: paymentIntentResponse.token,
         payload: {
           ...paymentIntentResponse.payload,
         },
@@ -76,7 +76,7 @@ export const useUserPayment = () => {
 
     return {
       id: paymentIntentResponse.id,
-      type: 'fiat',
+      type: paymentIntentResponse.type,
       clientSecret: paymentIntentResponse.clientSecret,
       invoiceStatus: paymentIntentResponse.invoiceStatus,
     };

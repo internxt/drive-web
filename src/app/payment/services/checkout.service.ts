@@ -8,6 +8,7 @@ import {
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
   PaymentIntent,
+  PaymentIntentCrypto,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
 import envService from 'app/core/services/env.service';
@@ -152,6 +153,11 @@ const checkoutSetupIntent = async (customerId: string) => {
   } catch (error) {
     throw new Error('Error creating subscription with trial');
   }
+};
+
+const verifyCryptoPayment = async (token: PaymentIntentCrypto['token']): Promise<boolean> => {
+  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
+  return checkoutClient.verifyCryptoPayment(token);
 };
 
 const loadStripeElements = async (
