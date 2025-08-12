@@ -248,7 +248,8 @@
       "taxes": "稅金"
     },
     "error": {
-      "invalidPlan": "不支援的方案類型。請選擇有效的方案。"
+      "invalidPlan": "不支援的方案類型。請選擇有效的方案。",
+      "fetchingCryptoCurrencies": "無法載入可用的加密貨幣選項"
     }
   },
   "general": {

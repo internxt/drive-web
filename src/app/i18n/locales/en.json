@@ -256,7 +256,8 @@
       "taxes": "Taxes"
     },
     "error": {
-      "invalidPlan": "Unsupported plan type. Please select a valid plan."
+      "invalidPlan": "Unsupported plan type. Please select a valid plan.",
+      "fetchingCryptoCurrencies": "We couldn't load the available cryptocurrency options"
     }
   },
   "general": {

@@ -237,7 +237,8 @@
       "taxes": "Impuestos"
     },
     "error": {
-      "invalidPlan": "Tipo de plan no soportado. Por favor, selecciona un plan válido."
+      "invalidPlan": "Tipo de plan no soportado. Por favor, selecciona un plan válido.",
+      "fetchingCryptoCurrencies": "No pudimos cargar las opciones de criptomonedas disponibles"
     }
   },
 

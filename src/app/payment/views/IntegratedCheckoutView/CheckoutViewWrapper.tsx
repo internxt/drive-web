@@ -5,7 +5,7 @@ import { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js
 import { Elements } from '@stripe/react-stripe-js';
 
 import { UserLocation } from '@internxt/sdk';
-import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
+import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Loader } from '@internxt/ui';
 import { userLocation } from 'app/utils/userLocation';
 import { useCheckout } from 'hooks/checkout/useCheckout';
@@ -294,28 +294,60 @@ const CheckoutViewWrapper = () => {
     promotionCode: string | null,
     userAddress?: UserLocation['ip'],
   ): Promise<void> => {
+    let price: PriceWithTax | null = null;
     try {
-      const price = await handleFetchSelectedPlan(planId, promotionCode, currencyValue, userAddress);
-      if (checkoutTheme && price) {
-        if (promotionCode) {
-          handleFetchPromotionCode(price.price.id, promotionCode).catch(handlePromoCodeError);
-        }
-        setSelectedCurrency(price.price.currency);
-
-        if (price.price.interval === PlanInterval.LIFETIME && IS_CRYPTO_PAYMENT_ENABLED) {
-          const availableCryptoCurrencies = await currencyService.getAvailableCryptoCurrencies();
-          setAvailableCryptoCurrencies(availableCryptoCurrencies);
-        }
-
-        const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], price);
-        setStripeElementsOptions(stripeElements as StripeElementsOptions);
-        const prices = await checkoutService.fetchPrices(price.price.type, currencyValue);
-        setPrices(prices);
-        setIsCheckoutReadyToRender(true);
-      }
-    } catch {
+      price = await handleFetchSelectedPlan(planId, promotionCode, currencyValue, userAddress);
+    } catch (error) {
+      console.error('Error fetching selected plan', error);
       redirectToFallbackPage();
+      return;
     }
+
+    if (!checkoutTheme || !price) {
+      return;
+    }
+
+    if (promotionCode) {
+      try {
+        await handleFetchPromotionCode(price.price.id, promotionCode);
+      } catch (error) {
+        handlePromoCodeError(error);
+      }
+    }
+
+    setSelectedCurrency(price.price.currency);
+
+    if (price.price.interval === PlanInterval.LIFETIME && IS_CRYPTO_PAYMENT_ENABLED) {
+      try {
+        const availableCryptoCurrencies = await currencyService.getAvailableCryptoCurrencies();
+        setAvailableCryptoCurrencies(availableCryptoCurrencies);
+      } catch (error) {
+        notificationsService.show({
+          text: translate('checkout.error.fetchingCryptoCurrencies'),
+          type: ToastType.Error,
+        });
+      }
+    }
+
+    try {
+      const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], price);
+      setStripeElementsOptions(stripeElements as StripeElementsOptions);
+    } catch (error) {
+      console.error('Error loading Stripe elements:', error);
+      redirectToFallbackPage();
+      return;
+    }
+
+    try {
+      const prices = await checkoutService.fetchPrices(price.price.type, currencyValue);
+      setPrices(prices);
+    } catch (error) {
+      console.error('Error fetching prices:', error);
+      redirectToFallbackPage();
+      return;
+    }
+
+    setIsCheckoutReadyToRender(true);
   };
 
   const onChangePlanClicked = async (priceId: string) => {
