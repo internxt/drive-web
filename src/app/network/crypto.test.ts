@@ -217,12 +217,12 @@ describe('Test crypto.ts functions', () => {
   it('encryptStreamInParts should give the same result as the entier file encryption', async () => {
     const uploadChunkSize = 10;
     const chunkSize = 5;
-    const extraSpace = 1;
+    const overhead = 1;
     const fileSize = 7 * uploadChunkSize;
     const streamCipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
 
-    const encryptedStream = encryptStreamInParts(file, streamCipher, uploadChunkSize, extraSpace);
+    const encryptedStream = encryptStreamInParts(file, streamCipher, uploadChunkSize, overhead);
     const { encryptedFile } = await processStreamToCompletion(encryptedStream);
     const flatEncryptedFile = Uint8Array.from(encryptedFile.flatMap((a) => [...a]));
 
@@ -236,12 +236,12 @@ describe('Test crypto.ts functions', () => {
   it('encryptStreamInParts should correctly encrypt file when chunkSize < uploadChunkSize', async () => {
     const uploadChunkSize = 10;
     const chunkSize = 5;
-    const extraSpace = 1;
+    const overhead = 1;
     const fileSize = 7 * uploadChunkSize + 1;
     const cipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
 
-    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, extraSpace);
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
     const result = await processStreamToCompletion(encryptedStream);
 
     const expectedEncryptedFile = [
@@ -260,15 +260,77 @@ describe('Test crypto.ts functions', () => {
     expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
   });
 
+  it('encryptStreamInParts should correctly encrypt file when fileSize = chunkSize = uploadChunkSize', async () => {
+    const uploadChunkSize = 10;
+    const chunkSize = uploadChunkSize;
+    const overhead = 2;
+    const fileSize = uploadChunkSize;
+    const cipher = getTestCipher();
+    const file = createZeroFile(fileSize, chunkSize);
+
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
+    const result = await processStreamToCompletion(encryptedStream);
+
+    const expectedEncryptedFile = [new Uint8Array([1, 154, 92, 204, 248, 101, 81, 115, 77, 1])];
+
+    expect(result.chunkCount).toBe(expectedEncryptedFile.length);
+    expect(result.totalSize).toBe(fileSize);
+    expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+  });
+
+  it('encryptStreamInParts should correctly encrypt file when chunkSize = uploadChunkSize + overhead', async () => {
+    const uploadChunkSize = 10;
+    const overhead = 2;
+    const chunkSize = uploadChunkSize + overhead;
+    const fileSize = 3 * uploadChunkSize + 1;
+    const cipher = getTestCipher();
+    const file = createZeroFile(fileSize, chunkSize);
+
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
+    const result = await processStreamToCompletion(encryptedStream);
+    const expectedEncryptedFile = [
+      new Uint8Array([1, 154, 92, 204, 248, 101, 81, 115, 77, 1]),
+      new Uint8Array([38, 164, 222, 12, 52, 182, 246, 171, 32, 103]),
+      new Uint8Array([73, 196, 170, 85, 160, 122, 57, 220, 85, 142]),
+      new Uint8Array([80]),
+    ];
+
+    expect(result.chunkCount).toBe(expectedEncryptedFile.length);
+    expect(result.totalSize).toBe(fileSize);
+    expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+  });
+
+  it('encryptStreamInParts should correctly encrypt file when uploadChunkSize = 2*chunkSize', async () => {
+    const chunkSize = 5;
+    const uploadChunkSize = 2 * chunkSize;
+    const overhead = 2;
+
+    const fileSize = 2 * uploadChunkSize + 1;
+    const cipher = getTestCipher();
+    const file = createZeroFile(fileSize, chunkSize);
+
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
+    const result = await processStreamToCompletion(encryptedStream);
+    const expectedEncryptedFile = [
+      new Uint8Array([1, 154, 92, 204, 248, 101, 81, 115, 77, 1]),
+      new Uint8Array([38, 164, 222, 12, 52, 182, 246, 171, 32, 103]),
+      new Uint8Array([73]),
+    ];
+
+    expect(result.chunkCount).toBe(expectedEncryptedFile.length);
+    expect(result.totalSize).toBe(fileSize);
+    expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+  });
+
   it('encryptStreamInParts should correctly encrypt file when chunkSize < uploadChunkSize, file size is multiple of uploadChunkSize', async () => {
     const uploadChunkSize = 10;
     const chunkSize = 3;
-    const extraSpace = 1;
+    const overhead = 1;
     const fileSize = 7 * uploadChunkSize;
     const cipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
 
-    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, extraSpace);
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
     const result = await processStreamToCompletion(encryptedStream);
 
     const expectedEncryptedFile = [
@@ -289,12 +351,12 @@ describe('Test crypto.ts functions', () => {
   it('encryptStreamInParts should correctly encrypt file even if chunkSize > uploadChunkSize', async () => {
     const uploadChunkSize = 10;
     const chunkSize = 13;
-    const extraSpace = 1;
+    const overhead = 1;
     const fileSize = 7 * uploadChunkSize + 1;
     const cipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
 
-    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, extraSpace);
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
     const result = await processStreamToCompletion(encryptedStream);
 
     const expectedEncryptedFile = [
