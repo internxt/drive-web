@@ -238,6 +238,22 @@
       "apply": "Применить",
       "taxes": "Налоги"
     },
+    "confirmCryptoPayment": {
+      "title": "Подтвердить платеж",
+      "timeExpiration": "Счет истечет через 20 минут",
+      "expiredLabel": "ИСТЁК",
+      "total": "Итого",
+      "copyAddress": "Скопировать адрес",
+      "doNotCloseWindowWarning": "Это окно не следует закрывать до подтверждения платежа",
+      "cancel": "Отмена",
+      "confirm": "Подтвердить платеж",
+      "sessionExpired": "Сессия Истекла",
+      "notifications": {
+        "paymentSucceeded": "Платеж успешно завершен",
+        "paymentNotCompleted": "Платеж не завершен",
+        "unexpectedError": "Что-то пошло не так при проверке платежа"
+      }
+    },
     "error": {
       "invalidPlan": "Неподдерживаемый тип плана. Пожалуйста, выберите действительный план.",
       "fetchingCryptoCurrencies": "Не удалось загрузить доступные варианты криптовалют"

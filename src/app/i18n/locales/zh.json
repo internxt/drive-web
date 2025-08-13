@@ -245,6 +245,22 @@
       "apply": "应用",
       "taxes": "税费"
     },
+    "confirmCryptoPayment": {
+      "title": "确认付款",
+      "timeExpiration": "发票将在20分钟后过期",
+      "expiredLabel": "已过期",
+      "total": "总计",
+      "copyAddress": "复制地址",
+      "doNotCloseWindowWarning": "在您确认付款之前，请勿关闭此窗口",
+      "cancel": "取消",
+      "confirm": "确认付款",
+      "sessionExpired": "会话已过期",
+      "notifications": {
+        "paymentSucceeded": "付款成功完成",
+        "paymentNotCompleted": "付款未完成",
+        "unexpectedError": "验证付款时出现错误"
+      }
+    },
     "error": {
       "invalidPlan": "不支持的套餐类型。请选择有效的套餐。",
       "fetchingCryptoCurrencies": "无法加载可用的加密货币选项"

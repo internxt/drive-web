@@ -34,12 +34,14 @@ import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutRe
 import { AuthMethodTypes, PaymentType, PlanInterval } from '../../types';
 import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'app/payment/hooks/useUserPayment';
+import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'app/payment/components/checkout/CryptoPaymentDialog';
+import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import currencyService from 'app/payment/services/currency.service';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
-const IS_CRYPTO_PAYMENT_ENABLED = false;
+const IS_CRYPTO_PAYMENT_ENABLED = true;
 
 export const THEME_STYLES = {
   dark: {
@@ -106,6 +108,7 @@ const CheckoutViewWrapper = () => {
   const { handleUserPayment } = useUserPayment();
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
   const [userLocationData, setUserLocationData] = useState<UserLocation>();
+  const { isDialogOpen, openDialog: openCryptoPaymentDialog } = useActionDialog();
   const [availableCryptoCurrencies, setAvailableCryptoCurrencies] = useState<CryptoCurrency[] | undefined>(undefined);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('eur');
   const [currencyType, setCurrencyType] = useState<PaymentType>();
@@ -154,6 +157,7 @@ const CheckoutViewWrapper = () => {
   const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
 
   const canChangePlanDialogBeOpened = prices && currentSelectedPlan?.price && isUpdateSubscriptionDialogOpen;
+  const isCryptoPaymentDialogOpen = isDialogOpen(CRYPTO_PAYMENT_DIALOG_KEY);
 
   const userInfo: UserInfoProps = {
     name: fullName,
@@ -502,6 +506,7 @@ const CheckoutViewWrapper = () => {
           token,
           gclidStored,
           seatsForBusinessSubscription,
+          openCryptoPaymentDialog,
         });
       }
     } catch (err) {
@@ -671,6 +676,9 @@ const CheckoutViewWrapper = () => {
               subscriptionSelected={currentSelectedPlan.price.type}
             />
           ) : undefined}
+
+          {/* {IS_CRYPTO_PAYMENT_ENABLED && isCryptoPaymentDialogOpen && <CryptoPaymentDialog />} */}
+          <CryptoPaymentDialog />
         </Elements>
       ) : (
         <div className="flex h-full items-center justify-center bg-gray-1">

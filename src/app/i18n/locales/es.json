@@ -236,6 +236,22 @@
       "apply": "Aplicar",
       "taxes": "Impuestos"
     },
+    "confirmCryptoPayment": {
+      "title": "Confirmar el pago",
+      "timeExpiration": "La factura expirará en 20 minutos",
+      "expiredLabel": "EXPIRADO",
+      "total": "Total",
+      "copyAddress": "Copiar la dirección",
+      "doNotCloseWindowWarning": "Esta ventana no debe cerrarse hasta que confirmes el pago",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar el pago",
+      "sessionExpired": "Sesión Expirada",
+      "notifications": {
+        "paymentSucceeded": "Pago completado exitosamente",
+        "paymentNotCompleted": "El pago no se completó",
+        "unexpectedError": "Algo salió mal al verificar el pago"
+      }
+    },
     "error": {
       "invalidPlan": "Tipo de plan no soportado. Por favor, selecciona un plan válido.",
       "fetchingCryptoCurrencies": "No pudimos cargar las opciones de criptomonedas disponibles"

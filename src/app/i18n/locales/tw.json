@@ -247,6 +247,22 @@
       "apply": "應用",
       "taxes": "稅金"
     },
+    "confirmCryptoPayment": {
+      "title": "確認付款",
+      "timeExpiration": "發票將在20分鐘後過期",
+      "expiredLabel": "已過期",
+      "total": "總計",
+      "copyAddress": "複製地址",
+      "doNotCloseWindowWarning": "在您確認付款之前，請勿關閉此視窗",
+      "cancel": "取消",
+      "confirm": "確認付款",
+      "sessionExpired": "工作階段已過期",
+      "notifications": {
+        "paymentSucceeded": "付款成功完成",
+        "paymentNotCompleted": "付款未完成",
+        "unexpectedError": "驗證付款時發生錯誤"
+      }
+    },
     "error": {
       "invalidPlan": "不支援的方案類型。請選擇有效的方案。",
       "fetchingCryptoCurrencies": "無法載入可用的加密貨幣選項"

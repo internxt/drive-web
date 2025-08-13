@@ -330,6 +330,22 @@
       "apply": "Applica",
       "taxes": "Tasse"
     },
+    "confirmCryptoPayment": {
+      "title": "Conferma il pagamento",
+      "timeExpiration": "La fattura scadrà tra 20 minuti",
+      "expiredLabel": "SCADUTO",
+      "total": "Totale",
+      "copyAddress": "Copia l'indirizzo",
+      "doNotCloseWindowWarning": "Questa finestra non deve essere chiusa fino a quando non confermi il pagamento",
+      "cancel": "Annulla",
+      "confirm": "Conferma il pagamento",
+      "sessionExpired": "Sessione Scaduta",
+      "notifications": {
+        "paymentSucceeded": "Pagamento completato con successo",
+        "paymentNotCompleted": "Il pagamento non è completato",
+        "unexpectedError": "Si è verificato un errore durante la verifica del pagamento"
+      }
+    },
     "error": {
       "invalidPlan": "Tipo di piano non supportato. Seleziona un piano valido.",
       "fetchingCryptoCurrencies": "Non siamo riusciti a caricare le opzioni di criptovalute disponibili"

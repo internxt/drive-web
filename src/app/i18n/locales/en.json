@@ -255,6 +255,22 @@
       "apply": "Apply",
       "taxes": "Taxes"
     },
+    "confirmCryptoPayment": {
+      "title": "Confirm the payment",
+      "timeExpiration": "The invoice will expire in 20 minutes",
+      "expiredLabel": "EXPIRED",
+      "total": "Total",
+      "copyAddress": "Copy the address",
+      "doNotCloseWindowWarning": "This window should not be closed until you confirm the payment",
+      "cancel": "Cancel",
+      "confirm": "Confirm the payment",
+      "sessionExpired": "Session Expired",
+      "notifications": {
+        "paymentSucceeded": "Payment completed successfully",
+        "paymentNotCompleted": "Payment is not completed",
+        "unexpectedError": "Something went wrong while verifying the payment"
+      }
+    },
     "error": {
       "invalidPlan": "Unsupported plan type. Please select a valid plan.",
       "fetchingCryptoCurrencies": "We couldn't load the available cryptocurrency options"
