@@ -1,6 +1,7 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Stripe, StripeElements } from '@stripe/stripe-js';
+import { ActionDialog, DialogActionConfig } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 
 export enum Currency {
   'eur' = '€',
@@ -130,6 +131,7 @@ export interface ProcessPurchasePayload {
   elements: StripeElements;
   confirmPayment: Stripe['confirmPayment'];
   confirmSetupIntent: Stripe['confirmSetup'];
+  openCryptoPaymentDialog?: (key: ActionDialog, config?: DialogActionConfig) => void;
   translate: (key: string) => string;
   currentSelectedPlan: PriceWithTax;
   seatsForBusinessSubscription?: number;
@@ -145,6 +147,7 @@ export interface UseUserPaymentPayload {
   elements: StripeElements;
   confirmPayment: Stripe['confirmPayment'];
   confirmSetupIntent: Stripe['confirmSetup'];
+  openCryptoPaymentDialog?: (key: ActionDialog, config?: DialogActionConfig) => void;
   gclidStored: string | null;
   translate: (key: string) => string;
   couponCodeData?: CouponCodeData;
