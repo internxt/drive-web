@@ -87,7 +87,7 @@
     "superBowl": "Super Bowl",
     "valentines": "Valentine's Day",
     "summer": "Summer",
-    "anniversary":"Anniversary",
+    "anniversary": "Anniversary",
     "stPatricks": "St. Patrick's Day",
     "idManagement": "Identity Management",
     "environment": "World Environment Day"
@@ -253,6 +253,9 @@
       },
       "apply": "Apply",
       "taxes": "Taxes"
+    },
+    "error": {
+      "invalidPlan": "Unsupported plan type. Please select a valid plan."
     }
   },
   "general": {
@@ -906,8 +909,8 @@
         "successSentInvitation": "Successful sharing with {{email}}",
         "acceptedSuccessfully": "Shared folder invitation successfully accepted",
         "declinedSuccessfully": "Shared folder invitation successfully declined",
-        "inviteNewUsersBody": "People without an Internxt account will be sent a signup invitation email.",
-        "inviteNewUsersTitle": "Invite new users?",
+        "inviteNewUsersBody": "In case the added emails don't correspond to an Internxt account, they will receive an email",
+        "inviteNewUsersTitle": "Invite users?",
         "accept": "Accept",
         "cancel": "Cancel",
         "error": {
@@ -1987,6 +1990,7 @@
       "deny": "Decline",
       "invitedOn": "Invitation sent ",
       "todayAt": "today at "
-    }
+    },
+    "sharedWorkspace": "Shared workspace"
   }
 }

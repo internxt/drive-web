@@ -11,14 +11,7 @@
     "guarantee": "30 天退款保證",
     "specialOfferGift": "瓦倫西亞 CF 球衣抽獎",
     "lastCta": "*僅限免費帳戶或新用戶",
-    "features": [
-      "Drive、VPN 和防毒",
-      "永續雲端儲存",
-      "後量子加密",
-      "端對端加密傳輸",
-      "無未授權存取",
-      "免費夏季主題"
-    ]
+    "features": ["Drive、VPN 和防毒", "永續雲端儲存", "後量子加密", "端對端加密傳輸", "無未授權存取", "免費夏季主題"]
   },
   "susbcriptionsBanner": {
     "title": "升級您的計畫！",
@@ -87,7 +80,7 @@
     "superBowl": "Super Bowl",
     "valentines": "情人節",
     "summer": "夏天",
-    "anniversary":"Anniversary",
+    "anniversary": "Anniversary",
     "stPatricks": "St. Patrick's",
     "idManagement": "Identity Management"
   },
@@ -252,6 +245,9 @@
       },
       "apply": "應用",
       "taxes": "稅金"
+    },
+    "error": {
+      "invalidPlan": "不支援的方案類型。請選擇有效的方案。"
     }
   },
   "general": {
@@ -867,8 +863,8 @@
         "successSentInvitation": "成功與{{email}}分享",
         "acceptedSuccessfully": "成功接受共享文件夾邀請",
         "declinedSuccessfully": "成功拒絕共享文件夾邀請",
-        "inviteNewUsersBody": "沒有Internxt帳戶的人將收到一封註冊邀請郵件。",
-        "inviteNewUsersTitle": "邀請新用戶？",
+        "inviteNewUsersBody": "如果添加的電子郵件不對應 Internxt 帳戶，他們將收到一封電子郵件",
+        "inviteNewUsersTitle": "邀請用戶?",
         "accept": "接受",
         "cancel": "取消",
         "error": {
@@ -1936,6 +1932,7 @@
       "deny": "拒絕",
       "invitedOn": "邀請發送 ",
       "todayAt": "今天在 "
-    }
+    },
+    "sharedWorkspace": "共用工作區"
   }
 }

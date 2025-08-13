@@ -66,7 +66,7 @@
     "superBowl": "Super Bowl",
     "sanValentin": "Valentinstag",
     "summer": "Sommer",
-    "anniversary":"Jubiläum",
+    "anniversary": "Jubiläum",
     "stPatricks": "St. Patrick's",
     "idManagement": "Identitätsmanagement",
     "environment": "Weltumwelt"
@@ -230,6 +230,9 @@
       },
       "apply": "Anwenden",
       "taxes": "Steuern"
+    },
+    "error": {
+      "invalidPlan": "Nicht unterstützter Plantyp. Bitte wählen Sie einen gültigen Plan."
     }
   },
   "general": {
@@ -833,8 +836,8 @@
         "successSentInvitation": "Erfolgreiche Freigabe mit {{email}}",
         "acceptedSuccessfully": "Einladung zum freigegebenen Ordner erfolgreich angenommen",
         "declinedSuccessfully": "Einladung zu gemeinsamem Ordner erfolgreich abgelehnt",
-        "inviteNewUsersBody": "Personen ohne Internxt-Konto erhalten eine Anmeldeeinladung per E-Mail.",
-        "inviteNewUsersTitle": "Neue benutzer einladen?",
+        "inviteNewUsersBody": "Falls die hinzugefügten E-Mails nicht zu einem Internxt-Konto gehören, erhalten sie eine E-Mail",
+        "inviteNewUsersTitle": "Benutzer einladen?",
         "accept": "Akzeptieren",
         "cancel": "Abbrechen",
         "error": {
@@ -1920,6 +1923,7 @@
       "deny": "Ablehnen",
       "invitedOn": "Einladung gesendet ",
       "todayAt": "heute um "
-    }
+    },
+    "sharedWorkspace": "Gemeinsamer Arbeitsbereich"
   }
 }

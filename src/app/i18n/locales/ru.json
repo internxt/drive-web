@@ -67,7 +67,7 @@
     "valentines": "Valentines",
     "stPatricks": "St. Patrick's",
     "summer": "годовщина",
-    "anniversary":"Anniversary",
+    "anniversary": "Anniversary",
     "idManagement": "Identity Management",
     "environment": "World Environment Day"
   },
@@ -236,6 +236,9 @@
       },
       "apply": "Применить",
       "taxes": "Налоги"
+    },
+    "error": {
+      "invalidPlan": "Неподдерживаемый тип плана. Пожалуйста, выберите действительный план."
     }
   },
   "general": {
@@ -879,8 +882,8 @@
         "successSentInvitation": "Успешное совместное использование c {{email}}",
         "acceptedSuccessfully": "Приглашение к общей папке успешно принято",
         "declinedSuccessfully": "Приглашение к общей папке успешно отклонено",
-        "inviteNewUsersBody": "Людям без учетной записи Internxt будет отправлено электронное письмо с приглашением к регистрации.",
-        "inviteNewUsersTitle": "Пригласить новых пользователей?",
+        "inviteNewUsersBody": "В случае если добавленные электронные адреса не соответствуют учетной записи Internxt, они получат электронное письмо",
+        "inviteNewUsersTitle": "Пригласить пользователей?",
         "accept": "Принять",
         "cancel": "Отмена",
         "error": {
@@ -1945,6 +1948,7 @@
       "deny": "Отклонить",
       "invitedOn": "Приглашение отправлено ",
       "todayAt": "сегодня в "
-    }
+    },
+    "sharedWorkspace": "Общее рабочее пространство"
   }
 }

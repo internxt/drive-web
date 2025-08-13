@@ -18,7 +18,6 @@ import FolderFileNotFound from '../../drive/views/FolderFileNotFound/FolderFileN
 import RecentsView from '../../drive/views/RecentsView/RecentsView';
 import RequestAccess from '../../drive/views/RequestAccess/RequestAccess';
 import TrashView from '../../drive/views/TrashView/TrashView';
-import GuestAcceptInvitationView from '../../guests/views/GuestAcceptInviteView/GuestAcceptInviteView';
 import CheckoutCancelView from '../../payment/views/CheckoutCancelView/CheckoutCancelView';
 import CheckoutSuccessView from '../../payment/views/CheckoutSuccessView/CheckoutSuccessView';
 import ShareFileView from '../../share/views/ShareView/ShareFileView';
@@ -40,7 +39,7 @@ const views: Array<{
   component: FunctionComponent<any> | ComponentClass<any>;
   componentProps?: Record<string, unknown>;
 }> = [
-  { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },
+  { id: AppView.Signup, component: SignUpView },
   { id: AppView.AppSumo, component: SignInView },
   { id: AppView.BlockedAccount, component: BlockedAccountView },
   { id: AppView.Login, component: SignInView },
@@ -55,7 +54,6 @@ const views: Array<{
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.Shared, component: SharedViewWrapper },
   { id: AppView.FolderFileNotFound, component: FolderFileNotFound },
-  { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
   { id: AppView.Deactivation, component: DeactivationView },
   { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
   { id: AppView.PcCloudSuccess, component: PcCloudSuccess },

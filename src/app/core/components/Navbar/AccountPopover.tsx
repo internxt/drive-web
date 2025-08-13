@@ -1,7 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import { Desktop, SignOut, UserPlus, Gear } from '@phosphor-icons/react';
+import { Desktop, SignOut, Gear } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
 import Popover from '../../../shared/components/Popover';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -68,10 +68,6 @@ export default function AccountPopover({
     dispatch(userThunks.logoutThunk());
   }
 
-  function onGuestInviteClick() {
-    dispatch(uiActions.setIsGuestInvitationDialogOpen(true));
-  }
-
   const panel = (
     <div className="w-52">
       <div className="flex items-center p-3">
@@ -85,6 +81,13 @@ export default function AccountPopover({
           </p>
         </div>
       </div>
+
+      {user && user.sharedWorkspace && (
+        <div className="flex items-center justify-between px-3 pb-1">
+          <p className="text-sm text-gray-50">{translate('workspaces.sharedWorkspace')}</p>
+        </div>
+      )}
+
       <div className="flex items-center justify-between px-3 pb-1">
         <p className="text-sm text-gray-50">
           {translate('views.account.popover.spaceUsed', { space: percentageUsed })}
@@ -124,12 +127,6 @@ export default function AccountPopover({
         <Gear size={20} />
         <p className="ml-3">{translate('views.account.popover.settings')}</p>
       </button>
-      {user && user.sharedWorkspace && (
-        <Item onClick={onGuestInviteClick}>
-          <UserPlus size={20} />
-          <p className="ml-3">Guest</p>
-        </Item>
-      )}
       <Item onClick={onLogout}>
         <SignOut size={20} />
         <p className="ml-3 truncate" data-test="logout">
