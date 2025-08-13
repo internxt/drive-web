@@ -6,6 +6,7 @@ import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import checkoutService from 'app/payment/services/checkout.service';
+import { Currency } from 'app/payment/types';
 import { useEffect, useState } from 'react';
 
 export const CRYPTO_PAYMENT_DIALOG_KEY = ActionDialog.CryptoPayment;
@@ -17,6 +18,10 @@ interface CryptoPaymentDialogProps {
   payAmount: number;
   payCurrency: string;
   address: string;
+  fiat: {
+    amount: number;
+    currency: string;
+  };
 }
 
 export const CryptoPaymentDialog = () => {
@@ -34,12 +39,6 @@ export const CryptoPaymentDialog = () => {
 
     return () => clearInterval(timer);
   }, [isCryptoPaymentDialogOpen, timeLeft]);
-
-  useEffect(() => {
-    if (isCryptoPaymentDialogOpen) {
-      setTimeLeft(1200);
-    }
-  }, [isCryptoPaymentDialogOpen]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor((seconds % 3600) / 60);
@@ -75,9 +74,15 @@ export const CryptoPaymentDialog = () => {
     }
   };
 
-  const { qrUrl, address, encodedInvoiceIdToken, payAmount, payCurrency } = getDialogData(
-    CRYPTO_PAYMENT_DIALOG_KEY,
-  ) as CryptoPaymentDialogProps;
+  const {
+    qrUrl,
+    payAmount,
+    payCurrency,
+    address: paymentAddress,
+    encodedInvoiceIdToken,
+    fiat,
+    paymentRequestUri,
+  } = getDialogData(CRYPTO_PAYMENT_DIALOG_KEY) as CryptoPaymentDialogProps;
 
   const onCopyPrice = () => {
     navigator.clipboard.writeText(payAmount.toString());
@@ -88,7 +93,7 @@ export const CryptoPaymentDialog = () => {
   };
 
   const onCopyAddress = () => {
-    navigator.clipboard.writeText(address);
+    navigator.clipboard.writeText(paymentAddress);
     notificationsService.show({
       text: 'Address copied to clipboard',
       type: ToastType.Success,
@@ -122,22 +127,37 @@ export const CryptoPaymentDialog = () => {
 
         <img src={qrUrl} alt="Crypto QR Code" className="w-[200px] h-[200px]" />
 
-        <div className="flex flex-col gap-1 items-center w-full">
-          <p className="text-xl font-semibold">{translate('checkout.confirmCryptoPayment.total')}</p>
-          <div className="flex flex-row gap-3 items-center">
-            <p>
-              {payAmount} {payCurrency}
+        <div className="flex flex-row gap-6 w-full justify-center items-center">
+          <div className="flex flex-col gap-2 items-start justify-center">
+            <p className="text-white text-lg font-semibold">
+              {translate('checkout.confirmCryptoPayment.totalInCrypto', {
+                cryptoCurrency: payCurrency,
+              })}
             </p>
-            <button onClick={onCopyPrice}>
-              <Copy size={20} />
-            </button>
+            <div className="flex flex-row gap-3 items-center">
+              <p className="text-white text-lg font-normal">{payAmount}</p>
+              <button onClick={onCopyPrice} className="text-gray-400 hover:text-white transition-colors">
+                <Copy size={18} />
+              </button>
+            </div>
+          </div>
+
+          <div className="w-px h-16 bg-gray-90" />
+
+          <div className="flex flex-col gap-2 items-start justify-start">
+            <p className="text-white text-lg font-semibold">{translate('checkout.confirmCryptoPayment.totalInFiat')}</p>
+            <div className="flex flex-row gap-3 items-center">
+              <p className="text-white text-lg font-normal">
+                {fiat.amount} {Currency[fiat.currency]}
+              </p>
+            </div>
           </div>
         </div>
 
         <div className="flex flex-col gap-2 items-center w-full">
-          <p className="text-xl font-semibold">{translate('checkout.confirmCryptoPayment.copyAddress')}</p>
+          <p className="text-lg font-semibold">{translate('checkout.confirmCryptoPayment.copyAddress')}</p>
           <div className="flex flex-row gap-4 items-center w-full">
-            <input readOnly value={address} onClick={onCopyAddress} className="w-full flex truncate" />
+            <input readOnly value={paymentAddress} onClick={onCopyAddress} className="w-full flex truncate" />
             <button onClick={onCopyAddress}>
               <Copy size={20} />
             </button>
