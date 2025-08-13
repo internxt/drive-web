@@ -1935,6 +1935,7 @@
       "deny": "Refuser",
       "invitedOn": "Invitation envoyée ",
       "todayAt": "aujourd'hui à "
-    }
+    },
+    "sharedWorkspace": "Espace de travail partagé"
   }
 }

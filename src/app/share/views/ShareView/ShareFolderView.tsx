@@ -9,7 +9,11 @@ import sizeService from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import shareService, { downloadPublicSharedFolder, getPublicSharingMeta, decodeSharingId } from 'app/share/services/share.service';
+import shareService, {
+  downloadPublicSharedFolder,
+  getPublicSharingMeta,
+  decodeSharingId,
+} from 'app/share/services/share.service';
 import { TaskProgress } from 'app/tasks/types';
 import { useEffect, useState } from 'react';
 import { match } from 'react-router';

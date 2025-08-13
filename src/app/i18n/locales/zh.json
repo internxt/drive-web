@@ -1971,6 +1971,7 @@
       "deny": "拒绝",
       "invitedOn": "邀请发送 ",
       "todayAt": "今天在 "
-    }
+    },
+    "sharedWorkspace": "共享工作区"
   }
 }

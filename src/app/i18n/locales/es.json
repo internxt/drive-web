@@ -1961,6 +1961,7 @@
       "deny": "Rechazar",
       "invitedOn": "Invitación enviada ",
       "todayAt": "hoy a las "
-    }
+    },
+    "sharedWorkspace": "Espacio de trabajo compartido"
   }
 }
