@@ -249,7 +249,7 @@
     },
     "confirmCryptoPayment": {
       "title": "確認付款",
-      "timeExpiration": "發票將在20分鐘後過期",
+      "timeExpiration": "發票將在10分鐘後過期",
       "expiredLabel": "已過期",
       "total": "總計",
       "copyAddress": "複製地址",

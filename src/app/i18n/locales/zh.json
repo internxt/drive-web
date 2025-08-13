@@ -247,7 +247,7 @@
     },
     "confirmCryptoPayment": {
       "title": "确认付款",
-      "timeExpiration": "发票将在20分钟后过期",
+      "timeExpiration": "发票将在10分钟后过期",
       "expiredLabel": "已过期",
       "total": "总计",
       "copyAddress": "复制地址",

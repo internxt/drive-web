@@ -234,7 +234,7 @@
     },
     "confirmCryptoPayment": {
       "title": "Zahlung bestätigen",
-      "timeExpiration": "Die Rechnung läuft in 20 Minuten ab",
+      "timeExpiration": "Die Rechnung läuft in 10 Minuten ab",
       "expiredLabel": "ABGELAUFEN",
       "total": "Gesamt",
       "copyAddress": "Adresse kopieren",

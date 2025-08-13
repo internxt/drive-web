@@ -238,7 +238,7 @@
     },
     "confirmCryptoPayment": {
       "title": "Confirmar el pago",
-      "timeExpiration": "La factura expirará en 20 minutos",
+      "timeExpiration": "La factura expirará en 10 minutos",
       "expiredLabel": "EXPIRADO",
       "total": "Total",
       "copyAddress": "Copiar la dirección",

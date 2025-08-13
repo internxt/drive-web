@@ -23,7 +23,7 @@ export const CryptoPaymentDialog = () => {
   const { translate } = useTranslationContext();
   const { closeDialog, getDialogData, isDialogOpen } = useActionDialog();
   const isCryptoPaymentDialogOpen = isDialogOpen(CRYPTO_PAYMENT_DIALOG_KEY);
-  const [timeLeft, setTimeLeft] = useState(1200);
+  const [timeLeft, setTimeLeft] = useState(600);
 
   useEffect(() => {
     if (!isCryptoPaymentDialogOpen || timeLeft <= 0) return;
@@ -99,8 +99,8 @@ export const CryptoPaymentDialog = () => {
 
   return (
     <Modal isOpen={isCryptoPaymentDialogOpen} onClose={onCloseDialog}>
-      <div className="flex flex-col items-center w-full gap-5 p-2">
-        <p className="text-2xl font-bold">{translate('checkout.confirmCryptoPayment.title')}</p>
+      <div className="flex flex-col items-center w-full gap-6 p-2">
+        <p className="text-3xl font-bold">{translate('checkout.confirmCryptoPayment.title')}</p>
 
         {/* Timer */}
         <div className="flex flex-col gap-2">

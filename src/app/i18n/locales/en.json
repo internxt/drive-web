@@ -257,7 +257,7 @@
     },
     "confirmCryptoPayment": {
       "title": "Confirm the payment",
-      "timeExpiration": "The invoice will expire in 20 minutes",
+      "timeExpiration": "The invoice will expire in 10 minutes",
       "expiredLabel": "EXPIRED",
       "total": "Total",
       "copyAddress": "Copy the address",

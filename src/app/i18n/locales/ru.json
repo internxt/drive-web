@@ -240,7 +240,7 @@
     },
     "confirmCryptoPayment": {
       "title": "Подтвердить платеж",
-      "timeExpiration": "Счет истечет через 20 минут",
+      "timeExpiration": "Счет истечет через 10 минут",
       "expiredLabel": "ИСТЁК",
       "total": "Итого",
       "copyAddress": "Скопировать адрес",

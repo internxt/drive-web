@@ -332,7 +332,7 @@
     },
     "confirmCryptoPayment": {
       "title": "Conferma il pagamento",
-      "timeExpiration": "La fattura scadrà tra 20 minuti",
+      "timeExpiration": "La fattura scadrà tra 10 minuti",
       "expiredLabel": "SCADUTO",
       "total": "Totale",
       "copyAddress": "Copia l'indirizzo",
