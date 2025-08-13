@@ -238,6 +238,7 @@ const checkoutService = {
   loadStripeElements,
   fetchPrices,
   checkoutSetupIntent,
+  verifyCryptoPayment,
 };
 
 export default checkoutService;
