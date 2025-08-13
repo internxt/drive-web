@@ -27,7 +27,6 @@ import { t } from 'i18next';
 import { Iterator } from '../../core/collections';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
-import httpService from '../../core/services/http.service';
 import localStorageService from '../../core/services/local-storage.service';
 import workspacesService from '../../core/services/workspace.service';
 import { hybridDecryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
@@ -138,49 +137,6 @@ export function deleteShareLink(shareId: string): Promise<{ deleted: boolean; sh
   return shareClient.deleteShareLink(shareId).catch((error) => {
     throw errorService.castError(error);
   });
-}
-
-export function getSharedFileInfo(
-  sharingId: string,
-  code: string,
-  password?: string,
-): Promise<{
-  id: string;
-  itemId: string;
-  itemType: string;
-  ownerId: string;
-  sharedWith: string;
-  encryptionKey: string;
-  encryptionAlgorithm: string;
-  createdAt: string;
-  updatedAt: string;
-  type: string;
-  item: any;
-  itemToken: string;
-}> {
-  const newApiURL = SdkFactory.getNewApiInstance().getApiUrl();
-  return httpService
-    .get<{
-      id: string;
-      itemId: string;
-      itemType: string;
-      ownerId: string;
-      sharedWith: string;
-      encryptionKey: string;
-      encryptionAlgorithm: string;
-      createdAt: string;
-      updatedAt: string;
-      type: string;
-      item: ShareTypes.ShareLink['item'];
-      itemToken: string;
-    }>(newApiURL + '/sharings/' + sharingId + '/meta?code=' + code, {
-      headers: {
-        'x-share-password': password,
-      },
-    })
-    .catch((error) => {
-      throw errorService.castError(error);
-    });
 }
 
 export function getSharedFolderInfo(token: string, password?: string): Promise<ShareTypes.ShareLink> {
@@ -892,7 +848,6 @@ const shareService = {
   createShare,
   updateShareLink,
   deleteShareLink,
-  getSharedFileInfo,
   getSharedDirectoryFiles,
   getSharedDirectoryFolders,
   getSentSharedFolders,

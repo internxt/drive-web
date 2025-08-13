@@ -21,7 +21,6 @@ const variableList = {
   baseUrl: 'REACT_APP_BASE_URL',
   stripePublicKey: 'REACT_APP_STRIPE_PK',
   stripeTestPublicKey: 'REACT_APP_STRIPE_TEST_PK',
-  api: 'REACT_APP_API_URL',
   newApi: 'REACT_APP_DRIVE_NEW_API_URL',
   payments: 'REACT_APP_PAYMENTS_API_URL',
   location: 'REACT_APP_LOCATION_API_URL',

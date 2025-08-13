@@ -81,6 +81,7 @@ beforeEach(() => {
   });
   vi.spyOn(localStorageService, 'getUser').mockReturnValue({
     uuid: mockedUserUuid,
+    email: 'usuario@ejemplo.com',
   } as unknown as UserSettings);
   vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
     if (key === 'paymentIntentId') return paymentIntentId;
@@ -89,6 +90,7 @@ beforeEach(() => {
     if (key === 'priceId') return product.price.id;
     if (key === 'currency') return product.price.currency;
     if (key === 'amountPaid') return expectedAmount;
+    if (key === 'couponCode') return promoCode.codeName;
     else return 'mock underfined';
   });
 });

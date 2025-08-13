@@ -10,11 +10,11 @@ vi.mock('../../../core/factory/sdk', () => ({
   },
 }));
 
-vi.mock('./uploadFile', () => ({
-  default: vi.fn(),
-}));
-
 describe('fileService', () => {
+  vi.mock('./uploadFile', () => ({
+    default: vi.fn(),
+  }));
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
