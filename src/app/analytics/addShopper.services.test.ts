@@ -1,69 +1,58 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { sendAddShoppersConversion } from './addShoppers.services';
+
+const baseOrder = {
+  orderId: 'order-123',
+  value: 50,
+  currency: 'eur',
+  couponCodeName: 'WELCOME',
+  email: 'user@example.com',
+};
 
 describe('sendAddShoppersConversion', () => {
   beforeEach(() => {
-    document.head.innerHTML = '';
-    delete (window as any).AddShoppersConversion;
+    if (typeof window !== 'undefined') {
+      window.dataLayer = [];
+    }
   });
 
-  it('should do nothing if required fields are missing', () => {
-    sendAddShoppersConversion({ orderId: '', value: 0, currency: '' });
+  it('should push event to dataLayer if all fields are valid and couponCodeName is "welcome"', () => {
+    sendAddShoppersConversion(baseOrder);
 
-    expect(document.head.querySelector('#AddShoppers')).toBeNull();
-    expect((window as any).AddShoppersConversion).toBeUndefined();
+    expect(window.dataLayer).toStrictEqual([
+      {
+        event: 'addshoppers_conversion',
+        order_id: 'order-123',
+        value: 50,
+        currency: 'EUR',
+        email: 'user@example.com',
+        offer_code: 'WELCOME',
+      },
+    ]);
   });
 
-  it('should not execute if offerCode is not "welcome"', () => {
-    sendAddShoppersConversion({
-      orderId: 'order999',
-      value: 10,
-      currency: 'usd',
-      offerCode: 'blackfriday',
-    });
-
-    expect(document.head.querySelector('#AddShoppers')).toBeNull();
-    expect((window as any).AddShoppersConversion).toBeUndefined();
+  it.each([
+    ['missing orderId', { ...baseOrder, orderId: undefined }],
+    ['zero value', { ...baseOrder, value: 0 }],
+    ['missing currency', { ...baseOrder, currency: undefined }],
+    ['missing couponCodeName', { ...baseOrder, couponCodeName: undefined }],
+    ['missing email', { ...baseOrder, email: undefined }],
+  ])('should not push event if %s', (_, input) => {
+    sendAddShoppersConversion(input);
+    expect(window.dataLayer).toStrictEqual([]);
   });
 
-  it('should set AddShoppersConversion and inject script if offerCode is "welcome"', () => {
-    const input = {
-      orderId: 'order123',
-      value: 29.99,
-      currency: 'eur',
-      offerCode: 'WELCOME',
+  it('should not push event if couponCodeName is not "welcome"', () => {
+    sendAddShoppersConversion({ ...baseOrder, couponCodeName: 'DISCOUNT10' });
+    expect(window.dataLayer).toStrictEqual([]);
+  });
+
+  it('should not throw if window.dataLayer.push fails', () => {
+    window.dataLayer = [];
+    window.dataLayer.push = () => {
+      throw new Error('Simulated error');
     };
 
-    sendAddShoppersConversion(input);
-
-    const script = document.head.querySelector('script#AddShoppers');
-
-    expect((window as any).AddShoppersConversion).toEqual({
-      order_id: input.orderId,
-      value: input.value,
-      currency: 'EUR',
-      offer_code: input.offerCode,
-    });
-
-    expect(script).not.toBeNull();
-    expect(script?.getAttribute('src')).toContain('shop.pe/widget/widget_async.js');
-  });
-
-  it('should not inject script again if already present', () => {
-    const existingScript = document.createElement('script');
-    existingScript.id = 'AddShoppers';
-    document.head.appendChild(existingScript);
-
-    const spy = vi.spyOn(document, 'createElement');
-
-    sendAddShoppersConversion({
-      orderId: 'abc',
-      value: 10,
-      currency: 'eur',
-      offerCode: 'welcome',
-    });
-
-    expect(spy).not.toHaveBeenCalledWith('script');
-    spy.mockRestore();
+    expect(() => sendAddShoppersConversion({ ...baseOrder, couponCodeName: 'welcome' })).not.toThrow();
   });
 });
