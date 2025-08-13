@@ -8,7 +8,7 @@ import envService from 'app/core/services/env.service';
 
 const axiosPlugin: AppPlugin = {
   install(store): void {
-    axios.defaults.baseURL = envService.getVariable('api');
+    axios.defaults.baseURL = envService.getVariable('newApi');
 
     axios.interceptors.request.use((requestConfig) => {
       const user = localStorageService.getUser();

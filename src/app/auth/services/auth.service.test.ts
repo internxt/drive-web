@@ -1,20 +1,20 @@
 /**
  * @jest-environment jsdom
  */
-import * as authService from './auth.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import * as keysService from 'app/crypto/services/keys.service';
-import { vi, describe, it, beforeAll, beforeEach, expect } from 'vitest';
-import { Buffer } from 'buffer';
-import { encryptTextWithKey, encryptText } from 'app/crypto/services/utils';
-import { SdkFactory } from '../../core/factory/sdk';
-import localStorageService from 'app/core/services/local-storage.service';
-import { userActions } from 'app/store/slices/user';
-import * as pgpService from 'app/crypto/services/pgp.service';
-import { validateMnemonic } from 'bip39';
-import { BackupData } from 'app/utils/backupKeyUtils';
 import { aes } from '@internxt/lib';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import envService from 'app/core/services/env.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import * as keysService from 'app/crypto/services/keys.service';
+import * as pgpService from 'app/crypto/services/pgp.service';
+import { encryptText, encryptTextWithKey } from 'app/crypto/services/utils';
+import { userActions } from 'app/store/slices/user';
+import { BackupData } from 'app/utils/backupKeyUtils';
+import { validateMnemonic } from 'bip39';
+import { Buffer } from 'buffer';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { SdkFactory } from '../../core/factory/sdk';
+import * as authService from './auth.service';
 
 const mockSecret = '123456789QWERTY';
 const mockMagicIv = '12345678912345678912345678912345';
@@ -134,7 +134,7 @@ beforeEach(() => {
   vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
     if (key === 'magicIv') return mockMagicIv;
     if (key === 'magicSalt') return mockMagicSalt;
-    if (key === 'api') return mockApi;
+    if (key === 'newApi') return mockApi;
     if (key === 'secret') return mockSecret;
     else return 'no mock implementation';
   });
@@ -350,6 +350,7 @@ describe('signUp', () => {
         mnemonic: mockMnemonicNotEnc,
       },
       xToken: mockToken,
+      xNewToken: mockNewToken,
       mnemonic: mockMnemonicNotEnc,
     };
 
@@ -358,7 +359,6 @@ describe('signUp', () => {
       email: mockEmail,
       password: mockPassword,
       token: mockToken,
-      isNewUser: true,
       redeemCodeObject: false,
       dispatch: vi.fn(),
     };
@@ -461,6 +461,7 @@ describe('signUp', () => {
         mnemonic: mockMnemonicNotEnc,
       },
       xToken: mockToken,
+      xNewToken: mockNewToken,
       mnemonic: mockMnemonicNotEnc,
     };
 
@@ -469,7 +470,6 @@ describe('signUp', () => {
       email: mockEmail,
       password: mockPassword,
       token: mockToken,
-      isNewUser: true,
       redeemCodeObject: false,
       dispatch: vi.fn(),
     };

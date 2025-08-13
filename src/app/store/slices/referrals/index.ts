@@ -59,7 +59,6 @@ const executeUserReferralActionThunk = createAsyncThunk<void, { referralKey: Ref
     };
     switch (referralKey) {
       case ReferralKey.SubscribeToNewsletter: {
-        dispatch(uiActions.setIsNewsletterDialogOpen(true));
         break;
       }
       case ReferralKey.InstallDesktopApp: {

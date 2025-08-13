@@ -869,8 +869,8 @@
         "successSentInvitation": "Partage réussi avec {{email}}",
         "acceptedSuccessfully": "Invitation à un dossier partagé acceptée avec succès",
         "declinedSuccessfully": "Invitation à un dossier partagé refusée avec succès",
-        "inviteNewUsersBody": "Les personnes sans compte Internxt recevront un courriel d'invitation à s'inscrire.",
-        "inviteNewUsersTitle": "Inviter de nouveaux utilisateurs ?",
+        "inviteNewUsersBody": "Si les e-mails ajoutés ne correspondent pas à un compte Internxt, ils recevront un e-mail",
+        "inviteNewUsersTitle": "Inviter des utilisateurs?",
         "accept": "Accepter",
         "cancel": "Annuler",
         "error": {
@@ -1935,6 +1935,7 @@
       "deny": "Refuser",
       "invitedOn": "Invitation envoyée ",
       "todayAt": "aujourd'hui à "
-    }
+    },
+    "sharedWorkspace": "Espace de travail partagé"
   }
 }
