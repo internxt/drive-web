@@ -182,6 +182,7 @@ export const useUserPayment = () => {
     const {
       id: paymentIntentId,
       invoiceStatus,
+      encodedInvoiceIdToken,
       type,
       clientSecret,
       payload,
@@ -211,6 +212,7 @@ export const useUserPayment = () => {
         data: {
           qrUrl: payload?.qrUrl,
           paymentRequestUri: payload?.paymentRequestUri,
+          encodedInvoiceIdToken,
           address: payload?.paymentAddress,
           payAmount: payload?.payAmount,
           payCurrency: payload?.payCurrency,

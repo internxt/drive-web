@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { useUserPayment } from './useUserPayment';
 import checkoutService from '../services/checkout.service';
 import localStorageService from '../../core/services/local-storage.service';
@@ -10,16 +10,6 @@ import { PaymentType, ProcessPurchasePayload, UseUserPaymentPayload } from '../t
 import notificationsService from '../../notifications/services/notifications.service';
 
 describe('Custom hook to handle payments', () => {
-  beforeAll(() => {
-    vi.doUnmock('@internxt/sdk');
-
-    vi.resetModules();
-  });
-
-  afterAll(() => {
-    vi.clearAllMocks();
-  });
-
   describe('Get subscription data to do the payment', () => {
     test('When creating a new subscription, then it is created successfully', async () => {
       const createNormalSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
