@@ -1,16 +1,25 @@
-import { describe, expect, test, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 import { useUserPayment } from './useUserPayment';
-import paymentService from '../services/payment.service';
 import checkoutService from '../services/checkout.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import envService from 'app/core/services/env.service';
+import localStorageService from '../../core/services/local-storage.service';
+import envService from '../../core/services/env.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
+import navigationService from '../../core/services/navigation.service';
+import { AppView } from '../../core/types';
 import { PaymentType, ProcessPurchasePayload, UseUserPaymentPayload } from '../types';
-import notificationsService from 'app/notifications/services/notifications.service';
+import notificationsService from '../../notifications/services/notifications.service';
 
 describe('Custom hook to handle payments', () => {
+  beforeAll(() => {
+    vi.doUnmock('@internxt/sdk');
+
+    vi.resetModules();
+  });
+
+  afterAll(() => {
+    vi.clearAllMocks();
+  });
+
   describe('Get subscription data to do the payment', () => {
     test('When creating a new subscription, then it is created successfully', async () => {
       const createNormalSubscriptionSpy = vi.spyOn(checkoutService, 'createSubscription').mockResolvedValue({
@@ -19,7 +28,6 @@ describe('Custom hook to handle payments', () => {
         paymentIntentId: 'payment_intent_id',
         subscriptionId: 'subscription_id',
       });
-      const createSubscriptionWithTrialSpy = vi.spyOn(paymentService, 'createSubscriptionWithTrial');
 
       const { getSubscriptionPaymentIntent } = useUserPayment();
 
@@ -48,7 +56,6 @@ describe('Custom hook to handle payments', () => {
         subscriptionId: 'subscription_id',
         paymentIntentId: 'payment_intent_id',
       });
-      expect(createSubscriptionWithTrialSpy).not.toHaveBeenCalled();
     });
   });
 
