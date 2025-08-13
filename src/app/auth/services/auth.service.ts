@@ -39,6 +39,7 @@ import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'app/utils/backupKeyUtils';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
@@ -242,10 +243,57 @@ export const getPasswordDetails = async (
   return { salt, hashedCurrentPassword, encryptedCurrentPassword };
 };
 
-const updateCredentialsWithToken = async (
+/**
+ * Recover account using backup key content
+ * This function detects the backup key format and uses appropriate recovery method
+ *
+ * @param token - The recovery token
+ * @param password - The new password
+ * @param backupKeyContent - The content of the backup key file
+ * @returns Promise<void>
+ */
+export const recoverAccountWithBackupKey = async (
+  token: string,
+  password: string,
+  backupKeyContent: string,
+): Promise<void> => {
+  try {
+    const { type, mnemonic, backupData } = detectBackupKeyFormat(backupKeyContent);
+
+    if (type === 'old') {
+      return recoveryOldBackuptWithToken(token, password, mnemonic);
+    } else {
+      return updateCredentialsWithToken(token, password, mnemonic, backupData);
+    }
+  } catch (error) {
+    console.error('Error recovering account with backup key:', error);
+    throw error;
+  }
+};
+
+/**
+ * Recovery method for old backup keys format (mnemonic only)
+ */
+export const recoveryOldBackuptWithToken = async (token: string, password: string, mnemonic: string): Promise<void> => {
+  try {
+    const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+    const recoverPayload = await prepareOldBackupRecoverPayloadForBackend({ mnemonic, password, token });
+
+    return authClient.legacyRecoverAccount(recoverPayload);
+  } catch (error) {
+    console.error('Error updating credentials with token:', error);
+    throw error;
+  }
+};
+
+/**
+ * Updates credentials with token (used for new backup format)
+ */
+export const updateCredentialsWithToken = async (
   token: string | undefined,
   newPassword: string,
   mnemonicInPlain: string,
+  backupData?: BackupData,
 ): Promise<void> => {
   const mnemonicIsInvalid = !validateMnemonic(mnemonicInPlain);
   if (mnemonicIsInvalid) {
@@ -258,12 +306,42 @@ const updateCredentialsWithToken = async (
 
   const encryptedMnemonic = encryptTextWithKey(mnemonicInPlain, newPassword);
 
+  let encryptedEccPrivateKey: string | undefined;
+  let encryptedKyberPrivateKey: string | undefined;
+
+  if (backupData) {
+    if (backupData.privateKey || backupData.keys?.ecc) {
+      const eccPrivateKeyBase64 = backupData.privateKey || backupData.keys?.ecc;
+      if (eccPrivateKeyBase64) {
+        const eccPrivateKey = Buffer.from(eccPrivateKeyBase64, 'base64').toString();
+        encryptedEccPrivateKey = aes.encrypt(eccPrivateKey, newPassword, getAesInitFromEnv());
+      }
+    }
+
+    if (backupData.keys?.kyber) {
+      const kyberPrivateKey = backupData.keys.kyber;
+      if (kyberPrivateKey) {
+        encryptedKyberPrivateKey = aes.encrypt(kyberPrivateKey, newPassword, getAesInitFromEnv());
+      }
+    }
+  }
+
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  return authClient.changePasswordWithLink(
+
+  const keys =
+    encryptedEccPrivateKey || encryptedKyberPrivateKey
+      ? {
+          ecc: encryptedEccPrivateKey,
+          kyber: encryptedKyberPrivateKey,
+        }
+      : undefined;
+
+  return authClient.changePasswordWithLinkV2(
     token,
     encryptedHashedNewPassword,
     encryptedHashedNewPasswordSalt,
     encryptedMnemonic,
+    keys,
   );
 };
 
@@ -557,6 +635,7 @@ const authService = {
   requestUnblockAccount,
   unblockAccount,
   authenticateUser,
+  recoverAccountWithBackupKey,
 };
 
 export default authService;
