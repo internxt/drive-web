@@ -3,11 +3,12 @@ import {
   PreCreateUserResponse,
   UpdateProfilePayload,
   UserPublicKeyResponse,
+  UserPublicKeyWithCreationResponse,
   VerifyEmailChangeResponse,
 } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { SdkFactory } from '../../core/factory/sdk';
 import localStorageService from 'app/core/services/local-storage.service';
+import { SdkFactory } from '../../core/factory/sdk';
 
 export const sendDeactivationEmail = (): Promise<void> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
@@ -66,6 +67,11 @@ const getPublicKeyByEmail = (email: string): Promise<UserPublicKeyResponse> => {
   return usersClient.getPublicKeyByEmail({ email });
 };
 
+const getPublicKeyWithPrecreation = (email: string): Promise<UserPublicKeyWithCreationResponse> => {
+  const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
+  return usersClient.getPublicKeyWithPrecreation({ email });
+};
+
 const changeEmail = (newEmail: string): Promise<void> => {
   const authClient = SdkFactory.getNewApiInstance().createUsersClient();
   return authClient.changeUserEmail(newEmail);
@@ -94,6 +100,7 @@ const userService = {
   deleteUserAvatar,
   sendVerificationEmail,
   getPublicKeyByEmail,
+  getPublicKeyWithPrecreation,
   changeEmail,
   verifyEmailChange,
   checkChangeEmailLinkExpiration,

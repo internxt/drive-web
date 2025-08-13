@@ -863,8 +863,8 @@
         "successSentInvitation": "成功與{{email}}分享",
         "acceptedSuccessfully": "成功接受共享文件夾邀請",
         "declinedSuccessfully": "成功拒絕共享文件夾邀請",
-        "inviteNewUsersBody": "沒有Internxt帳戶的人將收到一封註冊邀請郵件。",
-        "inviteNewUsersTitle": "邀請新用戶？",
+        "inviteNewUsersBody": "如果添加的電子郵件不對應 Internxt 帳戶，他們將收到一封電子郵件",
+        "inviteNewUsersTitle": "邀請用戶?",
         "accept": "接受",
         "cancel": "取消",
         "error": {
