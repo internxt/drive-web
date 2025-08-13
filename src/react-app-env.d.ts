@@ -42,6 +42,7 @@ interface Window {
       usedJSHeapSize: number;
     };
   };
+  dataLayer: Record<string, any>[];
 }
 
 interface Navigator {
