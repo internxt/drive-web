@@ -244,7 +244,7 @@
       "expiredLabel": "EXPIRÉ",
       "total": "Total",
       "copyAddress": "Copier l'adresse",
-      "doNotCloseWindowWarning": "Cette fenêtre ne doit pas être fermée jusqu'à ce que vous confirmiez le paiement",
+      "doNotCloseWindowWarning": "Ne fermez pas la fenêtre tant que le paiement n'est pas terminé",
       "cancel": "Annuler",
       "confirm": "Confirmer le paiement",
       "sessionExpired": "Session Expirée",

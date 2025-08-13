@@ -244,7 +244,7 @@
       "expiredLabel": "ИСТЁК",
       "total": "Итого",
       "copyAddress": "Скопировать адрес",
-      "doNotCloseWindowWarning": "Это окно не следует закрывать до подтверждения платежа",
+      "doNotCloseWindowWarning": "Не закрывайте окно, пока платеж не будет завершен",
       "cancel": "Отмена",
       "confirm": "Подтвердить платеж",
       "sessionExpired": "Сессия Истекла",

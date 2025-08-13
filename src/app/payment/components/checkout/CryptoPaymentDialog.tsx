@@ -123,7 +123,7 @@ export const CryptoPaymentDialog = () => {
         <img src={qrUrl} alt="Crypto QR Code" className="w-[200px] h-[200px]" />
 
         <div className="flex flex-col gap-1 items-center w-full">
-          <p className="text-lg font-medium">{translate('checkout.confirmCryptoPayment.total')}</p>
+          <p className="text-xl font-semibold">{translate('checkout.confirmCryptoPayment.total')}</p>
           <div className="flex flex-row gap-3 items-center">
             <p>
               {payAmount} {payCurrency}
@@ -151,7 +151,7 @@ export const CryptoPaymentDialog = () => {
           </div>
         </div>
 
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-2 justify-end w-full">
           <Button variant="secondary" onClick={onCloseDialog}>
             {translate('checkout.confirmCryptoPayment.cancel')}
           </Button>

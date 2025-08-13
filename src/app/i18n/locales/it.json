@@ -336,7 +336,7 @@
       "expiredLabel": "SCADUTO",
       "total": "Totale",
       "copyAddress": "Copia l'indirizzo",
-      "doNotCloseWindowWarning": "Questa finestra non deve essere chiusa fino a quando non confermi il pagamento",
+      "doNotCloseWindowWarning": "Non chiudere la finestra finché il pagamento non è completato",
       "cancel": "Annulla",
       "confirm": "Conferma il pagamento",
       "sessionExpired": "Sessione Scaduta",

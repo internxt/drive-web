@@ -253,7 +253,7 @@
       "expiredLabel": "已過期",
       "total": "總計",
       "copyAddress": "複製地址",
-      "doNotCloseWindowWarning": "在您確認付款之前，請勿關閉此視窗",
+      "doNotCloseWindowWarning": "在付款完成之前請勿關閉視窗",
       "cancel": "取消",
       "confirm": "確認付款",
       "sessionExpired": "工作階段已過期",

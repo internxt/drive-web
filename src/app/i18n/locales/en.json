@@ -261,7 +261,7 @@
       "expiredLabel": "EXPIRED",
       "total": "Total",
       "copyAddress": "Copy the address",
-      "doNotCloseWindowWarning": "This window should not be closed until you confirm the payment",
+      "doNotCloseWindowWarning": "Don't close the window until the payment is done",
       "cancel": "Cancel",
       "confirm": "Confirm the payment",
       "sessionExpired": "Session Expired",

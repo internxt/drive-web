@@ -238,7 +238,7 @@
       "expiredLabel": "ABGELAUFEN",
       "total": "Gesamt",
       "copyAddress": "Adresse kopieren",
-      "doNotCloseWindowWarning": "Dieses Fenster sollte nicht geschlossen werden, bis Sie die Zahlung bestätigen",
+      "doNotCloseWindowWarning": "Schließen Sie das Fenster nicht, bis die Zahlung abgeschlossen ist",
       "cancel": "Abbrechen",
       "confirm": "Zahlung bestätigen",
       "sessionExpired": "Sitzung Abgelaufen",

@@ -460,10 +460,12 @@ const CheckoutViewWrapper = () => {
         return;
       }
 
-      const { error: elementsError } = await elements.submit();
+      if (currencyType === PaymentType['FIAT']) {
+        const { error: elementsError } = await elements.submit();
 
-      if (elementsError) {
-        throw new Error(elementsError.message);
+        if (elementsError) {
+          throw new Error(elementsError.message);
+        }
       }
 
       const { customerId, token } = await checkoutService.getCustomerId({
@@ -497,7 +499,7 @@ const CheckoutViewWrapper = () => {
           confirmPayment: stripeSDK.confirmPayment,
           confirmSetupIntent: stripeSDK.confirmSetup,
           couponCodeData: couponCodeData,
-          currency: currentSelectedPlan.price.currency,
+          currency: selectedCurrency ?? currentSelectedPlan.price.currency,
           priceId: currentSelectedPlan.price.id,
           customerId,
           elements,
