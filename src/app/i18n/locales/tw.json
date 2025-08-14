@@ -1940,6 +1940,7 @@
       "deny": "拒絕",
       "invitedOn": "邀請發送 ",
       "todayAt": "今天在 "
-    }
+    },
+    "sharedWorkspace": "共用工作區"
   }
 }

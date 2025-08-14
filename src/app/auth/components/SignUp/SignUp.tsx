@@ -30,7 +30,6 @@ export interface SignUpProps {
   location: {
     search: string;
   };
-  isNewUser: boolean;
 }
 
 type PasswordState = {
@@ -50,11 +49,7 @@ function SignUp(props: SignUpProps): JSX.Element {
     () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
     [],
   );
-  const hasReferrer = !!qs.ref;
-  const { updateInfo, doRegister } = useSignUp(
-    qs.register === 'activate' ? 'activate' : 'appsumo',
-    hasReferrer ? String(qs.ref) : undefined,
-  );
+  const { doRegister } = useSignUp(qs.register === 'activate' ? 'activate' : 'appsumo');
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
 
   const getInitialEmailValue = () => {
@@ -143,7 +138,6 @@ function SignUp(props: SignUpProps): JSX.Element {
     setIsLoading(true);
 
     try {
-      const { isNewUser } = props;
       const { email, password, token } = formData;
 
       const authParams = {
@@ -153,9 +147,8 @@ function SignUp(props: SignUpProps): JSX.Element {
         twoFactorCode: '',
         dispatch,
         token,
-        isNewUser,
         redeemCodeObject: redeemCodeObject !== undefined,
-        doSignUp: isNewUser ? doRegister : updateInfo,
+        doSignUp: doRegister,
       };
 
       const { token: xToken, newToken: xNewToken } = await authenticateUser(authParams);

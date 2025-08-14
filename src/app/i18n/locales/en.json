@@ -1998,6 +1998,7 @@
       "deny": "Decline",
       "invitedOn": "Invitation sent ",
       "todayAt": "today at "
-    }
+    },
+    "sharedWorkspace": "Shared workspace"
   }
 }
