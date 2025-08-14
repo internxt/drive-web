@@ -129,6 +129,8 @@ export interface ProcessPurchasePayload {
   currency: string;
   elements: StripeElements;
   confirmPayment: Stripe['confirmPayment'];
+  confirmSetupIntent: Stripe['confirmSetup'];
+  translate: (key: string) => string;
   currentSelectedPlan: PriceWithTax;
   seatsForBusinessSubscription?: number;
   couponCodeData?: CouponCodeData;
@@ -142,6 +144,7 @@ export interface UseUserPaymentPayload {
   selectedPlan: PriceWithTax;
   elements: StripeElements;
   confirmPayment: Stripe['confirmPayment'];
+  confirmSetupIntent: Stripe['confirmSetup'];
   gclidStored: string | null;
   translate: (key: string) => string;
   couponCodeData?: CouponCodeData;

@@ -976,8 +976,8 @@
         "successSentInvitation": "Condivisione riuscita con {{email}}",
         "acceptedSuccessfully": "Invito a cartella condivisa accettato con successo",
         "declinedSuccessfully": "Invito a cartella condivisa rifiutato con successo",
-        "inviteNewUsersBody": "Le persone senza un account Internxt riceveranno un'email di invito alla registrazione.",
-        "inviteNewUsersTitle": "Invita nuovi utenti?",
+        "inviteNewUsersBody": "Nel caso in cui le email aggiunte non corrispondano a un account Internxt, riceveranno un'email",
+        "inviteNewUsersTitle": "Invitare utenti?",
         "accept": "Accetta",
         "cancel": "Annulla",
         "error": {
@@ -2044,6 +2044,7 @@
       "deny": "Rifiuta",
       "invitedOn": "Invito inviato ",
       "todayAt": "oggi alle "
-    }
+    },
+    "sharedWorkspace": "Spazio di lavoro condiviso"
   }
 }

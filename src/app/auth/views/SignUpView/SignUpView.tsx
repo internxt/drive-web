@@ -3,11 +3,11 @@ import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import SignUp from '../../components/SignUp/SignUp';
 import { useMemo } from 'react';
 import authService from '../../services/auth.service';
+
 export interface SignUpViewProps {
   location: {
     search: string;
   };
-  isNewUser: boolean;
   displayIframe: boolean;
 }
 

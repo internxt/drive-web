@@ -898,8 +898,8 @@
         "successSentInvitation": "與 {{email}} 成功分享",
         "acceptedSuccessfully": "成功接受共享文件夹邀请",
         "declinedSuccessfully": "成功拒绝共享文件夹邀请",
-        "inviteNewUsersBody": "没有Internxt帐户的人将收到注册邀请电子邮件。",
-        "inviteNewUsersTitle": "邀请新用户？",
+        "inviteNewUsersBody": "如果添加的电子邮件不对应 Internxt 账户，他们将收到一封电子邮件",
+        "inviteNewUsersTitle": "邀请用户?",
         "accept": "接受",
         "cancel": "取消",
         "error": {
@@ -1971,6 +1971,7 @@
       "deny": "拒绝",
       "invitedOn": "邀请发送 ",
       "todayAt": "今天在 "
-    }
+    },
+    "sharedWorkspace": "共享工作区"
   }
 }
