@@ -15,6 +15,7 @@ import TextInput from '../../../share/components/ShareItemDialog/components/Text
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import { CouponCodeData, Currency } from '../../types';
 import { SelectSeatsComponent } from './SelectSeatsComponent';
+import { getPlanCommingFeatures, getPlanFeatures, getPlanTitle } from 'app/payment/utils/utils';
 
 interface CheckoutProductCardProps {
   selectedPlan: PriceWithTax;
@@ -77,18 +78,14 @@ export const CheckoutProductCard = ({
       ? ((couponCodeData?.amountOff / taxesData.amountWithTax) * 100).toFixed(2)
       : undefined;
 
+  const isOldPlan = bytes === '2TB' || bytes === '10TB';
+
   const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
 
-  const productLabel = translate(`preferences.account.plans.${planType}.${bytes}.title`) ?? bytes;
-  const featureKeys =
-    translateList(`preferences.account.plans.${planType}.${bytes ?? 'freeFeatures'}.features`, {
-      returnObjects: true,
-    }) ?? translateList('preferences.account.plans.planFeaturesList.1GB.features');
-
-  const featuresList = Array.isArray(
-    translateList(`preferences.account.plans.${planType}.${bytes}.comingSoonFeatures`),
-  );
-  const comingSoonFeatureKeys = Array.isArray(featuresList) ? featuresList : [];
+  const productLabel = getPlanTitle(planType, bytes, isOldPlan, translate);
+  const featureKeys = getPlanFeatures(planType, bytes, isOldPlan, translateList);
+  const commingFeatureKeys = getPlanCommingFeatures(planType, bytes, isOldPlan, translateList);
+  const comingSoonFeatureKeys = Array.isArray(commingFeatureKeys) ? commingFeatureKeys : [];
 
   return (
     <div className="flex w-full flex-col space-y-4 overflow-y-auto">
