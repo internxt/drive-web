@@ -1,9 +1,4 @@
-import {
-  CreatedPaymentIntent,
-  CreatedSubscriptionData,
-  DisplayPrice,
-  UserType,
-} from '@internxt/sdk/dist/drive/payments/types/types';
+import { CreatedSubscriptionData, DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { CouponCodeData } from '../types';
 import axios from 'axios';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -12,6 +7,8 @@ import {
   CreatePaymentIntentPayload,
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
+  PaymentIntent,
+  PaymentIntentCrypto,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
 import envService from 'app/core/services/env.service';
@@ -106,7 +103,7 @@ export const createPaymentIntent = async ({
   token,
   currency,
   promoCodeId,
-}: CreatePaymentIntentPayload): Promise<CreatedPaymentIntent> => {
+}: CreatePaymentIntentPayload): Promise<PaymentIntent> => {
   const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.createPaymentIntent({
     customerId,
@@ -156,6 +153,11 @@ const checkoutSetupIntent = async (customerId: string) => {
   } catch (error) {
     throw new Error('Error creating subscription with trial');
   }
+};
+
+const verifyCryptoPayment = async (token: PaymentIntentCrypto['token']): Promise<boolean> => {
+  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
+  return checkoutClient.verifyCryptoPayment(token);
 };
 
 const loadStripeElements = async (
@@ -236,6 +238,7 @@ const checkoutService = {
   loadStripeElements,
   fetchPrices,
   checkoutSetupIntent,
+  verifyCryptoPayment,
 };
 
 export default checkoutService;

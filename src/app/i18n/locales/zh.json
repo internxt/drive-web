@@ -198,6 +198,7 @@
       "privacyGuarantee": "隐私保证：我们不会分享您的信息，并且只会在提供服务时与您联系。"
     },
     "addressBillingTitle": "账单地址",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "可选",
@@ -245,7 +246,8 @@
       "taxes": "税费"
     },
     "error": {
-      "invalidPlan": "不支持的套餐类型。请选择有效的套餐。"
+      "invalidPlan": "不支持的套餐类型。请选择有效的套餐。",
+      "fetchingCryptoCurrencies": "无法加载可用的加密货币选项"
     }
   },
   "general": {

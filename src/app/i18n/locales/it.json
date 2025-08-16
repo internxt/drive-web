@@ -208,6 +208,7 @@
       "privacyGuarantee": "Garanzia di privacy: Non condividiamo le tue informazioni e ti contatteremo solo se necessario per fornire il nostro servizio."
     },
     "addressBillingTitle": "Indirizzo di Fatturazione",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "Opzionale",
@@ -330,7 +331,8 @@
       "taxes": "Tasse"
     },
     "error": {
-      "invalidPlan": "Tipo di piano non supportato. Seleziona un piano valido."
+      "invalidPlan": "Tipo di piano non supportato. Seleziona un piano valido.",
+      "fetchingCryptoCurrencies": "Non siamo riusciti a caricare le opzioni di criptovalute disponibili"
     }
   },
   "general": {

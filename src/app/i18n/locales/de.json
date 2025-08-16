@@ -185,6 +185,7 @@
       "privacyGuarantee": "Datenschutzgarantie: Wir teilen Ihre Informationen nicht und werden Sie nur kontaktieren, wenn es notwendig ist, um unseren Service zu bieten."
     },
     "addressBillingTitle": "Rechnungsadresse",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "Optional",
@@ -232,7 +233,8 @@
       "taxes": "Steuern"
     },
     "error": {
-      "invalidPlan": "Nicht unterstützter Plantyp. Bitte wählen Sie einen gültigen Plan."
+      "invalidPlan": "Nicht unterstützter Plantyp. Bitte wählen Sie einen gültigen Plan.",
+      "fetchingCryptoCurrencies": "Die verfügbaren Kryptowährungsoptionen konnten nicht geladen werden"
     }
   },
   "general": {
