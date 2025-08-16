@@ -217,6 +217,10 @@ export const useUserPayment = () => {
           payAmount: payload?.payAmount,
           payCurrency: payload?.payCurrency,
           url: payload?.url,
+          fiat: {
+            amount: currentSelectedPlan.taxes.decimalAmountWithTax,
+            currency: currentSelectedPlan.price.currency,
+          },
         },
       });
     }

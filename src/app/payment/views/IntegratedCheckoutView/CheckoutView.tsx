@@ -23,7 +23,7 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   },
   layout: {
     type: 'accordion',
-    defaultCollapsed: false, // Set to true when the crypto payment is enabled
+    defaultCollapsed: true,
     radios: false,
     spacedAccordionItems: true,
   },
