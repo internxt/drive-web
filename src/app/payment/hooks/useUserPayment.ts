@@ -237,6 +237,8 @@ export const useUserPayment = () => {
     openCryptoPaymentDialog,
     confirmSetupIntent,
   }: UseUserPaymentPayload) => {
+    const planInterval = selectedPlan.price.interval as 'month' | 'year' | 'lifetime';
+
     if (gclidStored) {
       await sendConversionToAPI({
         gclid: gclidStored,
@@ -249,7 +251,8 @@ export const useUserPayment = () => {
       });
     }
 
-    switch (selectedPlan.price.interval) {
+    switch (planInterval) {
+      case PlanInterval.MONTH:
       case PlanInterval.YEAR:
         await handleSubscriptionPayment({
           currency,

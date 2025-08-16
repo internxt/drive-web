@@ -155,6 +155,7 @@ export interface UseUserPaymentPayload {
 }
 
 export enum PlanInterval {
+  MONTH = 'month',
   YEAR = 'year',
   LIFETIME = 'lifetime',
 }
