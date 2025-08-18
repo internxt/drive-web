@@ -24,11 +24,13 @@ interface CryptoPaymentDialogProps {
   };
 }
 
+const REMAINING_TIME_TO_PAY_IN_SECONDS = 600;
+
 export const CryptoPaymentDialog = () => {
   const { translate } = useTranslationContext();
   const { closeDialog, getDialogData, isDialogOpen } = useActionDialog();
-  const isCryptoPaymentDialogOpen = isDialogOpen(CRYPTO_PAYMENT_DIALOG_KEY);
-  const [timeLeft, setTimeLeft] = useState(600);
+  const [timeLeft, setTimeLeft] = useState(REMAINING_TIME_TO_PAY_IN_SECONDS);
+  const isHalfTimeLeft = timeLeft < REMAINING_TIME_TO_PAY_IN_SECONDS / 2;
 
   useEffect(() => {
     if (!isCryptoPaymentDialogOpen || timeLeft <= 0) return;
@@ -67,6 +69,7 @@ export const CryptoPaymentDialog = () => {
         });
       }
     } catch (error) {
+      console.error('Error while verifying crypto payment', error);
       notificationsService.show({
         text: translate('checkout.confirmCryptoPayment.notifications.unexpectedError'),
         type: ToastType.Error,
@@ -81,13 +84,12 @@ export const CryptoPaymentDialog = () => {
     address: paymentAddress,
     encodedInvoiceIdToken,
     fiat,
-    paymentRequestUri,
   } = getDialogData(CRYPTO_PAYMENT_DIALOG_KEY) as CryptoPaymentDialogProps;
 
   const onCopyPrice = () => {
     navigator.clipboard.writeText(payAmount.toString());
     notificationsService.show({
-      text: 'Price copied to clipboard',
+      text: translate('checkout.confirmCryptoPayment.notifications.priceCopied'),
       type: ToastType.Success,
     });
   };
@@ -95,7 +97,7 @@ export const CryptoPaymentDialog = () => {
   const onCopyAddress = () => {
     navigator.clipboard.writeText(paymentAddress);
     notificationsService.show({
-      text: 'Address copied to clipboard',
+      text: translate('checkout.confirmCryptoPayment.notifications.addressCopied'),
       type: ToastType.Success,
     });
   };
@@ -112,12 +114,12 @@ export const CryptoPaymentDialog = () => {
           <p>{translate('checkout.confirmCryptoPayment.timeExpiration')}</p>
           <div
             className={`flex flex-col items-center p-1 w-full rounded ${
-              isTimeExpired ? 'bg-red-50' : timeLeft < 300 ? 'bg-orange-50' : 'bg-gray-10'
+              isTimeExpired ? 'bg-red-50' : isHalfTimeLeft ? 'bg-orange/50' : 'bg-gray-10'
             }`}
           >
             <p
               className={`text-2xl font-bold ${
-                isTimeExpired ? 'text-red-600' : timeLeft < 300 ? 'text-orange-600' : 'text-gray-800'
+                isTimeExpired ? 'text-red-600' : isHalfTimeLeft ? 'text-orange/60' : 'text-gray-80'
               }`}
             >
               {isTimeExpired ? translate('checkout.confirmCryptoPayment.expiredLabel') : formatTime(timeLeft)}

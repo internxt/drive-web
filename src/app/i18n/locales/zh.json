@@ -257,6 +257,8 @@
       "confirm": "确认付款",
       "sessionExpired": "会话已过期",
       "notifications": {
+        "priceCopied": "价格已复制到剪贴板",
+        "addressCopied": "地址已复制到剪贴板",
         "paymentSucceeded": "付款成功完成",
         "paymentNotCompleted": "付款未完成",
         "unexpectedError": "验证付款时出现错误"

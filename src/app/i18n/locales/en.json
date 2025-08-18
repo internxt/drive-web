@@ -267,6 +267,8 @@
       "confirm": "Confirm the payment",
       "sessionExpired": "Session Expired",
       "notifications": {
+        "priceCopied": "Price copied to clipboard",
+        "addressCopied": "Address copied to clipboard",
         "paymentSucceeded": "Payment completed successfully",
         "paymentNotCompleted": "Payment is not completed",
         "unexpectedError": "Something went wrong while verifying the payment"

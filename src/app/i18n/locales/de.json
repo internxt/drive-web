@@ -244,6 +244,8 @@
       "confirm": "Zahlung bestätigen",
       "sessionExpired": "Sitzung Abgelaufen",
       "notifications": {
+        "priceCopied": "Preis in die Zwischenablage kopiert",
+        "addressCopied": "Adresse in die Zwischenablage kopiert",
         "paymentSucceeded": "Zahlung erfolgreich abgeschlossen",
         "paymentNotCompleted": "Zahlung ist nicht abgeschlossen",
         "unexpectedError": "Bei der Überprüfung der Zahlung ist ein Fehler aufgetreten"

@@ -342,6 +342,8 @@
       "confirm": "Conferma il pagamento",
       "sessionExpired": "Sessione Scaduta",
       "notifications": {
+        "priceCopied": "Prezzo copiato negli appunti",
+        "addressCopied": "Indirizzo copiato negli appunti",
         "paymentSucceeded": "Pagamento completato con successo",
         "paymentNotCompleted": "Il pagamento non è completato",
         "unexpectedError": "Si è verificato un errore durante la verifica del pagamento"

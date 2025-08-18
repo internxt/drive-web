@@ -248,6 +248,8 @@
       "confirm": "Confirmar el pago",
       "sessionExpired": "Sesión Expirada",
       "notifications": {
+        "priceCopied": "Precio copiado al portapapeles",
+        "addressCopied": "Dirección copiada al portapapeles",
         "paymentSucceeded": "Pago completado exitosamente",
         "paymentNotCompleted": "El pago no se completó",
         "unexpectedError": "Algo salió mal al verificar el pago"

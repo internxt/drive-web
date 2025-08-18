@@ -259,6 +259,8 @@
       "confirm": "確認付款",
       "sessionExpired": "工作階段已過期",
       "notifications": {
+        "priceCopied": "價格已複製到剪貼簿",
+        "addressCopied": "地址已複製到剪貼簿",
         "paymentSucceeded": "付款成功完成",
         "paymentNotCompleted": "付款未完成",
         "unexpectedError": "驗證付款時發生錯誤"

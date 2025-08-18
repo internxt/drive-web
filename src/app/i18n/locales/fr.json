@@ -250,6 +250,8 @@
       "confirm": "Confirmer le paiement",
       "sessionExpired": "Session Expirée",
       "notifications": {
+        "priceCopied": "Prix copié dans le presse-papiers",
+        "addressCopied": "Adresse copiée dans le presse-papiers",
         "paymentSucceeded": "Paiement effectué avec succès",
         "paymentNotCompleted": "Le paiement n'est pas terminé",
         "unexpectedError": "Une erreur s'est produite lors de la vérification du paiement"

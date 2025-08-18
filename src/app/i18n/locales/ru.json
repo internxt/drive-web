@@ -250,6 +250,8 @@
       "confirm": "Подтвердить платеж",
       "sessionExpired": "Сессия Истекла",
       "notifications": {
+        "priceCopied": "Цена скопирована в буфер обмена",
+        "addressCopied": "Адрес скопирован в буфер обмена",
         "paymentSucceeded": "Платеж успешно завершен",
         "paymentNotCompleted": "Платеж не завершен",
         "unexpectedError": "Что-то пошло не так при проверке платежа"
