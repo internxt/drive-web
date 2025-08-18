@@ -109,20 +109,24 @@ export const CryptoPaymentDialog = () => {
   const isTimeExpired = timeLeft <= 0;
 
   return (
-    <Modal isOpen={isCryptoPaymentDialogOpen} onClose={onCloseDialog}>
-      <div className="flex flex-col items-center w-full gap-6 p-2">
+    <Modal
+      isOpen={isCryptoPaymentDialogOpen}
+      onClose={onCloseDialog}
+      className="flex w-full max-h-[95vh] md:max-h-full"
+    >
+      <div className="flex flex-col items-center w-full gap-6 p-2 md:p-5 overflow-y-auto md:overflow-hidden ">
         <p className="text-3xl font-bold">{translate('checkout.confirmCryptoPayment.title')}</p>
 
         <div className="flex flex-col gap-2">
           <p>{translate('checkout.confirmCryptoPayment.timeExpiration')}</p>
           <div
             className={`flex flex-col items-center p-1 w-full rounded ${
-              isTimeExpired ? 'bg-red-50' : isHalfTimeLeft ? 'bg-orange/50' : 'bg-gray-10'
+              isTimeExpired ? 'bg-red-50' : isHalfTimeLeft ? 'bg-orange/40' : 'bg-gray-10'
             }`}
           >
             <p
               className={`text-2xl font-bold ${
-                isTimeExpired ? 'text-red-600' : isHalfTimeLeft ? 'text-orange/60' : 'text-gray-80'
+                isTimeExpired ? 'text-red-600' : isHalfTimeLeft ? 'text-orange/80' : 'text-gray-80'
               }`}
             >
               {isTimeExpired ? translate('checkout.confirmCryptoPayment.expiredLabel') : formatTime(timeLeft)}

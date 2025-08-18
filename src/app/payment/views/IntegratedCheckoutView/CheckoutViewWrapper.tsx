@@ -681,7 +681,7 @@ const CheckoutViewWrapper = () => {
           ) : undefined}
 
           {IS_CRYPTO_PAYMENT_ENABLED && isCryptoPaymentDialogOpen && (
-            <div onMouseDown={(e) => e.stopPropagation()}>
+            <div className="flex flex-col" onMouseDown={(e) => e.stopPropagation()}>
               <CryptoPaymentDialog />
             </div>
           )}
