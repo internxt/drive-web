@@ -200,6 +200,7 @@
       "privacyGuarantee": "隱私保證：我們不會分享您的信息，並且只會在提供服務時與您聯繫。"
     },
     "addressBillingTitle": "帳單地址",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "可選",
@@ -247,7 +248,8 @@
       "taxes": "稅金"
     },
     "error": {
-      "invalidPlan": "不支援的方案類型。請選擇有效的方案。"
+      "invalidPlan": "不支援的方案類型。請選擇有效的方案。",
+      "fetchingCryptoCurrencies": "無法載入可用的加密貨幣選項"
     }
   },
   "general": {
