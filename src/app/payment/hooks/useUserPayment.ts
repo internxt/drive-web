@@ -241,7 +241,7 @@ export const useUserPayment = () => {
     openCryptoPaymentDialog,
     confirmSetupIntent,
   }: UseUserPaymentPayload) => {
-    const planInterval = selectedPlan.price.interval as 'month' | 'year' | 'lifetime';
+    const planInterval = selectedPlan.price.interval;
 
     if (gclidStored) {
       await sendConversionToAPI({
