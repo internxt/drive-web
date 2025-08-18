@@ -66,14 +66,12 @@ const CheckoutView = ({
   const [isCryptoDropdownOpen, setIsCryptoDropdownOpen] = useState<boolean>(false);
 
   const onCryptoDropdownToggle = () => {
-    const newCryptoState = !isCryptoDropdownOpen;
-
-    if (newCryptoState) {
+    if (!isCryptoDropdownOpen) {
       elements?.getElement('payment')?.collapse();
     }
 
     onCurrencyTypeChanges(PaymentType['CRYPTO']);
-    setIsCryptoDropdownOpen(newCryptoState);
+    setIsCryptoDropdownOpen(!isCryptoDropdownOpen);
   };
 
   const onStripePaymentExpanded = () => {

@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { useUserPayment } from './useUserPayment';
 import checkoutService from '../services/checkout.service';
 import localStorageService from '../../core/services/local-storage.service';
@@ -9,15 +9,20 @@ import { AppView } from '../../core/types';
 import { PaymentType, ProcessPurchasePayload, UseUserPaymentPayload } from '../types';
 import notificationsService from '../../notifications/services/notifications.service';
 
+const mockHostname = 'https://hostname.com';
+
 describe('Custom hook to handle payments', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     vi.doUnmock('@internxt/sdk');
+    vi.doUnmock('../../core/factory/sdk');
+    vi.doUnmock('./payment.service');
+    vi.doUnmock('../../utils/userLocation');
+    vi.doUnmock('../../drive/services/file.service');
 
-    vi.resetModules();
-  });
-
-  afterAll(() => {
-    vi.clearAllMocks();
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
+      if (key === 'hostname') return mockHostname;
+      else return 'no mock implementation';
+    });
   });
 
   describe('Get subscription data to do the payment', () => {

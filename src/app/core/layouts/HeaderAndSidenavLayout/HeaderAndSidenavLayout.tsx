@@ -5,7 +5,6 @@ import Sidenav from '../../components/Sidenav/Sidenav';
 import { uiActions } from 'app/store/slices/ui';
 import ReachedPlanLimitDialog from 'app/drive/components/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
 import navigationService from '../../services/navigation.service';
-import GuestDialog from 'app/guests/components/GuestDialog/GuestDialog';
 import { AppView } from '../../types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import TaskLogger from 'app/tasks/components/TaskLogger/TaskLogger';
@@ -26,7 +25,6 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
   const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
   const isSharedFolderTooBigDialogOpen = useAppSelector((state) => state.ui.isSharedFolderTooBigDialogOpen);
-  const isGuestInviteDialogOpen = useAppSelector((state) => state.ui.isGuestInviteDialogOpen);
   const isDriveItemInfoMenuOpen = useAppSelector((state) => state.ui.isDriveItemInfoMenuOpen);
   const driveItemInfo = useAppSelector((state) => state.ui.currentFileInfoMenuItem);
   const onDriveItemInfoMenuClosed = () => {
@@ -45,7 +43,6 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
       {isShareItemDialogOpen && itemToShare && <ShareItemDialog share={itemToShare?.share} item={itemToShare.item} />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
       {isSharedFolderTooBigDialogOpen && <SharedFolderTooBigDialog />}
-      {isGuestInviteDialogOpen && <GuestDialog />}
 
       <div className="flex h-1 grow">
         <Sidenav />

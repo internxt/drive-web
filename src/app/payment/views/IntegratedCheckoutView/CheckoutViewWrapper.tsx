@@ -326,6 +326,7 @@ const CheckoutViewWrapper = () => {
         const availableCryptoCurrencies = await currencyService.getAvailableCryptoCurrencies();
         setAvailableCryptoCurrencies(availableCryptoCurrencies);
       } catch (error) {
+        console.error('Error fetching available crypto currencies', error);
         notificationsService.show({
           text: translate('checkout.error.fetchingCryptoCurrencies'),
           type: ToastType.Error,

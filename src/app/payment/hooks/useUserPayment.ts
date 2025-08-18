@@ -182,6 +182,7 @@ export const useUserPayment = () => {
     const {
       id: paymentIntentId,
       invoiceStatus,
+      encodedInvoiceIdToken,
       type,
       clientSecret,
       payload,
@@ -211,6 +212,7 @@ export const useUserPayment = () => {
         data: {
           qrUrl: payload?.qrUrl,
           paymentRequestUri: payload?.paymentRequestUri,
+          encodedInvoiceIdToken,
           address: payload?.paymentAddress,
           payAmount: payload?.payAmount,
           payCurrency: payload?.payCurrency,
@@ -239,6 +241,8 @@ export const useUserPayment = () => {
     openCryptoPaymentDialog,
     confirmSetupIntent,
   }: UseUserPaymentPayload) => {
+    const planInterval = selectedPlan.price.interval as 'month' | 'year' | 'lifetime';
+
     if (gclidStored) {
       await sendConversionToAPI({
         gclid: gclidStored,
@@ -251,7 +255,8 @@ export const useUserPayment = () => {
       });
     }
 
-    switch (selectedPlan.price.interval) {
+    switch (planInterval) {
+      case PlanInterval.MONTH:
       case PlanInterval.YEAR:
         await handleSubscriptionPayment({
           currency,
