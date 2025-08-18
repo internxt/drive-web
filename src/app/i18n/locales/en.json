@@ -208,6 +208,7 @@
       "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
     },
     "addressBillingTitle": "Address Billing",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "Optional",
@@ -255,7 +256,8 @@
       "taxes": "Taxes"
     },
     "error": {
-      "invalidPlan": "Unsupported plan type. Please select a valid plan."
+      "invalidPlan": "Unsupported plan type. Please select a valid plan.",
+      "fetchingCryptoCurrencies": "We couldn't load the available cryptocurrency options"
     }
   },
   "general": {

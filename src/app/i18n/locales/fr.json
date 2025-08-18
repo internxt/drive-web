@@ -191,6 +191,7 @@
       "privacyGuarantee": "Garantie de confidentialité : Nous ne partageons pas vos informations et ne vous contacterons que si nécessaire pour fournir notre service."
     },
     "addressBillingTitle": "Facturation d'Adresse",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "Optionnel",
@@ -238,7 +239,8 @@
       "taxes": "Taxes"
     },
     "error": {
-      "invalidPlan": "Type de plan non pris en charge. Veuillez sélectionner un plan valide."
+      "invalidPlan": "Type de plan non pris en charge. Veuillez sélectionner un plan valide.",
+      "fetchingCryptoCurrencies": "Nous n'avons pas pu charger les options de crypto-monnaies disponibles"
     }
   },
   "general": {
