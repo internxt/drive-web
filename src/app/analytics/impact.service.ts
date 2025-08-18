@@ -123,7 +123,7 @@ export async function trackPaymentConversion() {
       orderId: uuid,
       value: amount,
       currency: currency ?? 'EUR',
-      couponCodeData: couponCode,
+      couponCodeName: couponCode,
       email: userEmail,
     });
 
