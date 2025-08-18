@@ -3,6 +3,8 @@ import { Copy } from '@phosphor-icons/react';
 import { WarningDiamond } from '@phosphor-icons/react/dist/ssr';
 import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import checkoutService from 'app/payment/services/checkout.service';
@@ -63,6 +65,7 @@ export const CryptoPaymentDialog = () => {
           type: ToastType.Success,
         });
         closeDialog(CRYPTO_PAYMENT_DIALOG_KEY);
+        navigationService.push(AppView.CheckoutSuccess);
       } else {
         notificationsService.show({
           text: translate('checkout.confirmCryptoPayment.notifications.paymentNotCompleted'),
