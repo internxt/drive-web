@@ -680,7 +680,11 @@ const CheckoutViewWrapper = () => {
             />
           ) : undefined}
 
-          {IS_CRYPTO_PAYMENT_ENABLED && isCryptoPaymentDialogOpen && <CryptoPaymentDialog />}
+          {IS_CRYPTO_PAYMENT_ENABLED && isCryptoPaymentDialogOpen && (
+            <div onMouseDown={(e) => e.stopPropagation()}>
+              <CryptoPaymentDialog />
+            </div>
+          )}
         </Elements>
       ) : (
         <div className="flex h-full items-center justify-center bg-gray-1">

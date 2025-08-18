@@ -134,14 +134,14 @@ export const CryptoPaymentDialog = () => {
 
         <div className="flex flex-row gap-6 w-full justify-center items-center">
           <div className="flex flex-col gap-2 items-start justify-center">
-            <p className="text-white text-lg font-semibold">
+            <p className="text-gray-100 dark:text-white text-lg font-semibold">
               {translate('checkout.confirmCryptoPayment.totalInCrypto', {
                 cryptoCurrency: payCurrency,
               })}
             </p>
             <div className="flex flex-row gap-3 items-center">
-              <p className="text-white text-lg font-normal">{payAmount}</p>
-              <button onClick={onCopyPrice} className="text-gray-400 hover:text-white transition-colors">
+              <p className="text-gray-100 dark:text-white text-lg font-normal">{payAmount}</p>
+              <button onClick={onCopyPrice} className="text-gray-400 hover:text-gray-60 transition-colors">
                 <Copy size={18} />
               </button>
             </div>
@@ -150,9 +150,11 @@ export const CryptoPaymentDialog = () => {
           <div className="w-px h-16 bg-gray-90" />
 
           <div className="flex flex-col gap-2 items-start justify-start">
-            <p className="text-white text-lg font-semibold">{translate('checkout.confirmCryptoPayment.totalInFiat')}</p>
+            <p className="text-gray-100 dark:text-white text-lg font-semibold">
+              {translate('checkout.confirmCryptoPayment.totalInFiat')}
+            </p>
             <div className="flex flex-row gap-3 items-center">
-              <p className="text-white text-lg font-normal">
+              <p className="text-gray-100 dark:text-white text-lg font-normal">
                 {fiat.amount} {Currency[fiat.currency]}
               </p>
             </div>
