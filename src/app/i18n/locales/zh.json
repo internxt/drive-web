@@ -245,6 +245,25 @@
       "apply": "应用",
       "taxes": "税费"
     },
+    "confirmCryptoPayment": {
+      "title": "确认付款",
+      "timeExpiration": "发票将在10分钟后过期",
+      "expiredLabel": "已过期",
+      "totalInCrypto": "付款金额 ({{cryptoCurrency}})",
+      "totalInFiat": "金额",
+      "copyAddress": "付款地址",
+      "doNotCloseWindowWarning": "在付款完成之前请勿关闭窗口",
+      "cancel": "取消",
+      "confirm": "确认付款",
+      "sessionExpired": "会话已过期",
+      "notifications": {
+        "priceCopied": "价格已复制到剪贴板",
+        "addressCopied": "地址已复制到剪贴板",
+        "paymentSucceeded": "付款成功完成",
+        "paymentNotCompleted": "付款未完成",
+        "unexpectedError": "验证付款时出现错误"
+      }
+    },
     "error": {
       "invalidPlan": "不支持的套餐类型。请选择有效的套餐。",
       "fetchingCryptoCurrencies": "无法加载可用的加密货币选项"

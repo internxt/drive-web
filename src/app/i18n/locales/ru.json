@@ -238,6 +238,25 @@
       "apply": "Применить",
       "taxes": "Налоги"
     },
+    "confirmCryptoPayment": {
+      "title": "Подтвердить платеж",
+      "timeExpiration": "Счет истечет через 10 минут",
+      "expiredLabel": "ИСТЁК",
+      "totalInCrypto": "Сумма к оплате ({{cryptoCurrency}})",
+      "totalInFiat": "Сумма",
+      "copyAddress": "Адрес платежа",
+      "doNotCloseWindowWarning": "Не закрывайте окно, пока платеж не будет завершен",
+      "cancel": "Отмена",
+      "confirm": "Подтвердить платеж",
+      "sessionExpired": "Сессия Истекла",
+      "notifications": {
+        "priceCopied": "Цена скопирована в буфер обмена",
+        "addressCopied": "Адрес скопирован в буфер обмена",
+        "paymentSucceeded": "Платеж успешно завершен",
+        "paymentNotCompleted": "Платеж не завершен",
+        "unexpectedError": "Что-то пошло не так при проверке платежа"
+      }
+    },
     "error": {
       "invalidPlan": "Неподдерживаемый тип плана. Пожалуйста, выберите действительный план.",
       "fetchingCryptoCurrencies": "Не удалось загрузить доступные варианты криптовалют"
