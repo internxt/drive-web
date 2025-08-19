@@ -256,6 +256,31 @@ describe('Testing Impact Service', () => {
         expect(errorServiceSpy).toHaveBeenCalled();
         expect(errorServiceSpy).toHaveBeenCalledWith(unknownError);
       });
+
+      it('When the Impact event is triggered, then the necessary data is sent (including order_promo_code)', async () => {
+        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+        vi.spyOn(localStorageService, 'getUser').mockReturnValue({
+          uuid: mockedUserUuid,
+        } as unknown as UserSettings);
+
+        await trackPaymentConversion();
+
+        expect(axiosSpy).toHaveBeenCalledTimes(1);
+
+        const callArgs = axiosSpy.mock.calls[0][1];
+        expect(callArgs).toMatchObject({
+          anonymousId: 'anon_id',
+          userId: mockedUserUuid,
+          type: 'track',
+          event: 'Payment Conversion',
+          properties: {
+            impact_value: parseFloat(expectedAmount),
+            subscription_id: subId,
+            payment_intent: paymentIntentId,
+            order_promo_code: promoCode.codeName,
+          },
+        });
+      });
     });
   });
 });
