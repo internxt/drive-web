@@ -188,6 +188,7 @@
       "privacyGuarantee": "Garantía de privacidad: No compartimos su información y solo contactaremos contigo cuando sea necesario para brindar nuestro servicio."
     },
     "addressBillingTitle": "Facturación de Dirección",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "Opcional",
@@ -235,8 +236,28 @@
       "apply": "Aplicar",
       "taxes": "Impuestos"
     },
+    "confirmCryptoPayment": {
+      "title": "Confirmar el pago",
+      "timeExpiration": "La factura expirará en 10 minutos",
+      "expiredLabel": "EXPIRADO",
+      "totalInCrypto": "Cantidad a pagar ({{cryptoCurrency}})",
+      "totalInFiat": "Importe",
+      "copyAddress": "Dirección de pago",
+      "doNotCloseWindowWarning": "No cierres la ventana hasta que el pago esté completado",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar el pago",
+      "sessionExpired": "Sesión Expirada",
+      "notifications": {
+        "priceCopied": "Precio copiado al portapapeles",
+        "addressCopied": "Dirección copiada al portapapeles",
+        "paymentSucceeded": "Pago completado exitosamente",
+        "paymentNotCompleted": "El pago no se completó",
+        "unexpectedError": "Algo salió mal al verificar el pago"
+      }
+    },
     "error": {
-      "invalidPlan": "Tipo de plan no soportado. Por favor, selecciona un plan válido."
+      "invalidPlan": "Tipo de plan no soportado. Por favor, selecciona un plan válido.",
+      "fetchingCryptoCurrencies": "No pudimos cargar las opciones de criptomonedas disponibles"
     }
   },
 

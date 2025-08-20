@@ -1,10 +1,11 @@
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { Elements } from '@stripe/react-stripe-js';
-import { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js';
 import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 
 import { UserLocation } from '@internxt/sdk';
+import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Loader } from '@internxt/ui';
 import { userLocation } from 'app/utils/userLocation';
 import { useCheckout } from 'hooks/checkout/useCheckout';
@@ -30,12 +31,17 @@ import { planThunks } from '../../../store/slices/plan';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
-import { AuthMethodTypes } from '../../types';
+import { AuthMethodTypes, PaymentType, PlanInterval } from '../../types';
 import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'app/payment/hooks/useUserPayment';
+import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'app/payment/components/checkout/CryptoPaymentDialog';
+import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
+import currencyService from 'app/payment/services/currency.service';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+
+const IS_CRYPTO_PAYMENT_ENABLED = true;
 
 export const THEME_STYLES = {
   dark: {
@@ -75,6 +81,7 @@ export interface CheckoutViewManager {
   handleAuthMethodChange: (method: AuthMethodTypes) => void;
   onUserNameFromAddressElementChange: (userName: string) => void;
   onSeatsChange: (seat: number) => void;
+  onCurrencyChange: (currency: string) => void;
 }
 
 const STATUS_CODE_ERROR = {
@@ -101,6 +108,10 @@ const CheckoutViewWrapper = () => {
   const { handleUserPayment } = useUserPayment();
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
   const [userLocationData, setUserLocationData] = useState<UserLocation>();
+  const { isDialogOpen, openDialog: openCryptoPaymentDialog } = useActionDialog();
+  const [availableCryptoCurrencies, setAvailableCryptoCurrencies] = useState<CryptoCurrency[] | undefined>(undefined);
+  const [selectedCurrency, setSelectedCurrency] = useState<string>('eur');
+  const [currencyType, setCurrencyType] = useState<PaymentType>();
 
   const name = user?.name ?? '';
   const lastName = user?.lastname ?? '';
@@ -146,6 +157,7 @@ const CheckoutViewWrapper = () => {
   const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
 
   const canChangePlanDialogBeOpened = prices && currentSelectedPlan?.price && isUpdateSubscriptionDialogOpen;
+  const isCryptoPaymentDialogOpen = isDialogOpen(CRYPTO_PAYMENT_DIALOG_KEY);
 
   const userInfo: UserInfoProps = {
     name: fullName,
@@ -286,22 +298,61 @@ const CheckoutViewWrapper = () => {
     promotionCode: string | null,
     userAddress?: UserLocation['ip'],
   ): Promise<void> => {
+    let price: PriceWithTax | null = null;
     try {
-      const price = await handleFetchSelectedPlan(planId, promotionCode, currencyValue, userAddress);
-      if (checkoutTheme && price) {
-        if (promotionCode) {
-          handleFetchPromotionCode(price.price.id, promotionCode).catch(handlePromoCodeError);
-        }
-
-        const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], price);
-        setStripeElementsOptions(stripeElements as StripeElementsOptions);
-        const prices = await checkoutService.fetchPrices(price.price.type, currencyValue);
-        setPrices(prices);
-        setIsCheckoutReadyToRender(true);
-      }
-    } catch {
+      price = await handleFetchSelectedPlan(planId, promotionCode, currencyValue, userAddress);
+    } catch (error) {
+      console.error('Error fetching selected plan', error);
       redirectToFallbackPage();
+      return;
     }
+
+    if (!checkoutTheme || !price) {
+      return;
+    }
+
+    if (promotionCode) {
+      try {
+        await handleFetchPromotionCode(price.price.id, promotionCode);
+      } catch (error) {
+        handlePromoCodeError(error);
+      }
+    }
+
+    setSelectedCurrency(price.price.currency);
+
+    if (price.price.interval === PlanInterval.LIFETIME && IS_CRYPTO_PAYMENT_ENABLED) {
+      try {
+        const availableCryptoCurrencies = await currencyService.getAvailableCryptoCurrencies();
+        setAvailableCryptoCurrencies(availableCryptoCurrencies);
+      } catch (error) {
+        console.error('Error fetching available crypto currencies', error);
+        notificationsService.show({
+          text: translate('checkout.error.fetchingCryptoCurrencies'),
+          type: ToastType.Error,
+        });
+      }
+    }
+
+    try {
+      const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], price);
+      setStripeElementsOptions(stripeElements as StripeElementsOptions);
+    } catch (error) {
+      console.error('Error loading Stripe elements:', error);
+      redirectToFallbackPage();
+      return;
+    }
+
+    try {
+      const prices = await checkoutService.fetchPrices(price.price.type, currencyValue);
+      setPrices(prices);
+    } catch (error) {
+      console.error('Error fetching prices:', error);
+      redirectToFallbackPage();
+      return;
+    }
+
+    setIsCheckoutReadyToRender(true);
   };
 
   const onChangePlanClicked = async (priceId: string) => {
@@ -410,10 +461,12 @@ const CheckoutViewWrapper = () => {
         return;
       }
 
-      const { error: elementsError } = await elements.submit();
+      if (currencyType === PaymentType['FIAT']) {
+        const { error: elementsError } = await elements.submit();
 
-      if (elementsError) {
-        throw new Error(elementsError.message);
+        if (elementsError) {
+          throw new Error(elementsError.message);
+        }
       }
 
       const { customerId, token } = await checkoutService.getCustomerId({
@@ -447,7 +500,7 @@ const CheckoutViewWrapper = () => {
           confirmPayment: stripeSDK.confirmPayment,
           confirmSetupIntent: stripeSDK.confirmSetup,
           couponCodeData: couponCodeData,
-          currency: currentSelectedPlan.price.currency,
+          currency: selectedCurrency ?? currentSelectedPlan.price.currency,
           priceId: currentSelectedPlan.price.id,
           customerId,
           elements,
@@ -456,6 +509,7 @@ const CheckoutViewWrapper = () => {
           token,
           gclidStored,
           seatsForBusinessSubscription,
+          openCryptoPaymentDialog,
         });
       }
     } catch (err) {
@@ -578,6 +632,10 @@ const CheckoutViewWrapper = () => {
     }
   };
 
+  const onCurrencyTypeChanges = (currency: PaymentType) => {
+    setCurrencyType(currency);
+  };
+
   const checkoutViewManager: CheckoutViewManager = {
     onCouponInputChange: onCheckoutCouponChanges,
     onLogOut,
@@ -588,6 +646,7 @@ const CheckoutViewWrapper = () => {
     handleAuthMethodChange: setAuthMethod,
     onUserNameFromAddressElementChange: setUserNameFromElementAddress,
     onSeatsChange,
+    onCurrencyChange: setSelectedCurrency,
   };
 
   return (
@@ -599,13 +658,15 @@ const CheckoutViewWrapper = () => {
       currentSelectedPlan.taxes ? (
         <Elements stripe={stripeSdk} options={{ ...elementsOptions }}>
           <CheckoutView
-            checkoutViewVariables={state}
+            checkoutViewVariables={{ ...state, selectedCurrency }}
             userAuthComponentRef={userAuthComponentRef}
             showCouponCode={!mobileToken}
             userInfo={userInfo}
             isUserAuthenticated={isUserAuthenticated}
             showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
             checkoutViewManager={checkoutViewManager}
+            availableCryptoCurrencies={availableCryptoCurrencies}
+            onCurrencyTypeChanges={onCurrencyTypeChanges}
           />
           {canChangePlanDialogBeOpened ? (
             <ChangePlanDialog
@@ -618,6 +679,12 @@ const CheckoutViewWrapper = () => {
               subscriptionSelected={currentSelectedPlan.price.type}
             />
           ) : undefined}
+
+          {IS_CRYPTO_PAYMENT_ENABLED && isCryptoPaymentDialogOpen && (
+            <div className="flex flex-col" onMouseDown={(e) => e.stopPropagation()}>
+              <CryptoPaymentDialog />
+            </div>
+          )}
         </Elements>
       ) : (
         <div className="flex h-full items-center justify-center bg-gray-1">

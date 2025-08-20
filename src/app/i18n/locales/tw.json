@@ -200,6 +200,7 @@
       "privacyGuarantee": "隱私保證：我們不會分享您的信息，並且只會在提供服務時與您聯繫。"
     },
     "addressBillingTitle": "帳單地址",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "可選",
@@ -246,8 +247,28 @@
       "apply": "應用",
       "taxes": "稅金"
     },
+    "confirmCryptoPayment": {
+      "title": "確認付款",
+      "timeExpiration": "發票將在10分鐘後過期",
+      "expiredLabel": "已過期",
+      "totalInCrypto": "付款金額 ({{cryptoCurrency}})",
+      "totalInFiat": "金額",
+      "copyAddress": "付款地址",
+      "doNotCloseWindowWarning": "在付款完成之前請勿關閉視窗",
+      "cancel": "取消",
+      "confirm": "確認付款",
+      "sessionExpired": "工作階段已過期",
+      "notifications": {
+        "priceCopied": "價格已複製到剪貼簿",
+        "addressCopied": "地址已複製到剪貼簿",
+        "paymentSucceeded": "付款成功完成",
+        "paymentNotCompleted": "付款未完成",
+        "unexpectedError": "驗證付款時發生錯誤"
+      }
+    },
     "error": {
-      "invalidPlan": "不支援的方案類型。請選擇有效的方案。"
+      "invalidPlan": "不支援的方案類型。請選擇有效的方案。",
+      "fetchingCryptoCurrencies": "無法載入可用的加密貨幣選項"
     }
   },
   "general": {

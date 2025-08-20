@@ -9,10 +9,12 @@ import { AppView } from '../../core/types';
 import {
   CreatePaymentIntentPayload,
   InvoiceStatus,
+  PaymentType,
   PlanInterval,
   ProcessPurchasePayload,
   UseUserPaymentPayload,
 } from '../types';
+import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 export const useUserPayment = () => {
@@ -61,11 +63,22 @@ export const useUserPayment = () => {
       promoCodeId: promoCodeId,
     });
 
-    const { clientSecret, invoiceStatus, id } = paymentIntentResponse;
+    if (paymentIntentResponse.type === PaymentType['CRYPTO']) {
+      return {
+        id: paymentIntentResponse.id,
+        type: paymentIntentResponse.type,
+        encodedInvoiceIdToken: paymentIntentResponse.token,
+        payload: {
+          ...paymentIntentResponse.payload,
+        },
+      };
+    }
+
     return {
-      clientSecret,
-      invoiceStatus,
-      paymentIntentId: id,
+      id: paymentIntentResponse.id,
+      type: paymentIntentResponse.type,
+      clientSecret: paymentIntentResponse.clientSecret,
+      invoiceStatus: paymentIntentResponse.invoiceStatus,
     };
   };
 
@@ -164,8 +177,16 @@ export const useUserPayment = () => {
     couponCodeData,
     elements,
     confirmPayment,
+    openCryptoPaymentDialog,
   }: ProcessPurchasePayload) => {
-    const invoice = await getLifetimePaymentIntent({
+    const {
+      id: paymentIntentId,
+      invoiceStatus,
+      encodedInvoiceIdToken,
+      type,
+      clientSecret,
+      payload,
+    } = await getLifetimePaymentIntent({
       customerId,
       priceId,
       token,
@@ -173,17 +194,36 @@ export const useUserPayment = () => {
       currency,
     });
 
-    savePaymentDataInLocalStorage(undefined, invoice.paymentIntentId, currentSelectedPlan, 1, couponCodeData);
+    savePaymentDataInLocalStorage(undefined, paymentIntentId, currentSelectedPlan, 1, couponCodeData);
 
     // !DO NOT REMOVE THIS
     // If there is a one time payment with a 100% OFF coupon code, the invoice will be marked as 'paid' by Stripe and
     // no client secret will be provided.
-    if (invoice.invoiceStatus && invoice.invoiceStatus === InvoiceStatus.PAID) {
+    if (invoiceStatus && invoiceStatus === InvoiceStatus.PAID) {
       navigationService.push(AppView.CheckoutSuccess);
       return;
     }
 
-    await confirmStripePaymentIntent(elements, invoice.clientSecret, confirmPayment);
+    if (type === PaymentType.FIAT && clientSecret) {
+      await confirmStripePaymentIntent(elements, clientSecret, confirmPayment);
+    } else if (type === PaymentType.CRYPTO) {
+      openCryptoPaymentDialog?.(ActionDialog.CryptoPayment, {
+        closeAllDialogsFirst: true,
+        data: {
+          qrUrl: payload?.qrUrl,
+          paymentRequestUri: payload?.paymentRequestUri,
+          encodedInvoiceIdToken,
+          address: payload?.paymentAddress,
+          payAmount: payload?.payAmount,
+          payCurrency: payload?.payCurrency,
+          url: payload?.url,
+          fiat: {
+            amount: currentSelectedPlan.taxes.decimalAmountWithTax,
+            currency: currentSelectedPlan.price.currency,
+          },
+        },
+      });
+    }
   };
 
   const handleUserPayment = async ({
@@ -198,8 +238,11 @@ export const useUserPayment = () => {
     seatsForBusinessSubscription = 1,
     translate,
     confirmPayment,
+    openCryptoPaymentDialog,
     confirmSetupIntent,
   }: UseUserPaymentPayload) => {
+    const planInterval = selectedPlan.price.interval;
+
     if (gclidStored) {
       await sendConversionToAPI({
         gclid: gclidStored,
@@ -212,7 +255,8 @@ export const useUserPayment = () => {
       });
     }
 
-    switch (selectedPlan.price.interval) {
+    switch (planInterval) {
+      case PlanInterval.MONTH:
       case PlanInterval.YEAR:
         await handleSubscriptionPayment({
           currency,
@@ -240,6 +284,7 @@ export const useUserPayment = () => {
           couponCodeData,
           translate,
           confirmPayment,
+          openCryptoPaymentDialog,
           confirmSetupIntent,
         });
         break;

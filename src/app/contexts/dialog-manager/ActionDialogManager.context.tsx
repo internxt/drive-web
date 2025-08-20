@@ -11,6 +11,7 @@ export enum ActionDialog {
   EditItem = 'edit-item',
   NameCollision = 'name-collision',
   ModifyStorage = 'modify-storage',
+  CryptoPayment = 'crypto-payment',
 }
 
 interface ActionDialogState {
@@ -19,7 +20,7 @@ interface ActionDialogState {
   data?: unknown;
 }
 
-type DialogActionConfig = { closeAllDialogsFirst?: boolean; data?: unknown };
+export type DialogActionConfig = { closeAllDialogsFirst?: boolean; data?: unknown };
 
 export type ActionDialogContextProps = {
   actionDialogs: Partial<Record<ActionDialog, ActionDialogState>>;
