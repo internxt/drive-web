@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, test } from 'vitest';
 import checkoutService from './checkout.service';
 import {
   CreatePaymentIntentPayload,
@@ -50,6 +50,7 @@ vi.mock('../../core/factory/sdk', () => ({
           invoiceStatus: 'paid',
         }),
         fetchPrices: vi.fn().mockResolvedValue([{ id: 'price_1', currency: 'eur', amount: 1000 }]),
+        verifyCryptoPayment: vi.fn().mockResolvedValue(true),
       }),
     }),
   },
@@ -225,6 +226,14 @@ describe('Checkout Service tests', () => {
         amountOff: 500,
         percentOff: undefined,
       });
+    });
+  });
+
+  describe('Verify the crypto payment', () => {
+    test('When the token is passed to verify the crypto payment, then the correct data is returned', async () => {
+      const token = 'token';
+      const response = await checkoutService.verifyCryptoPayment(token);
+      expect(response).toBeTruthy();
     });
   });
 

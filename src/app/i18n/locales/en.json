@@ -208,6 +208,7 @@
       "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
     },
     "addressBillingTitle": "Address Billing",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "Optional",
@@ -254,8 +255,28 @@
       "apply": "Apply",
       "taxes": "Taxes"
     },
+    "confirmCryptoPayment": {
+      "title": "Confirm the payment",
+      "timeExpiration": "The invoice will expire in 10 minutes",
+      "expiredLabel": "EXPIRED",
+      "totalInCrypto": "Payment amount ({{cryptoCurrency}})",
+      "totalInFiat": "Amount",
+      "copyAddress": "Payment address",
+      "doNotCloseWindowWarning": "Don't close the window until the payment is done",
+      "cancel": "Cancel",
+      "confirm": "Confirm the payment",
+      "sessionExpired": "Session Expired",
+      "notifications": {
+        "priceCopied": "Price copied to clipboard",
+        "addressCopied": "Address copied to clipboard",
+        "paymentSucceeded": "Payment completed successfully",
+        "paymentNotCompleted": "Payment is not completed",
+        "unexpectedError": "Something went wrong while verifying the payment"
+      }
+    },
     "error": {
-      "invalidPlan": "Unsupported plan type. Please select a valid plan."
+      "invalidPlan": "Unsupported plan type. Please select a valid plan.",
+      "fetchingCryptoCurrencies": "We couldn't load the available cryptocurrency options"
     }
   },
   "general": {
