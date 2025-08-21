@@ -29,7 +29,7 @@ export const AvailableCryptoCurrenciesDropdown = ({
       <Menu>
         <Menu.Button
           onKeyDown={(e) => e.preventDefault()}
-          className={`flex h-full w-full flex-row items-center justify-between rounded-lg text-base transition-all duration-75 ease-in-out ${isDropdownOpen ? 'text-white' : 'text-[#6D6E78] hover:text-white'}`}
+          className={`flex h-full w-full flex-row items-center justify-between rounded-lg text-base transition-all duration-75 ease-in-out ${isDropdownOpen ? 'text-gray-100 dark:text-white' : 'text-[#6D6E78] hover:text-gray-100 hover:dark:text-white'}`}
           onClick={onDropdownClicked}
         >
           {cryptoSelected ? (

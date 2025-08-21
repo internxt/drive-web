@@ -34,12 +34,14 @@ import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutRe
 import { AuthMethodTypes, PaymentType, PlanInterval } from '../../types';
 import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'app/payment/hooks/useUserPayment';
+import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'app/payment/components/checkout/CryptoPaymentDialog';
+import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import currencyService from 'app/payment/services/currency.service';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
-const IS_CRYPTO_PAYMENT_ENABLED = false;
+const IS_CRYPTO_PAYMENT_ENABLED = true;
 
 export const THEME_STYLES = {
   dark: {
@@ -106,6 +108,7 @@ const CheckoutViewWrapper = () => {
   const { handleUserPayment } = useUserPayment();
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
   const [userLocationData, setUserLocationData] = useState<UserLocation>();
+  const { isDialogOpen, openDialog: openCryptoPaymentDialog } = useActionDialog();
   const [availableCryptoCurrencies, setAvailableCryptoCurrencies] = useState<CryptoCurrency[] | undefined>(undefined);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('eur');
   const [currencyType, setCurrencyType] = useState<PaymentType>();
@@ -154,6 +157,7 @@ const CheckoutViewWrapper = () => {
   const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
 
   const canChangePlanDialogBeOpened = prices && currentSelectedPlan?.price && isUpdateSubscriptionDialogOpen;
+  const isCryptoPaymentDialogOpen = isDialogOpen(CRYPTO_PAYMENT_DIALOG_KEY);
 
   const userInfo: UserInfoProps = {
     name: fullName,
@@ -457,10 +461,12 @@ const CheckoutViewWrapper = () => {
         return;
       }
 
-      const { error: elementsError } = await elements.submit();
+      if (currencyType === PaymentType['FIAT']) {
+        const { error: elementsError } = await elements.submit();
 
-      if (elementsError) {
-        throw new Error(elementsError.message);
+        if (elementsError) {
+          throw new Error(elementsError.message);
+        }
       }
 
       const { customerId, token } = await checkoutService.getCustomerId({
@@ -494,7 +500,7 @@ const CheckoutViewWrapper = () => {
           confirmPayment: stripeSDK.confirmPayment,
           confirmSetupIntent: stripeSDK.confirmSetup,
           couponCodeData: couponCodeData,
-          currency: currentSelectedPlan.price.currency,
+          currency: selectedCurrency ?? currentSelectedPlan.price.currency,
           priceId: currentSelectedPlan.price.id,
           customerId,
           elements,
@@ -503,6 +509,7 @@ const CheckoutViewWrapper = () => {
           token,
           gclidStored,
           seatsForBusinessSubscription,
+          openCryptoPaymentDialog,
         });
       }
     } catch (err) {
@@ -672,6 +679,12 @@ const CheckoutViewWrapper = () => {
               subscriptionSelected={currentSelectedPlan.price.type}
             />
           ) : undefined}
+
+          {IS_CRYPTO_PAYMENT_ENABLED && isCryptoPaymentDialogOpen && (
+            <div className="flex flex-col" onMouseDown={(e) => e.stopPropagation()}>
+              <CryptoPaymentDialog />
+            </div>
+          )}
         </Elements>
       ) : (
         <div className="flex h-full items-center justify-center bg-gray-1">

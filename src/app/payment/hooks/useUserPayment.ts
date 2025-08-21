@@ -217,6 +217,10 @@ export const useUserPayment = () => {
           payAmount: payload?.payAmount,
           payCurrency: payload?.payCurrency,
           url: payload?.url,
+          fiat: {
+            amount: currentSelectedPlan.taxes.decimalAmountWithTax,
+            currency: currentSelectedPlan.price.currency,
+          },
         },
       });
     }
@@ -237,7 +241,7 @@ export const useUserPayment = () => {
     openCryptoPaymentDialog,
     confirmSetupIntent,
   }: UseUserPaymentPayload) => {
-    const planInterval = selectedPlan.price.interval as 'month' | 'year' | 'lifetime';
+    const planInterval = selectedPlan.price.interval;
 
     if (gclidStored) {
       await sendConversionToAPI({
