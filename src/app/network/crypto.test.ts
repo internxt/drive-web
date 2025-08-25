@@ -221,6 +221,7 @@ describe('Test crypto.ts functions', () => {
     const fileSize = 7 * uploadChunkSize;
     const streamCipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
 
     const encryptedStream = encryptStreamInParts(file, streamCipher, uploadChunkSize, overhead);
     const { encryptedFile } = await processStreamToCompletion(encryptedStream);
@@ -231,6 +232,7 @@ describe('Test crypto.ts functions', () => {
     const encrypted = Uint8Array.from(Buffer.concat([cipher.update(text, 'utf8'), cipher.final()]));
 
     expect(encrypted).toStrictEqual(flatEncryptedFile);
+    expect(spy).not.toHaveBeenCalled();
   });
 
   it('encryptStreamInParts should correctly encrypt file when chunkSize < uploadChunkSize', async () => {
@@ -240,6 +242,7 @@ describe('Test crypto.ts functions', () => {
     const fileSize = 7 * uploadChunkSize + 1;
     const cipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
 
     const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
     const result = await processStreamToCompletion(encryptedStream);
@@ -258,6 +261,7 @@ describe('Test crypto.ts functions', () => {
     expect(result.chunkCount).toBe(expectedEncryptedFile.length);
     expect(result.totalSize).toBe(fileSize);
     expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+    expect(spy).not.toHaveBeenCalled();
   });
 
   it('encryptStreamInParts should correctly encrypt file when fileSize = chunkSize = uploadChunkSize', async () => {
@@ -267,6 +271,7 @@ describe('Test crypto.ts functions', () => {
     const fileSize = uploadChunkSize;
     const cipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
 
     const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
     const result = await processStreamToCompletion(encryptedStream);
@@ -276,6 +281,7 @@ describe('Test crypto.ts functions', () => {
     expect(result.chunkCount).toBe(expectedEncryptedFile.length);
     expect(result.totalSize).toBe(fileSize);
     expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+    expect(spy).not.toHaveBeenCalled();
   });
 
   it('encryptStreamInParts should correctly encrypt file when chunkSize = uploadChunkSize + overhead', async () => {
@@ -285,6 +291,7 @@ describe('Test crypto.ts functions', () => {
     const fileSize = 3 * uploadChunkSize + 1;
     const cipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
 
     const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
     const result = await processStreamToCompletion(encryptedStream);
@@ -298,6 +305,7 @@ describe('Test crypto.ts functions', () => {
     expect(result.chunkCount).toBe(expectedEncryptedFile.length);
     expect(result.totalSize).toBe(fileSize);
     expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+    expect(spy).toHaveBeenCalled();
   });
 
   it('encryptStreamInParts should correctly encrypt file when uploadChunkSize = 2*chunkSize', async () => {
@@ -308,6 +316,7 @@ describe('Test crypto.ts functions', () => {
     const fileSize = 2 * uploadChunkSize + 1;
     const cipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
 
     const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
     const result = await processStreamToCompletion(encryptedStream);
@@ -320,15 +329,17 @@ describe('Test crypto.ts functions', () => {
     expect(result.chunkCount).toBe(expectedEncryptedFile.length);
     expect(result.totalSize).toBe(fileSize);
     expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+    expect(spy).not.toHaveBeenCalled();
   });
 
   it('encryptStreamInParts should correctly encrypt file when chunkSize < uploadChunkSize, file size is multiple of uploadChunkSize', async () => {
     const uploadChunkSize = 10;
     const chunkSize = 3;
-    const overhead = 1;
+    const overhead = 2;
     const fileSize = 7 * uploadChunkSize;
     const cipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
 
     const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
     const result = await processStreamToCompletion(encryptedStream);
@@ -346,6 +357,7 @@ describe('Test crypto.ts functions', () => {
     expect(result.chunkCount).toBe(expectedEncryptedFile.length);
     expect(result.totalSize).toBe(fileSize);
     expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+    expect(spy).not.toHaveBeenCalled();
   });
 
   it('encryptStreamInParts should correctly encrypt file even if chunkSize > uploadChunkSize', async () => {
@@ -355,6 +367,7 @@ describe('Test crypto.ts functions', () => {
     const fileSize = 7 * uploadChunkSize + 1;
     const cipher = getTestCipher();
     const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
 
     const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
     const result = await processStreamToCompletion(encryptedStream);
@@ -373,6 +386,7 @@ describe('Test crypto.ts functions', () => {
     expect(result.chunkCount).toBe(expectedEncryptedFile.length);
     expect(result.totalSize).toBe(fileSize);
     expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+    expect(spy).toHaveBeenCalled();
   });
 });
 
