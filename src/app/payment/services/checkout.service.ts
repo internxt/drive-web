@@ -1,11 +1,5 @@
-import {
-  CreatedPaymentIntent,
-  CreatedSubscriptionData,
-  DisplayPrice,
-  UserType,
-} from '@internxt/sdk/dist/drive/payments/types/types';
-import paymentService from '../../payment/services/payment.service';
-import { ClientSecretData, CouponCodeData } from '../types';
+import { CreatedSubscriptionData, DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { CouponCodeData } from '../types';
 import axios from 'axios';
 import localStorageService from 'app/core/services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
@@ -13,6 +7,8 @@ import {
   CreatePaymentIntentPayload,
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
+  PaymentIntent,
+  PaymentIntentCrypto,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
 import envService from 'app/core/services/env.service';
@@ -107,7 +103,7 @@ export const createPaymentIntent = async ({
   token,
   currency,
   promoCodeId,
-}: CreatePaymentIntentPayload): Promise<CreatedPaymentIntent> => {
+}: CreatePaymentIntentPayload): Promise<PaymentIntent> => {
   const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
   return checkoutClient.createPaymentIntent({
     customerId,
@@ -130,140 +126,6 @@ const fetchPrices = async (userType: UserType, currency: string): Promise<Displa
   const dataJson = await response.json();
 
   return dataJson;
-};
-
-const getClientSecretForPaymentIntent = async ({
-  customerId,
-  priceId,
-  token,
-  currency,
-  promoCode,
-}: {
-  customerId: string;
-  priceId: string;
-  token: string;
-  currency: string;
-  promoCode?: string;
-}): Promise<ClientSecretData & { paymentIntentId: string; invoiceStatus?: string }> => {
-  const {
-    clientSecret: client_secret,
-    id,
-    invoiceStatus,
-  } = await createPaymentIntent({ customerId, priceId, token, currency, promoCodeId: promoCode });
-
-  return {
-    clientSecretType: 'payment',
-    client_secret,
-    paymentIntentId: id,
-    invoiceStatus: invoiceStatus,
-  };
-};
-
-const getClientSecretForSubscriptionIntent = async ({
-  customerId,
-  priceId,
-  token,
-  mobileToken,
-  currency,
-  promoCodeId,
-  seatsForBusinessSubscription = 1,
-}: {
-  customerId: string;
-  priceId: string;
-  token: string;
-  mobileToken: string | null;
-  currency: string;
-  seatsForBusinessSubscription?: number;
-  promoCodeId?: string;
-}): Promise<ClientSecretData & { subscriptionId?: string; paymentIntentId?: string }> => {
-  if (mobileToken) {
-    const {
-      type: paymentType,
-      clientSecret: client_secret,
-      subscriptionId,
-      paymentIntentId,
-    } = await paymentService.createSubscriptionWithTrial(customerId, priceId, token, mobileToken, currency);
-
-    return {
-      clientSecretType: paymentType,
-      client_secret,
-      subscriptionId,
-      paymentIntentId,
-    };
-  }
-
-  const {
-    type: paymentType,
-    clientSecret: client_secret,
-    subscriptionId,
-    paymentIntentId,
-  } = await checkoutService.createSubscription({
-    customerId,
-    priceId,
-    token,
-    currency,
-    promoCodeId,
-    quantity: seatsForBusinessSubscription,
-  });
-
-  return {
-    clientSecretType: paymentType,
-    client_secret,
-    subscriptionId,
-    paymentIntentId,
-  };
-};
-
-const getClientSecret = async ({
-  selectedPlan,
-  token,
-  mobileToken,
-  customerId,
-  promoCodeId,
-  seatsForBusinessSubscription = 1,
-}: {
-  selectedPlan: PriceWithTax;
-  token: string;
-  mobileToken: string | null;
-  customerId: string;
-  promoCodeId?: CouponCodeData['codeId'];
-  seatsForBusinessSubscription?: number;
-}) => {
-  if (selectedPlan?.price.interval === 'lifetime') {
-    const { clientSecretType, client_secret, paymentIntentId, invoiceStatus } =
-      await checkoutService.getClientSecretForPaymentIntent({
-        customerId,
-        priceId: selectedPlan.price.id,
-        token,
-        currency: selectedPlan.price.currency,
-        promoCode: promoCodeId,
-      });
-
-    return {
-      type: clientSecretType,
-      clientSecret: client_secret,
-      paymentIntentId,
-      invoiceStatus,
-    };
-  } else {
-    const response = await checkoutService.getClientSecretForSubscriptionIntent({
-      customerId,
-      priceId: selectedPlan.price?.id,
-      token,
-      mobileToken,
-      currency: selectedPlan.price.currency,
-      seatsForBusinessSubscription,
-      promoCodeId,
-    });
-
-    const { clientSecretType, client_secret, subscriptionId, paymentIntentId } = response;
-    return {
-      type: clientSecretType,
-      clientSecret: client_secret,
-      subscriptionId,
-      paymentIntentId,
-    };
-  }
 };
 
 const checkoutSetupIntent = async (customerId: string) => {
@@ -291,6 +153,11 @@ const checkoutSetupIntent = async (customerId: string) => {
   } catch (error) {
     throw new Error('Error creating subscription with trial');
   }
+};
+
+const verifyCryptoPayment = async (token: PaymentIntentCrypto['token']): Promise<boolean> => {
+  const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
+  return checkoutClient.verifyCryptoPayment(token);
 };
 
 const loadStripeElements = async (
@@ -364,9 +231,6 @@ const loadStripeElements = async (
 
 const checkoutService = {
   fetchPromotionCodeByName,
-  getClientSecretForPaymentIntent,
-  getClientSecretForSubscriptionIntent,
-  getClientSecret,
   getCustomerId,
   createPaymentIntent,
   getPriceById,
@@ -374,6 +238,7 @@ const checkoutService = {
   loadStripeElements,
   fetchPrices,
   checkoutSetupIntent,
+  verifyCryptoPayment,
 };
 
 export default checkoutService;

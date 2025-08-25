@@ -67,7 +67,7 @@
     "valentines": "Valentines",
     "stPatricks": "St. Patrick's",
     "summer": "годовщина",
-    "anniversary":"Anniversary",
+    "anniversary": "Anniversary",
     "idManagement": "Identity Management",
     "environment": "World Environment Day"
   },
@@ -191,6 +191,7 @@
       "privacyGuarantee": "Гарантия конфиденциальности: Мы не передаем вашу информацию и будем связываться с вами только при необходимости для предоставления наших услуг."
     },
     "addressBillingTitle": "Адрес для выставления счетов",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "Необязательно",
@@ -236,6 +237,29 @@
       },
       "apply": "Применить",
       "taxes": "Налоги"
+    },
+    "confirmCryptoPayment": {
+      "title": "Подтвердить платеж",
+      "timeExpiration": "Счет истечет через 10 минут",
+      "expiredLabel": "ИСТЁК",
+      "totalInCrypto": "Сумма к оплате ({{cryptoCurrency}})",
+      "totalInFiat": "Сумма",
+      "copyAddress": "Адрес платежа",
+      "doNotCloseWindowWarning": "Не закрывайте окно, пока платеж не будет завершен",
+      "cancel": "Отмена",
+      "confirm": "Подтвердить платеж",
+      "sessionExpired": "Сессия Истекла",
+      "notifications": {
+        "priceCopied": "Цена скопирована в буфер обмена",
+        "addressCopied": "Адрес скопирован в буфер обмена",
+        "paymentSucceeded": "Платеж успешно завершен",
+        "paymentNotCompleted": "Платеж не завершен",
+        "unexpectedError": "Что-то пошло не так при проверке платежа"
+      }
+    },
+    "error": {
+      "invalidPlan": "Неподдерживаемый тип плана. Пожалуйста, выберите действительный план.",
+      "fetchingCryptoCurrencies": "Не удалось загрузить доступные варианты криптовалют"
     }
   },
   "general": {
@@ -879,8 +903,8 @@
         "successSentInvitation": "Успешное совместное использование c {{email}}",
         "acceptedSuccessfully": "Приглашение к общей папке успешно принято",
         "declinedSuccessfully": "Приглашение к общей папке успешно отклонено",
-        "inviteNewUsersBody": "Людям без учетной записи Internxt будет отправлено электронное письмо с приглашением к регистрации.",
-        "inviteNewUsersTitle": "Пригласить новых пользователей?",
+        "inviteNewUsersBody": "В случае если добавленные электронные адреса не соответствуют учетной записи Internxt, они получат электронное письмо",
+        "inviteNewUsersTitle": "Пригласить пользователей?",
         "accept": "Принять",
         "cancel": "Отмена",
         "error": {
@@ -1945,6 +1969,7 @@
       "deny": "Отклонить",
       "invitedOn": "Приглашение отправлено ",
       "todayAt": "сегодня в "
-    }
+    },
+    "sharedWorkspace": "Общее рабочее пространство"
   }
 }

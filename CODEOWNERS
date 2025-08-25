@@ -7,3 +7,4 @@
 /src/upload.worker.ts @internxt/cryptography
 /src/app/analytics/ @internxt/marketing
 /src/app/theme/userThemes.service.ts @internxt/marketing
+/src/app/payment @xabg2

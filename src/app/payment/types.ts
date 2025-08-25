@@ -1,4 +1,7 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
+import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
+import { Stripe, StripeElements } from '@stripe/stripe-js';
+import { ActionDialog, DialogActionConfig } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 
 export enum Currency {
   'eur' = '€',
@@ -110,3 +113,58 @@ export interface ErrorStates {
 export type ErrorType = 'auth' | 'stripe' | 'coupon';
 
 export type PartialErrorState = Partial<Record<ErrorType, string>>;
+
+export interface CreatePaymentIntentPayload {
+  customerId: string;
+  priceId: string;
+  token: string;
+  currency: string;
+  seatsForBusinessSubscription?: number;
+  promoCodeId?: string;
+}
+
+export interface ProcessPurchasePayload {
+  customerId: string;
+  priceId: string;
+  token: string;
+  currency: string;
+  elements: StripeElements;
+  confirmPayment: Stripe['confirmPayment'];
+  confirmSetupIntent: Stripe['confirmSetup'];
+  openCryptoPaymentDialog?: (key: ActionDialog, config?: DialogActionConfig) => void;
+  translate: (key: string) => string;
+  currentSelectedPlan: PriceWithTax;
+  seatsForBusinessSubscription?: number;
+  couponCodeData?: CouponCodeData;
+}
+
+export interface UseUserPaymentPayload {
+  customerId: string;
+  priceId: string;
+  token: string;
+  currency: string;
+  selectedPlan: PriceWithTax;
+  elements: StripeElements;
+  confirmPayment: Stripe['confirmPayment'];
+  confirmSetupIntent: Stripe['confirmSetup'];
+  openCryptoPaymentDialog?: (key: ActionDialog, config?: DialogActionConfig) => void;
+  gclidStored: string | null;
+  translate: (key: string) => string;
+  couponCodeData?: CouponCodeData;
+  seatsForBusinessSubscription?: number;
+}
+
+export enum PlanInterval {
+  MONTH = 'month',
+  YEAR = 'year',
+  LIFETIME = 'lifetime',
+}
+
+export enum InvoiceStatus {
+  PAID = 'paid',
+}
+
+export enum PaymentType {
+  FIAT = 'fiat',
+  CRYPTO = 'crypto',
+}

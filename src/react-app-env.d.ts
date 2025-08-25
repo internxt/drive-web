@@ -5,7 +5,6 @@ declare namespace NodeJS {
     NODE_ENV: 'development' | 'production' | 'test';
     PUBLIC_URL: string;
     REACT_APP_NODE_ENV: string;
-    REACT_APP_API_URL: string;
     REACT_APP_DRIVE_NEW_API_URL: string;
     REACT_APP_PAYMENTS_API_URL: string;
     REACT_APP_CRYPTO_SECRET: string;
@@ -53,6 +52,7 @@ interface Window {
       accept: Record<string, string[]>;
     }>;
   }): Promise<FileSystemFileHandle>;
+  dataLayer: Record<string, any>[];
 }
 
 interface Navigator {

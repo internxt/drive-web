@@ -66,7 +66,7 @@
     "superBowl": "Super Bowl",
     "sanValentin": "Valentinstag",
     "summer": "Sommer",
-    "anniversary":"Jubiläum",
+    "anniversary": "Jubiläum",
     "stPatricks": "St. Patrick's",
     "idManagement": "Identitätsmanagement",
     "environment": "Weltumwelt"
@@ -185,6 +185,7 @@
       "privacyGuarantee": "Datenschutzgarantie: Wir teilen Ihre Informationen nicht und werden Sie nur kontaktieren, wenn es notwendig ist, um unseren Service zu bieten."
     },
     "addressBillingTitle": "Rechnungsadresse",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "Optional",
@@ -230,6 +231,29 @@
       },
       "apply": "Anwenden",
       "taxes": "Steuern"
+    },
+    "confirmCryptoPayment": {
+      "title": "Zahlung bestätigen",
+      "timeExpiration": "Die Rechnung läuft in 10 Minuten ab",
+      "expiredLabel": "ABGELAUFEN",
+      "totalInCrypto": "Zahlbetrag ({{cryptoCurrency}})",
+      "totalInFiat": "Betrag",
+      "copyAddress": "Zahlungsadresse",
+      "doNotCloseWindowWarning": "Schließen Sie das Fenster nicht, bis die Zahlung abgeschlossen ist",
+      "cancel": "Abbrechen",
+      "confirm": "Zahlung bestätigen",
+      "sessionExpired": "Sitzung Abgelaufen",
+      "notifications": {
+        "priceCopied": "Preis in die Zwischenablage kopiert",
+        "addressCopied": "Adresse in die Zwischenablage kopiert",
+        "paymentSucceeded": "Zahlung erfolgreich abgeschlossen",
+        "paymentNotCompleted": "Zahlung ist nicht abgeschlossen",
+        "unexpectedError": "Bei der Überprüfung der Zahlung ist ein Fehler aufgetreten"
+      }
+    },
+    "error": {
+      "invalidPlan": "Nicht unterstützter Plantyp. Bitte wählen Sie einen gültigen Plan.",
+      "fetchingCryptoCurrencies": "Die verfügbaren Kryptowährungsoptionen konnten nicht geladen werden"
     }
   },
   "general": {
@@ -833,8 +857,8 @@
         "successSentInvitation": "Erfolgreiche Freigabe mit {{email}}",
         "acceptedSuccessfully": "Einladung zum freigegebenen Ordner erfolgreich angenommen",
         "declinedSuccessfully": "Einladung zu gemeinsamem Ordner erfolgreich abgelehnt",
-        "inviteNewUsersBody": "Personen ohne Internxt-Konto erhalten eine Anmeldeeinladung per E-Mail.",
-        "inviteNewUsersTitle": "Neue benutzer einladen?",
+        "inviteNewUsersBody": "Falls die hinzugefügten E-Mails nicht zu einem Internxt-Konto gehören, erhalten sie eine E-Mail",
+        "inviteNewUsersTitle": "Benutzer einladen?",
         "accept": "Akzeptieren",
         "cancel": "Abbrechen",
         "error": {
@@ -1920,6 +1944,7 @@
       "deny": "Ablehnen",
       "invitedOn": "Einladung gesendet ",
       "todayAt": "heute um "
-    }
+    },
+    "sharedWorkspace": "Gemeinsamer Arbeitsbereich"
   }
 }
