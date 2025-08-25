@@ -65,7 +65,15 @@ const getPrivateSharedFolderAccessData = async (folderUUID: string, workspaceId?
   }
 
   // TODO: ADD TO SDK TYPES THE NECESSARY FIELDS
-  const sharedFolderData = { plainName: (response as any).name, uuid: folderUUID, isFolder: true };
+  const sharedFolderData = {
+    plainName: response.name,
+    uuid: folderUUID,
+    isFolder: true,
+    encryptionKey: response.encryptionKey,
+    credentials: response.credentials,
+    bucket: response.bucket,
+    token: response.token,
+  };
   return sharedFolderData;
 };
 
