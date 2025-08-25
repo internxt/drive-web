@@ -13,18 +13,6 @@ import downloadFileV2 from './download/v2';
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string; bucketId: string };
 
-export function loadWritableStreamPonyfill(): Promise<void> {
-  const script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/npm/web-streams-polyfill@2.0.2/dist/ponyfill.min.js';
-  document.head.appendChild(script);
-
-  return new Promise((resolve) => {
-    script.onload = function () {
-      resolve();
-    };
-  });
-}
-
 type BinaryStream = ReadableStream<Uint8Array>;
 
 export async function binaryStreamToBlob(stream: BinaryStream): Promise<Blob> {
