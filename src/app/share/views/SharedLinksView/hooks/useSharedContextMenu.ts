@@ -69,7 +69,7 @@ const useSharedContextMenu = ({
         copyLink,
         showDetails,
         downloadItem,
-        renameItem: isEditorUser ? renameItem : undefined,
+        renameItem: isEditorUser && !isRootFolder ? renameItem : undefined,
         ...ownerCurrentUserOptions,
       });
     };
