@@ -6,13 +6,15 @@ import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
 import { State } from 'app/payment/store/types';
-import { LegacyRef } from 'react';
+import { LegacyRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { CheckoutProductCard } from '../../components/checkout/CheckoutProductCard';
 import { CheckoutUserAuth } from '../../components/checkout/CheckoutUserAuth';
 import { HeaderComponent } from '../../components/checkout/Header';
-import { AuthMethodTypes } from '../../types';
+import { AuthMethodTypes, PaymentType } from '../../types';
 import { CheckoutViewManager, UserInfoProps } from './CheckoutViewWrapper';
+import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
+import { AvailableCryptoCurrenciesDropdown } from 'app/payment/components/checkout/AvailableCryptoCurrenciesDropdown';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -21,7 +23,7 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   },
   layout: {
     type: 'accordion',
-    defaultCollapsed: false,
+    defaultCollapsed: true,
     radios: false,
     spacedAccordionItems: true,
   },
@@ -33,8 +35,12 @@ interface CheckoutViewProps {
   showHardcodedRenewal?: string;
   showCouponCode: boolean;
   userAuthComponentRef: LegacyRef<HTMLDivElement>;
-  checkoutViewVariables: State;
+  checkoutViewVariables: State & {
+    selectedCurrency: string;
+  };
   checkoutViewManager: CheckoutViewManager;
+  availableCryptoCurrencies?: CryptoCurrency[];
+  onCurrencyTypeChanges: (currency: PaymentType) => void;
 }
 
 const AUTH_METHOD_VALUES = {
@@ -49,15 +55,39 @@ const CheckoutView = ({
   userAuthComponentRef,
   checkoutViewVariables,
   checkoutViewManager,
+  availableCryptoCurrencies,
+  onCurrencyTypeChanges,
 }: CheckoutViewProps) => {
   const { translate } = useTranslationContext();
   // Those custom hooks should be here.
   // They cannot be moved to the Parent, because it must be wrapped by <Elements> component.
   const stripeSDK = useStripe();
   const elements = useElements();
+  const [isCryptoDropdownOpen, setIsCryptoDropdownOpen] = useState<boolean>(false);
 
-  const { isPaying, error, authMethod, couponCodeData, seatsForBusinessSubscription, currentSelectedPlan } =
-    checkoutViewVariables;
+  const onCryptoDropdownToggle = () => {
+    if (!isCryptoDropdownOpen) {
+      elements?.getElement('payment')?.collapse();
+    }
+
+    onCurrencyTypeChanges(PaymentType['CRYPTO']);
+    setIsCryptoDropdownOpen(!isCryptoDropdownOpen);
+  };
+
+  const onStripePaymentExpanded = () => {
+    onCurrencyTypeChanges(PaymentType['FIAT']);
+    setIsCryptoDropdownOpen(false);
+  };
+
+  const {
+    isPaying,
+    error,
+    authMethod,
+    couponCodeData,
+    seatsForBusinessSubscription,
+    currentSelectedPlan,
+    selectedCurrency,
+  } = checkoutViewVariables;
 
   const {
     register,
@@ -138,7 +168,25 @@ const CheckoutView = ({
                   ) : undefined}
                 </div>
                 <p className="text-2xl font-semibold text-gray-100">3. {translate('checkout.paymentTitle')}</p>
-                <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
+                <div className="flex flex-col w-full gap-2">
+                  <PaymentElement
+                    options={PAYMENT_ELEMENT_OPTIONS}
+                    onChange={(event) => {
+                      if (!event.collapsed) {
+                        onStripePaymentExpanded();
+                      }
+                    }}
+                  />
+                  {availableCryptoCurrencies && (
+                    <AvailableCryptoCurrenciesDropdown
+                      availableCryptoCurrencies={availableCryptoCurrencies}
+                      selectedCurrency={selectedCurrency}
+                      isDropdownOpen={isCryptoDropdownOpen}
+                      onDropdownClicked={onCryptoDropdownToggle}
+                      onCryptoChanges={checkoutViewManager.onCurrencyChange}
+                    />
+                  )}
+                </div>
                 {error?.stripe && (
                   <div id="stripeError" className="text-red-dark">
                     {error.stripe}

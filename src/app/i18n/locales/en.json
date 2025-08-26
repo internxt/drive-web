@@ -87,7 +87,7 @@
     "superBowl": "Super Bowl",
     "valentines": "Valentine's Day",
     "summer": "Summer",
-    "anniversary":"Anniversary",
+    "anniversary": "Anniversary",
     "stPatricks": "St. Patrick's Day",
     "idManagement": "Identity Management",
     "environment": "World Environment Day"
@@ -208,6 +208,7 @@
       "privacyGuarantee": "Privacy guarantee: We do not share your information and will contact you only as needed to provide our service."
     },
     "addressBillingTitle": "Address Billing",
+    "crypto": "Crypto",
     "addressBilling": {
       "optional": {
         "cta": "Optional",
@@ -253,6 +254,29 @@
       },
       "apply": "Apply",
       "taxes": "Taxes"
+    },
+    "confirmCryptoPayment": {
+      "title": "Confirm the payment",
+      "timeExpiration": "The invoice will expire in 10 minutes",
+      "expiredLabel": "EXPIRED",
+      "totalInCrypto": "Payment amount ({{cryptoCurrency}})",
+      "totalInFiat": "Amount",
+      "copyAddress": "Payment address",
+      "doNotCloseWindowWarning": "Don't close the window until the payment is done",
+      "cancel": "Cancel",
+      "confirm": "Confirm the payment",
+      "sessionExpired": "Session Expired",
+      "notifications": {
+        "priceCopied": "Price copied to clipboard",
+        "addressCopied": "Address copied to clipboard",
+        "paymentSucceeded": "Payment completed successfully",
+        "paymentNotCompleted": "Payment is not completed",
+        "unexpectedError": "Something went wrong while verifying the payment"
+      }
+    },
+    "error": {
+      "invalidPlan": "Unsupported plan type. Please select a valid plan.",
+      "fetchingCryptoCurrencies": "We couldn't load the available cryptocurrency options"
     }
   },
   "general": {
@@ -906,8 +930,8 @@
         "successSentInvitation": "Successful sharing with {{email}}",
         "acceptedSuccessfully": "Shared folder invitation successfully accepted",
         "declinedSuccessfully": "Shared folder invitation successfully declined",
-        "inviteNewUsersBody": "People without an Internxt account will be sent a signup invitation email.",
-        "inviteNewUsersTitle": "Invite new users?",
+        "inviteNewUsersBody": "In case the added emails don't correspond to an Internxt account, they will receive an email",
+        "inviteNewUsersTitle": "Invite users?",
         "accept": "Accept",
         "cancel": "Cancel",
         "error": {
@@ -1987,6 +2011,7 @@
       "deny": "Decline",
       "invitedOn": "Invitation sent ",
       "todayAt": "today at "
-    }
+    },
+    "sharedWorkspace": "Shared workspace"
   }
 }

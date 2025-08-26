@@ -1,11 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, test } from 'vitest';
 import checkoutService from './checkout.service';
 import {
   CreatePaymentIntentPayload,
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
 } from '@internxt/sdk/dist/payments/types';
-import paymentService from './payment.service';
 
 vi.mock('./payment.service', () => ({
   default: {
@@ -51,6 +50,7 @@ vi.mock('../../core/factory/sdk', () => ({
           invoiceStatus: 'paid',
         }),
         fetchPrices: vi.fn().mockResolvedValue([{ id: 'price_1', currency: 'eur', amount: 1000 }]),
+        verifyCryptoPayment: vi.fn().mockResolvedValue(true),
       }),
     }),
   },
@@ -211,45 +211,6 @@ describe('Checkout Service tests', () => {
     });
   });
 
-  describe('Get the client secret from a payment intent', () => {
-    it('When the user wants to purchase a one time payment, then the correct data is returned', async () => {
-      const createInvoicePayload = {
-        customerId: 'cus_123',
-        priceId: 'price_123',
-        token: 'user_mocked_token',
-        currency: 'eur',
-      };
-
-      const createInvoiceResponse = await checkoutService.getClientSecretForPaymentIntent(createInvoicePayload);
-
-      expect(createInvoiceResponse).toStrictEqual({
-        clientSecretType: 'payment',
-        client_secret: 'client_secret',
-        paymentIntentId: 'py_id',
-        invoiceStatus: 'paid',
-      });
-    });
-
-    it('When the user wants to purchase a one time payment with a promotional code, then the correct data is returned', async () => {
-      const createInvoicePayload = {
-        customerId: 'cus_123',
-        priceId: 'price_123',
-        token: 'user_mocked_token',
-        currency: 'eur',
-        promoCodeId: 'promo_code_name',
-      };
-
-      const createInvoiceResponse = await checkoutService.getClientSecretForPaymentIntent(createInvoicePayload);
-
-      expect(createInvoiceResponse).toStrictEqual({
-        clientSecretType: 'payment',
-        client_secret: 'client_secret',
-        paymentIntentId: 'py_id',
-        invoiceStatus: 'paid',
-      });
-    });
-  });
-
   describe('Fetch promotion code by name', () => {
     it('When a valid promo code is passed, then it returns correct promo data', async () => {
       vi.spyOn(checkoutService, 'fetchPromotionCodeByName').mockResolvedValue({
@@ -268,94 +229,11 @@ describe('Checkout Service tests', () => {
     });
   });
 
-  describe('Fetch the client secret for a subscription', () => {
-    it('When mobileToken is provided, then it uses paymentService to create subscription with trial', async () => {
-      vi.spyOn(paymentService, 'createSubscriptionWithTrial').mockResolvedValue({
-        type: 'setup',
-        clientSecret: 'client_secret',
-        subscriptionId: 'sub_id',
-        paymentIntentId: 'pi_id',
-      });
-
-      const result = await checkoutService.getClientSecretForSubscriptionIntent({
-        customerId: 'cus_123',
-        priceId: 'price_123',
-        token: 'token_123',
-        mobileToken: 'mobile_token',
-        currency: 'eur',
-      });
-
-      expect(result).toEqual({
-        clientSecretType: 'setup',
-        client_secret: 'client_secret',
-        subscriptionId: 'sub_id',
-        paymentIntentId: 'pi_id',
-      });
-    });
-
-    it('When mobileToken is not provided, then it uses checkoutService to create subscription', async () => {
-      const result = await checkoutService.getClientSecretForSubscriptionIntent({
-        customerId: 'cus_123',
-        priceId: 'price_123',
-        token: 'token_123',
-        mobileToken: null,
-        currency: 'eur',
-        seatsForBusinessSubscription: 5,
-        promoCodeId: 'promo_1',
-      });
-
-      expect(result).toEqual({
-        clientSecretType: 'payment',
-        client_secret: 'client_secret',
-        subscriptionId: 'sub_123',
-        paymentIntentId: 'py_123',
-      });
-    });
-  });
-
-  describe('Fetch the user client secret', () => {
-    const selectedPlan = {
-      price: {
-        id: 'price_123',
-        currency: 'eur',
-        interval: 'lifetime',
-      },
-      taxes: { amountWithTax: 1000 },
-    } as any;
-
-    it('When plan is lifetime, then it gets payment intent secret', async () => {
-      const result = await checkoutService.getClientSecret({
-        selectedPlan,
-        token: 'token',
-        mobileToken: null,
-        customerId: 'cus_123',
-      });
-
-      expect(result).toEqual({
-        type: 'payment',
-        clientSecret: 'client_secret',
-        paymentIntentId: 'py_id',
-        invoiceStatus: 'paid',
-      });
-    });
-
-    it('When plan is subscription, then it gets subscription intent secret', async () => {
-      const subPlan = { ...selectedPlan, price: { ...selectedPlan.price, interval: 'year' } };
-
-      const result = await checkoutService.getClientSecret({
-        selectedPlan: subPlan,
-        token: 'token',
-        mobileToken: null,
-        customerId: 'cus_123',
-        promoCodeId: 'promo_123',
-      });
-
-      expect(result).toEqual({
-        type: 'payment',
-        clientSecret: 'client_secret',
-        subscriptionId: 'sub_123',
-        paymentIntentId: 'py_123',
-      });
+  describe('Verify the crypto payment', () => {
+    test('When the token is passed to verify the crypto payment, then the correct data is returned', async () => {
+      const token = 'token';
+      const response = await checkoutService.verifyCryptoPayment(token);
+      expect(response).toBeTruthy();
     });
   });
 

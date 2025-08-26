@@ -200,13 +200,6 @@
       "exact": false
     },
     {
-      "id": "guest-accept-invite",
-      "layout": "empty",
-      "path": "/guest/invite",
-      "exact": true,
-      "auth": true
-    },
-    {
       "id": "maintenance",
       "layout": "empty",
       "path": "/maintenance",

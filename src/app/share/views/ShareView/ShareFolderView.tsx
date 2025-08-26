@@ -7,14 +7,16 @@ import errorService from 'app/core/services/error.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { loadWritableStreamPonyfill } from 'app/network/download';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import shareService, { downloadPublicSharedFolder, getPublicSharingMeta, decodeSharingId } from 'app/share/services/share.service';
+import shareService, {
+  downloadPublicSharedFolder,
+  getPublicSharingMeta,
+  decodeSharingId,
+} from 'app/share/services/share.service';
 import { TaskProgress } from 'app/tasks/types';
 import { useEffect, useState } from 'react';
 import { match } from 'react-router';
 import { Link } from 'react-router-dom';
-import { WritableStream } from 'streamsaver';
 import { HTTP_CODES } from '../../../core/constants';
 import AppError from '../../../core/types';
 import { useAppSelector } from '../../../store/hooks';
@@ -63,13 +65,6 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const [folderSize, setFolderSize] = useState<string | null>(null);
   const [isGetFolderSizeError, setIsGetFolderSizeError] = useState<boolean>(false);
 
-  const canUseReadableStreamMethod =
-    'WritableStream' in window &&
-    'ReadableStream' in window &&
-    new ReadableStream().pipeTo !== undefined &&
-    new ReadableStream().pipeThrough !== undefined &&
-    WritableStream !== undefined;
-
   let body, downloadButton;
 
   useEffect(() => {
@@ -96,12 +91,6 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   }, []);
 
   async function loadFolderInfo(password?: string) {
-    if (!canUseReadableStreamMethod) {
-      // TODO: Hide inside download shared folder function
-      loadWritableStreamPonyfill().then(() => {
-        console.log('loaded ponyfill');
-      });
-    }
     // ! iOS Chrome is not supported
     if (navigator.userAgent.match('CriOS')) {
       throw new Error(CHROME_IOS_ERROR_MESSAGE);
