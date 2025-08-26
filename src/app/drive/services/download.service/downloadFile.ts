@@ -1,6 +1,4 @@
 import streamSaver from 'streamsaver';
-
-import { loadWritableStreamPonyfill } from 'app/network/download';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
 import { DriveFileData } from '../../types';
@@ -95,7 +93,7 @@ export default async function downloadFile(
   let support: DownloadSupport;
 
   if (isCypress) {
-    support = DownloadSupport.PatchedStreamApi;
+    support = DownloadSupport.PartialStreamApi;
   } else if (isBrave) {
     support = DownloadSupport.Blob;
   } else if (writeToFsIsSupported) {
@@ -103,7 +101,7 @@ export default async function downloadFile(
   } else if (writableIsSupported) {
     support = DownloadSupport.PartialStreamApi;
   } else {
-    support = DownloadSupport.PatchedStreamApi;
+    support = DownloadSupport.PartialStreamApi;
   }
 
   const fileStreamPromise = !sharingOptions
@@ -152,15 +150,14 @@ function downloadFileUsingStreamApi(
   destination: WritableStream,
   abortController?: AbortController,
 ): Promise<void> {
-  return (
-    (source.pipeTo && source.pipeTo(destination, { signal: abortController?.signal })) || pipe(source, destination)
-  );
+  return source.pipeTo
+    ? source.pipeTo(destination, { signal: abortController?.signal })
+    : pipe(source, destination as BlobWritable);
 }
 
 enum DownloadSupport {
   StreamApi = 'StreamApi',
   PartialStreamApi = 'PartialStreamApi',
-  PatchedStreamApi = 'PartialStreamApi',
   Blob = 'Blob',
 }
 
@@ -186,12 +183,6 @@ async function downloadToFs(
       const destination = await fsHandle.createWritable({ keepExistingData: false });
 
       return downloadFileUsingStreamApi(await source, destination, abortController);
-    case DownloadSupport.PatchedStreamApi:
-      await loadWritableStreamPonyfill();
-
-      streamSaver.WritableStream = window.WritableStream;
-
-      return downloadFileUsingStreamApi(await source, streamSaver.createWriteStream(filename), abortController);
     case DownloadSupport.PartialStreamApi:
       return downloadFileUsingStreamApi(await source, streamSaver.createWriteStream(filename), abortController);
 

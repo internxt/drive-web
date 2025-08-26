@@ -42,6 +42,16 @@ interface Window {
       usedJSHeapSize: number;
     };
   };
+  showSaveFilePicker(options?: {
+    excludeAcceptAllOption?: boolean;
+    id?: string;
+    startIn?: FileSystemHandle | 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos';
+    suggestedName?: string;
+    types?: Array<{
+      description?: string;
+      accept: Record<string, string[]>;
+    }>;
+  }): Promise<FileSystemFileHandle>;
   dataLayer: Record<string, any>[];
 }
 

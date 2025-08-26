@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.512",
+  "version": "v1.0.515",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -143,7 +143,7 @@
     "@types/streamsaver": "^2.0.1",
     "@types/wicg-file-system-access": "^2020.9.4",
     "@vitejs/plugin-react": "=4.5.1",
-    "@vitest/coverage-istanbul": "^2.1.6",
+    "@vitest/coverage-istanbul": "2.1.9",
     "autoprefixer": "^10.4.16",
     "browserslist": "^4.25.0",
     "buffer": "^6.0.3",
