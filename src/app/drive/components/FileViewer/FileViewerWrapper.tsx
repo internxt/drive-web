@@ -98,8 +98,8 @@ const FileViewerWrapper = ({
   useEffect(() => {
     setBlob(null);
     dispatch(uiActions.setFileViewerItem(currentFile));
-
     if (currentFile && !updateProgress && !isDownloadStarted) {
+      setIsDownloadStarted(true);
       fileContentManager
         .download()
         .then((downloadedFile) => {
@@ -114,7 +114,8 @@ const FileViewerWrapper = ({
           if (error.name === 'AbortError') {
             return;
           }
-          setUpdateProgress(0);
+          console.error(error);
+          setBlob(null);
           errorService.reportError(error);
           setIsDownloadStarted(false);
         });
