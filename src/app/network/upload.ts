@@ -6,6 +6,7 @@ import { getSha256 } from '../crypto/services/utils';
 import { NetworkFacade } from './NetworkFacade';
 import { ConnectionLostError } from './requests';
 import envService from 'app/core/services/env.service';
+import { MAX_TRIES, RETRY_DELAY, UPLOAD_CHUNK_SIZE, MIN_MULTIPART_SIZE } from './networkConstants';
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
@@ -27,8 +28,8 @@ interface IUploadParams {
   };
 }
 
-export async function uploadFileBlob(
-  content: Blob,
+export async function uploadFileUint8Array(
+  content: Uint8Array,
   url: string,
   opts: {
     progressCallback: UploadProgressCallback;
@@ -46,11 +47,7 @@ export async function uploadFileBlob(
       onUploadProgress: (progress: AxiosProgressEvent) => {
         opts.progressCallback(progress.total ?? 0, progress.loaded);
       },
-      cancelToken: new axios.CancelToken((canceler) => {
-        opts.abortController?.signal.addEventListener('abort', () => {
-          canceler();
-        });
-      }),
+      signal: opts.abortController?.signal,
     });
 
     return { etag: res.headers.etag };
@@ -98,12 +95,10 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
     ),
   );
 
-  const minimumMultipartThreshold = 100 * 1024 * 1024;
-  const useMultipart = params.filesize > minimumMultipartThreshold;
-  const partSize = 30 * 1024 * 1024;
+  const useMultipart = params.filesize > MIN_MULTIPART_SIZE;
+  const partSize = UPLOAD_CHUNK_SIZE;
 
   console.time('multipart-upload');
-
   const uploadAbortController = new AbortController();
   const context = typeof window === 'undefined' ? self : window;
 
@@ -129,8 +124,6 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
   params.abortController?.signal.addEventListener('abort', onAbort);
 
   async function retryUpload(): Promise<string> {
-    const MAX_TRIES = 3;
-    const RETRY_DELAY = 1000;
     let uploadPromise: Promise<string>;
     let lastTryError: unknown;
 

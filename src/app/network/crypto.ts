@@ -1,7 +1,7 @@
 import { mnemonicToSeed } from 'bip39';
 import * as crypto from 'crypto';
 import { Cipher, CipherCCM, createCipheriv } from 'crypto';
-import { streamFileIntoChunks } from '../core/services/stream.service';
+
 import {
   getHmacSha512,
   getHmacSha512FromHexKey,
@@ -11,11 +11,7 @@ import {
   getSha512FromHex,
 } from '../crypto/services/utils';
 import { LegacyShardMeta } from './types';
-
-const BUCKET_META_MAGIC = [
-  66, 150, 71, 16, 50, 114, 88, 160, 163, 35, 154, 65, 162, 213, 226, 215, 70, 138, 57, 61, 52, 19, 210, 170, 38, 164,
-  162, 200, 86, 201, 2, 81,
-];
+import { BUCKET_META_MAGIC } from './networkConstants';
 
 export function createAES256Cipher(key: Buffer, iv: Buffer): Cipher {
   return createCipheriv('aes-256-ctr', key, iv);
@@ -97,59 +93,84 @@ export function encryptReadable(readable: ReadableStream<Uint8Array>, cipher: Ci
   return encryptedFileReadable;
 }
 
-/**
- * Given a stream and a cipher, encrypt its content on pull
- * @param readable Readable stream
- * @param cipher Cipher used to encrypt the content
- * @returns A readable whose output is the encrypted content of the source stream
- */
-export function encryptReadablePull(readable: ReadableStream<Uint8Array>, cipher: Cipher): ReadableStream<Uint8Array> {
-  const reader = readable.getReader();
-
-  return new ReadableStream({
-    async pull(controller) {
-      console.log('2ND_STEP: PULLING');
-      const status = await reader.read();
-
-      if (!status.done) {
-        controller.enqueue(cipher.update(status.value));
-      } else {
-        controller.close();
-      }
-    },
-  });
-}
-
 export function encryptStreamInParts(
   plainFile: { size: number; stream(): ReadableStream<Uint8Array> },
   cipher: Cipher,
-  parts: number,
+  uploadChunkSize: number,
+  allowedChunkOverhead: number,
 ): ReadableStream<Uint8Array> {
-  // We include a marginChunkSize because if we split the chunk directly, there will always be one more chunk left, this will cause a mismatch with the urls provided
-  const marginChunkSize = 1024;
-  const chunkSize = plainFile.size / parts + marginChunkSize;
-  const readableFileChunks = streamFileIntoChunks(plainFile.stream(), chunkSize);
+  const readable = plainFile.stream();
 
-  return encryptReadablePull(readableFileChunks, cipher);
+  const reader = readable.getReader();
+
+  // allowedChunkOverhead ensures encrypted data can be buffered even when its sizes don't align perfectly with uploadChunkSize
+  const bufferSize = uploadChunkSize + allowedChunkOverhead;
+  let buffer = new Uint8Array(bufferSize);
+  let offset = 0;
+  let finished = false;
+
+  return new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      while (offset < uploadChunkSize && !finished) {
+        const { value, done } = await reader.read();
+
+        const encryptedChunk = done ? cipher.final() : cipher.update(value);
+
+        // Buffer overflow protection
+        // Should never happen with AES-CTR (1:1 ratio output/input) but prevents crashes if cipher is changed
+        const requiredLength = offset + encryptedChunk.length;
+        if (requiredLength > buffer.length) {
+          console.log('Applying buffer overflow protection');
+          const newBuffer = new Uint8Array(requiredLength);
+          newBuffer.set(buffer.subarray(0, offset), 0);
+          buffer = newBuffer;
+        }
+
+        buffer.set(encryptedChunk, offset);
+        offset += encryptedChunk.length;
+
+        if (done) finished = done;
+      }
+
+      if (offset >= uploadChunkSize) {
+        controller.enqueue(buffer.slice(0, uploadChunkSize));
+        buffer.set(buffer.slice(uploadChunkSize, offset), 0);
+        offset = offset - uploadChunkSize;
+      }
+
+      if (finished) {
+        if (offset > 0) {
+          controller.enqueue(buffer.slice(0, offset));
+        }
+        controller.close();
+      }
+    },
+    cancel() {
+      reader.cancel();
+    },
+  });
 }
 
 export async function getEncryptedFile(
   plainFile: { stream(): ReadableStream<Uint8Array> },
   cipher: Cipher,
-): Promise<[Blob, string]> {
+  fileLength: number,
+): Promise<[Uint8Array, string]> {
   const readable = encryptReadable(plainFile.stream(), cipher).getReader();
   const hasher = await getSha256Hasher();
   hasher.init();
-  const blobParts: Uint8Array[] = [];
+  const fileParts: Uint8Array = new Uint8Array(fileLength);
 
   let done = false;
+  let offset = 0;
 
   while (!done) {
     const status = await readable.read();
 
     if (!status.done) {
       hasher.update(status.value);
-      blobParts.push(status.value);
+      fileParts.set(status.value, offset);
+      offset += status.value.length;
     }
 
     done = status.done;
@@ -157,12 +178,12 @@ export async function getEncryptedFile(
 
   const sha256Result = hasher.digest();
 
-  return [new Blob(blobParts, { type: 'application/octet-stream' }), await getRipemd160FromHex(sha256Result)];
+  return [fileParts, await getRipemd160FromHex(sha256Result)];
 }
 
 export async function processEveryFileBlobReturnHash(
   chunkedFileReadable: ReadableStream<Uint8Array>,
-  onEveryBlob: (blob: Blob) => Promise<void>,
+  onEveryChunk: (part: Uint8Array) => Promise<void>,
 ): Promise<string> {
   const reader = chunkedFileReadable.getReader();
   const hasher = await getSha256Hasher();
@@ -175,8 +196,7 @@ export async function processEveryFileBlobReturnHash(
     if (!status.done) {
       const value = status.value;
       hasher.update(value);
-      const blob = new Blob([value], { type: 'application/octet-stream' });
-      await onEveryBlob(blob);
+      await onEveryChunk(value);
     }
 
     done = status.done;
