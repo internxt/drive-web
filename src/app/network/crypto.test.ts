@@ -5,7 +5,6 @@
 import { Buffer } from 'buffer';
 import crypto from 'crypto';
 import { describe, expect, it, vi } from 'vitest';
-import { getSha256 } from '../crypto/services/utils';
 import {
   Aes256gcmEncrypter,
   encryptFilename,
@@ -15,8 +14,8 @@ import {
   getEncryptedFile,
   getFileDeterministicKey,
   processEveryFileBlobReturnHash,
+  encryptStreamInParts,
 } from './crypto';
-
 import { mnemonicToSeed } from 'bip39';
 
 describe('Test crypto.ts functions', () => {
@@ -76,7 +75,16 @@ describe('Test crypto.ts functions', () => {
     expect(result).toBe(oldResult);
   });
 
-  it('generateHMAC should generate hmac', async () => {
+  it('encryptFilename should return correct result', async () => {
+    const mnemonic =
+      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
+    const bucketId = 'test busket id';
+    const filename = 'test filename';
+    const result = await encryptFilename(mnemonic, bucketId, filename);
+    expect(result).toBe('+iEqY7fQH9IRS//uFEiLwA8RBa7UGI3LhB0nNMcegc2IMHagNzUoENLzqtsrNx5RfQc3hBUq8z5FXJk3Yw==');
+  });
+
+  it('generateHMAC should generate correct hmac', async () => {
     const encryptionKey = Buffer.from('0b68dcbb255a4e654bbf361e73cf1b98', 'hex');
     const shardMeta = {
       challenges_as_str: [],
@@ -115,7 +123,7 @@ describe('Test crypto.ts functions', () => {
     const iv = Buffer.from('0b68dcbb255a4e654bbf361e73cf1b98', 'hex');
     const file = createMockFile('file.txt', 13, 'text/plain');
     const cipher = crypto.createCipheriv('aes-256-ctr', encryptionKey, iv);
-    const [encryptedFile, hash] = await getEncryptedFile(file, cipher);
+    const [encryptedFile, hash] = await getEncryptedFile(file, cipher, file.size);
     expect(encryptedFile).toBeDefined();
     expect(hash).toBe('422dab11a4f44c2ceab1f8ef39827109989607d6');
   });
@@ -132,7 +140,7 @@ describe('Test crypto.ts functions', () => {
     });
   }
 
-  it('processEveryFileBlobReturnHash should generate hash', async () => {
+  it('processEveryFileBlobReturnHash should generate correct hash', async () => {
     const chunkedFileReadable = getReadableStream();
 
     const receivedBlobs: unknown[] = [];
@@ -144,14 +152,241 @@ describe('Test crypto.ts functions', () => {
     expect(receivedBlobs.length).toBe(3);
   });
 
-  it('getSha256 should generate the same result as sha256 from crypto', async () => {
-    function oldSha256(input: Buffer): Buffer {
-      return crypto.createHash('sha256').update(input).digest();
+  function createZeroFile(
+    fileSizeInBytes: number,
+    chunkSizeInBytes: number,
+  ): {
+    size: number;
+    stream(): ReadableStream<Uint8Array>;
+  } {
+    const result = {
+      size: fileSizeInBytes,
+      stream() {
+        let bytesServed = 0;
+        return new ReadableStream<Uint8Array>({
+          pull(controller) {
+            const remaining = fileSizeInBytes - bytesServed;
+            if (remaining <= 0) {
+              controller.close();
+              return;
+            }
+
+            const chunkSize = Math.min(chunkSizeInBytes, remaining);
+            const chunk = new Uint8Array(chunkSize);
+            controller.enqueue(chunk);
+            bytesServed += chunkSize;
+          },
+        });
+      },
+    };
+
+    return result;
+  }
+
+  async function processStreamToCompletion(
+    readable: ReadableStream<Uint8Array>,
+  ): Promise<{ chunkCount: number; totalSize: number; encryptedFile: Uint8Array[] }> {
+    const reader = readable.getReader();
+    const encryptedFile: Uint8Array[] = [];
+    let totalSize = 0;
+    let chunkCount = 0;
+
+    try {
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        chunkCount++;
+        totalSize += value.length;
+        encryptedFile.push(value);
+      }
+
+      return { chunkCount, totalSize, encryptedFile };
+    } finally {
+      reader.releaseLock();
     }
-    const pass = 'Test password';
-    const hash = await getSha256(pass);
-    const oldHash = oldSha256(Buffer.from(pass)).toString('hex');
-    expect(hash).toBe(oldHash);
+  }
+
+  function getTestCipher() {
+    const key = Buffer.from('d82fc82d9265a60aa0d7e703e11809ba60b45038aec705f77d5f84630043b118', 'hex');
+    const iv = Buffer.from('0b68dcbb255a4e654bbf361e73cf1b98', 'hex');
+    return crypto.createCipheriv('aes-256-ctr', key, iv);
+  }
+
+  it('encryptStreamInParts should give the same result as the entier file encryption', async () => {
+    const uploadChunkSize = 10;
+    const chunkSize = 5;
+    const overhead = 1;
+    const fileSize = 7 * uploadChunkSize;
+    const streamCipher = getTestCipher();
+    const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
+
+    const encryptedStream = encryptStreamInParts(file, streamCipher, uploadChunkSize, overhead);
+    const { encryptedFile } = await processStreamToCompletion(encryptedStream);
+    const flatEncryptedFile = Uint8Array.from(encryptedFile.flatMap((a) => [...a]));
+
+    const text = Buffer.alloc(fileSize).toString();
+    const cipher = getTestCipher();
+    const encrypted = Uint8Array.from(Buffer.concat([cipher.update(text, 'utf8'), cipher.final()]));
+
+    expect(encrypted).toStrictEqual(flatEncryptedFile);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('encryptStreamInParts should correctly encrypt file when chunkSize < uploadChunkSize', async () => {
+    const uploadChunkSize = 10;
+    const chunkSize = 5;
+    const overhead = 1;
+    const fileSize = 7 * uploadChunkSize + 1;
+    const cipher = getTestCipher();
+    const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
+
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
+    const result = await processStreamToCompletion(encryptedStream);
+
+    const expectedEncryptedFile = [
+      new Uint8Array([1, 154, 92, 204, 248, 101, 81, 115, 77, 1]),
+      new Uint8Array([38, 164, 222, 12, 52, 182, 246, 171, 32, 103]),
+      new Uint8Array([73, 196, 170, 85, 160, 122, 57, 220, 85, 142]),
+      new Uint8Array([80, 134, 15, 169, 200, 223, 33, 106, 90, 252]),
+      new Uint8Array([22, 66, 64, 243, 231, 169, 203, 203, 88, 253]),
+      new Uint8Array([195, 91, 10, 103, 145, 133, 158, 13, 24, 87]),
+      new Uint8Array([60, 92, 184, 5, 86, 129, 103, 180, 68, 151]),
+      new Uint8Array([78]),
+    ];
+
+    expect(result.chunkCount).toBe(expectedEncryptedFile.length);
+    expect(result.totalSize).toBe(fileSize);
+    expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('encryptStreamInParts should correctly encrypt file when fileSize = chunkSize = uploadChunkSize', async () => {
+    const uploadChunkSize = 10;
+    const chunkSize = uploadChunkSize;
+    const overhead = 2;
+    const fileSize = uploadChunkSize;
+    const cipher = getTestCipher();
+    const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
+
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
+    const result = await processStreamToCompletion(encryptedStream);
+
+    const expectedEncryptedFile = [new Uint8Array([1, 154, 92, 204, 248, 101, 81, 115, 77, 1])];
+
+    expect(result.chunkCount).toBe(expectedEncryptedFile.length);
+    expect(result.totalSize).toBe(fileSize);
+    expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('encryptStreamInParts should correctly encrypt file when chunkSize = uploadChunkSize + overhead', async () => {
+    const uploadChunkSize = 10;
+    const overhead = 2;
+    const chunkSize = uploadChunkSize + overhead;
+    const fileSize = 3 * uploadChunkSize + 1;
+    const cipher = getTestCipher();
+    const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
+
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
+    const result = await processStreamToCompletion(encryptedStream);
+    const expectedEncryptedFile = [
+      new Uint8Array([1, 154, 92, 204, 248, 101, 81, 115, 77, 1]),
+      new Uint8Array([38, 164, 222, 12, 52, 182, 246, 171, 32, 103]),
+      new Uint8Array([73, 196, 170, 85, 160, 122, 57, 220, 85, 142]),
+      new Uint8Array([80]),
+    ];
+
+    expect(result.chunkCount).toBe(expectedEncryptedFile.length);
+    expect(result.totalSize).toBe(fileSize);
+    expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('encryptStreamInParts should correctly encrypt file when uploadChunkSize = 2*chunkSize', async () => {
+    const chunkSize = 5;
+    const uploadChunkSize = 2 * chunkSize;
+    const overhead = 2;
+
+    const fileSize = 2 * uploadChunkSize + 1;
+    const cipher = getTestCipher();
+    const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
+
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
+    const result = await processStreamToCompletion(encryptedStream);
+    const expectedEncryptedFile = [
+      new Uint8Array([1, 154, 92, 204, 248, 101, 81, 115, 77, 1]),
+      new Uint8Array([38, 164, 222, 12, 52, 182, 246, 171, 32, 103]),
+      new Uint8Array([73]),
+    ];
+
+    expect(result.chunkCount).toBe(expectedEncryptedFile.length);
+    expect(result.totalSize).toBe(fileSize);
+    expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('encryptStreamInParts should correctly encrypt file when chunkSize < uploadChunkSize, file size is multiple of uploadChunkSize', async () => {
+    const uploadChunkSize = 10;
+    const chunkSize = 3;
+    const overhead = 2;
+    const fileSize = 7 * uploadChunkSize;
+    const cipher = getTestCipher();
+    const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
+
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
+    const result = await processStreamToCompletion(encryptedStream);
+
+    const expectedEncryptedFile = [
+      new Uint8Array([1, 154, 92, 204, 248, 101, 81, 115, 77, 1]),
+      new Uint8Array([38, 164, 222, 12, 52, 182, 246, 171, 32, 103]),
+      new Uint8Array([73, 196, 170, 85, 160, 122, 57, 220, 85, 142]),
+      new Uint8Array([80, 134, 15, 169, 200, 223, 33, 106, 90, 252]),
+      new Uint8Array([22, 66, 64, 243, 231, 169, 203, 203, 88, 253]),
+      new Uint8Array([195, 91, 10, 103, 145, 133, 158, 13, 24, 87]),
+      new Uint8Array([60, 92, 184, 5, 86, 129, 103, 180, 68, 151]),
+    ];
+
+    expect(result.chunkCount).toBe(expectedEncryptedFile.length);
+    expect(result.totalSize).toBe(fileSize);
+    expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('encryptStreamInParts should correctly encrypt file even if chunkSize > uploadChunkSize', async () => {
+    const uploadChunkSize = 10;
+    const chunkSize = 13;
+    const overhead = 1;
+    const fileSize = 7 * uploadChunkSize + 1;
+    const cipher = getTestCipher();
+    const file = createZeroFile(fileSize, chunkSize);
+    const spy = vi.spyOn(console, 'log');
+
+    const encryptedStream = encryptStreamInParts(file, cipher, uploadChunkSize, overhead);
+    const result = await processStreamToCompletion(encryptedStream);
+
+    const expectedEncryptedFile = [
+      new Uint8Array([1, 154, 92, 204, 248, 101, 81, 115, 77, 1]),
+      new Uint8Array([38, 164, 222, 12, 52, 182, 246, 171, 32, 103]),
+      new Uint8Array([73, 196, 170, 85, 160, 122, 57, 220, 85, 142]),
+      new Uint8Array([80, 134, 15, 169, 200, 223, 33, 106, 90, 252]),
+      new Uint8Array([22, 66, 64, 243, 231, 169, 203, 203, 88, 253]),
+      new Uint8Array([195, 91, 10, 103, 145, 133, 158, 13, 24, 87]),
+      new Uint8Array([60, 92, 184, 5, 86, 129, 103, 180, 68, 151]),
+      new Uint8Array([78]),
+    ];
+
+    expect(result.chunkCount).toBe(expectedEncryptedFile.length);
+    expect(result.totalSize).toBe(fileSize);
+    expect(result.encryptedFile).toStrictEqual(expectedEncryptedFile);
+    expect(spy).toHaveBeenCalled();
   });
 });
 
