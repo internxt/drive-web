@@ -14,7 +14,8 @@ import { waitForContinueUploadSignal } from '../drive/services/worker.service/up
 import { TaskStatus } from '../tasks/types';
 import { encryptStreamInParts, generateFileKey, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
-import { uploadFileBlob, UploadProgressCallback } from './upload';
+import { uploadFileUint8Array, UploadProgressCallback } from './upload';
+import { UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD } from './networkConstants';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -37,7 +38,7 @@ interface DownloadOptions {
 }
 
 interface UploadTask {
-  contentToUpload: Blob;
+  contentToUpload: Uint8Array;
   urlToUpload: string;
   index: number;
 }
@@ -75,7 +76,7 @@ export class NetworkFacade {
   };
 
   upload(bucketId: string, mnemonic: string, file: File, options: UploadOptions): Promise<string> {
-    let fileToUpload: Blob;
+    let fileToUpload: Uint8Array;
     let fileHash: string;
 
     return uploadFile(
@@ -86,7 +87,7 @@ export class NetworkFacade {
       file.size,
       async (algorithm, key, iv) => {
         const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
-        const [encryptedFile, hash] = await getEncryptedFile(file, cipher);
+        const [encryptedFile, hash] = await getEncryptedFile(file, cipher, file.size);
 
         fileToUpload = encryptedFile;
         fileHash = hash;
@@ -101,7 +102,7 @@ export class NetworkFacade {
         if (isPaused && options?.continueUploadOptions?.taskId)
           await waitForContinueUploadSignal(options?.continueUploadOptions?.taskId);
 
-        await uploadFileBlob(fileToUpload, fetchUrl, {
+        await uploadFileUint8Array(fileToUpload, fetchUrl, {
           progressCallback: options.uploadingCallback,
           abortController: options.abortController,
         });
@@ -110,7 +111,7 @@ export class NetworkFacade {
          * TODO: Memory leak here, probably due to closures usage with this variable.
          * Pending to be solved, do not remove this line unless the leak is solved.
          */
-        fileToUpload = new Blob([]);
+        fileToUpload = new Uint8Array();
 
         return fileHash;
       },
@@ -138,7 +139,7 @@ export class NetworkFacade {
 
     const encryptFile: EncryptFileFunction = async (algorithm, key, iv) => {
       const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
-      fileReadable = encryptStreamInParts(file, cipher, options.parts);
+      fileReadable = encryptStreamInParts(file, cipher, UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD);
     };
 
     addEventListener('message', this.handleWorkerMessage);
@@ -153,7 +154,7 @@ export class NetworkFacade {
           await waitForContinueUploadSignal(options.continueUploadOptions.taskId);
         }
 
-        const { etag } = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
+        const { etag } = await uploadFileUint8Array(upload.contentToUpload, upload.urlToUpload, {
           progressCallback: (_, uploadedBytes) => {
             notifyProgress(upload.index, uploadedBytes);
           },
@@ -181,7 +182,7 @@ export class NetworkFacade {
           });
       }, limitConcurrency);
 
-      const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
+      const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (part: Uint8Array) => {
         if (uploadQueue.running() === limitConcurrency) {
           await uploadQueue.unsaturated();
         }
@@ -195,7 +196,7 @@ export class NetworkFacade {
 
         uploadQueue
           .pushAsync({
-            contentToUpload: blob,
+            contentToUpload: part,
             urlToUpload: urls[partIndex],
             index: partIndex++,
           })
@@ -214,9 +215,6 @@ export class NetworkFacade {
               }
             }
           });
-
-        // TODO: Remove
-        blob = new Blob([]);
       });
 
       while (uploadQueue.running() > 0 || uploadQueue.length() > 0) {
