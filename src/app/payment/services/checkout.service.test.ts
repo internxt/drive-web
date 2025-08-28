@@ -294,7 +294,7 @@ describe('Checkout Service tests', () => {
         mode: 'subscription',
         amount: 1500,
         currency: 'eur',
-        payment_method_types: ['card', 'paypal', 'klarna'],
+        payment_method_types: ['card', 'paypal'],
       });
     });
   });
