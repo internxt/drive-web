@@ -45,7 +45,9 @@ const PendingInvitationsDialog = ({
     setIsLoading(true);
     try {
       token && (await workspacesService.acceptWorkspaceInvite({ invitationId, token }));
-      dispatch(workspaceThunks.fetchWorkspaces());
+      setTimeout(() => {
+        dispatch(workspaceThunks.fetchWorkspaces());
+      }, 3000);
     } catch (err) {
       const appError = err as AppError;
       if (appError.status === WORKSPACE_INVITATION_BAD_REQUEST) {
