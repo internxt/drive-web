@@ -234,10 +234,10 @@ function SharedView({
     dispatch(sharedActions.setCurrentSharingRole(null));
   };
 
-  const onShowInvitationsModalClose = () => {
+  const onShowInvitationsModalClose = async () => {
     resetSharedViewState();
     actionDispatch(setCurrentFolderId(''));
-    fetchRootFolders(workspaceId);
+    await fetchRootFolders(workspaceId);
     dispatch(sharedThunks.getPendingInvitations());
     dispatch(uiActions.setIsInvitationsDialogOpen(false));
   };
