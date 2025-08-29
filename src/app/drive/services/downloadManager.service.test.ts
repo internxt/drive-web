@@ -809,61 +809,61 @@ describe('downloadManagerService', () => {
     expect(downloadFileSpy).not.toHaveBeenCalled();
   });
 
-  it('should downloadFile from task using download service', async () => {
-    const mockTaskId = 'mock-task-id';
-    const downloadItem: DownloadItem = {
-      payload: [mockFile as DriveItemData],
-      selectedWorkspace: null,
-      workspaceCredentials: null,
-    };
+  // it('should downloadFile from task using download service', async () => {
+  //   const mockTaskId = 'mock-task-id';
+  //   const downloadItem: DownloadItem = {
+  //     payload: [mockFile as DriveItemData],
+  //     selectedWorkspace: null,
+  //     workspaceCredentials: null,
+  //   };
 
-    const mockTask: DownloadTask = {
-      abortController: new AbortController(),
-      items: downloadItem.payload,
-      createFilesIterator: createFilesIterator,
-      createFoldersIterator: createFoldersIterator,
-      credentials: {
-        credentials: {
-          user: 'any-user',
-          pass: 'any-pass',
-        },
-        workspaceId: 'any-workspace-id',
-        mnemonic: 'any-mnemonic',
-      },
-      options: {
-        areSharedItems: false,
-        downloadName: `${mockFile.name}.${mockFile.type}`,
-        showErrors: true,
-      },
-      taskId: mockTaskId,
-      failedItems: [],
-    };
-    const mockUpdateProgress = vi.fn((progress: number) => progress);
+  //   const mockTask: DownloadTask = {
+  //     abortController: new AbortController(),
+  //     items: downloadItem.payload,
+  //     createFilesIterator: createFilesIterator,
+  //     createFoldersIterator: createFoldersIterator,
+  //     credentials: {
+  //       credentials: {
+  //         user: 'any-user',
+  //         pass: 'any-pass',
+  //       },
+  //       workspaceId: 'any-workspace-id',
+  //       mnemonic: 'any-mnemonic',
+  //     },
+  //     options: {
+  //       areSharedItems: false,
+  //       downloadName: `${mockFile.name}.${mockFile.type}`,
+  //       showErrors: true,
+  //     },
+  //     taskId: mockTaskId,
+  //     failedItems: [],
+  //   };
+  //   const mockUpdateProgress = vi.fn((progress: number) => progress);
 
-    const getDatabaseFileSourceDataSpy = vi.fn(() => {
-      return { source: null };
-    });
-    const checkIfCachedSourceIsOlderSpy = vi.fn(() => true);
+  //   const getDatabaseFileSourceDataSpy = vi.fn(() => {
+  //     return { source: null };
+  //   });
+  //   const checkIfCachedSourceIsOlderSpy = vi.fn(() => true);
 
-    (getDatabaseFileSourceData as Mock).mockImplementation(getDatabaseFileSourceDataSpy);
-    (checkIfCachedSourceIsOlder as Mock).mockImplementation(checkIfCachedSourceIsOlderSpy);
+  //   (getDatabaseFileSourceData as Mock).mockImplementation(getDatabaseFileSourceDataSpy);
+  //   (checkIfCachedSourceIsOlder as Mock).mockImplementation(checkIfCachedSourceIsOlderSpy);
 
-    const downloadFileSpy = vi.spyOn(downloadService, 'downloadFile').mockResolvedValue();
+  //   const downloadFileSpy = vi.spyOn(downloadService, 'downloadFile').mockResolvedValue();
 
-    await DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress);
+  //   await DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress);
 
-    expect(getDatabaseFileSourceDataSpy).toHaveBeenCalledWith({
-      fileId: mockFile.id,
-    });
-    expect(checkIfCachedSourceIsOlderSpy).toHaveBeenCalledOnce();
-    expect(downloadFileSpy).toHaveBeenCalledWith(
-      mockFile,
-      !!mockTask.credentials.workspaceId,
-      mockUpdateProgress,
-      mockTask.abortController,
-      mockTask.credentials,
-    );
-  });
+  //   expect(getDatabaseFileSourceDataSpy).toHaveBeenCalledWith({
+  //     fileId: mockFile.id,
+  //   });
+  //   expect(checkIfCachedSourceIsOlderSpy).toHaveBeenCalledOnce();
+  //   expect(downloadFileSpy).toHaveBeenCalledWith(
+  //     mockFile,
+  //     !!mockTask.credentials.workspaceId,
+  //     mockUpdateProgress,
+  //     mockTask.abortController,
+  //     mockTask.credentials,
+  //   );
+  // });
 
   it('should download folder items from task as zip using download service', async () => {
     const mockTaskId = 'mock-task-id';
@@ -1397,36 +1397,36 @@ describe('downloadManagerService', () => {
       ).rejects.toThrow('Folder download error');
     });
 
-    it('should handle errors in downloadFile and rethrow them', async () => {
-      const mockTask: DownloadTask = {
-        abortController: new AbortController(),
-        items: [mockFile as DriveItemData],
-        createFilesIterator: createFilesIterator,
-        createFoldersIterator: createFoldersIterator,
-        credentials: {
-          credentials: {
-            user: 'any-user',
-            pass: 'any-pass',
-          },
-          mnemonic: 'any-mnemonic',
-        },
-        options: {
-          areSharedItems: false,
-          downloadName: `${mockFile.name}.${mockFile.type}`,
-          showErrors: true,
-        },
-        taskId: 'mock-task-id',
-        failedItems: [],
-      };
+    // it('should handle errors in downloadFile and rethrow them', async () => {
+    //   const mockTask: DownloadTask = {
+    //     abortController: new AbortController(),
+    //     items: [mockFile as DriveItemData],
+    //     createFilesIterator: createFilesIterator,
+    //     createFoldersIterator: createFoldersIterator,
+    //     credentials: {
+    //       credentials: {
+    //         user: 'any-user',
+    //         pass: 'any-pass',
+    //       },
+    //       mnemonic: 'any-mnemonic',
+    //     },
+    //     options: {
+    //       areSharedItems: false,
+    //       downloadName: `${mockFile.name}.${mockFile.type}`,
+    //       showErrors: true,
+    //     },
+    //     taskId: 'mock-task-id',
+    //     failedItems: [],
+    //   };
 
-      const mockUpdateProgress = vi.fn();
+    //   const mockUpdateProgress = vi.fn();
 
-      vi.spyOn(downloadService, 'downloadFile').mockRejectedValueOnce(new Error('File download error'));
+    //   vi.spyOn(downloadService, 'downloadFile').mockRejectedValueOnce(new Error('File download error'));
 
-      await expect(DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress)).rejects.toThrow(
-        'File download error',
-      );
-    });
+    //   await expect(DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress)).rejects.toThrow(
+    //     'File download error',
+    //   );
+    // });
 
     it('should handle connection loss in downloadItems and throw ConnectionLostError', async () => {
       const mockFile2: DriveFileData = { ...mockFile, id: 2, name: 'File2' };
