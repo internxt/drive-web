@@ -264,7 +264,7 @@ describe('Checkout Service tests', () => {
         mode: 'payment',
         amount: 1500,
         currency: 'eur',
-        payment_method_types: ['card', 'paypal'],
+        payment_method_types: ['card', 'paypal', 'klarna'],
       });
     });
 

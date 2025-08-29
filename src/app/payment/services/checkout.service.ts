@@ -225,7 +225,7 @@ const loadStripeElements = async (
     mode: plan.price?.interval === 'lifetime' ? 'payment' : 'subscription',
     amount: plan.taxes?.amountWithTax,
     currency: plan.price?.currency,
-    payment_method_types: ['card', 'paypal'],
+    payment_method_types: plan?.price?.interval === 'lifetime' ? ['card', 'paypal', 'klarna'] : ['card', 'paypal'],
   };
 };
 
