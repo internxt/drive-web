@@ -96,31 +96,29 @@ const FileViewerWrapper = ({
   };
 
   useEffect(() => {
-    if (currentFile?.plainName === currentFile.name) {
-      setBlob(null);
-      dispatch(uiActions.setFileViewerItem(currentFile));
-      if (currentFile && !updateProgress && !isDownloadStarted) {
-        setIsDownloadStarted(true);
-        fileContentManager
-          .download()
-          .then((downloadedFile) => {
-            setBlob(downloadedFile.blob);
-            setUpdateProgress(0);
-            setIsDownloadStarted(false);
-            if (downloadedFile.shouldHandleFileThumbnail) {
-              handleFileThumbnail(currentFile, downloadedFile.blob).catch(errorService.reportError);
-            }
-          })
-          .catch((error) => {
-            if (error.name === 'AbortError') {
-              return;
-            }
-            console.error(error);
-            setBlob(null);
-            errorService.reportError(error);
-            setIsDownloadStarted(false);
-          });
-      }
+    setBlob(null);
+    dispatch(uiActions.setFileViewerItem(currentFile));
+    if (currentFile && !updateProgress && !isDownloadStarted) {
+      setIsDownloadStarted(true);
+      fileContentManager
+        .download()
+        .then((downloadedFile) => {
+          setBlob(downloadedFile.blob);
+          setUpdateProgress(0);
+          setIsDownloadStarted(false);
+          if (downloadedFile.shouldHandleFileThumbnail) {
+            handleFileThumbnail(currentFile, downloadedFile.blob).catch(errorService.reportError);
+          }
+        })
+        .catch((error) => {
+          if (error.name === 'AbortError') {
+            return;
+          }
+          console.error(error);
+          setBlob(null);
+          errorService.reportError(error);
+          setIsDownloadStarted(false);
+        });
     }
   }, [showPreview, currentFile]);
 
@@ -129,8 +127,10 @@ const FileViewerWrapper = ({
       setCurrentFile?.({
         ...currentFile,
         plainName: dirtyName,
+        name: dirtyName,
       });
     }
+    setUpdateProgress(0);
     dispatch(uiActions.setCurrentEditingNameDirty(''));
   }, [dirtyName, currentFile]);
 
