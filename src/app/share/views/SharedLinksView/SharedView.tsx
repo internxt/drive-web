@@ -237,9 +237,11 @@ function SharedView({
   const onShowInvitationsModalClose = async () => {
     resetSharedViewState();
     actionDispatch(setCurrentFolderId(''));
-    await fetchRootFolders(workspaceId);
     dispatch(sharedThunks.getPendingInvitations());
     dispatch(uiActions.setIsInvitationsDialogOpen(false));
+    setTimeout(async () => {
+      await fetchRootFolders(workspaceId);
+    }, 500);
   };
 
   const navigateToSharedFolder = (shareItem: AdvancedSharedItem) => {
