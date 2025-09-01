@@ -444,8 +444,13 @@ const CheckoutViewWrapper = () => {
     const isStripeNotLoaded = !stripeSDK || !elements;
     const customerName = companyName ?? userNameFromAddressElement;
 
+    await new Promise<void>((r) => window.grecaptcha.ready(r));
+    const captcha = await window.grecaptcha.execute(envService.getVariable('recaptchaV3'), {
+      action: 'authentication',
+    });
+
     try {
-      await authCheckoutService.authenticateUser({ email, password, authMethod, dispatch, doRegister });
+      await authCheckoutService.authenticateUser({ email, password, authMethod, dispatch, captcha, doRegister });
     } catch (err) {
       const error = err as Error;
       setError('auth', error.message);
@@ -474,6 +479,7 @@ const CheckoutViewWrapper = () => {
         countryCode: country,
         postalCode,
         vatId: companyVatId,
+        captchaToken: captcha,
       });
 
       if (mobileToken) {

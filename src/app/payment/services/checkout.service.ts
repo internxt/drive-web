@@ -41,10 +41,12 @@ const getCustomerId = async ({
   countryCode,
   postalCode,
   vatId,
+  captchaToken,
 }: {
   customerName: string;
   countryCode: string;
   postalCode: string;
+  captchaToken: string;
   vatId?: string;
 }): Promise<{
   customerId: string;
@@ -55,6 +57,7 @@ const getCustomerId = async ({
     customerName,
     country: countryCode,
     postalCode,
+    captchaToken,
     companyVatId: vatId,
   });
 };
