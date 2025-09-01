@@ -514,6 +514,7 @@ const CheckoutViewWrapper = () => {
           selectedPlan: currentSelectedPlan,
           token,
           gclidStored,
+          captchaToken: captcha,
           seatsForBusinessSubscription,
           openCryptoPaymentDialog,
         });
