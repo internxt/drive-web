@@ -37,6 +37,7 @@ import { useUserPayment } from 'app/payment/hooks/useUserPayment';
 import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'app/payment/components/checkout/CryptoPaymentDialog';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import currencyService from 'app/payment/services/currency.service';
+import { generateCaptchaToken } from 'app/utils/generateCaptchaToken';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -444,13 +445,17 @@ const CheckoutViewWrapper = () => {
     const isStripeNotLoaded = !stripeSDK || !elements;
     const customerName = companyName ?? userNameFromAddressElement;
 
-    await new Promise<void>((r) => window.grecaptcha.ready(r));
-    const captcha = await window.grecaptcha.execute(envService.getVariable('recaptchaV3'), {
-      action: 'authentication',
-    });
+    const authCaptcha = await generateCaptchaToken();
 
     try {
-      await authCheckoutService.authenticateUser({ email, password, authMethod, dispatch, captcha, doRegister });
+      await authCheckoutService.authenticateUser({
+        email,
+        password,
+        authMethod,
+        dispatch,
+        captcha: authCaptcha,
+        doRegister,
+      });
     } catch (err) {
       const error = err as Error;
       setError('auth', error.message);
@@ -474,12 +479,13 @@ const CheckoutViewWrapper = () => {
         }
       }
 
+      const customerToken = await generateCaptchaToken();
       const { customerId, token } = await checkoutService.getCustomerId({
         customerName,
         countryCode: country,
         postalCode,
         vatId: companyVatId,
-        captchaToken: captcha,
+        captchaToken: customerToken,
       });
 
       if (mobileToken) {
@@ -502,6 +508,8 @@ const CheckoutViewWrapper = () => {
           throw new Error(confirmIntentError.message);
         }
       } else {
+        const intentCaptcha = await generateCaptchaToken();
+
         await handleUserPayment({
           confirmPayment: stripeSDK.confirmPayment,
           confirmSetupIntent: stripeSDK.confirmSetup,
@@ -514,7 +522,7 @@ const CheckoutViewWrapper = () => {
           selectedPlan: currentSelectedPlan,
           token,
           gclidStored,
-          captchaToken: captcha,
+          captchaToken: intentCaptcha,
           seatsForBusinessSubscription,
           openCryptoPaymentDialog,
         });
