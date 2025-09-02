@@ -27,6 +27,16 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
     radios: false,
     spacedAccordionItems: true,
   },
+  fields: {
+    billingDetails: {
+      email: 'never',
+    },
+  },
+  defaultValues: {
+    billingDetails: {
+      email: '',
+    },
+  },
 };
 
 interface CheckoutViewProps {
