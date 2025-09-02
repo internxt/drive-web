@@ -6,12 +6,13 @@ type AuthParams = {
   email: string;
   password: string;
   authMethod: AuthMethodTypes;
+  captcha: string;
   dispatch: AppDispatch;
   doRegister: RegisterFunction;
 };
 
 const authenticateUser = async (params: AuthParams) => {
-  const { email, password, authMethod, dispatch, doRegister } = params;
+  const { email, password, authMethod, captcha, dispatch, doRegister } = params;
   if (authMethod === 'signIn') {
     await logIn({ email, password, twoFactorCode: '', dispatch });
   } else if (authMethod === 'signUp') {
@@ -19,7 +20,7 @@ const authenticateUser = async (params: AuthParams) => {
       doSignUp: doRegister,
       email,
       password,
-      token: '',
+      token: captcha,
       redeemCodeObject: false,
       dispatch,
     };

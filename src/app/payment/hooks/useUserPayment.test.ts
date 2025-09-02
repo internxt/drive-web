@@ -41,8 +41,9 @@ describe('Custom hook to handle payments', () => {
         priceId: 'price_id',
         token: 'token',
         currency: 'eur',
-        seatsForBusinessSubscription: 1,
+        captchaToken: 'captcha_token',
         promoCodeId: 'promo_code_id',
+        seatsForBusinessSubscription: 1,
       };
 
       const response = await getSubscriptionPaymentIntent(subscriptionPaymentIntentPayload);
@@ -53,6 +54,7 @@ describe('Custom hook to handle payments', () => {
         token: subscriptionPaymentIntentPayload.token,
         currency: subscriptionPaymentIntentPayload.currency,
         promoCodeId: subscriptionPaymentIntentPayload.promoCodeId,
+        captchaToken: subscriptionPaymentIntentPayload.captchaToken,
         quantity: subscriptionPaymentIntentPayload.seatsForBusinessSubscription,
       });
       expect(response).toStrictEqual({
@@ -80,6 +82,7 @@ describe('Custom hook to handle payments', () => {
         currency: 'currency',
         token: 'token',
         promoCodeId: 'promo_code_id',
+        captchaToken: 'captcha_token',
       };
 
       const response = await getLifetimePaymentIntent(lifetimePaymentIntentPayload);
@@ -90,13 +93,7 @@ describe('Custom hook to handle payments', () => {
         type: 'fiat',
         id: 'payment_intent_id',
       });
-      expect(createPaymentIntentSpy).toHaveBeenCalledWith({
-        customerId: lifetimePaymentIntentPayload.customerId,
-        priceId: lifetimePaymentIntentPayload.priceId,
-        currency: lifetimePaymentIntentPayload.currency,
-        token: lifetimePaymentIntentPayload.token,
-        promoCodeId: lifetimePaymentIntentPayload.promoCodeId,
-      });
+      expect(createPaymentIntentSpy).toHaveBeenCalledWith(lifetimePaymentIntentPayload);
     });
 
     test('When the user attempts to purchase a lifetime plan using crypto currencies, then the necessary data to purchase the plan are returned', async () => {
@@ -108,6 +105,7 @@ describe('Custom hook to handle payments', () => {
         currency: 'BTC',
         token: 'encoded-customer-id',
         promoCodeId: 'promo_code_id',
+        captchaToken: 'captcha_token',
       };
       const paymentIntentResponse = {
         type: PaymentType['CRYPTO'] as const,
@@ -137,13 +135,7 @@ describe('Custom hook to handle payments', () => {
           ...paymentIntentResponse.payload,
         },
       });
-      expect(createPaymentIntentSpy).toHaveBeenCalledWith({
-        customerId: lifetimePaymentIntentPayload.customerId,
-        priceId: lifetimePaymentIntentPayload.priceId,
-        currency: lifetimePaymentIntentPayload.currency,
-        token: lifetimePaymentIntentPayload.token,
-        promoCodeId: lifetimePaymentIntentPayload.promoCodeId,
-      });
+      expect(createPaymentIntentSpy).toHaveBeenCalledWith(lifetimePaymentIntentPayload);
     });
   });
 
@@ -176,6 +168,7 @@ describe('Custom hook to handle payments', () => {
             type: UserType.Individual,
           },
         } as any,
+        captchaToken: 'captcha_token',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         translate: translate,
@@ -190,6 +183,7 @@ describe('Custom hook to handle payments', () => {
         currency: subscriptionPaymentPayload.currency,
         promoCodeId: undefined,
         quantity: subscriptionPaymentPayload.seatsForBusinessSubscription,
+        captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
       expect(localStorageServiceSpy).toHaveBeenCalledTimes(5);
@@ -231,6 +225,7 @@ describe('Custom hook to handle payments', () => {
             type: UserType.Individual,
           },
         } as any,
+        captchaToken: 'captcha_token',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         translate: translate,
@@ -245,6 +240,7 @@ describe('Custom hook to handle payments', () => {
         currency: subscriptionPaymentPayload.currency,
         promoCodeId: undefined,
         quantity: subscriptionPaymentPayload.seatsForBusinessSubscription,
+        captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
       expect(localStorageServiceSpy).toHaveBeenCalledTimes(5);
@@ -287,6 +283,7 @@ describe('Custom hook to handle payments', () => {
             type: UserType.Individual,
           },
         } as any,
+        captchaToken: 'captcha_token',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         translate: translate,
@@ -301,6 +298,7 @@ describe('Custom hook to handle payments', () => {
         currency: subscriptionPaymentPayload.currency,
         promoCodeId: undefined,
         quantity: subscriptionPaymentPayload.seatsForBusinessSubscription,
+        captchaToken: subscriptionPaymentPayload.captchaToken,
       });
 
       expect(localStorageServiceSpy).toHaveBeenCalledTimes(5);
@@ -447,6 +445,7 @@ describe('Custom hook to handle payments', () => {
             type: UserType.Individual,
           },
         } as any,
+        captchaToken: 'captcha_token',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         gclidStored: null,
@@ -493,6 +492,7 @@ describe('Custom hook to handle payments', () => {
             type: UserType.Individual,
           },
         } as any,
+        captchaToken: 'captcha_token',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         gclidStored: null,
@@ -535,6 +535,7 @@ describe('Custom hook to handle payments', () => {
             type: UserType.Individual,
           },
         } as any,
+        captchaToken: 'captcha_token',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         gclidStored: null,
