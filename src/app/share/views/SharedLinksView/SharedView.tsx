@@ -102,7 +102,6 @@ function SharedView({
 
   const { state, actionDispatch } = useShareViewContext();
   const {
-    page,
     isLoading,
     shareFolders,
     shareFiles,
