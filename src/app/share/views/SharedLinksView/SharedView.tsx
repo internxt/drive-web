@@ -132,11 +132,6 @@ function SharedView({
   const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;
 
   useLayoutEffect(() => {
-    if (page === 0 && !folderUUID) {
-      fetchRootFolders(workspaceId);
-      dispatch(storageActions.resetSharedNamePath());
-    }
-
     if (folderUUID) {
       const onRedirectionToFolderError = (errorMessage: string) => {
         notificationsService.show({ text: errorMessage, type: ToastType.Error });
@@ -239,9 +234,6 @@ function SharedView({
     actionDispatch(setCurrentFolderId(''));
     dispatch(sharedThunks.getPendingInvitations());
     dispatch(uiActions.setIsInvitationsDialogOpen(false));
-    setTimeout(async () => {
-      await fetchRootFolders(workspaceId);
-    }, 500);
   };
 
   const navigateToSharedFolder = (shareItem: AdvancedSharedItem) => {
@@ -504,9 +496,8 @@ function SharedView({
         // This is added so that in case the element is no longer shared due
         // to changes in the share dialog it will disappear from the list.
         resetSharedViewState();
-        fetchRootFolders(workspaceId);
       }
-    }, 200);
+    }, 1000);
   };
 
   const handleOnTopBarInputChanges = (e: ChangeEvent<HTMLInputElement>) => {
