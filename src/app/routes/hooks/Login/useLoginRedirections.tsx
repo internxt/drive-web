@@ -74,6 +74,7 @@ const useLoginRedirections = ({
         await wait(2000);
         dispatch(workspaceThunks.fetchWorkspaces());
       } catch (error) {
+        console.error('ERROR WHILE ACCEPTING OR DECLINING WORKSPACE INVITATION: ', error);
         const notificationText = isDeclineAction
           ? t('preferences.workspace.members.invitationFlow.error.declinedError')
           : t('preferences.workspace.members.invitationFlow.error.acceptedError');
