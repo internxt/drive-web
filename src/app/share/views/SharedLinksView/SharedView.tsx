@@ -102,6 +102,7 @@ function SharedView({
 
   const { state, actionDispatch } = useShareViewContext();
   const {
+    page,
     isLoading,
     shareFolders,
     shareFiles,
@@ -131,6 +132,11 @@ function SharedView({
   const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;
 
   useLayoutEffect(() => {
+    if (page === 0 && !folderUUID) {
+      fetchRootFolders(workspaceId);
+      dispatch(storageActions.resetSharedNamePath());
+    }
+
     if (folderUUID) {
       const onRedirectionToFolderError = (errorMessage: string) => {
         notificationsService.show({ text: errorMessage, type: ToastType.Error });
