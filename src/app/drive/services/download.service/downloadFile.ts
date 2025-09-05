@@ -159,6 +159,7 @@ enum DownloadSupport {
 async function downloadFileWithBlockBufferStreamSaver(
   source: ReadableStream<Uint8Array>,
   writableStream: WritableStream<Uint8Array>,
+  abortController?: AbortController,
   blockSize = 100 * 1024 * 1024,
 ) {
   const writer = writableStream.getWriter();
