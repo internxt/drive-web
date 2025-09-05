@@ -156,44 +156,6 @@ enum DownloadSupport {
   Blob = 'Blob',
 }
 
-async function downloadFileWithBlockBufferStreamSaver(
-  source: ReadableStream<Uint8Array>,
-  writableStream: WritableStream<Uint8Array>,
-  abortController?: AbortController,
-  chunk = 50 * 1024 * 1024,
-) {
-  const writer = writableStream.getWriter();
-  const reader = source.getReader();
-  let buffer = new Uint8Array(0);
-  let totalBytes = 0;
-
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    if (abortController?.signal.aborted) break;
-
-    const { done, value } = await reader.read();
-    if (done) break;
-
-    const newBuffer = new Uint8Array(buffer.length + value.length);
-    newBuffer.set(buffer, 0);
-    newBuffer.set(value, buffer.length);
-    buffer = newBuffer;
-
-    if (buffer.length >= chunk) {
-      await writer.write(buffer);
-      totalBytes += buffer.length;
-      buffer = new Uint8Array(0);
-    }
-  }
-
-  if (buffer.length > 0) {
-    await writer.write(buffer);
-    totalBytes += buffer.length;
-  }
-
-  await writer.close();
-}
-
 async function downloadToFs(
   filename: string,
   source: Promise<ReadableStream>,
@@ -205,7 +167,8 @@ async function downloadToFs(
     case DownloadSupport.PartialStreamApi: {
       console.log('Using partial stream api');
       const streamSaverWritable = streamSaver.createWriteStream(filename);
-      return downloadFileWithBlockBufferStreamSaver(await source, streamSaverWritable, abortController);
+      const awaitedSource = await source;
+      return downloadFileUsingStreamApi(await source, streamSaverWritable, abortController);
     }
 
     default:
