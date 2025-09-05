@@ -1,11 +1,9 @@
 import streamSaver from 'streamsaver';
-import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
 import { DriveFileData } from '../../types';
 import downloadFileFromBlob from './downloadFileFromBlob';
 import fetchFileStream from './fetchFileStream';
 import fetchFileStreamWithCreds from './fetchFileStreamWithCreds';
-import { ErrorMessages } from 'app/core/constants';
 
 interface BlobWritable {
   getWriter: () => {
@@ -88,7 +86,6 @@ export default async function downloadFile(
   const isCypress = window['Cypress'] !== undefined;
 
   const writeToFsIsSupported = 'showSaveFilePicker' in window;
-  const writableIsSupported = 'WritableStream' in window && streamSaver.WritableStream;
 
   let support: DownloadSupport;
 
@@ -98,8 +95,6 @@ export default async function downloadFile(
     support = DownloadSupport.Blob;
   } else if (writeToFsIsSupported) {
     support = DownloadSupport.StreamApi;
-  } else if (writableIsSupported) {
-    support = DownloadSupport.PartialStreamApi;
   } else {
     support = DownloadSupport.PartialStreamApi;
   }
@@ -130,7 +125,7 @@ export default async function downloadFile(
     };
     window.addEventListener('offline', connectionLostListener);
 
-    await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController);
+    await downloadToFs(completeFilename, fileStreamPromise, support, abortController);
   } catch (err) {
     if (connectionLost) throw new ConnectionLostError();
     else throw err;
@@ -161,32 +156,59 @@ enum DownloadSupport {
   Blob = 'Blob',
 }
 
+async function downloadFileWithBlockBufferStreamSaver(
+  source: ReadableStream<Uint8Array>,
+  writableStream: WritableStream<Uint8Array>,
+  blockSize = 100 * 1024 * 1024,
+) {
+  const writer = writableStream.getWriter();
+  const reader = source.getReader();
+  let buffer = new Uint8Array(0);
+  let totalBytes = 0;
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    if (abortController?.signal.aborted) break;
+
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    const newBuffer = new Uint8Array(buffer.length + value.length);
+    newBuffer.set(buffer, 0);
+    newBuffer.set(value, buffer.length);
+    buffer = newBuffer;
+
+    if (buffer.length >= blockSize) {
+      await writer.write(buffer);
+      totalBytes += buffer.length;
+      buffer = new Uint8Array(0);
+    }
+  }
+
+  if (buffer.length > 0) {
+    await writer.write(buffer);
+    totalBytes += buffer.length;
+  }
+
+  await writer.close();
+}
+
 async function downloadToFs(
   filename: string,
   source: Promise<ReadableStream>,
   supports: DownloadSupport,
-  isFirefoxBrowser?: boolean,
   abortController?: AbortController,
 ): Promise<void> {
-  if (isFirefoxBrowser) {
-    return downloadFileAsBlob(filename, await source);
-  }
-
   switch (supports) {
     case DownloadSupport.StreamApi:
-      // eslint-disable-next-line no-case-declarations
-      const fsHandle = await window.showSaveFilePicker({ suggestedName: filename }).catch((_) => {
-        abortController?.abort();
-        throw new Error(ErrorMessages.FilePickerCancelled);
-      });
-      // eslint-disable-next-line no-case-declarations
-      const destination = await fsHandle.createWritable({ keepExistingData: false });
-
-      return downloadFileUsingStreamApi(await source, destination, abortController);
-    case DownloadSupport.PartialStreamApi:
-      return downloadFileUsingStreamApi(await source, streamSaver.createWriteStream(filename), abortController);
+    case DownloadSupport.PartialStreamApi: {
+      console.log('Using partial stream api');
+      const streamSaverWritable = streamSaver.createWriteStream(filename);
+      return downloadFileWithBlockBufferStreamSaver(await source, streamSaverWritable, abortController);
+    }
 
     default:
+      console.log('Using blob');
       return downloadFileAsBlob(filename, await source);
   }
 }
