@@ -160,7 +160,7 @@ async function downloadFileWithBlockBufferStreamSaver(
   source: ReadableStream<Uint8Array>,
   writableStream: WritableStream<Uint8Array>,
   abortController?: AbortController,
-  blockSize = 100 * 1024 * 1024,
+  chunk = 50 * 1024 * 1024,
 ) {
   const writer = writableStream.getWriter();
   const reader = source.getReader();
@@ -179,7 +179,7 @@ async function downloadFileWithBlockBufferStreamSaver(
     newBuffer.set(value, buffer.length);
     buffer = newBuffer;
 
-    if (buffer.length >= blockSize) {
+    if (buffer.length >= chunk) {
       await writer.write(buffer);
       totalBytes += buffer.length;
       buffer = new Uint8Array(0);
