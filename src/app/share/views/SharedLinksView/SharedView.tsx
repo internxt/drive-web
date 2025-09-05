@@ -497,6 +497,7 @@ function SharedView({
 
   const handleOnCloseShareDialog = () => {
     setTimeout(() => {
+      console.log('handleOnCloseShareDialog');
       if (!isShareDialogOpen && !folderUUID && isRootFolder) {
         // This is added so that in case the element is no longer shared due
         // to changes in the share dialog it will disappear from the list.
@@ -600,10 +601,12 @@ function SharedView({
         moveItemsToTrash={moveItemsToTrashOnStopSharing}
       />
       <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
-      <ShareDialog
-        onCloseDialog={handleOnCloseShareDialog}
-        onStopSharingItem={() => actionDispatch(setSelectedItems([]))}
-      />
+      {isShareDialogOpen && (
+        <ShareDialog
+          onCloseDialog={handleOnCloseShareDialog}
+          onStopSharingItem={() => actionDispatch(setSelectedItems([]))}
+        />
+      )}
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
