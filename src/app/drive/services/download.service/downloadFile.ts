@@ -140,16 +140,6 @@ async function downloadFileAsBlob(filename: string, source: ReadableStream): Pro
   await pipe(source, destination);
 }
 
-function downloadFileUsingStreamApi(
-  source: ReadableStream,
-  destination: WritableStream,
-  abortController?: AbortController,
-): Promise<void> {
-  return source.pipeTo
-    ? source.pipeTo(destination, { signal: abortController?.signal })
-    : pipe(source, destination as BlobWritable);
-}
-
 enum DownloadSupport {
   StreamApi = 'StreamApi',
   PartialStreamApi = 'PartialStreamApi',
@@ -168,7 +158,7 @@ async function downloadToFs(
       console.log('Using partial stream api');
       const streamSaverWritable = streamSaver.createWriteStream(filename);
       const awaitedSource = await source;
-      return downloadFileUsingStreamApi(await source, streamSaverWritable, abortController);
+      return awaitedSource.pipeTo(streamSaverWritable, { signal: abortController?.signal });
     }
 
     default:
