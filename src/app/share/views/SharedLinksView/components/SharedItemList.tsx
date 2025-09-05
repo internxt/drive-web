@@ -8,6 +8,7 @@ import sizeService from '../../../../drive/services/size.service';
 import { DriveFileData } from '../../../../drive/types';
 import { AdvancedSharedItem } from '../../../types';
 import { Avatar, List, MenuItemType } from '@internxt/ui';
+import { SharedListItem } from './SharedListItem';
 
 const skinSkeleton = [
   <div key="1" className="flex flex-row items-center space-x-4">
@@ -85,6 +86,18 @@ export const SharedItemList = ({
     checkIfIsItemSelected,
   });
 
+  const createSharedList = (item: AdvancedSharedItem) => (
+    <SharedListItem
+      item={item}
+      getOwnerAvatarSrc={getOwnerAvatarSrc}
+      isItemSelected={checkIfIsItemSelected(item)}
+      onItemDoubleClicked={onItemDoubleClicked}
+      onNameClicked={onNameClicked}
+      user={user}
+      onClickItem={onClickItem}
+    />
+  );
+
   return (
     <List<AdvancedSharedItem, OrderField>
       header={[
@@ -121,7 +134,7 @@ export const SharedItemList = ({
       disableKeyboardShortcuts={disableKeyboardShortcuts}
       onClick={onClickItem}
       onDoubleClick={onItemDoubleClicked}
-      itemComposition={itemComposition}
+      itemComposition={[(item) => createSharedList(item)]}
       skinSkeleton={skinSkeleton}
       emptyState={emptyStateElement}
       onNextPage={onNextPage}
@@ -166,7 +179,7 @@ const ShareItemNameField = ({ shareItem, onItemDoubleClicked, onNameClicked }) =
   const Icon = iconService.getItemIcon(shareItem.isFolder, (shareItem as unknown as DriveFileData)?.type);
 
   return (
-    <div className={'flex h-full w-full flex-row items-center space-x-4 overflow-hidden'}>
+    <div className={'flex h-full w-full flex-row items-center space-x-4 file-list-item group overflow-hidden'}>
       <div className="relative flex h-10 w-10 shrink items-center justify-center">
         <Icon className="flex h-full justify-center drop-shadow-soft" />
         {shareItem.dateShared && (
