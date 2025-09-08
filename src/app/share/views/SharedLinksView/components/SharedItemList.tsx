@@ -78,15 +78,7 @@ export const SharedItemList = ({
     return selectedItems.some((i) => item.id === i.id);
   };
 
-  const itemComposition = getSharedListItemComposition({
-    onItemDoubleClicked,
-    onNameClicked,
-    user,
-    getOwnerAvatarSrc,
-    checkIfIsItemSelected,
-  });
-
-  const createSharedList = (item: AdvancedSharedItem) => (
+  const itemComposition = (item: AdvancedSharedItem) => (
     <SharedListItem
       item={item}
       getOwnerAvatarSrc={getOwnerAvatarSrc}
@@ -134,7 +126,7 @@ export const SharedItemList = ({
       disableKeyboardShortcuts={disableKeyboardShortcuts}
       onClick={onClickItem}
       onDoubleClick={onItemDoubleClicked}
-      itemComposition={[(item) => createSharedList(item)]}
+      itemComposition={[itemComposition]}
       skinSkeleton={skinSkeleton}
       emptyState={emptyStateElement}
       onNextPage={onNextPage}

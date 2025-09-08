@@ -43,7 +43,7 @@ export const SharedListItem = ({
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
       {/* ITEM NAME */}
-      <div className="flex truncate whitespace-nowrap shrink-0 min-w-activity grow items-center pr-3">
+      <div className="flex truncate whitespace-nowrap shrink-0 min-w-[200px] grow items-center pr-3">
         {/* ICON */}
         <div className="box-content flex items-center pr-4">
           <div className="relative flex h-10 w-10 justify-center drop-shadow-soft">
@@ -62,7 +62,7 @@ export const SharedListItem = ({
         </div>
 
         {/* NAME */}
-        <div className="flex w-activity grow cursor-pointer items-center truncate pr-2">
+        <div className="flex w-[200px] grow cursor-pointer items-center truncate pr-2">
           <button
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className="truncate"
