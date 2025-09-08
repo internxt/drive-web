@@ -1,8 +1,15 @@
-import { WORKER_MESSAGE_STATES } from '../../../../WebWorker';
 import { Abortable } from '../../../network/Abortable';
 import DatabaseUploadRepository from '../../../repositories/DatabaseUploadRepository';
 import { TaskStatus } from '../../../tasks/types';
 import { IUploadParams } from '../network.service/types';
+
+export const WORKER_MESSAGE_STATES = {
+  SUCCESS: 'success',
+  ERROR: 'error',
+  ABORT: 'abort',
+  CHECK_UPLOAD_STATUS: 'checkUploadStatus',
+  UPLOAD_STATUS: 'uploadStatus',
+};
 
 /**
  * Checks the upload progress for the specified task.
