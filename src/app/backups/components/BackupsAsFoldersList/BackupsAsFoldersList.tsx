@@ -70,33 +70,17 @@ export default function BackupsAsFoldersList({
               const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
               return (
-                <div
-                  onKeyDown={() => {}}
-                  className={'file-list-item group'}
-                  data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
-                >
+                <div className={'file-list-item group'} data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}>
                   <div className="flex shrink-0 min-w-[200px] grow items-center pr-3">
                     {/* ICON */}
                     <div className="box-content flex items-center pr-4">
                       <div className="relative flex h-10 w-10 justify-center drop-shadow-soft">
-                        {item.currentThumbnail ? (
-                          <div className="h-full w-full">
-                            <img
-                              className="aspect-square h-full max-h-full object-contain object-center"
-                              src={item.currentThumbnail.urlObject}
-                              data-test={`file-list-${
-                                item.isFolder ? 'folder' : 'file'
-                              }-${transformItemService.getItemPlainNameWithExtension(item)}`}
-                            />
-                          </div>
-                        ) : (
-                          <ItemIconComponent
-                            className="h-full"
-                            data-test={`file-list-${
-                              item.isFolder ? 'folder' : 'file'
-                            }-${transformItemService.getItemPlainNameWithExtension(item)}`}
-                          />
-                        )}
+                        <ItemIconComponent
+                          className="h-full"
+                          data-test={`file-list-${
+                            item.isFolder ? 'folder' : 'file'
+                          }-${transformItemService.getItemPlainNameWithExtension(item)}`}
+                        />
                       </div>
                     </div>
 
