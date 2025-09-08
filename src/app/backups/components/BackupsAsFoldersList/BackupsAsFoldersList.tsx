@@ -1,12 +1,15 @@
 import { skinSkeleton } from 'app/shared/Skeleton';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import dateService from '../../../core/services/date.service';
-import iconService from '../../../drive/services/icon.service';
 import sizeService from '../../../drive/services/size.service';
 import { DriveItemData } from '../../../drive/types';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import Empty from '../../../shared/components/Empty/Empty';
 import { List, MenuItemType } from '@internxt/ui';
+import transformItemService from 'app/drive/services/item-transform.service';
+import { items } from '@internxt/lib';
+import { t } from 'i18next';
+import iconService from 'app/drive/services/icon.service';
 
 export default function BackupsAsFoldersList({
   className = '',
@@ -64,34 +67,75 @@ export default function BackupsAsFoldersList({
           isLoading={isLoading}
           itemComposition={[
             (item) => {
-              const displayName = item.type === 'folder' ? item.name : `${item.plainName}.${item.type}`;
-              const Icon = iconService.getItemIcon(item.isFolder, item.type);
+              const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
               return (
-                <div className="relative flex min-w-activity grow items-center justify-start pr-3">
-                  <div className="mr-3 h-8 w-8">
-                    <Icon className="h-8 w-8" />
+                <div
+                  onKeyDown={() => {}}
+                  className={'file-list-item group'}
+                  data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
+                >
+                  <div className="flex shrink-0 min-w-[200px] grow items-center pr-3">
+                    {/* ICON */}
+                    <div className="box-content flex items-center pr-4">
+                      <div className="relative flex h-10 w-10 justify-center drop-shadow-soft">
+                        {item.currentThumbnail ? (
+                          <div className="h-full w-full">
+                            <img
+                              className="aspect-square h-full max-h-full object-contain object-center"
+                              src={item.currentThumbnail.urlObject}
+                              data-test={`file-list-${
+                                item.isFolder ? 'folder' : 'file'
+                              }-${transformItemService.getItemPlainNameWithExtension(item)}`}
+                            />
+                          </div>
+                        ) : (
+                          <ItemIconComponent
+                            className="h-full"
+                            data-test={`file-list-${
+                              item.isFolder ? 'folder' : 'file'
+                            }-${transformItemService.getItemPlainNameWithExtension(item)}`}
+                          />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* NAME */}
+                    <div className="flex w-[200px] grow cursor-pointer items-center truncate pr-2">
+                      <button
+                        data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
+                        className="truncate"
+                        title={
+                          transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)
+                        }
+                        onClick={
+                          (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
+                            ? () => onItemClicked(item)
+                            : undefined
+                        }
+                      >
+                        <p className="truncate">
+                          {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+                        </p>
+                      </button>
+                    </div>
                   </div>
-                  <div className="relative flex grow cursor-default truncate">
-                    <button
-                      className="z-30 shrink cursor-pointer truncate"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onItemClicked(item);
-                      }}
-                    >
-                      {displayName}
-                    </button>
+
+                  {/* DATE */}
+                  <div className="block shrink-0 w-date items-center whitespace-nowrap">
+                    {dateService.formatDefaultDate(item.updatedAt, t)}
+                  </div>
+
+                  {/* SIZE */}
+                  <div className="w-size shrink-0 items-center whitespace-nowrap">
+                    {sizeService.bytesToString(item.size, false) === '' ? (
+                      <span className="opacity-25">—</span>
+                    ) : (
+                      sizeService.bytesToString(item.size, false)
+                    )}
                   </div>
                 </div>
               );
-            },
-            (item) => {
-              return <div>{dateService.formatDefaultDate(item.createdAt, translate)}</div>;
-            },
-            (item) => {
-              const size = 'size' in item ? sizeService.bytesToString(item.size) : '';
-              return <div>{size}</div>;
             },
           ]}
           onClick={(item) => {
