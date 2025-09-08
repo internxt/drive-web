@@ -1890,19 +1890,20 @@
           "1TB": {
             "title": "Essential",
             "features": [
+              "1TB zero-knowledge encrypted storage",
               "Post-quantum encryption",
               "Ultra fast unlimited VPN (FR)",
               "Antivirus",
               "Backup your files",
               "Password-protected file sharing",
               "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support"
+              "Two-factor authentication (2FA)"
             ]
           },
           "3TB": {
             "title": "Premium",
             "features": [
+              "3TB zero-knowledge encrypted storage",
               "Post-quantum encryption",
               "Ultra fast unlimited VPN (FR, DE, PL)",
               "Antivirus",
@@ -1910,14 +1911,14 @@
               "Password-protected file sharing",
               "Invite, share & collaborate",
               "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support"
+              "Two-factor authentication (2FA)"
             ],
             "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
           },
           "5TB": {
             "title": "Ultimate",
             "features": [
+              "5TB zero-knowledge encrypted storage",
               "Post-quantum encryption",
               "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
               "Antivirus",
@@ -1926,13 +1927,13 @@
               "Invite, share & collaborate",
               "GDPR compliance",
               "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support"
+              "CLI, WebDav, NAS & Rclone support"
             ],
             "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
           },
           "1GB": {
             "title": "Free",
-            "features": ["Free Standard VPN (FR)", "CLI, WebDav & Rclone support"]
+            "features": [ "1GB zero-knowledge encrypted storage","Free Standard VPN (FR)"]
           }
         },
         "businessPlanFeaturesList": {
@@ -1941,6 +1942,7 @@
           "1TB": {
             "title": "Standard",
             "features": [
+              "1TB zero-knowledge encrypted storage per user",
               "Post-quantum encryption",
               "Ultra fast unlimited VPN (FR, DE, PL)",
               "Antivirus",
@@ -1949,7 +1951,7 @@
               "Invite, share & collaborate",
               "GDPR compliance",
               "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support",
+              "CLI & WebDav support",
               "Manage account billing & payments"
             ],
             "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
@@ -1957,6 +1959,7 @@
           "2TB": {
             "title": "Pro",
             "features": [
+              "2TB zero-knowledge encrypted storage per user",
               "Post-quantum encryption",
               "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
               "Antivirus",
@@ -1965,7 +1968,7 @@
               "Invite, share & collaborate",
               "GDPR compliance",
               "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support",
+              "CLI, WebDav, Rclone & NAS support",
               "Manage account billing & payments"
             ],
             "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
