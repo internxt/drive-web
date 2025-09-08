@@ -23,7 +23,7 @@ import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { ConnectionLostError } from './../../network/requests';
 import { ErrorMessages } from 'app/core/constants';
-import { downloadWorkerHandler, DownloadWorkerHandler } from './worker.service/downloadWorkerUtils';
+import { downloadWorkerHandler, DownloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
