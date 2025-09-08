@@ -13,26 +13,32 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
 
   const products = [
     {
+      id: 'drive',
       icon: CloudArrowUp,
       text: translateList('featuresBanner.products.drive'),
     },
     {
+      id: 'antivirus',
       icon: ShieldPlus,
       text: translateList('featuresBanner.products.antivirus'),
     },
     {
+      id: 'cleaner',
       icon: Sparkle,
       text: translateList('featuresBanner.products.cleaner'),
     },
     {
+      id: 'vpn',
       icon: CellTower,
       text: translateList('featuresBanner.products.vpn'),
     },
     {
+      id: 'meet',
       icon: VideoConference,
       text: translateList('featuresBanner.products.meet'),
     },
     {
+      id: 'mail',
       icon: Envelope,
       text: translateList('featuresBanner.products.mail'),
     },
@@ -112,9 +118,9 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
           </div>
 
           <div className="flex w-full flex-wrap items-start justify-start gap-2 lg:flex-nowrap lg:justify-between">
-            {products.map((feature, index) => (
+            {products.map((feature) => (
               <div
-                key={index}
+                key={feature.id} 
                 className="flex h-6 w-min flex-row items-center justify-center gap-1 rounded bg-white/50 px-1 py-0.5 shadow-sm lg:h-8 lg:px-2 lg:py-1"
               >
                 <feature.icon className="h-5 w-5 text-primary lg:h-6 lg:w-6" />
