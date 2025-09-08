@@ -1823,19 +1823,20 @@
           "1TB": {
             "title": "Essential",
             "features": [
+              "1TB Zero-Knowledge verschlüsselter Speicher",
               "Post-Quanten-Verschlüsselung",
               "Ultraschnelles unbegrenztes VPN (FR)",
               "Antivirus",
               "Sicherung Ihrer Dateien",
               "Passwortgeschützter Dateiaustausch",
               "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI, WebDav & Rclone Unterstützung"
+              "Zwei-Faktor-Authentifizierung (2FA)"
             ]
           },
           "3TB": {
             "title": "Premium",
             "features": [
+              "3TB Zero-Knowledge verschlüsselter Speicher",
               "Post-Quanten-Verschlüsselung",
               "Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
               "Antivirus",
@@ -1843,14 +1844,14 @@
               "Passwortgeschützter Dateiaustausch",
               "Einladen, Teilen & Zusammenarbeiten",
               "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI, WebDav & Rclone Unterstützung"
+              "Zwei-Faktor-Authentifizierung (2FA)"
             ],
             "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor"]
           },
           "5TB": {
             "title": "Ultimate",
             "features": [
+              "5TB Zero-Knowledge verschlüsselter Speicher",
               "Post-Quanten-Verschlüsselung",
               "Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
               "Antivirus",
@@ -1859,13 +1860,16 @@
               "Einladen, Teilen & Zusammenarbeiten",
               "DSGVO-Konformität",
               "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI, WebDav & Rclone Unterstützung"
+              "CLI, WebDav, NAS & Rclone Unterstützung"
             ],
             "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor", "Meet", "Mail"]
           },
           "1GB": {
             "title": "Kostenlos",
-            "features": ["Kostenloses Standard-VPN (FR)", "CLI, WebDav & Rclone Unterstützung"]
+            "features": [
+              "1GB Zero-Knowledge verschlüsselter Speicher",
+              "Kostenloses Standard-VPN (FR)"
+            ]
           }
         },
         "businessPlanFeaturesList": {
@@ -1874,6 +1878,7 @@
           "1TB": {
             "title": "Standard",
             "features": [
+              "1TB Zero-Knowledge verschlüsselter Speicher pro Benutzer",
               "Post-Quanten-Verschlüsselung",
               "Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
               "Antivirus",
@@ -1882,7 +1887,7 @@
               "Einladen, Teilen & Zusammenarbeiten",
               "DSGVO-Konformität",
               "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI, WebDav & Rclone Unterstützung",
+              "CLI & WebDav Unterstützung",
               "Kontoverwaltung für Abrechnung & Zahlungen"
             ],
             "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor"]
@@ -1890,6 +1895,7 @@
           "2TB": {
             "title": "Pro",
             "features": [
+              "2TB Zero-Knowledge verschlüsselter Speicher pro Benutzer",
               "Post-Quanten-Verschlüsselung",
               "Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
               "Antivirus",
@@ -1898,7 +1904,7 @@
               "Einladen, Teilen & Zusammenarbeiten",
               "DSGVO-Konformität",
               "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI, WebDav & Rclone Unterstützung",
+              "CLI, WebDav, Rclone & NAS Unterstützung",
               "Kontoverwaltung für Abrechnung & Zahlungen"
             ],
             "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor", "Meet", "Mail"]

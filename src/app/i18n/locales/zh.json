@@ -1878,19 +1878,20 @@
           "1TB": {
             "title": "基础版",
             "features": [
+              "1TB零知识加密存储",
               "后量子加密",
               "超快无限制VPN（法国）",
               "防病毒",
               "文件备份",
               "密码保护文件共享",
               "符合GDPR",
-              "双因素认证（2FA）",
-              "支持CLI、WebDav和Rclone"
+              "双因素认证（2FA）"
             ]
           },
           "3TB": {
             "title": "高级版",
             "features": [
+              "3TB零知识加密存储",
               "后量子加密",
               "超快无限制VPN（法国、德国、波兰）",
               "防病毒",
@@ -1898,14 +1899,14 @@
               "密码保护文件共享",
               "邀请、共享和协作",
               "符合GDPR",
-              "双因素认证（2FA）",
-              "支持CLI、WebDav和Rclone"
+              "双因素认证（2FA）"
             ],
             "comingSoonFeatures": ["设备清理器", "暗网监控"]
           },
           "5TB": {
             "title": "旗舰版",
             "features": [
+              "5TB零知识加密存储",
               "后量子加密",
               "超快无限制VPN（法国、德国、波兰、加拿大、英国）",
               "防病毒",
@@ -1914,13 +1915,16 @@
               "邀请、共享和协作",
               "符合GDPR",
               "双因素认证（2FA）",
-              "支持CLI、WebDav和Rclone"
+              "支持CLI、WebDav、NAS和Rclone"
             ],
             "comingSoonFeatures": ["设备清理器", "暗网监控", "视频会议", "邮件"]
           },
           "1GB": {
             "title": "免费版",
-            "features": ["免费标准VPN（法国）", "支持CLI、WebDav和Rclone"]
+            "features": [
+              "1GB零知识加密存储",
+              "免费标准VPN（法国）"
+            ]
           }
         },
         "businessPlanFeaturesList": {
@@ -1929,6 +1933,7 @@
           "1TB": {
             "title": "标准版",
             "features": [
+              "每用户1TB零知识加密存储",
               "后量子加密",
               "超快无限制VPN（法国、德国、波兰）",
               "防病毒",
@@ -1937,7 +1942,7 @@
               "邀请、共享和协作",
               "符合GDPR",
               "双因素认证（2FA）",
-              "支持CLI、WebDav和Rclone",
+              "支持CLI和WebDav",
               "管理账户账单和支付"
             ],
             "comingSoonFeatures": ["设备清理器", "暗网监控"]
@@ -1945,6 +1950,7 @@
           "2TB": {
             "title": "专业版",
             "features": [
+              "每用户2TB零知识加密存储",
               "后量子加密",
               "超快无限制VPN（法国、德国、波兰、加拿大、英国）",
               "防病毒",
@@ -1953,7 +1959,7 @@
               "邀请、共享和协作",
               "符合GDPR",
               "双因素认证（2FA）",
-              "支持CLI、WebDav和Rclone",
+              "支持CLI、WebDav、Rclone和NAS",
               "管理账户账单和支付"
             ],
             "comingSoonFeatures": ["设备清理器", "暗网监控", "视频会议", "邮件"]
