@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { userSelectors } from 'app/store/slices/user';
 import FeaturesBanner from './FeaturesBanner';
 
-const OFFER_END_DAY = new Date('2025-08-27');
+const OFFER_END_DAY = new Date('2025-09-27');
 const TIMEOUT = 8000;
 
 const BannerWrapper = (): JSX.Element => {

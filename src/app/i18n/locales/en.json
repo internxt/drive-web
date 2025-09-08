@@ -4,21 +4,23 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 85%",
-    "title": "All Internxt Plans!",
-    "upperTitle": "Internxt turns 5!",
-    "cta": "Claim deal",
+    "label": {"blueText":"Get 87% off", "text":"in all Premium Plans"},
+    "title": "Get an exclusive discount!",
+    "subTitle": {
+      "blueText":"Special offer:",
+      "text":"store files in privacy for less"
+    },
+    "ctaGet": "Get the deal",
+    "ctaContinue":"Continue free",
     "guarantee": "30-day money-back guarantee",
-    "specialOfferGift": "Chance to win a signed Valencia CF T-shirt",
-    "lastCta": "*Offer is for free accounts or new customers",
-    "features": [
-      "Drive, VPN, and Antivirus",
-      "Sustainable cloud storage",
-      "Post-quantum encryption",
-      "End-to-end encrypted transfers",
-      "No unauthorized access",
-      "Free anniversary theme for Web App"
-    ]
+    "products": {
+      "drive": "Drive",
+      "antivirus": "Antivirus",
+      "cleaner": "Cleaner",
+      "vpn": "VPN",
+      "meet": "Meet",
+      "mail": "Mail"
+    }
   },
   "susbcriptionsBanner": {
     "title": "Supercharge your plan!",

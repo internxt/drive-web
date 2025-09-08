@@ -3,23 +3,24 @@
     "title": "Gestiona tus archivos, la cuenta y la suscripción en la app",
     "logOut": "Cerrar sesión"
   },
-
   "featuresBanner": {
-    "label": "Ahorra 85%",
-    "title": "En todos los planes",
-    "upperTitle": "¡Cumplimos 5 años!",
-    "cta": "Elige tu plan",
-    "guarantee": "Garantía de devolución de 30 días",
-    "specialOfferGift": "Sorteo de una camiseta firmada del Valencia CF",
-    "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
-    "features": [
-      "Drive, VPN, y Antivirus ",
-      "Almecanamineto sostenible",
-      "Cifrado post-cuántico",
-      "Transferencias cifradas ",
-      "Sin accesos no autorizados",
-      "Tema de verano gratis"
-    ]
+    "label": {"blueText":"Obtén 87% de descuento", "text":"en todos los Planes"},
+    "title": "¡Obtén un descuento exclusivo!",
+    "subTitle": {
+      "blueText":"Oferta especial:",
+      "text":"almacena archivos con privacidad por menos"
+    },
+    "ctaGet": "Obtener la oferta",
+    "ctaContinue":"Continuar gratis",
+    "guarantee": "Garantía de devolución de dinero de 30 días",
+    "products": {
+      "drive": "Drive",
+      "antivirus": "Antivirus",
+      "cleaner": "Cleaner",
+      "vpn": "VPN",
+      "meet": "Meet",
+      "mail": "Mail"
+    }
   },
   "susbcriptionsBanner": {
     "title": "¡Mejora tu plan!",

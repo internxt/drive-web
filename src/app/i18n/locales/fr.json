@@ -4,21 +4,23 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 85%",
-    "title": "Sur tous les forfaits",
-    "upperTitle": "On fête nos 5 ans !",
-    "cta": "Choisissez un plan",
-    "guarantee": "Garantie 30 jours remboursée",
-    "specialOfferGift": "Tirage d’un maillot signé du Valencia CF",
-    "lastCta": "*Offre valable pour comptes gratuits ou nouveaux clients",
-    "features": [
-      "Drive, VPN et Antivirus",
-      "Stockage durable",
-      "Chiffrement post-quantique",
-      "Transferts chiffrés",
-      "Aucun accès non autorisé",
-      "Thème d’été gratuit"
-    ]
+    "label": {"blueText":"Obtenez 87% de réduction", "text":"sur tous les Plans Premium"},
+    "title": "Obtenez une remise exclusive !",
+    "subTitle": {
+      "blueText":"Offre spéciale :",
+      "text":"stockez vos fichiers en privé pour moins cher"
+    },
+    "ctaGet": "Profiter de l'offre",
+    "ctaContinue":"Continuer gratuitement",
+    "guarantee": "Garantie de remboursement de 30 jours",
+    "products": {
+      "drive": "Drive",
+      "antivirus": "Antivirus",
+      "cleaner": "Cleaner",
+      "vpn": "VPN",
+      "meet": "Meet",
+      "mail": "Mail"
+    }
   },
   "susbcriptionsBanner": {
     "title": "Boostez votre abonnement !",

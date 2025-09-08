@@ -9,21 +9,23 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Spare 85 %",
-    "title": "Auf alle Pläne",
-    "upperTitle": "Wir feiern 5 Jahre!",
-    "cta": "Wähle deinen Plan",
-    "guarantee": "30 Tage Geld-zurück-Garantie",
-    "specialOfferGift": "Verlosung: signiertes Valencia-CF-Trikot",
-    "lastCta": "*Angebot für Gratisnutzer oder Neukunden",
-    "features": [
-      "Drive, VPN und Antivirus",
-      "Nachhaltiger Speicher",
-      "Post-quanten Verschlüsselung",
-      "Verschlüsselte Transfers",
-      "Keine unbefugten Zugriffe",
-      "Gratis Sommer-Theme"
-    ]
+    "label": {"blueText":"Ottieni l'87% di sconto", "text":"su tutti i Piani Premium"},
+    "title": "Ottieni uno sconto esclusivo!",
+    "subTitle": {
+      "blueText":"Offerta speciale:",
+      "text":"archivia i file in privato per meno"
+    },
+    "ctaGet": "Approfitta dell'offerta",
+    "ctaContinue":"Continua gratis",
+    "guarantee": "Garanzia di rimborso di 30 giorni",
+    "products": {
+      "drive": "Drive",
+      "antivirus": "Antivirus",
+      "cleaner": "Cleaner",
+      "vpn": "VPN",
+      "meet": "Meet",
+      "mail": "Mail"
+    }
   },
   "susbcriptionsBanner": {
     "title": "Potenzia il tuo piano!",

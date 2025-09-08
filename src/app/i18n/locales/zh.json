@@ -4,14 +4,23 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "立省85%",
-    "title": "適用所有方案",
-    "upperTitle": "我們5歲了！",
-    "cta": "選擇你的方案",
-    "guarantee": "30天退費保證",
-    "specialOfferGift": "抽獎：Valencia CF簽名球衣",
-    "lastCta": "*限免費帳戶或新用戶",
-    "features": ["雲端、VPN、防毒", "永續儲存空間", "後量子加密技術", "加密檔案傳輸", "無未授權存取", "免費夏日主題"]
+    "label": {"blueText":"获得87%折扣", "text":"所有高级套餐"},
+    "title": "获得专属折扣！",
+    "subTitle": {
+      "blueText":"特别优惠：",
+      "text":"以更低价格私密存储文件"
+    },
+    "ctaGet": "获取优惠",
+    "ctaContinue":"免费继续",
+    "guarantee": "30天退款保证",
+    "products": {
+      "drive": "Drive",
+      "antivirus": "Antivirus",
+      "cleaner": "Cleaner",
+      "vpn": "VPN",
+      "meet": "Meet",
+      "mail": "Mail"
+    }
   },
   "susbcriptionsBanner": {
     "title": "升级您的计划！",
