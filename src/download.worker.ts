@@ -1,6 +1,8 @@
 import downloadFile from 'app/drive/services/download.service/downloadFile';
 import { DriveFileData } from 'app/drive/types';
 
+let abortController: AbortController | undefined;
+
 self.addEventListener('message', async (event) => {
   console.log('[DOWNLOAD-WORKER]: Event received -->', event);
 
@@ -15,6 +17,7 @@ self.addEventListener('message', async (event) => {
         file: DriveFileData;
         isWorkspace: boolean;
         isBrave: boolean;
+        abortController: AbortController;
         credentials: any;
       };
       console.log('[DOWNLOAD-WORKER] Downloading file -->', {
@@ -22,13 +25,15 @@ self.addEventListener('message', async (event) => {
         type: file.type,
       });
 
+      abortController = new AbortController();
+
       const downloadedFile = await downloadFile(
         file,
         isWorkspace,
         (progress: number) => {
           postMessage({ result: 'progress', progress });
         },
-        undefined,
+        abortController,
         credentials,
       );
 
@@ -71,6 +76,10 @@ self.addEventListener('message', async (event) => {
       const errorCloned = JSON.parse(JSON.stringify(err));
       postMessage({ result: 'error', error: errorCloned });
     }
+  } else if (event.data.type === 'abort') {
+    console.log('[DOWNLOAD-WORKER] Received abort → aborting download');
+    abortController?.abort();
+    postMessage({ result: 'abort' });
   } else {
     console.warn('[DOWNLOAD-WORKER] Received unknown event');
   }

@@ -6,22 +6,20 @@ import { downloadFileAsBlob } from '../download.service/downloadFileAsBlob';
 
 interface HandleWorkerMessagesPayload {
   worker: Worker;
-  payload: {
-    itemData: DriveFileData;
-    isWorkspace: boolean;
-    updateProgressCallback: (progress: number) => void;
-    sharingOptions?: { credentials: { user: string; pass: string }; mnemonic: string };
-  };
+  abortController?: AbortController;
+  itemData: DriveFileData;
+  updateProgressCallback: (progress: number) => void;
 }
 
 interface HandleMessagesPayload {
   messageData: MessageData;
-  resolve: (value?: unknown) => void;
-  reject: (reason?: any) => void;
   worker: Worker;
   writer: WritableStreamDefaultWriter<Uint8Array>;
-  downloadCallback: (progress: number) => void;
   completeFilename: string;
+  abortController?: AbortController;
+  downloadCallback: (progress: number) => void;
+  resolve: (value?: unknown) => void;
+  reject: (reason?: any) => void;
 }
 
 export class DownloadWorkerHandler {
@@ -31,9 +29,14 @@ export class DownloadWorkerHandler {
     return createDownloadWebWorker();
   }
 
-  public handleWorkerMessages({ worker, payload }: HandleWorkerMessagesPayload) {
-    const fileName = payload.itemData.plainName ?? payload.itemData.name;
-    const completeFilename = payload.itemData.type ? `${fileName}.${payload.itemData.type}` : fileName;
+  public handleWorkerMessages({
+    worker,
+    abortController,
+    itemData,
+    updateProgressCallback,
+  }: HandleWorkerMessagesPayload) {
+    const fileName = itemData.plainName ?? itemData.name;
+    const completeFilename = itemData.type ? `${fileName}.${itemData.type}` : fileName;
     const fileStream = streamSaver.createWriteStream(completeFilename);
     const writer = fileStream.getWriter();
 
@@ -44,12 +47,13 @@ export class DownloadWorkerHandler {
           console.log('[DOWNLOAD/MAIN_THREAD]: Message received from worker', msg);
           await this.handleMessages({
             messageData: msg.data,
-            downloadCallback: payload.updateProgressCallback,
-            resolve,
-            reject,
             worker,
+            abortController,
             writer,
             completeFilename,
+            downloadCallback: updateProgressCallback,
+            resolve,
+            reject,
           });
         });
       }),
@@ -63,14 +67,22 @@ export class DownloadWorkerHandler {
 
   public async handleMessages({
     messageData,
-    resolve,
-    reject,
     worker,
-    downloadCallback,
     writer,
     completeFilename,
+    abortController,
+    resolve,
+    reject,
+    downloadCallback,
   }: HandleMessagesPayload) {
     const { result } = messageData;
+
+    if (abortController?.signal.aborted) {
+      await writer.close();
+      worker.terminate();
+      return;
+    }
+
     switch (result) {
       case 'chunk': {
         const { chunk } = messageData;
