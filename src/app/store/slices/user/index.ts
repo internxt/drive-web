@@ -97,7 +97,7 @@ export const refreshAvatarThunk = createAsyncThunk<void, { forceRefresh?: boolea
         dispatch(
           userActions.setUser({
             ...currentUser,
-            avatar: refreshedAvatar ?? userAvatar,
+            avatar: refreshedAvatar,
           }),
         );
       }

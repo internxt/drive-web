@@ -19,6 +19,7 @@ vi.mock('../../auth/services/user.service', () => ({
   default: {
     downloadAvatar: vi.fn(),
     refreshAvatarUser: vi.fn(),
+    checkAvatarUrlWorking: vi.fn(),
   },
 }));
 
@@ -119,11 +120,36 @@ describe('refreshAvatar', () => {
     const validUrl = `https://avatar-url.com/file.png?X-Amz-Date=${dateStr}Z&X-Amz-Expires=3600`;
 
     (getDatabaseProfileAvatar as Mock).mockResolvedValueOnce({ srcURL: validUrl });
+    (userService.checkAvatarUrlWorking as Mock).mockResolvedValueOnce(true);
 
     const result = await refreshAvatar(uuid, validUrl);
 
     expect(result).toBe(validUrl);
     expect(updateDatabaseProfileAvatar).not.toHaveBeenCalled();
     expect(userService.refreshAvatarUser).not.toHaveBeenCalled();
+  });
+
+  test('When the stored avatar URL is not working, then it should refresh the avatar', async () => {
+    const now = new Date();
+    const dateStr = now
+      .toISOString()
+      .replace(/[:-]/g, '')
+      .replace(/\.\d{3}Z$/, '');
+
+    const validUrl = `https://avatar-url.com/file.png?X-Amz-Date=${dateStr}Z&X-Amz-Expires=3600`;
+
+    (getDatabaseProfileAvatar as Mock).mockResolvedValueOnce({ srcURL: validUrl });
+    (userService.checkAvatarUrlWorking as Mock).mockResolvedValueOnce(false);
+    vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: newAvatarUrl });
+    vi.spyOn(userService, 'downloadAvatar').mockResolvedValue(avatarBlob);
+
+    const result = await refreshAvatar(uuid, validUrl);
+
+    expect(result).toBe(newAvatarUrl);
+    expect(updateDatabaseProfileAvatar).toHaveBeenCalledWith({
+      sourceURL: validUrl,
+      avatarBlob,
+      uuid,
+    });
   });
 });
