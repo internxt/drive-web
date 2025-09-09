@@ -129,7 +129,7 @@ describe('refreshAvatar', () => {
     expect(userService.refreshAvatarUser).not.toHaveBeenCalled();
   });
 
-  test('When the stored avatar URL is not working, then it should refresh the avatar', async () => {
+  test('When the stored avatar URL is not working, then it should return null', async () => {
     const now = new Date();
     const dateStr = now
       .toISOString()
@@ -140,16 +140,41 @@ describe('refreshAvatar', () => {
 
     (getDatabaseProfileAvatar as Mock).mockResolvedValueOnce({ srcURL: validUrl });
     (userService.checkAvatarUrlWorking as Mock).mockResolvedValueOnce(false);
-    vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: newAvatarUrl });
-    vi.spyOn(userService, 'downloadAvatar').mockResolvedValue(avatarBlob);
 
     const result = await refreshAvatar(uuid, validUrl);
 
-    expect(result).toBe(newAvatarUrl);
-    expect(updateDatabaseProfileAvatar).toHaveBeenCalledWith({
-      sourceURL: validUrl,
-      avatarBlob,
-      uuid,
-    });
+    expect(result).toBeNull();
+    expect(updateDatabaseProfileAvatar).not.toHaveBeenCalled();
+    expect(userService.refreshAvatarUser).not.toHaveBeenCalled();
+  });
+
+  test('When the stored avatar is valid and working, then it should return the stored URL', async () => {
+    const now = new Date();
+    const dateStr = now
+      .toISOString()
+      .replace(/[:-]/g, '')
+      .replace(/\.\d{3}Z$/, '');
+
+    const validUrl = `https://avatar-url.com/file.png?X-Amz-Date=${dateStr}Z&X-Amz-Expires=3600`;
+
+    (getDatabaseProfileAvatar as Mock).mockResolvedValueOnce({ srcURL: validUrl });
+    (userService.checkAvatarUrlWorking as Mock).mockResolvedValueOnce(true);
+
+    const result = await refreshAvatar(uuid, validUrl);
+
+    expect(result).toBe(validUrl);
+    expect(updateDatabaseProfileAvatar).not.toHaveBeenCalled();
+    expect(userService.refreshAvatarUser).not.toHaveBeenCalled();
+  });
+
+  test('When refreshAvatarUser returns no avatar, then it should return null', async () => {
+    (getDatabaseProfileAvatar as Mock).mockResolvedValueOnce(undefined);
+    vi.spyOn(userService, 'refreshAvatarUser').mockResolvedValue({ avatar: null });
+
+    const result = await refreshAvatar(uuid, expiredAvatarUrl);
+
+    expect(result).toBeNull();
+    expect(updateDatabaseProfileAvatar).not.toHaveBeenCalled();
+    expect(userService.downloadAvatar).not.toHaveBeenCalled();
   });
 });

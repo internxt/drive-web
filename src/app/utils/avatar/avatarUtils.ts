@@ -64,13 +64,11 @@ async function refreshAvatar(uuid: string, avatarUrl: string | null): Promise<st
 
   if (!shouldUpdate) {
     const isCurrentAvatarWorking = await userService.checkAvatarUrlWorking(storedUserAvatar?.srcURL);
-    if (isCurrentAvatarWorking) {
-      return storedUserAvatar?.srcURL;
-    }
+    if (!isCurrentAvatarWorking) return null;
+    return storedUserAvatar?.srcURL;
   }
 
   const { avatar: updatedUserAvatar } = await userService.refreshAvatarUser();
-
   if (!updatedUserAvatar) return null;
 
   const avatarBlob = await userService.downloadAvatar(updatedUserAvatar);
