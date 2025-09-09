@@ -1,4 +1,3 @@
-// createFileDownloadStream.test.ts
 import { describe, expect, vi, beforeEach, Mock, test } from 'vitest';
 import createFileDownloadStream from './createFileDownloadStream';
 import fetchFileStream from './fetchFileStream';
