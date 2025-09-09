@@ -23,8 +23,6 @@ interface HandleMessagesPayload {
 }
 
 export class DownloadWorkerHandler {
-  constructor() {}
-
   public static getWorker() {
     return createDownloadWebWorker();
   }
@@ -59,7 +57,7 @@ export class DownloadWorkerHandler {
       }),
       {
         abort: () => {
-          worker.postMessage({ type: 'upload', abort: true });
+          worker.postMessage({ type: 'download', abort: true });
         },
       },
     ];
@@ -78,7 +76,7 @@ export class DownloadWorkerHandler {
     const { result } = messageData;
 
     if (abortController?.signal.aborted) {
-      await writer.close();
+      await writer.abort();
       worker.terminate();
       return;
     }
@@ -116,15 +114,7 @@ export class DownloadWorkerHandler {
 
       case 'error': {
         const { error } = messageData;
-        await writer.close();
-        reject(error);
-        worker.terminate();
-        break;
-      }
-
-      case 'abort': {
-        const { error } = messageData;
-        await writer.close();
+        await writer.abort();
         reject(error);
         worker.terminate();
         break;

@@ -23,7 +23,7 @@ import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { ConnectionLostError } from './../../network/requests';
 import { ErrorMessages } from 'app/core/constants';
-import { downloadWorkerHandler, DownloadWorkerHandler } from './worker.service/downloadWorkerHandler';
+import { DownloadWorkerHandler, downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -298,8 +298,6 @@ export class DownloadManagerService {
         });
       }
 
-      console.log('[DOWNLOAD-MANAGER] Download completed');
-
       await this.checkAndHandleConnectionLost(connectionLost);
     } catch (error) {
       await this.checkAndHandleConnectionLost(connectionLost);
@@ -505,12 +503,14 @@ export class DownloadManagerService {
 
     const worker: Worker = DownloadWorkerHandler.getWorker();
 
+    const onAbort = () => {
+      console.log('[DOWNLOAD-MANAGER] Abort triggered → notifying worker');
+      worker.postMessage({ type: 'abort' });
+    };
+
     if (payload.abortController) {
-      payload.abortController.signal.addEventListener('abort', () => {
-        console.log('[DOWNLOAD-MANAGER] Abort triggered → notifying worker');
-        worker.postMessage({ type: 'abort' });
-      });
-      return;
+      console.log('WORKER 1');
+      payload.abortController.signal.addEventListener('abort', onAbort);
     }
 
     const workerPayload = {
@@ -530,6 +530,10 @@ export class DownloadManagerService {
       updateProgressCallback: payload.updateProgressCallback,
       abortController: payload.abortController,
     });
+
+    if (payload.abortController) {
+      payload.abortController.signal.removeEventListener('abort', onAbort);
+    }
 
     return promise;
   };
