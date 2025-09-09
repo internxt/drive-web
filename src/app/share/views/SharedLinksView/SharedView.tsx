@@ -600,10 +600,12 @@ function SharedView({
         moveItemsToTrash={moveItemsToTrashOnStopSharing}
       />
       <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
-      <ShareDialog
-        onCloseDialog={handleOnCloseShareDialog}
-        onStopSharingItem={() => actionDispatch(setSelectedItems([]))}
-      />
+      {isShareDialogOpen && (
+        <ShareDialog
+          onCloseDialog={handleOnCloseShareDialog}
+          onStopSharingItem={() => actionDispatch(setSelectedItems([]))}
+        />
+      )}
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
