@@ -2,6 +2,7 @@ import streamSaver from 'streamsaver';
 import { DriveFileData } from 'app/drive/types';
 import { MessageData } from './types/download';
 import { downloadFileAsBlob } from '../download.service/downloadFileAsBlob';
+import { createDownloadWebWorker } from '../../../../WebWorker';
 
 interface HandleWorkerMessagesPayload {
   worker: Worker;
@@ -23,8 +24,7 @@ interface HandleMessagesPayload {
 
 export class DownloadWorkerHandler {
   public getWorker() {
-    // Returning the donwloaded worker
-    // return createDownloadWebWorker();
+    return createDownloadWebWorker();
   }
 
   public handleWorkerMessages({
@@ -38,29 +38,22 @@ export class DownloadWorkerHandler {
     const fileStream = streamSaver.createWriteStream(completeFilename);
     const writer = fileStream.getWriter();
 
-    return [
-      new Promise((resolve, reject) => {
-        worker.addEventListener('error', reject);
-        worker.addEventListener('message', async (msg) => {
-          console.log('[DOWNLOAD/MAIN_THREAD]: Message received from worker', msg);
-          await this.handleMessages({
-            messageData: msg.data,
-            worker,
-            abortController,
-            writer,
-            completeFilename,
-            downloadCallback: updateProgressCallback,
-            resolve,
-            reject,
-          });
+    return new Promise((resolve, reject) => {
+      worker.addEventListener('error', reject);
+      worker.addEventListener('message', async (msg) => {
+        console.log('[DOWNLOAD/MAIN_THREAD]: Message received from worker', msg);
+        await this.handleMessages({
+          messageData: msg.data,
+          worker,
+          abortController,
+          writer,
+          completeFilename,
+          downloadCallback: updateProgressCallback,
+          resolve,
+          reject,
         });
-      }),
-      {
-        abort: () => {
-          worker.postMessage({ type: 'download', abort: true });
-        },
-      },
-    ];
+      });
+    });
   }
 
   public async handleMessages({

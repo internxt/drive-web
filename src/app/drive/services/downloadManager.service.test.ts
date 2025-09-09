@@ -593,7 +593,7 @@ describe('downloadManagerService', () => {
     (downloadFolderAsZip as Mock).mockImplementation(downloadFolderItemSpy);
 
     const handleConnectionLostSpy = vi.spyOn(DownloadManagerService.instance, 'handleConnectionLost');
-    const checkAndHandleConnectionLossSpy = vi.spyOn(DownloadManagerService.instance, 'checkAndHandleConnectionLoss');
+    const checkAndHandleConnectionLossSpy = vi.spyOn(DownloadManagerService.instance, 'checkAndHandleConnectionLost');
 
     await DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount);
 
@@ -659,7 +659,7 @@ describe('downloadManagerService', () => {
     );
 
     const handleConnectionLostSpy = vi.spyOn(DownloadManagerService.instance, 'handleConnectionLost');
-    const checkAndHandleConnectionLossSpy = vi.spyOn(DownloadManagerService.instance, 'checkAndHandleConnectionLoss');
+    const checkAndHandleConnectionLossSpy = vi.spyOn(DownloadManagerService.instance, 'checkAndHandleConnectionLost');
 
     await DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount);
 
@@ -702,7 +702,7 @@ describe('downloadManagerService', () => {
     );
 
     const handleConnectionLostSpy = vi.spyOn(DownloadManagerService.instance, 'handleConnectionLost');
-    const checkAndHandleConnectionLossSpy = vi.spyOn(DownloadManagerService.instance, 'checkAndHandleConnectionLoss');
+    const checkAndHandleConnectionLossSpy = vi.spyOn(DownloadManagerService.instance, 'checkAndHandleConnectionLost');
 
     await expect(
       DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount),
@@ -1613,10 +1613,10 @@ describe('downloadManagerService', () => {
       clearTimeoutSpy.mockRestore();
     });
 
-    describe('checkAndHandleConnectionLoss', () => {
+    describe('checkAndHandleConnectionLost', () => {
       it('should throw ConnectionLostError if connection is lost', async () => {
         navigatorOnLineSpy.mockReturnValue(false);
-        await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(true)).rejects.toThrow(
+        await expect(DownloadManagerService.instance.checkAndHandleConnectionLost(true)).rejects.toThrow(
           ConnectionLostError,
         );
       });
@@ -1626,7 +1626,7 @@ describe('downloadManagerService', () => {
         const zip = new FlatFolderZip('any-path', {});
         const spyAbort = vi.spyOn(FlatFolderZip.prototype, 'abort');
         const spyClose = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValueOnce();
-        await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(connectionLost, zip)).rejects.toThrow(
+        await expect(DownloadManagerService.instance.checkAndHandleConnectionLost(connectionLost, zip)).rejects.toThrow(
           ConnectionLostError,
         );
         expect(spyAbort).toHaveBeenCalledTimes(1);
@@ -1635,7 +1635,7 @@ describe('downloadManagerService', () => {
 
       it('should not throw if connection is fine', async () => {
         navigatorOnLineSpy.mockReturnValue(true);
-        await expect(DownloadManagerService.instance.checkAndHandleConnectionLoss(false)).resolves.toBeUndefined();
+        await expect(DownloadManagerService.instance.checkAndHandleConnectionLost(false)).resolves.toBeUndefined();
       });
     });
 
