@@ -3,7 +3,7 @@ import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
 import { DriveFileData } from '../../types';
 import fetchFileStream from './fetchFileStream';
-import fetchFileStreamWithCreds from './fetchFileStreamWithCreds';
+import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';
 import { ErrorMessages } from 'app/core/constants';
 import { downloadFileAsBlob } from './downloadFileAsBlob';
 
@@ -76,7 +76,7 @@ export default async function downloadFile(
         { ...itemData, bucketId: itemData.bucket },
         { isWorkspace, updateProgressCallback, abortController },
       )
-    : fetchFileStreamWithCreds(
+    : fetchFileStreamUsingCredentials(
         { ...itemData, bucketId: itemData.bucket },
         {
           updateProgressCallback,
