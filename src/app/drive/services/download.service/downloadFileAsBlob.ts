@@ -69,7 +69,7 @@ async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<v
 }
 
 export async function downloadFileAsBlob(filename: string, source: ReadableStream): Promise<void> {
-  const destination: BlobWritable = await getBlobWritable(filename, (blob) => {
+  const destination: BlobWritable = getBlobWritable(filename, (blob) => {
     downloadFileFromBlob(blob, filename);
   });
 
