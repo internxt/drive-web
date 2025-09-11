@@ -5,7 +5,6 @@ let abortController: AbortController | undefined;
 
 self.addEventListener('message', async (event) => {
   const eventType = event.data.type as 'download' | 'abort';
-  console.log('EVENT TYPE', eventType);
 
   switch (eventType) {
     case 'download':

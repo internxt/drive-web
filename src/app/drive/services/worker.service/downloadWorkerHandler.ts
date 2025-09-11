@@ -38,29 +38,22 @@ export class DownloadWorkerHandler {
     const fileStream = streamSaver.createWriteStream(completeFilename);
     const writer = fileStream.getWriter();
 
-    return [
-      new Promise((resolve, reject) => {
-        worker.addEventListener('error', reject);
-        worker.addEventListener('message', async (msg) => {
-          console.log('[DOWNLOAD/MAIN_THREAD]: Message received from worker', msg);
-          await this.handleMessages({
-            messageData: msg.data,
-            worker,
-            abortController,
-            writer,
-            completeFilename,
-            downloadCallback: updateProgressCallback,
-            resolve,
-            reject,
-          });
+    return new Promise((resolve, reject) => {
+      worker.addEventListener('error', reject);
+      worker.addEventListener('message', async (msg) => {
+        console.log('[DOWNLOAD/MAIN_THREAD]: Message received from worker', msg);
+        await this.handleMessages({
+          messageData: msg.data,
+          worker,
+          abortController,
+          writer,
+          completeFilename,
+          downloadCallback: updateProgressCallback,
+          resolve,
+          reject,
         });
-      }),
-      {
-        abort: () => {
-          worker.postMessage({ type: 'download', abort: true });
-        },
-      },
-    ];
+      });
+    });
   }
 
   public async handleMessages({
@@ -76,6 +69,7 @@ export class DownloadWorkerHandler {
     const { result } = messageData;
 
     if (abortController?.signal.aborted) {
+      worker.postMessage({ type: 'abort' });
       await writer.abort();
       worker.terminate();
       return;
@@ -92,7 +86,7 @@ export class DownloadWorkerHandler {
       case 'blob': {
         console.log('[MAIN_THREAD]: Downloading file as blob');
         const { readableStream, fileId } = messageData;
-        await downloadFileAsBlob(completeFilename, readableStream);
+        await downloadFileAsBlob(completeFilename, readableStream, abortController);
         resolve(fileId);
         worker.terminate();
         break;

@@ -68,10 +68,19 @@ async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<v
   await writer.close();
 }
 
-export async function downloadFileAsBlob(filename: string, source: ReadableStream): Promise<void> {
+export async function downloadFileAsBlob(
+  filename: string,
+  source: ReadableStream,
+  abortController?: AbortController,
+): Promise<void> {
   const destination: BlobWritable = await getBlobWritable(filename, (blob) => {
     downloadFileFromBlob(blob, filename);
   });
+
+  if (abortController?.signal.aborted) {
+    await destination.abort();
+    return;
+  }
 
   await pipe(source, destination);
 }
