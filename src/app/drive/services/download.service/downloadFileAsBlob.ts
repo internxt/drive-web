@@ -1,4 +1,4 @@
-export interface BlobWritable {
+interface BlobWritable {
   getWriter: () => {
     abort: () => Promise<void>;
     close: () => Promise<void>;
@@ -13,7 +13,7 @@ export interface BlobWritable {
   close: () => Promise<void>;
 }
 
-export async function getBlobWritable(filename: string, onClose: (result: Blob) => void): Promise<BlobWritable> {
+export function getBlobWritable(filename: string, onClose: (result: Blob) => void): BlobWritable {
   let blobParts: BlobPart[] = [];
 
   return {
