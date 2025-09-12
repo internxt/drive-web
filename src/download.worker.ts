@@ -1,10 +1,13 @@
+/* eslint-disable no-constant-condition */
 import createFileDownloadStream from 'app/drive/services/download.service/createFileDownloadStream';
 import { DriveFileData } from 'app/drive/types';
 
 let abortController: AbortController | undefined;
+let abortRequested = false;
 
 self.addEventListener('message', async (event) => {
   const eventType = event.data.type as 'download' | 'abort';
+  console.log('EVENT TYPE', eventType);
 
   switch (eventType) {
     case 'download':
@@ -13,7 +16,9 @@ self.addEventListener('message', async (event) => {
 
     case 'abort':
       console.log('[DOWNLOAD-WORKER] Received abort → aborting download');
+      abortRequested = true;
       abortController?.abort();
+      postMessage({ result: 'abort' });
       break;
 
     default:
@@ -48,22 +53,38 @@ const downloadingFile = async (params: {
     );
 
     if (isBrave) {
-      console.log('[DOWNLOAD-WORKER] Downloading as blob');
-      postMessage(
-        {
-          result: 'blob',
-          readableStream: downloadedFile,
-          fileId: file.fileId,
-        },
-        {
-          transfer: [downloadedFile],
-        },
-      );
+      const reader = downloadedFile.getReader();
+      const chunks: Uint8Array[] = [];
+
+      if (abortRequested) {
+        reader.releaseLock();
+        abortRequested = false;
+        return;
+      }
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) break;
+
+        const chunk =
+          value instanceof Uint8Array
+            ? new Uint8Array(value.buffer, value.byteOffset, value.byteLength)
+            : new Uint8Array(value);
+
+        chunks.push(chunk);
+      }
+
+      const completeBlob = new Blob(chunks);
+
+      postMessage({
+        result: 'blob',
+        blob: completeBlob,
+      });
     } else {
       console.log('[DOWNLOAD-WORKER] Downloading using readable stream');
       const reader = downloadedFile.getReader();
 
-      // eslint-disable-next-line no-constant-condition
       while (true) {
         const { done, value } = await reader.read();
         if (done) {

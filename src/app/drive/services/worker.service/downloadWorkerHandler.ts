@@ -1,9 +1,8 @@
 import streamSaver from 'streamsaver';
 import { DriveFileData } from 'app/drive/types';
 import { MessageData } from './types/download';
-import { BlobWritable, downloadFileAsBlob, getBlobWritable } from '../download.service/downloadFileAsBlob';
-import downloadFileFromBlob from '../download.service/downloadFileFromBlob';
 import { createDownloadWebWorker } from '../../../../WebWorker';
+import downloadFileFromBlob from '../download.service/downloadFileFromBlob';
 
 interface HandleWorkerMessagesPayload {
   worker: Worker;
@@ -70,65 +69,39 @@ export class DownloadWorkerHandler {
     const { result } = messageData;
     let aborted = false;
 
+    const abortWriter = async () => {
+      if (aborted) return;
+
+      try {
+        worker.postMessage({ type: 'abort' });
+        await writer?.abort();
+
+        console.log('[MAIN_THREAD]: Aborting download');
+        aborted = true;
+      } catch (_) {
+        // NO OP
+      }
+    };
+
+    if (abortController) {
+      abortController.signal.addEventListener('abort', abortWriter, { once: true });
+    }
+
     switch (result) {
       case 'chunk': {
         const { chunk } = messageData;
 
-        const abortWriter = async () => {
-          if (aborted) return;
-
-          try {
-            worker.postMessage({ type: 'abort' });
-            await writer.abort();
-            aborted = true;
-          } catch (_) {
-            // NO OP
-          } finally {
-            worker.terminate();
-            reject('Aborted');
-          }
-        };
-
-        if (abortController) {
-          abortController.signal.addEventListener('abort', abortWriter, { once: true });
-        }
-
         console.log('[MAIN_THREAD]: Received chunk from worker to download file');
         await writer.write(chunk);
 
-        if (abortController && !abortController.signal.aborted) {
-          abortController.signal.removeEventListener('abort', abortWriter);
-        }
         break;
       }
 
       case 'blob': {
-        console.log('[MAIN_THREAD]: Downloading file as blob');
-        const { readableStream } = messageData;
-        const blobWritable: BlobWritable = await getBlobWritable(completeFilename, (blob) => {
-          downloadFileFromBlob(blob, completeFilename);
-        });
+        console.log('[MAIN_THREAD]: Downloading complete blob');
+        const { blob } = messageData;
 
-        const abortBlobCallBack = async () => {
-          if (abortController?.signal.aborted && !aborted) {
-            worker.postMessage({ type: 'abort' });
-            await blobWritable.abort();
-            await readableStream.cancel();
-            worker.terminate();
-            aborted = true;
-            reject('Aborted');
-          }
-        };
-
-        if (abortController) {
-          abortController.signal.addEventListener('abort', abortBlobCallBack, { once: true });
-        }
-
-        await downloadFileAsBlob(readableStream, blobWritable);
-
-        if (abortController && !abortController.signal.aborted) {
-          abortController.signal.removeEventListener('abort', abortBlobCallBack);
-        }
+        downloadFileFromBlob(blob, completeFilename);
         break;
       }
 
@@ -143,6 +116,9 @@ export class DownloadWorkerHandler {
         await writer.close();
         resolve(fileId);
         worker.terminate();
+        if (abortController) {
+          abortController.signal.removeEventListener('abort', abortWriter);
+        }
         break;
       }
 
@@ -151,6 +127,18 @@ export class DownloadWorkerHandler {
         await writer.abort();
         reject(error);
         worker.terminate();
+        if (abortController) {
+          abortController.signal.removeEventListener('abort', abortWriter);
+        }
+        break;
+      }
+
+      case 'abort': {
+        if (abortController) {
+          abortController.signal.removeEventListener('abort', abortWriter);
+        }
+        worker.terminate();
+        reject('Aborted');
         break;
       }
 

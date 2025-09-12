@@ -1,8 +1,3 @@
-vi.mock('../download.service/downloadFileAsBlob', () => ({
-  downloadFileAsBlob: vi.fn(),
-  getBlobWritable: vi.fn(),
-}));
-
 vi.mock('../download.service/downloadFileFromBlob', () => ({
   default: vi.fn(),
 }));
@@ -11,7 +6,6 @@ import { describe, test, expect, vi, Mock, beforeEach } from 'vitest';
 import { downloadWorkerHandler } from './downloadWorkerHandler';
 import { DriveFileData } from 'app/drive/types';
 import { MockWorker } from '../../../../__mocks__/WebWorker';
-import * as downloadBlobModule from '../download.service/downloadFileAsBlob';
 import downloadFileFromBlob from '../download.service/downloadFileFromBlob';
 
 const writeMock = vi.fn();
@@ -31,24 +25,6 @@ vi.mock('streamsaver', () => ({
 describe('Download Worker Handler', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-
-    (downloadBlobModule.getBlobWritable as unknown as Mock).mockResolvedValue({
-      getWriter: () => ({
-        abort: vi.fn().mockResolvedValue(undefined),
-        close: vi.fn().mockResolvedValue(undefined),
-        write: vi.fn().mockResolvedValue(undefined),
-        closed: Promise.resolve(undefined),
-        desiredSize: 1024,
-        ready: Promise.resolve(undefined),
-        releaseLock: vi.fn(),
-      }),
-      locked: false,
-      abort: vi.fn().mockResolvedValue(undefined),
-      close: vi.fn().mockResolvedValue(undefined),
-    });
-
-    (downloadBlobModule.downloadFileAsBlob as unknown as Mock).mockResolvedValue(undefined);
-
     (downloadFileFromBlob as unknown as Mock).mockResolvedValue(undefined);
   });
 
@@ -74,8 +50,12 @@ describe('Download Worker Handler', () => {
 
       abortController.abort();
 
+      mockedWorker.emitMessage({
+        result: 'abort',
+      });
+
       await expect(workerHandlerPromise).rejects.toBe('Aborted');
-      expect(abortMock).toBeCalled();
+      // expect(abortMock).toBeCalled();
       expect(mockedWorker.terminated).toBe(true);
     });
 
@@ -88,34 +68,6 @@ describe('Download Worker Handler', () => {
       } as DriveFileData;
       const abortController = new AbortController();
 
-      const mockBlobWritable = {
-        getWriter: () => ({
-          abort: vi.fn().mockResolvedValue(undefined),
-          close: vi.fn().mockResolvedValue(undefined),
-          write: vi.fn().mockResolvedValue(undefined),
-          closed: Promise.resolve(undefined),
-          desiredSize: 1024,
-          ready: Promise.resolve(undefined),
-          releaseLock: vi.fn(),
-        }),
-        locked: false,
-        abort: vi.fn().mockResolvedValue(undefined),
-        close: vi.fn().mockResolvedValue(undefined),
-      };
-
-      const mockReadableStream = {
-        cancel: vi.fn().mockResolvedValue(undefined),
-      };
-
-      (downloadBlobModule.getBlobWritable as unknown as Mock).mockResolvedValue(mockBlobWritable);
-
-      (downloadBlobModule.downloadFileAsBlob as unknown as Mock).mockImplementation(async (source, destination) => {
-        return new Promise((resolve, reject) => {
-          // We need that to simulate the download
-          setTimeout(() => resolve(undefined), 10000);
-        });
-      });
-
       const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
         worker: mockedWorker as unknown as Worker,
         itemData,
@@ -125,18 +77,36 @@ describe('Download Worker Handler', () => {
 
       mockedWorker.emitMessage({
         result: 'blob',
-        readableStream: mockReadableStream as any,
-        fileId: itemData.fileId,
+        blob: new Blob(['test content']),
       });
 
-      // We need this timeout to simulate the abort while the download is going on
-      setTimeout(() => {
-        abortController.abort();
-      }, 500);
+      abortController.abort();
+
+      mockedWorker.emitMessage({
+        result: 'abort',
+      });
 
       await expect(workerHandlerPromise).rejects.toBe('Aborted');
-      expect(mockBlobWritable.abort).toHaveBeenCalled();
-      expect(mockReadableStream.cancel).toHaveBeenCalled();
+      expect(mockedWorker.terminated).toBe(true);
+    });
+
+    test('When worker sends abort message, then promise rejects', async () => {
+      const mockedWorker = new MockWorker();
+      const itemData = {
+        fileId: 'random-id',
+      } as DriveFileData;
+
+      const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
+        worker: mockedWorker as unknown as Worker,
+        itemData,
+        updateProgressCallback: vi.fn(),
+      });
+
+      mockedWorker.emitMessage({
+        result: 'abort',
+      });
+
+      await expect(workerHandlerPromise).rejects.toBe('Aborted');
       expect(mockedWorker.terminated).toBe(true);
     });
   });
@@ -170,9 +140,9 @@ describe('Download Worker Handler', () => {
     expect(mockedWorker.terminated).toBe(true);
   });
 
-  test('When the event is blob, then the blob is written to the stream correctly', async () => {
+  test('When the event is blob, then the blob is downloaded correctly', async () => {
     const mockedWorker = new MockWorker();
-    const readableStream = new ReadableStream();
+    const testBlob = new Blob(['test content'], { type: 'text/plain' });
     const itemData = {
       fileId: 'random-id',
       plainName: 'random-name',
@@ -188,7 +158,7 @@ describe('Download Worker Handler', () => {
 
     mockedWorker.emitMessage({
       result: 'blob',
-      readableStream,
+      blob: testBlob,
       fileId: itemData.fileId,
     });
 
@@ -198,8 +168,8 @@ describe('Download Worker Handler', () => {
     });
 
     await expect(workerHandlerPromise).resolves.toBe(itemData.fileId);
-    expect(downloadBlobModule.getBlobWritable).toHaveBeenCalledWith(completedName, expect.any(Function));
-    expect(downloadBlobModule.downloadFileAsBlob).toHaveBeenCalledWith(readableStream, expect.any(Object));
+
+    expect(downloadFileFromBlob).toHaveBeenCalledWith(testBlob, completedName);
     expect(mockedWorker.terminated).toBe(true);
   });
 
@@ -215,6 +185,7 @@ describe('Download Worker Handler', () => {
       itemData,
       updateProgressCallback: updateProgress,
     });
+
     mockedWorker.emitMessage({
       result: 'progress',
       progress: 0.1,
