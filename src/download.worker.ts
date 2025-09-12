@@ -5,7 +5,6 @@ let abortController: AbortController | undefined;
 
 self.addEventListener('message', async (event) => {
   const eventType = event.data.type as 'download' | 'abort';
-  console.log('EVENT TYPE', eventType);
 
   switch (eventType) {
     case 'download':
@@ -54,31 +53,31 @@ const downloadingFile = async (params: {
         {
           result: 'blob',
           readableStream: downloadedFile,
+          fileId: file.fileId,
         },
         {
           transfer: [downloadedFile],
         },
       );
-      return;
-    }
+    } else {
+      console.log('[DOWNLOAD-WORKER] Downloading using readable stream');
+      const reader = downloadedFile.getReader();
 
-    console.log('[DOWNLOAD-WORKER] Downloading using readable stream');
-    const reader = downloadedFile.getReader();
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
 
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
+        const chunk = value instanceof Uint8Array ? value.slice() : new Uint8Array(value);
+        postMessage(
+          { result: 'chunk', chunk },
+          {
+            transfer: [chunk.buffer],
+          },
+        );
       }
-
-      const chunk = value instanceof Uint8Array ? value.slice() : new Uint8Array(value);
-      postMessage(
-        { result: 'chunk', chunk },
-        {
-          transfer: [chunk.buffer],
-        },
-      );
     }
 
     postMessage({ result: 'success', fileId: file.fileId });

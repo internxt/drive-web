@@ -5,22 +5,7 @@ import { DriveFileData } from '../../types';
 import fetchFileStream from './fetchFileStream';
 import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';
 import { ErrorMessages } from 'app/core/constants';
-import { downloadFileAsBlob } from './downloadFileAsBlob';
-
-interface BlobWritable {
-  getWriter: () => {
-    abort: () => Promise<void>;
-    close: () => Promise<void>;
-    closed: Promise<undefined>;
-    desiredSize: number | null;
-    ready: Promise<undefined>;
-    releaseLock: () => void;
-    write: (chunk: Uint8Array) => Promise<void>;
-  };
-  locked: boolean;
-  abort: () => Promise<void>;
-  close: () => Promise<void>;
-}
+import { BlobWritable, downloadFileAsBlob } from './downloadFileAsBlob';
 
 async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
   const reader = readable.getReader();
