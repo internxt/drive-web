@@ -4,21 +4,23 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 85%",
-    "title": "Sur tous les forfaits",
-    "upperTitle": "On fête nos 5 ans !",
-    "cta": "Choisissez un plan",
-    "guarantee": "Garantie 30 jours remboursée",
-    "specialOfferGift": "Tirage d’un maillot signé du Valencia CF",
-    "lastCta": "*Offre valable pour comptes gratuits ou nouveaux clients",
-    "features": [
-      "Drive, VPN et Antivirus",
-      "Stockage durable",
-      "Chiffrement post-quantique",
-      "Transferts chiffrés",
-      "Aucun accès non autorisé",
-      "Thème d’été gratuit"
-    ]
+    "label": {"blueText":"Obtenez 87% de réduction", "text":"sur tous les Plans Premium"},
+    "title": "Obtenez une remise exclusive !",
+    "subTitle": {
+      "blueText":"Offre spéciale :",
+      "text":"stockez vos fichiers en privé pour moins cher"
+    },
+    "ctaGet": "Profiter de l'offre",
+    "ctaContinue":"Continuer gratuitement",
+    "guarantee": "Garantie de remboursement de 30 jours",
+    "products": {
+      "drive": "Drive",
+      "antivirus": "Antivirus",
+      "cleaner": "Cleaner",
+      "vpn": "VPN",
+      "meet": "Meet",
+      "mail": "Mail"
+    }
   },
   "susbcriptionsBanner": {
     "title": "Boostez votre abonnement !",
@@ -1833,19 +1835,20 @@
           "1TB": {
             "title": "Essentiel",
             "features": [
+              "1TB de stockage chiffré à connaissance zéro",
               "Chiffrement post-quantique",
               "VPN illimité ultra rapide (FR)",
               "Antivirus",
               "Sauvegarde de vos fichiers",
               "Partage de fichiers protégés par mot de passe",
               "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav et Rclone"
+              "Authentification à deux facteurs (2FA)"
             ]
           },
           "3TB": {
             "title": "Premium",
             "features": [
+              "3TB de stockage chiffré à connaissance zéro",
               "Chiffrement post-quantique",
               "VPN illimité ultra rapide (FR, DE, PL)",
               "Antivirus",
@@ -1853,14 +1856,14 @@
               "Partage de fichiers protégés par mot de passe",
               "Inviter, partager et collaborer",
               "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav et Rclone"
+              "Authentification à deux facteurs (2FA)"
             ],
-            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web"]
+            "comingSoonFeatures": ["Nettoyage de l'appareil", "Surveillance du dark web"]
           },
           "5TB": {
             "title": "Ultimate",
             "features": [
+              "5TB de stockage chiffré à connaissance zéro",
               "Chiffrement post-quantique",
               "VPN illimité ultra rapide (FR, DE, PL, CA, UK)",
               "Antivirus",
@@ -1869,13 +1872,16 @@
               "Inviter, partager et collaborer",
               "Conformité au RGPD",
               "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav et Rclone"
+              "Support CLI, WebDav, NAS et Rclone"
             ],
-            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web", "Meet", "Mail"]
+            "comingSoonFeatures": ["Nettoyage de l'appareil", "Surveillance du dark web", "Meet", "Mail"]
           },
           "1GB": {
             "title": "Gratuit",
-            "features": ["VPN standard gratuit (FR)", "Support CLI, WebDav et Rclone"]
+            "features": [
+              "1GB de stockage chiffré à connaissance zéro",
+              "VPN standard gratuit (FR)"
+            ]
           }
         },
         "businessPlanFeaturesList": {
@@ -1884,6 +1890,7 @@
           "1TB": {
             "title": "Standard",
             "features": [
+              "1TB de stockage chiffré à connaissance zéro par utilisateur",
               "Chiffrement post-quantique",
               "VPN illimité ultra rapide (FR, DE, PL)",
               "Antivirus",
@@ -1892,14 +1899,15 @@
               "Inviter, partager et collaborer",
               "Conformité au RGPD",
               "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav et Rclone",
+              "Support CLI et WebDav",
               "Gérer la facturation et les paiements du compte"
             ],
-            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web"]
+            "comingSoonFeatures": ["Nettoyage de l'appareil", "Surveillance du dark web"]
           },
           "2TB": {
             "title": "Pro",
             "features": [
+              "2TB de stockage chiffré à connaissance zéro par utilisateur",
               "Chiffrement post-quantique",
               "VPN illimité ultra rapide (FR, DE, PL, CA, UK)",
               "Antivirus",
@@ -1908,10 +1916,10 @@
               "Inviter, partager et collaborer",
               "Conformité au RGPD",
               "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav et Rclone",
+              "Support CLI, WebDav, Rclone et NAS",
               "Gérer la facturation et les paiements du compte"
             ],
-            "comingSoonFeatures": ["Nettoyage de l’appareil", "Surveillance du dark web", "Meet", "Mail"]
+            "comingSoonFeatures": ["Nettoyage de l'appareil", "Surveillance du dark web", "Meet", "Mail"]
           }
         },
         "user": "Utilisateur"
