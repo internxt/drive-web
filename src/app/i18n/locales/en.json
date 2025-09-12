@@ -4,13 +4,13 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": {"blueText":"Get 87% off", "text":"in all Premium Plans"},
-    "title": "Get an exclusive discount!",
+    "label": {"blueText":"Get 87% off", "text":"in all  Plans"},
+    "title": " Claim your exclusive discount!",
     "subTitle": {
       "blueText":"Special offer:",
-      "text":"store files in privacy for less"
+      "text":"store files in privacy for even less"
     },
-    "ctaGet": "Get the deal",
+    "ctaGet": "Accept invite",
     "ctaContinue":"Continue free",
     "guarantee": "30-day money-back guarantee",
     "products": {
