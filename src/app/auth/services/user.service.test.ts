@@ -129,4 +129,20 @@ describe('userService', () => {
     expect(result).toEqual(mockResponse);
     expect(usersClientMock.getPublicKeyWithPrecreation).toHaveBeenCalledWith({ email: testEmail });
   });
+
+  it('should check avatar URL working', async () => {
+    const checkAvatarUrlWorkingSpy = vi.spyOn(userService, 'checkAvatarUrlWorking');
+
+    await userService.checkAvatarUrlWorking('testAvatarUrl');
+
+    expect(checkAvatarUrlWorkingSpy).toHaveBeenCalledWith('testAvatarUrl');
+  });
+
+  it('should check avatar URL working with null', async () => {
+    const checkAvatarUrlWorkingSpy = vi.spyOn(userService, 'checkAvatarUrlWorking');
+
+    await userService.checkAvatarUrlWorking(null);
+
+    expect(checkAvatarUrlWorkingSpy).toHaveBeenCalledWith(null);
+  });
 });

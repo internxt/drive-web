@@ -93,6 +93,12 @@ const downloadAvatar = async (url: string, signal?: AbortSignal): Promise<Blob> 
   return data;
 };
 
+const checkAvatarUrlWorking = async (url: string | null | undefined): Promise<boolean> => {
+  if (!url) return false;
+  const response = await fetch(url, { method: 'HEAD' });
+  return response.ok;
+};
+
 const userService = {
   sendDeactivationEmail,
   updateUserProfile,
@@ -108,6 +114,7 @@ const userService = {
   refreshUserData,
   refreshAvatarUser,
   downloadAvatar,
+  checkAvatarUrlWorking,
 };
 
 export default userService;
