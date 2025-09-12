@@ -1,5 +1,5 @@
 import { describe, expect, vi, beforeEach, test } from 'vitest';
-import { downloadFileAsBlob } from './downloadFileAsBlob';
+import { downloadFileAsBlob, getBlobWritable } from './downloadFileAsBlob';
 import downloadFileFromBlob from './downloadFileFromBlob';
 
 vi.mock('./downloadFileFromBlob', () => ({
@@ -25,26 +25,37 @@ describe('downloadFileAsBlob', () => {
   test('When a blob is created, then it should be created and downloaded with the correct name and content', async () => {
     const chunks = [new TextEncoder().encode('Hello '), new TextEncoder().encode('World')];
     const stream = createStream(chunks);
+    const filename = 'test.txt';
 
-    await downloadFileAsBlob('test.txt', stream);
+    const blobWritable = await getBlobWritable(filename, (blob) => {
+      downloadFileFromBlob(blob, filename);
+    });
 
-    const [blob, filename] = (downloadFileFromBlob as any).mock.calls[0];
-    const text = await (blob as Blob).text();
+    await downloadFileAsBlob(stream, blobWritable);
 
     expect(downloadFileFromBlob).toHaveBeenCalledTimes(1);
-    expect(filename).toBe('test.txt');
+
+    const [blob, calledFilename] = (downloadFileFromBlob as any).mock.calls[0];
+    const text = await (blob as Blob).text();
+
+    expect(calledFilename).toBe(filename);
     expect(text).toBe('Hello World');
   });
 
   test('When a big file is created, then it should handle large chunk writes', async () => {
     const chunk = new Uint8Array(1024 * 1024).fill(97);
+    const streamSize = chunk.length * 2;
     const stream = createStream([chunk, chunk]);
+    const filename = 'big.txt';
 
-    await downloadFileAsBlob('big.txt', stream);
+    const blobWritable = await getBlobWritable(filename, (blob) => {
+      downloadFileFromBlob(blob, filename);
+    });
 
-    const [blob] = (downloadFileFromBlob as any).mock.calls[0];
+    await downloadFileAsBlob(stream, blobWritable);
 
     expect(downloadFileFromBlob).toHaveBeenCalledTimes(1);
-    expect(blob.size).toBe(2 * 1024 * 1024);
+    const [blob] = (downloadFileFromBlob as any).mock.calls[0];
+    expect(blob.size).toBe(streamSize);
   });
 });
