@@ -1588,6 +1588,221 @@ describe('downloadManagerService', () => {
     });
   });
 
+  describe('downloadManagerService - Download Cancellation', () => {
+    it('should handle download cancellation during file download', async () => {
+      const mockTask: DownloadTask = {
+        abortController: new AbortController(),
+        items: [mockFile as DriveItemData],
+        createFilesIterator: createFilesIterator,
+        createFoldersIterator: createFoldersIterator,
+        credentials: {
+          credentials: {
+            user: 'any-user',
+            pass: 'any-pass',
+          },
+          mnemonic: 'any-mnemonic',
+        },
+        options: {
+          areSharedItems: false,
+          downloadName: `${mockFile.name}.${mockFile.type}`,
+          showErrors: true,
+        },
+        taskId: 'mock-task-id',
+        failedItems: [],
+      };
+
+      const mockUpdateProgress = vi.fn();
+
+      (getDatabaseFileSourceData as Mock).mockResolvedValueOnce(undefined);
+      (checkIfCachedSourceIsOlder as Mock).mockReturnValueOnce(true);
+
+      const downloadFileSpy = vi
+        .spyOn(downloadService, 'downloadFile')
+        .mockRejectedValueOnce(new Error(ErrorMessages.DownloadCancelled));
+
+      await expect(DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress)).rejects.toThrow(
+        ErrorMessages.DownloadCancelled,
+      );
+
+      expect(downloadFileSpy).toHaveBeenCalledWith(
+        mockFile,
+        false,
+        mockUpdateProgress,
+        mockTask.abortController,
+        mockTask.credentials,
+      );
+    });
+
+    it('should handle download cancellation during folder download', async () => {
+      const mockTask: DownloadTask = {
+        abortController: new AbortController(),
+        items: [mockFolder as DriveItemData],
+        createFilesIterator: createFilesIterator,
+        createFoldersIterator: createFoldersIterator,
+        credentials: {
+          credentials: {
+            user: 'any-user',
+            pass: 'any-pass',
+          },
+          mnemonic: 'any-mnemonic',
+        },
+        options: {
+          areSharedItems: false,
+          downloadName: mockFolder.name,
+          showErrors: true,
+        },
+        taskId: 'mock-task-id',
+        failedItems: [],
+      };
+
+      const mockUpdateProgress = vi.fn();
+      const mockIncrementItemCount = vi.fn();
+
+      (downloadFolderAsZip as Mock).mockRejectedValueOnce(new Error(ErrorMessages.DownloadCancelled));
+
+      await expect(
+        DownloadManagerService.instance.downloadFolder(mockTask, mockUpdateProgress, mockIncrementItemCount),
+      ).rejects.toThrow(ErrorMessages.DownloadCancelled);
+    });
+
+    it('should handle download cancellation during multiple items download', async () => {
+      const mockTask: DownloadTask = {
+        abortController: new AbortController(),
+        items: [mockFile as DriveItemData, mockFolder as DriveItemData],
+        createFilesIterator: createFilesIterator,
+        createFoldersIterator: createFoldersIterator,
+        credentials: {
+          credentials: {
+            user: 'any-user',
+            pass: 'any-pass',
+          },
+          mnemonic: 'any-mnemonic',
+        },
+        options: {
+          areSharedItems: false,
+          downloadName: `${mockFile.name}.${mockFile.type}`,
+          showErrors: true,
+        },
+        taskId: 'mock-task-id',
+        failedItems: [],
+      };
+
+      const mockUpdateProgress = vi.fn();
+      const mockIncrementItemCount = vi.fn();
+
+      const levelsBlobsCache = new LevelsBlobsCache();
+      const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
+      vi.spyOn(lruCache, 'get').mockResolvedValueOnce({
+        id: mockFile.id,
+        parentId: mockFile.folderId,
+        source: undefined,
+      });
+      vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(lruCache);
+
+      (checkIfCachedSourceIsOlder as Mock).mockReturnValueOnce(true);
+
+      (downloadFile as Mock).mockImplementationOnce(() => {
+        throw new Error(ErrorMessages.DownloadCancelled);
+      });
+
+      vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
+      vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
+
+      await DownloadManagerService.instance.downloadItems(mockTask, mockUpdateProgress, mockIncrementItemCount);
+
+      expect(mockTask.failedItems).toContain(mockFile);
+    });
+
+    it('should properly handle download service cancellation error', async () => {
+      const mockTask: DownloadTask = {
+        abortController: new AbortController(),
+        items: [mockFile as DriveItemData],
+        createFilesIterator: createFilesIterator,
+        createFoldersIterator: createFoldersIterator,
+        credentials: {
+          credentials: {
+            user: 'any-user',
+            pass: 'any-pass',
+          },
+          mnemonic: 'any-mnemonic',
+        },
+        options: {
+          areSharedItems: false,
+          downloadName: `${mockFile.name}.${mockFile.type}`,
+          showErrors: true,
+        },
+        taskId: 'mock-task-id',
+        failedItems: [],
+      };
+
+      const mockUpdateProgress = vi.fn();
+
+      (getDatabaseFileSourceData as Mock).mockResolvedValueOnce(undefined);
+      (checkIfCachedSourceIsOlder as Mock).mockReturnValueOnce(true);
+
+      const downloadFileSpy = vi
+        .spyOn(downloadService, 'downloadFile')
+        .mockRejectedValueOnce(new Error(ErrorMessages.DownloadCancelled));
+
+      await expect(DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress)).rejects.toThrow(
+        ErrorMessages.DownloadCancelled,
+      );
+
+      expect(downloadFileSpy).toHaveBeenCalledWith(
+        mockFile,
+        false,
+        mockUpdateProgress,
+        mockTask.abortController,
+        mockTask.credentials,
+      );
+    });
+
+    it('should handle cancellation error during zip creation', async () => {
+      const mockTask: DownloadTask = {
+        abortController: new AbortController(),
+        items: [mockFile as DriveItemData, mockFolder as DriveItemData],
+        createFilesIterator: createFilesIterator,
+        createFoldersIterator: createFoldersIterator,
+        credentials: {
+          credentials: {
+            user: 'any-user',
+            pass: 'any-pass',
+          },
+          mnemonic: 'any-mnemonic',
+        },
+        options: {
+          areSharedItems: false,
+          downloadName: `${mockFile.name}.${mockFile.type}`,
+          showErrors: true,
+        },
+        taskId: 'mock-task-id',
+        failedItems: [],
+      };
+
+      const mockUpdateProgress = vi.fn();
+      const mockIncrementItemCount = vi.fn();
+
+      const levelsBlobsCache = new LevelsBlobsCache();
+      const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
+      vi.spyOn(lruCache, 'get').mockResolvedValueOnce({
+        id: mockFile.id,
+        parentId: mockFile.folderId,
+        source: undefined,
+      });
+      vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(lruCache);
+
+      (checkIfCachedSourceIsOlder as Mock).mockReturnValueOnce(true);
+
+      (downloadFile as Mock).mockImplementationOnce(() => {
+        throw new Error(ErrorMessages.DownloadCancelled);
+      });
+
+      await DownloadManagerService.instance.downloadItems(mockTask, mockUpdateProgress, mockIncrementItemCount);
+
+      expect(mockTask.failedItems).toContain(mockFile);
+    });
+  });
+
   describe('downloadManagerService - Connection Handling', () => {
     let navigatorOnLineSpy: MockInstance;
     let addEventListenerSpy: MockInstance;

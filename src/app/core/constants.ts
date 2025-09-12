@@ -11,4 +11,5 @@ export enum ErrorMessages {
   NetworkError = 'Network Error',
   ConnectionLost = 'Connection lost',
   FilePickerCancelled = 'File picker was canceled or failed',
+  DownloadCancelled = 'Download cancelled',
 }

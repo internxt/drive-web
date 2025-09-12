@@ -55,13 +55,23 @@ function getBlobWritable(filename: string, onClose: (result: Blob) => void): Blo
   };
 }
 
-async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
+async function pipe(
+  readable: ReadableStream,
+  writable: BlobWritable,
+  abortController?: AbortController,
+): Promise<void> {
   const reader = readable.getReader();
   const writer = writable.getWriter();
 
   let done = false;
 
   while (!done) {
+    if (abortController?.signal.aborted) {
+      await reader.cancel();
+      await writer.abort();
+      throw new Error(ErrorMessages.DownloadCancelled);
+    }
+
     const status = await reader.read();
 
     if (!status.done) {
@@ -137,12 +147,16 @@ export default async function downloadFile(
   }
 }
 
-async function downloadFileAsBlob(filename: string, source: ReadableStream): Promise<void> {
+async function downloadFileAsBlob(
+  filename: string,
+  source: ReadableStream,
+  abortController?: AbortController,
+): Promise<void> {
   const destination: BlobWritable = getBlobWritable(filename, (blob) => {
     downloadFileFromBlob(blob, filename);
   });
 
-  await pipe(source, destination);
+  await pipe(source, destination, abortController);
 }
 
 function downloadFileUsingStreamApi(
@@ -152,7 +166,7 @@ function downloadFileUsingStreamApi(
 ): Promise<void> {
   return source.pipeTo
     ? source.pipeTo(destination, { signal: abortController?.signal })
-    : pipe(source, destination as BlobWritable);
+    : pipe(source, destination as BlobWritable, abortController);
 }
 
 enum DownloadSupport {
@@ -169,7 +183,7 @@ async function downloadToFs(
   abortController?: AbortController,
 ): Promise<void> {
   if (isFirefoxBrowser) {
-    return downloadFileAsBlob(filename, await source);
+    return downloadFileAsBlob(filename, await source, abortController);
   }
 
   switch (supports) {
@@ -187,6 +201,6 @@ async function downloadToFs(
       return downloadFileUsingStreamApi(await source, streamSaver.createWriteStream(filename), abortController);
 
     default:
-      return downloadFileAsBlob(filename, await source);
+      return downloadFileAsBlob(filename, await source, abortController);
   }
 }
