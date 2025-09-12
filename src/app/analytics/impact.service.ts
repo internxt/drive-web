@@ -131,7 +131,7 @@ export async function trackPaymentConversion() {
     const anonymousID = getCookie('impactAnonymousId');
     const source = getCookie('impactSource');
 
-    if (source && source !== 'direct') {
+    if ((source && source !== 'direct') || couponCode) {
       await axios
         .post(IMPACT_API, {
           anonymousId: anonymousID,
@@ -140,6 +140,7 @@ export async function trackPaymentConversion() {
             impact_value: amount === 0 ? 0.01 : amount,
             subscription_id: subscription,
             payment_intent: paymentIntent,
+            ...(couponCode ? { order_promo_code: couponCode } : {}),
           },
           userId: uuid,
           type: 'track',
