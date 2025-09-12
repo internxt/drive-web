@@ -11,7 +11,7 @@ type FetchFileStreamOptions = {
   mnemonic: string;
 };
 
-export default function fetchFileStreamWithCreds(
+export default function fetchFileStreamUsingCredentials(
   item: Downloadable,
   options: FetchFileStreamOptions,
 ): Promise<ReadableStream<Uint8Array>> {
