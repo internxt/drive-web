@@ -1,6 +1,6 @@
 import downloadFileFromBlob from './downloadFileFromBlob';
 
-interface BlobWritable {
+export interface BlobWritable {
   getWriter: () => {
     abort: () => Promise<void>;
     close: () => Promise<void>;
@@ -15,7 +15,7 @@ interface BlobWritable {
   close: () => Promise<void>;
 }
 
-async function getBlobWritable(filename: string, onClose: (result: Blob) => void): Promise<BlobWritable> {
+function getBlobWritable(filename: string, onClose: (result: Blob) => void): BlobWritable {
   let blobParts: BlobPart[] = [];
 
   return {
@@ -69,7 +69,7 @@ async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<v
 }
 
 export async function downloadFileAsBlob(filename: string, source: ReadableStream): Promise<void> {
-  const destination: BlobWritable = await getBlobWritable(filename, (blob) => {
+  const destination: BlobWritable = getBlobWritable(filename, (blob) => {
     downloadFileFromBlob(blob, filename);
   });
 
