@@ -1,4 +1,4 @@
-interface BlobWritable {
+export interface BlobWritable {
   getWriter: () => {
     abort: () => Promise<void>;
     close: () => Promise<void>;
