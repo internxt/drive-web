@@ -21,7 +21,7 @@
     "@types/uuid": "^8.3.4",
     "@vitest/browser": "^2.1.9",
     "assert": "^2.1.0",
-    "axios": "^1.8.2",
+    "axios": "^1.12.0",
     "bip39": "^3.0.3",
     "browserify-zlib": "^0.2.0",
     "copy-to-clipboard": "^3.3.1",
