@@ -22,7 +22,18 @@ const useVpnAuth = (isVpnAuth: boolean, newToken: string | null) => {
 
   useEffect(() => {
     if (isVpnAuthNeeded && newToken) {
-      vpnAuthService.logIn(newToken);
+      if (document.readyState === 'complete') {
+        vpnAuthService.logIn(newToken);
+      } else {
+        window.addEventListener(
+          'load',
+          () => {
+            console.log('[VPN/AUTH]: Window load event fired, now logging in');
+            vpnAuthService.logIn(newToken);
+          },
+          { once: true },
+        );
+      }
       setIsVpnAuthNeeded(false);
     }
   }, [isVpnAuthNeeded, newToken]);
