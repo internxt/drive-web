@@ -28,6 +28,7 @@ export default function fetchFileStreamUsingCredentials(
         const progress = downloadedBytes / totalBytes;
         options.updateProgressCallback(progress);
       },
+      abortController: options.abortController,
     },
   });
 }
