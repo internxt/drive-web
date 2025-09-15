@@ -21,8 +21,18 @@ describe('VPN authentication management', () => {
   describe('VPN auth is enabled', () => {
     const isVpnAuth = true;
 
-    test('When there is new token and the VPN does not have the user token, then we should listen to the events and trigger the token', async () => {
+    test('Should send token immediately when VPN auth is enabled and token exists', async () => {
       renderHook(() => useVpnAuth(isVpnAuth, newToken));
+
+      await waitFor(() => {
+        expect(vpnAuthService.logIn).toHaveBeenCalledWith(newToken);
+      });
+    });
+
+    test('When the token is requested, then should be returned', async () => {
+      renderHook(() => useVpnAuth(isVpnAuth, newToken));
+
+      vi.clearAllMocks();
 
       act(() => {
         window.postMessage({ source: 'drive-extension', tokenStatus: 'token-not-found' }, '*');
@@ -35,7 +45,6 @@ describe('VPN authentication management', () => {
 
     test('When there is no new token, then we should not listen to events', async () => {
       const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
-
       renderHook(() => useVpnAuth(isVpnAuth, null));
 
       expect(addEventListenerSpy).not.toHaveBeenCalledWith('message', expect.any(Function));
@@ -52,19 +61,28 @@ describe('VPN authentication management', () => {
     test('When the VPN has the user token, then we should not send it', async () => {
       renderHook(() => useVpnAuth(isVpnAuth, newToken));
 
+      vi.clearAllMocks();
+
       act(() => {
         window.postMessage({ source: 'drive-extension', tokenStatus: 'token-found' }, '*');
       });
 
-      await waitFor(() => {
-        expect(vpnAuthService.logIn).not.toHaveBeenCalled();
-      });
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      expect(vpnAuthService.logIn).not.toHaveBeenCalled();
     });
   });
 
   describe('VPN auth is disabled', () => {
     const isVpnAuth = false;
-    test('When the VPN auth is not enabled, then do nothing', async () => {
+
+    test('When the VPN auth param is not enabled, then we should not send the token', async () => {
+      renderHook(() => useVpnAuth(isVpnAuth, newToken));
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      expect(vpnAuthService.logIn).not.toHaveBeenCalled();
+    });
+
+    test('When the VPN auth param is not enabled, then we should listen to the events in case the VPN wants the token', async () => {
       renderHook(() => useVpnAuth(isVpnAuth, newToken));
 
       act(() => {
@@ -72,7 +90,7 @@ describe('VPN authentication management', () => {
       });
 
       await waitFor(() => {
-        expect(vpnAuthService.logIn).not.toHaveBeenCalled();
+        expect(vpnAuthService.logIn).toHaveBeenCalledWith(newToken);
       });
     });
   });
@@ -85,7 +103,9 @@ describe('VPN authentication management', () => {
       const { unmount } = renderHook(() => useVpnAuth(true, 'token'));
 
       expect(addEventListenerSpy).toHaveBeenCalledWith('message', expect.any(Function));
+
       unmount();
+
       expect(removeEventListenerSpy).toHaveBeenCalledWith('message', expect.any(Function));
     });
   });
