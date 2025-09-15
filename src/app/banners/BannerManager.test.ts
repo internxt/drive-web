@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, beforeAll, afterAll, Mock } from 'vitest';
-import { BannerManager } from './BannerManager';
-import { PlanState } from '../store/slices/plan';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { RenewalPeriod } from '@internxt/sdk/dist/drive/payments/types/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { PlanState } from '../store/slices/plan';
+import { BannerManager } from './BannerManager';
 
 vi.mock('../core/services/local-storage.service', () => ({
   default: {
@@ -61,6 +61,7 @@ describe('BannerManager - showFreeBanner', () => {
     isLoadingPlans: false,
     isLoadingPlanLimit: false,
     isLoadingPlanUsage: false,
+    isLoadingBusinessLimitAndUsage: false,
     individualPlan: {
       planId: 'plan-id',
       productId: 'product-id',

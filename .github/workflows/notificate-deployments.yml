@@ -1,0 +1,33 @@
+name: Deployment Notifications
+
+on:
+  push:
+    branches: [ master ] 
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Send Slack Notification  
+        if: success() 
+        uses: slackapi/slack-github-action@v2.1.1
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOYMENTS_NOTIFICATIONS_WEBHOOK_URL }}
+        with:
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "Deployment completed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Cambio desplegado:* ${{ github.event.head_commit.message }}\n*Autor:* ${{ github.actor }}\n*Ref:* ${{ github.ref }}"
+                  }
+                }
+              ]
+            }
