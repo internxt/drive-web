@@ -14,7 +14,6 @@ const useVpnAuth = (isVpnAuth: boolean, newToken: string | null) => {
 
   useEffect(() => {
     if (isVpnAuth && newToken && !listenerRegistered.current) {
-      console.log('[VPN/AUTH]: Registering listener');
       window.addEventListener('message', handleMessage);
       listenerRegistered.current = true;
 
@@ -27,11 +26,9 @@ const useVpnAuth = (isVpnAuth: boolean, newToken: string | null) => {
 
   useEffect(() => {
     if (isVpnAuthNeeded && newToken && !hasLoggedIn.current) {
-      console.log('[VPN/AUTH]: Attempting login');
       hasLoggedIn.current = true;
 
       const doLogin = () => {
-        console.log('[VPN/AUTH]: Executing login');
         vpnAuthService.logIn(newToken);
       };
 
