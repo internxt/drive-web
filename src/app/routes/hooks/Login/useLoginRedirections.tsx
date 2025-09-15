@@ -2,6 +2,9 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { t } from 'i18next';
 import { AppView } from '../../../core/types';
 import workspacesService from 'app/core/services/workspace.service';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { AppDispatch } from 'app/store';
+import { wait } from 'app/utils/timeUtils';
 
 const useLoginRedirections = ({
   navigateTo,
@@ -46,30 +49,36 @@ const useLoginRedirections = ({
     }
   };
 
-  const handleWorkspaceInvitation = async () => {
+  const handleWorkspaceInvitation = async (dispatch: AppDispatch) => {
     if (workspaceInvitationId && token) {
       const isDeclineAction = sharingAction === 'decline';
       try {
         await workspacesService.validateWorkspaceInvitation(workspaceInvitationId);
-        processWorkspaceInvitation(isDeclineAction, workspaceInvitationId, token)
-          .then(() => {
-            navigateTo(AppView.Login);
-            const notificationText = isDeclineAction
-              ? t('preferences.workspace.members.invitationFlow.declinedSuccessfully')
-              : t('preferences.workspace.members.invitationFlow.acceptedSuccessfully');
-            showNotification({ text: notificationText, isError: false });
-          })
-          .catch(() => {
-            const notificationText = isDeclineAction
-              ? t('preferences.workspace.members.invitationFlow.error.declinedError')
-              : t('preferences.workspace.members.invitationFlow.error.acceptedError');
-            showNotification({ text: notificationText, isError: true });
-          });
       } catch (error) {
         showNotification({
           text: t('linkExpired.title'),
           isError: true,
         });
+
+        return;
+      }
+
+      try {
+        await processWorkspaceInvitation(isDeclineAction, workspaceInvitationId, token);
+
+        navigateTo(AppView.Login);
+        const notificationText = isDeclineAction
+          ? t('preferences.workspace.members.invitationFlow.declinedSuccessfully')
+          : t('preferences.workspace.members.invitationFlow.acceptedSuccessfully');
+        showNotification({ text: notificationText, isError: false });
+        await wait(2000);
+        dispatch(workspaceThunks.fetchWorkspaces());
+      } catch (error) {
+        console.error('ERROR WHILE ACCEPTING OR DECLINING WORKSPACE INVITATION: ', error);
+        const notificationText = isDeclineAction
+          ? t('preferences.workspace.members.invitationFlow.error.declinedError')
+          : t('preferences.workspace.members.invitationFlow.error.acceptedError');
+        showNotification({ text: notificationText, isError: true });
       }
     }
   };

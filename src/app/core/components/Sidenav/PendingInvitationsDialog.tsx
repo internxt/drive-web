@@ -10,6 +10,7 @@ import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import dayjs from 'dayjs';
 import AppError from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { wait } from 'app/utils/timeUtils';
 
 const WORKSPACE_INVITATION_BAD_REQUEST = 400;
 
@@ -45,6 +46,7 @@ const PendingInvitationsDialog = ({
     setIsLoading(true);
     try {
       token && (await workspacesService.acceptWorkspaceInvite({ invitationId, token }));
+      await wait(3000);
       dispatch(workspaceThunks.fetchWorkspaces());
     } catch (err) {
       const appError = err as AppError;

@@ -41,10 +41,12 @@ const getCustomerId = async ({
   countryCode,
   postalCode,
   vatId,
+  captchaToken,
 }: {
   customerName: string;
   countryCode: string;
   postalCode: string;
+  captchaToken: string;
   vatId?: string;
 }): Promise<{
   customerId: string;
@@ -55,6 +57,7 @@ const getCustomerId = async ({
     customerName,
     country: countryCode,
     postalCode,
+    captchaToken,
     companyVatId: vatId,
   });
 };
@@ -83,6 +86,7 @@ const createSubscription = async ({
   priceId,
   token,
   currency,
+  captchaToken,
   promoCodeId,
   quantity,
 }: CreateSubscriptionPayload): Promise<CreatedSubscriptionData> => {
@@ -92,6 +96,7 @@ const createSubscription = async ({
     priceId,
     token,
     currency,
+    captchaToken,
     promoCodeId,
     quantity,
   });
@@ -102,6 +107,7 @@ export const createPaymentIntent = async ({
   priceId,
   token,
   currency,
+  captchaToken,
   promoCodeId,
 }: CreatePaymentIntentPayload): Promise<PaymentIntent> => {
   const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
@@ -110,6 +116,7 @@ export const createPaymentIntent = async ({
     priceId,
     token,
     currency,
+    captchaToken,
     promoCodeId,
   });
 };
@@ -225,7 +232,7 @@ const loadStripeElements = async (
     mode: plan.price?.interval === 'lifetime' ? 'payment' : 'subscription',
     amount: plan.taxes?.amountWithTax,
     currency: plan.price?.currency,
-    payment_method_types: ['card', 'paypal'],
+    payment_method_types: plan?.price?.interval === 'lifetime' ? ['card', 'paypal', 'klarna'] : ['card', 'paypal'],
   };
 };
 
