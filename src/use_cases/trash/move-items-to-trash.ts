@@ -1,5 +1,4 @@
 import { Trash } from '@internxt/sdk/dist/drive';
-import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
 import { SdkFactory } from '../../app/core/factory/sdk';
@@ -28,7 +27,7 @@ async function sendItemsToTrashConcurrent({
 
   for (let i = 0; i < items.length; i += maxItemsToDelete) {
     const itemsToDelete = items.slice(i, i + maxItemsToDelete);
-    const promise = trashClient.addItemsToTrash({ items: itemsToDelete } as AddItemsToTrashPayload);
+    const promise = trashClient.addItemsToTrash({ items: itemsToDelete });
     promises.push(promise);
 
     if (promises.length === maxConcurrentRequests) {
