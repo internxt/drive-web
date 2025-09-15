@@ -3,7 +3,7 @@ import { describe, it, expect, afterAll, beforeEach, afterEach, vi } from 'vites
 import { logIn, logOut, postMessageToVpn } from './vpnAuth.service';
 import envService from 'app/core/services/env.service';
 
-const mockHostname = 'https://example.com';
+const mockHostname = 'https://fix-vpn-login.drive-web.pages.dev';
 
 describe('Tests for VPN auth', () => {
   const originalPostMessage = window.postMessage;
