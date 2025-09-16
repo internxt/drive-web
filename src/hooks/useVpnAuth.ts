@@ -1,31 +1,26 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import vpnAuthService from 'app/auth/services/vpnAuth.service';
 
 const useVpnAuth = (isVpnAuth: boolean, newToken: string | null) => {
-  const [isVpnAuthNeeded, setIsVpnAuthNeeded] = useState(false);
+  useEffect(() => {
+    if (!newToken) return;
 
-  const handleMessage = useCallback(
-    (event: MessageEvent) => {
+    const handleMessage = (event: MessageEvent) => {
       if (event.data?.source === 'drive-extension' && event.data?.tokenStatus === 'token-not-found') {
-        setIsVpnAuthNeeded(true);
+        console.log('[VPN/AUTH]: Sending token to extension');
+        vpnAuthService.logIn(newToken);
       }
-    },
-    [setIsVpnAuthNeeded],
-  );
+    };
 
-  useEffect(() => {
-    if (isVpnAuth && newToken) {
-      window.addEventListener('message', handleMessage);
-      return () => window.removeEventListener('message', handleMessage);
-    }
-  }, [isVpnAuth, newToken, handleMessage]);
+    window.addEventListener('message', handleMessage);
 
-  useEffect(() => {
-    if (isVpnAuthNeeded && newToken) {
+    if (isVpnAuth) {
+      console.log('[VPN/AUTH]: Initial VPN auth detected, sending token');
       vpnAuthService.logIn(newToken);
-      setIsVpnAuthNeeded(false);
     }
-  }, [isVpnAuthNeeded, newToken]);
+
+    return () => window.removeEventListener('message', handleMessage);
+  }, [newToken, isVpnAuth]);
 };
 
 export default useVpnAuth;

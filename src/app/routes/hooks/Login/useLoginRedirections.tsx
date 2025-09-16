@@ -92,20 +92,16 @@ const useLoginRedirections = ({
       return navigateTo(AppView.Shared, { folderuuid: folderuuidToRedirect });
     }
 
-    if (user.registerCompleted === false) {
-      return navigateTo(AppView.Login);
-    }
-
-    if (user?.registerCompleted && mnemonic && options?.isSharingInvitation) {
+    if (mnemonic && options?.isSharingInvitation) {
       return navigateTo(AppView.Shared);
     }
 
-    if (user?.registerCompleted && mnemonic && !options?.universalLinkMode) {
+    if (mnemonic && !options?.universalLinkMode) {
       return navigateTo(AppView.Drive);
     }
 
     // This is a redirect for universal link for Desktop MacOS
-    if (user?.registerCompleted && mnemonic && options?.universalLinkMode) {
+    if (mnemonic && options?.universalLinkMode) {
       return navigateTo(AppView.UniversalLinkSuccess);
     }
   };
