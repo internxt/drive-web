@@ -58,9 +58,9 @@ describe('BannerManager - showFreeBanner', () => {
     emailVerified: true,
   };
   const validPlan: PlanState = {
-    isLoadingPlans: false,
     isLoadingPlanLimit: false,
     isLoadingPlanUsage: false,
+    isLoadingBusinessLimitAndUsage: false,
     individualPlan: {
       planId: 'plan-id',
       productId: 'product-id',
@@ -78,7 +78,6 @@ describe('BannerManager - showFreeBanner', () => {
       seats: { minimumSeats: 1, maximumSeats: 1 },
     },
     businessPlan: null,
-    teamPlan: null,
     planLimit: 0,
     planUsage: 0,
     usageDetails: null,
