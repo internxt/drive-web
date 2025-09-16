@@ -144,6 +144,11 @@ const DriveView = (props: DriveViewProps) => {
     try {
       const fileMeta = await fileService.getFile(fileUUID, workspacesToken);
       dispatch(uiActions.setIsFileViewerOpen(true));
+      /*
+       * PreviewFileItem and FileMeta properties do not match, so we need to manually map them.
+       * We should find a better way to do this, probably by improving and refactoring the PreviewFileItem type,
+       * so we only have to map the properties that are different, if any.
+       */
       dispatch(
         uiActions.setFileViewerItem({
           name: fileMeta.name,
