@@ -25,11 +25,8 @@ export default defineWorkspace([
         name: 'chromium',
         headless: true,
       },
-      pool: 'threads',
+      pool: 'forks',
       poolOptions: {
-        threads: {
-          singleThread: true,
-        },
         forks: {
           singleFork: true,
         },
