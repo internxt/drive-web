@@ -11,6 +11,23 @@ export default defineConfig({
     },
   },
   test: {
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: true,
+      },
+      forks: {
+        singleFork: true,
+      },
+    },
+    isolate: true,
+    sequence: {
+      concurrent: false,
+      shuffle: false,
+    },
+    mockReset: true,
+    restoreMocks: true,
+    testTimeout: 30000,
     workspace: './vitest.workspace.ts',
     coverage: {
       provider: 'istanbul',
