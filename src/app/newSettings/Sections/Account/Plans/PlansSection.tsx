@@ -395,13 +395,11 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
         cancelSubscription={cancelSubscription}
         currentPlanName={
           isIndividualSubscriptionSelected
-            ? getPlanName(plan.individualPlan || plan.teamPlan, plan.planLimit)
+            ? getPlanName(plan.individualPlan, plan.planLimit)
             : getPlanName(plan.businessPlan, plan.businessPlanLimit)
         }
         currentPlanInfo={
-          isIndividualSubscriptionSelected
-            ? getPlanInfo(plan.individualPlan || plan.teamPlan)
-            : getPlanInfo(plan.businessPlan)
+          isIndividualSubscriptionSelected ? getPlanInfo(plan.individualPlan) : getPlanInfo(plan.businessPlan)
         }
         currentUsage={
           isIndividualSubscriptionSelected
