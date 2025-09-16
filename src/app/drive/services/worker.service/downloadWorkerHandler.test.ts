@@ -1,5 +1,5 @@
-vi.mock('../download.service/downloadFileAsBlob', () => ({
-  downloadFileAsBlob: vi.fn(),
+vi.mock('../download.service/downloadAsBlob', () => ({
+  downloadAsBlob: vi.fn(),
   getBlobWritable: vi.fn(),
 }));
 
@@ -11,7 +11,7 @@ import { describe, test, expect, vi, Mock, beforeEach } from 'vitest';
 import { downloadWorkerHandler } from './downloadWorkerHandler';
 import { DriveFileData } from 'app/drive/types';
 import { MockWorker } from '../../../../__mocks__/WebWorker';
-import * as downloadBlobModule from '../download.service/downloadFileAsBlob';
+import * as downloadBlobModule from '../download.service/downloadAsBlob';
 import downloadFileFromBlob from '../download.service/downloadFileFromBlob';
 
 const writeMock = vi.fn();
@@ -47,7 +47,7 @@ describe('Download Worker Handler', () => {
       close: vi.fn().mockResolvedValue(undefined),
     });
 
-    (downloadBlobModule.downloadFileAsBlob as unknown as Mock).mockResolvedValue(undefined);
+    (downloadBlobModule.downloadAsBlob as unknown as Mock).mockResolvedValue(undefined);
 
     (downloadFileFromBlob as unknown as Mock).mockResolvedValue(undefined);
   });
@@ -109,7 +109,7 @@ describe('Download Worker Handler', () => {
 
       (downloadBlobModule.getBlobWritable as unknown as Mock).mockResolvedValue(mockBlobWritable);
 
-      (downloadBlobModule.downloadFileAsBlob as unknown as Mock).mockImplementation(async (source, destination) => {
+      (downloadBlobModule.downloadAsBlob as unknown as Mock).mockImplementation(async (source, destination) => {
         return new Promise((resolve, reject) => {
           // We need that to simulate the download
           setTimeout(() => resolve(undefined), 10000);
@@ -199,7 +199,7 @@ describe('Download Worker Handler', () => {
 
     await expect(workerHandlerPromise).resolves.toBe(itemData.fileId);
     expect(downloadBlobModule.getBlobWritable).toHaveBeenCalledWith(completedName, expect.any(Function));
-    expect(downloadBlobModule.downloadFileAsBlob).toHaveBeenCalledWith(readableStream, expect.any(Object));
+    expect(downloadBlobModule.downloadAsBlob).toHaveBeenCalledWith(readableStream, expect.any(Object));
     expect(mockedWorker.terminated).toBe(true);
   });
 

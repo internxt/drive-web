@@ -1,7 +1,7 @@
 import streamSaver from 'streamsaver';
 import { DriveFileData } from 'app/drive/types';
 import { MessageData } from './types/download';
-import { BlobWritable, downloadFileAsBlob, getBlobWritable } from '../download.service/downloadFileAsBlob';
+import { BlobWritable, getBlobWritable, downloadAsBlob } from '../download.service/downloadAsBlob';
 import downloadFileFromBlob from '../download.service/downloadFileFromBlob';
 
 interface HandleWorkerMessagesPayload {
@@ -124,7 +124,7 @@ export class DownloadWorkerHandler {
           abortController.signal.addEventListener('abort', abortBlobCallBack, { once: true });
         }
 
-        await downloadFileAsBlob(readableStream, blobWritable);
+        await downloadAsBlob(readableStream, blobWritable);
 
         if (abortController && !abortController.signal.aborted) {
           abortController.signal.removeEventListener('abort', abortBlobCallBack);
