@@ -1,11 +1,5 @@
-import { describe, expect, vi, beforeEach, Mock, test } from 'vitest';
-import createFileDownloadStream from './createFileDownloadStream';
-import fetchFileStream from './fetchFileStream';
-import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';
+import { describe, expect, vi, beforeEach, test } from 'vitest';
 import { DriveFileData } from '../../types';
-
-vi.mock('./fetchFileStream');
-vi.mock('./fetchFileStreamUsingCredentials');
 
 const mockReadableStream = new ReadableStream();
 
@@ -19,13 +13,23 @@ const baseFile: DriveFileData = {
 describe('createFileDownloadStream', () => {
   const mockProgress = vi.fn();
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
-    (fetchFileStream as unknown as Mock).mockResolvedValue(mockReadableStream);
-    (fetchFileStreamUsingCredentials as unknown as Mock).mockResolvedValue(mockReadableStream);
+    vi.resetModules();
   });
 
   test('When sharing options (credentials) are not provided, then fetchFileStream is called', async () => {
+    vi.doMock('./fetchFileStream', () => ({
+      default: vi.fn().mockResolvedValue(mockReadableStream),
+    }));
+
+    vi.doMock('./fetchFileStreamUsingCredentials', () => ({
+      default: vi.fn().mockResolvedValue(mockReadableStream),
+    }));
+    const createFileDownloadStream = (await import('./createFileDownloadStream')).default;
+    const fetchFileStream = (await import('./fetchFileStream')).default;
+    const fetchFileStreamUsingCredentials = (await import('./fetchFileStreamUsingCredentials')).default;
+
     const result = await createFileDownloadStream(baseFile, true, mockProgress);
 
     expect(fetchFileStream).toHaveBeenCalledWith(
@@ -42,6 +46,16 @@ describe('createFileDownloadStream', () => {
       credentials: { user: 'test-user', pass: 'test-pass' },
       mnemonic: 'test-mnemonic',
     };
+    vi.doMock('./fetchFileStream', () => ({
+      default: vi.fn().mockResolvedValue(mockReadableStream),
+    }));
+
+    vi.doMock('./fetchFileStreamUsingCredentials', () => ({
+      default: vi.fn().mockResolvedValue(mockReadableStream),
+    }));
+    const createFileDownloadStream = (await import('./createFileDownloadStream')).default;
+    const fetchFileStream = (await import('./fetchFileStream')).default;
+    const fetchFileStreamUsingCredentials = (await import('./fetchFileStreamUsingCredentials')).default;
 
     const result = await createFileDownloadStream(baseFile, false, mockProgress, abortController, sharingOptions);
 

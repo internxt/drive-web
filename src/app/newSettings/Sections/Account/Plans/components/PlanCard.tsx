@@ -137,18 +137,6 @@ const PlanDetailsList = ({
         {t('preferences.account.plans.planFeaturesList.title')}
       </span>
       <div className="flex flex-col space-y-2">
-        <div className="flex flex-row items-start space-x-2">
-          <div>
-            <Check size={20} className="text-green" />
-          </div>
-          <span className="text-base text-gray-100">
-            {planSpace}
-            <span className="text-base font-normal text-gray-100">
-              {t('preferences.account.plans.planFeaturesList.storage')}
-            </span>
-          </span>
-        </div>
-
         {featureKeys.map((feature) => (
           <div key={feature} className="flex flex-row items-start space-x-2">
             <div>
