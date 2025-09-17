@@ -1,3 +1,4 @@
+// TODO: REMOVE THIS FILE ONCE THE WORKER IS DEPLOYED
 import downloadFileFromBlob from './downloadFileFromBlob';
 
 export interface BlobWritable {
