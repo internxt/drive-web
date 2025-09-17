@@ -105,7 +105,7 @@ export class DownloadWorkerHandler {
       case 'blob': {
         console.log('[MAIN_THREAD]: Downloading file as blob');
         const { readableStream } = messageData;
-        const blobWritable: BlobWritable = await getBlobWritable(completeFilename, (blob) => {
+        const blobWritable: BlobWritable = getBlobWritable(completeFilename, (blob) => {
           downloadFileFromBlob(blob, completeFilename);
         });
 

@@ -107,7 +107,7 @@ describe('Download Worker Handler', () => {
         cancel: vi.fn().mockResolvedValue(undefined),
       };
 
-      (downloadBlobModule.getBlobWritable as unknown as Mock).mockResolvedValue(mockBlobWritable);
+      (downloadBlobModule.getBlobWritable as unknown as Mock).mockReturnValue(mockBlobWritable);
 
       (downloadBlobModule.downloadAsBlob as unknown as Mock).mockImplementation(async (source, destination) => {
         return new Promise((resolve, reject) => {
