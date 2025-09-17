@@ -7,6 +7,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 export default defineWorkspace([
   {
     test: {
+      isolate: true,
+      sequence: {
+        concurrent: false,
+        shuffle: false,
+      },
+      testTimeout: 30000,
       name: 'browser',
       environment: 'jsdom',
       globals: true,
@@ -18,9 +24,6 @@ export default defineWorkspace([
         enabled: true,
         name: 'chromium',
         headless: true,
-      },
-      sequence: {
-        concurrent: false,
       },
       pool: 'forks',
       poolOptions: {
