@@ -1,4 +1,3 @@
-/* eslint-disable no-constant-condition */
 import createFileDownloadStream from 'app/drive/services/download.service/createFileDownloadStream';
 import { DriveFileData } from 'app/drive/types';
 
@@ -7,7 +6,6 @@ let abortRequested = false;
 
 self.addEventListener('message', async (event) => {
   const eventType = event.data.type as 'download' | 'abort';
-  console.log('EVENT TYPE', eventType);
 
   switch (eventType) {
     case 'download':
@@ -53,49 +51,9 @@ const downloadingFile = async (params: {
     );
 
     if (isBrave) {
-      const reader = downloadedFile.getReader();
-      const chunks: Uint8Array[] = [];
-
-      if (abortRequested) {
-        reader.releaseLock();
-        abortRequested = false;
-        return;
-      }
-
-      while (true) {
-        const { done, value } = await reader.read();
-
-        if (done) break;
-
-        const chunk =
-          value instanceof Uint8Array
-            ? new Uint8Array(value.buffer, value.byteOffset, value.byteLength)
-            : new Uint8Array(value);
-
-        chunks.push(chunk);
-      }
-
-      const completeBlob = new Blob(chunks);
-
-      postMessage({
-        result: 'blob',
-        blob: completeBlob,
-      });
+      await downloadUsingBlob(downloadedFile);
     } else {
-      console.log('[DOWNLOAD-WORKER] Downloading using readable stream');
-      const reader = downloadedFile.getReader();
-      let hasMoreData = true;
-
-      // eslint-disable-next-line no-constant-condition
-      while (hasMoreData) {
-        const { done, value } = await reader.read();
-        hasMoreData = !done;
-
-        if (!done) {
-          const chunk = value instanceof Uint8Array ? value.slice() : new Uint8Array(value);
-          postMessage({ result: 'chunk', chunk }, { transfer: [chunk.buffer] });
-        }
-      }
+      await downloadUsingChunks(downloadedFile);
     }
 
     postMessage({ result: 'success', fileId: file.fileId });
@@ -103,6 +61,55 @@ const downloadingFile = async (params: {
     console.log('[DOWNLOAD-WORKER] ERROR -->', err);
     const errorCloned = JSON.parse(JSON.stringify(err));
     postMessage({ result: 'error', error: errorCloned });
+  }
+};
+
+const downloadUsingBlob = async (downloadedFile: ReadableStream<Uint8Array<ArrayBufferLike>>) => {
+  const reader = downloadedFile.getReader();
+  const chunks: Uint8Array[] = [];
+  let hasMoreData = true;
+
+  if (abortRequested) {
+    reader.releaseLock();
+    abortRequested = false;
+    return;
+  }
+
+  while (hasMoreData) {
+    const { done, value } = await reader.read();
+    hasMoreData = !done;
+
+    if (!done) {
+      const chunk =
+        value instanceof Uint8Array
+          ? new Uint8Array(value.buffer, value.byteOffset, value.byteLength)
+          : new Uint8Array(value);
+
+      chunks.push(chunk);
+    }
+  }
+
+  const completeBlob = new Blob(chunks as BlobPart[]);
+
+  postMessage({
+    result: 'blob',
+    blob: completeBlob,
+  });
+};
+
+const downloadUsingChunks = async (downloadedFile: ReadableStream<Uint8Array<ArrayBufferLike>>) => {
+  console.log('[DOWNLOAD-WORKER] Downloading using readable stream');
+  const reader = downloadedFile.getReader();
+  let hasMoreData = true;
+
+  while (hasMoreData) {
+    const { done, value } = await reader.read();
+    hasMoreData = !done;
+
+    if (!done) {
+      const chunk = value instanceof Uint8Array ? value.slice() : new Uint8Array(value);
+      postMessage({ result: 'chunk', chunk }, { transfer: [chunk.buffer] });
+    }
   }
 };
 
