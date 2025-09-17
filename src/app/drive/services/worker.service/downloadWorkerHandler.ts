@@ -115,30 +115,30 @@ export class DownloadWorkerHandler {
       case 'success': {
         const { fileId } = messageData;
         await writer.close();
-        resolve(fileId);
         worker.terminate();
         if (abortController) {
           abortController.signal.removeEventListener('abort', abortWriter);
         }
+        resolve(fileId);
         break;
       }
 
       case 'error': {
         const { error } = messageData;
         await writer.abort();
-        reject(error);
         worker.terminate();
         if (abortController) {
           abortController.signal.removeEventListener('abort', abortWriter);
         }
+        reject(error);
         break;
       }
 
       case 'abort': {
+        worker.terminate();
         if (abortController) {
           abortController.signal.removeEventListener('abort', abortWriter);
         }
-        worker.terminate();
         reject('Aborted');
         break;
       }

@@ -505,15 +505,6 @@ export class DownloadManagerService {
 
     const worker: Worker = downloadWorkerHandler.getWorker();
 
-    const onAbort = () => {
-      console.log('[DOWNLOAD-MANAGER] Abort triggered → notifying worker');
-      worker.postMessage({ type: 'abort' });
-    };
-
-    if (payload.abortController) {
-      payload.abortController.signal.addEventListener('abort', onAbort);
-    }
-
     const workerPayload = {
       file: payload.file,
       isWorkspace: payload.isWorkspace,
@@ -531,10 +522,6 @@ export class DownloadManagerService {
       updateProgressCallback: payload.updateProgressCallback,
       abortController: payload.abortController,
     });
-
-    if (payload.abortController) {
-      payload.abortController.signal.removeEventListener('abort', onAbort);
-    }
 
     return promise;
   };
