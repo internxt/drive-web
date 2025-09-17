@@ -169,6 +169,13 @@ const Navbar = (props: NavbarProps) => {
     return query.length > 0 && !loadingSearch;
   };
 
+  const renderSearchState = () => {
+    if (shouldShowNotFound()) {
+      return <NotFoundState />;
+    }
+    return <EmptyState />;
+  };
+
   const getDisplayResults = () => {
     return filteredResults.length > 0 ? filteredResults : searchResult;
   };
@@ -379,10 +386,8 @@ const Navbar = (props: NavbarProps) => {
                     );
                   })}
                 </ul>
-              ) : shouldShowNotFound() ? (
-                <NotFoundState />
               ) : (
-                <EmptyState />
+                renderSearchState()
               )}
             </div>
           </form>
