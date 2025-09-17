@@ -9,7 +9,7 @@ import { AppView } from '../../../core/types';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { getEnvironmentConfig } from '../network.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
-import { OwnerUserAuthenticationData } from '../../../network/UploadManager';
+import { OwnerUserAuthenticationData } from '../../../network/types';
 import { FileToUpload } from './types';
 
 export interface FileUploadOptions {
