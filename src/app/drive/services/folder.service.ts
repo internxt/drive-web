@@ -21,7 +21,7 @@ import {
   SharedFileIterator,
   SharedFolderIterator,
   isLostConnectionError,
-} from '../../drive/services/downloadManager.service';
+} from './download-types';
 import { DriveItemBlobData } from '../../database/services/database.service';
 import dateService from '../../core/services/date.service';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
