@@ -74,12 +74,13 @@ export class DownloadWorkerHandler {
 
       try {
         worker.postMessage({ type: 'abort' });
-        await writer?.abort();
-
-        console.log('[MAIN_THREAD]: Aborting download');
+        await writer.abort();
         aborted = true;
-      } catch (_) {
+      } catch {
         // NO OP
+      } finally {
+        worker.terminate();
+        reject('Aborted');
       }
     };
 

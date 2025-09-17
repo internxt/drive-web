@@ -1,7 +1,6 @@
 import { describe, expect, vi, beforeEach, test } from 'vitest';
-import { getBlobWritable } from './downloadFileAsBlob';
+import { downloadAsBlob, getBlobWritable } from './downloadFileAsBlob';
 import downloadFileFromBlob from './downloadFileFromBlob';
-import { downloadAsBlob } from './downloadAsBlob';
 
 vi.mock('./downloadFileFromBlob', () => ({
   default: vi.fn(),

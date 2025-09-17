@@ -1,3 +1,8 @@
+vi.mock('../download.service/downloadFileAsBlob', () => ({
+  downloadAsBlob: vi.fn(),
+  getBlobWritable: vi.fn(),
+}));
+
 vi.mock('../download.service/downloadFileFromBlob', () => ({
   default: vi.fn(),
 }));

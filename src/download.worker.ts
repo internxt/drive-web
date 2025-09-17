@@ -84,20 +84,17 @@ const downloadingFile = async (params: {
     } else {
       console.log('[DOWNLOAD-WORKER] Downloading using readable stream');
       const reader = downloadedFile.getReader();
+      let hasMoreData = true;
 
-      while (true) {
+      // eslint-disable-next-line no-constant-condition
+      while (hasMoreData) {
         const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
+        hasMoreData = !done;
 
-        const chunk = value instanceof Uint8Array ? value.slice() : new Uint8Array(value);
-        postMessage(
-          { result: 'chunk', chunk },
-          {
-            transfer: [chunk.buffer],
-          },
-        );
+        if (!done) {
+          const chunk = value instanceof Uint8Array ? value.slice() : new Uint8Array(value);
+          postMessage({ result: 'chunk', chunk }, { transfer: [chunk.buffer] });
+        }
       }
     }
 
