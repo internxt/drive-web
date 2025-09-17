@@ -1,7 +1,7 @@
 import streamSaver from 'streamsaver';
 import { DriveFileData } from 'app/drive/types';
 import { MessageData } from './types/download';
-import { BlobWritable, getBlobWritable, downloadAsBlob } from '../download.service/downloadAsBlob';
+import { BlobWritable, getBlobWritable, downloadAsBlob } from '../download.service/downloadFileAsBlob';
 import downloadFileFromBlob from '../download.service/downloadFileFromBlob';
 
 interface HandleWorkerMessagesPayload {

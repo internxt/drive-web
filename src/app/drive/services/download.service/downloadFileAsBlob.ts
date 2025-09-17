@@ -76,3 +76,7 @@ export async function downloadFileAsBlob(filename: string, source: ReadableStrea
 
   await pipe(source, destination);
 }
+
+export async function downloadAsBlob(source: ReadableStream, destination: BlobWritable): Promise<void> {
+  await pipe(source, destination);
+}
