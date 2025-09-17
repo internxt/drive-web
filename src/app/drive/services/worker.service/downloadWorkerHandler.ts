@@ -81,7 +81,7 @@ export class DownloadWorkerHandler {
             worker.postMessage({ type: 'abort' });
             await writer.abort();
             aborted = true;
-          } catch (_) {
+          } catch {
             // NO OP
           } finally {
             worker.terminate();
