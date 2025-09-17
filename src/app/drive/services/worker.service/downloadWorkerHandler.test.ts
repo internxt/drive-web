@@ -243,4 +243,29 @@ describe('Download Worker Handler', () => {
     await expect(workerHandlerPromise).rejects.toBe('error');
     expect(mockedWorker.terminated).toBe(true);
   });
+
+  test('When the event is error and there is an abort controller, then removeEventListener is called', async () => {
+    const mockedWorker = new MockWorker();
+    const abortController = new AbortController();
+    const itemData = {
+      fileId: 'random-id',
+    } as DriveFileData;
+
+    const removeEventListenerSpy = vi.spyOn(abortController.signal, 'removeEventListener');
+
+    const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
+      worker: mockedWorker as unknown as Worker,
+      itemData,
+      abortController,
+      updateProgressCallback: vi.fn(),
+    });
+    mockedWorker.emitMessage({
+      result: 'error',
+      error: 'error',
+    });
+
+    await expect(workerHandlerPromise).rejects.toBe('error');
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('abort', expect.any(Function));
+    expect(mockedWorker.terminated).toBe(true);
+  });
 });

@@ -516,14 +516,12 @@ export class DownloadManagerService {
 
     console.log('[DOWNLOAD-MANAGER] Start Downloading file -->', payload.file);
 
-    const promise = downloadWorkerHandler.handleWorkerMessages({
+    return downloadWorkerHandler.handleWorkerMessages({
       worker,
       itemData: payload.file,
       updateProgressCallback: payload.updateProgressCallback,
       abortController: payload.abortController,
     });
-
-    return promise;
   };
 }
 
