@@ -1,3 +1,4 @@
+// TODO: REMOVE THIS FILE ONCE THE WORKER IS DEPLOYED
 import downloadFileFromBlob from './downloadFileFromBlob';
 
 export interface BlobWritable {
@@ -15,7 +16,7 @@ export interface BlobWritable {
   close: () => Promise<void>;
 }
 
-function getBlobWritable(filename: string, onClose: (result: Blob) => void): BlobWritable {
+export function getBlobWritable(filename: string, onClose: (result: Blob) => void): BlobWritable {
   let blobParts: BlobPart[] = [];
 
   return {
@@ -73,5 +74,9 @@ export async function downloadFileAsBlob(filename: string, source: ReadableStrea
     downloadFileFromBlob(blob, filename);
   });
 
+  await pipe(source, destination);
+}
+
+export async function downloadAsBlob(source: ReadableStream, destination: BlobWritable): Promise<void> {
   await pipe(source, destination);
 }
