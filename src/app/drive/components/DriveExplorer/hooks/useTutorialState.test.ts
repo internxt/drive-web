@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const createMockTutorialState = (initialStep = 0) => {
+const createMockTutorialState = (initialStep = 0, overrides = {}) => {
   let currentStep = initialStep;
   return {
     hasAnyUploadedFile: undefined,
@@ -10,6 +10,7 @@ const createMockTutorialState = (initialStep = 0) => {
     divRef: { current: null },
     showTutorial: false,
     passToNextStep: () => ++currentStep,
+    ...overrides,
   };
 };
 
@@ -68,5 +69,35 @@ describe('useTutorialState', () => {
       'passToNextStep',
     ];
     expectedProps.forEach((prop) => expect(state).toHaveProperty(prop));
+  });
+
+  it('shows tutorial when hasAnyUploadedFile is false', () => {
+    const state = createMockTutorialState(0, { hasAnyUploadedFile: false, showTutorial: true });
+    expect(state.hasAnyUploadedFile).toBe(false);
+    expect(state.showTutorial).toBe(true);
+  });
+
+  it('hides tutorial when hasAnyUploadedFile is true', () => {
+    const state = createMockTutorialState(0, { hasAnyUploadedFile: true, showTutorial: false });
+    expect(state.hasAnyUploadedFile).toBe(true);
+    expect(state.showTutorial).toBe(false);
+  });
+
+  it('shows second tutorial step when enabled', () => {
+    const state = createMockTutorialState(1, { showSecondTutorialStep: true });
+    expect(state.currentTutorialStep).toBe(1);
+    expect(state.showSecondTutorialStep).toBe(true);
+  });
+
+  it('allows overriding default values', () => {
+    const state = createMockTutorialState(5, {
+      hasAnyUploadedFile: true,
+      showSecondTutorialStep: true,
+      showTutorial: true,
+    });
+    expect(state.currentTutorialStep).toBe(5);
+    expect(state.hasAnyUploadedFile).toBe(true);
+    expect(state.showSecondTutorialStep).toBe(true);
+    expect(state.showTutorial).toBe(true);
   });
 });
