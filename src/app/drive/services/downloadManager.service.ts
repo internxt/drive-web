@@ -19,8 +19,6 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { downloadFile, NetworkCredentials } from 'app/network/download';
 import localStorageService from 'app/core/services/local-storage.service';
 import date from 'app/core/services/date.service';
-import { Iterator } from 'app/core/collections';
-import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { ConnectionLostError } from './../../network/requests';
 import { ErrorMessages } from 'app/core/constants';
