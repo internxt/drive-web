@@ -164,79 +164,106 @@ export class DownloadManager {
     }
   };
 
+  private static readonly handleConnectionLostError = (err: unknown, taskId: string) => {
+    tasksService.updateTask({
+      taskId,
+      merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
+    });
+    throw err;
+  };
+
+  private static readonly handleServerOrCancelledError = (
+    downloadTask: DownloadTask,
+    isServerError: boolean,
+    filePickerCancelled: boolean,
+  ): boolean => {
+    if (!isServerError && !filePickerCancelled) return true;
+
+    const retryTasks = RetryManager.getTasksById(downloadTask.taskId);
+    if (retryTasks.length > 0) {
+      tasksService.updateTask({
+        taskId: downloadTask.taskId,
+        merge: { status: TaskStatus.Success },
+      });
+      return false;
+    }
+
+    this.removeRetryItems(downloadTask.items, downloadTask);
+    return true;
+  };
+
+  private static readonly reportErrorWithContext = (err: unknown, items: DownloadItemType[]) => {
+    if (items.length > 1) {
+      errorService.reportError(err);
+      return;
+    }
+
+    const item = items[0];
+    if (item.isFolder) {
+      errorService.reportError(err, {
+        extra: { folder: item.name, bucket: item.bucket, folderParentId: item.parentId },
+      });
+    } else {
+      errorService.reportError(err, {
+        extra: { fileName: item.name, bucket: item.bucket, fileSize: item.size, fileType: item.type },
+      });
+    }
+  };
+
+  private static readonly showErrorNotification = (err: unknown, downloadTask: DownloadTask) => {
+    if (!downloadTask.options.showErrors) return;
+
+    const { items } = downloadTask;
+    const castedError = errorService.castError(err);
+    const errorText = items.length > 1 || !items[0].isFolder ? 'error.downloadingFile' : 'error.downloadingFolder';
+
+    notificationsService.show({
+      text: t(errorText, { message: castedError.message || '' }),
+      type: ToastType.Error,
+    });
+  };
+
+  private static readonly handleActiveTask = (
+    err: unknown,
+    downloadTask: DownloadTask,
+    updateTaskWithErrorStatus: boolean,
+  ) => {
+    this.reportErrorWithContext(err, downloadTask.items);
+
+    if (updateTaskWithErrorStatus) {
+      tasksService.updateTask({
+        taskId: downloadTask.taskId,
+        merge: { status: TaskStatus.Error },
+      });
+    }
+
+    this.showErrorNotification(err, downloadTask);
+  };
+
   private static readonly reportError = (err: unknown, downloadTask: DownloadTask) => {
-    const { items, taskId } = downloadTask;
+    const { taskId } = downloadTask;
     const isConnectionLost = isLostConnectionError(err);
     const isServerError = this.isServerError(err);
     const castedError = errorService.castError(err);
     const filePickerCancelled = castedError.message === ErrorMessages.FilePickerCancelled;
-    let updateTaskWithErrorStatus = true;
 
     if (isConnectionLost) {
-      tasksService.updateTask({
-        taskId,
-        merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
-      });
-      throw err;
+      this.handleConnectionLostError(err, taskId);
     }
 
-    if (isServerError || filePickerCancelled) {
-      const retryTasks = RetryManager.getTasksById(downloadTask.taskId);
-      if (retryTasks.length > 0) {
-        tasksService.updateTask({
-          taskId,
-          merge: {
-            status: TaskStatus.Success,
-          },
-        });
-        updateTaskWithErrorStatus = false;
-      } else {
-        this.removeRetryItems(items, downloadTask);
-      }
-    }
-
+    const updateTaskWithErrorStatus = this.handleServerOrCancelledError(
+      downloadTask,
+      isServerError,
+      filePickerCancelled,
+    );
     const task = tasksService.findTask(taskId);
 
     if (task !== undefined && task.status !== TaskStatus.Cancelled) {
-      if (items.length > 1) {
-        errorService.reportError(err);
-      } else {
-        const item = items[0];
-        if (item.isFolder) {
-          errorService.reportError(err, {
-            extra: { folder: item.name, bucket: item.bucket, folderParentId: item.parentId },
-          });
-        } else {
-          errorService.reportError(err, {
-            extra: { fileName: item.name, bucket: item.bucket, fileSize: item.size, fileType: item.type },
-          });
-        }
-      }
-      if (updateTaskWithErrorStatus) {
-        tasksService.updateTask({
-          taskId,
-          merge: {
-            status: TaskStatus.Error,
-          },
-        });
-      }
-
-      const castedError = errorService.castError(err);
-
-      if (downloadTask.options.showErrors) {
-        const errorText = items.length > 1 || !items[0].isFolder ? 'error.downloadingFile' : 'error.downloadingFolder';
-
-        notificationsService.show({
-          text: t(errorText, { message: castedError.message || '' }),
-          type: ToastType.Error,
-        });
-      }
+      this.handleActiveTask(err, downloadTask, updateTaskWithErrorStatus);
     } else {
       tasksService.updateTask({
         taskId,
-        merge: {
-          status: TaskStatus.Cancelled,
-        },
+        merge: { status: TaskStatus.Cancelled },
       });
     }
   };
