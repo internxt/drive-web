@@ -22,7 +22,7 @@ describe('downloadFileAsBlob', () => {
     vi.clearAllMocks();
   });
 
-  test('When a blob is created, then it should be created and downloaded with the correcta name and content', async () => {
+  test('When a blob is created, then it should be created and downloaded with the correct name and content', async () => {
     const chunks = [new TextEncoder().encode('Hello '), new TextEncoder().encode('World')];
     const stream = createStream(chunks);
 
