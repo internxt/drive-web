@@ -17,7 +17,6 @@ import { StorageFilters } from '../../../store/slices/storage/storage.model';
 import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useHotkeys } from 'react-hotkeys-hook';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 
