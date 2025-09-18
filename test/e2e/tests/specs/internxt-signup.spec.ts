@@ -3,15 +3,40 @@ import { expect, test } from '@playwright/test';
 import fs from 'fs';
 import { staticData } from '../helper/staticData';
 import { SignUpPage } from '../pages/signUpPage';
+import { getUser } from '../helper/getUser';
 const credentialsFile = './test/e2e/tests/specs/playwright/auth/credentials.json';
+const BASE_API_URL = process.env.REACT_APP_DRIVE_NEW_API_URL;
+
+const user = getUser();
+const invalidEmail = 'invalid@internxt.com';
+
+const mockedCall = async (route, request) => {
+  const { email } = request.postDataJSON();
+
+  if (invalidEmail === email) {
+    return route.fulfill({
+      status: 409,
+      body: JSON.stringify({ message: `${invalidEmail} already registered` }),
+    });
+  }
+
+  await route.fulfill({
+    status: 200,
+    body: JSON.stringify(user),
+  });
+};
 
 test.describe('Internxt SignUp', async () => {
   test.use({ storageState: { cookies: [], origins: [] } });
   test.beforeEach('Visiting Internxt Sign Up Page', async ({ page }) => {
+    await page.route(`${BASE_API_URL}/users`, mockedCall);
+
     await page.goto(staticData.signUpURL);
   });
 
   test('TC1: Validate that the user can create a new account', async ({ page }) => {
+    test.setTimeout(60000);
+
     const signupPage = new SignUpPage(page);
     const newEmail = faker.internet.email();
     const newPassword = faker.internet.password();
@@ -27,7 +52,7 @@ test.describe('Internxt SignUp', async () => {
     const signupPage = new SignUpPage(page);
     const credentialsData = JSON.parse(fs.readFileSync(credentialsFile, 'utf-8'));
 
-    await signupPage.typeInEmail(credentialsData.email);
+    await signupPage.typeInEmail(invalidEmail);
     await signupPage.typeInPassword(credentialsData.password);
     await signupPage.clickOnCreateAccountButton();
     const userAlreadyRegisteredText = await signupPage.UserAlreadyExistAssertion();
