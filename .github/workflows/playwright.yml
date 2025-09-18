@@ -39,6 +39,10 @@ jobs:
       - run: echo REACT_APP_SENTRY_DSN=${{ secrets.REACT_APP_SENTRY_DSN }} >> ./.env
       - run: echo REACT_APP_PAYMENTS_API_URL=${{ secrets.REACT_APP_PAYMENTS_API_URL }} >> ./.env
       - run: echo REACT_APP_DRIVE_NEW_API_URL=${{ secrets.REACT_APP_DRIVE_NEW_API_URL }} >> ./.env
+      - run: echo PLAYWRIGHT_EMAIL_TEST=${{ secrets.PLAYWRIGHT_EMAIL_TEST }} >> ./.env
+      - run: echo PLAYWRIGHT_PASSWORD_TEST=${{ secrets.PLAYWRIGHT_PASSWORD_TEST }} >> ./.env
+      - run: echo '${{ secrets.TEST_USER_DATA }}' > test/e2e/tests/user.json
+
       - run: echo REACT_APP_LOCATION_API_URL=some_api_key >> ./.env
       - name: Install dependencies
         run: npm install -g yarn && yarn
