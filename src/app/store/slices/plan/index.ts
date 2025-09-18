@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UsageResponseV2 } from '@internxt/sdk/dist/drive/storage/types';
@@ -8,7 +8,6 @@ import limitService from 'app/drive/services/limit.service';
 import usageService from 'app/drive/services/usage.service';
 import { RootState } from '../..';
 import paymentService from '../../../payment/services/payment.service';
-import { sessionSelectors } from '../session/session.selectors';
 import { FreeStoragePlan } from 'app/drive/types';
 
 export interface PlanState {
