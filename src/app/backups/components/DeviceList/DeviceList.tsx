@@ -1,5 +1,4 @@
 import desktopService from '../../../core/services/desktop.service';
-import { Device } from '../../types';
 
 import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
 import { DownloadSimple } from '@phosphor-icons/react';
@@ -16,6 +15,7 @@ import sizeService from '../../../drive/services/size.service';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { skinSkeleton } from 'app/shared/Skeleton';
 import { List } from '@internxt/ui';
+import { Device } from '@internxt/sdk/dist/drive/backups/types';
 
 interface Props {
   items: (Device | DriveFolderData)[];
@@ -25,6 +25,8 @@ interface Props {
   onDeviceDeleted: (device: (Device | DriveFolderData)[]) => void;
   onDeviceClicked: (device: Device | DriveFolderData) => void;
 }
+
+type Item = (Device & { name: string; size: number }) | (DriveFolderData & { size: number });
 
 const DeviceList = (props: Props): JSX.Element => {
   const { isLoading, onDeviceDeleted, onDeviceSelected, selectedItems, onDeviceClicked } = props;
@@ -39,7 +41,7 @@ const DeviceList = (props: Props): JSX.Element => {
   return (
     <div id="scrollableList" className="flex h-full flex-col overflow-y-auto">
       <div className="flex h-full w-full flex-col overflow-y-auto">
-        <List<Device | (DriveFolderData & { size: number }), 'name' | 'updatedAt' | 'size'>
+        <List<Item, 'name' | 'updatedAt' | 'size'>
           header={[
             {
               label: translate('drive.list.columns.name'),
@@ -63,7 +65,7 @@ const DeviceList = (props: Props): JSX.Element => {
               defaultDirection: 'ASC',
             },
           ]}
-          items={props.items as Device[] | (DriveFolderData & { size: number })[]}
+          items={props.items as Item[]}
           isLoading={isLoading}
           itemComposition={[
             (device) => {
@@ -140,7 +142,7 @@ const DeviceList = (props: Props): JSX.Element => {
             onDeviceDeleted,
             selectedDevices: selectedItems as Device[],
           })}
-          selectedItems={selectedItems as Device[] | (DriveFolderData & { size: number })[]}
+          selectedItems={selectedItems as Item[]}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
           onSelectedItemsChanged={(changes) => {
             const selectedDevicesParsed = changes.map((change) => ({ device: change.props, isSelected: change.value }));

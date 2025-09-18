@@ -18,7 +18,7 @@ async function sendItemsToTrashConcurrent({
   maxConcurrentRequests,
   trashClient,
 }: {
-  items: { uuid: string; type: string }[];
+  items: { uuid: string; type: 'file' | 'folder'; id: null }[];
   maxItemsToDelete: number;
   maxConcurrentRequests: number;
   trashClient: Trash;
@@ -44,10 +44,11 @@ async function sendItemsToTrashConcurrent({
 const isFolder = (item: DriveItemData) => item?.type === 'folder' || item?.isFolder;
 
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () => void): Promise<void> => {
-  const items: Array<{ uuid: string; type: string }> = itemsToTrash.map((item) => {
+  const items: Array<{ uuid: string; type: 'file' | 'folder'; id: null }> = itemsToTrash.map((item) => {
     return {
       uuid: item.uuid,
       type: isFolder(item) ? 'folder' : 'file',
+      id: null,
     };
   });
   let movingItemsToastId;
