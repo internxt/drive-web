@@ -19,7 +19,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import errorService from '../../../core/services/error.service';
-import { UPLOAD_ITEMS_LIMIT } from '../../../drive/components/DriveExplorer/DriveExplorer';
+import { UPLOAD_ITEMS_LIMIT } from '../../../drive/components/DriveExplorer/helpers/uploadHelpers';
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
 import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
