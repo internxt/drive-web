@@ -34,6 +34,7 @@ debug.log
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+**/tests/user.json
 
 **/__screenshots__/**
 
