@@ -96,13 +96,13 @@ export class SdkFactory {
 
   public async createPaymentsClient(): Promise<Payments> {
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getNewApiSecurity();
+    const apiSecurity = this.getIndividualApiSecurity();
     return Payments.client(envService.getVariable('payments'), appDetails, apiSecurity);
   }
 
   public async createCheckoutClient(): Promise<Checkout> {
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getNewApiSecurity();
+    const apiSecurity = this.getIndividualApiSecurity();
     return Checkout.client(envService.getVariable('payments'), appDetails, apiSecurity);
   }
 
@@ -122,6 +122,16 @@ export class SdkFactory {
       token: this.getNewToken(workspace),
       workspaceToken,
       unauthorizedCallback: async () => {
+        SdkFactory.sdk.dispatch(userThunks.logoutThunk());
+      },
+    };
+  }
+
+  private getIndividualApiSecurity(): ApiSecurity {
+    const token = this.getNewToken(Workspace.Individuals);
+    return {
+      token,
+      unauthorizedCallback: () => {
         SdkFactory.sdk.dispatch(userThunks.logoutThunk());
       },
     };
