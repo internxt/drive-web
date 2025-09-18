@@ -80,7 +80,13 @@ export class DownloadWorkerHandler {
         // NO OP
       } finally {
         worker.terminate();
-        reject('Aborted');
+        reject(new DownloadAbortedByUserError());
+      }
+    };
+
+    const removeAbortListener = () => {
+      if (abortController) {
+        abortController.signal.removeEventListener('abort', abortWriter);
       }
     };
 
@@ -116,9 +122,7 @@ export class DownloadWorkerHandler {
         const { fileId } = messageData;
         await writer.close();
         worker.terminate();
-        if (abortController) {
-          abortController.signal.removeEventListener('abort', abortWriter);
-        }
+        removeAbortListener();
         resolve(fileId);
         break;
       }
@@ -127,19 +131,15 @@ export class DownloadWorkerHandler {
         const { error } = messageData;
         await writer.abort();
         worker.terminate();
-        if (abortController) {
-          abortController.signal.removeEventListener('abort', abortWriter);
-        }
+        removeAbortListener();
         reject(error);
         break;
       }
 
       case 'abort': {
         worker.terminate();
-        if (abortController) {
-          abortController.signal.removeEventListener('abort', abortWriter);
-        }
-        reject('Aborted');
+        removeAbortListener();
+        reject(new DownloadAbortedByUserError());
         break;
       }
 
@@ -159,6 +159,12 @@ export class DownloadWorkerHandler {
     if (progress && downloadCallback) {
       downloadCallback(progress);
     }
+  }
+}
+
+export class DownloadAbortedByUserError extends Error {
+  public constructor() {
+    super('Download aborted by user');
   }
 }
 

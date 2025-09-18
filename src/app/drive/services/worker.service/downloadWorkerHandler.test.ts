@@ -3,7 +3,7 @@ vi.mock('../download.service/downloadFileFromBlob', () => ({
 }));
 
 import { describe, test, expect, vi, Mock, beforeEach } from 'vitest';
-import { downloadWorkerHandler } from './downloadWorkerHandler';
+import { DownloadAbortedByUserError, downloadWorkerHandler } from './downloadWorkerHandler';
 import { DriveFileData } from 'app/drive/types';
 import { MockWorker } from '../../../../__mocks__/WebWorker';
 import downloadFileFromBlob from '../download.service/downloadFileFromBlob';
@@ -54,8 +54,8 @@ describe('Download Worker Handler', () => {
         result: 'abort',
       });
 
-      await expect(workerHandlerPromise).rejects.toBe('Aborted');
-      // expect(abortMock).toBeCalled();
+      await expect(workerHandlerPromise).rejects.toThrow(new DownloadAbortedByUserError());
+      expect(abortMock).toBeCalled();
       expect(mockedWorker.terminated).toBe(true);
     });
 
@@ -86,7 +86,7 @@ describe('Download Worker Handler', () => {
         result: 'abort',
       });
 
-      await expect(workerHandlerPromise).rejects.toBe('Aborted');
+      await expect(workerHandlerPromise).rejects.toThrow(new DownloadAbortedByUserError());
       expect(mockedWorker.terminated).toBe(true);
     });
 
@@ -106,7 +106,7 @@ describe('Download Worker Handler', () => {
         result: 'abort',
       });
 
-      await expect(workerHandlerPromise).rejects.toBe('Aborted');
+      await expect(workerHandlerPromise).rejects.toThrow(new DownloadAbortedByUserError());
       expect(mockedWorker.terminated).toBe(true);
     });
   });
