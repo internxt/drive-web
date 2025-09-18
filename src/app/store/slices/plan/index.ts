@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UsageResponseV2 } from '@internxt/sdk/dist/drive/storage/types';
@@ -8,17 +8,14 @@ import limitService from 'app/drive/services/limit.service';
 import usageService from 'app/drive/services/usage.service';
 import { RootState } from '../..';
 import paymentService from '../../../payment/services/payment.service';
-import { sessionSelectors } from '../session/session.selectors';
 import { FreeStoragePlan } from 'app/drive/types';
 
 export interface PlanState {
-  isLoadingPlans: boolean;
   isLoadingPlanLimit: boolean;
   isLoadingPlanUsage: boolean;
   isLoadingBusinessLimitAndUsage: boolean;
   individualPlan: StoragePlan | null;
   businessPlan: StoragePlan | null;
-  teamPlan: StoragePlan | null;
   planLimit: number;
   planUsage: number;
   usageDetails: UsageResponseV2 | null;
@@ -30,13 +27,11 @@ export interface PlanState {
 }
 
 const initialState: PlanState = {
-  isLoadingPlans: false,
   isLoadingPlanLimit: false,
   isLoadingPlanUsage: false,
   isLoadingBusinessLimitAndUsage: false,
   individualPlan: null,
   businessPlan: null,
-  teamPlan: null,
   planLimit: 0,
   planUsage: 0,
   usageDetails: null,
@@ -128,14 +123,7 @@ export const fetchBusinessLimitUsageThunk = createAsyncThunk<GetMemberUsageRespo
 export const planSlice = createSlice({
   name: 'plan',
   initialState,
-  reducers: {
-    setSubscriptionIndividual: (state: PlanState, action: PayloadAction<UserSubscription>) => {
-      state.individualSubscription = action.payload;
-    },
-    setSubscriptionBusiness: (state: PlanState, action: PayloadAction<UserSubscription>) => {
-      state.businessSubscription = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(initializeThunk.pending, (state) => {
@@ -221,8 +209,7 @@ const currentPlanSelector = (state: RootState): StoragePlan | null => {
   const { selectedWorkspace } = state.workspaces;
   if (selectedWorkspace) return state.plan.businessPlan;
 
-  const isTeam = sessionSelectors.isTeam(state);
-  return isTeam ? state.plan.teamPlan : state.plan.individualPlan;
+  return state.plan.individualPlan;
 };
 
 export const planSelectors = {
@@ -252,15 +239,13 @@ export const planSelectors = {
   isPlanActive:
     (state: RootState) =>
     (priceId: string): boolean =>
-      state.plan.individualPlan?.planId === priceId || state.plan.teamPlan?.planId === priceId,
+      state.plan.individualPlan?.planId === priceId,
   subscriptionToShow: (state: RootState): UserSubscription | null => {
     const { selectedWorkspace } = state.workspaces;
     if (selectedWorkspace) return state.plan.businessSubscription;
     return state.plan.individualSubscription;
   },
 };
-
-export const planActions = planSlice.actions;
 
 export const planThunks = {
   initializeThunk,
