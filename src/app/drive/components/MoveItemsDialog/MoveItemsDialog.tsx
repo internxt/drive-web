@@ -66,14 +66,14 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     }
   }, [isOpen]);
 
-  const onShowFolderContentClicked = (folderId: string, name: string): void => {
+  const onShowFolderContentClicked = async (folderId: string, name: string): Promise<void> => {
     setIsLoading(true);
-    dispatch(fetchDialogContentThunk(folderId))
-      .unwrap()
-      .then(() => {
-        retrieveMoveDialogItems(folderId, name);
-      })
-      .finally(() => setIsLoading(false));
+    try {
+      await dispatch(fetchDialogContentThunk(folderId)).unwrap();
+      await retrieveMoveDialogItems(folderId, name);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDialogBreadcrumbs = (folderId: string, name: string) => {
@@ -92,30 +92,30 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     setCurrentNamePaths(auxCurrentPaths);
   };
 
-  const retrieveMoveDialogItems = (folderId: string, name: string) => {
-    databaseService.get(DatabaseCollection.MoveDialogLevels, folderId).then((items) => {
+  const handleRetrievedItems = (items: DriveItemData[], folderId: string, name: string) => {
+    setCurrentFolderId(folderId);
+    setCurrentFolderName(name);
+    setDestinationId(folderId);
+
+    const folders = items?.filter((i) => i.isFolder);
+    handleDialogBreadcrumbs(folderId, name);
+
+    if (folders) {
+      const unselectedFolders = folders?.filter((folderItem) => {
+        return !itemsToMove.some((itemToMove) => itemToMove.id === folderItem.id);
+      });
+      setShownFolders(unselectedFolders);
+    } else {
+      setShownFolders([]);
+      setDestinationId(folderId);
       setCurrentFolderId(folderId);
       setCurrentFolderName(name);
-      setDestinationId(folderId);
+    }
+  };
 
-      const folders = items?.filter((i) => {
-        return i.isFolder;
-      });
-
-      handleDialogBreadcrumbs(folderId, name);
-
-      if (folders) {
-        const unselectedFolders = folders?.filter((folderItem) => {
-          return !itemsToMove.some((itemToMove) => itemToMove.id === folderItem.id);
-        });
-        setShownFolders(unselectedFolders);
-      } else {
-        setShownFolders([]);
-        setDestinationId(folderId);
-        setCurrentFolderId(folderId);
-        setCurrentFolderName(name);
-      }
-    });
+  const retrieveMoveDialogItems = async (folderId: string, name: string) => {
+    const items = await databaseService.get(DatabaseCollection.MoveDialogLevels, folderId);
+    handleRetrievedItems(items || [], folderId, name);
   };
 
   const onFolderClicked = (folderId: string, name?: string): void => {
@@ -167,43 +167,55 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     }
   };
 
-  const onAccept = async (destinationFolderId, name, namePaths): Promise<void> => {
+  const prepareDestinationFolder = (destinationFolderId: string, namePaths: FolderPathDialog[]) => {
+    if (destinationFolderId !== currentFolderId) {
+      namePaths.push({ uuid: destinationId, name: selectedFolderName });
+    }
+    return destinationFolderId || currentFolderId;
+  };
+
+  const processItemsMove = async (finalDestinationId: string) => {
+    const files = itemsToMove.filter((item) => item.type !== 'folder') as DriveFileData[];
+    const folders = itemsToMove.filter((item) => item.type === 'folder') as (IRoot | DriveFolderData)[];
+
+    const filesWithoutDuplicates = await handleRepeatedUploadingFiles(files, dispatch, finalDestinationId);
+    const foldersWithoutDuplicates = await handleRepeatedUploadingFolders(folders, dispatch, finalDestinationId);
+
+    const itemsToMoveWithoutDuplicates = [...filesWithoutDuplicates, ...foldersWithoutDuplicates];
+
+    if (itemsToMoveWithoutDuplicates.length > 0) {
+      await dispatch(
+        storageThunks.moveItemsThunk({
+          items: itemsToMoveWithoutDuplicates as DriveItemData[],
+          destinationFolderId: finalDestinationId,
+        }),
+      );
+    }
+  };
+
+  const finalizeMove = () => {
+    props.onItemsMoved?.();
+    setIsLoading(false);
+    onClose();
+    if (!props.isTrash) {
+      setDriveBreadcrumb(itemsToMove);
+    }
+    store.dispatch(storageActions.popItemsToDelete(itemsToMove));
+  };
+
+  const onAccept = async (destinationFolderId: string, _: string, namePaths: FolderPathDialog[]): Promise<void> => {
     try {
       dispatch(storageActions.setMoveDestinationFolderId(destinationFolderId));
-
       setIsLoading(true);
-      if (itemsToMove.length > 0) {
-        if (destinationFolderId != currentFolderId) {
-          namePaths.push({ id: destinationId, name: selectedFolderName });
-        }
 
-        if (!destinationFolderId) {
-          destinationFolderId = currentFolderId;
-        }
-
-        const files = itemsToMove.filter((item) => item.type !== 'folder') as DriveFileData[];
-        const folders = itemsToMove.filter((item) => item.type === 'folder') as (IRoot | DriveFolderData)[];
-
-        const filesWithoutDuplicates = await handleRepeatedUploadingFiles(files, dispatch, destinationFolderId);
-        const foldersWithoutDuplicates = await handleRepeatedUploadingFolders(folders, dispatch, destinationFolderId);
-
-        const itemsToMoveWithoutDuplicates = [...filesWithoutDuplicates, ...foldersWithoutDuplicates];
-
-        if (itemsToMoveWithoutDuplicates.length > 0) {
-          await dispatch(
-            storageThunks.moveItemsThunk({
-              items: itemsToMoveWithoutDuplicates as DriveItemData[],
-              destinationFolderId: destinationFolderId,
-            }),
-          );
-        }
+      if (itemsToMove.length === 0) {
+        finalizeMove();
+        return;
       }
-      props.onItemsMoved?.();
 
-      setIsLoading(false);
-      onClose();
-      !props.isTrash && setDriveBreadcrumb(itemsToMove);
-      store.dispatch(storageActions.popItemsToDelete(itemsToMove));
+      const finalDestinationId = prepareDestinationFolder(destinationFolderId, namePaths);
+      await processItemsMove(finalDestinationId);
+      finalizeMove();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       errorService.reportError(castedError);
