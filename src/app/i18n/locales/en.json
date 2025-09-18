@@ -4,21 +4,23 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 85%",
-    "title": "All Internxt Plans!",
-    "upperTitle": "Internxt turns 5!",
-    "cta": "Claim deal",
+    "label": {"blueText":"Get 87% off", "text":"in all  Plans"},
+    "title": " Claim your exclusive discount!",
+    "subTitle": {
+      "blueText":"Special offer!",
+      "text":"Store files in privacy for even less"
+    },
+    "ctaGet": "Accept invite",
+    "ctaContinue":"Continue free",
     "guarantee": "30-day money-back guarantee",
-    "specialOfferGift": "Chance to win a signed Valencia CF T-shirt",
-    "lastCta": "*Offer is for free accounts or new customers",
-    "features": [
-      "Drive, VPN, and Antivirus",
-      "Sustainable cloud storage",
-      "Post-quantum encryption",
-      "End-to-end encrypted transfers",
-      "No unauthorized access",
-      "Free anniversary theme for Web App"
-    ]
+    "products": {
+      "drive": "Drive",
+      "antivirus": "Antivirus",
+      "cleaner": "Cleaner",
+      "vpn": "VPN",
+      "meet": "Meet",
+      "mail": "Mail"
+    }
   },
   "susbcriptionsBanner": {
     "title": "Supercharge your plan!",
@@ -1888,19 +1890,20 @@
           "1TB": {
             "title": "Essential",
             "features": [
+              "1TB zero-knowledge encrypted storage",
               "Post-quantum encryption",
               "Ultra fast unlimited VPN (FR)",
               "Antivirus",
               "Backup your files",
               "Password-protected file sharing",
               "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support"
+              "Two-factor authentication (2FA)"
             ]
           },
           "3TB": {
             "title": "Premium",
             "features": [
+              "3TB zero-knowledge encrypted storage",
               "Post-quantum encryption",
               "Ultra fast unlimited VPN (FR, DE, PL)",
               "Antivirus",
@@ -1908,14 +1911,14 @@
               "Password-protected file sharing",
               "Invite, share & collaborate",
               "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support"
+              "Two-factor authentication (2FA)"
             ],
             "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
           },
           "5TB": {
             "title": "Ultimate",
             "features": [
+              "5TB zero-knowledge encrypted storage",
               "Post-quantum encryption",
               "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
               "Antivirus",
@@ -1924,13 +1927,13 @@
               "Invite, share & collaborate",
               "GDPR compliance",
               "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support"
+              "CLI, WebDav, NAS & Rclone support"
             ],
             "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
           },
           "1GB": {
             "title": "Free",
-            "features": ["Free Standard VPN (FR)", "CLI, WebDav & Rclone support"]
+            "features": [ "1GB zero-knowledge encrypted storage","Free Standard VPN (FR)"]
           }
         },
         "businessPlanFeaturesList": {
@@ -1939,6 +1942,7 @@
           "1TB": {
             "title": "Standard",
             "features": [
+              "1TB zero-knowledge encrypted storage per user",
               "Post-quantum encryption",
               "Ultra fast unlimited VPN (FR, DE, PL)",
               "Antivirus",
@@ -1947,7 +1951,7 @@
               "Invite, share & collaborate",
               "GDPR compliance",
               "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support",
+              "CLI & WebDav support",
               "Manage account billing & payments"
             ],
             "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
@@ -1955,6 +1959,7 @@
           "2TB": {
             "title": "Pro",
             "features": [
+              "2TB zero-knowledge encrypted storage per user",
               "Post-quantum encryption",
               "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
               "Antivirus",
@@ -1963,7 +1968,7 @@
               "Invite, share & collaborate",
               "GDPR compliance",
               "Two-factor authentication (2FA)",
-              "CLI, WebDav & Rclone support",
+              "CLI, WebDav, Rclone & NAS support",
               "Manage account billing & payments"
             ],
             "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
