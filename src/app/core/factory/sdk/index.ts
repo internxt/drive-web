@@ -131,7 +131,7 @@ export class SdkFactory {
     const token = this.getNewToken(Workspace.Individuals);
     return {
       token,
-      unauthorizedCallback: async () => {
+      unauthorizedCallback: () => {
         SdkFactory.sdk.dispatch(userThunks.logoutThunk());
       },
     };
