@@ -71,7 +71,7 @@ describe('# keys service tests', () => {
   });
 });
 
-it('Should not decrypt null, empry, underfined or short private key', async () => {
+it('Should not decrypt null, empty, undefined or short private key', async () => {
   const password = 'pwd';
 
   const emptyResult = decryptPrivateKey('', password);
