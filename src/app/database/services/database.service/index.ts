@@ -2,27 +2,9 @@ import { DBSchema } from 'idb';
 import configService from '../../../core/services/config.service';
 import { DriveItemData } from '../../../drive/types';
 import { TaskStatus } from '../../../tasks/types';
+import { DatabaseProvider, DatabaseCollection, LRUCacheTypes } from '../../types';
 import { LRUCacheStruture } from './LRUCache';
 import indexedDBService from './indexed-db.service';
-
-export enum DatabaseProvider {
-  IndexedDB = 'indexed-db',
-}
-
-export enum DatabaseCollection {
-  Levels = 'levels',
-  MoveDialogLevels = 'move_levels',
-  LevelsBlobs = 'levels_blobs',
-  LRU_cache = 'lru_cache',
-  Account_settings = 'account_settings',
-  UploadItemStatus = 'upload_item_status',
-  WorkspacesAvatarBlobs = 'workspaces_avatar_blobs',
-}
-
-export enum LRUCacheTypes {
-  LevelsBlobs = 'levels_blobs',
-  LevelsBlobsPreview = 'levels_blobs_preview',
-}
 
 export type DriveItemBlobData = {
   id: number;
@@ -102,5 +84,7 @@ const providers: { [key in DatabaseProvider]: DatabaseService } = {
   [DatabaseProvider.IndexedDB]: indexedDBService,
 };
 const appConfig = configService.getAppConfig();
+
+export { DatabaseProvider, DatabaseCollection, LRUCacheTypes } from '../../types';
 
 export default providers[appConfig.database.provider](appConfig.database.name, appConfig.database.version);

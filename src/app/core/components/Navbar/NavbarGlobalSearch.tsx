@@ -32,6 +32,49 @@ interface NavbarProps {
 
 type FilterType = 'folder' | 'pdf' | 'image' | 'video' | 'audio' | null;
 
+const getSearchBoxClassName = (openSearchBox: boolean) => {
+  const baseClass = 'relative flex w-full items-center rounded-lg transition-all duration-150 ease-out';
+  const widthClass = openSearchBox ? 'max-w-screen-sm' : 'max-w-sm';
+  return `${baseClass} ${widthClass}`;
+};
+
+const getKeyboardShortcutClassName = (openSearchBox: boolean) => {
+  const baseClass =
+    'pointer-events-none absolute right-2.5 top-1/2 z-1 -translate-y-1/2 rounded-md bg-gray-10 px-2 py-1 text-sm text-gray-50';
+  const visibilityClass = openSearchBox ? 'opacity-0' : '';
+  return `${baseClass} ${visibilityClass}`;
+};
+
+const getClearButtonClassName = (query: string, openSearchBox: boolean) => {
+  const baseClass =
+    'absolute right-2.5 top-1/2 z-1 -translate-y-1/2 cursor-pointer text-gray-60 transition-all duration-100 ease-out';
+  const isHidden = query.length === 0 || !openSearchBox;
+  const visibilityClass = isHidden ? 'pointer-events-none opacity-0' : '';
+  return `${baseClass} ${visibilityClass}`;
+};
+
+const getSearchResultsClassName = (openSearchBox: boolean) => {
+  const baseClass =
+    'absolute top-12 z-10 flex h-80 w-full max-w-screen-sm origin-top flex-col overflow-hidden rounded-xl bg-surface text-gray-100 shadow-subtle-hard ring-1 ring-gray-10 transition-all duration-150 ease-out dark:bg-gray-5';
+  if (openSearchBox) {
+    return `${baseClass} translate-y-1.5 scale-100 opacity-100`;
+  }
+  return `${baseClass} pointer-events-none -translate-y-0.5 scale-98 opacity-0`;
+};
+
+const getClearFiltersClassName = (filtersLength: number) => {
+  const baseClass =
+    'flex h-8 cursor-pointer items-center space-x-2 rounded-full bg-gray-1 px-3 text-sm font-medium text-gray-60 transition-all duration-100 ease-out hover:bg-gray-5 dark:hover:bg-surface';
+  const visibilityClass = filtersLength === 0 ? 'pointer-events-none opacity-0' : '';
+  return `${baseClass} ${visibilityClass}`;
+};
+
+const getSearchResultItemClassName = (isSelected: boolean) => {
+  const baseClass = 'flex h-11 shrink-0 cursor-pointer items-center space-x-2.5 px-4 text-gray-100';
+  const selectedClass = isSelected ? 'bg-gray-5 dark:bg-gray-10' : '';
+  return `${baseClass} ${selectedClass}`;
+};
+
 const fileExtension = {
   image: fileExtensionGroups[FileExtensionGroup.Image],
   audio: fileExtensionGroups[FileExtensionGroup.Audio],
@@ -107,23 +150,42 @@ const Navbar = (props: NavbarProps) => {
     setSearchResult([]);
   };
 
-  const filteredSearchResults = searchResult.filter((result) => {
-    for (const filter of filters) {
-      if (filter === 'folder' && result.itemType?.toLowerCase() === 'folder') {
-        return true;
-      }
-      if (result.item.type && isSelectedType(result.item.type, fileExtension[filter || 'default'])) {
-        return true;
-      }
+  const matchesFilter = (result: SearchResult, filter: FilterType) => {
+    if (filter === 'folder') {
+      return result.itemType?.toLowerCase() === 'folder';
     }
+    return result.item.type && isSelectedType(result.item.type, fileExtension[filter || 'default']);
+  };
+
+  const filteredSearchResults = searchResult.filter((result) => {
+    return filters.some((filter) => matchesFilter(result, filter));
   });
+
+  const shouldShowResults = () => {
+    return (filters.length === 0 && searchResult.length > 0) || (filters.length > 0 && filteredResults.length > 0);
+  };
+
+  const shouldShowNotFound = () => {
+    return query.length > 0 && !loadingSearch;
+  };
+
+  const renderSearchState = () => {
+    if (shouldShowNotFound()) {
+      return <NotFoundState />;
+    }
+    return <EmptyState />;
+  };
+
+  const getDisplayResults = () => {
+    return filteredResults.length > 0 ? filteredResults : searchResult;
+  };
 
   const search = async () => {
     const query = searchInput.current?.value ?? '';
     const workspaceId = selectedWorkspace?.workspaceUser.workspaceId;
     if (query.length > 0) {
       const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-      const [itemsPromise] = await storageClient.getGlobalSearchItems(query, workspaceId);
+      const [itemsPromise] = storageClient.getGlobalSearchItems(query, workspaceId);
       const items = await itemsPromise;
       const resultItems: SearchResult[] = Array.isArray(items) ? items : items.data;
       setSearchResult(resultItems);
@@ -227,12 +289,7 @@ const Navbar = (props: NavbarProps) => {
           <div />
         ) : (
           <form className="relative flex h-full w-full items-center" onSubmitCapture={handleSubmit}>
-            <label
-              className={`${
-                openSearchBox ? 'max-w-screen-sm' : 'max-w-sm'
-              } relative flex w-full items-center rounded-lg transition-all duration-150 ease-out`}
-              htmlFor="globalSearchInput"
-            >
+            <label className={getSearchBoxClassName(openSearchBox)} htmlFor="globalSearchInput">
               <MagnifyingGlass
                 className="pointer-events-none absolute left-2.5 top-1/2 z-1 -translate-y-1/2 text-gray-60 focus-within:text-gray-80"
                 size={20}
@@ -268,17 +325,9 @@ const Navbar = (props: NavbarProps) => {
                 onFocusCapture={() => setOpenSearchBox(true)}
                 placeholder={translate('general.searchBar.placeholder')}
               />
-              <div
-                className={`${
-                  openSearchBox && 'opacity-0'
-                } pointer-events-none absolute right-2.5 top-1/2 z-1 -translate-y-1/2 rounded-md bg-gray-10 px-2 py-1 text-sm text-gray-50`}
-              >
-                {isMacOs ? '⌘F' : 'Ctrl F'}
-              </div>
+              <div className={getKeyboardShortcutClassName(openSearchBox)}>{isMacOs ? '⌘F' : 'Ctrl F'}</div>
               <X
-                className={`${
-                  (query.length === 0 || !openSearchBox) && 'pointer-events-none opacity-0'
-                } absolute right-2.5 top-1/2 z-1 -translate-y-1/2 cursor-pointer text-gray-60 transition-all duration-100 ease-out`}
+                className={getClearButtonClassName(query, openSearchBox)}
                 onMouseDownCapture={() => {
                   setQuery('');
                   setSearchResult([]);
@@ -289,11 +338,7 @@ const Navbar = (props: NavbarProps) => {
             </label>
 
             <div
-              className={`${
-                openSearchBox
-                  ? 'translate-y-1.5 scale-100 opacity-100'
-                  : 'pointer-events-none -translate-y-0.5 scale-98 opacity-0'
-              } absolute top-12 z-10 flex h-80 w-full max-w-screen-sm origin-top flex-col overflow-hidden rounded-xl bg-surface text-gray-100 shadow-subtle-hard ring-1 ring-gray-10 transition-all duration-150 ease-out dark:bg-gray-5`}
+              className={getSearchResultsClassName(openSearchBox)}
               onMouseEnter={() => setPreventBlur(true)}
               onMouseLeave={() => setPreventBlur(false)}
             >
@@ -313,19 +358,16 @@ const Navbar = (props: NavbarProps) => {
 
                 <button
                   type="button"
-                  className={`${
-                    filters.length === 0 && 'pointer-events-none opacity-0'
-                  } flex h-8 cursor-pointer items-center space-x-2 rounded-full bg-gray-1 px-3 text-sm font-medium text-gray-60 transition-all duration-100 ease-out hover:bg-gray-5 dark:hover:bg-surface`}
+                  className={getClearFiltersClassName(filters.length)}
                   onClick={() => setFilters([])}
                 >
                   {translate('general.searchBar.filters.clear')}
                 </button>
               </div>
 
-              {(filters.length === 0 && searchResult.length > 0) ||
-              (filters.length > 0 && filteredResults.length > 0) ? (
+              {shouldShowResults() ? (
                 <ul ref={searchResultList} className="flex h-full flex-col overflow-y-auto pb-4">
-                  {(filteredResults.length > 0 ? filteredResults : searchResult).map((item, index) => {
+                  {getDisplayResults().map((item, index) => {
                     const isFolder = item.itemType === 'FOLDER' || item.itemType === 'folder';
                     const Icon = iconService.getItemIcon(isFolder, item.item.type);
                     return (
@@ -334,9 +376,7 @@ const Navbar = (props: NavbarProps) => {
                         id={`searchResult_${item.id}`}
                         role="option"
                         aria-selected={selectedResult === index}
-                        className={`${
-                          selectedResult === index && 'bg-gray-5 dark:bg-gray-10'
-                        } flex h-11 shrink-0 cursor-pointer items-center space-x-2.5 px-4 text-gray-100`}
+                        className={getSearchResultItemClassName(selectedResult === index)}
                         onMouseEnter={() => setSelectedResult(index)}
                         onClickCapture={() => openItem(item)}
                       >
@@ -346,10 +386,8 @@ const Navbar = (props: NavbarProps) => {
                     );
                   })}
                 </ul>
-              ) : query.length > 0 && !loadingSearch ? (
-                <NotFoundState />
               ) : (
-                <EmptyState />
+                renderSearchState()
               )}
             </div>
           </form>
