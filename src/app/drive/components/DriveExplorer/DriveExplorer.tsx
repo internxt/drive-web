@@ -81,7 +81,6 @@ interface DriveExplorerProps {
   fetchFolderContent?: () => void;
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
-  user: UserSettings | undefined;
   currentFolderId: string;
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
@@ -153,8 +152,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   // Upload state
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
-  const [fileInputKey, setFileInputKey] = useState(0);
-  const [folderInputKey, setFolderInputKey] = useState(0);
+  const [fileInputKey, setFileInputKey] = useState<number>(0);
+  const [folderInputKey, setFolderInputKey] = useState<number>(0);
   const resetFileInput = () => setFileInputKey(Date.now());
   const resetFolderInput = () => setFolderInputKey(Date.now());
 

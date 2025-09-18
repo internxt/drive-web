@@ -9,7 +9,6 @@ import {
   transformJsonFilesToItems,
 } from '../../../services/folder.service/uploadFolderInput.service';
 import { IRoot } from '../../../../store/slices/storage/types';
-import errorService from '../../../../core/services/error.service';
 
 export const UPLOAD_ITEMS_LIMIT = 3000;
 
@@ -38,11 +37,11 @@ export const createFileUploadHandler = (
           parentFolderId: currentFolderId,
         }),
       ).then(() => {
-        onFileUploaded && onFileUploaded();
+        onFileUploaded?.();
         dispatch(fetchSortedFolderContentThunk(currentFolderId));
       });
 
-      resetFileInput && resetFileInput();
+      resetFileInput?.();
     } else {
       dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
     }
@@ -66,6 +65,6 @@ export const createFolderUploadHandler = <T>(
     const { rootList, rootFiles } = transformJsonFilesToItems(filesJson, currentFolderId);
 
     await uploadItems(props, rootList, rootFiles);
-    resetFolderInput && resetFolderInput();
+    resetFolderInput?.();
   };
 };
