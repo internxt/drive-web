@@ -3,23 +3,24 @@
     "title": "Gestiona tus archivos, la cuenta y la suscripción en la app",
     "logOut": "Cerrar sesión"
   },
-
   "featuresBanner": {
-    "label": "Ahorra 85%",
-    "title": "En todos los planes",
-    "upperTitle": "¡Cumplimos 5 años!",
-    "cta": "Elige tu plan",
-    "guarantee": "Garantía de devolución de 30 días",
-    "specialOfferGift": "Sorteo de una camiseta firmada del Valencia CF",
-    "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
-    "features": [
-      "Drive, VPN, y Antivirus ",
-      "Almecanamineto sostenible",
-      "Cifrado post-cuántico",
-      "Transferencias cifradas ",
-      "Sin accesos no autorizados",
-      "Tema de verano gratis"
-    ]
+    "label": {"blueText":"Obtén 87% de descuento", "text":"en todos los Planes"},
+    "title": "¡Obtén un descuento exclusivo!",
+    "subTitle": {
+      "blueText":"Oferta especial:",
+      "text":"almacena archivos con privacidad por menos"
+    },
+    "ctaGet": "Obtener la oferta",
+    "ctaContinue":"Continuar gratis",
+    "guarantee": "Garantía de devolución de dinero de 30 días",
+    "products": {
+      "drive": "Drive",
+      "antivirus": "Antivirus",
+      "cleaner": "Cleaner",
+      "vpn": "VPN",
+      "meet": "Meet",
+      "mail": "Mail"
+    }
   },
   "susbcriptionsBanner": {
     "title": "¡Mejora tu plan!",
@@ -1859,19 +1860,20 @@
           "1TB": {
             "title": "Esencial",
             "features": [
+              "1TB de almacenamiento cifrado con conocimiento cero",
               "Cifrado post-cuántico",
               "VPN ilimitada ultrarrápida (FR)",
               "Antivirus",
               "Copia de seguridad de tus archivos",
               "Compartir archivos protegidos con contraseña",
               "Cumplimiento del RGPD",
-              "Autenticación de dos factores (2FA)",
-              "Soporte para CLI, WebDav y Rclone"
+              "Autenticación de dos factores (2FA)"
             ]
           },
           "3TB": {
             "title": "Premium",
             "features": [
+              "3TB de almacenamiento cifrado con conocimiento cero",
               "Cifrado post-cuántico",
               "VPN ilimitada ultrarrápida (FR, DE, PL)",
               "Antivirus",
@@ -1879,14 +1881,14 @@
               "Compartir archivos protegidos con contraseña",
               "Invitar, compartir y colaborar",
               "Cumplimiento del RGPD",
-              "Autenticación de dos factores (2FA)",
-              "Soporte para CLI, WebDav y Rclone"
+              "Autenticación de dos factores (2FA)"
             ],
             "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web"]
           },
           "5TB": {
             "title": "Ultimate",
             "features": [
+              "5TB de almacenamiento cifrado con conocimiento cero",
               "Cifrado post-cuántico",
               "VPN ilimitada ultrarrápida (FR, DE, PL, CA, UK)",
               "Antivirus",
@@ -1895,13 +1897,16 @@
               "Invitar, compartir y colaborar",
               "Cumplimiento del RGPD",
               "Autenticación de dos factores (2FA)",
-              "Soporte para CLI, WebDav y Rclone"
+              "Soporte para CLI, WebDav, NAS y Rclone"
             ],
             "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web", "Meet", "Mail"]
           },
           "1GB": {
             "title": "Gratis",
-            "features": ["VPN estándar gratuita (FR)", "Soporte para CLI, WebDav y Rclone"]
+            "features": [
+              "1GB de almacenamiento cifrado con conocimiento cero",
+              "VPN estándar gratuita (FR)"
+            ]
           }
         },
         "businessPlanFeaturesList": {
@@ -1910,6 +1915,7 @@
           "1TB": {
             "title": "Estándar",
             "features": [
+              "1TB de almacenamiento cifrado con conocimiento cero por usuario",
               "Cifrado post-cuántico",
               "VPN ilimitada ultrarrápida (FR, DE, PL)",
               "Antivirus",
@@ -1918,7 +1924,7 @@
               "Invitar, compartir y colaborar",
               "Cumplimiento del RGPD",
               "Autenticación de dos factores (2FA)",
-              "Soporte para CLI, WebDav y Rclone",
+              "Soporte para CLI y WebDav",
               "Gestionar facturación y pagos de la cuenta"
             ],
             "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web"]
@@ -1926,6 +1932,7 @@
           "2TB": {
             "title": "Pro",
             "features": [
+              "2TB de almacenamiento cifrado con conocimiento cero por usuario",
               "Cifrado post-cuántico",
               "VPN ilimitada ultrarrápida (FR, DE, PL, CA, UK)",
               "Antivirus",
@@ -1934,7 +1941,7 @@
               "Invitar, compartir y colaborar",
               "Cumplimiento del RGPD",
               "Autenticación de dos factores (2FA)",
-              "Soporte para CLI, WebDav y Rclone",
+              "Soporte para CLI, WebDav, Rclone y NAS",
               "Gestionar facturación y pagos de la cuenta"
             ],
             "comingSoonFeatures": ["Limpiador de dispositivos", "Monitor de Dark Web", "Meet", "Mail"]

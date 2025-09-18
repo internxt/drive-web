@@ -114,7 +114,7 @@ function ShareGuestSingUpView(): JSX.Element {
   useEffect(() => {
     if (user && mnemonic) {
       dispatch(userActions.setUser(user));
-      if (user?.registerCompleted && mnemonic) {
+      if (mnemonic) {
         return navigationService.push(AppView.Shared);
       }
     }
