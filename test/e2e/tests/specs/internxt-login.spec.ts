@@ -1,11 +1,10 @@
 import { expect, test } from '@playwright/test';
-import fs from 'fs';
 import { staticData } from '../helper/staticData';
 import { LoginPage } from '../pages/loginPage';
-import { getLoggedUser } from '../helper/getUser';
-const credentialsFile = './test/e2e/tests/specs/playwright/auth/credentials.json';
+import { getLoggedUser, getUserCredentials } from '../helper/getUser';
 const BASE_API_URL = process.env.REACT_APP_DRIVE_NEW_API_URL;
 
+const credentialsFile = getUserCredentials();
 const user = getLoggedUser();
 const invalidEmail = 'invalid@internxt.com';
 
@@ -57,10 +56,9 @@ test.describe('internxt login', async () => {
 
   test('TC1: Validate that the user can log in successfully', async ({ page }) => {
     const loginpage = new LoginPage(page);
-    const credentialsData = JSON.parse(fs.readFileSync(credentialsFile, 'utf-8'));
 
-    await loginpage.typeEmail(credentialsData.email);
-    await loginpage.typePassword(credentialsData.password);
+    await loginpage.typeEmail(credentialsFile.email);
+    await loginpage.typePassword(credentialsFile.password);
 
     const driveTitle = await loginpage.clickLogIn();
     expect(driveTitle).toEqual(staticData.driveTitle);

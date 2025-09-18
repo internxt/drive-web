@@ -1,12 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { expect, test } from '@playwright/test';
-import fs from 'fs';
 import { staticData } from '../helper/staticData';
 import { SignUpPage } from '../pages/signUpPage';
-import { getUser } from '../helper/getUser';
-const credentialsFile = './test/e2e/tests/specs/playwright/auth/credentials.json';
+import { getUser, getUserCredentials } from '../helper/getUser';
 const BASE_API_URL = process.env.REACT_APP_DRIVE_NEW_API_URL;
 
+const credentialsFile = getUserCredentials();
 const user = getUser();
 const invalidEmail = 'invalid@internxt.com';
 
@@ -50,10 +49,9 @@ test.describe('Internxt SignUp', async () => {
 
   test('TC2: Validate that the user can’t sign up if the email address is already used', async ({ page }) => {
     const signupPage = new SignUpPage(page);
-    const credentialsData = JSON.parse(fs.readFileSync(credentialsFile, 'utf-8'));
 
     await signupPage.typeInEmail(invalidEmail);
-    await signupPage.typeInPassword(credentialsData.password);
+    await signupPage.typeInPassword(credentialsFile.password as string);
     await signupPage.clickOnCreateAccountButton();
     const userAlreadyRegisteredText = await signupPage.UserAlreadyExistAssertion();
     expect(userAlreadyRegisteredText).toContain(staticData.userAlreadyRegistered);
