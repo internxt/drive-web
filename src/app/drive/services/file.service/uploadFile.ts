@@ -93,13 +93,14 @@ export async function uploadFile(
   } else {
     const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
     const fileEntry: StorageTypes.FileEntryByUuid = {
-      fileId,
+      id: fileId,
       type: file.type,
       size: file.size,
-      plainName: file.name,
+      name: file.name,
+      plain_name: file.name,
       bucket: bucketId,
-      folderUuid: file.parentFolderId,
-      encryptVersion: StorageTypes.EncryptionVersion.Aes03,
+      folder_id: file.parentFolderId,
+      encrypt_version: StorageTypes.EncryptionVersion.Aes03,
     };
 
     response = await storageClient.createFileEntryByUuid(fileEntry, options.ownerUserAuthenticationData?.token);

@@ -357,7 +357,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     } else {
       setOpenPasswordDisableDialog(true);
     }
-  }, [isPasswordProtected]);
+  }, [isPasswordProtected, isPasswordSharingAvailable]);
 
   const onSavePublicSharePassword = useCallback(
     async (plainPassword: string) => {
