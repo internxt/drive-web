@@ -12,7 +12,7 @@ import { CheckoutProductCard } from '../../components/checkout/CheckoutProductCa
 import { CheckoutUserAuth } from '../../components/checkout/CheckoutUserAuth';
 import { HeaderComponent } from '../../components/checkout/Header';
 import { AuthMethodTypes, PaymentType } from '../../types';
-import { CheckoutViewManager, UserInfoProps } from './CheckoutViewWrapper';
+import { CheckoutViewManager, UserInfoProps } from './types/checkout.types';
 import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
 import { AvailableCryptoCurrenciesDropdown } from 'app/payment/components/checkout/AvailableCryptoCurrenciesDropdown';
 
