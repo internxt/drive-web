@@ -787,8 +787,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
             isDialogOpen={isRestrictedPasswordDialogOpen}
             onAccept={onUpgradePlan}
             onCloseDialog={() => setIsRestrictedPasswordDialogOpen(false)}
-            title={translate('modals.restrictedPasswordDialog.title')}
-            subtitle={translate('modals.restrictedPasswordDialog.subtitle')}
+            title={translate('modals.restrictedPasswordModal.title')}
+            subtitle={translate('modals.restrictedPasswordModal.subtitle')}
             primaryAction={translate('actions.upgrade')}
             secondaryAction={translate('actions.cancel')}
           />
