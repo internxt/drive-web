@@ -22,12 +22,14 @@ import { workspacesActions } from '../../../store/slices/workspaces/workspacesSt
 import errorService from '../../../core/services/error.service';
 import { isTokenExpired } from '../../utils';
 import { refreshAvatar } from '../../../utils/avatar/avatarUtils';
+import { getAvailableUserFeatures, UserTierFeatures } from 'app/payment/services/products.service';
 
 export interface UserState {
   isInitializing: boolean;
   isAuthenticated: boolean;
   isInitialized: boolean;
   user?: UserSettings;
+  userTierFeatures?: UserTierFeatures;
 }
 
 const initialState: UserState = {
@@ -35,6 +37,7 @@ const initialState: UserState = {
   isAuthenticated: false,
   isInitialized: false,
   user: undefined,
+  userTierFeatures: undefined,
 };
 
 export const initializeUserThunk = createAsyncThunk<
@@ -51,6 +54,7 @@ export const initializeUserThunk = createAsyncThunk<
 
   if (user && isAuthenticated) {
     dispatch(refreshUserThunk());
+    dispatch(getUserTierFeaturesThunk());
     dispatch(refreshAvatarThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
@@ -80,6 +84,15 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
     } catch (err) {
       errorService.reportError(err, { extra: { thunk: 'refreshUser' } });
     }
+  },
+);
+
+export const getUserTierFeaturesThunk = createAsyncThunk<void, void, { state: RootState }>(
+  'user/getUserTierFeatures',
+  async (_, { dispatch }) => {
+    const userFeatures = await getAvailableUserFeatures();
+
+    dispatch(userActions.setUserTierFeatures(userFeatures));
   },
 );
 
@@ -188,6 +201,9 @@ export const userSlice = createSlice({
     },
     setIsUserInitialized: (state: UserState, action: PayloadAction<boolean>) => {
       state.isInitialized = action.payload;
+    },
+    setUserTierFeatures(state: UserState, action: PayloadAction<UserTierFeatures>) {
+      state.userTierFeatures = action.payload;
     },
     setUser: (state: UserState, action: PayloadAction<UserSettings>) => {
       state.isAuthenticated = !!action.payload;
