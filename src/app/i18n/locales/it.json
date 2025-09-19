@@ -9,14 +9,14 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": {"blueText":"Ottieni l'87% di sconto", "text":"su tutti i Piani Premium"},
+    "label": { "blueText": "Ottieni l'87% di sconto", "text": "su tutti i Piani Premium" },
     "title": "Ottieni uno sconto esclusivo!",
     "subTitle": {
-      "blueText":"Offerta speciale:",
-      "text":"archivia i file in privato per meno"
+      "blueText": "Offerta speciale:",
+      "text": "archivia i file in privato per meno"
     },
     "ctaGet": "Approfitta dell'offerta",
-    "ctaContinue":"Continua gratis",
+    "ctaContinue": "Continua gratis",
     "guarantee": "Garanzia di rimborso di 30 giorni",
     "products": {
       "drive": "Drive",
@@ -1084,6 +1084,14 @@
       "teams": "Squadre",
       "teamsWithAccess": "Squadre con accesso:",
       "shareButton": "Condividi"
+    },
+    "restrictedSharingModal": {
+      "title": "Aggiorna per condividere file",
+      "subtitle": "La condivisione dei file non è disponibile nel piano Essential. Aggiorna per sbloccare la condivisione sicura dei file."
+    },
+    "restrictedPasswordDialog": {
+      "title": "Sblocca la condivisione protetta da password",
+      "subtitle": "Aggiungi un ulteriore livello di sicurezza proteggendo i tuoi link condivisi con una password."
     }
   },
   "form": {
@@ -1482,7 +1490,8 @@
     "more": "Di più",
     "continue": "Continua",
     "keepCurrent": "Mantieni attuale",
-    "logOut": "Disconnettersi"
+    "logOut": "Disconnettersi",
+    "locked": "Bloccato"
   },
   "drive": {
     "usage": "Utilizzo",
@@ -1986,10 +1995,7 @@
           },
           "1GB": {
             "title": "Gratuito",
-            "features": [
-              "1GB di archiviazione criptata a conoscenza zero",
-              "VPN standard gratuita (FR)"
-            ]
+            "features": ["1GB di archiviazione criptata a conoscenza zero", "VPN standard gratuita (FR)"]
           }
         },
         "businessPlanFeaturesList": {
