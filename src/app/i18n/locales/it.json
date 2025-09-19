@@ -1089,7 +1089,7 @@
       "title": "Aggiorna per condividere file",
       "subtitle": "La condivisione dei file non è disponibile nel piano Essential. Aggiorna per sbloccare la condivisione sicura dei file."
     },
-    "restrictedPasswordDialog": {
+    "restrictedPasswordModal": {
       "title": "Sblocca la condivisione protetta da password",
       "subtitle": "Aggiungi un ulteriore livello di sicurezza proteggendo i tuoi link condivisi con una password."
     }

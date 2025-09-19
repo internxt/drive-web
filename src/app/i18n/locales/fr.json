@@ -982,7 +982,7 @@
       "title": "Passez à une offre supérieure pour partager des fichiers",
       "subtitle": "Le partage de fichiers n’est pas disponible avec l’offre Essential. Passez à une offre supérieure pour activer le partage sécurisé."
     },
-    "restrictedPasswordDialog": {
+    "restrictedPasswordModal": {
       "title": "Débloquer le partage protégé par mot de passe",
       "subtitle": "Ajoutez une couche de sécurité supplémentaire en protégeant vos liens partagés avec un mot de passe."
     }
