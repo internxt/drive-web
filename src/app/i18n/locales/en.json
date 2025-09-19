@@ -1084,7 +1084,8 @@
     "maxSizeUploadLimitError": "File too large (greater than 40GB)",
     "connectionLostError": "Internet connection lost",
     "errorLoadingTrashItems": "Error loading trash items",
-    "updateAvatarError": "Error updating avatar"
+    "updateAvatarError": "Error updating avatar",
+    "featuresUnavailable": "Some features may be unavailable"
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",

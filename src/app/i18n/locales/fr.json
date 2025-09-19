@@ -1043,7 +1043,8 @@
     "maxSizeUploadLimitError": "Fichier trop volumineux (plus de 40GB)",
     "connectionLostError": "Lost Internet connection",
     "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille",
-    "updateAvatarError": "Erreur lors de la mise à jour de l'avatar"
+    "updateAvatarError": "Erreur lors de la mise à jour de l'avatar",
+    "featuresUnavailable": "Certaines fonctionnalités peuvent être indisponibles"
   },
   "backups": {
     "backups-from": "Sauvagardes de {{deviceName}}",
