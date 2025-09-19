@@ -51,10 +51,9 @@ import {
   ViewProps,
   Views,
 } from './types';
-import { RestrictedSharingDialog } from '../UpgradeToDialogs/RestrictedSharingDialog';
 import navigationService from 'app/core/services/navigation.service';
-import { RestrictedPasswordDialog } from '../UpgradeToDialogs/RestrictedPasswordDialog';
 import { Service } from '@internxt/sdk/dist/drive/payments/types/tiers';
+import { UpgradeDialog } from '../UpgradeDialog/UpgradeDialog';
 
 const isRequestPending = (status: RequestStatus): boolean =>
   status !== REQUEST_STATUS.DENIED && status !== REQUEST_STATUS.ACCEPTED;
@@ -775,15 +774,23 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
             onSavePassword={onSavePublicSharePassword}
             isAlreadyProtected={isPasswordProtected}
           />
-          <RestrictedSharingDialog
+          <UpgradeDialog
             isDialogOpen={isRestrictedSharingDialogOpen}
             onAccept={onUpgradePlan}
             onCloseDialog={() => setIsRestrictedSharingDialogOpen(false)}
+            title={translate('modals.restrictedSharingModal.title')}
+            subtitle={translate('modals.restrictedSharingModal.subtitle')}
+            primaryAction={translate('actions.upgrade')}
+            secondaryAction={translate('actions.cancel')}
           />
-          <RestrictedPasswordDialog
+          <UpgradeDialog
             isDialogOpen={isRestrictedPasswordDialogOpen}
             onAccept={onUpgradePlan}
             onCloseDialog={() => setIsRestrictedPasswordDialogOpen(false)}
+            title={translate('modals.restrictedPasswordDialog.title')}
+            subtitle={translate('modals.restrictedPasswordDialog.subtitle')}
+            primaryAction={translate('actions.upgrade')}
+            secondaryAction={translate('actions.cancel')}
           />
           <SharePasswordDisableDialog
             isOpen={openPasswordDisableDialog}
