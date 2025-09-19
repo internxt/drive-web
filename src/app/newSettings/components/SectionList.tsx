@@ -1,4 +1,4 @@
-import { NavSection } from '../containers/SectionListContainer';
+import { NavSection } from '../types/section.types';
 import SectionItem, { SectionItemProps } from './SectionItem';
 
 interface SectionListProps {
