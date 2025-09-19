@@ -1018,7 +1018,7 @@
       "title": "升级以共享文件",
       "subtitle": "基础方案不支持文件共享。升级即可解锁安全的文件共享功能。"
     },
-    "restrictedPasswordDialog": {
+    "restrictedPasswordModal": {
       "title": "解锁受密码保护的共享",
       "subtitle": "通过为共享链接设置密码，添加额外的安全保护。"
     }

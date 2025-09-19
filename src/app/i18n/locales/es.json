@@ -1001,7 +1001,7 @@
       "title": "Mejora tu plan para compartir archivos",
       "subtitle": "Compartir archivos no está disponible en el plan Essential. Mejora tu plan para desbloquear el uso compartido seguro."
     },
-    "restrictedPasswordDialog": {
+    "restrictedPasswordModal": {
       "title": "Desbloquear el uso compartido con contraseña",
       "subtitle": "Añade una capa extra de seguridad protegiendo tus enlaces compartidos con una contraseña."
     }

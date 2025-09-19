@@ -1022,7 +1022,7 @@
       "title": "Upgrade to share files",
       "subtitle": "Sharing files is not available on the Essential plan. Upgrade to unlock secure file sharing."
     },
-    "restrictedPasswordDialog": {
+    "restrictedPasswordModal": {
       "title": "Unlock password-protected sharing",
       "subtitle": "Add an extra layer of security by protecting your shared links with a password."
     }
