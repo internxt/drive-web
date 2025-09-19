@@ -23,6 +23,7 @@ import errorService from '../../../core/services/error.service';
 import { isTokenExpired } from '../../utils';
 import { refreshAvatar } from '../../../utils/avatar/avatarUtils';
 import { getAvailableUserFeatures, UserTierFeatures } from 'app/payment/services/products.service';
+import { t } from 'i18next';
 
 export interface UserState {
   isInitializing: boolean;
@@ -90,9 +91,17 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
 export const getUserTierFeaturesThunk = createAsyncThunk<void, void, { state: RootState }>(
   'user/getUserTierFeatures',
   async (_, { dispatch }) => {
-    const userFeatures = await getAvailableUserFeatures();
+    try {
+      const userFeatures = await getAvailableUserFeatures();
 
-    dispatch(userActions.setUserTierFeatures(userFeatures));
+      dispatch(userActions.setUserTierFeatures(userFeatures));
+    } catch (error) {
+      console.error('Error getting the user tier features', error);
+      notificationsService.show({
+        text: t('error.featuresUnavailable'),
+        type: ToastType.Warning,
+      });
+    }
   },
 );
 
