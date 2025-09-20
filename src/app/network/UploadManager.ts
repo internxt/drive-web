@@ -408,7 +408,7 @@ class UploadManager {
     }
 
     const memory = window.performance.memory;
-    if (!memory || memory.jsHeapSizeLimit === null || memory.usedJSHeapSize === null) {
+    if (!memory?.jsHeapSizeLimit || !memory?.usedJSHeapSize) {
       return null;
     }
 
