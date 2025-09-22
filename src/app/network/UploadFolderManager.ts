@@ -187,7 +187,7 @@ export class UploadFoldersManager {
     currentFolderId: string,
     taskId: string,
     abortController: AbortController,
-  ): Promise<DriveFolderData | null> => {
+  ): Promise<DriveFolderData | undefined> => {
     let createdFolder: DriveFolderData | undefined;
     let uploadAttempts = 0;
 
@@ -208,12 +208,12 @@ export class UploadFoldersManager {
         if (uploadAttempts >= UploadFoldersManager.MAX_UPLOAD_ATTEMPTS) {
           this.stopUploadTask(taskId, abortController);
           this.killQueueAndNotifyError(taskId);
-          return null;
+          return;
         }
       }
     }
 
-    return createdFolder || null;
+    return createdFolder;
   };
 
   private readonly updateTaskProgress = (taskId: string, abortController: AbortController): void => {

@@ -16,7 +16,7 @@ import {
   contextMenuTrashItems,
 } from '../../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import { MenuItemType } from '@internxt/ui';
-import { TopBarActionsMenu } from '../file-viewer-types';
+import { TopBarActionsMenu } from '../types';
 
 interface DownloadedBlobData {
   blob: Blob;
