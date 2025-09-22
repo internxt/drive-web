@@ -15,6 +15,7 @@ interface NetworkCredentials {
 interface DownloadFileParams {
   bucketId: string;
   fileId: string;
+  fileSize: number;
   options?: DownloadFileOptions;
 }
 
@@ -37,7 +38,7 @@ type DownloadOwnFileFunction = (params: DownloadOwnFileParams) => DownloadFileRe
 type DownloadFileFunction = (params: DownloadSharedFileParams | DownloadOwnFileParams) => DownloadFileResponse;
 
 const downloadSharedFile: DownloadSharedFileFunction = (params) => {
-  const { bucketId, fileId, encryptionKey, token, options } = params;
+  const { bucketId, fileId, encryptionKey, token, fileSize, options } = params;
 
   return new NetworkFacade(
     Network.client(
@@ -51,7 +52,7 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
         userId: '',
       },
     ),
-  ).download(bucketId, fileId, '', {
+  ).download(bucketId, fileId, '', fileSize, {
     key: Buffer.from(encryptionKey, 'hex'),
     token,
     downloadingCallback: options?.notifyProgress,
@@ -67,7 +68,7 @@ async function getAuthFromCredentials(creds: NetworkCredentials): Promise<{ user
 }
 
 const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
-  const { bucketId, fileId, mnemonic, options } = params;
+  const { bucketId, fileId, mnemonic, fileSize, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
   return new NetworkFacade(
@@ -82,7 +83,7 @@ const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
         userId: auth.password,
       },
     ),
-  ).download(bucketId, fileId, mnemonic, {
+  ).download(bucketId, fileId, mnemonic, fileSize, {
     downloadingCallback: options?.notifyProgress,
     abortController: options?.abortController,
   });

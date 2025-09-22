@@ -11,7 +11,7 @@ import { generateFileKey } from './crypto';
 import downloadFileV2 from './download/v2';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
-export type Downloadable = { fileId: string; bucketId: string };
+export type Downloadable = { fileId: string; bucketId: string; size: number };
 
 type BinaryStream = ReadableStream<Uint8Array>;
 
@@ -120,6 +120,7 @@ interface IDownloadParams {
   mnemonic?: string;
   encryptionKey?: Buffer;
   token?: string;
+  fileSize: number;
   options?: {
     notifyProgress: DownloadProgressCallback;
     abortController?: AbortController;

@@ -1,18 +1,19 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { Network as NetworkModule } from '@internxt/sdk';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
 import { uploadFile, uploadMultipartFile } from '@internxt/sdk/dist/network/upload';
 import { validateMnemonic } from 'bip39';
-import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import { createCipheriv, createDecipheriv, Decipher, randomBytes } from 'crypto';
 
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
 import envService from 'app/core/services/env.service';
-import { buildProgressStream } from 'app/core/services/stream.service';
+import { joinReadableBinaryStreams } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 
 import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
 import { TaskStatus } from '../tasks/types';
 import { encryptStreamInParts, generateFileKey, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
-import { DownloadProgressCallback, getDecryptedStream } from './download';
+import { DownloadProgressCallback } from './download';
 import { uploadFileUint8Array, UploadProgressCallback } from './upload';
 import { UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD } from './networkConstants';
 import { WORKER_MESSAGE_STATES } from 'app/drive/services/worker.service/types/upload';
@@ -239,16 +240,16 @@ export class NetworkFacade {
     );
   }
 
-  async download(
+  async downloadChunk(
     bucketId: string,
     fileId: string,
     mnemonic: string,
+    chunkStart: number,
+    chunkEnd: number,
     options?: DownloadOptions,
-  ): Promise<ReadableStream> {
+  ): Promise<ReadableStream<Uint8Array>> {
     const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
     let fileStream: ReadableStream<Uint8Array>;
-
-    // TODO: Check hash when downloaded
 
     await downloadFile(
       fileId,
@@ -263,33 +264,126 @@ export class NetworkFacade {
             throw new Error('Download aborted');
           }
 
-          const encryptedContentStream = await fetch(downloadable.url, {
+          const response = await fetch(downloadable.url, {
             signal: options?.abortController?.signal,
-          }).then((res) => {
-            if (!res.body) {
-              throw new Error('No content received');
-            }
-
-            return res.body;
+            headers: {
+              Range: `bytes=${chunkStart}-${chunkEnd}`,
+            },
           });
 
-          encryptedContentStreams.push(encryptedContentStream);
+          if (response.status !== 206 && response.status !== 200) {
+            throw new Error(`Unexpected status ${response.status}`);
+          }
+
+          if (!response.body) {
+            throw new Error('No content received');
+          }
+
+          encryptedContentStreams.push(response.body);
         }
       },
       async (algorithm, key, iv, fileSize) => {
-        const decryptedStream = getDecryptedStream(
-          encryptedContentStreams,
-          createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), iv as Buffer),
-        );
-
-        fileStream = buildProgressStream(decryptedStream, (readBytes) => {
-          options && options.downloadingCallback && options.downloadingCallback(fileSize, readBytes);
-        });
+        fileStream = this.decryptStream(encryptedContentStreams, key as Buffer, iv as Buffer, chunkStart);
       },
       (options?.token && { token: options.token }) || undefined,
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return fileStream!;
   }
+
+  async download(
+    bucketId: string,
+    fileId: string,
+    mnemonic: string,
+    fileSize: number,
+    options?: DownloadOptions,
+  ): Promise<ReadableStream<Uint8Array>> {
+    const chunkSize = 30 * 1024 * 1024;
+    const self = this;
+    let downloadedBytes = 0;
+
+    return new ReadableStream<Uint8Array>({
+      async start(controller) {
+        let start = 0;
+
+        while (start < fileSize) {
+          const end = Math.min(start + chunkSize - 1, fileSize - 1);
+
+          const chunkStream = await self.downloadChunk(bucketId, fileId, mnemonic, start, end, options);
+          const reader = chunkStream.getReader();
+          let isDone = false;
+
+          try {
+            while (!isDone) {
+              const { done, value } = await reader.read();
+              if (!done) {
+                controller.enqueue(value);
+                downloadedBytes += value.length;
+                console.log('DOWNLOADED BYTES: ', downloadedBytes);
+                options?.downloadingCallback?.(fileSize, downloadedBytes);
+              } else {
+                isDone = true;
+              }
+            }
+          } finally {
+            reader.releaseLock();
+          }
+
+          start = end + 1;
+        }
+
+        controller.close();
+      },
+    });
+  }
+
+  public decryptStream = (
+    inputSlices: ReadableStream<Uint8Array>[],
+    key: Buffer,
+    iv: Buffer,
+    startOffsetByte?: number,
+  ) => {
+    let decipher: Decipher;
+    if (startOffsetByte) {
+      const aesBlockSize = 16;
+      const startOffset = startOffsetByte % aesBlockSize;
+      const startBlockFirstByte = startOffsetByte - startOffset;
+      const startBlockNumber = startBlockFirstByte / aesBlockSize;
+
+      const ivForRange = (BigInt('0x' + iv.toString('hex')) + BigInt(startBlockNumber)).toString(16).padStart(32, '0');
+      const newIv = Buffer.from(ivForRange, 'hex');
+
+      const skipBuffer = Buffer.alloc(startOffset, 0);
+
+      decipher = createDecipheriv('aes-256-ctr', key, newIv);
+      decipher.update(skipBuffer);
+    } else {
+      decipher = createDecipheriv('aes-256-ctr', key, iv);
+    }
+    const encryptedStream = joinReadableBinaryStreams(inputSlices);
+
+    let keepReading = true;
+
+    const decryptedStream = new ReadableStream({
+      async pull(controller) {
+        if (!keepReading) return;
+
+        const reader = encryptedStream.getReader();
+        const status = await reader.read();
+
+        if (status.done) {
+          controller.close();
+        } else {
+          controller.enqueue(decipher.update(status.value));
+        }
+
+        reader.releaseLock();
+      },
+      cancel() {
+        keepReading = false;
+      },
+    });
+
+    return decryptedStream;
+  };
 }
