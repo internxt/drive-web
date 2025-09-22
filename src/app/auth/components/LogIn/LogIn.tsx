@@ -67,7 +67,7 @@ export default function LogIn(): JSX.Element {
 
   useEffect(() => {
     handleShareInvitation();
-    handleWorkspaceInvitation();
+    handleWorkspaceInvitation(dispatch);
   }, []);
 
   useEffect(() => {

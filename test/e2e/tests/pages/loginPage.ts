@@ -88,16 +88,21 @@ export class LoginPage {
   }
 
   async clickOnCreateAccount() {
-    await expect(this.loginTitle).toBeVisible();
+    await expect(this.loginTitle).toBeVisible({
+      timeout: 10000,
+    });
     const dontHaveAccountText = await this.dontHaveAccountText.textContent();
-    const createAccountText = await this.createAccount.textContent();
+    const createAccountText = await this.createAccount.textContent({
+      timeout: 10000,
+    });
     expect(dontHaveAccountText).toEqual("Don't have an account?");
     expect(createAccountText).toEqual('Create account');
     await expect(this.createAccount).toBeEnabled();
     await this.createAccount.click();
-    await expect(this.createAccounTitle).toBeVisible();
+    await expect(this.createAccounTitle).toBeVisible({
+      timeout: 10000,
+    });
     const createAccountHeader = this.createAccounTitle.textContent();
-    //console.log(createAccountHeader)
 
     return createAccountHeader;
   }

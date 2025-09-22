@@ -237,7 +237,6 @@ function SharedView({
   const onShowInvitationsModalClose = () => {
     resetSharedViewState();
     actionDispatch(setCurrentFolderId(''));
-    fetchRootFolders(workspaceId);
     dispatch(sharedThunks.getPendingInvitations());
     dispatch(uiActions.setIsInvitationsDialogOpen(false));
   };
@@ -502,9 +501,8 @@ function SharedView({
         // This is added so that in case the element is no longer shared due
         // to changes in the share dialog it will disappear from the list.
         resetSharedViewState();
-        fetchRootFolders(workspaceId);
       }
-    }, 200);
+    }, 1000);
   };
 
   const handleOnTopBarInputChanges = (e: ChangeEvent<HTMLInputElement>) => {
@@ -602,10 +600,12 @@ function SharedView({
         moveItemsToTrash={moveItemsToTrashOnStopSharing}
       />
       <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
-      <ShareDialog
-        onCloseDialog={handleOnCloseShareDialog}
-        onStopSharingItem={() => actionDispatch(setSelectedItems([]))}
-      />
+      {isShareDialogOpen && (
+        <ShareDialog
+          onCloseDialog={handleOnCloseShareDialog}
+          onStopSharingItem={() => actionDispatch(setSelectedItems([]))}
+        />
+      )}
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}

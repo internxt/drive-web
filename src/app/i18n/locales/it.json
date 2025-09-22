@@ -9,21 +9,23 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Spare 85 %",
-    "title": "Auf alle Pläne",
-    "upperTitle": "Wir feiern 5 Jahre!",
-    "cta": "Wähle deinen Plan",
-    "guarantee": "30 Tage Geld-zurück-Garantie",
-    "specialOfferGift": "Verlosung: signiertes Valencia-CF-Trikot",
-    "lastCta": "*Angebot für Gratisnutzer oder Neukunden",
-    "features": [
-      "Drive, VPN und Antivirus",
-      "Nachhaltiger Speicher",
-      "Post-quanten Verschlüsselung",
-      "Verschlüsselte Transfers",
-      "Keine unbefugten Zugriffe",
-      "Gratis Sommer-Theme"
-    ]
+    "label": {"blueText":"Ottieni l'87% di sconto", "text":"su tutti i Piani Premium"},
+    "title": "Ottieni uno sconto esclusivo!",
+    "subTitle": {
+      "blueText":"Offerta speciale:",
+      "text":"archivia i file in privato per meno"
+    },
+    "ctaGet": "Approfitta dell'offerta",
+    "ctaContinue":"Continua gratis",
+    "guarantee": "Garanzia di rimborso di 30 giorni",
+    "products": {
+      "drive": "Drive",
+      "antivirus": "Antivirus",
+      "cleaner": "Cleaner",
+      "vpn": "VPN",
+      "meet": "Meet",
+      "mail": "Mail"
+    }
   },
   "susbcriptionsBanner": {
     "title": "Potenzia il tuo piano!",
@@ -1941,19 +1943,20 @@
           "1TB": {
             "title": "Essenziale",
             "features": [
+              "1TB di archiviazione criptata a conoscenza zero",
               "Crittografia post-quantistica",
               "VPN illimitata ultraveloce (FR)",
               "Antivirus",
               "Backup dei tuoi file",
               "Condivisione file protetta da password",
               "Conformità GDPR",
-              "Autenticazione a due fattori (2FA)",
-              "Supporto CLI, WebDav e Rclone"
+              "Autenticazione a due fattori (2FA)"
             ]
           },
           "3TB": {
             "title": "Premium",
             "features": [
+              "3TB di archiviazione criptata a conoscenza zero",
               "Crittografia post-quantistica",
               "VPN illimitata ultraveloce (FR, DE, PL)",
               "Antivirus",
@@ -1961,14 +1964,14 @@
               "Condivisione file protetta da password",
               "Invita, condividi e collabora",
               "Conformità GDPR",
-              "Autenticazione a due fattori (2FA)",
-              "Supporto CLI, WebDav e Rclone"
+              "Autenticazione a due fattori (2FA)"
             ],
             "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web"]
           },
           "5TB": {
             "title": "Ultimate",
             "features": [
+              "5TB di archiviazione criptata a conoscenza zero",
               "Crittografia post-quantistica",
               "VPN illimitata ultraveloce (FR, DE, PL, CA, UK)",
               "Antivirus",
@@ -1977,13 +1980,16 @@
               "Invita, condividi e collabora",
               "Conformità GDPR",
               "Autenticazione a due fattori (2FA)",
-              "Supporto CLI, WebDav e Rclone"
+              "Supporto CLI, WebDav, NAS e Rclone"
             ],
             "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web", "Meet", "Mail"]
           },
           "1GB": {
             "title": "Gratuito",
-            "features": ["VPN standard gratuita (FR)", "Supporto CLI, WebDav e Rclone"]
+            "features": [
+              "1GB di archiviazione criptata a conoscenza zero",
+              "VPN standard gratuita (FR)"
+            ]
           }
         },
         "businessPlanFeaturesList": {
@@ -1992,6 +1998,7 @@
           "1TB": {
             "title": "Standard",
             "features": [
+              "1TB di archiviazione criptata a conoscenza zero per utente",
               "Crittografia post-quantistica",
               "VPN illimitata ultraveloce (FR, DE, PL)",
               "Antivirus",
@@ -2000,7 +2007,7 @@
               "Invita, condividi e collabora",
               "Conformità GDPR",
               "Autenticazione a due fattori (2FA)",
-              "Supporto CLI, WebDav e Rclone",
+              "Supporto CLI e WebDav",
               "Gestisci fatturazione e pagamenti dell'account"
             ],
             "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web"]
@@ -2008,6 +2015,7 @@
           "2TB": {
             "title": "Pro",
             "features": [
+              "2TB di archiviazione criptata a conoscenza zero per utente",
               "Crittografia post-quantistica",
               "VPN illimitata ultraveloce (FR, DE, PL, CA, UK)",
               "Antivirus",
@@ -2016,7 +2024,7 @@
               "Invita, condividi e collabora",
               "Conformità GDPR",
               "Autenticazione a due fattori (2FA)",
-              "Supporto CLI, WebDav e Rclone",
+              "Supporto CLI, WebDav, Rclone e NAS",
               "Gestisci fatturazione e pagamenti dell'account"
             ],
             "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web", "Meet", "Mail"]

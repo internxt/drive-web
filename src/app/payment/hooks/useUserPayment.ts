@@ -24,6 +24,7 @@ export const useUserPayment = () => {
     token,
     currency,
     seatsForBusinessSubscription,
+    captchaToken,
     promoCodeId,
   }: CreatePaymentIntentPayload) => {
     const {
@@ -36,6 +37,7 @@ export const useUserPayment = () => {
       priceId,
       token,
       currency,
+      captchaToken,
       promoCodeId,
       quantity: seatsForBusinessSubscription,
     });
@@ -53,6 +55,7 @@ export const useUserPayment = () => {
     priceId,
     currency,
     token,
+    captchaToken,
     promoCodeId,
   }: CreatePaymentIntentPayload) => {
     const paymentIntentResponse = await checkoutService.createPaymentIntent({
@@ -60,6 +63,7 @@ export const useUserPayment = () => {
       priceId,
       currency,
       token,
+      captchaToken,
       promoCodeId: promoCodeId,
     });
 
@@ -129,6 +133,7 @@ export const useUserPayment = () => {
     currentSelectedPlan,
     couponCodeData,
     elements,
+    captchaToken,
     translate,
     confirmPayment,
     confirmSetupIntent,
@@ -138,6 +143,7 @@ export const useUserPayment = () => {
       priceId,
       token,
       seatsForBusinessSubscription,
+      captchaToken,
       promoCodeId: couponCodeData?.codeId,
       currency,
     });
@@ -176,6 +182,7 @@ export const useUserPayment = () => {
     currentSelectedPlan,
     couponCodeData,
     elements,
+    captchaToken,
     confirmPayment,
     openCryptoPaymentDialog,
   }: ProcessPurchasePayload) => {
@@ -190,6 +197,7 @@ export const useUserPayment = () => {
       customerId,
       priceId,
       token,
+      captchaToken,
       promoCodeId: couponCodeData?.codeId,
       currency,
     });
@@ -236,6 +244,7 @@ export const useUserPayment = () => {
     elements,
     gclidStored,
     seatsForBusinessSubscription = 1,
+    captchaToken,
     translate,
     confirmPayment,
     openCryptoPaymentDialog,
@@ -267,6 +276,7 @@ export const useUserPayment = () => {
           token,
           couponCodeData,
           seatsForBusinessSubscription,
+          captchaToken,
           translate,
           confirmPayment,
           confirmSetupIntent,
@@ -282,6 +292,7 @@ export const useUserPayment = () => {
           priceId,
           token,
           couponCodeData,
+          captchaToken,
           translate,
           confirmPayment,
           openCryptoPaymentDialog,
