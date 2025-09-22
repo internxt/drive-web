@@ -7,13 +7,13 @@ import { createCipheriv, createDecipheriv, Decipher, randomBytes } from 'crypto'
 
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
 import envService from 'app/core/services/env.service';
-import { joinReadableBinaryStreams } from 'app/core/services/stream.service';
+import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 
 import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
 import { TaskStatus } from '../tasks/types';
 import { encryptStreamInParts, generateFileKey, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
-import { DownloadProgressCallback } from './download';
+import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileUint8Array, UploadProgressCallback } from './upload';
 import { UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD } from './networkConstants';
 import { WORKER_MESSAGE_STATES } from 'app/drive/services/worker.service/types/upload';
@@ -240,6 +240,174 @@ export class NetworkFacade {
     );
   }
 
+  async download(
+    bucketId: string,
+    fileId: string,
+    mnemonic: string,
+    options?: DownloadOptions,
+  ): Promise<ReadableStream> {
+    const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
+    let fileStream: ReadableStream<Uint8Array>;
+
+    // TODO: Check hash when downloaded
+
+    await downloadFile(
+      fileId,
+      bucketId,
+      mnemonic,
+      this.network,
+      this.cryptoLib,
+      Buffer.from,
+      async (downloadables) => {
+        for (const downloadable of downloadables) {
+          if (options?.abortController?.signal.aborted) {
+            throw new Error('Download aborted');
+          }
+
+          const encryptedContentStream = await fetch(downloadable.url, {
+            signal: options?.abortController?.signal,
+          }).then((res) => {
+            if (!res.body) {
+              throw new Error('No content received');
+            }
+
+            return res.body;
+          });
+
+          encryptedContentStreams.push(encryptedContentStream);
+        }
+      },
+      async (algorithm, key, iv, fileSize) => {
+        const decryptedStream = getDecryptedStream(
+          encryptedContentStreams,
+          createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), iv as Buffer),
+        );
+
+        fileStream = buildProgressStream(decryptedStream, (readBytes) => {
+          options && options.downloadingCallback && options.downloadingCallback(fileSize, readBytes);
+        });
+      },
+      (options?.token && { token: options.token }) || undefined,
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return fileStream!;
+  }
+
+  async downloadMultipartFile(
+    bucketId: string,
+    fileId: string,
+    mnemonic: string,
+    fileSize: number,
+    options?: DownloadOptions,
+  ): Promise<ReadableStream<Uint8Array>> {
+    const self = this;
+    const chunkSize = 30 * 1024 * 1024;
+    const concurrency = 4;
+
+    return new ReadableStream<Uint8Array>({
+      async start(controller) {
+        let downloadedBytes = 0;
+        let start = 0;
+        let chunkIndex = 0;
+        const chunks: Array<{ index: number; chunkStart: number; chunkEnd: number }> = [];
+
+        // Split the file into chunks
+        while (start < fileSize) {
+          const end = Math.min(start + chunkSize - 1, fileSize - 1);
+          chunks.push({
+            index: chunkIndex,
+            chunkStart: start,
+            chunkEnd: end,
+          });
+          start = end + 1;
+          chunkIndex++;
+        }
+
+        // Store and stream the chunks sorted
+        let nextChunkToStream = 0;
+        let hasError = false;
+        const completedChunks: Array<Uint8Array[] | null> = new Array(chunks.length).fill(null);
+
+        const streamOrderedChunks = () => {
+          while (
+            nextChunkToStream < completedChunks.length &&
+            completedChunks[nextChunkToStream] !== null &&
+            !hasError
+          ) {
+            const chunkData = completedChunks[nextChunkToStream]!;
+
+            for (const data of chunkData) {
+              controller.enqueue(data);
+            }
+
+            completedChunks[nextChunkToStream] = null;
+            nextChunkToStream++;
+          }
+
+          if (nextChunkToStream === chunks.length && !hasError) {
+            controller.close();
+          }
+        };
+
+        // Download the chunks and stream them if possible - then use queue to download them in parallel
+        const downloadQueue = queue(async (task: { index: number; chunkStart: number; chunkEnd: number }) => {
+          try {
+            const chunkStream = await self.downloadChunk(
+              bucketId,
+              fileId,
+              mnemonic,
+              task.chunkStart,
+              task.chunkEnd,
+              options,
+            );
+
+            const reader = chunkStream.getReader();
+            const chunkData: Uint8Array[] = [];
+            let isDownloadingDone = false;
+
+            try {
+              while (!isDownloadingDone) {
+                const { done, value } = await reader.read();
+
+                if (!done) {
+                  chunkData.push(value);
+                  downloadedBytes += value.length;
+                  console.log('DOWNLOADED BYTES: ', downloadedBytes);
+                  options?.downloadingCallback?.(fileSize, downloadedBytes);
+                } else {
+                  isDownloadingDone = true;
+                }
+              }
+
+              completedChunks.push(chunkData);
+
+              streamOrderedChunks();
+            } finally {
+              reader.releaseLock();
+            }
+          } catch (err) {
+            hasError = true;
+            controller.error(err);
+          }
+        }, concurrency);
+
+        downloadQueue.error((err, task) => {
+          hasError = true;
+          controller.error(err);
+        });
+
+        for (const chunk of chunks) {
+          downloadQueue.push(chunk);
+        }
+
+        if (chunks.length === 0) {
+          controller.close();
+        }
+      },
+    });
+  }
+
   async downloadChunk(
     bucketId: string,
     fileId: string,
@@ -289,52 +457,6 @@ export class NetworkFacade {
     );
 
     return fileStream!;
-  }
-
-  async download(
-    bucketId: string,
-    fileId: string,
-    mnemonic: string,
-    fileSize: number,
-    options?: DownloadOptions,
-  ): Promise<ReadableStream<Uint8Array>> {
-    const chunkSize = 30 * 1024 * 1024;
-    const self = this;
-    let downloadedBytes = 0;
-
-    return new ReadableStream<Uint8Array>({
-      async start(controller) {
-        let start = 0;
-
-        while (start < fileSize) {
-          const end = Math.min(start + chunkSize - 1, fileSize - 1);
-
-          const chunkStream = await self.downloadChunk(bucketId, fileId, mnemonic, start, end, options);
-          const reader = chunkStream.getReader();
-          let isDone = false;
-
-          try {
-            while (!isDone) {
-              const { done, value } = await reader.read();
-              if (!done) {
-                controller.enqueue(value);
-                downloadedBytes += value.length;
-                console.log('DOWNLOADED BYTES: ', downloadedBytes);
-                options?.downloadingCallback?.(fileSize, downloadedBytes);
-              } else {
-                isDone = true;
-              }
-            }
-          } finally {
-            reader.releaseLock();
-          }
-
-          start = end + 1;
-        }
-
-        controller.close();
-      },
-    });
   }
 
   public decryptStream = (

@@ -52,7 +52,7 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
         userId: '',
       },
     ),
-  ).download(bucketId, fileId, '', fileSize, {
+  ).downloadMultipartFile(bucketId, fileId, '', fileSize, {
     key: Buffer.from(encryptionKey, 'hex'),
     token,
     downloadingCallback: options?.notifyProgress,
@@ -83,7 +83,7 @@ const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
         userId: auth.password,
       },
     ),
-  ).download(bucketId, fileId, mnemonic, fileSize, {
+  ).downloadMultipartFile(bucketId, fileId, mnemonic, fileSize, {
     downloadingCallback: options?.notifyProgress,
     abortController: options?.abortController,
   });
