@@ -198,7 +198,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     order,
   });
 
-  const showTutorial = tutorialState.showTutorial;
   const signupSteps = getSignUpSteps(
     {
       onNextStepClicked: () => {
@@ -263,7 +262,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         height: menuItemsRef?.current?.offsetHeight || 0,
       });
     }
-  }, [dimensions.height, dimensions.width]);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -749,7 +748,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   );
 
   return !isTrash ? (
-    <Tutorial show={showTutorial} steps={signupSteps} currentStep={tutorialState.currentTutorialStep}>
+    <Tutorial show={tutorialState.showTutorial} steps={signupSteps} currentStep={tutorialState.currentTutorialStep}>
       {connectDropTarget(driveExplorer) || driveExplorer}
     </Tutorial>
   ) : (
