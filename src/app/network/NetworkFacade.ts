@@ -44,6 +44,14 @@ interface UploadTask {
   index: number;
 }
 
+interface DownloadChunkTask {
+  index: number;
+  chunkStart: number;
+  chunkEnd: number;
+  attempt: number;
+  maxRetries: number;
+}
+
 /**
  * The entry point for interacting with the network
  */
@@ -294,7 +302,16 @@ export class NetworkFacade {
     return fileStream!;
   }
 
-  async downloadMultipartFile(
+  /**
+   * Downloads a file in chunks and streams the chunks as they are downloaded.
+   * @param bucketId The bucket ID where the file is located.
+   * @param fileId The file ID of the file to download.
+   * @param mnemonic The mnemonic used to encrypt the file.
+   * @param fileSize The size of the file in bytes.
+   * @param options The options to download the file.
+   * @returns A promise that resolves to a readable stream of the file.
+   */
+  async downloadMultipart(
     bucketId: string,
     fileId: string,
     mnemonic: string,
@@ -304,13 +321,14 @@ export class NetworkFacade {
     const self = this;
     const chunkSize = 30 * 1024 * 1024;
     const concurrency = 4;
+    const maxChunkRetires = 3;
 
     return new ReadableStream<Uint8Array>({
       async start(controller) {
         let downloadedBytes = 0;
         let start = 0;
         let chunkIndex = 0;
-        const chunks: Array<{ index: number; chunkStart: number; chunkEnd: number }> = [];
+        const chunks: Array<DownloadChunkTask> = [];
 
         // Split the file into chunks
         while (start < fileSize) {
@@ -319,6 +337,8 @@ export class NetworkFacade {
             index: chunkIndex,
             chunkStart: start,
             chunkEnd: end,
+            attempt: 1,
+            maxRetries: maxChunkRetires,
           });
           start = end + 1;
           chunkIndex++;
@@ -326,15 +346,11 @@ export class NetworkFacade {
 
         // Store and stream the chunks sorted
         let nextChunkToStream = 0;
-        let hasError = false;
+        let completedChunksDownloadedCount = 0;
         const completedChunks: Array<Uint8Array[] | null> = new Array(chunks.length).fill(null);
 
         const streamOrderedChunks = () => {
-          while (
-            nextChunkToStream < completedChunks.length &&
-            completedChunks[nextChunkToStream] !== null &&
-            !hasError
-          ) {
+          while (nextChunkToStream < completedChunks.length && completedChunks[nextChunkToStream] !== null) {
             const chunkData = completedChunks[nextChunkToStream]!;
 
             for (const data of chunkData) {
@@ -344,14 +360,22 @@ export class NetworkFacade {
             completedChunks[nextChunkToStream] = null;
             nextChunkToStream++;
           }
-
-          if (nextChunkToStream === chunks.length && !hasError) {
-            controller.close();
-          }
         };
 
-        // Download the chunks and stream them if possible - then use queue to download them in parallel
-        const downloadQueue = queue(async (task: { index: number; chunkStart: number; chunkEnd: number }) => {
+        const handleChunkError = (task: DownloadChunkTask, errorMessage: string) => {
+          if (task.attempt > task.maxRetries) {
+            controller.error(new Error('Download failed: ' + errorMessage));
+            controller.close();
+            downloadQueue.kill();
+            return;
+          }
+
+          chunks[task.index].attempt++;
+          downloadQueue.unshift(task);
+        };
+
+        // Download the chunks and stream - then use queue to download them in parallel
+        const downloadQueue = queue(async (task: DownloadChunkTask) => {
           try {
             const chunkStream = await self.downloadChunk(
               bucketId,
@@ -370,44 +394,62 @@ export class NetworkFacade {
               while (!isDownloadingDone) {
                 const { done, value } = await reader.read();
 
-                if (!done) {
-                  chunkData.push(value);
-                  downloadedBytes += value.length;
-                  console.log('DOWNLOADED BYTES: ', downloadedBytes);
-                  options?.downloadingCallback?.(fileSize, downloadedBytes);
-                } else {
+                if (done) {
                   isDownloadingDone = true;
+                  continue;
                 }
+
+                chunkData.push(value);
+                downloadedBytes += value.length;
+                console.log('DOWNLOADED BYTES: ', downloadedBytes);
+                options?.downloadingCallback?.(fileSize, downloadedBytes);
               }
 
-              completedChunks.push(chunkData);
+              completedChunks[task.index] = chunkData;
+              completedChunksDownloadedCount++;
 
               streamOrderedChunks();
             } finally {
               reader.releaseLock();
             }
           } catch (err) {
-            hasError = true;
-            controller.error(err);
+            const error = err as Error;
+            handleChunkError(task, error.message);
           }
         }, concurrency);
 
         downloadQueue.error((err, task) => {
-          hasError = true;
-          controller.error(err);
+          handleChunkError(task, err.message);
+        });
+
+        downloadQueue.drain(() => {
+          streamOrderedChunks();
+
+          if (completedChunksDownloadedCount === chunks.length && nextChunkToStream < chunks.length) {
+            console.warn('[DOWNLOAD-MULTIPART] Streaming the remaining chunks before closing the stream');
+            streamOrderedChunks();
+          }
+
+          controller.close();
         });
 
         for (const chunk of chunks) {
           downloadQueue.push(chunk);
         }
-
-        if (chunks.length === 0) {
-          controller.close();
-        }
       },
     });
   }
 
+  /**
+   * Downloads a chunk of a file from the network.
+   * @param bucketId The bucket ID where the file is located.
+   * @param fileId The file ID of the file to download.
+   * @param mnemonic The mnemonic used to encrypt the file.
+   * @param chunkStart The start of the chunk in bytes.
+   * @param chunkEnd The end of the chunk in bytes.
+   * @param options The options to download the file.
+   * @returns A promise that resolves to a readable stream of the file chunk.
+   */
   async downloadChunk(
     bucketId: string,
     fileId: string,
@@ -459,12 +501,22 @@ export class NetworkFacade {
     return fileStream!;
   }
 
-  public decryptStream = (
+  /**
+   * Creates a ReadableStream that decrypts the given input slices with the given key and IV.
+   * The `startOffsetByte` parameter can be used to decrypt files that are not aligned with the AES block size.
+   * In this case, it will generate a new IV for the given range and skip the first `startOffset` bytes of the encrypted stream.
+   * @param {ReadableStream<Uint8Array>[]} inputSlices - The input slices to decrypt.
+   * @param {Buffer} key - The key to use for decryption.
+   * @param {Buffer} iv - The IV to use for decryption.
+   * @param {number} [startOffsetByte] - The optional offset in bytes to start decryption from.
+   * @returns {ReadableStream<Uint8Array>} - The decrypted stream.
+   */
+  decryptStream(
     inputSlices: ReadableStream<Uint8Array>[],
     key: Buffer,
     iv: Buffer,
     startOffsetByte?: number,
-  ) => {
+  ): ReadableStream<Uint8Array> {
     let decipher: Decipher;
     if (startOffsetByte) {
       const aesBlockSize = 16;
@@ -507,5 +559,5 @@ export class NetworkFacade {
     });
 
     return decryptedStream;
-  };
+  }
 }
