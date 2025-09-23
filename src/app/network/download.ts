@@ -31,7 +31,7 @@ export async function binaryStreamToBlob(stream: BinaryStream): Promise<Blob> {
     finish = done;
   }
 
-  return new Blob(slices);
+  return new Blob(slices as BlobPart[]);
 }
 
 interface FileInfo {

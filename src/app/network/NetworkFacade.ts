@@ -3,11 +3,11 @@ import { Network as NetworkModule } from '@internxt/sdk';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
 import { uploadFile, uploadMultipartFile } from '@internxt/sdk/dist/network/upload';
 import { validateMnemonic } from 'bip39';
-import { createCipheriv, createDecipheriv, Decipher, randomBytes } from 'crypto';
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
 import envService from 'app/core/services/env.service';
-import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
+import { buildProgressStream, decryptStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 
 import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
@@ -319,8 +319,8 @@ export class NetworkFacade {
     options?: DownloadOptions,
   ): Promise<ReadableStream<Uint8Array>> {
     const self = this;
-    const chunkSize = 30 * 1024 * 1024;
-    const concurrency = 4;
+    const chunkSize = 100 * 1024 * 1024;
+    const concurrency = 6;
     const maxChunkRetires = 3;
 
     return new ReadableStream<Uint8Array>({
@@ -363,9 +363,9 @@ export class NetworkFacade {
         };
 
         const handleChunkError = (task: DownloadChunkTask, errorMessage: string) => {
-          if (task.attempt > task.maxRetries) {
+          if (task.attempt >= task.maxRetries) {
             controller.error(new Error('Download failed: ' + errorMessage));
-            controller.close();
+            options?.abortController?.abort();
             downloadQueue.kill();
             return;
           }
@@ -376,45 +376,39 @@ export class NetworkFacade {
 
         // Download the chunks and stream - then use queue to download them in parallel
         const downloadQueue = queue(async (task: DownloadChunkTask) => {
+          const chunkStream = await self.downloadChunk(
+            bucketId,
+            fileId,
+            mnemonic,
+            task.chunkStart,
+            task.chunkEnd,
+            options,
+          );
+
+          const reader = chunkStream.getReader();
+          const chunkData: Uint8Array[] = [];
+          let isDownloadingDone = false;
+
           try {
-            const chunkStream = await self.downloadChunk(
-              bucketId,
-              fileId,
-              mnemonic,
-              task.chunkStart,
-              task.chunkEnd,
-              options,
-            );
+            while (!isDownloadingDone) {
+              const { done, value } = await reader.read();
 
-            const reader = chunkStream.getReader();
-            const chunkData: Uint8Array[] = [];
-            let isDownloadingDone = false;
-
-            try {
-              while (!isDownloadingDone) {
-                const { done, value } = await reader.read();
-
-                if (done) {
-                  isDownloadingDone = true;
-                  continue;
-                }
-
-                chunkData.push(value);
-                downloadedBytes += value.length;
-                console.log('DOWNLOADED BYTES: ', downloadedBytes);
-                options?.downloadingCallback?.(fileSize, downloadedBytes);
+              if (done) {
+                isDownloadingDone = true;
+                continue;
               }
 
-              completedChunks[task.index] = chunkData;
-              completedChunksDownloadedCount++;
-
-              streamOrderedChunks();
-            } finally {
-              reader.releaseLock();
+              chunkData.push(value);
+              downloadedBytes += value.length;
+              options?.downloadingCallback?.(fileSize, downloadedBytes);
             }
-          } catch (err) {
-            const error = err as Error;
-            handleChunkError(task, error.message);
+
+            completedChunks[task.index] = chunkData;
+            completedChunksDownloadedCount++;
+
+            streamOrderedChunks();
+          } finally {
+            reader.releaseLock();
           }
         }, concurrency);
 
@@ -493,71 +487,11 @@ export class NetworkFacade {
         }
       },
       async (algorithm, key, iv, fileSize) => {
-        fileStream = this.decryptStream(encryptedContentStreams, key as Buffer, iv as Buffer, chunkStart);
+        fileStream = decryptStream(encryptedContentStreams, key as Buffer, iv as Buffer, chunkStart);
       },
       (options?.token && { token: options.token }) || undefined,
     );
 
     return fileStream!;
-  }
-
-  /**
-   * Creates a ReadableStream that decrypts the given input slices with the given key and IV.
-   * The `startOffsetByte` parameter can be used to decrypt files that are not aligned with the AES block size.
-   * In this case, it will generate a new IV for the given range and skip the first `startOffset` bytes of the encrypted stream.
-   * @param {ReadableStream<Uint8Array>[]} inputSlices - The input slices to decrypt.
-   * @param {Buffer} key - The key to use for decryption.
-   * @param {Buffer} iv - The IV to use for decryption.
-   * @param {number} [startOffsetByte] - The optional offset in bytes to start decryption from.
-   * @returns {ReadableStream<Uint8Array>} - The decrypted stream.
-   */
-  decryptStream(
-    inputSlices: ReadableStream<Uint8Array>[],
-    key: Buffer,
-    iv: Buffer,
-    startOffsetByte?: number,
-  ): ReadableStream<Uint8Array> {
-    let decipher: Decipher;
-    if (startOffsetByte) {
-      const aesBlockSize = 16;
-      const startOffset = startOffsetByte % aesBlockSize;
-      const startBlockFirstByte = startOffsetByte - startOffset;
-      const startBlockNumber = startBlockFirstByte / aesBlockSize;
-
-      const ivForRange = (BigInt('0x' + iv.toString('hex')) + BigInt(startBlockNumber)).toString(16).padStart(32, '0');
-      const newIv = Buffer.from(ivForRange, 'hex');
-
-      const skipBuffer = Buffer.alloc(startOffset, 0);
-
-      decipher = createDecipheriv('aes-256-ctr', key, newIv);
-      decipher.update(skipBuffer);
-    } else {
-      decipher = createDecipheriv('aes-256-ctr', key, iv);
-    }
-    const encryptedStream = joinReadableBinaryStreams(inputSlices);
-
-    let keepReading = true;
-
-    const decryptedStream = new ReadableStream({
-      async pull(controller) {
-        if (!keepReading) return;
-
-        const reader = encryptedStream.getReader();
-        const status = await reader.read();
-
-        if (status.done) {
-          controller.close();
-        } else {
-          controller.enqueue(decipher.update(status.value));
-        }
-
-        reader.releaseLock();
-      },
-      cancel() {
-        keepReading = false;
-      },
-    });
-
-    return decryptedStream;
   }
 }
