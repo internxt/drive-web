@@ -94,7 +94,7 @@ function SharedView({
   const currentUser = localStorageService.getUser();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(globalThis.location.search);
   const folderUUID = urlParams.get('folderuuid');
 
   const isRootFolder = sharedNamePath.length === 0;
@@ -587,7 +587,7 @@ function SharedView({
           onClose={() => handleOpenItemPreview(false)}
           onShowStopSharingDialog={onOpenStopSharingDialog}
           sharedKeyboardShortcuts={{
-            renameItemFromKeyboard: !isCurrentUserViewer(currentUserRole) ? renameItem : undefined,
+            renameItemFromKeyboard: isCurrentUserViewer(currentUserRole) ? undefined : renameItem,
             removeItemFromKeyboard: handleIsItemOwnedByCurrentUser() ? onOpenStopSharingDialog : undefined,
           }}
         />
