@@ -747,12 +747,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  return !isTrash ? (
+  if (isTrash) {
+    return driveExplorer;
+  }
+
+  return (
     <Tutorial show={tutorialState.showTutorial} steps={signupSteps} currentStep={tutorialState.currentTutorialStep}>
       {connectDropTarget(driveExplorer) || driveExplorer}
     </Tutorial>
-  ) : (
-    driveExplorer
   );
 };
 
