@@ -302,6 +302,22 @@ export class NetworkFacade {
     return fileStream!;
   }
 
+  calculateOptimalChunkSize(fileSize: number): { chunkSize: number; concurrency: number } {
+    const fileSizeGB = fileSize / (1024 * 1024 * 1024);
+
+    if (fileSizeGB <= 0.5) {
+      return { chunkSize: 50 * 1024 * 1024, concurrency: 4 }; // 50MB chunks
+    } else if (fileSizeGB <= 2) {
+      return { chunkSize: 25 * 1024 * 1024, concurrency: 4 }; // 25MB chunks
+    } else if (fileSizeGB <= 5) {
+      return { chunkSize: 15 * 1024 * 1024, concurrency: 3 }; // 15MB chunks
+    } else if (fileSizeGB <= 10) {
+      return { chunkSize: 10 * 1024 * 1024, concurrency: 2 }; // 10MB chunks
+    } else {
+      return { chunkSize: 5 * 1024 * 1024, concurrency: 2 }; // 5MB chunks
+    }
+  }
+
   /**
    * Downloads a file in chunks and streams the chunks as they are downloaded.
    * @param bucketId The bucket ID where the file is located.
@@ -319,35 +335,76 @@ export class NetworkFacade {
     options?: DownloadOptions,
   ): Promise<ReadableStream<Uint8Array>> {
     const self = this;
-    const chunkSize = 100 * 1024 * 1024;
-    const concurrency = 6;
     const maxChunkRetires = 3;
+    const { chunkSize, concurrency } = this.calculateOptimalChunkSize(fileSize);
+
+    let downloadedBytes = 0;
+    let completedChunksDownloadedCount = 0;
+
+    const getDownloadTasks = () => {
+      let start = 0;
+      let chunkIndex = 0;
+      const chunks: Array<DownloadChunkTask> = [];
+
+      // Split the file into chunks
+      while (start < fileSize) {
+        const end = Math.min(start + chunkSize - 1, fileSize - 1);
+        chunks.push({
+          index: chunkIndex,
+          chunkStart: start,
+          chunkEnd: end,
+          attempt: 1,
+          maxRetries: maxChunkRetires,
+        });
+        start = end + 1;
+        chunkIndex++;
+      }
+
+      return chunks;
+    };
+
+    const downloadTask = async (
+      task: DownloadChunkTask,
+      completedChunks: Array<Uint8Array[] | null>,
+      streamOrderedChunks: () => void,
+    ) => {
+      let isDownloadingDone = false;
+      const chunkData: Uint8Array[] = [];
+
+      const chunkStream = await self.downloadChunk(bucketId, fileId, mnemonic, task.chunkStart, task.chunkEnd, options);
+      const reader = chunkStream.getReader();
+
+      try {
+        while (!isDownloadingDone) {
+          const { done, value } = await reader.read();
+
+          if (done) {
+            isDownloadingDone = true;
+            continue;
+          }
+
+          chunkData.push(value);
+          downloadedBytes += value.length;
+          options?.downloadingCallback?.(fileSize, downloadedBytes);
+        }
+
+        completedChunks[task.index] = chunkData;
+        completedChunksDownloadedCount++;
+
+        streamOrderedChunks();
+      } finally {
+        reader.releaseLock();
+      }
+    };
 
     return new ReadableStream<Uint8Array>({
       async start(controller) {
-        let downloadedBytes = 0;
-        let start = 0;
-        let chunkIndex = 0;
-        const chunks: Array<DownloadChunkTask> = [];
-
-        // Split the file into chunks
-        while (start < fileSize) {
-          const end = Math.min(start + chunkSize - 1, fileSize - 1);
-          chunks.push({
-            index: chunkIndex,
-            chunkStart: start,
-            chunkEnd: end,
-            attempt: 1,
-            maxRetries: maxChunkRetires,
-          });
-          start = end + 1;
-          chunkIndex++;
-        }
+        const tasks = getDownloadTasks();
 
         // Store and stream the chunks sorted
         let nextChunkToStream = 0;
-        let completedChunksDownloadedCount = 0;
-        const completedChunks: Array<Uint8Array[] | null> = new Array(chunks.length).fill(null);
+
+        const completedChunks: Array<Uint8Array[] | null> = new Array(tasks.length).fill(null);
 
         const streamOrderedChunks = () => {
           while (nextChunkToStream < completedChunks.length && completedChunks[nextChunkToStream] !== null) {
@@ -359,58 +416,28 @@ export class NetworkFacade {
 
             completedChunks[nextChunkToStream] = null;
             nextChunkToStream++;
+            chunkData.length = 0;
           }
         };
 
         const handleChunkError = (task: DownloadChunkTask, errorMessage: string) => {
           if (task.attempt >= task.maxRetries) {
-            controller.error(new Error('Download failed: ' + errorMessage));
+            const error = new Error('Download failed: ' + errorMessage);
+            controller.error(error);
             options?.abortController?.abort();
             downloadQueue.kill();
-            return;
+            throw error;
           }
 
-          chunks[task.index].attempt++;
+          tasks[task.index].attempt++;
           downloadQueue.unshift(task);
         };
 
         // Download the chunks and stream - then use queue to download them in parallel
-        const downloadQueue = queue(async (task: DownloadChunkTask) => {
-          const chunkStream = await self.downloadChunk(
-            bucketId,
-            fileId,
-            mnemonic,
-            task.chunkStart,
-            task.chunkEnd,
-            options,
-          );
-
-          const reader = chunkStream.getReader();
-          const chunkData: Uint8Array[] = [];
-          let isDownloadingDone = false;
-
-          try {
-            while (!isDownloadingDone) {
-              const { done, value } = await reader.read();
-
-              if (done) {
-                isDownloadingDone = true;
-                continue;
-              }
-
-              chunkData.push(value);
-              downloadedBytes += value.length;
-              options?.downloadingCallback?.(fileSize, downloadedBytes);
-            }
-
-            completedChunks[task.index] = chunkData;
-            completedChunksDownloadedCount++;
-
-            streamOrderedChunks();
-          } finally {
-            reader.releaseLock();
-          }
-        }, concurrency);
+        const downloadQueue = queue(
+          async (task: DownloadChunkTask) => await downloadTask(task, completedChunks, streamOrderedChunks),
+          concurrency,
+        );
 
         downloadQueue.error((err, task) => {
           handleChunkError(task, err.message);
@@ -419,7 +446,7 @@ export class NetworkFacade {
         downloadQueue.drain(() => {
           streamOrderedChunks();
 
-          if (completedChunksDownloadedCount === chunks.length && nextChunkToStream < chunks.length) {
+          if (completedChunksDownloadedCount === tasks.length && nextChunkToStream < tasks.length) {
             console.warn('[DOWNLOAD-MULTIPART] Streaming the remaining chunks before closing the stream');
             streamOrderedChunks();
           }
@@ -427,7 +454,7 @@ export class NetworkFacade {
           controller.close();
         });
 
-        for (const chunk of chunks) {
+        for (const chunk of tasks) {
           downloadQueue.push(chunk);
         }
       },
