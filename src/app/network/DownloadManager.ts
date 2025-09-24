@@ -165,14 +165,15 @@ export class DownloadManager {
   };
 
   private static readonly handleConnectionLostError = (err: unknown, taskId: string) => {
+    const subtitle = t('error.connectionLostError');
     tasksService.updateTask({
       taskId,
-      merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
+      merge: { status: TaskStatus.Error, subtitle },
     });
     throw err;
   };
 
-  private static readonly handleServerOrCancelledError = (
+  private static readonly shouldUpdateTaskWithError = (
     downloadTask: DownloadTask,
     isServerError: boolean,
     filePickerCancelled: boolean,
@@ -251,15 +252,11 @@ export class DownloadManager {
       this.handleConnectionLostError(err, taskId);
     }
 
-    const updateTaskWithErrorStatus = this.handleServerOrCancelledError(
-      downloadTask,
-      isServerError,
-      filePickerCancelled,
-    );
+    const shouldContinueProcessing = this.shouldUpdateTaskWithError(downloadTask, isServerError, filePickerCancelled);
     const task = tasksService.findTask(taskId);
 
     if (task !== undefined && task.status !== TaskStatus.Cancelled) {
-      this.handleActiveTask(err, downloadTask, updateTaskWithErrorStatus);
+      this.handleActiveTask(err, downloadTask, shouldContinueProcessing);
     } else {
       tasksService.updateTask({
         taskId,
