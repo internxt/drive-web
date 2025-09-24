@@ -1,6 +1,5 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
 import { AvatarBlobData } from 'app/database/services/database.service';
-import { isAvatarExpired } from 'app/utils/avatar/avatarUtils';
 
 type UseAvatarManagerProps = {
   avatarSrcURL: string | null;
@@ -35,7 +34,7 @@ export const useAvatar = ({
     async (url: string, signal?: AbortSignal) => {
       const databaseAvatarData = await getDatabaseAvatar().catch();
 
-      if (!databaseAvatarData || isAvatarExpired(databaseAvatarData.srcURL)) {
+      if (!databaseAvatarData) {
         return downloadAndSaveAvatar(url, signal);
       }
 
