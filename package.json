@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.538",
+  "version": "v1.0.539",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -67,7 +67,7 @@
     "react-loading-skeleton": "^2.2.0",
     "react-pdf": "=9.2.1",
     "react-popper": "^2.3.0",
-    "react-redux": "^7.2.4",
+    "react-redux": "^7.2.9",
     "react-router-dom": "^5.3.4",
     "react-tooltip": "^5.8.3",
     "react-window": "^1.8.11",
