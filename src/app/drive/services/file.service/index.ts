@@ -20,11 +20,10 @@ export function updateMetaData(
 export async function moveFileByUuid(fileUuid: string, destinationFolderUuid: string): Promise<StorageTypes.FileMeta> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   const payload: StorageTypes.MoveFileUuidPayload = {
-    fileUuid: fileUuid,
-    destinationFolderUuid: destinationFolderUuid,
+    destinationFolder: destinationFolderUuid,
   };
   return storageClient
-    .moveFileByUuid(payload)
+    .moveFileByUuid(fileUuid, payload)
     .then((response) => {
       return response;
     })

@@ -36,10 +36,10 @@ const BreadcrumbsBackupsView = ({ backupsAsFoldersPath, goToFolder, goToFolderRo
       onClick: () => goToFolderRoot(),
     });
 
-    if (currentDevice && 'mac' in currentDevice) {
+    if (currentDevice && 'mac' in currentDevice && 'name' in currentDevice) {
       items.push({
         uuid: currentDevice.id.toString(),
-        label: currentDevice.name,
+        label: currentDevice.name as string,
         icon: null,
         active: false,
         isBackup: true,
