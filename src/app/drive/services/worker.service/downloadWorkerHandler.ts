@@ -41,7 +41,6 @@ export class DownloadWorkerHandler {
     return new Promise((resolve, reject) => {
       worker.addEventListener('error', reject);
       worker.addEventListener('message', async (msg) => {
-        console.log('[DOWNLOAD/MAIN_THREAD]: Message received from worker', msg);
         await this.handleMessages({
           messageData: msg.data,
           worker,
@@ -98,7 +97,6 @@ export class DownloadWorkerHandler {
       case 'chunk': {
         const { chunk } = messageData;
 
-        console.log('[MAIN_THREAD]: Received chunk from worker to download file');
         await writer.write(chunk);
 
         break;

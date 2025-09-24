@@ -38,7 +38,7 @@ type DownloadOwnFileFunction = (params: DownloadOwnFileParams) => DownloadFileRe
 type DownloadFileFunction = (params: DownloadSharedFileParams | DownloadOwnFileParams) => DownloadFileResponse;
 
 const downloadSharedFile: DownloadSharedFileFunction = (params) => {
-  const { bucketId, fileId, encryptionKey, token, fileSize, options } = params;
+  const { bucketId, fileId, encryptionKey, token, options } = params;
 
   return new NetworkFacade(
     Network.client(
@@ -52,7 +52,7 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
         userId: '',
       },
     ),
-  ).downloadMultipart(bucketId, fileId, '', fileSize, {
+  ).download(bucketId, fileId, '', {
     key: Buffer.from(encryptionKey, 'hex'),
     token,
     downloadingCallback: options?.notifyProgress,
@@ -68,7 +68,7 @@ async function getAuthFromCredentials(creds: NetworkCredentials): Promise<{ user
 }
 
 const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
-  const { bucketId, fileId, mnemonic, fileSize, options } = params;
+  const { bucketId, fileId, mnemonic, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
   return new NetworkFacade(
@@ -81,6 +81,28 @@ const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
       {
         bridgeUser: auth.username,
         userId: auth.password,
+      },
+    ),
+  ).download(bucketId, fileId, mnemonic, {
+    downloadingCallback: options?.notifyProgress,
+    abortController: options?.abortController,
+  });
+};
+
+export const multipartDownload = async (params) => {
+  const { bucketId, fileId, mnemonic, fileSize, options } = params;
+  const auth = await getAuthFromCredentials(params.creds);
+
+  return new NetworkFacade(
+    Network.client(
+      envService.getVariable('storjBridge'),
+      {
+        clientName: 'drive-web',
+        clientVersion: '1.0',
+      },
+      {
+        bridgeUser: params.creds ? auth.username : '',
+        userId: params.creds ? auth.password : '',
       },
     ),
   ).downloadMultipart(bucketId, fileId, mnemonic, fileSize, {
