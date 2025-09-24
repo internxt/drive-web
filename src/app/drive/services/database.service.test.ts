@@ -1,21 +1,22 @@
-import { describe, it } from 'vitest';
-import { AppDatabase, DatabaseCollection } from '../../database/services/database.service';
-import { DriveItemData } from '../types';
+import { describe, it, expect } from 'vitest';
+import { canFileBeCached } from './database.service';
+import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 describe('databaseService', () => {
-  const get = (database) => (databaseKey: DatabaseCollection, itemKey: number | string) =>
-    Promise.resolve<DriveItemData[]>(database[databaseKey][itemKey]);
+  describe('canFileBeCached', () => {
+    it('should return true when file size is less than 50MB', () => {
+      const file = { size: 1024 * 1024 * 25 } as DriveFileData;
+      expect(canFileBeCached(file)).toBe(true);
+    });
 
-  const put =
-    (database) =>
-    (
-      collectionName: DatabaseCollection,
-      key: AppDatabase[DatabaseCollection]['key'],
-      value: AppDatabase[DatabaseCollection]['value'],
-    ) => {
-      database[collectionName][key] = value;
-      return Promise.resolve();
-    };
+    it('should return false when file size is greater than 50MB', () => {
+      const file = { size: 1024 * 1024 * 51 } as DriveFileData;
+      expect(canFileBeCached(file)).toBe(false);
+    });
 
-  it('just mocks the test', () => {});
+    it('should return true when file size is exactly 50MB', () => {
+      const file = { size: 1024 * 1024 * 50 } as DriveFileData;
+      expect(canFileBeCached(file)).toBe(false);
+    });
+  });
 });

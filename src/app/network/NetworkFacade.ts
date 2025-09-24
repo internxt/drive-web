@@ -14,7 +14,7 @@ import { waitForContinueUploadSignal } from '../drive/services/worker.service/up
 import { TaskStatus } from '../tasks/types';
 import { encryptStreamInParts, generateFileKey, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
-import { uploadFileUint8Array, UploadProgressCallback } from './upload';
+import { uploadFileUint8Array, UploadProgressCallback } from './upload-utils';
 import { UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD } from './networkConstants';
 
 interface UploadOptions {
