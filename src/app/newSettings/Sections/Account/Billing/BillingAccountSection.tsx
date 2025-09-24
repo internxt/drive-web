@@ -32,8 +32,8 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
   useEffect(() => {
     plan.individualSubscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
 
-    setPlanName(getPlanName(plan.individualPlan || plan.teamPlan, plan.planLimit));
-    setPlanInfo(getPlanInfo(plan.individualPlan || plan.teamPlan));
+    setPlanName(getPlanName(plan.individualPlan, plan.planLimit));
+    setPlanInfo(getPlanInfo(plan.individualPlan));
     setCurrentUsage(getCurrentUsage(plan.usageDetails));
   }, [plan.individualSubscription]);
 
