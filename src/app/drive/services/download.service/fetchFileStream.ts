@@ -21,7 +21,6 @@ export default function fetchFileStream(
       user: bridgeUser,
     },
     mnemonic: encryptionKey,
-    fileSize: item.size,
     options: {
       notifyProgress: (totalBytes: number, downloadedBytes: number) => {
         options.updateProgressCallback(downloadedBytes / totalBytes);
