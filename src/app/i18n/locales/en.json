@@ -1020,7 +1020,7 @@
     },
     "restrictedSharingModal": {
       "title": "Upgrade to share files",
-      "subtitle": "Sharing files is not available on the Essential plan. Upgrade to unlock secure file sharing."
+      "subtitle": "Sharing files is not available on your current plan. Upgrade to unlock secure file sharing."
     },
     "restrictedPasswordModal": {
       "title": "Unlock password-protected sharing",
