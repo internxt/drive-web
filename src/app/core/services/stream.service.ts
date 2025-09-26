@@ -1,3 +1,6 @@
+import { getDecryptedStream } from 'app/network/download';
+import { createDecipheriv, Decipher } from 'crypto';
+
 type BinaryStream = ReadableStream<Uint8Array>;
 
 export async function binaryStreamToBlob(stream: BinaryStream, mimeType?: string): Promise<Blob> {
@@ -16,7 +19,7 @@ export async function binaryStreamToBlob(stream: BinaryStream, mimeType?: string
     finish = done;
   }
 
-  return new Blob(slices, mimeType ? { type: mimeType } : {});
+  return new Blob(slices as BlobPart[], mimeType ? { type: mimeType } : {});
 }
 
 export function buildProgressStream(source: BinaryStream, onRead: (readBytes: number) => void): BinaryStream {
@@ -40,6 +43,43 @@ export function buildProgressStream(source: BinaryStream, onRead: (readBytes: nu
       return reader.cancel();
     },
   });
+}
+
+/**
+ * Creates a ReadableStream that decrypts the given input slices with the given key and IV.
+ * The `startOffsetByte` parameter can be used to decrypt files that are not aligned with the AES block size.
+ * In this case, it will generate a new IV for the given range and skip the first `startOffset` bytes of the encrypted stream.
+ * @param {ReadableStream<Uint8Array>[]} inputSlices - The input slices to decrypt.
+ * @param {Buffer} key - The key to use for decryption.
+ * @param {Buffer} iv - The IV to use for decryption.
+ * @param {number} [startOffsetByte] - The optional offset in bytes to start decryption from.
+ * @returns {ReadableStream<Uint8Array>} - The decrypted stream.
+ */
+export function decryptStream(
+  inputSlices: ReadableStream<Uint8Array>[],
+  key: Buffer,
+  iv: Buffer,
+  startOffsetByte?: number,
+): ReadableStream<Uint8Array> {
+  let decipher: Decipher;
+  if (startOffsetByte) {
+    const aesBlockSize = 16;
+    const startOffset = startOffsetByte % aesBlockSize;
+    const startBlockFirstByte = startOffsetByte - startOffset;
+    const startBlockNumber = startBlockFirstByte / aesBlockSize;
+
+    const ivForRange = (BigInt('0x' + iv.toString('hex')) + BigInt(startBlockNumber)).toString(16).padStart(32, '0');
+    const newIv = Buffer.from(ivForRange, 'hex');
+
+    const skipBuffer = Buffer.alloc(startOffset, 0);
+
+    decipher = createDecipheriv('aes-256-ctr', key, newIv);
+    decipher.update(skipBuffer);
+  } else {
+    decipher = createDecipheriv('aes-256-ctr', key, iv);
+  }
+
+  return getDecryptedStream(inputSlices, decipher);
 }
 
 export function joinReadableBinaryStreams(streams: BinaryStream[]): ReadableStream {

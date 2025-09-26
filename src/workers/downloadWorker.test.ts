@@ -61,7 +61,6 @@ describe('Downloading file worker', () => {
 
       expect(createFileDownloadStream).toHaveBeenCalledWith(
         mockFile,
-        false,
         mockCallbacks.onProgress,
         expect.any(AbortController),
         mockParams.credentials,
@@ -105,10 +104,10 @@ describe('Downloading file worker', () => {
 
     test('When the download progress changes, then the callback is called', async () => {
       const mockedProgressValue = 75;
-      let progressCallback: any;
 
-      (createFileDownloadStream as any).mockImplementation((file, workspace, callback) => {
-        progressCallback = callback;
+      (createFileDownloadStream as any).mockImplementation((file, onProgress, abortController, credentials) => {
+        onProgress(mockedProgressValue);
+
         return Promise.resolve({
           getReader: () => ({
             read: vi
@@ -121,7 +120,6 @@ describe('Downloading file worker', () => {
       });
 
       await downloadingFile(mockParams, mockCallbacks);
-      progressCallback(mockedProgressValue);
 
       expect(mockCallbacks.onProgress).toHaveBeenCalledWith(mockedProgressValue);
     });
@@ -147,7 +145,6 @@ describe('Downloading file worker', () => {
 
       expect(createFileDownloadStream).toHaveBeenCalledWith(
         mockFile,
-        false,
         mockCallbacks.onProgress,
         customAbortController,
         mockParams.credentials,

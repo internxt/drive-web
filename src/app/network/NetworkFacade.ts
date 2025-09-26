@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { Network as NetworkModule } from '@internxt/sdk';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
 import { uploadFile, uploadMultipartFile } from '@internxt/sdk/dist/network/upload';
@@ -6,7 +7,7 @@ import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
 import envService from 'app/core/services/env.service';
-import { buildProgressStream } from 'app/core/services/stream.service';
+import { buildProgressStream, decryptStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 
 import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
@@ -16,6 +17,8 @@ import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileUint8Array, UploadProgressCallback } from './upload';
 import { UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD } from './networkConstants';
 import { WORKER_MESSAGE_STATES } from 'app/drive/services/worker.service/types/upload';
+import { QueueUtilsService } from 'app/utils/queueUtils';
+import { NetworkUtils } from 'app/utils/networkUtils';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -41,6 +44,14 @@ interface UploadTask {
   contentToUpload: Uint8Array;
   urlToUpload: string;
   index: number;
+}
+
+export interface DownloadChunkTask {
+  index: number;
+  chunkStart: number;
+  chunkEnd: number;
+  attempt: number;
+  maxRetries: number;
 }
 
 /**
@@ -290,6 +301,195 @@ export class NetworkFacade {
     );
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return fileStream!;
+  }
+
+  /**
+   * Downloads a file in chunks and streams the chunks as they are downloaded.
+   * @param bucketId The bucket ID where the file is located.
+   * @param fileId The file ID of the file to download.
+   * @param mnemonic The mnemonic used to encrypt the file.
+   * @param fileSize The size of the file in bytes.
+   * @param options The options to download the file.
+   * @returns A promise that resolves to a readable stream of the file.
+   */
+  async downloadMultipart(
+    bucketId: string,
+    fileId: string,
+    mnemonic: string,
+    fileSize: number,
+    options?: DownloadOptions,
+  ): Promise<ReadableStream<Uint8Array>> {
+    const maxChunkRetires = 3;
+    const { chunkSize, concurrency } = QueueUtilsService.instance.calculateChunkSizeAndConcurrency(fileSize);
+    const tasks = NetworkUtils.instance.createDownloadChunks(fileSize, chunkSize, maxChunkRetires);
+
+    let downloadedBytes = 0;
+    let completedChunksDownloadedCount = 0;
+
+    const downloadTask = async (
+      task: DownloadChunkTask,
+      completedChunks: Array<Uint8Array[] | null>,
+      streamOrderedChunks: () => void,
+    ) => {
+      const chunkStream = await this.downloadChunk(bucketId, fileId, mnemonic, task.chunkStart, task.chunkEnd, options);
+      const reader = chunkStream.getReader();
+      const chunkData: Uint8Array[] = [];
+
+      let isDownloadingDone = false;
+      try {
+        while (!isDownloadingDone) {
+          const { done, value } = await reader.read();
+
+          if (done) {
+            isDownloadingDone = true;
+            continue;
+          }
+
+          chunkData.push(value);
+          downloadedBytes += value.length;
+          options?.downloadingCallback?.(fileSize, downloadedBytes);
+        }
+
+        completedChunks[task.index] = chunkData;
+        completedChunksDownloadedCount++;
+
+        streamOrderedChunks();
+      } finally {
+        reader.releaseLock();
+      }
+    };
+
+    const handleChunkError = ({
+      task,
+      errorMessage,
+      controller,
+      downloadQueue,
+    }: {
+      task: DownloadChunkTask;
+      errorMessage: string;
+      downloadQueue: QueueObject<DownloadChunkTask>;
+      controller: ReadableStreamDefaultController<Uint8Array>;
+    }) => {
+      if (task.attempt >= task.maxRetries) {
+        const error = new Error('Download failed: ' + errorMessage);
+        options?.abortController?.abort();
+        downloadQueue.kill();
+        controller.error(error);
+        return;
+      }
+
+      task.attempt++;
+      downloadQueue.unshift(task);
+    };
+
+    return new ReadableStream<Uint8Array>({
+      async start(controller) {
+        // Store and stream the chunks sorted
+        let nextChunkToStream = 0;
+
+        const completedChunks: Array<Uint8Array[] | null> = new Array(tasks.length).fill(null);
+
+        const streamOrderedChunks = () => {
+          while (nextChunkToStream < completedChunks.length && completedChunks[nextChunkToStream] !== null) {
+            const chunkData = completedChunks[nextChunkToStream]!;
+
+            for (const data of chunkData) {
+              controller.enqueue(data);
+            }
+
+            completedChunks[nextChunkToStream] = null;
+            nextChunkToStream++;
+            chunkData.length = 0;
+          }
+        };
+
+        // Download the chunks and stream - then use queue to download them in parallel
+        const downloadQueue = queue(
+          async (task: DownloadChunkTask) => await downloadTask(task, completedChunks, streamOrderedChunks),
+          concurrency,
+        );
+
+        downloadQueue.error((err, task) => {
+          handleChunkError({ task, errorMessage: err.message, downloadQueue, controller });
+        });
+
+        downloadQueue.drain(() => {
+          streamOrderedChunks();
+
+          if (completedChunksDownloadedCount === tasks.length && nextChunkToStream < tasks.length) {
+            console.warn('[DOWNLOAD-MULTIPART] Streaming the remaining chunks before closing the stream');
+            streamOrderedChunks();
+          }
+
+          controller.close();
+        });
+
+        for (const chunk of tasks) {
+          downloadQueue.push(chunk);
+        }
+      },
+    });
+  }
+
+  /**
+   * Downloads a chunk of a file from the network.
+   * @param bucketId The bucket ID where the file is located.
+   * @param fileId The file ID of the file to download.
+   * @param mnemonic The mnemonic used to encrypt the file.
+   * @param chunkStart The start of the chunk in bytes.
+   * @param chunkEnd The end of the chunk in bytes.
+   * @param options The options to download the file.
+   * @returns A promise that resolves to a readable stream of the file chunk.
+   */
+  async downloadChunk(
+    bucketId: string,
+    fileId: string,
+    mnemonic: string,
+    chunkStart: number,
+    chunkEnd: number,
+    options?: DownloadOptions,
+  ): Promise<ReadableStream<Uint8Array>> {
+    const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
+    let fileStream: ReadableStream<Uint8Array>;
+
+    await downloadFile(
+      fileId,
+      bucketId,
+      mnemonic,
+      this.network,
+      this.cryptoLib,
+      Buffer.from,
+      async (downloadables) => {
+        for (const downloadable of downloadables) {
+          if (options?.abortController?.signal.aborted) {
+            throw new Error('Download aborted');
+          }
+
+          const response = await fetch(downloadable.url, {
+            signal: options?.abortController?.signal,
+            headers: {
+              Range: `bytes=${chunkStart}-${chunkEnd}`,
+            },
+          });
+
+          if (response.status !== 206 && response.status !== 200) {
+            throw new Error(`Unexpected status ${response.status}`);
+          }
+
+          if (!response.body) {
+            throw new Error('No content received');
+          }
+
+          encryptedContentStreams.push(response.body);
+        }
+      },
+      async (algorithm, key, iv, fileSize) => {
+        fileStream = decryptStream(encryptedContentStreams, key as Buffer, iv as Buffer, chunkStart);
+      },
+      (options?.token && { token: options.token }) || undefined,
+    );
+
     return fileStream!;
   }
 }

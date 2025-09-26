@@ -26,13 +26,7 @@ export const downloadingFile = async (
       type: file.type,
     });
 
-    const downloadedFile = await createFileDownloadStream(
-      file,
-      isWorkspace,
-      callbacks.onProgress,
-      abortController,
-      credentials,
-    );
+    const downloadedFile = await createFileDownloadStream(file, callbacks.onProgress, abortController, credentials);
 
     if (isBrave) {
       await downloadUsingBlob(downloadedFile, callbacks.onBlob, abortSignal);
@@ -57,6 +51,7 @@ export const downloadUsingBlob = async (
   const chunks: Uint8Array[] = [];
   let hasMoreData = true;
 
+  console.log('[DOWNLOAD-WORKER] Downloading using blob');
   if (abortSignal?.isAborted()) {
     reader.releaseLock();
     return;
