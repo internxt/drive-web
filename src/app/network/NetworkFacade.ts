@@ -17,6 +17,8 @@ import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileUint8Array, UploadProgressCallback } from './upload';
 import { UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD } from './networkConstants';
 import { WORKER_MESSAGE_STATES } from 'app/drive/services/worker.service/types/upload';
+import { QueueUtilsService } from 'app/utils/queueUtils';
+import { NetworkUtils } from 'app/utils/networkUtils';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -44,7 +46,7 @@ interface UploadTask {
   index: number;
 }
 
-interface DownloadChunkTask {
+export interface DownloadChunkTask {
   index: number;
   chunkStart: number;
   chunkEnd: number;
@@ -302,44 +304,6 @@ export class NetworkFacade {
     return fileStream!;
   }
 
-  calculateOptimalChunkSize(fileSize: number): { chunkSize: number; concurrency: number } {
-    const fileSizeGB = fileSize / (1024 * 1024 * 1024);
-
-    if (fileSizeGB <= 0.5) {
-      return { chunkSize: 50 * 1024 * 1024, concurrency: 4 }; // 50MB chunks
-    } else if (fileSizeGB <= 2) {
-      return { chunkSize: 25 * 1024 * 1024, concurrency: 4 }; // 25MB chunks
-    } else if (fileSizeGB <= 5) {
-      return { chunkSize: 15 * 1024 * 1024, concurrency: 3 }; // 15MB chunks
-    } else if (fileSizeGB <= 10) {
-      return { chunkSize: 10 * 1024 * 1024, concurrency: 2 }; // 10MB chunks
-    } else {
-      return { chunkSize: 5 * 1024 * 1024, concurrency: 2 }; // 5MB chunks
-    }
-  }
-
-  getDownloadTasks = (fileSize: number, chunkSize: number, maxChunkRetires: number) => {
-    let start = 0;
-    let chunkIndex = 0;
-    const chunks: Array<DownloadChunkTask> = [];
-
-    // Split the file into chunks
-    while (start < fileSize) {
-      const end = Math.min(start + chunkSize - 1, fileSize - 1);
-      chunks.push({
-        index: chunkIndex,
-        chunkStart: start,
-        chunkEnd: end,
-        attempt: 0,
-        maxRetries: maxChunkRetires,
-      });
-      start = end + 1;
-      chunkIndex++;
-    }
-
-    return chunks;
-  };
-
   /**
    * Downloads a file in chunks and streams the chunks as they are downloaded.
    * @param bucketId The bucket ID where the file is located.
@@ -356,9 +320,9 @@ export class NetworkFacade {
     fileSize: number,
     options?: DownloadOptions,
   ): Promise<ReadableStream<Uint8Array>> {
-    const self = this;
     const maxChunkRetires = 3;
-    const { chunkSize, concurrency } = this.calculateOptimalChunkSize(fileSize);
+    const { chunkSize, concurrency } = QueueUtilsService.instance.calculateChunkSizeAndConcurrency(fileSize);
+    const tasks = NetworkUtils.instance.createDownloadChunks(fileSize, chunkSize, maxChunkRetires);
 
     let downloadedBytes = 0;
     let completedChunksDownloadedCount = 0;
@@ -368,12 +332,11 @@ export class NetworkFacade {
       completedChunks: Array<Uint8Array[] | null>,
       streamOrderedChunks: () => void,
     ) => {
-      let isDownloadingDone = false;
+      const chunkStream = await this.downloadChunk(bucketId, fileId, mnemonic, task.chunkStart, task.chunkEnd, options);
+      const reader = chunkStream.getReader();
       const chunkData: Uint8Array[] = [];
 
-      const chunkStream = await self.downloadChunk(bucketId, fileId, mnemonic, task.chunkStart, task.chunkEnd, options);
-      const reader = chunkStream.getReader();
-
+      let isDownloadingDone = false;
       try {
         while (!isDownloadingDone) {
           const { done, value } = await reader.read();
@@ -422,8 +385,6 @@ export class NetworkFacade {
 
     return new ReadableStream<Uint8Array>({
       async start(controller) {
-        const tasks = self.getDownloadTasks(fileSize, chunkSize, maxChunkRetires);
-
         // Store and stream the chunks sorted
         let nextChunkToStream = 0;
 

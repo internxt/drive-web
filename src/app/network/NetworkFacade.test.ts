@@ -4,6 +4,7 @@ import { Network as NetworkModule } from '@internxt/sdk';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
 import { decryptStream } from 'app/core/services/stream.service';
 import { queue } from 'async';
+import { NetworkUtils } from 'app/utils/networkUtils';
 
 vi.mock('@internxt/sdk/dist/network/download');
 vi.mock('app/core/services/stream.service');
@@ -27,42 +28,6 @@ describe('NetworkFacade', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
-  });
-
-  describe('Calculating the optimal chunks', () => {
-    const FIFTY_MB = 50 * 1024 * 1024;
-    const TWENTY_FIVE_MB = 25 * 1024 * 1024;
-    const FIVE_MB = 5 * 1024 * 1024;
-
-    test('When the file is smaller than 0.5GB, then return chunks of 50MB and concurrency of 4', () => {
-      const fileSize = 0.3 * 1024 * 1024 * 1024;
-      const result = networkFacade.calculateOptimalChunkSize(fileSize);
-
-      expect(result).toStrictEqual({
-        chunkSize: FIFTY_MB,
-        concurrency: 4,
-      });
-    });
-
-    test('When the file is smaller than 2GB, then return chunks of 25MB and concurrency of 4', () => {
-      const fileSize = 1.5 * 1024 * 1024 * 1024;
-      const result = networkFacade.calculateOptimalChunkSize(fileSize);
-
-      expect(result).toStrictEqual({
-        chunkSize: TWENTY_FIVE_MB,
-        concurrency: 4,
-      });
-    });
-
-    test('When the file is bigger than 10GB, then return chunks of 5MB and concurrency of 2', () => {
-      const fileSize = 15 * 1024 * 1024 * 1024;
-      const result = networkFacade.calculateOptimalChunkSize(fileSize);
-
-      expect(result).toStrictEqual({
-        chunkSize: FIVE_MB,
-        concurrency: 2,
-      });
-    });
   });
 
   describe('Downloading a chunk', () => {
@@ -295,7 +260,7 @@ describe('NetworkFacade', () => {
         maxRetries: 3,
       };
 
-      vi.spyOn(networkFacade, 'getDownloadTasks').mockResolvedValue([task]);
+      vi.spyOn(NetworkUtils.instance, 'createDownloadChunks').mockResolvedValue([task]);
 
       queueErrorCallback(mockError, task);
 
