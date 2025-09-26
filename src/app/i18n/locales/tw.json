@@ -981,7 +981,7 @@
     },
     "restrictedSharingModal": {
       "title": "升級以分享檔案",
-      "subtitle": "基本方案不支援檔案分享。升級即可解鎖安全的檔案分享功能。"
+      "subtitle": "您目前的方案不支援檔案分享。升級即可解鎖安全的檔案分享功能。"
     },
     "restrictedPasswordModal": {
       "title": "解鎖受密碼保護的分享",

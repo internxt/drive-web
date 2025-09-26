@@ -980,7 +980,7 @@
     },
     "restrictedSharingModal": {
       "title": "Passez à une offre supérieure pour partager des fichiers",
-      "subtitle": "Le partage de fichiers n’est pas disponible avec l’offre Essential. Passez à une offre supérieure pour activer le partage sécurisé."
+      "subtitle": "Le partage de fichiers n'est pas disponible avec votre forfait actuel. Passez à une offre supérieure pour activer le partage sécurisé."
     },
     "restrictedPasswordModal": {
       "title": "Débloquer le partage protégé par mot de passe",

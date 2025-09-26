@@ -1016,7 +1016,7 @@
     },
     "restrictedSharingModal": {
       "title": "升级以共享文件",
-      "subtitle": "基础方案不支持文件共享。升级即可解锁安全的文件共享功能。"
+      "subtitle": "您当前的套餐不支持文件共享。升级即可解锁安全的文件共享功能。"
     },
     "restrictedPasswordModal": {
       "title": "解锁受密码保护的共享",

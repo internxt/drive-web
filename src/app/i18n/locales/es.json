@@ -999,7 +999,7 @@
     },
     "restrictedSharingModal": {
       "title": "Mejora tu plan para compartir archivos",
-      "subtitle": "Compartir archivos no está disponible en el plan Essential. Mejora tu plan para desbloquear el uso compartido seguro."
+      "subtitle": "Compartir archivos no está disponible en tu plan actual. Mejora tu plan para desbloquear el uso compartido seguro."
     },
     "restrictedPasswordModal": {
       "title": "Desbloquear el uso compartido con contraseña",
