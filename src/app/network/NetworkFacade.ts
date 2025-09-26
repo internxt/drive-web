@@ -318,6 +318,28 @@ export class NetworkFacade {
     }
   }
 
+  getDownloadTasks = (fileSize: number, chunkSize: number, maxChunkRetires: number) => {
+    let start = 0;
+    let chunkIndex = 0;
+    const chunks: Array<DownloadChunkTask> = [];
+
+    // Split the file into chunks
+    while (start < fileSize) {
+      const end = Math.min(start + chunkSize - 1, fileSize - 1);
+      chunks.push({
+        index: chunkIndex,
+        chunkStart: start,
+        chunkEnd: end,
+        attempt: 0,
+        maxRetries: maxChunkRetires,
+      });
+      start = end + 1;
+      chunkIndex++;
+    }
+
+    return chunks;
+  };
+
   /**
    * Downloads a file in chunks and streams the chunks as they are downloaded.
    * @param bucketId The bucket ID where the file is located.
@@ -340,28 +362,6 @@ export class NetworkFacade {
 
     let downloadedBytes = 0;
     let completedChunksDownloadedCount = 0;
-
-    const getDownloadTasks = () => {
-      let start = 0;
-      let chunkIndex = 0;
-      const chunks: Array<DownloadChunkTask> = [];
-
-      // Split the file into chunks
-      while (start < fileSize) {
-        const end = Math.min(start + chunkSize - 1, fileSize - 1);
-        chunks.push({
-          index: chunkIndex,
-          chunkStart: start,
-          chunkEnd: end,
-          attempt: 1,
-          maxRetries: maxChunkRetires,
-        });
-        start = end + 1;
-        chunkIndex++;
-      }
-
-      return chunks;
-    };
 
     const downloadTask = async (
       task: DownloadChunkTask,
@@ -397,9 +397,32 @@ export class NetworkFacade {
       }
     };
 
+    const handleChunkError = ({
+      task,
+      errorMessage,
+      controller,
+      downloadQueue,
+    }: {
+      task: DownloadChunkTask;
+      errorMessage: string;
+      downloadQueue: QueueObject<DownloadChunkTask>;
+      controller: ReadableStreamDefaultController<Uint8Array>;
+    }) => {
+      if (task.attempt >= task.maxRetries) {
+        const error = new Error('Download failed: ' + errorMessage);
+        options?.abortController?.abort();
+        downloadQueue.kill();
+        controller.error(error);
+        return;
+      }
+
+      task.attempt++;
+      downloadQueue.unshift(task);
+    };
+
     return new ReadableStream<Uint8Array>({
       async start(controller) {
-        const tasks = getDownloadTasks();
+        const tasks = self.getDownloadTasks(fileSize, chunkSize, maxChunkRetires);
 
         // Store and stream the chunks sorted
         let nextChunkToStream = 0;
@@ -420,19 +443,6 @@ export class NetworkFacade {
           }
         };
 
-        const handleChunkError = (task: DownloadChunkTask, errorMessage: string) => {
-          if (task.attempt >= task.maxRetries) {
-            const error = new Error('Download failed: ' + errorMessage);
-            controller.error(error);
-            options?.abortController?.abort();
-            downloadQueue.kill();
-            throw error;
-          }
-
-          tasks[task.index].attempt++;
-          downloadQueue.unshift(task);
-        };
-
         // Download the chunks and stream - then use queue to download them in parallel
         const downloadQueue = queue(
           async (task: DownloadChunkTask) => await downloadTask(task, completedChunks, streamOrderedChunks),
@@ -440,7 +450,7 @@ export class NetworkFacade {
         );
 
         downloadQueue.error((err, task) => {
-          handleChunkError(task, err.message);
+          handleChunkError({ task, errorMessage: err.message, downloadQueue, controller });
         });
 
         downloadQueue.drain(() => {
