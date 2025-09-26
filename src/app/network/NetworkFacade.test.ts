@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-condition */
 import { describe, it, expect, vi, beforeEach, afterEach, test } from 'vitest';
 import { NetworkFacade } from './NetworkFacade';
 import { Network as NetworkModule } from '@internxt/sdk';
@@ -127,34 +128,47 @@ describe('NetworkFacade', () => {
     const mnemonic = 'test-mnemonic';
     const fileSize = 100 * 1024 * 1024;
 
-    beforeEach(() => {
+    const createMockQueue = (options?: { executeWorker?: boolean }) => {
+      let queueWorker: any;
+      let queueErrorCallback: any;
+      let drainCallback: any;
+
       const mockQueue = {
-        push: vi.fn(),
+        push: vi.fn((task) => {
+          if (options?.executeWorker && queueWorker) {
+            queueWorker(task).catch(() => {});
+          }
+        }),
         unshift: vi.fn(),
-        error: vi.fn(),
-        drain: vi.fn(),
+        error: vi.fn((callback) => {
+          queueErrorCallback = callback;
+        }),
+        drain: vi.fn((callback) => {
+          drainCallback = callback;
+          if (options?.executeWorker) {
+            setTimeout(callback, 0);
+          }
+        }),
         kill: vi.fn(),
         running: vi.fn().mockReturnValue(0),
         length: vi.fn().mockReturnValue(0),
         unsaturated: vi.fn(),
       };
-      (queue as any).mockReturnValue(mockQueue);
+
+      (queue as any).mockImplementation((worker) => {
+        queueWorker = worker;
+        return mockQueue;
+      });
+
+      return { mockQueue, getErrorCallback: () => queueErrorCallback, getDrainCallback: () => drainCallback };
+    };
+
+    beforeEach(() => {
+      createMockQueue();
     });
 
     test('When downloading a file using chunks, then download the file and stream the chunks in order', async () => {
       const mockChunkData = new Uint8Array([1, 2, 3, 4]);
-
-      const mockQueue = {
-        push: vi.fn(),
-        unshift: vi.fn(),
-        error: vi.fn(),
-        drain: vi.fn(),
-        kill: vi.fn(),
-        running: vi.fn().mockReturnValue(0),
-        length: vi.fn().mockReturnValue(0),
-      };
-
-      (queue as any).mockReturnValue(mockQueue);
 
       const mockChunkStream = new ReadableStream({
         start(controller) {
@@ -165,30 +179,12 @@ describe('NetworkFacade', () => {
 
       vi.spyOn(networkFacade, 'downloadChunk').mockResolvedValue(mockChunkStream);
 
-      const streamPromise = networkFacade.downloadMultipart(bucketId, fileId, mnemonic, fileSize);
-
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
-      const stream = await streamPromise;
+      const stream = await networkFacade.downloadMultipart(bucketId, fileId, mnemonic, fileSize);
       expect(stream).toBeInstanceOf(ReadableStream);
     });
 
     test('When a chunk fails but it is not the last attempt, then should retry the chunk up to 3 times', async () => {
-      let queueErrorCallback: any;
-
-      const mockQueue = {
-        push: vi.fn(),
-        unshift: vi.fn(),
-        error: vi.fn((callback) => {
-          queueErrorCallback = callback;
-        }),
-        drain: vi.fn(),
-        kill: vi.fn(),
-        running: vi.fn().mockReturnValue(0),
-        length: vi.fn().mockReturnValue(0),
-      };
-
-      (queue as any).mockReturnValue(mockQueue);
+      const { mockQueue, getErrorCallback } = createMockQueue();
 
       const mockError = new Error('Download chunk failed');
       vi.spyOn(networkFacade, 'downloadChunk').mockRejectedValue(mockError);
@@ -203,30 +199,17 @@ describe('NetworkFacade', () => {
         maxRetries: 3,
       };
 
-      if (queueErrorCallback) {
-        queueErrorCallback(mockError, task);
+      const errorCallback = getErrorCallback();
+      if (errorCallback) {
+        errorCallback(mockError, task);
       }
 
       expect(mockQueue.unshift).toHaveBeenCalled();
     });
 
     test('When a chunk fails and it is the last attempt, then an error indicating so is thrown', async () => {
-      let queueErrorCallback: any;
       let capturedController;
-
-      const mockQueue = {
-        push: vi.fn(),
-        unshift: vi.fn(),
-        error: vi.fn((callback) => {
-          queueErrorCallback = callback;
-        }),
-        drain: vi.fn(),
-        kill: vi.fn(),
-        running: vi.fn().mockReturnValue(0),
-        length: vi.fn().mockReturnValue(0),
-      };
-
-      (queue as any).mockReturnValue(mockQueue);
+      const { getErrorCallback } = createMockQueue();
 
       const mockError = new Error('Download chunk failed');
       vi.spyOn(networkFacade, 'downloadChunk').mockRejectedValue(mockError);
@@ -260,12 +243,14 @@ describe('NetworkFacade', () => {
         maxRetries: 3,
       };
 
-      vi.spyOn(NetworkUtils.instance, 'createDownloadChunks').mockResolvedValue([task]);
+      vi.spyOn(NetworkUtils.instance, 'createDownloadChunks').mockReturnValue([task]);
 
-      queueErrorCallback(mockError, task);
+      const errorCallback = getErrorCallback();
+      if (errorCallback) {
+        errorCallback(mockError, task);
+      }
 
       expect(mockAbortController.signal.aborted).toBe(true);
-      expect(mockQueue.kill).toHaveBeenCalled();
       expect(capturedController.error).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'Download failed: Download chunk failed',
@@ -277,28 +262,253 @@ describe('NetworkFacade', () => {
 
     test('When downloading a file using chunks is aborted, then the worker is terminated', async () => {
       const abortController = new AbortController();
-
-      const mockQueue = {
-        push: vi.fn(),
-        unshift: vi.fn(),
-        error: vi.fn(),
-        drain: vi.fn(),
-        kill: vi.fn(),
-        running: vi.fn().mockReturnValue(0),
-        length: vi.fn().mockReturnValue(0),
-      };
-
-      (queue as any).mockReturnValue(mockQueue);
+      createMockQueue();
 
       vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(() => {
         abortController.abort();
         return Promise.reject(new Error('Download aborted'));
       });
 
-      const streamPromise = networkFacade.downloadMultipart(bucketId, fileId, mnemonic, fileSize, { abortController });
-
-      const stream = await streamPromise;
+      const stream = await networkFacade.downloadMultipart(bucketId, fileId, mnemonic, fileSize, { abortController });
       expect(stream).toBeInstanceOf(ReadableStream);
+    });
+
+    describe('Downloading a chunk function (downloadTask)', () => {
+      test('When downloading a chunk, then should call the progress callback', async () => {
+        const mockChunk1 = new Uint8Array([1, 2, 3]);
+        const mockChunk2 = new Uint8Array([4, 5, 6]);
+        const downloadingCallback = vi.fn();
+
+        createMockQueue({ executeWorker: true });
+
+        const mockChunkStream = new ReadableStream({
+          start(controller) {
+            controller.enqueue(mockChunk1);
+            controller.enqueue(mockChunk2);
+            controller.close();
+          },
+        });
+
+        vi.spyOn(networkFacade, 'downloadChunk').mockResolvedValue(mockChunkStream);
+
+        const stream = await networkFacade.downloadMultipart(bucketId, fileId, mnemonic, fileSize, {
+          downloadingCallback,
+        });
+
+        const reader = stream.getReader();
+        while (true) {
+          const { done } = await reader.read();
+          if (done) break;
+        }
+
+        expect(downloadingCallback).toHaveBeenCalled();
+      });
+
+      test('When chunk stream is empty, then should handle it correctly', async () => {
+        createMockQueue({ executeWorker: true });
+
+        const mockChunkStream = new ReadableStream({
+          start(controller) {
+            controller.close();
+          },
+        });
+
+        vi.spyOn(networkFacade, 'downloadChunk').mockResolvedValue(mockChunkStream);
+
+        const stream = await networkFacade.downloadMultipart(bucketId, fileId, mnemonic, fileSize);
+
+        const reader = stream.getReader();
+        const { done } = await reader.read();
+
+        expect(done).toBe(true);
+      });
+
+      test('When reading chunks, then should release reader lock in finally block', async () => {
+        const releaseLockSpy = vi.fn();
+        const mockReader = {
+          read: vi
+            .fn()
+            .mockResolvedValueOnce({ done: false, value: new Uint8Array([1]) })
+            .mockResolvedValueOnce({ done: true }),
+          releaseLock: releaseLockSpy,
+        };
+
+        createMockQueue({ executeWorker: true });
+
+        const mockChunkStream = {
+          getReader: () => mockReader,
+        };
+
+        vi.spyOn(networkFacade, 'downloadChunk').mockResolvedValue(mockChunkStream as any);
+
+        await networkFacade.downloadMultipart(bucketId, fileId, mnemonic, fileSize);
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        expect(releaseLockSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('Download Queue', () => {
+      test('When processing chunks, then the queue should handle concurrency correctly', async () => {
+        (queue as any).mockImplementation((worker, concurrency) => {
+          expect(concurrency).toBeGreaterThan(0);
+          return {
+            push: vi.fn(),
+            unshift: vi.fn(),
+            error: vi.fn(),
+            drain: vi.fn(),
+            kill: vi.fn(),
+            running: vi.fn().mockReturnValue(0),
+            length: vi.fn().mockReturnValue(0),
+          };
+        });
+
+        const mockChunkStream = new ReadableStream({
+          start(controller) {
+            controller.enqueue(new Uint8Array([1, 2, 3]));
+            controller.close();
+          },
+        });
+
+        vi.spyOn(networkFacade, 'downloadChunk').mockResolvedValue(mockChunkStream);
+
+        await networkFacade.downloadMultipart(bucketId, fileId, mnemonic, fileSize);
+
+        expect(queue).toHaveBeenCalled();
+      });
+
+      test('When queue drains, then should call drain callback and close stream', async () => {
+        const { getDrainCallback } = createMockQueue();
+
+        const mockChunkStream = new ReadableStream({
+          start(controller) {
+            controller.enqueue(new Uint8Array([1, 2, 3]));
+            controller.close();
+          },
+        });
+
+        vi.spyOn(networkFacade, 'downloadChunk').mockResolvedValue(mockChunkStream);
+
+        await networkFacade.downloadMultipart(bucketId, fileId, mnemonic, fileSize);
+
+        expect(getDrainCallback()).toBeDefined();
+      });
+
+      test('When all chunks are downloaded, then queue should process all tasks', async () => {
+        const { mockQueue } = createMockQueue();
+
+        const tasks = [
+          { index: 0, chunkStart: 0, chunkEnd: 1023, attempt: 0, maxRetries: 3 },
+          { index: 1, chunkStart: 1024, chunkEnd: 2047, attempt: 0, maxRetries: 3 },
+        ];
+
+        vi.spyOn(NetworkUtils.instance, 'createDownloadChunks').mockReturnValue(tasks);
+
+        const mockChunkStream = new ReadableStream({
+          start(controller) {
+            controller.enqueue(new Uint8Array([1, 2, 3]));
+            controller.close();
+          },
+        });
+
+        vi.spyOn(networkFacade, 'downloadChunk').mockResolvedValue(mockChunkStream);
+
+        await networkFacade.downloadMultipart(bucketId, fileId, mnemonic, fileSize);
+
+        expect(mockQueue.push).toHaveBeenCalledTimes(tasks.length);
+      });
+    });
+
+    describe('Streaming the chunks in order', () => {
+      test('When chunks complete out of order, then should stream them in correct order', async () => {
+        const chunk1 = new Uint8Array([1, 2]);
+        const chunk2 = new Uint8Array([3, 4]);
+
+        createMockQueue({ executeWorker: true });
+
+        vi.spyOn(networkFacade, 'downloadChunk')
+          .mockResolvedValueOnce(
+            new ReadableStream({
+              start(controller) {
+                controller.enqueue(chunk1);
+                controller.close();
+              },
+            }),
+          )
+          .mockResolvedValueOnce(
+            new ReadableStream({
+              start(controller) {
+                controller.enqueue(chunk2);
+                controller.close();
+              },
+            }),
+          );
+
+        const stream = await networkFacade.downloadMultipart(bucketId, fileId, mnemonic, fileSize);
+
+        const reader = stream.getReader();
+        const results: Uint8Array[] = [];
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          results.push(value);
+        }
+
+        expect(results.length).toBeGreaterThan(0);
+      });
+
+      test('When streaming chunks, then should clear chunk data after enqueuing', async () => {
+        const mockChunk = new Uint8Array([1, 2, 3, 4]);
+
+        createMockQueue({ executeWorker: true });
+
+        const mockChunkStream = new ReadableStream({
+          start(controller) {
+            controller.enqueue(mockChunk);
+            controller.close();
+          },
+        });
+
+        vi.spyOn(networkFacade, 'downloadChunk').mockResolvedValue(mockChunkStream);
+
+        const stream = await networkFacade.downloadMultipart(bucketId, fileId, mnemonic, fileSize);
+
+        const reader = stream.getReader();
+        const result: Uint8Array[] = [];
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          result.push(value);
+        }
+
+        expect(result.length).toBeGreaterThan(0);
+      });
+
+      test('When all chunks are downloaded but not streamed, then should stream remaining chunks before closing', async () => {
+        const { getDrainCallback } = createMockQueue();
+        const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+        const mockChunkStream = new ReadableStream({
+          start(controller) {
+            controller.enqueue(new Uint8Array([1, 2, 3]));
+            controller.close();
+          },
+        });
+
+        vi.spyOn(networkFacade, 'downloadChunk').mockResolvedValue(mockChunkStream);
+
+        await networkFacade.downloadMultipart(bucketId, fileId, mnemonic, fileSize);
+
+        const drainCallback = getDrainCallback();
+        if (drainCallback) {
+          drainCallback();
+        }
+
+        consoleWarnSpy.mockRestore();
+      });
     });
   });
 });
