@@ -1,3 +1,4 @@
+import { getDecryptedStream } from 'app/network/download';
 import { createDecipheriv, Decipher } from 'crypto';
 
 type BinaryStream = ReadableStream<Uint8Array>;
@@ -77,31 +78,8 @@ export function decryptStream(
   } else {
     decipher = createDecipheriv('aes-256-ctr', key, iv);
   }
-  const encryptedStream = joinReadableBinaryStreams(inputSlices);
 
-  let keepReading = true;
-
-  const decryptedStream = new ReadableStream({
-    async pull(controller) {
-      if (!keepReading) return;
-
-      const reader = encryptedStream.getReader();
-      const status = await reader.read();
-
-      if (status.done) {
-        controller.close();
-      } else {
-        controller.enqueue(decipher.update(status.value));
-      }
-
-      reader.releaseLock();
-    },
-    cancel() {
-      keepReading = false;
-    },
-  });
-
-  return decryptedStream;
+  return getDecryptedStream(inputSlices, decipher);
 }
 
 export function joinReadableBinaryStreams(streams: BinaryStream[]): ReadableStream {
