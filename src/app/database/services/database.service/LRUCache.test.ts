@@ -41,4 +41,84 @@ describe('LRUCache', () => {
     const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
     expect(lastState).toEqual({ lruKeyList: ['fresh-entry'], itemsListSize: 30 });
   });
+
+  it('breaks eviction loop when lruList is empty after reconciliation', async () => {
+    const cache = new InMemoryCache<{ id: string }>();
+    const lru = new LRUCache(cache, 50, { lruKeyList: ['stale-1', 'stale-2'], itemsListSize: 60 });
+
+    // Try to add entry that would need eviction, but all entries are stale
+    await lru.set('new-entry', { id: 'new-entry' }, 40);
+
+    const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
+    expect(lastState).toEqual({ lruKeyList: ['new-entry'], itemsListSize: 40 });
+  });
+
+  it('handles eviction when shift returns undefined', async () => {
+    const cache = new InMemoryCache<{ id: string }>();
+    const lru = new LRUCache(cache, 100, { lruKeyList: [], itemsListSize: 0 });
+
+    await lru.set('entry-1', { id: 'entry-1' }, 40);
+    await lru.set('entry-2', { id: 'entry-2' }, 40);
+
+    // Manually corrupt the lru list to make shift return undefined
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const lruListRef = (lru as any).lruList as string[];
+    lruListRef.length = 0;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (lru as any).currentSize = 80;
+
+    await lru.set('entry-3', { id: 'entry-3' }, 30);
+
+    const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
+    expect(lastState?.lruKeyList).toContain('entry-3');
+  });
+
+  it('properly evicts entries and updates size', async () => {
+    const cache = new InMemoryCache<{ id: string }>();
+    const lru = new LRUCache(cache, 100);
+
+    await lru.set('entry-1', { id: 'entry-1' }, 30);
+    await lru.set('entry-2', { id: 'entry-2' }, 30);
+    await lru.set('entry-3', { id: 'entry-3' }, 30);
+
+    // This should evict entry-1 and entry-2 (30 + 30 + 30 + 50 = 140 > 100)
+    await lru.set('entry-4', { id: 'entry-4' }, 50);
+
+    const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
+    expect(lastState?.lruKeyList).toEqual(['entry-3', 'entry-4']);
+    expect(lastState?.itemsListSize).toBe(80);
+    expect(await cache.has('entry-1')).toBe(false);
+    expect(await cache.has('entry-2')).toBe(false);
+  });
+
+  it('reconciles state with mix of valid and invalid keys', async () => {
+    const cache = new InMemoryCache<{ id: string }>();
+    cache.set('valid-1', { id: 'valid-1' }, 20);
+    cache.set('valid-2', { id: 'valid-2' }, 15);
+
+    const lru = new LRUCache(cache, 100, {
+      lruKeyList: ['valid-1', 'stale-1', 'valid-2', 'stale-2'],
+      itemsListSize: 100,
+    });
+
+    // Trigger reconciliation by adding entry that needs eviction
+    await lru.set('new-entry', { id: 'new-entry' }, 70);
+
+    const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
+    // After reconciliation, valid-1 gets evicted (20 + 15 + 70 = 105 > 100)
+    expect(lastState?.lruKeyList).toContain('valid-2');
+    expect(lastState?.lruKeyList).toContain('new-entry');
+    expect(lastState?.lruKeyList).not.toContain('stale-1');
+    expect(lastState?.lruKeyList).not.toContain('stale-2');
+  });
+
+  it('reconciles empty state', async () => {
+    const cache = new InMemoryCache<{ id: string }>();
+    const lru = new LRUCache(cache, 100, { lruKeyList: [], itemsListSize: 0 });
+
+    await lru.set('entry-1', { id: 'entry-1' }, 30);
+
+    const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
+    expect(lastState).toEqual({ lruKeyList: ['entry-1'], itemsListSize: 30 });
+  });
 });
