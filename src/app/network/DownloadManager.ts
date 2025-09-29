@@ -60,6 +60,11 @@ export class DownloadManager {
     this.MAX_CONCURRENT_DOWNLOADS,
   );
 
+  /**
+   * Determines if an error is a server error (5xx status codes or specific server error messages)
+   * @param error - The error to check
+   * @returns True if the error is a server error, false otherwise
+   */
   private static readonly isServerError = (error: unknown): boolean => {
     const castedError = errorService.castError(error);
     return (
@@ -71,6 +76,11 @@ export class DownloadManager {
     );
   };
 
+  /**
+   * Processes a download task from the queue
+   * Handles the complete download workflow including progress tracking, cancellation, and error handling
+   * @param downloadTask - The download task containing items, taskId, and abort controller
+   */
   private static readonly downloadTask = async (downloadTask: DownloadTask) => {
     const { items, taskId, abortController } = downloadTask;
 
@@ -164,6 +174,12 @@ export class DownloadManager {
     }
   };
 
+  /**
+   * Handles connection lost errors by updating task status and showing appropriate error message
+   * @param err - The connection error
+   * @param taskId - The ID of the task that encountered the connection error
+   * @throws Rethrows the original error after handling
+   */
   private static readonly handleConnectionLostError = (err: unknown, taskId: string) => {
     const subtitle = t('error.connectionLostError');
     tasksService.updateTask({
@@ -173,7 +189,15 @@ export class DownloadManager {
     throw err;
   };
 
-  private static readonly shouldUpdateTaskWithError = (
+  /**
+   * Determines whether to continue processing after an error occurs
+   * Checks for retry tasks and handles task status updates accordingly
+   * @param downloadTask - The download task that encountered an error
+   * @param isServerError - Whether the error is a server error
+   * @param filePickerCancelled - Whether the file picker was cancelled
+   * @returns True if processing should continue, false otherwise
+   */
+  private static readonly shouldContinueAfterError = (
     downloadTask: DownloadTask,
     isServerError: boolean,
     filePickerCancelled: boolean,
@@ -193,6 +217,12 @@ export class DownloadManager {
     return true;
   };
 
+  /**
+   * Reports an error with contextual information about the download items
+   * Adds different context based on whether it's a single file, folder, or multiple items
+   * @param err - The error to report
+   * @param items - The download items that were being processed when the error occurred
+   */
   private static readonly reportErrorWithContext = (err: unknown, items: DownloadItemType[]) => {
     if (items.length > 1) {
       errorService.reportError(err);
@@ -211,6 +241,12 @@ export class DownloadManager {
     }
   };
 
+  /**
+   * Shows an error notification to the user if error display is enabled
+   * Customizes the error message based on the type of download (file vs folder)
+   * @param err - The error that occurred
+   * @param downloadTask - The download task that encountered the error
+   */
   private static readonly showErrorNotification = (err: unknown, downloadTask: DownloadTask) => {
     if (!downloadTask.options.showErrors) return;
 
@@ -224,6 +260,13 @@ export class DownloadManager {
     });
   };
 
+  /**
+   * Handles error processing for active (non-cancelled) tasks
+   * Reports the error with context, updates task status if needed, and shows notifications
+   * @param err - The error that occurred
+   * @param downloadTask - The download task that encountered the error
+   * @param updateTaskWithErrorStatus - Whether to update the task status to Error
+   */
   private static readonly handleActiveTask = (
     err: unknown,
     downloadTask: DownloadTask,
@@ -241,6 +284,12 @@ export class DownloadManager {
     this.showErrorNotification(err, downloadTask);
   };
 
+  /**
+   * Main error reporting function that coordinates all error handling logic
+   * Determines error type, handles connection issues, and delegates to appropriate handlers
+   * @param err - The error that occurred during download
+   * @param downloadTask - The download task that encountered the error
+   */
   private static readonly reportError = (err: unknown, downloadTask: DownloadTask) => {
     const { taskId } = downloadTask;
     const isConnectionLost = isLostConnectionError(err);
@@ -252,7 +301,7 @@ export class DownloadManager {
       this.handleConnectionLostError(err, taskId);
     }
 
-    const shouldContinueProcessing = this.shouldUpdateTaskWithError(downloadTask, isServerError, filePickerCancelled);
+    const shouldContinueProcessing = this.shouldContinueAfterError(downloadTask, isServerError, filePickerCancelled);
     const task = tasksService.findTask(taskId);
 
     if (task !== undefined && task.status !== TaskStatus.Cancelled) {
@@ -265,6 +314,12 @@ export class DownloadManager {
     }
   };
 
+  /**
+   * Public method to download a single item (file or folder)
+   * Generates a download task and adds it to the download queue
+   * @param downloadItem - The item to download
+   * @returns The generated download task if successful, undefined otherwise
+   */
   static readonly downloadItem = async (downloadItem: DownloadItem) => {
     const newTask = await DownloadManagerService.instance.generateTasksForItem(downloadItem);
 
@@ -274,6 +329,12 @@ export class DownloadManager {
     }
   };
 
+  /**
+   * Removes successfully downloaded items from the retry manager
+   * Filters out failed items and removes only the successful ones from retry queue
+   * @param items - The items that were attempted for download
+   * @param downloadTask - The download task containing information about failed items
+   */
   private static readonly removeRetryItems = (items: DownloadItemType[], downloadTask: DownloadTask) => {
     items
       .filter((item) => !downloadTask.failedItems?.some((failedItem) => failedItem.id === item.id))
