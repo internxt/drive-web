@@ -132,16 +132,16 @@ describe('LRUCache', () => {
     expect(lastState).toEqual({ lruKeyList: ['entry-1'], itemsListSize: 40 });
   });
 
-  it('handles evictedKey undefined by calling reconcileState and continuing', async () => {
+  it('covers evictedKey undefined path (lines 54-56)', async () => {
     const cache = new InMemoryCache<{ id: string }>();
     const lru = new LRUCache(cache, 100);
 
     await lru.set('entry-1', { id: 'entry-1' }, 40);
     await lru.set('entry-2', { id: 'entry-2' }, 40);
 
+    // Corrupt state: empty lruList but high currentSize forces eviction loop
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const lruListRef = (lru as any).lruList as string[];
-    lruListRef.length = 0;
+    (lru as any).lruList.length = 0;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (lru as any).currentSize = 90;
 
@@ -149,5 +149,16 @@ describe('LRUCache', () => {
 
     const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
     expect(lastState?.lruKeyList).toContain('entry-3');
+  });
+
+  it('covers reconcileState early return (lines 112-114)', async () => {
+    const cache = new InMemoryCache<{ id: string }>();
+    const lru = new LRUCache(cache, 100);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (lru as any).reconcileState();
+
+    const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
+    expect(lastState).toEqual({ lruKeyList: [], itemsListSize: 0 });
   });
 });
