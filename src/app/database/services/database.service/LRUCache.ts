@@ -41,37 +41,42 @@ export class LRUCache<T> {
         return;
       }
 
-      while (this.currentSize + size > this.size) {
-        if (!this.lruList.length) {
-          await this.reconcileState();
-          if (!this.lruList.length) {
-            break;
-          }
-        }
+      await this.evictEntriesIfNeeded(size);
 
-        const evictedKey = this.lruList.shift();
-
-        if (evictedKey === undefined) {
-          await this.reconcileState();
-          continue;
-        }
-
-        const isCached = await this.cache.has(evictedKey);
-
-        if (!isCached) {
-          await this.reconcileState();
-          continue;
-        }
-
-        const evictedSize = await this.cache.getSize(evictedKey);
-
-        this.currentSize = Math.max(0, this.currentSize - evictedSize);
-        this.cache.delete(evictedKey);
-        this.persistState();
-      }
       this.lruList.push(key);
       this.currentSize += size;
       this.cache.set(key, value, size);
+      this.persistState();
+    }
+  }
+
+  private async evictEntriesIfNeeded(requiredSize: number): Promise<void> {
+    while (this.currentSize + requiredSize > this.size) {
+      if (!this.lruList.length) {
+        await this.reconcileState();
+        if (!this.lruList.length) {
+          break;
+        }
+      }
+
+      const evictedKey = this.lruList.shift();
+
+      if (evictedKey === undefined) {
+        await this.reconcileState();
+        continue;
+      }
+
+      const isCached = await this.cache.has(evictedKey);
+
+      if (!isCached) {
+        await this.reconcileState();
+        continue;
+      }
+
+      const evictedSize = await this.cache.getSize(evictedKey);
+
+      this.currentSize = Math.max(0, this.currentSize - evictedSize);
+      this.cache.delete(evictedKey);
       this.persistState();
     }
   }
@@ -117,7 +122,7 @@ export class LRUCache<T> {
     const validKeys: string[] = [];
     let computedSize = 0;
 
-    for (const cachedKey of [...this.lruList]) {
+    for (const cachedKey of this.lruList) {
       const exists = await this.cache.has(cachedKey);
 
       if (!exists) {
