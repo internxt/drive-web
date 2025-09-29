@@ -23,7 +23,6 @@ import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/w
 import { ConnectionLostError } from './../../network/requests';
 import { ErrorMessages } from 'app/core/constants';
 import {
-  DownloadFilesType,
   FolderIterator,
   FileIterator,
   SharedFolderIterator,
@@ -52,7 +51,6 @@ export type DownloadItem = {
 };
 
 export type DownloadItemType = DriveItemData | AdvancedSharedItem;
-export type { DownloadFilesType, FolderIterator, FileIterator, SharedFolderIterator, SharedFileIterator };
 
 export type DownloadTask = {
   items: DownloadItemType[];
