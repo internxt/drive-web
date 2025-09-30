@@ -13,10 +13,10 @@ import {
 } from '@phosphor-icons/react';
 import MoveActionIcon from 'assets/icons/move.svg?react';
 import { t } from 'i18next';
-import { Device } from '../../../../backups/types';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import { AdvancedSharedItem } from '../../../../share/types';
 import { MenuItemType } from '@internxt/ui';
+import { Device } from '@internxt/sdk/dist/drive/backups/types';
 
 const getOpenPreviewMenuItem = (openPreview: (target) => void) => ({
   name: t('drive.dropdown.openPreview'),
