@@ -76,6 +76,7 @@ describe('Checkout Service tests', () => {
         countryCode: 'ES',
         postalCode: '12345',
         vatId: 'VAT123',
+        captchaToken: 'token',
       };
 
       const result = await checkoutService.getCustomerId(getCustomerPayload);
@@ -125,6 +126,7 @@ describe('Checkout Service tests', () => {
         customerId: 'cus_123',
         priceId: 'price_123',
         token: 'user_mocked_token',
+        captchaToken: 'captcha_token',
       };
 
       const createSubResponse = await checkoutService.createSubscription(createSubPayload);
@@ -143,6 +145,7 @@ describe('Checkout Service tests', () => {
         priceId: 'price_123',
         token: 'user_mocked_token',
         promoCodeId: 'promo_code_id',
+        captchaToken: 'captcha_token',
       };
 
       const createSubResponse = await checkoutService.createSubscription(createSubPayload);
@@ -161,6 +164,7 @@ describe('Checkout Service tests', () => {
         priceId: 'price_123',
         token: 'user_mocked_token',
         quantity: 3,
+        captchaToken: 'captcha_token',
       };
 
       const createSubResponse = await checkoutService.createSubscription(createSubPayload);
@@ -181,6 +185,7 @@ describe('Checkout Service tests', () => {
         priceId: 'price_123',
         token: 'user_mocked_token',
         currency: 'eur',
+        captchaToken: 'captcha_token',
       };
 
       const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload);
@@ -199,6 +204,7 @@ describe('Checkout Service tests', () => {
         token: 'user_mocked_token',
         currency: 'eur',
         promoCodeId: 'promo_code_name',
+        captchaToken: 'captcha_token',
       };
 
       const createInvoiceResponse = await checkoutService.createPaymentIntent(createInvoicePayload);
