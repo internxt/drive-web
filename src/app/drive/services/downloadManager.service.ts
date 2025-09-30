@@ -289,6 +289,7 @@ export class DownloadManagerService {
         saveAs(cachedFile.source, options.downloadName);
       } else {
         const isWorkspace = !!credentials.workspaceId;
+        console.time('downloadFileFromWorker');
         await this.downloadFileFromWorker({
           file,
           isWorkspace,
@@ -297,6 +298,8 @@ export class DownloadManagerService {
           abortController,
           sharingOptions: credentials,
         });
+
+        console.timeEnd('downloadFileFromWorker');
       }
 
       await this.checkAndHandleConnectionLost(connectionLost);

@@ -71,7 +71,9 @@ export class DownloadWorkerHandler {
       try {
         worker.postMessage({ type: 'abort' });
         if (this.currentWriter) {
-          this.currentWriter.abort();
+          await this.currentWriter.abort();
+          this.currentWriter = undefined;
+          this.currentFileStream = undefined;
         }
         aborted = true;
       } catch {
@@ -122,6 +124,8 @@ export class DownloadWorkerHandler {
         const { fileId } = messageData;
         if (this.currentWriter) {
           await this.currentWriter.close();
+          this.currentWriter = undefined;
+          this.currentFileStream = undefined;
         }
         worker.terminate();
         removeAbortListener();
@@ -131,6 +135,11 @@ export class DownloadWorkerHandler {
 
       case 'error': {
         const { error } = messageData;
+        if (this.currentWriter) {
+          await this.currentWriter.abort();
+          this.currentWriter = undefined;
+          this.currentFileStream = undefined;
+        }
         worker.terminate();
         removeAbortListener();
         reject(error);
