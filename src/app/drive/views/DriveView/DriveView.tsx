@@ -144,7 +144,36 @@ const DriveView = (props: DriveViewProps) => {
     try {
       const fileMeta = await fileService.getFile(fileUUID, workspacesToken);
       dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(fileMeta));
+      /*
+       * PreviewFileItem and FileMeta properties do not match, so we need to manually map them.
+       * We should find a better way to do this, probably by improving and refactoring the PreviewFileItem type,
+       * so we only have to map the properties that are different, if any.
+       */
+      dispatch(
+        uiActions.setFileViewerItem({
+          name: fileMeta.name,
+          bucket: fileMeta.bucket,
+          size: Number(fileMeta.size),
+          type: fileMeta.type,
+          created_at: fileMeta.createdAt,
+          createdAt: fileMeta.createdAt,
+          currentThumbnail: null,
+          deleted: false,
+          deletedAt: null,
+          encrypt_version: fileMeta.encryptVersion,
+          fileId: fileMeta.fileId,
+          folder_id: fileMeta.folderId,
+          folderId: fileMeta.folderId,
+          id: fileMeta.id,
+          folderUuid: fileMeta.folderUuid,
+          plainName: fileMeta.plainName,
+          plain_name: fileMeta.plainName,
+          status: fileMeta.status,
+          uuid: fileMeta.uuid,
+          thumbnails: [],
+          updatedAt: fileMeta.updatedAt,
+        }),
+      );
       fileMeta.plainName && setTitle(`${fileMeta.plainName}.${fileMeta.type} - Internxt Drive`);
     } catch (error) {
       navigationService.push(AppView.FolderFileNotFound, { itemType: 'file' });
