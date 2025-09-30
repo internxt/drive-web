@@ -128,10 +128,39 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     }
   };
 
+  const selectUserSubscriptionPlan = useCallback(
+    (prices: DisplayPrice[]) => {
+      if (!prices?.length) return;
+
+      setSelectedSubscriptionType(UserType.Individual);
+
+      if (individualSubscription?.type === 'free') {
+        setPriceSelected(FREE_PLAN_DATA);
+        return;
+      }
+
+      const isLifetime = individualSubscription?.type === 'lifetime';
+      const interval = isLifetime ? 'lifetime' : defaultInterval;
+
+      setSelectedInterval(interval);
+
+      const userPlan = prices.find((p) => p.productId === individualSubscription?.productId && p.interval === interval);
+
+      console.log('USER PLAN: ', { userPlan, plan, individualPrices: prices });
+
+      if (userPlan) {
+        setPriceSelected(userPlan);
+      }
+    },
+    [defaultInterval, individualSubscription],
+  );
+
   const fetchDataAndSetPrices = useCallback(async () => {
     try {
       const individualPrices = await fetchPlanPrices(UserType.Individual);
       const businessPrices = await fetchPlanPrices(UserType.Business);
+
+      selectUserSubscriptionPlan(individualPrices);
 
       setIndividualPrices(individualPrices);
       setBusinessPrices(businessPrices);

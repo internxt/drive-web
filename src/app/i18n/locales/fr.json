@@ -4,14 +4,14 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": {"blueText":"Obtenez 87% de réduction", "text":"sur tous les Plans Premium"},
+    "label": { "blueText": "Obtenez 87% de réduction", "text": "sur tous les Plans Premium" },
     "title": "Obtenez une remise exclusive !",
     "subTitle": {
-      "blueText":"Offre spéciale :",
-      "text":"stockez vos fichiers en privé pour moins cher"
+      "blueText": "Offre spéciale :",
+      "text": "stockez vos fichiers en privé pour moins cher"
     },
     "ctaGet": "Profiter de l'offre",
-    "ctaContinue":"Continuer gratuitement",
+    "ctaContinue": "Continuer gratuitement",
     "guarantee": "Garantie de remboursement de 30 jours",
     "products": {
       "drive": "Drive",
@@ -977,6 +977,14 @@
       "teams": "Équipes",
       "teamsWithAccess": "Équipes avec accès :",
       "shareButton": "Partager"
+    },
+    "restrictedSharingModal": {
+      "title": "Passez à une offre supérieure pour partager des fichiers",
+      "subtitle": "Le partage de fichiers n'est pas disponible avec votre forfait actuel. Passez à une offre supérieure pour activer le partage sécurisé."
+    },
+    "restrictedPasswordModal": {
+      "title": "Débloquer le partage protégé par mot de passe",
+      "subtitle": "Ajoutez une couche de sécurité supplémentaire en protégeant vos liens partagés avec un mot de passe."
     }
   },
   "form": {
@@ -1374,7 +1382,8 @@
     "more": "Plus",
     "continue": "Continuer",
     "keepCurrent": "Garder actuel",
-    "logOut": "Se déconnecter"
+    "logOut": "Se déconnecter",
+    "locked": "Verrouillé"
   },
   "drive": {
     "usage": "Usage",
@@ -1878,10 +1887,7 @@
           },
           "1GB": {
             "title": "Gratuit",
-            "features": [
-              "1GB de stockage chiffré à connaissance zéro",
-              "VPN standard gratuit (FR)"
-            ]
+            "features": ["1GB de stockage chiffré à connaissance zéro", "VPN standard gratuit (FR)"]
           }
         },
         "businessPlanFeaturesList": {

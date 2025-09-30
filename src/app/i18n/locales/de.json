@@ -4,14 +4,14 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": {"blueText":"87% Rabatt erhalten", "text":"auf alle Premium-Pläne"},
+    "label": { "blueText": "87% Rabatt erhalten", "text": "auf alle Premium-Pläne" },
     "title": "Erhalten Sie einen exklusiven Rabatt!",
     "subTitle": {
-      "blueText":"Sonderangebot:",
-      "text":"Dateien privat speichern für weniger"
+      "blueText": "Sonderangebot:",
+      "text": "Dateien privat speichern für weniger"
     },
     "ctaGet": "Angebot sichern",
-    "ctaContinue":"Kostenlos fortfahren",
+    "ctaContinue": "Kostenlos fortfahren",
     "guarantee": "30-Tage-Geld-zurück-Garantie",
     "products": {
       "drive": "Drive",
@@ -968,6 +968,14 @@
       "teams": "Teams",
       "teamsWithAccess": "Teams mit Zugriff:",
       "shareButton": "Teilen"
+    },
+    "restrictedSharingModal": {
+      "title": "Upgrade zum Teilen von Dateien",
+      "subtitle": "Das Teilen von Dateien ist in Ihrem aktuellen Tarif nicht verfügbar. Führen Sie ein Upgrade durch, um sicheres Teilen freizuschalten."
+    },
+    "restrictedPasswordModal": {
+      "title": "Passwortgeschütztes Teilen freischalten",
+      "subtitle": "Fügen Sie eine zusätzliche Sicherheitsebene hinzu, indem Sie Ihre geteilten Links mit einem Passwort schützen."
     }
   },
   "form": {
@@ -1362,7 +1370,8 @@
     "more": "Mehr",
     "continue": "Fortsetzen",
     "keepCurrent": "Aktuell behalten",
-    "logOut": "Abmelden"
+    "logOut": "Abmelden",
+    "locked": "Gesperrt"
   },
   "drive": {
     "usage": "Verwendung",
@@ -1866,10 +1875,7 @@
           },
           "1GB": {
             "title": "Kostenlos",
-            "features": [
-              "1GB Zero-Knowledge verschlüsselter Speicher",
-              "Kostenloses Standard-VPN (FR)"
-            ]
+            "features": ["1GB Zero-Knowledge verschlüsselter Speicher", "Kostenloses Standard-VPN (FR)"]
           }
         },
         "businessPlanFeaturesList": {
