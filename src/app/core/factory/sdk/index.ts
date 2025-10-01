@@ -38,7 +38,7 @@ export class SdkFactory {
     return this.sdk.newApiInstance;
   }
 
-  public createAuthClient(options?: { unauthorizedCallback?: () => void | Promise<void> }): Auth {
+  public createAuthClient(options?: { unauthorizedCallback?: () => void }): Auth {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
     const apiSecurity = this.getNewApiSecurity(options?.unauthorizedCallback);
@@ -115,7 +115,7 @@ export class SdkFactory {
 
   /** Helpers **/
 
-  private getNewApiSecurity(unauthorizedCallback?: () => void | Promise<void>): ApiSecurity {
+  private getNewApiSecurity(unauthorizedCallback?: () => void): ApiSecurity {
     const workspace = SdkFactory.sdk.localStorage.getWorkspace();
     const workspaceToken = this.getWorkspaceToken();
     return {
@@ -123,7 +123,7 @@ export class SdkFactory {
       workspaceToken,
       unauthorizedCallback:
         unauthorizedCallback ??
-        (async () => {
+        (() => {
           SdkFactory.sdk.dispatch(userThunks.logoutThunk());
         }),
     };
