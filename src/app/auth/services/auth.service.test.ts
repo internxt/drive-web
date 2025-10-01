@@ -890,4 +890,47 @@ describe('areCredentialsCorrect', () => {
 
     await expect(authService.areCredentialsCorrect(mockPassword)).rejects.toThrow('API error');
   });
+
+  it('should use unauthorizedCallback: () => undefined when creating auth client', async () => {
+    const mockPassword = 'password123';
+    const mockSalt = 'mockSalt';
+    const mockToken = 'mockToken';
+    const mockEmail = 'test@example.com';
+    const mockCreateAuthClient = vi.fn();
+
+    vi.spyOn(localStorageService, 'get').mockImplementation((key: string) => {
+      if (key === 'xNewToken') return mockToken;
+      return null;
+    });
+
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({
+      email: mockEmail,
+    } as any);
+
+    const encryptedSalt = encryptText(mockSalt);
+    const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(true);
+    const mockSecurityDetails = vi.fn().mockResolvedValue({ encryptedSalt });
+
+    mockCreateAuthClient.mockImplementation(() => {
+      return {
+        securityDetails: mockSecurityDetails,
+        areCredentialsCorrect: mockAreCredentialsCorrect,
+      };
+    });
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: mockCreateAuthClient,
+    } as any);
+
+    await authService.areCredentialsCorrect(mockPassword);
+
+    expect(mockCreateAuthClient).toHaveBeenCalledTimes(2);
+    expect(mockCreateAuthClient).toHaveBeenNthCalledWith(2, {
+      unauthorizedCallback: expect.any(Function),
+    });
+
+    const callArgs = mockCreateAuthClient.mock.calls[1][0];
+    const unauthorizedResult = callArgs.unauthorizedCallback();
+    expect(unauthorizedResult).toBeUndefined();
+  });
 });
