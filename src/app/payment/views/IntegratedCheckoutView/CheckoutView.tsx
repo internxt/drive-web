@@ -63,6 +63,15 @@ const CheckoutView = ({
   const stripeSDK = useStripe();
   const elements = useElements();
   const [isCryptoDropdownOpen, setIsCryptoDropdownOpen] = useState<boolean>(false);
+  const {
+    isPaying,
+    error,
+    authMethod,
+    couponCodeData,
+    seatsForBusinessSubscription,
+    currentSelectedPlan,
+    selectedCurrency,
+  } = checkoutViewVariables;
 
   const onCryptoDropdownToggle = () => {
     if (!isCryptoDropdownOpen) {
@@ -75,18 +84,9 @@ const CheckoutView = ({
 
   const onStripePaymentExpanded = () => {
     onCurrencyTypeChanges(PaymentType['FIAT']);
+    checkoutViewManager.onCurrencyChange(currentSelectedPlan?.price.currency ?? 'eur');
     setIsCryptoDropdownOpen(false);
   };
-
-  const {
-    isPaying,
-    error,
-    authMethod,
-    couponCodeData,
-    seatsForBusinessSubscription,
-    currentSelectedPlan,
-    selectedCurrency,
-  } = checkoutViewVariables;
 
   const {
     register,
