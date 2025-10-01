@@ -38,10 +38,10 @@ export class SdkFactory {
     return this.sdk.newApiInstance;
   }
 
-  public createAuthClient(): Auth {
+  public createAuthClient(options?: { unauthorizedCallback?: () => void | Promise<void> }): Auth {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
-    const apiSecurity = this.getNewApiSecurity();
+    const apiSecurity = this.getNewApiSecurity(options?.unauthorizedCallback);
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
 
@@ -115,15 +115,17 @@ export class SdkFactory {
 
   /** Helpers **/
 
-  private getNewApiSecurity(): ApiSecurity {
+  private getNewApiSecurity(unauthorizedCallback?: () => void | Promise<void>): ApiSecurity {
     const workspace = SdkFactory.sdk.localStorage.getWorkspace();
     const workspaceToken = this.getWorkspaceToken();
     return {
       token: this.getNewToken(workspace),
       workspaceToken,
-      unauthorizedCallback: async () => {
-        SdkFactory.sdk.dispatch(userThunks.logoutThunk());
-      },
+      unauthorizedCallback:
+        unauthorizedCallback ??
+        (async () => {
+          SdkFactory.sdk.dispatch(userThunks.logoutThunk());
+        }),
     };
   }
 
