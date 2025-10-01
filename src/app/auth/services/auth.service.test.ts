@@ -800,3 +800,94 @@ describe('updateCredentialsWithToken', () => {
     );
   });
 });
+
+describe('areCredentialsCorrect', () => {
+  it('should return true when credentials are correct', async () => {
+    const mockPassword = 'password123';
+    const mockSalt = 'mockSalt';
+    const mockToken = 'mockToken';
+
+    vi.spyOn(localStorageService, 'get').mockReturnValue(mockToken);
+
+    const encryptedSalt = encryptText(mockSalt);
+    const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(true);
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        securityDetails: vi.fn().mockResolvedValue({ encryptedSalt }),
+        areCredentialsCorrect: mockAreCredentialsCorrect,
+      }),
+    } as any);
+
+    const result = await authService.areCredentialsCorrect(mockPassword);
+
+    expect(result).toBe(true);
+    expect(mockAreCredentialsCorrect).toHaveBeenCalledWith(expect.any(String), mockToken);
+  });
+
+  it('should return false when credentials are incorrect', async () => {
+    const mockPassword = 'wrongPassword';
+    const mockSalt = 'mockSalt';
+    const mockToken = 'mockToken';
+
+    vi.spyOn(localStorageService, 'get').mockReturnValue(mockToken);
+
+    const encryptedSalt = encryptText(mockSalt);
+    const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(false);
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        securityDetails: vi.fn().mockResolvedValue({ encryptedSalt }),
+        areCredentialsCorrect: mockAreCredentialsCorrect,
+      }),
+    } as any);
+
+    const result = await authService.areCredentialsCorrect(mockPassword);
+
+    expect(result).toBe(false);
+    expect(mockAreCredentialsCorrect).toHaveBeenCalledWith(expect.any(String), mockToken);
+  });
+
+  it('should handle undefined token', async () => {
+    const mockPassword = 'password123';
+    const mockSalt = 'mockSalt';
+
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+
+    const encryptedSalt = encryptText(mockSalt);
+    const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(true);
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        securityDetails: vi.fn().mockResolvedValue({ encryptedSalt }),
+        areCredentialsCorrect: mockAreCredentialsCorrect,
+      }),
+    } as any);
+
+    const result = await authService.areCredentialsCorrect(mockPassword);
+
+    expect(result).toBe(true);
+    expect(mockAreCredentialsCorrect).toHaveBeenCalledWith(expect.any(String), undefined);
+  });
+
+  it('should handle errors from API', async () => {
+    const mockPassword = 'password123';
+    const mockSalt = 'mockSalt';
+    const mockToken = 'mockToken';
+
+    vi.spyOn(localStorageService, 'get').mockReturnValue(mockToken);
+
+    const encryptedSalt = encryptText(mockSalt);
+    const mockError = new Error('API error');
+    const mockAreCredentialsCorrect = vi.fn().mockRejectedValue(mockError);
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue({
+        securityDetails: vi.fn().mockResolvedValue({ encryptedSalt }),
+        areCredentialsCorrect: mockAreCredentialsCorrect,
+      }),
+    } as any);
+
+    await expect(authService.areCredentialsCorrect(mockPassword)).rejects.toThrow('API error');
+  });
+});
