@@ -23,7 +23,6 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   },
   layout: {
     type: 'accordion',
-    defaultCollapsed: true,
     radios: false,
     spacedAccordionItems: true,
   },
