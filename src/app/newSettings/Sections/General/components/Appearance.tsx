@@ -41,6 +41,24 @@ const themes = [
   { theme: 'dark', img: appearance_dark },
 ];
 
+const filterNewThemes = (newThemes, existingThemes) => {
+  return newThemes.filter(
+    (newTheme) => !existingThemes.some((existingTheme) => existingTheme.theme === newTheme.theme),
+  );
+};
+
+const createThemeAppearances = (themes) => {
+  return themes.map((theme) => ({
+    theme,
+    img: appearance_dark,
+  }));
+};
+
+const mergeThemes = (existingThemes, newThemes) => {
+  const filteredNewThemes = filterNewThemes(newThemes, existingThemes);
+  return [...existingThemes, ...filteredNewThemes];
+};
+
 const Appearance = () => {
   const { translate } = useTranslationContext();
   const { currentTheme, toggleTheme } = useThemeContext();
@@ -56,18 +74,10 @@ const Appearance = () => {
       const { usedCoupons: userPromoCodes } = await paymentService.getPromoCodesUsedByUser();
       const availableThemesService = new UserThemesService(userPromoCodes);
 
-      const allAvailableThemesForUSer = availableThemesService.getAllAvailableThemes();
-      const newAppearances = allAvailableThemesForUSer.map((theme) => ({
-        theme,
-        img: appearance_dark,
-      }));
+      const allAvailableThemesForUser = availableThemesService.getAllAvailableThemes();
+      const newAppearances = createThemeAppearances(allAvailableThemesForUser);
 
-      setAppearances((prev) => {
-        const filteredNew = newAppearances.filter(
-          (newAppearance) => !prev.some((appearance) => appearance.theme === newAppearance.theme),
-        );
-        return [...prev, ...filteredNew];
-      });
+      setAppearances((prev) => mergeThemes(prev, newAppearances));
     } catch (error) {
       console.error(`Something went wrong while fetching available themes for user. ERROR: ${error}`);
       errorService.reportError(error);
