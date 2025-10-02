@@ -1056,7 +1056,8 @@
     "maxSizeUploadLimitError": "Слишком большой файл (более 40 ГБ)",
     "connectionLostError": "Потеряно подключение к Интернету",
     "errorLoadingTrashItems": "Ошибка при загрузке элементов корзины",
-    "updateAvatarError": "Ошибка при обновлении аватара"
+    "updateAvatarError": "Ошибка при обновлении аватара",
+    "featuresUnavailable": "Некоторые функции могут быть недоступны"
   },
   "backups": {
     "backups-from": "Резервные копии с {{deviceName}}",
