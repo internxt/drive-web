@@ -8,7 +8,6 @@ import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/
 import envService from 'app/core/services/env.service';
 import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
-import { WORKER_MESSAGE_STATES } from '../../WebWorker';
 
 import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
 import { TaskStatus } from '../tasks/types';
@@ -16,6 +15,7 @@ import { encryptStreamInParts, generateFileKey, getEncryptedFile, processEveryFi
 import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileUint8Array, UploadProgressCallback } from './upload';
 import { UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD } from './networkConstants';
+import { WORKER_MESSAGE_STATES } from 'app/drive/services/worker.service/types/upload';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
