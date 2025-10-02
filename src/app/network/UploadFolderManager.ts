@@ -182,14 +182,15 @@ export class UploadFoldersManager {
     UploadFoldersManager.MAX_CONCURRENT_UPLOADS,
   );
 
-  private readonly uploadFolderAsync = async (taskFolder: TaskFolder) => {
-    const { root: level, currentFolderId, taskId, abortController } = taskFolder;
-
-    if (abortController.signal.aborted) return;
-
+  private readonly createFolderWithRetry = async (
+    level: IRoot,
+    currentFolderId: string,
+    taskId: string,
+    abortController: AbortController,
+  ): Promise<DriveFolderData | undefined> => {
     let createdFolder: DriveFolderData | undefined;
-
     let uploadAttempts = 0;
+
     while (!createdFolder && uploadAttempts < UploadFoldersManager.MAX_UPLOAD_ATTEMPTS) {
       uploadAttempts++;
       try {
@@ -212,18 +213,11 @@ export class UploadFoldersManager {
       }
     }
 
-    if (!createdFolder) {
-      this.stopUploadTask(taskId, abortController);
-      this.killQueueAndNotifyError(taskId);
-      return;
-    }
+    return createdFolder;
+  };
 
-    if (!this.tasksInfo[taskId].rootFolderItem) {
-      this.tasksInfo[taskId].rootFolderItem = createdFolder;
-    }
-
+  private readonly updateTaskProgress = (taskId: string, abortController: AbortController): void => {
     this.tasksInfo[taskId].progress.itemsUploaded += 1;
-
     tasksService.updateTask({
       taskId,
       merge: {
@@ -231,50 +225,45 @@ export class UploadFoldersManager {
         stop: () => this.stopUploadTask(taskId, abortController),
       },
     });
+  };
 
-    if (level.childrenFiles.length > 0 || level.childrenFolders.length > 0) {
-      // Added wait in order to allow enough time for the server to create the folder
-      await wait(600);
-    }
+  private readonly handleFileUploads = async (
+    level: IRoot,
+    createdFolder: DriveFolderData,
+    taskId: string,
+    abortController: AbortController,
+  ): Promise<void> => {
+    if (level.childrenFiles.length === 0) return;
+    if (abortController.signal.aborted) return;
 
-    if (level.childrenFiles.length > 0) {
-      if (abortController.signal.aborted) return;
-      await this.dispatch(
-        uploadItemsParallelThunk({
-          files: level.childrenFiles,
-          parentFolderId: createdFolder.uuid,
-          options: {
-            relatedTaskId: taskId,
-            showNotifications: false,
-            showErrors: false,
-            abortController: abortController,
-            disableDuplicatedNamesCheck: true,
-            disableExistenceCheck: true,
-            isUploadedFromFolder: true,
-            notUploadHiddenFiles: true,
-          },
-          onFileUploadCallback: () => {
-            this.tasksInfo[taskId].progress.itemsUploaded += 1;
-            tasksService.updateTask({
-              taskId,
-              merge: {
-                progress: this.tasksInfo[taskId].progress.itemsUploaded / this.tasksInfo[taskId].progress.totalItems,
-                stop: () => this.stopUploadTask(taskId, abortController),
-              },
-            });
-          },
-        }),
-      )
-        .unwrap()
-        .catch(() => {
-          this.stopUploadTask(taskId, abortController);
-          this.killQueueAndNotifyError(taskId);
-          return;
-        });
-    }
+    await this.dispatch(
+      uploadItemsParallelThunk({
+        files: level.childrenFiles,
+        parentFolderId: createdFolder.uuid,
+        options: {
+          relatedTaskId: taskId,
+          showNotifications: false,
+          showErrors: false,
+          abortController: abortController,
+          disableDuplicatedNamesCheck: true,
+          disableExistenceCheck: true,
+          isUploadedFromFolder: true,
+          notUploadHiddenFiles: true,
+        },
+        onFileUploadCallback: () => this.updateTaskProgress(taskId, abortController),
+      }),
+    )
+      .unwrap()
+      .catch(() => {
+        this.stopUploadTask(taskId, abortController);
+        this.killQueueAndNotifyError(taskId);
+        return;
+      });
+  };
 
+  private readonly queueChildFolders = (level: IRoot, createdFolder: DriveFolderData, taskFolder: TaskFolder): void => {
     for (const child of level.childrenFolders) {
-      if (abortController.signal.aborted) return;
+      if (taskFolder.abortController.signal.aborted) return;
 
       this.uploadFoldersQueue.push({
         root: { ...child, folderId: createdFolder.uuid },
@@ -284,6 +273,29 @@ export class UploadFoldersManager {
         taskId: taskFolder.taskId,
       });
     }
+  };
+
+  private readonly uploadFolderAsync = async (taskFolder: TaskFolder) => {
+    const { root: level, currentFolderId, taskId, abortController } = taskFolder;
+
+    if (abortController.signal.aborted) return;
+
+    const createdFolder = await this.createFolderWithRetry(level, currentFolderId, taskId, abortController);
+    if (!createdFolder) return;
+
+    if (!this.tasksInfo[taskId].rootFolderItem) {
+      this.tasksInfo[taskId].rootFolderItem = createdFolder;
+    }
+
+    this.updateTaskProgress(taskId, abortController);
+
+    if (level.childrenFiles.length > 0 || level.childrenFolders.length > 0) {
+      // Added wait in order to allow enough time for the server to create the folder
+      await wait(600);
+    }
+
+    await this.handleFileUploads(level, createdFolder, taskId, abortController);
+    this.queueChildFolders(level, createdFolder, taskFolder);
 
     return createdFolder;
   };

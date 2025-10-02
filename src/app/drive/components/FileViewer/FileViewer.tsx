@@ -14,7 +14,7 @@ import { Fragment, Suspense, useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { PreviewFileItem } from '../../../share/types';
 import { setItemsToMove, storageActions } from '../../../store/slices/storage';
-import { TopBarActionsMenu } from './FileViewerWrapper';
+import { TopBarActionsMenu } from './types';
 import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailableComponent';
 import TopBarActions from './components/TopBarActions';
 import { getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';

@@ -16,13 +16,12 @@ import {
   contextMenuTrashItems,
 } from '../../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import { MenuItemType } from '@internxt/ui';
+import { TopBarActionsMenu } from '../types';
 
 interface DownloadedBlobData {
   blob: Blob;
   shouldHandleFileThumbnail: boolean;
 }
-
-export type TopBarActionsMenu = Array<MenuItemType<DriveItemData>> | Array<MenuItemType<AdvancedSharedItem>>;
 
 type PathProps = 'drive' | 'trash' | 'shared' | 'recents';
 
