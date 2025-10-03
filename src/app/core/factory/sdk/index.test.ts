@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SdkFactory } from './index';
 import { LocalStorageService } from '../../services/local-storage.service';
