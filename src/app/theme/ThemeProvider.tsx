@@ -72,7 +72,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const toggleTheme = (theme: Theme) => setCurrentTheme(theme);
 
-  const persistIsDark = (value: boolean) => {
+  const persistDarkTheme = (value: boolean) => {
     localStorageService.set('theme:isDark', value ? 'true' : 'false');
   };
 
@@ -97,7 +97,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         root.style.backgroundImage = 'none';
         document.documentElement.classList.add('dark');
         setCheckoutTheme('dark');
-        persistIsDark(true);
+        persistDarkTheme(true);
         return;
       }
 
@@ -114,13 +114,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         if (config.darkMode) {
           document.documentElement.classList.add('dark');
           setCheckoutTheme('dark');
-          persistIsDark(true);
+          persistDarkTheme(true);
           return;
         }
 
         document.documentElement.classList.remove('dark');
         setCheckoutTheme('light');
-        persistIsDark(false);
+        persistDarkTheme(false);
 
         return;
       }
@@ -129,7 +129,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       root.style.backgroundImage = 'none';
       document.documentElement.classList.remove('dark');
       setCheckoutTheme('light');
-      persistIsDark(false);
+      persistDarkTheme(false);
     };
 
     updateTheme();
