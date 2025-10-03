@@ -63,6 +63,7 @@ function clear(): void {
   localStorage.removeItem('workspace');
   localStorage.removeItem('language');
   localStorage.removeItem('showSummerBanner');
+  localStorage.removeItem('theme:isDark');
   localStorage.removeItem('xInvitedToken');
   localStorage.removeItem('xResourcesToken');
   localStorage.removeItem(STORAGE_KEYS.B2B_WORKSPACE);
