@@ -51,7 +51,7 @@ const ChangePasswordModal = ({
   }, [isOpen]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} preventClosing>
       <form onSubmit={handleSubmit}>
         <h1 className="text-2xl font-medium text-gray-80">{translate('modals.changePasswordModal.title')}</h1>
         <ValidPassword
