@@ -146,8 +146,6 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
       const userPlan = prices.find((p) => p.productId === individualSubscription?.productId && p.interval === interval);
 
-      console.log('USER PLAN: ', { userPlan, plan, individualPrices: prices });
-
       if (userPlan) {
         setPriceSelected(userPlan);
       }
