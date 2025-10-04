@@ -41,21 +41,61 @@ export class LRUCache<T> {
         return;
       }
 
-      while (this.currentSize + size > this.size) {
-        const evictedKey = this.lruList.shift();
+      await this.evictEntriesIfNeeded(size);
 
-        if (evictedKey !== undefined) {
-          this.currentSize -= await this.cache.getSize(evictedKey);
-          this.cache.delete(evictedKey);
-        }
-      }
       this.lruList.push(key);
       this.currentSize += size;
       this.cache.set(key, value, size);
-      this.cache.updateLRUState({
-        lruKeyList: this.lruList.slice(),
-        itemsListSize: this.currentSize,
-      });
+      this.persistState();
+    }
+  }
+
+  private async evictEntriesIfNeeded(requiredSize: number): Promise<void> {
+    let hasReconciled = false;
+    let hasEvicted = false;
+
+    while (this.currentSize + requiredSize > this.size) {
+      if (!this.lruList.length) {
+        if (hasReconciled) {
+          break;
+        }
+        await this.reconcileState();
+        hasReconciled = true;
+        if (!this.lruList.length) {
+          break;
+        }
+      }
+
+      const evictedKey = this.lruList.shift();
+
+      if (evictedKey === undefined) {
+        if (!hasReconciled) {
+          await this.reconcileState();
+          hasReconciled = true;
+        }
+        continue;
+      }
+
+      const isCached = await this.cache.has(evictedKey);
+
+      if (!isCached) {
+        if (hasReconciled) {
+          continue;
+        }
+        await this.reconcileState();
+        hasReconciled = true;
+        continue;
+      }
+
+      const evictedSize = await this.cache.getSize(evictedKey);
+
+      this.currentSize = Math.max(0, this.currentSize - evictedSize);
+      this.cache.delete(evictedKey);
+      hasEvicted = true;
+    }
+
+    if (hasEvicted) {
+      this.persistState();
     }
   }
 
@@ -72,10 +112,7 @@ export class LRUCache<T> {
 
     this.currentSize -= size;
     this.cache.delete(key);
-    this.cache.updateLRUState({
-      lruKeyList: this.lruList.slice(),
-      itemsListSize: this.currentSize,
-    });
+    this.persistState();
   }
 
   private updateLRU(key: string) {
@@ -84,9 +121,46 @@ export class LRUCache<T> {
       this.lruList.splice(index, 1);
     }
     this.lruList.push(key);
+    this.persistState();
+  }
+
+  private persistState(): void {
     this.cache.updateLRUState({
       lruKeyList: this.lruList.slice(),
       itemsListSize: this.currentSize,
     });
+  }
+
+  private async reconcileState(): Promise<void> {
+    if (!this.lruList.length && this.currentSize === 0) {
+      this.persistState();
+      return;
+    }
+
+    const results = await Promise.all(
+      this.lruList.map(async (cachedKey) => {
+        const exists = await this.cache.has(cachedKey);
+        if (!exists) {
+          return null;
+        }
+        const cachedSize = await this.cache.getSize(cachedKey);
+        return { key: cachedKey, size: cachedSize };
+      }),
+    );
+
+    const validKeys: string[] = [];
+    let computedSize = 0;
+
+    for (const result of results) {
+      if (result) {
+        validKeys.push(result.key);
+        computedSize += result.size;
+      }
+    }
+
+    this.lruList.length = 0;
+    this.lruList.push(...validKeys);
+    this.currentSize = computedSize;
+    this.persistState();
   }
 }

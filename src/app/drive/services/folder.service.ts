@@ -313,7 +313,7 @@ export async function downloadFolderAsZip({
         try {
           updateNumItems();
           const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-          const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
+          const cachedFile = await lruFilesCacheManager.get(file.id?.toString());
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
           if (cachedFile?.source && !isCachedFileOlder) {
@@ -380,7 +380,7 @@ export async function downloadFolderAsZip({
         addUniqueItem(file);
         try {
           const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-          const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
+          const cachedFile = await lruFilesCacheManager.get(file.id?.toString());
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
           updateNumItems();
