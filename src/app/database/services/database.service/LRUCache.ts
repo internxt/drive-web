@@ -51,9 +51,16 @@ export class LRUCache<T> {
   }
 
   private async evictEntriesIfNeeded(requiredSize: number): Promise<void> {
+    let hasReconciled = false;
+    let hasEvicted = false;
+
     while (this.currentSize + requiredSize > this.size) {
       if (!this.lruList.length) {
+        if (hasReconciled) {
+          break;
+        }
         await this.reconcileState();
+        hasReconciled = true;
         if (!this.lruList.length) {
           break;
         }
@@ -62,14 +69,21 @@ export class LRUCache<T> {
       const evictedKey = this.lruList.shift();
 
       if (evictedKey === undefined) {
-        await this.reconcileState();
+        if (!hasReconciled) {
+          await this.reconcileState();
+          hasReconciled = true;
+        }
         continue;
       }
 
       const isCached = await this.cache.has(evictedKey);
 
       if (!isCached) {
+        if (hasReconciled) {
+          continue;
+        }
         await this.reconcileState();
+        hasReconciled = true;
         continue;
       }
 
@@ -77,6 +91,10 @@ export class LRUCache<T> {
 
       this.currentSize = Math.max(0, this.currentSize - evictedSize);
       this.cache.delete(evictedKey);
+      hasEvicted = true;
+    }
+
+    if (hasEvicted) {
       this.persistState();
     }
   }
@@ -119,20 +137,25 @@ export class LRUCache<T> {
       return;
     }
 
+    const results = await Promise.all(
+      this.lruList.map(async (cachedKey) => {
+        const exists = await this.cache.has(cachedKey);
+        if (!exists) {
+          return null;
+        }
+        const cachedSize = await this.cache.getSize(cachedKey);
+        return { key: cachedKey, size: cachedSize };
+      }),
+    );
+
     const validKeys: string[] = [];
     let computedSize = 0;
 
-    for (const cachedKey of this.lruList) {
-      const exists = await this.cache.has(cachedKey);
-
-      if (!exists) {
-        continue;
+    for (const result of results) {
+      if (result) {
+        validKeys.push(result.key);
+        computedSize += result.size;
       }
-
-      const cachedSize = await this.cache.getSize(cachedKey);
-
-      computedSize += cachedSize;
-      validKeys.push(cachedKey);
     }
 
     this.lruList.length = 0;
