@@ -1,4 +1,4 @@
-import { afterAll, beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer, { getUserTierFeaturesThunk } from './index';
 import { ProductService, UserTierFeatures } from 'app/payment/services/products.service';
@@ -22,10 +22,7 @@ describe('User reducer', () => {
   beforeEach(() => {
     store = createTestStore();
     vi.clearAllMocks();
-  });
-
-  afterAll(() => {
-    vi.restoreAllMocks();
+    vi.resetModules();
   });
 
   describe('Get user tier thunk', () => {
