@@ -133,7 +133,7 @@ describe('LRUCache', () => {
     expect(lastState).toEqual({ lruKeyList: ['entry-1'], itemsListSize: 40 });
   });
 
-  it('covers evictedKey undefined path and breaks after reconciliation', async () => {
+  it('reconciles and breaks when lruList is empty after reconciliation', async () => {
     const cache = new InMemoryCache<{ id: string }>();
     const lru = new LRUCache(cache, 100);
 
@@ -153,7 +153,7 @@ describe('LRUCache', () => {
     expect(lastState?.itemsListSize).toBe(20);
   });
 
-  it('covers reconcileState early return (lines 112-114)', async () => {
+  it('reconciles empty state when lruList and currentSize are zero', async () => {
     const cache = new InMemoryCache<{ id: string }>();
     const lru = new LRUCache(cache, 100);
 
@@ -162,5 +162,25 @@ describe('LRUCache', () => {
 
     const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
     expect(lastState).toEqual({ lruKeyList: [], itemsListSize: 0 });
+  });
+
+  it('reconciles when shift returns undefined before hasReconciled flag is set', async () => {
+    const cache = new InMemoryCache<{ id: string }>();
+    const lru = new LRUCache(cache, 100);
+
+    await lru.set('entry-1', { id: 'entry-1' }, 30);
+    cache.set('entry-2-cached', { id: 'entry-2-cached' }, 20);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const lruListRef = (lru as any).lruList as any[];
+    lruListRef.push(undefined, 'entry-2-cached');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (lru as any).currentSize = 80;
+    await lru.set('entry-3', { id: 'entry-3' }, 25);
+
+    const allCalls = cache.updateLRUState.mock.calls;
+    const lastState = allCalls[allCalls.length - 1][0];
+
+    expect(allCalls.length).toBeGreaterThan(2);
+    expect(lastState?.lruKeyList.filter((k) => k !== undefined)).toContain('entry-3');
   });
 });
