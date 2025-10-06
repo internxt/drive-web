@@ -51,6 +51,9 @@ import {
   ViewProps,
   Views,
 } from './types';
+import navigationService from 'app/core/services/navigation.service';
+import { Service } from '@internxt/sdk/dist/drive/payments/types/tiers';
+import { UpgradeDialog } from '../UpgradeDialog/UpgradeDialog';
 
 const isRequestPending = (status: RequestStatus): boolean =>
   status !== REQUEST_STATUS.DENIED && status !== REQUEST_STATUS.ACCEPTED;
@@ -107,6 +110,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
+  const userFeatures = useAppSelector((state) => state.user.userTierFeatures);
+  const isRestrictedSharingAvailable = userFeatures?.[Service.Drive].restrictedItemsSharing.enabled ?? false;
+  const isPasswordSharingAvailable = userFeatures?.[Service.Drive].passwordProtectedSharing.enabled ?? false;
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [inviteDialogRoles, setInviteDialogRoles] = useState<Role[]>([]);
@@ -121,6 +127,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [openPasswordInput, setOpenPasswordInput] = useState(false);
   const [openPasswordDisableDialog, setOpenPasswordDisableDialog] = useState(false);
   const [sharingMeta, setSharingMeta] = useState<SharingMeta | null>(null);
+  const [isRestrictedSharingDialogOpen, setIsRestrictedSharingDialogOpen] = useState<boolean>(false);
+  const [isRestrictedPasswordDialogOpen, setIsRestrictedPasswordDialogOpen] = useState<boolean>(false);
 
   const [accessRequests, setAccessRequests] = useState<RequestProps[]>([]);
   const [userOptionsEmail, setUserOptionsEmail] = useState<InvitedUserProps>();
@@ -339,12 +347,17 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   const onPasswordCheckboxChange = useCallback(() => {
+    if (!isPasswordSharingAvailable) {
+      setIsRestrictedPasswordDialogOpen(true);
+      return;
+    }
+
     if (!isPasswordProtected) {
       setOpenPasswordInput(true);
     } else {
       setOpenPasswordDisableDialog(true);
     }
-  }, [isPasswordProtected]);
+  }, [isPasswordProtected, isPasswordSharingAvailable]);
 
   const onSavePublicSharePassword = useCallback(
     async (plainPassword: string) => {
@@ -386,6 +399,12 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const changeAccess = async (mode: AccessMode) => {
     closeSelectedUserPopover();
+
+    if (!isRestrictedSharingAvailable) {
+      setIsRestrictedSharingDialogOpen(true);
+      return;
+    }
+
     if (mode != accessMode) {
       setIsLoading(true);
       try {
@@ -426,6 +445,17 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setShowStopSharingConfirmation(false);
     onClose();
     setIsLoading(false);
+  };
+
+  const onUpgradePlan = () => {
+    navigationService.openPreferencesDialog({
+      section: 'account',
+      subsection: 'plans',
+    });
+    setIsRestrictedPasswordDialogOpen(false);
+    setIsRestrictedSharingDialogOpen(false);
+    onClose();
+    dispatch(uiActions.setIsPreferencesDialogOpen(true));
   };
 
   const handleUserRoleChange = async (email: string, roleName: string) => {
@@ -583,20 +613,30 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               <div className="flex flex-col space-y-2.5">
                 <div className="flex items-center">
                   <Checkbox checked={isPasswordProtected} onClick={onPasswordCheckboxChange} />
-                  <p className="ml-2 select-none text-base font-medium">
+                  <p
+                    className={`ml-2 select-none text-base font-medium ${isPasswordSharingAvailable ? '' : 'text-gray-50'}`}
+                  >
                     {translate('modals.shareModal.protectSharingModal.protect')}
                   </p>
-                  <Question
-                    size={20}
-                    className="ml-2 flex items-center justify-center font-medium text-gray-50"
-                    data-tooltip-id="uploadFolder-tooltip"
-                    data-tooltip-place="top"
-                  />
-                  <Tooltip id="uploadFolder-tooltip" delayShow={DELAY_SHOW_MS} className="z-40 rounded-md">
-                    <p className="break-word w-60 text-center text-white">
-                      {translate('modals.shareModal.protectSharingModal.protectTooltipText')}
-                    </p>
-                  </Tooltip>
+                  {isPasswordSharingAvailable ? (
+                    <>
+                      <Question
+                        size={20}
+                        className="ml-2 flex items-center justify-center font-medium text-gray-50"
+                        data-tooltip-id="uploadFolder-tooltip"
+                        data-tooltip-place="top"
+                      />
+                      <Tooltip id="uploadFolder-tooltip" delayShow={DELAY_SHOW_MS} className="z-40 rounded-md">
+                        <p className="break-word w-60 text-center text-white">
+                          {translate('modals.shareModal.protectSharingModal.protectTooltipText')}
+                        </p>
+                      </Tooltip>
+                    </>
+                  ) : (
+                    <div className="py-1 px-2 ml-2 rounded-md bg-gray-5">
+                      <p className="text-xs font-semibold">{translate('actions.locked')}</p>
+                    </div>
+                  )}
                 </div>
               </div>
               {isPasswordProtected && (
@@ -632,7 +672,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     </Popover.Button>
 
                     <Popover.Panel
-                      className={`absolute bottom-full z-0 mb-1 w-80 origin-bottom-left rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5 ${
+                      className={`absolute bottom-full z-0 mb-1 w-80 origin-bottom-left rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out ${
                         open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
                       }`}
                       static
@@ -641,7 +681,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                         <>
                           {/* Public */}
                           <button
-                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
+                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
                             onClick={() => changeAccess('public')}
                           >
                             <Globe size={32} weight="light" />
@@ -666,15 +706,26 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                           {/* Restricted */}
                           {!isWorkspace && (
                             <button
-                              className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
+                              className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
                               onClick={() => changeAccess('restricted')}
                             >
                               <Users size={32} weight="light" />
                               <div className="flex flex-1 flex-col items-start">
-                                <p className="text-base font-medium leading-none">
-                                  {translate('modals.shareModal.general.accessOptions.restricted.title')}
-                                </p>
-                                <p className="text-left text-sm leading-tight text-gray-60">
+                                <div className="flex flex-row gap-2 items-center">
+                                  <p
+                                    className={`text-base font-medium leading-none ${isRestrictedSharingAvailable ? '' : 'text-gray-70'}`}
+                                  >
+                                    {translate('modals.shareModal.general.accessOptions.restricted.title')}
+                                  </p>
+                                  {!isRestrictedSharingAvailable && (
+                                    <div className="py-1 px-2 ml-2 rounded-md bg-gray-5">
+                                      <p className="text-xs font-semibold">{translate('actions.locked')}</p>
+                                    </div>
+                                  )}
+                                </div>
+                                <p
+                                  className={`text-left text-sm leading-tight ${isRestrictedSharingAvailable ? 'text-gray-60' : 'text-gray-70'}`}
+                                >
                                   {translate('modals.shareModal.general.accessOptions.restricted.subtitle')}
                                 </p>
                               </div>
@@ -692,7 +743,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                           {/* Stop sharing */}
                           {(currentUserFolderRole === 'owner' || isUserOwner || props?.isDriveItem) && (
                             <button
-                              className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5 dark:hover:bg-gray-10"
+                              className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5"
                               onClick={() => {
                                 setShowStopSharingConfirmation(true);
                                 close();
@@ -722,6 +773,24 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
             isOpen={openPasswordInput}
             onSavePassword={onSavePublicSharePassword}
             isAlreadyProtected={isPasswordProtected}
+          />
+          <UpgradeDialog
+            isDialogOpen={isRestrictedSharingDialogOpen}
+            onAccept={onUpgradePlan}
+            onCloseDialog={() => setIsRestrictedSharingDialogOpen(false)}
+            title={translate('modals.restrictedSharingModal.title')}
+            subtitle={translate('modals.restrictedSharingModal.subtitle')}
+            primaryAction={translate('actions.upgrade')}
+            secondaryAction={translate('actions.cancel')}
+          />
+          <UpgradeDialog
+            isDialogOpen={isRestrictedPasswordDialogOpen}
+            onAccept={onUpgradePlan}
+            onCloseDialog={() => setIsRestrictedPasswordDialogOpen(false)}
+            title={translate('modals.restrictedPasswordModal.title')}
+            subtitle={translate('modals.restrictedPasswordModal.subtitle')}
+            primaryAction={translate('actions.upgrade')}
+            secondaryAction={translate('actions.cancel')}
           />
           <SharePasswordDisableDialog
             isOpen={openPasswordDisableDialog}
@@ -783,7 +852,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                           </Popover.Button>
 
                           <Popover.Panel
-                            className={`absolute right-0 z-10 mt-1 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5 ${
+                            className={`absolute right-0 z-10 mt-1 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out ${
                               open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
                             }`}
                             style={{ minWidth: '160px' }}
