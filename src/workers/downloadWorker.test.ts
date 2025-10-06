@@ -72,7 +72,7 @@ describe('Downloading file worker', () => {
       expect(mockCallbacks.onSuccess).toHaveBeenCalledWith(mockFile.fileId);
     });
 
-    test('When the download is for Brave browser, then the downlaod uses blob', async () => {
+    test('When the download is for Brave browser, then the download uses blob', async () => {
       const braveParams = { ...mockParams, isBrave: true };
       const mockReader = {
         read: vi
