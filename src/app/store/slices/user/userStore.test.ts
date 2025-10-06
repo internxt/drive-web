@@ -1,12 +1,10 @@
 import { afterAll, beforeEach, describe, expect, test, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer, { getUserTierFeaturesThunk } from './index';
-import { getAvailableUserFeatures, UserTierFeatures } from 'app/payment/services/products.service';
+import { ProductService, UserTierFeatures } from 'app/payment/services/products.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 
 const MOCK_TRANSLATION_MESSAGE = 'Some features may be unavailable';
-
-vi.mock('app/payment/services/products.service');
 
 vi.mock('i18next', () => ({ t: () => MOCK_TRANSLATION_MESSAGE }));
 
@@ -51,7 +49,9 @@ describe('User reducer', () => {
         },
       } as any;
 
-      const getAvailableUserFeaturesSpy = vi.mocked(getAvailableUserFeatures).mockResolvedValue(mockUserFeatures);
+      const getAvailableUserFeaturesSpy = vi
+        .spyOn(ProductService.instance, 'getAvailableUserFeatures')
+        .mockResolvedValue(mockUserFeatures);
 
       await store.dispatch(getUserTierFeaturesThunk() as any);
 
@@ -62,7 +62,9 @@ describe('User reducer', () => {
     test('When getting user tier features fails, then a warning notification is displayed', async () => {
       const mockError = new Error('Failed to fetch features');
 
-      const getAvailableUserFeaturesSpy = vi.mocked(getAvailableUserFeatures).mockRejectedValue(mockError);
+      const getAvailableUserFeaturesSpy = vi
+        .spyOn(ProductService.instance, 'getAvailableUserFeatures')
+        .mockRejectedValue(mockError);
       const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
 
       await store.dispatch(getUserTierFeaturesThunk() as any);

@@ -7,8 +7,8 @@ vi.mock('../../core/factory/sdk', () => ({
   },
 }));
 
-import { getAvailableUserFeatures } from './products.service';
 import { SdkFactory } from '../../core/factory/sdk';
+import { ProductService } from './products.service';
 
 const mockedUserTier: Tier = {
   id: '123456789',
@@ -74,7 +74,7 @@ describe('Products Service', () => {
       };
       (SdkFactory.getNewApiInstance as any).mockReturnValue(mockApiInstance);
 
-      const userFeatures = await getAvailableUserFeatures();
+      const userFeatures = await ProductService.instance.getAvailableUserFeatures();
 
       expect(userFeatures).toEqual(mockedUserTier.featuresPerService);
       expect(SdkFactory.getNewApiInstance).toHaveBeenCalledTimes(1);

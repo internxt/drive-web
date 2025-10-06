@@ -22,7 +22,7 @@ import { workspacesActions } from '../../../store/slices/workspaces/workspacesSt
 import errorService from '../../../core/services/error.service';
 import { isTokenExpired } from '../../utils';
 import { refreshAvatar } from '../../../utils/avatar/avatarUtils';
-import { getAvailableUserFeatures, UserTierFeatures } from 'app/payment/services/products.service';
+import { ProductService, UserTierFeatures } from 'app/payment/services/products.service';
 import { t } from 'i18next';
 
 export interface UserState {
@@ -92,7 +92,7 @@ export const getUserTierFeaturesThunk = createAsyncThunk<void, void, { state: Ro
   'user/getUserTierFeatures',
   async (_, { dispatch }) => {
     try {
-      const userFeatures = await getAvailableUserFeatures();
+      const userFeatures = await ProductService.instance.getAvailableUserFeatures();
 
       dispatch(userActions.setUserTierFeatures(userFeatures));
     } catch (error) {

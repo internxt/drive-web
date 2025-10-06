@@ -10,9 +10,13 @@ export const fetchProducts = async (): Promise<ProductData[]> => {
   return paymentsClient.getProducts() as unknown as ProductData[];
 };
 
-export const getAvailableUserFeatures = async (): Promise<UserTierFeatures> => {
-  const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
-  const userTier = await paymentsClient.getUserTier();
+export class ProductService {
+  public static readonly instance: ProductService = new ProductService();
 
-  return userTier.featuresPerService;
-};
+  readonly getAvailableUserFeatures = async (): Promise<UserTierFeatures> => {
+    const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
+    const userTier = await paymentsClient.getUserTier();
+
+    return userTier.featuresPerService;
+  };
+}
