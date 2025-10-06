@@ -1,3 +1,4 @@
+import streamSaver from 'streamsaver';
 import tasksService from 'app/tasks/services/tasks.service';
 import { DownloadFilesTask, DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
@@ -24,6 +25,7 @@ import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/w
 import { ConnectionLostError } from './../../network/requests';
 import { ErrorMessages } from 'app/core/constants';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
+import createFileDownloadStream from './download.service/createFileDownloadStream';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -289,15 +291,28 @@ export class DownloadManagerService {
         saveAs(cachedFile.source, options.downloadName);
       } else {
         const isWorkspace = !!credentials.workspaceId;
+        const isFirefox = navigator.userAgent.includes('Firefox');
+
         console.time('downloadFileFromWorker');
-        await this.downloadFileFromWorker({
-          file,
-          isWorkspace,
-          updateProgressCallback,
-          connectionLost,
-          abortController,
-          sharingOptions: credentials,
-        });
+        if (isFirefox) {
+          await this.directDownloadFromClientUsingStream({
+            file,
+            isWorkspace,
+            updateProgressCallback,
+            connectionLost,
+            abortController,
+            sharingOptions: credentials,
+          });
+        } else {
+          await this.downloadFileFromWorker({
+            file,
+            isWorkspace,
+            updateProgressCallback,
+            connectionLost,
+            abortController,
+            sharingOptions: credentials,
+          });
+        }
 
         console.timeEnd('downloadFileFromWorker');
       }
@@ -494,6 +509,42 @@ export class DownloadManagerService {
     };
 
     return { connectionLost, cleanup };
+  };
+
+  readonly directDownloadFromClientUsingStream = async ({
+    file,
+    isWorkspace,
+    updateProgressCallback,
+    connectionLost,
+    abortController,
+    sharingOptions,
+  }: {
+    file: DriveFileData;
+    isWorkspace: boolean;
+    updateProgressCallback: (progress: number) => void;
+    connectionLost: boolean;
+    abortController?: AbortController;
+    sharingOptions: { credentials: { user: string; pass: string }; mnemonic: string };
+  }) => {
+    const completeFileName = file.type ? `${file.name}.${file.type}` : file.name;
+
+    const stream = streamSaver.createWriteStream(completeFileName, {
+      writableStrategy: new ByteLengthQueuingStrategy({
+        highWaterMark: 8 * 1024 * 1024,
+      }),
+    });
+
+    const readableFileStream = await createFileDownloadStream(
+      file,
+      isWorkspace,
+      updateProgressCallback,
+      abortController,
+      sharingOptions,
+    );
+
+    await readableFileStream.pipeTo(stream, {
+      signal: abortController?.signal,
+    });
   };
 
   readonly downloadFileFromWorker = async (payload: {
