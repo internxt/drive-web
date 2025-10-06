@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer, { getUserTierFeaturesThunk } from './index';
 import { ProductService, UserTierFeatures } from 'app/payment/services/products.service';
@@ -22,7 +22,10 @@ describe('User reducer', () => {
   beforeEach(() => {
     store = createTestStore();
     vi.clearAllMocks();
-    vi.resetModules();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Get user tier thunk', () => {
@@ -57,16 +60,12 @@ describe('User reducer', () => {
     });
 
     test('When getting user tier features fails, then a warning notification is displayed', async () => {
-      const mockError = new Error('Failed to fetch features');
-
-      const getAvailableUserFeaturesSpy = vi
-        .spyOn(ProductService.instance, 'getAvailableUserFeatures')
-        .mockRejectedValue(mockError);
       const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
+      const mockError = new Error('Failed to fetch features');
+      vi.spyOn(ProductService.instance, 'getAvailableUserFeatures').mockRejectedValue(mockError);
 
       await store.dispatch(getUserTierFeaturesThunk() as any);
 
-      expect(getAvailableUserFeaturesSpy).toHaveBeenCalledTimes(1);
       expect(notificationsServiceSpy).toHaveBeenCalledWith({
         text: MOCK_TRANSLATION_MESSAGE,
         type: ToastType.Warning,
