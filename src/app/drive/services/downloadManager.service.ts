@@ -299,7 +299,6 @@ export class DownloadManagerService {
             file,
             isWorkspace,
             updateProgressCallback,
-            connectionLost,
             abortController,
             sharingOptions: credentials,
           });
@@ -308,7 +307,6 @@ export class DownloadManagerService {
             file,
             isWorkspace,
             updateProgressCallback,
-            connectionLost,
             abortController,
             sharingOptions: credentials,
           });
@@ -515,14 +513,12 @@ export class DownloadManagerService {
     file,
     isWorkspace,
     updateProgressCallback,
-    connectionLost,
     abortController,
     sharingOptions,
   }: {
     file: DriveFileData;
     isWorkspace: boolean;
     updateProgressCallback: (progress: number) => void;
-    connectionLost: boolean;
     abortController?: AbortController;
     sharingOptions: { credentials: { user: string; pass: string }; mnemonic: string };
   }) => {
@@ -551,7 +547,6 @@ export class DownloadManagerService {
     file: DriveFileData;
     isWorkspace: boolean;
     updateProgressCallback: (progress: number) => void;
-    connectionLost: boolean;
     abortController?: AbortController;
     sharingOptions: { credentials: { user: string; pass: string }; mnemonic: string };
   }) => {
