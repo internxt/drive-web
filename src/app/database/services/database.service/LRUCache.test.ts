@@ -53,7 +53,7 @@ describe('LRUCache', () => {
     expect(lastState).toEqual({ lruKeyList: ['new-entry'], itemsListSize: 40 });
   });
 
-  it('handles eviction when shift returns undefined', async () => {
+  it('handles eviction when shift returns undefined and reconciles once', async () => {
     const cache = new InMemoryCache<{ id: string }>();
     const lru = new LRUCache(cache, 100, { lruKeyList: [], itemsListSize: 0 });
 
@@ -70,7 +70,8 @@ describe('LRUCache', () => {
     await lru.set('entry-3', { id: 'entry-3' }, 30);
 
     const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
-    expect(lastState?.lruKeyList).toContain('entry-3');
+    expect(lastState?.lruKeyList).toEqual(['entry-3']);
+    expect(lastState?.itemsListSize).toBe(30);
   });
 
   it('properly evicts entries and updates size', async () => {
@@ -132,7 +133,7 @@ describe('LRUCache', () => {
     expect(lastState).toEqual({ lruKeyList: ['entry-1'], itemsListSize: 40 });
   });
 
-  it('covers evictedKey undefined path (lines 54-56)', async () => {
+  it('covers evictedKey undefined path and breaks after reconciliation', async () => {
     const cache = new InMemoryCache<{ id: string }>();
     const lru = new LRUCache(cache, 100);
 
@@ -148,7 +149,8 @@ describe('LRUCache', () => {
     await lru.set('entry-3', { id: 'entry-3' }, 20);
 
     const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
-    expect(lastState?.lruKeyList).toContain('entry-3');
+    expect(lastState?.lruKeyList).toEqual(['entry-3']);
+    expect(lastState?.itemsListSize).toBe(20);
   });
 
   it('covers reconcileState early return (lines 112-114)', async () => {
