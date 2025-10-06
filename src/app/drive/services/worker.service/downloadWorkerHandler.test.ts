@@ -2,6 +2,7 @@ vi.mock('../download.service/downloadFileFromBlob', () => ({
   default: vi.fn(),
 }));
 
+import streamSaver from 'streamsaver';
 import { describe, test, expect, vi, Mock, beforeEach } from 'vitest';
 import { DownloadAbortedByUserError, downloadWorkerHandler } from './downloadWorkerHandler';
 import { DriveFileData } from 'app/drive/types';
@@ -223,11 +224,25 @@ describe('Download Worker Handler', () => {
     expect(mockedWorker.terminated).toBe(true);
   });
 
-  test('When the event is error, then the worker is terminated and the error returned', async () => {
+  test('When the event is error and currentWriter exists, then it should abort the writer before terminating', async () => {
     const mockedWorker = new MockWorker();
     const itemData = {
       fileId: 'random-id',
+      name: 'test-file',
+      type: 'pdf',
     } as DriveFileData;
+
+    const mockAbort = vi.fn();
+    const mockWriter = {
+      write: vi.fn(),
+      abort: mockAbort,
+      close: vi.fn(),
+    };
+    const mockStream = {
+      getWriter: vi.fn().mockReturnValue(mockWriter),
+    };
+
+    vi.mocked(streamSaver.createWriteStream).mockReturnValue(mockStream as unknown as WritableStream);
 
     const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
       worker: mockedWorker as unknown as Worker,
@@ -236,11 +251,20 @@ describe('Download Worker Handler', () => {
     });
 
     mockedWorker.emitMessage({
-      result: 'error',
-      error: 'error',
+      result: 'chunk',
+      chunk: new Uint8Array([1, 2, 3]),
     });
 
-    await expect(workerHandlerPromise).rejects.toBe('error');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    mockedWorker.emitMessage({
+      result: 'error',
+      error: 'download failed',
+    });
+
+    await expect(workerHandlerPromise).rejects.toBe('download failed');
+
+    expect(mockAbort).toHaveBeenCalled();
     expect(mockedWorker.terminated).toBe(true);
   });
 
