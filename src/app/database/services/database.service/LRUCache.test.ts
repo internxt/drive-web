@@ -166,21 +166,19 @@ describe('LRUCache', () => {
 
   it('reconciles when shift returns undefined before hasReconciled flag is set', async () => {
     const cache = new InMemoryCache<{ id: string }>();
-    const lru = new LRUCache(cache, 100);
 
-    await lru.set('entry-1', { id: 'entry-1' }, 30);
-    cache.set('entry-2-cached', { id: 'entry-2-cached' }, 20);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const lruListRef = (lru as any).lruList as any[];
-    lruListRef.push(undefined, 'entry-2-cached');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (lru as any).currentSize = 80;
-    await lru.set('entry-3', { id: 'entry-3' }, 25);
+    cache.set('orphaned-entry', { id: 'orphaned' }, 30);
+    const lru = new LRUCache(cache, 100, {
+      lruKeyList: [undefined as unknown as string, 'orphaned-entry'],
+      itemsListSize: 60,
+    });
+    await lru.set('new-entry', { id: 'new' }, 50);
 
     const allCalls = cache.updateLRUState.mock.calls;
-    const lastState = allCalls[allCalls.length - 1][0];
 
-    expect(allCalls.length).toBeGreaterThan(2);
-    expect(lastState?.lruKeyList.filter((k) => k !== undefined)).toContain('entry-3');
+    expect(allCalls.length).toBeGreaterThan(1);
+
+    const lastState = allCalls[allCalls.length - 1][0];
+    expect(lastState?.lruKeyList).toContain('new-entry');
   });
 });
