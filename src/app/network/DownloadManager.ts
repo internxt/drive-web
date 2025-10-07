@@ -190,30 +190,50 @@ export class DownloadManager {
   };
 
   /**
+   * Marks a task as successful
+   * @param taskId - The ID of the task to mark as successful
+   */
+  private static readonly markTaskAsSuccessful = (taskId: string): void => {
+    tasksService.updateTask({
+      taskId,
+      merge: { status: TaskStatus.Success },
+    });
+  };
+
+  /**
+   * Handles retry logic for a download task
+   * If retry tasks exist, marks the task as successful
+   * Otherwise, removes the successfully downloaded items from retry queue
+   * @param downloadTask - The download task to handle retries for
+   * @returns True if retry tasks exist, false otherwise
+   */
+  private static readonly handleRetryLogic = (downloadTask: DownloadTask): boolean => {
+    const retryTasks = RetryManager.getTasksById(downloadTask.taskId);
+    const hasRetryTasks = retryTasks.length > 0;
+
+    if (hasRetryTasks) {
+      this.markTaskAsSuccessful(downloadTask.taskId);
+    } else {
+      this.removeRetryItems(downloadTask.items, downloadTask);
+    }
+
+    return hasRetryTasks;
+  };
+
+  /**
    * Determines whether to continue processing after an error occurs
-   * Checks for retry tasks and handles task status updates accordingly
-   * @param downloadTask - The download task that encountered an error
    * @param isServerError - Whether the error is a server error
    * @param filePickerCancelled - Whether the file picker was cancelled
+   * @param hasRetryTasks - Whether there are retry tasks available
    * @returns True if processing should continue, false otherwise
    */
   private static readonly shouldContinueAfterError = (
-    downloadTask: DownloadTask,
     isServerError: boolean,
     filePickerCancelled: boolean,
+    hasRetryTasks: boolean,
   ): boolean => {
     if (!isServerError && !filePickerCancelled) return true;
-
-    const retryTasks = RetryManager.getTasksById(downloadTask.taskId);
-    if (retryTasks.length > 0) {
-      tasksService.updateTask({
-        taskId: downloadTask.taskId,
-        merge: { status: TaskStatus.Success },
-      });
-      return false;
-    }
-
-    this.removeRetryItems(downloadTask.items, downloadTask);
+    if (hasRetryTasks) return false;
     return true;
   };
 
@@ -301,7 +321,9 @@ export class DownloadManager {
       this.handleConnectionLostError(err, taskId);
     }
 
-    const shouldContinueProcessing = this.shouldContinueAfterError(downloadTask, isServerError, filePickerCancelled);
+    const shouldHandleRetries = isServerError || filePickerCancelled;
+    const hasRetryTasks = shouldHandleRetries ? this.handleRetryLogic(downloadTask) : false;
+    const shouldContinueProcessing = this.shouldContinueAfterError(isServerError, filePickerCancelled, hasRetryTasks);
     const task = tasksService.findTask(taskId);
 
     if (task !== undefined && task.status !== TaskStatus.Cancelled) {

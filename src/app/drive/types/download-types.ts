@@ -1,8 +1,8 @@
 import { Iterator } from 'app/core/collections';
-import { DriveFileData, DriveFolderData } from '../types';
+import { DriveFileData, DriveFolderData } from '.';
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 import errorService from 'app/core/services/error.service';
-import { ConnectionLostError } from './../../network/requests';
+import { ConnectionLostError } from '../../network/requests';
 import { ErrorMessages } from 'app/core/constants';
 
 export type DownloadFilesType = DriveFileData[] & SharedFiles[];

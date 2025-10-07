@@ -28,7 +28,7 @@ import {
   SharedFolderIterator,
   SharedFileIterator,
   isLostConnectionError as isLostConnectionErrorUtil,
-} from './download-types';
+} from '../types/download-types';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
