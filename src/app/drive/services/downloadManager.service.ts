@@ -1,3 +1,4 @@
+import streamSaver from 'streamsaver';
 import tasksService from 'app/tasks/services/tasks.service';
 import { DownloadFilesTask, DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
@@ -12,7 +13,6 @@ import {
 } from './folder.service';
 import errorService from 'app/core/services/error.service';
 import { FlatFolderZip } from 'app/core/services/zip.service';
-import downloadService from './download.service';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { AdvancedSharedItem } from 'app/share/types';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
@@ -24,6 +24,8 @@ import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { ConnectionLostError } from './../../network/requests';
 import { ErrorMessages } from 'app/core/constants';
+import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
+import createFileDownloadStream from './download.service/createFileDownloadStream';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -245,7 +247,7 @@ export class DownloadManagerService {
         abortController,
       });
 
-      await this.checkAndHandleConnectionLoss(connectionLost);
+      await this.checkAndHandleConnectionLost(connectionLost);
 
       if (zipFolderResult?.allItemsFailed) {
         throw new Error(ErrorMessages.ServerUnavailable);
@@ -253,7 +255,7 @@ export class DownloadManagerService {
         downloadTask.failedItems.push(...(zipFolderResult.failedItems as DownloadItemType[]));
       }
     } catch (error) {
-      await this.checkAndHandleConnectionLoss(connectionLost);
+      await this.checkAndHandleConnectionLost(connectionLost);
       throw error;
     } finally {
       cleanup();
@@ -289,12 +291,33 @@ export class DownloadManagerService {
         saveAs(cachedFile.source, options.downloadName);
       } else {
         const isWorkspace = !!credentials.workspaceId;
-        await downloadService.downloadFile(file, isWorkspace, updateProgressCallback, abortController, credentials);
+        const isFirefox = navigator.userAgent.includes('Firefox');
+
+        console.time('downloadFileFromWorker');
+        if (isFirefox) {
+          await this.directDownloadFromClientUsingStream({
+            file,
+            isWorkspace,
+            updateProgressCallback,
+            abortController,
+            sharingOptions: credentials,
+          });
+        } else {
+          await this.downloadFileFromWorker({
+            file,
+            isWorkspace,
+            updateProgressCallback,
+            abortController,
+            sharingOptions: credentials,
+          });
+        }
+
+        console.timeEnd('downloadFileFromWorker');
       }
 
-      await this.checkAndHandleConnectionLoss(connectionLost);
+      await this.checkAndHandleConnectionLost(connectionLost);
     } catch (error) {
-      await this.checkAndHandleConnectionLoss(connectionLost);
+      await this.checkAndHandleConnectionLost(connectionLost);
       throw error;
     } finally {
       cleanup();
@@ -397,7 +420,7 @@ export class DownloadManagerService {
         });
         downloadProgress[index] = 1;
 
-        await this.checkAndHandleConnectionLoss(connectionLost, folderZip);
+        await this.checkAndHandleConnectionLost(connectionLost, folderZip);
 
         if (downloadedItems.allItemsFailed) {
           failedItems.push(driveItem);
@@ -421,7 +444,7 @@ export class DownloadManagerService {
           }
           await addFileStreamToZip(index, driveItem);
         } catch (error: unknown) {
-          await this.checkAndHandleConnectionLoss(connectionLost, folderZip);
+          await this.checkAndHandleConnectionLost(connectionLost, folderZip);
           if (isLostConnectionError(error)) {
             folderZip.abort();
             await folderZip.close();
@@ -441,14 +464,14 @@ export class DownloadManagerService {
 
       await folderZip.close();
     } catch (error) {
-      await this.checkAndHandleConnectionLoss(connectionLost);
+      await this.checkAndHandleConnectionLost(connectionLost);
       throw error;
     } finally {
       cleanup();
     }
   };
 
-  readonly checkAndHandleConnectionLoss = async (conn: boolean, zip?: FlatFolderZip) => {
+  readonly checkAndHandleConnectionLost = async (conn: boolean, zip?: FlatFolderZip) => {
     if (conn || navigator.onLine === false) {
       if (zip) {
         zip.abort();
@@ -484,6 +507,70 @@ export class DownloadManagerService {
     };
 
     return { connectionLost, cleanup };
+  };
+
+  readonly directDownloadFromClientUsingStream = async ({
+    file,
+    isWorkspace,
+    updateProgressCallback,
+    abortController,
+    sharingOptions,
+  }: {
+    file: DriveFileData;
+    isWorkspace: boolean;
+    updateProgressCallback: (progress: number) => void;
+    abortController?: AbortController;
+    sharingOptions: { credentials: { user: string; pass: string }; mnemonic: string };
+  }) => {
+    const completeFileName = file.type ? `${file.name}.${file.type}` : file.name;
+
+    const stream = streamSaver.createWriteStream(completeFileName, {
+      writableStrategy: new ByteLengthQueuingStrategy({
+        highWaterMark: 8 * 1024 * 1024,
+      }),
+    });
+
+    const readableFileStream = await createFileDownloadStream(
+      file,
+      isWorkspace,
+      updateProgressCallback,
+      abortController,
+      sharingOptions,
+    );
+
+    await readableFileStream.pipeTo(stream, {
+      signal: abortController?.signal,
+    });
+  };
+
+  readonly downloadFileFromWorker = async (payload: {
+    file: DriveFileData;
+    isWorkspace: boolean;
+    updateProgressCallback: (progress: number) => void;
+    abortController?: AbortController;
+    sharingOptions: { credentials: { user: string; pass: string }; mnemonic: string };
+  }) => {
+    const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
+
+    const worker: Worker = downloadWorkerHandler.getWorker();
+
+    const workerPayload = {
+      file: payload.file,
+      isWorkspace: payload.isWorkspace,
+      credentials: payload.sharingOptions,
+      isBrave,
+    };
+
+    worker.postMessage({ type: 'download', params: workerPayload });
+
+    console.log('[DOWNLOAD-MANAGER] Start Downloading file -->', payload.file);
+
+    return downloadWorkerHandler.handleWorkerMessages({
+      worker,
+      itemData: payload.file,
+      updateProgressCallback: payload.updateProgressCallback,
+      abortController: payload.abortController,
+    });
   };
 }
 
