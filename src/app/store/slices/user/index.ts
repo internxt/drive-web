@@ -76,8 +76,8 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
       if (isExpired || forceRefresh) {
         const { user, newToken } = await userService.refreshUserData(currentUser.uuid);
 
-        const { avatar, emailVerified, name, lastname, uuid } = user;
-        await refreshAvatar(uuid, avatar);
+        const { emailVerified, name, lastname, uuid } = user;
+        const avatar = await refreshAvatar(uuid);
 
         dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
         dispatch(userActions.setToken(newToken));
@@ -113,13 +113,13 @@ export const refreshAvatarThunk = createAsyncThunk<void, { forceRefresh?: boolea
 
     try {
       if (currentUser) {
-        const { avatar: userAvatar, uuid } = currentUser;
-        const refreshedAvatar = await refreshAvatar(uuid, userAvatar);
+        const { uuid } = currentUser;
+        const refreshedAvatar = await refreshAvatar(uuid);
 
         dispatch(
           userActions.setUser({
             ...currentUser,
-            avatar: refreshedAvatar ?? userAvatar,
+            avatar: refreshedAvatar,
           }),
         );
       }
