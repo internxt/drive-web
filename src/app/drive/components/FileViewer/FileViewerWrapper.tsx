@@ -14,7 +14,7 @@ import {
   setThumbnails,
   uploadThumbnail,
 } from '../../../drive/services/thumbnail.service';
-import { AdvancedSharedItem, PreviewFileItem, UserRoles } from '../../../share/types';
+import { PreviewFileItem, UserRoles } from '../../../share/types';
 import { RootState } from '../../../store';
 import { uiActions } from '../../../store/slices/ui';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
@@ -30,11 +30,6 @@ import {
 import { FileToUpload } from '../../../drive/services/file.service/types';
 import { MenuItemType } from '@internxt/ui';
 import { DownloadManager } from '../../../network/DownloadManager';
-
-export type TopBarActionsMenu =
-  | Array<MenuItemType<DriveItemData>>
-  | Array<MenuItemType<AdvancedSharedItem>>
-  | undefined;
 
 type pathProps = 'drive' | 'trash' | 'shared' | 'recents';
 
