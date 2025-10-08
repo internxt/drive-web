@@ -50,6 +50,39 @@ export class LRUCache<T> {
     }
   }
 
+  /**
+   * Attempts to evict the next entry from the LRU list
+   * @param hasReconciled - Whether state reconciliation has already occurred
+   * @returns Object indicating if eviction succeeded and if reconciliation was performed
+   */
+  private async tryEvictNext(hasReconciled: boolean): Promise<{ evicted: boolean; reconciled: boolean }> {
+    const evictedKey = this.lruList.shift();
+
+    if (evictedKey === undefined) {
+      if (!hasReconciled) {
+        await this.reconcileState();
+        return { evicted: false, reconciled: true };
+      }
+      return { evicted: false, reconciled: hasReconciled };
+    }
+
+    const isCached = await this.cache.has(evictedKey);
+
+    if (!isCached) {
+      if (hasReconciled) {
+        return { evicted: false, reconciled: hasReconciled };
+      }
+      await this.reconcileState();
+      return { evicted: false, reconciled: true };
+    }
+
+    const evictedSize = await this.cache.getSize(evictedKey);
+    this.currentSize = Math.max(0, this.currentSize - evictedSize);
+    this.cache.delete(evictedKey);
+
+    return { evicted: true, reconciled: hasReconciled };
+  }
+
   private async evictEntriesIfNeeded(requiredSize: number): Promise<void> {
     let hasReconciled = false;
     let hasEvicted = false;
@@ -66,32 +99,11 @@ export class LRUCache<T> {
         }
       }
 
-      const evictedKey = this.lruList.shift();
-
-      if (evictedKey === undefined) {
-        if (!hasReconciled) {
-          await this.reconcileState();
-          hasReconciled = true;
-        }
-        continue;
+      const result = await this.tryEvictNext(hasReconciled);
+      hasReconciled = result.reconciled;
+      if (result.evicted) {
+        hasEvicted = true;
       }
-
-      const isCached = await this.cache.has(evictedKey);
-
-      if (!isCached) {
-        if (hasReconciled) {
-          continue;
-        }
-        await this.reconcileState();
-        hasReconciled = true;
-        continue;
-      }
-
-      const evictedSize = await this.cache.getSize(evictedKey);
-
-      this.currentSize = Math.max(0, this.currentSize - evictedSize);
-      this.cache.delete(evictedKey);
-      hasEvicted = true;
     }
 
     if (hasEvicted) {
@@ -131,22 +143,27 @@ export class LRUCache<T> {
     });
   }
 
+  /**
+   * Validates a cached key and returns its metadata if it exists
+   * @param cachedKey - The key to validate
+   * @returns Object with key and size if valid, null otherwise
+   */
+  private async validateCachedKey(cachedKey: string): Promise<{ key: string; size: number } | null> {
+    const exists = await this.cache.has(cachedKey);
+    if (!exists) {
+      return null;
+    }
+    const cachedSize = await this.cache.getSize(cachedKey);
+    return { key: cachedKey, size: cachedSize };
+  }
+
   private async reconcileState(): Promise<void> {
     if (!this.lruList.length && this.currentSize === 0) {
       this.persistState();
       return;
     }
 
-    const results = await Promise.all(
-      this.lruList.map(async (cachedKey) => {
-        const exists = await this.cache.has(cachedKey);
-        if (!exists) {
-          return null;
-        }
-        const cachedSize = await this.cache.getSize(cachedKey);
-        return { key: cachedKey, size: cachedSize };
-      }),
-    );
+    const results = await Promise.all(this.lruList.map((cachedKey) => this.validateCachedKey(cachedKey)));
 
     const validKeys: string[] = [];
     let computedSize = 0;

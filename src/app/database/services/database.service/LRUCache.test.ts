@@ -181,4 +181,94 @@ describe('LRUCache', () => {
     const lastState = allCalls[allCalls.length - 1][0];
     expect(lastState?.lruKeyList).toContain('new-entry');
   });
+
+  it('handles shift returning undefined after reconciliation', async () => {
+    const cache = new InMemoryCache<{ id: string }>();
+    const lru = new LRUCache(cache, 100, { lruKeyList: [], itemsListSize: 0 });
+
+    await lru.set('entry-1', { id: 'entry-1' }, 40);
+
+    const lruListRef = (lru as any).lruList as string[];
+    lruListRef.unshift(undefined as unknown as string);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (lru as any).currentSize = 80;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result = await (lru as any).tryEvictNext(true);
+
+    expect(result.evicted).toBe(false);
+    expect(result.reconciled).toBe(true);
+  });
+
+  it('deletes an entry from cache and updates LRU state', async () => {
+    const cache = new InMemoryCache<{ id: string }>();
+    const lru = new LRUCache(cache, 100);
+
+    await lru.set('entry-1', { id: 'entry-1' }, 30);
+    await lru.set('entry-2', { id: 'entry-2' }, 40);
+
+    await lru.delete('entry-1', 30);
+
+    expect(await cache.has('entry-1')).toBe(false);
+    const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
+    expect(lastState?.lruKeyList).toEqual(['entry-2']);
+    expect(lastState?.itemsListSize).toBe(40);
+  });
+
+  it('handles delete when entry does not exist in cache', async () => {
+    const cache = new InMemoryCache<{ id: string }>();
+    const lru = new LRUCache(cache, 100);
+
+    await lru.set('entry-1', { id: 'entry-1' }, 30);
+
+    const callsBefore = cache.updateLRUState.mock.calls.length;
+    await lru.delete('non-existent', 10);
+
+    expect(cache.updateLRUState.mock.calls.length).toBe(callsBefore);
+  });
+
+  it('handles delete when key is in lruList', async () => {
+    const cache = new InMemoryCache<{ id: string }>();
+    const lru = new LRUCache(cache, 100);
+
+    await lru.set('entry-1', { id: 'entry-1' }, 30);
+    await lru.set('entry-2', { id: 'entry-2' }, 40);
+    await lru.set('entry-3', { id: 'entry-3' }, 20);
+
+    await lru.delete('entry-2', 40);
+
+    const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
+    expect(lastState?.lruKeyList).toEqual(['entry-1', 'entry-3']);
+    expect(lastState?.itemsListSize).toBe(50);
+    expect(await cache.has('entry-2')).toBe(false);
+  });
+
+  it('breaks eviction loop when lruList becomes empty after reconciliation during eviction', async () => {
+    const cache = new InMemoryCache<{ id: string }>();
+
+    const lru = new LRUCache(cache, 100, {
+      lruKeyList: ['stale-1', 'stale-2', 'stale-3'],
+      itemsListSize: 90,
+    });
+
+    await lru.set('new-entry', { id: 'new-entry' }, 20);
+
+    const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
+    expect(lastState?.lruKeyList).toEqual(['new-entry']);
+    expect(lastState?.itemsListSize).toBe(20);
+  });
+
+  it('updates LRU position when getting an existing entry', async () => {
+    const cache = new InMemoryCache<{ id: string }>();
+    const lru = new LRUCache(cache, 100);
+
+    await lru.set('entry-1', { id: 'entry-1' }, 30);
+    await lru.set('entry-2', { id: 'entry-2' }, 30);
+    await lru.set('entry-3', { id: 'entry-3' }, 30);
+
+    await lru.get('entry-1');
+
+    const lastState = cache.updateLRUState.mock.calls.at(-1)?.[0];
+    expect(lastState?.lruKeyList).toEqual(['entry-2', 'entry-3', 'entry-1']);
+  });
 });
