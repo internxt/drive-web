@@ -85,13 +85,13 @@ function SignUp(props: SignUpProps): JSX.Element {
 
   const formInputError = Object.values(errors)[0];
 
-  let bottomInfoError: null | string = null;
+  const getBottomInfoError = (): string | null => {
+    if (formInputError?.message) return formInputError.message;
+    if (showError && signupError) return signupError.toString();
+    return null;
+  };
 
-  if (formInputError?.message) {
-    bottomInfoError = formInputError.message;
-  } else if (showError && signupError) {
-    bottomInfoError = signupError.toString();
-  }
+  const bottomInfoError = getBottomInfoError();
 
   useEffect(() => {
     if (autoSubmit.enabled && autoSubmit.credentials) {
@@ -103,29 +103,43 @@ function SignUp(props: SignUpProps): JSX.Element {
     if (password.length > 0) onChangeHandler(password);
   }, [password]);
 
+  const getValidPasswordState = (strength?: string): PasswordState => {
+    return strength === 'medium'
+      ? { tag: 'warning', label: 'Password is weak' }
+      : { tag: 'success', label: 'Password is strong' };
+  };
+
+  const getInvalidPasswordState = (reason?: string): PasswordState => {
+    const label =
+      reason === 'NOT_COMPLEX_ENOUGH'
+        ? 'Password is not complex enough'
+        : 'Password has to be at least 8 characters long';
+    return { tag: 'error', label };
+  };
+
   const getPasswordState = (result: { valid: boolean; strength?: string; reason?: string }): PasswordState => {
-    if (result.valid) {
-      if (result.strength === 'medium') {
-        return { tag: 'warning', label: 'Password is weak' };
-      }
-      return { tag: 'success', label: 'Password is strong' };
-    } else {
-      return {
-        tag: 'error',
-        label:
-          result.reason === 'NOT_COMPLEX_ENOUGH'
-            ? 'Password is not complex enough'
-            : 'Password has to be at least 8 characters long',
-      };
+    return result.valid ? getValidPasswordState(result.strength) : getInvalidPasswordState(result.reason);
+  };
+
+  const handlePasswordTooLong = (input: string): boolean => {
+    if (input.length > MAX_PASSWORD_LENGTH) {
+      setPasswordState({ tag: 'error', label: translate('modals.changePasswordModal.errors.longPassword') });
+      return true;
     }
+    return false;
+  };
+
+  const handleSubmitError = (err: unknown) => {
+    setIsLoading(false);
+    errorService.reportError(err);
+    const castedError = errorService.castError(err);
+    setSignupError(castedError.message);
   };
 
   const onChangeHandler = (input: string) => {
     setIsValidPassword(false);
-    if (input.length > MAX_PASSWORD_LENGTH) {
-      setPasswordState({ tag: 'error', label: translate('modals.changePasswordModal.errors.longPassword') });
-      return;
-    }
+
+    if (handlePasswordTooLong(input)) return;
 
     const result = testPasswordStrength(input, String(qs.email || ''));
     setIsValidPassword(result.valid);
@@ -155,13 +169,27 @@ function SignUp(props: SignUpProps): JSX.Element {
 
       await redirectTheUserAfterRegistration(xToken, xNewToken, redeemCodeObject);
     } catch (err: unknown) {
-      setIsLoading(false);
-      errorService.reportError(err);
-      const castedError = errorService.castError(err);
-      setSignupError(castedError.message);
+      handleSubmitError(err);
     } finally {
       setShowError(true);
     }
+  };
+
+  const handleVPNAuth = (isVPNAuth: string | null, xNewToken: string) => {
+    if (isVPNAuth && xNewToken) {
+      vpnAuthService.logIn(xNewToken);
+    }
+  };
+
+  const handleRedeemCode = async (redeemCodeObject: { code: string; provider: string }) => {
+    await paymentService.redeemCode(redeemCodeObject);
+    dispatch(planThunks.initializeThunk());
+    navigationService.push(AppView.Drive);
+  };
+
+  const handleDefaultRedirect = (isUniversalLinkMode: boolean) => {
+    const redirectView = isUniversalLinkMode ? AppView.UniversalLinkSuccess : AppView.Drive;
+    return navigationService.push(redirectView);
   };
 
   const redirectTheUserAfterRegistration = async (
@@ -177,19 +205,14 @@ function SignUp(props: SignUpProps): JSX.Element {
     const redirectUrl = authService.getRedirectUrl(urlParams, xToken);
     const isVPNAuth = urlParams.get('vpnAuth');
 
-    if (isVPNAuth && xNewToken) {
-      vpnAuthService.logIn(xNewToken);
-    }
+    handleVPNAuth(isVPNAuth, xNewToken);
 
     if (redirectUrl) {
       window.location.replace(redirectUrl);
     } else if (redeemCodeObject) {
-      await paymentService.redeemCode(redeemCodeObject);
-      dispatch(planThunks.initializeThunk());
-      navigationService.push(AppView.Drive);
+      await handleRedeemCode(redeemCodeObject);
     } else {
-      const redirectView = isUniversalLinkMode ? AppView.UniversalLinkSuccess : AppView.Drive;
-      return navigationService.push(redirectView);
+      return handleDefaultRedirect(isUniversalLinkMode);
     }
   };
 

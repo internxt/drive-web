@@ -1,14 +1,12 @@
 import { Network } from '@internxt/sdk/dist/network';
 import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 import * as Sentry from '@sentry/react';
-import axios, { AxiosError, AxiosProgressEvent } from 'axios';
 import { getSha256 } from '../crypto/services/utils';
 import { NetworkFacade } from './NetworkFacade';
 import { ConnectionLostError } from './requests';
 import envService from 'app/core/services/env.service';
 import { MAX_TRIES, RETRY_DELAY, UPLOAD_CHUNK_SIZE, MIN_MULTIPART_SIZE } from './networkConstants';
-
-export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
+import { UploadProgressCallback } from './upload-utils';
 
 interface NetworkCredentials {
   user: string;
@@ -26,44 +24,6 @@ interface IUploadParams {
     taskId: string;
     isPaused: boolean;
   };
-}
-
-export async function uploadFileUint8Array(
-  content: Uint8Array,
-  url: string,
-  opts: {
-    progressCallback: UploadProgressCallback;
-    abortController?: AbortController;
-  },
-): Promise<{ etag: string | undefined }> {
-  try {
-    const res = await axios.create()({
-      url,
-      method: 'PUT',
-      data: content,
-      headers: {
-        'content-type': 'application/octet-stream',
-      },
-      onUploadProgress: (progress: AxiosProgressEvent) => {
-        opts.progressCallback(progress.total ?? 0, progress.loaded);
-      },
-      signal: opts.abortController?.signal,
-    });
-
-    return { etag: res.headers.etag };
-  } catch (err) {
-    const error = err as AxiosError<any>;
-
-    if (axios.isCancel(error)) {
-      throw new Error('Upload aborted');
-    } else if ((error as AxiosError).response && (error as AxiosError)?.response?.status === 403) {
-      throw new Error('Request has expired');
-    } else if ((error as AxiosError).message === 'Network Error') {
-      throw error;
-    } else {
-      throw new Error('Unknown error');
-    }
-  }
 }
 
 async function getAuthFromCredentials(creds: NetworkCredentials): Promise<{ username: string; password: string }> {
