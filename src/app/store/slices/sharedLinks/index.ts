@@ -230,13 +230,6 @@ export const sharedSlice = createSlice({
   },
 });
 
-export const sharedSelectors = {
-  getSharedFolderUserRoles(state: RootState): Role[] {
-    const { roles } = state.shared;
-    return roles;
-  },
-};
-
 export const sharedActions = sharedSlice.actions;
 
 export const sharedThunks = {

@@ -112,8 +112,6 @@ export const backupsSlice = createSlice({
   },
 });
 
-export const backupsSelectors = {};
-
 export const backupsActions = backupsSlice.actions;
 
 export const backupsThunks = {

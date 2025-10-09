@@ -43,7 +43,7 @@ const getSubscriptionData = ({
     const interval = userSubscription.interval === 'month' ? 'monthly' : 'yearly';
 
     const amountInterval = formatPlanPaymentInterval(
-      userType == UserType.Business ? plan.businessPlan : (plan.individualPlan ?? plan.teamPlan),
+      userType == UserType.Business ? plan.businessPlan : plan.individualPlan,
     );
 
     return { amountInterval, interval, renewDate };

@@ -14,7 +14,6 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Loader } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { t } from 'i18next';
@@ -211,7 +210,7 @@ const Sidenav = ({
           <SideNavItems sideNavItems={itemsNavigation} />
         </div>
 
-        {subscription && subscription.type === 'free' ? <ReferralsWidget /> : <div className="grow"></div>}
+        <div className="grow"></div>
 
         <div className="mb-11 mt-8 px-5">
           <PlanUsage
