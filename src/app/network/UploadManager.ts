@@ -13,23 +13,12 @@ import { FileToUpload } from '../drive/services/file.service/types';
 import RetryManager, { RetryableTask } from './RetryManager';
 import { ErrorMessages } from 'app/core/constants';
 import { MAX_UPLOAD_ATTEMPTS, TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from './networkConstants';
+import { OwnerUserAuthenticationData } from './types';
 
 enum FileSizeType {
   Big = 'big',
   Medium = 'medium',
   Small = 'small',
-}
-
-export interface OwnerUserAuthenticationData {
-  token: string;
-  bridgeUser: string;
-  bridgePass: string;
-  encryptionKey: string;
-  bucketId: string;
-  // to manage B2B workspaces
-  workspaceId?: string;
-  workspacesToken?: string;
-  resourcesToken: string;
 }
 
 type Options = {
