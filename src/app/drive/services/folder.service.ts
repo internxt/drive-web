@@ -493,11 +493,10 @@ export async function moveFolderByUuid(
 ): Promise<StorageTypes.FolderMeta> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   const payload: StorageTypes.MoveFolderUuidPayload = {
-    folderUuid: folderUuid,
-    destinationFolderUuid: destinationFolderUuid,
+    destinationFolder: destinationFolderUuid,
   };
 
-  return storageClient.moveFolderByUuid(payload).catch((err) => {
+  return storageClient.moveFolderByUuid(folderUuid, payload).catch((err) => {
     const castedError = errorService.castError(err);
     if (castedError.status) {
       castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);

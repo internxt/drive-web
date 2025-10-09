@@ -12,7 +12,7 @@ import { CheckoutProductCard } from '../../components/checkout/CheckoutProductCa
 import { CheckoutUserAuth } from '../../components/checkout/CheckoutUserAuth';
 import { HeaderComponent } from '../../components/checkout/Header';
 import { AuthMethodTypes, PaymentType } from '../../types';
-import { CheckoutViewManager, UserInfoProps } from './CheckoutViewWrapper';
+import { CheckoutViewManager, UserInfoProps } from './types/checkout.types';
 import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
 import { AvailableCryptoCurrenciesDropdown } from 'app/payment/components/checkout/AvailableCryptoCurrenciesDropdown';
 
@@ -23,7 +23,6 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   },
   layout: {
     type: 'accordion',
-    defaultCollapsed: true,
     radios: false,
     spacedAccordionItems: true,
   },
@@ -64,6 +63,15 @@ const CheckoutView = ({
   const stripeSDK = useStripe();
   const elements = useElements();
   const [isCryptoDropdownOpen, setIsCryptoDropdownOpen] = useState<boolean>(false);
+  const {
+    isPaying,
+    error,
+    authMethod,
+    couponCodeData,
+    seatsForBusinessSubscription,
+    currentSelectedPlan,
+    selectedCurrency,
+  } = checkoutViewVariables;
 
   const onCryptoDropdownToggle = () => {
     if (!isCryptoDropdownOpen) {
@@ -76,18 +84,9 @@ const CheckoutView = ({
 
   const onStripePaymentExpanded = () => {
     onCurrencyTypeChanges(PaymentType['FIAT']);
+    checkoutViewManager.onCurrencyChange(currentSelectedPlan?.price.currency ?? 'eur');
     setIsCryptoDropdownOpen(false);
   };
-
-  const {
-    isPaying,
-    error,
-    authMethod,
-    couponCodeData,
-    seatsForBusinessSubscription,
-    currentSelectedPlan,
-    selectedCurrency,
-  } = checkoutViewVariables;
 
   const {
     register,
