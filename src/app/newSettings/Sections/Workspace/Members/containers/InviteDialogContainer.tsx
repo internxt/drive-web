@@ -11,7 +11,7 @@ import notificationsService, { ToastType } from '../../../../../notifications/se
 import { RootState } from '../../../../../store';
 import UserInviteDialog from '../InviteDialog';
 
-const InviteDialogContainer = ({ isOpen, onClose }) => {
+const InviteDialogContainer = ({ isOpen, onClose, onInvitationSuccess }) => {
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const user = useSelector((state: RootState) => state.user.user);
 
@@ -22,6 +22,10 @@ const InviteDialogContainer = ({ isOpen, onClose }) => {
       });
 
       await Promise.all(invitePromises);
+
+      if (onInvitationSuccess) {
+        await onInvitationSuccess();
+      }
     }
   };
 

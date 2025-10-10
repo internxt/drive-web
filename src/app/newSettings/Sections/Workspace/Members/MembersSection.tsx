@@ -233,7 +233,11 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
               </div>
             </div>
           </div>
-          <InviteDialogContainer isOpen={isInviteDialogOpen} onClose={() => setIsInviteDialogOpen(false)} />
+          <InviteDialogContainer
+            isOpen={isInviteDialogOpen}
+            onClose={() => setIsInviteDialogOpen(false)}
+            onInvitationSuccess={refreshWorkspaceMembers}
+          />
         </>
       )}
     </Section>
