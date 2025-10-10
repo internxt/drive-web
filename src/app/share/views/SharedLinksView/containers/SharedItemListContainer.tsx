@@ -70,7 +70,7 @@ const SharedItemListContainer = ({
   const reorderedSharedItems = sortSharedItems(shareItems, orderBy);
 
   const hasMoreItems = hasMoreFiles || hasMoreFolders;
-  const isPendingFirstFilesFetch = !hasMoreFolders && hasMoreFiles && shareFiles.length === 0;
+  const isAwaitingInitialFilesLoad = !hasMoreFolders && hasMoreFiles && shareFiles.length === 0;
   const currentUser = localStorageService.getUser();
 
   const openShareAccessSettings = (shareItem: AdvancedSharedItem) => {
@@ -209,11 +209,11 @@ const SharedItemListContainer = ({
   };
 
   const onNextPage = useCallback(() => {
-    if (!hasMoreItems || isLoading || isPendingFirstFilesFetch) {
+    if (!hasMoreItems || isLoading || isAwaitingInitialFilesLoad) {
       return;
     }
     actionDispatch(setPage(page + 1));
-  }, [actionDispatch, hasMoreItems, isLoading, isPendingFirstFilesFetch, page]);
+  }, [actionDispatch, hasMoreItems, isLoading, isAwaitingInitialFilesLoad, page]);
 
   const onNameClicked = (shareItem: AdvancedSharedItem) => {
     onItemDoubleClicked(shareItem);
