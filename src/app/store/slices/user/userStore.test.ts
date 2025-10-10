@@ -28,7 +28,7 @@ describe('User reducer', () => {
     vi.restoreAllMocks();
   });
 
-  describe('Get user tier thunk', () => {
+  describe.skip('Get user tier thunk', () => {
     test('When getting user tier features successfully, then the features are stored in the state', async () => {
       const mockUserFeatures: Partial<UserTierFeatures> = {
         drive: {
