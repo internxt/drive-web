@@ -143,7 +143,7 @@ const App = (props: AppProps): JSX.Element => {
   const isAndroid = /Android/i.exec(navigator.userAgent);
 
   if (isIphone || isAndroid) {
-    isMobile = true;
+    isMobile = false;
   }
 
   const onCloseFileViewer = () => {
