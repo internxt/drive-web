@@ -164,7 +164,7 @@ const App = (props: AppProps): JSX.Element => {
 
     dispatch(uiActions.setFileViewerItem(null));
   };
-  console.log('pathName', pathName);
+
   if (!isAuthenticated || isInitialized) {
     template = (
       <DndProvider manager={manager}>
