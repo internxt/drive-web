@@ -143,7 +143,7 @@ const App = (props: AppProps): JSX.Element => {
   const isAndroid = /Android/i.exec(navigator.userAgent);
 
   if (isIphone || isAndroid) {
-    isMobile = false;
+    isMobile = true;
   }
 
   const onCloseFileViewer = () => {
@@ -191,7 +191,7 @@ const App = (props: AppProps): JSX.Element => {
               to={`/?preferences=open&section=account&subsection=${params.get('tab') ?? 'account'}`}
             />
             <Redirect from="/app/:section?" to={{ pathname: '/:section?', search: `${queryParameters}` }} />
-            {pathName !== 'checkout' && isMobile && isAuthenticated ? (
+            {pathName !== 'checkout' && pathName !== AppView.UniversalLinkSuccess && isMobile && isAuthenticated ? (
               <Route path="*">
                 <Mobile user={props.user} />
               </Route>
