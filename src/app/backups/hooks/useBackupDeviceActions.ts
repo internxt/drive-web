@@ -1,5 +1,4 @@
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import { Device } from 'app/backups/types';
 import backupsService from '../services/backups.service';
 import { DriveItemData, DriveFolderData as DriveWebFolderData } from 'app/drive/types';
 import { AppDispatch } from 'app/store';
@@ -7,6 +6,7 @@ import { useAppSelector } from 'app/store/hooks';
 import { backupsActions, backupsThunks } from 'app/store/slices/backups';
 import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/deleteItemsThunk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Device } from '@internxt/sdk/dist/drive/backups/types';
 
 export const useBackupDeviceActions = (
   onFolderUuidChanges: (folderUuid?: string) => void,
@@ -52,7 +52,7 @@ export const useBackupDeviceActions = (
   const onDeviceClicked = (target: Device | DriveFolderData) => {
     setSelectedDevices([]);
     dispatch(backupsActions.setCurrentDevice(target));
-    if ('mac' in target) {
+    if ('mac' in target && target.mac) {
       dispatch(backupsThunks.fetchDeviceBackupsThunk(target.mac));
     }
   };

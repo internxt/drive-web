@@ -21,7 +21,7 @@ import {
   SharedFileIterator,
   SharedFolderIterator,
   isLostConnectionError,
-} from '../../drive/services/downloadManager.service';
+} from '../types/download-types';
 import { DriveItemBlobData } from '../../database/services/database.service';
 import dateService from '../../core/services/date.service';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
@@ -493,11 +493,10 @@ export async function moveFolderByUuid(
 ): Promise<StorageTypes.FolderMeta> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   const payload: StorageTypes.MoveFolderUuidPayload = {
-    folderUuid: folderUuid,
-    destinationFolderUuid: destinationFolderUuid,
+    destinationFolder: destinationFolderUuid,
   };
 
-  return storageClient.moveFolderByUuid(payload).catch((err) => {
+  return storageClient.moveFolderByUuid(folderUuid, payload).catch((err) => {
     const castedError = errorService.castError(err);
     if (castedError.status) {
       castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);

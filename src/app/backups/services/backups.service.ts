@@ -1,9 +1,7 @@
-import { aes } from '@internxt/lib';
 import { Device, DeviceBackup } from '@internxt/sdk/dist/drive/backups/types';
 import { SdkFactory } from '../../core/factory/sdk';
 import { mapBackupFolder } from '../utils/mappers';
 import { DriveFolderData } from '../../drive/types';
-import envService from 'app/core/services/env.service';
 
 const backupsService = {
   async getAllDevices(): Promise<Device[]> {
@@ -21,15 +19,7 @@ const backupsService = {
   async getAllBackups(mac: string): Promise<DeviceBackup[]> {
     const backupsClient = SdkFactory.getNewApiInstance().createBackupsClient();
     const backups = await backupsClient.getAllBackups(mac);
-    return backups.map((backup) => {
-      const path = aes.decrypt(backup.path, `${envService.getVariable('secret2')}-${backup.bucket}`);
-      const name = path.split(/[/\\]/).pop() as string;
-      return {
-        ...backup,
-        path,
-        name,
-      };
-    });
+    return backups;
   },
 
   deleteBackup(backup: DeviceBackup): Promise<void> {

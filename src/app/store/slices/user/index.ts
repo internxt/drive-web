@@ -22,12 +22,15 @@ import { workspacesActions } from '../../../store/slices/workspaces/workspacesSt
 import errorService from '../../../core/services/error.service';
 import { isTokenExpired } from '../../utils';
 import { refreshAvatar } from '../../../utils/avatar/avatarUtils';
+import { ProductService, UserTierFeatures } from 'app/payment/services/products.service';
+import { t } from 'i18next';
 
 export interface UserState {
   isInitializing: boolean;
   isAuthenticated: boolean;
   isInitialized: boolean;
   user?: UserSettings;
+  userTierFeatures?: UserTierFeatures;
 }
 
 const initialState: UserState = {
@@ -35,6 +38,7 @@ const initialState: UserState = {
   isAuthenticated: false,
   isInitialized: false,
   user: undefined,
+  userTierFeatures: undefined,
 };
 
 export const initializeUserThunk = createAsyncThunk<
@@ -51,6 +55,7 @@ export const initializeUserThunk = createAsyncThunk<
 
   if (user && isAuthenticated) {
     dispatch(refreshUserThunk());
+    dispatch(getUserTierFeaturesThunk());
     dispatch(refreshAvatarThunk());
     dispatch(setIsUserInitialized(true));
   } else if (payload.redirectToLogin) {
@@ -71,14 +76,31 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
       if (isExpired || forceRefresh) {
         const { user, newToken } = await userService.refreshUserData(currentUser.uuid);
 
-        const { avatar, emailVerified, name, lastname, uuid } = user;
-        await refreshAvatar(uuid, avatar);
+        const { emailVerified, name, lastname, uuid } = user;
+        const avatar = await refreshAvatar(uuid);
 
         dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
         dispatch(userActions.setToken(newToken));
       }
     } catch (err) {
       errorService.reportError(err, { extra: { thunk: 'refreshUser' } });
+    }
+  },
+);
+
+export const getUserTierFeaturesThunk = createAsyncThunk<void, void, { state: RootState }>(
+  'user/getUserTierFeatures',
+  async (_, { dispatch }) => {
+    try {
+      const userFeatures = await ProductService.instance.getAvailableUserFeatures();
+
+      dispatch(userActions.setUserTierFeatures(userFeatures));
+    } catch (error) {
+      console.error('Error getting the user tier features', error);
+      notificationsService.show({
+        text: t('error.featuresUnavailable'),
+        type: ToastType.Warning,
+      });
     }
   },
 );
@@ -91,13 +113,13 @@ export const refreshAvatarThunk = createAsyncThunk<void, { forceRefresh?: boolea
 
     try {
       if (currentUser) {
-        const { avatar: userAvatar, uuid } = currentUser;
-        const refreshedAvatar = await refreshAvatar(uuid, userAvatar);
+        const { uuid } = currentUser;
+        const refreshedAvatar = await refreshAvatar(uuid);
 
         dispatch(
           userActions.setUser({
             ...currentUser,
-            avatar: refreshedAvatar ?? userAvatar,
+            avatar: refreshedAvatar,
           }),
         );
       }
@@ -188,6 +210,9 @@ export const userSlice = createSlice({
     },
     setIsUserInitialized: (state: UserState, action: PayloadAction<boolean>) => {
       state.isInitialized = action.payload;
+    },
+    setUserTierFeatures(state: UserState, action: PayloadAction<UserTierFeatures>) {
+      state.userTierFeatures = action.payload;
     },
     setUser: (state: UserState, action: PayloadAction<UserSettings>) => {
       state.isAuthenticated = !!action.payload;

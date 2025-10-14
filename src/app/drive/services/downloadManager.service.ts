@@ -19,11 +19,16 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { downloadFile, NetworkCredentials } from 'app/network/download';
 import localStorageService from 'app/core/services/local-storage.service';
 import date from 'app/core/services/date.service';
-import { Iterator } from 'app/core/collections';
-import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { ConnectionLostError } from './../../network/requests';
 import { ErrorMessages } from 'app/core/constants';
+import {
+  FolderIterator,
+  FileIterator,
+  SharedFolderIterator,
+  SharedFileIterator,
+  isLostConnectionError as isLostConnectionErrorUtil,
+} from '../types/download-types';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -46,7 +51,6 @@ export type DownloadItem = {
 };
 
 export type DownloadItemType = DriveItemData | AdvancedSharedItem;
-export type DownloadFilesType = DriveFileData[] & SharedFiles[];
 
 export type DownloadTask = {
   items: DownloadItemType[];
@@ -62,12 +66,6 @@ export type DownloadTask = {
   createFilesIterator: FileIterator | SharedFileIterator;
   failedItems: DownloadItemType[];
 };
-
-export type FolderIterator = (directoryUUID: string, workspaceId?: string) => Iterator<DriveFolderData>;
-export type FileIterator = (directoryUUID: string, workspaceId?: string) => Iterator<DriveFileData>;
-
-export type SharedFolderIterator = (directoryId: string, resourcesToken?: string) => Iterator<SharedFolders>;
-export type SharedFileIterator = (directoryId: string, resourcesToken?: string) => Iterator<SharedFiles>;
 
 /**
  * DownloadManagerService handles file and folder downloads with queue management
@@ -487,16 +485,7 @@ export class DownloadManagerService {
   };
 }
 
-export const isLostConnectionError = (error: unknown) => {
-  const castedError = errorService.castError(error);
-  const isLostConnectionError =
-    error instanceof ConnectionLostError ||
-    [ErrorMessages.ConnectionLost.toLowerCase(), ErrorMessages.NetworkError.toLowerCase()].includes(
-      castedError.message.toLowerCase() as ErrorMessages,
-    );
-
-  return isLostConnectionError;
-};
+export const isLostConnectionError = isLostConnectionErrorUtil;
 
 export const areItemArraysEqual = (firstArray: DownloadItemType[], secondArray: DownloadItemType[]) => {
   if (firstArray.length !== secondArray.length) return false;
