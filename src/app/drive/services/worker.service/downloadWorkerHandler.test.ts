@@ -268,7 +268,7 @@ describe('Download Worker Handler', () => {
     expect(mockedWorker.terminated).toBe(true);
   });
 
-  test('When the event is error and there is an abort controller, then removeEventListener is called', async () => {
+  test('When the event is error and there is an abort controller, then the remove event listener function is called', async () => {
     const mockedWorker = new MockWorker();
     const abortController = new AbortController();
     const itemData = {
