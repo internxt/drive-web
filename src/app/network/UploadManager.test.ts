@@ -78,6 +78,121 @@ const mockFile2 = {
 } as unknown as DriveFileData;
 const taskId = 'task-id';
 
+describe('UploadManager memory usage conditions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should handle case when window.performance.memory is undefined', async () => {
+    const originalPerformance = window.performance;
+    Object.defineProperty(window, 'performance', {
+      value: undefined,
+      writable: true,
+      configurable: true,
+    });
+
+    const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+
+    await uploadFileWithManager(
+      [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
+      openMaxSpaceOccupiedDialogMock,
+      DatabaseUploadRepository.getInstance(),
+      undefined,
+      {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
+    );
+
+    expect(uploadFileSpy).toHaveBeenCalledOnce();
+
+    Object.defineProperty(window, 'performance', {
+      value: originalPerformance,
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  it('should handle case when memory properties are null', async () => {
+    const originalPerformance = window.performance;
+    Object.defineProperty(window, 'performance', {
+      value: {
+        memory: {
+          jsHeapSizeLimit: null,
+          usedJSHeapSize: null,
+        },
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    const uploadFileSpy = (uploadFile as Mock).mockResolvedValueOnce(mockFile1);
+    vi.spyOn(tasksService, 'create').mockReturnValue('taskId');
+    vi.spyOn(tasksService, 'updateTask').mockReturnValue();
+    vi.spyOn(tasksService, 'addListener').mockReturnValue();
+    vi.spyOn(tasksService, 'removeListener').mockReturnValue();
+    vi.spyOn(errorService, 'castError').mockResolvedValue(new AppError('error'));
+
+    await uploadFileWithManager(
+      [
+        {
+          taskId: 'taskId',
+          filecontent: {
+            content: 'file-content' as unknown as File,
+            type: 'text/plain',
+            name: 'file.txt',
+            size: 1024,
+            parentFolderId: 'folder-1',
+          },
+          userEmail: '',
+          parentFolderId: '',
+        },
+      ],
+      openMaxSpaceOccupiedDialogMock,
+      DatabaseUploadRepository.getInstance(),
+      undefined,
+      {
+        ownerUserAuthenticationData: undefined,
+        sharedItemData: {
+          isDeepFolder: false,
+          currentFolderId: 'parentFolderId',
+        },
+        isUploadedFromFolder: true,
+      },
+    );
+
+    expect(uploadFileSpy).toHaveBeenCalledOnce();
+
+    Object.defineProperty(window, 'performance', {
+      value: originalPerformance,
+      writable: true,
+      configurable: true,
+    });
+  });
+});
+
 describe('checkUploadFiles', () => {
   beforeEach(() => {
     RetryManager.clearTasks();
