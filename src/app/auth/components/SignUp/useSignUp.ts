@@ -1,23 +1,12 @@
 import { RegisterDetails } from '@internxt/sdk';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as bip39 from 'bip39';
-
-import { readReferalCookie, RegisterFunction } from 'app/auth/services/auth.service';
+import { readReferalCookie } from 'app/auth/services/auth.service';
+import {RegisterPreCreatedUser, RegisterFunction} from 'app/auth/services/auth.types';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { getKeys } from 'app/crypto/services/keys.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 
-type RegisterPreCreatedUser = (
-  email: string,
-  password: string,
-  invitationId: string,
-  captcha: string,
-) => Promise<{
-  xUser: UserSettings;
-  xToken: string;
-  xNewToken: string;
-  mnemonic: string;
-}>;
 
 export function parseUserSettingsEnsureKyberKeysAdded(user: UserSettings): UserSettings {
   return {

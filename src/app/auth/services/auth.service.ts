@@ -32,8 +32,6 @@ import {
   passToHash,
 } from 'app/crypto/services/utils';
 import databaseService from 'app/database/services/database.service';
-import { AuthMethodTypes } from 'app/payment/types';
-import { AppDispatch } from 'app/store';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
@@ -44,53 +42,7 @@ import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 import vpnAuthService from './vpnAuth.service';
-
-type ProfileInfo = {
-  user: UserSettings;
-  token: string;
-  newToken: string;
-  mnemonic: string;
-};
-
-export type RegisterFunction = (
-  email: string,
-  password: string,
-  captcha: string,
-) => Promise<{
-  xUser: UserSettings;
-  xToken: string;
-  xNewToken: string;
-  mnemonic: string;
-}>;
-
-export type SignUpParams = {
-  doSignUp: RegisterFunction;
-  email: string;
-  password: string;
-  token: string;
-  redeemCodeObject: boolean;
-  dispatch: AppDispatch;
-};
-
-type LogInParams = {
-  email: string;
-  password: string;
-  twoFactorCode: string;
-  dispatch: AppDispatch;
-  loginType?: 'web' | 'desktop';
-};
-
-export type AuthenticateUserParams = {
-  email: string;
-  password: string;
-  authMethod: AuthMethodTypes;
-  twoFactorCode: string;
-  dispatch: AppDispatch;
-  loginType?: 'web' | 'desktop';
-  token?: string;
-  redeemCodeObject?: boolean;
-  doSignUp?: RegisterFunction;
-};
+import { ProfileInfo, SignUpParams, AuthenticateUserParams, LogInParams  } from './auth.types';
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   try {
@@ -118,13 +70,13 @@ export function cancelAccount(): Promise<void> {
   return authClient.sendUserDeactivationEmail(token);
 }
 
-export const is2FANeeded = async (email: string): Promise<boolean> => {
+export const is2FAorOpaqueNeeded = async (email: string): Promise<{tfaEnabled: boolean, opaqueLogin: boolean }> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
     throw new AppError(error.message ?? 'Login error', error.status ?? 500);
   });
 
-  return securityDetails.tfaEnabled;
+  return {tfaEnabled: securityDetails.tfaEnabled, opaqueLogin: securityDetails.opaqueLogin };
 };
 
 const getAuthClient = (authType: 'web' | 'desktop') => {
@@ -623,7 +575,7 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
 
 const authService = {
   logOut,
-  check2FANeeded: is2FANeeded,
+  check2FANeeded: is2FAorOpaqueNeeded,
   readReferalCookie,
   cancelAccount,
   store2FA,
