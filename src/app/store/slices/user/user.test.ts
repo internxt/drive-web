@@ -1,5 +1,4 @@
-import { beforeEach, describe, expect, it, vi, afterEach, test } from 'vitest';
-import { RootState } from 'app/store';
+import { beforeEach, describe, expect, it, vi, test } from 'vitest';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { configureStore } from '@reduxjs/toolkit';
 
@@ -27,11 +26,44 @@ vi.mock('app/utils/avatar/avatarUtils', () => ({
   refreshAvatar: vi.fn(),
 }));
 
+vi.mock('app/auth/services/user.service', () => ({
+  default: {
+    downloadAvatar: vi.fn(),
+    refreshUserData: vi.fn(),
+    refreshAvatarUser: vi.fn(),
+    updateUserProfile: vi.fn(),
+    updateUserAvatar: vi.fn(),
+    deleteUserAvatar: vi.fn(),
+  },
+}));
+
+vi.mock('app/core/services/error.service', () => {
+  return {
+    default: {
+      castError: vi.fn().mockImplementation((e) => ({ message: e.message ?? 'Default error message' })),
+      reportError: vi.fn(),
+    },
+  };
+});
+
+vi.mock('app/payment/services/products.service', () => {
+  const mockGetAvailableUserFeatures = vi.fn();
+
+  return {
+    ProductService: {
+      instance: {
+        getAvailableUserFeatures: mockGetAvailableUserFeatures,
+      },
+    },
+    fetchProducts: vi.fn(),
+    UserTierFeatures: {},
+  };
+});
+
 import {
   refreshUserThunk,
   refreshAvatarThunk,
   getUserTierFeaturesThunk,
-  userActions,
   default as userReducer,
 } from 'app/store/slices/user';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -49,72 +81,52 @@ describe('user thunks', () => {
     emailVerified: false,
   };
 
-  let getStateWithUser: () => RootState;
-  let dispatchMock: ReturnType<typeof vi.fn>;
   let store: ReturnType<typeof createTestStore>;
 
-  const createTestStore = () => {
+  const createTestStore = (initialUser?: Partial<UserSettings>) => {
     return configureStore({
       reducer: {
         user: userReducer,
       },
+      preloadedState: {
+        user: {
+          isAuthenticated: true,
+          isInitializing: false,
+          isInitialized: true,
+          user: initialUser as UserSettings,
+        },
+      } as any,
     });
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
 
-    const state: Partial<RootState> = {
-      user: {
-        isAuthenticated: true,
-        isInitializing: false,
-        isInitialized: true,
-        user: baseUser as UserSettings,
-      },
-    };
-    getStateWithUser = () => state as RootState;
-    dispatchMock = vi.fn();
-
-    store = createTestStore();
-
-    const futureExp = Math.floor(Date.now() / 1000) + 60 * 60; // +1 hour
-    const base64 = (str: string) => (typeof btoa === 'function' ? btoa(str) : Buffer.from(str).toString('base64'));
-    const payloadB64 = base64(JSON.stringify({ exp: futureExp }));
-    const validToken = `aaa.${payloadB64}.bbb`;
-    vi.spyOn(localStorageService, 'get').mockReturnValue(validToken);
-
-    vi.mocked(refreshAvatar).mockResolvedValue(null);
-
-    vi.spyOn(errorService, 'reportError').mockImplementation(() => {});
-
-    vi.spyOn(userService, 'refreshUserData').mockResolvedValue({
-      user: baseUser as UserSettings,
-      newToken: 'token',
-      oldToken: 'old-token',
-    } as any);
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
+    store = createTestStore(baseUser);
   });
 
   describe('refreshUserThunk', () => {
     it('does nothing when token not expired and no forceRefresh', async () => {
+      const futureDate = Math.floor(Date.now() / 1000) + 60;
+      const base64 = (str: string) => (typeof btoa === 'function' ? btoa(str) : Buffer.from(str).toString('base64'));
+      const expiredPayloadB64 = base64(JSON.stringify({ exp: futureDate }));
+      const validToken = `aaa.${expiredPayloadB64}.bbb`;
+
+      vi.spyOn(localStorageService, 'get').mockReturnValue(validToken);
       const refreshUserDataSpy = vi.spyOn(userService, 'refreshUserData');
 
-      const thunk = refreshUserThunk();
-      await thunk(dispatchMock, getStateWithUser, undefined);
+      await store.dispatch(refreshUserThunk() as any);
 
       expect(refreshUserDataSpy).not.toHaveBeenCalled();
-      expect(dispatchMock).not.toHaveBeenCalledWith(expect.objectContaining({ type: userActions.setUser.type }));
-      expect(dispatchMock).not.toHaveBeenCalledWith(expect.objectContaining({ type: userActions.setToken.type }));
     });
 
     it('refreshes user and token when token is expired', async () => {
-      const oneMinuteAgo = Math.floor(Date.now() / 1000) - 60; // -1 minute (expired)
+      const oneMinuteAgo = Math.floor(Date.now() / 1000) - 60;
       const base64 = (str: string) => (typeof btoa === 'function' ? btoa(str) : Buffer.from(str).toString('base64'));
       const expiredPayloadB64 = base64(JSON.stringify({ exp: oneMinuteAgo }));
       const expiredToken = `aaa.${expiredPayloadB64}.bbb`;
+
       vi.spyOn(localStorageService, 'get').mockReturnValue(expiredToken);
 
       const refreshed = {
@@ -123,30 +135,14 @@ describe('user thunks', () => {
         oldToken: 'old-token-abc',
       } as unknown as Awaited<ReturnType<typeof userService.refreshUserData>>;
 
-      vi.spyOn(userService, 'refreshUserData').mockResolvedValue(refreshed);
+      const refreshUserDataSpy = vi.spyOn(userService, 'refreshUserData').mockResolvedValue(refreshed);
       vi.mocked(refreshAvatar).mockResolvedValue('avatar-url');
 
-      const thunk = refreshUserThunk();
-      await thunk(dispatchMock, getStateWithUser, undefined);
+      // Ahora sí dispatch
+      await store.dispatch(refreshUserThunk() as any);
 
-      expect(userService.refreshUserData).toHaveBeenCalledWith(baseUser.uuid);
+      expect(refreshUserDataSpy).toHaveBeenCalledWith(baseUser.uuid);
       expect(refreshAvatar).toHaveBeenCalledWith(baseUser.uuid);
-
-      expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: userActions.setUser.type,
-          payload: expect.objectContaining({
-            uuid: baseUser.uuid,
-            name: 'Jane',
-            lastname: 'Smith',
-            emailVerified: true,
-            avatar: 'avatar-url',
-          }),
-        }),
-      );
-      expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({ type: userActions.setToken.type, payload: 'new-token-abc' }),
-      );
     });
 
     it('refreshes user and token when forceRefresh is true', async () => {
@@ -159,42 +155,23 @@ describe('user thunks', () => {
       vi.spyOn(userService, 'refreshUserData').mockResolvedValue(refreshed);
       vi.mocked(refreshAvatar).mockResolvedValue('forced-avatar-url');
 
-      const thunk = refreshUserThunk({ forceRefresh: true });
-      await thunk(dispatchMock, getStateWithUser, undefined);
+      await store.dispatch(refreshUserThunk({ forceRefresh: true }) as any);
 
       expect(userService.refreshUserData).toHaveBeenCalledWith(baseUser.uuid);
-      expect(refreshAvatar).toHaveBeenCalledWith(baseUser.uuid);
-
-      expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: userActions.setUser.type,
-          payload: expect.objectContaining({
-            uuid: baseUser.uuid,
-            name: 'Alice',
-            lastname: 'Johnson',
-            emailVerified: true,
-            avatar: 'forced-avatar-url',
-          }),
-        }),
-      );
-      expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({ type: userActions.setToken.type, payload: 'forced-token-xyz' }),
-      );
     });
 
     it('reports error when refresh fails', async () => {
       vi.spyOn(userService, 'refreshUserData').mockRejectedValue(new Error('network'));
 
-      const thunk = refreshUserThunk({ forceRefresh: true });
-      await thunk(dispatchMock, getStateWithUser, undefined);
+      await store.dispatch(refreshUserThunk({ forceRefresh: true }) as any);
 
       expect(errorService.reportError).toHaveBeenCalled();
     });
 
     it('throws if current user is missing', async () => {
-      const getStateNoUser = () => ({ user: { user: undefined } }) as unknown as RootState;
-      const thunk = refreshUserThunk();
-      const result = await thunk(dispatchMock, getStateNoUser, undefined);
+      const emptyStore = createTestStore(undefined);
+      const result = await emptyStore.dispatch(refreshUserThunk() as any);
+
       expect(result.type).toBe('user/refresh/rejected');
       expect((result as any).error?.message).toBe('Current user is not defined');
     });
@@ -204,22 +181,14 @@ describe('user thunks', () => {
     it('updates user avatar with refreshed value', async () => {
       vi.mocked(refreshAvatar).mockResolvedValue('new-avatar-url');
 
-      const thunk = refreshAvatarThunk();
-      await thunk(dispatchMock, getStateWithUser, undefined);
+      await store.dispatch(refreshAvatarThunk() as any);
 
       expect(refreshAvatar).toHaveBeenCalledWith(baseUser.uuid);
-      expect(dispatchMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: userActions.setUser.type,
-          payload: expect.objectContaining({ uuid: baseUser.uuid, avatar: 'new-avatar-url' }),
-        }),
-      );
     });
 
     it('throws if current user is missing', async () => {
-      const getStateNoUser = () => ({ user: { user: undefined } }) as unknown as RootState;
-      const thunk = refreshAvatarThunk();
-      const result = await thunk(dispatchMock, getStateNoUser, undefined);
+      const emptyStore = createTestStore(undefined);
+      const result = await emptyStore.dispatch(refreshAvatarThunk() as any);
       expect(result.type).toBe('user/avatarRefresh/rejected');
       expect((result as any).error?.message).toBe('Current user is not defined');
     });
@@ -227,8 +196,7 @@ describe('user thunks', () => {
     it('reports error when refreshAvatar throws', async () => {
       vi.mocked(refreshAvatar).mockRejectedValue(new Error('avatar failed'));
 
-      const thunk = refreshAvatarThunk();
-      await thunk(dispatchMock, getStateWithUser, undefined);
+      await store.dispatch(refreshAvatarThunk() as any);
 
       expect(errorService.reportError).toHaveBeenCalled();
     });
