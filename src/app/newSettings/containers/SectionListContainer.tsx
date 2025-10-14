@@ -5,14 +5,6 @@ import { RootState } from '../../store';
 import workspacesSelectors from '../../store/slices/workspaces/workspaces.selectors';
 import SectionList from '../components/SectionList';
 
-export interface NavSection {
-  section?: string;
-  subsection?: string;
-  text: string;
-  isSubsection?: boolean;
-  notificationsNumber: number;
-}
-
 export const sectionItems = [
   {
     section: 'general',
