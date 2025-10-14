@@ -26,6 +26,45 @@
     -->
     <title>Internxt Drive – Private & Secure Cloud Storage</title>
 
+    <style>
+      html.dark,
+      html.dark body {
+        background-color: #111;
+        color-scheme: dark;
+      }
+    </style>
+    <script>
+      (function () {
+        try {
+          var storedTheme = localStorage.getItem('theme');
+          var persistedIsDark = localStorage.getItem('theme:isDark');
+          var systemPrefersDark = false;
+
+          try {
+            systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          } catch (matchError) {
+            systemPrefersDark = false;
+          }
+
+          var theme = storedTheme || 'system';
+          var shouldUseDark = false;
+
+          if (persistedIsDark !== null) {
+            shouldUseDark = JSON.parse(persistedIsDark);
+          } else {
+            shouldUseDark =
+              theme === 'dark' ||
+              (theme === 'system' && systemPrefersDark) ||
+              (theme !== 'system' && theme !== 'light');
+          }
+
+          if (shouldUseDark) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (error) {}
+      })();
+    </script>
+
     <script src="https://www.google.com/recaptcha/api.js?render=%REACT_APP_RECAPTCHA_V3%"></script>
     <script src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_ID%"></script>
     <script>
