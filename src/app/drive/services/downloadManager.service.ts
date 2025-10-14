@@ -243,7 +243,7 @@ export class DownloadManagerService {
         abortController,
       });
 
-      await this.checkAndHandleConnectionLoss(connectionLost);
+      await this.checkAndHandleConnectionLost(connectionLost);
 
       if (zipFolderResult?.allItemsFailed) {
         throw new Error(ErrorMessages.ServerUnavailable);
@@ -251,7 +251,7 @@ export class DownloadManagerService {
         downloadTask.failedItems.push(...(zipFolderResult.failedItems as DownloadItemType[]));
       }
     } catch (error) {
-      await this.checkAndHandleConnectionLoss(connectionLost);
+      await this.checkAndHandleConnectionLost(connectionLost);
       throw error;
     } finally {
       cleanup();
@@ -290,9 +290,9 @@ export class DownloadManagerService {
         await downloadService.downloadFile(file, isWorkspace, updateProgressCallback, abortController, credentials);
       }
 
-      await this.checkAndHandleConnectionLoss(connectionLost);
+      await this.checkAndHandleConnectionLost(connectionLost);
     } catch (error) {
-      await this.checkAndHandleConnectionLoss(connectionLost);
+      await this.checkAndHandleConnectionLost(connectionLost);
       throw error;
     } finally {
       cleanup();
@@ -395,7 +395,7 @@ export class DownloadManagerService {
         });
         downloadProgress[index] = 1;
 
-        await this.checkAndHandleConnectionLoss(connectionLost, folderZip);
+        await this.checkAndHandleConnectionLost(connectionLost, folderZip);
 
         if (downloadedItems.allItemsFailed) {
           failedItems.push(driveItem);
@@ -419,7 +419,7 @@ export class DownloadManagerService {
           }
           await addFileStreamToZip(index, driveItem);
         } catch (error: unknown) {
-          await this.checkAndHandleConnectionLoss(connectionLost, folderZip);
+          await this.checkAndHandleConnectionLost(connectionLost, folderZip);
           if (isLostConnectionError(error)) {
             folderZip.abort();
             await folderZip.close();
@@ -439,14 +439,14 @@ export class DownloadManagerService {
 
       await folderZip.close();
     } catch (error) {
-      await this.checkAndHandleConnectionLoss(connectionLost);
+      await this.checkAndHandleConnectionLost(connectionLost);
       throw error;
     } finally {
       cleanup();
     }
   };
 
-  readonly checkAndHandleConnectionLoss = async (conn: boolean, zip?: FlatFolderZip) => {
+  readonly checkAndHandleConnectionLost = async (conn: boolean, zip?: FlatFolderZip) => {
     if (conn || navigator.onLine === false) {
       if (zip) {
         zip.abort();
