@@ -14,7 +14,6 @@ interface HandleWorkerMessagesPayload {
 interface HandleMessagesPayload {
   messageData: MessageData;
   worker: Worker;
-  writer: WritableStreamDefaultWriter<Uint8Array>;
   completeFilename: string;
   abortController?: AbortController;
   downloadCallback: (progress: number) => void;
@@ -23,6 +22,8 @@ interface HandleMessagesPayload {
 }
 
 export class DownloadWorkerHandler {
+  private currentWriter: WritableStreamDefaultWriter | undefined;
+  private currentFileStream: WritableStream<Uint8Array<ArrayBufferLike>> | undefined;
   public getWorker() {
     return createDownloadWebWorker();
   }
@@ -35,8 +36,6 @@ export class DownloadWorkerHandler {
   }: HandleWorkerMessagesPayload) {
     const fileName = itemData.plainName ?? itemData.name;
     const completeFilename = itemData.type ? `${fileName}.${itemData.type}` : fileName;
-    const fileStream = streamSaver.createWriteStream(completeFilename);
-    const writer = fileStream.getWriter();
 
     return new Promise((resolve, reject) => {
       worker.addEventListener('error', reject);
@@ -45,7 +44,6 @@ export class DownloadWorkerHandler {
           messageData: msg.data,
           worker,
           abortController,
-          writer,
           completeFilename,
           downloadCallback: updateProgressCallback,
           resolve,
@@ -58,7 +56,6 @@ export class DownloadWorkerHandler {
   public async handleMessages({
     messageData,
     worker,
-    writer,
     completeFilename,
     abortController,
     resolve,
@@ -73,7 +70,11 @@ export class DownloadWorkerHandler {
 
       try {
         worker.postMessage({ type: 'abort' });
-        await writer.abort();
+        if (this.currentWriter) {
+          await this.currentWriter.abort();
+          this.currentWriter = undefined;
+          this.currentFileStream = undefined;
+        }
         aborted = true;
       } catch {
         // NO OP
@@ -95,10 +96,13 @@ export class DownloadWorkerHandler {
 
     switch (result) {
       case 'chunk': {
+        if (!this.currentWriter) {
+          this.currentFileStream = streamSaver.createWriteStream(completeFilename);
+          this.currentWriter = this.currentFileStream.getWriter();
+        }
+
         const { chunk } = messageData;
-
-        await writer.write(chunk);
-
+        await this.currentWriter.write(chunk);
         break;
       }
 
@@ -118,7 +122,11 @@ export class DownloadWorkerHandler {
 
       case 'success': {
         const { fileId } = messageData;
-        await writer.close();
+        if (this.currentWriter) {
+          await this.currentWriter.close();
+          this.currentWriter = undefined;
+          this.currentFileStream = undefined;
+        }
         worker.terminate();
         removeAbortListener();
         resolve(fileId);
@@ -127,7 +135,11 @@ export class DownloadWorkerHandler {
 
       case 'error': {
         const { error } = messageData;
-        await writer.abort();
+        if (this.currentWriter) {
+          await this.currentWriter.abort();
+          this.currentWriter = undefined;
+          this.currentFileStream = undefined;
+        }
         worker.terminate();
         removeAbortListener();
         reject(error);

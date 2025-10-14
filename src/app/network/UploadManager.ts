@@ -13,23 +13,12 @@ import { FileToUpload } from '../drive/services/file.service/types';
 import RetryManager, { RetryableTask } from './RetryManager';
 import { ErrorMessages } from 'app/core/constants';
 import { MAX_UPLOAD_ATTEMPTS, TWENTY_MEGABYTES, USE_MULTIPART_THRESHOLD_BYTES } from './networkConstants';
+import { OwnerUserAuthenticationData } from './types';
 
 enum FileSizeType {
   Big = 'big',
   Medium = 'medium',
   Small = 'small',
-}
-
-export interface OwnerUserAuthenticationData {
-  token: string;
-  bridgeUser: string;
-  bridgePass: string;
-  encryptionKey: string;
-  bucketId: string;
-  // to manage B2B workspaces
-  workspaceId?: string;
-  workspacesToken?: string;
-  resourcesToken: string;
 }
 
 type Options = {
@@ -402,36 +391,52 @@ class UploadManager {
     next(error);
   }
 
-  private manageMemoryUsage() {
-    if (window?.performance?.memory) {
-      const memory = window.performance.memory;
-
-      if (memory && memory?.jsHeapSizeLimit !== null && memory.usedJSHeapSize !== null) {
-        const memoryUsagePercentage = memory.usedJSHeapSize / memory.jsHeapSizeLimit;
-        const shouldIncreaseConcurrency =
-          memoryUsagePercentage < 0.7 && this.currentGroupBeingUploaded !== FileSizeType.Big;
-
-        if (shouldIncreaseConcurrency) {
-          const newConcurrency = Math.min(
-            this.uploadQueue.concurrency + 1,
-            this.filesGroups[FileSizeType.Small].concurrency,
-          );
-          if (newConcurrency !== this.uploadQueue.concurrency) {
-            console.warn(`Memory usage under 70%. Increasing upload concurrency to ${newConcurrency}`);
-            this.uploadQueue.concurrency = newConcurrency;
-          }
-        }
-
-        const shouldReduceConcurrency = memoryUsagePercentage >= 0.8 && this.uploadQueue.concurrency > 1;
-
-        if (shouldReduceConcurrency) {
-          console.warn('Memory usage reached 80%. Reducing upload concurrency.');
-          this.uploadQueue.concurrency = 1;
-        }
-      }
-    } else {
-      console.warn('Memory usage control is not available');
+  private getMemoryUsagePercentage(): number | null {
+    if (!window?.performance?.memory) {
+      return null;
     }
+
+    const memory = window.performance.memory;
+    if (!memory?.jsHeapSizeLimit || !memory?.usedJSHeapSize) {
+      return null;
+    }
+
+    return memory.usedJSHeapSize / memory.jsHeapSizeLimit;
+  }
+
+  private handleConcurrencyIncrease(memoryUsagePercentage: number): void {
+    const shouldIncrease = memoryUsagePercentage < 0.7 && this.currentGroupBeingUploaded !== FileSizeType.Big;
+
+    if (!shouldIncrease) return;
+
+    const newConcurrency = Math.min(this.uploadQueue.concurrency + 1, this.filesGroups[FileSizeType.Small].concurrency);
+
+    if (newConcurrency !== this.uploadQueue.concurrency) {
+      console.warn(`Memory usage under 70%. Increasing upload concurrency to ${newConcurrency}`);
+      this.uploadQueue.concurrency = newConcurrency;
+    }
+  }
+
+  private handleConcurrencyReduction(memoryUsagePercentage: number): void {
+    const shouldReduce = memoryUsagePercentage >= 0.8 && this.uploadQueue.concurrency > 1;
+
+    if (shouldReduce) {
+      console.warn('Memory usage reached 80%. Reducing upload concurrency.');
+      this.uploadQueue.concurrency = 1;
+    }
+  }
+
+  private manageMemoryUsage() {
+    const memoryUsagePercentage = this.getMemoryUsagePercentage();
+    console.log('Current memory usage percentage:', memoryUsagePercentage);
+
+    if (memoryUsagePercentage === null) {
+      console.warn('Memory usage control is not available');
+      return;
+    }
+
+    this.handleConcurrencyIncrease(memoryUsagePercentage);
+    this.handleConcurrencyReduction(memoryUsagePercentage);
   }
 
   private classifyFilesBySize(

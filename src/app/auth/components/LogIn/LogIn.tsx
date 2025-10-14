@@ -125,6 +125,43 @@ export default function LogIn(): JSX.Element {
     }
   };
 
+  const handleAuthenticationError = async (err: unknown, email: string): Promise<void> => {
+    const castedError = errorService.castError(err);
+
+    if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
+      const emailEncoded = encodeURIComponent(email);
+      navigationService.history.push(`/activate/${emailEncoded}`);
+      return;
+    }
+
+    setLoginError([castedError.message]);
+    setShowErrors(true);
+
+    if ((err as AppError)?.status === 403) {
+      await sendUnblockAccountEmail(email);
+      navigationService.history.push({
+        pathname: AppView.BlockedAccount,
+        search: QueryString.stringify({ email }),
+      });
+    }
+  };
+
+  const handleSuccessfulAuth = (token: string, user: UserSettings, mnemonic: string): void => {
+    const redirectUrl = authService.getRedirectUrl(urlParams, token);
+
+    if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
+      window.location.replace(redirectUrl);
+    }
+
+    const isVPNAuth = urlParams.get('vpnAuth');
+    const newToken = localStorageService.get('xNewToken');
+    if (isVPNAuth && newToken) {
+      vpnAuthService.logIn(newToken);
+    }
+
+    redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode, isSharingInvitation });
+  };
+
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     event?.preventDefault();
     setIsLoggingIn(true);
@@ -145,42 +182,14 @@ export default function LogIn(): JSX.Element {
         };
 
         const { token, user, mnemonic } = await authenticateUser(authParams);
-
-        const redirectUrl = authService.getRedirectUrl(urlParams, token);
-
-        if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
-          window.location.replace(redirectUrl);
-        }
-
-        const isVPNAuth = urlParams.get('vpnAuth');
-        const newToken = localStorageService.get('xNewToken');
-        if (isVPNAuth && newToken) {
-          vpnAuthService.logIn(newToken);
-        }
-
-        redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode, isSharingInvitation });
+        handleSuccessfulAuth(token, user, mnemonic);
       } else {
         setShowTwoFactor(true);
         setLoginError([]);
         setShowErrors(false);
       }
     } catch (err: unknown) {
-      const castedError = errorService.castError(err);
-
-      if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
-        const emailEncoded = encodeURIComponent(email);
-        navigationService.history.push(`/activate/${emailEncoded}`);
-      }
-
-      setLoginError([castedError.message]);
-      setShowErrors(true);
-      if ((err as AppError)?.status === 403) {
-        await sendUnblockAccountEmail(email);
-        navigationService.history.push({
-          pathname: AppView.BlockedAccount,
-          search: QueryString.stringify({ email: email }),
-        });
-      }
+      await handleAuthenticationError(err, email);
     } finally {
       setIsLoggingIn(false);
     }

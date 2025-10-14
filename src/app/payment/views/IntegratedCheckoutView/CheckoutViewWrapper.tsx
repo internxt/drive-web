@@ -31,7 +31,8 @@ import { planThunks } from '../../../store/slices/plan';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
-import { AuthMethodTypes, PaymentType, PlanInterval } from '../../types';
+import { PaymentType, PlanInterval } from '../../types';
+import { CheckoutViewManager, UserInfoProps } from './types/checkout.types';
 import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'app/payment/hooks/useUserPayment';
 import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'app/payment/components/checkout/CryptoPaymentDialog';
@@ -60,30 +61,6 @@ export const THEME_STYLES = {
     labelTextColor: 'rgb(58 58 59)',
   },
 };
-
-export interface UserInfoProps {
-  avatar: Blob | null;
-  name: string;
-  email: string;
-}
-
-export interface CheckoutViewManager {
-  onCouponInputChange: (coupon?: string) => Promise<void>;
-  onLogOut: () => Promise<void>;
-  onCountryChange: (country: string) => void;
-  onPostalCodeChange: (postalCode: string) => void;
-  onCheckoutButtonClicked: (
-    formData: IFormValues,
-    event: BaseSyntheticEvent<object, any, any> | undefined,
-    stripeSDK: Stripe | null,
-    elements: StripeElements | null,
-  ) => Promise<void>;
-  onRemoveAppliedCouponCode: () => void;
-  handleAuthMethodChange: (method: AuthMethodTypes) => void;
-  onUserNameFromAddressElementChange: (userName: string) => void;
-  onSeatsChange: (seat: number) => void;
-  onCurrencyChange: (currency: string) => void;
-}
 
 const STATUS_CODE_ERROR = {
   USER_EXISTS: 409,

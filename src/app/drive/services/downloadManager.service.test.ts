@@ -1,3 +1,4 @@
+import streamSaver from 'streamsaver';
 import {
   DownloadCredentials,
   DownloadItem,
@@ -92,10 +93,19 @@ vi.mock('app/core/services/local-storage.service', () => ({
     getUser: vi.fn(),
   },
 }));
+vi.mock('streamsaver');
+vi.mock('./download.service/createFileDownloadStream');
+
 describe('downloadManagerService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
+    const defaultWritableStream = new WritableStream({
+      write: vi.fn(),
+      close: vi.fn(),
+      abort: vi.fn(),
+    });
+    vi.mocked(streamSaver.createWriteStream).mockReturnValue(defaultWritableStream);
   });
 
   const mockUser: UserSettings = {
@@ -1691,129 +1701,125 @@ describe('downloadManagerService', () => {
         expect(removeEventListenerSpy).toHaveBeenCalledWith('offline', expect.any(Function));
       });
     });
+  });
 
-    describe('Download a file from worker', () => {
-      const mockWorker = {
-        postMessage: vi.fn(),
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        terminate: vi.fn(),
-      } as unknown as Worker;
+  describe('Download a file from worker', () => {
+    const mockWorker = {
+      postMessage: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      terminate: vi.fn(),
+    } as unknown as Worker;
 
-      const mockSharingOptions = {
-        credentials: { user: 'test-user', pass: 'test-pass' },
-        mnemonic: 'test-mnemonic',
+    const mockSharingOptions = {
+      credentials: { user: 'test-user', pass: 'test-pass' },
+      mnemonic: 'test-mnemonic',
+    };
+
+    beforeEach(() => {
+      vi.clearAllMocks();
+
+      vi.spyOn(downloadWorkerHandler, 'getWorker').mockReturnValue(mockWorker);
+      vi.spyOn(downloadWorkerHandler, 'handleWorkerMessages').mockResolvedValue(() => {});
+
+      vi.stubGlobal('navigator', {
+        ...navigator,
+        brave: { isBrave: vi.fn().mockResolvedValue(false) },
+      });
+      vi.spyOn(console, 'log').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    test('When the download is started, then the worker is started and the handler should be called correctly', async () => {
+      const updateProgressCallback = vi.fn();
+      const payload = {
+        file: mockFile,
+        isWorkspace: false,
+        updateProgressCallback,
+        sharingOptions: mockSharingOptions,
       };
 
-      beforeEach(() => {
-        vi.clearAllMocks();
+      await DownloadManagerService.instance.downloadFileFromWorker(payload);
 
-        vi.spyOn(downloadWorkerHandler, 'getWorker').mockReturnValue(mockWorker);
-        vi.spyOn(downloadWorkerHandler, 'handleWorkerMessages').mockResolvedValue(() => {});
-
-        vi.stubGlobal('navigator', {
-          ...navigator,
-          brave: { isBrave: vi.fn().mockResolvedValue(false) },
-        });
-        vi.spyOn(console, 'log').mockImplementation(() => {});
-      });
-
-      afterEach(() => {
-        vi.unstubAllGlobals();
-      });
-
-      test('When the download is started, then the worker is started and the handler should be called correctly', async () => {
-        const updateProgressCallback = vi.fn();
-        const payload = {
+      expect(downloadWorkerHandler.getWorker).toHaveBeenCalled();
+      expect(mockWorker.postMessage).toHaveBeenCalledWith({
+        type: 'download',
+        params: {
           file: mockFile,
           isWorkspace: false,
-          updateProgressCallback,
-          connectionLost: false,
-          sharingOptions: mockSharingOptions,
-        };
-
-        await DownloadManagerService.instance.downloadFileFromWorker(payload);
-
-        expect(downloadWorkerHandler.getWorker).toHaveBeenCalled();
-        expect(mockWorker.postMessage).toHaveBeenCalledWith({
-          type: 'download',
-          params: {
-            file: mockFile,
-            isWorkspace: false,
-            credentials: mockSharingOptions,
-            isBrave: false,
-          },
-        });
-        expect(downloadWorkerHandler.handleWorkerMessages).toHaveBeenCalledWith({
-          worker: mockWorker,
-          itemData: mockFile,
-          updateProgressCallback,
-          abortController: undefined,
-        });
+          credentials: mockSharingOptions,
+          isBrave: false,
+        },
       });
+      expect(downloadWorkerHandler.handleWorkerMessages).toHaveBeenCalledWith({
+        worker: mockWorker,
+        itemData: mockFile,
+        updateProgressCallback,
+        abortController: undefined,
+      });
+    });
 
-      test('When the browser is brave, then the worker is started with a flag indicating so', async () => {
-        const updateProgressCallback = vi.fn();
-        (navigator as any).brave = { isBrave: vi.fn().mockResolvedValue(true) };
+    test('When the browser is brave, then the worker is started with a flag indicating so', async () => {
+      const updateProgressCallback = vi.fn();
+      (navigator as any).brave = { isBrave: vi.fn().mockResolvedValue(true) };
 
-        const payload = {
+      const payload = {
+        file: mockFile,
+        isWorkspace: true,
+        updateProgressCallback,
+        sharingOptions: mockSharingOptions,
+      };
+
+      await DownloadManagerService.instance.downloadFileFromWorker(payload);
+
+      expect(mockWorker.postMessage).toHaveBeenCalledWith({
+        type: 'download',
+        params: {
           file: mockFile,
           isWorkspace: true,
-          updateProgressCallback,
-          connectionLost: false,
-          sharingOptions: mockSharingOptions,
-        };
-
-        await DownloadManagerService.instance.downloadFileFromWorker(payload);
-
-        expect(mockWorker.postMessage).toHaveBeenCalledWith({
-          type: 'download',
-          params: {
-            file: mockFile,
-            isWorkspace: true,
-            credentials: mockSharingOptions,
-            isBrave: true,
-          },
-        });
+          credentials: mockSharingOptions,
+          isBrave: true,
+        },
       });
+    });
 
-      test('When an error occurs in the worker, then it should be thrown', async () => {
-        const workerError = new Error('Worker failed');
-        const updateProgressCallback = vi.fn();
-        vi.spyOn(downloadWorkerHandler, 'handleWorkerMessages').mockRejectedValue(workerError);
+    test('When an error occurs in the worker, then it should be thrown', async () => {
+      const workerError = new Error('Worker failed');
+      const updateProgressCallback = vi.fn();
+      vi.spyOn(downloadWorkerHandler, 'handleWorkerMessages').mockRejectedValue(workerError);
 
-        const payload = {
-          file: mockFile,
-          isWorkspace: false,
-          updateProgressCallback,
-          connectionLost: false,
-          sharingOptions: mockSharingOptions,
-        };
+      const payload = {
+        file: mockFile,
+        isWorkspace: false,
+        updateProgressCallback,
+        sharingOptions: mockSharingOptions,
+      };
 
-        await expect(DownloadManagerService.instance.downloadFileFromWorker(payload)).rejects.toThrow('Worker failed');
-      });
+      await expect(DownloadManagerService.instance.downloadFileFromWorker(payload)).rejects.toThrow(workerError);
+    });
 
-      test('When no abort controller is passed, then the worker is started without it', async () => {
-        const updateProgressCallback = vi.fn();
+    test('When no abort controller is passed, then the worker is started without it', async () => {
+      const updateProgressCallback = vi.fn();
 
-        const payload = {
-          file: mockFile,
-          isWorkspace: false,
-          updateProgressCallback,
-          connectionLost: false,
-          sharingOptions: mockSharingOptions,
-        };
+      const payload = {
+        file: mockFile,
+        isWorkspace: false,
+        updateProgressCallback,
+        sharingOptions: mockSharingOptions,
+      };
 
-        await expect(DownloadManagerService.instance.downloadFileFromWorker(payload)).resolves.toEqual(
-          expect.any(Function),
-        );
+      await expect(DownloadManagerService.instance.downloadFileFromWorker(payload)).resolves.toEqual(
+        expect.any(Function),
+      );
 
-        expect(downloadWorkerHandler.handleWorkerMessages).toHaveBeenCalledWith({
-          worker: mockWorker,
-          itemData: mockFile,
-          updateProgressCallback,
-          abortController: undefined,
-        });
+      expect(downloadWorkerHandler.handleWorkerMessages).toHaveBeenCalledWith({
+        worker: mockWorker,
+        itemData: mockFile,
+        updateProgressCallback,
+        abortController: undefined,
       });
     });
   });
