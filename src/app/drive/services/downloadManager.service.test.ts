@@ -1798,7 +1798,7 @@ describe('downloadManagerService', () => {
         sharingOptions: mockSharingOptions,
       };
 
-      await expect(DownloadManagerService.instance.downloadFileFromWorker(payload)).rejects.toThrow('Worker failed');
+      await expect(DownloadManagerService.instance.downloadFileFromWorker(payload)).rejects.toThrow(workerError);
     });
 
     test('When no abort controller is passed, then the worker is started without it', async () => {

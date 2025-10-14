@@ -1,4 +1,4 @@
-import { DownloadWorker } from 'workers/downloadWorker';
+import { DownloadWorker } from 'app/workers/downloadWorker';
 
 let abortController: AbortController | undefined;
 let abortRequested = false;
