@@ -1,4 +1,4 @@
-import { downloadingFile } from './workers/downloadWorker';
+import { DownloadWorker } from 'workers/downloadWorker';
 
 let abortController: AbortController | undefined;
 let abortRequested = false;
@@ -53,7 +53,7 @@ const handleDownload = async (params: { file: any; isWorkspace: boolean; isBrave
     },
   };
 
-  await downloadingFile(params, callbacks, abortController, abortSignal);
+  await DownloadWorker.instance.downloadFile(params, callbacks, abortController);
 };
 
 export {};

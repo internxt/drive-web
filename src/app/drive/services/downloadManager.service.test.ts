@@ -32,7 +32,6 @@ import { DriveItemBlobData } from 'app/database/services/database.service';
 import { ConnectionLostError } from 'app/network/requests';
 import { downloadFile } from 'app/network/download';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
-import createFileDownloadStream from './download.service/createFileDownloadStream';
 
 vi.mock('./../../network/requests', () => ({ ConnectionLostError: vi.fn(), NetworkCredentials: {} }));
 vi.mock('app/core/services/stream.service', () => ({ downloadFile: vi.fn(), NetworkCredentials: {} }));
@@ -1701,66 +1700,6 @@ describe('downloadManagerService', () => {
         expect(clearTimeoutSpy).toHaveBeenCalled();
         expect(removeEventListenerSpy).toHaveBeenCalledWith('offline', expect.any(Function));
       });
-    });
-  });
-
-  describe('Download the file directly from the client side', () => {
-    let downloadManager: DownloadManagerService;
-    let mockReadableStream: ReadableStream;
-    let mockAbortController: AbortController;
-
-    const mockFile: DriveFileData = {
-      id: 123,
-      fileId: 'file-123',
-      name: 'test-file',
-      type: 'pdf',
-      size: 1024 * 1024,
-      bucket: 'bucket-123',
-      folderId: 456,
-      updatedAt: '2025-01-01T00:00:00Z',
-      isFolder: false,
-    } as unknown as DriveFileData;
-
-    const mockSharingOptions = {
-      credentials: { user: 'test-user', pass: 'test-pass' },
-      mnemonic: 'test-mnemonic',
-    };
-
-    beforeEach(() => {
-      downloadManager = DownloadManagerService.instance;
-      mockAbortController = new AbortController();
-      vi.clearAllMocks();
-    });
-
-    test('When downloading the file directly from the client, then it should download the file successfully', async () => {
-      const updateProgressCallback = vi.fn();
-      const mockChunks = [new Uint8Array([1, 2, 3]), new Uint8Array([4, 5, 6])];
-      mockReadableStream = new ReadableStream({
-        start(controller) {
-          mockChunks.forEach((chunk) => controller.enqueue(chunk));
-          controller.close();
-        },
-      });
-      vi.mocked(createFileDownloadStream).mockResolvedValue(mockReadableStream);
-
-      await downloadManager.directDownloadFromClientUsingStream({
-        file: mockFile,
-        isWorkspace: false,
-        updateProgressCallback,
-        abortController: mockAbortController,
-        sharingOptions: mockSharingOptions,
-      });
-
-      expect(streamSaver.createWriteStream).toHaveBeenCalledWith('test-file.pdf', {
-        writableStrategy: expect.any(ByteLengthQueuingStrategy),
-      });
-      expect(createFileDownloadStream).toHaveBeenCalledWith(
-        mockFile,
-        false,
-        updateProgressCallback,
-        mockAbortController,
-        mockSharingOptions,
-      );
     });
   });
 
