@@ -181,7 +181,7 @@
     },
     "universalLinkSuccess": {
       "loginAs": "以...登錄",
-      "openDesktopApp": "打開桌面應用",
+      "openApp": "開放申請",
       "anotherAccount": "使用其他帳戶？",
       "login": "登錄"
     }
@@ -1045,7 +1045,8 @@
     "maxSizeUploadLimitError": "文件過大（大於40GB）",
     "connectionLostError": "網絡連接已丟失",
     "errorLoadingTrashItems": "加載垃圾桶項目時出錯",
-    "updateAvatarError": "更新頭像時發生錯誤"
+    "updateAvatarError": "更新頭像時發生錯誤",
+    "featuresUnavailable": "某些功能可能無法使用"
   },
   "backups": {
     "backups-from": "來自{{deviceName}}的備份",

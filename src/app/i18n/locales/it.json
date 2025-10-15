@@ -182,7 +182,7 @@
     },
     "universalLinkSuccess": {
       "loginAs": "Accedi come",
-      "openDesktopApp": "Apri l'applicazione desktop",
+      "openApp": "Apri l'applicazione",
       "anotherAccount": "Utilizzare un altro account?",
       "login": "Accedi"
     }
@@ -1151,7 +1151,8 @@
     "maxSizeUploadLimitError": "File troppo grande (superiore a 40GB)",
     "connectionLostError": "Connessione Internet persa",
     "errorLoadingTrashItems": "Errore nel caricamento degli elementi del cestino",
-    "updateAvatarError": "Errore nell'aggiornamento dell'avatar"
+    "updateAvatarError": "Errore nell'aggiornamento dell'avatar",
+    "featuresUnavailable": "Alcune funzionalità potrebbero non essere disponibili"
   },
   "backups": {
     "backups-from": "Backup da {{deviceName}}",

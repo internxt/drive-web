@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.544",
+  "version": "v1.0.561",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -8,8 +8,8 @@
     "@iconscout/react-unicons": "^1.1.6",
     "@internxt/css-config": "1.0.3",
     "@internxt/lib": "1.3.1",
-    "@internxt/sdk": "=1.11.8",
-    "@internxt/ui": "0.0.25",
+    "@internxt/sdk": "=1.11.11",
+    "@internxt/ui": "0.0.26",
     "@phosphor-icons/react": "^2.1.7",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.6.0",

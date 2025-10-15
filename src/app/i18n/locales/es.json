@@ -161,7 +161,7 @@
     },
     "universalLinkSuccess": {
       "loginAs": "Iniciar sesión como",
-      "openDesktopApp": "Abrir Drive Desktop",
+      "openApp": "Abrir app",
       "anotherAccount": "Usar otra cuenta?",
       "login": "Iniciar sesión"
     }
@@ -1063,7 +1063,8 @@
     "maxSizeUploadLimitError": "File too large (greater than 40GB)",
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera",
-    "updateAvatarError": "Error al actualizar el avatar"
+    "updateAvatarError": "Error al actualizar el avatar",
+    "featuresUnavailable": "Algunas funciones pueden no estar disponibles"
   },
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",
