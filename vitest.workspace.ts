@@ -24,11 +24,13 @@ export default defineWorkspace([
         enabled: true,
         name: 'chromium',
         headless: true,
+        fileParallelism: false,
       },
       pool: 'forks',
       poolOptions: {
         forks: {
-          singleFork: true,
+          singleFork: false,
+          isolate: true,
         },
       },
     },
