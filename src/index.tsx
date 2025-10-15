@@ -25,24 +25,23 @@ import { LiveChatLoaderProvider } from 'react-live-chat-loader';
 import { DialogManagerProvider } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import envService from 'app/core/services/env.service';
 
-const CANONICAL_DRIVE_URL = 'https://drive.internxt.com';
 const CANONICAL_DRIVE_HOSTNAME = 'drive.internxt.com';
 
 const enforceCanonicalDriveDomain = () => {
-  const isBrowser = typeof window !== 'undefined';
-
+  const isBrowser = typeof globalThis !== 'undefined';
   if (!isBrowser || !envService.isProduction()) {
     return;
   }
 
-  const { hostname, pathname, search, hash } = window.location;
-
-  if (hostname === CANONICAL_DRIVE_HOSTNAME) {
+  if (globalThis.location.hostname === CANONICAL_DRIVE_HOSTNAME) {
     return;
   }
 
-  const targetUrl = `${CANONICAL_DRIVE_URL}${pathname}${search}${hash}`;
-  window.location.replace(targetUrl);
+  const { pathname, search, hash } = globalThis.location;
+
+  const safeUrl = `https://${CANONICAL_DRIVE_HOSTNAME}${pathname}${search}${hash}`;
+
+  globalThis.location.href = safeUrl;
 };
 
 enforceCanonicalDriveDomain();
