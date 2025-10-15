@@ -1,10 +1,20 @@
 import { describe, expect, vi, beforeEach, test, afterEach } from 'vitest';
 import { DownloadWorker } from './downloadWorker';
 import createFileDownloadStream from 'app/drive/services/download.service/createFileDownloadStream';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
 
 vi.mock('app/drive/services/download.service/createFileDownloadStream', () => ({
   default: vi.fn(),
 }));
+
+vi.mock('app/core/services/stream.service', () => {
+  const actual = vi.importActual<typeof import('app/core/services/stream.service')>('app/core/services/stream.service');
+
+  return {
+    ...actual,
+    binaryStreamToBlob: vi.fn(),
+  };
+});
 
 describe('Download Worker', () => {
   const mockFile = {
@@ -91,10 +101,12 @@ describe('Download Worker', () => {
 
     test('When downloading a file for Brave browser, then it should use blob', async () => {
       const braveParams = { ...mockParams, isBrave: true };
+      const mockedChunks = [new Uint8Array([1, 2, 3])];
+      const mockedBlob = new Blob(mockedChunks, { type: mockFile.type });
       const mockReader = {
         read: vi
           .fn()
-          .mockResolvedValueOnce({ done: false, value: new Uint8Array([1, 2, 3]) })
+          .mockResolvedValueOnce({ done: false, value: mockedChunks[0] })
           .mockResolvedValueOnce({ done: true, value: undefined }),
         releaseLock: vi.fn(),
       };
@@ -104,11 +116,12 @@ describe('Download Worker', () => {
       };
 
       vi.mocked(createFileDownloadStream).mockResolvedValue(mockStream as any);
+      vi.mocked(binaryStreamToBlob).mockResolvedValue(mockedBlob);
 
       const worker = DownloadWorker.instance;
       await worker.downloadFile(braveParams, mockCallbacks);
 
-      expect(mockCallbacks.onBlob).toHaveBeenCalledWith(expect.any(Blob));
+      expect(mockCallbacks.onBlob).toHaveBeenCalledWith(mockedBlob);
       expect(mockCallbacks.onChunk).not.toHaveBeenCalled();
       expect(mockCallbacks.onSuccess).toHaveBeenCalledWith(mockFile.fileId);
     });
@@ -128,7 +141,7 @@ describe('Download Worker', () => {
       expect(mockCallbacks.onSuccess).not.toHaveBeenCalled();
     });
 
-    test('When a custom abort controller is provided, then it should be used', async () => {
+    test('When a custom abort controller is provided and aborted, then the download is cancelled', async () => {
       const customAbortController = new AbortController();
       const mockReader = {
         read: vi
@@ -137,7 +150,6 @@ describe('Download Worker', () => {
           .mockResolvedValueOnce({ done: true, value: undefined }),
         releaseLock: vi.fn(),
       };
-
       const mockStream = {
         getReader: vi.fn().mockReturnValue(mockReader),
       };
@@ -145,7 +157,9 @@ describe('Download Worker', () => {
       vi.mocked(createFileDownloadStream).mockResolvedValue(mockStream as any);
 
       const worker = DownloadWorker.instance;
-      await worker.downloadFile(mockParams, mockCallbacks, customAbortController);
+
+      worker.downloadFile(mockParams, mockCallbacks, customAbortController);
+      customAbortController.abort();
 
       expect(createFileDownloadStream).toHaveBeenCalledWith(
         mockFile,
@@ -154,6 +168,7 @@ describe('Download Worker', () => {
         customAbortController,
         mockParams.credentials,
       );
+      expect(customAbortController.signal.aborted).toBe(true);
     });
 
     test('When progress changes, then the progress callback is called', async () => {
@@ -183,12 +198,13 @@ describe('Download Worker', () => {
     });
 
     test('When downloading multiple chunks, then each chunk callback is called', async () => {
+      const chunks = [new Uint8Array([1, 2, 3]), new Uint8Array([4, 5, 6]), new Uint8Array([7, 8, 9])];
       const mockReader = {
         read: vi
           .fn()
-          .mockResolvedValueOnce({ done: false, value: new Uint8Array([1, 2, 3]) })
-          .mockResolvedValueOnce({ done: false, value: new Uint8Array([4, 5, 6]) })
-          .mockResolvedValueOnce({ done: false, value: new Uint8Array([7, 8, 9]) })
+          .mockResolvedValueOnce({ done: false, value: chunks[0] })
+          .mockResolvedValueOnce({ done: false, value: chunks[1] })
+          .mockResolvedValueOnce({ done: false, value: chunks[2] })
           .mockResolvedValueOnce({ done: true, value: undefined }),
         releaseLock: vi.fn(),
       };
@@ -203,32 +219,30 @@ describe('Download Worker', () => {
       await worker.downloadFile(mockParams, mockCallbacks);
 
       expect(mockCallbacks.onChunk).toHaveBeenCalledTimes(3);
+      expect(mockCallbacks.onChunk).toHaveBeenCalledWith(chunks[0]);
+      expect(mockCallbacks.onChunk).toHaveBeenCalledWith(chunks[1]);
+      expect(mockCallbacks.onChunk).toHaveBeenCalledWith(chunks[2]);
       expect(mockCallbacks.onSuccess).toHaveBeenCalledWith(mockFile.fileId);
     });
 
-    test('When downloading as blob, then a single blob is created from all chunks', async () => {
+    test('When downloading as blob, then a single blob is created from the stream', async () => {
       const braveParams = { ...mockParams, isBrave: true };
-      const mockReader = {
-        read: vi
-          .fn()
-          .mockResolvedValueOnce({ done: false, value: new Uint8Array([1, 2, 3]) })
-          .mockResolvedValueOnce({ done: false, value: new Uint8Array([4, 5, 6]) })
-          .mockResolvedValueOnce({ done: true, value: undefined }),
-        releaseLock: vi.fn(),
-      };
+      const mockedBlob = new Blob([new Uint8Array([1, 2, 3, 4, 5, 6])], { type: mockFile.type });
 
       const mockStream = {
-        getReader: vi.fn().mockReturnValue(mockReader),
-      };
+        getReader: vi.fn(),
+      } as any;
 
-      vi.mocked(createFileDownloadStream).mockResolvedValue(mockStream as any);
+      vi.mocked(createFileDownloadStream).mockResolvedValue(mockStream);
+      vi.mocked(binaryStreamToBlob).mockResolvedValue(mockedBlob);
 
       const worker = DownloadWorker.instance;
       await worker.downloadFile(braveParams, mockCallbacks);
 
+      expect(binaryStreamToBlob).toHaveBeenCalledWith(mockStream, mockFile.type);
       expect(mockCallbacks.onBlob).toHaveBeenCalledTimes(1);
-      expect(mockCallbacks.onBlob).toHaveBeenCalledWith(expect.any(Blob));
-      expect(mockReader.releaseLock).toHaveBeenCalled();
+      expect(mockCallbacks.onBlob).toHaveBeenCalledWith(mockedBlob);
+      expect(mockCallbacks.onSuccess).toHaveBeenCalledWith(mockFile.fileId);
     });
 
     test('When the stream is empty, then success is still called', async () => {

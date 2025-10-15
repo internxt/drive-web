@@ -135,6 +135,7 @@ export class DownloadWorkerHandler {
 
       case 'error': {
         const { error } = messageData;
+        const castedError = new Error(error);
         if (this.currentWriter) {
           await this.currentWriter.abort();
           this.currentWriter = undefined;
@@ -142,7 +143,7 @@ export class DownloadWorkerHandler {
         }
         worker.terminate();
         removeAbortListener();
-        reject(error);
+        reject(castedError);
         break;
       }
 

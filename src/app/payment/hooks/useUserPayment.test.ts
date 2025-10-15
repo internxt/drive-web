@@ -1,5 +1,3 @@
-// @vitest-environment node
-
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { useUserPayment } from './useUserPayment';
 import checkoutService from '../services/checkout.service';

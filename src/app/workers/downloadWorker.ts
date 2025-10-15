@@ -1,3 +1,4 @@
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import createFileDownloadStream from 'app/drive/services/download.service/createFileDownloadStream';
 import { DriveFileData } from 'app/drive/types';
 
@@ -42,7 +43,8 @@ export class DownloadWorker {
       );
 
       if (isBrave) {
-        await this.downloadUsingBlob(downloadedFile, callbacks.onBlob);
+        const blob = await binaryStreamToBlob(downloadedFile, file.type);
+        callbacks.onBlob(blob);
       } else {
         await this.downloadUsingChunks(downloadedFile, callbacks.onChunk);
       }
@@ -55,40 +57,6 @@ export class DownloadWorker {
         ...(err instanceof Error && err.stack && { stack: err.stack }),
       };
       callbacks.onError(errorCloned);
-    }
-  }
-
-  private async downloadUsingBlob(
-    downloadedFile: ReadableStream<Uint8Array<ArrayBufferLike>>,
-    onBlobReady: (blob: Blob) => void,
-  ) {
-    const reader = downloadedFile.getReader();
-    const chunks: Uint8Array[] = [];
-    let hasMoreData = true;
-
-    if (this.abortController?.signal.aborted) {
-      reader.releaseLock();
-      return;
-    }
-
-    try {
-      while (hasMoreData) {
-        const { done, value } = await reader.read();
-        hasMoreData = !done;
-
-        if (!done) {
-          const chunk =
-            value instanceof Uint8Array
-              ? new Uint8Array(value.buffer, value.byteOffset, value.byteLength)
-              : new Uint8Array(value);
-          chunks.push(chunk);
-        }
-      }
-
-      const completeBlob = new Blob(chunks as BlobPart[]);
-      onBlobReady(completeBlob);
-    } finally {
-      reader.releaseLock();
     }
   }
 

@@ -226,6 +226,7 @@ describe('Download Worker Handler', () => {
 
   test('When the event is error and currentWriter exists, then it should abort the writer before terminating', async () => {
     const mockedWorker = new MockWorker();
+    const mockedError = new Error('download failed');
     const itemData = {
       fileId: 'random-id',
       name: 'test-file',
@@ -259,11 +260,10 @@ describe('Download Worker Handler', () => {
 
     mockedWorker.emitMessage({
       result: 'error',
-      error: 'download failed',
+      error: mockedError.message,
     });
 
-    await expect(workerHandlerPromise).rejects.toBe('download failed');
-
+    await expect(workerHandlerPromise).rejects.toThrow(mockedError);
     expect(mockAbort).toHaveBeenCalled();
     expect(mockedWorker.terminated).toBe(true);
   });
@@ -271,6 +271,8 @@ describe('Download Worker Handler', () => {
   test('When the event is error and there is an abort controller, then the remove event listener function is called', async () => {
     const mockedWorker = new MockWorker();
     const abortController = new AbortController();
+    const mockedError = new Error('Random error');
+
     const itemData = {
       fileId: 'random-id',
     } as DriveFileData;
@@ -285,10 +287,10 @@ describe('Download Worker Handler', () => {
     });
     mockedWorker.emitMessage({
       result: 'error',
-      error: 'error',
+      error: mockedError.message,
     });
 
-    await expect(workerHandlerPromise).rejects.toBe('error');
+    await expect(workerHandlerPromise).rejects.toThrow(mockedError);
     expect(removeEventListenerSpy).toHaveBeenCalledWith('abort', expect.any(Function));
     expect(mockedWorker.terminated).toBe(true);
   });
