@@ -2,7 +2,7 @@ export function checkIsProduction(mode: string | undefined, nodeEnv: string | un
   const runtimeMode = (mode ?? '').toLowerCase();
   const reactNodeEnv = (nodeEnv ?? '').toLowerCase();
 
-  const nonProdValues = new Set(['staging', 'development', 'dev']);
+  const nonProdValues = new Set(['staging', 'development']);
 
   if (nonProdValues.has(runtimeMode) || nonProdValues.has(reactNodeEnv)) {
     return false;

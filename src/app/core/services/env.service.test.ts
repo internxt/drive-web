@@ -23,20 +23,12 @@ describe('env.service', () => {
       expect(checkIsProduction('development', '')).toBe(false);
     });
 
-    it('should return false when MODE is dev', () => {
-      expect(checkIsProduction('dev', '')).toBe(false);
-    });
-
     it('should return false when REACT_APP_NODE_ENV is staging', () => {
       expect(checkIsProduction('', 'staging')).toBe(false);
     });
 
     it('should return false when REACT_APP_NODE_ENV is development', () => {
       expect(checkIsProduction('', 'development')).toBe(false);
-    });
-
-    it('should return false when REACT_APP_NODE_ENV is dev', () => {
-      expect(checkIsProduction('', 'dev')).toBe(false);
     });
 
     it('should handle uppercase MODE values', () => {
@@ -59,8 +51,8 @@ describe('env.service', () => {
       expect(checkIsProduction('production', 'staging')).toBe(false);
     });
 
-    it('should return false when MODE is dev but REACT_APP_NODE_ENV is production', () => {
-      expect(checkIsProduction('dev', 'production')).toBe(false);
+    it('should return false when MODE is development but REACT_APP_NODE_ENV is production', () => {
+      expect(checkIsProduction('development', 'production')).toBe(false);
     });
 
     it('should handle undefined MODE', () => {
