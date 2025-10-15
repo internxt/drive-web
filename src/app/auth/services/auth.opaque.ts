@@ -40,44 +40,64 @@ export const authenticateUserOpaque = async (params: AuthenticateUserParams): Pr
   }
 };
 
-
-export async function encryptUserKeysAndMnemonic(userKeys: UserKeys, mnemonic: string, exportKey: string): Promise<{encMnemonic: string, encKeys: UserKeys}> {
- 
+export async function encryptUserKeysAndMnemonic(
+  userKeys: UserKeys,
+  mnemonic: string,
+  exportKey: string,
+): Promise<{ encMnemonic: string; encKeys: UserKeys }> {
   const keyArray = utils.base64ToUint8Array(exportKey);
   const cryptoKey = await symmetric.importSymmetricCryptoKey(keyArray);
-  const encPrivateKey = await symmetric.encryptSymmetrically(cryptoKey, userKeys.privateKey, 'user-private-key');
-  const encPrivateKyberKey =  await symmetric.encryptSymmetrically(cryptoKey, userKeys.privateKyberKey, 'user-private-kyber-key');
-  const encMnemonic =  await symmetric.encryptSymmetrically(cryptoKey, mnemonic, 'user-mnemonic');
- 
+  const encPrivateKey = await symmetric.encryptSymmetrically(cryptoKey, userKeys.ecc.privateKey, 'user-private-key');
+  const encPrivateKyberKey = await symmetric.encryptSymmetrically(
+    cryptoKey,
+    userKeys.kyber.privateKey,
+    'user-private-kyber-key',
+  );
+  const encMnemonic = await symmetric.encryptSymmetrically(cryptoKey, mnemonic, 'user-mnemonic');
+
   const encKeys: UserKeys = {
+    ecc: {
       privateKey: encPrivateKey,
-      publicKey: userKeys.publicKey,
-      privateKyberKey: encPrivateKyberKey,
-      publicKyberKey: userKeys.publicKyberKey,
+      publicKey: userKeys.ecc.publicKey,
+    },
+    kyber: {
+      privateKey: encPrivateKyberKey,
+      publicKey: userKeys.kyber.publicKey,
+    },
   };
-  return { encMnemonic, encKeys};
+  return { encMnemonic, encKeys };
 }
 
 async function decryptUserKeysAndMnemonic(
   encMnemonic: string,
   encKeys: UserKeys,
   key: string,
-): Promise<{ keys: UserKeys, clearMnemonic: string }> {
+): Promise<{ keys: UserKeys; clearMnemonic: string }> {
   const keyArray = utils.base64ToUint8Array(key);
   const cryptoKey = await symmetric.importSymmetricCryptoKey(keyArray);
-  const privateKey = await symmetric.decryptSymmetrically(cryptoKey, encKeys.privateKey, 'user-private-key');
-  const privateKyberKey =  await symmetric.decryptSymmetrically(cryptoKey, encKeys.privateKey, 'user-private-kyber-key');
-  const publicKey = encKeys.publicKey;
-  const publicKyberKey = encKeys.publicKey;
+  const privateKey = await symmetric.decryptSymmetrically(cryptoKey, encKeys.ecc.privateKey, 'user-private-key');
+  const privateKyberKey = await symmetric.decryptSymmetrically(
+    cryptoKey,
+    encKeys.kyber.privateKey,
+    'user-private-kyber-key',
+  );
   const clearMnemonic = await symmetric.decryptSymmetrically(cryptoKey, encMnemonic, 'user-mnemonic');
 
-  const keys = { privateKey, publicKey, privateKyberKey, publicKyberKey };
-
+  const keys: UserKeys = {
+    ecc: {
+      privateKey: privateKey,
+      publicKey: encKeys.ecc.publicKey,
+    },
+    kyber: {
+      privateKey: privateKyberKey,
+      publicKey: encKeys.kyber.publicKey,
+    },
+  };
   return { keys, clearMnemonic };
 }
 
 export const logInOpaque = async (params: LogInParams): Promise<ProfileInfo> => {
-  const { email, password, twoFactorCode, dispatch} = params;
+  const { email, password, twoFactorCode, dispatch } = params;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const { clientLoginState, startLoginRequest } = opaque.client.startLogin({
     password,
@@ -93,17 +113,11 @@ export const logInOpaque = async (params: LogInParams): Promise<ProfileInfo> => 
   if (!loginResult) {
     throw new Error('Login failed');
   }
-  const { exportKey, finishLoginRequest }= loginResult;
+  const { exportKey, finishLoginRequest, sessionKey } = loginResult;
   const data = await authClient.loginOpaqueFinish(email, finishLoginRequest);
   const { user, token, newToken } = data;
 
-  const encKeys: UserKeys = {
-      privateKey: user.keys.ecc.privateKey,
-      publicKey: user.keys.ecc.publicKey,
-      privateKyberKey: user.keys.kyber.privateKey,
-      publicKyberKey: user.keys.kyber.publicKey, 
-    };
-  const { keys, clearMnemonic } = await decryptUserKeysAndMnemonic(user.mnemonic, encKeys, exportKey);
+  const { keys, clearMnemonic } = await decryptUserKeysAndMnemonic(user.mnemonic, user.keys, exportKey);
   Sentry.setUser({
     id: user.uuid,
     email: user.email,
@@ -113,22 +127,14 @@ export const logInOpaque = async (params: LogInParams): Promise<ProfileInfo> => 
   const clearUser = {
     ...user,
     mnemonic: clearMnemonic,
-    privateKey: keys.privateKey,
-    keys: {
-      ecc: {
-        publicKey: keys.publicKey,
-        privateKey: keys.privateKey,
-      },
-      kyber: {
-        publicKey: keys.publicKyberKey,
-        privateKey: keys.privateKyberKey,
-      },
-    },
+    privateKey: keys.ecc.privateKey,
+    keys,
   };
 
   localStorageService.set('xToken', token);
   localStorageService.set('xMnemonic', clearMnemonic);
   localStorageService.set('xNewToken', newToken);
+  localStorageService.set('sessionKey', sessionKey);
 
   dispatch(userActions.setUser(clearUser));
 
@@ -150,38 +156,37 @@ export const logInOpaque = async (params: LogInParams): Promise<ProfileInfo> => 
   return { token, user: clearUser, mnemonic: clearMnemonic, newToken };
 };
 
-
 export const signUpOpaque = async (params: SignUpParams) => {
   const { email, password, token, redeemCodeObject, dispatch } = params;
   const { clientRegistrationState, registrationRequest } = opaque.client.startRegistration({ password });
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  const response = await authClient.signupOpaqueStart(email, registrationRequest, token, readReferalCookie());
+  const response = await authClient.registerOpaqueStart(email, registrationRequest, token, readReferalCookie());
 
-  const {exportKey,  registrationRecord } = opaque.client.finishRegistration({
-  clientRegistrationState,
-  registrationResponse: response.signUpResponse,
-  password,
-});
+  const { exportKey, registrationRecord } = opaque.client.finishRegistration({
+    clientRegistrationState,
+    registrationResponse: response.signUpResponse,
+    password,
+  });
   const clearMnemonic = bip39.generateMnemonic(256);
-   const { privateKeyArmored, publicKeyArmored, publicKyberKeyBase64, privateKyberKeyBase64 } =
-    await generateNewKeys();
+  const { privateKeyArmored, publicKeyArmored, publicKyberKeyBase64, privateKyberKeyBase64 } = await generateNewKeys();
   const keys: UserKeys = {
-    privateKey: privateKeyArmored,
-    publicKey: publicKeyArmored,
-    privateKyberKey: privateKyberKeyBase64,
-    publicKyberKey: publicKyberKeyBase64,
+    ecc: { privateKey: privateKeyArmored, publicKey: publicKeyArmored },
+    kyber: {
+      privateKey: privateKyberKeyBase64,
+      publicKey: publicKyberKeyBase64,
+    },
   };
-  const {encKeys, encMnemonic} = await encryptUserKeysAndMnemonic(keys, clearMnemonic, exportKey);
+  const { encKeys, encMnemonic } = await encryptUserKeysAndMnemonic(keys, clearMnemonic, exportKey);
   const registerDetails: RegisterOpaqueDetails = {
     name: 'My',
     lastname: 'Internxt',
     email: email.toLowerCase(),
-    encKeys: encKeys,
-    encMnemonic: encMnemonic,
+    keys: encKeys,
+    mnemonic: encMnemonic,
     captcha: token,
   };
 
-  const data = await authClient.signupOpaqueFinish(registrationRecord, registerDetails);
+  const data = await authClient.registerOpaqueFinish(registrationRecord, registerDetails);
   const { user: xUser, token: xToken, newToken } = data;
   localStorageService.clear();
 
@@ -191,17 +196,8 @@ export const signUpOpaque = async (params: SignUpParams) => {
 
   const user = {
     ...xUser,
-    privateKey: keys.privateKey,
-    keys: {
-      ecc: {
-        publicKey: keys.publicKey,
-        privateKey: keys.privateKey,
-      },
-      kyber: {
-        publicKey: keys.publicKyberKey,
-        privateKey: keys.privateKyberKey,
-      },
-    },
+    privateKey: keys.ecc.privateKey,
+    keys,
   } as UserSettings;
 
   dispatch(userActions.setUser(user));
@@ -213,4 +209,11 @@ export const signUpOpaque = async (params: SignUpParams) => {
   await trackSignUp(xUser.uuid);
 
   return { token: xToken, user: xUser, mnemonic: clearMnemonic, newToken };
+};
+
+export const deactivate2FAOpaque = (deactivationCode: string): Promise<void> => {
+  const sessionKey = localStorageService.get('sessionKey') || '';
+  const token = localStorageService.get('xNewToken') || undefined;
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.disableTwoFactorAuth(sessionKey, deactivationCode, token);
 };
