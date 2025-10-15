@@ -28,6 +28,9 @@ jobs:
           file: ./infrastructure/preview.Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-dev:preview-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}
+          build-args: |
+            REACT_APP_NODE_ENV=staging
+            MODE=staging
   add_ready_for_preview_label:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
