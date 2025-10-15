@@ -136,6 +136,7 @@ const App = (props: AppProps): JSX.Element => {
   };
 
   const pathName = window.location.pathname.split('/')[1];
+  const MOBILE_EXCLUDED_PATHS = ['checkout', 'new', AppView.Login, AppView.UniversalLinkSuccess];
   let template = <PreparingWorkspaceAnimation />;
   let isMobile = false;
 
@@ -191,7 +192,7 @@ const App = (props: AppProps): JSX.Element => {
               to={`/?preferences=open&section=account&subsection=${params.get('tab') ?? 'account'}`}
             />
             <Redirect from="/app/:section?" to={{ pathname: '/:section?', search: `${queryParameters}` }} />
-            {pathName !== 'checkout' && isMobile && isAuthenticated ? (
+            {!MOBILE_EXCLUDED_PATHS.includes(pathName) && isMobile && isAuthenticated ? (
               <Route path="*">
                 <Mobile user={props.user} />
               </Route>
