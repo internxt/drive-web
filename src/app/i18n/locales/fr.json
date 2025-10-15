@@ -165,7 +165,7 @@
     },
     "universalLinkSuccess": {
       "loginAs": "Se connecter comme",
-      "openDesktopApp": "Ouvrir l'application de bureau",
+      "openApp": "Ouvrir l'application",
       "anotherAccount": "Utiliser un autre compte ?",
       "login": "Connexion"
     }
