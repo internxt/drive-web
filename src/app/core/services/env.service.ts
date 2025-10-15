@@ -1,14 +1,18 @@
-function isProduction(): boolean {
-  const runtimeMode = (import.meta.env.MODE ?? '').toLowerCase();
-  const nodeEnv = (import.meta.env.REACT_APP_NODE_ENV ?? '').toLowerCase();
+export function checkIsProduction(mode: string | undefined, nodeEnv: string | undefined): boolean {
+  const runtimeMode = (mode ?? '').toLowerCase();
+  const reactNodeEnv = (nodeEnv ?? '').toLowerCase();
 
-  const nonProdValues = ['staging', 'development', 'dev'];
+  const nonProdValues = new Set(['staging', 'development', 'dev']);
 
-  if (nonProdValues.includes(runtimeMode) || nonProdValues.includes(nodeEnv)) {
+  if (nonProdValues.has(runtimeMode) || nonProdValues.has(reactNodeEnv)) {
     return false;
   }
 
-  return runtimeMode === 'production' || nodeEnv === 'production';
+  return runtimeMode === 'production' || reactNodeEnv === 'production';
+}
+
+function isProduction(): boolean {
+  return checkIsProduction(import.meta.env.MODE, import.meta.env.REACT_APP_NODE_ENV);
 }
 
 const envService = {
