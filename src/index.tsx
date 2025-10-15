@@ -26,6 +26,28 @@ import { DialogManagerProvider } from 'app/contexts/dialog-manager/ActionDialogM
 import envService from 'app/core/services/env.service';
 
 const CANONICAL_DRIVE_HOSTNAME = 'drive.internxt.com';
+const CANONICAL_DRIVE_ORIGIN = `https://${CANONICAL_DRIVE_HOSTNAME}`;
+
+const buildSafeCanonicalUrl = () => {
+  const isBrowser = typeof globalThis !== 'undefined';
+
+  if (!isBrowser) {
+    return CANONICAL_DRIVE_ORIGIN;
+  }
+
+  try {
+    const relativeUrl = `${globalThis.location.pathname}${globalThis.location.search}${globalThis.location.hash}`;
+    const normalizedUrl = new URL(relativeUrl, CANONICAL_DRIVE_ORIGIN);
+
+    if (normalizedUrl.origin !== CANONICAL_DRIVE_ORIGIN) {
+      return CANONICAL_DRIVE_ORIGIN;
+    }
+
+    return normalizedUrl.toString();
+  } catch {
+    return CANONICAL_DRIVE_ORIGIN;
+  }
+};
 
 const enforceCanonicalDriveDomain = () => {
   const isBrowser = typeof globalThis !== 'undefined';
@@ -37,11 +59,9 @@ const enforceCanonicalDriveDomain = () => {
     return;
   }
 
-  const { pathname, search, hash } = globalThis.location;
+  const safeUrl = buildSafeCanonicalUrl();
 
-  const safeUrl = `https://${CANONICAL_DRIVE_HOSTNAME}${pathname}${search}${hash}`;
-
-  globalThis.location.href = safeUrl;
+  globalThis.location.replace(safeUrl);
 };
 
 enforceCanonicalDriveDomain();
