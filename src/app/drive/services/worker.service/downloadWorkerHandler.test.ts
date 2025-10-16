@@ -224,7 +224,7 @@ describe('Download Worker Handler', () => {
     expect(mockedWorker.terminated).toBe(true);
   });
 
-  test('When the event is error and currentWriter exists, then it should abort the writer before terminating', async () => {
+  test('When the event is an error and there is a writter, then it should abort the writer before terminating', async () => {
     const mockedWorker = new MockWorker();
     const mockedError = new Error('download failed');
     const itemData = {
@@ -268,7 +268,7 @@ describe('Download Worker Handler', () => {
     expect(mockedWorker.terminated).toBe(true);
   });
 
-  test('When the event is error and there is an abort controller, then the remove event listener function is called', async () => {
+  test('When the event is an error and there is an abort controller, then the remove event listener function is called', async () => {
     const mockedWorker = new MockWorker();
     const abortController = new AbortController();
     const mockedError = new Error('Random error');
@@ -290,8 +290,8 @@ describe('Download Worker Handler', () => {
       error: mockedError.message,
     });
 
-    await expect(workerHandlerPromise).rejects.toThrow(mockedError);
     expect(removeEventListenerSpy).toHaveBeenCalledWith('abort', expect.any(Function));
+    await expect(workerHandlerPromise).rejects.toThrow(mockedError);
     expect(mockedWorker.terminated).toBe(true);
   });
 });
