@@ -36,7 +36,8 @@ const buildSafeCanonicalUrl = () => {
   }
 
   try {
-    const relativeUrl = `${globalThis.location.pathname}${globalThis.location.search}${globalThis.location.hash}`;
+    const { pathname, search, hash } = globalThis.location;
+    const relativeUrl = `${pathname}${search}${hash}`;
     const normalizedUrl = new URL(relativeUrl, CANONICAL_DRIVE_ORIGIN);
 
     if (normalizedUrl.origin !== CANONICAL_DRIVE_ORIGIN) {
@@ -51,12 +52,18 @@ const buildSafeCanonicalUrl = () => {
 
 const enforceCanonicalDriveDomain = () => {
   const isBrowser = typeof globalThis !== 'undefined';
-  const isPreview = process.env.REACT_APP_IS_PREVIEW === 'true';
-  if (!isBrowser || !envService.isProduction() || isPreview) {
+
+  if (!isBrowser || !envService.isProduction()) {
+    return;
+  }
+  const hostname = globalThis.location.hostname;
+  const isPreviewDeployment = hostname.includes('.pages.dev');
+
+  if (isPreviewDeployment) {
     return;
   }
 
-  if (globalThis.location.hostname === CANONICAL_DRIVE_HOSTNAME) {
+  if (hostname === CANONICAL_DRIVE_HOSTNAME) {
     return;
   }
 

@@ -1,7 +1,5 @@
 FROM node:18-alpine3.19
 
-ENV REACT_APP_IS_PREVIEW=true
-
 RUN apk update
 RUN apk add nginx git yarn
 
