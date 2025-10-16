@@ -69,10 +69,11 @@ describe('Download Worker', () => {
 
   describe('downloadFile method', () => {
     test('When downloading a file for non-Brave browser, then it should use chunks', async () => {
+      const mockedChunks = [new Uint8Array([1, 2, 3])];
       const mockReader = {
         read: vi
           .fn()
-          .mockResolvedValueOnce({ done: false, value: new Uint8Array([1, 2, 3]) })
+          .mockResolvedValueOnce({ done: false, value: mockedChunks[0] })
           .mockResolvedValueOnce({ done: true, value: undefined }),
         releaseLock: vi.fn(),
       };
@@ -93,8 +94,7 @@ describe('Download Worker', () => {
         expect.any(AbortController),
         mockParams.credentials,
       );
-
-      expect(mockCallbacks.onChunk).toHaveBeenCalledWith(expect.any(Uint8Array));
+      expect(mockCallbacks.onChunk).toHaveBeenCalledWith(mockedChunks[0]);
       expect(mockCallbacks.onBlob).not.toHaveBeenCalled();
       expect(mockCallbacks.onSuccess).toHaveBeenCalledWith(mockFile.fileId);
     });
@@ -133,11 +133,7 @@ describe('Download Worker', () => {
       const worker = DownloadWorker.instance;
       await worker.downloadFile(mockParams, mockCallbacks);
 
-      expect(mockCallbacks.onError).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: 'Download failed',
-        }),
-      );
+      expect(mockCallbacks.onError).toHaveBeenCalledWith(expect.objectContaining({ message: error.message }));
       expect(mockCallbacks.onSuccess).not.toHaveBeenCalled();
     });
 

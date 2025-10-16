@@ -820,61 +820,105 @@ describe('downloadManagerService', () => {
     expect(downloadFileSpy).not.toHaveBeenCalled();
   });
 
-  // it('should downloadFile from task using download service', async () => {
-  //   const mockTaskId = 'mock-task-id';
-  //   const downloadItem: DownloadItem = {
-  //     payload: [mockFile as DriveItemData],
-  //     selectedWorkspace: null,
-  //     workspaceCredentials: null,
-  //   };
+  describe('Downloading file from network', () => {
+    const mockTaskId = 'mock-task-id';
+    const downloadItem: DownloadItem = {
+      payload: [mockFile as DriveItemData],
+      selectedWorkspace: null,
+      workspaceCredentials: null,
+    };
 
-  //   const mockTask: DownloadTask = {
-  //     abortController: new AbortController(),
-  //     items: downloadItem.payload,
-  //     createFilesIterator: createFilesIterator,
-  //     createFoldersIterator: createFoldersIterator,
-  //     credentials: {
-  //       credentials: {
-  //         user: 'any-user',
-  //         pass: 'any-pass',
-  //       },
-  //       workspaceId: 'any-workspace-id',
-  //       mnemonic: 'any-mnemonic',
-  //     },
-  //     options: {
-  //       areSharedItems: false,
-  //       downloadName: `${mockFile.name}.${mockFile.type}`,
-  //       showErrors: true,
-  //     },
-  //     taskId: mockTaskId,
-  //     failedItems: [],
-  //   };
-  //   const mockUpdateProgress = vi.fn((progress: number) => progress);
+    const mockTask: DownloadTask = {
+      abortController: new AbortController(),
+      items: downloadItem.payload,
+      createFilesIterator: createFilesIterator,
+      createFoldersIterator: createFoldersIterator,
+      credentials: {
+        credentials: {
+          user: 'any-user',
+          pass: 'any-pass',
+        },
+        workspaceId: 'any-workspace-id',
+        mnemonic: 'any-mnemonic',
+      },
+      options: {
+        areSharedItems: false,
+        downloadName: `${mockFile.name}.${mockFile.type}`,
+        showErrors: true,
+      },
+      taskId: mockTaskId,
+      failedItems: [],
+    };
 
-  //   const getDatabaseFileSourceDataSpy = vi.fn(() => {
-  //     return { source: null };
-  //   });
-  //   const checkIfCachedSourceIsOlderSpy = vi.fn(() => true);
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
 
-  //   (getDatabaseFileSourceData as Mock).mockImplementation(getDatabaseFileSourceDataSpy);
-  //   (checkIfCachedSourceIsOlder as Mock).mockImplementation(checkIfCachedSourceIsOlderSpy);
+    test('When the download is for Firefox, then the old download should be used', async () => {
+      vi.stubGlobal('navigator', {
+        ...navigator,
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
+        onLine: true,
+      });
 
-  //   const downloadFileSpy = vi.spyOn(downloadService, 'downloadFile').mockResolvedValue();
+      const mockUpdateProgress = vi.fn((progress: number) => progress);
 
-  //   await DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress);
+      vi.mocked(getDatabaseFileSourceData).mockResolvedValue({ source: null } as any);
+      vi.mocked(checkIfCachedSourceIsOlder).mockReturnValue(true);
 
-  //   expect(getDatabaseFileSourceDataSpy).toHaveBeenCalledWith({
-  //     fileId: mockFile.id,
-  //   });
-  //   expect(checkIfCachedSourceIsOlderSpy).toHaveBeenCalledOnce();
-  //   expect(downloadFileSpy).toHaveBeenCalledWith(
-  //     mockFile,
-  //     !!mockTask.credentials.workspaceId,
-  //     mockUpdateProgress,
-  //     mockTask.abortController,
-  //     mockTask.credentials,
-  //   );
-  // });
+      const downloadFileSpy = vi.spyOn(downloadService, 'downloadFile').mockResolvedValue(undefined);
+      const downloadFileFromWorkerSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFileFromWorker');
+
+      await DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress);
+
+      expect(getDatabaseFileSourceData).toHaveBeenCalledWith({
+        fileId: mockFile.id,
+      });
+      expect(checkIfCachedSourceIsOlder).toHaveBeenCalledOnce();
+      expect(downloadFileSpy).toHaveBeenCalledWith(
+        mockFile,
+        !!mockTask.credentials.workspaceId,
+        mockUpdateProgress,
+        mockTask.abortController,
+        mockTask.credentials,
+      );
+      expect(downloadFileFromWorkerSpy).not.toHaveBeenCalled();
+    });
+
+    test('When the download is for any browser except Firefox, then should download the file from the worker', async () => {
+      vi.stubGlobal('navigator', {
+        ...navigator,
+        userAgent:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        onLine: true,
+      });
+
+      const mockUpdateProgress = vi.fn((progress: number) => progress);
+
+      vi.mocked(getDatabaseFileSourceData).mockResolvedValue({ source: null } as any);
+      vi.mocked(checkIfCachedSourceIsOlder).mockReturnValue(true);
+
+      const downloadFileSpy = vi.spyOn(downloadService, 'downloadFile').mockResolvedValue(undefined);
+      const downloadFileFromWorkerSpy = vi
+        .spyOn(DownloadManagerService.instance, 'downloadFileFromWorker')
+        .mockResolvedValueOnce(mockFile.fileId);
+
+      await DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress);
+
+      expect(getDatabaseFileSourceData).toHaveBeenCalledWith({
+        fileId: mockFile.id,
+      });
+      expect(checkIfCachedSourceIsOlder).toHaveBeenCalledOnce();
+      expect(downloadFileFromWorkerSpy).toHaveBeenCalledWith({
+        file: mockFile,
+        isWorkspace: !!mockTask.credentials.workspaceId,
+        updateProgressCallback: mockUpdateProgress,
+        abortController: mockTask.abortController,
+        sharingOptions: mockTask.credentials,
+      });
+      expect(downloadFileSpy).not.toHaveBeenCalled();
+    });
+  });
 
   it('should download folder items from task as zip using download service', async () => {
     const mockTaskId = 'mock-task-id';
