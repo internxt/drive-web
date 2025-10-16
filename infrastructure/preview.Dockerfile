@@ -1,9 +1,9 @@
 FROM node:18-alpine3.19
 
-ARG REACT_APP_NODE_ENV=staging
+ARG NODE_ENV=staging
 ARG MODE=staging
 
-ENV REACT_APP_NODE_ENV=${REACT_APP_NODE_ENV}
+ENV NODE_ENV=${NODE_ENV}
 ENV MODE=${MODE}
 
 RUN apk update
