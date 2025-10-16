@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.561",
+  "version": "v1.0.562",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
