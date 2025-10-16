@@ -22,8 +22,9 @@ interface HandleMessagesPayload {
 }
 
 export class DownloadWorkerHandler {
-  private currentWriter: WritableStreamDefaultWriter | undefined;
-  private currentFileStream: WritableStream<Uint8Array<ArrayBufferLike>> | undefined;
+  private writers = new Map<string, WritableStreamDefaultWriter>();
+  private fileStreams = new Map<string, WritableStream<Uint8Array<ArrayBufferLike>>>();
+
   public getWorker() {
     return createDownloadWebWorker();
   }
@@ -36,6 +37,7 @@ export class DownloadWorkerHandler {
   }: HandleWorkerMessagesPayload) {
     const fileName = itemData.plainName ?? itemData.name;
     const completeFilename = itemData.type ? `${fileName}.${itemData.type}` : fileName;
+    const downloadId = itemData.fileId;
 
     return new Promise((resolve, reject) => {
       worker.addEventListener('error', reject);
@@ -46,6 +48,7 @@ export class DownloadWorkerHandler {
           abortController,
           completeFilename,
           downloadCallback: updateProgressCallback,
+          downloadId,
           resolve,
           reject,
         });
@@ -58,10 +61,11 @@ export class DownloadWorkerHandler {
     worker,
     completeFilename,
     abortController,
+    downloadId,
     resolve,
     reject,
     downloadCallback,
-  }: HandleMessagesPayload) {
+  }: HandleMessagesPayload & { downloadId: string }) {
     const { result } = messageData;
     let aborted = false;
 
@@ -70,10 +74,11 @@ export class DownloadWorkerHandler {
 
       try {
         worker.postMessage({ type: 'abort' });
-        if (this.currentWriter) {
-          await this.currentWriter.abort();
-          this.currentWriter = undefined;
-          this.currentFileStream = undefined;
+        const writer = this.writers.get(downloadId);
+        if (writer) {
+          await writer.abort();
+          this.writers.delete(downloadId);
+          this.fileStreams.delete(downloadId);
         }
         aborted = true;
       } catch {
@@ -96,20 +101,23 @@ export class DownloadWorkerHandler {
 
     switch (result) {
       case 'chunk': {
-        if (!this.currentWriter) {
-          this.currentFileStream = streamSaver.createWriteStream(completeFilename);
-          this.currentWriter = this.currentFileStream.getWriter();
+        let writer = this.writers.get(downloadId);
+
+        if (!writer) {
+          const fileStream = streamSaver.createWriteStream(completeFilename);
+          writer = fileStream.getWriter();
+          this.writers.set(downloadId, writer);
+          this.fileStreams.set(downloadId, fileStream);
         }
 
         const { chunk } = messageData;
-        await this.currentWriter.write(chunk);
+        await writer.write(chunk);
         break;
       }
 
       case 'blob': {
         console.log('[MAIN_THREAD]: Downloading complete blob');
         const { blob } = messageData;
-
         downloadFileFromBlob(blob, completeFilename);
         break;
       }
@@ -122,11 +130,14 @@ export class DownloadWorkerHandler {
 
       case 'success': {
         const { fileId } = messageData;
-        if (this.currentWriter) {
-          await this.currentWriter.close();
-          this.currentWriter = undefined;
-          this.currentFileStream = undefined;
+        const writer = this.writers.get(downloadId);
+
+        if (writer) {
+          await writer.close();
+          this.writers.delete(downloadId);
+          this.fileStreams.delete(downloadId);
         }
+
         worker.terminate();
         removeAbortListener();
         resolve(fileId);
@@ -136,11 +147,14 @@ export class DownloadWorkerHandler {
       case 'error': {
         const { error } = messageData;
         const castedError = new Error(error);
-        if (this.currentWriter) {
-          await this.currentWriter.abort();
-          this.currentWriter = undefined;
-          this.currentFileStream = undefined;
+        const writer = this.writers.get(downloadId);
+
+        if (writer) {
+          await writer.abort();
+          this.writers.delete(downloadId);
+          this.fileStreams.delete(downloadId);
         }
+
         worker.terminate();
         removeAbortListener();
         reject(castedError);
@@ -148,6 +162,8 @@ export class DownloadWorkerHandler {
       }
 
       case 'abort': {
+        this.writers.delete(downloadId);
+        this.fileStreams.delete(downloadId);
         worker.terminate();
         removeAbortListener();
         reject(new DownloadAbortedByUserError());

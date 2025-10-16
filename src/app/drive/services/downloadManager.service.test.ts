@@ -898,7 +898,7 @@ describe('downloadManagerService', () => {
       vi.mocked(getDatabaseFileSourceData).mockResolvedValue({ source: null } as any);
       vi.mocked(checkIfCachedSourceIsOlder).mockReturnValue(true);
 
-      const downloadFileSpy = vi.spyOn(downloadService, 'downloadFile').mockResolvedValue(undefined);
+      const downloadFileSpy = vi.spyOn(downloadService, 'downloadFile');
       const downloadFileFromWorkerSpy = vi
         .spyOn(DownloadManagerService.instance, 'downloadFileFromWorker')
         .mockResolvedValueOnce(mockFile.fileId);
