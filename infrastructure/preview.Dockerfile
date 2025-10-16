@@ -1,10 +1,6 @@
 FROM node:18-alpine3.19
 
-ARG NODE_ENV=staging
-ARG MODE=staging
-
-ENV NODE_ENV=${NODE_ENV}
-ENV MODE=${MODE}
+ENV REACT_APP_IS_PREVIEW=true
 
 RUN apk update
 RUN apk add nginx git yarn

@@ -51,7 +51,8 @@ const buildSafeCanonicalUrl = () => {
 
 const enforceCanonicalDriveDomain = () => {
   const isBrowser = typeof globalThis !== 'undefined';
-  if (!isBrowser || !envService.isProduction()) {
+  const isPreview = process.env.REACT_APP_IS_PREVIEW === 'true';
+  if (!isBrowser || !envService.isProduction() || isPreview) {
     return;
   }
 
