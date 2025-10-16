@@ -29,6 +29,191 @@ describe('Download Worker Handler', () => {
     (downloadFileFromBlob as unknown as Mock).mockResolvedValue(undefined);
   });
 
+  describe('Concurrent downloads', () => {
+    const mockedWorker1 = new MockWorker();
+    const mockedWorker2 = new MockWorker();
+    const mockedChunks = [new Uint8Array([1, 2, 3]), new Uint8Array([4, 5, 6])];
+
+    const itemData1 = {
+      fileId: 'file-1',
+      plainName: 'document-1',
+      type: 'pdf',
+    } as DriveFileData;
+
+    const itemData2 = {
+      fileId: 'file-2',
+      plainName: 'document-2',
+      type: 'pdf',
+    } as DriveFileData;
+
+    const write1Mock = vi.fn();
+    const close1Mock = vi.fn();
+    const write2Mock = vi.fn();
+    const close2Mock = vi.fn();
+    const abort1Mock = vi.fn();
+    const abort2Mock = vi.fn();
+
+    const mockWriter1 = {
+      write: write1Mock,
+      close: close1Mock,
+      abort: abort1Mock,
+    };
+
+    const mockWriter2 = {
+      write: write2Mock,
+      close: close2Mock,
+      abort: abort2Mock,
+    };
+
+    test('When downloading multiple files concurrently, then each file should have its own writer', async () => {
+      vi.mocked(streamSaver.createWriteStream)
+        .mockReturnValueOnce({
+          getWriter: vi.fn().mockReturnValue(mockWriter1),
+        } as unknown as WritableStream)
+        .mockReturnValueOnce({
+          getWriter: vi.fn().mockReturnValue(mockWriter2),
+        } as unknown as WritableStream);
+
+      const promise1 = downloadWorkerHandler.handleWorkerMessages({
+        worker: mockedWorker1 as unknown as Worker,
+        itemData: itemData1,
+        updateProgressCallback: vi.fn(),
+      });
+      const promise2 = downloadWorkerHandler.handleWorkerMessages({
+        worker: mockedWorker2 as unknown as Worker,
+        itemData: itemData2,
+        updateProgressCallback: vi.fn(),
+      });
+
+      mockedWorker1.emitMessage({
+        result: 'chunk',
+        chunk: mockedChunks[0],
+      });
+      mockedWorker2.emitMessage({
+        result: 'chunk',
+        chunk: mockedChunks[1],
+      });
+      mockedWorker1.emitMessage({
+        result: 'success',
+        fileId: itemData1.fileId,
+      });
+      mockedWorker2.emitMessage({
+        result: 'success',
+        fileId: itemData2.fileId,
+      });
+
+      await expect(promise1).resolves.toBe(itemData1.fileId);
+      await expect(promise2).resolves.toBe(itemData2.fileId);
+      expect(write1Mock).toHaveBeenCalledWith(mockedChunks[0]);
+      expect(write2Mock).toHaveBeenCalledWith(mockedChunks[1]);
+      expect(close1Mock).toHaveBeenCalled();
+      expect(close2Mock).toHaveBeenCalled();
+      expect(mockedWorker1.terminated).toBeTruthy();
+      expect(mockedWorker2.terminated).toBeTruthy();
+    });
+
+    test('When one download fails, then it should not affect other concurrent downloads', async () => {
+      const mockedError = new Error('Download failed');
+      vi.mocked(streamSaver.createWriteStream)
+        .mockReturnValueOnce({
+          getWriter: vi.fn().mockReturnValue(mockWriter1),
+        } as unknown as WritableStream)
+        .mockReturnValueOnce({
+          getWriter: vi.fn().mockReturnValue(mockWriter2),
+        } as unknown as WritableStream);
+
+      const promise1 = downloadWorkerHandler.handleWorkerMessages({
+        worker: mockedWorker1 as unknown as Worker,
+        itemData: itemData1,
+        updateProgressCallback: vi.fn(),
+      });
+
+      const promise2 = downloadWorkerHandler.handleWorkerMessages({
+        worker: mockedWorker2 as unknown as Worker,
+        itemData: itemData2,
+        updateProgressCallback: vi.fn(),
+      });
+
+      mockedWorker1.emitMessage({
+        result: 'chunk',
+        chunk: mockedChunks[0],
+      });
+
+      mockedWorker2.emitMessage({
+        result: 'chunk',
+        chunk: mockedChunks[1],
+      });
+
+      mockedWorker1.emitMessage({
+        result: 'error',
+        error: mockedError.message,
+      });
+      mockedWorker2.emitMessage({
+        result: 'success',
+        fileId: itemData2.fileId,
+      });
+
+      await expect(promise1).rejects.toThrow(mockedError);
+      await expect(promise2).resolves.toBe(itemData2.fileId);
+      expect(abort1Mock).toHaveBeenCalled();
+      expect(write2Mock).toHaveBeenCalledWith(mockedChunks[1]);
+      expect(mockedWorker2.terminated).toBeTruthy();
+      expect(close2Mock).toHaveBeenCalled();
+    });
+
+    test('When aborting one download, then it should not affect other concurrent downloads', async () => {
+      const abortController1 = new AbortController();
+
+      vi.mocked(streamSaver.createWriteStream)
+        .mockReturnValueOnce({
+          getWriter: vi.fn().mockReturnValue(mockWriter1),
+        } as unknown as WritableStream)
+        .mockReturnValueOnce({
+          getWriter: vi.fn().mockReturnValue(mockWriter2),
+        } as unknown as WritableStream);
+
+      const promise1 = downloadWorkerHandler.handleWorkerMessages({
+        worker: mockedWorker1 as unknown as Worker,
+        itemData: itemData1,
+        abortController: abortController1,
+        updateProgressCallback: vi.fn(),
+      });
+
+      const promise2 = downloadWorkerHandler.handleWorkerMessages({
+        worker: mockedWorker2 as unknown as Worker,
+        itemData: itemData2,
+        updateProgressCallback: vi.fn(),
+      });
+
+      mockedWorker1.emitMessage({
+        result: 'chunk',
+        chunk: new Uint8Array([1, 2, 3]),
+      });
+
+      mockedWorker2.emitMessage({
+        result: 'chunk',
+        chunk: new Uint8Array([4, 5, 6]),
+      });
+
+      abortController1.abort();
+
+      mockedWorker1.emitMessage({
+        result: 'abort',
+      });
+      mockedWorker2.emitMessage({
+        result: 'success',
+        fileId: itemData2.fileId,
+      });
+
+      await expect(promise1).rejects.toThrow(DownloadAbortedByUserError);
+      await expect(promise2).resolves.toBe(itemData2.fileId);
+      expect(abortController1.signal.aborted).toBeTruthy();
+      expect(abort1Mock).toHaveBeenCalled();
+      expect(write2Mock).toHaveBeenCalledWith(mockedChunks[1]);
+      expect(close2Mock).toHaveBeenCalled();
+    });
+  });
+
   describe('Aborting the download', () => {
     test('When downloading the file using chunks is aborted, then the worker is terminated and the writer aborted', async () => {
       const mockedWorker = new MockWorker();
@@ -57,7 +242,7 @@ describe('Download Worker Handler', () => {
 
       await expect(workerHandlerPromise).rejects.toThrow(new DownloadAbortedByUserError());
       expect(abortMock).toBeCalled();
-      expect(mockedWorker.terminated).toBe(true);
+      expect(mockedWorker.terminated).toBeTruthy();
     });
 
     test('When downloading the file using blob is aborted, then the worker is terminated', async () => {
@@ -88,7 +273,7 @@ describe('Download Worker Handler', () => {
       });
 
       await expect(workerHandlerPromise).rejects.toThrow(new DownloadAbortedByUserError());
-      expect(mockedWorker.terminated).toBe(true);
+      expect(mockedWorker.terminated).toBeTruthy();
     });
 
     test('When worker sends abort message, then promise rejects', async () => {
@@ -108,7 +293,7 @@ describe('Download Worker Handler', () => {
       });
 
       await expect(workerHandlerPromise).rejects.toThrow(new DownloadAbortedByUserError());
-      expect(mockedWorker.terminated).toBe(true);
+      expect(mockedWorker.terminated).toBeTruthy();
     });
   });
 
@@ -138,7 +323,7 @@ describe('Download Worker Handler', () => {
     await expect(workerHandlerPromise).resolves.toBe(itemData.fileId);
     expect(writeMock).toBeCalledWith(chunk);
     expect(closeMock).toBeCalled();
-    expect(mockedWorker.terminated).toBe(true);
+    expect(mockedWorker.terminated).toBeTruthy();
   });
 
   test('When the event is blob, then the blob is downloaded correctly', async () => {
@@ -171,7 +356,7 @@ describe('Download Worker Handler', () => {
     await expect(workerHandlerPromise).resolves.toBe(itemData.fileId);
 
     expect(downloadFileFromBlob).toHaveBeenCalledWith(testBlob, completedName);
-    expect(mockedWorker.terminated).toBe(true);
+    expect(mockedWorker.terminated).toBeTruthy();
   });
 
   test('When the event is progress, then the progress callback is called and the value is updated correctly', async () => {
@@ -200,7 +385,7 @@ describe('Download Worker Handler', () => {
     });
 
     await expect(workerHandlerPromise).resolves.toBe(itemData.fileId);
-    expect(mockedWorker.terminated).toBe(true);
+    expect(mockedWorker.terminated).toBeTruthy();
   });
 
   test('When success is called, then the worker is terminated', async () => {
@@ -221,11 +406,12 @@ describe('Download Worker Handler', () => {
     });
 
     await expect(workerHandlerPromise).resolves.toBe(itemData.fileId);
-    expect(mockedWorker.terminated).toBe(true);
+    expect(mockedWorker.terminated).toBeTruthy();
   });
 
-  test('When the event is error and currentWriter exists, then it should abort the writer before terminating', async () => {
+  test('When the event is an error and there is a writer, then it should abort the writer before terminating', async () => {
     const mockedWorker = new MockWorker();
+    const mockedError = new Error('download failed');
     const itemData = {
       fileId: 'random-id',
       name: 'test-file',
@@ -259,18 +445,19 @@ describe('Download Worker Handler', () => {
 
     mockedWorker.emitMessage({
       result: 'error',
-      error: 'download failed',
+      error: mockedError.message,
     });
 
-    await expect(workerHandlerPromise).rejects.toBe('download failed');
-
+    await expect(workerHandlerPromise).rejects.toThrow(mockedError);
     expect(mockAbort).toHaveBeenCalled();
-    expect(mockedWorker.terminated).toBe(true);
+    expect(mockedWorker.terminated).toBeTruthy();
   });
 
-  test('When the event is error and there is an abort controller, then the remove event listener function is called', async () => {
+  test('When the event is an error and there is an abort controller, then the remove event listener function is called', async () => {
     const mockedWorker = new MockWorker();
     const abortController = new AbortController();
+    const mockedError = new Error('Random error');
+
     const itemData = {
       fileId: 'random-id',
     } as DriveFileData;
@@ -285,11 +472,11 @@ describe('Download Worker Handler', () => {
     });
     mockedWorker.emitMessage({
       result: 'error',
-      error: 'error',
+      error: mockedError.message,
     });
 
-    await expect(workerHandlerPromise).rejects.toBe('error');
     expect(removeEventListenerSpy).toHaveBeenCalledWith('abort', expect.any(Function));
-    expect(mockedWorker.terminated).toBe(true);
+    await expect(workerHandlerPromise).rejects.toThrow(mockedError);
+    expect(mockedWorker.terminated).toBeTruthy();
   });
 });
