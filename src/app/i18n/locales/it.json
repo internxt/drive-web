@@ -182,7 +182,7 @@
     },
     "universalLinkSuccess": {
       "loginAs": "Accedi come",
-      "openDesktopApp": "Apri l'applicazione desktop",
+      "openApp": "Apri l'applicazione",
       "anotherAccount": "Utilizzare un altro account?",
       "login": "Accedi"
     }
