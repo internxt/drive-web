@@ -10,7 +10,7 @@ import {
   UserSubscription,
   UserType,
 } from '@internxt/sdk/dist/drive/payments/types/types';
-import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@stripe/stripe-js';
+import { Source, Stripe } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js/pure';
 import axios from 'axios';
 import { SdkFactory } from '../../core/factory/sdk';
@@ -112,12 +112,6 @@ const paymentService = {
   async getInvoices(payload: InvoicePayload): Promise<Invoice[]> {
     const paymentsClient = await SdkFactory.getNewApiInstance().createPaymentsClient();
     return paymentsClient.getInvoices(payload);
-  },
-
-  async redirectToCheckout(options: RedirectToCheckoutServerOptions): Promise<{ error: StripeError }> {
-    const stripe = await this.getStripe();
-
-    return stripe.redirectToCheckout(options);
   },
 
   async getUserSubscription(userType?: UserType): Promise<UserSubscription> {

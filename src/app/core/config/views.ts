@@ -30,7 +30,6 @@ import ChangeEmailView from '../views/ChangeEmailView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
 import VerifyEmailView from '../views/VerifyEmailView';
 import CheckoutViewWrapper from '../../payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
-import { CheckoutSessionId } from 'app/payment/views/CheckoutSession/CheckoutSessionId';
 import PcCloudSuccess from 'app/payment/views/CheckoutSuccessView/PcCloudSuccess';
 
 const views: Array<{
@@ -58,7 +57,6 @@ const views: Array<{
   { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
   { id: AppView.PcCloudSuccess, component: PcCloudSuccess },
   { id: AppView.CheckoutCancel, component: CheckoutCancelView },
-  { id: AppView.CheckoutSession, component: CheckoutSessionId },
   { id: AppView.Checkout, component: CheckoutViewWrapper },
   { id: AppView.RecoveryLink, component: RecoveryLinkView },
   { id: AppView.ShareFileToken, component: ShareFileView },
