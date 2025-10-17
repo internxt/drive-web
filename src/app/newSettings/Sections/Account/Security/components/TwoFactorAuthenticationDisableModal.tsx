@@ -34,7 +34,7 @@ const TwoFactorAuthenticationDisableModal = ({
     try {
       const { encryptedSalt, opaqueLogin } = await userHas2FAStored();
 
-      await (opaqueLogin ? deactivate2FAOpaque(authCode) : deactivate2FA(encryptedSalt, password, authCode));
+      await (opaqueLogin ? deactivate2FAOpaque(password, authCode) : deactivate2FA(encryptedSalt, password, authCode));
 
       notificationsService.show({ text: translate('success.twoFactorAuthDisabled'), type: ToastType.Success });
       onDisabled();

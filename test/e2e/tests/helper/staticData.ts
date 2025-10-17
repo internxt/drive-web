@@ -28,7 +28,7 @@ export const staticData = {
   userAlreadyRegistered: 'already registered',
   accountRecovery: 'Account recovery',
   wrongLoginWarning: 'Wrong login credentials',
-  dontHaveAccountText: "Don't have an account?",
+  dontHaveAccountText: 'Don\'t have an account?',
   createAccountText: 'Create account',
   termsAndConditionsLinkText: 'Terms and conditions',
   youAcceptTermsLinkText: 'you accept the terms & conditions',

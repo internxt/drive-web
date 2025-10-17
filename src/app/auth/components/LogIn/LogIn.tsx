@@ -29,7 +29,7 @@ import TextInput from '../TextInput/TextInput';
 import { AuthMethodTypes } from 'app/payment/types';
 import vpnAuthService from 'app/auth/services/vpnAuth.service';
 import envService from 'app/core/services/env.service';
-import { authenticateUserOpaque } from '../../services/auth.opaque';
+import { logInOpaque } from '../../services/auth.opaque';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -182,7 +182,7 @@ export default function LogIn(): JSX.Element {
           loginType,
         };
 
-        const {token, user, mnemonic} = await (opaqueLogin ? authenticateUserOpaque(authParams) : authenticateUser(authParams));
+        const { token, user, mnemonic } = await (opaqueLogin ? logInOpaque(authParams) : authenticateUser(authParams));
         handleSuccessfulAuth(token, user, mnemonic);
       } else {
         setShowTwoFactor(true);

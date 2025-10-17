@@ -9,6 +9,19 @@ export type ProfileInfo = {
   mnemonic: string;
 };
 
+export type ProfileInfoOpaque = {
+  user: UserSettings;
+  token: string;
+  mnemonic: string;
+};
+
+export type LogInParamsOpaque = {
+  email: string;
+  password: string;
+  twoFactorCode: string;
+  dispatch: AppDispatch;
+};
+
 export type RegisterFunction = (
   email: string,
   password: string,
@@ -19,6 +32,13 @@ export type RegisterFunction = (
   xNewToken: string;
   mnemonic: string;
 }>;
+
+export type SignUpParamsOpaque = {
+  email: string;
+  password: string;
+  redeemCodeObject: boolean;
+  dispatch: AppDispatch;
+};
 
 export type SignUpParams = {
   doSignUp: RegisterFunction;
@@ -36,7 +56,6 @@ export type LogInParams = {
   dispatch: AppDispatch;
   loginType?: 'web' | 'desktop';
 };
-
 
 export type AuthenticateUserParams = {
   email: string;
