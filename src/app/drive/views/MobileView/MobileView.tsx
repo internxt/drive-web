@@ -64,7 +64,7 @@ const Mobile = (props: MobileProps): JSX.Element => {
       <section className="mb-4 mt-10 flex flex-col items-center">
         <img className="w-64" src={devices} alt="Mobile and desktop view" />
         <h2 className="m-6 text-center text-2xl font-medium text-gray-100">{translate('mobileView.title')}</h2>
-        <div className="flex flex-col items-center w-40">
+        <div>
           {osMobile === 'iphone' ? (
             <a href="https://apps.apple.com/es/app/internxt/id1465869889" target="_blank">
               <AppStore className="w-40" />
