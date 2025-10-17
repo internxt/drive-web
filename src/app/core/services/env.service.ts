@@ -1,6 +1,18 @@
+export function checkIsProduction(mode: string | undefined, nodeEnv: string | undefined): boolean {
+  const runtimeMode = (mode ?? '').toLowerCase();
+  const reactNodeEnv = (nodeEnv ?? '').toLowerCase();
+
+  const nonProdValues = new Set(['staging', 'development']);
+
+  if (nonProdValues.has(runtimeMode) || nonProdValues.has(reactNodeEnv)) {
+    return false;
+  }
+
+  return runtimeMode === 'production' || reactNodeEnv === 'production';
+}
+
 function isProduction(): boolean {
-  if (import.meta.env.REACT_APP_NODE_ENV === 'staging') return false;
-  return import.meta.env.MODE === 'production' || import.meta.env.REACT_APP_NODE_ENV === 'production';
+  return checkIsProduction(import.meta.env.MODE, import.meta.env.REACT_APP_NODE_ENV);
 }
 
 const envService = {
