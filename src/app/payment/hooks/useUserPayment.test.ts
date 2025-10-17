@@ -438,6 +438,7 @@ describe('Custom hook to handle payments', () => {
           getElement: vi.fn(),
           submit: vi.fn(),
           update: vi.fn(),
+          on: vi.fn(),
         },
         selectedPlan: {
           price: {
@@ -485,6 +486,7 @@ describe('Custom hook to handle payments', () => {
           getElement: vi.fn(),
           submit: vi.fn(),
           update: vi.fn(),
+          on: vi.fn(),
         },
         selectedPlan: {
           price: {
@@ -528,6 +530,7 @@ describe('Custom hook to handle payments', () => {
           getElement: vi.fn(),
           submit: vi.fn(),
           update: vi.fn(),
+          on: vi.fn(),
         },
         selectedPlan: {
           price: {
