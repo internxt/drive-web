@@ -8,10 +8,10 @@ import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
 import envService from 'app/core/services/env.service';
 
 import { generateFileKey } from './crypto';
-import downloadFileV2 from './download/v2';
+import downloadFileV2, { multipartDownload } from './download/v2';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
-export type Downloadable = { fileId: string; bucketId: string };
+export type Downloadable = { fileId: string; bucketId: string; size: number };
 
 type BinaryStream = ReadableStream<Uint8Array>;
 
@@ -31,7 +31,7 @@ export async function binaryStreamToBlob(stream: BinaryStream): Promise<Blob> {
     finish = done;
   }
 
-  return new Blob(slices);
+  return new Blob(slices as BlobPart[]);
 }
 
 interface FileInfo {
@@ -120,6 +120,7 @@ interface IDownloadParams {
   mnemonic?: string;
   encryptionKey?: Buffer;
   token?: string;
+  fileSize?: number;
   options?: {
     notifyProgress: DownloadProgressCallback;
     abortController?: AbortController;
@@ -158,6 +159,18 @@ export function downloadFile(params: IDownloadParams): Promise<ReadableStream<Ui
   const downloadFileV2Promise = downloadFileV2(params as any);
 
   return downloadFileV2Promise.catch((err) => {
+    if (err instanceof FileVersionOneError) {
+      return _downloadFile(params);
+    }
+
+    throw err;
+  });
+}
+
+export async function multipartDownloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
+  const multipartDownloadFileV2Promise = multipartDownload(params as any);
+
+  return multipartDownloadFileV2Promise.catch((err) => {
     if (err instanceof FileVersionOneError) {
       return _downloadFile(params);
     }

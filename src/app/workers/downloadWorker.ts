@@ -36,7 +36,6 @@ export class DownloadWorker {
 
       const downloadedFile = await createFileDownloadStream(
         file,
-        isWorkspace,
         callbacks.onProgress,
         this.abortController,
         credentials,
