@@ -34,7 +34,7 @@ async function getSha512Combined(key: Buffer, data: Buffer): Promise<string> {
  * @param {string} dataArray - The input array of data
  * @returns {Promise<string>} The result of applying hmac-sha512 to the array of data.
  */
-async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer[]): Promise<string> {
+async function getHmacSha512(encryptionKey: Buffer | string, dataArray: string[] | Buffer[]): Promise<string> {
   const hashFunc = createSHA512();
   const hmac = await createHMAC(hashFunc, encryptionKey);
   hmac.init();

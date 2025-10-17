@@ -1,15 +1,6 @@
-import { logIn, RegisterFunction, signUp, SignUpParams } from 'app/auth/services/auth.service';
-import { AppDispatch } from 'app/store';
-import { AuthMethodTypes } from '../types';
+import { AuthParams, SignUpParams } from 'app/auth/services/auth.types';
+import { logIn, signUp } from 'app/auth/services/auth.service';
 
-type AuthParams = {
-  email: string;
-  password: string;
-  authMethod: AuthMethodTypes;
-  captcha: string;
-  dispatch: AppDispatch;
-  doRegister: RegisterFunction;
-};
 
 const authenticateUser = async (params: AuthParams) => {
   const { email, password, authMethod, captcha, dispatch, doRegister } = params;
