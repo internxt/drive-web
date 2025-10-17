@@ -23,7 +23,6 @@ interface HandleMessagesPayload {
 
 export class DownloadWorkerHandler {
   private writers = new Map<string, WritableStreamDefaultWriter>();
-  private fileStreams = new Map<string, WritableStream<Uint8Array<ArrayBufferLike>>>();
 
   public getWorker() {
     return createDownloadWebWorker();
@@ -78,7 +77,6 @@ export class DownloadWorkerHandler {
         if (writer) {
           await writer.abort();
           this.writers.delete(downloadId);
-          this.fileStreams.delete(downloadId);
         }
         aborted = true;
       } catch {
@@ -99,6 +97,21 @@ export class DownloadWorkerHandler {
       abortController.signal.addEventListener('abort', abortWriter, { once: true });
     }
 
+    const downloadCleanup = async (downloadId: string, shouldAbort = false) => {
+      const writer = this.writers.get(downloadId);
+      if (writer) {
+        if (shouldAbort) {
+          await writer.abort();
+        } else {
+          await writer.close();
+        }
+      }
+
+      this.writers.delete(downloadId);
+      worker.terminate();
+      removeAbortListener();
+    };
+
     switch (result) {
       case 'chunk': {
         let writer = this.writers.get(downloadId);
@@ -107,7 +120,6 @@ export class DownloadWorkerHandler {
           const fileStream = streamSaver.createWriteStream(completeFilename);
           writer = fileStream.getWriter();
           this.writers.set(downloadId, writer);
-          this.fileStreams.set(downloadId, fileStream);
         }
 
         const { chunk } = messageData;
@@ -130,16 +142,8 @@ export class DownloadWorkerHandler {
 
       case 'success': {
         const { fileId } = messageData;
-        const writer = this.writers.get(downloadId);
+        downloadCleanup(downloadId);
 
-        if (writer) {
-          await writer.close();
-          this.writers.delete(downloadId);
-          this.fileStreams.delete(downloadId);
-        }
-
-        worker.terminate();
-        removeAbortListener();
         resolve(fileId);
         break;
       }
@@ -147,25 +151,13 @@ export class DownloadWorkerHandler {
       case 'error': {
         const { error } = messageData;
         const castedError = new Error(error);
-        const writer = this.writers.get(downloadId);
-
-        if (writer) {
-          await writer.abort();
-          this.writers.delete(downloadId);
-          this.fileStreams.delete(downloadId);
-        }
-
-        worker.terminate();
-        removeAbortListener();
+        downloadCleanup(downloadId, true);
         reject(castedError);
         break;
       }
 
       case 'abort': {
-        this.writers.delete(downloadId);
-        this.fileStreams.delete(downloadId);
-        worker.terminate();
-        removeAbortListener();
+        downloadCleanup(downloadId, true);
         reject(new DownloadAbortedByUserError());
         break;
       }
