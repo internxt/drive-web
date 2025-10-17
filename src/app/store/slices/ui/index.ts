@@ -5,7 +5,6 @@ import { PreviewFileItem } from '../../../share/types';
 interface UISliceState {
   isSidenavCollapsed: boolean;
   isFileLoggerOpen: boolean;
-  isFileInfoMenuOpen: boolean;
   isNameCollisionDialogOpen: boolean;
   isShareDialogOpen: boolean;
   isInvitationsDialogOpen: boolean;
@@ -36,7 +35,6 @@ interface UISliceState {
 const initialState: UISliceState = {
   isSidenavCollapsed: false,
   isFileLoggerOpen: false,
-  isFileInfoMenuOpen: false,
   isNameCollisionDialogOpen: false,
   isShareDialogOpen: false,
   isInvitationsDialogOpen: false,
@@ -73,9 +71,6 @@ export const uiSlice = createSlice({
     },
     setIsFileLoggerOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isFileLoggerOpen = action.payload;
-    },
-    setIsFileInfoMenuOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isFileInfoMenuOpen = action.payload;
     },
     setIsNameCollisionDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isNameCollisionDialogOpen = action.payload;
@@ -170,7 +165,6 @@ export const {
   setIsMoveItemsDialogOpen,
   setIsPreferencesDialogOpen,
   setIsFileLoggerOpen,
-  setIsFileInfoMenuOpen,
   setIsReachedPlanLimitDialogOpen,
   setIsSharedFolderTooBigDialogOpen,
   setIsShareItemDialogOpen,
