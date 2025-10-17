@@ -6,8 +6,8 @@ import { userThunks } from '../../../store/slices/user';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import devices from 'assets/images/mobile-app/devices.png';
-import AppStore from 'assets/images/mobile-app/app-store.svg?react';
-import googlePlay from 'assets/images/mobile-app/google-play.jpg';
+import AppStore from 'assets/icons/app-store.svg?react';
+import GooglePlay from 'assets/icons/google-play.svg?react';
 import { Button, Avatar } from '@internxt/ui';
 
 interface MobileProps {
@@ -44,16 +44,16 @@ const Mobile = (props: MobileProps): JSX.Element => {
       <header className="flex flex-col items-center bg-gray-1 pb-4 pt-8">
         <InternxtLogo className="h-auto w-28 text-gray-100" />
         <div className="flex w-full flex-row items-center justify-between px-4 pt-8">
-          <div className="... mr-2 flex flex-row truncate">
+          <div className="mr-2 flex flex-row truncate">
             <Avatar
               className="mr-2.5 shrink-0"
               diameter={48}
               fullName={fullName}
               src={avatarBlob ? URL.createObjectURL(avatarBlob) : null}
             />
-            <div className="... flex flex-col truncate">
-              <p className="... truncate text-base font-medium text-gray-100">{fullName}</p>
-              <p className="... truncate text-base text-gray-50">{props.user?.username}</p>
+            <div className="flex flex-col truncate">
+              <p className="truncate text-base font-medium text-gray-100">{fullName}</p>
+              <p className="truncate text-base text-gray-50">{props.user?.username}</p>
             </div>
           </div>
           <Button variant="secondary" onClick={onLogOutClicked}>
@@ -62,16 +62,16 @@ const Mobile = (props: MobileProps): JSX.Element => {
         </div>
       </header>
       <section className="mb-4 mt-10 flex flex-col items-center">
-        <img className="w-64" src={devices} alt="Mobile and descktop view" />
+        <img className="w-64" src={devices} alt="Mobile and desktop view" />
         <h2 className="m-6 text-center text-2xl font-medium text-gray-100">{translate('mobileView.title')}</h2>
-        <div>
+        <div className="flex flex-col items-center w-40">
           {osMobile === 'iphone' ? (
             <a href="https://apps.apple.com/es/app/internxt/id1465869889" target="_blank">
               <AppStore className="w-40" />
             </a>
           ) : (
             <a href="https://play.google.com/store/apps/details?id=com.internxt.cloud" target="_blank">
-              <img className="w-40" src={googlePlay} alt="google play" />
+              <GooglePlay className="w-40" />
             </a>
           )}
         </div>
