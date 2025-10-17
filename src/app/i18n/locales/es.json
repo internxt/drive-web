@@ -161,7 +161,7 @@
     },
     "universalLinkSuccess": {
       "loginAs": "Iniciar sesión como",
-      "openDesktopApp": "Abrir Drive Desktop",
+      "openApp": "Abrir app",
       "anotherAccount": "Usar otra cuenta?",
       "login": "Iniciar sesión"
     }

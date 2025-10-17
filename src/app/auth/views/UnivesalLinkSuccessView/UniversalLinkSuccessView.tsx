@@ -1,10 +1,10 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { Button } from '@internxt/ui';
 import authService from 'app/auth/services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Button } from '@internxt/ui';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { useEffect, useMemo } from 'react';
 
@@ -56,7 +56,7 @@ export default function UniversalLinkSuccessView(): JSX.Element {
           </h3>
           {/* Universal links needs to be clicked in order to work, JS window.open does not work */}
           <a href={getUniversalLinkAuthUrl(user)}>
-            <Button className="w-full">{translate('auth.universalLinkSuccess.openDesktopApp')}</Button>
+            <Button className="w-full">{translate('auth.universalLinkSuccess.openApp')}</Button>
           </a>
           <div className="separator my-6"></div>
           <div className="flex flex-row justify-center">

@@ -42,7 +42,7 @@ import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 import vpnAuthService from './vpnAuth.service';
-import { ProfileInfo, SignUpParams, AuthenticateUserParams, LogInParams  } from './auth.types';
+import { ProfileInfo, SignUpParams, AuthenticateUserParams, LogInParams } from './auth.types';
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   try {
@@ -70,13 +70,13 @@ export function cancelAccount(): Promise<void> {
   return authClient.sendUserDeactivationEmail(token);
 }
 
-export const is2FAorOpaqueNeeded = async (email: string): Promise<{tfaEnabled: boolean, opaqueLogin: boolean }> => {
+export const is2FAorOpaqueNeeded = async (email: string): Promise<{ tfaEnabled: boolean; opaqueLogin: boolean }> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
     throw new AppError(error.message ?? 'Login error', error.status ?? 500);
   });
 
-  return {tfaEnabled: securityDetails.tfaEnabled, opaqueLogin: securityDetails.opaqueLogin };
+  return { tfaEnabled: securityDetails.tfaEnabled, opaqueLogin: securityDetails.opaqueLogin };
 };
 
 const getAuthClient = (authType: 'web' | 'desktop') => {
@@ -398,7 +398,9 @@ export const deactivate2FA = (
 export async function areCredentialsCorrect(password: string): Promise<boolean> {
   const salt = await getSalt();
   const { hash: hashedPassword } = passToHash({ password, salt });
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient({
+    unauthorizedCallback: () => undefined,
+  });
   const token = localStorageService.get('xNewToken') ?? undefined;
   return authClient.areCredentialsCorrect(hashedPassword, token);
 }
