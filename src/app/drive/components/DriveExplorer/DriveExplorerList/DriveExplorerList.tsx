@@ -299,7 +299,11 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       });
     },
     moveToTrash: () => {
-      isSelectedSharedItems ? props.onOpenStopSharingAndMoveToTrashDialog() : moveItemsToTrash(props.selectedItems);
+      if (isSelectedSharedItems) {
+        props.onOpenStopSharingAndMoveToTrashDialog();
+      } else {
+        moveItemsToTrash(props.selectedItems);
+      }
     },
   });
 
@@ -505,9 +509,11 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           keyBoardShortcutActions={{
             onBackspaceKeyPressed: () => {
               if (props.selectedItems.length) {
-                isSelectedSharedItems
-                  ? props.onOpenStopSharingAndMoveToTrashDialog()
-                  : moveItemsToTrash(props.selectedItems);
+                if (isSelectedSharedItems) {
+                  props.onOpenStopSharingAndMoveToTrashDialog();
+                } else {
+                  moveItemsToTrash(props.selectedItems);
+                }
               }
             },
             onRKeyPressed: () => {

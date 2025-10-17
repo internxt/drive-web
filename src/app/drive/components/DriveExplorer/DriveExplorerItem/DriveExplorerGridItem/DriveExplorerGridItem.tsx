@@ -115,30 +115,33 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       onMouseEnter={props.onMouseEnter}
       onMouseLeave={props.onMouseLeave}
       draggable={false}
-      onKeyDown={(e) => {}}
+      onKeyDown={() => {}}
     >
       <Menu as="div" className="absolute right-2 top-2 z-10">
-        {({ open, close }) => (
-          <div className="relative">
-            <Menu.Button
-              id="dropdown-basic"
-              ref={itemButton}
-              className="h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-primary opacity-0 transition group-hover:opacity-100"
-            >
-              <UilEllipsisH className="h-full w-full" />
-            </Menu.Button>
-            <Menu.Items
-              data-tooltip-place="top"
-              style={{
-                position: 'absolute',
-                zIndex: 999,
-                right: lastRowItem ? 5 : 'auto',
-              }}
-            >
-              <DriveItemDropdownActions openDropdown={open} item={item} />
-            </Menu.Items>
-          </div>
-        )}
+        {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          ({ open, close }) => (
+            <div className="relative">
+              <Menu.Button
+                id="dropdown-basic"
+                ref={itemButton}
+                className="h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-primary opacity-0 transition group-hover:opacity-100"
+              >
+                <UilEllipsisH className="h-full w-full" />
+              </Menu.Button>
+              <Menu.Items
+                data-tooltip-place="top"
+                style={{
+                  position: 'absolute',
+                  zIndex: 999,
+                  right: lastRowItem ? 5 : 'auto',
+                }}
+              >
+                <DriveItemDropdownActions openDropdown={open} item={item} />
+              </Menu.Items>
+            </div>
+          )
+        }
       </Menu>
       <div className="flex h-4/6 w-full items-center justify-center drop-shadow-soft">
         {item.currentThumbnail ? (

@@ -217,7 +217,7 @@ const paymentService = {
       );
 
       return response.data;
-    } catch (error) {
+    } catch {
       throw new Error('Error creating subscription with trial');
     }
   },

@@ -11,14 +11,12 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Card from '../../../../../shared/components/Card';
-import { MemberRole, Teams, TypeTabs } from '../../../../types/types';
-import ActivityTab from '../components/ActivityTab';
+import { MemberRole } from '../../../../types/types';
 import DeactivateMemberModal from '../components/DeactivateModal';
 import LeaveMemberModal from '../components/LeaveModal';
 import ReactivateMemberModal from '../components/ReactivateModal';
 import RemoveMemberModal from '../components/RemoveModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
-import TeamsTab from '../components/TeamsTab';
 import UserCard from '../components/UserCard';
 import { Loader } from '@internxt/ui';
 import { RootState } from '../../../../../store';
@@ -169,6 +167,7 @@ const MemberDetailsContainer = ({
     }
   };
 
+  /*
   //  MOCK DATA TO BE IMPLENTED
   const isActivityEnabled = Math.random() < 0.5;
   const activity = [
@@ -198,6 +197,7 @@ const MemberDetailsContainer = ({
       ],
     },
   ];
+
   const teams: { isTeams: boolean; teams: Teams } = {
     isTeams: true,
     teams: [
@@ -218,7 +218,7 @@ const MemberDetailsContainer = ({
       view: <TeamsTab role={memberRole} teams={teams.teams} isTeams={teams.isTeams} />,
     },
   ];
-  // const [activeTab, setActiveTab] = useState<ActiveTab>(tabs[0]);
+  const [activeTab, setActiveTab] = useState<ActiveTab>(tabs[0]);*/
 
   return (
     <div className="flex flex-col space-y-8">

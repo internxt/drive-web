@@ -99,7 +99,9 @@ const ShareWithTeamDialog = ({ item, roles }: ShareWithTeamDialogProps) => {
   const shareWithTeam = async (workspaceId: string, teamId: string) => {
     const editorRole = roles.find((role) => role.name === 'EDITOR');
     try {
-      selectedWorkspace && editorRole && (await shareItemWithTeamV2(workspaceId, item, teamId, editorRole));
+      if (selectedWorkspace && editorRole) {
+        await shareItemWithTeamV2(workspaceId, item, teamId, editorRole);
+      }
       fetchTeams();
     } catch (error) {
       errorService.reportError(error);

@@ -29,9 +29,11 @@ export const updateItemMetadataThunk = createAsyncThunk<
     const namePathDestinationArray = namePath.map((level) => level.name);
     namePathDestinationArray[0] = '';
 
-    item.isFolder
-      ? await folderService.updateMetaData(item.uuid, metadata, resourceToken)
-      : await fileService.updateMetaData(item.uuid, metadata, resourceToken);
+    if (item.isFolder) {
+      await folderService.updateMetaData(item.uuid, metadata, resourceToken);
+    } else {
+      await fileService.updateMetaData(item.uuid, metadata, resourceToken);
+    }
 
     dispatch(
       storageActions.patchItem({

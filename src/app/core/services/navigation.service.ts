@@ -36,12 +36,18 @@ const navigationService = {
     instance.push({ pathname: viewConfig?.path ?? 'view-not-found', search: viewSearch });
   },
   pushFolder(folderUuid: string | undefined, workspaceUuid?: string): void {
-    workspaceUuid
-      ? instance.push(`/folder/${folderUuid}?workspaceid=${workspaceUuid}`)
-      : instance.push(`/folder/${folderUuid}`);
+    if (workspaceUuid) {
+      instance.push(`/folder/${folderUuid}?workspaceid=${workspaceUuid}`);
+    } else {
+      instance.push(`/folder/${folderUuid}`);
+    }
   },
   pushFile(uuid: string | undefined, workspaceUuid?: string): void {
-    workspaceUuid ? instance.push(`/file/${uuid}?workspaceid=${workspaceUuid}`) : instance.push(`/file/${uuid}`);
+    if (workspaceUuid) {
+      instance.push(`/file/${uuid}?workspaceid=${workspaceUuid}`);
+    } else {
+      instance.push(`/file/${uuid}`);
+    }
   },
   isCurrentPath(path: string): boolean {
     const pathname = navigationService.history.location.pathname.split('/');
@@ -54,15 +60,19 @@ const navigationService = {
     return lastSegment;
   },
   openPreferencesDialog({ section, subsection, workspaceUuid }: SelectSectionProps) {
-    workspaceUuid
-      ? instance.push(`?workspaceid=${workspaceUuid}&preferences=open&section=${section}&subsection=${subsection}`)
-      : instance.push(`?preferences=open&section=${section}&subsection=${subsection}`);
+    if (workspaceUuid) {
+      instance.push(`?workspaceid=${workspaceUuid}&preferences=open&section=${section}&subsection=${subsection}`);
+    } else {
+      instance.push(`?preferences=open&section=${section}&subsection=${subsection}`);
+    }
   },
   closePreferencesDialog({ workspaceUuid }: { workspaceUuid: string | undefined }) {
     const sanitizedPathname = encodeURI(navigationService.history.location.pathname);
-    workspaceUuid
-      ? instance.push(`${sanitizedPathname}?workspaceid=${workspaceUuid}`)
-      : instance.push(sanitizedPathname);
+    if (workspaceUuid) {
+      instance.push(`${sanitizedPathname}?workspaceid=${workspaceUuid}`);
+    } else {
+      instance.push(sanitizedPathname);
+    }
   },
   replaceState(uuid: string | undefined): void {
     try {
@@ -78,10 +88,9 @@ const navigationService = {
     const user = localStorageService.getUser();
     const params = new URLSearchParams(window.location.search);
     const [currentWorkspaceUuid] = params.getAll('workspaceid');
-    user &&
-      !window.location.pathname.includes('file') &&
-      !window.location.pathname.includes('folder') &&
+    if (user && !window.location.pathname.includes('file') && !window.location.pathname.includes('folder')) {
       dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: currentWorkspaceUuid || null, updateUrl }));
+    }
   },
   resetB2BWorkspaceCredentials(dispatch): void {
     localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');

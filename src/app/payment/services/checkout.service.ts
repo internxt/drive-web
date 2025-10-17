@@ -157,7 +157,7 @@ const checkoutSetupIntent = async (customerId: string) => {
     );
 
     return response.data;
-  } catch (error) {
+  } catch {
     throw new Error('Error creating subscription with trial');
   }
 };

@@ -467,7 +467,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const handleOnShareItem = useCallback(() => {
     setTimeout(() => {
-      fetchFolderContent?.() ?? resetPaginationStateAndFetchDriveFolderContent(currentFolderId);
+      if (fetchFolderContent) {
+        fetchFolderContent();
+      } else {
+        resetPaginationStateAndFetchDriveFolderContent(currentFolderId);
+      }
     }, 500);
   }, [currentFolderId, fetchFolderContent]);
 

@@ -105,7 +105,7 @@ const TwoFactorAuthenticationEnableModal = ({
         notificationsService.show({ text: translate('success.twoFactorAuthActivated'), type: ToastType.Success });
         onEnabled();
         onClose();
-      } catch (err) {
+      } catch {
         setActivateState('error');
       }
     }

@@ -283,13 +283,12 @@ export class NetworkFacade {
         );
 
         fileStream = buildProgressStream(decryptedStream, (readBytes) => {
-          options && options.downloadingCallback && options.downloadingCallback(fileSize, readBytes);
+          options?.downloadingCallback?.(fileSize, readBytes);
         });
       },
       (options?.token && { token: options.token }) || undefined,
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return fileStream!;
   }
 }

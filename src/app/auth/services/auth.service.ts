@@ -369,6 +369,7 @@ const resetAccountWithToken = async (token: string | undefined, newPassword: str
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const changePassword = async (newPassword: string, currentPassword: string, email: string): Promise<void> => {
   const user = localStorageService.getUser() as UserSettings;
 
@@ -516,7 +517,7 @@ const extractOneUseCredentialsForAutoSubmit = (
         redeemCodeObject: credentials.redeemCode,
       },
     };
-  } catch (error) {
+  } catch {
     return {
       enabled: true,
     };

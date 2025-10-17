@@ -32,15 +32,21 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
 
   useEffect(() => {
     if (newPassword.length > 0) onChangeHandler(newPassword);
-    confirmNewPassword && confirmNewPassword != newPassword ? setIsEqualPassword(false) : setIsEqualPassword(true);
+    if (confirmNewPassword && confirmNewPassword != newPassword) {
+      setIsEqualPassword(false);
+    } else {
+      setIsEqualPassword(true);
+    }
   }, [newPassword]);
 
   useEffect(() => {
     const confirmNewPasswordLength = confirmNewPassword.length;
     const firstLettersPassword = newPassword.substring(0, confirmNewPasswordLength);
-    confirmNewPassword && confirmNewPassword != firstLettersPassword
-      ? setIsEqualPassword(false)
-      : setIsEqualPassword(true);
+    if (confirmNewPassword && confirmNewPassword != firstLettersPassword) {
+      setIsEqualPassword(false);
+    } else {
+      setIsEqualPassword(true);
+    }
   }, [confirmNewPassword]);
 
   useEffect(() => {
@@ -51,7 +57,9 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
       return () => clearInterval(timer);
     }
 
-    countDown === 0 && window.location.assign(`${window.location.origin}/login`);
+    if (countDown === 0) {
+      window.location.assign(`${window.location.origin}/login`);
+    }
   }, [isEmailSent, countDown]);
 
   //TODO: Refactor to PasswordStrengthIndicator

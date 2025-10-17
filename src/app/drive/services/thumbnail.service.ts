@@ -219,6 +219,7 @@ export const generateThumbnailFromFile = async (
   return null;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isWorkspace: boolean): Promise<Blob> => {
   const updateProgressCallback = () => {
     return;

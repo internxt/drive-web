@@ -58,6 +58,7 @@ export const fetchDialogContentThunkExtraReducers = (builder: ActionReducerMapBu
   builder
     .addCase(fetchDialogContentThunk.pending, () => undefined)
     .addCase(fetchDialogContentThunk.fulfilled, () => undefined)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .addCase(fetchDialogContentThunk.rejected, (state, action) => {
       notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
     });

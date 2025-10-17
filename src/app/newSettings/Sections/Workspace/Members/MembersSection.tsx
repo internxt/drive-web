@@ -37,7 +37,9 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
   }, []);
 
   useEffect(() => {
-    displayedMembers && getCurrentMember(selectedWorkspace?.workspaceUser.memberId);
+    if (displayedMembers) {
+      getCurrentMember(selectedWorkspace?.workspaceUser.memberId);
+    }
   }, [displayedMembers]);
 
   useEffect(() => {
@@ -71,12 +73,16 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
 
   const getCurrentMember = (workspaceMemberId) => {
     const workspaceCurrentMember = displayedMembers?.find((member) => member.memberId === workspaceMemberId);
-    workspaceCurrentMember?.isOwner && setIsCurrentMemberOwner(true);
+    if (workspaceCurrentMember?.isOwner) {
+      setIsCurrentMemberOwner(true);
+    }
   };
 
   const refreshWorkspaceMembers = async () => {
     const selectedWorkspaceId = selectedWorkspace?.workspace.id;
-    selectedWorkspaceId && (await getWorkspacesMembers(selectedWorkspaceId));
+    if (selectedWorkspaceId) {
+      await getWorkspacesMembers(selectedWorkspaceId);
+    }
     await getWorkspacePendingInvitations(selectedWorkspace?.workspaceUser.workspaceId);
   };
 

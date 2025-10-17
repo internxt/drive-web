@@ -254,9 +254,13 @@ const SharedItemListContainer = ({
       keyBoardShortcutActions={{
         onBackspaceKeyPressed: () => {
           if (selectedItems.length === 1) {
-            isItemOwnedByCurrentUser(selectedItems[0].user?.uuid) && onOpenStopSharingDialog();
+            if (isItemOwnedByCurrentUser(selectedItems[0].user?.uuid)) {
+              onOpenStopSharingDialog();
+            }
           } else if (selectedItems.length > 1) {
-            checkIfIsItemsOwnedByCurrentUser() && onOpenStopSharingDialog();
+            if (checkIfIsItemsOwnedByCurrentUser()) {
+              onOpenStopSharingDialog();
+            }
           }
         },
         onRKeyPressed: () => {

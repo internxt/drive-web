@@ -109,7 +109,9 @@ describe('Download Worker Handler', () => {
 
       (downloadBlobModule.getBlobWritable as unknown as Mock).mockReturnValue(mockBlobWritable);
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (downloadBlobModule.downloadAsBlob as unknown as Mock).mockImplementation(async (source, destination) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         return new Promise((resolve, reject) => {
           // We need that to simulate the download
           setTimeout(() => resolve(undefined), 10000);

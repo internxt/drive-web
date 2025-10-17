@@ -43,9 +43,11 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   const [isAnyInviteLoading, setIsAnyInviteLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    isValidEmail(email) || usersToInvite.length > 0
-      ? setIsInviteButtonDisabled(false)
-      : setIsInviteButtonDisabled(true);
+    if (isValidEmail(email) || usersToInvite.length > 0) {
+      setIsInviteButtonDisabled(false);
+    } else {
+      setIsInviteButtonDisabled(true);
+    }
 
     if (email.indexOf(',') > -1) {
       onAddInviteUser();

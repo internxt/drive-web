@@ -27,7 +27,6 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
   async (payload: CheckoutThunkPayload) => {
     const body: CreatePaymentSessionPayload = {
       test: envService.isProduction() ? undefined : true,
-      // eslint-disable-next-line max-len
       successUrl:
         envService.getVariable('hostname') +
         `/checkout/success?price_id=${payload.product.price.id}&cs_id={CHECKOUT_SESSION_ID}`,

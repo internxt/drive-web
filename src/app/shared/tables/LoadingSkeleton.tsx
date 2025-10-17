@@ -4,7 +4,7 @@ export const LoadingRowSkeleton = ({ numberOfColumns }: { numberOfColumns: numbe
   const totalRowsArray = new Array(5).fill(null);
   return (
     <>
-      {totalRowsArray.map((_, rowIndex) => (
+      {totalRowsArray.map(() => (
         <>
           {new Array(numberOfColumns).fill(null).map((_, index) => (
             <TableRow

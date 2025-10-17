@@ -11,7 +11,7 @@ export async function isValid(key: string): Promise<boolean> {
     const openpgp = await getOpenpgp();
     await openpgp.readKey({ armoredKey: key });
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

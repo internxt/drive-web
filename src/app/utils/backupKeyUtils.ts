@@ -98,7 +98,7 @@ export const detectBackupKeyFormat = (
         backupData,
       };
     }
-  } catch (err) {
+  } catch {
     // Not JSON, might be an old format (just plain mnemonic)
   }
   const trimmedContent = backupKeyContent.trim();

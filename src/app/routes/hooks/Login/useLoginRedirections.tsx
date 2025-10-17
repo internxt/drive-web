@@ -54,7 +54,7 @@ const useLoginRedirections = ({
       const isDeclineAction = sharingAction === 'decline';
       try {
         await workspacesService.validateWorkspaceInvitation(workspaceInvitationId);
-      } catch (error) {
+      } catch {
         showNotification({
           text: t('linkExpired.title'),
           isError: true,

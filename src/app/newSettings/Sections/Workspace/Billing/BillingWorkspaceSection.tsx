@@ -66,7 +66,8 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   });
 
   useEffect(() => {
-    plan.businessSubscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
+    const isBusinessSub = plan.businessSubscription?.type === 'subscription';
+    setIsSubscription(isBusinessSub);
     getJoinedMembers();
     setPlanName(getPlanName(plan.businessPlan, plan.businessPlanLimit));
     setPlanInfo(getPlanInfo(plan.businessPlan));

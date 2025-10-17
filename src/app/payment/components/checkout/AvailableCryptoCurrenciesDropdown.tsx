@@ -58,21 +58,24 @@ export const AvailableCryptoCurrenciesDropdown = ({
             <div className="flex flex-col w-full border border-gray-10" />
             {availableCryptoCurrencies.map((cryptoCurrency) => (
               <Menu.Item key={cryptoCurrency.currencyId}>
-                {({ active, close }) => (
-                  <button
-                    onClick={(e: MouseEvent<HTMLButtonElement>) => {
-                      e.preventDefault();
-                      onCryptoChanges(cryptoCurrency.currencyId.toLowerCase());
-                      onDropdownClicked();
-                    }}
-                    className={`flex w-full flex-row items-center rounded-md text-left ${active ? 'bg-gray-10' : ''}`}
-                  >
-                    <div className="flex flex-row gap-5 py-2 items-center">
-                      <img src={cryptoCurrency.imageUrl} alt={cryptoCurrency.name} className="h-5 w-5" />
-                      <span>{cryptoCurrency.name}</span>
-                    </div>
-                  </button>
-                )}
+                {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  ({ active, close }) => (
+                    <button
+                      onClick={(e: MouseEvent<HTMLButtonElement>) => {
+                        e.preventDefault();
+                        onCryptoChanges(cryptoCurrency.currencyId.toLowerCase());
+                        onDropdownClicked();
+                      }}
+                      className={`flex w-full flex-row items-center rounded-md text-left ${active ? 'bg-gray-10' : ''}`}
+                    >
+                      <div className="flex flex-row gap-5 py-2 items-center">
+                        <img src={cryptoCurrency.imageUrl} alt={cryptoCurrency.name} className="h-5 w-5" />
+                        <span>{cryptoCurrency.name}</span>
+                      </div>
+                    </button>
+                  )
+                }
               </Menu.Item>
             ))}
           </Menu.Items>

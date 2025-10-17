@@ -34,6 +34,7 @@ import envService from 'app/core/services/env.service';
 function ShareGuestSingUpView(): JSX.Element {
   const { translate } = useTranslationContext();
   const [isValidPassword, setIsValidPassword] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [view, setView] = useState<Views>('signUp');
 
   const qs = queryString.parse(navigationService.history.location.search);

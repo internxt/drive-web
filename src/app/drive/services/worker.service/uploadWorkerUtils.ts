@@ -62,7 +62,11 @@ const handleSuccess = ({ msgData, resolve, worker }) => {
 
 const handleError = ({ msgData, params, resolve, reject, worker }) => {
   //if upload is from folder, resolve promise to continue uploading
-  params.isUploadedFromFolder ? resolve(msgData.fileId) : reject(msgData.error);
+  if (params.isUploadedFromFolder) {
+    resolve(msgData.fileId);
+  } else {
+    reject(msgData.error);
+  }
   worker.terminate();
 };
 

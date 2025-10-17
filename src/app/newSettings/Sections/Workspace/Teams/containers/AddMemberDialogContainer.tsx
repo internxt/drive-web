@@ -75,7 +75,9 @@ const AddMemberDialogContainer: React.FC<AddMemberDialogContainerProps> = ({
       setSearchedMemberString('');
       setTimeout(() => {
         getWorkspacesMembers();
-        selectedTeam && getTeamMembers(selectedTeam);
+        if (selectedTeam) {
+          getTeamMembers(selectedTeam);
+        }
         getTeams();
       }, 500);
     } catch (err) {

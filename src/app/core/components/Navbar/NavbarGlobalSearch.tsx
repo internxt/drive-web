@@ -200,7 +200,9 @@ const Navbar = (props: NavbarProps) => {
   const openItem = (item) => {
     const itemData = { ...item.item, name: getItemPlainName(item.item), uuid: item.itemId };
     if (item.itemType.toLowerCase() === 'folder') {
-      isGlobalSearch && dispatch(storageThunks.resetNamePathThunk());
+      if (isGlobalSearch) {
+        dispatch(storageThunks.resetNamePathThunk());
+      }
       dispatch(uiActions.setIsGlobalSearch(true));
 
       navigationService.pushFolder(itemData.uuid, selectedWorkspace?.workspaceUser.workspaceId);

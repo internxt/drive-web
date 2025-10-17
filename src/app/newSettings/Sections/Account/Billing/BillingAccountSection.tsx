@@ -30,7 +30,8 @@ const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAcc
   const [currentUsage, setCurrentUsage] = useState<number>(-1);
 
   useEffect(() => {
-    plan.individualSubscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
+    const isIndividualSub = plan.individualSubscription?.type === 'subscription';
+    setIsSubscription(isIndividualSub);
 
     setPlanName(getPlanName(plan.individualPlan || plan.teamPlan, plan.planLimit));
     setPlanInfo(getPlanInfo(plan.individualPlan || plan.teamPlan));

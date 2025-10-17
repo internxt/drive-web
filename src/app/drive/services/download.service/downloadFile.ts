@@ -119,7 +119,7 @@ async function downloadToFs(
   switch (supports) {
     case DownloadSupport.StreamApi:
       // eslint-disable-next-line no-case-declarations
-      const fsHandle = await window.showSaveFilePicker({ suggestedName: filename }).catch((_) => {
+      const fsHandle = await window.showSaveFilePicker({ suggestedName: filename }).catch(() => {
         abortController?.abort();
         throw new Error(ErrorMessages.FilePickerCancelled);
       });

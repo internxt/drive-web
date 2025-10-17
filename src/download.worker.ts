@@ -64,7 +64,6 @@ const downloadingFile = async (params: {
       const reader = downloadedFile.getReader();
       let hasMoreData = true;
 
-      // eslint-disable-next-line no-constant-condition
       while (hasMoreData) {
         const { done, value } = await reader.read();
         hasMoreData = !done;

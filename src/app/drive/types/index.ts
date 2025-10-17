@@ -80,6 +80,7 @@ interface Thumbnail {
 
 export enum ThumbnailConfig {
   MaxWidth = 300,
+  // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
   MaxHeight = 300,
   Quality = 100,
   Type = 'png',

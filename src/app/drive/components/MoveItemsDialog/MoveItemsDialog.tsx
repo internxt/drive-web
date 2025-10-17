@@ -124,7 +124,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     } else {
       setDestinationId(currentFolderId);
     }
-    name && setSelectedFolderName(name);
+    if (name) {
+      setSelectedFolderName(name);
+    }
   };
 
   const onClose = (): void => {

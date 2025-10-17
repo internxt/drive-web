@@ -45,7 +45,9 @@ const PendingInvitationsDialog = ({
   async function onAcceptInvitation(invitationId: string) {
     setIsLoading(true);
     try {
-      token && (await workspacesService.acceptWorkspaceInvite({ invitationId, token }));
+      if (token) {
+        await workspacesService.acceptWorkspaceInvite({ invitationId, token });
+      }
       await wait(3000);
       dispatch(workspaceThunks.fetchWorkspaces());
     } catch (err) {
@@ -71,7 +73,9 @@ const PendingInvitationsDialog = ({
   async function onDeclineInvitation(invitationId: string) {
     setIsLoading(true);
     try {
-      token && (await workspacesService.declineWorkspaceInvite({ invitationId, token }));
+      if (token) {
+        await workspacesService.declineWorkspaceInvite({ invitationId, token });
+      }
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);

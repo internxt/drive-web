@@ -27,7 +27,7 @@ export default async function fetchFileBlob(
     options: {
       notifyProgress: (totalBytes, downloadedBytes) => {
         options.updateProgressCallback(downloadedBytes / totalBytes);
-        options.incrementItemCount && options.incrementItemCount();
+        options.incrementItemCount?.();
       },
       abortController: options.abortController,
     },

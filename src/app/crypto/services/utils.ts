@@ -156,7 +156,7 @@ const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
     } else {
       return aes.decrypt(item.name, `${envService.getVariable('secret2')}-${item.folderId}`);
     }
-  } catch (err) {
+  } catch {
     //Decrypt has failed because item.name is not encrypted
     return item.name;
   }

@@ -409,7 +409,7 @@ describe('filesZip', () => {
           .mockReturnValueOnce({ value: [], done: true }),
       };
 
-      const result = await addFilesToZip('/path/to/files', mockDownloadFile, iterator, zip as unknown as FlatFolderZip);
+      await addFilesToZip('/path/to/files', mockDownloadFile, iterator, zip as unknown as FlatFolderZip);
 
       expect(mockDownloadFile).toHaveBeenCalledTimes(filesPage1.length);
       expect(addFile).toHaveBeenCalledTimes(2);

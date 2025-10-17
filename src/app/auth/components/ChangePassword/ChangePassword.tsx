@@ -36,15 +36,21 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
 
   useEffect(() => {
     if (newPassword.length > 0) onChangeHandler(newPassword);
-    confirmNewPassword && confirmNewPassword != newPassword ? setIsEqualPassword(false) : setIsEqualPassword(true);
+    if (confirmNewPassword && confirmNewPassword != newPassword) {
+      setIsEqualPassword(false);
+    } else {
+      setIsEqualPassword(true);
+    }
   }, [newPassword]);
 
   useEffect(() => {
     const confirmNewPasswordLength = confirmNewPassword.length;
     const firstLettersPassword = newPassword.substring(0, confirmNewPasswordLength);
-    confirmNewPassword && confirmNewPassword != firstLettersPassword
-      ? setIsEqualPassword(false)
-      : setIsEqualPassword(true);
+    if (confirmNewPassword && confirmNewPassword != firstLettersPassword) {
+      setIsEqualPassword(false);
+    } else {
+      setIsEqualPassword(true);
+    }
   }, [confirmNewPassword]);
 
   useEffect(() => {
@@ -55,7 +61,9 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
       return () => clearInterval(timer);
     }
 
-    countDown === 0 && window.location.assign(`${window.location.origin}/login`);
+    if (countDown === 0) {
+      window.location.assign(`${window.location.origin}/login`);
+    }
   }, [isEmailSent, countDown]);
 
   const uploadBackupKey = () => {
@@ -73,7 +81,7 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
         setBackupKeyContent(uploadedBackupKeyContent);
         return;
       }
-    } catch (err) {
+    } catch {
       if (validateMnemonic(uploadedBackupKeyContent)) {
         setBackupKeyContent(uploadedBackupKeyContent);
         return;

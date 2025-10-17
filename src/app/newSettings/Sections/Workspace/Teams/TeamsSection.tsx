@@ -60,7 +60,9 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
         setTeams(teams);
         if ((selectedTeam && isRenameTeamDialogOpen) || (selectedTeam && isChangeManagerDialogOpen)) {
           const team = teams.find((team) => team.team.id === selectedTeam?.team.id);
-          team && setSelectedTeam(team);
+          if (team) {
+            setSelectedTeam(team);
+          }
         }
       } catch (err) {
         const castedError = errorService.castError(err);
@@ -74,7 +76,8 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
     setIsGetTeamMembersLoading(true);
     try {
       const teamMembers = await workspacesService.getTeamMembers(team.team.id);
-      user && user.uuid === team.team.managerId ? setIsCurrentUserManager(true) : setIsCurrentUserManager(false);
+      const isCurrentManager = user?.uuid === team.team.managerId;
+      setIsCurrentUserManager(isCurrentManager);
       setSelectedTeamMembers(teamMembers);
     } catch (err) {
       const castedError = errorService.castError(err);

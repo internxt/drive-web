@@ -209,7 +209,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       }));
 
       setInvitedUsers(invitedUsersListParsed);
-    } catch (error) {
+    } catch {
       // the server throws an error when there are no users with shared item,
       // that means that the local user is the owner as there is nobody else with this shared file.
       if (isUserOwner) {
@@ -262,6 +262,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onAcceptRequest = (email: string, roleName: UserRole) => {
     // TODO -> Accept user access request
     setAccessRequests((prevRequests) =>
@@ -293,7 +294,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     try {
       await copyTextToClipboard(`${envService.getVariable('hostname')}/shared/?folderuuid=${itemToShare?.item.uuid}`);
       notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
-    } catch (error) {
+    } catch {
       notificationsService.show({
         text: translate('modals.shareModal.errors.copy-to-clipboard'),
         type: ToastType.Error,

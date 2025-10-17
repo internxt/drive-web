@@ -45,7 +45,9 @@ const TeamDetailsContainer: React.FC<TeamDetailsContainerProps> = ({
 
   const handleMemberLeave = () => {
     setHoveredMember(null);
-    isMemberOptionsOpen && setIsMemberOptionsOpen(false);
+    if (isMemberOptionsOpen) {
+      setIsMemberOptionsOpen(false);
+    }
   };
 
   return (

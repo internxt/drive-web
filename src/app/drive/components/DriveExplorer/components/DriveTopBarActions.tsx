@@ -113,6 +113,7 @@ const DriveTopBarActions = ({
     moveItemsToTrash(selectedItems);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSelectedOneItemShare = (e): void => {
     if (selectedItems.length === 1) {
       const selectedItem = selectedItems[0];
@@ -127,6 +128,7 @@ const DriveTopBarActions = ({
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSelectedOneItemRename = (e): void => {
     if (selectedItems.length === 1) {
       if (!dirtyName || dirtyName === null || dirtyName.trim() === '') {

@@ -39,7 +39,9 @@ const RemoveTeamMemberDialogContainer: React.FC<RemoveTeamMemberDialogContainerP
       }
       setTimeout(() => {
         getWorkspacesMembers();
-        selectedTeam && getTeamMembers(selectedTeam);
+        if (selectedTeam) {
+          getTeamMembers(selectedTeam);
+        }
         getTeams();
       }, 500);
     } catch (err) {

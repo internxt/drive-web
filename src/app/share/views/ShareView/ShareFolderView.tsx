@@ -134,7 +134,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     setNItems((prevNItems) => prevNItems + 1);
   };
 
-  const download = async (password?: string): Promise<void> => {
+  const download = async (): Promise<void> => {
     if (!isDownloading) {
       const folderInfo = info as unknown as ShareTypes.ShareLink | null;
 
@@ -283,7 +283,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         <div className="flex flex-row items-center justify-center">
           <button
             onClick={() => {
-              download(itemPassword);
+              download();
             }}
             className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
                         text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-primary'}`}

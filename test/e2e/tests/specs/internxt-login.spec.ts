@@ -8,6 +8,7 @@ const credentialsFile = getUserCredentials();
 const user = getLoggedUser();
 const invalidEmail = 'invalid@internxt.com';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockLoginCall = async (route, request) => {
   await route.fulfill({
     status: 200,

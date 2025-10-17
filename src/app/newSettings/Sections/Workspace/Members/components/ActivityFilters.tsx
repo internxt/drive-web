@@ -45,8 +45,17 @@ const ActivityFilters = ({ isSelectedRoles, setIsSelectedRoles }: ActivityFilter
     const roleIndex = newSelectedRoles.indexOf(roleType);
     const isSelected = newSelectedRoles.includes(roleType);
 
-    isSelected ? newSelectedRoles.splice(roleIndex, 1) : newSelectedRoles.push(roleType);
-    newSelectedRoles.length === 3 ? setIsFiltersModified(false) : setIsFiltersModified(true);
+    if (isSelected) {
+      newSelectedRoles.splice(roleIndex, 1);
+    } else {
+      newSelectedRoles.push(roleType);
+    }
+
+    if (newSelectedRoles.length === 3) {
+      setIsFiltersModified(false);
+    } else {
+      setIsFiltersModified(true);
+    }
     setIsSelectedRoles(newSelectedRoles);
   };
 

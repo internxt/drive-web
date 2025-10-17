@@ -95,7 +95,7 @@ export function decryptPrivateKey(privateKey: string, password: string): string 
     try {
       const result = aes.decrypt(privateKey, password);
       return result;
-    } catch (error) {
+    } catch {
       throw new CorruptedEncryptedPrivateKeyError();
     }
   }

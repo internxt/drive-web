@@ -24,17 +24,19 @@ const searchMembersEmail = (membersList: WorkspaceUser[] | null, searchString: s
 };
 
 const getMemberRole = (member: WorkspaceUser) => {
-  let role;
   const isOwner = member.isOwner;
   const isManager = member.isManager;
   const isDeactivated = member.deactivated;
 
-  isOwner && isManager && (role = 'owner');
-  !isOwner && isManager && (role = 'manager');
-  isDeactivated && (role = 'deactivated');
-  !isOwner && !isManager && !isDeactivated && (role = 'member');
-
-  return role;
+  if (isDeactivated) {
+    return 'deactivated';
+  } else if (isOwner) {
+    return 'owner';
+  } else if (isManager) {
+    return 'manager';
+  } else {
+    return 'member';
+  }
 };
 
 export { getMemberRole, searchMembers, searchMembersEmail };

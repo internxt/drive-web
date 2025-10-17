@@ -53,7 +53,11 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
     dispatch(storageActions.resetDrivePagination());
     dispatch(storageActions.resetLevelsFoldersLength({ folderId: path.uuid }));
 
-    isInNamePath ? dispatch(storageActions.popNamePathUpTo(path)) : dispatch(storageActions.pushNamePath(path));
+    if (isInNamePath) {
+      dispatch(storageActions.popNamePathUpTo(path));
+    } else {
+      dispatch(storageActions.pushNamePath(path));
+    }
 
     dispatch(uiActions.setFileInfoItem(null));
     dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));
