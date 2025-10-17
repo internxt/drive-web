@@ -6,7 +6,7 @@ import { userThunks } from '../../../store/slices/user';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import devices from 'assets/images/mobile-app/devices.png';
-import appStore from 'assets/images/mobile-app/app-store.jpg';
+import AppStore from 'assets/images/mobile-app/app-store.svg?react';
 import googlePlay from 'assets/images/mobile-app/google-play.jpg';
 import { Button, Avatar } from '@internxt/ui';
 
@@ -67,7 +67,7 @@ const Mobile = (props: MobileProps): JSX.Element => {
         <div>
           {osMobile === 'iphone' ? (
             <a href="https://apps.apple.com/es/app/internxt/id1465869889" target="_blank">
-              <img className="w-40" src={appStore} alt="app store" />
+              <AppStore className="w-40" />
             </a>
           ) : (
             <a href="https://play.google.com/store/apps/details?id=com.internxt.cloud" target="_blank">
