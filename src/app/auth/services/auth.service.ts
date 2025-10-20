@@ -92,6 +92,21 @@ export type AuthenticateUserParams = {
   doSignUp?: RegisterFunction;
 };
 
+const getCurrentUrlParams = (): Record<string, string> => {
+  const currentParams = new URLSearchParams(window.location.search);
+  const preservedParams: Record<string, string> = {};
+
+  const safeParams = ['universalLink', 'folderuuid'];
+
+  currentParams.forEach((value, key) => {
+    if (safeParams.includes(key)) {
+      preservedParams[key] = value;
+    }
+  });
+
+  return preservedParams;
+};
+
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   try {
     const token = localStorageService.get('xNewToken') ?? undefined;
@@ -108,7 +123,10 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
   localStorageService.clear();
   RealtimeService.getInstance().stop();
   if (!navigationService.isCurrentPath(AppView.BlockedAccount) && !navigationService.isCurrentPath(AppView.Checkout)) {
-    navigationService.push(AppView.Login, loginParams);
+    const preservedParams = getCurrentUrlParams();
+    const urlParams = { ...preservedParams, ...loginParams };
+
+    navigationService.push(AppView.Login, urlParams);
   }
 }
 
