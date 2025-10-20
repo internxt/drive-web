@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 import NameCollisionDialog, { OPERATION_TYPE, OnSubmitPressed } from '.';
-import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
+import moveItemsToTrash from '../../../views/Trash/services/move-items-to-trash';
 import errorService from '../../../core/services/error.service';
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';

@@ -18,7 +18,7 @@ import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 
 import { useHotkeys } from 'react-hotkeys-hook';
-import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
+import moveItemsToTrash from '../../../views/Trash/services/move-items-to-trash';
 
 import { Role } from '@internxt/sdk/dist/drive/share/types';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';

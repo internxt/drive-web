@@ -1,4 +1,3 @@
-import { Trash } from '@internxt/sdk/dist/drive';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
 import { SdkFactory } from '../../../core/factory/sdk';
@@ -8,38 +7,10 @@ import { DriveItemData } from '../../../drive/types';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { store } from '../../../store';
 import { storageActions } from '../../../store/slices/storage';
+import { processBatchConcurrently } from './batch-processor';
 
 const MAX_ITEMS_TO_DELETE = 10;
 const MAX_CONCURRENT_REQUESTS = 3;
-
-async function sendItemsToTrashConcurrent({
-  items,
-  maxItemsToDelete,
-  maxConcurrentRequests,
-  trashClient,
-}: {
-  items: { uuid: string; type: 'file' | 'folder'; id: null }[];
-  maxItemsToDelete: number;
-  maxConcurrentRequests: number;
-  trashClient: Trash;
-}) {
-  const promises: Promise<unknown>[] = [];
-
-  for (let i = 0; i < items.length; i += maxItemsToDelete) {
-    const itemsToDelete = items.slice(i, i + maxItemsToDelete);
-    const promise = trashClient.addItemsToTrash({ items: itemsToDelete });
-    promises.push(promise);
-
-    if (promises.length === maxConcurrentRequests) {
-      await Promise.all(promises);
-      promises.length = 0;
-    }
-  }
-
-  if (promises.length > 0) {
-    await Promise.all(promises);
-  }
-}
 
 const isFolder = (item: DriveItemData) => item?.type === 'folder' || item?.isFolder;
 
@@ -63,11 +34,11 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
       closable: false,
     });
 
-    await sendItemsToTrashConcurrent({
+    await processBatchConcurrently({
       items,
-      maxItemsToDelete: MAX_ITEMS_TO_DELETE,
-      maxConcurrentRequests: MAX_CONCURRENT_REQUESTS,
-      trashClient,
+      batchSize: MAX_ITEMS_TO_DELETE,
+      maxConcurrentBatches: MAX_CONCURRENT_REQUESTS,
+      processor: (batch) => trashClient.addItemsToTrash({ items: batch }),
     });
 
     await deleteDatabaseItems(itemsToTrash);

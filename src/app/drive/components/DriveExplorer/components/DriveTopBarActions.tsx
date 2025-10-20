@@ -11,7 +11,7 @@ import {
 } from '@phosphor-icons/react';
 import MoveActionIcon from 'assets/icons/move.svg?react';
 import { useSelector } from 'react-redux';
-import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import moveItemsToTrash from 'app/views/Trash/services/move-items-to-trash';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
 import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';

@@ -8,40 +8,10 @@ import { DriveItemData } from '../../../drive/types';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { store } from '../../../store';
 import { storageActions } from '../../../store/slices/storage';
+import { processBatchConcurrently } from './batch-processor';
 
 const MAX_ITEMS_TO_DELETE = 20;
 const MAX_CONCURRENT_REQUESTS = 2;
-
-async function deleteItemsPermanently({
-  items,
-  maxItemsToDelete,
-  maxConcurrentRequests,
-  trashClient,
-}: {
-  items: { uuid: string; type: string }[];
-  maxItemsToDelete: number;
-  maxConcurrentRequests: number;
-  trashClient: Trash;
-}) {
-  const promises: Promise<unknown>[] = [];
-
-  for (let i = 0; i < items.length; i += maxItemsToDelete) {
-    const itemsToDelete = items.slice(i, i + maxItemsToDelete);
-    const promise = trashClient.deleteItemsPermanentlyByUUID({
-      items: itemsToDelete,
-    } as DeleteItemsPermanentlyByUUIDPayload);
-    promises.push(promise);
-
-    if (promises.length === maxConcurrentRequests) {
-      await Promise.all(promises);
-      promises.length = 0;
-    }
-  }
-
-  if (promises.length > 0) {
-    await Promise.all(promises);
-  }
-}
 
 const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
   const items: Array<{ uuid: string; type: string }> = itemsToDelete.map((item) => {
@@ -53,27 +23,31 @@ const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
 
   try {
     const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
-    await deleteItemsPermanently({
+    await processBatchConcurrently({
       items,
-      maxItemsToDelete: MAX_ITEMS_TO_DELETE,
-      maxConcurrentRequests: MAX_CONCURRENT_REQUESTS,
-      trashClient,
+      batchSize: MAX_ITEMS_TO_DELETE,
+      maxConcurrentBatches: MAX_CONCURRENT_REQUESTS,
+      processor: (batch) =>
+        trashClient.deleteItemsPermanentlyByUUID({
+          items: batch,
+        } as DeleteItemsPermanentlyByUUIDPayload),
     });
 
     await deleteDatabaseItems(itemsToDelete);
 
     store.dispatch(storageActions.popItemsToDelete(itemsToDelete));
 
-    let foldersRemovedNumber = 0;
-    let filesRemovedNumber = 0;
-
-    itemsToDelete.forEach((item) => {
-      if (item.isFolder) {
-        foldersRemovedNumber = foldersRemovedNumber + 1;
-      } else {
-        filesRemovedNumber = filesRemovedNumber + 1;
-      }
-    });
+    const { foldersRemovedNumber, filesRemovedNumber } = itemsToDelete.reduce(
+      (acc, item) => {
+        if (item.isFolder) {
+          acc.foldersRemovedNumber++;
+        } else {
+          acc.filesRemovedNumber++;
+        }
+        return acc;
+      },
+      { foldersRemovedNumber: 0, filesRemovedNumber: 0 },
+    );
     store.dispatch(storageActions.addFoldersOnTrashLength(-foldersRemovedNumber));
     store.dispatch(storageActions.addFilesOnTrashLength(-filesRemovedNumber));
     store.dispatch(storageActions.clearSelectedItems());
