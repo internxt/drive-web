@@ -11,9 +11,9 @@ import { storageActions } from '../../../store/slices/storage';
 const getTrash = async (): Promise<void> => {
   const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
   const itemsInTrash = await trashClient.getTrash();
-  itemsInTrash.children.forEach((folder) => {
+  for (const folder of itemsInTrash.children) {
     Object.assign(folder, { isFolder: true });
-  });
+  }
   const items: DriveItemData[] = [
     ...(itemsInTrash.files as DriveItemData[]),
     ...(itemsInTrash.children as DriveItemData[]),

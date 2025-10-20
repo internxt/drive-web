@@ -45,24 +45,36 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
 
     store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToTrash }));
     store.dispatch(storageActions.clearSelectedItems());
-    onSuccess && onSuccess();
+    onSuccess?.();
     notificationsService.dismiss(movingItemsToastId);
+
+    const isMultipleItems = itemsToTrash.length > 1;
+    const firstItemIsFolder = isFolder(itemsToTrash[0]);
+
+    let item: string;
+    let suffix: string;
+
+    if (isMultipleItems) {
+      item = t('general.files');
+      suffix = 'os';
+    } else if (firstItemIsFolder) {
+      item = t('general.folder');
+      suffix = 'a';
+    } else {
+      item = t('general.file');
+      suffix = 'o';
+    }
 
     const id = notificationsService.show({
       type: ToastType.Success,
       text: t('notificationMessages.itemsMovedToTrash', {
-        item:
-          itemsToTrash.length > 1
-            ? t('general.files')
-            : isFolder(itemsToTrash[0])
-              ? t('general.folder')
-              : t('general.file'),
-        s: itemsToTrash.length > 1 ? 'os' : isFolder(itemsToTrash[0]) ? 'a' : 'o',
+        item,
+        s: suffix,
       }),
 
       action: {
         text: t('actions.undo'),
-        onClick: async () => {
+        onClick: () => {
           notificationsService.dismiss(id);
           if (itemsToTrash.length > 0) {
             const destinationId = isFolder(itemsToTrash[0]) ? itemsToTrash[0].parentUuid : itemsToTrash[0].folderUuid;
@@ -72,7 +84,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
             );
 
             store.dispatch(storageActions.clearSelectedItems());
-            await store.dispatch(
+            store.dispatch(
               storageThunks.moveItemsThunk({
                 items: itemsToTrash,
                 destinationFolderId: destinationId,
