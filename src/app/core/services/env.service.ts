@@ -53,6 +53,7 @@ const variableList = {
   cdpDataPlane: 'REACT_APP_CDP_DATA_PLANE',
   vpnId: 'REACT_APP_VPN_ID',
   impactApiUrl: 'REACT_APP_IMPACT_API',
+  dontRedirect: 'REACT_APP_DONT_REDIRECT',
 };
 
 function getVariable(variable: keyof typeof variableList): string {

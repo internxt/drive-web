@@ -56,12 +56,13 @@ const enforceCanonicalDriveDomain = () => {
   if (!isBrowser || !envService.isProduction()) {
     return;
   }
-  const hostname = globalThis.location.hostname;
-  const isPreviewDeployment = hostname.includes('.pages.dev');
+  const shouldSkipRedirect = envService.getVariable('dontRedirect') === 'true';
 
-  if (isPreviewDeployment) {
+  if (shouldSkipRedirect) {
     return;
   }
+
+  const hostname = globalThis.location.hostname;
 
   if (hostname === CANONICAL_DRIVE_HOSTNAME) {
     return;
