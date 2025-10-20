@@ -8,7 +8,12 @@ import { queue } from 'async';
 import { NetworkUtils } from 'app/utils/networkUtils';
 
 vi.mock('@internxt/sdk/dist/network/download');
-vi.mock('app/core/services/stream.service');
+vi.mock('app/core/services/stream.service', () => ({
+  binaryStreamToBlob: vi.fn(),
+  buildProgressStream: vi.fn(),
+  decryptStream: vi.fn(),
+  joinReadableBinaryStreams: vi.fn(),
+}));
 vi.mock('async');
 vi.mock('bip39');
 vi.mock('crypto');
@@ -54,7 +59,7 @@ describe('NetworkFacade', () => {
           await decryptCallback();
         },
       );
-      (decryptStream as any).mockReturnValue(mockDecryptedStream);
+      vi.mocked(decryptStream).mockReturnValue(mockDecryptedStream);
 
       const result = await networkFacade.downloadChunk(bucketId, fileId, mnemonic, chunkStart, chunkEnd);
 

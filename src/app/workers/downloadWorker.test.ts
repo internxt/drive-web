@@ -7,14 +7,12 @@ vi.mock('app/drive/services/download.service/createFileDownloadStream', () => ({
   default: vi.fn(),
 }));
 
-vi.mock('app/core/services/stream.service', () => {
-  const actual = vi.importActual<typeof import('app/core/services/stream.service')>('app/core/services/stream.service');
-
-  return {
-    ...actual,
-    binaryStreamToBlob: vi.fn(),
-  };
-});
+vi.mock('app/core/services/stream.service', () => ({
+  binaryStreamToBlob: vi.fn(),
+  buildProgressStream: vi.fn(),
+  decryptStream: vi.fn(),
+  joinReadableBinaryStreams: vi.fn(),
+}));
 
 describe('Download Worker', () => {
   const mockFile = {
