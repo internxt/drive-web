@@ -15,7 +15,6 @@ const handleMessage = async (event: MessageEvent) => {
       console.log('[DOWNLOAD-WORKER] Received abort → aborting download');
       abortRequested = true;
       abortController?.abort();
-      postMessage({ result: 'abort' });
       break;
 
     default:

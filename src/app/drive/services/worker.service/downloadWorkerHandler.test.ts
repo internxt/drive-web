@@ -214,6 +214,62 @@ describe('Download Worker Handler', () => {
     });
   });
 
+  describe('Cleaning up the worker', () => {
+    test('When cleanup is called and should abort, then writer should be aborted', async () => {
+      const mockedWorker = new MockWorker();
+      const downloadId = 'test-download-id';
+      const mockAbort = vi.fn();
+      const mockWriter = {
+        write: vi.fn(),
+        abort: mockAbort,
+        close: vi.fn(),
+      };
+
+      downloadWorkerHandler['writers'].set(downloadId, mockWriter as any);
+
+      await downloadWorkerHandler.downloadCleanup(mockedWorker as unknown as Worker, downloadId, true);
+
+      expect(mockAbort).toHaveBeenCalled();
+      expect(downloadWorkerHandler['writers'].has(downloadId)).toBe(false);
+      expect(mockedWorker.terminated).toBeTruthy();
+    });
+
+    test('When cleanup is called without abort, then writer should be closed', async () => {
+      const mockedWorker = new MockWorker();
+      const downloadId = 'test-download-id';
+      const mockClose = vi.fn();
+      const mockWriter = {
+        write: vi.fn(),
+        abort: vi.fn(),
+        close: mockClose,
+      };
+
+      downloadWorkerHandler['writers'].set(downloadId, mockWriter as any);
+
+      await downloadWorkerHandler.downloadCleanup(mockedWorker as unknown as Worker, downloadId, false);
+
+      expect(mockClose).toHaveBeenCalled();
+      expect(downloadWorkerHandler['writers'].has(downloadId)).toBe(false);
+      expect(mockedWorker.terminated).toBeTruthy();
+    });
+
+    test('When cleanup is called a remove abort listener function, then it should be invoked', async () => {
+      const mockedWorker = new MockWorker();
+      const downloadId = 'test-download-id';
+      const removeAbortListener = vi.fn();
+
+      await downloadWorkerHandler.downloadCleanup(
+        mockedWorker as unknown as Worker,
+        downloadId,
+        false,
+        removeAbortListener,
+      );
+
+      expect(removeAbortListener).toHaveBeenCalled();
+      expect(mockedWorker.terminated).toBeTruthy();
+    });
+  });
+
   describe('Aborting the download', () => {
     test('When downloading the file using chunks is aborted, then the worker is terminated and the writer aborted', async () => {
       const mockedWorker = new MockWorker();
@@ -276,17 +332,21 @@ describe('Download Worker Handler', () => {
       expect(mockedWorker.terminated).toBeTruthy();
     });
 
-    test('When worker sends abort message, then promise rejects', async () => {
+    test('When abort message is received from worker, then it should be handled gracefully', async () => {
       const mockedWorker = new MockWorker();
       const itemData = {
         fileId: 'random-id',
       } as DriveFileData;
+      const abortController = new AbortController();
 
       const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
         worker: mockedWorker as unknown as Worker,
         itemData,
+        abortController,
         updateProgressCallback: vi.fn(),
       });
+
+      abortController.abort();
 
       mockedWorker.emitMessage({
         result: 'abort',
@@ -294,6 +354,43 @@ describe('Download Worker Handler', () => {
 
       await expect(workerHandlerPromise).rejects.toThrow(new DownloadAbortedByUserError());
       expect(mockedWorker.terminated).toBeTruthy();
+    });
+
+    test('When messages arrive after abort, then they should be ignored', async () => {
+      const mockedWorker = new MockWorker();
+      const itemData = {
+        fileId: 'random-id',
+      } as DriveFileData;
+      const abortController = new AbortController();
+      const consoleLogSpy = vi.spyOn(console, 'log');
+
+      const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
+        worker: mockedWorker as unknown as Worker,
+        itemData,
+        abortController,
+        updateProgressCallback: vi.fn(),
+      });
+
+      mockedWorker.emitMessage({
+        result: 'chunk',
+        chunk: new Uint8Array([1, 2, 3]),
+      });
+
+      abortController.abort();
+
+      mockedWorker.emitMessage({
+        result: 'progress',
+        progress: 0.5,
+      });
+
+      mockedWorker.emitMessage({
+        result: 'chunk',
+        chunk: new Uint8Array([4, 5, 6]),
+      });
+
+      await expect(workerHandlerPromise).rejects.toThrow(new DownloadAbortedByUserError());
+      expect(consoleLogSpy).toHaveBeenCalledWith('[MAIN_THREAD]: Ignoring message after abort:', 'progress');
+      expect(consoleLogSpy).toHaveBeenCalledWith('[MAIN_THREAD]: Ignoring message after abort:', 'chunk');
     });
   });
 
@@ -450,33 +547,6 @@ describe('Download Worker Handler', () => {
 
     await expect(workerHandlerPromise).rejects.toThrow(mockedError);
     expect(mockAbort).toHaveBeenCalled();
-    expect(mockedWorker.terminated).toBeTruthy();
-  });
-
-  test('When the event is an error and there is an abort controller, then the remove event listener function is called', async () => {
-    const mockedWorker = new MockWorker();
-    const abortController = new AbortController();
-    const mockedError = new Error('Random error');
-
-    const itemData = {
-      fileId: 'random-id',
-    } as DriveFileData;
-
-    const removeEventListenerSpy = vi.spyOn(abortController.signal, 'removeEventListener');
-
-    const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
-      worker: mockedWorker as unknown as Worker,
-      itemData,
-      abortController,
-      updateProgressCallback: vi.fn(),
-    });
-    mockedWorker.emitMessage({
-      result: 'error',
-      error: mockedError.message,
-    });
-
-    expect(removeEventListenerSpy).toHaveBeenCalledWith('abort', expect.any(Function));
-    await expect(workerHandlerPromise).rejects.toThrow(mockedError);
     expect(mockedWorker.terminated).toBeTruthy();
   });
 });
