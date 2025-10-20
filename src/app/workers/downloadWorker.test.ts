@@ -138,13 +138,24 @@ describe('Download Worker', () => {
 
     test('When a custom abort controller is provided and aborted, then the download is cancelled', async () => {
       const customAbortController = new AbortController();
+
+      let readReject: ((error: Error) => void) | null = null;
+
       const mockReader = {
-        read: vi
-          .fn()
-          .mockResolvedValueOnce({ done: false, value: new Uint8Array([1, 2, 3]) })
-          .mockResolvedValueOnce({ done: true, value: undefined }),
+        read: vi.fn().mockImplementation(() => {
+          return new Promise((resolve, reject) => {
+            readReject = reject;
+          });
+        }),
+        cancel: vi.fn().mockImplementation(() => {
+          if (readReject) {
+            readReject(new Error('Reader was cancelled'));
+          }
+          return Promise.resolve();
+        }),
         releaseLock: vi.fn(),
       };
+
       const mockStream = {
         getReader: vi.fn().mockReturnValue(mockReader),
       };
@@ -153,16 +164,15 @@ describe('Download Worker', () => {
 
       const worker = DownloadWorker.instance;
 
-      worker.downloadFile(mockParams, mockCallbacks, customAbortController);
+      const downloadPromise = worker.downloadFile(mockParams, mockCallbacks, customAbortController);
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
       customAbortController.abort();
 
-      expect(createFileDownloadStream).toHaveBeenCalledWith(
-        mockFile,
-        mockCallbacks.onProgress,
-        customAbortController,
-        mockParams.credentials,
-      );
-      expect(customAbortController.signal.aborted).toBe(true);
+      await downloadPromise;
+
+      expect(mockReader.cancel).toHaveBeenCalled();
+      expect(mockCallbacks.onError).toHaveBeenCalled();
     });
 
     test('When progress changes, then the progress callback is called', async () => {

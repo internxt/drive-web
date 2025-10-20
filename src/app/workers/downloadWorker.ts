@@ -28,6 +28,14 @@ export class DownloadWorker {
     const { file, isWorkspace, isBrave, credentials } = params;
     this.abortController = abortController ?? new AbortController();
 
+    let streamReader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+
+    const abortHandler = () => {
+      if (streamReader) {
+        streamReader.cancel().catch(() => {});
+      }
+    };
+
     try {
       console.log('[DOWNLOAD-WORKER] Downloading file -->', {
         fileName: file.plainName ?? file.name,
@@ -41,11 +49,14 @@ export class DownloadWorker {
         credentials,
       );
 
+      streamReader = downloadedFile.getReader();
+      this.abortController.signal.addEventListener('abort', abortHandler);
+
       if (isBrave) {
         const blob = await binaryStreamToBlob(downloadedFile, file.type);
         callbacks.onBlob(blob);
       } else {
-        await this.downloadUsingChunks(downloadedFile, callbacks.onChunk);
+        await this.downloadUsingChunks(streamReader, callbacks.onChunk);
       }
 
       callbacks.onSuccess(file.fileId);
@@ -56,15 +67,16 @@ export class DownloadWorker {
         ...(err instanceof Error && err.stack && { stack: err.stack }),
       };
       callbacks.onError(errorCloned);
+    } finally {
+      this.abortController?.signal.removeEventListener('abort', abortHandler);
     }
   }
 
   private async downloadUsingChunks(
-    downloadedFile: ReadableStream<Uint8Array<ArrayBufferLike>>,
+    reader: ReadableStreamDefaultReader<Uint8Array<ArrayBufferLike>>,
     onChunk: (chunk: Uint8Array) => void,
   ) {
     console.log('[DOWNLOAD-WORKER] Downloading using readable stream');
-    const reader = downloadedFile.getReader();
     let hasMoreData = true;
 
     try {
@@ -77,6 +89,9 @@ export class DownloadWorker {
           onChunk(chunk);
         }
       }
+    } catch (error) {
+      await reader.cancel();
+      throw error;
     } finally {
       reader.releaseLock();
     }

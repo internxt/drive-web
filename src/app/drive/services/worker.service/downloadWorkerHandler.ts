@@ -3,6 +3,7 @@ import { DriveFileData } from 'app/drive/types';
 import { MessageData } from './types/download';
 import { createDownloadWebWorker } from '../../../../WebWorker';
 import downloadFileFromBlob from '../download.service/downloadFileFromBlob';
+import errorService from 'app/core/services/error.service';
 
 interface HandleWorkerMessagesPayload {
   worker: Worker;
@@ -15,15 +16,13 @@ interface HandleMessagesPayload {
   messageData: MessageData;
   worker: Worker;
   completeFilename: string;
-  abortController?: AbortController;
   downloadCallback: (progress: number) => void;
   resolve: (value?: unknown) => void;
   reject: (reason?: any) => void;
 }
 
 export class DownloadWorkerHandler {
-  private writers = new Map<string, WritableStreamDefaultWriter>();
-  private fileStreams = new Map<string, WritableStream<Uint8Array<ArrayBufferLike>>>();
+  private readonly writers = new Map<string, WritableStreamDefaultWriter>();
 
   public getWorker() {
     return createDownloadWebWorker();
@@ -40,64 +39,88 @@ export class DownloadWorkerHandler {
     const downloadId = itemData.fileId;
 
     return new Promise((resolve, reject) => {
+      let aborted = false;
+
+      const removeAbortListener = () => {
+        if (abortController) {
+          abortController.signal.removeEventListener('abort', abortWriter);
+        }
+      };
+
+      const abortWriter = async () => {
+        if (aborted) return;
+        aborted = true;
+
+        try {
+          worker.postMessage({ type: 'abort' });
+          await this.downloadCleanup(worker, downloadId, true, removeAbortListener);
+          console.log('[MAIN_THREAD]: Download aborted by user');
+          reject(new DownloadAbortedByUserError());
+        } catch (error) {
+          const castedError = errorService.castError(error);
+          reject(castedError);
+        }
+      };
+
+      if (abortController) {
+        abortController.signal.addEventListener('abort', abortWriter, { once: true });
+      }
+
       worker.addEventListener('error', reject);
       worker.addEventListener('message', async (msg) => {
+        if (aborted) {
+          console.log('[MAIN_THREAD]: Ignoring message after abort:', msg.data.result);
+          return;
+        }
+
         await this.handleMessages({
           messageData: msg.data,
           worker,
-          abortController,
           completeFilename,
           downloadCallback: updateProgressCallback,
           downloadId,
           resolve,
           reject,
+          removeAbortListener,
         });
       });
     });
+  }
+
+  async downloadCleanup(worker: Worker, downloadId: string, shouldAbort = false, removeAbortListener?: () => void) {
+    const writer = this.writers.get(downloadId);
+    if (writer) {
+      if (shouldAbort) {
+        await writer.abort();
+      } else {
+        await writer.close();
+      }
+    }
+
+    this.writers.delete(downloadId);
+
+    if (removeAbortListener) {
+      removeAbortListener();
+    }
+
+    console.log('[MAIN_THREAD]: Download cleanup complete');
+    worker.terminate();
   }
 
   public async handleMessages({
     messageData,
     worker,
     completeFilename,
-    abortController,
     downloadId,
     resolve,
     reject,
     downloadCallback,
-  }: HandleMessagesPayload & { downloadId: string }) {
+    removeAbortListener,
+  }: HandleMessagesPayload & {
+    downloadId: string;
+    removeAbortListener: () => void;
+  }) {
     const { result } = messageData;
-    let aborted = false;
-
-    const abortWriter = async () => {
-      if (aborted) return;
-
-      try {
-        worker.postMessage({ type: 'abort' });
-        const writer = this.writers.get(downloadId);
-        if (writer) {
-          await writer.abort();
-          this.writers.delete(downloadId);
-          this.fileStreams.delete(downloadId);
-        }
-        aborted = true;
-      } catch {
-        // NO OP
-      } finally {
-        worker.terminate();
-        reject(new DownloadAbortedByUserError());
-      }
-    };
-
-    const removeAbortListener = () => {
-      if (abortController) {
-        abortController.signal.removeEventListener('abort', abortWriter);
-      }
-    };
-
-    if (abortController) {
-      abortController.signal.addEventListener('abort', abortWriter, { once: true });
-    }
 
     switch (result) {
       case 'chunk': {
@@ -107,7 +130,6 @@ export class DownloadWorkerHandler {
           const fileStream = streamSaver.createWriteStream(completeFilename);
           writer = fileStream.getWriter();
           this.writers.set(downloadId, writer);
-          this.fileStreams.set(downloadId, fileStream);
         }
 
         const { chunk } = messageData;
@@ -130,16 +152,7 @@ export class DownloadWorkerHandler {
 
       case 'success': {
         const { fileId } = messageData;
-        const writer = this.writers.get(downloadId);
-
-        if (writer) {
-          await writer.close();
-          this.writers.delete(downloadId);
-          this.fileStreams.delete(downloadId);
-        }
-
-        worker.terminate();
-        removeAbortListener();
+        await this.downloadCleanup(worker, downloadId, false, removeAbortListener);
         resolve(fileId);
         break;
       }
@@ -147,31 +160,13 @@ export class DownloadWorkerHandler {
       case 'error': {
         const { error } = messageData;
         const castedError = new Error(error);
-        const writer = this.writers.get(downloadId);
-
-        if (writer) {
-          await writer.abort();
-          this.writers.delete(downloadId);
-          this.fileStreams.delete(downloadId);
-        }
-
-        worker.terminate();
-        removeAbortListener();
+        await this.downloadCleanup(worker, downloadId, true, removeAbortListener);
         reject(castedError);
         break;
       }
 
-      case 'abort': {
-        this.writers.delete(downloadId);
-        this.fileStreams.delete(downloadId);
-        worker.terminate();
-        removeAbortListener();
-        reject(new DownloadAbortedByUserError());
-        break;
-      }
-
       default:
-        console.warn('[MAIN_THREAD]: Received unknown message from worker');
+        console.warn('[MAIN_THREAD]: Received unknown message from worker:', result);
         break;
     }
   }
