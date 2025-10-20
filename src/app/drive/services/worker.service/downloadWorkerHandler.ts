@@ -3,6 +3,7 @@ import { DriveFileData } from 'app/drive/types';
 import { MessageData } from './types/download';
 import { createDownloadWebWorker } from '../../../../WebWorker';
 import downloadFileFromBlob from '../download.service/downloadFileFromBlob';
+import errorService from 'app/core/services/error.service';
 
 interface HandleWorkerMessagesPayload {
   worker: Worker;
@@ -21,7 +22,7 @@ interface HandleMessagesPayload {
 }
 
 export class DownloadWorkerHandler {
-  private writers = new Map<string, WritableStreamDefaultWriter>();
+  private readonly writers = new Map<string, WritableStreamDefaultWriter>();
 
   public getWorker() {
     return createDownloadWebWorker();
@@ -56,7 +57,8 @@ export class DownloadWorkerHandler {
           console.log('[MAIN_THREAD]: Download aborted by user');
           reject(new DownloadAbortedByUserError());
         } catch (error) {
-          reject(error);
+          const castedError = errorService.castError(error);
+          reject(castedError);
         }
       };
 
