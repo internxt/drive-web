@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   isWhitelistedPath,
   buildCanonicalUrlFromParts,
+  buildSafeCanonicalUrl,
   enforceCanonicalDriveDomain,
   CANONICAL_DRIVE_ORIGIN,
 } from './canonicalDomain.utils';
@@ -20,6 +21,10 @@ const mockEnvService = envService as {
 };
 
 describe('canonicalDomain.utils', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   describe('isWhitelistedPath', () => {
     it('should return true for whitelisted paths', () => {
       expect(isWhitelistedPath('/sh/file/token123')).toBe(true);
@@ -51,22 +56,42 @@ describe('canonicalDomain.utils', () => {
       const result = buildCanonicalUrlFromParts('//evil.com/malicious', '', '');
       expect(result).toBe(CANONICAL_DRIVE_ORIGIN);
     });
+
+    it('should return CANONICAL_DRIVE_ORIGIN when URL origin differs', () => {
+      const result = buildCanonicalUrlFromParts('javascript:alert(1)', '', '');
+      expect(result).toBe(CANONICAL_DRIVE_ORIGIN);
+    });
+  });
+
+  describe('buildSafeCanonicalUrl', () => {
+    it('should build canonical URL from current location', () => {
+      const result = buildSafeCanonicalUrl();
+      expect(result).toContain('https://drive.internxt.com');
+    });
   });
 
   describe('enforceCanonicalDriveDomain', () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-    });
-
-    it('should skip redirect in non-production or when dontRedirect is set', () => {
+    it('should skip redirect in non-production environment', () => {
       mockEnvService.isProduction.mockReturnValue(false);
+      mockEnvService.getVariable.mockReturnValue('false');
+
       expect(() => enforceCanonicalDriveDomain()).not.toThrow();
       expect(mockEnvService.isProduction).toHaveBeenCalled();
+    });
 
+    it('should skip redirect when dontRedirect is set', () => {
       mockEnvService.isProduction.mockReturnValue(true);
       mockEnvService.getVariable.mockReturnValue('true');
+
       expect(() => enforceCanonicalDriveDomain()).not.toThrow();
       expect(mockEnvService.getVariable).toHaveBeenCalledWith('dontRedirect');
+    });
+
+    it('should not throw when called in production with dontRedirect false', () => {
+      mockEnvService.isProduction.mockReturnValue(true);
+      mockEnvService.getVariable.mockReturnValue('false');
+
+      expect(() => enforceCanonicalDriveDomain()).not.toThrow();
     });
   });
 });
