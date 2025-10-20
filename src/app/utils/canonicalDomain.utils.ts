@@ -29,7 +29,7 @@ export const buildCanonicalUrlFromParts = (pathname: string, search: string, has
 };
 
 export const buildSafeCanonicalUrl = (): string => {
-  const isBrowser = typeof globalThis !== 'undefined' && typeof globalThis.location !== 'undefined';
+  const isBrowser = globalThis?.location !== undefined;
 
   if (!isBrowser) {
     return CANONICAL_DRIVE_ORIGIN;
@@ -40,7 +40,7 @@ export const buildSafeCanonicalUrl = (): string => {
 };
 
 export const enforceCanonicalDriveDomain = (): void => {
-  const isBrowser = typeof globalThis !== 'undefined';
+  const isBrowser = globalThis !== undefined;
 
   if (!isBrowser || !envService.isProduction()) {
     return;
