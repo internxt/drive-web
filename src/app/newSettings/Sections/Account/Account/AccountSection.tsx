@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { areCredentialsCorrect } from '../../../../auth/services/auth.service';
 import userService from '../../../../auth/services/user.service';
 import errorService from '../../../../core/services/error.service';
-import ClearTrashDialog from '../../../../drive/components/ClearTrashDialog/ClearTrashDialog';
+import ClearTrashDialog from '../../../../views/Trash/components/ClearTrashDialog/ClearTrashDialog';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import { Button } from '@internxt/ui';

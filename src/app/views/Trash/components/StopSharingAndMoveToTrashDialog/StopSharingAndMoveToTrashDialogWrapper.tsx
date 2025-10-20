@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { MAX_SHARED_NAME_LENGTH } from '../../../share/views/SharedLinksView/SharedView';
-import StopSharingAndMoveToTrashDialog from './components/StopSharingAndMoveToTrashDialog';
-import { sharedThunks } from '../../../store/slices/sharedLinks';
-import { DriveItemData } from '../../types';
+import { MAX_SHARED_NAME_LENGTH } from '../../../../share/views/SharedLinksView/SharedView';
+import StopSharingAndMoveToTrashDialog from './StopSharingAndMoveToTrashDialog';
+import { sharedThunks } from '../../../../store/slices/sharedLinks';
+import { DriveItemData } from '../../../../drive/types';
 
 interface StopSharingAndMoveToTrashDialogWrapperProps {
   selectedItems: any[];

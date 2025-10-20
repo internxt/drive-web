@@ -7,8 +7,8 @@ import { planThunks } from 'app/store/slices/plan';
 import { uiActions } from 'app/store/slices/ui';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import clearTrash from '../../../../use_cases/trash/clear-trash';
-import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import clearTrash from '../../services/clear-trash';
+import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
 
 interface ClearTrashDialogProps {
   onItemsDeleted?: () => void;
