@@ -3,28 +3,28 @@ import { DownloadWorker } from 'app/workers/downloadWorker';
 let abortController: AbortController | undefined;
 let abortRequested = false;
 
-const abortSignal = {
-  isAborted: () => abortRequested,
-};
-
-self.addEventListener('message', async (event) => {
+const handleMessage = async (event: MessageEvent) => {
   const eventType = event.data.type as 'download' | 'abort';
 
   switch (eventType) {
     case 'download':
       await handleDownload(event.data.params);
       break;
+
     case 'abort':
       console.log('[DOWNLOAD-WORKER] Received abort → aborting download');
       abortRequested = true;
       abortController?.abort();
       postMessage({ result: 'abort' });
       break;
+
     default:
       console.warn('[DOWNLOAD-WORKER] Received unknown event');
       break;
   }
-});
+};
+
+self.addEventListener('message', handleMessage);
 
 const handleDownload = async (params: { file: any; isWorkspace: boolean; isBrave: boolean; credentials: any }) => {
   abortRequested = false;
@@ -44,12 +44,7 @@ const handleDownload = async (params: { file: any; isWorkspace: boolean; isBrave
       postMessage({ result: 'blob', blob });
     },
     onChunk: (chunk: Uint8Array) => {
-      postMessage(
-        { result: 'chunk', chunk },
-        {
-          transfer: [chunk.buffer],
-        },
-      );
+      postMessage({ result: 'chunk', chunk }, { transfer: [chunk.buffer] });
     },
   };
 
