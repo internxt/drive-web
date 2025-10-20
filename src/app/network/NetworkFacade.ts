@@ -17,6 +17,7 @@ import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileUint8Array, UploadProgressCallback } from './upload-utils';
 import { UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD } from './networkConstants';
 import { WORKER_MESSAGE_STATES } from 'app/drive/services/worker.service/types/upload';
+import { QueueUtilsService } from 'app/utils/queueUtils';
 import { NetworkUtils } from 'app/utils/networkUtils';
 
 interface UploadOptions {
@@ -320,8 +321,7 @@ export class NetworkFacade {
     options?: DownloadOptions,
   ): Promise<ReadableStream<Uint8Array>> {
     const maxChunkRetires = 3;
-    const chunkSize = 1024 * 1024 * 30;
-    const concurrency = 3;
+    const { chunkSize, concurrency } = QueueUtilsService.instance.calculateChunkSizeAndConcurrency(fileSize);
     const tasks = NetworkUtils.instance.createDownloadChunks(fileSize, chunkSize, maxChunkRetires);
 
     let downloadedBytes = 0;
