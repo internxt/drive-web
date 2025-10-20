@@ -30,25 +30,4 @@ export class QueueUtilsService {
     }
     return newConcurrency;
   };
-
-  /**
-   * This function is used to calculate the chunk size and concurrency based on the file size when downloading a file (multipart download)
-   * @param fileSize - The file size in bytes
-   * @returns An object containing the chunk size and concurrency
-   */
-  public readonly calculateChunkSizeAndConcurrency = (fileSize: number): { chunkSize: number; concurrency: number } => {
-    const fileSizeGB = fileSize / (1024 * 1024 * 1024);
-
-    if (fileSizeGB <= 0.5) {
-      return { chunkSize: 50 * 1024 * 1024, concurrency: 4 };
-    } else if (fileSizeGB <= 2) {
-      return { chunkSize: 25 * 1024 * 1024, concurrency: 4 };
-    } else if (fileSizeGB <= 5) {
-      return { chunkSize: 15 * 1024 * 1024, concurrency: 3 };
-    } else if (fileSizeGB <= 10) {
-      return { chunkSize: 10 * 1024 * 1024, concurrency: 3 };
-    } else {
-      return { chunkSize: 5 * 1024 * 1024, concurrency: 2 };
-    }
-  };
 }
