@@ -290,7 +290,7 @@ export class DownloadManagerService {
         const isWorkspace = !!credentials.workspaceId;
         const isFirefox = navigator.userAgent.includes('Firefox');
 
-        console.time('download-file');
+        console.time(`download-file-${file.fileId}`);
         if (isFirefox) {
           await downloadService.downloadFile(file, isWorkspace, updateProgressCallback, abortController, credentials);
         } else {
@@ -303,7 +303,7 @@ export class DownloadManagerService {
           });
         }
 
-        console.timeEnd('download-file');
+        console.timeEnd(`download-file-${file.fileId}`);
       }
 
       await this.checkAndHandleConnectionLost(connectionLost);
