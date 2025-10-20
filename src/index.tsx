@@ -24,54 +24,7 @@ import { ThemeProvider } from 'app/theme/ThemeProvider';
 import { LiveChatLoaderProvider } from 'react-live-chat-loader';
 import { DialogManagerProvider } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import envService from 'app/core/services/env.service';
-
-const CANONICAL_DRIVE_HOSTNAME = 'drive.internxt.com';
-const CANONICAL_DRIVE_ORIGIN = `https://${CANONICAL_DRIVE_HOSTNAME}`;
-
-const buildSafeCanonicalUrl = () => {
-  const isBrowser = typeof globalThis !== 'undefined';
-
-  if (!isBrowser) {
-    return CANONICAL_DRIVE_ORIGIN;
-  }
-
-  try {
-    const { pathname, search, hash } = globalThis.location;
-    const relativeUrl = `${pathname}${search}${hash}`;
-    const normalizedUrl = new URL(relativeUrl, CANONICAL_DRIVE_ORIGIN);
-
-    if (normalizedUrl.origin !== CANONICAL_DRIVE_ORIGIN) {
-      return CANONICAL_DRIVE_ORIGIN;
-    }
-
-    return normalizedUrl.toString();
-  } catch {
-    return CANONICAL_DRIVE_ORIGIN;
-  }
-};
-
-const enforceCanonicalDriveDomain = () => {
-  const isBrowser = typeof globalThis !== 'undefined';
-
-  if (!isBrowser || !envService.isProduction()) {
-    return;
-  }
-  const shouldSkipRedirect = envService.getVariable('dontRedirect') === 'true';
-
-  if (shouldSkipRedirect) {
-    return;
-  }
-
-  const hostname = globalThis.location.hostname;
-
-  if (hostname === CANONICAL_DRIVE_HOSTNAME) {
-    return;
-  }
-
-  const safeUrl = buildSafeCanonicalUrl();
-
-  globalThis.location.replace(safeUrl);
-};
+import { enforceCanonicalDriveDomain } from 'app/utils/canonicalDomain.utils';
 
 enforceCanonicalDriveDomain();
 
