@@ -22,6 +22,39 @@ const getTrash = async (): Promise<void> => {
   store.dispatch(storageActions.setItemsOnTrash(items));
 };
 
+function processTrashItems(
+  items: Array<{ plainName: string }>,
+  type: 'files' | 'folders',
+  limit: number,
+): { parsedItems: DriveItemData[]; finished: boolean; itemsRetrieved: number } {
+  const parsedItems = items.map(
+    (item) => ({ ...item, isFolder: type === 'folders', name: item.plainName }) as unknown as DriveItemData,
+  );
+  const itemslength = items.length;
+  const areLastItems = itemslength < limit;
+
+  store.dispatch(storageActions.clearSelectedItems());
+  store.dispatch(storageActions.addItemsOnTrash(parsedItems));
+
+  if (type === 'folders') {
+    store.dispatch(storageActions.addFoldersOnTrashLength(itemslength));
+  } else {
+    store.dispatch(storageActions.addFilesOnTrashLength(itemslength));
+  }
+
+  return { parsedItems, finished: areLastItems, itemsRetrieved: itemslength };
+}
+
+function handleTrashError(error: unknown): { finished: boolean; itemsRetrieved: number } {
+  notificationsService.show({
+    text: t('error.errorLoadingTrashItems'),
+    type: ToastType.Error,
+  });
+
+  errorService.reportError(error);
+  return { finished: false, itemsRetrieved: 0 };
+}
+
 const getTrashPaginated = async (
   limit: number,
   offset: number | undefined,
@@ -35,30 +68,10 @@ const getTrashPaginated = async (
     const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
     const itemsInTrash = await trashClient.getTrashedItemsSorted(limit, offset, type, root, sort, order, folderId);
 
-    const parsedTrashItems = itemsInTrash.result.map(
-      (item) => ({ ...item, isFolder: type === 'folders', name: item.plainName }) as unknown as DriveItemData,
-    );
-    const itemslength = itemsInTrash.result.length;
-    const areLastItems = itemslength < limit;
-
-    store.dispatch(storageActions.clearSelectedItems());
-    store.dispatch(storageActions.addItemsOnTrash(parsedTrashItems));
-
-    if (type === 'folders') {
-      store.dispatch(storageActions.addFoldersOnTrashLength(itemslength));
-    } else {
-      store.dispatch(storageActions.addFilesOnTrashLength(itemslength));
-    }
-
-    return { finished: areLastItems, itemsRetrieved: itemslength };
+    const { finished, itemsRetrieved } = processTrashItems(itemsInTrash.result, type, limit);
+    return { finished, itemsRetrieved };
   } catch (error) {
-    notificationsService.show({
-      text: t('error.errorLoadingTrashItems'),
-      type: ToastType.Error,
-    });
-
-    errorService.reportError(error);
-    return { finished: false, itemsRetrieved: 0 };
+    return handleTrashError(error);
   }
 };
 
@@ -72,30 +85,10 @@ const getWorkspaceTrashPaginated = async (
     const trashType = type === 'files' ? 'file' : 'folder';
     const itemsInTrash = await workspacesService.getTrashItems(workspace?.workspace.id as string, trashType, offset);
 
-    const parsedTrashItems = itemsInTrash.result.map(
-      (item) => ({ ...item, isFolder: type === 'folders', name: item.plainName }) as unknown as DriveItemData,
-    );
-    const itemslength = itemsInTrash.result.length;
-    const areLastItems = itemslength < limit;
-
-    store.dispatch(storageActions.clearSelectedItems());
-    store.dispatch(storageActions.addItemsOnTrash(parsedTrashItems));
-
-    if (type === 'folders') {
-      store.dispatch(storageActions.addFoldersOnTrashLength(itemslength));
-    } else {
-      store.dispatch(storageActions.addFilesOnTrashLength(itemslength));
-    }
-
-    return { finished: areLastItems, itemsRetrieved: itemslength };
+    const { finished, itemsRetrieved } = processTrashItems(itemsInTrash.result, type, limit);
+    return { finished, itemsRetrieved };
   } catch (error) {
-    notificationsService.show({
-      text: t('error.errorLoadingTrashItems'),
-      type: ToastType.Error,
-    });
-
-    errorService.reportError(error);
-    return { finished: false, itemsRetrieved: 0 };
+    return handleTrashError(error);
   }
 };
 export { getTrash, getTrashPaginated, getWorkspaceTrashPaginated };
