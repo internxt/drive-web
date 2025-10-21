@@ -49,13 +49,13 @@ export class DownloadWorker {
         credentials,
       );
 
-      streamReader = downloadedFile.getReader();
       this.abortController.signal.addEventListener('abort', abortHandler);
 
       if (isBrave) {
         const blob = await binaryStreamToBlob(downloadedFile, file.type);
         callbacks.onBlob(blob);
       } else {
+        streamReader = downloadedFile.getReader();
         await this.downloadUsingChunks(streamReader, callbacks.onChunk);
       }
 
