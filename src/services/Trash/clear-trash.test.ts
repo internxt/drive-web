@@ -1,31 +1,31 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import clearTrash from './clear-trash';
-import { SdkFactory } from '../../../core/factory/sdk';
-import errorService from '../../../core/services/error.service';
-import workspacesService from '../../../core/services/workspace.service';
-import notificationsService from '../../../notifications/services/notifications.service';
-import { store } from '../../../store';
-import { storageActions } from '../../../store/slices/storage';
+import { SdkFactory } from 'app/core/factory/sdk';
+import errorService from 'app/core/services/error.service';
+import workspacesService from 'app/core/services/workspace.service';
+import notificationsService from 'app/notifications/services/notifications.service';
+import { store } from 'app/store';
+import { storageActions } from 'app/store/slices/storage';
 
-vi.mock('../../../core/factory/sdk', () => ({
+vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(),
   },
 }));
 
-vi.mock('../../../core/services/error.service', () => ({
+vi.mock('app/core/services/error.service', () => ({
   default: {
     reportError: vi.fn(),
   },
 }));
 
-vi.mock('../../../core/services/workspace.service', () => ({
+vi.mock('app/core/services/workspace.service', () => ({
   default: {
     emptyTrash: vi.fn(),
   },
 }));
 
-vi.mock('../../../notifications/services/notifications.service', () => ({
+vi.mock('app/notifications/services/notifications.service', () => ({
   default: {
     show: vi.fn(),
     dismiss: vi.fn(),
@@ -37,13 +37,13 @@ vi.mock('../../../notifications/services/notifications.service', () => ({
   },
 }));
 
-vi.mock('../../../store', () => ({
+vi.mock('app/store', () => ({
   store: {
     dispatch: vi.fn(),
   },
 }));
 
-vi.mock('../../../store/slices/storage', () => ({
+vi.mock('app/store/slices/storage', () => ({
   storageActions: {
     resetTrash: vi.fn(),
     clearSelectedItems: vi.fn(),

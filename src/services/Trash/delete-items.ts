@@ -1,12 +1,12 @@
 import { DeleteItemsPermanentlyByUUIDPayload } from '@internxt/sdk/dist/drive/trash/types';
 import { t } from 'i18next';
-import { SdkFactory } from '../../../core/factory/sdk';
-import errorService from '../../../core/services/error.service';
-import { deleteDatabaseItems } from '../../../drive/services/database.service';
-import { DriveItemData } from '../../../drive/types';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import { store } from '../../../store';
-import { storageActions } from '../../../store/slices/storage';
+import { SdkFactory } from 'app/core/factory/sdk';
+import errorService from 'app/core/services/error.service';
+import { deleteDatabaseItems } from 'app/drive/services/database.service';
+import { DriveItemData } from 'app/drive/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { store } from 'app/store';
+import { storageActions } from 'app/store/slices/storage';
 import { processBatchConcurrently } from './batch-processor';
 
 const MAX_ITEMS_TO_DELETE = 20;

@@ -7,9 +7,9 @@ import { DriveItemData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { AppDispatch, RootState } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
-import { getTrashPaginated, getWorkspaceTrashPaginated } from './services/get_trash';
-import storageThunks from '../../store/slices/storage/storage.thunks';
-import workspacesSelectors from '../../store/slices/workspaces/workspaces.selectors';
+import { getTrashPaginated, getWorkspaceTrashPaginated } from '../../services/Trash/get_trash';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 export interface TrashViewProps {
   isLoadingItemsOnTrash: boolean;

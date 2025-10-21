@@ -1,32 +1,32 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import moveItemsToTrash from './move-items-to-trash';
-import { SdkFactory } from '../../../core/factory/sdk';
-import errorService from '../../../core/services/error.service';
-import { deleteDatabaseItems } from '../../../drive/services/database.service';
-import { DriveItemData } from '../../../drive/types';
-import notificationsService from '../../../notifications/services/notifications.service';
-import { store } from '../../../store';
-import { storageActions } from '../../../store/slices/storage';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
+import { SdkFactory } from 'app/core/factory/sdk';
+import errorService from 'app/core/services/error.service';
+import { deleteDatabaseItems } from 'app/drive/services/database.service';
+import { DriveItemData } from 'app/drive/types';
+import notificationsService from 'app/notifications/services/notifications.service';
+import { store } from 'app/store';
+import { storageActions } from 'app/store/slices/storage';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { processBatchConcurrently } from './batch-processor';
 
-vi.mock('../../../core/factory/sdk', () => ({
+vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(),
   },
 }));
 
-vi.mock('../../../core/services/error.service', () => ({
+vi.mock('app/core/services/error.service', () => ({
   default: {
     reportError: vi.fn(),
   },
 }));
 
-vi.mock('../../../drive/services/database.service', () => ({
+vi.mock('app/drive/services/database.service', () => ({
   deleteDatabaseItems: vi.fn(),
 }));
 
-vi.mock('../../../notifications/services/notifications.service', () => ({
+vi.mock('app/notifications/services/notifications.service', () => ({
   default: {
     show: vi.fn(),
     dismiss: vi.fn(),
@@ -38,13 +38,13 @@ vi.mock('../../../notifications/services/notifications.service', () => ({
   },
 }));
 
-vi.mock('../../../store', () => ({
+vi.mock('app/store', () => ({
   store: {
     dispatch: vi.fn(),
   },
 }));
 
-vi.mock('../../../store/slices/storage', () => ({
+vi.mock('app/store/slices/storage', () => ({
   storageActions: {
     popItems: vi.fn(),
     pushItems: vi.fn(),
@@ -52,7 +52,7 @@ vi.mock('../../../store/slices/storage', () => ({
   },
 }));
 
-vi.mock('../../../store/slices/storage/storage.thunks', () => ({
+vi.mock('app/store/slices/storage/storage.thunks', () => ({
   default: {
     moveItemsThunk: vi.fn(),
   },
