@@ -289,9 +289,10 @@ export class DownloadManagerService {
       } else {
         const isWorkspace = !!credentials.workspaceId;
         const isFirefox = navigator.userAgent.includes('Firefox');
+        const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
         console.time('download-file');
-        if (isFirefox) {
+        if (isFirefox || isBrave) {
           await downloadService.downloadFile(file, isWorkspace, updateProgressCallback, abortController, credentials);
         } else {
           await this.downloadFileFromWorker({
