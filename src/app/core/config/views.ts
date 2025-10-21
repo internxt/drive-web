@@ -15,7 +15,7 @@ import BackupsView from '../../backups/views/BackupsView/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
 import DriveView from '../../drive/views/DriveView/DriveView';
 import FolderFileNotFound from '../../drive/views/FolderFileNotFound/FolderFileNotFound';
-import RecentsView from '../../drive/views/RecentsView/RecentsView';
+import RecentsView from 'app/views/Recents/RecentsView';
 import RequestAccess from '../../drive/views/RequestAccess/RequestAccess';
 import TrashView from '../../drive/views/TrashView/TrashView';
 import CheckoutCancelView from '../../payment/views/CheckoutCancelView/CheckoutCancelView';
