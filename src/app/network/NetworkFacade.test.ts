@@ -64,12 +64,15 @@ describe('NetworkFacade', () => {
       const result = await networkFacade.downloadChunk(bucketId, fileId, mnemonic, chunkStart, chunkEnd);
 
       expect(result).toStrictEqual(mockDecryptedStream);
+
       expect(global.fetch).toHaveBeenCalledWith(
         downloadExample,
         expect.objectContaining({
           headers: {
             Range: `bytes=${chunkStart}-${chunkEnd}`,
+            Connection: 'keep-alive',
           },
+          keepalive: true,
         }),
       );
     });

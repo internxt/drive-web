@@ -470,7 +470,9 @@ export class NetworkFacade {
             signal: options?.abortController?.signal,
             headers: {
               Range: `bytes=${chunkStart}-${chunkEnd}`,
+              Connection: 'keep-alive',
             },
+            keepalive: true,
           });
 
           if (response.status !== 206 && response.status !== 200) {
