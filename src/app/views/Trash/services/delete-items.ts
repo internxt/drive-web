@@ -1,4 +1,3 @@
-import { Trash } from '@internxt/sdk/dist/drive';
 import { DeleteItemsPermanentlyByUUIDPayload } from '@internxt/sdk/dist/drive/trash/types';
 import { t } from 'i18next';
 import { SdkFactory } from '../../../core/factory/sdk';
