@@ -3,59 +3,62 @@ import { QueueUtilsService } from './queueUtils';
 
 describe('Testing Queue Utils', () => {
   describe('Calculating the optimal chunks', () => {
+    const HUNDRED_MB = 100 * 1024 * 1024;
     const FIFTY_MB = 50 * 1024 * 1024;
-    const TWENTY_FIVE_MB = 25 * 1024 * 1024;
-    const FIFTEEN_MB = 15 * 1024 * 1024;
-    const TEN_MB = 10 * 1024 * 1024;
-    const FIVE_MB = 5 * 1024 * 1024;
 
-    test('When the file is smaller than 0.5GB, then return chunks of 50MB and concurrency of 4', () => {
-      const fileSize = 0.3 * 1024 * 1024 * 1024;
+    test('When the file is smaller than 100MB, then return no chunking (concurrency 1)', () => {
+      const fileSize = 80 * 1024 * 1024;
+      const result = QueueUtilsService.instance.calculateChunkSizeAndConcurrency(fileSize);
+
+      expect(result).toStrictEqual({
+        chunkSize: fileSize,
+        concurrency: 1,
+      });
+    });
+
+    test('When the file is between 100MB and 500MB, then return chunks with concurrency of 6', () => {
+      const fileSize = 300 * 1024 * 1024;
       const result = QueueUtilsService.instance.calculateChunkSizeAndConcurrency(fileSize);
 
       expect(result).toStrictEqual({
         chunkSize: FIFTY_MB,
-        concurrency: 4,
+        concurrency: 6,
       });
     });
 
-    test('When the file is smaller than 2GB, then return chunks of 25MB and concurrency of 4', () => {
+    test('When the file is between 500MB and 2GB, then return chunks of 100MB and concurrency of 10', () => {
       const fileSize = 1.5 * 1024 * 1024 * 1024;
       const result = QueueUtilsService.instance.calculateChunkSizeAndConcurrency(fileSize);
 
+      const expectedChunkSize = Math.ceil(fileSize / 16);
+
       expect(result).toStrictEqual({
-        chunkSize: TWENTY_FIVE_MB,
-        concurrency: 4,
+        chunkSize: expectedChunkSize,
+        concurrency: 10,
       });
     });
 
-    test('When the file is bigger than 2GB and smaller than 5GB, then return chunks of 15MB and concurrency of 3', () => {
+    test('When the file is bigger than 2GB, then return chunks of 100MB and concurrency of 16', () => {
       const fileSize = 3.5 * 1024 * 1024 * 1024;
       const result = QueueUtilsService.instance.calculateChunkSizeAndConcurrency(fileSize);
 
+      const expectedChunkSize = Math.ceil(fileSize / 36);
+
       expect(result).toStrictEqual({
-        chunkSize: FIFTEEN_MB,
-        concurrency: 3,
+        chunkSize: expectedChunkSize,
+        concurrency: 16,
       });
     });
 
-    test('When the file is bigger than 5GB and smaller than 10GB, then return chunks of 10MB and concurrency of 2', () => {
-      const fileSize = 8.5 * 1024 * 1024 * 1024;
+    test('When the file is 10GB, then return chunks of 100MB and concurrency of 16', () => {
+      const fileSize = 10 * 1024 * 1024 * 1024;
       const result = QueueUtilsService.instance.calculateChunkSizeAndConcurrency(fileSize);
 
-      expect(result).toStrictEqual({
-        chunkSize: TEN_MB,
-        concurrency: 3,
-      });
-    });
-
-    test('When the file is bigger than 10GB, then return chunks of 5MB and concurrency of 2', () => {
-      const fileSize = 15 * 1024 * 1024 * 1024;
-      const result = QueueUtilsService.instance.calculateChunkSizeAndConcurrency(fileSize);
+      const expectedChunkSize = Math.ceil(fileSize / 103);
 
       expect(result).toStrictEqual({
-        chunkSize: FIVE_MB,
-        concurrency: 2,
+        chunkSize: expectedChunkSize,
+        concurrency: 16,
       });
     });
   });
