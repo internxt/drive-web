@@ -5,7 +5,10 @@ import { createFolderThunk, createFolderThunkExtraReducers } from './createFolde
 import { deleteItemsThunk, deleteItemsThunkExtraReducers } from './deleteItemsThunk';
 import { fetchDeletedThunk, fetchDeletedThunkExtraReducers } from './fetchDeletedThunk';
 import { fetchFolderContentThunkExtraReducers, fetchPaginatedFolderContentThunk } from './fetchFolderContentThunk';
-import { fetchRecentsThunk, fetchRecentsThunkExtraReducers } from '../../../../../services/Recents/fetchRecentsThunk';
+import {
+  fetchRecentsThunk,
+  fetchRecentsThunkExtraReducers,
+} from '../../../../../views/Recents/services/fetchRecentsThunk';
 import { goToFolderThunk, goToFolderThunkExtraReducers } from './goToFolderThunk';
 import { initializeThunk, initializeThunkExtraReducers } from './initializeThunk';
 import { moveItemsThunk, moveItemsThunkExtraReducers } from './moveItemsThunk';
