@@ -3,7 +3,7 @@ import UilCloudDownload from '@iconscout/react-unicons/icons/uil-cloud-download'
 import UilFileInfoAlt from '@iconscout/react-unicons/icons/uil-file-info-alt';
 import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { DriveItemAction } from '../../../drive/components/DriveExplorer/DriveExplorerItem';
+import { DriveItemAction } from '../../../app/drive/components/DriveExplorer/DriveExplorerItem';
 
 interface BackupDropdownActionsProps {
   title?: string;

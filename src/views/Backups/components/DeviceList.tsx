@@ -1,17 +1,17 @@
-import desktopService from '../../../core/services/desktop.service';
+import desktopService from '../../../app/core/services/desktop.service';
 
-import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
+import folderEmptyImage from '../../../assets/icons/light/folder-backup.svg';
 import { DownloadSimple } from '@phosphor-icons/react';
-import Empty from '../../../shared/components/Empty/Empty';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { contextMenuBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import Empty from '../../../app/shared/components/Empty/Empty';
+import notificationsService, { ToastType } from '../../../app/notifications/services/notifications.service';
+import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
+import { contextMenuBackupItems } from '../../../app/drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import UilApple from '@iconscout/react-unicons/icons/uil-apple';
 import UilLinux from '@iconscout/react-unicons/icons/uil-linux';
 import UilWindows from '@iconscout/react-unicons/icons/uil-windows';
 import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
-import dateService from '../../../core/services/date.service';
-import sizeService from '../../../drive/services/size.service';
+import dateService from '../../../app/core/services/date.service';
+import sizeService from '../../../app/drive/services/size.service';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { skinSkeleton } from 'app/shared/Skeleton';
 import { List } from '@internxt/ui';

@@ -1,10 +1,10 @@
-import { skinSkeleton } from 'app/shared/Skeleton';
-import folderEmptyImage from 'assets/icons/light/folder-open.svg';
-import dateService from '../../../core/services/date.service';
-import sizeService from '../../../drive/services/size.service';
-import { DriveItemData } from '../../../drive/types';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import Empty from '../../../shared/components/Empty/Empty';
+import { skinSkeleton } from '../../../app/shared/Skeleton';
+import folderEmptyImage from '../../../assets/icons/light/folder-open.svg';
+import dateService from '../../../app/core/services/date.service';
+import sizeService from '../../../app/drive/services/size.service';
+import { DriveItemData } from '../../../app/drive/types';
+import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
+import Empty from '../../../app/shared/components/Empty/Empty';
 import { List, MenuItemType } from '@internxt/ui';
 import transformItemService from 'app/drive/services/item-transform.service';
 import { items } from '@internxt/lib';

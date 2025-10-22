@@ -11,7 +11,7 @@ import RecoveryLinkView from '../../auth/views/RecoveryLinkView/RecoveryLinkView
 import SignInView from '../../auth/views/SignInView/SignInView';
 import SignUpView from '../../auth/views/SignUpView/SignUpView';
 import UniversalLinkSuccessView from '../../auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
-import BackupsView from '../../backups/views/BackupsView/BackupsView';
+import BackupsView from '../../../views/Backups/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
 import DriveView from '../../drive/views/DriveView/DriveView';
 import FolderFileNotFound from '../../drive/views/FolderFileNotFound/FolderFileNotFound';

@@ -1,7 +1,7 @@
 import { Device, DeviceBackup } from '@internxt/sdk/dist/drive/backups/types';
-import { SdkFactory } from '../../core/factory/sdk';
+import { SdkFactory } from 'app/core/factory/sdk';
 import { mapBackupFolder } from '../utils/mappers';
-import { DriveFolderData } from '../../drive/types';
+import { DriveFolderData } from 'app/drive/types';
 
 const backupsService = {
   async getAllDevices(): Promise<Device[]> {

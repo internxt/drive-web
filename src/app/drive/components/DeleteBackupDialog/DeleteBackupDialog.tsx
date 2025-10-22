@@ -8,7 +8,7 @@ import { backupsThunks } from 'app/store/slices/backups';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Dialog } from '@internxt/ui';
-import backupsService from 'app/backups/services/backups.service';
+import backupsService from '../../../../views/Backups/services/backups.service';
 
 interface DeleteBackupDialogProps {
   backupsAsFoldersPath: DriveFolderData[];
