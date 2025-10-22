@@ -17,7 +17,7 @@ import BreadcrumbsSharedView from 'app/shared/components/Breadcrumbs/Containers/
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';
-import moveItemsToTrash from '../../../../services/Trash/move-items-to-trash';
+import moveItemsToTrash from '../../../../views/Trash/services/move-items-to-trash';
 import errorService from '../../../core/services/error.service';
 import { UPLOAD_ITEMS_LIMIT } from '../../../drive/components/DriveExplorer/helpers/uploadHelpers';
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
@@ -27,7 +27,7 @@ import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItems
 import NameCollisionContainer from '../../../drive/components/NameCollisionDialog/NameCollisionContainer';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import ShowInvitationsDialog from '../../../drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
-import StopSharingAndMoveToTrashDialogWrapper from '../../../../views/Trash/StopSharingAndMoveToTrashDialogWrapper';
+import StopSharingAndMoveToTrashDialogWrapper from '../../../../views/Trash/components/StopSharingAndMoveToTrashDialogWrapper';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../share/types';
 import { RootState } from '../../../store';

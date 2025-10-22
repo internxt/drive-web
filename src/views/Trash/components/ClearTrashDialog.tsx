@@ -7,7 +7,7 @@ import { planThunks } from 'app/store/slices/plan';
 import { uiActions } from 'app/store/slices/ui';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import clearTrash from '../../services/Trash/clear-trash';
+import clearTrash from '../services/clear-trash';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 interface ClearTrashDialogProps {

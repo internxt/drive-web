@@ -1,7 +1,7 @@
 import { createRef, useMemo } from 'react';
 
 import navigationService from 'app/core/services/navigation.service';
-import moveItemsToTrash from '../../../../../../services/Trash/move-items-to-trash';
+import moveItemsToTrash from '../../../../../../views/Trash/services/move-items-to-trash';
 import {
   getDatabaseFilePreviewData,
   updateDatabaseFilePreviewData,
