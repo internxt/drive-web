@@ -1,3 +1,5 @@
+import { FIFTY_MEGABYTES } from 'app/network/networkConstants';
+
 export class QueueUtilsService {
   public static readonly instance: QueueUtilsService = new QueueUtilsService();
 
@@ -36,34 +38,19 @@ export class QueueUtilsService {
    * @param fileSize - The file size in bytes
    * @returns An object containing the chunk size and concurrency
    */
-  calculateChunkSizeAndConcurrency(fileSize: number) {
-    const MAX_CHUNK_SIZE = 100 * 1024 * 1024;
-    const OPTIMAL_CHUNK_SIZE = 25 * 1024 * 1024;
+  public readonly calculateChunkSizeAndConcurrency = (fileSize: number): { chunkSize: number; concurrency: number } => {
+    const fileSizeGB = fileSize / (1024 * 1024 * 1024);
 
-    let concurrency: number;
-    let chunkSize: number;
-
-    if (fileSize < 100 * 1024 * 1024) {
-      concurrency = 1;
-      chunkSize = fileSize;
-    } else if (fileSize < 500 * 1024 * 1024) {
-      concurrency = 6;
-      chunkSize = Math.max(OPTIMAL_CHUNK_SIZE, Math.floor(fileSize / concurrency));
-    } else if (fileSize <= 2 * 1024 * 1024 * 1024) {
-      concurrency = 10;
-      chunkSize = MAX_CHUNK_SIZE;
+    if (fileSizeGB <= 0.5) {
+      return { chunkSize: fileSize, concurrency: 1 };
+    } else if (fileSizeGB <= 2) {
+      return { chunkSize: FIFTY_MEGABYTES, concurrency: 6 };
+    } else if (fileSizeGB <= 5) {
+      return { chunkSize: FIFTY_MEGABYTES, concurrency: 6 };
+    } else if (fileSizeGB <= 10) {
+      return { chunkSize: FIFTY_MEGABYTES, concurrency: 6 };
     } else {
-      concurrency = 16;
-      chunkSize = MAX_CHUNK_SIZE;
+      return { chunkSize: FIFTY_MEGABYTES, concurrency: 6 };
     }
-
-    const numChunks = Math.ceil(fileSize / chunkSize);
-    chunkSize = Math.ceil(fileSize / numChunks);
-
-    console.log(
-      `[CALC] FileSize: ${(fileSize / 1024 / 1024).toFixed(2)}MB, Chunks: ${numChunks}, ChunkSize: ${(chunkSize / 1024 / 1024).toFixed(2)}MB, Concurrency: ${concurrency}`,
-    );
-
-    return { chunkSize, concurrency };
-  }
+  };
 }
