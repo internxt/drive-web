@@ -32,6 +32,8 @@ import {
   passToHash,
 } from 'app/crypto/services/utils';
 import databaseService from 'app/database/services/database.service';
+import { AuthMethodTypes } from 'app/payment/types';
+import { AppDispatch } from 'app/store';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
@@ -42,7 +44,53 @@ import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 import vpnAuthService from './vpnAuth.service';
-import { ProfileInfo, SignUpParams, AuthenticateUserParams, LogInParams } from './auth.types';
+
+type ProfileInfo = {
+  user: UserSettings;
+  token: string;
+  newToken: string;
+  mnemonic: string;
+};
+
+export type RegisterFunction = (
+  email: string,
+  password: string,
+  captcha: string,
+) => Promise<{
+  xUser: UserSettings;
+  xToken: string;
+  xNewToken: string;
+  mnemonic: string;
+}>;
+
+export type SignUpParams = {
+  doSignUp: RegisterFunction;
+  email: string;
+  password: string;
+  token: string;
+  redeemCodeObject: boolean;
+  dispatch: AppDispatch;
+};
+
+type LogInParams = {
+  email: string;
+  password: string;
+  twoFactorCode: string;
+  dispatch: AppDispatch;
+  loginType?: 'web' | 'desktop';
+};
+
+export type AuthenticateUserParams = {
+  email: string;
+  password: string;
+  authMethod: AuthMethodTypes;
+  twoFactorCode: string;
+  dispatch: AppDispatch;
+  loginType?: 'web' | 'desktop';
+  token?: string;
+  redeemCodeObject?: boolean;
+  doSignUp?: RegisterFunction;
+};
 
 const getCurrentUrlParams = (): Record<string, string> => {
   const currentParams = new URLSearchParams(window.location.search);
