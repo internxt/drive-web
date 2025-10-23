@@ -10,10 +10,6 @@ interface DeviceDropdownActionsProps {
 }
 
 class DeviceDropdownActions extends React.Component<DeviceDropdownActionsProps> {
-  constructor(props: DeviceDropdownActionsProps) {
-    super(props);
-  }
-
   render(): ReactNode {
     const { title } = this.props;
     const hiddenActions = this.props.hiddenActions || [];
@@ -23,12 +19,12 @@ class DeviceDropdownActions extends React.Component<DeviceDropdownActionsProps> 
         {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
 
         {title && <hr className="my-1.5 text-gray-5"></hr>}
-        {!hiddenActions.includes(DriveItemAction.Delete) ? (
+        {hiddenActions.includes(DriveItemAction.Delete) ? null : (
           <Dropdown.Item id="info" onClick={this.props.onDeleteButtonClicked}>
             <UilTrashAlt className="mr-1 h-5 text-red" />
             <span className="text-red">Delete</span>
           </Dropdown.Item>
-        ) : null}
+        )}
       </div>
     );
   }

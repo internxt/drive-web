@@ -158,6 +158,7 @@ export default function BackupsView(): JSX.Element {
 
   return (
     <div
+      role="none"
       className="flex w-full shrink-0 grow flex-col"
       onContextMenu={(e) => {
         e.preventDefault();

@@ -14,10 +14,6 @@ interface BackupDropdownActionsProps {
 }
 
 class BackupDropdownActions extends React.Component<BackupDropdownActionsProps> {
-  constructor(props: BackupDropdownActionsProps) {
-    super(props);
-  }
-
   render(): ReactNode {
     const { title } = this.props;
     const hiddenActions = this.props.hiddenActions || [];
@@ -26,25 +22,25 @@ class BackupDropdownActions extends React.Component<BackupDropdownActionsProps> 
       <div>
         {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
 
-        {!hiddenActions.includes(DriveItemAction.Download) ? (
+        {hiddenActions.includes(DriveItemAction.Download) ? null : (
           <Dropdown.Item id="download" onClick={this.props.onDownloadButtonClicked}>
             <UilCloudDownload className="mr-1 h-5 text-primary" />
             <span>Download</span>
           </Dropdown.Item>
-        ) : null}
-        {!hiddenActions.includes(DriveItemAction.Info) ? (
+        )}
+        {hiddenActions.includes(DriveItemAction.Info) ? null : (
           <Dropdown.Item id="info" onClick={this.props.onInfoButtonClicked}>
             <UilFileInfoAlt className="mr-1 h-5 text-primary" />
             <span>Info</span>
           </Dropdown.Item>
-        ) : null}
+        )}
         <hr className="my-1.5 text-gray-5"></hr>
-        {!hiddenActions.includes(DriveItemAction.Delete) ? (
+        {hiddenActions.includes(DriveItemAction.Delete) ? null : (
           <Dropdown.Item id="info" onClick={this.props.onDeleteButtonClicked}>
             <UilTrashAlt className="mr-1 h-5 text-red" />
             <span className="text-red">Delete</span>
           </Dropdown.Item>
-        ) : null}
+        )}
       </div>
     );
   }
