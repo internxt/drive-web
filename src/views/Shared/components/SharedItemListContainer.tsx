@@ -1,23 +1,23 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DriveItemData, DriveItemDetails } from '../../../../drive/types';
-import { storageActions } from '../../../../store/slices/storage';
-import { uiActions } from '../../../../store/slices/ui';
-import EmptySharedView from '../../../components/EmptySharedView/EmptySharedView';
-import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../types';
-import { OrderField, SharedItemList } from '../components/SharedItemList';
+import { DriveItemData, DriveItemDetails } from '../../../app/drive/types';
+import { storageActions } from '../../../app/store/slices/storage';
+import { uiActions } from '../../../app/store/slices/ui';
+import EmptySharedView from './EmptySharedView';
+import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../app/share/types';
+import { OrderField, SharedItemList } from './SharedItemList';
 
-import errorService from '../../../../core/services/error.service';
-import localStorageService from '../../../../core/services/local-storage.service';
-import workspacesService from '../../../../core/services/workspace.service';
-import { OrderDirection } from '../../../../core/types';
-import { sharedThunks } from '../../../../store/slices/sharedLinks';
-import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
-import shareService, { decryptMnemonic } from '../../../services/share.service';
+import errorService from '../../../app/core/services/error.service';
+import localStorageService from '../../../app/core/services/local-storage.service';
+import workspacesService from '../../../app/core/services/workspace.service';
+import { OrderDirection } from '../../../app/core/types';
+import { sharedThunks } from '../../../app/store/slices/sharedLinks';
+import workspacesSelectors from '../../../app/store/slices/workspaces/workspaces.selectors';
+import shareService, { decryptMnemonic } from '../../../app/share/services/share.service';
 import { setOrderBy, setPage, setSelectedItems } from '../context/SharedViewContext.actions';
 import { useShareViewContext } from '../context/SharedViewContextProvider';
 import useSharedContextMenu from '../hooks/useSharedContextMenu';
-import { isItemsOwnedByCurrentUser, sortSharedItems } from '../sharedViewUtils';
+import { isItemsOwnedByCurrentUser, sortSharedItems } from '../utils/sharedViewUtils';
 
 type ShareItemListContainerProps = {
   disableKeyboardShortcuts: boolean;
