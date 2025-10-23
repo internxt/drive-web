@@ -50,8 +50,18 @@ interface PassObjectInterface {
 }
 
 /**
+ * Computes MAC using keyed Blake3
+ * @param {Uint8Array} sessionKey - The session key
+ * @param {string[]} data - The data to authenticate
+ * @returns {Promise<string>} The resulting MAC
+ */
+async function balke3MAC(sessionKey: Uint8Array, data: string[]): Promise<string> {
+  return blake3(JSON.stringify(data), 256, sessionKey);
+}
+
+/**
  * Extends the given secret to the required number of bits
- * @param {string} secret - The original secret
+ * @param {Uint8Array} secret - The original secret
  * @param {number} length - The desired bitlength
  * @returns {Promise<string>} The extended secret of the desired bitlength
  */
@@ -179,4 +189,5 @@ export {
   getSha512FromHex,
   passToHash,
   renameFile,
+  balke3MAC,
 };

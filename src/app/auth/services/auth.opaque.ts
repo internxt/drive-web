@@ -8,74 +8,26 @@ import { planThunks } from 'app/store/slices/plan';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { SdkFactory } from '../../core/factory/sdk';
 import * as Sentry from '@sentry/react';
-import { symmetric, utils, derive } from 'internxt-crypto';
 import localStorageService from 'app/core/services/local-storage.service';
 import { trackSignUp } from 'app/analytics/impact.service';
-import * as bip39 from 'bip39';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
-import { RegisterOpaqueDetails, UserKeys } from '@internxt/sdk';
+
+import { RegisterOpaqueDetails } from '@internxt/sdk';
 import { readReferalCookie } from 'app/auth/services/auth.service';
-import { getHmacSha512 } from 'app/crypto/services/utils';
 import { generateCaptchaToken } from 'app/utils/generateCaptchaToken';
+import {
+  decryptUserKeysAndMnemonic,
+  encryptUserKeysAndMnemonic,
+  authenticateRequest,
+  encryptSessionKey,
+  decryptSessionKey,
+  generateUserSecrets,
+} from './auth.crypto';
 
-async function encryptUserKeysAndMnemonic(
-  userKeys: UserKeys,
-  mnemonic: string,
-  exportKey: string,
-): Promise<{ encMnemonic: string; encKeys: UserKeys }> {
-  const keyArray = utils.base64ToUint8Array(exportKey);
-  const cryptoKey = await symmetric.importSymmetricCryptoKey(keyArray);
-  const encPrivateKey = await symmetric.encryptSymmetrically(cryptoKey, userKeys.ecc.privateKey, 'user-private-key');
-  const encPrivateKyberKey = await symmetric.encryptSymmetrically(
-    cryptoKey,
-    userKeys.kyber.privateKey,
-    'user-private-kyber-key',
-  );
-  const encMnemonic = await symmetric.encryptSymmetrically(cryptoKey, mnemonic, 'user-mnemonic');
-
-  const encKeys: UserKeys = {
-    ecc: {
-      privateKey: encPrivateKey,
-      publicKey: userKeys.ecc.publicKey,
-    },
-    kyber: {
-      privateKey: encPrivateKyberKey,
-      publicKey: userKeys.kyber.publicKey,
-    },
-  };
-  return { encMnemonic, encKeys };
-}
-
-async function decryptUserKeysAndMnemonic(
-  encMnemonic: string,
-  encKeys: UserKeys,
-  key: string,
-): Promise<{ keys: UserKeys; clearMnemonic: string }> {
-  const keyArray = utils.base64ToUint8Array(key);
-  const cryptoKey = await symmetric.importSymmetricCryptoKey(keyArray);
-  const privateKey = await symmetric.decryptSymmetrically(cryptoKey, encKeys.ecc.privateKey, 'user-private-key');
-  const privateKyberKey = await symmetric.decryptSymmetrically(
-    cryptoKey,
-    encKeys.kyber.privateKey,
-    'user-private-kyber-key',
-  );
-  const clearMnemonic = await symmetric.decryptSymmetrically(cryptoKey, encMnemonic, 'user-mnemonic');
-
-  const keys: UserKeys = {
-    ecc: {
-      privateKey: privateKey,
-      publicKey: encKeys.ecc.publicKey,
-    },
-    kyber: {
-      privateKey: privateKyberKey,
-      publicKey: encKeys.kyber.publicKey,
-    },
-  };
-  return { keys, clearMnemonic };
-}
-
-export const logInOpaque = async (params: LogInParamsOpaque): Promise<ProfileInfoOpaque> => {
-  const { email, password, twoFactorCode, dispatch } = params;
+export const doLogInOpaque = async (
+  email: string,
+  password: string,
+  twoFactorCode: string,
+): Promise<ProfileInfoOpaque> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const { clientLoginState, startLoginRequest } = opaque.client.startLogin({
     password,
@@ -86,34 +38,42 @@ export const logInOpaque = async (params: LogInParamsOpaque): Promise<ProfileInf
     clientLoginState,
     loginResponse,
     password,
-    keyStretching: 'memory-constrained',
   });
   if (!loginResult) {
     throw new Error('Login failed');
   }
   const { exportKey, finishLoginRequest, sessionKey } = loginResult;
-  const data = await authClient.loginOpaqueFinish(email, finishLoginRequest);
-  const { user, token } = data;
+  const { user, sessionID } = await authClient.loginOpaqueFinish(email, finishLoginRequest);
 
-  const { keys, clearMnemonic } = await decryptUserKeysAndMnemonic(user.mnemonic, user.keys, exportKey);
+  return { user, sessionID, sessionKey, exportKey };
+};
+
+export const logInOpaque = async (
+  params: LogInParamsOpaque,
+): Promise<{ token: string; user: UserSettings; mnemonic: string }> => {
+  const { email, password, twoFactorCode, dispatch } = params;
+  const { sessionID, user: encUser, sessionKey, exportKey } = await doLogInOpaque(email, password, twoFactorCode);
+
+  const { keys, mnemonic } = await decryptUserKeysAndMnemonic(encUser.mnemonic, encUser.keys, exportKey);
+
+  const user = {
+    ...encUser,
+    mnemonic,
+    privateKey: keys.ecc.privateKey,
+    keys,
+  };
+
+  localStorageService.set('xMnemonic', mnemonic);
+  localStorageService.set('xNewToken', sessionID);
+  await setSessionKey(password, sessionKey);
+
   Sentry.setUser({
     id: user.uuid,
     email: user.email,
     sharedWorkspace: user.sharedWorkspace,
   });
 
-  const clearUser = {
-    ...user,
-    mnemonic: clearMnemonic,
-    privateKey: keys.ecc.privateKey,
-    keys,
-  };
-
-  localStorageService.set('xMnemonic', clearMnemonic);
-  localStorageService.set('xNewToken', token);
-  await setSessionKey(password, sessionKey);
-
-  dispatch(userActions.setUser(clearUser));
+  dispatch(userActions.setUser(user));
 
   try {
     dispatch(productsThunks.initializeThunk());
@@ -128,42 +88,39 @@ export const logInOpaque = async (params: LogInParamsOpaque): Promise<ProfileInf
     throw new Error(error.message);
   }
 
-  userActions.setUser(clearUser);
+  userActions.setUser(user);
 
-  return { token, user: clearUser, mnemonic: clearMnemonic };
+  return { token: sessionID, user, mnemonic };
 };
 
-export const signUpOpaque = async (params: SignUpParamsOpaque) => {
-  const { email, password, redeemCodeObject, dispatch } = params;
+export const doSignUpOpaque = async (
+  email: string,
+  password: string,
+  captcha: string,
+  referrer: string,
+  referral: string,
+) => {
   const { clientRegistrationState, registrationRequest } = opaque.client.startRegistration({ password });
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  const response = await authClient.registerOpaqueStart(email, registrationRequest);
+  const { signUpResponse } = await authClient.registerOpaqueStart(email, registrationRequest);
 
   const { exportKey, registrationRecord } = opaque.client.finishRegistration({
     clientRegistrationState,
-    registrationResponse: response.signUpResponse,
+    registrationResponse: signUpResponse,
     password,
   });
-  const clearMnemonic = bip39.generateMnemonic(256);
-  const { privateKeyArmored, publicKeyArmored, publicKyberKeyBase64, privateKyberKeyBase64 } = await generateNewKeys();
-  const keys: UserKeys = {
-    ecc: { privateKey: privateKeyArmored, publicKey: publicKeyArmored },
-    kyber: {
-      privateKey: privateKyberKeyBase64,
-      publicKey: publicKyberKeyBase64,
-    },
-  };
-  const { encKeys, encMnemonic } = await encryptUserKeysAndMnemonic(keys, clearMnemonic, exportKey);
-  const authCaptcha = await generateCaptchaToken();
+  const { keys, mnemonic } = await generateUserSecrets();
+  const { encKeys, encMnemonic } = await encryptUserKeysAndMnemonic(keys, mnemonic, exportKey);
+
   const registerDetails: RegisterOpaqueDetails = {
     name: 'My',
     lastname: 'Internxt',
     email: email.toLowerCase(),
     keys: encKeys,
     mnemonic: encMnemonic,
-    referral: readReferalCookie(),
-    captcha: authCaptcha,
-    referrer: '',
+    referral,
+    captcha,
+    referrer,
   };
 
   const { clientLoginState, startLoginRequest } = opaque.client.startLogin({
@@ -179,19 +136,36 @@ export const signUpOpaque = async (params: SignUpParamsOpaque) => {
     clientLoginState,
     loginResponse,
     password,
-    keyStretching: 'memory-constrained',
   });
   if (!loginResult) {
     throw new Error('Login failed');
   }
   const { finishLoginRequest, sessionKey } = loginResult;
-  const data = await authClient.loginOpaqueFinish(email, finishLoginRequest);
-  const { user: xUser, token: newToken } = data;
+  const { user, sessionID } = await authClient.loginOpaqueFinish(email, finishLoginRequest);
+
+  return { user, sessionID, sessionKey, mnemonic, keys, exportKey };
+};
+
+export const signUpOpaque = async (params: SignUpParamsOpaque) => {
+  const { email, password, redeemCodeObject, dispatch } = params;
+
+  const authCaptcha = await generateCaptchaToken();
+  const referrer = '';
+  const referral = readReferalCookie() ?? '';
+
+  const {
+    user: xUser,
+    sessionID,
+    sessionKey,
+    mnemonic,
+    keys,
+  } = await doSignUpOpaque(email, password, authCaptcha, referrer, referral);
+
   await setSessionKey(password, sessionKey);
 
   localStorageService.clear();
-  localStorageService.set('xMnemonic', clearMnemonic);
-  localStorageService.set('xNewToken', newToken);
+  localStorageService.set('xMnemonic', mnemonic);
+  localStorageService.set('xNewToken', sessionID);
 
   const user = {
     ...xUser,
@@ -207,45 +181,42 @@ export const signUpOpaque = async (params: SignUpParamsOpaque) => {
   dispatch(referralsThunks.initializeThunk());
   await trackSignUp(xUser.uuid);
 
-  return { token: newToken, user: xUser, mnemonic: clearMnemonic };
+  return { token: sessionID, user: xUser, mnemonic };
 };
 
-const setSessionKey = async (password: string, sessionKey: string): Promise<void> => {
-  const { key, salt } = await derive.getKeyFromPassword(password);
-  const cryptoKey = await symmetric.importSymmetricCryptoKey(key);
-  const sessionKeyEnc = await symmetric.encryptSymmetrically(cryptoKey, sessionKey, 'UserSessionKey');
+export const setSessionKey = async (password: string, sessionKey: string): Promise<void> => {
+  const { sessionKeyEnc, salt } = await encryptSessionKey(password, sessionKey);
   localStorageService.set('sessionKey', sessionKeyEnc);
   localStorageService.set('sessionKeySalt', salt);
 };
 
-const getSessionKey = async (password: string): Promise<string> => {
+export const getSessionKey = async (password: string): Promise<string> => {
   const sessionKeyEnc = localStorageService.get('sessionKey') || '';
   const salt = localStorageService.get('sessionKeySalt') || '';
-  const keyBytes = await derive.getKeyFromPasswordAndSalt(password, salt);
-  const key = await symmetric.importSymmetricCryptoKey(keyBytes);
-  return symmetric.decryptSymmetrically(key, sessionKeyEnc, 'UserSessionKey');
+  return decryptSessionKey(password, sessionKeyEnc, salt);
 };
 
-const getPasswordProof = async (password: string, purpose: string[]): Promise<string> => {
+export const getMac = async (password: string, request: string[]): Promise<string> => {
   const sessionKey = await getSessionKey(password);
-  return getHmacSha512(sessionKey, purpose);
+  return authenticateRequest(sessionKey, request);
 };
 
 export const deactivate2FAOpaque = async (password: string, authCode: string): Promise<void> => {
-  const token = localStorageService.get('xNewToken') || undefined;
-  const proof = await getPasswordProof(password, ['deactivate2FA', authCode]);
+  const sessionID = localStorageService.get('xNewToken') || '';
+  const mac = await getMac(password, [authCode, sessionID]);
 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  return authClient.disableTwoFactorAuth(proof, authCode, token);
+  return authClient.disableTwoFactorAuth(mac, authCode, sessionID);
 };
 
-export const changePasswordOpaque = async (newPassword: string, currentPassword: string): Promise<void> => {
+export const doChangePasswordOpaque = async (newPassword: string, currentPassword: string, sessionID: string) => {
   const { clientRegistrationState, registrationRequest } = opaque.client.startRegistration({ password: newPassword });
 
-  const proof = await getPasswordProof(currentPassword, ['change-password-start', registrationRequest]);
+  const mac = await getMac(currentPassword, [registrationRequest, sessionID]);
 
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
-  const { registrationResponse } = await usersClient.changePwdOpaqueStart(proof, registrationRequest);
+
+  const { registrationResponse } = await usersClient.changePwdOpaqueStart(mac, sessionID, registrationRequest);
   const { exportKey, registrationRecord: newRegistrationRecord } = opaque.client.finishRegistration({
     clientRegistrationState,
     registrationResponse,
@@ -255,13 +226,20 @@ export const changePasswordOpaque = async (newPassword: string, currentPassword:
   const user = localStorageService.getUser() as UserSettings;
   const { encKeys, encMnemonic } = await encryptUserKeysAndMnemonic(user.keys, user.mnemonic, exportKey);
 
-  const proof_new = await getPasswordProof(currentPassword, ['change-password-finish', newRegistrationRecord, proof]);
   const { clientLoginState, startLoginRequest } = opaque.client.startLogin({
     password: newPassword,
   });
 
+  const mac_new = await getMac(currentPassword, [
+    newRegistrationRecord,
+    encMnemonic,
+    JSON.stringify(encKeys),
+    startLoginRequest,
+  ]);
+
   const { loginResponse } = await usersClient.changePwdOpaqueFinish(
-    proof_new,
+    mac_new,
+    sessionID,
     newRegistrationRecord,
     encMnemonic,
     encKeys,
@@ -272,14 +250,26 @@ export const changePasswordOpaque = async (newPassword: string, currentPassword:
     clientLoginState,
     loginResponse,
     password: newPassword,
-    keyStretching: 'memory-constrained',
   });
   if (!loginResult) {
     throw new Error('Login failed');
   }
   const { finishLoginRequest, sessionKey: newSessionKey } = loginResult;
-  await setSessionKey(newPassword, newSessionKey);
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  const { token } = await authClient.loginOpaqueFinish(user.email, finishLoginRequest);
-  localStorageService.set('xNewToken', token);
+
+  const { sessionID: new_sessionID } = await authClient.loginOpaqueFinish(user.email, finishLoginRequest);
+
+  return { exportKey, sessionID: new_sessionID, sessionKey: newSessionKey };
+};
+
+export const changePasswordOpaque = async (newPassword: string, currentPassword: string): Promise<void> => {
+  const sessionID = localStorageService.get('xNewToken') || '';
+  const {
+    exportKey,
+    sessionID: newSessionID,
+    sessionKey: newSessionKey,
+  } = await doChangePasswordOpaque(newPassword, currentPassword, sessionID);
+  await setSessionKey(newPassword, newSessionKey);
+  localStorageService.set('xNewToken', newSessionID);
+  localStorageService.set('exportKey', exportKey);
 };

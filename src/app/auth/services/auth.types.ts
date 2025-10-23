@@ -11,8 +11,9 @@ export type ProfileInfo = {
 
 export type ProfileInfoOpaque = {
   user: UserSettings;
-  token: string;
-  mnemonic: string;
+  sessionID: string;
+  sessionKey: string;
+  exportKey: string;
 };
 
 export type LogInParamsOpaque = {
