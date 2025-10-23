@@ -13,9 +13,7 @@ vi.mock('../../../share/services/share.service', () => ({
 const MOCK_FILE_ENTRY = {
   isFile: true,
   isDirectory: false,
-  file: vi.fn((successCallback, errorCallback) =>
-    successCallback(new File(['file content'], 'mockFile.txt', { type: 'text/plain' })),
-  ),
+  file: vi.fn((successCallback) => successCallback(new File(['file content'], 'mockFile.txt', { type: 'text/plain' }))),
 };
 
 const MOCK_FOLDER_ENTRY = {

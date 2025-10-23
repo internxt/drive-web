@@ -53,7 +53,6 @@ export interface TextInputProps {
   patternHint?: string;
   passwordError?: boolean;
   onChange?: (e: any) => void | (() => void);
-  onChangeText?: (text: string) => void;
   style?: CSSProperties;
   onFocus?: (e: any) => void | (() => void);
   onBlur?: (e: any) => void | (() => void);
@@ -86,7 +85,6 @@ const TextInput = (props: TextInputProps) => {
         props.className ?? ''
       }`}
       onChange={props.onChange}
-      onKeyPress={() => props.onChangeText}
       onKeyDown={props.onKeyDown}
       onFocus={(e) => {
         if (props.autoCompleteOnFocus) {

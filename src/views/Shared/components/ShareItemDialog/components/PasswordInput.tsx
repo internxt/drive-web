@@ -13,19 +13,17 @@ const PasswordInput = (props: TextInputProps) => {
         isPasswordInput
         passwordError={props.passwordError}
       />
-      <div
+      <button
+        type="button"
         onClick={() => setShowPassword(!showPassword)}
+        disabled={props.disabled}
+        aria-label={showPassword ? 'Hide password' : 'Show password'}
         className={`absolute top-0 right-0 flex h-11 w-11 flex-col items-center justify-center ${
           props.disabled ? 'text-gray-30' : 'text-gray-100'
         } cursor-pointer`}
       >
-        <div
-          onKeyDown={(e) => (e['code'] === 'Space' || e['code'] === 'Enter') && setShowPassword(!showPassword)}
-          tabIndex={0}
-        >
-          {showPassword ? <Eye className="h-6 w-6" /> : <EyeSlash className="h-6 w-6" />}
-        </div>
-      </div>
+        {showPassword ? <Eye className="h-6 w-6" /> : <EyeSlash className="h-6 w-6" />}
+      </button>
     </div>
   );
 };

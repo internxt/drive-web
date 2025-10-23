@@ -1,6 +1,6 @@
 import { t } from 'i18next';
 import { SharedNamePath } from 'app/share/types';
-import { useShareViewContext } from 'app/share/views/SharedLinksView/context/SharedViewContextProvider';
+import { useShareViewContext } from '../../../../../views/Shared/context/SharedViewContextProvider';
 import {
   setPage,
   setHasMoreFolders,
@@ -8,7 +8,7 @@ import {
   setSelectedItems,
   setCurrentFolderLevelResourcesToken,
   setCurrentFolderId,
-} from 'app/share/views/SharedLinksView/context/SharedViewContext.actions';
+} from '../../../../../views/Shared/context/SharedViewContext.actions';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import { canItemDrop, onItemDropped } from '../helper';
