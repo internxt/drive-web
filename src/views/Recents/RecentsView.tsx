@@ -2,13 +2,13 @@ import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet-async';
 
-import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
-import navigationService from '../../../core/services/navigation.service';
-import { AppDispatch, RootState } from '../../../store';
-import { storageActions, storageSelectors } from '../../../store/slices/storage';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
-import { DriveItemData } from '../../types';
-import { AppView } from '../../../core/types';
+import DriveExplorer from 'app/drive/components/DriveExplorer/DriveExplorer';
+import navigationService from 'app/core/services/navigation.service';
+import { AppDispatch, RootState } from 'app/store';
+import { storageActions, storageSelectors } from 'app/store/slices/storage';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { DriveItemData } from 'app/drive/types';
+import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export interface RecentsViewProps {
@@ -41,7 +41,7 @@ const RecentsView = (props: RecentsViewProps) => {
         <title>{translate('sideNav.recents')} - Internxt Drive</title>
       </Helmet>
       <DriveExplorer
-        title={translate('views.recents.head') as string}
+        title={translate('views.recents.head')}
         isLoading={isLoadingRecents}
         items={items}
         onFolderCreated={redirectToDrive}

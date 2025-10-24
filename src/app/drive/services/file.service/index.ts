@@ -41,11 +41,6 @@ export async function deleteFile(fileData: DriveFileData): Promise<void> {
   await storageClient.deleteFileByUuid(fileData.uuid);
 }
 
-async function fetchRecents(limit: number): Promise<StorageTypes.DriveFileData[]> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  return storageClient.getRecentFilesV2(limit);
-}
-
 async function fetchDeleted(): Promise<DriveFileData[]> {
   const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
 
@@ -67,7 +62,6 @@ export function getFile(uuid: string, workspacesToken?: string): Promise<FileMet
 const fileService = {
   updateMetaData,
   moveFileByUuid,
-  fetchRecents,
   uploadFile,
   fetchDeleted,
   getFile,
