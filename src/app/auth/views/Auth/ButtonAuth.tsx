@@ -1,4 +1,4 @@
-import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
+import { useSignUp } from '../../../../views/Signup/hooks/useSignup';
 import { useAppDispatch } from 'app/store/hooks';
 import React, { useState } from 'react';
 import signup from './signup';

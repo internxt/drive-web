@@ -3,8 +3,8 @@ import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStreng
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Info, WarningCircle } from '@phosphor-icons/react';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
-import { Views } from 'app/auth/components/SignUp/SignUp';
-import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
+import { Views } from '../../../../views/Signup/components/SignupForm';
+import { useSignUp } from '../../../../views/Signup/hooks/useSignup';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';

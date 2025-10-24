@@ -2,10 +2,10 @@ import { RegisterDetails } from '@internxt/sdk';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as bip39 from 'bip39';
 
-import { readReferalCookie, RegisterFunction } from 'app/auth/services/auth.service';
-import { SdkFactory } from 'app/core/factory/sdk';
-import { getKeys } from 'app/crypto/services/keys.service';
-import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
+import { readReferalCookie, RegisterFunction } from '../../../app/auth/services/auth.service';
+import { SdkFactory } from '../../../app/core/factory/sdk';
+import { getKeys } from '../../../app/crypto/services/keys.service';
+import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from '../../../app/crypto/services/utils';
 
 type RegisterPreCreatedUser = (
   email: string,

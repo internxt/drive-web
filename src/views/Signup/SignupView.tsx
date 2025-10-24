@@ -1,8 +1,8 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
-import SignUp from '../../components/SignUp/SignUp';
+import SignUpForm from './components/SignupForm';
 import { useMemo } from 'react';
-import authService from '../../services/auth.service';
+import authService from '../../app/auth/services/auth.service';
 
 export interface SignUpViewProps {
   location: {
@@ -14,7 +14,7 @@ export interface SignUpViewProps {
 export default function SignUpView(props: SignUpViewProps): JSX.Element {
   const { translate } = useTranslationContext();
   const autoSubmit = useMemo(
-    () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
+    () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(globalThis.location.search)),
     [],
   );
   const isRegularSignup = !props.displayIframe && !autoSubmit.enabled;
@@ -30,7 +30,7 @@ export default function SignUpView(props: SignUpViewProps): JSX.Element {
       )}
 
       <div className={`flex h-full flex-col ${!props.displayIframe && 'items-center justify-center'}`}>
-        <SignUp {...props} />
+        <SignUpForm {...props} />
       </div>
 
       {isRegularSignup && (

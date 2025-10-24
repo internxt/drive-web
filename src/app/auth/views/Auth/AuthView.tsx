@@ -1,5 +1,5 @@
 import { useAppDispatch } from 'app/store/hooks';
-import { useSignUp } from '../../components/SignUp/useSignUp';
+import { useSignUp } from '../../../../views/Signup/hooks/useSignup';
 import { useState } from 'react';
 
 import { IFormValues } from 'app/core/types';

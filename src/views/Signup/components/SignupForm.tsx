@@ -6,25 +6,25 @@ import { Link } from 'react-router-dom';
 import { Info, WarningCircle } from '@phosphor-icons/react';
 import { Helmet } from 'react-helmet-async';
 
-import { useAppDispatch } from '../../../store/hooks';
-import { planThunks } from '../../../store/slices/plan';
-import errorService from '../../../core/services/error.service';
-import navigationService from '../../../core/services/navigation.service';
-import { AppView, IFormValues } from '../../../core/types';
-import TextInput from '../TextInput/TextInput';
-import PasswordInput from '../PasswordInput/PasswordInput';
+import { useAppDispatch } from '../../../app/store/hooks';
+import { planThunks } from '../../../app/store/slices/plan';
+import errorService from '../../../app/core/services/error.service';
+import navigationService from '../../../app/core/services/navigation.service';
+import { AppView, IFormValues } from '../../../app/core/types';
+import TextInput from '../../../app/auth/components/TextInput/TextInput';
+import PasswordInput from '../../../app/auth/components/PasswordInput/PasswordInput';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import PasswordStrengthIndicator from '../../../shared/components/PasswordStrengthIndicator';
-import { useSignUp } from './useSignUp';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import authService, { authenticateUser } from '../../../auth/services/auth.service';
-import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
-import paymentService from '../../../payment/services/payment.service';
-import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
+import PasswordStrengthIndicator from '../../../app/shared/components/PasswordStrengthIndicator';
+import { useSignUp } from '../hooks/useSignup';
+import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
+import authService, { authenticateUser } from '../../../app/auth/services/auth.service';
+import PreparingWorkspaceAnimation from '../../../app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
+import paymentService from '../../../app/payment/services/payment.service';
+import { MAX_PASSWORD_LENGTH } from '../../../app/shared/components/ValidPassword';
 import { Button } from '@internxt/ui';
-import { AuthMethodTypes } from 'app/payment/types';
-import vpnAuthService from 'app/auth/services/vpnAuth.service';
-import envService from 'app/core/services/env.service';
+import { AuthMethodTypes } from '../../../app/payment/types';
+import vpnAuthService from '../../../app/auth/services/vpnAuth.service';
+import envService from '../../../app/core/services/env.service';
 
 export interface SignUpProps {
   location: {
@@ -39,14 +39,14 @@ type PasswordState = {
 
 export type Views = 'signUp' | 'downloadBackupKey';
 
-function SignUp(props: SignUpProps): JSX.Element {
+function SignUpForm(props: Readonly<SignUpProps>): JSX.Element {
   const { translate } = useTranslationContext();
   const [isValidPassword, setIsValidPassword] = useState(false);
-  const [view, setView] = useState<Views>('signUp');
+  const [view] = useState<Views>('signUp');
 
   const qs = queryString.parse(navigationService.history.location.search);
   const autoSubmit = useMemo(
-    () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
+    () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(globalThis.location.search)),
     [],
   );
   const { doRegister } = useSignUp(qs.register === 'activate' ? 'activate' : 'appsumo');
@@ -147,7 +147,7 @@ function SignUp(props: SignUpProps): JSX.Element {
   };
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
-    const redeemCodeObject = autoSubmit.credentials && autoSubmit.credentials.redeemCodeObject;
+    const redeemCodeObject = autoSubmit.credentials?.redeemCodeObject;
     event?.preventDefault();
     setIsLoading(true);
 
@@ -200,7 +200,7 @@ function SignUp(props: SignUpProps): JSX.Element {
       provider: string;
     },
   ) => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(globalThis.location.search);
     const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
     const redirectUrl = authService.getRedirectUrl(urlParams, xToken);
     const isVPNAuth = urlParams.get('vpnAuth');
@@ -208,7 +208,7 @@ function SignUp(props: SignUpProps): JSX.Element {
     handleVPNAuth(isVPNAuth, xNewToken);
 
     if (redirectUrl) {
-      window.location.replace(redirectUrl);
+      globalThis.location.replace(redirectUrl);
     } else if (redeemCodeObject) {
       await handleRedeemCode(redeemCodeObject);
     } else {
@@ -217,9 +217,108 @@ function SignUp(props: SignUpProps): JSX.Element {
   };
 
   const getLoginLink = () => {
-    const currentParams = new URLSearchParams(window.location.search);
+    const currentParams = new URLSearchParams(globalThis.location.search);
 
     return currentParams.toString() ? '/login?' + currentParams.toString() : '/login';
+  };
+
+  const renderContent = () => {
+    if (showPreparingWorkspaceAnimation) {
+      return <PreparingWorkspaceAnimation />;
+    }
+
+    if (view === 'downloadBackupKey') {
+      //TODO: Use this component when we have to implement the download of the backup key
+      // return <DownloadBackupKey onRedirect={onRedirect} />;
+      return <></>;
+    }
+
+    return (
+      <div className="flex flex-col items-start space-y-5">
+        <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>
+
+        <form className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
+          <TextInput
+            placeholder={translate('auth.email')}
+            label="email"
+            type="email"
+            disabled={hasEmailParam}
+            register={register}
+            required={true}
+            minLength={{ value: 1, message: 'Email must not be empty' }}
+            error={errors.email}
+          />
+
+          <label className="space-y-0.5">
+            <PasswordInput
+              className={passwordState ? passwordState.tag : ''}
+              placeholder={translate('auth.password')}
+              label="password"
+              maxLength={MAX_PASSWORD_LENGTH}
+              register={register}
+              onFocus={() => setShowPasswordIndicator(true)}
+              required={true}
+              error={errors.password}
+            />
+            {showPasswordIndicator && passwordState && (
+              <PasswordStrengthIndicator className="pt-1" strength={passwordState.tag} label={passwordState.label} />
+            )}
+            {bottomInfoError && (
+              <div className="flex flex-row items-start pt-1">
+                <div className="flex h-5 flex-row items-center">
+                  <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
+                </div>
+                <span className="font-base w-56 text-sm text-red">{bottomInfoError}</span>
+              </div>
+            )}
+          </label>
+
+          <div className="flex space-x-2.5 rounded-lg bg-primary/10 p-3 pr-4 dark:bg-primary/20">
+            <Info size={20} className="shrink-0 text-primary" />
+            <p className="text-xs">
+              {translate('auth.signup.info.normalText')}{' '}
+              <span className="font-semibold">{translate('auth.signup.info.boldText')}</span>{' '}
+              <span className="font-semibold text-primary underline">
+                <a href="https://help.internxt.com/en/articles/8450457-how-do-i-create-a-backup-key" target="_blank">
+                  {translate('auth.signup.info.cta')}
+                </a>
+              </span>
+            </p>
+          </div>
+
+          <Button
+            disabled={isLoading || !isValidPassword}
+            loading={isLoading}
+            type="submit"
+            variant="primary"
+            className="w-full"
+          >
+            {isLoading && isValid && isValidPassword
+              ? `${translate('auth.signup.encrypting')}...`
+              : translate('auth.signup.title')}
+          </Button>
+        </form>
+
+        <span className="mt-2 w-full text-xs text-gray-50">
+          {translate('auth.terms1')}{' '}
+          <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-60">
+            {translate('auth.terms2')}
+          </a>
+        </span>
+
+        <div className="w-full border-b border-gray-10" />
+
+        <div className="flex w-full items-center justify-center space-x-1.5 font-medium">
+          <span>{translate('auth.signup.haveAccount')}</span>
+          <Link
+            to={getLoginLink()}
+            className="cursor-pointer font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
+          >
+            {translate('auth.signup.login')}
+          </Link>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -234,114 +333,10 @@ function SignUp(props: SignUpProps): JSX.Element {
             : 'h-fit w-96 flex-col items-center justify-center px-8 py-10'
         }`}
       >
-        {showPreparingWorkspaceAnimation ? (
-          <PreparingWorkspaceAnimation />
-        ) : view === 'downloadBackupKey' ? (
-          //TODO: Use this component when we have to implement the download of the backup key
-          // <DownloadBackupKey onRedirect={onRedirect} />
-          <></>
-        ) : (
-          <div className="flex flex-col items-start space-y-5">
-            <div className="flex flex-col items-start space-y-5">
-              <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>
-
-              <form className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
-                <TextInput
-                  placeholder={translate('auth.email')}
-                  label="email"
-                  type="email"
-                  disabled={hasEmailParam}
-                  register={register}
-                  required={true}
-                  minLength={{ value: 1, message: 'Email must not be empty' }}
-                  error={errors.email}
-                />
-
-                <label className="space-y-0.5">
-                  <PasswordInput
-                    className={passwordState ? passwordState.tag : ''}
-                    placeholder={translate('auth.password')}
-                    label="password"
-                    maxLength={MAX_PASSWORD_LENGTH}
-                    register={register}
-                    onFocus={() => setShowPasswordIndicator(true)}
-                    required={true}
-                    error={errors.password}
-                  />
-                  {showPasswordIndicator && passwordState && (
-                    <PasswordStrengthIndicator
-                      className="pt-1"
-                      strength={passwordState.tag}
-                      label={passwordState.label}
-                    />
-                  )}
-                  {bottomInfoError && (
-                    <div className="flex flex-row items-start pt-1">
-                      <div className="flex h-5 flex-row items-center">
-                        <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
-                      </div>
-                      <span className="font-base w-56 text-sm text-red">{bottomInfoError}</span>
-                    </div>
-                  )}
-                </label>
-
-                <div className="flex space-x-2.5 rounded-lg bg-primary/10 p-3 pr-4 dark:bg-primary/20">
-                  <Info size={20} className="shrink-0 text-primary" />
-                  <p className="text-xs">
-                    {translate('auth.signup.info.normalText')}{' '}
-                    <span className="font-semibold">{translate('auth.signup.info.boldText')}</span>{' '}
-                    <span className="font-semibold text-primary underline">
-                      <a
-                        href="https://help.internxt.com/en/articles/8450457-how-do-i-create-a-backup-key"
-                        target="_blank"
-                      >
-                        {translate('auth.signup.info.cta')}
-                      </a>
-                    </span>
-                  </p>
-                </div>
-
-                <Button
-                  disabled={isLoading || !isValidPassword}
-                  loading={isLoading}
-                  type="submit"
-                  variant="primary"
-                  className="w-full"
-                >
-                  {isLoading && isValid && isValidPassword
-                    ? `${translate('auth.signup.encrypting')}...`
-                    : translate('auth.signup.title')}
-                </Button>
-              </form>
-
-              <span className="mt-2 w-full text-xs text-gray-50">
-                {translate('auth.terms1')}{' '}
-                <a
-                  href="https://internxt.com/legal"
-                  target="_blank"
-                  className="text-xs text-gray-50 hover:text-gray-60"
-                >
-                  {translate('auth.terms2')}
-                </a>
-              </span>
-
-              <div className="w-full border-b border-gray-10" />
-
-              <div className="flex w-full items-center justify-center space-x-1.5 font-medium">
-                <span>{translate('auth.signup.haveAccount')}</span>
-                <Link
-                  to={getLoginLink()}
-                  className="cursor-pointer font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
-                >
-                  {translate('auth.signup.login')}
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
+        {renderContent()}
       </div>
     </>
   );
 }
 
-export default SignUp;
+export default SignUpForm;
