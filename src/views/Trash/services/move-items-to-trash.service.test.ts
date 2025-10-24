@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import moveItemsToTrash from './move-items-to-trash';
+import moveItemsToTrash from './move-items-to-trash.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'app/core/services/error.service';
 import { deleteDatabaseItems } from 'app/drive/services/database.service';
@@ -8,7 +8,7 @@ import notificationsService from 'app/notifications/services/notifications.servi
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import { processBatchConcurrently } from './batch-processor';
+import { processBatchConcurrently } from './batch-processor.service';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -58,7 +58,7 @@ vi.mock('app/store/slices/storage/storage.thunks', () => ({
   },
 }));
 
-vi.mock('./batch-processor', () => ({
+vi.mock('./batch-processor.service', () => ({
   processBatchConcurrently: vi.fn(),
 }));
 

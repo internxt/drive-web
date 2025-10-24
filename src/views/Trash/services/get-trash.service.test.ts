@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import { getTrash, getTrashPaginated, getWorkspaceTrashPaginated } from './get_trash';
+import { getTrash, getTrashPaginated, getWorkspaceTrashPaginated } from './get-trash.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import DeleteItems from './delete-items';
+import deleteItems from './delete-items.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'app/core/services/error.service';
 import { deleteDatabaseItems } from 'app/drive/services/database.service';
@@ -7,7 +7,7 @@ import { DriveItemData } from 'app/drive/types';
 import notificationsService from 'app/notifications/services/notifications.service';
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
-import { processBatchConcurrently } from './batch-processor';
+import { processBatchConcurrently } from './batch-processor.service';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -50,7 +50,7 @@ vi.mock('app/store/slices/storage', () => ({
   },
 }));
 
-vi.mock('./batch-processor', () => ({
+vi.mock('./batch-processor.service', () => ({
   processBatchConcurrently: vi.fn(),
 }));
 
@@ -83,7 +83,7 @@ describe('DeleteItems', () => {
       }),
     });
 
-    await DeleteItems(mockItems);
+    await deleteItems(mockItems);
 
     expect(processBatchConcurrently).toHaveBeenCalled();
     expect(mockDeletePermanently).toHaveBeenCalledWith({
@@ -112,7 +112,7 @@ describe('DeleteItems', () => {
       }),
     });
 
-    await DeleteItems(mockItems);
+    await deleteItems(mockItems);
 
     expect(store.dispatch).toHaveBeenCalledWith(storageActions.addFoldersOnTrashLength(-1));
     expect(store.dispatch).toHaveBeenCalledWith(storageActions.addFilesOnTrashLength(0));
@@ -134,7 +134,7 @@ describe('DeleteItems', () => {
       }),
     });
 
-    await DeleteItems(mockItems);
+    await deleteItems(mockItems);
 
     expect(store.dispatch).toHaveBeenCalledWith(storageActions.addFoldersOnTrashLength(0));
     expect(store.dispatch).toHaveBeenCalledWith(storageActions.addFilesOnTrashLength(-1));
@@ -152,7 +152,7 @@ describe('DeleteItems', () => {
       }),
     });
 
-    await DeleteItems(mockItems);
+    await deleteItems(mockItems);
 
     expect(notificationsService.show).toHaveBeenCalledWith({
       text: 'error.errorDeletingFromTrash',

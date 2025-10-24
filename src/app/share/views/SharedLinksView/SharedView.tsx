@@ -17,7 +17,7 @@ import BreadcrumbsSharedView from 'app/shared/components/Breadcrumbs/Containers/
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';
-import moveItemsToTrash from '../../../../views/Trash/services/move-items-to-trash';
+import moveItemsToTrash from '../../../../views/Trash/services/move-items-to-trash.service';
 import errorService from '../../../core/services/error.service';
 import { UPLOAD_ITEMS_LIMIT } from '../../../drive/components/DriveExplorer/helpers/uploadHelpers';
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';

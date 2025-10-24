@@ -13,7 +13,7 @@ import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAnd
 import './DriveExplorerGridItem.scss';
 import { Menu } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import moveItemsToTrash from '../../../../../../views/Trash/services/move-items-to-trash';
+import moveItemsToTrash from '../../../../../../views/Trash/services/move-items-to-trash.service';
 import transformItemService from 'app/drive/services/item-transform.service';
 
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {

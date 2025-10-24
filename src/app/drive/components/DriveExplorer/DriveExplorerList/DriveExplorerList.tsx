@@ -8,7 +8,7 @@ import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { skinSkeleton } from 'app/shared/Skeleton';
-import moveItemsToTrash from '../../../../../views/Trash/services/move-items-to-trash';
+import moveItemsToTrash from '../../../../../views/Trash/services/move-items-to-trash.service';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
 import shareService from '../../../../share/services/share.service';
 import { AppDispatch, RootState } from '../../../../store';

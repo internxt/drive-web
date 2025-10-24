@@ -7,7 +7,7 @@ import { DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
-import { processBatchConcurrently } from './batch-processor';
+import { processBatchConcurrently } from './batch-processor.service';
 
 const MAX_ITEMS_TO_DELETE = 10;
 const MAX_CONCURRENT_REQUESTS = 3;

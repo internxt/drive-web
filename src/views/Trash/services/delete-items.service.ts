@@ -7,12 +7,12 @@ import { DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
-import { processBatchConcurrently } from './batch-processor';
+import { processBatchConcurrently } from './batch-processor.service';
 
 const MAX_ITEMS_TO_DELETE = 20;
 const MAX_CONCURRENT_REQUESTS = 2;
 
-const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
+const deleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
   const items: Array<{ uuid: string; type: string }> = itemsToDelete.map((item) => {
     return {
       uuid: item.uuid,
@@ -73,4 +73,4 @@ const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
   }
 };
 
-export default DeleteItems;
+export default deleteItems;

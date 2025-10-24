@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import clearTrash from './clear-trash';
+import clearTrash from './clear-trash.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'app/core/services/error.service';
 import workspacesService from 'app/core/services/workspace.service';
