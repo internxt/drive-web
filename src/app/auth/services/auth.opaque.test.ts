@@ -2,7 +2,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as opaque from '@serenity-kit/opaque';
 import { describe, expect, it, vi } from 'vitest';
 import { SdkFactory } from '../../core/factory/sdk';
-import * as authService from './auth.opaque';
+import * as authOpaqueService from './auth.opaque';
 import { v4 as uuidV4 } from 'uuid';
 import { RegisterOpaqueDetails, UserKeys } from '@internxt/sdk';
 import { decryptUserKeysAndMnemonic } from './auth.crypto';
@@ -53,7 +53,6 @@ describe('logIn', () => {
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: vi.fn().mockImplementation(() => {
         return {
-          securityDetails: vi.fn().mockReturnValue({ tfaEnabled: true, opaqueLogin: true }),
           registerOpaqueStart: vi.fn().mockImplementation((email: string, registrationRequest: string) => {
             const { registrationResponse } = opaque.server.createRegistrationResponse({
               serverSetup,
@@ -135,8 +134,8 @@ describe('logIn', () => {
 
               const sessionKey = record.sessionKey;
 
-              const correct_mac = await hash.computeMac(sessionKey, [twoFactorCode, sessionID]);
-              if (correct_mac !== mac) {
+              const correctMac = await hash.computeMac(sessionKey, [twoFactorCode, sessionID]);
+              if (correctMac !== mac) {
                 throw new Error('HMAC is incorrect');
               } else return true;
             }),
@@ -154,8 +153,8 @@ describe('logIn', () => {
 
               const sessionKey = record.sessionKey;
 
-              const correct_mac = await hash.computeMac(sessionKey, [registrationRequest, sessionID]);
-              if (correct_mac !== mac) {
+              const correctMac = await hash.computeMac(sessionKey, [registrationRequest, sessionID]);
+              if (correctMac !== mac) {
                 throw new Error('HMAC is incorrect');
               }
               const email = record.email ?? '';
@@ -186,32 +185,32 @@ describe('logIn', () => {
 
                 const sessionKey = record.sessionKey;
 
-                const correct_mac = await hash.computeMac(sessionKey, [
+                const correctMac = await hash.computeMac(sessionKey, [
                   registrationRecord,
                   encMnemonic,
                   JSON.stringify(encKeys),
                   startLoginRequest,
                 ]);
-                if (correct_mac !== mac) {
+                if (correctMac !== mac) {
                   throw new Error('HMAC is incorrect');
                 }
                 const email = record.email ?? '';
 
-                if (correct_mac !== mac) {
+                if (correctMac !== mac) {
                   throw new Error('HMAC is incorrect');
                 }
 
-                const old_user = users.get(email);
-                if (!old_user) {
+                const oldUser = users.get(email);
+                if (!oldUser) {
                   throw new Error('No user found');
                 }
-                const new_user = {
-                  ...old_user,
+                const newUser = {
+                  ...oldUser,
                   encKeys,
                   encMnemonic,
                 };
 
-                users.set(email, new_user);
+                users.set(email, newUser);
                 registrationRecords.set(email, registrationRecord);
 
                 const { loginResponse, serverLoginState } = opaque.server.startLogin({
@@ -236,10 +235,7 @@ describe('logIn', () => {
     const mockReferrer = 'referrer';
     const mockReferral = 'referral';
 
-    const { opaqueLogin } = await authService.is2FAorOpaqueNeeded(mockEmail);
-    expect(opaqueLogin).toBeTruthy();
-
-    const { sessionKey: sessionKey_signup, exportKey: exportKey_signUp } = await authService.doSignUpOpaque(
+    const { sessionKey: sessionKeySignup, exportKey: exportKeySignUp } = await authOpaqueService.signupOpaque(
       mockEmail,
       mockPassword,
       mockCaptcha,
@@ -247,19 +243,19 @@ describe('logIn', () => {
       mockReferral,
     );
     const {
-      sessionKey: sessionKey_login,
-      exportKey: exportKey_login,
+      sessionKey: sessionKeyLogin,
+      exportKey: exportKeyLogin,
       sessionID,
       user,
-    } = await authService.doLogInOpaque(mockEmail, mockPassword, mockTwoFactorCode);
+    } = await authOpaqueService.loginOpaque(mockEmail, mockPassword, mockTwoFactorCode);
 
-    expect(sessionKey_login).not.toEqual(sessionKey_signup);
-    expect(exportKey_login).toEqual(exportKey_signUp);
+    expect(sessionKeyLogin).not.toEqual(sessionKeySignup);
+    expect(exportKeyLogin).toEqual(exportKeySignUp);
 
     const mockStorage = new Map();
     mockStorage.set('xNewToken', sessionID);
 
-    const { keys, mnemonic } = await decryptUserKeysAndMnemonic(user.mnemonic, user.keys, exportKey_login);
+    const { keys, mnemonic } = await decryptUserKeysAndMnemonic(user.mnemonic, user.keys, exportKeyLogin);
 
     const clearUser = {
       ...user,
@@ -276,28 +272,28 @@ describe('logIn', () => {
       return mockStorage.get(key);
     });
 
-    await authService.setSessionKey(mockPassword, sessionKey_login);
-    const result = await authService.deactivate2FAOpaque(mockPassword, mockTwoFactorCode);
+    await authOpaqueService.setSessionKey(mockPassword, sessionKeyLogin);
+    const result = await authOpaqueService.deactivate2FAOpaque(mockPassword, mockTwoFactorCode);
     expect(result).toBeTruthy();
 
     const mockNewPassword = 'newPassword123';
     const {
-      exportKey: exportKey_change,
-      sessionID: sessionID_change,
-      sessionKey: sessionKey_change,
-    } = await authService.doChangePasswordOpaque(mockNewPassword, mockPassword, sessionID);
+      exportKey: exportKeyPwdChange,
+      sessionID: sessionIdPwdChange,
+      sessionKey: sessionKeyPwdChange,
+    } = await authOpaqueService.doChangePasswordOpaque(mockNewPassword, mockPassword, sessionID);
     const {
-      sessionKey: sessionKey_new_login,
-      exportKey: exportKey_new_login,
-      sessionID: new_sessionID,
-    } = await authService.doLogInOpaque(mockEmail, mockNewPassword, mockTwoFactorCode);
+      sessionKey: sessionKeyNewLogin,
+      exportKey: exportKeyNewLogin,
+      sessionID: newSessionID,
+    } = await authOpaqueService.loginOpaque(mockEmail, mockNewPassword, mockTwoFactorCode);
 
-    expect(sessionKey_login).not.toEqual(sessionKey_new_login);
-    expect(new_sessionID).not.toEqual(sessionID);
-    expect(exportKey_new_login).not.toEqual(exportKey_login);
+    expect(sessionKeyLogin).not.toEqual(sessionKeyNewLogin);
+    expect(newSessionID).not.toEqual(sessionID);
+    expect(exportKeyNewLogin).not.toEqual(exportKeyLogin);
 
-    expect(sessionKey_login).not.toEqual(sessionKey_change);
-    expect(new_sessionID).not.toEqual(sessionID_change);
-    expect(exportKey_new_login).toEqual(exportKey_change);
+    expect(sessionKeyLogin).not.toEqual(sessionKeyPwdChange);
+    expect(newSessionID).not.toEqual(sessionIdPwdChange);
+    expect(exportKeyNewLogin).toEqual(exportKeyPwdChange);
   });
 });

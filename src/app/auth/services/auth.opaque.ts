@@ -1,21 +1,12 @@
 import * as opaque from '@serenity-kit/opaque';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { ProfileInfoOpaque, SignUpParamsOpaque, LogInParamsOpaque } from './auth.types';
-import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
-import { productsThunks } from 'app/store/slices/products';
-import { referralsThunks } from 'app/store/slices/referrals';
-import { planThunks } from 'app/store/slices/plan';
-import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { SdkFactory } from '../../core/factory/sdk';
 import * as Sentry from '@sentry/react';
 import localStorageService from 'app/core/services/local-storage.service';
-import { trackSignUp } from 'app/analytics/impact.service';
 import { hash } from 'internxt-crypto';
-import AppError from 'app/core/types';
 
 import { RegisterOpaqueDetails } from '@internxt/sdk';
 import { readReferalCookie } from 'app/auth/services/auth.service';
-import { generateCaptchaToken } from 'app/utils/generateCaptchaToken';
 import {
   decryptUserKeysAndMnemonic,
   encryptUserKeysAndMnemonic,
@@ -24,18 +15,14 @@ import {
   generateUserSecrets,
 } from './auth.crypto';
 
-export const is2FAorOpaqueNeeded = async (email: string): Promise<{ tfaEnabled: boolean; opaqueLogin: boolean }> => {
-  try {
-    const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-    const securityDetails = await authClient.securityDetails(email);
-    return { tfaEnabled: securityDetails.tfaEnabled, opaqueLogin: securityDetails.opaqueLogin };
-  } catch (error) {
-    const err = error as Error & { status?: number };
-    throw new AppError(err.message ?? 'Login error', err.status ?? 500);
-  }
+export type ProfileInfoOpaque = {
+  user: UserSettings;
+  sessionID: string;
+  sessionKey: string;
+  exportKey: string;
 };
 
-export const doLogInOpaque = async (
+export const loginOpaque = async (
   email: string,
   password: string,
   twoFactorCode: string,
@@ -60,11 +47,12 @@ export const doLogInOpaque = async (
   return { user, sessionID, sessionKey, exportKey };
 };
 
-export const logInOpaque = async (
-  params: LogInParamsOpaque,
-): Promise<{ token: string; user: UserSettings; mnemonic: string }> => {
-  const { email, password, twoFactorCode, dispatch } = params;
-  const { sessionID, user: encUser, sessionKey, exportKey } = await doLogInOpaque(email, password, twoFactorCode);
+export const doLoginOpaque = async (
+  email: string,
+  password: string,
+  twoFactorCode: string,
+): Promise<{ token: string; user: UserSettings; mnemonic: string; newToken: string }> => {
+  const { sessionID, user: encUser, sessionKey, exportKey } = await loginOpaque(email, password, twoFactorCode);
 
   const { keys, mnemonic } = await decryptUserKeysAndMnemonic(encUser.mnemonic, encUser.keys, exportKey);
 
@@ -85,27 +73,10 @@ export const logInOpaque = async (
     sharedWorkspace: user.sharedWorkspace,
   });
 
-  dispatch(userActions.setUser(user));
-
-  try {
-    dispatch(productsThunks.initializeThunk());
-    dispatch(planThunks.initializeThunk());
-    dispatch(referralsThunks.initializeThunk());
-    await dispatch(initializeUserThunk())?.unwrap();
-    dispatch(workspaceThunks.fetchWorkspaces());
-    dispatch(workspaceThunks.checkAndSetLocalWorkspace());
-  } catch (e: unknown) {
-    const error = e as Error;
-
-    throw new Error(error.message);
-  }
-
-  userActions.setUser(user);
-
-  return { token: sessionID, user, mnemonic };
+  return { token: sessionID, user, mnemonic, newToken: sessionID };
 };
 
-export const doSignUpOpaque = async (
+export const signupOpaque = async (
   email: string,
   password: string,
   captcha: string,
@@ -155,13 +126,10 @@ export const doSignUpOpaque = async (
   const { finishLoginRequest, sessionKey } = loginResult;
   const { user, sessionID } = await authClient.loginOpaqueFinish(email, finishLoginRequest);
 
-  return { user, sessionID, sessionKey, mnemonic, keys, exportKey };
+  return { user, sessionID, sessionKey, mnemonic, exportKey };
 };
 
-export const signUpOpaque = async (params: SignUpParamsOpaque) => {
-  const { email, password, redeemCodeObject, dispatch } = params;
-
-  const authCaptcha = await generateCaptchaToken();
+export const doSignUpOpaque = async (email: string, password: string, captcha: string) => {
   const referrer = '';
   const referral = readReferalCookie() ?? '';
 
@@ -170,30 +138,11 @@ export const signUpOpaque = async (params: SignUpParamsOpaque) => {
     sessionID,
     sessionKey,
     mnemonic,
-    keys,
-  } = await doSignUpOpaque(email, password, authCaptcha, referrer, referral);
+  } = await signupOpaque(email, password, captcha, referral, referrer);
 
   await setSessionKey(password, sessionKey);
 
-  localStorageService.clear();
-  localStorageService.set('xMnemonic', mnemonic);
-  localStorageService.set('xNewToken', sessionID);
-
-  const user = {
-    ...xUser,
-    privateKey: keys.ecc.privateKey,
-    keys,
-  } as UserSettings;
-
-  dispatch(userActions.setUser(user));
-  await dispatch(userThunks.initializeUserThunk());
-  dispatch(productsThunks.initializeThunk());
-
-  if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
-  dispatch(referralsThunks.initializeThunk());
-  await trackSignUp(xUser.uuid);
-
-  return { token: sessionID, user: xUser, mnemonic };
+  return { xToken: sessionID, xUser, mnemonic, xNewToken: sessionID };
 };
 
 export const setSessionKey = async (password: string, sessionKey: string): Promise<void> => {
