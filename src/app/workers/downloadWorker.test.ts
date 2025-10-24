@@ -2,19 +2,22 @@ import { describe, expect, vi, beforeEach, test, afterEach } from 'vitest';
 import { DownloadWorker } from './downloadWorker';
 import createFileDownloadStream from 'app/drive/services/download.service/createFileDownloadStream';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import createMultipartFileDownloadStream from 'app/drive/services/download.service/createMultipartDownloadStream';
 
 vi.mock('app/drive/services/download.service/createFileDownloadStream', () => ({
   default: vi.fn(),
 }));
 
-vi.mock('app/core/services/stream.service', () => {
-  const actual = vi.importActual<typeof import('app/core/services/stream.service')>('app/core/services/stream.service');
+vi.mock('app/drive/services/download.service/createMultipartDownloadStream', () => ({
+  default: vi.fn(),
+}));
 
-  return {
-    ...actual,
-    binaryStreamToBlob: vi.fn(),
-  };
-});
+vi.mock('app/core/services/stream.service', () => ({
+  binaryStreamToBlob: vi.fn(),
+  buildProgressStream: vi.fn(),
+  decryptStream: vi.fn(),
+  joinReadableBinaryStreams: vi.fn(),
+}));
 
 describe('Download Worker', () => {
   const mockFile = {
@@ -68,6 +71,43 @@ describe('Download Worker', () => {
   });
 
   describe('downloadFile method', () => {
+    test('When the file size is more than or equal to 2GB, then the multipart download is used', async () => {
+      const mockedBigFile = { ...mockFile, size: 2 * 1024 * 1024 * 1024 };
+      const mockedChunks = [new Uint8Array([1, 2, 3])];
+      const mockReader = {
+        read: vi
+          .fn()
+          .mockResolvedValueOnce({ done: false, value: mockedChunks[0] })
+          .mockResolvedValueOnce({ done: true, value: undefined }),
+        releaseLock: vi.fn(),
+      };
+
+      const mockStream = {
+        getReader: vi.fn().mockReturnValue(mockReader),
+      };
+
+      vi.mocked(createMultipartFileDownloadStream).mockResolvedValue(mockStream as any);
+
+      const worker = DownloadWorker.instance;
+      await worker.downloadFile(
+        {
+          ...mockParams,
+          file: mockedBigFile,
+        },
+        mockCallbacks,
+      );
+
+      expect(createMultipartFileDownloadStream).toHaveBeenCalledWith(
+        mockedBigFile,
+        mockCallbacks.onProgress,
+        expect.any(AbortController),
+        mockParams.credentials,
+      );
+      expect(mockCallbacks.onChunk).toHaveBeenCalledWith(mockedChunks[0]);
+      expect(mockCallbacks.onBlob).not.toHaveBeenCalled();
+      expect(mockCallbacks.onSuccess).toHaveBeenCalledWith(mockedBigFile.fileId);
+    });
+
     test('When downloading a file for non-Brave browser, then it should use chunks', async () => {
       const mockedChunks = [new Uint8Array([1, 2, 3])];
       const mockReader = {
@@ -180,8 +220,9 @@ describe('Download Worker', () => {
       const mockedProgressValue = 75;
       let capturedProgressCallback: any;
 
-      vi.mocked(createFileDownloadStream).mockImplementation(async (_file, _workspace, progressCallback) => {
-        capturedProgressCallback = progressCallback;
+      vi.mocked(createFileDownloadStream).mockImplementation(async (_file, _isWorkspace, onProgress) => {
+        capturedProgressCallback = onProgress;
+        onProgress(mockedProgressValue);
 
         return {
           getReader: () => ({

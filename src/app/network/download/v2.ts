@@ -15,6 +15,7 @@ interface NetworkCredentials {
 interface DownloadFileParams {
   bucketId: string;
   fileId: string;
+  fileSize: number;
   options?: DownloadFileOptions;
 }
 
@@ -83,6 +84,28 @@ const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
       },
     ),
   ).download(bucketId, fileId, mnemonic, {
+    downloadingCallback: options?.notifyProgress,
+    abortController: options?.abortController,
+  });
+};
+
+export const multipartDownload = async (params) => {
+  const { bucketId, fileId, mnemonic, fileSize, options } = params;
+  const auth = await getAuthFromCredentials(params.creds);
+
+  return new NetworkFacade(
+    Network.client(
+      envService.getVariable('storjBridge'),
+      {
+        clientName: 'drive-web',
+        clientVersion: '1.0',
+      },
+      {
+        bridgeUser: params.creds ? auth.username : '',
+        userId: params.creds ? auth.password : '',
+      },
+    ),
+  ).downloadMultipart(bucketId, fileId, mnemonic, fileSize, {
     downloadingCallback: options?.notifyProgress,
     abortController: options?.abortController,
   });
