@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { deactivate2FA, userHas2FAStored } from 'app/auth/services/auth.service';
-import { deactivate2FAOpaque } from 'app/auth/services/auth.opaque';
 import { Button, Modal, Input } from '@internxt/ui';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -32,9 +31,9 @@ const TwoFactorAuthenticationDisableModal = ({
     e.preventDefault();
     setStatus('loading');
     try {
-      const { encryptedSalt, opaqueLogin } = await userHas2FAStored();
+      const { encryptedSalt } = await userHas2FAStored();
 
-      await (opaqueLogin ? deactivate2FAOpaque(password, authCode) : deactivate2FA(encryptedSalt, password, authCode));
+      await deactivate2FA(encryptedSalt, password, authCode);
 
       notificationsService.show({ text: translate('success.twoFactorAuthDisabled'), type: ToastType.Success });
       onDisabled();
