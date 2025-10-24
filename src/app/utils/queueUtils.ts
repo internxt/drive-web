@@ -1,5 +1,3 @@
-import { FIFTY_MEGABYTES } from 'app/network/networkConstants';
-
 export class QueueUtilsService {
   public static readonly instance: QueueUtilsService = new QueueUtilsService();
 
@@ -31,26 +29,5 @@ export class QueueUtilsService {
       /* noop */
     }
     return newConcurrency;
-  };
-
-  /**
-   * This function is used to calculate the chunk size and concurrency based on the file size when downloading a file (multipart download)
-   * @param fileSize - The file size in bytes
-   * @returns An object containing the chunk size and concurrency
-   */
-  public readonly calculateChunkSizeAndConcurrency = (fileSize: number): { chunkSize: number; concurrency: number } => {
-    const fileSizeGB = fileSize / (1024 * 1024 * 1024);
-
-    if (fileSizeGB <= 0.5) {
-      return { chunkSize: fileSize, concurrency: 1 };
-    } else if (fileSizeGB <= 2) {
-      return { chunkSize: FIFTY_MEGABYTES, concurrency: 6 };
-    } else if (fileSizeGB <= 5) {
-      return { chunkSize: FIFTY_MEGABYTES, concurrency: 6 };
-    } else if (fileSizeGB <= 10) {
-      return { chunkSize: FIFTY_MEGABYTES, concurrency: 6 };
-    } else {
-      return { chunkSize: FIFTY_MEGABYTES, concurrency: 6 };
-    }
   };
 }

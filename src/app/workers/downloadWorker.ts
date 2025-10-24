@@ -1,6 +1,8 @@
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import createFileDownloadStream from 'app/drive/services/download.service/createFileDownloadStream';
+import createMultipartFileDownloadStream from 'app/drive/services/download.service/createMultipartDownloadStream';
 import { DriveFileData } from 'app/drive/types';
+import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
 
 export class DownloadWorker {
   static readonly instance: DownloadWorker = new DownloadWorker();
@@ -42,12 +44,24 @@ export class DownloadWorker {
         type: file.type,
       });
 
-      const downloadedFile = await createFileDownloadStream(
-        file,
-        callbacks.onProgress,
-        this.abortController,
-        credentials,
-      );
+      let downloadedFile: ReadableStream<Uint8Array<ArrayBufferLike>>;
+
+      if (file.size >= MIN_DOWNLOAD_MULTIPART_SIZE) {
+        downloadedFile = await createMultipartFileDownloadStream(
+          file,
+          callbacks.onProgress,
+          this.abortController,
+          credentials,
+        );
+      } else {
+        downloadedFile = await createFileDownloadStream(
+          file,
+          isWorkspace,
+          callbacks.onProgress,
+          this.abortController,
+          credentials,
+        );
+      }
 
       this.abortController.signal.addEventListener('abort', abortHandler);
 

@@ -87,6 +87,7 @@ describe('Download Worker', () => {
 
       expect(createFileDownloadStream).toHaveBeenCalledWith(
         mockFile,
+        false,
         mockCallbacks.onProgress,
         expect.any(AbortController),
         mockParams.credentials,
@@ -177,7 +178,7 @@ describe('Download Worker', () => {
       const mockedProgressValue = 75;
       let capturedProgressCallback: any;
 
-      vi.mocked(createFileDownloadStream).mockImplementation(async (_file, onProgress) => {
+      vi.mocked(createFileDownloadStream).mockImplementation(async (_file, _isWorkspace, onProgress) => {
         capturedProgressCallback = onProgress;
         onProgress(mockedProgressValue);
 
