@@ -5,7 +5,7 @@ import { userActions } from 'app/store/slices/user';
 import * as keysService from 'app/crypto/services/keys.service';
 import { encryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
+import { useSignUp } from '../../../../views/Signup/hooks/useSignup';
 import { Buffer } from 'buffer';
 import { generateMnemonic } from 'bip39';
 import envService from 'app/core/services/env.service';
@@ -75,11 +75,11 @@ describe('onSubmit', () => {
       };
     });
 
-    vi.mock('app/auth/components/SignUp/SignUp', () => ({
+    vi.mock('../../../../views/Signup/components/SignupForm', () => ({
       Views: vi.fn(),
     }));
 
-    vi.mock('app/auth/components/SignUp/useSignUp', () => ({
+    vi.mock('../../../../views/Signup/hooks/useSignup', () => ({
       useSignUp: vi.fn().mockReturnValue({ doRegisterPreCreatedUser: vi.fn() }),
       parseUserSettingsEnsureKyberKeysAdded: vi.importActual,
     }));

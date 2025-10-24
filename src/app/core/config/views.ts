@@ -9,7 +9,7 @@ import BlockedAccountView from '../../auth/views/BlockedAccountView/BlockedAccou
 import RecoverAccountView from '../../auth/views/RecoverAccountView/RecoverAccountView';
 import RecoveryLinkView from '../../auth/views/RecoveryLinkView/RecoveryLinkView';
 import SignInView from '../../auth/views/SignInView/SignInView';
-import SignUpView from '../../auth/views/SignUpView/SignUpView';
+import SignUpView from '../../../views/Signup';
 import UniversalLinkSuccessView from '../../auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 import BackupsView from '../../backups/views/BackupsView/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
@@ -21,7 +21,7 @@ import TrashView from '../../drive/views/TrashView/TrashView';
 import CheckoutCancelView from '../../payment/views/CheckoutCancelView/CheckoutCancelView';
 import CheckoutSuccessView from '../../payment/views/CheckoutSuccessView/CheckoutSuccessView';
 import ShareFileView from '../../share/views/ShareView/ShareFileView';
-import WorkspaceGuestSingUpView from '../../auth/components/SignUp/WorkspaceGuestSignUp';
+import WorkspaceGuestSingUpView from '../../../views/Signup/components/WorkspaceGuestSignUp';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
 import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
