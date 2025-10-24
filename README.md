@@ -102,6 +102,8 @@ The [/src](./src) folder contains the source code.
 
 This project is organized following a **view-based hierarchy** approach. Each view (or page) has its own folder containing its specific components, styles, and logic. Additionally, reusable components, custom hooks, utilities, and global styles are stored in separate directories to enhance reusability and maintainability.
 
+> **Note:** The following is a **simplified example** to illustrate the organizational structure. The actual project structure may vary, but follows the same principles described here.
+
 Example:
 
 ```
@@ -111,158 +113,182 @@ src/
 │   │   ├── index.tsx              # Main login view
 │   │   ├── Login.module.css
 │   │   ├── components/            # Login-specific components
-│   │   │   ├── LoginForm.tsx
-│   │   │   └── SocialLogin.tsx
+│   │   │   ├── LoginForm/         # Complex component (folder)
+│   │   │   │   ├── LoginForm.tsx
+│   │   │   │   ├── LoginForm.test.tsx
+│   │   │   │   └── useLoginForm.ts
+│   │   │   └── SocialLogin.tsx    # Simple component (file)
 │   │   ├── hooks/                 # Custom hooks for login
 │   │   │   └── useLogin.ts
 │   │   ├── services/              # API calls for authentication
-│   │   │   └── authService.ts
+│   │   │   └── auth.service.ts
 │   │   ├── store/                 # Redux slice for login state
-│   │   │   └── loginSlice.ts
-│   │   └── types/                 # TypeScript types/interfaces
-│   │       └── login.types.ts
+│   │   │   └── index.ts
+│   │   └── types.ts               # TypeScript types/interfaces
 │   │
 │   ├── Signup/
 │   │   ├── index.tsx              # Main signup view
 │   │   ├── components/            # Signup-specific components
-│   │   │   ├── SignupForm.tsx
-│   │   │   └── PlanSelector.tsx
+│   │   │   ├── SignupForm/
+│   │   │   │   └── SignupForm.tsx
+│   │   │   └── PlanSelector/
+│   │   │       └── PlanSelector.tsx
 │   │   ├── hooks/                 # Custom hooks for signup
 │   │   │   └── useSignup.ts
 │   │   ├── services/              # API calls for registration
-│   │   │   └── registrationService.ts
+│   │   │   └── user.service.ts
 │   │   ├── store/                 # Redux slice for signup state
-│   │   │   └── signupSlice.ts
-│   │   └── types/                 # TypeScript types/interfaces
-│   │       └── signup.types.ts
+│   │   │   └── index.ts
+│   │   └── types.ts               # TypeScript types/interfaces
 │   │
 │   ├── Home/                      # Main layout wrapper
 │   │   ├── index.tsx              # Home layout component
 │   │   ├── components/            # Layout components
-│   │   │   ├── Sidebar.tsx
-│   │   │   ├── TopBar.tsx
-│   │   │   └── UserMenu.tsx
+│   │   │   ├── Sidebar/
+│   │   │   │   └── Sidebar.tsx
+│   │   │   ├── TopBar/
+│   │   │   │   └── TopBar.tsx
+│   │   │   └── UserMenu/
+│   │   │       └── UserMenu.tsx
 │   │   ├── store/                 # Redux slice for UI state
-│   │   │   └── uiSlice.ts
-│   │   ├── types/                 # TypeScript types/interfaces
-│   │   │   └── ui.types.ts
+│   │   │   └── index.ts
+│   │   ├── types.ts               # TypeScript types/interfaces
 │   │   └── Home.module.css
 │   │
-│   ├── Drive/                     # Main files view
+│   ├── Drive/                     # Main files view (large module)
 │   │   ├── index.tsx              # Drive page component
 │   │   ├── components/            # Drive-specific components
-│   │   │   ├── FileList.tsx
-│   │   │   ├── FileItem.tsx
-│   │   │   ├── FolderItem.tsx
-│   │   │   ├── UploadButton.tsx
-│   │   │   └── FilePreview.tsx
+│   │   │   ├── FileList/          # Complex component (folder)
+│   │   │   │   ├── FileList.tsx
+│   │   │   │   ├── FileList.test.tsx
+│   │   │   │   └── FileList.scss
+│   │   │   ├── FileItem.tsx       # Simple component (file)
+│   │   │   ├── FolderItem.tsx     # Simple component (file)
+│   │   │   ├── UploadButton/      # Complex component (folder)
+│   │   │   │   ├── UploadButton.tsx
+│   │   │   │   └── helpers.ts
+│   │   │   └── FilePreview/       # Complex component (folder)
+│   │   │       ├── FilePreview.tsx
+│   │   │       └── utils.ts
 │   │   ├── hooks/                 # Custom hooks for files
 │   │   │   ├── useFiles.ts
 │   │   │   ├── useUpload.ts
 │   │   │   └── useFileActions.ts
 │   │   ├── services/              # API calls for files
-│   │   │   ├── fileService.ts
-│   │   │   └── uploadService.ts
+│   │   │   ├── file.service.ts
+│   │   │   └── upload.service.ts
 │   │   ├── store/                 # Redux slices for Drive
-│   │   │   ├── filesSlice.ts      # Files state management
-│   │   │   └── selectors.ts       # Reselect selectors
-│   │   ├── types/                 # TypeScript types/interfaces
-│   │   │   └── file.types.ts
+│   │   │   ├── index.ts           # Files state management
+│   │   │   └── storage.selectors.ts # Reselect selectors
+│   │   ├── types/                 # TypeScript types (large module)
+│   │   │   ├── index.ts           # Barrel export
+│   │   │   ├── file.types.ts      # File-related types
+│   │   │   └── download.types.ts  # Download-related types
 │   │   └── utils/                 # Helper functions
-│   │       └── fileHelpers.ts
+│   │       └── fileUtils.ts
 │   │
 │   ├── Recents/                   # Recent files view
 │   │   ├── index.tsx              # Recents page component
 │   │   ├── components/            # Recents-specific components
-│   │   │   ├── RecentFilesList.tsx
-│   │   │   └── TimelineView.tsx
+│   │   │   ├── RecentFilesList/
+│   │   │   │   └── RecentFilesList.tsx
+│   │   │   └── TimelineView/
+│   │   │       └── TimelineView.tsx
 │   │   ├── hooks/                 # Custom hooks for recent files
 │   │   │   └── useRecentFiles.ts
 │   │   ├── services/              # API calls for recents
-│   │   │   └── recentsService.ts
+│   │   │   └── recents.service.ts
 │   │   ├── store/                 # Redux slice for recents
-│   │   │   └── recentsSlice.ts
-│   │   └── types/                 # TypeScript types/interfaces
-│   │       └── recents.types.ts
+│   │   │   └── index.ts
+│   │   └── types.ts               # TypeScript types/interfaces
 │   │
 │   ├── Backups/                   # Backups view
 │   │   ├── index.tsx              # Backups page component
 │   │   ├── components/            # Backup-specific components
-│   │   │   ├── BackupList.tsx
-│   │   │   ├── CreateBackup.tsx
-│   │   │   └── RestoreDialog.tsx
+│   │   │   ├── BackupList/
+│   │   │   │   └── BackupList.tsx
+│   │   │   ├── CreateBackup/
+│   │   │   │   └── CreateBackup.tsx
+│   │   │   └── RestoreDialog/
+│   │   │       └── RestoreDialog.tsx
 │   │   ├── hooks/                 # Custom hooks for backups
 │   │   │   └── useBackups.ts
 │   │   ├── services/              # API calls for backups
-│   │   │   └── backupService.ts
+│   │   │   └── backup.service.ts
 │   │   ├── store/                 # Redux slice for backups
-│   │   │   └── backupsSlice.ts
-│   │   └── types/                 # TypeScript types/interfaces
-│   │       └── backup.types.ts
+│   │   │   └── index.ts
+│   │   └── types.ts               # TypeScript types/interfaces
 │   │
 │   ├── Shared/                    # Shared files view
 │   │   ├── index.tsx              # Shared page component
 │   │   ├── components/            # Shared-specific components
-│   │   │   ├── SharedFilesList.tsx
-│   │   │   └── ShareDialog.tsx
+│   │   │   ├── SharedFilesList/   # Complex component
+│   │   │   │   ├── SharedFilesList.tsx
+│   │   │   │   └── SharedFilesList.scss
+│   │   │   └── ShareDialog/       # Complex component
+│   │   │       ├── ShareDialog.tsx
+│   │   │       └── components/
+│   │   │           └── UserOptions.tsx
 │   │   ├── hooks/                 # Custom hooks for sharing
 │   │   │   └── useSharedFiles.ts
 │   │   ├── services/              # API calls for sharing
-│   │   │   └── shareService.ts
+│   │   │   └── share.service.ts
 │   │   ├── store/                 # Redux slice for shared files
-│   │   │   └── sharedSlice.ts
-│   │   └── types/                 # TypeScript types/interfaces
-│   │       └── shared.types.ts
+│   │   │   └── index.ts
+│   │   └── types.ts               # TypeScript types/interfaces
 │   │
 │   └── Trash/                     # Trash view
 │       ├── index.tsx              # Trash page component
 │       ├── components/            # Trash-specific components
-│       │   ├── TrashList.tsx
-│       │   └── RestoreButton.tsx
+│       │   ├── TrashList/
+│       │   │   └── TrashList.tsx
+│       │   └── RestoreButton/
+│       │       └── RestoreButton.tsx
 │       ├── hooks/                 # Custom hooks for trash
 │       │   └── useTrash.ts
 │       ├── services/              # API calls for trash
-│       │   └── trashService.ts
+│       │   └── trash.service.ts
 │       ├── store/                 # Redux slice for trash
-│       │   └── trashSlice.ts
-│       └── types/                 # TypeScript types/interfaces
-│           └── trash.types.ts
+│       │   └── index.ts
+│       └── types.ts               # TypeScript types/interfaces
 │
 ├── shared/                        # Shared code across views
 │   ├── components/                # Reusable UI components
-│   │   ├── Button/
-│   │   │   ├── Button.tsx
-│   │   │   └── Button.types.ts
-│   │   ├── Modal/
+│   │   ├── BaseDialog/            # Complex component (folder)
+│   │   │   ├── BaseDialog.tsx
+│   │   │   ├── BaseDialog.scss
+│   │   │   └── index.ts
+│   │   ├── Modal/                 # Complex component (folder)
 │   │   │   ├── Modal.tsx
-│   │   │   └── Modal.types.ts
-│   │   ├── Dropdown/
-│   │   │   ├── Dropdown.tsx
-│   │   │   └── Dropdown.types.ts
-│   │   └── SearchBar/
-│   │       ├── SearchBar.tsx
-│   │       └── SearchBar.types.ts
+│   │   │   ├── Modal.test.tsx
+│   │   │   └── index.ts
+│   │   ├── AuthButton.tsx         # Simple component (file)
+│   │   ├── BaseButton.tsx         # Simple component (file)
+│   │   └── Tooltip/               # Complex component (folder)
+│   │       ├── Tooltip.tsx
+│   │       └── index.ts
 │   ├── hooks/                     # Global custom hooks
 │   │   ├── useAuth.ts
 │   │   └── useTheme.ts
 │   ├── store/                     # Global Redux slices
-│   │   ├── authSlice.ts          # Global auth state
-│   │   ├── userSlice.ts          # User profile state
-│   │   └── notificationsSlice.ts # App notifications
-│   ├── types/                     # Global TypeScript types
-│   │   ├── user.types.ts
-│   │   ├── auth.types.ts
-│   │   └── api.types.ts
+│   │   ├── session/
+│   │   │   ├── index.ts          # Auth slice
+│   │   │   └── session.selectors.ts
+│   │   ├── user/
+│   │   │   └── index.ts          # User slice
+│   │   └── ui/
+│   │       └── index.ts          # UI notifications slice
+│   ├── types.ts                   # Global TypeScript types
 │   ├── utils/                     # Global utility functions
-│   │   ├── formatDate.ts
-│   │   └── formatFileSize.ts
+│   │   ├── timeUtils.ts
+│   │   └── stringUtils.ts
 │   └── constants/                 # App constants
 │       └── routes.ts
 │
 ├── store/                         # Redux store configuration
 │   ├── index.ts                   # Store setup & root reducer
 │   ├── rootReducer.ts             # Combine all reducers
-│   ├── store.types.ts             # Store type definitions
+│   ├── store.ts                   # Store type definitions
 │   └── middleware.ts              # Custom middleware
 │
 ├── config/                        # App configuration
@@ -270,7 +296,7 @@ src/
 │
 ├── routes/                        # Route definitions
 │   ├── AppRoutes.tsx              # React Router setup
-│   └── routes.types.ts            # Route types
+│   └── routes.ts                  # Route types
 │
 └── App.tsx                        # Root application component
 ```
@@ -285,7 +311,13 @@ Following the example structure above, each view folder contains the following s
 
 View-specific UI components that are only used within that particular view. These components are tightly coupled to the view's functionality and are not meant to be reused across other views.
 
-**Example:** `views/Login/components/LoginForm.tsx`, `views/Drive/components/FileList.tsx`
+**Organization:**
+- **Complex components** (with tests, styles, hooks, helpers) → Use a folder: `LoginForm/LoginForm.tsx`
+- **Simple components** (just the component file) → Use a file directly: `SocialLogin.tsx`
+
+**Example:**
+- Complex: `views/Drive/components/FileList/FileList.tsx`
+- Simple: `views/Drive/components/FileItem.tsx`
 
 ---
 
@@ -301,7 +333,7 @@ Custom React hooks that encapsulate view-specific logic and state management. Th
 
 API calls and business logic specific to the view. This folder provides an abstraction layer for external interactions (API endpoints, data fetching) related to the feature.
 
-**Example:** `views/Login/services/authService.ts`, `views/Drive/services/fileService.ts`
+**Example:** `views/Login/services/auth.service.ts`, `views/Drive/services/file.service.ts`
 
 ---
 
@@ -309,15 +341,31 @@ API calls and business logic specific to the view. This folder provides an abstr
 
 Redux slices and state management specific to the view. Each view can manage its own state using Redux Toolkit slices, keeping state logic close to where it's used.
 
-**Example:** `views/Login/store/loginSlice.ts`, `views/Drive/store/filesSlice.ts`
+**Example:** `views/Login/store/index.ts`, `views/Drive/store/index.ts`
 
 ---
 
-### **`views/[ViewName]/types/`**
+### **`views/[ViewName]/types/` or `types.ts`**
 
 TypeScript type definitions and interfaces specific to the view. This includes props interfaces, data models, and any type that is only relevant to this feature.
 
-**Example:** `views/Login/types/login.types.ts`, `views/Drive/types/file.types.ts`
+**Organization:**
+- **Small modules** (< 100 lines of types) → Use a single file: `types.ts`
+- **Large modules** (> 100 lines or multiple contexts) → Use a folder: `types/`
+
+**Nomenclature when using `types/` folder:**
+```
+types/
+├── index.ts              # Barrel export for all types
+├── file.types.ts         # File-related types
+├── folder.types.ts       # Folder-related types
+├── user.types.ts         # User-related types
+└── api.types.ts          # API-related types
+```
+
+**Example:**
+- Simple: `views/Login/types.ts`
+- Complex: `views/Drive/types/file.types.ts`, `views/Drive/types/download.types.ts`
 
 ---
 
@@ -325,7 +373,7 @@ TypeScript type definitions and interfaces specific to the view. This includes p
 
 Helper functions and utilities specific to the view. These are not React hooks but pure functions that help with data transformation, validation, or other view-specific operations.
 
-**Example:** `views/Drive/utils/fileHelpers.ts`
+**Example:** `views/Drive/utils/fileUtils.ts`
 
 ---
 
@@ -336,7 +384,7 @@ Contains global, reusable code that is shared across multiple views:
 - **`shared/components/`**: Atomic UI components (Button, Modal, Dropdown) used throughout the app
 - **`shared/hooks/`**: Global custom hooks (useAuth, useTheme) shared across views
 - **`shared/store/`**: Global Redux slices (authSlice, userSlice, notificationsSlice)
-- **`shared/types/`**: Global TypeScript types (user.types.ts, api.types.ts)
+- **`shared/types.ts`**: Global TypeScript types and interfaces
 - **`shared/utils/`**: Global utility functions (formatDate, formatFileSize)
 - **`shared/constants/`**: App-wide constants (routes, API endpoints)
 
@@ -349,7 +397,7 @@ Redux store configuration and setup:
 - **`store/index.ts`**: Store setup and root reducer
 - **`store/rootReducer.ts`**: Combines all reducers (from views and shared)
 - **`store/middleware.ts`**: Custom Redux middleware
-- **`store/store.types.ts`**: Store type definitions
+- **`store/store.ts`**: Store type definitions
 
 ---
 
