@@ -10,6 +10,7 @@ import { SdkFactory } from '../../core/factory/sdk';
 import * as Sentry from '@sentry/react';
 import localStorageService from 'app/core/services/local-storage.service';
 import { trackSignUp } from 'app/analytics/impact.service';
+import { hash } from 'internxt-crypto';
 
 import { RegisterOpaqueDetails } from '@internxt/sdk';
 import { readReferalCookie } from 'app/auth/services/auth.service';
@@ -17,7 +18,6 @@ import { generateCaptchaToken } from 'app/utils/generateCaptchaToken';
 import {
   decryptUserKeysAndMnemonic,
   encryptUserKeysAndMnemonic,
-  authenticateRequest,
   encryptSessionKey,
   decryptSessionKey,
   generateUserSecrets,
@@ -198,7 +198,7 @@ export const getSessionKey = async (password: string): Promise<string> => {
 
 export const getMac = async (password: string, request: string[]): Promise<string> => {
   const sessionKey = await getSessionKey(password);
-  return authenticateRequest(sessionKey, request);
+  return hash.computeMac(sessionKey, request);
 };
 
 export const deactivate2FAOpaque = async (password: string, authCode: string): Promise<void> => {

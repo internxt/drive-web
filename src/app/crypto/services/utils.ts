@@ -34,7 +34,7 @@ async function getSha512Combined(key: Buffer, data: Buffer): Promise<string> {
  * @param {string} dataArray - The input array of data
  * @returns {Promise<string>} The result of applying hmac-sha512 to the array of data.
  */
-async function getHmacSha512(encryptionKey: Buffer | string, dataArray: string[] | Buffer[]): Promise<string> {
+async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer[]): Promise<string> {
   const hashFunc = createSHA512();
   const hmac = await createHMAC(hashFunc, encryptionKey);
   hmac.init();
@@ -50,18 +50,8 @@ interface PassObjectInterface {
 }
 
 /**
- * Computes MAC using keyed Blake3
- * @param {Uint8Array} sessionKey - The session key
- * @param {string[]} data - The data to authenticate
- * @returns {Promise<string>} The resulting MAC
- */
-async function balke3MAC(sessionKey: Uint8Array, data: string[]): Promise<string> {
-  return blake3(JSON.stringify(data), 256, sessionKey);
-}
-
-/**
  * Extends the given secret to the required number of bits
- * @param {Uint8Array} secret - The original secret
+ * @param {string} secret - The original secret
  * @param {number} length - The desired bitlength
  * @returns {Promise<string>} The extended secret of the desired bitlength
  */
@@ -189,5 +179,4 @@ export {
   getSha512FromHex,
   passToHash,
   renameFile,
-  balke3MAC,
 };

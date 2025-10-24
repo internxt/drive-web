@@ -1,19 +1,13 @@
 import { symmetric, utils, deriveKey } from 'internxt-crypto';
 import { UserKeys } from '@internxt/sdk';
-import { balke3MAC } from 'app/crypto/services/utils';
 
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
-
-const USER_DATA_CONTEXT = 'key for protecting user mnemonic';
-const SESSION_KEY_CONTENT = 'key for authenticating via mac';
-
 export async function encryptUserKeysAndMnemonic(
   userKeys: UserKeys,
   mnemonic: string,
   exportKey: string,
 ): Promise<{ encMnemonic: string; encKeys: UserKeys }> {
-  const keyArray = await deriveKey.deriveSymmetricKeyFromContext(USER_DATA_CONTEXT, exportKey);
-  const cryptoKey = await symmetric.importSymmetricCryptoKey(keyArray);
+  const cryptoKey = await symmetric.deriveSymmetricCryptoKey(exportKey);
   const key = utils.UTF8ToUint8(userKeys.ecc.privateKey);
   const encPrivateKey = await symmetric.encryptSymmetrically(cryptoKey, key, 'user-private-key');
   const keyKyber = utils.base64ToUint8Array(userKeys.kyber.privateKey);
@@ -38,10 +32,9 @@ export async function encryptUserKeysAndMnemonic(
 export async function decryptUserKeysAndMnemonic(
   encMnemonic: string,
   encKeys: UserKeys,
-  key: string,
+  exportKey: string,
 ): Promise<{ keys: UserKeys; mnemonic: string }> {
-  const keyArray = await deriveKey.deriveSymmetricKeyFromContext(USER_DATA_CONTEXT, key);
-  const cryptoKey = await symmetric.importSymmetricCryptoKey(keyArray);
+  const cryptoKey = await symmetric.deriveSymmetricCryptoKey(exportKey);
   const encKey = utils.base64ToCiphertext(encKeys.ecc.privateKey);
   const privateKey = await symmetric.decryptSymmetrically(cryptoKey, encKey, 'user-private-key');
   const encKyberKey = utils.base64ToCiphertext(encKeys.kyber.privateKey);
@@ -81,13 +74,8 @@ export const decryptSessionKey = async (password: string, sessionKeyEnc: string,
   const sessionKeyCipher = utils.base64ToCiphertext(sessionKeyEnc);
   const sessionKeyArray = await symmetric.decryptSymmetrically(key, sessionKeyCipher, 'UserSessionKey');
   const sessionKey = utils.uint8ArrayToBase64(sessionKeyArray);
-  const urlSafeSessionKey = sessionKey.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const urlSafeSessionKey = sessionKey.replace(/\+/g, '-').replace(/\//g, '_').replace(/=*$/, '');
   return urlSafeSessionKey;
-};
-
-export const authenticateRequest = async (sessionKey: string, request: string[]): Promise<string> => {
-  const key = await deriveKey.deriveSymmetricKeyFromContext(SESSION_KEY_CONTENT, sessionKey);
-  return balke3MAC(key, request);
 };
 
 export const generateUserSecrets = async (): Promise<{ keys: UserKeys; mnemonic: string }> => {

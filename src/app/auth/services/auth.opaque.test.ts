@@ -5,8 +5,9 @@ import { SdkFactory } from '../../core/factory/sdk';
 import * as authService from './auth.opaque';
 import { v4 as uuidV4 } from 'uuid';
 import { RegisterOpaqueDetails, UserKeys } from '@internxt/sdk';
-import { authenticateRequest, decryptUserKeysAndMnemonic } from './auth.crypto';
+import { decryptUserKeysAndMnemonic } from './auth.crypto';
 import localStorageService from 'app/core/services/local-storage.service';
+import { hash } from 'internxt-crypto';
 
 function getMockUser(registerDetails: RegisterOpaqueDetails) {
   const mockUser: UserSettings = {
@@ -133,7 +134,7 @@ describe('logIn', () => {
 
               const sessionKey = record.sessionKey;
 
-              const correct_mac = await authenticateRequest(sessionKey, [twoFactorCode, sessionID]);
+              const correct_mac = await hash.computeMac(sessionKey, [twoFactorCode, sessionID]);
               if (correct_mac !== mac) {
                 throw new Error('HMAC is incorrect');
               } else return true;
@@ -152,7 +153,7 @@ describe('logIn', () => {
 
               const sessionKey = record.sessionKey;
 
-              const correct_mac = await authenticateRequest(sessionKey, [registrationRequest, sessionID]);
+              const correct_mac = await hash.computeMac(sessionKey, [registrationRequest, sessionID]);
               if (correct_mac !== mac) {
                 throw new Error('HMAC is incorrect');
               }
@@ -184,7 +185,7 @@ describe('logIn', () => {
 
                 const sessionKey = record.sessionKey;
 
-                const correct_mac = await authenticateRequest(sessionKey, [
+                const correct_mac = await hash.computeMac(sessionKey, [
                   registrationRecord,
                   encMnemonic,
                   JSON.stringify(encKeys),

@@ -6442,10 +6442,10 @@ ini@^1.3.5, ini@~1.3.0:
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
   integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
 
-internxt-crypto@0.0.7-alpha:
-  version "0.0.7-alpha"
-  resolved "https://registry.yarnpkg.com/internxt-crypto/-/internxt-crypto-0.0.7-alpha.tgz#59e4ff734e595051a693714ba01585dffd04c92d"
-  integrity sha512-tizJ+dkNcBoxLec2Zy8oAgRr+urYDqCFLGO3c57RIAhMj+/WJ8YCOkegxR0syw0bHuYHsD5LacI9oFs8gMug8A==
+internxt-crypto@0.0.8-alpha:
+  version "0.0.8-alpha"
+  resolved "https://registry.yarnpkg.com/internxt-crypto/-/internxt-crypto-0.0.8-alpha.tgz#f71e9eed285c540c6134caac94071f778889c07c"
+  integrity sha512-S+PEyDPlKda/sk6Br7V8UGiP00wKZ76hWI1F2hCoV2H5d4tBzI1YLb1GZPa+yywZg43Ovixe3K3ApQ85emxuTA==
   dependencies:
     "@emailjs/browser" "^4.4.1"
     "@noble/post-quantum" "^0.4.1"

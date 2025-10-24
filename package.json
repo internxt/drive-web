@@ -40,7 +40,7 @@
     "i18next": "^22.4.9",
     "i18next-browser-languagedetector": "^7.2.0",
     "idb": "^6.1.5",
-    "internxt-crypto": "0.0.7-alpha",
+    "internxt-crypto": "0.0.8-alpha",
     "js-file-download": "^0.4.12",
     "lint-staged": "^13.1.0",
     "lodash": "^4.17.21",
