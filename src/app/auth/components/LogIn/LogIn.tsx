@@ -11,7 +11,7 @@ import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions } from 'app/store/slices/user';
-import authService, { authenticateUser, is2FAorOpaqueNeeded } from '../../services/auth.service';
+import authService, { authenticateUser } from '../../services/auth.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WarningCircle } from '@phosphor-icons/react';
@@ -29,7 +29,7 @@ import TextInput from '../TextInput/TextInput';
 import { AuthMethodTypes } from 'app/payment/types';
 import vpnAuthService from 'app/auth/services/vpnAuth.service';
 import envService from 'app/core/services/env.service';
-import { logInOpaque } from '../../services/auth.opaque';
+import { logInOpaque, is2FAorOpaqueNeeded } from '../../services/auth.opaque';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({

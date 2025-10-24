@@ -11,6 +11,7 @@ import * as Sentry from '@sentry/react';
 import localStorageService from 'app/core/services/local-storage.service';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { hash } from 'internxt-crypto';
+import AppError from 'app/core/types';
 
 import { RegisterOpaqueDetails } from '@internxt/sdk';
 import { readReferalCookie } from 'app/auth/services/auth.service';
@@ -22,6 +23,17 @@ import {
   decryptSessionKey,
   generateUserSecrets,
 } from './auth.crypto';
+
+export const is2FAorOpaqueNeeded = async (email: string): Promise<{ tfaEnabled: boolean; opaqueLogin: boolean }> => {
+  try {
+    const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+    const securityDetails = await authClient.securityDetails(email);
+    return { tfaEnabled: securityDetails.tfaEnabled, opaqueLogin: securityDetails.opaqueLogin };
+  } catch (error) {
+    const err = error as Error & { status?: number };
+    throw new AppError(err.message ?? 'Login error', err.status ?? 500);
+  }
+};
 
 export const doLogInOpaque = async (
   email: string,

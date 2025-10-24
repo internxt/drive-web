@@ -136,13 +136,13 @@ export function cancelAccount(): Promise<void> {
   return authClient.sendUserDeactivationEmail(token);
 }
 
-export const is2FAorOpaqueNeeded = async (email: string): Promise<{ tfaEnabled: boolean; opaqueLogin: boolean }> => {
+export const is2FANeeded = async (email: string): Promise<boolean> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
     throw new AppError(error.message ?? 'Login error', error.status ?? 500);
   });
 
-  return { tfaEnabled: securityDetails.tfaEnabled, opaqueLogin: securityDetails.opaqueLogin };
+  return securityDetails.tfaEnabled;
 };
 
 const getAuthClient = (authType: 'web' | 'desktop') => {
@@ -643,7 +643,7 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
 
 const authService = {
   logOut,
-  check2FANeeded: is2FAorOpaqueNeeded,
+  check2FANeeded: is2FANeeded,
   readReferalCookie,
   cancelAccount,
   store2FA,

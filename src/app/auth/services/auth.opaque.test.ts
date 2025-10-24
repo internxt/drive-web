@@ -53,6 +53,7 @@ describe('logIn', () => {
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: vi.fn().mockImplementation(() => {
         return {
+          securityDetails: vi.fn().mockReturnValue({ tfaEnabled: true, opaqueLogin: true }),
           registerOpaqueStart: vi.fn().mockImplementation((email: string, registrationRequest: string) => {
             const { registrationResponse } = opaque.server.createRegistrationResponse({
               serverSetup,
@@ -234,6 +235,9 @@ describe('logIn', () => {
     const mockCaptcha = 'captcha';
     const mockReferrer = 'referrer';
     const mockReferral = 'referral';
+
+    const { opaqueLogin } = await authService.is2FAorOpaqueNeeded(mockEmail);
+    expect(opaqueLogin).toBeTruthy();
 
     const { sessionKey: sessionKey_signup, exportKey: exportKey_signUp } = await authService.doSignUpOpaque(
       mockEmail,
