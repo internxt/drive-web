@@ -517,6 +517,7 @@ function SharedView({
 
   return (
     <div
+      role="none"
       className="flex w-full shrink-0 flex-col"
       onContextMenu={(e) => {
         e.preventDefault();
