@@ -1,7 +1,7 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { useBackupDeviceActions } from './useBackupDeviceActions';
-import { backupsActions, backupsThunks } from 'app/store/slices/backups';
+import { backupsActions, backupsThunks } from '../store/backupsSlice';
 import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/deleteItemsThunk';
 import backupsService from '../services/backups.service';
 import { Device } from '@internxt/sdk/dist/drive/backups/types';
@@ -12,14 +12,18 @@ vi.mock('app/store/hooks', () => ({
   useAppSelector: vi.fn((selector) => selector({ backups: { currentDevice: null } })),
 }));
 
-vi.mock('app/store/slices/backups', () => ({
+vi.mock('../store/backupsSlice', () => ({
   backupsActions: {
     setCurrentDevice: vi.fn((payload) => ({ type: 'backups/setCurrentDevice', payload })),
   },
   backupsThunks: {
     fetchDevicesThunk: vi.fn(() => ({ type: 'backups/fetchDevices' })),
     fetchDeviceBackupsThunk: vi.fn((mac: string) => ({ type: 'backups/fetchDeviceBackups', payload: mac })),
-    deleteDeviceThunk: vi.fn((device: Device) => ({ type: 'backups/deleteDevice', payload: device })),
+    deleteDeviceThunk: vi.fn((device: Device) => ({
+      type: 'backups/deleteDevice',
+      payload: device,
+      unwrap: vi.fn(() => Promise.resolve()),
+    })),
   },
 }));
 
@@ -124,7 +128,7 @@ describe('useBackupDeviceActions', () => {
       result.current.goToFolder(2, 'uuid-2');
     });
 
-    const callback = onBreadcrumbFolderChanges.mock.calls[onBreadcrumbFolderChanges.mock.calls.length - 1][0];
+    const callback = onBreadcrumbFolderChanges.mock.calls.at(-1)?.[0];
     const newBreadcrumbs = callback(mockFolders);
     expect(newBreadcrumbs).toEqual([mockFolders[0], mockFolders[1]]);
     expect(onFolderUuidChanges).toHaveBeenCalledWith('uuid-2');
@@ -262,10 +266,9 @@ describe('useBackupDeviceActions', () => {
       await result.current.onConfirmDelete();
     });
 
-    expect(dispatch).toHaveBeenCalledWith(backupsThunks.deleteDeviceThunk(mockDevice));
+    expect(vi.mocked(backupsThunks.deleteDeviceThunk)).toHaveBeenCalledWith(mockDevice);
     expect(vi.mocked(deleteItemsThunk)).toHaveBeenCalledWith([mockFolder]);
-    expect(backupsService.deleteBackupDeviceAsFolder).toHaveBeenCalledWith(mockFolder.uuid);
-    expect(dispatch).toHaveBeenCalledWith(backupsThunks.fetchDevicesThunk());
+    expect(vi.mocked(backupsService.deleteBackupDeviceAsFolder)).toHaveBeenCalledWith(mockFolder.uuid);
 
     await waitFor(() => {
       expect(result.current.isDeleteModalOpen).toBe(false);

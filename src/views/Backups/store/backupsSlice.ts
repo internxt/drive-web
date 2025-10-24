@@ -1,17 +1,19 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../..';
+import { RootState } from 'app/store';
 
 import { Device, DeviceBackup } from '@internxt/sdk/dist/drive/backups/types';
-import backupsService from '../../../../views/Backups/services/backups.service';
+import backupsService from '../services/backups.service';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+
+type BackupDevice = Device | DriveFolderData;
 
 interface BackupsState {
   isLoadingDevices: boolean;
   isLoadingDeviceBackups: boolean;
-  currentDevice: Device | DriveFolderData | null;
-  devices: (Device | DriveFolderData)[];
+  currentDevice: BackupDevice | null;
+  devices: BackupDevice[];
   backups: DeviceBackup[];
-  currentFolder: Device | DriveFolderData | null;
+  currentFolder: BackupDevice | null;
 }
 
 const initialState: BackupsState = {
@@ -23,7 +25,7 @@ const initialState: BackupsState = {
   currentFolder: null,
 };
 
-export const fetchDevicesThunk = createAsyncThunk<Array<Device | DriveFolderData>, void, { state: RootState }>(
+export const fetchDevicesThunk = createAsyncThunk<BackupDevice[], void, { state: RootState }>(
   'backups/fetchDevices',
   async () => {
     const [devices, folders] = await Promise.all([
@@ -63,11 +65,11 @@ export const backupsSlice = createSlice({
   name: 'backups',
   initialState,
   reducers: {
-    setCurrentDevice: (state, action: PayloadAction<Device | null | DriveFolderData>) => {
+    setCurrentDevice: (state, action: PayloadAction<BackupDevice | null>) => {
       state.currentDevice = action.payload;
       state.backups = [];
     },
-    setCurrentFolder: (state, action: PayloadAction<Device | null | DriveFolderData>) => {
+    setCurrentFolder: (state, action: PayloadAction<BackupDevice | null>) => {
       state.currentFolder = action.payload;
     },
   },

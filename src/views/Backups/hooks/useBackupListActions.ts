@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import { DriveItemData } from 'app/drive/types';
 import { AppDispatch } from 'app/store';
-import { backupsActions } from 'app/store/slices/backups';
+import { backupsActions } from '../store/backupsSlice';
 import { PreviewFileItem } from 'app/share/types';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 

@@ -3,7 +3,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import BreadcrumbsBackupsView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsBackupsView';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { Helmet } from 'react-helmet-async';
-import DeleteBackupDialog from 'app/drive/components/DeleteBackupDialog/DeleteBackupDialog';
+import { DeleteBackupDialog } from './components';
 import WarningMessageWrapper from 'app/drive/components/WarningMessage/WarningMessageWrapper';
 import BackupsAsFoldersList from './components/BackupsAsFoldersList';
 import DeviceList from './components/DeviceList';
@@ -49,6 +49,7 @@ export default function BackupsView(): JSX.Element {
   const {
     selectedDevices,
     isDeleteModalOpen,
+    isLoadingDeleteModal,
     goToFolder,
     goToFolderRoot,
     onConfirmDelete,
@@ -178,6 +179,7 @@ export default function BackupsView(): JSX.Element {
         primaryAction={translate('modals.deleteBackupModal.primaryAction')}
         secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
         primaryActionColor="danger"
+        isLoading={isLoadingDeleteModal}
       />
       {itemToPreview && (
         <FileViewerWrapper

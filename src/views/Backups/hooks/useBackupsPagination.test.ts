@@ -6,7 +6,6 @@ import { FetchFolderContentResponse } from '@internxt/sdk/dist/drive/storage/typ
 import { renderHook, waitFor } from '@testing-library/react';
 import _ from 'lodash';
 
-// ESTO ESTA DIFERENTE, MIAR PR POR SI NO SIRVE ESTO---------------------
 import { act } from 'react-dom/test-utils';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import newStorageService from '../../../app/drive/services/new-storage.service';

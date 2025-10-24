@@ -1,11 +1,11 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { useBackupListActions } from './useBackupListActions';
-import { backupsActions } from 'app/store/slices/backups';
+import { backupsActions } from '../store/backupsSlice';
 import { DriveItemData } from 'app/drive/types';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 
-vi.mock('app/store/slices/backups', () => ({
+vi.mock('../store/backupsSlice', () => ({
   backupsActions: {
     setCurrentFolder: vi.fn((payload) => ({ type: 'backups/setCurrentFolder', payload })),
   },
