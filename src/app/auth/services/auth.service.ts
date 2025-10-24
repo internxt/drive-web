@@ -44,6 +44,7 @@ import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 import vpnAuthService from './vpnAuth.service';
+import { doLoginOpaque, doSignUpOpaque } from './auth.opaque';
 
 type ProfileInfo = {
   user: UserSettings;
@@ -70,6 +71,7 @@ export type SignUpParams = {
   token: string;
   redeemCodeObject: boolean;
   dispatch: AppDispatch;
+  opaqueLogin?: boolean;
 };
 
 type LogInParams = {
@@ -78,6 +80,7 @@ type LogInParams = {
   twoFactorCode: string;
   dispatch: AppDispatch;
   loginType?: 'web' | 'desktop';
+  opaqueLogin?: boolean;
 };
 
 export type AuthenticateUserParams = {
@@ -90,6 +93,7 @@ export type AuthenticateUserParams = {
   token?: string;
   redeemCodeObject?: boolean;
   doSignUp?: RegisterFunction;
+  opaqueLogin?: boolean;
 };
 
 const getCurrentUrlParams = (): Record<string, string> => {
@@ -136,13 +140,13 @@ export function cancelAccount(): Promise<void> {
   return authClient.sendUserDeactivationEmail(token);
 }
 
-export const is2FANeeded = async (email: string): Promise<boolean> => {
+export const is2FAorOpaqueNeeded = async (email: string): Promise<{ tfaEnabled: boolean; opaqueLogin: boolean }> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
     throw new AppError(error.message ?? 'Login error', error.status ?? 500);
   });
 
-  return securityDetails.tfaEnabled;
+  return { tfaEnabled: securityDetails.tfaEnabled, opaqueLogin: securityDetails.opaqueLogin };
 };
 
 const getAuthClient = (authType: 'web' | 'desktop') => {
@@ -557,8 +561,10 @@ export const unblockAccount = (token: string): Promise<void> => {
 };
 
 export const signUp = async (params: SignUpParams) => {
-  const { doSignUp, email, password, token, redeemCodeObject, dispatch } = params;
-  const { xUser, xToken, xNewToken, mnemonic } = await doSignUp(email, password, token);
+  const { doSignUp, email, password, token, redeemCodeObject, dispatch, opaqueLogin = false } = params;
+  const { xUser, xToken, xNewToken, mnemonic } = await (opaqueLogin
+    ? doSignUpOpaque(email, password, token)
+    : doSignUp(email, password, token));
 
   localStorageService.clear();
 
@@ -595,8 +601,10 @@ export const signUp = async (params: SignUpParams) => {
 };
 
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
-  const { email, password, twoFactorCode, dispatch, loginType = 'web' } = params;
-  const { token, newToken, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
+  const { email, password, twoFactorCode, dispatch, loginType = 'web', opaqueLogin = false } = params;
+  const { token, newToken, user, mnemonic } = await (opaqueLogin
+    ? doLoginOpaque(email, password, twoFactorCode)
+    : doLogin(email, password, twoFactorCode, loginType));
   dispatch(userActions.setUser(user));
 
   try {
@@ -628,13 +636,14 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
     token = '',
     redeemCodeObject = false,
     doSignUp,
+    opaqueLogin = false,
   } = params;
   if (authMethod === 'signIn') {
-    const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, loginType });
+    const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, loginType, opaqueLogin });
     window.gtag('event', 'User Signin', { method: 'email' });
     return profileInfo;
   } else if (authMethod === 'signUp' && doSignUp) {
-    const profileInfo = await signUp({ doSignUp, email, password, token, redeemCodeObject, dispatch });
+    const profileInfo = await signUp({ doSignUp, email, password, token, redeemCodeObject, dispatch, opaqueLogin });
     return profileInfo;
   } else {
     throw new Error(`Unknown authMethod: ${authMethod}`);
@@ -643,7 +652,7 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
 
 const authService = {
   logOut,
-  check2FANeeded: is2FANeeded,
+  check2FANeeded: is2FAorOpaqueNeeded,
   readReferalCookie,
   cancelAccount,
   store2FA,
