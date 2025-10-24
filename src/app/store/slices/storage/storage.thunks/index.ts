@@ -8,7 +8,7 @@ import { fetchFolderContentThunkExtraReducers, fetchPaginatedFolderContentThunk 
 import {
   fetchRecentsThunk,
   fetchRecentsThunkExtraReducers,
-} from '../../../../../views/Recents/services/fetchRecentsThunk';
+} from '../../../../../views/Recents/store/fetchRecentsThunk';
 import { goToFolderThunk, goToFolderThunkExtraReducers } from './goToFolderThunk';
 import { initializeThunk, initializeThunkExtraReducers } from './initializeThunk';
 import { moveItemsThunk, moveItemsThunkExtraReducers } from './moveItemsThunk';

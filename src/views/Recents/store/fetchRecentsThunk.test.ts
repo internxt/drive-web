@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { fetchRecentsThunk, fetchRecentsThunkExtraReducers } from './fetchRecentsThunk';
-import { fetchRecents } from './fetchRecents';
+import { fetchRecents } from '../services/fetchRecents';
 import configService from 'app/core/services/config.service';
 import { excludeHiddenItems, getItemPlainName } from 'app/crypto/services/utils';
 import { storageActions } from 'app/store/slices/storage';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { StorageState } from 'app/store/slices/storage/storage.model';
 
-vi.mock('./fetchRecents', () => ({
+vi.mock('../services/fetchRecents', () => ({
   fetchRecents: vi.fn(),
 }));
 
