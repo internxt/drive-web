@@ -6,21 +6,20 @@ import { FetchFolderContentResponse } from '@internxt/sdk/dist/drive/storage/typ
 import { renderHook, waitFor } from '@testing-library/react';
 import _ from 'lodash';
 
-// ESTO ESTA DIFERENTE, MIAR PR POR SI NO SIRVE ESTO---------------------
 import { act } from 'react-dom/test-utils';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import newStorageService from '../../drive/services/new-storage.service';
-import { DriveItemData } from '../../drive/types';
-import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
+import newStorageService from '../../../app/drive/services/new-storage.service';
+import { DriveItemData } from '../../../app/drive/types';
+import notificationsService, { ToastType } from '../../../app/notifications/services/notifications.service';
 import { useBackupsPagination } from './useBackupsPagination';
 
-vi.mock('../../drive/services/new-storage.service', () => ({
+vi.mock('../../../app/drive/services/new-storage.service', () => ({
   default: {
     getFolderContentByUuid: vi.fn(),
   },
 }));
 
-vi.mock('../../core/services/error.service', () => ({
+vi.mock('../../../app/core/services/error.service', () => ({
   default: {
     reportError: vi.fn(),
   },

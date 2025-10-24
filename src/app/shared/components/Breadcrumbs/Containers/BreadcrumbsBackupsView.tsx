@@ -1,6 +1,6 @@
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { backupsActions } from 'app/store/slices/backups';
+import { backupsActions } from '../../../../../views/Backups/store/backupsSlice';
 import { t } from 'i18next';
 import BreadcrumbsMenuBackups from '../BreadcrumbsMenu/BreadcrumbsMenuBackups';
 import { storageSelectors } from 'app/store/slices/storage';
