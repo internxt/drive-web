@@ -1,12 +1,12 @@
 import { Avatar } from '@internxt/ui';
-import { AdvancedSharedItem } from 'app/share/types';
-import usersIcon from 'assets/icons/users.svg';
-import iconService from 'app/drive/services/icon.service';
-import transformItemService from 'app/drive/services/item-transform.service';
+import { AdvancedSharedItem } from '../../../app/share/types';
+import usersIcon from '../../../assets/icons/users.svg';
+import iconService from '../../../app/drive/services/icon.service';
+import transformItemService from '../../../app/drive/services/item-transform.service';
 import { items } from '@internxt/lib';
-import { DriveItemData } from 'app/drive/types';
-import dateService from 'app/core/services/date.service';
-import sizeService from 'app/drive/services/size.service';
+import { DriveItemData } from '../../../app/drive/types';
+import dateService from '../../../app/core/services/date.service';
+import sizeService from '../../../app/drive/services/size.service';
 
 type SharedListItem = {
   onClickItem: (item) => void;
@@ -18,6 +18,7 @@ type SharedListItem = {
   user?: AdvancedSharedItem['user'];
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const SharedListItem = ({
   onClickItem,
   isItemSelected,
@@ -32,6 +33,7 @@ export const SharedListItem = ({
 
   return (
     <div
+      role="none"
       onKeyDown={() => {}}
       className={`${selectedClassNames} file-list-item group`}
       onClick={() => onClickItem}

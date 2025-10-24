@@ -1,7 +1,7 @@
-import errorService from '../../../core/services/error.service';
-import shareService from '../../services/share.service';
-import { AdvancedSharedItem, UserRoles } from '../../types';
-import { OrderField } from './components/SharedItemList';
+import errorService from '../../../app/core/services/error.service';
+import shareService from '../../../app/share/services/share.service';
+import { AdvancedSharedItem, UserRoles } from '../../../app/share/types';
+import { OrderField } from '../components/SharedItemList';
 
 /**
  * Checks if the current user role is that of a reader.
@@ -87,7 +87,7 @@ const getFolderUserRole = async ({
  */
 const parseField = (item: AdvancedSharedItem, field: OrderField): number | string => {
   const isSizeField = field === 'size';
-  return isSizeField ? parseFloat(item[field]) : String(item[field]).toLowerCase();
+  return isSizeField ? Number.parseFloat(item[field]) : String(item[field]).toLowerCase();
 };
 
 /**
@@ -196,6 +196,7 @@ const getDraggedItemsWithoutFolders = async (draggedItemsList: DataTransferItem[
 
     loadedFiles = (await Promise.all(filesPromises)).filter((file): file is File => file !== null);
   } catch (error) {
+    errorService.reportError(error);
     loadedFiles = [];
     hasFolders = false;
   }

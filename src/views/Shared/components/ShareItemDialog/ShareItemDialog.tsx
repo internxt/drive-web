@@ -1,23 +1,23 @@
 import { useState } from 'react';
-import { DriveItemData } from 'app/drive/types';
-import { uiActions } from 'app/store/slices/ui';
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
+import { DriveItemData } from '../../../../app/drive/types';
+import { uiActions } from '../../../../app/store/slices/ui';
+import BaseDialog from '../../../../app/shared/components/BaseDialog/BaseDialog';
 import './ShareItemDialog.scss';
-import { storageActions } from 'app/store/slices/storage';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { storageActions } from '../../../../app/store/slices/storage';
+import notificationsService, { ToastType } from '../../../../app/notifications/services/notifications.service';
 import { aes, items } from '@internxt/lib';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../../app/store/hooks';
 import PasswordInput from './components/PasswordInput';
 import { Check, Copy } from '@phosphor-icons/react';
-import dateService from 'app/core/services/date.service';
-import shareService, { copyTextToClipboard } from 'app/share/services/share.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import dateService from '../../../../app/core/services/date.service';
+import shareService, { copyTextToClipboard } from '../../../../app/share/services/share.service';
+import localStorageService from '../../../../app/core/services/local-storage.service';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { TFunction } from 'i18next';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { domainManager } from '../../services/DomainManager';
+import { useTranslationContext } from '../../../../app/i18n/provider/TranslationProvider';
+import { domainManager } from '../../../../app/share/services/DomainManager';
 import _ from 'lodash';
-import { AdvancedSharedItem } from 'app/share/types';
+import { AdvancedSharedItem } from '../../../../app/share/types';
 
 interface ShareItemDialogProps {
   share?: ShareLink;
@@ -27,7 +27,7 @@ interface ShareItemDialogProps {
 
 async function copyShareLink(type: string, code: string, token: string, translate: TFunction) {
   const domainList =
-    domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
+    domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [globalThis.location.origin];
   const shareDomain = _.sample(domainList);
 
   await copyTextToClipboard(`${shareDomain}/sh/${type}/${token}/${code}`);
@@ -73,6 +73,13 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
 
   const itemFullName = items.getItemDisplayName(item);
 
+  const getPasswordInputValue = () => {
+    if (isSavedAlreadyWithPassword) {
+      return passwordInputVirgin ? 'xxxxxxxxx' : itemPassword;
+    }
+    return itemPassword;
+  };
+
   return (
     <BaseDialog
       isOpen={isOpen}
@@ -105,8 +112,8 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
           </div>
           <div className="ml-6 mt-3 w-80">
             <PasswordInput
-              value={isSavedAlreadyWithPassword ? (passwordInputVirgin ? 'xxxxxxxxx' : itemPassword) : itemPassword}
-              placeholder={translate('shareItemDialog.password') as string}
+              value={getPasswordInputValue()}
+              placeholder={translate('shareItemDialog.password')}
               disabled={!isPasswordProtected}
               onChange={(evt) => setItemPassword(evt.target.value)}
               onFocus={() => setPasswordInputVirgin(false)}

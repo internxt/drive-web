@@ -3,8 +3,8 @@ import {
   contextMenuDriveFolderSharedAFS,
   contextMenuDriveItemSharedAFS,
   contextMenuMultipleSharedViewAFS,
-} from '../../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import { AdvancedSharedItem } from '../../../types';
+} from '../../../app/drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import { AdvancedSharedItem } from '../../../app/share/types';
 
 interface SharedContextMenuActions {
   downloadItem: (item: AdvancedSharedItem) => Promise<void>;
