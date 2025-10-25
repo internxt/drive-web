@@ -34,7 +34,7 @@ const signup = async (data, dispatch, doRegister, setLoading, appRedirect?, setE
     dispatch(referralsThunks.initializeThunk());
     await dispatch(userThunks.initializeUserThunk());
 
-    window.gtag('event', 'User Signup', { send_to: 'Blog' });
+    globalThis.gtag('event', 'User Signup', { send_to: 'Blog' });
     localStorage.removeItem('email');
     localStorage.removeItem('password');
     setLoading(false);

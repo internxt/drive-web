@@ -11,7 +11,7 @@ export interface SignUpViewProps {
   displayIframe: boolean;
 }
 
-export default function SignUpView(props: SignUpViewProps): JSX.Element {
+export default function SignUpView(props: Readonly<SignUpViewProps>): JSX.Element {
   const { translate } = useTranslationContext();
   const autoSubmit = useMemo(
     () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(globalThis.location.search)),
@@ -30,7 +30,7 @@ export default function SignUpView(props: SignUpViewProps): JSX.Element {
       )}
 
       <div className={`flex h-full flex-col ${!props.displayIframe && 'items-center justify-center'}`}>
-        <SignUpForm {...props} />
+        <SignUpForm />
       </div>
 
       {isRegularSignup && (

@@ -2,9 +2,9 @@ import { ComponentClass, FunctionComponent } from 'react';
 
 import { AppView } from '../types';
 
-import AuthView from '../../auth/views/Auth/AuthView';
-import ButtonAuth from '../../auth/views/Auth/ButtonAuth';
-import SignupBlog from '../../auth/views/Auth/SignupBlog';
+import AuthView from '../../../views/Signup/components/AuthView';
+import ButtonAuth from '../../../views/Signup/components/ButtonAuth';
+import SignupBlog from '../../../views/Signup/components/SignupBlog';
 import BlockedAccountView from '../../auth/views/BlockedAccountView/BlockedAccountView';
 import RecoverAccountView from '../../auth/views/RecoverAccountView/RecoverAccountView';
 import RecoveryLinkView from '../../auth/views/RecoveryLinkView/RecoveryLinkView';
