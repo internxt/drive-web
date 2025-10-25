@@ -1,12 +1,12 @@
 import { beforeEach, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
 import { fireEvent, render } from '@testing-library/react';
-import ShareGuestSingUpView from './ShareGuestSingUpView';
+import ShareGuestSignUpView from './ShareGuestSignUpView';
 import { userActions } from 'app/store/slices/user';
 import * as keysService from 'app/crypto/services/keys.service';
 import { encryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useSignUp } from '../../../../views/Signup/hooks/useSignup';
-import { Buffer } from 'buffer';
+import { useSignUp } from '../hooks/useSignup';
+import { Buffer } from 'node:buffer';
 import { generateMnemonic } from 'bip39';
 import envService from 'app/core/services/env.service';
 
@@ -84,16 +84,16 @@ describe('onSubmit', () => {
       };
     });
 
-    vi.mock('../../../../views/Signup/components/SignupForm', () => ({
+    vi.mock('./SignupForm', () => ({
       Views: vi.fn(),
     }));
 
-    vi.mock('../../../../views/Signup/hooks/useSignup', () => ({
+    vi.mock('../hooks/useSignup', () => ({
       useSignUp: vi.fn().mockReturnValue({ doRegisterPreCreatedUser: vi.fn() }),
       parseUserSettingsEnsureKyberKeysAdded: vi.importActual,
     }));
 
-    vi.mock('../../../../views/Signup/hooks/useGuestSignupState', () => ({
+    vi.mock('../hooks/useGuestSignupState', () => ({
       useGuestSignupState: vi.fn(() => ({
         isValidPassword: true,
         setIsValidPassword: vi.fn(),
@@ -332,7 +332,7 @@ describe('onSubmit', () => {
         type: 'user/setUser',
       };
     });
-    const { container } = render(<ShareGuestSingUpView />);
+    const { container } = render(<ShareGuestSignUpView />);
     const form = container.querySelector('form');
 
     if (!form) {
@@ -439,7 +439,7 @@ describe('onSubmit', () => {
         type: 'user/setUser',
       };
     });
-    const { container } = render(<ShareGuestSingUpView />);
+    const { container } = render(<ShareGuestSignUpView />);
     const form = container.querySelector('form');
 
     if (!form) {
