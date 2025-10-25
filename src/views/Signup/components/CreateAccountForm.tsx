@@ -1,14 +1,33 @@
 import { Info, WarningCircle } from '@phosphor-icons/react';
-import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
-import TextInput from 'app/auth/components/TextInput/TextInput';
+import PasswordInput from '../../../app/auth/components/PasswordInput/PasswordInput';
+import TextInput from '../../../app/auth/components/TextInput/TextInput';
 import { Button } from '@internxt/ui';
-import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
-import InternxtLogo from 'assets/icons/big-logo.svg?react';
+import PasswordStrengthIndicator from '../../../app/shared/components/PasswordStrengthIndicator';
+import InternxtLogo from '../../../assets/icons/big-logo.svg?react';
 import { Helmet } from 'react-helmet-async';
-import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
-import envService from 'app/core/services/env.service';
+import { MAX_PASSWORD_LENGTH } from '../../../app/shared/components/ValidPassword';
+import envService from '../../../app/core/services/env.service';
+import { FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
+import { IFormValues } from '../../../app/core/types';
+import { PasswordState } from '../hooks/useGuestSignupState';
 
-const CreateAccountForm = ({
+interface CreateAccountFormProps {
+  handleSubmit: UseFormHandleSubmit<IFormValues>;
+  onSubmit: (data: IFormValues, event?: React.BaseSyntheticEvent) => void;
+  translate: (key: string) => string;
+  hasEmailParam: boolean;
+  register: UseFormRegister<IFormValues>;
+  errors: FieldErrors<IFormValues>;
+  passwordState: PasswordState | null;
+  setShowPasswordIndicator: (show: boolean) => void;
+  showPasswordIndicator: boolean;
+  bottomInfoError: string | null;
+  isLoading: boolean;
+  isValidPassword: boolean;
+  isValid: boolean;
+}
+
+const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
   handleSubmit,
   onSubmit,
   translate,

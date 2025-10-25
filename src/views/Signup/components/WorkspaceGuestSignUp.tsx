@@ -1,26 +1,25 @@
 import { auth } from '@internxt/lib';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView, IFormValues } from 'app/core/types';
-import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
-import { RootState } from 'app/store';
-import { useAppDispatch } from 'app/store/hooks';
-import { planThunks } from 'app/store/slices/plan';
-import { productsThunks } from 'app/store/slices/products';
-import { referralsThunks } from 'app/store/slices/referrals';
-import { userActions, userThunks } from 'app/store/slices/user';
+import { useSignUp } from '../hooks/useSignup';
+import { useGuestSignupState } from '../hooks/useGuestSignupState';
+import errorService from '../../../app/core/services/error.service';
+import localStorageService from '../../../app/core/services/local-storage.service';
+import navigationService from '../../../app/core/services/navigation.service';
+import { AppView, IFormValues } from '../../../app/core/types';
+import { parseAndDecryptUserKeys } from '../../../app/crypto/services/keys.service';
+import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
+import ExpiredLink from '../../../app/shared/views/ExpiredLink/ExpiredLinkView';
+import { useAppDispatch } from '../../../app/store/hooks';
+import { planThunks } from '../../../app/store/slices/plan';
+import { productsThunks } from '../../../app/store/slices/products';
+import { referralsThunks } from '../../../app/store/slices/referrals';
+import { userActions, userThunks } from '../../../app/store/slices/user';
 import queryString from 'query-string';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { useSelector } from 'react-redux';
-import { onChangePasswordHandler } from '../../utils';
+import { onChangePasswordHandler } from '../utils';
 import CreateAccountForm from './CreateAccountForm';
-import workspacesService from 'app/core/services/workspace.service';
+import workspacesService from '../../../app/core/services/workspace.service';
 
 function WorkspaceGuestSingUpView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -28,19 +27,25 @@ function WorkspaceGuestSingUpView(): JSX.Element {
   const qs = queryString.parse(navigationService.history.location.search);
   const hasEmailParam = (qs.email && auth.isValidEmail(decodeURIComponent(qs.email as string))) || false;
 
-  const [isValidPassword, setIsValidPassword] = useState(false);
-  const [signupError, setSignupError] = useState<Error | string>();
-  const [showError, setShowError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    isValidPassword,
+    setIsValidPassword,
+    signupError,
+    setSignupError,
+    showError,
+    setShowError,
+    isLoading,
+    setIsLoading,
+    passwordState,
+    setPasswordState,
+    invitationId,
+    setInvitationId,
+    showPasswordIndicator,
+    setShowPasswordIndicator,
+    user,
+    mnemonic,
+  } = useGuestSignupState();
   const { doRegisterPreCreatedUser } = useSignUp('activate');
-  const [passwordState, setPasswordState] = useState<{
-    tag: 'error' | 'warning' | 'success';
-    label: string;
-  } | null>(null);
-  const [invitationId, setInvitationId] = useState<string>();
-  const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
-  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
-  const mnemonic = localStorageService.get('xMnemonic');
 
   const getInitialEmailValue = () => {
     if (hasEmailParam) {

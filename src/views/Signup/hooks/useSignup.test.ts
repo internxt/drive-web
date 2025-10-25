@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react';
 import { SdkFactory } from 'app/core/factory/sdk';
 import * as bip39 from 'bip39';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useSignUp } from './useSignUp';
+import { useSignUp } from './useSignup';
 
 vi.mock('@internxt/lib', () => ({
   aes: {

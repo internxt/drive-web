@@ -9,7 +9,7 @@ import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types'
 import { Loader } from '@internxt/ui';
 import { userLocation } from 'app/utils/userLocation';
 import { useCheckout } from 'hooks/checkout/useCheckout';
-import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
+import { useSignUp } from '../../../../views/Signup/hooks/useSignup';
 import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
