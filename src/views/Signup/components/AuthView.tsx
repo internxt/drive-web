@@ -1,5 +1,5 @@
 import { useAppDispatch } from 'app/store/hooks';
-import { useSignUp } from '../../../../views/Signup/hooks/useSignup';
+import { useSignUp } from '../hooks/useSignup';
 import { useState } from 'react';
 
 import { IFormValues } from 'app/core/types';
@@ -7,7 +7,7 @@ import { WarningCircle } from '@phosphor-icons/react';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { useForm } from 'react-hook-form';
-import signup from './signup';
+import signup from '../utils/signup';
 
 const textContent = {
   email: 'Correo',

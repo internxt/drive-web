@@ -18,7 +18,7 @@ import PasswordStrengthIndicator from '../../../app/shared/components/PasswordSt
 import { useSignUp } from '../hooks/useSignup';
 import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
 import authService, { authenticateUser } from '../../../app/auth/services/auth.service';
-import PreparingWorkspaceAnimation from '../../../app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
+import PreparingWorkspaceAnimation from './PreparingWorkspaceAnimation';
 import paymentService from '../../../app/payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../app/shared/components/ValidPassword';
 import { Button } from '@internxt/ui';
@@ -39,7 +39,7 @@ type PasswordState = {
 
 export type Views = 'signUp' | 'downloadBackupKey';
 
-function SignUpForm(props: Readonly<SignUpProps>): JSX.Element {
+function SignUpForm(): JSX.Element {
   const { translate } = useTranslationContext();
   const [isValidPassword, setIsValidPassword] = useState(false);
   const [view] = useState<Views>('signUp');

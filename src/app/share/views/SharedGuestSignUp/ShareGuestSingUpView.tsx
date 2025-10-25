@@ -5,6 +5,7 @@ import { Info, WarningCircle } from '@phosphor-icons/react';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { Views } from '../../../../views/Signup/components/SignupForm';
 import { useSignUp } from '../../../../views/Signup/hooks/useSignup';
+import { useGuestSignupState } from '../../../../views/Signup/hooks/useGuestSignupState';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -16,7 +17,6 @@ import shareService from 'app/share/services/share.service';
 import { Button } from '@internxt/ui';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
-import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
@@ -27,13 +27,11 @@ import queryString from 'query-string';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { useSelector } from 'react-redux';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import envService from 'app/core/services/env.service';
 
 function ShareGuestSingUpView(): JSX.Element {
   const { translate } = useTranslationContext();
-  const [isValidPassword, setIsValidPassword] = useState(false);
   const [view, setView] = useState<Views>('signUp');
 
   const qs = queryString.parse(navigationService.history.location.search);
@@ -60,18 +58,25 @@ function ShareGuestSingUpView(): JSX.Element {
 
   const dispatch = useAppDispatch();
   const password = useWatch({ control, name: 'password', defaultValue: '' });
-  const [signupError, setSignupError] = useState<Error | string>();
-  const [showError, setShowError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    isValidPassword,
+    setIsValidPassword,
+    signupError,
+    setSignupError,
+    showError,
+    setShowError,
+    isLoading,
+    setIsLoading,
+    passwordState,
+    setPasswordState,
+    invitationId,
+    setInvitationId,
+    showPasswordIndicator,
+    setShowPasswordIndicator,
+    user,
+    mnemonic,
+  } = useGuestSignupState();
   const { doRegisterPreCreatedUser } = useSignUp('activate');
-  const [passwordState, setPasswordState] = useState<{
-    tag: 'error' | 'warning' | 'success';
-    label: string;
-  } | null>(null);
-  const [invitationId, setInvitationId] = useState<string>();
-  const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
-  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
-  const mnemonic = localStorageService.get('xMnemonic');
 
   const [invitationValidation, setInvitationValidation] = useState({
     isLoading: true,
