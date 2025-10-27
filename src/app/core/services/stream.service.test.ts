@@ -3,8 +3,6 @@ import { describe, it, expect, vi, beforeEach, test } from 'vitest';
 vi.mock('crypto', () => ({
   createDecipheriv: vi.fn(),
 }));
-
-import { decryptStream } from './stream.service';
 vi.mock('app/network/download', () => ({
   getDecryptedStream: vi.fn(
     () =>
@@ -16,6 +14,7 @@ vi.mock('app/network/download', () => ({
   ),
 }));
 
+import { decryptStream } from './stream.service';
 import { getDecryptedStream } from 'app/network/download';
 import crypto from 'crypto';
 
