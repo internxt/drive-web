@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as opaque from '@serenity-kit/opaque';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { SdkFactory } from '../../core/factory/sdk';
 import * as authOpaqueService from './auth.opaque';
 import { v4 as uuidV4 } from 'uuid';
@@ -42,13 +42,43 @@ function getMockUser(registerDetails: RegisterOpaqueDetails) {
 }
 
 describe('logIn', () => {
-  it('opaque signUp, login, disable2FA and changePassword work', async () => {
-    const mockTwoFactorCode = '123456';
+  const mockTwoFactorCode = '123456';
+  const mockEmail = 'test-email';
+  const mockPassword = 'password123';
+  const mockCaptcha = 'captcha';
+  const mockReferrer = 'referrer';
+  const mockReferral = 'referral';
+
+  beforeAll(() => {
     const serverSetup = opaque.server.createSetup();
     const registrationRecords = new Map<string, string>();
     const users = new Map<string, UserSettings>();
     const logedInUsers = new Map<string, { email: string; sessionKey: string }>();
     const serverLoginStates = new Map<string, string>();
+
+    const mockLocalStorage = (() => {
+      let store: Record<string, string> = {};
+
+      return {
+        getItem: vi.fn((key: string) => store[key] || null),
+        setItem: vi.fn((key: string, value: string) => {
+          store[key] = value;
+        }),
+        removeItem: vi.fn((key: string) => {
+          delete store[key];
+        }),
+        clear: vi.fn(() => {
+          store = {};
+        }),
+      };
+    })();
+
+    Object.defineProperty(window, 'localStorage', {
+      value: mockLocalStorage,
+      writable: true,
+    });
+
+    mockLocalStorage.clear();
 
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createAuthClient: vi.fn().mockImplementation(() => {
@@ -228,13 +258,9 @@ describe('logIn', () => {
         };
       }),
     } as any);
+  });
 
-    const mockEmail = 'test-email';
-    const mockPassword = 'password123';
-    const mockCaptcha = 'captcha';
-    const mockReferrer = 'referrer';
-    const mockReferral = 'referral';
-
+  it('should successfully sign up and then log in', async () => {
     const { sessionKey: sessionKeySignup, exportKey: exportKeySignUp } = await authOpaqueService.signupOpaque(
       mockEmail,
       mockPassword,
@@ -249,11 +275,7 @@ describe('logIn', () => {
       user,
     } = await authOpaqueService.loginOpaque(mockEmail, mockPassword, mockTwoFactorCode);
 
-    expect(sessionKeyLogin).not.toEqual(sessionKeySignup);
-    expect(exportKeyLogin).toEqual(exportKeySignUp);
-
-    const mockStorage = new Map();
-    mockStorage.set('xNewToken', sessionID);
+    localStorage.setItem('xNewToken', sessionID);
 
     const { keys, mnemonic } = await decryptUserKeysAndMnemonic(user.mnemonic, user.keys, exportKeyLogin);
 
@@ -264,19 +286,42 @@ describe('logIn', () => {
       keys,
     };
 
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue(clearUser);
-    vi.spyOn(localStorageService, 'set').mockImplementation((key, value) => {
-      mockStorage.set(key, value);
-    });
-    vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
-      return mockStorage.get(key);
-    });
+    localStorage.setItem('xUser', JSON.stringify(clearUser));
+    localStorage.setItem('sessionKeyTest', sessionKeyLogin);
+    localStorage.setItem('exportKeyTest', exportKeyLogin);
 
     await authOpaqueService.setSessionKey(mockPassword, sessionKeyLogin);
+
+    expect(sessionKeyLogin).not.toEqual(sessionKeySignup);
+    expect(exportKeyLogin).toEqual(exportKeySignUp);
+  });
+
+  it('should not log in with a wrong passwor or 2FA code', async () => {
+    await expect(authOpaqueService.loginOpaque(mockEmail, 'wrong pwd', mockTwoFactorCode)).rejects.toThrow(
+      'Login failed',
+    );
+
+    await expect(authOpaqueService.loginOpaque(mockEmail, mockPassword, 'wrong 2FA code')).rejects.toThrow(
+      'Two factor code is incorrect',
+    );
+  });
+
+  it('should successfully deactivate 2FA verification', async () => {
     const result = await authOpaqueService.deactivate2FAOpaque(mockPassword, mockTwoFactorCode);
     expect(result).toBeTruthy();
+  });
 
+  it('should not deactivate 2FA verification with a wrong 2FA code', async () => {
+    expect(authOpaqueService.deactivate2FAOpaque(mockPassword, 'wrong 2FA code')).rejects.toThrow(
+      'Two factor code is incorrect',
+    );
+  });
+
+  it('should change the password and then successfully log in with the new password', async () => {
     const mockNewPassword = 'newPassword123';
+    const sessionID = localStorage.getItem('xNewToken') ?? '';
+    const sessionKeyLogin = localStorage.getItem('sessionKeyTest') ?? '';
+    const exportKeyLogin = localStorage.getItem('exportKeyTest') ?? '';
     const {
       exportKey: exportKeyPwdChange,
       sessionID: sessionIdPwdChange,
