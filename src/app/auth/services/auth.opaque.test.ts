@@ -260,6 +260,7 @@ describe('logIn', () => {
     } as any);
   });
 
+  let sessionKeyTest, sessionIdTest, exportKeyTest: string;
   it('should successfully sign up and then log in', async () => {
     const { sessionKey: sessionKeySignup, exportKey: exportKeySignUp } = await authOpaqueService.signupOpaque(
       mockEmail,
@@ -275,7 +276,7 @@ describe('logIn', () => {
       user,
     } = await authOpaqueService.loginOpaque(mockEmail, mockPassword, mockTwoFactorCode);
 
-    localStorage.setItem('xNewToken', sessionID);
+    localStorageService.set('xNewToken', sessionID);
 
     const { keys, mnemonic } = await decryptUserKeysAndMnemonic(user.mnemonic, user.keys, exportKeyLogin);
 
@@ -286,9 +287,10 @@ describe('logIn', () => {
       keys,
     };
 
-    localStorage.setItem('xUser', JSON.stringify(clearUser));
-    localStorage.setItem('sessionKeyTest', sessionKeyLogin);
-    localStorage.setItem('exportKeyTest', exportKeyLogin);
+    localStorageService.set('xUser', JSON.stringify(clearUser));
+    sessionKeyTest = sessionKeyLogin;
+    exportKeyTest = exportKeyLogin;
+    sessionIdTest = sessionID;
 
     await authOpaqueService.setSessionKey(mockPassword, sessionKeyLogin);
 
@@ -319,25 +321,22 @@ describe('logIn', () => {
 
   it('should change the password and then successfully log in with the new password', async () => {
     const mockNewPassword = 'newPassword123';
-    const sessionID = localStorage.getItem('xNewToken') ?? '';
-    const sessionKeyLogin = localStorage.getItem('sessionKeyTest') ?? '';
-    const exportKeyLogin = localStorage.getItem('exportKeyTest') ?? '';
     const {
       exportKey: exportKeyPwdChange,
       sessionID: sessionIdPwdChange,
       sessionKey: sessionKeyPwdChange,
-    } = await authOpaqueService.doChangePasswordOpaque(mockNewPassword, mockPassword, sessionID);
+    } = await authOpaqueService.doChangePasswordOpaque(mockNewPassword, mockPassword, sessionIdTest);
     const {
       sessionKey: sessionKeyNewLogin,
       exportKey: exportKeyNewLogin,
       sessionID: newSessionID,
     } = await authOpaqueService.loginOpaque(mockEmail, mockNewPassword, mockTwoFactorCode);
 
-    expect(sessionKeyLogin).not.toEqual(sessionKeyNewLogin);
-    expect(newSessionID).not.toEqual(sessionID);
-    expect(exportKeyNewLogin).not.toEqual(exportKeyLogin);
+    expect(sessionKeyTest).not.toEqual(sessionKeyNewLogin);
+    expect(newSessionID).not.toEqual(sessionIdTest);
+    expect(exportKeyNewLogin).not.toEqual(exportKeyTest);
 
-    expect(sessionKeyLogin).not.toEqual(sessionKeyPwdChange);
+    expect(sessionKeyTest).not.toEqual(sessionKeyPwdChange);
     expect(newSessionID).not.toEqual(sessionIdPwdChange);
     expect(exportKeyNewLogin).toEqual(exportKeyPwdChange);
   });
