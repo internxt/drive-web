@@ -85,8 +85,9 @@ vi.mock('app/network/download', () => ({
 
 vi.mock('app/core/services/stream.service', () => ({
   binaryStreamToBlob: vi.fn(),
-  downloadFile: vi.fn(),
-  NetworkCredentials: {},
+  buildProgressStream: vi.fn(),
+  decryptStream: vi.fn(),
+  joinReadableBinaryStreams: vi.fn(),
 }));
 
 vi.mock('app/core/services/local-storage.service', () => ({
