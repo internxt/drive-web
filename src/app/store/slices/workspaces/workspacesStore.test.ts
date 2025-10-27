@@ -16,9 +16,14 @@ vi.mock('i18next', () => ({
 }));
 
 vi.mock('../../../core/types', () => ({
-  AppView: vi.fn(),
+  default: class AppError extends Error {},
+  AppView: {},
+  LocalStorageItem: {},
+  Workspace: {},
+  OrderDirection: {},
 }));
 vi.mock('../../../share/services/share.service', () => ({
+  default: {},
   decryptMnemonic: vi.fn(),
 }));
 vi.mock('../plan', () => ({
@@ -28,8 +33,9 @@ vi.mock('../session/session.thunks', () => ({
   default: {
     changeWorkspaceThunk: vi.fn(),
   },
+  sessionExtraReducers: vi.fn(),
 }));
-vi.mock('../../../newSettings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper', () => ({
+vi.mock('views/Home/Settings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper', () => ({
   deleteWorkspaceAvatarFromDatabase: vi.fn(),
   saveWorkspaceAvatarToDatabase: vi.fn(),
 }));

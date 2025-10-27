@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 
-import Navbar from '../../components/Navbar/NavbarGlobalSearch';
-import Sidenav from '../../components/Sidenav/Sidenav';
+import Navbar from '../../../../views/Home/Topbar';
+import Sidenav from '../../../../views/Home/Sidenav';
 import { uiActions } from 'app/store/slices/ui';
 import ReachedPlanLimitDialog from 'app/drive/components/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
 import navigationService from '../../services/navigation.service';
