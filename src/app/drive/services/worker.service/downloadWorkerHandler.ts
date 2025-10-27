@@ -4,6 +4,7 @@ import { MessageData } from './types/download';
 import { createDownloadWebWorker } from '../../../../WebWorker';
 import downloadFileFromBlob from '../download.service/downloadFileFromBlob';
 import errorService from 'app/core/services/error.service';
+import { DownloadAbortedByUserError } from 'app/network/errors/download.errors';
 
 interface HandleWorkerMessagesPayload {
   worker: Worker;
@@ -181,12 +182,6 @@ export class DownloadWorkerHandler {
     if (progress && downloadCallback) {
       downloadCallback(progress);
     }
-  }
-}
-
-export class DownloadAbortedByUserError extends Error {
-  public constructor() {
-    super('Download aborted by user');
   }
 }
 
