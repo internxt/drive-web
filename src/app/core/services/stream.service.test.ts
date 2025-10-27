@@ -5,9 +5,6 @@ vi.mock('crypto', () => ({
 }));
 
 import { decryptStream } from './stream.service';
-import { getDecryptedStream } from 'app/network/download';
-import { createDecipheriv } from 'crypto';
-
 vi.mock('app/network/download', () => ({
   getDecryptedStream: vi.fn(
     () =>
@@ -18,6 +15,9 @@ vi.mock('app/network/download', () => ({
       }),
   ),
 }));
+
+import { getDecryptedStream } from 'app/network/download';
+import crypto from 'crypto';
 
 describe('Stream service', () => {
   let mockDecipher: any;
@@ -32,7 +32,7 @@ describe('Stream service', () => {
     mockDecipher = {
       update: vi.fn(),
     };
-    vi.mocked(createDecipheriv).mockReturnValue(mockDecipher);
+    vi.mocked(crypto.createDecipheriv).mockReturnValue(mockDecipher);
     mockInputSlices = [
       new ReadableStream({
         start(controller) {
@@ -46,7 +46,7 @@ describe('Stream service', () => {
     test('When there is no offset, then should proceed with standard decryption', () => {
       const result = decryptStream(mockInputSlices, mockKey, mockIv);
 
-      expect(createDecipheriv).toHaveBeenCalledWith('aes-256-ctr', mockKey, mockIv);
+      expect(crypto.createDecipheriv).toHaveBeenCalledWith('aes-256-ctr', mockKey, mockIv);
       expect(mockDecipher.update).not.toHaveBeenCalled();
       expect(getDecryptedStream).toHaveBeenCalledWith(mockInputSlices, mockDecipher);
       expect(result).toBeInstanceOf(ReadableStream);
@@ -62,7 +62,7 @@ describe('Stream service', () => {
 
       const result = decryptStream(mockInputSlices, mockKey, mockIv, startOffsetByte);
 
-      expect(createDecipheriv).toHaveBeenCalledWith('aes-256-ctr', mockKey, expectedNewIv);
+      expect(crypto.createDecipheriv).toHaveBeenCalledWith('aes-256-ctr', mockKey, expectedNewIv);
       expect(mockDecipher.update).toHaveBeenCalledWith(expectedSkipBuffer);
       expect(getDecryptedStream).toHaveBeenCalledWith(mockInputSlices, mockDecipher);
       expect(result).toBeInstanceOf(ReadableStream);
