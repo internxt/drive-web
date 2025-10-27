@@ -17,7 +17,11 @@ import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileUint8Array, UploadProgressCallback } from './upload-utils';
 import { UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD } from './networkConstants';
 import { WORKER_MESSAGE_STATES } from 'app/drive/services/worker.service/types/upload';
-import { DownloadAbortedByUserError } from 'app/drive/services/worker.service/downloadWorkerHandler';
+import {
+  DownloadAbortedByUserError,
+  DownloadFailedWithUnknownError,
+  NoContentReceivedError,
+} from './errors/download.errors';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -366,19 +370,5 @@ export class NetworkFacade {
     );
 
     return fileStream!;
-  }
-}
-
-export class DownloadFailedWithUnknownError extends Error {
-  constructor(status?: number) {
-    super(`Download failed with unknown error. Status code: ${status ?? 'unknown'}`);
-    Object.setPrototypeOf(this, DownloadFailedWithUnknownError.prototype);
-  }
-}
-
-export class NoContentReceivedError extends Error {
-  constructor() {
-    super('No content received');
-    Object.setPrototypeOf(this, NoContentReceivedError.prototype);
   }
 }

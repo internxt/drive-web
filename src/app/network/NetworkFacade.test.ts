@@ -1,10 +1,14 @@
 /* eslint-disable no-constant-condition */
 import { describe, it, expect, vi, beforeEach, afterEach, test } from 'vitest';
-import { DownloadFailedWithUnknownError, NetworkFacade, NoContentReceivedError } from './NetworkFacade';
+import { NetworkFacade } from './NetworkFacade';
 import { Network as NetworkModule } from '@internxt/sdk';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
 import { decryptStream } from 'app/core/services/stream.service';
-import { DownloadAbortedByUserError } from 'app/drive/services/worker.service/downloadWorkerHandler';
+import {
+  DownloadAbortedByUserError,
+  DownloadFailedWithUnknownError,
+  NoContentReceivedError,
+} from './errors/download.errors';
 
 vi.mock('@internxt/sdk/dist/network/download');
 vi.mock('app/core/services/stream.service', () => ({
