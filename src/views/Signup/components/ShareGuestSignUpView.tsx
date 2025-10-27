@@ -18,7 +18,6 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { MAX_PASSWORD_LENGTH } from '../../../app/shared/components/ValidPassword';
 import CreateAccountForm from './CreateAccountForm';
 import { guestSignupOnSubmit } from '../utils/guestSignupOnSubmit';
-import { c } from 'vite/dist/node/moduleRunnerTransport.d-DJ_mE5sf';
 
 function ShareGuestSingUpView(): JSX.Element {
   const { translate } = useTranslationContext();
