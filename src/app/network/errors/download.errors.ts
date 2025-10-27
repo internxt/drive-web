@@ -1,6 +1,7 @@
 export class DownloadAbortedByUserError extends Error {
   public constructor() {
     super('Download aborted by user');
+    Object.setPrototypeOf(this, DownloadAbortedByUserError.prototype);
   }
 }
 
