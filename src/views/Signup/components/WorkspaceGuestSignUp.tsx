@@ -1,25 +1,21 @@
 import { auth } from '@internxt/lib';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useSignUp } from '../hooks/useSignup';
 import { useGuestSignupState } from '../hooks/useGuestSignupState';
-import errorService from '../../../app/core/services/error.service';
-import localStorageService from '../../../app/core/services/local-storage.service';
+import { useInvitationValidation } from '../hooks/useInvitationValidation';
+import { useGuestSignupForm } from '../hooks/useGuestSignupForm';
 import navigationService from '../../../app/core/services/navigation.service';
 import { AppView, IFormValues } from '../../../app/core/types';
-import { parseAndDecryptUserKeys } from '../../../app/crypto/services/keys.service';
 import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
 import ExpiredLink from '../../../app/shared/views/ExpiredLink/ExpiredLinkView';
 import { useAppDispatch } from '../../../app/store/hooks';
-import { planThunks } from '../../../app/store/slices/plan';
-import { productsThunks } from '../../../app/store/slices/products';
-import { referralsThunks } from '../../../app/store/slices/referrals';
-import { userActions, userThunks } from '../../../app/store/slices/user';
+import { userActions } from '../../../app/store/slices/user';
 import queryString from 'query-string';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { onChangePasswordHandler } from '../utils';
 import CreateAccountForm from './CreateAccountForm';
 import workspacesService from '../../../app/core/services/workspace.service';
+import { guestSignupOnSubmit } from '../utils/guestSignupOnSubmit';
 
 function WorkspaceGuestSingUpView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -67,43 +63,16 @@ function WorkspaceGuestSingUpView(): JSX.Element {
   });
   const password = useWatch({ control, name: 'password', defaultValue: '' });
 
-  const [invitationValidation, setInvitationValidation] = useState({
-    isLoading: true,
-    isValid: false,
+  const { invitationValidation } = useInvitationValidation({
+    validateInvitationFn: workspacesService.validateWorkspaceInvitation,
+    setInvitationId,
   });
 
-  const formInputError = Object.values(errors)[0];
-
-  let bottomInfoError: null | string = null;
-
-  if (formInputError?.message) {
-    bottomInfoError = formInputError.message;
-  } else if (showError && signupError) {
-    bottomInfoError = signupError.toString();
-  }
-
-  const validateInvitation = async (id: string) => {
-    setInvitationValidation((prev) => ({ ...prev, isLoading: true }));
-
-    try {
-      await workspacesService.validateWorkspaceInvitation(id);
-      setInvitationId(id);
-      setInvitationValidation((prev) => ({ ...prev, isLoading: false, isValid: true }));
-    } catch (error) {
-      errorService.reportError(error);
-      setInvitationValidation((prev) => ({ ...prev, isLoading: false, isValid: false }));
-    }
-  };
-
-  useEffect(() => {
-    const inviteId = qs.invitation as string;
-
-    if (inviteId) {
-      validateInvitation(inviteId);
-    } else {
-      return navigationService.push(AppView.Signup);
-    }
-  }, [invitationId]);
+  const { bottomInfoError } = useGuestSignupForm({
+    errors,
+    showError,
+    signupError,
+  });
 
   useEffect(() => {
     if (user && mnemonic) {
@@ -120,57 +89,17 @@ function WorkspaceGuestSingUpView(): JSX.Element {
   }, [password]);
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
-    event?.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const { email, password, token } = formData;
-      const { xUser, xToken, xNewToken, mnemonic } = await doRegisterPreCreatedUser(
-        email,
-        password,
-        invitationId ?? '',
-        token,
-      );
-
-      localStorageService.clear();
-
-      localStorageService.set('xToken', xToken);
-      localStorageService.set('xMnemonic', mnemonic);
-      localStorageService.set('xNewToken', xNewToken);
-
-      const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(xUser, password);
-
-      const user = {
-        ...xUser,
-        privateKey,
-        keys: {
-          ecc: {
-            publicKey: publicKey,
-            privateKey: privateKey,
-          },
-          kyber: {
-            publicKey: publicKyberKey,
-            privateKey: privateKyberKey,
-          },
-        },
-      } as UserSettings;
-
-      dispatch(userActions.setUser(user));
-      await dispatch(userThunks.initializeUserThunk());
-      dispatch(productsThunks.initializeThunk());
-      dispatch(planThunks.initializeThunk());
-
-      dispatch(referralsThunks.initializeThunk());
-
-      return navigationService.push(AppView.Drive);
-    } catch (err: unknown) {
-      setIsLoading(false);
-      errorService.reportError(err);
-      const castedError = errorService.castError(err);
-      setSignupError(castedError.message);
-    } finally {
-      setShowError(true);
-    }
+    await guestSignupOnSubmit({
+      formData,
+      event,
+      invitationId: invitationId ?? '',
+      doRegisterPreCreatedUser,
+      dispatch,
+      setIsLoading,
+      setSignupError,
+      setShowError,
+      redirectTo: AppView.Drive,
+    });
   };
 
   if (invitationValidation.isLoading) {
