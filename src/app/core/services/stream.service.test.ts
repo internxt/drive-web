@@ -43,7 +43,7 @@ describe('Stream service', () => {
   });
 
   describe('Decrypt Stream', () => {
-    test('When there is no offset, then should create a new cipher', () => {
+    test('When there is no offset, then should proceed with standard decryption', () => {
       const result = decryptStream(mockInputSlices, mockKey, mockIv);
 
       expect(createDecipheriv).toHaveBeenCalledWith('aes-256-ctr', mockKey, mockIv);
