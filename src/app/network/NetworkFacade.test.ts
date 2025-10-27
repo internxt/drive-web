@@ -1,9 +1,10 @@
 /* eslint-disable no-constant-condition */
 import { describe, it, expect, vi, beforeEach, afterEach, test } from 'vitest';
-import { NetworkFacade } from './NetworkFacade';
+import { DownloadFailedWithUnknownError, NetworkFacade, NoContentReceivedError } from './NetworkFacade';
 import { Network as NetworkModule } from '@internxt/sdk';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
 import { decryptStream } from 'app/core/services/stream.service';
+import { DownloadAbortedByUserError } from 'app/drive/services/worker.service/downloadWorkerHandler';
 
 vi.mock('@internxt/sdk/dist/network/download');
 vi.mock('app/core/services/stream.service', () => ({
@@ -12,9 +13,6 @@ vi.mock('app/core/services/stream.service', () => ({
   decryptStream: vi.fn(),
   joinReadableBinaryStreams: vi.fn(),
 }));
-vi.mock('async');
-vi.mock('bip39');
-vi.mock('crypto');
 
 describe('NetworkFacade', () => {
   let networkFacade: NetworkFacade;
@@ -89,11 +87,11 @@ describe('NetworkFacade', () => {
       );
 
       await expect(networkFacade.downloadChunk(bucketId, fileId, mnemonic, chunkStart, chunkEnd)).rejects.toThrow(
-        'Unexpected status 404',
+        new DownloadFailedWithUnknownError(mockResponse.status),
       );
     });
 
-    test('When there is no body in the response, then an error is thrown', async () => {
+    test('When there is no body in the response, then an error indicating so is thrown', async () => {
       const mockResponse = {
         status: 206,
         body: null,
@@ -107,7 +105,7 @@ describe('NetworkFacade', () => {
       );
 
       await expect(networkFacade.downloadChunk(bucketId, fileId, mnemonic, chunkStart, chunkEnd)).rejects.toThrow(
-        'No content received',
+        NoContentReceivedError,
       );
     });
 
@@ -124,7 +122,7 @@ describe('NetworkFacade', () => {
         networkFacade.downloadChunk(bucketId, fileId, mnemonic, chunkStart, chunkEnd, {
           abortController,
         }),
-      ).rejects.toThrow('Download aborted');
+      ).rejects.toThrow(DownloadAbortedByUserError);
     });
   });
 });

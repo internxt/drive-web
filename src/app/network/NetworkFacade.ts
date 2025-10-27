@@ -17,6 +17,7 @@ import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileUint8Array, UploadProgressCallback } from './upload-utils';
 import { UPLOAD_CHUNK_SIZE, ALLOWED_CHUNK_OVERHEAD } from './networkConstants';
 import { WORKER_MESSAGE_STATES } from 'app/drive/services/worker.service/types/upload';
+import { DownloadAbortedByUserError } from 'app/drive/services/worker.service/downloadWorkerHandler';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -333,7 +334,7 @@ export class NetworkFacade {
       async (downloadables) => {
         for (const downloadable of downloadables) {
           if (options?.abortController?.signal.aborted) {
-            throw new Error('Download aborted');
+            throw new DownloadAbortedByUserError();
           }
 
           const response = await fetch(downloadable.url, {
@@ -345,12 +346,14 @@ export class NetworkFacade {
             keepalive: true,
           });
 
-          if (response.status !== 206 && response.status !== 200) {
-            throw new Error(`Unexpected status ${response.status}`);
+          const statusCode = response.status;
+
+          if (statusCode !== 206 && statusCode !== 200) {
+            throw new DownloadFailedWithUnknownError(statusCode);
           }
 
           if (!response.body) {
-            throw new Error('No content received');
+            throw new NoContentReceivedError();
           }
 
           encryptedContentStreams.push(response.body);
@@ -363,5 +366,19 @@ export class NetworkFacade {
     );
 
     return fileStream!;
+  }
+}
+
+export class DownloadFailedWithUnknownError extends Error {
+  constructor(status?: number) {
+    super(`Download failed with unknown error. Status code: ${status ?? 'unknown'}`);
+    Object.setPrototypeOf(this, DownloadFailedWithUnknownError.prototype);
+  }
+}
+
+export class NoContentReceivedError extends Error {
+  constructor() {
+    super('No content received');
+    Object.setPrototypeOf(this, NoContentReceivedError.prototype);
   }
 }
