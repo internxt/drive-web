@@ -259,6 +259,29 @@ describe('logIn', () => {
       }),
     } as any);
   });
+  it('should successfully sign up', async () => {
+    const { xUser, xNewToken, xToken, mnemonic } = await authOpaqueService.doSignUpOpaque(
+      mockEmail,
+      mockPassword,
+      mockCaptcha,
+    );
+    expect(xUser).toBeDefined();
+    expect(xNewToken).toBeDefined();
+    expect(xToken).toBeDefined();
+    expect(mnemonic).toBeDefined();
+  });
+
+  it('should successfully log in', async () => {
+    const { user, newToken, token, mnemonic } = await authOpaqueService.doLoginOpaque(
+      mockEmail,
+      mockPassword,
+      mockTwoFactorCode,
+    );
+    expect(user).toBeDefined();
+    expect(newToken).toBeDefined();
+    expect(token).toBeDefined();
+    expect(mnemonic).toBeDefined();
+  });
 
   let sessionKeyTest, sessionIdTest, exportKeyTest: string;
   it('should successfully sign up and then log in', async () => {
