@@ -325,34 +325,47 @@ export class NetworkFacade {
     let downloadedBytes = 0;
     let completedChunksDownloadedCount = 0;
 
+    async function* readableStreamToAsyncIterator<T>(stream: ReadableStream<T>): AsyncGenerator<T> {
+      const reader = stream.getReader();
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) return;
+          yield value!;
+        }
+      } finally {
+        reader.releaseLock();
+      }
+    }
+
     const downloadTask = async (
       task: DownloadChunkTask,
       completedChunks: Array<Uint8Array[] | null>,
+      controller: ReadableStreamDefaultController<Uint8Array>,
+      downloadQueue: QueueObject<DownloadChunkTask>,
       streamOrderedChunks: () => void,
     ) => {
       const chunkStream = await this.downloadChunk(bucketId, fileId, mnemonic, task.chunkStart, task.chunkEnd, options);
       const reader = chunkStream.getReader();
       const chunkData: Uint8Array[] = [];
 
-      let isDownloadingDone = false;
       try {
-        while (!isDownloadingDone) {
-          const { done, value } = await reader.read();
-
-          if (done) {
-            isDownloadingDone = true;
-            continue;
-          }
-
-          chunkData.push(value);
-          downloadedBytes += value.length;
-          options?.downloadingCallback?.(fileSize, downloadedBytes);
+        for await (const chunk of readableStreamToAsyncIterator(chunkStream)) {
+          chunkData.push(chunk);
+          downloadedBytes += chunk.length;
         }
 
+        options?.downloadingCallback?.(fileSize, downloadedBytes);
         completedChunks[task.index] = chunkData;
         completedChunksDownloadedCount++;
 
         streamOrderedChunks();
+      } catch (error) {
+        const partialBytes = completedChunks[task.index]?.reduce((sum, chunk) => sum + chunk.length, 0) || 0;
+        downloadedBytes -= partialBytes;
+        completedChunks[task.index] = null;
+
+        handleChunkError({ task, errorMessage: (error as Error).message, controller, downloadQueue });
       } finally {
         reader.releaseLock();
       }
@@ -404,7 +417,8 @@ export class NetworkFacade {
 
         // Download the chunks and stream - then use queue to download them in parallel
         const downloadQueue = queue(
-          async (task: DownloadChunkTask) => await downloadTask(task, completedChunks, streamOrderedChunks),
+          async (task: DownloadChunkTask) =>
+            await downloadTask(task, completedChunks, controller, downloadQueue, streamOrderedChunks),
           concurrency,
         );
 

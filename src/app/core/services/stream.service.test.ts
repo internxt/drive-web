@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, beforeEach, test } from 'vitest';
-import { createDecipheriv } from 'crypto';
-import { decryptStream } from './stream.service';
-import { getDecryptedStream } from 'app/network/download';
 
 vi.mock('crypto', () => ({
   createDecipheriv: vi.fn(),
 }));
+
+import { decryptStream } from './stream.service';
+import { getDecryptedStream } from 'app/network/download';
+import { createDecipheriv } from 'crypto';
 
 vi.mock('app/network/download', () => ({
   getDecryptedStream: vi.fn(

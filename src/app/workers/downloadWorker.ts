@@ -38,30 +38,21 @@ export class DownloadWorker {
       }
     };
 
+    const getFileReadableStream = async () => {
+      if (file.size >= MIN_DOWNLOAD_MULTIPART_SIZE) {
+        return createMultipartFileDownloadStream(file, callbacks.onProgress, this.abortController, credentials);
+      }
+
+      return createFileDownloadStream(file, isWorkspace, callbacks.onProgress, this.abortController, credentials);
+    };
+
     try {
       console.log('[DOWNLOAD-WORKER] Downloading file -->', {
         fileName: file.plainName ?? file.name,
         type: file.type,
       });
 
-      let downloadedFile: ReadableStream<Uint8Array<ArrayBufferLike>>;
-
-      if (file.size >= MIN_DOWNLOAD_MULTIPART_SIZE) {
-        downloadedFile = await createMultipartFileDownloadStream(
-          file,
-          callbacks.onProgress,
-          this.abortController,
-          credentials,
-        );
-      } else {
-        downloadedFile = await createFileDownloadStream(
-          file,
-          isWorkspace,
-          callbacks.onProgress,
-          this.abortController,
-          credentials,
-        );
-      }
+      const downloadedFile: ReadableStream<Uint8Array<ArrayBufferLike>> = await getFileReadableStream();
 
       this.abortController.signal.addEventListener('abort', abortHandler);
 

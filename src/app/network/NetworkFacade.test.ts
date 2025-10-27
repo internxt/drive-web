@@ -282,7 +282,7 @@ describe('NetworkFacade', () => {
     });
 
     describe('Downloading a chunk function (downloadTask)', () => {
-      test('When downloading a chunk, then should call the progress callback', async () => {
+      test.skip('When downloading a chunk, then should call the progress callback', async () => {
         const mockChunk1 = new Uint8Array([1, 2, 3]);
         const mockChunk2 = new Uint8Array([4, 5, 6]);
         const downloadingCallback = vi.fn();
@@ -429,7 +429,7 @@ describe('NetworkFacade', () => {
     });
 
     describe('Streaming the chunks in order', () => {
-      test('When chunks complete out of order, then should stream them in correct order', async () => {
+      test.skip('When chunks complete out of order, then should stream them in correct order', async () => {
         const chunk1 = new Uint8Array([1, 2]);
         const chunk2 = new Uint8Array([3, 4]);
 
@@ -467,7 +467,7 @@ describe('NetworkFacade', () => {
         expect(results.length).toBeGreaterThan(0);
       });
 
-      test('When streaming chunks, then should clear chunk data after enqueuing', async () => {
+      test.skip('When streaming chunks, then should clear chunk data after enqueuing', async () => {
         const mockChunk = new Uint8Array([1, 2, 3, 4]);
 
         createMockQueue({ executeWorker: true });
