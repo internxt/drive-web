@@ -1,5 +1,5 @@
 import { getDecryptedStream } from 'app/network/download';
-import { createDecipheriv, Decipher } from 'crypto';
+import crypto, { Decipher } from 'crypto';
 
 type BinaryStream = ReadableStream<Uint8Array>;
 
@@ -73,10 +73,10 @@ export function decryptStream(
 
     const skipBuffer = Buffer.alloc(startOffset, 0);
 
-    decipher = createDecipheriv('aes-256-ctr', key, newIv);
+    decipher = crypto.createDecipheriv('aes-256-ctr', key, newIv);
     decipher.update(skipBuffer);
   } else {
-    decipher = createDecipheriv('aes-256-ctr', key, iv);
+    decipher = crypto.createDecipheriv('aes-256-ctr', key, iv);
   }
 
   return getDecryptedStream(inputSlices, decipher);
