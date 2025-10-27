@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-          registry-url: "https://npm.pkg.github.com"
+          registry-url: 'https://npm.pkg.github.com'
       - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> ./.env
       - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> ./.env
       - run: echo REACT_APP_STRIPE_TEST_PK=${{ secrets.REACT_APP_STRIPE_TEST_PK }} >> ./.env
@@ -55,7 +55,7 @@ jobs:
       - name: Install Playwright Browsers
         run: yarn playwright install
       - name: Unit test run
-        run: yarn test --no-cache
+        run: yarn test
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -67,7 +67,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-          registry-url: "https://npm.pkg.github.com"
+          registry-url: 'https://npm.pkg.github.com'
       - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
       - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
       # You cannot read packages from other private repos with GITHUB_TOKEN
