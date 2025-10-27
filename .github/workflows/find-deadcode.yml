@@ -1,0 +1,32 @@
+name: Find deadcode
+
+on: pull_request
+
+jobs:
+  find_deadcode:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Create .npmrc file
+        run: |
+          echo "registry=https://registry.yarnpkg.com/" > .npmrc
+          echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
+          echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
+          echo "always-auth=true" >> .npmrc
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Find deadcode
+        run: npm run find-deadcode
