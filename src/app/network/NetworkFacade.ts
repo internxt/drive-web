@@ -480,69 +480,6 @@ export class NetworkFacade {
       async (downloadables) => {
         for (const downloadable of downloadables) {
           if (options?.abortController?.signal.aborted) {
-            throw new Error('Download aborted');
-          }
-
-          const response = await fetch(downloadable.url, {
-            signal: options?.abortController?.signal,
-            headers: {
-              Range: `bytes=${chunkStart}-${chunkEnd}`,
-              Connection: 'keep-alive',
-            },
-            keepalive: true,
-          });
-
-          if (response.status !== 206 && response.status !== 200) {
-            throw new Error(`Unexpected status ${response.status}`);
-          }
-
-          if (!response.body) {
-            throw new Error('No content received');
-          }
-
-          encryptedContentStreams.push(response.body);
-        }
-      },
-      async (algorithm, key, iv, fileSize) => {
-        fileStream = decryptStream(encryptedContentStreams, key as Buffer, iv as Buffer, chunkStart);
-      },
-      (options?.token && { token: options.token }) || undefined,
-    );
-
-    return fileStream!;
-  }
-
-  /**
-   * Downloads a chunk of a file from the network.
-   * @param bucketId The bucket ID where the file is located.
-   * @param fileId The file ID of the file to download.
-   * @param mnemonic The mnemonic used to encrypt the file.
-   * @param chunkStart The start of the chunk in bytes.
-   * @param chunkEnd The end of the chunk in bytes.
-   * @param options The options to download the file.
-   * @returns A promise that resolves to a readable stream of the file chunk.
-   */
-  async downloadChunk(
-    bucketId: string,
-    fileId: string,
-    mnemonic: string,
-    chunkStart: number,
-    chunkEnd: number,
-    options?: DownloadOptions,
-  ): Promise<ReadableStream<Uint8Array>> {
-    const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
-    let fileStream: ReadableStream<Uint8Array>;
-
-    await downloadFile(
-      fileId,
-      bucketId,
-      mnemonic,
-      this.network,
-      this.cryptoLib,
-      Buffer.from,
-      async (downloadables) => {
-        for (const downloadable of downloadables) {
-          if (options?.abortController?.signal.aborted) {
             throw new DownloadAbortedByUserError();
           }
 
