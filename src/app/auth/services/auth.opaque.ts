@@ -138,7 +138,7 @@ export const doSignUpOpaque = async (email: string, password: string, captcha: s
     sessionID,
     sessionKey,
     mnemonic,
-  } = await signupOpaque(email, password, captcha, referral, referrer);
+  } = await signupOpaque(email, password, captcha, referrer, referral);
 
   await setSessionKey(password, sessionKey);
 

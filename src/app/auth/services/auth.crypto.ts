@@ -74,7 +74,7 @@ export const decryptSessionKey = async (password: string, sessionKeyEnc: string,
   const sessionKeyCipher = utils.base64ToCiphertext(sessionKeyEnc);
   const sessionKeyArray = await symmetric.decryptSymmetrically(key, sessionKeyCipher, 'UserSessionKey');
   const sessionKey = utils.uint8ArrayToBase64(sessionKeyArray);
-  const urlSafeSessionKey = sessionKey.replace(/\+/g, '-').replace(/\//g, '_').replace(/=$/, '').replace(/=$/, '');
+  const urlSafeSessionKey = sessionKey.replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
   return urlSafeSessionKey;
 };
 
