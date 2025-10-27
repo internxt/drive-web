@@ -8,13 +8,9 @@ describe('Test auth crypto functions', () => {
 
     const { encMnemonic, encKeys } = await encryptUserKeysAndMnemonic(keys, mnemonic, exportKey);
 
-    const { keys: dec_keys, mnemonic: dec_mnemonic } = await decryptUserKeysAndMnemonic(
-      encMnemonic,
-      encKeys,
-      exportKey,
-    );
+    const { keys: decKeys, mnemonic: decMnemonic } = await decryptUserKeysAndMnemonic(encMnemonic, encKeys, exportKey);
 
-    expect(keys).toStrictEqual(dec_keys);
-    expect(mnemonic).toEqual(dec_mnemonic);
+    expect(keys).toStrictEqual(decKeys);
+    expect(mnemonic).toEqual(decMnemonic);
   });
 });
