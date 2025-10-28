@@ -7,7 +7,7 @@ import { storageActions } from '../../../../app/store/slices/storage';
 import notificationsService, { ToastType } from '../../../../app/notifications/services/notifications.service';
 import { aes, items } from '@internxt/lib';
 import { useAppDispatch, useAppSelector } from '../../../../app/store/hooks';
-import PasswordInput from './components/PasswordInput';
+import PasswordInput from '../../../../components/PasswordInput';
 import { Check, Copy } from '@phosphor-icons/react';
 import dateService from '../../../../app/core/services/date.service';
 import shareService, { copyTextToClipboard } from '../../../../app/share/services/share.service';

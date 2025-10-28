@@ -8,7 +8,7 @@ import sizeService from 'app/drive/services/size.service';
 import { DriveItemData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import PasswordInput from '../../../../views/Shared/components/ShareItemDialog/components/PasswordInput';
+import PasswordInput from '../../../../components/PasswordInput';
 import { Button } from '@internxt/ui';
 import LockLogo from 'assets/icons/Lock.svg?react';
 import { useState } from 'react';
