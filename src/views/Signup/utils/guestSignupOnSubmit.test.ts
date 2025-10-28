@@ -10,14 +10,14 @@ import { productsThunks } from 'app/store/slices/products';
 import { planThunks } from 'app/store/slices/plan';
 import { referralsThunks } from 'app/store/slices/referrals';
 
-vi.mock('app/core/services/error.service');
-vi.mock('app/core/services/local-storage.service');
-vi.mock('app/core/services/navigation.service');
-vi.mock('app/crypto/services/keys.service');
-vi.mock('app/store/slices/user');
-vi.mock('app/store/slices/products');
-vi.mock('app/store/slices/plan');
-vi.mock('app/store/slices/referrals');
+vi.mock(import('app/core/services/error.service'));
+vi.mock(import('app/core/services/local-storage.service'));
+vi.mock(import('app/core/services/navigation.service'));
+vi.mock(import('app/crypto/services/keys.service'));
+vi.mock(import('app/store/slices/user'));
+vi.mock(import('app/store/slices/products'));
+vi.mock(import('app/store/slices/plan'));
+vi.mock(import('app/store/slices/referrals'));
 
 describe('guestSignupOnSubmit', () => {
   const mockDispatch = vi.fn();

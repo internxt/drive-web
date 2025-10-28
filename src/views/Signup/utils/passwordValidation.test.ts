@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { onChangePasswordHandler } from './passwordValidation';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 
-vi.mock('@internxt/lib/dist/src/auth/testPasswordStrength');
+vi.mock(import('@internxt/lib/dist/src/auth/testPasswordStrength'));
 vi.mock('i18next', () => ({
   t: vi.fn((key: string) => key),
 }));
