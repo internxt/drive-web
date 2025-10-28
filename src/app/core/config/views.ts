@@ -13,7 +13,7 @@ import SignUpView from '../../auth/views/SignUpView/SignUpView';
 import UniversalLinkSuccessView from '../../auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 import BackupsView from '../../backups/views/BackupsView/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
-import HomeView from '../../../views/Home/Home';
+import DriveView from '../../../views/Drive';
 import FolderFileNotFound from '../../drive/views/FolderFileNotFound/FolderFileNotFound';
 import RecentsView from '../../drive/views/RecentsView/RecentsView';
 import RequestAccess from '../../drive/views/RequestAccess/RequestAccess';
@@ -71,8 +71,8 @@ const views: Array<{
   { id: AppView.RequestAccess, component: RequestAccess },
   { id: AppView.UniversalLinkSuccess, component: UniversalLinkSuccessView },
   // Leave these routes last, otherwise it will match react router and may cause malfunctioning.
-  { id: AppView.DriveItems, component: HomeView },
-  { id: AppView.Drive, component: HomeView },
+  { id: AppView.DriveItems, component: DriveView },
+  { id: AppView.Drive, component: DriveView },
   { id: AppView.NotFound, component: NotFoundView },
 ];
 

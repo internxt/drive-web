@@ -35,7 +35,7 @@ vi.mock('../session/session.thunks', () => ({
   },
   sessionExtraReducers: vi.fn(),
 }));
-vi.mock('views/Home/Settings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper', () => ({
+vi.mock('views/Drive/Settings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper', () => ({
   deleteWorkspaceAvatarFromDatabase: vi.fn(),
   saveWorkspaceAvatarToDatabase: vi.fn(),
 }));
