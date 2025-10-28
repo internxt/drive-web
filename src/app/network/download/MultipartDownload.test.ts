@@ -51,7 +51,7 @@ describe('MultipartDownload ', () => {
       expect(chunks[0]).toStrictEqual(mockChunkData);
     });
 
-    test('When downloading a single chunk, then downloadingCallback should be called with correct progress', async () => {
+    test('When downloading a single chunk, then the progress callback should be called with correct progress', async () => {
       const fileSize = 1024;
       const mockChunkData = new Uint8Array(1024);
       const downloadingCallback = vi.fn();
@@ -437,7 +437,7 @@ describe('MultipartDownload ', () => {
 
     test('When a chunk fails and retries, then bytes should only be counted once on success', async () => {
       const FIFTY_MEGABYTES = 52428800;
-      const fileSize = FIFTY_MEGABYTES * 2; // ~104MB
+      const fileSize = FIFTY_MEGABYTES * 2;
       const chunkSize = 1024;
       const attemptsByChunk = new Map<number, number>();
       const progressUpdates: number[] = [];
