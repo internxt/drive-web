@@ -2,6 +2,7 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { MultipartDownload } from './MultipartDownload';
 import { NetworkFacade } from '../NetworkFacade';
 import { DownloadChunkTask, DownloadOptions } from '../types/index';
+import { MaxRetriesExceededError } from '../errors/download.errors';
 
 describe('MultipartDownload ', () => {
   let multipartDownload: MultipartDownload;
@@ -376,7 +377,7 @@ describe('MultipartDownload ', () => {
         }
       })();
 
-      await expect(readPromise).rejects.toThrow();
+      await expect(readPromise).rejects.toThrow(MaxRetriesExceededError);
 
       expect(abortSpy).toHaveBeenCalled();
     });

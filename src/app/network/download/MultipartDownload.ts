@@ -2,6 +2,7 @@ import { queue, QueueObject } from 'async';
 import { DownloadOptions, DownloadChunkTask } from '../types/index';
 import { USE_MULTIPART_THRESHOLD_BYTES as FIFTY_MEGABYTES } from '../networkConstants';
 import { NetworkFacade } from '../NetworkFacade';
+import { MaxRetriesExceededError } from '../errors/download.errors';
 
 interface DownloadFilePayload {
   bucketId: string;
@@ -256,7 +257,7 @@ export class MultipartDownload {
     this.revertPartialDownload(task.index);
 
     if (task.attempt >= task.maxRetries) {
-      const finalError = new Error(`Download failed after ${task.maxRetries} retries: ${error.message}`);
+      const finalError = new MaxRetriesExceededError(task.maxRetries, error.message);
       options?.abortController?.abort();
       downloadQueue.kill();
       controller.error(finalError);
