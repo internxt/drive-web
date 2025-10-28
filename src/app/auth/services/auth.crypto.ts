@@ -1,7 +1,8 @@
 import { symmetric, utils, deriveKey } from 'internxt-crypto';
 import { UserKeys } from '@internxt/sdk';
-
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
+import { ECC_KEY_AUX, KYBER_KEY_AUX, MNEMONIC_AUX } from './auth.constants';
+
 export async function encryptUserKeysAndMnemonic(
   userKeys: UserKeys,
   mnemonic: string,
@@ -9,11 +10,11 @@ export async function encryptUserKeysAndMnemonic(
 ): Promise<{ encMnemonic: string; encKeys: UserKeys }> {
   const cryptoKey = await symmetric.deriveSymmetricCryptoKey(exportKey);
   const key = utils.UTF8ToUint8(userKeys.ecc.privateKey);
-  const encPrivateKey = await symmetric.encryptSymmetrically(cryptoKey, key, 'user-private-key');
+  const encPrivateKey = await symmetric.encryptSymmetrically(cryptoKey, key, ECC_KEY_AUX);
   const keyKyber = utils.base64ToUint8Array(userKeys.kyber.privateKey);
-  const encPrivateKyberKey = await symmetric.encryptSymmetrically(cryptoKey, keyKyber, 'user-private-kyber-key');
+  const encPrivateKyberKey = await symmetric.encryptSymmetrically(cryptoKey, keyKyber, KYBER_KEY_AUX);
   const mnemonicArray = utils.UTF8ToUint8(mnemonic);
-  const mnemonicCipher = await symmetric.encryptSymmetrically(cryptoKey, mnemonicArray, 'user-mnemonic');
+  const mnemonicCipher = await symmetric.encryptSymmetrically(cryptoKey, mnemonicArray, MNEMONIC_AUX);
   const encMnemonic = utils.ciphertextToBase64(mnemonicCipher);
 
   const encKeys: UserKeys = {
@@ -36,11 +37,11 @@ export async function decryptUserKeysAndMnemonic(
 ): Promise<{ keys: UserKeys; mnemonic: string }> {
   const cryptoKey = await symmetric.deriveSymmetricCryptoKey(exportKey);
   const encKey = utils.base64ToCiphertext(encKeys.ecc.privateKey);
-  const privateKey = await symmetric.decryptSymmetrically(cryptoKey, encKey, 'user-private-key');
+  const privateKey = await symmetric.decryptSymmetrically(cryptoKey, encKey, ECC_KEY_AUX);
   const encKyberKey = utils.base64ToCiphertext(encKeys.kyber.privateKey);
-  const privateKyberKey = await symmetric.decryptSymmetrically(cryptoKey, encKyberKey, 'user-private-kyber-key');
+  const privateKyberKey = await symmetric.decryptSymmetrically(cryptoKey, encKyberKey, KYBER_KEY_AUX);
   const encMnemonicArray = utils.base64ToCiphertext(encMnemonic);
-  const mnemonicArray = await symmetric.decryptSymmetrically(cryptoKey, encMnemonicArray, 'user-mnemonic');
+  const mnemonicArray = await symmetric.decryptSymmetrically(cryptoKey, encMnemonicArray, MNEMONIC_AUX);
   const mnemonic = utils.uint8ToUTF8(mnemonicArray);
 
   const keys: UserKeys = {

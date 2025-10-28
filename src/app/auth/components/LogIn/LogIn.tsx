@@ -168,7 +168,7 @@ export default function LogIn(): JSX.Element {
     const { email, password } = formData;
 
     try {
-      const { tfaEnabled: isTfaEnabled, opaqueLogin } = await is2FAorOpaqueNeeded(email);
+      const { tfaEnabled: isTfaEnabled, useOpaqueLogin } = await is2FAorOpaqueNeeded(email);
 
       if (!isTfaEnabled || showTwoFactor) {
         const loginType: 'desktop' | 'web' = isUniversalLinkMode ? 'desktop' : 'web';
@@ -179,7 +179,7 @@ export default function LogIn(): JSX.Element {
           twoFactorCode,
           dispatch,
           loginType,
-          opaqueLogin,
+          useOpaqueLogin,
         };
 
         const { token, user, mnemonic } = await authenticateUser(authParams);

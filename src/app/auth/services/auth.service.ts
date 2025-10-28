@@ -71,7 +71,7 @@ export type SignUpParams = {
   token: string;
   redeemCodeObject: boolean;
   dispatch: AppDispatch;
-  opaqueLogin?: boolean;
+  useOpaqueLogin?: boolean;
 };
 
 type LogInParams = {
@@ -80,7 +80,7 @@ type LogInParams = {
   twoFactorCode: string;
   dispatch: AppDispatch;
   loginType?: 'web' | 'desktop';
-  opaqueLogin?: boolean;
+  useOpaqueLogin?: boolean;
 };
 
 export type AuthenticateUserParams = {
@@ -93,7 +93,7 @@ export type AuthenticateUserParams = {
   token?: string;
   redeemCodeObject?: boolean;
   doSignUp?: RegisterFunction;
-  opaqueLogin?: boolean;
+  useOpaqueLogin?: boolean;
 };
 
 const getCurrentUrlParams = (): Record<string, string> => {
@@ -140,13 +140,13 @@ export function cancelAccount(): Promise<void> {
   return authClient.sendUserDeactivationEmail(token);
 }
 
-export const is2FAorOpaqueNeeded = async (email: string): Promise<{ tfaEnabled: boolean; opaqueLogin: boolean }> => {
+export const is2FAorOpaqueNeeded = async (email: string): Promise<{ tfaEnabled: boolean; useOpaqueLogin: boolean }> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const securityDetails = await authClient.securityDetails(email).catch((error) => {
     throw new AppError(error.message ?? 'Login error', error.status ?? 500);
   });
 
-  return { tfaEnabled: securityDetails.tfaEnabled, opaqueLogin: securityDetails.opaqueLogin };
+  return { tfaEnabled: securityDetails.tfaEnabled, useOpaqueLogin: securityDetails.opaqueLogin };
 };
 
 const getAuthClient = (authType: 'web' | 'desktop') => {
@@ -561,8 +561,8 @@ export const unblockAccount = (token: string): Promise<void> => {
 };
 
 export const signUp = async (params: SignUpParams) => {
-  const { doSignUp, email, password, token, redeemCodeObject, dispatch, opaqueLogin = false } = params;
-  const { xUser, xToken, xNewToken, mnemonic } = await (opaqueLogin
+  const { doSignUp, email, password, token, redeemCodeObject, dispatch, useOpaqueLogin = false } = params;
+  const { xUser, xToken, xNewToken, mnemonic } = await (useOpaqueLogin
     ? doSignUpOpaque(email, password, token)
     : doSignUp(email, password, token));
 
@@ -601,8 +601,8 @@ export const signUp = async (params: SignUpParams) => {
 };
 
 export const logIn = async (params: LogInParams): Promise<ProfileInfo> => {
-  const { email, password, twoFactorCode, dispatch, loginType = 'web', opaqueLogin = false } = params;
-  const { token, newToken, user, mnemonic } = await (opaqueLogin
+  const { email, password, twoFactorCode, dispatch, loginType = 'web', useOpaqueLogin = false } = params;
+  const { token, newToken, user, mnemonic } = await (useOpaqueLogin
     ? doLoginOpaque(email, password, twoFactorCode)
     : doLogin(email, password, twoFactorCode, loginType));
   dispatch(userActions.setUser(user));
@@ -636,14 +636,14 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
     token = '',
     redeemCodeObject = false,
     doSignUp,
-    opaqueLogin = false,
+    useOpaqueLogin = false,
   } = params;
   if (authMethod === 'signIn') {
-    const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, loginType, opaqueLogin });
+    const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, loginType, useOpaqueLogin });
     window.gtag('event', 'User Signin', { method: 'email' });
     return profileInfo;
   } else if (authMethod === 'signUp' && doSignUp) {
-    const profileInfo = await signUp({ doSignUp, email, password, token, redeemCodeObject, dispatch, opaqueLogin });
+    const profileInfo = await signUp({ doSignUp, email, password, token, redeemCodeObject, dispatch, useOpaqueLogin });
     return profileInfo;
   } else {
     throw new Error(`Unknown authMethod: ${authMethod}`);

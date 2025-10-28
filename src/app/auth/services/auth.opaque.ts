@@ -33,16 +33,12 @@ export const loginOpaque = async (
   });
 
   const { loginResponse } = await authClient.loginOpaqueStart(email, startLoginRequest, twoFactorCode);
-  const loginResult = opaque.client.finishLogin({
+  const { user, sessionID, sessionKey, exportKey } = await finishOpaqueLogin(
     clientLoginState,
     loginResponse,
     password,
-  });
-  if (!loginResult) {
-    throw new Error('Login failed');
-  }
-  const { exportKey, finishLoginRequest, sessionKey } = loginResult;
-  const { user, sessionID } = await authClient.loginOpaqueFinish(email, finishLoginRequest);
+    email,
+  );
 
   return { user, sessionID, sessionKey, exportKey };
 };
@@ -115,16 +111,8 @@ export const signupOpaque = async (
     registerDetails,
     startLoginRequest,
   );
-  const loginResult = opaque.client.finishLogin({
-    clientLoginState,
-    loginResponse,
-    password,
-  });
-  if (!loginResult) {
-    throw new Error('Login failed');
-  }
-  const { finishLoginRequest, sessionKey } = loginResult;
-  const { user, sessionID } = await authClient.loginOpaqueFinish(email, finishLoginRequest);
+
+  const { user, sessionID, sessionKey } = await finishOpaqueLogin(clientLoginState, loginResponse, password, email);
 
   return { user, sessionID, sessionKey, mnemonic, exportKey };
 };
@@ -170,6 +158,22 @@ export const deactivate2FAOpaque = async (password: string, authCode: string): P
   return authClient.disableTwoFactorAuth(mac, authCode, sessionID);
 };
 
+const finishOpaqueLogin = async (clientLoginState: string, loginResponse: string, password: string, email: string) => {
+  const loginResult = opaque.client.finishLogin({
+    clientLoginState,
+    loginResponse,
+    password,
+  });
+  if (!loginResult) {
+    throw new Error('Login failed');
+  }
+  const { finishLoginRequest, sessionKey, exportKey } = loginResult;
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  const { sessionID, user } = await authClient.loginOpaqueFinish(email, finishLoginRequest);
+
+  return { exportKey, sessionID, sessionKey, user };
+};
+
 export const doChangePasswordOpaque = async (newPassword: string, currentPassword: string, sessionID: string) => {
   const { clientRegistrationState, registrationRequest } = opaque.client.startRegistration({ password: newPassword });
 
@@ -191,7 +195,7 @@ export const doChangePasswordOpaque = async (newPassword: string, currentPasswor
     password: newPassword,
   });
 
-  const mac_new = await getMac(currentPassword, [
+  const macNew = await getMac(currentPassword, [
     newRegistrationRecord,
     encMnemonic,
     JSON.stringify(encKeys),
@@ -199,7 +203,7 @@ export const doChangePasswordOpaque = async (newPassword: string, currentPasswor
   ]);
 
   const { loginResponse } = await usersClient.changePwdOpaqueFinish(
-    mac_new,
+    macNew,
     sessionID,
     newRegistrationRecord,
     encMnemonic,
@@ -207,30 +211,19 @@ export const doChangePasswordOpaque = async (newPassword: string, currentPasswor
     startLoginRequest,
   );
 
-  const loginResult = opaque.client.finishLogin({
+  const { sessionID: newSessionID, sessionKey: newSessionKey } = await finishOpaqueLogin(
     clientLoginState,
     loginResponse,
-    password: newPassword,
-  });
-  if (!loginResult) {
-    throw new Error('Login failed');
-  }
-  const { finishLoginRequest, sessionKey: newSessionKey } = loginResult;
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+    newPassword,
+    user.email,
+  );
 
-  const { sessionID: new_sessionID } = await authClient.loginOpaqueFinish(user.email, finishLoginRequest);
-
-  return { exportKey, sessionID: new_sessionID, sessionKey: newSessionKey };
+  return { exportKey, sessionID: newSessionID, sessionKey: newSessionKey };
 };
 
 export const changePasswordOpaque = async (newPassword: string, currentPassword: string): Promise<void> => {
-  const sessionID = localStorageService.get('xNewToken') || '';
-  const {
-    exportKey,
-    sessionID: newSessionID,
-    sessionKey: newSessionKey,
-  } = await doChangePasswordOpaque(newPassword, currentPassword, sessionID);
-  await setSessionKey(newPassword, newSessionKey);
-  localStorageService.set('xNewToken', newSessionID);
-  localStorageService.set('exportKey', exportKey);
+  const currentSessionID = localStorageService.get('xNewToken') || '';
+  const { sessionID, sessionKey } = await doChangePasswordOpaque(newPassword, currentPassword, currentSessionID);
+  await setSessionKey(newPassword, sessionKey);
+  localStorageService.set('xNewToken', sessionID);
 };
