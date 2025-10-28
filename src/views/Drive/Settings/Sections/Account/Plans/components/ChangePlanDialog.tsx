@@ -80,7 +80,7 @@ const ChangePlanDialog = ({
   };
 
   const displayAmount = (value) => {
-    return parseFloat((value / 100).toFixed(2));
+    return Number.parseFloat((value / 100).toFixed(2));
   };
 
   return (

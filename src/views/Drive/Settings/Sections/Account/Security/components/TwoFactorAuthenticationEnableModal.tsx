@@ -8,6 +8,7 @@ import useEffectAsync from 'app/core/hooks/useEffectAsync';
 import Copyable from 'app/shared/components/Copyable';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import errorService from 'app/core/services/error.service';
 
 const TwoFactorAuthenticationEnableModal = ({
   isOpen,
@@ -106,6 +107,9 @@ const TwoFactorAuthenticationEnableModal = ({
         onEnabled();
         onClose();
       } catch (err) {
+        errorService.reportError(err);
+        const castedError = errorService.castError(err);
+        notificationsService.show({ text: castedError.message, type: ToastType.Error });
         setActivateState('error');
       }
     }
@@ -155,13 +159,13 @@ const TwoFactorAuthenticationEnableModal = ({
             {step === 0 ? translate('actions.cancel') : translate('actions.back')}
           </Button>
           <div className="ml-2">
-            {step !== steps.length - 1 ? (
-              <Button onClick={() => setStep(step + 1)} disabled={qr === null && step === 1}>
-                {translate('actions.next')}
-              </Button>
-            ) : (
+            {step === steps.length - 1 ? (
               <Button type="submit" disabled={activateValue.length < 6} loading={activateState === 'loading'}>
                 {translate('views.account.tabs.security.2FA.modal.button')}
+              </Button>
+            ) : (
+              <Button onClick={() => setStep(step + 1)} disabled={qr === null && step === 1}>
+                {translate('actions.next')}
               </Button>
             )}
           </div>

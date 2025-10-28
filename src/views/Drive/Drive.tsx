@@ -62,10 +62,10 @@ const DriveView = (props: DriveViewProps) => {
         navigationService.setWorkspaceFromParams(workspaceThunks, dispatch, false);
       }
     };
-    window.addEventListener('popstate', handlePopState);
+    globalThis.addEventListener('popstate', handlePopState);
 
     return () => {
-      window.removeEventListener('popstate', handlePopState);
+      globalThis.removeEventListener('popstate', handlePopState);
     };
   }, [history]);
 

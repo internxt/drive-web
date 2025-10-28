@@ -33,7 +33,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
   const dispatch = useAppDispatch();
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
 
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(globalThis.location.search);
   const currentSectionParams = params.getAll('section');
   const currentSubsectionParams = params.getAll('subsection');
   const [activeSection, setActiveSection] = useState<Section | undefined>({
@@ -100,7 +100,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
           <TeamsSection onClosePreferences={onClosePreferences} />
         )}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'billing' && (
-          <BillingWorkspaceSection onClosePreferences={onClosePreferences} changeSection={changeSection} />
+          <BillingWorkspaceSection onClosePreferences={onClosePreferences} />
         )}
         {activeSection?.section === 'account' && activeSection?.subsection === 'account' && (
           <AccountSection changeSection={changeSection} onClosePreferences={onClosePreferences} />

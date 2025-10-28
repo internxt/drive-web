@@ -29,7 +29,6 @@ import workspacesService from 'app/core/services/workspace.service';
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 
 interface BillingWorkspaceSectionProps {
-  changeSection: ({ section, subsection }) => void;
   onClosePreferences: () => void;
 }
 

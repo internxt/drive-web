@@ -63,14 +63,12 @@ const AccountUsageContainer = ({
     <Card className="space-y-6">
       <div className={`${className} w-full space-y-6 `}>
         {products && planUsage >= 0 && planLimitInBytes ? (
-          <>
-            <Usage
-              usedSpace={planUsage}
-              spaceLimit={planLimitInBytes}
-              driveUsage={driveUsage}
-              backupsUsage={backupsUsage}
-            />
-          </>
+          <Usage
+            usedSpace={planUsage}
+            spaceLimit={planLimitInBytes}
+            driveUsage={driveUsage}
+            backupsUsage={backupsUsage}
+          />
         ) : (
           <div className="flex h-36 w-full items-center justify-center">
             <Loader classNameLoader="h-7 w-7 text-primary" />
