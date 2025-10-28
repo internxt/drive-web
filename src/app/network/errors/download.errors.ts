@@ -18,3 +18,10 @@ export class NoContentReceivedError extends Error {
     Object.setPrototypeOf(this, NoContentReceivedError.prototype);
   }
 }
+
+export class MaxRetriesExceededError extends Error {
+  constructor(maxRetries: number, errorMessage: string) {
+    super(`Download failed after ${maxRetries} retries: ${errorMessage}`);
+    Object.setPrototypeOf(this, MaxRetriesExceededError.prototype);
+  }
+}

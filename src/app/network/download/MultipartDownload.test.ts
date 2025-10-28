@@ -2,6 +2,7 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { MultipartDownload } from './MultipartDownload';
 import { NetworkFacade } from '../NetworkFacade';
 import { DownloadChunkTask, DownloadOptions } from '../types/index';
+import { MaxRetriesExceededError } from '../errors/download.errors';
 import { USE_MULTIPART_THRESHOLD_BYTES as FIFTY_MEGABYTES } from '../networkConstants';
 
 describe('MultipartDownload ', () => {
@@ -51,7 +52,7 @@ describe('MultipartDownload ', () => {
       expect(chunks[0]).toStrictEqual(mockChunkData);
     });
 
-    test('When downloading a single chunk, then downloadingCallback should be called with correct progress', async () => {
+    test('When downloading a single chunk, then the progress callback should be called with correct progress', async () => {
       const fileSize = 1024;
       const mockChunkData = new Uint8Array(1024);
       const downloadingCallback = vi.fn();
@@ -370,7 +371,7 @@ describe('MultipartDownload ', () => {
         }
       })();
 
-      await expect(readPromise).rejects.toThrow();
+      await expect(readPromise).rejects.toThrow(MaxRetriesExceededError);
 
       expect(abortSpy).toHaveBeenCalled();
     });
