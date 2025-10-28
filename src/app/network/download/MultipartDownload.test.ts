@@ -1,8 +1,60 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { MultipartDownload } from './MultipartDownload';
+import { DownloadFilePayload, MultipartDownload } from './MultipartDownload';
 import { NetworkFacade } from '../NetworkFacade';
 import { DownloadChunkTask, DownloadOptions } from '../types/index';
 import { MaxRetriesExceededError } from '../errors/download.errors';
+
+const TEST_BUCKET_ID = 'test-bucket';
+const TEST_FILE_ID = 'test-file';
+const TEST_MNEMONIC = 'test-mnemonic';
+const TEST_FILE_SIZE = 1000;
+
+async function consumeStream(stream: ReadableStream<Uint8Array>): Promise<{
+  chunks: Uint8Array[];
+  error: Error | undefined;
+}> {
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let error: Error | undefined;
+
+  try {
+    let result = await reader.read();
+    while (!result.done) {
+      chunks.push(result.value);
+      result = await reader.read();
+    }
+  } catch (err) {
+    error = err as Error;
+  }
+
+  return { chunks, error };
+}
+
+function createMockStream(chunkData: Uint8Array): ReadableStream<Uint8Array> {
+  return new ReadableStream({
+    start(controller) {
+      controller.enqueue(chunkData);
+      controller.close();
+    },
+  });
+}
+
+function executeDownload(
+  multipartDownload: MultipartDownload,
+  params: Partial<DownloadFilePayload & { fileSize?: number }>,
+): ReadableStream<Uint8Array> {
+  return multipartDownload.downloadFile({
+    bucketId: params.bucketId ?? TEST_BUCKET_ID,
+    fileId: params.fileId ?? TEST_FILE_ID,
+    mnemonic: params.mnemonic ?? TEST_MNEMONIC,
+    fileSize: params.fileSize ?? TEST_FILE_SIZE,
+    options: params.options,
+  });
+}
+
+function isMonotonicallyIncreasing(arr: number[]): boolean {
+  return arr.every((value, index) => index === 0 || value >= arr[index - 1]);
+}
 
 describe('MultipartDownload ', () => {
   let multipartDownload: MultipartDownload;
@@ -22,30 +74,18 @@ describe('MultipartDownload ', () => {
       const fileSize = 1024;
       const mockChunkData = new Uint8Array([1, 2, 3, 4, 5]);
 
-      const mockStream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(mockChunkData);
-          controller.close();
-        },
-      });
+      const mockStream = createMockStream(mockChunkData);
 
       const downloadChunkSpy = vi.spyOn(networkFacade, 'downloadChunk').mockResolvedValue(mockStream);
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId,
         fileId,
         mnemonic,
         fileSize,
       });
 
-      const reader = resultStream.getReader();
-      const chunks: Uint8Array[] = [];
-      let result = await reader.read();
-
-      while (!result.done) {
-        chunks.push(result.value);
-        result = await reader.read();
-      }
+      const { chunks } = await consumeStream(resultStream);
 
       expect(downloadChunkSpy).toHaveBeenCalledTimes(1);
       expect(chunks[0]).toStrictEqual(mockChunkData);
@@ -56,12 +96,7 @@ describe('MultipartDownload ', () => {
       const mockChunkData = new Uint8Array(1024);
       const downloadingCallback = vi.fn();
 
-      const mockStream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(mockChunkData);
-          controller.close();
-        },
-      });
+      const mockStream = createMockStream(mockChunkData);
 
       vi.spyOn(networkFacade, 'downloadChunk').mockResolvedValue(mockStream);
 
@@ -69,7 +104,7 @@ describe('MultipartDownload ', () => {
         downloadingCallback,
       };
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         mnemonic: 'test-mnemonic',
@@ -77,11 +112,7 @@ describe('MultipartDownload ', () => {
         options,
       });
 
-      const reader = resultStream.getReader();
-      let result = await reader.read();
-      while (!result.done) {
-        result = await reader.read();
-      }
+      await consumeStream(resultStream);
 
       expect(downloadingCallback).toHaveBeenCalledWith(fileSize, 1024);
     });
@@ -95,15 +126,10 @@ describe('MultipartDownload ', () => {
       const tasksSpy = vi.spyOn(multipartDownload, 'createDownloadTasks');
       const downloadChunkSpy = vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart }) => {
         const chunkData = new Uint8Array(chunkSize).fill(chunkStart % 256);
-        return new ReadableStream({
-          start(controller) {
-            controller.enqueue(chunkData);
-            controller.close();
-          },
-        });
+        return createMockStream(chunkData);
       });
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         mnemonic: 'test-mnemonic',
@@ -111,14 +137,7 @@ describe('MultipartDownload ', () => {
       });
 
       const createdTasks = tasksSpy.mock.results[0].value as DownloadChunkTask[];
-      const reader = resultStream.getReader();
-      const chunks: Uint8Array[] = [];
-      let result = await reader.read();
-
-      while (!result.done) {
-        chunks.push(result.value);
-        result = await reader.read();
-      }
+      const { chunks } = await consumeStream(resultStream);
 
       expect(downloadChunkSpy).toHaveBeenCalled();
       expect(downloadChunkSpy.mock.calls.length).toStrictEqual(createdTasks.length);
@@ -142,15 +161,10 @@ describe('MultipartDownload ', () => {
         const view = new DataView(chunkData.buffer);
         view.setUint32(0, chunkStart, true);
 
-        return new ReadableStream({
-          start(controller) {
-            controller.enqueue(chunkData);
-            controller.close();
-          },
-        });
+        return createMockStream(chunkData);
       });
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         mnemonic: 'test-mnemonic',
@@ -167,9 +181,7 @@ describe('MultipartDownload ', () => {
         result = await reader.read();
       }
 
-      const isStreamOrderIncreasingInOrder = streamOrder.every(
-        (value, index) => index === 0 || value >= streamOrder[index - 1],
-      );
+      const isStreamOrderIncreasingInOrder = isMonotonicallyIncreasing(streamOrder);
 
       expect(streamOrder.length).toBeGreaterThan(0);
       expect(isStreamOrderIncreasingInOrder).toBeTruthy();
@@ -184,12 +196,7 @@ describe('MultipartDownload ', () => {
 
       vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async () => {
         const chunkData = new Uint8Array(chunkSize);
-        return new ReadableStream({
-          start(controller) {
-            controller.enqueue(chunkData);
-            controller.close();
-          },
-        });
+        return createMockStream(chunkData);
       });
 
       const options: DownloadOptions = {
@@ -199,7 +206,7 @@ describe('MultipartDownload ', () => {
         },
       };
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         mnemonic: 'test-mnemonic',
@@ -207,11 +214,7 @@ describe('MultipartDownload ', () => {
         options,
       });
 
-      const reader = resultStream.getReader();
-      let result = await reader.read();
-      while (!result.done) {
-        result = await reader.read();
-      }
+      await consumeStream(resultStream);
 
       expect(downloadingCallback).toHaveBeenCalled();
       expect(finalProgress).toBeLessThanOrEqual(fileSize);
@@ -236,26 +239,17 @@ describe('MultipartDownload ', () => {
         const chunkData = new Uint8Array(chunkSize);
         currentConcurrent--;
 
-        return new ReadableStream({
-          start(controller) {
-            controller.enqueue(chunkData);
-            controller.close();
-          },
-        });
+        return createMockStream(chunkData);
       });
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         mnemonic: 'test-mnemonic',
         fileSize,
       });
 
-      const reader = resultStream.getReader();
-      let result = await reader.read();
-      while (!result.done) {
-        result = await reader.read();
-      }
+      await consumeStream(resultStream);
 
       expect(maxConcurrent).toBeLessThanOrEqual(6);
       expect(maxConcurrent).toBeGreaterThan(1);
@@ -270,15 +264,10 @@ describe('MultipartDownload ', () => {
 
       vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async () => {
         const chunkData = new Uint8Array(chunkSize);
-        return new ReadableStream({
-          start(controller) {
-            controller.enqueue(chunkData);
-            controller.close();
-          },
-        });
+        return createMockStream(chunkData);
       });
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         mnemonic: 'test-mnemonic',
@@ -307,15 +296,10 @@ describe('MultipartDownload ', () => {
 
       const downloadChunkSpy = vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart }) => {
         const chunkData = new Uint8Array(chunkSize).fill(chunkStart % 256);
-        return new ReadableStream({
-          start(controller) {
-            controller.enqueue(chunkData);
-            controller.close();
-          },
-        });
+        return createMockStream(chunkData);
       });
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         mnemonic: 'test-mnemonic',
@@ -348,19 +332,14 @@ describe('MultipartDownload ', () => {
         }
 
         const chunkData = new Uint8Array(1024);
-        return new ReadableStream({
-          start(controller) {
-            controller.enqueue(chunkData);
-            controller.close();
-          },
-        });
+        return createMockStream(chunkData);
       });
 
       const options: DownloadOptions = {
         abortController,
       };
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         mnemonic: 'test-mnemonic',
@@ -400,12 +379,7 @@ describe('MultipartDownload ', () => {
         }
 
         const chunkData = new Uint8Array(chunkSize);
-        return new ReadableStream({
-          start(controller) {
-            controller.enqueue(chunkData);
-            controller.close();
-          },
-        });
+        return createMockStream(chunkData);
       });
 
       const options: DownloadOptions = {
@@ -414,7 +388,7 @@ describe('MultipartDownload ', () => {
         },
       };
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         mnemonic: 'test-mnemonic',
@@ -422,17 +396,11 @@ describe('MultipartDownload ', () => {
         options,
       });
 
-      const reader = resultStream.getReader();
-      let result = await reader.read();
-      while (!result.done) {
-        result = await reader.read();
-      }
+      await consumeStream(resultStream);
 
-      const isMonotonicallyIncreasing = progressUpdates.every(
-        (value, index) => index === 0 || value >= progressUpdates[index - 1],
-      );
+      const isProgressIncreasing = isMonotonicallyIncreasing(progressUpdates);
 
-      expect(isMonotonicallyIncreasing).toBeTruthy();
+      expect(isProgressIncreasing).toBeTruthy();
     });
 
     test('When a chunk fails and retries, then bytes should only be counted once on success', async () => {
@@ -452,12 +420,7 @@ describe('MultipartDownload ', () => {
         }
 
         const chunkData = new Uint8Array(chunkSize);
-        return new ReadableStream({
-          start(controller) {
-            controller.enqueue(chunkData);
-            controller.close();
-          },
-        });
+        return createMockStream(chunkData);
       });
 
       const options: DownloadOptions = {
@@ -466,7 +429,7 @@ describe('MultipartDownload ', () => {
         },
       };
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         mnemonic: 'test-mnemonic',
@@ -474,19 +437,12 @@ describe('MultipartDownload ', () => {
         options,
       });
 
-      const reader = resultStream.getReader();
-      let result = await reader.read();
-
-      while (!result.done) {
-        result = await reader.read();
-      }
+      await consumeStream(resultStream);
 
       expect(attemptsByChunk.get(0)).toBe(2);
 
-      const isMonotonicallyIncreasing = progressUpdates.every(
-        (value, index) => index === 0 || value >= progressUpdates[index - 1],
-      );
-      expect(isMonotonicallyIncreasing).toBe(true);
+      const isProgressIncreasing = isMonotonicallyIncreasing(progressUpdates);
+      expect(isProgressIncreasing).toBe(true);
 
       const finalProgress = progressUpdates[progressUpdates.length - 1];
       expect(finalProgress).toBeGreaterThan(0);
@@ -506,12 +462,7 @@ describe('MultipartDownload ', () => {
 
       vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async () => {
         const chunkData = new Uint8Array(chunkSize);
-        return new ReadableStream({
-          start(controller) {
-            controller.enqueue(chunkData);
-            controller.close();
-          },
-        });
+        return createMockStream(chunkData);
       });
 
       const options: DownloadOptions = {
@@ -520,7 +471,7 @@ describe('MultipartDownload ', () => {
         },
       };
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         mnemonic: 'test-mnemonic',
@@ -528,17 +479,11 @@ describe('MultipartDownload ', () => {
         options,
       });
 
-      const reader = resultStream.getReader();
-      let result = await reader.read();
-      while (!result.done) {
-        result = await reader.read();
-      }
+      await consumeStream(resultStream);
 
-      const isMonotonicallyIncreasing = progressSnapshots.every(
-        (value, index) => index === 0 || value >= progressSnapshots[index - 1],
-      );
+      const isProgressIncreasing = isMonotonicallyIncreasing(progressSnapshots);
 
-      expect(isMonotonicallyIncreasing).toBeTruthy();
+      expect(isProgressIncreasing).toBeTruthy();
     });
   });
 
@@ -558,32 +503,17 @@ describe('MultipartDownload ', () => {
         }
 
         const chunkData = new Uint8Array(chunkSize);
-        return new ReadableStream({
-          start(controller) {
-            controller.enqueue(chunkData);
-            controller.close();
-          },
-        });
+        return createMockStream(chunkData);
       });
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         mnemonic: 'test-mnemonic',
         fileSize,
       });
 
-      const reader = resultStream.getReader();
-      let errorThrown = false;
-
-      try {
-        let result = await reader.read();
-        while (!result.done) {
-          result = await reader.read();
-        }
-      } catch (error) {
-        errorThrown = true;
-      }
+      await consumeStream(resultStream);
 
       expect(attemptsByChunk.get(0)! > 1).toBeTruthy();
     });
@@ -608,32 +538,17 @@ describe('MultipartDownload ', () => {
         }
 
         const chunkData = new Uint8Array(chunkSize);
-        return new ReadableStream({
-          start(controller) {
-            controller.enqueue(chunkData);
-            controller.close();
-          },
-        });
+        return createMockStream(chunkData);
       });
 
-      const resultStream = multipartDownload.downloadFile({
+      const resultStream = executeDownload(multipartDownload, {
         bucketId: 'test-bucket',
         fileId: 'test-file',
         mnemonic: 'test-mnemonic',
         fileSize,
       });
 
-      const reader = resultStream.getReader();
-      let errorOccurred = false;
-
-      try {
-        let result = await reader.read();
-        while (!result.done) {
-          result = await reader.read();
-        }
-      } catch (error) {
-        errorOccurred = true;
-      }
+      await consumeStream(resultStream);
 
       const firstChunkAttempts = attemptsByChunk.get(0) || 0;
       expect(firstChunkAttempts >= 2).toBeTruthy();

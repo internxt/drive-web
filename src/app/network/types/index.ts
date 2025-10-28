@@ -26,3 +26,12 @@ export interface DownloadChunkTask {
   attempt: number;
   maxRetries: number;
 }
+
+export interface DownloadChunkPayload {
+  bucketId: string;
+  fileId: string;
+  mnemonic: string;
+  chunkStart: number;
+  chunkEnd: number;
+  options?: DownloadOptions;
+}

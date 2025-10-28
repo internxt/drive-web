@@ -4,7 +4,7 @@ import { USE_MULTIPART_THRESHOLD_BYTES as FIFTY_MEGABYTES } from '../networkCons
 import { NetworkFacade } from '../NetworkFacade';
 import { MaxRetriesExceededError } from '../errors/download.errors';
 
-interface DownloadFilePayload {
+export interface DownloadFilePayload {
   bucketId: string;
   fileId: string;
   mnemonic: string;
