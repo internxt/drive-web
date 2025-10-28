@@ -1,10 +1,10 @@
 import { auth } from '@internxt/lib';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import { Views } from './SignupForm';
-import { useSignUp } from '../hooks/useSignup';
-import { useGuestSignupState } from '../hooks/useGuestSignupState';
-import { useInvitationValidation } from '../hooks/useInvitationValidation';
-import { useGuestSignupForm } from '../hooks/useGuestSignupForm';
+import { Views } from './components/SignupForm';
+import { useSignUp } from './hooks/useSignup';
+import { useGuestSignupState } from './hooks/useGuestSignupState';
+import { useInvitationValidation } from './hooks/useInvitationValidation';
+import { useGuestSignupForm } from './hooks/useGuestSignupForm';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -15,9 +15,9 @@ import { userActions } from 'app/store/slices/user';
 import queryString from 'query-string';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { MAX_PASSWORD_LENGTH } from '../../../app/shared/components/ValidPassword';
-import CreateAccountForm from './CreateAccountForm';
-import { guestSignupOnSubmit } from '../utils/guestSignupOnSubmit';
+import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
+import CreateAccountForm from './components/CreateAccountForm';
+import { guestSignupOnSubmit } from './utils/guestSignupOnSubmit';
 
 function ShareGuestSingUpView(): JSX.Element {
   const { translate } = useTranslationContext();
