@@ -7,7 +7,7 @@ import { excludeHiddenItems, getItemPlainName } from 'app/crypto/services/utils'
 import configService from 'app/core/services/config.service';
 import { AppFileExplorerConfig } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
-import { fetchRecents } from '../services/fetchRecents';
+import { fetchRecents } from '../services';
 
 export const fetchRecentsThunk = createAsyncThunk<void, void, { state: RootState }>(
   'storage/fetchRecents',
