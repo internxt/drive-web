@@ -1,6 +1,6 @@
 import { t } from 'i18next';
 import { SharedNamePath } from 'app/share/types';
-import { useShareViewContext } from '../../../../../views/Shared/context/SharedViewContextProvider';
+import { useShareViewContext } from '../context/SharedViewContextProvider';
 import {
   setPage,
   setHasMoreFolders,
@@ -8,10 +8,10 @@ import {
   setSelectedItems,
   setCurrentFolderLevelResourcesToken,
   setCurrentFolderId,
-} from '../../../../../views/Shared/context/SharedViewContext.actions';
+} from '../context/SharedViewContext.actions';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
-import { canItemDrop, onItemDropped } from '../helper';
+import { canItemDrop, onItemDropped } from 'app/shared/components/Breadcrumbs/helper';
 import iconService from 'app/drive/services/icon.service';
 import { DragAndDropType } from 'app/core/types';
 import { NativeTypes } from 'react-dnd-html5-backend';
