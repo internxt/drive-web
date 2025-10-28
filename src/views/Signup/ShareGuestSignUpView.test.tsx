@@ -5,7 +5,7 @@ import { userActions } from 'app/store/slices/user';
 import * as keysService from 'app/crypto/services/keys.service';
 import { encryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useSignUp } from '../hooks/useSignup';
+import { useSignUp } from './hooks/useSignup';
 import { Buffer } from 'node:buffer';
 import { generateMnemonic } from 'bip39';
 import envService from 'app/core/services/env.service';
@@ -84,16 +84,16 @@ describe('onSubmit', () => {
       };
     });
 
-    vi.mock('./SignupForm', () => ({
+    vi.mock('./components/SignupForm', () => ({
       Views: vi.fn(),
     }));
 
-    vi.mock('../hooks/useSignup', () => ({
+    vi.mock('./hooks/useSignup', () => ({
       useSignUp: vi.fn().mockReturnValue({ doRegisterPreCreatedUser: vi.fn() }),
       parseUserSettingsEnsureKyberKeysAdded: vi.importActual,
     }));
 
-    vi.mock('../hooks/useGuestSignupState', () => ({
+    vi.mock('./hooks/useGuestSignupState', () => ({
       useGuestSignupState: vi.fn(() => ({
         isValidPassword: true,
         setIsValidPassword: vi.fn(),
@@ -127,10 +127,10 @@ describe('onSubmit', () => {
 
     vi.mock('app/share/services/share.service', () => ({
       default: {
-        shareService: {
-          validateSharingInvitation: vi.fn(),
-        },
+        validateSharingInvitation: vi.fn(),
       },
+      validateSharingInvitation: vi.fn(),
+      decryptMnemonic: vi.fn(),
     }));
 
     vi.mock('app/core/services/navigation.service', () => ({
