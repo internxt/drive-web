@@ -9,13 +9,13 @@ import { referralsThunks } from 'app/store/slices/referrals';
 import { userActions, userThunks } from 'app/store/slices/user';
 import envService from 'app/core/services/env.service';
 
-vi.mock('app/core/services/error.service');
-vi.mock('app/core/services/local-storage.service');
-vi.mock('app/store/slices/plan');
-vi.mock('app/store/slices/products');
-vi.mock('app/store/slices/referrals');
-vi.mock('app/store/slices/user');
-vi.mock('app/core/services/env.service');
+vi.mock(import('app/core/services/error.service'));
+vi.mock(import('app/core/services/local-storage.service'));
+vi.mock(import('app/store/slices/plan'));
+vi.mock(import('app/store/slices/products'));
+vi.mock(import('app/store/slices/referrals'));
+vi.mock(import('app/store/slices/user'));
+vi.mock(import('app/core/services/env.service'));
 
 describe('signup', () => {
   const mockDispatch = vi.fn();

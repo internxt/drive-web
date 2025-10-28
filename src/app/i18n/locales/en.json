@@ -112,7 +112,7 @@
       "login": "Log in",
       "encrypting": "Encrypting",
       "info": {
-        "normalText": "Internxt doesn't store passwords.",
+        "normalText": "Internxt doesn’t store passwords.",
         "boldText": "If you forget your password, you can download a backup key to regain access to your files.",
         "cta": "Learn more"
       },
