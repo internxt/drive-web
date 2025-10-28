@@ -19,6 +19,7 @@ export class MultipartDownload {
   private completedChunksDownloadedCount = 0;
   private nextChunkToStream = 0;
   private completedChunks: Array<Uint8Array[] | null> = [];
+  private downloadQueue: QueueObject<DownloadChunkTask> | null = null;
 
   constructor(private readonly network: NetworkFacade) {}
 
@@ -96,7 +97,7 @@ export class MultipartDownload {
   }): Promise<void> {
     const { tasks, bucketId, fileId, mnemonic, fileSize, controller, options } = params;
 
-    const downloadQueue = queue(
+    this.downloadQueue = queue(
       async (task: DownloadChunkTask) =>
         await this.executeTask({
           task,
@@ -105,29 +106,27 @@ export class MultipartDownload {
           mnemonic,
           fileSize,
           controller,
-          downloadQueue,
           options,
         }),
       this.concurrency,
     );
 
-    downloadQueue.error((err, task) => {
+    this.downloadQueue.error((err, task) => {
       this.handleDownloadError({
         task,
         error: err,
         controller,
-        downloadQueue,
         options,
       });
     });
 
-    downloadQueue.drain(() => {
+    this.downloadQueue.drain(() => {
       this.streamRemainingChunks(controller, tasks.length);
       controller.close();
     });
 
     for (const task of tasks) {
-      downloadQueue.push(task);
+      this.downloadQueue.push(task);
     }
   }
 
@@ -214,10 +213,9 @@ export class MultipartDownload {
     mnemonic: string;
     fileSize: number;
     controller: ReadableStreamDefaultController<Uint8Array>;
-    downloadQueue: QueueObject<DownloadChunkTask>;
     options?: DownloadOptions;
   }): Promise<void> {
-    const { task, bucketId, fileId, mnemonic, fileSize, controller, downloadQueue, options } = params;
+    const { task, bucketId, fileId, mnemonic, fileSize, controller, options } = params;
 
     try {
       const chunkData = await this.downloadChunk(bucketId, fileId, mnemonic, task.chunkStart, task.chunkEnd, options);
@@ -234,7 +232,6 @@ export class MultipartDownload {
         task,
         error: error as Error,
         controller,
-        downloadQueue,
         options,
       });
     }
@@ -244,10 +241,9 @@ export class MultipartDownload {
     task: DownloadChunkTask;
     error: Error;
     controller: ReadableStreamDefaultController<Uint8Array>;
-    downloadQueue: QueueObject<DownloadChunkTask>;
     options?: DownloadOptions;
   }): void {
-    const { task, error, controller, downloadQueue, options } = params;
+    const { task, error, controller, options } = params;
 
     console.log(
       `[DOWNLOAD-MULTIPART] Download error for task: ${task.index} with chunk start: ${task.chunkStart}`,
@@ -259,13 +255,13 @@ export class MultipartDownload {
     if (task.attempt >= task.maxRetries) {
       const finalError = new MaxRetriesExceededError(task.maxRetries, error.message);
       options?.abortController?.abort();
-      downloadQueue.kill();
+      this.downloadQueue?.kill();
       controller.error(finalError);
       return;
     }
 
     task.attempt++;
-    downloadQueue.unshift(task);
+    this.downloadQueue?.unshift(task);
   }
 
   private async *readableStreamToAsyncIterator<T>(stream: ReadableStream<T>): AsyncGenerator<T> {
