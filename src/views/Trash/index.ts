@@ -1,10 +1,1 @@
 export { default } from './Trash';
-export { default as ClearTrashDialog } from './components/ClearTrashDialog';
-export { default as DeleteItemsDialog } from './components/DeleteItemsDialog';
-export { default as StopSharingAndMoveToTrashDialogWrapper } from './components/StopSharingAndMoveToTrashDialogWrapper';
-export { default as StopSharingAndMoveToTrashDialog } from './components/StopSharingAndMoveToTrashDialog';
-export { useTrashPagination } from './hooks/useTrashPagination';
-export { getTrashPaginated, getWorkspaceTrashPaginated } from './services/get-trash.service';
-export { default as clearTrash } from './services/clear-trash.service';
-export { default as deleteItems } from './services/delete-items.service';
-export { default as moveItemsToTrash } from './services/move-items-to-trash.service';

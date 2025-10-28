@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { processBatchConcurrently } from './batch-processor.service';
+import { processBatchConcurrently } from './batchProcessor.service';
 
 describe('processBatchConcurrently', () => {
   it('should process items in batches with concurrent limit', async () => {
