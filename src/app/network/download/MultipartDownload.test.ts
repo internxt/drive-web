@@ -2,6 +2,7 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { MultipartDownload } from './MultipartDownload';
 import { NetworkFacade } from '../NetworkFacade';
 import { DownloadChunkTask, DownloadOptions } from '../types/index';
+import { USE_MULTIPART_THRESHOLD_BYTES as FIFTY_MEGABYTES } from '../networkConstants';
 
 describe('MultipartDownload ', () => {
   let multipartDownload: MultipartDownload;
@@ -88,7 +89,6 @@ describe('MultipartDownload ', () => {
 
   describe('Multiple chunk downloads', () => {
     test('When downloading a file with multiple chunks, then all chunks should be downloaded successfully', async () => {
-      const FIFTY_MEGABYTES = 52428800;
       const fileSize = FIFTY_MEGABYTES * 2.5;
       const chunkSize = 1024;
       const tasksSpy = vi.spyOn(multipartDownload, 'createDownloadTasks');
@@ -125,7 +125,6 @@ describe('MultipartDownload ', () => {
     });
 
     test('When chunks complete in random order, then they should be streamed in correct order', async () => {
-      const FIFTY_MEGABYTES = 52428800;
       const fileSize = FIFTY_MEGABYTES * 2.5;
       const chunkSize = 1024;
       const downloadOrder: number[] = [];
@@ -175,7 +174,6 @@ describe('MultipartDownload ', () => {
     });
 
     test('When downloading multiple chunks, then correct total progress should be reported', async () => {
-      const FIFTY_MEGABYTES = 52428800;
       const fileSize = FIFTY_MEGABYTES * 2.5;
       const chunkSize = 1024;
       const downloadingCallback = vi.fn();
@@ -220,7 +218,6 @@ describe('MultipartDownload ', () => {
     });
 
     test('When downloading concurrently, then concurrency limit of 6 should be respected', async () => {
-      const FIFTY_MEGABYTES = 52428800;
       const fileSize = FIFTY_MEGABYTES * 6;
       const chunkSize = 1024;
       let maxConcurrent = 0;
@@ -263,7 +260,6 @@ describe('MultipartDownload ', () => {
 
   describe('Stream completion', () => {
     test('When all chunks are downloaded and streamed, then stream should close properly', async () => {
-      const FIFTY_MEGABYTES = 52428800;
       const fileSize = FIFTY_MEGABYTES * 2;
       const chunkSize = 1024;
 
@@ -299,7 +295,6 @@ describe('MultipartDownload ', () => {
     });
 
     test('When all downloads complete, then remaining chunks should be streamed before closing', async () => {
-      const FIFTY_MEGABYTES = 52428800;
       const fileSize = FIFTY_MEGABYTES * 2.5;
       const chunkSize = 1024;
       const streamedChunks: number[] = [];
@@ -336,7 +331,6 @@ describe('MultipartDownload ', () => {
 
   describe('Max retries exceeded', () => {
     test('When a chunk fails more than max retries, then download should fail, abort should be called, and queue should be killed', async () => {
-      const FIFTY_MEGABYTES = 52428800;
       const fileSize = FIFTY_MEGABYTES * 2.5;
       const abortController = new AbortController();
       const abortSpy = vi.spyOn(abortController, 'abort');
@@ -384,7 +378,6 @@ describe('MultipartDownload ', () => {
 
   describe('Progress tracking with failures', () => {
     test('When a chunk fails before completion, then downloaded bytes should not be added to progress', async () => {
-      const FIFTY_MEGABYTES = 52428800;
       const fileSize = FIFTY_MEGABYTES * 2;
       const chunkSize = 1024;
       const progressUpdates: number[] = [];
@@ -435,7 +428,6 @@ describe('MultipartDownload ', () => {
     });
 
     test('When a chunk fails and retries, then bytes should only be counted once on success', async () => {
-      const FIFTY_MEGABYTES = 52428800;
       const fileSize = FIFTY_MEGABYTES * 2; // ~104MB
       const chunkSize = 1024;
       const attemptsByChunk = new Map<number, number>();
@@ -498,7 +490,6 @@ describe('MultipartDownload ', () => {
     });
 
     test('When a chunk fails after being registered, then its bytes should be reverted', async () => {
-      const FIFTY_MEGABYTES = 52428800;
       const fileSize = FIFTY_MEGABYTES * 2;
       const chunkSize = 1024;
       const progressSnapshots: number[] = [];
@@ -543,7 +534,6 @@ describe('MultipartDownload ', () => {
 
   describe('Stream errors', () => {
     test('When network returns invalid stream, then error should be caught and retried', async () => {
-      const FIFTY_MEGABYTES = 52428800;
       const fileSize = FIFTY_MEGABYTES * 1.5;
       const chunkSize = 1024;
       const attemptsByChunk = new Map<number, number>();
@@ -588,7 +578,6 @@ describe('MultipartDownload ', () => {
     });
 
     test('When stream reading fails mid-chunk, then chunk should be retried', async () => {
-      const FIFTY_MEGABYTES = 52428800;
       const fileSize = FIFTY_MEGABYTES * 1.5;
       const chunkSize = 1024;
       const attemptsByChunk = new Map<number, number>();
