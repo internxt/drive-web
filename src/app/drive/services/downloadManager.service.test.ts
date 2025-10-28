@@ -34,7 +34,6 @@ import { downloadFile } from 'app/network/download';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 
 vi.mock('./../../network/requests', () => ({ ConnectionLostError: vi.fn(), NetworkCredentials: {} }));
-vi.mock('app/core/services/stream.service', () => ({ downloadFile: vi.fn(), NetworkCredentials: {} }));
 vi.mock('app/tasks/services/tasks.service', () => ({
   default: {
     create: vi.fn(),
@@ -86,6 +85,9 @@ vi.mock('app/network/download', () => ({
 
 vi.mock('app/core/services/stream.service', () => ({
   binaryStreamToBlob: vi.fn(),
+  buildProgressStream: vi.fn(),
+  decryptStream: vi.fn(),
+  joinReadableBinaryStreams: vi.fn(),
 }));
 
 vi.mock('app/core/services/local-storage.service', () => ({
