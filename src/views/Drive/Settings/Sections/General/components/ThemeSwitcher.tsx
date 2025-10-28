@@ -31,7 +31,7 @@ function ThemeButton({ theme, toggleTheme, isSelected, img }) {
         <img src={img} alt={theme} />
       </div>
 
-      <span className={`text-sm font-medium ${!isSelected ? 'text-gray-50' : ''}`}>{translate(`theme.${theme}`)}</span>
+      <span className={`text-sm font-medium ${isSelected ? '' : 'text-gray-50'}`}>{translate(`theme.${theme}`)}</span>
     </button>
   );
 }

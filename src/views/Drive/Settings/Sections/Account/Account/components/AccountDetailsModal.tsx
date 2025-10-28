@@ -41,25 +41,33 @@ const AccountDetailsModal = ({
     }
   }, [isOpen]);
 
-  const validate = (value: string) => {
+  const isValid = (value: string) => {
     return value.length > 0 && value.length < 20;
   };
 
   const onSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validate(nameValue)) {
+
+    const isNameValid = isValid(nameValue);
+    const isLastnameValid = isValid(lastnameValue);
+
+    if (!isNameValid) {
       setStatus({ tag: 'error', type: 'NAME_INVALID' });
-    } else if (!validate(lastnameValue)) {
+      return;
+    }
+
+    if (!isLastnameValid) {
       setStatus({ tag: 'error', type: 'LASTNAME_INVALID' });
-    } else {
-      try {
-        setStatus({ tag: 'loading' });
-        await onUpdateUserProfileData({ name: nameValue, lastname: lastnameValue });
-        onClose();
-      } catch {
-        setStatus({ tag: 'error', type: 'UNKNOWN' });
-        onErrorUpdatingUserProfileData();
-      }
+      return;
+    }
+
+    try {
+      setStatus({ tag: 'loading' });
+      await onUpdateUserProfileData({ name: nameValue, lastname: lastnameValue });
+      onClose();
+    } catch {
+      setStatus({ tag: 'error', type: 'UNKNOWN' });
+      onErrorUpdatingUserProfileData();
     }
   };
 
