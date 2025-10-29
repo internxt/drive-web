@@ -1,12 +1,12 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { ArrowRight } from '@phosphor-icons/react';
 import { useSelector } from 'react-redux';
-import { bytesToString } from 'app/drive/services/size.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import moneyService from 'app/payment/services/currency.service';
+import { bytesToString } from '../../../../../drive/services/size.service';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
+import moneyService from '../../../../../payment/services/currency.service';
 import { Button, Modal } from '@internxt/ui';
-import { RootState } from 'app/store';
-import { PlanState } from 'app/store/slices/plan';
+import { RootState } from '../../../../../store';
+import { PlanState } from '../../../../../store/slices/plan';
 
 const ChangePlanDialog = ({
   prices,
@@ -80,7 +80,7 @@ const ChangePlanDialog = ({
   };
 
   const displayAmount = (value) => {
-    return Number.parseFloat((value / 100).toFixed(2));
+    return parseFloat((value / 100).toFixed(2));
   };
 
   return (

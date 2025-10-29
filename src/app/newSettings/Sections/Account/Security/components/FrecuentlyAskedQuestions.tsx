@@ -1,7 +1,7 @@
 import { Disclosure } from '@headlessui/react';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import { Plus } from '@phosphor-icons/react';
-import Section from '../../../../../../app/newSettings/Sections/General/components/Section';
+import Section from '../../../../../newSettings/Sections/General/components/Section';
 
 const FrecuentlyAskedQuestions = () => {
   const { translate } = useTranslationContext();

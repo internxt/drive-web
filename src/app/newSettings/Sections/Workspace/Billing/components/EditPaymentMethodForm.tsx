@@ -19,7 +19,7 @@ const EditPaymentMethodForm = ({ setIsEditPaymentMethodModalOpen }: EditPaymentM
 
     const result = await stripe.confirmSetup({
       elements,
-      confirmParams: { return_url: globalThis.location.href },
+      confirmParams: { return_url: window.location.href },
     });
 
     if (result.error.message) {

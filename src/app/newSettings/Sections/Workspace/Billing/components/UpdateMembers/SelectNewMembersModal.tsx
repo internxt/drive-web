@@ -1,6 +1,6 @@
 import { Button, RangeSlider, Modal } from '@internxt/ui';
 import { X } from '@phosphor-icons/react';
-import { Translate } from 'app/i18n/types';
+import { Translate } from '../../../../../../i18n/types';
 import { StoragePlan } from '@internxt/sdk/dist/drive/payments/types/types';
 
 interface SeatsProps {

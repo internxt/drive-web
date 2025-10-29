@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { getSubscriptionData } from './suscriptionUtils';
 import { UserSubscription, UserType, StoragePlan, RenewalPeriod } from '@internxt/sdk/dist/drive/payments/types/types';
-import { PlanState } from 'app/store/slices/plan';
+import { PlanState } from '../../store/slices/plan';
 
 vi.mock('i18next', () => ({
   t: (key: string) => {

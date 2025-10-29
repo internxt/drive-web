@@ -2,15 +2,15 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { t } from 'i18next';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from 'app/store';
-import { useAppDispatch } from 'app/store/hooks';
-import { refreshUserThunk } from 'app/store/slices/user';
+import { RootState } from '../../../../store';
+import { useAppDispatch } from '../../../../store/hooks';
+import { refreshUserThunk } from '../../../../store/slices/user';
 import ChangePassword from './components/ChangePassword';
 import EnterPassword from './components/EnterPassword';
 import ExportBackupKey from './components/ExportBackupKey';
 import FrecuentlyAskedQuestions from './components/FrecuentlyAskedQuestions';
 import TwoFactorAuthentication from './components/TwoFactorAuthentication';
-import Section from '../../../../../app/newSettings/components/Section';
+import Section from 'app/newSettings/components/Section';
 
 const SecuritySection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);

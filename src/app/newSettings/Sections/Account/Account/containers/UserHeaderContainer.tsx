@@ -1,13 +1,13 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import errorService from 'app/core/services/error.service';
-import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { RootState } from 'app/store';
-import { useAppDispatch } from 'app/store/hooks';
-import { deleteUserAvatarThunk, updateUserAvatarThunk } from 'app/store/slices/user';
+import errorService from '../../../../../core/services/error.service';
+import { getDatabaseProfileAvatar } from '../../../../../drive/services/database.service';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
+import { RootState } from '../../../../../store';
+import { useAppDispatch } from '../../../../../store/hooks';
+import { deleteUserAvatarThunk, updateUserAvatarThunk } from '../../../../../store/slices/user';
 import UserHeader from '../components/UserHeader';
 
 const UserHeaderContainer = () => {

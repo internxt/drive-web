@@ -1,14 +1,14 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { t } from 'i18next';
 import { useSelector } from 'react-redux';
-import userService from 'app/auth/services/user.service';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
-import workspacesService from 'app/core/services/workspace.service';
-import { AppView } from 'app/core/types';
-import { encryptMessageWithPublicKey } from 'app/crypto/services/pgp.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { RootState } from 'app/store';
+import userService from '../../../../../auth/services/user.service';
+import errorService from '../../../../../core/services/error.service';
+import navigationService from '../../../../../core/services/navigation.service';
+import workspacesService from '../../../../../core/services/workspace.service';
+import { AppView } from '../../../../../core/types';
+import { encryptMessageWithPublicKey } from '../../../../../crypto/services/pgp.service';
+import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
+import { RootState } from '../../../../../store';
 import UserInviteDialog from '../InviteDialog';
 
 const InviteDialogContainer = ({ isOpen, onClose, onInvitationSuccess }) => {

@@ -8,7 +8,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { LoadingRowSkeleton } from 'app/shared/tables/LoadingSkeleton';
 import { ScrollableTable } from 'app/shared/tables/ScrollableTable';
 import { useDebounce } from 'hooks/useDebounce';
-import Section from '../../../../../app/newSettings/components/Section';
+import Section from '../../../../newSettings/components/Section';
 import { getEnumKey } from '../../../utils/LogsUtils';
 import { AccessLogsFilterOptions } from './components/AccessLogsFilterOptions';
 import { useAccessLogs } from './hooks/useAccessLogs';

@@ -5,9 +5,9 @@ import {
   deleteDatabaseWorkspaceAvatar,
   getDatabaseWorkspaceAvatar,
   updateDatabaseWorkspaceAvatar,
-} from 'app/drive/services/database.service';
+} from '../../../../../drive/services/database.service';
 import { useAvatar } from 'hooks/useAvatar';
-import { showUpdateAvatarErrorToast } from '../../../../../../app/newSettings/Sections/Account/Account/components/AvatarWrapper';
+import { showUpdateAvatarErrorToast } from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
 
 export const saveWorkspaceAvatarToDatabase = async (workspaceId: string, url: string, avatar: Blob): Promise<void> => {
   return await updateDatabaseWorkspaceAvatar({

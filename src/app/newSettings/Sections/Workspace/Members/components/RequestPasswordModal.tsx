@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import TextArea from '../../../Account/Account/components/TextArea';
 
 import ActionModal from './ActionModal';

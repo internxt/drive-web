@@ -1,14 +1,14 @@
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { ArrowRight } from '@phosphor-icons/react';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import sizeService from 'app/drive/services/size.service';
-import { FreeStoragePlan } from 'app/drive/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import paymentService from 'app/payment/services/payment.service';
+import sizeService from '../../../../drive/services/size.service';
+import { FreeStoragePlan } from '../../../../drive/types';
+import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import paymentService from '../../../../payment/services/payment.service';
 import { Button, Modal } from '@internxt/ui';
-import { useAppDispatch } from 'app/store/hooks';
-import { planThunks } from 'app/store/slices/plan';
+import { useAppDispatch } from '../../../../store/hooks';
+import { planThunks } from '../../../../store/slices/plan';
 
 interface CancelSubscriptionModalProps {
   isOpen: boolean;

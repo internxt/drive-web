@@ -1,7 +1,7 @@
 import { t } from 'i18next';
 
 import localStorageService from 'app/core/services/local-storage.service';
-import { bytesToString } from 'app/drive/services/size.service';
+import { bytesToString } from '../../../../../drive/services/size.service';
 
 import Card from 'app/shared/components/Card';
 
@@ -29,15 +29,7 @@ const BillingWorkspaceOverview = ({ plan }: BillingWorkspaceOverviewProps) => {
 
   return (
     <section className="flex flex-row">
-      {isFreeSubscription ? (
-        <Card className="w-full text-center">
-          <h1 className="font-medium text-gray-60">
-            {t('preferences.workspace.billing.paymentMethod.freePlanTitle', {
-              planLimit: bytesToString(plan.businessPlanLimit),
-            })}
-          </h1>
-        </Card>
-      ) : (
+      {!isFreeSubscription ? (
         nextBillingDate &&
         integerPart &&
         decimalPart && (
@@ -76,6 +68,14 @@ const BillingWorkspaceOverview = ({ plan }: BillingWorkspaceOverviewProps) => {
             </Card>
           </div>
         )
+      ) : (
+        <Card className="w-full text-center">
+          <h1 className="font-medium text-gray-60">
+            {t('preferences.workspace.billing.paymentMethod.freePlanTitle', {
+              planLimit: bytesToString(plan.businessPlanLimit),
+            })}
+          </h1>
+        </Card>
       )}
     </section>
   );

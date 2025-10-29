@@ -1,7 +1,7 @@
 // fetchPlanPrices.test.ts
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import paymentService from 'app/payment/services/payment.service';
-import envService from 'app/core/services/env.service';
+import paymentService from '../../../../../payment/services/payment.service';
+import envService from '../../../../../core/services/env.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { userLocation } from 'app/utils/userLocation';
 import { loadStripe } from '@stripe/stripe-js';
@@ -14,7 +14,7 @@ vi.mock('@stripe/stripe-js', () => ({
   loadStripe: vi.fn(),
 }));
 
-vi.mock('app/payment/services/payment.service', () => ({
+vi.mock('../../../../../payment/services/payment.service', () => ({
   default: {
     getPrices: vi.fn(),
   },

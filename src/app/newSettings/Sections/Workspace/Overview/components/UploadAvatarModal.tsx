@@ -1,7 +1,7 @@
 import { Image } from '@phosphor-icons/react';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import AvatarEditor from 'react-avatar-editor';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import { Button, Loader, Modal } from '@internxt/ui';
 
 interface UploadAvatarModalProps {

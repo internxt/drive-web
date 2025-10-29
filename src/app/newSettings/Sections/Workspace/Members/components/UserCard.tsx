@@ -1,5 +1,5 @@
 import { Avatar } from '@internxt/ui';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import { MemberRole } from '../../../../types/types';
 import RoleBadge from './RoleBadge';
 
