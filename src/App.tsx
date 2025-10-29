@@ -28,7 +28,7 @@ import { LRUFilesCacheManager } from './app/database/services/database.service/L
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import Mobile from './app/drive/views/MobileView/MobileView';
-import PreferencesDialog from './app/newSettings/SettingsModal';
+import PreferencesDialog from './app/newSettings/PreferencesDialog';
 import { usePreferencesParamsChange } from './app/newSettings/hooks/usePreferencesParamsChange';
 import SharingRedirect from './app/routes/Share/ShareRedirection';
 import WorkspacesRedirect from './app/routes/Workspaces/WorkspacesRedirection';
