@@ -25,3 +25,24 @@ export class MaxRetriesExceededError extends Error {
     Object.setPrototypeOf(this, MaxRetriesExceededError.prototype);
   }
 }
+
+export class UnknownDownloadError extends Error {
+  constructor() {
+    super('DOWNLOAD ERRNO. 0');
+    Object.setPrototypeOf(this, UnknownDownloadError.prototype);
+  }
+}
+
+export class MissingAuthenticationError extends Error {
+  constructor() {
+    super('Missing authentication credentials. Either token or credentials must be provided.');
+    Object.setPrototypeOf(this, MissingAuthenticationError.prototype);
+  }
+}
+
+export class MissingEncryptionKeyError extends Error {
+  constructor() {
+    super('Missing encryption key. Either encryptionKey or mnemonic must be provided.');
+    Object.setPrototypeOf(this, MissingEncryptionKeyError.prototype);
+  }
+}

@@ -1,14 +1,9 @@
-import { createDecipheriv, Decipher } from 'crypto';
-
-import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
+import { Decipher } from 'crypto';
+import { joinReadableBinaryStreams } from 'app/core/services/stream.service';
 import { Abortable } from './Abortable';
-import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
-
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
-import envService from 'app/core/services/env.service';
-
-import { generateFileKey } from './crypto';
-import downloadFileV2, { multipartDownload } from './download/v2';
+import { downloadFileV2 } from './download/v2';
+import { legacyDownload } from './download/LegacyDownload';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string; bucketId: string; size: number };
@@ -32,24 +27,6 @@ export async function binaryStreamToBlob(stream: BinaryStream): Promise<Blob> {
   }
 
   return new Blob(slices as BlobPart[]);
-}
-
-interface FileInfo {
-  bucket: string;
-  mimetype: string;
-  filename: string;
-  frame: string;
-  size: number;
-  id: string;
-  created: Date;
-  hmac: {
-    value: string;
-    type: string;
-  };
-  erasure?: {
-    type: string;
-  };
-  index: string;
 }
 
 export function getDecryptedStream(
@@ -83,37 +60,12 @@ export function getDecryptedStream(
   return decryptedStream;
 }
 
-async function getFileDownloadStream(
-  downloadUrls: string[],
-  decipher: Decipher,
-  abortController?: AbortController,
-): Promise<ReadableStream> {
-  const encryptedContentParts: ReadableStream<Uint8Array>[] = [];
-
-  for (const downloadUrl of downloadUrls) {
-    const useProxy =
-      envService.getVariable('dontUseProxy') !== 'true' && !new URL(downloadUrl).hostname.includes('internxt');
-    const fetchUrl = (useProxy ? envService.getVariable('proxy') + '/' : '') + downloadUrl;
-    const encryptedStream = await fetch(fetchUrl, { signal: abortController?.signal }).then((res) => {
-      if (!res.body) {
-        throw new Error('No content received');
-      }
-
-      return res.body;
-    });
-
-    encryptedContentParts.push(encryptedStream);
-  }
-
-  return getDecryptedStream(encryptedContentParts, decipher);
-}
-
 export interface NetworkCredentials {
   user: string;
   pass: string;
 }
 
-interface IDownloadParams {
+export interface IDownloadParams {
   bucketId: string;
   fileId: string;
   creds?: NetworkCredentials;
@@ -127,40 +79,13 @@ interface IDownloadParams {
   };
 }
 
-interface MetadataRequiredForDownload {
-  mirrors: Mirror[];
-  fileMeta: FileInfo;
-}
-
-async function getRequiredFileMetadataWithToken(
-  bucketId: string,
-  fileId: string,
-  token: string,
-): Promise<MetadataRequiredForDownload> {
-  const fileMeta: FileInfo = await getFileInfoWithToken(bucketId, fileId, token);
-  const mirrors: Mirror[] = await getMirrors(bucketId, fileId, null, token);
-
-  return { fileMeta, mirrors };
-}
-
-async function getRequiredFileMetadataWithAuth(
-  bucketId: string,
-  fileId: string,
-  creds: NetworkCredentials,
-): Promise<MetadataRequiredForDownload> {
-  const fileMeta: FileInfo = await getFileInfoWithAuth(bucketId, fileId, creds);
-  const mirrors: Mirror[] = await getMirrors(bucketId, fileId, creds);
-
-  return { fileMeta, mirrors };
-}
-
-export function downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
+export async function downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const downloadFileV2Promise = downloadFileV2(params as any);
+  const downloadFileV2Promise = downloadFileV2.downloadFile(params as any);
 
   return downloadFileV2Promise.catch((err) => {
     if (err instanceof FileVersionOneError) {
-      return _downloadFile(params);
+      return legacyDownload.downloadFile(params);
     }
 
     throw err;
@@ -168,53 +93,14 @@ export function downloadFile(params: IDownloadParams): Promise<ReadableStream<Ui
 }
 
 export async function multipartDownloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
-  const multipartDownloadFileV2Promise = multipartDownload(params as any);
+  const multipartDownloadFileV2Promise = downloadFileV2.multipartDownload(params as any);
 
   return multipartDownloadFileV2Promise.catch((err) => {
     if (err instanceof FileVersionOneError) {
-      return _downloadFile(params);
+      return legacyDownload.downloadFile(params);
     }
 
     throw err;
-  });
-}
-
-async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
-  const { bucketId, fileId, token, creds } = params;
-
-  let metadata: MetadataRequiredForDownload;
-
-  if (creds) {
-    metadata = await getRequiredFileMetadataWithAuth(bucketId, fileId, creds);
-  } else if (token) {
-    metadata = await getRequiredFileMetadataWithToken(bucketId, fileId, token);
-  } else {
-    throw new Error('Download error 1');
-  }
-
-  const { mirrors, fileMeta } = metadata;
-  const downloadUrls: string[] = mirrors.map((m) => m.url);
-
-  const index = Buffer.from(fileMeta.index, 'hex');
-  const iv = index.slice(0, 16);
-  let key: Buffer;
-
-  if (params.encryptionKey) {
-    key = params.encryptionKey;
-  } else if (params.mnemonic) {
-    key = await generateFileKey(params.mnemonic, bucketId, index);
-  } else {
-    throw new Error('Download error code 1');
-  }
-
-  const downloadStream = await getFileDownloadStream(
-    downloadUrls,
-    createDecipheriv('aes-256-ctr', key, iv),
-    params.options?.abortController,
-  );
-
-  return buildProgressStream(downloadStream, (readBytes) => {
-    params.options?.notifyProgress(metadata.fileMeta.size, readBytes);
   });
 }
 
