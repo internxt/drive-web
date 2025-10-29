@@ -214,9 +214,9 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     );
   }
 
-  if (isError) {
+  const renderErrorState = () => {
     const ItemIconComponent = iconService.getItemIcon(false, 'default');
-    body = (
+    return (
       <>
         <div className="relative h-32 w-32">
           <ItemIconComponent className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft" />
@@ -241,18 +241,23 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         )}
       </>
     );
-  } else if (isLoaded) {
+  };
+
+  const renderLoadedState = () => {
     const FileIcon = iconService.getItemIcon(true);
-    body = requiresPassword ? (
-      //WITH PASSWORD
-      <ShareItemPwdView
-        onPasswordSubmitted={loadFolderInfo}
-        itemPassword={itemPassword}
-        setItemPassword={setItemPassword}
-        itemData={itemData}
-      />
-    ) : (
-      //WITHOUT PASSWORD
+
+    if (requiresPassword) {
+      return (
+        <ShareItemPwdView
+          onPasswordSubmitted={loadFolderInfo}
+          itemPassword={itemPassword}
+          setItemPassword={setItemPassword}
+          itemData={itemData}
+        />
+      );
+    }
+
+    return (
       <>
         <SendBanner sendBannerVisible={sendBannerVisible} setSendBannerVisible={setSendBannerVisible} />
 
@@ -291,6 +296,12 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         </div>
       </>
     );
+  };
+
+  if (isError) {
+    body = renderErrorState();
+  } else if (isLoaded) {
+    body = renderLoadedState();
   } else {
     body = <Loader classNameContainer="h-8 w-8 text-gray-30" />;
   }
