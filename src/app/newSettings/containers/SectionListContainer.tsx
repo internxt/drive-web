@@ -1,8 +1,8 @@
 import { useSelector } from 'react-redux';
-import navigationService from 'app/core/services/navigation.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { RootState } from 'app/store';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import navigationService from '../../core/services/navigation.service';
+import { useTranslationContext } from '../../i18n/provider/TranslationProvider';
+import { RootState } from '../../store';
+import workspacesSelectors from '../../store/slices/workspaces/workspaces.selectors';
 import SectionList from '../components/SectionList';
 
 export const sectionItems = [

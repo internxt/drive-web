@@ -1,8 +1,8 @@
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { handleExportBackupKey } from 'app/utils/backupKeyUtils';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
+import { handleExportBackupKey } from '../../../../../utils/backupKeyUtils';
 import { Button } from '@internxt/ui';
-import Card from 'app/shared/components/Card';
-import Section from '../../../../../../app/newSettings/Sections/General/components/Section';
+import Card from '../../../../../shared/components/Card';
+import Section from '../../../../../newSettings/Sections/General/components/Section';
 
 const ExportBackupKey = (): JSX.Element => {
   const { translate } = useTranslationContext();

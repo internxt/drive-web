@@ -2,7 +2,7 @@ import { t } from 'i18next';
 import { WorkspaceTeam, WorkspaceTeamResponse } from '@internxt/sdk/dist/workspaces/types';
 
 import { Button, Loader } from '@internxt/ui';
-import EmptyTab from '../../../../../../app/newSettings/components/EmptyTab';
+import EmptyTab from 'app/newSettings/components/EmptyTab';
 
 import membersTeams from 'assets/icons/empty/members-teams.svg';
 interface TeamsListProps {

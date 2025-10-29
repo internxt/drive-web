@@ -2,7 +2,7 @@ import { WorkspaceData, WorkspaceTeam, TeamMembers } from '@internxt/sdk/dist/wo
 import { t } from 'i18next';
 import { DotsThreeVertical } from '@phosphor-icons/react';
 
-import RoleBadge from '../../../../../../app/newSettings/Sections/Workspace/Members/components/RoleBadge';
+import RoleBadge from 'app/newSettings/Sections/Workspace/Members/components/RoleBadge';
 import { Button, Avatar, Loader } from '@internxt/ui';
 
 interface TeamDetailsProps {

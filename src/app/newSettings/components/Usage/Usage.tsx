@@ -1,6 +1,6 @@
 import { t } from 'i18next';
 import { bytesToString } from 'app/drive/services/size.service';
-import UsageBar from '../../../../app/newSettings/components/Usage/UsageBar';
+import UsageBar from 'app/newSettings/components/Usage/UsageBar';
 
 const Usage = ({
   usedSpace,

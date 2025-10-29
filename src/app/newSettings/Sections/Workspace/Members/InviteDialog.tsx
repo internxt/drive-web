@@ -2,10 +2,10 @@ import { KeyboardEvent, useState } from 'react';
 import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
 import { UserPlus, X } from '@phosphor-icons/react';
 import { useForm } from 'react-hook-form';
-import { IFormValues } from 'app/core/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { IFormValues } from '../../../../core/types';
+import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import { Button, Modal, Checkbox, Input } from '@internxt/ui';
-import Card from 'app/shared/components/Card';
+import Card from '../../../../shared/components/Card';
 import TextArea from '../../Account/Account/components/TextArea';
 import UserCard from './components/UserCard';
 

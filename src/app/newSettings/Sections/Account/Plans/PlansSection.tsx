@@ -1,18 +1,18 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { AppView } from 'app/core/types';
-import Section from '../../../../../app/newSettings/components/Section';
+import Section from 'app/newSettings/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
-import { FreeStoragePlan } from 'app/drive/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import paymentService from 'app/payment/services/payment.service';
-import { RootState } from 'app/store';
-import { useAppDispatch } from 'app/store/hooks';
-import { PlanState, planThunks } from 'app/store/slices/plan';
+import errorService from '../../../../core/services/error.service';
+import navigationService from '../../../../core/services/navigation.service';
+import { FreeStoragePlan } from '../../../../drive/types';
+import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import paymentService from '../../../../payment/services/payment.service';
+import { RootState } from '../../../../store';
+import { useAppDispatch } from '../../../../store/hooks';
+import { PlanState, planThunks } from '../../../../store/slices/plan';
 import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
 import { fetchPlanPrices, getStripe } from './api/plansApi';
 import ChangePlanDialog from './components/ChangePlanDialog';
@@ -285,8 +285,8 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
     const intervalPrice =
       userType === UserType.Individual
-        ? individualPrices.find((p) => p.interval == selectedInterval)
-        : businessPrices.find((p) => p.interval == selectedInterval);
+        ? individualPrices.filter((p) => p.interval == selectedInterval)[0]
+        : businessPrices.filter((p) => p.interval == selectedInterval)[0];
     if (intervalPrice) return intervalPrice;
 
     const firstPrice = userType === UserType.Individual ? individualPrices[0] : businessPrices[0];

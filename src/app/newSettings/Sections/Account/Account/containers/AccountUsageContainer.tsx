@@ -3,14 +3,14 @@ import { useEffect, useState } from 'react';
 import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 import { useDispatch, useSelector } from 'react-redux';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
-import usageService, { UsageDetailsProps } from 'app/drive/services/usage.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import errorService from '../../../../../core/services/error.service';
+import navigationService from '../../../../../core/services/navigation.service';
+import usageService, { UsageDetailsProps } from '../../../../../drive/services/usage.service';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import { Button, Loader } from '@internxt/ui';
-import Card from 'app/shared/components/Card';
-import { PlanState } from 'app/store/slices/plan';
-import { uiActions } from 'app/store/slices/ui';
+import Card from '../../../../../shared/components/Card';
+import { PlanState } from '../../../../../store/slices/plan';
+import { uiActions } from '../../../../../store/slices/ui';
 import VerticalDivider from '../../../../components/VerticalDivider';
 import { getProductCaptions } from '../../../../utils/productUtils';
 import Usage from '../../../../components/Usage/Usage';
@@ -63,12 +63,14 @@ const AccountUsageContainer = ({
     <Card className="space-y-6">
       <div className={`${className} w-full space-y-6 `}>
         {products && planUsage >= 0 && planLimitInBytes ? (
-          <Usage
-            usedSpace={planUsage}
-            spaceLimit={planLimitInBytes}
-            driveUsage={driveUsage}
-            backupsUsage={backupsUsage}
-          />
+          <>
+            <Usage
+              usedSpace={planUsage}
+              spaceLimit={planLimitInBytes}
+              driveUsage={driveUsage}
+              backupsUsage={backupsUsage}
+            />
+          </>
         ) : (
           <div className="flex h-36 w-full items-center justify-center">
             <Loader classNameLoader="h-7 w-7 text-primary" />

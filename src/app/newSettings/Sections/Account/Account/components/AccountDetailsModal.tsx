@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 
 import { Button, Modal, Input } from '@internxt/ui';
 
@@ -41,33 +41,25 @@ const AccountDetailsModal = ({
     }
   }, [isOpen]);
 
-  const isValid = (value: string) => {
+  const validate = (value: string) => {
     return value.length > 0 && value.length < 20;
   };
 
   const onSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const isNameValid = isValid(nameValue);
-    const isLastnameValid = isValid(lastnameValue);
-
-    if (!isNameValid) {
+    if (!validate(nameValue)) {
       setStatus({ tag: 'error', type: 'NAME_INVALID' });
-      return;
-    }
-
-    if (!isLastnameValid) {
+    } else if (!validate(lastnameValue)) {
       setStatus({ tag: 'error', type: 'LASTNAME_INVALID' });
-      return;
-    }
-
-    try {
-      setStatus({ tag: 'loading' });
-      await onUpdateUserProfileData({ name: nameValue, lastname: lastnameValue });
-      onClose();
-    } catch {
-      setStatus({ tag: 'error', type: 'UNKNOWN' });
-      onErrorUpdatingUserProfileData();
+    } else {
+      try {
+        setStatus({ tag: 'loading' });
+        await onUpdateUserProfileData({ name: nameValue, lastname: lastnameValue });
+        onClose();
+      } catch {
+        setStatus({ tag: 'error', type: 'UNKNOWN' });
+        onErrorUpdatingUserProfileData();
+      }
     }
   };
 

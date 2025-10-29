@@ -3,11 +3,11 @@ import { X } from '@phosphor-icons/react';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
-import { bytesToString } from 'app/drive/services/size.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { ActionDialog } from '../../../../../contexts/dialog-manager/ActionDialogManager.context';
+import { bytesToString } from '../../../../../drive/services/size.service';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 
-import { MemberRole } from 'app/newSettings/types/types';
+import { MemberRole } from '../../../../../newSettings/types/types';
 import UserCard from './UserCard';
 
 const MINIMUM_BYTES_TO_ASSIGN = 100 * 1024 * 1024;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { uiActions } from 'app/store/slices/ui';
-import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { uiActions } from '../../store/slices/ui';
+import { RootState } from '../../store';
 
 export const usePreferencesParamsChange = () => {
   const dispatch = useAppDispatch();

@@ -1,6 +1,6 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-import { useThemeContext } from 'app/theme/ThemeProvider';
+import { useThemeContext } from '../../../../theme/ThemeProvider';
 import Section from './Section';
 
 import appearance_dark from 'assets/dark.svg';
@@ -31,7 +31,7 @@ function ThemeButton({ theme, toggleTheme, isSelected, img }) {
         <img src={img} alt={theme} />
       </div>
 
-      <span className={`text-sm font-medium ${isSelected ? '' : 'text-gray-50'}`}>{translate(`theme.${theme}`)}</span>
+      <span className={`text-sm font-medium ${!isSelected ? 'text-gray-50' : ''}`}>{translate(`theme.${theme}`)}</span>
     </button>
   );
 }

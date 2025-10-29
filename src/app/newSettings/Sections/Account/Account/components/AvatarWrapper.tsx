@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { updateDatabaseProfileAvatar } from 'app/drive/services/database.service';
+import { updateDatabaseProfileAvatar } from '../../../../../drive/services/database.service';
 import { Avatar } from '@internxt/ui';
 import { t } from 'i18next';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';

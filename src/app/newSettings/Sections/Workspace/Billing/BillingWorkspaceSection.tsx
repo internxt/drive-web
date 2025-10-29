@@ -7,7 +7,7 @@ import { PlanState, planThunks } from 'app/store/slices/plan';
 
 import { CustomerBillingInfo, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Section from '../../../../../app/newSettings/components/Section';
+import Section from 'app/newSettings/components/Section';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import paymentService from 'app/payment/services/payment.service';
 import { useAppDispatch } from 'app/store/hooks';
@@ -29,6 +29,7 @@ import workspacesService from 'app/core/services/workspace.service';
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 
 interface BillingWorkspaceSectionProps {
+  changeSection: ({ section, subsection }) => void;
   onClosePreferences: () => void;
 }
 

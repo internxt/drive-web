@@ -1,7 +1,7 @@
 import Appearance from './components/Appearance';
 import ContactSupport from './components/ContactSupport';
 import Language from './components/Language';
-import Section from '../../../../app/newSettings/components/Section';
+import Section from 'app/newSettings/components/Section';
 
 const GeneralSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   return (

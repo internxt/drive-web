@@ -1,12 +1,12 @@
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import paymentService from 'app/payment/services/payment.service';
-import { RootState } from 'app/store';
-import { useAppDispatch } from 'app/store/hooks';
-import { PlanState, planThunks } from 'app/store/slices/plan';
-import Section from '../../../../../app/newSettings/components/Section';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import paymentService from '../../../../payment/services/payment.service';
+import { RootState } from '../../../../store';
+import { useAppDispatch } from '../../../../store/hooks';
+import { PlanState, planThunks } from '../../../../store/slices/plan';
+import Section from 'app/newSettings/components/Section';
 import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCard';
 import Invoices from '../../../containers/InvoicesContainer';
 import CancelSubscription from './components/CancelSubscription';

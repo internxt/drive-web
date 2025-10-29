@@ -13,7 +13,7 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import workspacesService from 'app/core/services/workspace.service';
 import errorService from 'app/core/services/error.service';
 
-import Section from '../../../../../app/newSettings/components/Section';
+import Section from 'app/newSettings/components/Section';
 import TeamsList from './components/TeamsList';
 import AddMemberDialogContainer from './containers/AddMemberDialogContainer';
 import CreateTeamDialogContainer from './containers/CreateTeamDialogContainer';
