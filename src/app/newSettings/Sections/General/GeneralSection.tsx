@@ -1,6 +1,6 @@
-import Appearance from './components/ThemeSwitcher';
+import Appearance from './components/Appearance';
 import ContactSupport from './components/ContactSupport';
-import Language from './components/LanguageOptions';
+import Language from './components/Language';
 import Section from '../../../../app/newSettings/components/Section';
 
 const GeneralSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
