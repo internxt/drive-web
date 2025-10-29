@@ -10,7 +10,7 @@ import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.co
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { AppView } from 'app/core/types';
 import { FolderPath } from 'app/drive/types';
-import { ModifyStorageModal } from './app/newSettings/Sections/Workspace/Members/components/ModifyStorageModal';
+import { ModifyStorageModal } from 'app/newSettings/Sections/Workspace/Members/components/ModifyStorageModal';
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import i18next, { t } from 'i18next';
