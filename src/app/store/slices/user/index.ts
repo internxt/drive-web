@@ -9,7 +9,7 @@ import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView, LocalStorageItem } from '../../../core/types';
 import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
-import { saveAvatarToDatabase } from '../../../../app/newSettings/Sections/Account/Account/components/AvatarWrapper';
+import { saveAvatarToDatabase } from '../../../newSettings/Sections/Account/Account/components/AvatarWrapper';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import tasksService from '../../../tasks/services/tasks.service';
 import { referralsActions } from '../referrals';
