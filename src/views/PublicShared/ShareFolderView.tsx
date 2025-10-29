@@ -13,12 +13,11 @@ import { TaskProgress } from 'app/tasks/types';
 import { useEffect, useState } from 'react';
 import { match } from 'react-router';
 import { Link } from 'react-router-dom';
-import { HTTP_CODES } from '../../../core/constants';
-import AppError from '../../../core/types';
-import { useAppSelector } from '../../../store/hooks';
-import SendBanner from './SendBanner';
-import ShareItemPwdView from './ShareItemPwdView';
-import './ShareView.scss';
+import { HTTP_CODES } from 'app/core/constants';
+import AppError from 'app/core/types';
+import { useAppSelector } from 'app/store/hooks';
+import { SendBanner, ShareItemPwdView } from './components';
+import './components/ShareView.scss';
 import { Loader } from '@internxt/ui';
 import { stringUtils } from '@internxt/lib';
 
@@ -58,38 +57,40 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const [requiresPassword, setRequiresPassword] = useState(false);
   const [itemPassword, setItemPassword] = useState('');
-  const [sendBannerVisible, setIsSendBannerVisible] = useState(false);
+  const [sendBannerVisible, setSendBannerVisible] = useState(false);
   const [folderSize, setFolderSize] = useState<string | null>(null);
   const [isGetFolderSizeError, setIsGetFolderSizeError] = useState<boolean>(false);
 
   let body, downloadButton;
 
-  useEffect(() => {
-    loadFolderInfo().catch((err) => {
-      if (err.status !== HTTP_CODES.FORBIDDEN) {
-        setIsLoaded(true);
-        if (err.message === CHROME_IOS_ERROR_MESSAGE) {
-          notificationsService.show({
-            text: errorService.castError(err).message,
-            type: ToastType.Warning,
-            duration: 50000,
-          });
-          setErrorMessage(CHROME_IOS_ERROR_MESSAGE);
-          return;
-        }
-        setIsError(true);
-        /**
-         * TODO: Check that the server returns proper error message instead
-         * of assuming that everything means that the link has expired
-         */
-        throw new Error(translate('error.linkExpired') as string);
+  const handleLoadFolderError = (err) => {
+    if (err.status !== HTTP_CODES.FORBIDDEN) {
+      setIsLoaded(true);
+      if (err.message === CHROME_IOS_ERROR_MESSAGE) {
+        notificationsService.show({
+          text: errorService.castError(err).message,
+          type: ToastType.Warning,
+          duration: 50000,
+        });
+        setErrorMessage(CHROME_IOS_ERROR_MESSAGE);
+        return;
       }
-    });
+      setIsError(true);
+      /**
+       * TODO: Check that the server returns proper error message instead
+       * of assuming that everything means that the link has expired
+       */
+      throw new Error(translate('error.linkExpired'));
+    }
+  };
+
+  useEffect(() => {
+    loadFolderInfo().catch(handleLoadFolderError);
   }, []);
 
   async function loadFolderInfo(password?: string) {
     // ! iOS Chrome is not supported
-    if (navigator.userAgent.match('CriOS')) {
+    if (/CriOS/.test(navigator.userAgent)) {
       throw new Error(CHROME_IOS_ERROR_MESSAGE);
     }
 
@@ -99,7 +100,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         setIsLoaded(true);
         setRequiresPassword(false);
         getFolderSize(res.id);
-        return Promise.resolve(0);
+        return 0;
       })
       .then((folderSize) => {
         setSize(folderSize);
@@ -131,7 +132,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     setNItems((prevNItems) => prevNItems + 1);
   };
 
-  const download = async (password?: string): Promise<void> => {
+  const download = async (): Promise<void> => {
     if (!isDownloading) {
       const folderInfo = info as unknown as ShareTypes.ShareLink | null;
 
@@ -147,11 +148,11 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           .then(() => {
             updateProgress(1);
             setTimeout(() => {
-              setIsSendBannerVisible(true);
+              setSendBannerVisible(true);
             }, 3000);
           })
           .catch((err) => {
-            if (err && err.message && err.message.includes('user aborted')) {
+            if (err?.message?.includes('user aborted')) {
               setIsDownloading(false);
               return;
             }
@@ -190,14 +191,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     }
   }, [progress]);
 
-  if (!isDownloading) {
-    downloadButton = (
-      <>
-        <UilImport height="20" width="20" />
-        <span className="font-medium">{translate('actions.download')}</span>
-      </>
-    );
-  } else {
+  if (isDownloading) {
     downloadButton =
       progress < 100 ? (
         <>
@@ -211,6 +205,13 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           <span className="font-medium">{translate('actions.downloaded')}</span>
         </>
       );
+  } else {
+    downloadButton = (
+      <>
+        <UilImport height="20" width="20" />
+        <span className="font-medium">{translate('actions.download')}</span>
+      </>
+    );
   }
 
   if (isError) {
@@ -253,7 +254,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     ) : (
       //WITHOUT PASSWORD
       <>
-        <SendBanner sendBannerVisible={sendBannerVisible} setIsSendBannerVisible={setIsSendBannerVisible} />
+        <SendBanner sendBannerVisible={sendBannerVisible} setSendBannerVisible={setSendBannerVisible} />
 
         {/* File info */}
         <div className="flex grow-0 flex-col items-center justify-center space-y-4">
@@ -280,10 +281,10 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         <div className="flex flex-row items-center justify-center">
           <button
             onClick={() => {
-              download(itemPassword);
+              download();
             }}
             className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
-                        text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-primary'}`}
+                        text-white ${progress && progress >= 100 ? 'bg-green' : 'bg-primary'}`}
           >
             {downloadButton}
           </button>

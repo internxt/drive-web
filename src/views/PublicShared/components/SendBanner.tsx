@@ -4,12 +4,12 @@ import BackgroundImage from 'assets/images/shared-file/banner-bg.png';
 
 export interface Props {
   sendBannerVisible: boolean;
-  setIsSendBannerVisible: (value: boolean) => void;
+  setSendBannerVisible: (value: boolean) => void;
 }
 
 const SendBanner = (props: Props) => {
   const onClose = () => {
-    props.setIsSendBannerVisible(false);
+    props.setSendBannerVisible(false);
   };
 
   return (
@@ -38,7 +38,7 @@ const SendBanner = (props: Props) => {
               <button
                 className="relative flex h-14 w-48 flex-row items-center justify-center space-x-4 rounded-full bg-primary px-8 text-base text-white transition duration-100 focus:outline-none focus-visible:bg-primary-dark active:bg-primary-dark sm:text-lg"
                 onClick={() => {
-                  window.location.replace('https://internxt.com');
+                  globalThis.location.replace('https://internxt.com');
                 }}
               >
                 Start for free!
