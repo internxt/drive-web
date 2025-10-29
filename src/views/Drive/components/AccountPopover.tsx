@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { userThunks } from 'app/store/slices/user';
 import desktopService from 'app/core/services/desktop.service';
-import AvatarWrapper from '../Settings/Sections/Account/Account/components/AvatarWrapper';
+import AvatarWrapper from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
 import navigationService from 'app/core/services/navigation.service';
 import { RootState } from 'app/store';
 

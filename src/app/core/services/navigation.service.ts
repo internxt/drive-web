@@ -1,7 +1,7 @@
 import { BrowserHistoryBuildOptions, createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
-import { SelectSectionProps } from 'views/Drive/Settings/types/types';
+import { SelectSectionProps } from 'app/newSettings/types/types';
 import { AppView } from '../types';
 import configService from './config.service';
 import errorService from './error.service';

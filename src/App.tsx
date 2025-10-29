@@ -10,7 +10,7 @@ import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.co
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { AppView } from 'app/core/types';
 import { FolderPath } from 'app/drive/types';
-import { ModifyStorageModal } from './views/Drive/Settings/Sections/Workspace/Members/components/ModifyStorageModal';
+import { ModifyStorageModal } from './app/newSettings/Sections/Workspace/Members/components/ModifyStorageModal';
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import i18next, { t } from 'i18next';
@@ -28,8 +28,8 @@ import { LRUFilesCacheManager } from './app/database/services/database.service/L
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import Mobile from './app/drive/views/MobileView/MobileView';
-import PreferencesDialog from './views/Drive/Settings/SettingsModal';
-import { usePreferencesParamsChange } from './views/Drive/Settings/hooks/usePreferencesParamsChange';
+import PreferencesDialog from './app/newSettings/SettingsModal';
+import { usePreferencesParamsChange } from './app/newSettings/hooks/usePreferencesParamsChange';
 import SharingRedirect from './app/routes/Share/ShareRedirection';
 import WorkspacesRedirect from './app/routes/Workspaces/WorkspacesRedirection';
 import { getRoutes } from './app/routes/routes';
