@@ -112,7 +112,7 @@ describe('MultipartDownload ', () => {
       const fileSize = 200 * chunkSize * chunkSize;
       const tasksSpy = vi.spyOn(multipartDownload, 'createDownloadTasks');
       const downloadChunkSpy = vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart }) => {
-        const chunkData = new Uint8Array(chunkSize).fill(chunkStart % 256);
+        const chunkData = new Uint8Array(chunkSize).fill(chunkStart);
         return createMockStream(chunkData);
       });
 
