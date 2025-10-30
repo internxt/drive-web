@@ -79,10 +79,10 @@ const LoadingSpinner = ({ text }: { text: string }) => (
 
 const SideNavItems = ({ sideNavItems }: { sideNavItems: SideNavItemsProps[] }) => (
   <>
-    {sideNavItems.map((item, index) =>
+    {sideNavItems.map((item) =>
       item.isVisible ? (
         <SidenavItem
-          key={index}
+          key={item.to}
           label={item.label}
           to={item.to}
           Icon={item.icon}
