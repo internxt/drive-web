@@ -19,7 +19,7 @@ export class MultipartDownload {
   private completedChunksDownloadedCount = 0;
   private nextChunkToStream = 0;
   private completedChunks: Array<Uint8Array[] | null> = [];
-  private downloadQueue: QueueObject<DownloadChunkTask> | null = null;
+  public downloadQueue: QueueObject<DownloadChunkTask> | null = null;
 
   constructor(private readonly network: NetworkFacade) {}
 

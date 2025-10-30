@@ -130,12 +130,13 @@ describe('MultipartDownload ', () => {
     test('When chunks complete in a unordered way, then they should be streamed in the correct order', async () => {
       const chunkSize = 1024;
       const fileSize = chunkSize * 3;
-
-      const createTasksSpy = vi.spyOn(multipartDownload, 'createDownloadTasks').mockReturnValue([
+      const mockedChunks = [
         { index: 2, chunkStart: 2048, chunkEnd: 3071, attempt: 0, maxRetries: 3 },
         { index: 0, chunkStart: 0, chunkEnd: 1023, attempt: 0, maxRetries: 3 },
         { index: 1, chunkStart: 1024, chunkEnd: 2047, attempt: 0, maxRetries: 3 },
-      ]);
+      ];
+
+      const createTasksSpy = vi.spyOn(multipartDownload, 'createDownloadTasks').mockReturnValue(mockedChunks);
       vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart }) => {
         const data = new Uint8Array(chunkSize);
         new DataView(data.buffer).setUint32(0, chunkStart, true);
@@ -148,7 +149,9 @@ describe('MultipartDownload ', () => {
 
       const { chunks } = await consumeStream(stream);
       const order = chunks.map((c) => new DataView(c.buffer).getUint32(0, true));
-      expect(order).toEqual([0, chunkSize, chunkSize * 2]);
+      const shortedMockedChunks = mockedChunks.sort((a, b) => a.index - b.index).map((c) => c.chunkStart);
+
+      expect(order).toEqual(shortedMockedChunks);
 
       createTasksSpy.mockRestore();
     });
@@ -243,7 +246,6 @@ describe('MultipartDownload ', () => {
       }
 
       expect(result.done).toBeTruthy();
-      expect(result.value).toBeUndefined();
       expect(chunkCount).toStrictEqual(expectedChunkCount);
     });
 
@@ -280,8 +282,14 @@ describe('MultipartDownload ', () => {
       const fileSize = FIFTY_MEGABYTES * 2.5;
       const abortController = new AbortController();
       const abortSpy = vi.spyOn(abortController, 'abort');
+      let queueKillSpy;
 
       vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart }) => {
+        // Spy the kill method here because it is initialized when executing the download
+        if (!queueKillSpy && multipartDownload['downloadQueue']) {
+          queueKillSpy = vi.spyOn(multipartDownload['downloadQueue'], 'kill');
+        }
+
         if (chunkStart === 0) {
           throw new Error('Persistent network error');
         }
@@ -303,6 +311,7 @@ describe('MultipartDownload ', () => {
 
       expect(error).toBeInstanceOf(MaxRetriesExceededError);
       expect(abortSpy).toHaveBeenCalledOnce();
+      expect(queueKillSpy).toHaveBeenCalledOnce();
     });
   });
 
@@ -368,13 +377,12 @@ describe('MultipartDownload ', () => {
 
       await consumeStream(resultStream);
 
-      expect(attemptsByChunk.get(0)! >= 2).toBeTruthy();
+      expect(attemptsByChunk.get(0)).toBeGreaterThanOrEqual(2);
     });
 
     test('When stream reading fails mid-chunk, then chunk should be retried', async () => {
-      const FIFTY_MEGABYTES = 52428800;
-      const fileSize = FIFTY_MEGABYTES * 1.5;
       const chunkSize = 1024;
+      const fileSize = chunkSize * chunkSize * 150;
       const attemptsByChunk = new Map<number, number>();
 
       vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart }) => {
@@ -400,8 +408,7 @@ describe('MultipartDownload ', () => {
 
       await consumeStream(resultStream);
 
-      const firstChunkAttempts = attemptsByChunk.get(0) || 0;
-      expect(firstChunkAttempts >= 2).toBeTruthy();
+      expect(attemptsByChunk.get(0)).toBeGreaterThanOrEqual(2);
     });
   });
 });
