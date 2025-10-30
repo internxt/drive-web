@@ -7,8 +7,8 @@ import { planThunks } from 'app/store/slices/plan';
 import { uiActions } from 'app/store/slices/ui';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import clearTrash from '../../../../use_cases/trash/clear-trash';
-import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import { clearTrash } from '../services';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 interface ClearTrashDialogProps {
   onItemsDeleted?: () => void;
@@ -33,7 +33,7 @@ const ClearTrashDialog = (props: ClearTrashDialogProps): JSX.Element => {
       setIsLoading(true);
       await emptyTrash();
 
-      props.onItemsDeleted && props.onItemsDeleted();
+      props.onItemsDeleted?.();
 
       setIsLoading(false);
       onClose();
