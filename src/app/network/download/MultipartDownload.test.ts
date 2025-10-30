@@ -144,47 +144,33 @@ describe('MultipartDownload ', () => {
       expect(chunks.length).toBeGreaterThan(0);
     });
 
-    test('When chunks complete in random order, then they should be streamed in correct order', async () => {
-      const FIFTY_MEGABYTES = 52428800;
-      const fileSize = FIFTY_MEGABYTES * 2.5;
+    test('When chunks complete in a unordered way, then they should be streamed in the correct order', async () => {
       const chunkSize = 1024;
-      const downloadOrder: number[] = [];
-      const streamOrder: number[] = [];
+      const fileSize = chunkSize * 3;
 
-      vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart, chunkEnd }) => {
-        await new Promise((resolve) => setTimeout(resolve, Math.random() * 50));
-
-        downloadOrder.push(chunkStart);
-
-        const chunkData = new Uint8Array(chunkSize);
-
-        const view = new DataView(chunkData.buffer);
-        view.setUint32(0, chunkStart, true);
-
-        return createMockStream(chunkData);
+      const createTasksSpy = vi.spyOn(multipartDownload, 'createDownloadTasks').mockReturnValue([
+        { index: 2, chunkStart: 2048, chunkEnd: 3071, attempt: 0, maxRetries: 3 },
+        { index: 0, chunkStart: 0, chunkEnd: 1023, attempt: 0, maxRetries: 3 },
+        { index: 1, chunkStart: 1024, chunkEnd: 2047, attempt: 0, maxRetries: 3 },
+      ]);
+      vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart }) => {
+        const data = new Uint8Array(chunkSize);
+        new DataView(data.buffer).setUint32(0, chunkStart, true);
+        return createMockStream(data);
       });
 
-      const resultStream = executeDownload(multipartDownload, {
-        bucketId: 'test-bucket',
-        fileId: 'test-file',
-        mnemonic: 'test-mnemonic',
+      const stream = executeDownload(multipartDownload, {
+        bucketId: 'test',
+        fileId: 'test',
+        mnemonic: 'test',
         fileSize,
       });
 
-      const reader = resultStream.getReader();
-      let result = await reader.read();
+      const { chunks } = await consumeStream(stream);
+      const order = chunks.map((c) => new DataView(c.buffer).getUint32(0, true));
+      expect(order).toEqual([0, chunkSize, chunkSize * 2]);
 
-      while (!result.done) {
-        const view = new DataView(result.value.buffer);
-        const chunkStart = view.getUint32(0, true);
-        streamOrder.push(chunkStart);
-        result = await reader.read();
-      }
-
-      const isStreamOrderIncreasingInOrder = isMonotonicallyIncreasing(streamOrder);
-
-      expect(streamOrder.length).toBeGreaterThan(0);
-      expect(isStreamOrderIncreasingInOrder).toBeTruthy();
+      createTasksSpy.mockRestore();
     });
 
     test('When downloading multiple chunks, then correct total progress should be reported', async () => {
@@ -262,6 +248,7 @@ describe('MultipartDownload ', () => {
       const fileSize = FIFTY_MEGABYTES * 2;
       const chunkSize = 1024;
 
+      const createTasksSpy = vi.spyOn(multipartDownload, 'createDownloadTasks');
       vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async () => {
         const chunkData = new Uint8Array(chunkSize);
         return createMockStream(chunkData);
@@ -274,6 +261,8 @@ describe('MultipartDownload ', () => {
         fileSize,
       });
 
+      const createdTasks = createTasksSpy.mock.results[0].value;
+      const expectedChunkCount = createdTasks.length;
       const reader = resultStream.getReader();
       let result = await reader.read();
       let chunkCount = 0;
@@ -285,7 +274,7 @@ describe('MultipartDownload ', () => {
 
       expect(result.done).toBeTruthy();
       expect(result.value).toBeUndefined();
-      expect(chunkCount).toBeGreaterThan(0);
+      expect(chunkCount).toStrictEqual(expectedChunkCount);
     });
 
     test('When all downloads complete, then remaining chunks should be streamed before closing', async () => {
