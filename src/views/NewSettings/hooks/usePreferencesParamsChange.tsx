@@ -5,14 +5,14 @@ import { RootState } from 'app/store';
 
 export const usePreferencesParamsChange = () => {
   const dispatch = useAppDispatch();
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(globalThis.location.search);
   const isOpenParams = params.get('preferences') === 'open';
   const isOpenDialog = useAppSelector((state: RootState) => state.ui.isPreferencesDialogOpen);
 
   const [haveParamsChanged, setHaveParamsChanged] = useState(false);
 
   useEffect(() => {
-    window.onpopstate = () => {
+    globalThis.onpopstate = () => {
       setHaveParamsChanged(true);
     };
   }, []);

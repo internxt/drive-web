@@ -215,6 +215,7 @@ const StorageSelectionCard = ({
     </div>
     <div style={{ pointerEvents: 'auto', zIndex: 10000, position: 'relative' }}>
       <div
+        role="none"
         style={{ pointerEvents: 'auto' }}
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => {

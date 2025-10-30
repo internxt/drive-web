@@ -2,7 +2,7 @@ import { t } from 'i18next';
 
 import { Button } from '@internxt/ui';
 import Card from 'app/shared/components/Card';
-import { BillingDetailsCardProps } from '../../../types/types';
+import { BillingDetailsCardProps } from '../../../../types/types';
 import Detail from './Detail';
 
 const BillingDetailsCard = ({ address, phone, isOwner, onEditButtonClick }: BillingDetailsCardProps) => {

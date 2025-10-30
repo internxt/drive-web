@@ -51,10 +51,10 @@ const AddMemberDialogContainer: React.FC<AddMemberDialogContainerProps> = ({
   const selectMemberToInvite = (member: WorkspaceUser) => {
     const isMemberSelected = membersToInvite.some((m) => m.member.uuid === member.member.uuid);
 
-    if (!isMemberSelected) {
-      setMembersToInvite([...membersToInvite, member]);
-    } else {
+    if (isMemberSelected) {
       setMembersToInvite(membersToInvite.filter((m) => m.member.uuid !== member.member.uuid));
+    } else {
+      setMembersToInvite([...membersToInvite, member]);
     }
   };
 
@@ -62,13 +62,13 @@ const AddMemberDialogContainer: React.FC<AddMemberDialogContainerProps> = ({
     return membersToInvite.some((m) => m.member.uuid === member.member.uuid);
   };
 
-  const addMembersToTeam = () => {
+  const addMembersToTeam = async () => {
     setIsAddMembersLoading(true);
     try {
       if (selectedTeam) {
-        membersToInvite.map(async (member) => {
-          await workspacesService.addTeamUser(selectedTeam.team.id, member.member.uuid);
-        });
+        await Promise.all(
+          membersToInvite.map((member) => workspacesService.addTeamUser(selectedTeam.team.id, member.member.uuid)),
+        );
       }
       setIsAddMemberDialogOpen(false);
       setMembersToInvite([]);

@@ -28,7 +28,7 @@ const TeamsList: React.FC<TeamsListProps> = ({
         <h2 className="text-xl font-medium text-gray-100">
           <span>{teams.length} </span>
           <span>
-            {teams.length != 1 ? t('preferences.workspace.teams.title') : t('preferences.workspace.teams.team')}
+            {teams.length === 1 ? t('preferences.workspace.teams.team') : t('preferences.workspace.teams.title')}
           </span>
         </h2>
         {isCurrentUserWorkspaceOwner && (

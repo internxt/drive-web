@@ -104,7 +104,10 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
 
   const handleChangeManagerClicked = (member: TeamMember) => {
     setNewTeamManager(member);
-    selectedTeamMembers.map((member) => member.uuid === selectedTeam?.team.managerId && setCurrentTeamManager(member));
+    const currentManager = selectedTeamMembers.find((member) => member.uuid === selectedTeam?.team.managerId);
+    if (currentManager) {
+      setCurrentTeamManager(currentManager);
+    }
     setIsChangeManagerDialogOpen(true);
   };
 

@@ -157,7 +157,7 @@ const UserInviteDialog = ({ isOpen, onClose, processInvitation }: UserInviteDial
         )}
         <div className={`${isAddMessageSelected ? 'mt-2' : 'mt-8'} flex w-full flex-row items-center justify-between`}>
           <button
-            className={`flex items-center ${!isLoading ? 'cursor-pointer' : ''}`}
+            className={`flex items-center ${isLoading ? '' : 'cursor-pointer'}`}
             onClick={() => !isLoading && setIsAddMessageSelected(!isAddMessageSelected)}
           >
             <Checkbox checked={isAddMessageSelected} />

@@ -8,7 +8,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { LoadingRowSkeleton } from 'app/shared/tables/LoadingSkeleton';
 import { ScrollableTable } from 'app/shared/tables/ScrollableTable';
 import { useDebounce } from 'hooks/useDebounce';
-import Section from '../../../Section';
+import { Section } from '../../..';
 import { getEnumKey } from '../../../../utils';
 import { AccessLogsFilterOptions } from './components/AccessLogsFilterOptions';
 import { useAccessLogs } from './hooks/useAccessLogs';
@@ -60,7 +60,7 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
   );
 
   const handleActivityFilters = (actionType: WorkspaceLogType) => {
-    const isFilterActivated = activityFilter?.some((activity) => activity === actionType);
+    const isFilterActivated = activityFilter?.includes(actionType);
     const newActivityFilters = isFilterActivated
       ? activityFilter.filter((activity) => activity !== actionType)
       : [...activityFilter, actionType];
@@ -124,10 +124,16 @@ export const AccessLogsSection = ({ onClosePreferences }: LogsViewProps): JSX.El
   const onSortByChange = (item: HeaderItemsProps) => {
     if (!item.isSortByAvailable || !item.sortKey) return;
 
+    let direction: 'ASC' | 'DESC';
+    if (orderBy.key === item.sortKey) {
+      direction = orderBy.direction === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      direction = item.defaultSort ?? 'ASC';
+    }
+
     const newSortBy = {
       key: item.sortKey,
-      direction:
-        orderBy.key === item.sortKey ? (orderBy.direction === 'ASC' ? 'DESC' : 'ASC') : (item.defaultSort ?? 'ASC'),
+      direction,
     } as const;
 
     setOrderBy(newSortBy);
