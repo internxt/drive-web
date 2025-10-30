@@ -4,7 +4,7 @@ import { USE_MULTIPART_THRESHOLD_BYTES as FIFTY_MEGABYTES } from '../networkCons
 import { NetworkFacade } from '../NetworkFacade';
 import { MaxRetriesExceededError } from '../errors/download.errors';
 
-interface DownloadFilePayload {
+export interface DownloadFilePayload {
   bucketId: string;
   fileId: string;
   mnemonic: string;
@@ -19,7 +19,7 @@ export class MultipartDownload {
   private completedChunksDownloadedCount = 0;
   private nextChunkToStream = 0;
   private completedChunks: Array<Uint8Array[] | null> = [];
-  private downloadQueue: QueueObject<DownloadChunkTask> | null = null;
+  public downloadQueue: QueueObject<DownloadChunkTask> | null = null;
 
   constructor(private readonly network: NetworkFacade) {}
 

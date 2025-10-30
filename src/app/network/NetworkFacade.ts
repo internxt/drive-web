@@ -22,6 +22,7 @@ import {
   DownloadFailedWithUnknownError,
   NoContentReceivedError,
 } from './errors/download.errors';
+import { DownloadChunkPayload } from './types/index';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -324,14 +325,7 @@ export class NetworkFacade {
     chunkStart,
     chunkEnd,
     options,
-  }: {
-    bucketId: string;
-    fileId: string;
-    mnemonic: string;
-    chunkStart: number;
-    chunkEnd: number;
-    options?: DownloadOptions;
-  }): Promise<ReadableStream<Uint8Array>> {
+  }: DownloadChunkPayload): Promise<ReadableStream<Uint8Array>> {
     const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
     let fileStream: ReadableStream<Uint8Array>;
 

@@ -856,51 +856,12 @@ describe('downloadManagerService', () => {
       vi.unstubAllGlobals();
     });
 
-    test('When the download is for Firefox, then the old download should be used', async () => {
-      vi.stubGlobal('navigator', {
-        ...navigator,
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
-        onLine: true,
-      });
-
+    test('When the download is for any browser, then should download the file from the worker', async () => {
       const mockUpdateProgress = vi.fn((progress: number) => progress);
 
       vi.mocked(getDatabaseFileSourceData).mockResolvedValue({ source: null } as any);
       vi.mocked(checkIfCachedSourceIsOlder).mockReturnValue(true);
 
-      const downloadFileSpy = vi.spyOn(downloadService, 'downloadFile').mockResolvedValue(undefined);
-      const downloadFileFromWorkerSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFileFromWorker');
-
-      await DownloadManagerService.instance.downloadFile(mockTask, mockUpdateProgress);
-
-      expect(getDatabaseFileSourceData).toHaveBeenCalledWith({
-        fileId: mockFile.id,
-      });
-      expect(checkIfCachedSourceIsOlder).toHaveBeenCalledOnce();
-      expect(downloadFileSpy).toHaveBeenCalledWith(
-        mockFile,
-        !!mockTask.credentials.workspaceId,
-        mockUpdateProgress,
-        mockTask.abortController,
-        mockTask.credentials,
-      );
-      expect(downloadFileFromWorkerSpy).not.toHaveBeenCalled();
-    });
-
-    test('When the download is for any browser except Firefox, then should download the file from the worker', async () => {
-      vi.stubGlobal('navigator', {
-        ...navigator,
-        userAgent:
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        onLine: true,
-      });
-
-      const mockUpdateProgress = vi.fn((progress: number) => progress);
-
-      vi.mocked(getDatabaseFileSourceData).mockResolvedValue({ source: null } as any);
-      vi.mocked(checkIfCachedSourceIsOlder).mockReturnValue(true);
-
-      const downloadFileSpy = vi.spyOn(downloadService, 'downloadFile');
       const downloadFileFromWorkerSpy = vi
         .spyOn(DownloadManagerService.instance, 'downloadFileFromWorker')
         .mockResolvedValueOnce(mockFile.fileId);
@@ -918,7 +879,6 @@ describe('downloadManagerService', () => {
         abortController: mockTask.abortController,
         sharingOptions: mockTask.credentials,
       });
-      expect(downloadFileSpy).not.toHaveBeenCalled();
     });
   });
 

@@ -29,7 +29,6 @@ import {
   isLostConnectionError as isLostConnectionErrorUtil,
 } from '../types/download-types';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
-import downloadService from './download.service';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -288,20 +287,16 @@ export class DownloadManagerService {
         saveAs(cachedFile.source, options.downloadName);
       } else {
         const isWorkspace = !!credentials.workspaceId;
-        const isFirefox = navigator.userAgent.includes('Firefox');
 
         console.time(`download-file-${file.fileId}`);
-        if (isFirefox) {
-          await downloadService.downloadFile(file, isWorkspace, updateProgressCallback, abortController, credentials);
-        } else {
-          await this.downloadFileFromWorker({
-            file,
-            isWorkspace,
-            updateProgressCallback,
-            abortController,
-            sharingOptions: credentials,
-          });
-        }
+
+        await this.downloadFileFromWorker({
+          file,
+          isWorkspace,
+          updateProgressCallback,
+          abortController,
+          sharingOptions: credentials,
+        });
 
         console.timeEnd(`download-file-${file.fileId}`);
       }
