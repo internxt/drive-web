@@ -29,10 +29,13 @@ vi.mock('../session/session.thunks', () => ({
     changeWorkspaceThunk: vi.fn(),
   },
 }));
-vi.mock('../../../newSettings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper', () => ({
-  deleteWorkspaceAvatarFromDatabase: vi.fn(),
-  saveWorkspaceAvatarToDatabase: vi.fn(),
-}));
+vi.mock(
+  '../../../../views/NewSettings/components/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper',
+  () => ({
+    deleteWorkspaceAvatarFromDatabase: vi.fn(),
+    saveWorkspaceAvatarToDatabase: vi.fn(),
+  }),
+);
 vi.mock('../../../core/services/navigation.service', () => ({
   default: { push: vi.fn() },
 }));

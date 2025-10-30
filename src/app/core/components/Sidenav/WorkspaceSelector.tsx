@@ -2,8 +2,8 @@ import { CaretUpDown, Check, Icon } from '@phosphor-icons/react';
 import { useEffect, useRef } from 'react';
 
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import WorkspaceAvatarWrapper from '../../../newSettings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper';
-import AvatarWrapper from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
+import WorkspaceAvatarWrapper from '../../../../views/NewSettings/components/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper';
+import AvatarWrapper from '../../../../views/NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
 
 export interface Workspace {
   uuid: string;

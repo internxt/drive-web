@@ -20,7 +20,7 @@ import AppError, { AppView, IFormValues } from '../../../core/types';
 import databaseService from '../../../database/services/database.service';
 import { getDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import ChangePlanDialog from '../../../newSettings/Sections/Account/Plans/components/ChangePlanDialog';
+import ChangePlanDialog from '../../../../views/NewSettings/components/Sections/Account/Plans/components/ChangePlanDialog';
 import longNotificationsService from '../../../notifications/services/longNotification.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import checkoutService from '../../../payment/services/checkout.service';
