@@ -12,11 +12,7 @@ import AvatarWrapper from 'app/newSettings/Sections/Account/Account/components/A
 import navigationService from 'app/core/services/navigation.service';
 import { RootState } from 'app/store';
 
-export default function AccountPopover({
-  className = '',
-  user,
-  plan,
-}: {
+interface AccountPopoverProps {
   className?: string;
   user: UserSettings;
   plan: {
@@ -26,12 +22,14 @@ export default function AccountPopover({
     businessPlanLimit: number;
     businessPlanUsage: number;
   };
-}): JSX.Element {
+}
+
+export default function AccountPopover({ className = '', user, plan }: Readonly<AccountPopoverProps>): JSX.Element {
   const dispatch = useAppDispatch();
   const { selectedWorkspace } = useAppSelector((state: RootState) => state.workspaces);
   const memberId = selectedWorkspace?.workspaceUser?.memberId;
-  const usage = !memberId ? plan.planUsage : plan.businessPlanUsage;
-  const limit = !memberId ? plan.planLimit : plan.businessPlanLimit;
+  const usage = memberId ? plan.businessPlanUsage : plan.planUsage;
+  const limit = memberId ? plan.businessPlanLimit : plan.planLimit;
 
   const { translate } = useTranslationContext();
   const name = user?.name ?? '';
@@ -138,15 +136,18 @@ export default function AccountPopover({
 
   return <Popover className={className} childrenButton={avatarWrapper} panel={panel} data-test="app-header-dropdown" />;
 }
-
-function Item({ children, onClick }: { children: ReactNode; onClick: () => void }) {
+interface ItemProps {
+  children: ReactNode;
+  onClick: () => void;
+}
+function Item({ children, onClick }: Readonly<ItemProps>) {
   return (
-    <div
-      className="flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-1 dark:hover:bg-gray-10"
+    <button
+      className="flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-1 dark:hover:bg-gray-10"
       style={{ lineHeight: 1.25 }}
       onClick={onClick}
     >
       {children}
-    </div>
+    </button>
   );
 }
