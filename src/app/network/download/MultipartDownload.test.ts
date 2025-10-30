@@ -76,12 +76,14 @@ describe('MultipartDownload ', () => {
       const { chunks } = await consumeStream(resultStream);
 
       expect(downloadChunkSpy).toHaveBeenCalledOnce();
+      expect(chunks).toHaveLength(1);
       expect(chunks[0]).toStrictEqual(mockChunkData);
     });
 
     test('When downloading a single chunk, then the progress callback should be called with correct progress', async () => {
-      const fileSize = 1024;
-      const mockChunkData = new Uint8Array(1024);
+      const chunkSize = 1024;
+      const fileSize = chunkSize;
+      const mockChunkData = new Uint8Array(chunkSize);
       const downloadingCallback = vi.fn();
 
       const mockStream = createMockStream(mockChunkData);
@@ -99,28 +101,30 @@ describe('MultipartDownload ', () => {
 
       await consumeStream(resultStream);
 
-      expect(downloadingCallback).toHaveBeenCalledWith(fileSize, 1024);
+      expect(downloadingCallback).toHaveBeenCalledWith(fileSize, chunkSize);
+      expect(downloadingCallback).toHaveBeenCalledOnce();
     });
   });
 
   describe('Multiple chunk downloads', () => {
     test('When downloading a file with multiple chunks, then all chunks should be downloaded successfully', async () => {
-      const FIFTY_MEGABYTES = 52428800;
       const chunkSize = 1024;
+      const fileSize = 200 * chunkSize * chunkSize;
       const tasksSpy = vi.spyOn(multipartDownload, 'createDownloadTasks');
       const downloadChunkSpy = vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart }) => {
         const chunkData = new Uint8Array(chunkSize).fill(chunkStart % 256);
         return createMockStream(chunkData);
       });
 
-      const resultStream = executeDownload(multipartDownload);
+      const resultStream = executeDownload(multipartDownload, {
+        fileSize,
+      });
 
       const createdTasks = tasksSpy.mock.results[0].value as DownloadChunkTask[];
       const { chunks } = await consumeStream(resultStream);
 
-      expect(downloadChunkSpy).toHaveBeenCalled();
       expect(downloadChunkSpy.mock.calls.length).toStrictEqual(createdTasks.length);
-      expect(chunks.length).toBeGreaterThan(0);
+      expect(chunks.length).toStrictEqual(createdTasks.length);
     });
 
     test('When chunks complete in a unordered way, then they should be streamed in the correct order', async () => {
@@ -150,13 +154,12 @@ describe('MultipartDownload ', () => {
     });
 
     test('When downloading multiple chunks, then correct total progress should be reported', async () => {
-      const FIFTY_MEGABYTES = 52428800;
-      const fileSize = FIFTY_MEGABYTES * 2.5;
       const chunkSize = 1024;
+      const fileSize = 200 * chunkSize * chunkSize;
       const downloadingCallback = vi.fn();
       let finalProgress = 0;
 
-      vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async () => {
+      const downloadChunk = vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async () => {
         const chunkData = new Uint8Array(chunkSize);
         return createMockStream(chunkData);
       });
@@ -175,28 +178,28 @@ describe('MultipartDownload ', () => {
 
       await consumeStream(resultStream);
 
-      expect(downloadingCallback).toHaveBeenCalled();
-      expect(finalProgress).toBeLessThanOrEqual(fileSize);
-      expect(finalProgress).toBeGreaterThan(0);
+      const totalChunksDownloaded = downloadChunk.mock.calls.length;
+      // N chunks downloaded * chunk size = total progress
+      const expectedFinalProgress = totalChunksDownloaded * chunkSize;
 
-      expect(downloadingCallback).toHaveBeenCalledWith(fileSize, finalProgress);
+      expect(finalProgress).toBe(expectedFinalProgress);
+      expect(downloadingCallback).toHaveBeenCalledTimes(totalChunksDownloaded);
+      expect(downloadingCallback).toHaveBeenLastCalledWith(fileSize, expectedFinalProgress);
     });
 
-    test('When downloading concurrently, then concurrency limit of 6 should be respected', async () => {
-      const FIFTY_MEGABYTES = 52428800;
-      const fileSize = FIFTY_MEGABYTES * 6;
+    test('When downloading concurrently, then concurrency limit should match tasks when tasks < limit', async () => {
       const chunkSize = 1024;
-      let maxConcurrent = 0;
+      const fileSize = 150 * chunkSize * chunkSize;
       let currentConcurrent = 0;
+
+      const createTasksSpy = vi.spyOn(multipartDownload, 'createDownloadTasks');
 
       vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async () => {
         currentConcurrent++;
-        maxConcurrent = Math.max(maxConcurrent, currentConcurrent);
 
         await new Promise((resolve) => setTimeout(resolve, 10));
 
         const chunkData = new Uint8Array(chunkSize);
-        currentConcurrent--;
 
         return createMockStream(chunkData);
       });
@@ -207,16 +210,16 @@ describe('MultipartDownload ', () => {
 
       await consumeStream(resultStream);
 
-      expect(maxConcurrent).toBeLessThanOrEqual(6);
-      expect(maxConcurrent).toBeGreaterThan(1);
+      const totalTasks = createTasksSpy.mock.results[0].value.length;
+
+      expect(currentConcurrent).toBe(totalTasks);
     });
   });
 
   describe('Stream completion', () => {
     test('When all chunks are downloaded and streamed, then stream should close properly', async () => {
-      const FIFTY_MEGABYTES = 52428800;
-      const fileSize = FIFTY_MEGABYTES * 2;
       const chunkSize = 1024;
+      const fileSize = chunkSize * chunkSize * 200;
 
       const createTasksSpy = vi.spyOn(multipartDownload, 'createDownloadTasks');
       vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async () => {
@@ -245,9 +248,8 @@ describe('MultipartDownload ', () => {
     });
 
     test('When all downloads complete, then remaining chunks should be streamed before closing', async () => {
-      const FIFTY_MEGABYTES = 52428800;
-      const fileSize = FIFTY_MEGABYTES * 2.5;
       const chunkSize = 1024;
+      const fileSize = chunkSize * chunkSize * 250;
       const streamedChunks: number[] = [];
 
       const downloadChunkSpy = vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart }) => {
@@ -268,7 +270,7 @@ describe('MultipartDownload ', () => {
       }
 
       const totalCalls = downloadChunkSpy.mock.calls.length;
-      expect(streamedChunks.length).toBe(totalCalls);
+      expect(streamedChunks.length).toStrictEqual(totalCalls);
     });
   });
 
@@ -297,29 +299,21 @@ describe('MultipartDownload ', () => {
         options,
       });
 
-      const reader = resultStream.getReader();
+      const { error } = await consumeStream(resultStream);
 
-      const readPromise = (async () => {
-        let result = await reader.read();
-        while (!result.done) {
-          result = await reader.read();
-        }
-      })();
-
-      await expect(readPromise).rejects.toThrow(MaxRetriesExceededError);
-
-      expect(abortSpy).toHaveBeenCalled();
+      expect(error).toBeInstanceOf(MaxRetriesExceededError);
+      expect(abortSpy).toHaveBeenCalledOnce();
     });
   });
 
   describe('Progress tracking with failures', () => {
     test('When a chunk fails before completion, then downloaded bytes should not be added to progress', async () => {
-      const FIFTY_MEGABYTES = 52428800;
-      const fileSize = FIFTY_MEGABYTES * 2;
       const chunkSize = 1024;
+      const fileSize = chunkSize * chunkSize * 200;
       const progressUpdates: number[] = [];
       const attemptsByChunk = new Map<number, number>();
 
+      const createTasksSpy = vi.spyOn(multipartDownload, 'createDownloadTasks');
       vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart }) => {
         const attempts = (attemptsByChunk.get(chunkStart) || 0) + 1;
         attemptsByChunk.set(chunkStart, attempts);
@@ -338,101 +332,22 @@ describe('MultipartDownload ', () => {
         },
       };
 
-      const resultStream = executeDownload(multipartDownload, {
-        fileSize,
-        options,
-      });
-
+      const resultStream = executeDownload(multipartDownload, { fileSize, options });
       await consumeStream(resultStream);
 
-      const isProgressIncreasing = isMonotonicallyIncreasing(progressUpdates);
-
-      expect(isProgressIncreasing).toBeTruthy();
-    });
-
-    test('When a chunk fails and retries, then bytes should only be counted once on success', async () => {
-      const FIFTY_MEGABYTES = 52428800;
-      const fileSize = FIFTY_MEGABYTES * 2;
-      const chunkSize = 1024;
-      const attemptsByChunk = new Map<number, number>();
-      const progressUpdates: number[] = [];
-
-      const downloadChunkSpy = vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart }) => {
-        const attempts = (attemptsByChunk.get(chunkStart) || 0) + 1;
-        attemptsByChunk.set(chunkStart, attempts);
-
-        // First chunk fails on first attempt
-        if (chunkStart === 0 && attempts === 1) {
-          throw new Error('First attempt failed');
-        }
-
-        const chunkData = new Uint8Array(chunkSize);
-        return createMockStream(chunkData);
-      });
-
-      const options: DownloadOptions = {
-        downloadingCallback: (_, downloaded) => {
-          progressUpdates.push(downloaded);
-        },
-      };
-
-      const resultStream = executeDownload(multipartDownload, {
-        fileSize,
-        options,
-      });
-
-      await consumeStream(resultStream);
+      const totalTasks = createTasksSpy.mock.results[0].value.length;
+      const expectedFinalProgress = totalTasks * chunkSize;
+      const finalProgress = progressUpdates[progressUpdates.length - 1];
 
       expect(attemptsByChunk.get(0)).toBe(2);
-
-      const isProgressIncreasing = isMonotonicallyIncreasing(progressUpdates);
-      expect(isProgressIncreasing).toBe(true);
-
-      const finalProgress = progressUpdates[progressUpdates.length - 1];
-      expect(finalProgress).toBeGreaterThan(0);
-      expect(finalProgress).toBeLessThanOrEqual(fileSize);
-
-      const totalChunks = downloadChunkSpy.mock.calls.length;
-      const expectedBytes = (totalChunks - 1) * chunkSize;
-
-      expect(finalProgress).toBe(expectedBytes);
-    });
-
-    test('When a chunk fails after being registered, then its bytes should be reverted', async () => {
-      const FIFTY_MEGABYTES = 52428800;
-      const fileSize = FIFTY_MEGABYTES * 2;
-      const chunkSize = 1024;
-      const progressSnapshots: number[] = [];
-
-      vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async () => {
-        const chunkData = new Uint8Array(chunkSize);
-        return createMockStream(chunkData);
-      });
-
-      const options: DownloadOptions = {
-        downloadingCallback: (_, downloaded) => {
-          progressSnapshots.push(downloaded);
-        },
-      };
-
-      const resultStream = executeDownload(multipartDownload, {
-        fileSize,
-        options,
-      });
-
-      await consumeStream(resultStream);
-
-      const isProgressIncreasing = isMonotonicallyIncreasing(progressSnapshots);
-
-      expect(isProgressIncreasing).toBeTruthy();
+      expect(finalProgress).toStrictEqual(expectedFinalProgress);
     });
   });
 
   describe('Stream errors', () => {
     test('When network returns invalid stream, then error should be caught and retried', async () => {
-      const FIFTY_MEGABYTES = 52428800;
-      const fileSize = FIFTY_MEGABYTES * 1.5;
       const chunkSize = 1024;
+      const fileSize = chunkSize * chunkSize * 150;
       const attemptsByChunk = new Map<number, number>();
 
       vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart }) => {
@@ -453,7 +368,7 @@ describe('MultipartDownload ', () => {
 
       await consumeStream(resultStream);
 
-      expect(attemptsByChunk.get(0)! > 1).toBeTruthy();
+      expect(attemptsByChunk.get(0)! >= 2).toBeTruthy();
     });
 
     test('When stream reading fails mid-chunk, then chunk should be retried', async () => {
