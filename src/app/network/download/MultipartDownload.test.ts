@@ -69,13 +69,10 @@ describe('MultipartDownload ', () => {
   describe('Single chunk downloads', () => {
     test('When downloading a small file with 1 chunk, then it should download successfully', async () => {
       const mockChunkData = new Uint8Array([1, 2, 3, 4, 5]);
-
       const mockStream = createMockStream(mockChunkData);
-
       const downloadChunkSpy = vi.spyOn(networkFacade, 'downloadChunk').mockResolvedValue(mockStream);
 
       const resultStream = executeDownload(multipartDownload);
-
       const { chunks } = await consumeStream(resultStream);
 
       expect(downloadChunkSpy).toHaveBeenCalledOnce();
@@ -109,7 +106,6 @@ describe('MultipartDownload ', () => {
   describe('Multiple chunk downloads', () => {
     test('When downloading a file with multiple chunks, then all chunks should be downloaded successfully', async () => {
       const FIFTY_MEGABYTES = 52428800;
-      const fileSize = FIFTY_MEGABYTES * 2.5;
       const chunkSize = 1024;
       const tasksSpy = vi.spyOn(multipartDownload, 'createDownloadTasks');
       const downloadChunkSpy = vi.spyOn(networkFacade, 'downloadChunk').mockImplementation(async ({ chunkStart }) => {
