@@ -1,4 +1,3 @@
-import {} from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 

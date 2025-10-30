@@ -70,7 +70,6 @@ const WorkspaceCard = ({
 const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   userWorkspace,
   workspaces,
-  onCreateWorkspaceButtonClicked,
   onChangeWorkspace,
   setIsDialogOpen,
   pendingWorkspacesInvitesLength,

@@ -52,7 +52,7 @@ const resetAccessTokenFileFolder = () => {
 };
 
 const isActiveButton = (path: string) => {
-  return !!matchPath(window.location.pathname, { path, exact: true });
+  return !!matchPath(globalThis.location.pathname, { path, exact: true });
 };
 
 const handleDownloadApp = (): void => {
@@ -60,7 +60,7 @@ const handleDownloadApp = (): void => {
   desktopService
     .getDownloadAppUrl()
     .then((download) => {
-      window.open(download, '_self');
+      globalThis.open(download, '_self');
     })
     .catch(() => {
       notificationsService.show({
