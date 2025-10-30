@@ -34,20 +34,9 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
   const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const currentUserId = useAppSelector((state: RootState) => state.user.user?.uuid);
 
-  if (!selectedWorkspace?.workspace.id) {
-    return null;
-  }
-
-  const workspaceId = selectedWorkspace.workspace.id;
-  const companyName = selectedWorkspace.workspace.name;
-  const description = selectedWorkspace.workspace.description;
-  const avatarSrcURL = selectedWorkspace.workspace.avatar;
-  const ownerId = selectedWorkspace.workspace.ownerId;
-  const isOwner = (currentUserId && ownerId && currentUserId === ownerId) || false;
-
   const [isEditingDetails, setIsEditingDetails] = useState(false);
-  const [editedCompanyName, setEditedCompanyName] = useState(companyName);
-  const [aboutCompany, setAboutCompany] = useState(description);
+  const [editedCompanyName, setEditedCompanyName] = useState(selectedWorkspace?.workspace.name ?? '');
+  const [aboutCompany, setAboutCompany] = useState(selectedWorkspace?.workspace.description ?? '');
   const [isSavingProfileDetails, setIsSavingProfileDetails] = useState(false);
   const [members, setMembers] = useState<WorkspaceUser[] | null>(null);
   const [teams, setTeams] = useState<WorkspaceTeam[] | null>(null);
@@ -60,6 +49,24 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
   const products = planUsage ? getProductCaptions(planUsage) : null;
   const subscriptionData: { amountInterval: string; interval: 'monthly' | 'yearly'; renewDate: string } | undefined =
     getSubscriptionData({ userSubscription: plan.businessSubscription, plan, local, userType: UserType.Business });
+
+  const getWorkspacesMembers = async (selectedWorkspaceId: string) => {
+    try {
+      const members = await workspacesService.getWorkspacesMembers(selectedWorkspaceId);
+      setMembers(members.activatedUsers);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
+
+  const getWorkspacesTeams = async (selectedWorkspaceId: string) => {
+    try {
+      const teams = await workspacesService.getWorkspaceTeams(selectedWorkspaceId);
+      setTeams(teams);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
 
   useEffect(() => {
     if (selectedWorkspace?.workspace.id) {
@@ -85,25 +92,16 @@ const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionP
           errorService.reportError(error);
         });
     }
-  }, []);
+  }, [selectedWorkspace?.workspace.id, selectedWorkspace?.workspaceUser.memberId]);
 
-  const getWorkspacesMembers = async (selectedWorkspaceId: string) => {
-    try {
-      const members = await workspacesService.getWorkspacesMembers(selectedWorkspaceId);
-      setMembers(members.activatedUsers);
-    } catch (error) {
-      errorService.reportError(error);
-    }
-  };
+  if (!selectedWorkspace?.workspace.id) {
+    return null;
+  }
 
-  const getWorkspacesTeams = async (selectedWorkspaceId: string) => {
-    try {
-      const teams = await workspacesService.getWorkspaceTeams(selectedWorkspaceId);
-      setTeams(teams);
-    } catch (error) {
-      errorService.reportError(error);
-    }
-  };
+  const workspaceId = selectedWorkspace.workspace.id;
+  const avatarSrcURL = selectedWorkspace.workspace.avatar;
+  const ownerId = selectedWorkspace.workspace.ownerId;
+  const isOwner = (currentUserId && ownerId && currentUserId === ownerId) || false;
 
   const onSaveProfileDetails = async (newCompanyName: string, newAboutCompany: string) => {
     setIsSavingProfileDetails(true);

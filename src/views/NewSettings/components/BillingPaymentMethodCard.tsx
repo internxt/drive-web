@@ -58,6 +58,59 @@ const BillingPaymentMethodCard = ({
     setIsEditPaymentMethodModalOpen(true);
   };
 
+  const renderCardContent = () => {
+    if (existsPaymentMethod) {
+      return (
+        <div className="flex">
+          {defaultPaymentMethod.card ? (
+            <>
+              <img
+                className="h-11 rounded-md"
+                src={cardBrands[defaultPaymentMethod.card.brand]}
+                alt={cardBrands[defaultPaymentMethod.card.brand]}
+              />
+              <div className="ml-4 flex-1">
+                <div className="flex flex-col">
+                  <p className="text-base font-medium text-gray-100">{defaultPaymentMethod.name}</p>
+                  <div className="font-regular flex flex-row text-base text-gray-60">
+                    <p>&#x25CF;&#x25CF;&#x25CF;&#x25CF;</p>
+                    <p className="ml-1.5 mr-2.5">{defaultPaymentMethod.card.last4}</p>
+                    <p>{`${defaultPaymentMethod.card.exp_month}/${defaultPaymentMethod.card.exp_year}`}</p>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            defaultPaymentMethod.type && (
+              <div className="ml-4 flex-1">
+                <div className="flex items-center text-gray-100">
+                  <p className="text-base font-medium leading-tight">{paymentsTypes[defaultPaymentMethod.type]}</p>
+                </div>
+                <p className="text-sm text-gray-50">
+                  {t('views.account.tabs.billing.paymentMethod.contactUs.description')}
+                </p>
+              </div>
+            )
+          )}
+        </div>
+      );
+    }
+
+    if (defaultPaymentMethod.tag === 'loading') {
+      return (
+        <div className="flex h-10 items-center justify-center">
+          <Loader classNameLoader="h-5 w-5" />
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex h-full items-center justify-center text-center">
+        <p className="font-regular text-base text-gray-60">{t('preferences.workspace.billing.paymentMethod.empty')}</p>
+      </div>
+    );
+  };
+
   return (
     <section className="space-y-3">
       <div className="flex w-full flex-row items-center justify-between ">
@@ -72,52 +125,7 @@ const BillingPaymentMethodCard = ({
           </Button>
         )}
       </div>
-      <Card className={`${defaultPaymentMethod.tag === 'empty' && 'h-20'}`}>
-        {existsPaymentMethod ? (
-          <div className="flex">
-            {defaultPaymentMethod.card ? (
-              <>
-                <img
-                  className="h-11 rounded-md"
-                  src={cardBrands[defaultPaymentMethod.card.brand]}
-                  alt={cardBrands[defaultPaymentMethod.card.brand]}
-                />
-                <div className="ml-4 flex-1">
-                  <div className="flex flex-col">
-                    <p className="text-base font-medium text-gray-100">{defaultPaymentMethod.name}</p>
-                    <div className="font-regular flex flex-row text-base text-gray-60">
-                      <p>&#x25CF;&#x25CF;&#x25CF;&#x25CF;</p>
-                      <p className="ml-1.5 mr-2.5">{defaultPaymentMethod.card.last4}</p>
-                      <p>{`${defaultPaymentMethod.card.exp_month}/${defaultPaymentMethod.card.exp_year}`}</p>
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              defaultPaymentMethod.type && (
-                <div className="ml-4 flex-1">
-                  <div className="flex items-center text-gray-100">
-                    <p className="text-base font-medium leading-tight">{paymentsTypes[defaultPaymentMethod.type]}</p>
-                  </div>
-                  <p className="text-sm text-gray-50">
-                    {t('views.account.tabs.billing.paymentMethod.contactUs.description')}
-                  </p>
-                </div>
-              )
-            )}
-          </div>
-        ) : defaultPaymentMethod.tag === 'loading' ? (
-          <div className="flex h-10 items-center justify-center">
-            <Loader classNameLoader="h-5 w-5" />
-          </div>
-        ) : (
-          <div className="flex h-full items-center justify-center text-center">
-            <p className="font-regular text-base text-gray-60">
-              {t('preferences.workspace.billing.paymentMethod.empty')}
-            </p>
-          </div>
-        )}
-      </Card>
+      <Card className={`${defaultPaymentMethod.tag === 'empty' && 'h-20'}`}>{renderCardContent()}</Card>
       <EditPaymentMethodModal
         isEditPaymentMethodModalOpen={isEditPaymentMethodModalOpen}
         setIsEditPaymentMethodModalOpen={setIsEditPaymentMethodModalOpen}

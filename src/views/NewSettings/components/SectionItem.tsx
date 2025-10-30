@@ -29,18 +29,14 @@ const SectionItem = ({
   const notificationClass = isActive ? 'bg-white' : ' bg-primary';
   const notificationTextClass = isActive ? 'text-primary' : 'text-white';
 
+  const Element = isClickable ? 'button' : 'div';
+
   return (
-    <div
+    <Element
       className={`flex h-10 w-full items-center justify-between rounded-lg px-3 py-2
        ${clickableClass} ${containerClass}`}
       onClick={onClick}
-      role={isClickable ? 'button' : undefined}
-      tabIndex={isClickable ? 0 : undefined}
-      onKeyDown={(event) => {
-        if (isClickable && (event.key === 'Enter' || event.key === ' ')) {
-          onClick();
-        }
-      }}
+      {...(isClickable ? { type: 'button' as const } : {})}
     >
       <div className="flex items-center">
         <span className={`text-base font-normal ${disabledTextClass} ${sectionTextClass} ${subsectionTextClass}`}>
@@ -52,7 +48,7 @@ const SectionItem = ({
           <span className={`text-xs font-normal  ${notificationTextClass}`}>{notificationsNumber}</span>
         </div>
       )}
-    </div>
+    </Element>
   );
 };
 

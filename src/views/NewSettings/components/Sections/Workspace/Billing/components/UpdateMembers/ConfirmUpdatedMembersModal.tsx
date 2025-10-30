@@ -47,14 +47,14 @@ export const ConfirmUpdatedMembersModal = ({
         <div className="gap-5º flex w-full flex-row items-center justify-center">
           <MembersCard
             label={translate('preferences.workspace.billing.members.confirmUpdateModal.current')}
-            members={currentAmountOfSeats as number}
+            members={currentAmountOfSeats}
             price={(monthlyPrice * currentAmountOfSeats).toFixed(2)}
             translate={translate}
           />
           <ArrowRight size={32} className="mx-5 font-semibold text-gray-20" />
           <MembersCard
             label={translate('preferences.workspace.billing.members.confirmUpdateModal.new')}
-            members={updatedAmountOfSeats as number}
+            members={updatedAmountOfSeats}
             price={(monthlyPrice * updatedAmountOfSeats).toFixed(2)}
             translate={translate}
           />

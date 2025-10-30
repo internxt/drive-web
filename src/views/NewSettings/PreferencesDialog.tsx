@@ -33,7 +33,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
   const dispatch = useAppDispatch();
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
 
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(globalThis.location.search);
   const currentSectionParams = params.getAll('section');
   const currentSubsectionParams = params.getAll('subsection');
   const [activeSection, setActiveSection] = useState<Section | undefined>({
@@ -48,10 +48,8 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
   useEffect(() => {
     if (currentSectionParams.length > 0) {
       const sectionParams = sectionItems.filter((section) => section.section === currentSectionParams[0]);
-      const subsectionParams = sectionParams.filter(
-        (subsection) => subsection.subsection === currentSubsectionParams[0],
-      );
-      changeSection({ section: sectionParams[0]?.section, subsection: subsectionParams[0]?.subsection });
+      const subsectionParams = sectionParams.find((subsection) => subsection.subsection === currentSubsectionParams[0]);
+      changeSection({ section: sectionParams[0]?.section, subsection: subsectionParams?.subsection });
     } else {
       dispatch(uiActions.setIsPreferencesDialogOpen(false));
     }
@@ -100,7 +98,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
           <TeamsSection onClosePreferences={onClosePreferences} />
         )}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'billing' && (
-          <BillingWorkspaceSection onClosePreferences={onClosePreferences} changeSection={changeSection} />
+          <BillingWorkspaceSection onClosePreferences={onClosePreferences} />
         )}
         {activeSection?.section === 'account' && activeSection?.subsection === 'account' && (
           <AccountSection changeSection={changeSection} onClosePreferences={onClosePreferences} />

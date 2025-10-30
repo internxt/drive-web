@@ -1,7 +1,7 @@
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 
 const searchMembers = (membersList: WorkspaceUser[] | null, searchString: string) => {
-  const escapedSearchString = searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escapedSearchString = searchString.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
   const regex = new RegExp(escapedSearchString, 'i');
 
   const resultados = membersList?.filter((obj) => {
@@ -13,7 +13,7 @@ const searchMembers = (membersList: WorkspaceUser[] | null, searchString: string
 };
 
 const searchMembersEmail = (membersList: WorkspaceUser[] | null, searchString: string) => {
-  const escapedSearchString = searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escapedSearchString = searchString.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
   const regex = new RegExp(escapedSearchString, 'i');
 
   const resultados = membersList?.filter((obj) => {

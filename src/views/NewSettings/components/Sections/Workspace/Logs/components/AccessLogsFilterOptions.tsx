@@ -36,7 +36,7 @@ export const AccessLogsFilterOptions = ({
   const isFilteredByDays = selectedFilters.days;
   const thereAreAnyFilterActivated = isFilteredByActivity || isFilteredByDays;
 
-  const isChecked = (activity: WorkspaceLogType) => selectedFilters.activity.some((a) => a === activity);
+  const isChecked = (activity: WorkspaceLogType) => selectedFilters.activity.includes(activity);
 
   const handleInputChange = (value: string) => {
     if (value.length <= MAX_SEARCH_CHARACTERS) {
