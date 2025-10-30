@@ -78,7 +78,7 @@ describe('MultipartDownload ', () => {
 
       const { chunks } = await consumeStream(resultStream);
 
-      expect(downloadChunkSpy).toHaveBeenCalledTimes(1);
+      expect(downloadChunkSpy).toHaveBeenCalledOnce();
       expect(chunks[0]).toStrictEqual(mockChunkData);
     });
 
