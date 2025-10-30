@@ -41,14 +41,14 @@ function createMockStream(chunkData: Uint8Array): ReadableStream<Uint8Array> {
 
 function executeDownload(
   multipartDownload: MultipartDownload,
-  params: Partial<DownloadFilePayload & { fileSize?: number }>,
+  params?: Partial<DownloadFilePayload & { fileSize?: number }>,
 ): ReadableStream<Uint8Array> {
   return multipartDownload.downloadFile({
-    bucketId: params.bucketId ?? TEST_BUCKET_ID,
-    fileId: params.fileId ?? TEST_FILE_ID,
-    mnemonic: params.mnemonic ?? TEST_MNEMONIC,
-    fileSize: params.fileSize ?? TEST_FILE_SIZE,
-    options: params.options,
+    bucketId: params?.bucketId ?? TEST_BUCKET_ID,
+    fileId: params?.fileId ?? TEST_FILE_ID,
+    mnemonic: params?.mnemonic ?? TEST_MNEMONIC,
+    fileSize: params?.fileSize ?? TEST_FILE_SIZE,
+    options: params?.options,
   });
 }
 
@@ -68,22 +68,13 @@ describe('MultipartDownload ', () => {
 
   describe('Single chunk downloads', () => {
     test('When downloading a small file with 1 chunk, then it should download successfully', async () => {
-      const bucketId = 'test-bucket';
-      const fileId = 'test-file';
-      const mnemonic = 'test-mnemonic';
-      const fileSize = 1024;
       const mockChunkData = new Uint8Array([1, 2, 3, 4, 5]);
 
       const mockStream = createMockStream(mockChunkData);
 
       const downloadChunkSpy = vi.spyOn(networkFacade, 'downloadChunk').mockResolvedValue(mockStream);
 
-      const resultStream = executeDownload(multipartDownload, {
-        bucketId,
-        fileId,
-        mnemonic,
-        fileSize,
-      });
+      const resultStream = executeDownload(multipartDownload);
 
       const { chunks } = await consumeStream(resultStream);
 
@@ -105,9 +96,6 @@ describe('MultipartDownload ', () => {
       };
 
       const resultStream = executeDownload(multipartDownload, {
-        bucketId: 'test-bucket',
-        fileId: 'test-file',
-        mnemonic: 'test-mnemonic',
         fileSize,
         options,
       });
@@ -129,12 +117,7 @@ describe('MultipartDownload ', () => {
         return createMockStream(chunkData);
       });
 
-      const resultStream = executeDownload(multipartDownload, {
-        bucketId: 'test-bucket',
-        fileId: 'test-file',
-        mnemonic: 'test-mnemonic',
-        fileSize,
-      });
+      const resultStream = executeDownload(multipartDownload);
 
       const createdTasks = tasksSpy.mock.results[0].value as DownloadChunkTask[];
       const { chunks } = await consumeStream(resultStream);
@@ -160,9 +143,6 @@ describe('MultipartDownload ', () => {
       });
 
       const stream = executeDownload(multipartDownload, {
-        bucketId: 'test',
-        fileId: 'test',
-        mnemonic: 'test',
         fileSize,
       });
 
@@ -193,9 +173,6 @@ describe('MultipartDownload ', () => {
       };
 
       const resultStream = executeDownload(multipartDownload, {
-        bucketId: 'test-bucket',
-        fileId: 'test-file',
-        mnemonic: 'test-mnemonic',
         fileSize,
         options,
       });
@@ -229,9 +206,6 @@ describe('MultipartDownload ', () => {
       });
 
       const resultStream = executeDownload(multipartDownload, {
-        bucketId: 'test-bucket',
-        fileId: 'test-file',
-        mnemonic: 'test-mnemonic',
         fileSize,
       });
 
@@ -255,9 +229,6 @@ describe('MultipartDownload ', () => {
       });
 
       const resultStream = executeDownload(multipartDownload, {
-        bucketId: 'test-bucket',
-        fileId: 'test-file',
-        mnemonic: 'test-mnemonic',
         fileSize,
       });
 
@@ -289,9 +260,6 @@ describe('MultipartDownload ', () => {
       });
 
       const resultStream = executeDownload(multipartDownload, {
-        bucketId: 'test-bucket',
-        fileId: 'test-file',
-        mnemonic: 'test-mnemonic',
         fileSize,
       });
 
@@ -329,9 +297,6 @@ describe('MultipartDownload ', () => {
       };
 
       const resultStream = executeDownload(multipartDownload, {
-        bucketId: 'test-bucket',
-        fileId: 'test-file',
-        mnemonic: 'test-mnemonic',
         fileSize,
         options,
       });
@@ -378,9 +343,6 @@ describe('MultipartDownload ', () => {
       };
 
       const resultStream = executeDownload(multipartDownload, {
-        bucketId: 'test-bucket',
-        fileId: 'test-file',
-        mnemonic: 'test-mnemonic',
         fileSize,
         options,
       });
@@ -419,9 +381,6 @@ describe('MultipartDownload ', () => {
       };
 
       const resultStream = executeDownload(multipartDownload, {
-        bucketId: 'test-bucket',
-        fileId: 'test-file',
-        mnemonic: 'test-mnemonic',
         fileSize,
         options,
       });
@@ -461,9 +420,6 @@ describe('MultipartDownload ', () => {
       };
 
       const resultStream = executeDownload(multipartDownload, {
-        bucketId: 'test-bucket',
-        fileId: 'test-file',
-        mnemonic: 'test-mnemonic',
         fileSize,
         options,
       });
@@ -496,9 +452,6 @@ describe('MultipartDownload ', () => {
       });
 
       const resultStream = executeDownload(multipartDownload, {
-        bucketId: 'test-bucket',
-        fileId: 'test-file',
-        mnemonic: 'test-mnemonic',
         fileSize,
       });
 
@@ -531,9 +484,6 @@ describe('MultipartDownload ', () => {
       });
 
       const resultStream = executeDownload(multipartDownload, {
-        bucketId: 'test-bucket',
-        fileId: 'test-file',
-        mnemonic: 'test-mnemonic',
         fileSize,
       });
 
