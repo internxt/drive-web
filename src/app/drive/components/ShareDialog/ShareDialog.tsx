@@ -16,7 +16,7 @@ import {
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
 import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
-import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
+import { MAX_SHARED_NAME_LENGTH } from '../../../../views/Shared/SharedView';
 import { Avatar, Button, Checkbox, Loader, Modal } from '@internxt/ui';
 import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
 import { RootState } from 'app/store';
@@ -31,7 +31,7 @@ import localStorageService from '../../../core/services/local-storage.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import shareService, { copyTextToClipboard, getSharingRoles } from '../../../share/services/share.service';
 import { AdvancedSharedItem } from '../../../share/types';
-import { isUserItemOwner } from '../../../share/views/SharedLinksView/sharedViewUtils';
+import { isUserItemOwner } from '../../../../views/Shared/utils/sharedViewUtils';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import { DriveItemData } from '../../types';

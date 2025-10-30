@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { MAX_SHARED_NAME_LENGTH } from '../../../share/views/SharedLinksView/SharedView';
+import { MAX_SHARED_NAME_LENGTH } from '../../../../views/Shared/SharedView';
 import StopSharingAndMoveToTrashDialog from './components/StopSharingAndMoveToTrashDialog';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { DriveItemData } from '../../types';

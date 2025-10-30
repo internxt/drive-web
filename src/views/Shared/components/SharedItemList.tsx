@@ -1,7 +1,7 @@
 import { t } from 'i18next';
 import { useCallback } from 'react';
-import { OrderDirection } from '../../../../core/types';
-import { AdvancedSharedItem } from '../../../types';
+import { OrderDirection } from '../../../app/core/types';
+import { AdvancedSharedItem } from '../../../app/share/types';
 import { List, MenuItemType } from '@internxt/ui';
 import { SharedListItem } from './SharedListItem';
 
