@@ -2,7 +2,7 @@ vi.mock('../download.service/downloadFileFromBlob', () => ({
   default: vi.fn(),
 }));
 
-import streamSaver from 'streamsaver';
+import * as streamSaver from '../../../../services/streamSaver';
 import { describe, test, expect, vi, Mock, beforeEach } from 'vitest';
 import { downloadWorkerHandler } from './downloadWorkerHandler';
 import { DriveFileData } from 'app/drive/types';
@@ -14,7 +14,7 @@ const writeMock = vi.fn();
 const closeMock = vi.fn();
 const abortMock = vi.fn();
 
-vi.mock('streamsaver', () => ({
+vi.mock('../../../../services/streamSaver', () => ({
   createWriteStream: vi.fn().mockImplementation(() => ({
     getWriter: () => ({
       write: writeMock,
@@ -39,12 +39,14 @@ describe('Download Worker Handler', () => {
       fileId: 'file-1',
       plainName: 'document-1',
       type: 'pdf',
+      size: 1000,
     } as DriveFileData;
 
     const itemData2 = {
       fileId: 'file-2',
       plainName: 'document-2',
       type: 'pdf',
+      size: 1000,
     } as DriveFileData;
 
     const write1Mock = vi.fn();
@@ -276,6 +278,7 @@ describe('Download Worker Handler', () => {
       const mockedWorker = new MockWorker();
       const itemData = {
         fileId: 'random-id',
+        size: 1000,
       } as DriveFileData;
       const abortController = new AbortController();
 
@@ -308,6 +311,7 @@ describe('Download Worker Handler', () => {
         fileId: 'random-id',
         plainName: 'test-file',
         type: 'txt',
+        size: 1000,
       } as DriveFileData;
       const abortController = new AbortController();
 
@@ -337,6 +341,7 @@ describe('Download Worker Handler', () => {
       const mockedWorker = new MockWorker();
       const itemData = {
         fileId: 'random-id',
+        size: 1000,
       } as DriveFileData;
       const abortController = new AbortController();
 
@@ -361,6 +366,7 @@ describe('Download Worker Handler', () => {
       const mockedWorker = new MockWorker();
       const itemData = {
         fileId: 'random-id',
+        size: 1000,
       } as DriveFileData;
       const abortController = new AbortController();
       const consoleLogSpy = vi.spyOn(console, 'log');
@@ -400,6 +406,7 @@ describe('Download Worker Handler', () => {
     const chunk = new Uint8Array([1, 2, 3]);
     const itemData = {
       fileId: 'random-id',
+      size: 1000,
     } as DriveFileData;
 
     const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
@@ -431,6 +438,7 @@ describe('Download Worker Handler', () => {
       fileId: 'random-id',
       plainName: 'random-name',
       type: 'txt',
+      size: 1000,
     } as DriveFileData;
     const completedName = `${itemData.plainName}.${itemData.type}`;
 
@@ -461,6 +469,7 @@ describe('Download Worker Handler', () => {
     const mockedWorker = new MockWorker();
     const itemData = {
       fileId: 'random-id',
+      size: 1000,
     } as DriveFileData;
     const updateProgress = vi.fn();
 
@@ -490,6 +499,7 @@ describe('Download Worker Handler', () => {
     const mockedWorker = new MockWorker();
     const itemData = {
       fileId: 'random-id',
+      size: 1000,
     } as DriveFileData;
 
     const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
@@ -514,6 +524,7 @@ describe('Download Worker Handler', () => {
       fileId: 'random-id',
       name: 'test-file',
       type: 'pdf',
+      size: 1000,
     } as DriveFileData;
 
     const mockAbort = vi.fn();

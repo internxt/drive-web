@@ -1,4 +1,4 @@
-import streamSaver from 'streamsaver';
+import * as streamSaver from '../../../../services/streamSaver';
 import { DriveFileData } from 'app/drive/types';
 import { MessageData } from './types/download';
 import { createDownloadWebWorker } from '../../../../WebWorker';
@@ -17,6 +17,10 @@ interface HandleMessagesPayload {
   messageData: MessageData;
   worker: Worker;
   completeFilename: string;
+  item: {
+    fileName: string;
+    size: number;
+  };
   downloadCallback: (progress: number) => void;
   resolve: (value?: unknown) => void;
   reject: (reason?: any) => void;
@@ -37,6 +41,7 @@ export class DownloadWorkerHandler {
   }: HandleWorkerMessagesPayload) {
     const fileName = itemData.plainName ?? itemData.name;
     const completeFilename = itemData.type ? `${fileName}.${itemData.type}` : fileName;
+    const itemSize = itemData.size;
     const downloadId = itemData.fileId;
 
     return new Promise((resolve, reject) => {
@@ -79,6 +84,10 @@ export class DownloadWorkerHandler {
           worker,
           completeFilename,
           downloadCallback: updateProgressCallback,
+          item: {
+            fileName: completeFilename,
+            size: itemSize,
+          },
           downloadId,
           resolve,
           reject,
@@ -113,6 +122,7 @@ export class DownloadWorkerHandler {
     worker,
     completeFilename,
     downloadId,
+    item,
     resolve,
     reject,
     downloadCallback,
@@ -128,12 +138,19 @@ export class DownloadWorkerHandler {
         let writer = this.writers.get(downloadId);
 
         if (!writer) {
-          const fileStream = streamSaver.createWriteStream(completeFilename);
+          const streamOptions = {
+            size: item.size || null,
+          };
+
+          const fileStream = streamSaver.createWriteStream(completeFilename, streamOptions);
+
           writer = fileStream.getWriter();
+
           this.writers.set(downloadId, writer);
         }
 
         const { chunk } = messageData;
+
         await writer.write(chunk);
         break;
       }
