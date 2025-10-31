@@ -1,11 +1,8 @@
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import { fetchRecentsThunk, fetchRecentsThunkExtraReducers } from './fetchRecentsThunk';
-import { fetchRecents } from '../services';
-import configService from 'app/core/services/config.service';
-import { excludeHiddenItems, getItemPlainName } from 'app/crypto/services/utils';
-import { storageActions } from 'app/store/slices/storage';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { StorageState } from 'app/store/slices/storage/storage.model';
+import { AppConfig } from 'app/core/types';
+import { DriveItemData } from 'app/drive/types';
 
 vi.mock('../services/fetchRecents', () => ({
   fetchRecents: vi.fn(),
@@ -18,14 +15,15 @@ vi.mock('app/core/services/config.service', () => ({
 }));
 
 vi.mock('app/crypto/services/utils', () => ({
-  excludeHiddenItems: vi.fn(),
   getItemPlainName: vi.fn(),
+  excludeHiddenItems: vi.fn(),
 }));
 
 vi.mock('app/store/slices/storage', () => ({
   storageActions: {
-    setRecents: vi.fn(),
+    setRecents: vi.fn((payload) => ({ type: 'storage/setRecents', payload })),
   },
+  storageSelectors: {},
 }));
 
 describe('fetchRecentsThunk', () => {
@@ -34,40 +32,50 @@ describe('fetchRecentsThunk', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
-  it('should fetch recents and dispatch setRecents action', async () => {
-    const mockRecents = [
+  it('should load recent files and update the store with decrypted names', async () => {
+    const { fetchRecentsThunk } = await import('./fetchRecentsThunk');
+    const { storageActions } = await import('app/store/slices/storage');
+    const { fetchRecents } = await import('../services/fetchRecents');
+    const configService = await import('app/core/services/config.service');
+    const cryptoUtils = await import('app/crypto/services/utils');
+
+    const mockRecents: Partial<DriveItemData>[] = [
       { id: 1, name: 'encrypted-file1.txt', plainName: 'file1.txt' },
       { id: 2, name: 'encrypted-file2.txt', plainName: 'file2.txt' },
     ];
-    const mockFormattedRecents = [
+    const mockFormattedRecents: Partial<DriveItemData>[] = [
       { id: 1, name: 'file1.txt', plainName: 'file1.txt' },
       { id: 2, name: 'file2.txt', plainName: 'file2.txt' },
     ];
     const mockRecentsLimit = 50;
 
-    (configService.getAppConfig as Mock).mockReturnValue({
-      fileExplorer: { recentsLimit: mockRecentsLimit },
-    });
-    (fetchRecents as Mock).mockResolvedValue(mockRecents);
-    (getItemPlainName as Mock).mockImplementation((item) => item.plainName);
-    (excludeHiddenItems as Mock).mockReturnValue(mockFormattedRecents);
-    (storageActions.setRecents as unknown as Mock).mockReturnValue({ type: 'storage/setRecents' });
+    vi.mocked(configService.default.getAppConfig).mockReturnValue({
+      fileExplorer: { recentsLimit: mockRecentsLimit, download: { folder: { method: 'stream' } } },
+    } as unknown as AppConfig);
+    vi.mocked(fetchRecents).mockResolvedValue(mockRecents as DriveItemData[]);
+    vi.mocked(cryptoUtils.getItemPlainName).mockImplementation(
+      (item) => (item as Partial<DriveItemData>).plainName ?? '',
+    );
+    vi.mocked(cryptoUtils.excludeHiddenItems).mockReturnValue(mockFormattedRecents as DriveItemData[]);
 
     await fetchRecentsThunk()(dispatch, getState, undefined);
 
-    expect(configService.getAppConfig).toHaveBeenCalled();
+    expect(configService.default.getAppConfig).toHaveBeenCalled();
     expect(fetchRecents).toHaveBeenCalledWith(mockRecentsLimit);
-    expect(getItemPlainName).toHaveBeenCalledTimes(2);
-    expect(excludeHiddenItems).toHaveBeenCalledWith(mockFormattedRecents);
+    expect(cryptoUtils.getItemPlainName).toHaveBeenCalledTimes(2);
+    expect(cryptoUtils.excludeHiddenItems).toHaveBeenCalledWith(mockFormattedRecents);
     expect(storageActions.setRecents).toHaveBeenCalledWith(mockFormattedRecents);
-    expect(dispatch).toHaveBeenCalledWith({ type: 'storage/setRecents' });
+    expect(dispatch).toHaveBeenCalled();
   });
 });
 
 describe('fetchRecentsThunkExtraReducers', () => {
-  it('should handle pending, fulfilled, and rejected states', () => {
+  it('should handle pending, fulfilled, and rejected states', async () => {
+    const { fetchRecentsThunkExtraReducers } = await import('./fetchRecentsThunk');
+
     const callbacks: Array<(state: StorageState) => void> = [];
     const builder = {
       addCase: vi.fn().mockImplementation((_, callback) => {

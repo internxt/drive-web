@@ -1,19 +1,13 @@
-import { describe, expect, it, vi, beforeEach, Mock } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { fetchRecents } from './fetchRecents';
 import { SdkFactory } from 'app/core/factory/sdk';
-
-vi.mock('app/core/factory/sdk', () => ({
-  SdkFactory: {
-    getNewApiInstance: vi.fn(),
-  },
-}));
 
 describe('fetchRecents', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should call getRecentFilesV2 with the correct limit', async () => {
+  it('should fetch recent files with the specified limit', async () => {
     const mockLimit = 10;
     const mockFiles = [
       { id: 1, name: 'file1.txt' },
@@ -22,9 +16,9 @@ describe('fetchRecents', () => {
     const mockGetRecentFilesV2 = vi.fn().mockResolvedValue(mockFiles);
     const mockStorageClient = { getRecentFilesV2: mockGetRecentFilesV2 };
 
-    (SdkFactory.getNewApiInstance as Mock).mockReturnValue({
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
       createNewStorageClient: vi.fn().mockReturnValue(mockStorageClient),
-    });
+    } as any);
 
     const result = await fetchRecents(mockLimit);
 
