@@ -6,6 +6,19 @@ import Empty from '../../../app/shared/components/Empty/Empty';
 import { List, MenuItemType } from '@internxt/ui';
 import BackupListItem from './BackupListItem';
 
+interface BackupsAsFoldersListProps {
+  className?: string;
+  contextMenu: Array<MenuItemType<DriveItemData>>;
+  currentItems: DriveItemData[];
+  selectedItems: DriveItemData[];
+  isLoading: boolean;
+  hasMoreItems: boolean;
+  getPaginatedBackupList: () => void;
+  onItemClicked: (item: DriveItemData) => void;
+  onItemSelected: (changes: { device: DriveItemData; isSelected: boolean }[]) => void;
+  onSelectedItemsChanged: (changes: { props: DriveItemData; value: boolean }[]) => void;
+}
+
 export default function BackupsAsFoldersList({
   className = '',
   contextMenu,
@@ -17,18 +30,7 @@ export default function BackupsAsFoldersList({
   onItemClicked,
   onItemSelected,
   onSelectedItemsChanged,
-}: Readonly<{
-  className?: string;
-  contextMenu: Array<MenuItemType<DriveItemData>>;
-  currentItems: DriveItemData[];
-  selectedItems: DriveItemData[];
-  isLoading: boolean;
-  hasMoreItems: boolean;
-  getPaginatedBackupList: () => void;
-  onItemClicked: (item: DriveItemData) => void;
-  onItemSelected: (changes: { device: DriveItemData; isSelected: boolean }[]) => void;
-  onSelectedItemsChanged: (changes: { props: DriveItemData; value: boolean }[]) => void;
-}>): JSX.Element {
+}: Readonly<BackupsAsFoldersListProps>): JSX.Element {
   const { translate } = useTranslationContext();
 
   const renderBackupListItem = (item: DriveItemData) => <BackupListItem item={item} onItemClicked={onItemClicked} />;

@@ -13,13 +13,14 @@ class DeviceDropdownActions extends React.Component<DeviceDropdownActionsProps> 
   render(): ReactNode {
     const { title } = this.props;
     const hiddenActions = this.props.hiddenActions || [];
+    const isDeleteButtonHidden = hiddenActions.includes(DriveItemAction.Delete);
 
     return (
       <div>
         {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
 
         {title && <hr className="my-1.5 text-gray-5"></hr>}
-        {hiddenActions.includes(DriveItemAction.Delete) ? null : (
+        {isDeleteButtonHidden ? null : (
           <Dropdown.Item id="info" onClick={this.props.onDeleteButtonClicked}>
             <UilTrashAlt className="mr-1 h-5 text-red" />
             <span className="text-red">Delete</span>

@@ -79,7 +79,7 @@ describe('useBackupDeviceActions', () => {
     });
   });
 
-  it('should initialize with correct default values and dispatch initial actions', () => {
+  it('should start with no devices selected, delete modal closed, and load available devices', () => {
     const { result } = renderHook(() =>
       useBackupDeviceActions(onFolderUuidChanges, onBreadcrumbFolderChanges, dispatch),
     );
@@ -92,7 +92,7 @@ describe('useBackupDeviceActions', () => {
     expect(dispatch).toHaveBeenCalledWith(backupsThunks.fetchDevicesThunk());
   });
 
-  it('should update breadcrumbs only when currentDevice is a folder', () => {
+  it('should show navigation path when viewing a folder', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(useAppSelector).mockImplementation((selector: any) =>
       selector({
@@ -113,7 +113,7 @@ describe('useBackupDeviceActions', () => {
     expect(onFolderUuidChanges).toHaveBeenCalledWith(mockFolder.uuid);
   });
 
-  it('should update breadcrumbs and optionally folder UUID when navigating', () => {
+  it('should navigate through folder hierarchy using breadcrumbs', () => {
     const { result } = renderHook(() =>
       useBackupDeviceActions(onFolderUuidChanges, onBreadcrumbFolderChanges, dispatch),
     );
@@ -140,7 +140,7 @@ describe('useBackupDeviceActions', () => {
     expect(onFolderUuidChanges.mock.calls.length).toBe(initialCallCount);
   });
 
-  it('should reset to root state', () => {
+  it('should return to devices list and clear all selections', () => {
     const { result } = renderHook(() =>
       useBackupDeviceActions(onFolderUuidChanges, onBreadcrumbFolderChanges, dispatch),
     );
@@ -160,7 +160,7 @@ describe('useBackupDeviceActions', () => {
     expect(dispatch).toHaveBeenCalledWith(backupsActions.setCurrentDevice(null));
   });
 
-  it('should handle device clicks and conditionally fetch backups', () => {
+  it('should open a device and load its backups', () => {
     const { result } = renderHook(() =>
       useBackupDeviceActions(onFolderUuidChanges, onBreadcrumbFolderChanges, dispatch),
     );
@@ -189,7 +189,7 @@ describe('useBackupDeviceActions', () => {
     expect(vi.mocked(backupsThunks.fetchDeviceBackupsThunk).mock.calls.length).toBe(fetchDeviceBackupsCallCount);
   });
 
-  it('should open delete modal and append to existing selected devices', () => {
+  it('should show delete confirmation with selected devices', () => {
     const { result } = renderHook(() =>
       useBackupDeviceActions(onFolderUuidChanges, onBreadcrumbFolderChanges, dispatch),
     );
@@ -217,7 +217,7 @@ describe('useBackupDeviceActions', () => {
     expect(result.current.selectedDevices).toEqual([mockDevice, mockFolder]);
   });
 
-  it('should handle device selection, deselection, and prevent duplicates', () => {
+  it('should select and deselect devices without duplicates', () => {
     const { result } = renderHook(() =>
       useBackupDeviceActions(onFolderUuidChanges, onBreadcrumbFolderChanges, dispatch),
     );
@@ -250,7 +250,7 @@ describe('useBackupDeviceActions', () => {
     expect(result.current.selectedDevices).toEqual([mockFolder]);
   });
 
-  it('should delete devices and folders, then close modal and clear selection', async () => {
+  it('should remove devices and folders, then close confirmation and clear selection', async () => {
     const { result } = renderHook(() =>
       useBackupDeviceActions(onFolderUuidChanges, onBreadcrumbFolderChanges, dispatch),
     );

@@ -35,7 +35,7 @@ describe('useBackupListActions', () => {
     dispatch = vi.fn();
   });
 
-  it('should initialize with correct default values', () => {
+  it('should start with no folder selected, no items selected, and file viewer closed', () => {
     const { result } = renderHook(() => useBackupListActions(onBreadcrumbFolderChanges, dispatch));
 
     expect(result.current.folderUuid).toBeUndefined();
@@ -44,7 +44,7 @@ describe('useBackupListActions', () => {
     expect(result.current.isFileViewerOpen).toBe(false);
   });
 
-  it('should update folder UUID', () => {
+  it('should navigate to a different folder when folder identifier changes', () => {
     const { result } = renderHook(() => useBackupListActions(onBreadcrumbFolderChanges, dispatch));
 
     act(() => {
@@ -60,7 +60,7 @@ describe('useBackupListActions', () => {
     expect(result.current.folderUuid).toBeUndefined();
   });
 
-  it('should handle folder click by updating breadcrumbs and folder state', () => {
+  it('should navigate into a folder and update navigation breadcrumbs', () => {
     const { result } = renderHook(() => useBackupListActions(onBreadcrumbFolderChanges, dispatch));
 
     act(() => {
@@ -76,7 +76,7 @@ describe('useBackupListActions', () => {
     expect(result.current.folderUuid).toBe(mockFolder.uuid);
   });
 
-  it('should handle file click by opening file viewer', () => {
+  it('should open preview when clicking on a file', () => {
     const { result } = renderHook(() => useBackupListActions(onBreadcrumbFolderChanges, dispatch));
 
     act(() => {
@@ -88,7 +88,7 @@ describe('useBackupListActions', () => {
     expect(onBreadcrumbFolderChanges).not.toHaveBeenCalled();
   });
 
-  it('should close file viewer and clear preview item', () => {
+  it('should close file preview and reset preview state', () => {
     const { result } = renderHook(() => useBackupListActions(onBreadcrumbFolderChanges, dispatch));
 
     act(() => {
@@ -106,7 +106,7 @@ describe('useBackupListActions', () => {
     expect(result.current.itemToPreview).toBeUndefined();
   });
 
-  it('should handle item selection and deselection', () => {
+  it('should select and deselect multiple items', () => {
     const { result } = renderHook(() => useBackupListActions(onBreadcrumbFolderChanges, dispatch));
 
     const item1 = { ...mockFile, id: 1 };
@@ -139,7 +139,7 @@ describe('useBackupListActions', () => {
     expect(result.current.selectedItems).toEqual([item2]);
   });
 
-  it('should handle onSelectedItemsChanged by transforming and calling onItemSelected', () => {
+  it('should update selection state when items are checked or unchecked', () => {
     const { result } = renderHook(() => useBackupListActions(onBreadcrumbFolderChanges, dispatch));
 
     const item1 = { ...mockFile, id: 1 };
@@ -161,7 +161,7 @@ describe('useBackupListActions', () => {
     expect(result.current.selectedItems).toEqual([item2]);
   });
 
-  it('should clear all selected items', () => {
+  it('should deselect all items when selection is cleared', () => {
     const { result } = renderHook(() => useBackupListActions(onBreadcrumbFolderChanges, dispatch));
 
     const item1 = { ...mockFile, id: 1 };

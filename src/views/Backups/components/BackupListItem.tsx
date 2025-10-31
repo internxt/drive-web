@@ -6,13 +6,12 @@ import { items } from '@internxt/lib';
 import { t } from 'i18next';
 import iconService from 'app/drive/services/icon.service';
 
-export default function BackupListItem({
-  item,
-  onItemClicked,
-}: Readonly<{
+interface BackupListItemProps {
   item: DriveItemData;
   onItemClicked: (item: DriveItemData) => void;
-}>): JSX.Element {
+}
+
+export default function BackupListItem({ item, onItemClicked }: Readonly<BackupListItemProps>): JSX.Element {
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
   return (
