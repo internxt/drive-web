@@ -3,10 +3,11 @@ import backupsService from '../services/backups.service';
 import { DriveItemData, DriveFolderData as DriveWebFolderData } from 'app/drive/types';
 import { AppDispatch } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
-import { backupsActions, backupsThunks } from 'app/store/slices/backups';
+import { backupsActions, backupsThunks } from '../store/backupsSlice';
 import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/deleteItemsThunk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Device } from '@internxt/sdk/dist/drive/backups/types';
+import errorService from 'app/core/services/error.service';
 
 export const useBackupDeviceActions = (
   onFolderUuidChanges: (folderUuid?: string) => void,
@@ -16,6 +17,7 @@ export const useBackupDeviceActions = (
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isLoadingDeleteModal, setIsLoadingDeleteModal] = useState(false);
   const [selectedDevices, setSelectedDevices] = useState<(Device | DriveFolderData)[]>([]);
 
   useEffect(() => {
@@ -74,16 +76,23 @@ export const useBackupDeviceActions = (
   };
 
   const onConfirmDelete = async () => {
-    for (const selectedDevice of selectedDevices) {
-      if (selectedDevice && 'mac' in selectedDevice) {
-        dispatch(backupsThunks.deleteDeviceThunk(selectedDevice));
-      } else {
-        await dispatch(deleteItemsThunk([selectedDevice as DriveItemData])).unwrap();
-        await backupsService.deleteBackupDeviceAsFolder((selectedDevice as DriveWebFolderData).uuid);
-        dispatch(backupsThunks.fetchDevicesThunk());
+    setIsLoadingDeleteModal(true);
+    try {
+      for (const selectedDevice of selectedDevices) {
+        if (selectedDevice && 'mac' in selectedDevice) {
+          await dispatch(backupsThunks.deleteDeviceThunk(selectedDevice)).unwrap();
+        } else {
+          await dispatch(deleteItemsThunk([selectedDevice as DriveItemData])).unwrap();
+          await backupsService.deleteBackupDeviceAsFolder((selectedDevice as DriveWebFolderData).uuid);
+          await dispatch(backupsThunks.fetchDevicesThunk());
+        }
       }
+    } catch (error) {
+      errorService.reportError(error);
+    } finally {
+      setIsLoadingDeleteModal(false);
+      onCloseDeleteModal();
     }
-    onCloseDeleteModal();
   };
 
   const onCloseDeleteModal = () => {
@@ -93,6 +102,7 @@ export const useBackupDeviceActions = (
 
   return {
     isDeleteModalOpen,
+    isLoadingDeleteModal,
     selectedDevices,
     goToFolder,
     goToFolderRoot,

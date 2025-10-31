@@ -1,21 +1,16 @@
-import desktopService from '../../../core/services/desktop.service';
+import desktopService from '../../../app/core/services/desktop.service';
 
-import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
+import folderEmptyImage from '../../../assets/icons/light/folder-backup.svg';
 import { DownloadSimple } from '@phosphor-icons/react';
-import Empty from '../../../shared/components/Empty/Empty';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { contextMenuBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import UilApple from '@iconscout/react-unicons/icons/uil-apple';
-import UilLinux from '@iconscout/react-unicons/icons/uil-linux';
-import UilWindows from '@iconscout/react-unicons/icons/uil-windows';
-import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
-import dateService from '../../../core/services/date.service';
-import sizeService from '../../../drive/services/size.service';
+import Empty from '../../../app/shared/components/Empty/Empty';
+import notificationsService, { ToastType } from '../../../app/notifications/services/notifications.service';
+import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
+import { contextMenuBackupItems } from '../../../app/drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { skinSkeleton } from 'app/shared/Skeleton';
 import { List } from '@internxt/ui';
 import { Device } from '@internxt/sdk/dist/drive/backups/types';
+import { DeviceNameCell, DeviceDateCell, DeviceSizeCell } from './DeviceListItem';
 
 interface Props {
   items: (Device | DriveFolderData)[];
@@ -32,6 +27,10 @@ const DeviceList = (props: Props): JSX.Element => {
   const { isLoading, onDeviceDeleted, onDeviceSelected, selectedItems, onDeviceClicked } = props;
 
   const { translate } = useTranslationContext();
+
+  const renderDeviceNameCell = (device: Item) => <DeviceNameCell device={device} onDeviceClicked={onDeviceClicked} />;
+  const renderDeviceDateCell = (device: Item) => <DeviceDateCell device={device} translate={translate} />;
+  const renderDeviceSizeCell = (device: Item) => <DeviceSizeCell device={device} />;
 
   const getDownloadApp = async () => {
     const download = await desktopService.getDownloadAppUrl();
@@ -67,44 +66,7 @@ const DeviceList = (props: Props): JSX.Element => {
           ]}
           items={props.items as Item[]}
           isLoading={isLoading}
-          itemComposition={[
-            (device) => {
-              let Icon;
-
-              if ('platform' in device) {
-                switch (device.platform) {
-                  case 'darwin':
-                    Icon = UilApple;
-                    break;
-                  case 'linux':
-                    Icon = UilLinux;
-                    break;
-                  case 'win32':
-                    Icon = UilWindows;
-                    break;
-                  default:
-                    Icon = UilDesktop;
-                }
-              } else Icon = UilDesktop;
-              return (
-                <div className="flex min-w-activity cursor-default flex-row items-center justify-center">
-                  <div className="mr-3 h-8 w-8">
-                    <Icon className="h-8 w-8" />
-                  </div>
-                  <div className="grow cursor-default truncate pr-3">
-                    <button className="z-10 shrink cursor-pointer truncate" onClick={() => onDeviceClicked(device)}>
-                      {device.name}
-                    </button>
-                  </div>
-                </div>
-              );
-            },
-            (device) => <div>{dateService.formatDefaultDate(device.updatedAt, translate)}</div>,
-            (device) => {
-              const size = 'size' in device ? sizeService.bytesToString(device.size) : '';
-              return <div>{size}</div>;
-            },
-          ]}
+          itemComposition={[renderDeviceNameCell, renderDeviceDateCell, renderDeviceSizeCell]}
           onClick={(item) => {
             const unselectedDevices = selectedItems.map((deviceSelected) => ({
               device: deviceSelected,
