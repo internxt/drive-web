@@ -2,7 +2,7 @@ vi.mock('../download.service/downloadFileFromBlob', () => ({
   default: vi.fn(),
 }));
 
-import * as streamSaver from '../../../../services/streamSaver';
+import streamSaver from '../../../../services/streamSaver';
 import { describe, test, expect, vi, Mock, beforeEach } from 'vitest';
 import { downloadWorkerHandler } from './downloadWorkerHandler';
 import { DriveFileData } from 'app/drive/types';
@@ -14,20 +14,26 @@ const writeMock = vi.fn();
 const closeMock = vi.fn();
 const abortMock = vi.fn();
 
-vi.mock('../../../../services/streamSaver', () => ({
-  createWriteStream: vi.fn().mockImplementation(() => ({
-    getWriter: () => ({
-      write: writeMock,
-      close: closeMock,
-      abort: abortMock,
-    }),
-  })),
-}));
+const createMockItemData = (overrides?: Partial<DriveFileData>): DriveFileData =>
+  ({
+    fileId: 'random-id',
+    plainName: 'test-file',
+    type: 'bin',
+    size: 1000,
+    ...overrides,
+  }) as DriveFileData;
 
 describe('Download Worker Handler', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (downloadFileFromBlob as unknown as Mock).mockResolvedValue(undefined);
+    vi.spyOn(streamSaver, 'createWriteStream').mockReturnValue({
+      getWriter: vi.fn().mockReturnValue({
+        write: writeMock,
+        close: closeMock,
+        abort: abortMock,
+      }),
+    } as unknown as WritableStream);
   });
 
   describe('Concurrent downloads', () => {
@@ -35,19 +41,12 @@ describe('Download Worker Handler', () => {
     const mockedWorker2 = new MockWorker();
     const mockedChunks = [new Uint8Array([1, 2, 3]), new Uint8Array([4, 5, 6])];
 
-    const itemData1 = {
-      fileId: 'file-1',
-      plainName: 'document-1',
-      type: 'pdf',
-      size: 1000,
-    } as DriveFileData;
+    const itemData1 = createMockItemData();
 
-    const itemData2 = {
-      fileId: 'file-2',
-      plainName: 'document-2',
-      type: 'pdf',
-      size: 1000,
-    } as DriveFileData;
+    const itemData2 = createMockItemData({
+      fileId: 'random-id-2',
+      plainName: 'test-file-2',
+    });
 
     const write1Mock = vi.fn();
     const close1Mock = vi.fn();
@@ -69,7 +68,7 @@ describe('Download Worker Handler', () => {
     };
 
     test('When downloading multiple files concurrently, then each file should have its own writer', async () => {
-      vi.mocked(streamSaver.createWriteStream)
+      vi.spyOn(streamSaver, 'createWriteStream')
         .mockReturnValueOnce({
           getWriter: vi.fn().mockReturnValue(mockWriter1),
         } as unknown as WritableStream)
@@ -117,7 +116,7 @@ describe('Download Worker Handler', () => {
 
     test('When one download fails, then it should not affect other concurrent downloads', async () => {
       const mockedError = new Error('Download failed');
-      vi.mocked(streamSaver.createWriteStream)
+      vi.spyOn(streamSaver, 'createWriteStream')
         .mockReturnValueOnce({
           getWriter: vi.fn().mockReturnValue(mockWriter1),
         } as unknown as WritableStream)
@@ -276,10 +275,7 @@ describe('Download Worker Handler', () => {
   describe('Aborting the download', () => {
     test('When downloading the file using chunks is aborted, then the worker is terminated and the writer aborted', async () => {
       const mockedWorker = new MockWorker();
-      const itemData = {
-        fileId: 'random-id',
-        size: 1000,
-      } as DriveFileData;
+      const itemData = createMockItemData();
       const abortController = new AbortController();
 
       const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
@@ -307,12 +303,7 @@ describe('Download Worker Handler', () => {
 
     test('When downloading the file using blob is aborted, then the worker is terminated', async () => {
       const mockedWorker = new MockWorker();
-      const itemData = {
-        fileId: 'random-id',
-        plainName: 'test-file',
-        type: 'txt',
-        size: 1000,
-      } as DriveFileData;
+      const itemData = createMockItemData();
       const abortController = new AbortController();
 
       const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
@@ -339,10 +330,7 @@ describe('Download Worker Handler', () => {
 
     test('When abort message is received from worker, then it should be handled gracefully', async () => {
       const mockedWorker = new MockWorker();
-      const itemData = {
-        fileId: 'random-id',
-        size: 1000,
-      } as DriveFileData;
+      const itemData = createMockItemData();
       const abortController = new AbortController();
 
       const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
@@ -364,10 +352,7 @@ describe('Download Worker Handler', () => {
 
     test('When messages arrive after abort, then they should be ignored', async () => {
       const mockedWorker = new MockWorker();
-      const itemData = {
-        fileId: 'random-id',
-        size: 1000,
-      } as DriveFileData;
+      const itemData = createMockItemData();
       const abortController = new AbortController();
       const consoleLogSpy = vi.spyOn(console, 'log');
 
@@ -404,10 +389,7 @@ describe('Download Worker Handler', () => {
   test('When the event is chunk, then the chunk is written to the stream correctly', async () => {
     const mockedWorker = new MockWorker();
     const chunk = new Uint8Array([1, 2, 3]);
-    const itemData = {
-      fileId: 'random-id',
-      size: 1000,
-    } as DriveFileData;
+    const itemData = createMockItemData();
 
     const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
       worker: mockedWorker as unknown as Worker,
@@ -434,12 +416,7 @@ describe('Download Worker Handler', () => {
   test('When the event is blob, then the blob is downloaded correctly', async () => {
     const mockedWorker = new MockWorker();
     const testBlob = new Blob(['test content'], { type: 'text/plain' });
-    const itemData = {
-      fileId: 'random-id',
-      plainName: 'random-name',
-      type: 'txt',
-      size: 1000,
-    } as DriveFileData;
+    const itemData = createMockItemData();
     const completedName = `${itemData.plainName}.${itemData.type}`;
 
     const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
@@ -467,10 +444,7 @@ describe('Download Worker Handler', () => {
 
   test('When the event is progress, then the progress callback is called and the value is updated correctly', async () => {
     const mockedWorker = new MockWorker();
-    const itemData = {
-      fileId: 'random-id',
-      size: 1000,
-    } as DriveFileData;
+    const itemData = createMockItemData();
     const updateProgress = vi.fn();
 
     const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
@@ -497,10 +471,7 @@ describe('Download Worker Handler', () => {
 
   test('When success is called, then the worker is terminated', async () => {
     const mockedWorker = new MockWorker();
-    const itemData = {
-      fileId: 'random-id',
-      size: 1000,
-    } as DriveFileData;
+    const itemData = createMockItemData();
 
     const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
       worker: mockedWorker as unknown as Worker,
@@ -520,12 +491,7 @@ describe('Download Worker Handler', () => {
   test('When the event is an error and there is a writer, then it should abort the writer before terminating', async () => {
     const mockedWorker = new MockWorker();
     const mockedError = new Error('download failed');
-    const itemData = {
-      fileId: 'random-id',
-      name: 'test-file',
-      type: 'pdf',
-      size: 1000,
-    } as DriveFileData;
+    const itemData = createMockItemData();
 
     const mockAbort = vi.fn();
     const mockWriter = {

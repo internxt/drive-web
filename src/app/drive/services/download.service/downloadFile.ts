@@ -1,4 +1,3 @@
-import streamSaver from 'streamsaver';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
 import { DriveFileData } from '../../types';
@@ -6,6 +5,7 @@ import fetchFileStream from './fetchFileStream';
 import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';
 import { ErrorMessages } from 'app/core/constants';
 import { BlobWritable, downloadFileAsBlob } from './downloadFileAsBlob';
+import streamSaver from '../../../../services/streamSaver';
 
 async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
   const reader = readable.getReader();
@@ -40,7 +40,6 @@ export default async function downloadFile(
   const isCypress = window['Cypress'] !== undefined;
 
   const writeToFsIsSupported = 'showSaveFilePicker' in window;
-  const writableIsSupported = 'WritableStream' in window && streamSaver.WritableStream;
 
   let support: DownloadSupport;
 
@@ -50,8 +49,6 @@ export default async function downloadFile(
     support = DownloadSupport.Blob;
   } else if (writeToFsIsSupported) {
     support = DownloadSupport.StreamApi;
-  } else if (writableIsSupported) {
-    support = DownloadSupport.PartialStreamApi;
   } else {
     support = DownloadSupport.PartialStreamApi;
   }
