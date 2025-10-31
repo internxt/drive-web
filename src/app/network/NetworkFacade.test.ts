@@ -61,7 +61,7 @@ describe('NetworkFacade', () => {
       );
       vi.mocked(decryptStream).mockReturnValue(mockDecryptedStream);
 
-      const result = await networkFacade.downloadChunk(bucketId, fileId, mnemonic, chunkStart, chunkEnd);
+      const result = await networkFacade.downloadChunk({ bucketId, fileId, mnemonic, chunkStart, chunkEnd });
 
       expect(result).toStrictEqual(mockDecryptedStream);
 
@@ -90,7 +90,7 @@ describe('NetworkFacade', () => {
         },
       );
 
-      await expect(networkFacade.downloadChunk(bucketId, fileId, mnemonic, chunkStart, chunkEnd)).rejects.toThrow(
+      await expect(networkFacade.downloadChunk({ bucketId, fileId, mnemonic, chunkStart, chunkEnd })).rejects.toThrow(
         new DownloadFailedWithUnknownError(mockResponse.status),
       );
     });
@@ -108,7 +108,7 @@ describe('NetworkFacade', () => {
         },
       );
 
-      await expect(networkFacade.downloadChunk(bucketId, fileId, mnemonic, chunkStart, chunkEnd)).rejects.toThrow(
+      await expect(networkFacade.downloadChunk({ bucketId, fileId, mnemonic, chunkStart, chunkEnd })).rejects.toThrow(
         NoContentReceivedError,
       );
     });
@@ -123,8 +123,15 @@ describe('NetworkFacade', () => {
         },
       );
       await expect(
-        networkFacade.downloadChunk(bucketId, fileId, mnemonic, chunkStart, chunkEnd, {
-          abortController,
+        networkFacade.downloadChunk({
+          bucketId,
+          fileId,
+          mnemonic,
+          chunkStart,
+          chunkEnd,
+          options: {
+            abortController,
+          },
         }),
       ).rejects.toThrow(DownloadAbortedByUserError);
     });
