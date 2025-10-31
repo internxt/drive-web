@@ -1,8 +1,8 @@
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import { t } from 'i18next';
-import { MAX_PASSWORD_LENGTH } from '../shared/components/ValidPassword';
+import { MAX_PASSWORD_LENGTH } from '../../../app/shared/components/ValidPassword';
 
-const onChangePasswordHandler = ({
+export const onChangePasswordHandler = ({
   password,
   setIsValidPassword,
   setPasswordState,
@@ -36,5 +36,3 @@ const onChangePasswordHandler = ({
     setPasswordState({ tag: 'success', label: 'Password is strong' });
   }
 };
-
-export { onChangePasswordHandler };
