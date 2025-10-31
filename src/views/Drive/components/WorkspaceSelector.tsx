@@ -1,8 +1,8 @@
 import { CaretUpDown, Check, Icon } from '@phosphor-icons/react';
 import { useEffect, useRef } from 'react';
 
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import WorkspaceAvatarWrapper from '../../../newSettings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import WorkspaceAvatarWrapper from 'app/newSettings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper';
 import AvatarWrapper from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
 
 export interface Workspace {
@@ -70,7 +70,6 @@ const WorkspaceCard = ({
 const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   userWorkspace,
   workspaces,
-  onCreateWorkspaceButtonClicked,
   onChangeWorkspace,
   setIsDialogOpen,
   pendingWorkspacesInvitesLength,

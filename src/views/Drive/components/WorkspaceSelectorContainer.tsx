@@ -3,14 +3,14 @@ import { PendingInvitesResponse, PendingWorkspace, WorkspaceData } from '@intern
 import { planThunks } from 'app/store/slices/plan';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import PendingInvitationsDialog from '../../../core/components/Sidenav/PendingInvitationsDialog';
-import errorService from '../../../core/services/error.service';
-import workspacesService from '../../../core/services/workspace.service';
-import { RootState } from '../../../store';
-import { workspaceThunks } from '../../../store/slices/workspaces/workspacesStore';
+import PendingInvitationsDialog from './PendingInvitationsDialog';
+import errorService from 'app/core/services/error.service';
+import workspacesService from 'app/core/services/workspace.service';
+import { RootState } from 'app/store';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import WorkspaceSelector, { Workspace } from './WorkspaceSelector';
-import localStorageService from '../../../core/services/local-storage.service';
-import { STORAGE_KEYS } from '../../../core/services/storage-keys';
+import localStorageService from 'app/core/services/local-storage.service';
+import { STORAGE_KEYS } from 'app/core/services/storage-keys';
 
 const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }) => {
   const dispatch = useDispatch();

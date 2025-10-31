@@ -13,7 +13,7 @@ import SignUpView from '../../auth/views/SignUpView/SignUpView';
 import UniversalLinkSuccessView from '../../auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 import BackupsView from '../../backups/views/BackupsView/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
-import DriveView from '../../drive/views/DriveView/DriveView';
+import DriveView from '../../../views/Drive';
 import FolderFileNotFound from '../../drive/views/FolderFileNotFound/FolderFileNotFound';
 import RecentsView from '../../drive/views/RecentsView/RecentsView';
 import RequestAccess from '../../drive/views/RequestAccess/RequestAccess';

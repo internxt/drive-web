@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
-import { RootState } from '../../../store';
-import { storageSelectors } from '../../../store/slices/storage';
-import { sessionSelectors } from '../../../store/slices/session/session.selectors';
+import { RootState } from 'app/store';
+import { storageSelectors } from 'app/store/slices/storage';
+import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
 import { Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
-import { PlanState } from '../../../store/slices/plan';
+import { PlanState } from 'app/store/slices/plan';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -338,6 +338,7 @@ const Navbar = (props: NavbarProps) => {
             </label>
 
             <div
+              role="none"
               className={getSearchResultsClassName(openSearchBox)}
               onMouseEnter={() => setPreventBlur(true)}
               onMouseLeave={() => setPreventBlur(false)}
@@ -371,10 +372,9 @@ const Navbar = (props: NavbarProps) => {
                     const isFolder = item.itemType === 'FOLDER' || item.itemType === 'folder';
                     const Icon = iconService.getItemIcon(isFolder, item.item.type);
                     return (
-                      <li
+                      <option
                         key={item.id}
                         id={`searchResult_${item.id}`}
-                        role="option"
                         aria-selected={selectedResult === index}
                         className={getSearchResultItemClassName(selectedResult === index)}
                         onMouseEnter={() => setSelectedResult(index)}
@@ -382,7 +382,7 @@ const Navbar = (props: NavbarProps) => {
                       >
                         <Icon className="h-7 w-7 drop-shadow-soft" />
                         <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap">{item.name}</p>
-                      </li>
+                      </option>
                     );
                   })}
                 </ul>
@@ -413,7 +413,7 @@ const Navbar = (props: NavbarProps) => {
           user={user}
           plan={{
             ...props.plan,
-            showUpgrade: (props.plan.individualPlan && props.plan.individualPlan.name === 'Free Plan') ?? false,
+            showUpgrade: props.plan.individualPlan?.name === 'Free Plan',
           }}
         />
       </div>
