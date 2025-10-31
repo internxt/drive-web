@@ -225,12 +225,6 @@ function SignUpForm(): JSX.Element {
       return <PreparingWorkspaceAnimation />;
     }
 
-    if (view === 'downloadBackupKey') {
-      //TODO: Use this component when we have to implement the download of the backup key
-      // return <DownloadBackupKey onRedirect={onRedirect} />;
-      return <></>;
-    }
-
     return (
       <div className="flex flex-col items-start space-y-5">
         <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>

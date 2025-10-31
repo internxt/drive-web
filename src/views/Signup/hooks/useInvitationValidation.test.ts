@@ -2,18 +2,7 @@ import { renderHook, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useInvitationValidation } from './useInvitationValidation';
 import errorService from 'app/core/services/error.service';
-
-vi.mock('app/core/services/error.service', () => ({
-  default: {
-    reportError: vi.fn(),
-  },
-}));
-
-vi.mock('app/core/services/navigation.service', () => ({
-  default: {
-    push: vi.fn(),
-  },
-}));
+import navigationService from 'app/core/services/navigation.service';
 
 describe('useInvitationValidation', () => {
   const mockSetInvitationId = vi.fn();
@@ -22,6 +11,8 @@ describe('useInvitationValidation', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(errorService, 'reportError').mockImplementation(() => {});
+    vi.spyOn(navigationService, 'push').mockImplementation(() => {});
     originalSearch = globalThis.location.search;
   });
 
