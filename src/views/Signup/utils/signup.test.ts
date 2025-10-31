@@ -9,13 +9,10 @@ import { referralsThunks } from 'app/store/slices/referrals';
 import { userActions, userThunks } from 'app/store/slices/user';
 import envService from 'app/core/services/env.service';
 
-vi.mock(import('app/core/services/error.service'));
-vi.mock(import('app/core/services/local-storage.service'));
 vi.mock(import('app/store/slices/plan'));
 vi.mock(import('app/store/slices/products'));
 vi.mock(import('app/store/slices/referrals'));
 vi.mock(import('app/store/slices/user'));
-vi.mock(import('app/core/services/env.service'));
 
 describe('signup', () => {
   const mockDispatch = vi.fn();
@@ -37,6 +34,9 @@ describe('signup', () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     vi.spyOn(globalThis.top!, 'postMessage').mockImplementation(() => {});
     vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {});
+    vi.spyOn(errorService, 'castError').mockImplementation((error) => error as Error);
+    vi.spyOn(localStorageService, 'set').mockImplementation(() => {});
+    vi.spyOn(envService, 'getVariable').mockReturnValue('https://internxt.com');
   });
 
   it('should return early and scroll when email and password are empty', async () => {
@@ -70,7 +70,6 @@ describe('signup', () => {
   it('should successfully register user and initialize store', async () => {
     const data = { email: 'test@example.com', password: 'password123', token: 'token' };
     mockDoRegister.mockResolvedValue(mockResponse);
-    vi.mocked(envService.getVariable).mockReturnValue('https://internxt.com');
 
     await signup(data, mockDispatch, mockDoRegister, mockSetLoading);
 
@@ -88,7 +87,6 @@ describe('signup', () => {
   it('should track signup event and clean up localStorage', async () => {
     const data = { email: 'test@example.com', password: 'password123', token: 'token' };
     mockDoRegister.mockResolvedValue(mockResponse);
-    vi.mocked(envService.getVariable).mockReturnValue('https://internxt.com');
 
     await signup(data, mockDispatch, mockDoRegister, mockSetLoading);
 
@@ -100,7 +98,6 @@ describe('signup', () => {
   it('should open new window with hostname after successful signup', async () => {
     const data = { email: 'test@example.com', password: 'password123', token: 'token' };
     mockDoRegister.mockResolvedValue(mockResponse);
-    vi.mocked(envService.getVariable).mockReturnValue('https://internxt.com');
 
     await signup(data, mockDispatch, mockDoRegister, mockSetLoading);
 
@@ -112,7 +109,6 @@ describe('signup', () => {
     const data = { email: 'test@example.com', password: 'password123', token: 'token' };
     const mockError = new Error('Registration failed');
     mockDoRegister.mockRejectedValue(mockError);
-    vi.mocked(errorService.castError).mockReturnValue({ message: 'Registration failed' } as Error);
 
     await signup(data, mockDispatch, mockDoRegister, mockSetLoading, undefined, mockSetError);
 

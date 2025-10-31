@@ -1,6 +1,5 @@
 import { auth } from '@internxt/lib';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import { Views } from './components/SignupForm';
 import { useSignUp } from './hooks/useSignup';
 import { useGuestSignupState } from './hooks/useGuestSignupState';
 import { useInvitationValidation } from './hooks/useInvitationValidation';
@@ -13,7 +12,7 @@ import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions } from 'app/store/slices/user';
 import queryString from 'query-string';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
 import CreateAccountForm from './components/CreateAccountForm';
@@ -21,7 +20,6 @@ import { guestSignupOnSubmit } from './utils/guestSignupOnSubmit';
 
 function ShareGuestSingUpView(): JSX.Element {
   const { translate } = useTranslationContext();
-  const [view] = useState<Views>('signUp');
 
   const qs = queryString.parse(navigationService.history.location.search);
   const hasEmailParam = (qs.email && auth.isValidEmail(decodeURIComponent(qs.email as string))) || false;
@@ -135,12 +133,6 @@ function ShareGuestSingUpView(): JSX.Element {
 
   if (!invitationValidation.isValid) {
     return <ExpiredLink />;
-  }
-
-  if (view === 'downloadBackupKey') {
-    //TODO: Use this component when we have to implement the download of the backup key
-    // return <DownloadBackupKey onRedirect={onRedirect} />;
-    return <></>;
   }
 
   return (

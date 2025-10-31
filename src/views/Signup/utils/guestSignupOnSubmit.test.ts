@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { guestSignupOnSubmit } from './guestSignupOnSubmit';
 import { AppView, IFormValues } from 'app/core/types';
@@ -67,13 +68,9 @@ describe('guestSignupOnSubmit', () => {
     vi.clearAllMocks();
     mockDispatch.mockResolvedValue(undefined);
     vi.mocked(parseAndDecryptUserKeys).mockReturnValue(mockParsedKeys);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(userThunks.initializeUserThunk).mockReturnValue({} as any);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(productsThunks.initializeThunk).mockReturnValue({} as any);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(planThunks.initializeThunk).mockReturnValue({} as any);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(referralsThunks.initializeThunk).mockReturnValue({} as any);
   });
 
