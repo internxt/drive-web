@@ -90,7 +90,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
       <form className="flex w-full flex-col text-left sm:px-0">
         <p className="pb-2 text-sm font-medium">{translate('shareItemPwdView.password')}</p>
         <PasswordInput
-          placeholder={translate('shareItemPwdView.pwdLayout') as string}
+          placeholder={translate('shareItemPwdView.pwdLayout')}
           onChange={handleChange}
           value={itemPassword}
           passwordError={onPasswordError}
