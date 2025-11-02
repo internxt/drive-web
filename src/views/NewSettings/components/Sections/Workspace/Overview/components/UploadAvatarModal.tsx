@@ -47,7 +47,7 @@ const UploadWorkspaceAvatarModal = ({
     }
   };
 
-  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const onDrop = (e: React.DragEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
 
@@ -80,7 +80,27 @@ const UploadWorkspaceAvatarModal = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <h1 className="text-2xl font-medium text-gray-80">{translate('views.account.avatar.title')}</h1>
       <div className="mt-4">
-        {state.tag !== 'empty' ? (
+        {state.tag === 'empty' ? (
+          <>
+            <input accept="image/*" ref={inputRef} className="hidden" type="file" onChange={onInputChange} />
+            <button
+              type="button"
+              className="flex h-32 w-full cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-10"
+              onClick={() => inputRef.current?.click()}
+              onDrop={onDrop}
+              onDragOver={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+              }}
+            >
+              <div className="text-gray-20 hover:text-gray-30">
+                <Image className="mx-auto" weight="light" size={80} />
+                <p className="font-medium">{translate('views.account.avatar.dragNDrop')}</p>
+              </div>
+            </button>
+          </>
+        ) : (
           <div>
             <Suspense fallback={<Loader classNameLoader="mx-auto mt-4 h-10 w-10" />}>
               <AvatarEditor
@@ -100,33 +120,11 @@ const UploadWorkspaceAvatarModal = ({
                   step={0.01}
                   defaultValue={1}
                   disabled={state.tag === 'loading'}
-                  onChange={(e) => setState({ ...state, zoom: parseFloat(e.target.value) })}
+                  onChange={(e) => setState({ ...state, zoom: Number.parseFloat(e.target.value) })}
                 />
               </div>
             </Suspense>
           </div>
-        ) : (
-          <>
-            <input accept="image/*" ref={inputRef} className="hidden" type="file" onChange={onInputChange} />
-            <div
-              className="flex h-32 w-full cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-10"
-              onClick={() => inputRef.current?.click()}
-              onDrop={onDrop}
-              onDragOver={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'copy';
-              }}
-              role="button"
-              tabIndex={0}
-              onKeyDown={() => inputRef.current?.click()}
-            >
-              <div className="text-gray-20 hover:text-gray-30">
-                <Image className="mx-auto" weight="light" size={80} />
-                <p className="font-medium">{translate('views.account.avatar.dragNDrop')}</p>
-              </div>
-            </div>
-          </>
         )}
       </div>
       <div className="mt-6 flex justify-end">
