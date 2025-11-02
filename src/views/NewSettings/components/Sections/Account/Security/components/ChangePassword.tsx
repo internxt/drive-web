@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ChangePasswordModal from './ChangePasswordModal';
-import Section from '../../../../Section';
+import Section from '../../../General/components/Section';
 import Card from 'app/shared/components/Card';
 import { Button } from '@internxt/ui';
 

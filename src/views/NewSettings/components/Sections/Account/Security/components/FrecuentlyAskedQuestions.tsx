@@ -1,7 +1,7 @@
 import { Disclosure } from '@headlessui/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Plus } from '@phosphor-icons/react';
-import Section from '../../../../Section';
+import Section from '../../../General/components/Section';
 
 const FrecuentlyAskedQuestions = () => {
   const { translate } = useTranslationContext();
@@ -28,7 +28,7 @@ const FrecuentlyAskedQuestions = () => {
   return (
     <Section title={translate('views.account.tabs.security.faq.title')}>
       {questions.map((question, i) => (
-        <Disclosure defaultOpen={i === 0} key={i}>
+        <Disclosure defaultOpen={i === 0} key={question.title}>
           {({ open }) => (
             <div
               className={`flex flex-col ${

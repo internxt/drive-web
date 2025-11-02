@@ -47,7 +47,6 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
   setIsRemoveTeamMemberDialogOpen,
   setTeamMemberToRemove,
   handleChangeManagerClicked,
-  selectedWorkspace,
   isCurrentUserManager,
 }) => {
   return (
@@ -58,9 +57,9 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
           <h4 className="font-regular mt-0.5 text-base text-gray-60">
             <span>{selectedTeamMembers.length} </span>
             <span>
-              {selectedTeamMembers.length !== 1
-                ? t('preferences.workspace.teams.teamDetails.members')
-                : t('preferences.workspace.teams.teamDetails.member')}
+              {selectedTeamMembers.length === 1
+                ? t('preferences.workspace.teams.teamDetails.member')
+                : t('preferences.workspace.teams.teamDetails.members')}
             </span>
           </h4>
         </div>
@@ -88,6 +87,8 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
           )}
           {isTeamOptionsOpen && (
             <div
+              role="menu"
+              tabIndex={-1}
               onMouseLeave={() => {
                 setIsTeamOptionsOpen(!isTeamOptionsOpen);
               }}

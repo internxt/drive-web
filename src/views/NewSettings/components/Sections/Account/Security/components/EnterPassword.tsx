@@ -43,13 +43,7 @@ const EnterPassword = ({
   };
 
   return (
-    <div
-      className="flex w-full justify-center"
-      title={translate('views.account.tabs.security.label')}
-      onMouseDown={(e) => {
-        e.stopPropagation();
-      }}
-    >
+    <div className="flex w-full justify-center" title={translate('views.account.tabs.security.label')}>
       <Card className="w-2/3 space-y-3">
         <h1 className="text-lg font-medium text-gray-80">{translate('views.account.tabs.security.lock.title')}</h1>
         <p className="text-gray-80">{translate('views.account.tabs.security.lock.description')}</p>

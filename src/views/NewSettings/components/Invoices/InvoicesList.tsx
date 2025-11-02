@@ -69,6 +69,7 @@ const InvoiceDateColumn = ({ invoices, isLastInvoice, translate, setHoverItemInd
     </h1>
     {invoices.map(({ created, id }, i) => (
       <div
+        role="none"
         key={id}
         className={`flex h-12 flex-row items-center justify-between border-gray-10 px-5 text-base font-medium text-gray-100 ${
           isLastInvoice(i) ? 'rounded-bl-xl' : ' border-b'
@@ -98,6 +99,7 @@ const InvoiceStorageColumn = ({
     </h1>
     {invoices.map(({ bytesInPlan, id }, i) => (
       <div
+        role="none"
         key={id}
         className={`flex h-12 items-center justify-between border-gray-10 px-5 text-base font-normal text-gray-60 ${
           isLastInvoice(i) ? '' : ' border-b'
@@ -126,6 +128,7 @@ const InvoiceAmountColumn = ({
     </h1>
     {invoices.map(({ pdf, id, total, currency }, i) => (
       <div
+        role="none"
         key={id}
         className={`flex h-12 w-40 flex-row items-center justify-between border-gray-10 pl-5 text-base font-normal text-gray-60 lg:w-56 ${
           isLastInvoice(i) ? 'rounded-br-xl' : 'border-b'

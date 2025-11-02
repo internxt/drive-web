@@ -1,17 +1,19 @@
 import { CaretLeft } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
 
+interface SectionProps {
+  className?: string;
+  children: ReactNode;
+  title: string;
+  onBackButtonClicked?: () => void;
+}
+
 export default function Section({
   className = '',
   children,
   title,
   onBackButtonClicked,
-}: {
-  className?: string;
-  children: ReactNode;
-  title: string;
-  onBackButtonClicked?: () => void;
-}): JSX.Element {
+}: Readonly<SectionProps>): JSX.Element {
   return (
     <div className={`${className} space-y-2`}>
       <div className="flex flex-row space-x-4 ">

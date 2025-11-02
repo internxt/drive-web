@@ -2,7 +2,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { handleExportBackupKey } from 'app/utils/backupKeyUtils';
 import { Button } from '@internxt/ui';
 import Card from 'app/shared/components/Card';
-import Section from '../../../../Section';
+import Section from '../../../General/components/Section';
 
 const ExportBackupKey = (): JSX.Element => {
   const { translate } = useTranslationContext();

@@ -21,6 +21,8 @@ const Divider = () => (
   </div>
 );
 
+const SKELETON_ITEMS = Array.from({ length: 8 }, (_, i) => `skeleton-item-${i}`);
+
 const PlanDetailsList = () => {
   return (
     <div className="flex flex-col space-y-2">
@@ -28,8 +30,8 @@ const PlanDetailsList = () => {
         <Skeleton width={80} height={20} className="bg-surface" />
       </div>
       <div className="flex flex-col space-y-2">
-        {new Array(8).fill(0).map((_, index) => (
-          <div className="animate-pulse dark:opacity-30" key={index}>
+        {SKELETON_ITEMS.map((id) => (
+          <div className="animate-pulse dark:opacity-30" key={id}>
             <Skeleton width={280} height={24} className="bg-surface" />
           </div>
         ))}

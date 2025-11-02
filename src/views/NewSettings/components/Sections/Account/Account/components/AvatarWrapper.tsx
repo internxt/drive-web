@@ -12,7 +12,7 @@ export const showUpdateAvatarErrorToast = () =>
 
 export const extractAvatarURLID = (url: string): string | null => {
   const regex = /internxt\.com\/(.*?)[?&]/;
-  const match = url.match(regex);
+  const match = regex.exec(url);
   return match ? match[1] : null;
 };
 

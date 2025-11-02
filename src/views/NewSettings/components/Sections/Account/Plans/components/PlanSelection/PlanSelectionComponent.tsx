@@ -45,6 +45,8 @@ export const PlanSelectionComponent = ({
     ? TOTAL_SKELETON_ITEMS.INDIVIDUAL
     : TOTAL_SKELETON_ITEMS.BUSINESS;
 
+  const skeletonKeys = Array.from({ length: skeletonItems }, (_, i) => `plan-skeleton-${i}`);
+
   return (
     <div className="flex flex-1 flex-col items-stretch space-y-2.5">
       {pricesToRender.length > 0 ? (
@@ -77,7 +79,7 @@ export const PlanSelectionComponent = ({
           )}
         </>
       ) : (
-        new Array(skeletonItems).fill(0).map((_, index) => <PlanSelectionCardSkeleton key={index} />)
+        skeletonKeys.map((key) => <PlanSelectionCardSkeleton key={key} />)
       )}
     </div>
   );

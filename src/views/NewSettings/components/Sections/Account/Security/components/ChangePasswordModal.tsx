@@ -30,7 +30,7 @@ const ChangePasswordModal = ({
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const isConfirmationWrong = passwordPayload.password.slice(0, passwordConfirmation.length) !== passwordConfirmation;
+  const isConfirmationWrong = !passwordPayload.password.startsWith(passwordConfirmation);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

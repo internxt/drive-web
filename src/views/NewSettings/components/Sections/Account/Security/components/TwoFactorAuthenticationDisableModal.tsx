@@ -53,14 +53,10 @@ const TwoFactorAuthenticationDisableModal = ({
         </h1>
         <Input
           className="mt-4"
-          label={translate('views.account.tabs.security.2FA.modal.2FALabelCode') as string}
+          label={translate('views.account.tabs.security.2FA.modal.2FALabelCode')}
           disabled={status === 'loading'}
           accent={status === 'error' ? 'error' : undefined}
-          message={
-            status === 'error'
-              ? (translate('views.account.tabs.security.2FA.modal.errors.incorrect') as string)
-              : undefined
-          }
+          message={status === 'error' ? translate('views.account.tabs.security.2FA.modal.errors.incorrect') : undefined}
           value={authCode}
           onChange={setAuthCode}
         />

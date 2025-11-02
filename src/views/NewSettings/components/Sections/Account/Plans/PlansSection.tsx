@@ -285,8 +285,8 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
     const intervalPrice =
       userType === UserType.Individual
-        ? individualPrices.filter((p) => p.interval == selectedInterval)[0]
-        : businessPrices.filter((p) => p.interval == selectedInterval)[0];
+        ? individualPrices.find((p) => p.interval == selectedInterval)
+        : businessPrices.find((p) => p.interval == selectedInterval);
     if (intervalPrice) return intervalPrice;
 
     const firstPrice = userType === UserType.Individual ? individualPrices[0] : businessPrices[0];
