@@ -17,7 +17,7 @@ import DriveView from '../../drive/views/DriveView/DriveView';
 import FolderFileNotFound from '../../drive/views/FolderFileNotFound/FolderFileNotFound';
 import RecentsView from '../../../views/Recents/RecentsView';
 import RequestAccess from '../../drive/views/RequestAccess/RequestAccess';
-import TrashView from '../../drive/views/TrashView/TrashView';
+import TrashView from '../../../views/Trash/Trash';
 import CheckoutCancelView from '../../payment/views/CheckoutCancelView/CheckoutCancelView';
 import CheckoutSuccessView from '../../payment/views/CheckoutSuccessView/CheckoutSuccessView';
 import ShareFileView from '../../share/views/ShareView/ShareFileView';
