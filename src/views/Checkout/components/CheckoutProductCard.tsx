@@ -5,15 +5,15 @@ import { useState } from 'react';
 
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Button } from '@internxt/ui';
-import { formatPrice } from 'app/payment/utils/formatPrice';
-import { getProductAmount } from 'app/payment/utils/getProductAmount';
+import { formatPrice } from '../../../views/Checkout/utils/formatPrice';
+import { getProductAmount } from '../../../views/Checkout/utils/getProductAmount';
 import GuaranteeDarkDays from 'assets/icons/checkout/guarantee-dark.svg?react';
 import GuaranteeWhiteDays from 'assets/icons/checkout/guarantee-white.svg?react';
 import { bytesToString } from 'app/drive/services/size.service';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import TextInput from '../../../../components/TextInput';
-import { useThemeContext } from '../../../theme/ThemeProvider';
-import { CouponCodeData, Currency } from '../../types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import TextInput from '../../../components/TextInput';
+import { useThemeContext } from 'app/theme/ThemeProvider';
+import { CouponCodeData, Currency } from '../types';
 import { SelectSeatsComponent } from './SelectSeatsComponent';
 
 interface CheckoutProductCardProps {

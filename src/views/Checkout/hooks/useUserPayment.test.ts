@@ -1,23 +1,23 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { useUserPayment } from './useUserPayment';
 import checkoutService from '../services/checkout.service';
-import localStorageService from '../../core/services/local-storage.service';
-import envService from '../../core/services/env.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import envService from 'app/core/services/env.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import navigationService from '../../core/services/navigation.service';
-import { AppView } from '../../core/types';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 import { PaymentType, ProcessPurchasePayload, UseUserPaymentPayload } from '../types';
-import notificationsService from '../../notifications/services/notifications.service';
 import { CreateSubscriptionPayload } from '@internxt/sdk/dist/payments/types';
+import notificationsService from 'app/notifications/services/notifications.service';
 
 const mockHostname = 'https://hostname.com';
 
 describe('Custom hook to handle payments', () => {
   beforeEach(() => {
     vi.doUnmock('@internxt/sdk');
-    vi.doUnmock('../../core/factory/sdk');
-    vi.doUnmock('./payment.service');
-    vi.doUnmock('../../utils/userLocation');
+    vi.doUnmock('app/core/factory/sdk');
+    vi.doUnmock('views/Checkout/services/payment.service');
+    vi.doUnmock('app/utils/userLocation');
     vi.doUnmock('app/drive/services/file.service');
 
     vi.spyOn(envService, 'getVariable').mockImplementation((key) => {

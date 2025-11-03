@@ -9,7 +9,7 @@ import { CustomerBillingInfo, UserType } from '@internxt/sdk/dist/drive/payments
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Section from '../../../Section';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import paymentService from 'app/payment/services/payment.service';
+import paymentService from '../../../../../views/Checkout/services/payment.service';
 import { useAppDispatch } from 'app/store/hooks';
 import { WorkspacesState, workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import BillingPaymentMethodCard from '../../../BillingPaymentMethodCard';

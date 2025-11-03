@@ -1,6 +1,6 @@
 import { BaseSyntheticEvent } from 'react';
 import { Stripe, StripeElements } from '@stripe/stripe-js';
-import { IFormValues } from '../../../../core/types';
+import { IFormValues } from 'app/core/types';
 import { AuthMethodTypes } from '../../../types';
 
 export interface UserInfoProps {

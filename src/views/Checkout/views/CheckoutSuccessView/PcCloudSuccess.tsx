@@ -1,6 +1,6 @@
 import { trackPaymentConversion } from 'app/analytics/impact.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import paymentService from 'app/payment/services/payment.service';
+import paymentService from '../../../../views/Checkout/services/payment.service';
 import { useAppDispatch } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { userThunks } from 'app/store/slices/user';

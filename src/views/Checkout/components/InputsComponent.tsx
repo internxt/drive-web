@@ -2,7 +2,7 @@ import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { AuthMethodTypes } from 'app/payment/types';
+import { AuthMethodTypes } from 'views/Checkout/types';
 import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 

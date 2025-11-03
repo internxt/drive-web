@@ -2,7 +2,7 @@ import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
 import { describe, test, vi, expect, beforeEach } from 'vitest';
 import currencyService from './currency.service';
 
-vi.mock('../../core/factory/sdk', () => ({
+vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn().mockReturnValue({
       createCheckoutClient: vi.fn().mockResolvedValue({
@@ -39,7 +39,7 @@ describe('Currency Service', () => {
         },
       ];
 
-      const { SdkFactory } = await import('../../core/factory/sdk');
+      const { SdkFactory } = await import('app/core/factory/sdk');
       const mockApiInstance = await SdkFactory.getNewApiInstance();
       const mockCheckoutClient = await mockApiInstance.createCheckoutClient();
 

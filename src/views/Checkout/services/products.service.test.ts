@@ -1,13 +1,13 @@
 import { Tier } from '@internxt/sdk/dist/drive/payments/types/tiers';
 import { describe, expect, test, vi, beforeEach } from 'vitest';
 
-vi.mock('../../core/factory/sdk', () => ({
+vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(),
   },
 }));
 
-import { SdkFactory } from '../../core/factory/sdk';
+import { SdkFactory } from 'app/core/factory/sdk';
 import { ProductService } from './products.service';
 
 const mockedUserTier: Tier = {

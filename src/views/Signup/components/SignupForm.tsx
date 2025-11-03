@@ -18,8 +18,8 @@ import localStorageService from '../../../app/core/services/local-storage.servic
 import navigationService from '../../../app/core/services/navigation.service';
 import { AppView, IFormValues } from '../../../app/core/types';
 import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
-import paymentService from '../../../app/payment/services/payment.service';
-import { AuthMethodTypes } from '../../../app/payment/types';
+import paymentService from 'views/Checkout/services/payment.service';
+import { AuthMethodTypes } from 'views/Checkout/types';
 import { MAX_PASSWORD_LENGTH } from '../../../app/shared/components/ValidPassword';
 import { useAppDispatch } from '../../../app/store/hooks';
 import { planThunks } from '../../../app/store/slices/plan';

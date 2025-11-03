@@ -13,7 +13,7 @@ vi.mock('./payment.service', () => ({
   },
 }));
 
-vi.mock('../../core/factory/sdk', () => ({
+vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn().mockReturnValue({
       createCheckoutClient: vi.fn().mockResolvedValue({

@@ -12,7 +12,7 @@ vi.mock('i18next', () => ({
   },
 }));
 
-vi.mock('../../payment/services/currency.service', () => ({
+vi.mock('views/Checkout/services/currency.service', () => ({
   default: {
     getCurrencySymbol: (currency: string) => {
       if (currency === 'USD') return '$';

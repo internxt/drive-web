@@ -1,6 +1,6 @@
 import { Stripe, loadStripe } from '@stripe/stripe-js';
 import envService from 'app/core/services/env.service';
-import paymentService from 'app/payment/services/payment.service';
+import paymentService from 'views/Checkout/services/payment.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { userLocation } from 'app/utils/userLocation';
 
