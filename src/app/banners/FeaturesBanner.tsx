@@ -48,11 +48,10 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
     window.open('https://internxt.com/deals/black-friday-internxt', '_blank', 'noopener noreferrer');
     onClose();
   };
-
   const parseSubtitle = (text: string) => {
     const parts = text.split('**');
     return parts.map((part, index) => (
-      <span key={index} className={index % 2 === 1 ? 'text-primary' : 'text-gray-1'}>
+      <span key={`${part}-${index}`} className={index % 2 === 1 ? 'text-primary' : 'text-gray-1'}>
         {part}
       </span>
     ));
