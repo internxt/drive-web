@@ -32,7 +32,7 @@ import {
   passToHash,
 } from 'app/crypto/services/utils';
 import databaseService from 'app/database/services/database.service';
-import { AuthMethodTypes } from 'app/payment/types';
+import { AuthMethodTypes } from 'views/Checkout/types';
 import { AppDispatch } from 'app/store';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import paymentService from 'app/payment/services/payment.service';
+import paymentService from 'views/Checkout/services/payment.service';
 import envService from 'app/core/services/env.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { userLocation } from 'app/utils/userLocation';
@@ -13,7 +13,7 @@ vi.mock('@stripe/stripe-js', () => ({
   loadStripe: vi.fn(),
 }));
 
-vi.mock('app/payment/services/payment.service', () => ({
+vi.mock('views/Checkout/services/payment.service', () => ({
   default: {
     getPrices: vi.fn(),
   },

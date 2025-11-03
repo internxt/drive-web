@@ -5,7 +5,7 @@ import { useAppDispatch } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { userThunks } from 'app/store/slices/user';
 import { useCallback } from 'react';
-import localStorageService from '../../../core/services/local-storage.service';
+import localStorageService from 'app/core/services/local-storage.service';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { trackPaymentConversion } from 'app/analytics/impact.service';
 

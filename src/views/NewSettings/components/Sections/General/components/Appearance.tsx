@@ -7,7 +7,7 @@ import appearance_dark from 'assets/dark.svg';
 import appearance_light from 'assets/light.svg';
 import appearance_system from 'assets/system.svg';
 import { useEffect, useState } from 'react';
-import paymentService from 'app/payment/services/payment.service';
+import paymentService from '../../../../../views/Checkout/services/payment.service';
 import { UserThemesService } from 'app/theme/userThemes.service';
 import errorService from 'app/core/services/error.service';
 

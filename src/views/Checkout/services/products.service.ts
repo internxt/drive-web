@@ -1,5 +1,5 @@
 import { ProductData } from '../types';
-import { SdkFactory } from '../../core/factory/sdk';
+import { SdkFactory } from 'app/core/factory/sdk';
 import { Tier } from '@internxt/sdk/dist/drive/payments/types/tiers';
 
 export type UserTierFeatures = Tier['featuresPerService'];

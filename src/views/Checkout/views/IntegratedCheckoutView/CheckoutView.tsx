@@ -4,17 +4,17 @@ import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { OptionalB2BDropdown } from 'app/payment/components/checkout/OptionalB2BDropdown';
-import { State } from 'app/payment/store/types';
+import { OptionalB2BDropdown } from '../../../../views/Checkout/components/OptionalB2BDropdown';
+import { State } from 'views/Checkout/store/types';
 import { LegacyRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { CheckoutProductCard } from '../../components/checkout/CheckoutProductCard';
-import { CheckoutUserAuth } from '../../components/checkout/CheckoutUserAuth';
-import { HeaderComponent } from '../../components/checkout/Header';
+import { CheckoutProductCard } from '../../components/CheckoutProductCard';
+import { CheckoutUserAuth } from '../../components/CheckoutUserAuth';
+import { HeaderComponent } from '../../components/Header';
 import { AuthMethodTypes, PaymentType } from '../../types';
 import { CheckoutViewManager, UserInfoProps } from './types/checkout.types';
 import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
-import { AvailableCryptoCurrenciesDropdown } from 'app/payment/components/checkout/AvailableCryptoCurrenciesDropdown';
+import { AvailableCryptoCurrenciesDropdown } from '../../../../views/Checkout/components/AvailableCryptoCurrenciesDropdown';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {

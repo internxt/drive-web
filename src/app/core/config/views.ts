@@ -7,26 +7,26 @@ import BlockedAccountView from '../../auth/views/BlockedAccountView/BlockedAccou
 import RecoverAccountView from '../../auth/views/RecoverAccountView/RecoverAccountView';
 import RecoveryLinkView from '../../auth/views/RecoveryLinkView/RecoveryLinkView';
 import SignInView from '../../auth/views/SignInView/SignInView';
-import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from '../../../views/Signup';
+import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from 'views/Signup';
 import UniversalLinkSuccessView from '../../auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
-import BackupsView from '../../../views/Backups/BackupsView';
+import BackupsView from 'views/Backups/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
 import DriveView from 'views/Drive';
 import FolderFileNotFound from 'app/drive/views/FolderFileNotFound/FolderFileNotFound';
 import RecentsView from 'views/Recents';
 import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 import TrashView from 'views/Trash';
-import CheckoutCancelView from '../../payment/views/CheckoutCancelView/CheckoutCancelView';
-import CheckoutSuccessView from '../../payment/views/CheckoutSuccessView/CheckoutSuccessView';
-import { ShareFileView, ShareFolderView } from '../../../views/PublicShared';
+import CheckoutCancelView from 'views/Checkout/views/CheckoutCancelView/CheckoutCancelView';
+import CheckoutSuccessView from 'views/Checkout/views/CheckoutSuccessView/CheckoutSuccessView';
+import { ShareFileView, ShareFolderView } from 'views/PublicShared';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
-import SharedViewWrapper from '../../../views/Shared/SharedViewWrapper';
+import SharedViewWrapper from 'views/Shared/SharedViewWrapper';
 import ChangeEmailView from '../views/ChangeEmailView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
 import VerifyEmailView from '../views/VerifyEmailView';
-import CheckoutViewWrapper from '../../payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
-import { CheckoutSessionId } from 'app/payment/views/CheckoutSession/CheckoutSessionId';
-import PcCloudSuccess from 'app/payment/views/CheckoutSuccessView/PcCloudSuccess';
+import CheckoutViewWrapper from 'views/Checkout/views/IntegratedCheckoutView/CheckoutViewWrapper';
+import { CheckoutSessionId } from 'views/Checkout/views/CheckoutSession/CheckoutSessionId';
+import PcCloudSuccess from 'views/Checkout/views/CheckoutSuccessView/PcCloudSuccess';
 
 const views: Array<{
   id: string;

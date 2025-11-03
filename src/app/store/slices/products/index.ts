@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '../..';
-import { fetchProducts } from '../../../payment/services/products.service';
-import { ProductData, RenewalPeriod } from '../../../payment/types';
+import { fetchProducts } from '../../../../views/Checkout/services/products.service';
+import { ProductData, RenewalPeriod } from 'views/Checkout/types';
 
 interface ProductsState {
   isLoading: boolean;
