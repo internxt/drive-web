@@ -113,7 +113,7 @@ export interface NetworkCredentials {
   pass: string;
 }
 
-interface IDownloadParams {
+export interface IDownloadParams {
   bucketId: string;
   fileId: string;
   creds?: NetworkCredentials;
@@ -180,7 +180,7 @@ export async function multipartDownloadFile(
   });
 }
 
-async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
+export async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
   const { bucketId, fileId, token, creds } = params;
 
   let metadata: MetadataRequiredForDownload;
