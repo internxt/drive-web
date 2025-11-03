@@ -1,8 +1,6 @@
 import { describe, expect, vi, beforeEach, test } from 'vitest';
 import { DriveFileData } from '../../types';
 
-const mockReadableStream = new ReadableStream();
-
 const mockedSharingOptions = {
   credentials: { user: 'user', pass: 'hashed-password' },
   mnemonic: 'mnemonic',
@@ -25,6 +23,8 @@ describe('createFileDownloadStream', () => {
   });
 
   test('When we want to create a file download stream, then we use the multipart download', async () => {
+    const mockReadableStream = new ReadableStream();
+
     vi.doMock('app/network/download', () => ({
       multipartDownloadFile: vi.fn().mockResolvedValue(mockReadableStream),
     }));
@@ -42,6 +42,6 @@ describe('createFileDownloadStream', () => {
       options: { notifyProgress: expect.any(Function), abortController: undefined },
     });
 
-    expect(result).toBe(mockReadableStream);
+    expect(result).toStrictEqual(mockReadableStream);
   });
 });
