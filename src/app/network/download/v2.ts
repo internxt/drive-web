@@ -2,6 +2,7 @@ import { Network } from '@internxt/sdk/dist/network';
 import { getSha256 } from '../../crypto/services/utils';
 import { NetworkFacade } from '../NetworkFacade';
 import envService from 'app/core/services/env.service';
+import { MultipartDownload } from './MultipartDownload';
 
 type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 type FileStream = ReadableStream<Uint8Array>;
@@ -87,6 +88,38 @@ const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
     abortController: options?.abortController,
   });
 };
+
+export async function multipartDownload(params) {
+  const { bucketId, fileId, mnemonic, fileSize, options } = params;
+  const auth = await getAuthFromCredentials(params.creds);
+
+  const networkFacade = new NetworkFacade(
+    Network.client(
+      envService.getVariable('storjBridge'),
+      {
+        clientName: 'drive-web',
+        clientVersion: '1.0',
+      },
+      {
+        bridgeUser: params.creds ? auth.username : '',
+        userId: params.creds ? auth.password : '',
+      },
+    ),
+  );
+
+  const multipartDownload = new MultipartDownload(networkFacade);
+
+  return multipartDownload.downloadFile({
+    bucketId,
+    fileId,
+    mnemonic,
+    fileSize,
+    options: {
+      downloadingCallback: options.notifyProgress,
+      abortController: options.abortController,
+    },
+  });
+}
 
 const downloadFile: DownloadFileFunction = (params) => {
   if (params.token && params.encryptionKey) {
