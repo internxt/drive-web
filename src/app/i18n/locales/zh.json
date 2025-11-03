@@ -4,22 +4,19 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": { "blueText": "获得87%折扣", "text": "所有高级套餐" },
-    "title": "获得专属折扣！",
-    "subTitle": {
-      "blueText": "特别优惠：",
-      "text": "以更低价格私密存储文件"
-    },
-    "ctaGet": "获取优惠",
-    "ctaContinue": "免费继续",
+    "label": { "blueText": "90% 折扣", "text": "所有套餐" },
+    "title": "领取您的黑色星期五特别优惠！",
+    "subTitle": "**最大折扣**享受**最高隐私保护**",
+    "ctaGet": "接受邀请",
+    "ctaContinue": "继续免费使用",
     "guarantee": "30天退款保证",
     "products": {
-      "drive": "Drive",
-      "antivirus": "Antivirus",
-      "cleaner": "Cleaner",
+      "drive": "云盘",
+      "antivirus": "杀毒软件",
+      "cleaner": "清理工具",
       "vpn": "VPN",
-      "meet": "Meet",
-      "mail": "Mail"
+      "meet": "会议",
+      "mail": "邮箱"
     }
   },
   "susbcriptionsBanner": {
