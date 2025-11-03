@@ -101,9 +101,8 @@ describe('Download Worker', () => {
       expect(createMultipartFileDownloadStream).toHaveBeenCalledWith(
         mockedBigFile,
         mockCallbacks.onProgress,
-        mockParams.isWorkspace,
-        expect.any(AbortController),
         mockParams.credentials,
+        expect.any(AbortController),
       );
       expect(mockCallbacks.onChunk).toHaveBeenCalledWith(mockedChunks[0]);
       expect(mockCallbacks.onBlob).not.toHaveBeenCalled();

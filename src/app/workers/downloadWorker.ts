@@ -40,13 +40,7 @@ export class DownloadWorker {
 
     const getFileReadableStream = async () => {
       if (file.size >= MIN_DOWNLOAD_MULTIPART_SIZE) {
-        return createMultipartFileDownloadStream(
-          file,
-          callbacks.onProgress,
-          isWorkspace,
-          this.abortController,
-          credentials,
-        );
+        return createMultipartFileDownloadStream(file, callbacks.onProgress, credentials, this.abortController);
       }
 
       return createFileDownloadStream(file, isWorkspace, callbacks.onProgress, this.abortController, credentials);
