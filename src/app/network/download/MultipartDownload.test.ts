@@ -278,6 +278,7 @@ describe('MultipartDownload ', () => {
 
   describe('Max retries exceeded', () => {
     test('When a chunk fails more than max retries, then download should fail, abort should be called, and queue should be killed', async () => {
+      const FIFTY_MEGABYTES = 1024 * 1024 * 50;
       const fileSize = FIFTY_MEGABYTES * 2.5;
       const abortController = new AbortController();
       const abortSpy = vi.spyOn(abortController, 'abort');
