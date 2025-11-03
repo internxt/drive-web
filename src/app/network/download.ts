@@ -166,6 +166,20 @@ export function downloadFile(params: IDownloadParams): Promise<ReadableStream<Ui
   });
 }
 
+export function multipartDownloadFile(
+  params: IDownloadParams & { fileSize?: number },
+): Promise<ReadableStream<Uint8Array>> {
+  const downloadMultipartPromise = multipartDownloadFile(params);
+
+  return downloadMultipartPromise.catch((err) => {
+    if (err instanceof FileVersionOneError) {
+      return _downloadFile(params);
+    }
+
+    throw err;
+  });
+}
+
 async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
   const { bucketId, fileId, token, creds } = params;
 
