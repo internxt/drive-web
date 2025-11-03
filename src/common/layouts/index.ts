@@ -1,5 +1,5 @@
 import { ComponentClass, FunctionComponent } from 'react';
-import { AppViewLayout } from '../types';
+import { AppViewLayout } from 'app/core/types';
 
 import EmptyLayout, { EmptyLayoutProps } from './EmptyLayout/EmptyLayout';
 import HeaderAndSidenavLayout, { HeaderAndSidenavLayoutProps } from './HeaderAndSidenavLayout/HeaderAndSidenavLayout';

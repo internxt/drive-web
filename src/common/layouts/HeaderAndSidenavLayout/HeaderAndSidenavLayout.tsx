@@ -1,16 +1,16 @@
 import { Link, useLocation } from 'react-router-dom';
 
-import { Topbar as Navbar, Sidenav } from '../../../../views/Drive/components';
+import { Topbar as Navbar, Sidenav } from '../../../views/Drive/components';
 import { uiActions } from 'app/store/slices/ui';
 import ReachedPlanLimitDialog from 'app/drive/components/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
-import navigationService from '../../services/navigation.service';
-import { AppView } from '../../types';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import TaskLogger from 'app/tasks/components/TaskLogger/TaskLogger';
 import DriveItemInfoMenu from 'app/drive/components/DriveItemInfoMenu/DriveItemInfoMenu';
-import SharedFolderTooBigDialog from '../../../drive/components/SharedFolderTooBigDialog/SharedFolderTooBigDialog';
-import { getAppConfig } from '../../services/config.service';
-import ShareItemDialog from '../../../../views/Shared/components/ShareItemDialog/ShareItemDialog';
+import SharedFolderTooBigDialog from 'app/drive/components/SharedFolderTooBigDialog/SharedFolderTooBigDialog';
+import { getAppConfig } from 'app/core/services/config.service';
+import ShareItemDialog from 'views/Shared/components/ShareItemDialog/ShareItemDialog';
 
 export interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;

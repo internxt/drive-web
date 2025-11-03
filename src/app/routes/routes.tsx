@@ -1,6 +1,6 @@
 import { Route, RouteProps } from 'react-router-dom';
 import views from '../core/config/views';
-import layouts from '../core/layouts';
+import layouts from '../../common/layouts';
 import configService from '../core/services/config.service';
 import { AppViewConfig } from '../core/types';
 import { createElement } from 'react';
