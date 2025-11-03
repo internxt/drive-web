@@ -152,6 +152,17 @@ describe('paymentService', () => {
     });
   });
 
+  describe('requestPreventCancellation', () => {
+    it('checks eligibility for retention offer', async () => {
+      mockPaymentsClient.requestPreventCancellation.mockResolvedValue({ elegible: true });
+
+      const result = await paymentService.requestPreventCancellation();
+
+      expect(mockPaymentsClient.requestPreventCancellation).toHaveBeenCalled();
+      expect(result.elegible).toBe(true);
+    });
+  });
+
   describe('createSubscriptionWithTrial', () => {
     it('activates free trial period', async () => {
       vi.spyOn(localStorageService, 'get').mockReturnValue('token');
