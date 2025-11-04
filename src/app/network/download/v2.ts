@@ -89,7 +89,7 @@ const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
   });
 };
 
-export async function multipartDownload(params) {
+export async function multipartDownload(params: DownloadOwnFileParams & { fileSize: number }): Promise<FileStream> {
   const { bucketId, fileId, mnemonic, fileSize, options } = params;
   const auth = await getAuthFromCredentials(params.creds);
 
@@ -101,8 +101,8 @@ export async function multipartDownload(params) {
         clientVersion: '1.0',
       },
       {
-        bridgeUser: params.creds ? auth.username : '',
-        userId: params.creds ? auth.password : '',
+        bridgeUser: auth.username,
+        userId: auth.password,
       },
     ),
   );
@@ -115,8 +115,8 @@ export async function multipartDownload(params) {
     mnemonic,
     fileSize,
     options: {
-      downloadingCallback: options.notifyProgress,
-      abortController: options.abortController,
+      downloadingCallback: options?.notifyProgress,
+      abortController: options?.abortController,
     },
   });
 }

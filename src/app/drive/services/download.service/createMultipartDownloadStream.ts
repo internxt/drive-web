@@ -6,7 +6,7 @@ export default async function createMultipartFileDownloadStream(
   updateProgressCallback: (progress: number) => void,
   sharingOptions: { credentials: { user: string; pass: string }; mnemonic: string },
   abortController?: AbortController,
-): Promise<ReadableStream<Uint8Array<ArrayBufferLike>>> {
+): Promise<ReadableStream<Uint8Array>> {
   return multipartDownloadFile({
     bucketId: itemData.bucket,
     fileId: itemData.fileId,
