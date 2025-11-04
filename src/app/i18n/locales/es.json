@@ -4,22 +4,19 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": {"blueText":"Obtén 87% de descuento", "text":"en todos los Planes"},
-    "title": "¡Obtén un descuento exclusivo!",
-    "subTitle": {
-      "blueText":"Oferta especial:",
-      "text":"almacena archivos con privacidad por menos"
-    },
-    "ctaGet": "Obtener la oferta",
-    "ctaContinue":"Continuar gratis",
-    "guarantee": "Garantía de devolución de dinero de 30 días",
+    "label": { "blueText": "90% de descuento", "text": "en todos los planes" },
+    "title": "¡Consigue tu oferta especial de Black Friday!",
+    "subTitle": "El **mayor descuento** para la **máxima privacidad**",
+    "ctaGet": "Aceptar invitación",
+    "ctaContinue": "Continuar gratis",
+    "guarantee": "Garantía de devolución de 30 días",
     "products": {
       "drive": "Drive",
       "antivirus": "Antivirus",
-      "cleaner": "Cleaner",
+      "cleaner": "Limpiador",
       "vpn": "VPN",
       "meet": "Meet",
-      "mail": "Mail"
+      "mail": "Correo"
     }
   },
   "susbcriptionsBanner": {
@@ -161,7 +158,7 @@
     },
     "universalLinkSuccess": {
       "loginAs": "Iniciar sesión como",
-      "openDesktopApp": "Abrir Drive Desktop",
+      "openApp": "Abrir app",
       "anotherAccount": "Usar otra cuenta?",
       "login": "Iniciar sesión"
     }
@@ -996,6 +993,14 @@
       "teams": "Equipos",
       "teamsWithAccess": "Equipos con acceso:",
       "shareButton": "Compartir"
+    },
+    "restrictedSharingModal": {
+      "title": "Mejora tu plan para compartir archivos",
+      "subtitle": "Compartir archivos no está disponible en tu plan actual. Mejora tu plan para desbloquear el uso compartido seguro."
+    },
+    "restrictedPasswordModal": {
+      "title": "Desbloquear el uso compartido con contraseña",
+      "subtitle": "Añade una capa extra de seguridad protegiendo tus enlaces compartidos con una contraseña."
     }
   },
   "form": {
@@ -1055,7 +1060,8 @@
     "maxSizeUploadLimitError": "File too large (greater than 40GB)",
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera",
-    "updateAvatarError": "Error al actualizar el avatar"
+    "updateAvatarError": "Error al actualizar el avatar",
+    "featuresUnavailable": "Algunas funciones pueden no estar disponibles"
   },
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",
@@ -1399,7 +1405,8 @@
     "more": "Más",
     "continue": "Continuar",
     "keepCurrent": "Mantener actual",
-    "logOut": "Cerrar sesión"
+    "logOut": "Cerrar sesión",
+    "locked": "Bloqueado"
   },
   "drive": {
     "usage": "Uso",
@@ -1903,10 +1910,7 @@
           },
           "1GB": {
             "title": "Gratis",
-            "features": [
-              "1GB de almacenamiento cifrado con conocimiento cero",
-              "VPN estándar gratuita (FR)"
-            ]
+            "features": ["1GB de almacenamiento cifrado con conocimiento cero", "VPN estándar gratuita (FR)"]
           }
         },
         "businessPlanFeaturesList": {

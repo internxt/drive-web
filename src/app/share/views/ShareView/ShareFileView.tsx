@@ -2,7 +2,7 @@
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import network from 'app/network';
-import shareService, { decodeSharingId } from 'app/share/services/share.service';
+import shareService from 'app/share/services/share.service';
 import { TaskProgress } from 'app/tasks/types';
 import { useEffect, useState } from 'react';
 import { match } from 'react-router';
@@ -29,6 +29,7 @@ import AppError from '../../../core/types';
 import { Button, Loader } from '@internxt/ui';
 import SendBanner from './SendBanner';
 import ShareItemPwdView from './ShareItemPwdView';
+import { stringUtils } from '@internxt/lib';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -57,7 +58,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const { translate } = useTranslationContext();
 
   const code = props.match.params.code;
-  const sharingId = decodeSharingId(props.match.params.token);
+  const sharingId = stringUtils.decodeV4Uuid(props.match.params.token);
 
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [blobProgress, setBlobProgress] = useState(TaskProgress.Min);

@@ -4,22 +4,19 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": {"blueText":"获得87%折扣", "text":"所有高级套餐"},
-    "title": "获得专属折扣！",
-    "subTitle": {
-      "blueText":"特别优惠：",
-      "text":"以更低价格私密存储文件"
-    },
-    "ctaGet": "获取优惠",
-    "ctaContinue":"免费继续",
+    "label": { "blueText": "90% 折扣", "text": "所有套餐" },
+    "title": "领取您的黑色星期五特别优惠！",
+    "subTitle": "**最大折扣**享受**最高隐私保护**",
+    "ctaGet": "接受邀请",
+    "ctaContinue": "继续免费使用",
     "guarantee": "30天退款保证",
     "products": {
-      "drive": "Drive",
-      "antivirus": "Antivirus",
-      "cleaner": "Cleaner",
+      "drive": "云盘",
+      "antivirus": "杀毒软件",
+      "cleaner": "清理工具",
       "vpn": "VPN",
-      "meet": "Meet",
-      "mail": "Mail"
+      "meet": "会议",
+      "mail": "邮箱"
     }
   },
   "susbcriptionsBanner": {
@@ -179,7 +176,7 @@
     },
     "universalLinkSuccess": {
       "loginAs": "登录为",
-      "openDesktopApp": "打开桌面应用程序",
+      "openApp": "开放申请",
       "anotherAccount": "使用另一个帐户？",
       "login": "登录"
     }
@@ -1013,6 +1010,14 @@
       "teams": "团队",
       "teamsWithAccess": "有权限的团队：",
       "shareButton": "分享"
+    },
+    "restrictedSharingModal": {
+      "title": "升级以共享文件",
+      "subtitle": "您当前的套餐不支持文件共享。升级即可解锁安全的文件共享功能。"
+    },
+    "restrictedPasswordModal": {
+      "title": "解锁受密码保护的共享",
+      "subtitle": "通过为共享链接设置密码，添加额外的安全保护。"
     }
   },
   "form": {
@@ -1072,7 +1077,8 @@
     "maxSizeUploadLimitError": "文件太大（大于40GB）",
     "connectionLostError": "互联网连接丢失",
     "errorLoadingTrashItems": "加载垃圾箱内的项目时出错",
-    "updateAvatarError": "更新头像时出错"
+    "updateAvatarError": "更新头像时出错",
+    "featuresUnavailable": "某些功能可能无法使用"
   },
   "backups": {
     "backups-from": "来自 {{deviceName}} 的备份",
@@ -1415,7 +1421,8 @@
     "more": "更多信息",
     "continue": "继续",
     "keepCurrent": "保持当前",
-    "logOut": "登出"
+    "logOut": "登出",
+    "locked": "已锁定"
   },
   "drive": {
     "usage": "使用情况",
@@ -1921,10 +1928,7 @@
           },
           "1GB": {
             "title": "免费版",
-            "features": [
-              "1GB零知识加密存储",
-              "免费标准VPN（法国）"
-            ]
+            "features": ["1GB零知识加密存储", "免费标准VPN（法国）"]
           }
         },
         "businessPlanFeaturesList": {

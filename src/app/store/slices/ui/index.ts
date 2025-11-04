@@ -4,9 +4,7 @@ import { PreviewFileItem } from '../../../share/types';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
-  isReferralsWidgetCollapsed: boolean;
   isFileLoggerOpen: boolean;
-  isFileInfoMenuOpen: boolean;
   isNameCollisionDialogOpen: boolean;
   isShareDialogOpen: boolean;
   isInvitationsDialogOpen: boolean;
@@ -36,9 +34,7 @@ interface UISliceState {
 
 const initialState: UISliceState = {
   isSidenavCollapsed: false,
-  isReferralsWidgetCollapsed: false,
   isFileLoggerOpen: false,
-  isFileInfoMenuOpen: false,
   isNameCollisionDialogOpen: false,
   isShareDialogOpen: false,
   isInvitationsDialogOpen: false,
@@ -73,14 +69,8 @@ export const uiSlice = createSlice({
     setIsSidenavCollapsed: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isSidenavCollapsed = action.payload;
     },
-    setIsReferralsWidgetCollapsed: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isReferralsWidgetCollapsed = action.payload;
-    },
     setIsFileLoggerOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isFileLoggerOpen = action.payload;
-    },
-    setIsFileInfoMenuOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isFileInfoMenuOpen = action.payload;
     },
     setIsNameCollisionDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isNameCollisionDialogOpen = action.payload;
@@ -170,13 +160,11 @@ export const uiSlice = createSlice({
 });
 
 export const {
-  setIsReferralsWidgetCollapsed,
   setIsCreateFolderDialogOpen,
   setIsDeleteItemsDialogOpen,
   setIsMoveItemsDialogOpen,
   setIsPreferencesDialogOpen,
   setIsFileLoggerOpen,
-  setIsFileInfoMenuOpen,
   setIsReachedPlanLimitDialogOpen,
   setIsSharedFolderTooBigDialogOpen,
   setIsShareItemDialogOpen,

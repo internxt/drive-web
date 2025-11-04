@@ -20,11 +20,10 @@ export function updateMetaData(
 export async function moveFileByUuid(fileUuid: string, destinationFolderUuid: string): Promise<StorageTypes.FileMeta> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   const payload: StorageTypes.MoveFileUuidPayload = {
-    fileUuid: fileUuid,
-    destinationFolderUuid: destinationFolderUuid,
+    destinationFolder: destinationFolderUuid,
   };
   return storageClient
-    .moveFileByUuid(payload)
+    .moveFileByUuid(fileUuid, payload)
     .then((response) => {
       return response;
     })
@@ -40,11 +39,6 @@ export async function moveFileByUuid(fileUuid: string, destinationFolderUuid: st
 export async function deleteFile(fileData: DriveFileData): Promise<void> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   await storageClient.deleteFileByUuid(fileData.uuid);
-}
-
-async function fetchRecents(limit: number): Promise<StorageTypes.DriveFileData[]> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  return storageClient.getRecentFilesV2(limit);
 }
 
 async function fetchDeleted(): Promise<DriveFileData[]> {
@@ -68,7 +62,6 @@ export function getFile(uuid: string, workspacesToken?: string): Promise<FileMet
 const fileService = {
   updateMetaData,
   moveFileByUuid,
-  fetchRecents,
   uploadFile,
   fetchDeleted,
   getFile,

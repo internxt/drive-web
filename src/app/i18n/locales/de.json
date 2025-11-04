@@ -4,22 +4,19 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": {"blueText":"87% Rabatt erhalten", "text":"auf alle Premium-Pläne"},
-    "title": "Erhalten Sie einen exklusiven Rabatt!",
-    "subTitle": {
-      "blueText":"Sonderangebot:",
-      "text":"Dateien privat speichern für weniger"
-    },
-    "ctaGet": "Angebot sichern",
-    "ctaContinue":"Kostenlos fortfahren",
-    "guarantee": "30-Tage-Geld-zurück-Garantie",
+    "label": { "blueText": "90% de descuento", "text": "en todos los planes" },
+    "title": "¡Consigue tu oferta especial de Black Friday!",
+    "subTitle": "El **mayor descuento** para la **máxima privacidad**",
+    "ctaGet": "Aceptar invitación",
+    "ctaContinue": "Continuar gratis",
+    "guarantee": "Garantía de devolución de 30 días",
     "products": {
       "drive": "Drive",
       "antivirus": "Antivirus",
-      "cleaner": "Cleaner",
+      "cleaner": "Limpiador",
       "vpn": "VPN",
       "meet": "Meet",
-      "mail": "Mail"
+      "mail": "Correo"
     }
   },
   "susbcriptionsBanner": {
@@ -968,6 +965,14 @@
       "teams": "Teams",
       "teamsWithAccess": "Teams mit Zugriff:",
       "shareButton": "Teilen"
+    },
+    "restrictedSharingModal": {
+      "title": "Upgrade zum Teilen von Dateien",
+      "subtitle": "Das Teilen von Dateien ist in Ihrem aktuellen Tarif nicht verfügbar. Führen Sie ein Upgrade durch, um sicheres Teilen freizuschalten."
+    },
+    "restrictedPasswordModal": {
+      "title": "Passwortgeschütztes Teilen freischalten",
+      "subtitle": "Fügen Sie eine zusätzliche Sicherheitsebene hinzu, indem Sie Ihre geteilten Links mit einem Passwort schützen."
     }
   },
   "form": {
@@ -1026,7 +1031,8 @@
     "errorDeletingFromTrash": "Beim Löschen der Elemente aus dem Papierkorb ist ein Fehler aufgetreten.",
     "maxSizeUploadLimitError": "Datei zu groß (größer als 40 GB)",
     "braveNotSupportMultiplePhotosDowload": "Brave unterstützt nicht das Herunterladen mehrerer Fotos.",
-    "updateAvatarError": "Fehler beim Aktualisieren des Avatars"
+    "updateAvatarError": "Fehler beim Aktualisieren des Avatars",
+    "featuresUnavailable": "Einige Funktionen sind möglicherweise nicht verfügbar"
   },
   "backups": {
     "backups-from": "Backups von {{deviceName}}",
@@ -1362,7 +1368,8 @@
     "more": "Mehr",
     "continue": "Fortsetzen",
     "keepCurrent": "Aktuell behalten",
-    "logOut": "Abmelden"
+    "logOut": "Abmelden",
+    "locked": "Gesperrt"
   },
   "drive": {
     "usage": "Verwendung",
@@ -1866,10 +1873,7 @@
           },
           "1GB": {
             "title": "Kostenlos",
-            "features": [
-              "1GB Zero-Knowledge verschlüsselter Speicher",
-              "Kostenloses Standard-VPN (FR)"
-            ]
+            "features": ["1GB Zero-Knowledge verschlüsselter Speicher", "Kostenloses Standard-VPN (FR)"]
           }
         },
         "businessPlanFeaturesList": {

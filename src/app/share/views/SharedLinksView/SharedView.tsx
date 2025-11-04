@@ -17,9 +17,9 @@ import BreadcrumbsSharedView from 'app/shared/components/Breadcrumbs/Containers/
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';
-import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
+import { moveItemsToTrash } from '../../../../views/Trash/services';
 import errorService from '../../../core/services/error.service';
-import { UPLOAD_ITEMS_LIMIT } from '../../../drive/components/DriveExplorer/DriveExplorer';
+import { UPLOAD_ITEMS_LIMIT } from '../../../drive/components/DriveExplorer/helpers/uploadHelpers';
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
 import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
@@ -27,7 +27,7 @@ import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItems
 import NameCollisionContainer from '../../../drive/components/NameCollisionDialog/NameCollisionContainer';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import ShowInvitationsDialog from '../../../drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
-import StopSharingAndMoveToTrashDialogWrapper from '../../../drive/components/StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
+import { StopSharingAndMoveToTrashDialogWrapper } from '../../../../views/Trash/components';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../share/types';
 import { RootState } from '../../../store';
@@ -94,7 +94,7 @@ function SharedView({
   const currentUser = localStorageService.getUser();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(globalThis.location.search);
   const folderUUID = urlParams.get('folderuuid');
 
   const isRootFolder = sharedNamePath.length === 0;
@@ -587,7 +587,7 @@ function SharedView({
           onClose={() => handleOpenItemPreview(false)}
           onShowStopSharingDialog={onOpenStopSharingDialog}
           sharedKeyboardShortcuts={{
-            renameItemFromKeyboard: !isCurrentUserViewer(currentUserRole) ? renameItem : undefined,
+            renameItemFromKeyboard: isCurrentUserViewer(currentUserRole) ? undefined : renameItem,
             removeItemFromKeyboard: handleIsItemOwnedByCurrentUser() ? onOpenStopSharingDialog : undefined,
           }}
         />

@@ -1,6 +1,6 @@
 import APP_CONFIG from '../config/app.json';
 import ROUTES from '../../routes/paths.json';
-import { DatabaseProvider } from '../../database/services/database.service';
+import { DatabaseProvider } from '../../database/types';
 import { AppConfig, AppViewConfig, AppViewLayout } from '../types';
 import { DownloadFolderMethod } from '../../drive/types';
 import envService from 'app/core/services/env.service';

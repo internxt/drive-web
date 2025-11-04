@@ -128,10 +128,37 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     }
   };
 
+  const selectUserSubscriptionPlan = useCallback(
+    (prices: DisplayPrice[]) => {
+      if (!prices?.length) return;
+
+      setSelectedSubscriptionType(UserType.Individual);
+
+      if (individualSubscription?.type === 'free') {
+        setPriceSelected(FREE_PLAN_DATA);
+        return;
+      }
+
+      const isLifetime = individualSubscription?.type === 'lifetime';
+      const interval = isLifetime ? 'lifetime' : defaultInterval;
+
+      setSelectedInterval(interval);
+
+      const userPlan = prices.find((p) => p.productId === individualSubscription?.productId && p.interval === interval);
+
+      if (userPlan) {
+        setPriceSelected(userPlan);
+      }
+    },
+    [defaultInterval, individualSubscription],
+  );
+
   const fetchDataAndSetPrices = useCallback(async () => {
     try {
       const individualPrices = await fetchPlanPrices(UserType.Individual);
       const businessPrices = await fetchPlanPrices(UserType.Business);
+
+      selectUserSubscriptionPlan(individualPrices);
 
       setIndividualPrices(individualPrices);
       setBusinessPrices(businessPrices);
@@ -395,13 +422,11 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
         cancelSubscription={cancelSubscription}
         currentPlanName={
           isIndividualSubscriptionSelected
-            ? getPlanName(plan.individualPlan || plan.teamPlan, plan.planLimit)
+            ? getPlanName(plan.individualPlan, plan.planLimit)
             : getPlanName(plan.businessPlan, plan.businessPlanLimit)
         }
         currentPlanInfo={
-          isIndividualSubscriptionSelected
-            ? getPlanInfo(plan.individualPlan || plan.teamPlan)
-            : getPlanInfo(plan.businessPlan)
+          isIndividualSubscriptionSelected ? getPlanInfo(plan.individualPlan) : getPlanInfo(plan.businessPlan)
         }
         currentUsage={
           isIndividualSubscriptionSelected

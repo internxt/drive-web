@@ -9,22 +9,19 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": {"blueText":"Ottieni l'87% di sconto", "text":"su tutti i Piani Premium"},
-    "title": "Ottieni uno sconto esclusivo!",
-    "subTitle": {
-      "blueText":"Offerta speciale:",
-      "text":"archivia i file in privato per meno"
-    },
-    "ctaGet": "Approfitta dell'offerta",
-    "ctaContinue":"Continua gratis",
-    "guarantee": "Garanzia di rimborso di 30 giorni",
+    "label": { "blueText": "Скидка 90%", "text": "на все тарифы" },
+    "title": "Получите специальное предложение Черной пятницы!",
+    "subTitle": "**Максимальная скидка** для **максимальной конфиденциальности**",
+    "ctaGet": "Принять приглашение",
+    "ctaContinue": "Продолжить бесплатно",
+    "guarantee": "30-дневная гарантия возврата денег",
     "products": {
       "drive": "Drive",
-      "antivirus": "Antivirus",
-      "cleaner": "Cleaner",
+      "antivirus": "Антивирус",
+      "cleaner": "Очистка",
       "vpn": "VPN",
       "meet": "Meet",
-      "mail": "Mail"
+      "mail": "Почта"
     }
   },
   "susbcriptionsBanner": {
@@ -182,7 +179,7 @@
     },
     "universalLinkSuccess": {
       "loginAs": "Accedi come",
-      "openDesktopApp": "Apri l'applicazione desktop",
+      "openApp": "Apri l'applicazione",
       "anotherAccount": "Utilizzare un altro account?",
       "login": "Accedi"
     }
@@ -1084,6 +1081,14 @@
       "teams": "Squadre",
       "teamsWithAccess": "Squadre con accesso:",
       "shareButton": "Condividi"
+    },
+    "restrictedSharingModal": {
+      "title": "Aggiorna per condividere file",
+      "subtitle": "La condivisione di file non è disponibile con il tuo piano attuale. Aggiorna per sbloccare la condivisione sicura dei file."
+    },
+    "restrictedPasswordModal": {
+      "title": "Sblocca la condivisione protetta da password",
+      "subtitle": "Aggiungi un ulteriore livello di sicurezza proteggendo i tuoi link condivisi con una password."
     }
   },
   "form": {
@@ -1143,7 +1148,8 @@
     "maxSizeUploadLimitError": "File troppo grande (superiore a 40GB)",
     "connectionLostError": "Connessione Internet persa",
     "errorLoadingTrashItems": "Errore nel caricamento degli elementi del cestino",
-    "updateAvatarError": "Errore nell'aggiornamento dell'avatar"
+    "updateAvatarError": "Errore nell'aggiornamento dell'avatar",
+    "featuresUnavailable": "Alcune funzionalità potrebbero non essere disponibili"
   },
   "backups": {
     "backups-from": "Backup da {{deviceName}}",
@@ -1482,7 +1488,8 @@
     "more": "Di più",
     "continue": "Continua",
     "keepCurrent": "Mantieni attuale",
-    "logOut": "Disconnettersi"
+    "logOut": "Disconnettersi",
+    "locked": "Bloccato"
   },
   "drive": {
     "usage": "Utilizzo",
@@ -1986,10 +1993,7 @@
           },
           "1GB": {
             "title": "Gratuito",
-            "features": [
-              "1GB di archiviazione criptata a conoscenza zero",
-              "VPN standard gratuita (FR)"
-            ]
+            "features": ["1GB di archiviazione criptata a conoscenza zero", "VPN standard gratuita (FR)"]
           }
         },
         "businessPlanFeaturesList": {

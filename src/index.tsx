@@ -24,6 +24,9 @@ import { ThemeProvider } from 'app/theme/ThemeProvider';
 import { LiveChatLoaderProvider } from 'react-live-chat-loader';
 import { DialogManagerProvider } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import envService from 'app/core/services/env.service';
+import { enforceCanonicalDriveDomain } from 'app/utils/canonicalDomain.utils';
+
+enforceCanonicalDriveDomain();
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));

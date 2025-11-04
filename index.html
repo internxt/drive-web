@@ -26,6 +26,45 @@
     -->
     <title>Internxt Drive – Private & Secure Cloud Storage</title>
 
+    <style>
+      html.dark,
+      html.dark body {
+        background-color: #111;
+        color-scheme: dark;
+      }
+    </style>
+    <script>
+      (function () {
+        try {
+          var storedTheme = localStorage.getItem('theme');
+          var persistedIsDark = localStorage.getItem('theme:isDark');
+          var systemPrefersDark = false;
+
+          try {
+            systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          } catch (matchError) {
+            systemPrefersDark = false;
+          }
+
+          var theme = storedTheme || 'system';
+          var shouldUseDark = false;
+
+          if (persistedIsDark !== null) {
+            shouldUseDark = JSON.parse(persistedIsDark);
+          } else {
+            shouldUseDark =
+              theme === 'dark' ||
+              (theme === 'system' && systemPrefersDark) ||
+              (theme !== 'system' && theme !== 'light');
+          }
+
+          if (shouldUseDark) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (error) {}
+      })();
+    </script>
+
     <script src="https://www.google.com/recaptcha/api.js?render=%REACT_APP_RECAPTCHA_V3%"></script>
     <script src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_ID%"></script>
     <script>
@@ -36,52 +75,6 @@
       gtag('js', new Date());
       gtag('config', '%REACT_APP_GA_ID%', { debug_mode: '%NODE_ENV%' === 'development' });
       gtag('config', '%REACT_APP_GA_BLOG_ID%', { debug_mode: '%NODE_ENV%' === 'development', groups: 'Blog' });
-    </script>
-    <script type="text/javascript">
-      !(function () {
-        let k = '2EFjDkXZ8xv0qKyI2dHZ4d5VtmM';
-        if (location.hostname === 'drive.internxt.com') {
-          k = '2EL15xyzDYBZ1V8C4ov6vX6MSOV';
-        }
-        var e = (window.rudderanalytics = window.rudderanalytics || []);
-        (e.methods = [
-          'load',
-          'page',
-          'track',
-          'identify',
-          'alias',
-          'group',
-          'ready',
-          'reset',
-          'getAnonymousId',
-          'setAnonymousId',
-          'getUserId',
-          'getUserTraits',
-          'getGroupId',
-          'getGroupTraits',
-        ]),
-          (e.factory = function (t) {
-            return function () {
-              var r = Array.prototype.slice.call(arguments);
-              return r.unshift(t), e.push(r), e;
-            };
-          });
-        for (var t = 0; t < e.methods.length; t++) {
-          var r = e.methods[t];
-          e[r] = e.factory(r);
-        }
-        (e.loadJS = function (e, t) {
-          var r = document.createElement('script');
-          (r.type = 'text/javascript'),
-            (r.async = !0),
-            (r.src = 'https://s3.us-east-1.wasabisys.com/djdjdkwl/ruddersnippet.js');
-          var a = document.getElementsByTagName('script')[0];
-          a.parentNode.insertBefore(r, a);
-        }),
-          e.loadJS(),
-          e.load(k, 'https://cdp.internxt.com'),
-          e.page();
-      })();
     </script>
 
     <!-- MailerLite Universal -->

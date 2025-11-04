@@ -4,14 +4,11 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": {"blueText":"Get 87% off", "text":"in all  Plans"},
-    "title": " Claim your exclusive discount!",
-    "subTitle": {
-      "blueText":"Special offer!",
-      "text":"Store files in privacy for even less"
-    },
+    "label": { "blueText": "Get 90% off", "text": "in all  Plans" },
+    "title": "Claim your special Black Friday offer!",
+    "subTitle": "The **biggest discount** for **maximum privacy**",
     "ctaGet": "Accept invite",
-    "ctaContinue":"Continue free",
+    "ctaContinue": "Continue free",
     "guarantee": "30-day money-back guarantee",
     "products": {
       "drive": "Drive",
@@ -182,7 +179,7 @@
     },
     "universalLinkSuccess": {
       "loginAs": "Log in as",
-      "openDesktopApp": "Open the desktop app",
+      "openApp": "Open app",
       "anotherAccount": "Use another account?",
       "login": "Log in"
     }
@@ -1017,6 +1014,14 @@
       "teams": "Teams",
       "teamsWithAcces": "Teams with Access:",
       "shareButton": "Share"
+    },
+    "restrictedSharingModal": {
+      "title": "Upgrade to share files",
+      "subtitle": "Sharing files is not available on your current plan. Upgrade to unlock secure file sharing."
+    },
+    "restrictedPasswordModal": {
+      "title": "Unlock password-protected sharing",
+      "subtitle": "Add an extra layer of security by protecting your shared links with a password."
     }
   },
   "form": {
@@ -1076,7 +1081,8 @@
     "maxSizeUploadLimitError": "File too large (greater than 40GB)",
     "connectionLostError": "Internet connection lost",
     "errorLoadingTrashItems": "Error loading trash items",
-    "updateAvatarError": "Error updating avatar"
+    "updateAvatarError": "Error updating avatar",
+    "featuresUnavailable": "Some features may be unavailable"
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",
@@ -1419,7 +1425,8 @@
     "more": "More",
     "continue": "Continue",
     "keepCurrent": "Keep current",
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "locked": "Locked"
   },
   "drive": {
     "usage": "Usage",
@@ -1933,7 +1940,7 @@
           },
           "1GB": {
             "title": "Free",
-            "features": [ "1GB zero-knowledge encrypted storage","Free Standard VPN (FR)"]
+            "features": ["1GB zero-knowledge encrypted storage", "Free Standard VPN (FR)"]
           }
         },
         "businessPlanFeaturesList": {

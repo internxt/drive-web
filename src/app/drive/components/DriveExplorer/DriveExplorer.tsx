@@ -1,6 +1,9 @@
 import { ArrowFatUp, FileArrowUp, FolderSimplePlus, Trash, UploadSimple } from '@phosphor-icons/react';
-import { RefObject, createRef, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
+import { usePaginationState } from './hooks/usePaginationState';
+import { useTutorialState } from './hooks/useTutorialState';
+import { createFileUploadHandler, createFolderUploadHandler, UPLOAD_ITEMS_LIMIT } from './helpers/uploadHelpers';
 
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
@@ -14,9 +17,8 @@ import { StorageFilters } from '../../../store/slices/storage/storage.model';
 import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useHotkeys } from 'react-hotkeys-hook';
-import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
+import { moveItemsToTrash } from '../../../../views/Trash/services';
 
 import { Role } from '@internxt/sdk/dist/drive/share/types';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
@@ -27,14 +29,13 @@ import deviceService from '../../../core/services/device.service';
 import errorService from '../../../core/services/error.service';
 import navigationService from '../../../core/services/navigation.service';
 import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.service';
-import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
-import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/CreateFolderDialog';
-import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
-import { useTrashPagination } from '../../../drive/hooks/trash/useTrashPagination';
 import {
-  transformInputFilesToJSON,
-  transformJsonFilesToItems,
-} from '../../../drive/services/folder.service/uploadFolderInput.service';
+  ClearTrashDialog,
+  DeleteItemsDialog,
+  StopSharingAndMoveToTrashDialogWrapper,
+} from '../../../../views/Trash/components';
+import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/CreateFolderDialog';
+import { useTrashPagination } from '../../../../views/Trash/hooks';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { uploadFoldersWithManager } from '../../../network/UploadFolderManager';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
@@ -55,10 +56,7 @@ import {
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
 import { IRoot } from '../../../store/slices/storage/types';
 import { uiActions } from '../../../store/slices/ui';
-import { userSelectors } from '../../../store/slices/user';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
-import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
-import { TaskStatus } from '../../../tasks/types';
 import iconService from '../../services/icon.service';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
@@ -66,16 +64,11 @@ import ItemDetailsDialog from '../ItemDetailsDialog/ItemDetailsDialog';
 import MoveItemsDialog from '../MoveItemsDialog/MoveItemsDialog';
 import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
 import ShareDialog from '../ShareDialog/ShareDialog';
-import StopSharingAndMoveToTrashDialogWrapper from '../StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
 import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
 import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
-import newStorageService from 'app/drive/services/new-storage.service';
-import envService from 'app/core/services/env.service';
-
-export const UPLOAD_ITEMS_LIMIT = 3000;
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -89,7 +82,6 @@ interface DriveExplorerProps {
   fetchFolderContent?: () => void;
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
-  user: UserSettings | undefined;
   currentFolderId: string;
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
@@ -144,16 +136,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     filesOnTrashLength,
     hasMoreFolders,
     hasMoreFiles,
-    user,
     getTrashPaginated,
     roles,
     selectedWorkspace,
   } = props;
-  const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
-  const menuItemsRef = useRef<HTMLDivElement | null>(null);
-  const menuContextItemsRef = useRef<HTMLDivElement | null>(null);
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -161,6 +149,29 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const isRecents = title === translate('views.recents.head');
   const isTrash = title === translate('trash.trash');
+
+  // Upload state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const folderInputRef = useRef<HTMLInputElement>(null);
+  const [fileInputKey, setFileInputKey] = useState<number>(0);
+  const [folderInputKey, setFolderInputKey] = useState<number>(0);
+  const resetFileInput = () => setFileInputKey(Date.now());
+  const resetFolderInput = () => setFolderInputKey(Date.now());
+
+  // Context menu state
+  const [isOpen, setIsOpen] = useState(false);
+  const [isListElementsHovered, setIsListElementsHovered] = useState<boolean>(false);
+  const [posX, setPosX] = useState(0);
+  const [posY, setPosY] = useState(0);
+  const [openedWithRightClick, setOpenedWithRightClick] = useState(false);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const menuItemsRef = useRef<HTMLDivElement | null>(null);
+  const menuContextItemsRef = useRef<HTMLDivElement | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const paginationState = usePaginationState({ isTrash, hasMoreFiles, hasMoreFolders });
+  const tutorialState = useTutorialState();
 
   const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
   const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
@@ -170,15 +181,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
   const order = useAppSelector((state: RootState) => state.storage.order);
 
-  // UPLOAD ITEMS STATES
-  const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
-  const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
-  const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
-  const [folderInputKey, setFolderInputKey] = useState<number>(Date.now());
-
-  // PAGINATION STATES
-  const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
-  const hasMoreItemsToLoad = isTrash ? hasMoreItems : hasMoreFiles || hasMoreFolders;
+  const hasMoreItemsToLoad = paginationState.hasMoreItemsToLoad;
   const isEmptyFolder = !isLoading && !hasMoreItemsToLoad;
 
   // TRASH PAGINATION
@@ -193,59 +196,27 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     folderOnTrashLength,
     isTrash: isTrash,
     filesOnTrashLength,
-    setHasMoreItems,
+    setHasMoreItems: paginationState.setHasMoreItems,
     order,
   });
 
-  // RIGHT CLICK MENU STATES
-  const [isListElementsHovered, setIsListElementsHovered] = useState<boolean>(false);
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const [posX, setPosX] = useState(0);
-  const [posY, setPosY] = useState(0);
-  const [openedWithRightClick, setOpenedWithRightClick] = useState(false);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // ONBOARDING TUTORIAL STATES
-  const [hasAnyUploadedFile, setHasAnyUploadedFile] = useState<boolean | undefined>();
-  const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
-  const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
-  const uploadFileButtonRef = useRef(null);
-  const successNotifications = useTaskManagerGetNotifications({
-    status: [TaskStatus.Success],
-  });
-  const divRef = useRef<HTMLDivElement | null>(null);
-  const hasSignedToday = useAppSelector(userSelectors.hasSignedToday);
-
-  const showTutorial =
-    hasAnyUploadedFile !== undefined &&
-    !hasAnyUploadedFile &&
-    envService.isProduction() &&
-    hasSignedToday &&
-    (showSecondTutorialStep || currentTutorialStep === 0);
   const signupSteps = getSignUpSteps(
     {
       onNextStepClicked: () => {
         setTimeout(() => {
           onUploadFileButtonClicked();
         }, 0);
-        passToNextStep();
+        tutorialState.passToNextStep();
       },
-      stepOneTutorialRef: uploadFileButtonRef,
-      offset: hasAnyItemSelected ? { x: divRef?.current?.offsetWidth ?? 0, y: 0 } : { x: 0, y: 0 },
+      stepOneTutorialRef: tutorialState.uploadFileButtonRef,
+      offset: hasAnyItemSelected ? { x: tutorialState.divRef?.current?.offsetWidth ?? 0, y: 0 } : { x: 0, y: 0 },
     },
     {
       onNextStepClicked: () => {
-        passToNextStep();
+        tutorialState.passToNextStep();
       },
     },
   );
-
-  useEffect(() => {
-    if (!hasAnyUploadedFile && currentTutorialStep === 1 && successNotifications[0]?.status === TaskStatus.Success) {
-      setShowSecondTutorialStep(true);
-    }
-  }, [currentTutorialStep, successNotifications]);
 
   const realtimeService = RealtimeService.getInstance();
   const handleFileCreatedEvent = (data) => {
@@ -283,29 +254,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if ((!isTrash && !hasMoreFolders) || (isTrash && !hasMoreTrashFolders)) {
-      fetchItems();
-    }
-  }, [hasMoreFolders, hasMoreTrashFolders]);
-
-  useEffect(() => {
-    if (!isTrash && !hasMoreFiles) {
-      setHasMoreItems(false);
-    }
-  }, [hasMoreFiles]);
-
-  useEffect(() => {
-    if (hasMoreFiles && hasMoreFolders) {
-      setHasMoreItems(true);
-    }
-  }, [hasMoreFiles, hasMoreFolders]);
-
-  useEffect(() => {
-    resetPaginationState();
-    fetchItems();
-  }, [currentFolderId, order]);
-
-  useEffect(() => {
     if (
       menuItemsRef.current &&
       (menuItemsRef.current.offsetHeight !== dimensions.height ||
@@ -315,19 +263,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         width: menuItemsRef?.current?.offsetWidth || 0,
         height: menuItemsRef?.current?.offsetHeight || 0,
       });
-    }
-  }, []);
-
-  useEffect(() => {
-    if (hasSignedToday) {
-      newStorageService
-        .hasUploadedFiles()
-        .then(({ hasUploadedFiles }) => {
-          setHasAnyUploadedFile(hasUploadedFiles);
-        })
-        .catch((error) => {
-          errorService.reportError(error);
-        });
     }
   }, []);
 
@@ -347,19 +282,26 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     };
   }, []);
 
+  useEffect(() => {
+    if ((!isTrash && !hasMoreFolders) || (isTrash && !hasMoreTrashFolders)) {
+      fetchItems();
+    }
+  }, [hasMoreFolders, hasMoreTrashFolders]);
+
+  useEffect(() => {
+    resetPaginationState();
+    fetchItems();
+  }, [currentFolderId, order]);
+
   const resetPaginationState = () => {
     dispatch(storageActions.resetTrash());
-    setHasMoreItems(true);
+    paginationState.resetPaginationState();
     setHasMoreTrashFolders(true);
     setIsLoadingTrashItems(false);
   };
 
   const fetchItems = () =>
     isTrash ? getMoreTrashItems() : dispatch(fetchPaginatedFolderContentThunk(currentFolderId));
-
-  const passToNextStep = () => {
-    setCurrentTutorialStep(currentTutorialStep + 1);
-  };
 
   const onDetailsButtonClicked = useCallback(
     (item: DriveItemData | AdvancedSharedItem) => {
@@ -396,43 +338,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     folderInputRef.current?.click();
   }, [currentFolderId]);
 
-  const onUploadFileInputChanged = async (e) => {
-    const files = e.target.files;
+  const onUploadFileInputChanged = createFileUploadHandler(dispatch, currentFolderId, onFileUploaded, resetFileInput);
 
-    if (files.length <= UPLOAD_ITEMS_LIMIT) {
-      const unrepeatedUploadedFiles = (await handleRepeatedUploadingFiles(
-        Array.from(files),
-        dispatch,
-        currentFolderId,
-      )) as File[];
-      dispatch(
-        storageThunks.uploadItemsThunk({
-          files: Array.from(unrepeatedUploadedFiles),
-          parentFolderId: currentFolderId,
-        }),
-      ).then(() => {
-        onFileUploaded && onFileUploaded();
-        dispatch(fetchSortedFolderContentThunk(currentFolderId));
-      });
-      setFileInputKey(Date.now());
-    } else {
-      dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
-      notificationsService.show({
-        text: translate('drive.uploadItems.advice'),
-        type: ToastType.Warning,
-      });
-    }
-  };
-
-  const onUploadFolderInputChanged = async (e) => {
-    const files = e?.target?.files as File[];
-
-    const filesJson = transformInputFilesToJSON(files);
-    const { rootList, rootFiles } = transformJsonFilesToItems(filesJson, currentFolderId);
-
-    await uploadItems(props, rootList, rootFiles);
-    setFolderInputKey(Date.now());
-  };
+  const onUploadFolderInputChanged = createFolderUploadHandler(currentFolderId, props, uploadItems, resetFolderInput);
 
   const onCreateFolderButtonClicked = useCallback((): void => {
     errorService.addBreadcrumb({
@@ -694,7 +602,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             {!isTrash && (
               <div className="flex items-center justify-center">
                 <DriveTopBarItems
-                  stepOneTutorialRef={uploadFileButtonRef}
+                  stepOneTutorialRef={tutorialState.uploadFileButtonRef}
                   onCreateFolderButtonClicked={onCreateFolderButtonClicked}
                   onUploadFileButtonClicked={onUploadFileButtonClicked}
                   onUploadFolderButtonClicked={onUploadFolderButtonClicked}
@@ -708,7 +616,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               currentFolderId={currentFolderId}
               setEditNameItem={setEditNameItem}
               hasItems={hasItems}
-              driveActionsRef={divRef}
+              driveActionsRef={tutorialState.divRef}
               roles={roles}
             />
           </div>
@@ -841,12 +749,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  return !isTrash ? (
-    <Tutorial show={showTutorial} steps={signupSteps} currentStep={currentTutorialStep}>
+  if (isTrash) {
+    return driveExplorer;
+  }
+
+  return (
+    <Tutorial show={tutorialState.showTutorial} steps={signupSteps} currentStep={tutorialState.currentTutorialStep}>
       {connectDropTarget(driveExplorer) || driveExplorer}
     </Tutorial>
-  ) : (
-    driveExplorer
   );
 };
 
