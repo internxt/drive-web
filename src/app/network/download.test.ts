@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { IDownloadParams } from './download';
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
-import { downloadFileV2 } from './download/v2';
+import { downloadV2 } from './download/v2';
 import { multipartDownloadFile } from './download';
 import { legacyDownload } from './download/LegacyDownload';
 import { MaxRetriesExceededError } from './errors/download.errors';
@@ -30,7 +30,7 @@ describe('Download functions', () => {
       const params = createMockParams();
       const mockStream = new ReadableStream<Uint8Array>();
 
-      const multipartDownloadSpy = vi.spyOn(downloadFileV2, 'multipartDownload').mockResolvedValue(mockStream);
+      const multipartDownloadSpy = vi.spyOn(downloadV2, 'multipartDownload').mockResolvedValue(mockStream);
 
       const result = await multipartDownloadFile(params);
 
@@ -45,7 +45,7 @@ describe('Download functions', () => {
       const fileVersionOneError = new FileVersionOneError();
 
       const legacyFileDownloadSpy = vi.spyOn(legacyDownload, 'downloadFile').mockResolvedValue(legacyMockStream);
-      vi.spyOn(downloadFileV2, 'multipartDownload').mockRejectedValue(fileVersionOneError);
+      vi.spyOn(downloadV2, 'multipartDownload').mockRejectedValue(fileVersionOneError);
 
       const result = await multipartDownloadFile(params);
 
@@ -58,7 +58,7 @@ describe('Download functions', () => {
       const params = createMockParams();
       const networkError = new MaxRetriesExceededError(3, 'Network Error');
 
-      vi.spyOn(downloadFileV2, 'multipartDownload').mockRejectedValue(networkError);
+      vi.spyOn(downloadV2, 'multipartDownload').mockRejectedValue(networkError);
 
       await expect(multipartDownloadFile(params)).rejects.toThrow(networkError);
     });

@@ -1,23 +1,8 @@
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import createFileDownloadStream from 'app/drive/services/download.service/createFileDownloadStream';
 import createMultipartFileDownloadStream from 'app/drive/services/download.service/createMultipartDownloadStream';
-import { DriveFileData } from 'app/drive/types';
 import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
-
-export interface DownloadFilePayload {
-  file: DriveFileData;
-  isWorkspace: boolean;
-  isBrave: boolean;
-  credentials: any;
-}
-
-interface DownloadFileCallback {
-  onProgress: (progress: number) => void;
-  onSuccess: (fileId: string) => void;
-  onError: (error: any) => void;
-  onBlob: (blob: Blob) => void;
-  onChunk: (chunk: Uint8Array) => void;
-}
+import { DownloadFileCallback, DownloadFilePayload } from './types/download';
 
 export class DownloadWorker {
   static readonly instance: DownloadWorker = new DownloadWorker();
@@ -40,13 +25,7 @@ export class DownloadWorker {
 
     const getFileReadableStream = async () => {
       if (file.size >= MIN_DOWNLOAD_MULTIPART_SIZE) {
-        return createMultipartFileDownloadStream(
-          file,
-          callbacks.onProgress,
-          isWorkspace,
-          this.abortController,
-          credentials,
-        );
+        return createMultipartFileDownloadStream(file, callbacks.onProgress, credentials, this.abortController);
       }
 
       return createFileDownloadStream(file, isWorkspace, callbacks.onProgress, this.abortController, credentials);
@@ -58,7 +37,7 @@ export class DownloadWorker {
         type: file.type,
       });
 
-      const downloadedFile: ReadableStream<Uint8Array<ArrayBufferLike>> = await getFileReadableStream();
+      const downloadedFile: ReadableStream<Uint8Array> = await getFileReadableStream();
 
       this.abortController.signal.addEventListener('abort', abortHandler);
 
@@ -84,7 +63,7 @@ export class DownloadWorker {
   }
 
   private async downloadUsingChunks(
-    reader: ReadableStreamDefaultReader<Uint8Array<ArrayBufferLike>>,
+    reader: ReadableStreamDefaultReader<Uint8Array>,
     onChunk: (chunk: Uint8Array) => void,
   ) {
     console.log('[DOWNLOAD-WORKER] Downloading using readable stream');

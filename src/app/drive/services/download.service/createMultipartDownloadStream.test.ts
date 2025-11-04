@@ -2,7 +2,6 @@ import { describe, expect, vi, beforeEach, test } from 'vitest';
 import { DriveFileData } from '../../types';
 
 vi.mock('app/network/download');
-vi.mock('../network.service');
 
 const mockedSharingOptions = {
   credentials: { user: 'sharing-user', pass: 'sharing-password' },
@@ -33,21 +32,12 @@ describe('createMultipartFileDownloadStream', () => {
   test('When using sharing options, then it should use sharing credentials and mnemonic', async () => {
     const mockReadableStream = new ReadableStream();
     const { multipartDownloadFile } = await import('app/network/download');
-    const { getEnvironmentConfig } = await import('../network.service');
     const createMultipartFileDownloadStream = (await import('./createMultipartDownloadStream')).default;
 
     vi.mocked(multipartDownloadFile).mockResolvedValue(mockReadableStream);
-    vi.mocked(getEnvironmentConfig).mockReturnValue(mockedEnvironmentConfig as any);
 
-    const result = await createMultipartFileDownloadStream(
-      baseFile,
-      mockProgress,
-      false,
-      undefined,
-      mockedSharingOptions,
-    );
+    const result = await createMultipartFileDownloadStream(baseFile, mockProgress, mockedSharingOptions, undefined);
 
-    expect(getEnvironmentConfig).toHaveBeenCalledWith(false);
     expect(multipartDownloadFile).toHaveBeenCalledWith({
       bucketId: baseFile.bucket,
       fileId: baseFile.fileId,
@@ -57,34 +47,6 @@ describe('createMultipartFileDownloadStream', () => {
         pass: mockedSharingOptions.credentials.pass,
       },
       mnemonic: mockedSharingOptions.mnemonic,
-      options: {
-        notifyProgress: expect.any(Function),
-        abortController: undefined,
-      },
-    });
-    expect(result).toStrictEqual(mockReadableStream);
-  });
-
-  test('When not using sharing options, then it should use environment credentials and mnemonic', async () => {
-    const mockReadableStream = new ReadableStream();
-    const { multipartDownloadFile } = await import('app/network/download');
-    const { getEnvironmentConfig } = await import('../network.service');
-    const createMultipartFileDownloadStream = (await import('./createMultipartDownloadStream')).default;
-
-    vi.mocked(multipartDownloadFile).mockResolvedValue(mockReadableStream);
-    vi.mocked(getEnvironmentConfig).mockReturnValue(mockedEnvironmentConfig as any);
-
-    const result = await createMultipartFileDownloadStream(baseFile, mockProgress, false, undefined, undefined);
-
-    expect(multipartDownloadFile).toHaveBeenCalledWith({
-      bucketId: baseFile.bucket,
-      fileId: baseFile.fileId,
-      fileSize: baseFile.size,
-      creds: {
-        user: mockedEnvironmentConfig.bridgeUser,
-        pass: mockedEnvironmentConfig.bridgePass,
-      },
-      mnemonic: mockedEnvironmentConfig.encryptionKey,
       options: {
         notifyProgress: expect.any(Function),
         abortController: undefined,
