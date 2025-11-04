@@ -1,7 +1,7 @@
-import { useSignUp } from '../hooks/useSignup';
+import { useSignUp } from '../../hooks/useSignup';
 import { useAppDispatch } from 'app/store/hooks';
 import React, { useState } from 'react';
-import signup from '../utils/signup';
+import { signup } from '../../services';
 
 export default function ButtonAuth() {
   const dispatch = useAppDispatch();

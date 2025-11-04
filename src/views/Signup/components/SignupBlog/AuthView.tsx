@@ -1,5 +1,5 @@
 import { useAppDispatch } from 'app/store/hooks';
-import { useSignUp } from '../hooks/useSignup';
+import { useSignUp } from '../../hooks/useSignup';
 import { useState } from 'react';
 
 import { IFormValues } from 'app/core/types';
@@ -7,7 +7,7 @@ import { WarningCircle } from '@phosphor-icons/react';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { useForm } from 'react-hook-form';
-import signup from '../utils/signup';
+import { signup } from '../../services';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export const SignupComponent = ({

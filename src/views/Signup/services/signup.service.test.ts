@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import signup from './signup';
+import signup from './signup.service';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import { planThunks } from 'app/store/slices/plan';
