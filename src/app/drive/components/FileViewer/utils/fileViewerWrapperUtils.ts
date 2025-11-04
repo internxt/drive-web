@@ -8,13 +8,13 @@ import {
 } from 'app/drive/services/database.service';
 import { DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem, PreviewFileItem } from 'app/share/types';
-import { DriveItemActions } from '../../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
+import { DriveItemActions } from 'views/Drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import {
   contextMenuDriveItemShared,
   contextMenuDriveItemSharedAFS,
   contextMenuDriveNotSharedLink,
   contextMenuTrashItems,
-} from '../../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+} from 'views/Drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import { MenuItemType } from '@internxt/ui';
 import { TopBarActionsMenu } from '../types';
 

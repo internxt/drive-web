@@ -1,8 +1,8 @@
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { ArrowRight } from '@phosphor-icons/react';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import sizeService from '../../../../drive/services/size.service';
-import { FreeStoragePlan } from '../../../../drive/types';
+import sizeService from 'app/drive/services/size.service';
+import { FreeStoragePlan } from 'app/drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import paymentService from '../../../../payment/services/payment.service';

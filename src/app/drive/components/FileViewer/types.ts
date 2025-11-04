@@ -1,5 +1,5 @@
-import { DriveItemData } from '../../types';
-import { AdvancedSharedItem } from '../../../share/types';
+import { DriveItemData } from 'app/drive/types';
+import { AdvancedSharedItem } from 'app/share/types';
 import { MenuItemType } from '@internxt/ui';
 
 export type TopBarActionsMenu =

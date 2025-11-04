@@ -4,8 +4,8 @@ import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import { Button } from '@internxt/ui';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
-import DriveStorageError from '../../../../assets/images/drive-error.svg';
-import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import DriveStorageError from 'assets/images/drive-error.svg';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 const ReachedPlanLimitDialog = (): JSX.Element => {
   const { translate } = useTranslationContext();

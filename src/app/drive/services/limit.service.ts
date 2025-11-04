@@ -1,5 +1,5 @@
 import { bytesToString } from './size.service';
-import { SdkFactory } from '../../core/factory/sdk';
+import { SdkFactory } from 'app/core/factory/sdk';
 import { HUNDRED_TB } from 'app/core/constants';
 
 async function fetchLimit(): Promise<number> {

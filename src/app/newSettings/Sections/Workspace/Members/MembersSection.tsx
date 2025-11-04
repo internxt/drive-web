@@ -3,7 +3,7 @@ import Section from 'app/newSettings/components/Section';
 import { useEffect, useState } from 'react';
 import errorService from '../../../../core/services/error.service';
 import workspacesService from '../../../../core/services/workspace.service';
-import { bytesToString } from '../../../../drive/services/size.service';
+import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import UsageBar from '../../../../newSettings/components/Usage/UsageBar';
 import { getMemberRole, searchMembers } from '../../../../newSettings/utils/membersUtils';

@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
-import { bytesToString } from '../../../../../drive/services/size.service';
+import { bytesToString } from 'app/drive/services/size.service';
 
 import Card from 'app/shared/components/Card';
 

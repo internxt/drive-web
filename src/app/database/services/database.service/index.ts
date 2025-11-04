@@ -1,6 +1,6 @@
 import { DBSchema } from 'idb';
 import configService from '../../../core/services/config.service';
-import { DriveItemData } from '../../../drive/types';
+import { DriveItemData } from 'app/drive/types';
 import { TaskStatus } from '../../../tasks/types';
 import { DatabaseProvider, DatabaseCollection, LRUCacheTypes } from '../../types';
 import { LRUCacheStruture } from './LRUCache';

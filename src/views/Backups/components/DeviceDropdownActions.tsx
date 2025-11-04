@@ -1,7 +1,7 @@
 import React, { MouseEvent, ReactNode } from 'react';
 import UilTrashAlt from '@iconscout/react-unicons/icons/uil-trash-alt';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { DriveItemAction } from '../../../app/drive/components/DriveExplorer/DriveExplorerItem';
+import { DriveItemAction } from 'views/Drive/components/DriveExplorer/DriveExplorerItem';
 
 interface DeviceDropdownActionsProps {
   title?: string;

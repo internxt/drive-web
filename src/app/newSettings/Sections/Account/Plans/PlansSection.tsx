@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
-import { FreeStoragePlan } from '../../../../drive/types';
+import { FreeStoragePlan } from 'app/drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import paymentService from '../../../../payment/services/payment.service';

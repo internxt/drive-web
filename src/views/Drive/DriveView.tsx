@@ -15,7 +15,7 @@ import { Helmet } from 'react-helmet-async';
 import useDriveNavigation from 'app/routes/hooks/Drive/useDrive';
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import DriveExplorer from 'app/drive/components/DriveExplorer/DriveExplorer';
+import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from 'app/drive/types';
 import { workspacesActions, workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -193,7 +193,7 @@ const DriveView = (props: DriveViewProps) => {
 };
 
 const sortFoldersFirst = (items: DriveItemData[]) =>
-  items.toSorted((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
+  [...items].sort((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
 
 export default connect((state: RootState) => {
   const currentFolderId = storageSelectors.currentFolderId(state);

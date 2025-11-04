@@ -2,7 +2,7 @@ import { Invoice } from '@internxt/sdk/dist/drive/payments/types/types';
 import { DownloadSimple } from '@phosphor-icons/react';
 import { useState } from 'react';
 import dateService from '../../../core/services/date.service';
-import { bytesToString } from '../../../drive/services/size.service';
+import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import currencyService from 'app/payment/services/currency.service';
 import { Loader } from '@internxt/ui';

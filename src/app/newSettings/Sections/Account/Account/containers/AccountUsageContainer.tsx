@@ -5,7 +5,7 @@ import { useAppSelector } from 'app/store/hooks';
 import { useDispatch, useSelector } from 'react-redux';
 import errorService from '../../../../../core/services/error.service';
 import navigationService from '../../../../../core/services/navigation.service';
-import usageService, { UsageDetailsProps } from '../../../../../drive/services/usage.service';
+import usageService, { UsageDetailsProps } from 'app/drive/services/usage.service';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import { Button, Loader } from '@internxt/ui';
 import Card from '../../../../../shared/components/Card';

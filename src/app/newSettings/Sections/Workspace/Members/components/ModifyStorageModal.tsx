@@ -4,7 +4,7 @@ import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { ActionDialog } from '../../../../../contexts/dialog-manager/ActionDialogManager.context';
-import { bytesToString } from '../../../../../drive/services/size.service';
+import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 
 import { MemberRole } from '../../../../../newSettings/types/types';

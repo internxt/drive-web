@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { userThunks } from 'app/store/slices/user';
 import desktopService from 'app/core/services/desktop.service';
-import 'app/share/views/ShareView/ShareView.scss';
+import 'views/PublicShared/components/ShareView.scss';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';

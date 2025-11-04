@@ -1,5 +1,5 @@
 import { t } from 'i18next';
-import { UsageDetailsProps } from '../../drive/services/usage.service';
+import { UsageDetailsProps } from 'app/drive/services/usage.service';
 import UsageDetails from '../../shared/components/UsageDetails';
 
 const getProductCaptions = (usageDetails: UsageDetailsProps | null) => {

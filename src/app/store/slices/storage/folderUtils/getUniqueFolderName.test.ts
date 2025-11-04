@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import newStorageService from '../../../../drive/services/new-storage.service';
-import { DriveFolderData } from '../../../../drive/types';
+import newStorageService from 'app/drive/services/new-storage.service';
+import { DriveFolderData } from 'app/drive/types';
 
 import { getUniqueFolderName } from './getUniqueFolderName';
 import renameFolderIfNeeded from './renameFolderIfNeeded';
 
-vi.mock('../../../../drive/services/new-storage.service', () => ({
+vi.mock('app/drive/services/new-storage.service', () => ({
   default: {
     checkDuplicatedFolders: vi.fn(),
   },

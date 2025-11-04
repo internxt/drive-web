@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import errorService from '../../../../core/services/error.service';
 import localStorageService from '../../../../core/services/local-storage.service';
 import workspacesService from '../../../../core/services/workspace.service';
-import { UsageDetailsProps } from '../../../../drive/services/usage.service';
+import { UsageDetailsProps } from 'app/drive/services/usage.service';
 import Section from '../../../../newSettings/components/Section';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import Card from '../../../../shared/components/Card';

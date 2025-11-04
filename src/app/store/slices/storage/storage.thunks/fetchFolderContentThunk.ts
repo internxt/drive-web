@@ -5,7 +5,7 @@ import { storageActions } from '..';
 import { RootState } from '../../..';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
-import { DriveItemData } from '../../../../drive/types';
+import { DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';

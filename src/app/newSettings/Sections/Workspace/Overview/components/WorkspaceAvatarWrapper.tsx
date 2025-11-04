@@ -5,7 +5,7 @@ import {
   deleteDatabaseWorkspaceAvatar,
   getDatabaseWorkspaceAvatar,
   updateDatabaseWorkspaceAvatar,
-} from '../../../../../drive/services/database.service';
+} from 'app/drive/services/database.service';
 import { useAvatar } from 'hooks/useAvatar';
 import { showUpdateAvatarErrorToast } from 'app/newSettings/Sections/Account/Account/components/AvatarWrapper';
 

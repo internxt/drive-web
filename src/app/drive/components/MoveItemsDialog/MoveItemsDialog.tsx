@@ -21,13 +21,13 @@ import { useSelector } from 'react-redux';
 import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
-} from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
-import { IRoot } from '../../../store/slices/storage/types';
-import { DriveFileData, DriveFolderData, DriveItemData, FolderPathDialog } from '../../types';
-import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
-import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
-import localStorageService from '../../../core/services/local-storage.service';
-import { STORAGE_KEYS } from '../../../core/services/storage-keys';
+} from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
+import { IRoot } from 'app/store/slices/storage/types';
+import { DriveFileData, DriveFolderData, DriveItemData, FolderPathDialog } from 'app/drive/types';
+import CreateFolderDialog from 'views/Drive/components/CreateFolderDialog/CreateFolderDialog';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import localStorageService from 'app/core/services/local-storage.service';
+import { STORAGE_KEYS } from 'app/core/services/storage-keys';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;

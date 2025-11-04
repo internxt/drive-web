@@ -3,7 +3,7 @@ import { connect, useSelector } from 'react-redux';
 import { matchPath } from 'react-router-dom';
 
 import desktopService from 'app/core/services/desktop.service';
-import PlanUsage from 'app/drive/components/PlanUsage/PlanUsage';
+import PlanUsage from 'views/Home/components/PlanUsage/PlanUsage';
 import { RootState } from 'app/store';
 import { planSelectors } from 'app/store/slices/plan';
 import navigationService from 'app/core/services/navigation.service';
@@ -20,7 +20,7 @@ import { t } from 'i18next';
 import localStorageService from 'app/core/services/local-storage.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import SidenavItem from './SidenavItem/SidenavItem';
-import WorkspaceSelectorContainer from '../../views/Drive/components/WorkspaceSelectorContainer';
+import WorkspaceSelectorContainer from 'views/Home/components/WorkspaceSelectorContainer';
 import { STORAGE_KEYS } from 'app/core/services/storage-keys';
 import { HUNDRED_TB } from 'app/core/constants';
 import { useEffect } from 'react';
