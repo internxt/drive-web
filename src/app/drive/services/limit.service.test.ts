@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { SdkFactory } from '../../core/factory/sdk';
+import { SdkFactory } from 'app/core/factory/sdk';
 import limitService from './limit.service';
 
-vi.mock('../../core/factory/sdk', () => ({
+vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(),
   },

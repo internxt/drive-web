@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { getDatabaseProfileAvatar } from '../../services/database.service';
-import { userThunks } from '../../../store/slices/user';
+import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
+import { userThunks } from 'app/store/slices/user';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import devices from 'assets/images/mobile-app/devices.png';

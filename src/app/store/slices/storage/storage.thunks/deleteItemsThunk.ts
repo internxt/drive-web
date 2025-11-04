@@ -3,7 +3,7 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { DriveItemData } from '../../../../drive/types';
+import { DriveItemData } from 'app/drive/types';
 import { planThunks } from '../../plan';
 
 export const deleteItemsThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(

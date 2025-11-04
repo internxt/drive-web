@@ -1,4 +1,4 @@
-import { DriveItemData } from '../drive/types';
+import { DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem } from '../share/types';
 
 type ItemData = AdvancedSharedItem | DriveItemData;

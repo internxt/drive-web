@@ -19,7 +19,7 @@ import { downloadFile, NetworkCredentials } from 'app/network/download';
 import localStorageService from 'app/core/services/local-storage.service';
 import date from 'app/core/services/date.service';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { ConnectionLostError } from './../../network/requests';
+import { ConnectionLostError } from 'app/network/requests';
 import { ErrorMessages } from 'app/core/constants';
 import {
   FolderIterator,

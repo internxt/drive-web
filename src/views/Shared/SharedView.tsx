@@ -19,7 +19,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';
 import { moveItemsToTrash } from '../Trash/services';
 import errorService from '../../app/core/services/error.service';
-import { UPLOAD_ITEMS_LIMIT } from '../../app/drive/components/DriveExplorer/helpers/uploadHelpers';
+import { UPLOAD_ITEMS_LIMIT } from 'views/Drive/components/DriveExplorer/helpers/uploadHelpers';
 import EditItemNameDialog from '../../app/drive/components/EditItemNameDialog/EditItemNameDialog';
 import FileViewerWrapper from '../../app/drive/components/FileViewer/FileViewerWrapper';
 import ItemDetailsDialog from '../../app/drive/components/ItemDetailsDialog/ItemDetailsDialog';
@@ -28,7 +28,7 @@ import NameCollisionContainer from '../../app/drive/components/NameCollisionDial
 import ShareDialog from '../../app/drive/components/ShareDialog/ShareDialog';
 import ShowInvitationsDialog from '../../app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
 import StopSharingAndMoveToTrashDialogWrapper from '../Trash/components/StopSharingAndMoveToTrashDialogWrapper';
-import WarningMessageWrapper from '../../app/drive/components/WarningMessage/WarningMessageWrapper';
+import WarningMessageWrapper from 'views/Home/components/WarningMessage/WarningMessageWrapper';
 import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../app/share/types';
 import { RootState } from '../../app/store';
 import { sharedActions, sharedThunks } from '../../app/store/slices/sharedLinks';

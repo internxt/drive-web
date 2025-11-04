@@ -8,11 +8,11 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { IFormValues } from '../../../core/types';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { RootState } from '../../../store';
-import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sharedLinks';
-import { Role } from '../../../store/slices/sharedLinks/types';
+import { IFormValues } from 'app/core/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { RootState } from 'app/store';
+import { ShareFileWithUserPayload, sharedThunks } from 'app/store/slices/sharedLinks';
+import { Role } from 'app/store/slices/sharedLinks/types';
 import ShareUserNotRegistered from '../ShareUserNotRegistered/ShareUserNotRegistered';
 import './ShareInviteDialog.scss';
 

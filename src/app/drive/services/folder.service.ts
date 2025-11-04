@@ -6,9 +6,9 @@ import { FlatFolderZip } from 'app/core/services/zip.service';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { downloadFile } from 'app/network/download';
 import { t } from 'i18next';
-import { SdkFactory } from '../../core/factory/sdk';
-import errorService from '../../core/services/error.service';
-import workspacesService from '../../core/services/workspace.service';
+import { SdkFactory } from 'app/core/factory/sdk';
+import errorService from 'app/core/services/error.service';
+import workspacesService from 'app/core/services/workspace.service';
 import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData } from '../types';
 import { updateDatabaseFileSourceData } from './database.service';
 import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
@@ -22,8 +22,8 @@ import {
   SharedFolderIterator,
   isLostConnectionError,
 } from '../types/download-types';
-import { DriveItemBlobData } from '../../database/services/database.service';
-import dateService from '../../core/services/date.service';
+import { DriveItemBlobData } from 'app/database/services/database.service';
+import dateService from 'app/core/services/date.service';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { queue, QueueObject } from 'async';
 import { QueueUtilsService } from 'app/utils/queueUtils';
