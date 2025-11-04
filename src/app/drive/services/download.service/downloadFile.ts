@@ -5,7 +5,7 @@ import fetchFileStream from './fetchFileStream';
 import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';
 import { ErrorMessages } from 'app/core/constants';
 import { BlobWritable, downloadFileAsBlob } from './downloadFileAsBlob';
-import streamSaver from '../../../../services/streamSaver';
+import streamSaver from '../../../../services/StreamSaver';
 
 async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
   const reader = readable.getReader();

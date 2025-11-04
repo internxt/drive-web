@@ -2,7 +2,7 @@ vi.mock('../download.service/downloadFileFromBlob', () => ({
   default: vi.fn(),
 }));
 
-import streamSaver from '../../../../services/streamSaver';
+import streamSaver from '../../../../services/StreamSaver';
 import { describe, test, expect, vi, Mock, beforeEach } from 'vitest';
 import { downloadWorkerHandler } from './downloadWorkerHandler';
 import { DriveFileData } from 'app/drive/types';

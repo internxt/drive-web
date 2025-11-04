@@ -1,14 +1,6 @@
 export interface StreamSaverOptions {
   size?: number | null;
-
-  /**
-   * Custom pathname for the download URL
-   */
   pathname?: string | null;
-
-  /**
-   * Headers to pass to the service worker
-   */
   headers?: HeadersInit;
 }
 
