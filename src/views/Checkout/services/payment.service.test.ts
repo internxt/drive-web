@@ -163,6 +163,82 @@ describe('paymentService', () => {
     });
   });
 
+  describe('getUserSubscription', () => {
+    it('retrieves individual user subscription details', async () => {
+      const mockSubscription = {
+        id: 'sub_123',
+        type: 'subscription',
+        status: 'active',
+      };
+      mockPaymentsClient.getUserSubscription.mockResolvedValue(mockSubscription as any);
+
+      const result = await paymentService.getUserSubscription(UserType.Individual);
+
+      expect(mockPaymentsClient.getUserSubscription).toHaveBeenCalledWith(UserType.Individual);
+      expect(result).toEqual(mockSubscription);
+    });
+
+    it('retrieves subscription without specifying user type', async () => {
+      const mockSubscription = {
+        id: 'sub_456',
+        type: 'subscription',
+        status: 'active',
+      };
+      mockPaymentsClient.getUserSubscription.mockResolvedValue(mockSubscription as any);
+
+      const result = await paymentService.getUserSubscription();
+
+      expect(mockPaymentsClient.getUserSubscription).toHaveBeenCalledWith(undefined);
+      expect(result).toEqual(mockSubscription);
+    });
+  });
+
+  describe('getPrices', () => {
+    it('fetches prices for specific currency and user type', async () => {
+      const mockPrices = [
+        { id: 'price_1', amount: 999, currency: 'eur' },
+        { id: 'price_2', amount: 1999, currency: 'eur' },
+      ];
+      mockPaymentsClient.getPrices.mockResolvedValue(mockPrices as any);
+
+      const result = await paymentService.getPrices('eur', UserType.Individual);
+
+      expect(mockPaymentsClient.getPrices).toHaveBeenCalledWith('eur', UserType.Individual);
+      expect(result).toEqual(mockPrices);
+    });
+
+    it('fetches prices without parameters', async () => {
+      const mockPrices = [{ id: 'price_3', amount: 1299, currency: 'usd' }];
+      mockPaymentsClient.getPrices.mockResolvedValue(mockPrices as any);
+
+      const result = await paymentService.getPrices();
+
+      expect(mockPaymentsClient.getPrices).toHaveBeenCalledWith(undefined, undefined);
+      expect(result).toEqual(mockPrices);
+    });
+  });
+
+  describe('isCouponUsedByUser', () => {
+    it('detects when user already redeemed coupon', async () => {
+      const couponCode = 'SAVE20';
+      mockPaymentsClient.isCouponUsedByUser.mockResolvedValue({ couponUsed: true });
+
+      const result = await paymentService.isCouponUsedByUser(couponCode);
+
+      expect(mockPaymentsClient.isCouponUsedByUser).toHaveBeenCalledWith({ couponCode });
+      expect(result).toEqual({ couponUsed: true });
+    });
+
+    it('allows unused coupons to be applied', async () => {
+      const couponCode = 'DISCOUNT10';
+      mockPaymentsClient.isCouponUsedByUser.mockResolvedValue({ couponUsed: false });
+
+      const result = await paymentService.isCouponUsedByUser(couponCode);
+
+      expect(mockPaymentsClient.isCouponUsedByUser).toHaveBeenCalledWith({ couponCode: 'DISCOUNT10' });
+      expect(result).toEqual({ couponUsed: false });
+    });
+  });
   describe('createSubscriptionWithTrial', () => {
     it('activates free trial period', async () => {
       vi.spyOn(localStorageService, 'get').mockReturnValue('token');
