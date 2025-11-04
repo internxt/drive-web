@@ -27,7 +27,7 @@ import MoveItemsDialog from '../../app/drive/components/MoveItemsDialog/MoveItem
 import NameCollisionContainer from '../../app/drive/components/NameCollisionDialog/NameCollisionContainer';
 import ShareDialog from '../../app/drive/components/ShareDialog/ShareDialog';
 import ShowInvitationsDialog from '../../app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
-import StopSharingAndMoveToTrashDialogWrapper from '../Trash';
+import StopSharingAndMoveToTrashDialogWrapper from '../Trash/components/StopSharingAndMoveToTrashDialogWrapper';
 import WarningMessageWrapper from '../../app/drive/components/WarningMessage/WarningMessageWrapper';
 import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../app/share/types';
 import { RootState } from '../../app/store';
