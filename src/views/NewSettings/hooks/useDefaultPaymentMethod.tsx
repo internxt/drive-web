@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { PaymentMethod, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { Source } from '@stripe/stripe-js';
 
-import paymentService from '../../../views/Checkout/services/payment.service';
+import { paymentService } from 'views/Checkout/services';
 
 interface DefaultPaymentMethodProps {
   tag: 'ready' | 'loading' | 'empty';

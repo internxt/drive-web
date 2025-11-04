@@ -7,7 +7,7 @@ import workspacesService from 'app/core/services/workspace.service';
 import limitService from 'app/drive/services/limit.service';
 import usageService from 'app/drive/services/usage.service';
 import { RootState } from '../..';
-import paymentService from '../../../../views/Checkout/services/payment.service';
+import { paymentService } from 'views/Checkout/services';
 import { FreeStoragePlan } from 'app/drive/types';
 
 export interface PlanState {

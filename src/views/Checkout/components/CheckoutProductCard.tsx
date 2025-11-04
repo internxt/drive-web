@@ -5,8 +5,8 @@ import { useState } from 'react';
 
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Button } from '@internxt/ui';
-import { formatPrice } from '../../../views/Checkout/utils/formatPrice';
-import { getProductAmount } from '../../../views/Checkout/utils/getProductAmount';
+import { formatPrice } from '../utils/formatPrice';
+import { getProductAmount } from '../utils/getProductAmount';
 import GuaranteeDarkDays from 'assets/icons/checkout/guarantee-dark.svg?react';
 import GuaranteeWhiteDays from 'assets/icons/checkout/guarantee-white.svg?react';
 import { bytesToString } from 'app/drive/services/size.service';

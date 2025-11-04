@@ -16,7 +16,7 @@ describe('Custom hook to handle payments', () => {
   beforeEach(() => {
     vi.doUnmock('@internxt/sdk');
     vi.doUnmock('app/core/factory/sdk');
-    vi.doUnmock('views/Checkout/services/payment.service');
+    vi.doUnmock('../services/payment.service');
     vi.doUnmock('app/utils/userLocation');
     vi.doUnmock('app/drive/services/file.service');
 

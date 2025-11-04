@@ -7,8 +7,8 @@ import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import checkoutService from '../../../views/Checkout/services/checkout.service';
-import { Currency } from '../../../views/Checkout/types';
+import checkoutService from '../services/checkout.service';
+import { Currency } from '../types';
 import { useEffect, useState } from 'react';
 
 export const CRYPTO_PAYMENT_DIALOG_KEY = ActionDialog.CryptoPayment;

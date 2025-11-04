@@ -3,7 +3,7 @@ import { t } from 'i18next';
 
 import { Elements } from '@stripe/react-stripe-js';
 
-import paymentService from '../../../../../../views/Checkout/services/payment.service';
+import { paymentService } from 'views/Checkout/services';
 import useEffectAsync from 'app/core/hooks/useEffectAsync';
 
 import EditPaymentMethodForm from './EditPaymentMethodForm';
