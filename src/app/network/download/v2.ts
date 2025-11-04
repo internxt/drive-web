@@ -135,4 +135,4 @@ export class DownloadV2 {
   };
 }
 
-export const downloadFileV2 = new DownloadV2();
+export const downloadV2 = new DownloadV2();

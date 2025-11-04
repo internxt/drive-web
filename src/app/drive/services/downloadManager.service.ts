@@ -288,7 +288,7 @@ export class DownloadManagerService {
       } else {
         const isWorkspace = !!credentials.workspaceId;
 
-        console.time(`download-file-${file.fileId}`);
+        console.time(`download-file-${file.uuid}`);
 
         await this.downloadFileFromWorker({
           file,
@@ -298,7 +298,7 @@ export class DownloadManagerService {
           sharingOptions: credentials,
         });
 
-        console.timeEnd(`download-file-${file.fileId}`);
+        console.timeEnd(`download-file-${file.uuid}`);
       }
 
       await this.checkAndHandleConnectionLost(connectionLost);

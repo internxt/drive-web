@@ -851,10 +851,6 @@ describe('downloadManagerService', () => {
       failedItems: [],
     };
 
-    afterEach(() => {
-      vi.unstubAllGlobals();
-    });
-
     test('When the download is for any browser, then should download the file from the worker', async () => {
       const mockUpdateProgress = vi.fn((progress: number) => progress);
 

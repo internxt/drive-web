@@ -4,9 +4,9 @@ import { DriveFileData } from '../../types';
 export default async function createMultipartFileDownloadStream(
   itemData: DriveFileData,
   updateProgressCallback: (progress: number) => void,
+  sharingOptions: { credentials: { user: string; pass: string }; mnemonic: string },
   abortController?: AbortController,
-  sharingOptions?: { credentials: { user: string; pass: string }; mnemonic: string },
-): Promise<ReadableStream<Uint8Array<ArrayBufferLike>>> {
+): Promise<ReadableStream<Uint8Array>> {
   return multipartDownloadFile({
     bucketId: itemData.bucket,
     fileId: itemData.fileId,

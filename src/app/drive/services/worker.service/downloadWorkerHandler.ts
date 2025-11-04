@@ -178,6 +178,7 @@ export class DownloadWorkerHandler {
       case 'error': {
         const { error } = messageData;
         const castedError = new Error(error);
+        console.error('[MAIN_THREAD]: Error while downloading the file: ', error);
         await this.downloadCleanup(worker, downloadId, true, removeAbortListener);
         reject(castedError);
         break;

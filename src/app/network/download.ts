@@ -2,8 +2,8 @@ import { Decipher } from 'crypto';
 import { joinReadableBinaryStreams } from 'app/core/services/stream.service';
 import { Abortable } from './Abortable';
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
-import { downloadFileV2 } from './download/v2';
 import { legacyDownload } from './download/LegacyDownload';
+import { downloadV2 } from './download/v2';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string; bucketId: string; size: number };
@@ -81,7 +81,7 @@ export interface IDownloadParams {
 
 export async function downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const downloadFileV2Promise = downloadFileV2.downloadFile(params as any);
+  const downloadFileV2Promise = downloadV2.downloadFile(params as any);
 
   return downloadFileV2Promise.catch((err) => {
     if (err instanceof FileVersionOneError) {
@@ -93,7 +93,7 @@ export async function downloadFile(params: IDownloadParams): Promise<ReadableStr
 }
 
 export async function multipartDownloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
-  const multipartDownloadFileV2Promise = downloadFileV2.multipartDownload(params as any);
+  const multipartDownloadFileV2Promise = downloadV2.multipartDownload(params as any);
 
   return multipartDownloadFileV2Promise.catch((err) => {
     if (err instanceof FileVersionOneError) {
