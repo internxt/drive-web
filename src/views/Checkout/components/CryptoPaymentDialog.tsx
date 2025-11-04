@@ -120,14 +120,18 @@ export const CryptoPaymentDialog = () => {
         <div className="flex flex-col gap-2">
           <p>{translate('checkout.confirmCryptoPayment.timeExpiration')}</p>
           <div
-            className={`flex flex-col items-center p-1 w-full rounded ${
-              isTimeExpired ? 'bg-red-50' : isHalfTimeLeft ? 'bg-orange/40' : 'bg-gray-10'
-            }`}
+            className={`flex flex-col items-center p-1 w-full rounded ${(() => {
+              if (isTimeExpired) return 'bg-red-50';
+              if (isHalfTimeLeft) return 'bg-orange/40';
+              return 'bg-gray-10';
+            })()}`}
           >
             <p
-              className={`text-2xl font-bold ${
-                isTimeExpired ? 'text-red-600' : isHalfTimeLeft ? 'text-orange/80' : 'text-gray-80'
-              }`}
+              className={`text-2xl font-bold ${(() => {
+                if (isTimeExpired) return 'text-red-600';
+                if (isHalfTimeLeft) return 'text-orange/80';
+                return 'text-gray-80';
+              })()}`}
             >
               {isTimeExpired ? translate('checkout.confirmCryptoPayment.expiredLabel') : formatTime(timeLeft)}
             </p>

@@ -39,7 +39,7 @@ const PcCloudSuccess = () => {
         console.log('Analytics error: ', err);
       }
       const deepLinkUrl = 'com.internxt.pccloud://checkout';
-      window.location.href = deepLinkUrl;
+      globalThis.location.href = deepLinkUrl;
     },
     [dispatch],
   );

@@ -230,7 +230,7 @@ const CheckoutViewWrapper = () => {
   };
 
   const getCheckoutQueryParams = () => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(globalThis.location.search);
 
     return {
       planId: params.get('planId'),
@@ -680,7 +680,7 @@ const CheckoutViewWrapper = () => {
           ) : undefined}
 
           {IS_CRYPTO_PAYMENT_ENABLED && isCryptoPaymentDialogOpen && (
-            <div className="flex flex-col" onMouseDown={(e) => e.stopPropagation()}>
+            <div role="none" className="flex flex-col" onMouseDown={(e) => e.stopPropagation()}>
               <CryptoPaymentDialog />
             </div>
           )}

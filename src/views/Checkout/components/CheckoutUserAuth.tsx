@@ -56,6 +56,7 @@ export const CheckoutUserAuth = ({
         1. {translate(`checkout.authComponent.title.${authMethod}`)}
       </p>
       <div
+        role="none"
         onKeyDown={handleKeyDown}
         className="flex flex-col space-y-4 rounded-2xl border border-gray-10 bg-surface p-5"
       >

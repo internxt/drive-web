@@ -97,7 +97,7 @@ const CheckoutView = ({
     mode: 'onChange',
   });
 
-  if (!currentSelectedPlan || !currentSelectedPlan.price || !currentSelectedPlan.taxes) {
+  if (!currentSelectedPlan?.price || !currentSelectedPlan?.taxes) {
     return (
       <div className="flex h-full items-center justify-center bg-gray-1">
         <Loader type="pulse" />
