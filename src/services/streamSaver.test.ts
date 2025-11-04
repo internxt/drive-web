@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, vi, afterEach } from 'vitest';
-import { STREAM_SAVER_MITM, StreamSaver } from './StreamSaver';
+import { STREAM_SAVER_MITM, StreamSaver } from './streamSaver';
 import { InvalidChunkError } from './errors/streamSaver.errors';
 
 const mockedChunk = new Uint8Array([1, 2, 3]);
