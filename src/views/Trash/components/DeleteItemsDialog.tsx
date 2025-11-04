@@ -5,8 +5,8 @@ import { uiActions } from 'app/store/slices/ui';
 import { setItemsToDelete } from 'app/store/slices/storage';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
-import { DriveItemData } from '../../types';
-import deleteItems from '../../../../use_cases/trash/delete-items';
+import { DriveItemData } from 'app/drive/types';
+import { deleteItems } from '../services';
 import { Button, Modal } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { planThunks } from 'app/store/slices/plan';
@@ -36,7 +36,7 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
         await deleteItems(itemsToDelete);
       }
 
-      props.onItemsDeleted && props.onItemsDeleted();
+      props.onItemsDeleted?.();
 
       setIsLoading(false);
       onClose();
