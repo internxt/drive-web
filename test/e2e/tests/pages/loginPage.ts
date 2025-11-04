@@ -80,7 +80,8 @@ export class LoginPage {
 
   async clickOnForgotYourPassword() {
     await expect(this.loginTitle).toBeVisible();
-    await expect(this.forgotPassword).toBeEditable();
+    await expect(this.forgotPassword).toBeVisible();
+    await expect(this.forgotPassword).toBeEnabled();
     await this.forgotPassword.click();
     await expect(this.accountRecoveryTitle).toBeVisible();
     const accountRecoveryText = await this.accountRecoveryTitle.textContent({ timeout: 3000 });
