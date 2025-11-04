@@ -1,4 +1,4 @@
-import streamSaver from 'streamsaver';
+import streamSaver from '../../../services/StreamSaver';
 import {
   DownloadCredentials,
   DownloadItem,
@@ -95,7 +95,6 @@ vi.mock('app/core/services/local-storage.service', () => ({
     getUser: vi.fn(),
   },
 }));
-vi.mock('streamsaver');
 vi.mock('./download.service/createFileDownloadStream');
 
 describe('downloadManagerService', () => {
@@ -107,7 +106,7 @@ describe('downloadManagerService', () => {
       close: vi.fn(),
       abort: vi.fn(),
     });
-    vi.mocked(streamSaver.createWriteStream).mockReturnValue(defaultWritableStream);
+    vi.spyOn(streamSaver, 'createWriteStream').mockReturnValue(defaultWritableStream);
   });
 
   const mockUser: UserSettings = {
