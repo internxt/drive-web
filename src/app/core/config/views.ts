@@ -16,17 +16,19 @@ import FolderFileNotFound from 'app/drive/views/FolderFileNotFound/FolderFileNot
 import RecentsView from 'views/Recents';
 import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 import TrashView from 'views/Trash';
-import CheckoutCancelView from 'views/Checkout/views/CheckoutCancelView/CheckoutCancelView';
-import CheckoutSuccessView from 'views/Checkout/views/CheckoutSuccessView/CheckoutSuccessView';
+import {
+  CheckoutCancelView,
+  CheckoutSessionId,
+  CheckoutSuccessView,
+  CheckoutViewWrapper,
+  PcCloudSuccess,
+} from 'views/Checkout';
 import { ShareFileView, ShareFolderView } from 'views/PublicShared';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import SharedViewWrapper from 'views/Shared/SharedViewWrapper';
 import ChangeEmailView from '../views/ChangeEmailView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
 import VerifyEmailView from '../views/VerifyEmailView';
-import CheckoutViewWrapper from 'views/Checkout/views/IntegratedCheckoutView/CheckoutViewWrapper';
-import { CheckoutSessionId } from 'views/Checkout/views/CheckoutSession/CheckoutSessionId';
-import PcCloudSuccess from 'views/Checkout/views/CheckoutSuccessView/PcCloudSuccess';
 
 const views: Array<{
   id: string;

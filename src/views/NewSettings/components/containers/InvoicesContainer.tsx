@@ -4,7 +4,7 @@ import Section from '../Sections/General/components/Section';
 import Card from 'app/shared/components/Card';
 import InvoicesList from '../../components/Invoices/InvoicesList';
 import { useEffect, useState } from 'react';
-import paymentService from '../../../views/Checkout/services/payment.service';
+import { paymentService } from 'views/Checkout/services';
 
 const Invoices = ({ userType, className = '' }: { className?: string; userType: UserType }): JSX.Element => {
   const { translate } = useTranslationContext();

@@ -23,8 +23,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ChangePlanDialog from 'views/NewSettings/components/Sections/Account/Plans/components/ChangePlanDialog';
 import longNotificationsService from 'app/notifications/services/longNotification.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import checkoutService from 'views/Checkout/services/checkout.service';
-import paymentService from 'views/Checkout/services/payment.service';
+import { paymentService, checkoutService, currencyService } from 'views/Checkout/services';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
@@ -40,7 +39,6 @@ import {
   CryptoPaymentDialog,
 } from 'views/Checkout/components/CryptoPaymentDialog';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
-import currencyService from 'views/Checkout/services/currency.service';
 import { generateCaptchaToken } from 'app/utils/generateCaptchaToken';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;

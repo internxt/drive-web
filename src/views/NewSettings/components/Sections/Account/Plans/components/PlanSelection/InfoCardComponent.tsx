@@ -1,7 +1,7 @@
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types/types';
 import PlanCard, { ChangePlanType } from '../PlanCard';
 import { bytesToString } from 'app/drive/services/size.service';
-import currencyService from 'views/Checkout/services/currency.service';
+import { currencyService } from 'views/Checkout/services';
 import { displayAmount } from '../../../../../../utils/planUtils';
 import { InfoPlanCardSkeleton } from './skeletons/InfoPlanCardSkeleton';
 

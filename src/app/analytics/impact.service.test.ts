@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { savePaymentDataInLocalStorage, trackPaymentConversion, trackSignUp } from './impact.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import { getProductAmount } from '../../views/Checkout/utils/getProductAmount';
+import { getProductAmount } from 'views/Checkout/utils';
 import axios from 'axios';
 import localStorageService from 'app/core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';

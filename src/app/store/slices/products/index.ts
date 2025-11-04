@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '../..';
-import { fetchProducts } from '../../../../views/Checkout/services/products.service';
+import { fetchProducts } from 'views/Checkout/services';
 import { ProductData, RenewalPeriod } from 'views/Checkout/types';
 
 interface ProductsState {
