@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import errorService from '../../../../core/services/error.service';
+import errorService from '../../../app/core/services/error.service';
 import {
   setCurrentFolderLevelResourcesToken,
   setCurrentShareOwnerAvatar,
@@ -17,16 +17,16 @@ import {
 
 import { ListSharedItemsResponse, SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 import { useDispatch, useSelector } from 'react-redux';
-import workspacesService from '../../../../core/services/workspace.service';
-import { getItemPlainName } from '../../../../crypto/services/utils';
-import { sharedActions } from '../../../../store/slices/sharedLinks';
-import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
-import { removeDuplicates } from '../../../../utils/driveItemsUtils';
-import shareService from '../../../services/share.service';
-import { AdvancedSharedItem, SharedNetworkCredentials } from '../../../types';
+import workspacesService from '../../../app/core/services/workspace.service';
+import { getItemPlainName } from '../../../app/crypto/services/utils';
+import { sharedActions } from '../../../app/store/slices/sharedLinks';
+import workspacesSelectors from '../../../app/store/slices/workspaces/workspaces.selectors';
+import { removeDuplicates } from '../../../app/utils/driveItemsUtils';
+import shareService from '../../../app/share/services/share.service';
+import { AdvancedSharedItem, SharedNetworkCredentials } from '../../../app/share/types';
 import { useShareViewContext } from '../context/SharedViewContextProvider';
-import localStorageService from '../../../../core/services/local-storage.service';
-import { STORAGE_KEYS } from '../../../../core/services/storage-keys';
+import localStorageService from '../../../app/core/services/local-storage.service';
+import { STORAGE_KEYS } from '../../../app/core/services/storage-keys';
 
 const ITEMS_PER_PAGE = 30;
 
