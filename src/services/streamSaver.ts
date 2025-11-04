@@ -1,34 +1,12 @@
 /* eslint-disable quotes */
-import { InvalidChunkError } from './errors/streamSaver.errors';
 import { StreamSaverOptions, MitmTransporter, ServiceWorkerMessage, ServiceWorkerResponse } from './types';
 
 export const STREAM_SAVER_MITM = '/streamsaver/mitm.html?version=2.0.0';
 
 export class StreamSaver {
   private mitmTransporter: MitmTransporter | null = null;
-  private supportsTransferable = false;
 
-  constructor() {
-    this.detectTransferableSupport();
-  }
-
-  /**
-   * Detect if browser supports transferable streams
-   */
-  private detectTransferableSupport(): void {
-    try {
-      new Response(new ReadableStream());
-
-      const { readable } = new TransformStream();
-      const mc = new MessageChannel();
-      mc.port1.postMessage(readable, [readable as any]);
-      mc.port1.close();
-      mc.port2.close();
-      this.supportsTransferable = true;
-    } catch (err) {
-      this.supportsTransferable = false;
-    }
-  }
+  constructor() {}
 
   /**
    * Create a hidden iframe and append it to the DOM
@@ -77,11 +55,9 @@ export class StreamSaver {
    * Create a writable stream for downloading files
    */
   public createWriteStream(filename: string, options?: StreamSaverOptions): WritableStream<Uint8Array> {
-    let channel: MessageChannel | null = null;
-    let transformStream: TransformStream<Uint8Array, Uint8Array> | null = null;
+    const channel = new MessageChannel();
 
     this.loadTransporter();
-    channel = new MessageChannel();
 
     // Make filename RFC5987 compatible
     const encodedFilename = encodeURIComponent(filename.replace(/\//g, ':'))
@@ -89,7 +65,7 @@ export class StreamSaver {
       .replace(/\*/g, '%2A');
 
     const response: ServiceWorkerMessage = {
-      transferringReadable: this.supportsTransferable,
+      transferringReadable: true,
       pathname: options?.pathname || Math.random().toString().slice(-6) + '/' + encodedFilename,
       headers: {
         'Content-Type': 'application/octet-stream; charset=utf-8',
@@ -103,25 +79,33 @@ export class StreamSaver {
 
     const args: [ServiceWorkerMessage, string, MessagePort[]] = [response, '*', [channel.port2]];
 
-    if (this.supportsTransferable) {
-      transformStream = new TransformStream();
-      channel.port1.postMessage({ readableStream: transformStream.readable }, [transformStream.readable]);
-    }
+    const transformStream = new TransformStream();
+    channel.port1.postMessage({ readableStream: transformStream.readable }, [transformStream.readable]);
 
-    channel.port1.onmessage = (evt: MessageEvent<ServiceWorkerResponse>) => {
-      if (evt.data.download) {
-        this.makeIframe(evt.data.download);
-      } else if (evt.data.abort) {
-        chunks = [];
-        channel?.port1.postMessage('abort');
-        if (channel) {
-          channel.port1.onmessage = null;
-          channel.port1.close();
-          channel.port2.close();
-          channel = null;
-        }
-      }
+    const abortCleanup = () => {
+      channel.port1.postMessage('abort');
+      channel.port1.onmessage = null;
+      channel.port1.close();
+      channel.port2.close();
     };
+
+    const onMessageReceived = (event: MessageEvent<ServiceWorkerResponse>) => {
+      const { data } = event;
+
+      if (data.download) {
+        this.makeIframe(data.download);
+        return;
+      }
+
+      if (data.abort) {
+        abortCleanup();
+        return;
+      }
+
+      console.error('Unknown message received from service worker', data);
+    };
+
+    channel.port1.onmessage = onMessageReceived;
 
     if (this.mitmTransporter?.loaded) {
       this.mitmTransporter.postMessage(...args);
@@ -129,32 +113,7 @@ export class StreamSaver {
       this.mitmTransporter?.addEventListener('load', () => this.mitmTransporter?.postMessage(...args), { once: true });
     }
 
-    let chunks: Uint8Array[] = [];
-
-    return (
-      (transformStream?.writable as WritableStream<Uint8Array>) ||
-      new WritableStream<Uint8Array>({
-        write(chunk: Uint8Array) {
-          if (!(chunk instanceof Uint8Array)) {
-            throw new InvalidChunkError();
-          }
-          channel?.port1.postMessage(chunk);
-        },
-        close() {
-          channel?.port1.postMessage('end');
-        },
-        abort() {
-          chunks = [];
-          channel?.port1.postMessage('abort');
-          if (channel) {
-            channel.port1.onmessage = null;
-            channel.port1.close();
-            channel.port2.close();
-            channel = null;
-          }
-        },
-      })
-    );
+    return transformStream.writable;
   }
 }
 
