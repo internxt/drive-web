@@ -12,6 +12,7 @@ import {
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
 import envService from 'app/core/services/env.service';
+import errorService from 'app/core/services/error.service';
 
 const BORDER_SHADOW = 'rgb(0 102 255)';
 
@@ -158,6 +159,7 @@ const checkoutSetupIntent = async (customerId: string) => {
 
     return response.data;
   } catch (error) {
+    errorService.reportError(error);
     throw new Error('Error creating subscription with trial');
   }
 };
