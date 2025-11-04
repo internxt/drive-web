@@ -4,13 +4,10 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": { "blueText": "Obtenez 87% de réduction", "text": "sur tous les Plans Premium" },
-    "title": "Obtenez une remise exclusive !",
-    "subTitle": {
-      "blueText": "Offre spéciale :",
-      "text": "stockez vos fichiers en privé pour moins cher"
-    },
-    "ctaGet": "Profiter de l'offre",
+    "label": { "blueText": "90% de réduction", "text": "sur tous les forfaits" },
+    "title": "Profitez de votre offre spéciale Black Friday !",
+    "subTitle": "La **plus grande réduction** pour une **confidentialité maximale**",
+    "ctaGet": "Accepter l'invitation",
     "ctaContinue": "Continuer gratuitement",
     "guarantee": "Garantie de remboursement de 30 jours",
     "products": {
