@@ -122,7 +122,7 @@
     "@faker-js/faker": "^9.0.0",
     "@internxt/eslint-config-internxt": "1.0.10",
     "@internxt/prettier-config": "internxt/prettier-config#v1.0.2",
-    "@playwright/test": "^1.44.1",
+    "@playwright/test": "^1.56.1",
     "@svgr/rollup": "^8.1.0",
     "@testing-library/dom": "^7.26.0",
     "@testing-library/jest-dom": "^6.6.2",
