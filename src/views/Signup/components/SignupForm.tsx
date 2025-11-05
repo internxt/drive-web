@@ -16,7 +16,7 @@ import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStreng
 import { useSignUp } from '../hooks/useSignup';
 import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
 import authService, { authenticateUser } from '../../../app/auth/services/auth.service';
-import PreparingWorkspaceAnimation from './PreparingWorkspaceAnimation';
+import PreparingWorkspaceAnimation from '../../../common/components/PreparingWorkspaceAnimation';
 import paymentService from '../../../app/payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../app/shared/components/ValidPassword';
 import { Button } from '@internxt/ui';

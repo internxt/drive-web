@@ -15,7 +15,7 @@ import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import i18next, { t } from 'i18next';
 import { pdfjs } from 'react-pdf';
-import PreparingWorkspaceAnimation from './views/Signup/components/PreparingWorkspaceAnimation';
+import PreparingWorkspaceAnimation from './common/components/PreparingWorkspaceAnimation';
 import authService from './app/auth/services/auth.service';
 import configService from './app/core/services/config.service';
 import envService from './app/core/services/env.service';

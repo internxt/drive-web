@@ -7,7 +7,7 @@ import BlockedAccountView from '../../auth/views/BlockedAccountView/BlockedAccou
 import RecoverAccountView from '../../auth/views/RecoverAccountView/RecoverAccountView';
 import RecoveryLinkView from '../../auth/views/RecoveryLinkView/RecoveryLinkView';
 import SignInView from '../../auth/views/SignInView/SignInView';
-import SignUpView, { ShareGuestSignUpView } from '../../../views/Signup';
+import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from '../../../views/Signup';
 import UniversalLinkSuccessView from '../../auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 import BackupsView from '../../../views/Backups/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
@@ -19,7 +19,6 @@ import TrashView from '../../../views/Trash/Trash';
 import CheckoutCancelView from '../../payment/views/CheckoutCancelView/CheckoutCancelView';
 import CheckoutSuccessView from '../../payment/views/CheckoutSuccessView/CheckoutSuccessView';
 import { ShareFileView, ShareFolderView } from '../../../views/PublicShared';
-import WorkspaceGuestSingUpView from '../../../views/Signup/components/WorkspaceGuestSignUp';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import SharedViewWrapper from '../../../views/Shared/SharedViewWrapper';
 import ChangeEmailView from '../views/ChangeEmailView';
@@ -41,7 +40,7 @@ const views: Array<{
   { id: AppView.Login, component: SignInView },
   { id: AppView.SignupBlog, component: SignupBlog },
   { id: AppView.ShareGuestAcceptInvite, component: ShareGuestSignUpView },
-  { id: AppView.WorkspaceGuestInvite, component: WorkspaceGuestSingUpView },
+  { id: AppView.WorkspaceGuestInvite, component: WorkspaceGuestSignUpView },
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.RecoverAccount, component: RecoverAccountView },
