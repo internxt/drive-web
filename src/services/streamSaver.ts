@@ -6,8 +6,6 @@ export const STREAM_SAVER_MITM = '/streamsaver/mitm.html?version=2.0.0';
 export class StreamSaver {
   private mitmTransporter: MitmTransporter | null = null;
 
-  constructor() {}
-
   /**
    * Create a hidden iframe and append it to the DOM
    */
@@ -60,9 +58,7 @@ export class StreamSaver {
     this.loadTransporter();
 
     // Make filename RFC5987 compatible
-    const encodedFilename = encodeURIComponent(filename.replace(/\//g, ':'))
-      .replace(/['()]/g, escape)
-      .replace(/\*/g, '%2A');
+    const encodedFilename = encodeURIComponent(filename.replaceAll('/', ':'));
 
     const response: ServiceWorkerMessage = {
       transferringReadable: true,
