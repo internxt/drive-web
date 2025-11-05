@@ -1,5 +1,5 @@
 import fileDownload from 'js-file-download';
-import streamSaver from 'streamsaver';
+import streamSaver from '../../../services/streamSaver';
 import { AsyncZipDeflate, Zip } from 'fflate';
 
 import browserService from './browser.service';

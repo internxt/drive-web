@@ -1,4 +1,4 @@
-import streamSaver from 'streamsaver';
+import streamSaver from '../../../../services/streamSaver';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
 import { DriveFileData } from '../../types';
@@ -40,7 +40,7 @@ export default async function downloadFile(
   const isCypress = window['Cypress'] !== undefined;
 
   const writeToFsIsSupported = 'showSaveFilePicker' in window;
-  const writableIsSupported = 'WritableStream' in window && streamSaver.WritableStream;
+  const writableIsSupported = 'WritableStream' in window;
 
   let support: DownloadSupport;
 

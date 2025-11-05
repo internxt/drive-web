@@ -2,7 +2,7 @@ vi.mock('../download.service/downloadFileFromBlob', () => ({
   default: vi.fn(),
 }));
 
-import streamSaver from 'streamsaver';
+import streamSaver from '../../../../services/streamSaver';
 import { describe, test, expect, vi, Mock, beforeEach } from 'vitest';
 import { downloadWorkerHandler } from './downloadWorkerHandler';
 import { DriveFileData } from 'app/drive/types';
@@ -14,20 +14,18 @@ const writeMock = vi.fn();
 const closeMock = vi.fn();
 const abortMock = vi.fn();
 
-vi.mock('streamsaver', () => ({
-  createWriteStream: vi.fn().mockImplementation(() => ({
-    getWriter: () => ({
-      write: writeMock,
-      close: closeMock,
-      abort: abortMock,
-    }),
-  })),
-}));
-
 describe('Download Worker Handler', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (downloadFileFromBlob as unknown as Mock).mockResolvedValue(undefined);
+
+    vi.spyOn(streamSaver, 'createWriteStream').mockReturnValue({
+      getWriter: vi.fn().mockReturnValue({
+        write: writeMock,
+        close: closeMock,
+        abort: abortMock,
+      }),
+    } as unknown as WritableStream);
   });
 
   describe('Concurrent downloads', () => {
@@ -67,7 +65,7 @@ describe('Download Worker Handler', () => {
     };
 
     test('When downloading multiple files concurrently, then each file should have its own writer', async () => {
-      vi.mocked(streamSaver.createWriteStream)
+      vi.spyOn(streamSaver, 'createWriteStream')
         .mockReturnValueOnce({
           getWriter: vi.fn().mockReturnValue(mockWriter1),
         } as unknown as WritableStream)
@@ -115,7 +113,7 @@ describe('Download Worker Handler', () => {
 
     test('When one download fails, then it should not affect other concurrent downloads', async () => {
       const mockedError = new Error('Download failed');
-      vi.mocked(streamSaver.createWriteStream)
+      vi.spyOn(streamSaver, 'createWriteStream')
         .mockReturnValueOnce({
           getWriter: vi.fn().mockReturnValue(mockWriter1),
         } as unknown as WritableStream)
@@ -165,7 +163,7 @@ describe('Download Worker Handler', () => {
     test('When aborting one download, then it should not affect other concurrent downloads', async () => {
       const abortController1 = new AbortController();
 
-      vi.mocked(streamSaver.createWriteStream)
+      vi.spyOn(streamSaver, 'createWriteStream')
         .mockReturnValueOnce({
           getWriter: vi.fn().mockReturnValue(mockWriter1),
         } as unknown as WritableStream)
@@ -526,7 +524,7 @@ describe('Download Worker Handler', () => {
       getWriter: vi.fn().mockReturnValue(mockWriter),
     };
 
-    vi.mocked(streamSaver.createWriteStream).mockReturnValue(mockStream as unknown as WritableStream);
+    vi.spyOn(streamSaver, 'createWriteStream').mockReturnValue(mockStream as unknown as WritableStream);
 
     const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
       worker: mockedWorker as unknown as Worker,

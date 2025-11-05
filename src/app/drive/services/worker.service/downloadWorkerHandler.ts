@@ -1,4 +1,4 @@
-import streamSaver from 'streamsaver';
+import streamSaver from '../../../../services/streamSaver';
 import { DriveFileData } from 'app/drive/types';
 import { MessageData } from './types/download';
 import { createDownloadWebWorker } from '../../../../WebWorker';
@@ -16,7 +16,10 @@ interface HandleWorkerMessagesPayload {
 interface HandleMessagesPayload {
   messageData: MessageData;
   worker: Worker;
-  completeFilename: string;
+  item: {
+    completeFilename: string;
+    size: number;
+  };
   downloadCallback: (progress: number) => void;
   resolve: (value?: unknown) => void;
   reject: (reason?: any) => void;
@@ -77,7 +80,10 @@ export class DownloadWorkerHandler {
         await this.handleMessages({
           messageData: msg.data,
           worker,
-          completeFilename,
+          item: {
+            completeFilename,
+            size: itemData.size,
+          },
           downloadCallback: updateProgressCallback,
           downloadId,
           resolve,
@@ -111,7 +117,7 @@ export class DownloadWorkerHandler {
   public async handleMessages({
     messageData,
     worker,
-    completeFilename,
+    item,
     downloadId,
     resolve,
     reject,
@@ -122,13 +128,16 @@ export class DownloadWorkerHandler {
     removeAbortListener: () => void;
   }) {
     const { result } = messageData;
+    const { completeFilename, size: fileSize } = item;
 
     switch (result) {
       case 'chunk': {
         let writer = this.writers.get(downloadId);
 
         if (!writer) {
-          const fileStream = streamSaver.createWriteStream(completeFilename);
+          const fileStream = streamSaver.createWriteStream(completeFilename, {
+            size: fileSize,
+          });
           writer = fileStream.getWriter();
           this.writers.set(downloadId, writer);
         }
