@@ -40,7 +40,7 @@ export default async function downloadFile(
   const isCypress = window['Cypress'] !== undefined;
 
   const writeToFsIsSupported = 'showSaveFilePicker' in window;
-  const writableIsSupported = 'WritableStream' in window;
+  const writableIsSupported = 'WritableStream' in window && streamSaver.WritableStream;
 
   let support: DownloadSupport;
 
