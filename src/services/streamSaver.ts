@@ -5,6 +5,7 @@ export const STREAM_SAVER_MITM = '/streamsaver/mitm.html?version=2.0.0';
 
 export class StreamSaver {
   private mitmTransporter: MitmTransporter | null = null;
+  // Exposed for backward compatibility with legacy code in downloadFile.ts
   public WritableStream = globalThis.WritableStream;
 
   /**
