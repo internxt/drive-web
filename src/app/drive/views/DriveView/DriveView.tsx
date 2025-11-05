@@ -193,7 +193,7 @@ const DriveView = (props: DriveViewProps) => {
 };
 
 const sortFoldersFirst = (items: DriveItemData[]) =>
-  [...items].sort((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
+  items.toSorted((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
 
 export default connect((state: RootState) => {
   const currentFolderId = storageSelectors.currentFolderId(state);
