@@ -3,40 +3,40 @@ import { connect, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { ChangeEvent, useEffect, useLayoutEffect, useRef } from 'react';
-import localStorageService from '../../../core/services/local-storage.service';
-import { DriveItemData } from '../../../drive/types';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import shareService, { decryptMnemonic } from '../../../share/services/share.service';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { storageActions } from '../../../store/slices/storage';
-import { uiActions } from '../../../store/slices/ui';
+import localStorageService from '../../app/core/services/local-storage.service';
+import { DriveItemData } from '../../app/drive/types';
+import { useTranslationContext } from '../../app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
+import shareService, { decryptMnemonic } from '../../app/share/services/share.service';
+import { useAppDispatch, useAppSelector } from '../../app/store/hooks';
+import { storageActions } from '../../app/store/slices/storage';
+import { uiActions } from '../../app/store/slices/ui';
 
 import { Dialog as DeleteDialog } from '@internxt/ui';
-import BreadcrumbsSharedView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsSharedView';
+import BreadcrumbsSharedView from './components/BreadcrumbsSharedView';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';
-import { moveItemsToTrash } from '../../../../views/Trash/services';
-import errorService from '../../../core/services/error.service';
-import { UPLOAD_ITEMS_LIMIT } from '../../../drive/components/DriveExplorer/helpers/uploadHelpers';
-import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
-import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
-import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
-import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItemsDialog';
-import NameCollisionContainer from '../../../drive/components/NameCollisionDialog/NameCollisionContainer';
-import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
-import ShowInvitationsDialog from '../../../drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
-import { StopSharingAndMoveToTrashDialogWrapper } from '../../../../views/Trash/components';
-import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
-import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../share/types';
-import { RootState } from '../../../store';
-import { sharedActions, sharedThunks } from '../../../store/slices/sharedLinks';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
-import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
-import { handlePrivateSharedFolderAccess } from '../../services/redirections.service';
+import { moveItemsToTrash } from '../Trash/services';
+import errorService from '../../app/core/services/error.service';
+import { UPLOAD_ITEMS_LIMIT } from '../../app/drive/components/DriveExplorer/helpers/uploadHelpers';
+import EditItemNameDialog from '../../app/drive/components/EditItemNameDialog/EditItemNameDialog';
+import FileViewerWrapper from '../../app/drive/components/FileViewer/FileViewerWrapper';
+import ItemDetailsDialog from '../../app/drive/components/ItemDetailsDialog/ItemDetailsDialog';
+import MoveItemsDialog from '../../app/drive/components/MoveItemsDialog/MoveItemsDialog';
+import NameCollisionContainer from '../../app/drive/components/NameCollisionDialog/NameCollisionContainer';
+import ShareDialog from '../../app/drive/components/ShareDialog/ShareDialog';
+import ShowInvitationsDialog from '../../app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
+import StopSharingAndMoveToTrashDialogWrapper from '../Trash/components/StopSharingAndMoveToTrashDialogWrapper';
+import WarningMessageWrapper from '../../app/drive/components/WarningMessage/WarningMessageWrapper';
+import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../app/share/types';
+import { RootState } from '../../app/store';
+import { sharedActions, sharedThunks } from '../../app/store/slices/sharedLinks';
+import storageThunks from '../../app/store/slices/storage/storage.thunks';
+import workspacesSelectors from '../../app/store/slices/workspaces/workspaces.selectors';
+import { handlePrivateSharedFolderAccess } from '../../app/share/services/redirections.service';
 import TopBarButtons from './components/TopBarButtons';
-import SharedItemListContainer from './containers/SharedItemListContainer';
+import SharedItemListContainer from './components/SharedItemListContainer';
 import {
   setClickedShareItemEncryptionKey,
   setClickedShareItemUser,
@@ -66,7 +66,7 @@ import {
   getFolderUserRole,
   isCurrentUserViewer,
   isItemOwnedByCurrentUser,
-} from './sharedViewUtils';
+} from './utils/sharedViewUtils';
 
 export const MAX_SHARED_NAME_LENGTH = 32;
 
@@ -517,6 +517,7 @@ function SharedView({
 
   return (
     <div
+      role="none"
       className="flex w-full shrink-0 flex-col"
       onContextMenu={(e) => {
         e.preventDefault();
