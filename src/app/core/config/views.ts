@@ -25,7 +25,7 @@ import WorkspaceGuestSingUpView from '../../auth/components/SignUp/WorkspaceGues
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
 import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
-import SharedViewWrapper from '../../share/views/SharedLinksView/SharedViewWrapper';
+import SharedViewWrapper from '../../../views/Shared/SharedViewWrapper';
 import ChangeEmailView from '../views/ChangeEmailView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
 import VerifyEmailView from '../views/VerifyEmailView';
