@@ -12,7 +12,7 @@ import Invoices from '../../../containers/InvoicesContainer';
 import CancelSubscription from './components/CancelSubscription';
 import BillingAccountOverview from './containers/BillingAccountOverview';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import { getCurrentUsage, getPlanInfo, getPlanName } from '../Plans/utils/planUtils';
+import { getCurrentUsage, getPlanInfo, getPlanName } from '../../../../utils/planUtils';
 
 interface BillingAccountSectionProps {
   changeSection: ({ section, subsection }) => void;

@@ -1,4 +1,3 @@
-// fetchPlanPrices.test.ts
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import paymentService from 'app/payment/services/payment.service';
 import envService from 'app/core/services/env.service';

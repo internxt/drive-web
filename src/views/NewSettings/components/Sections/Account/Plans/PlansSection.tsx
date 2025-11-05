@@ -14,7 +14,7 @@ import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { PlanState, planThunks } from 'app/store/slices/plan';
 import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
-import { fetchPlanPrices, getStripe } from './api/plansApi';
+import { fetchPlanPrices, getStripe } from '../../../../services/plansApi';
 import ChangePlanDialog from './components/ChangePlanDialog';
 import IntervalSwitch from './components/TabButton';
 import {
@@ -23,7 +23,7 @@ import {
   getPlanInfo,
   getPlanName,
   getRenewalPeriod,
-} from './utils/planUtils';
+} from '../../../../utils/planUtils';
 import { PlanSelectionComponent } from './components/PlanSelection/PlanSelectionComponent';
 import { InfoCardComponent } from './components/PlanSelection/InfoCardComponent';
 

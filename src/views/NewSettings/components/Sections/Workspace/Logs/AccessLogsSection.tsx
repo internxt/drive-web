@@ -11,7 +11,7 @@ import { useDebounce } from 'hooks/useDebounce';
 import { Section } from '../../..';
 import { getEnumKey } from '../../../../utils';
 import { AccessLogsFilterOptions } from './components/AccessLogsFilterOptions';
-import { useAccessLogs } from './hooks/useAccessLogs';
+import { useAccessLogs } from '../../../../hooks/Logs/useAccessLogs';
 
 interface LogsViewProps {
   onClosePreferences: () => void;

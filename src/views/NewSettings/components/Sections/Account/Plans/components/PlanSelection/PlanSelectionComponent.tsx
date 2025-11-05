@@ -1,7 +1,7 @@
 import { DisplayPrice, UserSubscription } from '@internxt/sdk/dist/drive/payments/types/types';
 import PlanSelectionCard from './PlanSelectionCard';
 import { bytesToString } from 'app/drive/services/size.service';
-import { displayAmount } from '../../utils/planUtils';
+import { displayAmount } from '../../../../../../utils/planUtils';
 import { PlanSelectionCardSkeleton } from './skeletons/PlanSelectionCardSkeleton';
 import currencyService from 'app/payment/services/currency.service';
 

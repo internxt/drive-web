@@ -15,7 +15,7 @@ import { WorkspacesState, workspaceThunks } from 'app/store/slices/workspaces/wo
 import BillingPaymentMethodCard from '../../../BillingPaymentMethodCard';
 import Invoices from '../../../containers/InvoicesContainer';
 import CancelSubscription from '../../Account/Billing/components/CancelSubscription';
-import { getPlanInfo, getPlanName } from '../../Account/Plans/utils/planUtils';
+import { getPlanInfo, getPlanName } from '../../../../utils/planUtils';
 import BillingDetailsCard from './BillingDetailsCard';
 import EditBillingDetailsModal from './components/EditBillingDetailsModal';
 import BillingWorkspaceOverview from './containers/BillingWorkspaceOverview';
