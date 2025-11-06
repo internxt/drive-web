@@ -36,7 +36,10 @@ const WarningMessageWrapper = ({
   const isLoading = isLoadingPlanLimit || isLoadingPlanUsage;
   const plansNotFetched = planUsage === 0 && planLimit === 0;
   const areNotNumbers =
-    (planUsage !== 0 && !planUsage) || (planLimit !== 0 && !planLimit) || isNaN(planUsage) || isNaN(planLimit);
+    (planUsage !== 0 && !planUsage) ||
+    (planLimit !== 0 && !planLimit) ||
+    Number.isNaN(planUsage) ||
+    Number.isNaN(planLimit);
 
   if (plansNotFetched || areNotNumbers || !isLimitReached || isLoading) return <></>;
 

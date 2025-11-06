@@ -29,7 +29,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
   const forceUpdate = useForceUpdate();
   const updateHeight = () => forceUpdate();
-  const ṣpanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
+  const ṣpanDisplayClass: string = isEditingName(item) ? 'hidden' : 'block';
 
   const isDraggingClassNames: string = isDraggingThisItem ? 'opacity-50' : '';
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
@@ -105,6 +105,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
 
   const template = connectDropTarget(
     <div
+      role="none"
       ref={itemRef}
       style={{ height }}
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames}
@@ -118,7 +119,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       onKeyDown={(e) => {}}
     >
       <Menu as="div" className="absolute right-2 top-2 z-10">
-        {({ open, close }) => (
+        {({ open }) => (
           <div className="relative">
             <Menu.Button
               id="dropdown-basic"
@@ -146,6 +147,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
             <img
               className="h-full max-h-full w-full max-w-full object-contain object-center pt-5"
               src={item.currentThumbnail.urlObject}
+              alt={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
             />
           </div>
         ) : (
@@ -155,6 +157,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       <div className="mt-3 text-center">
         <div className="mb-1">
           <span
+            role="none"
             onKeyDown={() => {}}
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${ṣpanDisplayClass} cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap px-1 text-base text-gray-100 hover:underline`}

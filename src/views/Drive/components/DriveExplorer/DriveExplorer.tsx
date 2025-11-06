@@ -68,6 +68,63 @@ import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
 
+const MenuItemToGetSize = ({
+  isTrash,
+  translate,
+  menuItemsRef,
+}: {
+  isTrash: boolean;
+  translate: (key: string) => string;
+  menuItemsRef: React.RefObject<HTMLDivElement>;
+}) => (
+  <div
+    className={
+      'mt-1 rounded-md border border-gray-10 bg-surface py-1.5 text-base shadow-subtle-hard outline-none dark:bg-gray-5'
+    }
+    style={{
+      minWidth: '180px',
+      position: 'fixed',
+      top: -9999,
+      left: -9999,
+    }}
+    ref={menuItemsRef}
+  >
+    {!isTrash && (
+      <>
+        <div className="flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10">
+          <FolderSimplePlus size={20} />
+          <p>{translate('actions.upload.folder')}</p>
+        </div>
+
+        <div className="mx-3 my-px flex border-t border-gray-5" />
+
+        <div
+          className={
+            'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
+          }
+        >
+          <FileArrowUp size={20} />
+          <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
+        </div>
+      </>
+    )}
+    <div
+      className={
+        'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
+      }
+    >
+      <UploadSimple size={20} />
+      <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
+    </div>
+  </div>
+);
+
+const EmptyTrash = () => (
+  <div className="flex h-36 w-36 items-center justify-center rounded-full bg-gray-5">
+    <Trash size={80} weight="thin" />
+  </div>
+);
+
 interface DriveExplorerProps {
   title: JSX.Element | string;
   titleClassName?: string;
@@ -76,25 +133,16 @@ interface DriveExplorerProps {
   onItemsDeleted?: () => void;
   onItemsMoved?: () => void;
   onFileUploaded?: () => void;
-  onFolderUploaded?: () => void;
   fetchFolderContent?: () => void;
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
   currentFolderId: string;
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
-  isAuthenticated: boolean;
-  isCreateFolderDialogOpen: boolean;
-  isMoveItemsDialogOpen: boolean;
-  isDeleteItemsDialogOpen: boolean;
-  isClearTrashDialogOpen: boolean;
   viewMode: FileViewMode;
   namePath: FolderPath[];
   dispatch: AppDispatch;
-  workspace: Workspace;
   selectedWorkspace: WorkspaceData | null;
-  planLimit: number;
-  planUsage: number;
   isOver: boolean;
   connectDropTarget: ConnectDropTarget;
   folderOnTrashLength: number;
@@ -110,7 +158,6 @@ interface DriveExplorerProps {
     order: 'ASC' | 'DESC',
     folderId?: number | undefined,
   ) => Promise<{ finished: boolean; itemsRetrieved: number }>;
-  roles: Role[];
 }
 
 const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
@@ -135,7 +182,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     hasMoreFolders,
     hasMoreFiles,
     getTrashPaginated,
-    roles,
     selectedWorkspace,
   } = props;
   const dispatch = useAppDispatch();
@@ -181,6 +227,56 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const hasMoreItemsToLoad = paginationState.hasMoreItemsToLoad;
   const isEmptyFolder = !isLoading && !hasMoreItemsToLoad;
+
+  const renderEmptyState = () => {
+    if (hasFilters) {
+      return (
+        <Empty
+          icon={filesEmptyImage}
+          title={translate('views.recents.empty.noResults')}
+          subtitle={translate('views.recents.empty.dragNDrop')}
+          action={{
+            icon: UploadSimple,
+            style: 'elevated',
+            text: translate('views.recents.empty.uploadFiles'),
+            onClick: onUploadFileButtonClicked,
+          }}
+        />
+      );
+    }
+    if (isRecents) {
+      return (
+        <Empty
+          icon={filesEmptyImage}
+          title={translate('views.recents.empty.title')}
+          subtitle={translate('views.recents.empty.description')}
+        />
+      );
+    }
+    if (isTrash) {
+      return (
+        <Empty
+          icon={<EmptyTrash />}
+          title={translate('trash.empty-state.title')}
+          subtitle={translate('trash.empty-state.subtitle')}
+        />
+      );
+    }
+    return (
+      <Empty
+        icon={<img className="w-36" alt="" src={folderEmptyImage} />}
+        title={translate('views.recents.empty.folderEmpty')}
+        subtitle={translate('views.recents.empty.folderEmptySubtitle')}
+        action={{
+          icon: UploadSimple,
+          style: 'elevated',
+          text: translate('views.recents.empty.uploadFiles'),
+          onClick: onUploadFileButtonClicked,
+        }}
+        contextMenuClick={handleContextMenuClick}
+      />
+    );
+  };
 
   // TRASH PAGINATION
   const {
@@ -388,12 +484,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  const EmptyTrash = () => (
-    <div className="flex h-36 w-36 items-center justify-center rounded-full bg-gray-5">
-      <Trash size={80} weight="thin" />
-    </div>
-  );
-
   const handleContextMenuClick = (event) => {
     event.preventDefault();
     const childWidth = menuItemsRef?.current?.offsetWidth ?? 180;
@@ -416,49 +506,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     setIsOpen(true);
     menuButtonRef.current?.click();
   };
-
-  const MenuItemToGetSize = () => (
-    <div
-      className={
-        'mt-1 rounded-md border border-gray-10 bg-surface py-1.5 text-base shadow-subtle-hard outline-none dark:bg-gray-5'
-      }
-      style={{
-        minWidth: '180px',
-        position: 'fixed',
-        top: -9999,
-        left: -9999,
-      }}
-      ref={menuItemsRef}
-    >
-      {!isTrash && (
-        <>
-          <div className="flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10">
-            <FolderSimplePlus size={20} />
-            <p>{translate('actions.upload.folder')}</p>
-          </div>
-
-          <div className="mx-3 my-px flex border-t border-gray-5" />
-
-          <div
-            className={
-              'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
-            }
-          >
-            <FileArrowUp size={20} />
-            <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
-          </div>
-        </>
-      )}
-      <div
-        className={
-          'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
-        }
-      >
-        <UploadSimple size={20} />
-        <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
-      </div>
-    </div>
-  );
 
   const resetPaginationStateAndFetchDriveFolderContent = (currentFolderId: string) => {
     resetPaginationState();
@@ -505,6 +552,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const driveExplorer = (
     <div
+      role="none"
       className="flex h-full grow flex-col"
       data-test="drag-and-drop-area"
       onContextMenu={isListElementsHovered ? () => setIsOpen(false) : handleContextMenuClick}
@@ -525,7 +573,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <UploadItemsFailsDialog />
-      <MenuItemToGetSize />
+      <MenuItemToGetSize isTrash={isTrash} translate={translate} menuItemsRef={menuItemsRef} />
       <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} />
       {editNameItem && (
         <EditItemNameDialog
@@ -563,17 +611,20 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             menu={[
               {
                 node: (
-                  <div
+                  <button
+                    type="button"
                     onClick={onCreateFolderButtonClicked}
                     data-cy="contextMenuCreateFolderButton"
-                    className={'flex cursor-pointer items-center space-x-3 whitespace-nowrap'}
+                    className={
+                      'flex w-full cursor-pointer items-center space-x-3 whitespace-nowrap bg-transparent p-0 text-left'
+                    }
                   >
                     <FolderSimplePlus size={20} />
                     <p data-cy="contextMenuCreateFolderButtonText">{translate('actions.upload.folder')}</p>
                     <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
                       <ArrowFatUp size={14} /> F
                     </span>
-                  </div>
+                  </button>
                 ),
               },
               {
@@ -615,7 +666,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               setEditNameItem={setEditNameItem}
               hasItems={hasItems}
               driveActionsRef={tutorialState.divRef}
-              roles={roles}
             />
           </div>
 
@@ -664,47 +714,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             </div>
             {
               /* EMPTY FOLDER */
-              !hasItems &&
-                isEmptyFolder &&
-                !isLoadingTrashItems &&
-                (hasFilters ? (
-                  <Empty
-                    icon={filesEmptyImage}
-                    title={translate('views.recents.empty.noResults')}
-                    subtitle={translate('views.recents.empty.dragNDrop')}
-                    action={{
-                      icon: UploadSimple,
-                      style: 'elevated',
-                      text: translate('views.recents.empty.uploadFiles'),
-                      onClick: onUploadFileButtonClicked,
-                    }}
-                  />
-                ) : isRecents ? (
-                  <Empty
-                    icon={filesEmptyImage}
-                    title={translate('views.recents.empty.title')}
-                    subtitle={translate('views.recents.empty.description')}
-                  />
-                ) : isTrash ? (
-                  <Empty
-                    icon={<EmptyTrash />}
-                    title={translate('trash.empty-state.title')}
-                    subtitle={translate('trash.empty-state.subtitle')}
-                  />
-                ) : (
-                  <Empty
-                    icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-                    title={translate('views.recents.empty.folderEmpty')}
-                    subtitle={translate('views.recents.empty.folderEmptySubtitle')}
-                    action={{
-                      icon: UploadSimple,
-                      style: 'elevated',
-                      text: translate('views.recents.empty.uploadFiles'),
-                      onClick: onUploadFileButtonClicked,
-                    }}
-                    contextMenuClick={handleContextMenuClick}
-                  />
-                ))
+              !hasItems && isEmptyFolder && !isLoadingTrashItems && renderEmptyState()
             }
 
             {
@@ -734,7 +744,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 className="hidden"
                 ref={folderInputRef}
                 type="file"
-                directory=""
                 webkitdirectory=""
                 onChange={onUploadFolderInputChanged}
                 multiple={true}

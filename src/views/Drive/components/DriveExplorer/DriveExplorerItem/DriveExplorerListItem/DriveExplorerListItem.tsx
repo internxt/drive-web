@@ -12,6 +12,17 @@ import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import './DriveExplorerListItem.scss';
 import { t } from 'i18next';
 
+const getItemClassNames = (isSelected: boolean, isDraggingOver: boolean, isDragging: boolean): string => {
+  const selectedClass = isSelected ? 'selected' : '';
+  const draggingOverClass = isDraggingOver ? 'drag-over-effect' : '';
+  const draggingClass = isDragging ? 'is-dragging' : '';
+  return `${selectedClass} ${draggingOverClass} ${draggingClass} file-list-item group`;
+};
+
+const isItemInteractive = (item: DriveExplorerItemProps['item']): boolean => {
+  return (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS');
+};
+
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
   const { isItemSelected, isEditingName } = useDriveItemStoreProps();
   const { nameInputRef, onNameClicked, onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } =
@@ -19,9 +30,6 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
-  const isDraggingClassNames: string = isDraggingThisItem ? 'is-dragging' : '';
-  const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
-  const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
 
   useEffect(() => {
@@ -40,17 +48,15 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   }, [item]);
 
   const isItemShared = (item.sharings?.length ?? 0) > 0;
+  const isInteractive = isItemInteractive(item);
+  const itemClassNames = getItemClassNames(isItemSelected(item), isDraggingOverThisItem, isDraggingThisItem);
 
   const template = (
     <div
-      onKeyDown={() => {}}
-      className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-list-item group`}
+      role="none"
+      className={itemClassNames}
       onClick={onItemClicked}
-      onDoubleClick={
-        (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
-          ? onItemDoubleClicked
-          : undefined
-      }
+      onDoubleClick={isInteractive ? onItemDoubleClicked : undefined}
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
       <div className="flex shrink-0 min-w-activity grow items-center pr-3">
@@ -62,6 +68,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
                 <img
                   className="aspect-square h-full max-h-full object-contain object-center"
                   src={item.currentThumbnail.urlObject}
+                  alt={transformItemService.getItemPlainNameWithExtension(item)}
                   data-test={`file-list-${
                     item.isFolder ? 'folder' : 'file'
                   }-${transformItemService.getItemPlainNameWithExtension(item)}`}
@@ -92,11 +99,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className="truncate"
             title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
-            onClick={
-              (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
-                ? onNameClicked
-                : undefined
-            }
+            onClick={isInteractive ? onNameClicked : undefined}
           >
             <p className="truncate">
               {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
@@ -107,8 +110,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
       {
         /* DROPPABLE ZONE */
-        ((item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')) &&
-          connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
+        isInteractive && connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
       }
 
       {/* DATE */}

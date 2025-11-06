@@ -19,15 +19,13 @@ interface DriveExplorerGridProps {
   onHoverListItems?: (areHover: boolean) => void;
 }
 
+function loadingSkeleton(): JSX.Element[] {
+  return new Array(20).fill(0).map((n) => <DriveGridItemSkeleton key={n} />);
+}
+
 const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridProps) => {
   const [editNameItem, setEditNameItem] = React.useState<DriveItemData | null>(null);
   const dispatch = useAppDispatch();
-
-  function loadingSkeleton(): JSX.Element[] {
-    return Array(20)
-      .fill(0)
-      .map((n, i) => <DriveGridItemSkeleton key={i} />);
-  }
 
   function itemsList(): JSX.Element[] {
     return props.items.map((item) => {
