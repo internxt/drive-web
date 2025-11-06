@@ -7,29 +7,27 @@ import { TaskProgress } from 'app/tasks/types';
 import { useEffect, useState } from 'react';
 import { match } from 'react-router';
 import { Link } from 'react-router-dom';
-import FileViewer from '../../../../app/drive/components/FileViewer/FileViewer';
-import { useAppSelector } from '../../../../app/store/hooks';
-import fileExtensionService from '../../../drive/services/file-extension.service';
-import { fileExtensionPreviewableGroups } from '../../../drive/types/file-types';
+import FileViewer from 'app/drive/components/FileViewer/FileViewer';
+import { useAppSelector } from 'app/store/hooks';
+import fileExtensionService from 'app/drive/services/file-extension.service';
+import { fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
 import { Check, DownloadSimple, Eye } from '@phosphor-icons/react';
 
 import downloadService from 'app/drive/services/download.service';
-import './ShareView.scss';
+import './components/ShareView.scss';
 
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import errorService from 'app/core/services/error.service';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { HTTP_CODES } from '../../../core/constants';
-import AppError from '../../../core/types';
+import { HTTP_CODES } from 'app/core/constants';
+import AppError from 'app/core/types';
 import { Button, Loader } from '@internxt/ui';
-import SendBanner from './SendBanner';
-import ShareItemPwdView from './ShareItemPwdView';
 import { stringUtils } from '@internxt/lib';
+import { SendBanner, ShareItemPwdView } from './components';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -37,24 +35,11 @@ export interface ShareViewProps extends ShareViewState {
     code: string;
   }>;
 }
-
-interface GetShareInfoWithDecryptedName extends ShareTypes.ShareLink {
-  name: string | null;
-}
-
 interface ShareViewState {
   token: string;
-  progress: number;
-  isDownloading: boolean;
-  info: GetShareInfoWithDecryptedName | null;
-  error: Error | null;
-  accessedFile: boolean;
-  openPreview: boolean;
-  isAuthenticated: boolean;
-  user: UserSettings | null;
 }
 
-export default function ShareFileView(props: ShareViewProps): JSX.Element {
+export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Element {
   const { translate } = useTranslationContext();
 
   const code = props.match.params.code;
@@ -71,7 +56,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const [requiresPassword, setRequiresPassword] = useState(false);
   const [itemPassword, setItemPassword] = useState('');
-  const [sendBannerVisible, setIsSendBannerVisible] = useState(false);
+  const [sendBannerVisible, setSendBannerVisible] = useState(false);
   const [blob, setBlob] = useState<Blob | null>(null);
 
   let body;
@@ -81,7 +66,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       if (err.status !== HTTP_CODES.FORBIDDEN) {
         setIsLoaded(true);
         setIsError(true);
-        throw new Error(translate('error.linkExpired') as string);
+        throw new Error(translate('error.linkExpired'));
       }
     });
   }, []);
@@ -110,6 +95,37 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
   const getFormatFileSize = (): string => {
     return sizeService.bytesToString(info?.item?.size || 0);
+  };
+
+  const renderDownloadButton = () => {
+    if (Number(progress) === 100) {
+      return (
+        <>
+          {/* Download completed */}
+          <Check size={24} />
+          <span>{translate('actions.downloaded')}</span>
+        </>
+      );
+    }
+
+    if (isDownloading) {
+      return (
+        <>
+          {/* Download in progress */}
+          <Loader size={24} classNameLoader="h-5 w-5 text-white" />
+          <span>{translate('actions.downloading')}</span>
+          <span className="text-white/50">{progress}%</span>
+        </>
+      );
+    }
+
+    return (
+      <>
+        {/* Download button */}
+        <DownloadSimple size={24} />
+        <span>{translate('actions.download')}</span>
+      </>
+    );
   };
 
   function loadInfo(password?: string) {
@@ -199,7 +215,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
         await downloadService.downloadFileFromBlob(fileBlob, getFormatFileName());
         setTimeout(() => {
-          setIsSendBannerVisible(true);
+          setSendBannerVisible(true);
         }, 3000);
       }
     }
@@ -300,26 +316,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
           )}
 
           <Button onClick={download} variant="primary">
-            {Number(progress) == 100 ? (
-              <>
-                {/* Download completed */}
-                <Check size={24} />
-                <span>{translate('actions.downloaded')}</span>
-              </>
-            ) : isDownloading ? (
-              <>
-                {/* Download in progress */}
-                <Loader size={24} classNameLoader="h-5 w-5 text-white" />
-                <span>{translate('actions.downloading')}</span>
-                <span className="text-white/50">{progress}%</span>
-              </>
-            ) : (
-              <>
-                {/* Download button */}
-                <DownloadSimple size={24} />
-                <span>{translate('actions.download')}</span>
-              </>
-            )}
+            {renderDownloadButton()}
           </Button>
         </div>
       </>
@@ -330,7 +327,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
   return (
     <>
-      <SendBanner sendBannerVisible={sendBannerVisible} setIsSendBannerVisible={setIsSendBannerVisible} />
+      <SendBanner sendBannerVisible={sendBannerVisible} setSendBannerVisible={setSendBannerVisible} />
       {openPreview && info['item'] && (
         <FileViewer
           show={openPreview}

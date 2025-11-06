@@ -8,7 +8,7 @@ import sizeService from 'app/drive/services/size.service';
 import { DriveItemData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import PasswordInput from '../../../../components/PasswordInput';
+import PasswordInput from '../../../components/PasswordInput';
 import { Button } from '@internxt/ui';
 import LockLogo from 'assets/icons/Lock.svg?react';
 import { useState } from 'react';
@@ -90,7 +90,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
       <form className="flex w-full flex-col text-left sm:px-0">
         <p className="pb-2 text-sm font-medium">{translate('shareItemPwdView.password')}</p>
         <PasswordInput
-          placeholder={translate('shareItemPwdView.pwdLayout') as string}
+          placeholder={translate('shareItemPwdView.pwdLayout')}
           onChange={handleChange}
           value={itemPassword}
           passwordError={onPasswordError}
