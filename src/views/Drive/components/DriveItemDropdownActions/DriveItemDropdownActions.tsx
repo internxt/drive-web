@@ -52,42 +52,38 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
           downloadItem: onDownloadItemButtonClicked,
           moveToTrash: onMoveToTrashButtonClicked,
         });
-      } else {
-        return contextMenuDriveItemShared({
-          openPreview: onOpenPreviewButtonClicked,
-          showDetails: onShowDetailsButtonClicked,
-          copyLink: onCopyLinkButtonClicked,
-          openShareAccessSettings: onOpenPreviewButtonClicked,
-          renameItem: onRenameItemButtonClicked,
-          moveItem: onMoveItemButtonClicked,
-          downloadItem: onDownloadItemButtonClicked,
-          moveToTrash: onMoveToTrashButtonClicked,
-        });
       }
-    } else {
-      if (item?.isFolder) {
-        return contextMenuDriveFolderNotSharedLink({
-          shareLink: onLinkSettingsButtonClicked,
-          showDetails: onShowDetailsButtonClicked,
-          getLink: onCopyLinkButtonClicked,
-          renameItem: onRenameItemButtonClicked,
-          moveItem: onMoveItemButtonClicked,
-          downloadItem: onDownloadItemButtonClicked,
-          moveToTrash: onMoveToTrashButtonClicked,
-        });
-      } else {
-        return contextMenuDriveNotSharedLink({
-          shareLink: onLinkSettingsButtonClicked,
-          openPreview: onOpenPreviewButtonClicked,
-          showDetails: onShowDetailsButtonClicked,
-          getLink: onCopyLinkButtonClicked,
-          renameItem: onRenameItemButtonClicked,
-          moveItem: onMoveItemButtonClicked,
-          downloadItem: onDownloadItemButtonClicked,
-          moveToTrash: onMoveToTrashButtonClicked,
-        });
-      }
+      return contextMenuDriveItemShared({
+        openPreview: onOpenPreviewButtonClicked,
+        showDetails: onShowDetailsButtonClicked,
+        copyLink: onCopyLinkButtonClicked,
+        openShareAccessSettings: onOpenPreviewButtonClicked,
+        renameItem: onRenameItemButtonClicked,
+        moveItem: onMoveItemButtonClicked,
+        downloadItem: onDownloadItemButtonClicked,
+        moveToTrash: onMoveToTrashButtonClicked,
+      });
+    } else if (item?.isFolder) {
+      return contextMenuDriveFolderNotSharedLink({
+        shareLink: onLinkSettingsButtonClicked,
+        showDetails: onShowDetailsButtonClicked,
+        getLink: onCopyLinkButtonClicked,
+        renameItem: onRenameItemButtonClicked,
+        moveItem: onMoveItemButtonClicked,
+        downloadItem: onDownloadItemButtonClicked,
+        moveToTrash: onMoveToTrashButtonClicked,
+      });
     }
+    return contextMenuDriveNotSharedLink({
+      shareLink: onLinkSettingsButtonClicked,
+      openPreview: onOpenPreviewButtonClicked,
+      showDetails: onShowDetailsButtonClicked,
+      getLink: onCopyLinkButtonClicked,
+      renameItem: onRenameItemButtonClicked,
+      moveItem: onMoveItemButtonClicked,
+      downloadItem: onDownloadItemButtonClicked,
+      moveToTrash: onMoveToTrashButtonClicked,
+    });
   };
 
   return (
@@ -96,7 +92,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       {openDropdown && item && (
         <>
           {menuItems()?.map((option, i) => (
-            <div key={i}>
+            <div key={option?.separator ? `separator-${i}` : option?.name || i}>
               {option?.separator ? (
                 <div className="my-0.5 flex w-full flex-row px-4">
                   <div className="h-px w-full bg-gray-10" />

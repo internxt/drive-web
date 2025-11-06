@@ -54,7 +54,7 @@ const handleDriveItemDrop = async (
   dispatch: ReturnType<typeof useAppDispatch>,
 ) => {
   const itemsToMove = isSomeItemSelected
-    ? [...selectedItems, droppedData as DriveItemData].filter(
+    ? [...selectedItems, droppedData].filter(
         (a, index, self) => index === self.findIndex((b) => a.id === b.id && a.isFolder === b.isFolder),
       )
     : [droppedData];

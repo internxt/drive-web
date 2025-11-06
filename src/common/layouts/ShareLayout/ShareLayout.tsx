@@ -19,7 +19,7 @@ interface ShareLayoutProps {
   children: JSX.Element;
 }
 
-export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
+export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Element {
   const { translate } = useTranslationContext();
 
   const dispatch = useAppDispatch();
@@ -184,7 +184,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   <Button
                     variant="secondary"
                     onClick={() => {
-                      window.location.href = envService.getVariable('hostname') + '/login';
+                      globalThis.location.href = envService.getVariable('hostname') + '/login';
                     }}
                   >
                     {translate('shareLayout.topBar.login')}
@@ -193,7 +193,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   <Button
                     variant="primary"
                     onClick={() => {
-                      window.location.href = envService.getVariable('hostname') + '/new';
+                      globalThis.location.href = envService.getVariable('hostname') + '/new';
                     }}
                   >
                     {translate('shareLayout.topBar.createAccount')}

@@ -28,7 +28,7 @@ export interface DriveItemActions {
   onNameClicked: (e) => void;
   onItemClicked: () => void;
   onItemDoubleClicked: () => void;
-  downloadAndSetThumbnail: () => void;
+  downloadAndSetThumbnail: () => Promise<void>;
 }
 
 const useDriveItemActions = (item): DriveItemActions => {
@@ -64,12 +64,12 @@ const useDriveItemActions = (item): DriveItemActions => {
 
   const onGetLinkButtonClicked = () => {
     const driveItem = item as DriveItemData;
-    shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
+    shareService.getPublicShareLink(driveItem.uuid, driveItem.isFolder ? 'folder' : 'file');
   };
 
   const onCopyLinkButtonClicked = () => {
     const driveItem = item as DriveItemData;
-    shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
+    shareService.getPublicShareLink(driveItem.uuid, driveItem.isFolder ? 'folder' : 'file');
   };
 
   const onShowDetailsButtonClicked = () => {
@@ -115,13 +115,11 @@ const useDriveItemActions = (item): DriveItemActions => {
     if (item.isFolder) {
       dispatch(storageActions.setForceLoading(true));
       navigationService.pushFolder(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
+    } else if (isRecentsView) {
+      dispatch(uiActions.setFileViewerItem(item));
+      dispatch(uiActions.setIsFileViewerOpen(true));
     } else {
-      if (isRecentsView) {
-        dispatch(uiActions.setFileViewerItem(item));
-        dispatch(uiActions.setIsFileViewerOpen(true));
-      } else {
-        navigationService.pushFile(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
-      }
+      navigationService.pushFile(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
     }
   };
 

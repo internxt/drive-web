@@ -71,10 +71,10 @@ function findUniqueItems<T extends ObjectWithId>(array1: T[], array2: T[]): T[] 
   }
 
   for (const item of array2) {
-    if (!map.has(item.id.toString())) {
-      result.push(item);
-    } else {
+    if (map.has(item.id.toString())) {
       map.delete(item.id.toString());
+    } else {
+      result.push(item);
     }
   }
 
@@ -142,12 +142,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const isTrash = props.title === translate('trash.trash');
 
   const sortBy = (value: { field: 'type' | 'name' | 'updatedAt' | 'size'; direction: 'ASC' | 'DESC' }) => {
-    const direction =
-      order.by === value.field
-        ? order.direction === OrderDirection.Desc
-          ? OrderDirection.Asc
-          : OrderDirection.Desc
-        : OrderDirection.Asc;
+    let direction = OrderDirection.Asc;
+    if (order.by === value.field) {
+      direction = order.direction === OrderDirection.Desc ? OrderDirection.Asc : OrderDirection.Desc;
+    }
 
     dispatch(storageActions.setOrder({ by: value.field, direction }));
 

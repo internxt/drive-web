@@ -50,7 +50,6 @@ const DriveTopBarActions = ({
   isTrash: boolean;
   hasItems: boolean;
   driveActionsRef?: React.MutableRefObject<HTMLDivElement | null>;
-  roles: Role[];
 }) => {
   const dispatch = useAppDispatch();
   const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);

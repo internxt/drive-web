@@ -8,19 +8,21 @@ import { useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
+interface PlanUsageProps {
+  limit: number;
+  usage: number;
+  isLoading: boolean;
+  isUpgradeAvailable: () => boolean;
+  className?: string;
+}
+
 export default function PlanUsage({
   limit,
   usage,
   isLoading,
   isUpgradeAvailable,
   className = '',
-}: {
-  limit: number;
-  usage: number;
-  isLoading: boolean;
-  isUpgradeAvailable: () => boolean;
-  className?: string;
-}): JSX.Element {
+}: Readonly<PlanUsageProps>): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useDispatch();
   const usagePercent = usageService.getUsagePercent(usage, limit);
@@ -51,12 +53,12 @@ export default function PlanUsage({
         <div className={`h-full ${componentColor}`} style={{ width: isLoading ? 0 : `${usagePercent}%` }} />
       </div>
       {isUpgradeAvailable() && (
-        <p
+        <button
           onClick={onUpgradeButtonClicked}
-          className={`mt-3 h-full cursor-pointer text-sm font-medium ${isLimitReached ? 'text-red' : 'text-primary'}`}
+          className={`mt-3 w-fit cursor-pointer bg-transparent p-0 text-left text-sm font-medium ${isLimitReached ? 'text-red' : 'text-primary'}`}
         >
           {translate('actions.upgradeNow')}
-        </p>
+        </button>
       )}
     </div>
   );
