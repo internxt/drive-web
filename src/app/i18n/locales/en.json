@@ -4,12 +4,9 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": { "blueText": "Get 87% off", "text": "in all  Plans" },
-    "title": " Claim your exclusive discount!",
-    "subTitle": {
-      "blueText": "Special offer!",
-      "text": "Store files in privacy for even less"
-    },
+    "label": { "blueText": "Get 90% off", "text": "in all  Plans" },
+    "title": "Claim your special Black Friday offer!",
+    "subTitle": "The **biggest discount** for **maximum privacy**",
     "ctaGet": "Accept invite",
     "ctaContinue": "Continue free",
     "guarantee": "30-day money-back guarantee",
