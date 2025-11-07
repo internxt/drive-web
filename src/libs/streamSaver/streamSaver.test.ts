@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, vi, afterEach } from 'vitest';
-import { StreamSaver } from './streamSaver';
+import { StreamSaver } from '.';
 
 const mockedChunk = new Uint8Array([1, 2, 3]);
 
