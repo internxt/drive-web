@@ -3,7 +3,7 @@ import {
   contextMenuDriveFolderSharedAFS,
   contextMenuDriveItemSharedAFS,
   contextMenuMultipleSharedViewAFS,
-} from 'views/Drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+} from 'views/Drive/components/DriveExplorer/components';
 import { AdvancedSharedItem } from 'app/share/types';
 
 interface SharedContextMenuActions {

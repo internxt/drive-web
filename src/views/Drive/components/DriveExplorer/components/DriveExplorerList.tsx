@@ -19,7 +19,7 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import { DriveItemData, DriveItemDetails } from 'app/drive/types';
 import EditItemNameDialog from 'app/drive/components/EditItemNameDialog/EditItemNameDialog';
 import ShareWithTeamDialog from 'app/drive/components/ShareWithTeamDialog/ShareWithTeamDialog';
-import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
+import DriveExplorerListItem from './DriveExplorerListItem';
 import {
   contextMenuDriveFolderNotSharedLink,
   contextMenuDriveFolderShared,

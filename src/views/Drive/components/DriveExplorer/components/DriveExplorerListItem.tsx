@@ -1,14 +1,12 @@
 import { items } from '@internxt/lib';
 import usersIcon from 'assets/icons/users.svg';
 import { useEffect } from 'react';
-import { DriveExplorerItemProps } from '..';
+import { DriveExplorerItemProps } from '../types';
 import dateService from 'app/core/services/date.service';
 import transformItemService from 'app/drive/services/item-transform.service';
 import sizeService from 'app/drive/services/size.service';
 import iconService from 'app/drive/services/icon.service';
-import useDriveItemActions from '../hooks/useDriveItemActions';
-import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
-import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
+import { useDriveItemActions, useDriveItemDrag, useDriveItemDrop, useDriveItemStoreProps } from '../../../hooks';
 import './DriveExplorerListItem.scss';
 import { t } from 'i18next';
 

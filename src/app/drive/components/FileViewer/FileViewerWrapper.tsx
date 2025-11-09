@@ -20,7 +20,7 @@ import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from 'app/drive/services/database.service';
 import downloadService from 'app/drive/services/download.service';
-import useDriveItemActions from 'views/Drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
+import { useDriveItemActions } from 'views/Drive/hooks';
 import FileViewer from './FileViewer';
 import {
   getFileContentManager,

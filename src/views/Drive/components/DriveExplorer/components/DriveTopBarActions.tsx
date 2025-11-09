@@ -22,7 +22,7 @@ import TooltipElement, { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Too
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
-import useDriveItemStoreProps from '../DriveExplorerItem/hooks/useDriveStoreProps';
+import { useDriveItemStoreProps } from '../../../hooks';
 import {
   contextMenuDriveFolderNotSharedLink,
   contextMenuDriveFolderShared,
@@ -30,7 +30,7 @@ import {
   contextMenuDriveNotSharedLink,
   contextMenuWorkspaceFile,
   contextMenuWorkspaceFolder,
-} from '../DriveExplorerList/DriveItemContextMenu';
+} from './DriveItemContextMenu';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { DownloadManager } from 'app/network/DownloadManager';
 

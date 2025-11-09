@@ -24,7 +24,7 @@ import {
 } from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
 import { IRoot } from 'app/store/slices/storage/types';
 import { DriveFileData, DriveFolderData, DriveItemData, FolderPathDialog } from 'app/drive/types';
-import CreateFolderDialog from 'views/Drive/components/CreateFolderDialog/CreateFolderDialog';
+import { CreateFolderDialog } from 'views/Drive/components';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import localStorageService from 'app/core/services/local-storage.service';
 import { STORAGE_KEYS } from 'app/core/services/storage-keys';

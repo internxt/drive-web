@@ -1,8 +1,7 @@
 import { ArrowFatUp, FileArrowUp, FolderSimplePlus, Trash, UploadSimple } from '@phosphor-icons/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
-import { usePaginationState } from './hooks/usePaginationState';
-import { useTutorialState } from './hooks/useTutorialState';
+import { usePaginationState, useTutorialState } from '../../hooks';
 import { createFileUploadHandler, createFolderUploadHandler, UPLOAD_ITEMS_LIMIT } from './helpers/uploadHelpers';
 
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
@@ -14,8 +13,7 @@ import { Workspace } from 'app/core/types';
 import Empty from 'app/shared/components/Empty/Empty';
 import { AppDispatch, RootState } from 'app/store';
 import { StorageFilters } from 'app/store/slices/storage/storage.model';
-import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
-import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
+import { DriveExplorerGrid, DriveExplorerList, DriveTopBarActions } from './components';
 
 import { useHotkeys } from 'react-hotkeys-hook';
 import { moveItemsToTrash } from 'views/Trash/services';
@@ -30,7 +28,7 @@ import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import RealtimeService, { SOCKET_EVENTS } from 'app/core/services/socket.service';
 import { ClearTrashDialog } from 'views/Trash/components';
-import CreateFolderDialog from 'views/Drive/components/CreateFolderDialog/CreateFolderDialog';
+import { CreateFolderDialog } from 'views/Drive/components';
 import DeleteItemsDialog from 'views/Trash/components/DeleteItemsDialog';
 import { useTrashPagination } from 'views/Trash/hooks/useTrashPagination';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -63,10 +61,9 @@ import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/Nam
 import ShareDialog from 'app/drive/components/ShareDialog/ShareDialog';
 import StopSharingAndMoveToTrashDialogWrapper from 'views/Trash/components/StopSharingAndMoveToTrashDialogWrapper';
 import UploadItemsFailsDialog from 'app/drive/components/UploadItemsFailsDialog/UploadItemsFailsDialog';
-import WarningMessageWrapper from 'views/Home/components/WarningMessage/WarningMessageWrapper';
+import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
-import DriveTopBarActions from './components/DriveTopBarActions';
 
 const MenuItemToGetSize = ({
   isTrash,

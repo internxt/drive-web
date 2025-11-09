@@ -2,18 +2,16 @@ import { createRef, useEffect, useRef, useState } from 'react';
 import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
 import { items } from '@internxt/lib';
 
-import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
+import DriveItemDropdownActions from '../../DriveItemDropdownActions';
 import iconService from 'app/drive/services/icon.service';
 import useForceUpdate from 'app/core/hooks/useForceUpdate';
-import { DriveExplorerItemProps } from '..';
-import useDriveItemActions from '../hooks/useDriveItemActions';
-import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
-import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
+import { DriveExplorerItemProps } from '../types';
+import { useDriveItemActions, useDriveItemStoreProps, useDriveItemDrag, useDriveItemDrop } from '../../../hooks';
 
 import './DriveExplorerGridItem.scss';
 import { Menu } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { moveItemsToTrash } from '../../../../../../views/Trash/services';
+import { moveItemsToTrash } from '../../../../../views/Trash/services';
 import transformItemService from 'app/drive/services/item-transform.service';
 
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {

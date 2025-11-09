@@ -5,9 +5,9 @@ import { useAppDispatch } from 'app/store/hooks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { DriveItemData } from 'app/drive/types';
-import DriveGridItemSkeleton from '../../DriveGridItemSkeleton/DriveGridItemSkeleton';
+import DriveGridItemSkeleton from '../../DriveGridItemSkeleton';
 import EditItemNameDialog from 'app/drive/components/EditItemNameDialog/EditItemNameDialog';
-import DriveExplorerGridItem from '../DriveExplorerItem/DriveExplorerGridItem/DriveExplorerGridItem';
+import DriveExplorerGridItem from './DriveExplorerGridItem';
 import './DriveExplorerGrid.scss';
 
 interface DriveExplorerGridProps {
