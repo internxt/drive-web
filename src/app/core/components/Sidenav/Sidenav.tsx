@@ -3,7 +3,7 @@ import { connect, useSelector } from 'react-redux';
 import { matchPath } from 'react-router-dom';
 
 import desktopService from 'app/core/services/desktop.service';
-import PlanUsage from 'views/Home/components/PlanUsage/PlanUsage';
+import PlanUsage from 'views/Home/components/PlanUsage';
 import { RootState } from 'app/store';
 import { planSelectors } from 'app/store/slices/plan';
 import navigationService from '../../services/navigation.service';

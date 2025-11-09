@@ -4,7 +4,7 @@ import BreadcrumbsBackupsView from 'app/shared/components/Breadcrumbs/Containers
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { Helmet } from 'react-helmet-async';
 import { DeleteBackupDialog } from './components';
-import WarningMessageWrapper from 'views/Home/components/WarningMessage/WarningMessageWrapper';
+import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import BackupsAsFoldersList from './components/BackupsAsFoldersList';
 import DeviceList from './components/DeviceList';
 import FileViewerWrapper from 'app/drive/components/FileViewer/FileViewerWrapper';
@@ -13,7 +13,7 @@ import { deleteFile } from 'app/drive/services/file.service';
 import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/deleteItemsThunk';
 import { DriveItemData } from 'app/drive/types';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import { contextMenuSelectedBackupItems } from 'views/Drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import { contextMenuSelectedBackupItems } from 'views/Drive/components/DriveExplorer/components';
 import { useBackupListActions } from './hooks/useBackupListActions';
 import { useBackupDeviceActions } from './hooks/useBackupDeviceActions';
 import { useBackupsPagination } from './hooks/useBackupsPagination';

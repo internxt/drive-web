@@ -1,12 +1,12 @@
 import { Menu } from '@headlessui/react';
 import { DriveItemData } from 'app/drive/types';
-import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
+import { useDriveItemActions } from '../hooks';
 import {
   contextMenuDriveFolderNotSharedLink,
   contextMenuDriveFolderShared,
   contextMenuDriveItemShared,
   contextMenuDriveNotSharedLink,
-} from '../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+} from './DriveExplorer/components';
 import { MenuItemType } from '@internxt/ui';
 
 interface FileDropdownActionsProps {
