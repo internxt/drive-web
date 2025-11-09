@@ -57,10 +57,9 @@ interface DriveExplorerListProps {
 
 type ObjectWithId = { id: string | number };
 
-type ContextMenuDriveItem =
-  | DriveItemData
-  | Pick<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
-  | (ListShareLinksItem & { code: string });
+type SortField = 'type' | 'name' | 'updatedAt' | 'size';
+
+type ContextMenuDriveItem = DriveItemData | Pick<DriveItemData, SortField> | (ListShareLinksItem & { code: string });
 
 function findUniqueItems<T extends ObjectWithId>(array1: T[], array2: T[]): T[] {
   const result: T[] = [];
@@ -141,7 +140,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const isRecents = props.title === translate('views.recents.head');
   const isTrash = props.title === translate('trash.trash');
 
-  const sortBy = (value: { field: 'type' | 'name' | 'updatedAt' | 'size'; direction: 'ASC' | 'DESC' }) => {
+  const sortBy = (value: { field: SortField; direction: 'ASC' | 'DESC' }) => {
     let direction = OrderDirection.Asc;
     if (order.by === value.field) {
       direction = order.direction === OrderDirection.Desc ? OrderDirection.Asc : OrderDirection.Desc;
@@ -194,7 +193,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   );
 
   const restoreItem = useCallback(
-    (item: DriveItemData | Pick<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>) => {
+    (item: DriveItemData | Pick<DriveItemData, SortField>) => {
       dispatch(storageActions.setItemsToMove([item as DriveItemData]));
       dispatch(uiActions.setIsMoveItemsDialogOpen(true));
     },
@@ -202,7 +201,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   );
 
   const deletePermanently = useCallback(
-    (item: DriveItemData | Pick<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>) => {
+    (item: DriveItemData | Pick<DriveItemData, SortField>) => {
       dispatch(storageActions.setItemsToDelete([item as DriveItemData]));
       dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
     },
@@ -517,7 +516,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           }}
           onOrderByChanged={sortBy}
           orderBy={{
-            field: props.order.by as 'type' | 'name' | 'updatedAt' | 'size',
+            field: props.order.by as SortField,
             direction: props.order.direction,
           }}
           onSelectedItemsChanged={onSelectedItemsChanged}
