@@ -1,12 +1,12 @@
 import { beforeEach, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
-import { screen, fireEvent, render } from '@testing-library/react';
-import WorkspaceGuestSingUpView from './WorkspaceGuestSignUp';
+import { fireEvent, render } from '@testing-library/react';
+import ShareGuestSignUpView from './ShareGuestSignUpView';
 import { userActions } from 'app/store/slices/user';
 import * as keysService from 'app/crypto/services/keys.service';
 import { encryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
-import { Buffer } from 'buffer';
+import { useSignUp } from './hooks/useSignup';
+import { Buffer } from 'node:buffer';
 import { generateMnemonic } from 'bip39';
 import envService from 'app/core/services/env.service';
 
@@ -16,11 +16,19 @@ const mockMagicSalt =
   '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
 const mockApi = 'https://mock';
 const mockHostname = 'hostname';
-
 const mockPassword = 'mock-password';
 const mockEmal = 'mock@email.com';
 const mockToken = 'mock-token';
 let callCount = 0;
+
+const createMockSetState = (initialValue: unknown) => {
+  return vi.fn().mockImplementation((newState) => {
+    if (typeof newState === 'function') {
+      return newState(initialValue);
+    }
+    return newState;
+  });
+};
 
 describe('onSubmit', () => {
   beforeAll(() => {
@@ -29,6 +37,19 @@ describe('onSubmit', () => {
     vi.spyOn(globalThis, 'decodeURIComponent').mockImplementation((value) => {
       return value;
     });
+
+    vi.mock('app/core/services/local-storage.service', () => ({
+      default: {
+        get: vi.fn(),
+        clear: vi.fn(),
+        getUser: vi.fn(),
+        set: vi.fn(),
+      },
+    }));
+
+    vi.mock('@internxt/lib/dist/src/auth/testPasswordStrength', () => ({
+      testPasswordStrength: vi.fn(),
+    }));
 
     vi.mock('react-helmet-async', () => ({
       Helmet: vi.fn(),
@@ -63,15 +84,38 @@ describe('onSubmit', () => {
       };
     });
 
-    vi.mock('app/auth/components/SignUp/useSignUp', () => ({
+    vi.mock('./components/SignupForm', () => ({
+      Views: vi.fn(),
+    }));
+
+    vi.mock('./hooks/useSignup', () => ({
       useSignUp: vi.fn().mockReturnValue({ doRegisterPreCreatedUser: vi.fn() }),
       parseUserSettingsEnsureKyberKeysAdded: vi.importActual,
     }));
 
+    vi.mock('./hooks/useGuestSignupState', () => ({
+      useGuestSignupState: vi.fn(() => ({
+        isValidPassword: true,
+        setIsValidPassword: vi.fn(),
+        signupError: undefined,
+        setSignupError: vi.fn(),
+        showError: false,
+        setShowError: vi.fn(),
+        isLoading: false,
+        setIsLoading: vi.fn(),
+        passwordState: { tag: 'success', label: 'Password is strong' } as const,
+        setPasswordState: vi.fn(),
+        invitationId: 'test-invitation',
+        setInvitationId: vi.fn(),
+        showPasswordIndicator: true,
+        setShowPasswordIndicator: vi.fn(),
+        user: null,
+        mnemonic: null,
+      })),
+    }));
+
     vi.mock('app/shared/components/PasswordStrengthIndicator', () => ({
-      default: {
-        PasswordStrengthIndicator: () => <div>Mocked Password Strength Indicator</div>,
-      },
+      default: () => <div>Mocked Password Strength Indicator</div>,
     }));
 
     vi.mock('app/core/services/error.service', () => ({
@@ -81,13 +125,12 @@ describe('onSubmit', () => {
       },
     }));
 
-    vi.mock('app/core/services/local-storage.service', () => ({
+    vi.mock('app/share/services/share.service', () => ({
       default: {
-        get: vi.fn(),
-        clear: vi.fn(),
-        getUser: vi.fn(),
-        set: vi.fn(),
+        validateSharingInvitation: vi.fn(),
       },
+      validateSharingInvitation: vi.fn(),
+      decryptMnemonic: vi.fn(),
     }));
 
     vi.mock('app/core/services/navigation.service', () => ({
@@ -95,7 +138,7 @@ describe('onSubmit', () => {
         push: vi.fn(),
         history: {
           location: {
-            search: { email: 'mock@email.com' },
+            search: '?email=mock@email.com&invitation=test-invitation',
           },
         },
       },
@@ -119,13 +162,15 @@ describe('onSubmit', () => {
       parse: vi.fn().mockImplementation((input: string) => input),
     }));
 
-    vi.mock('react', () => {
+    vi.mock('react', async () => {
+      const actual = await vi.importActual('react');
       return {
+        ...actual,
         useEffect: vi.fn(),
         useState: vi.fn().mockImplementation((initial) => {
           callCount++;
-          const value = callCount === 1 ? true : false;
-          if (initial === false) initial = value;
+          let stateValue = initial;
+
           if (
             initial &&
             typeof initial === 'object' &&
@@ -134,38 +179,37 @@ describe('onSubmit', () => {
             initial.isLoading === true &&
             initial.isValid === false
           ) {
-            initial = { isLoading: false, isValid: true };
+            stateValue = { isLoading: false, isValid: true };
           }
-          const setState = vi.fn().mockImplementation((newState) => {
-            return { ...initial, ...newState };
-          });
 
-          return [initial, setState];
+          return [stateValue, createMockSetState(stateValue)];
         }),
-        createElement: vi.fn(),
       };
     });
 
-    vi.mock('react-hook-form', () => ({
-      SubmitHandler: vi.fn(),
-      useForm: () => {
-        const mockValues = { email: mockEmal, token: mockToken, password: mockPassword };
+    vi.mock('react-hook-form', () => {
+      const mockEmail = 'mock@email.com';
+      const mockToken = 'mock-token';
+      const mockPassword = 'mock-password';
+      const mockValues = { email: mockEmail, token: mockToken, password: mockPassword };
 
-        return {
-          register: vi.fn(),
-          handleSubmit: vi.fn().mockImplementation((fn) => {
-            return (event) => {
+      return {
+        SubmitHandler: vi.fn(),
+        useForm() {
+          return {
+            register: vi.fn((name: string) => ({ onChange: vi.fn(), onBlur: vi.fn(), ref: vi.fn(), name })),
+            handleSubmit: vi.fn((fn) => (event: Event) => {
               event?.preventDefault();
-              fn(mockValues);
-            };
-          }),
-          formState: { errors: {}, isValid: true },
-          control: vi.fn(),
-          watch: vi.fn((name) => mockValues[name]),
-        };
-      },
-      useWatch: vi.fn(),
-    }));
+              return fn(mockValues, event);
+            }),
+            formState: { errors: {}, isValid: true },
+            control: {},
+            watch: vi.fn((name: string) => mockValues[name]),
+          };
+        },
+        useWatch: vi.fn(() => mockPassword),
+      };
+    });
 
     vi.mock('react-redux', () => ({
       useSelector: vi.fn(),
@@ -193,7 +237,6 @@ describe('onSubmit', () => {
         initializeThunk: vi.fn(),
       },
     }));
-
     vi.mock('app/store/slices/products', () => ({
       productsThunks: {
         initializeThunk: vi.fn(),
@@ -230,7 +273,7 @@ describe('onSubmit', () => {
     });
   });
 
-  it('when called with new valid data, then user with decypted keys is saved in local storage', async () => {
+  it('when called with new valid data, then user with decrypted keys is saved in local storage', async () => {
     const mockMnemonic = generateMnemonic(256);
     const keys = await keysService.getKeys(mockPassword);
     const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
@@ -289,9 +332,15 @@ describe('onSubmit', () => {
         type: 'user/setUser',
       };
     });
-    render(<WorkspaceGuestSingUpView />);
-    const submitButton = screen.getByRole('button');
-    fireEvent.click(submitButton);
+    const { container } = render(<ShareGuestSignUpView />);
+    const form = container.querySelector('form');
+
+    if (!form) {
+      throw new Error('Form not found in component');
+    }
+
+    fireEvent.submit(form);
+
     await vi.waitFor(() => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -341,7 +390,7 @@ describe('onSubmit', () => {
     expect(spy).toBeCalledWith(mockClearUser);
   });
 
-  it('when called with old valid data, then user with decypted keys is saved in local storage', async () => {
+  it('when called with old valid data, then user with decrypted keys is saved in local storage', async () => {
     const mockMnemonic = generateMnemonic(256);
     const keys = await keysService.getKeys(mockPassword);
     const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
@@ -375,6 +424,7 @@ describe('onSubmit', () => {
     };
 
     callCount = 0;
+
     (useSignUp as Mock).mockImplementation(() => ({
       doRegisterPreCreatedUser: vi.fn().mockResolvedValue({
         xUser: mockUser as UserSettings,
@@ -389,9 +439,15 @@ describe('onSubmit', () => {
         type: 'user/setUser',
       };
     });
-    render(<WorkspaceGuestSingUpView />);
-    const submitButton = screen.getByRole('button');
-    fireEvent.click(submitButton);
+    const { container } = render(<ShareGuestSignUpView />);
+    const form = container.querySelector('form');
+
+    if (!form) {
+      throw new Error('Form not found in component');
+    }
+
+    fireEvent.submit(form);
+
     await vi.waitFor(() => {
       expect(spy).toHaveBeenCalledTimes(1);
     });

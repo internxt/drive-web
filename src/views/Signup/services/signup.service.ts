@@ -11,6 +11,7 @@ const postMessage = (data: Record<string, unknown>) => {
   window.top?.postMessage(data, CampaignLinks.PcComponentes);
 };
 
+// TODO: This is duplicating signup logic. Check this in order to refactor and avoid duplication.
 const signup = async (data, dispatch, doRegister, setLoading, appRedirect?, setError?) => {
   if ((data.email === '' && data.password === '') || data.email === null || data.password === null) {
     postMessage({ action: 'autoScroll' });
@@ -34,7 +35,7 @@ const signup = async (data, dispatch, doRegister, setLoading, appRedirect?, setE
     dispatch(referralsThunks.initializeThunk());
     await dispatch(userThunks.initializeUserThunk());
 
-    window.gtag('event', 'User Signup', { send_to: 'Blog' });
+    globalThis.gtag('event', 'User Signup', { send_to: 'Blog' });
     localStorage.removeItem('email');
     localStorage.removeItem('password');
     setLoading(false);

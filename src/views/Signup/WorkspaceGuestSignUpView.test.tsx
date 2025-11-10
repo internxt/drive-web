@@ -1,14 +1,14 @@
 import { beforeEach, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
 import { screen, fireEvent, render } from '@testing-library/react';
-import ShareGuestSingUpView from './ShareGuestSingUpView';
-import { userActions } from 'app/store/slices/user';
-import * as keysService from 'app/crypto/services/keys.service';
-import { encryptTextWithKey } from 'app/crypto/services/utils';
+import WorkspaceGuestSingUpView from './WorkspaceGuestSignUpView';
+import { userActions } from '../../app/store/slices/user';
+import * as keysService from '../../app/crypto/services/keys.service';
+import { encryptTextWithKey } from '../../app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
-import { Buffer } from 'buffer';
+import { useSignUp } from './hooks/useSignup';
+import { Buffer } from 'node:buffer';
 import { generateMnemonic } from 'bip39';
-import envService from 'app/core/services/env.service';
+import envService from '../../app/core/services/env.service';
 
 const mockSecret = '123456789QWERTY';
 const mockMagicIv = '12345678912345678912345678912345';
@@ -16,10 +16,58 @@ const mockMagicSalt =
   '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
 const mockApi = 'https://mock';
 const mockHostname = 'hostname';
+
 const mockPassword = 'mock-password';
 const mockEmal = 'mock@email.com';
 const mockToken = 'mock-token';
+const mockValues = { email: mockEmal, token: mockToken, password: mockPassword };
 let callCount = 0;
+
+const createSetStateMock = (initial: Record<string, unknown>) => {
+  return vi.fn().mockImplementation((newState: Record<string, unknown>) => ({ ...initial, ...newState }));
+};
+
+const createHandleSubmitMock = (fn: (values: typeof mockValues) => void) => {
+  return (event?: { preventDefault: () => void }) => {
+    event?.preventDefault();
+    fn(mockValues);
+  };
+};
+
+vi.mock('react', () => {
+  return {
+    useEffect: vi.fn(),
+    useState: vi.fn().mockImplementation((initial: unknown) => {
+      callCount++;
+      const value = callCount === 1;
+      if (initial === false) initial = value;
+      if (
+        initial &&
+        typeof initial === 'object' &&
+        'isLoading' in initial &&
+        'isValid' in initial &&
+        initial.isLoading === true &&
+        initial.isValid === false
+      ) {
+        initial = { isLoading: false, isValid: true };
+      }
+      return [initial, createSetStateMock(initial as Record<string, unknown>)];
+    }),
+    createElement: vi.fn(),
+  };
+});
+
+vi.mock('react-hook-form', () => ({
+  SubmitHandler: vi.fn(),
+  useForm: () => ({
+    register: vi.fn(),
+    handleSubmit: vi.fn().mockImplementation(createHandleSubmitMock),
+    formState: { errors: {}, isValid: true },
+    control: vi.fn(),
+    watch: vi.fn((name: keyof typeof mockValues) => mockValues[name]),
+  }),
+  useWatch: vi.fn(),
+}));
 
 describe('onSubmit', () => {
   beforeAll(() => {
@@ -28,19 +76,6 @@ describe('onSubmit', () => {
     vi.spyOn(globalThis, 'decodeURIComponent').mockImplementation((value) => {
       return value;
     });
-
-    vi.mock('app/core/services/local-storage.service', () => ({
-      default: {
-        get: vi.fn(),
-        clear: vi.fn(),
-        getUser: vi.fn(),
-        set: vi.fn(),
-      },
-    }));
-
-    vi.mock('@internxt/lib/dist/src/auth/testPasswordStrength', () => ({
-      testPasswordStrength: vi.fn(),
-    }));
 
     vi.mock('react-helmet-async', () => ({
       Helmet: vi.fn(),
@@ -58,7 +93,7 @@ describe('onSubmit', () => {
       X: () => <div>Mocked X Icon</div>,
     }));
 
-    vi.mock('app/auth/components/PasswordInput/PasswordInput', () => {
+    vi.mock('../../app/auth/components/PasswordInput/PasswordInput', () => {
       return {
         __esModule: true,
         default: vi.fn(({ register, ...props }) => (
@@ -75,37 +110,34 @@ describe('onSubmit', () => {
       };
     });
 
-    vi.mock('app/auth/components/SignUp/SignUp', () => ({
-      Views: vi.fn(),
-    }));
-
-    vi.mock('app/auth/components/SignUp/useSignUp', () => ({
+    vi.mock('./hooks/useSignup', () => ({
       useSignUp: vi.fn().mockReturnValue({ doRegisterPreCreatedUser: vi.fn() }),
       parseUserSettingsEnsureKyberKeysAdded: vi.importActual,
     }));
 
-    vi.mock('app/shared/components/PasswordStrengthIndicator', () => ({
+    vi.mock('../../app/shared/components/PasswordStrengthIndicator', () => ({
       default: {
         PasswordStrengthIndicator: () => <div>Mocked Password Strength Indicator</div>,
       },
     }));
 
-    vi.mock('app/core/services/error.service', () => ({
+    vi.mock('../../app/core/services/error.service', () => ({
       default: {
         castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
         reportError: vi.fn(),
       },
     }));
 
-    vi.mock('app/share/services/share.service', () => ({
+    vi.mock('../../app/core/services/local-storage.service', () => ({
       default: {
-        shareService: {
-          validateSharingInvitation: vi.fn(),
-        },
+        get: vi.fn(),
+        clear: vi.fn(),
+        getUser: vi.fn(),
+        set: vi.fn(),
       },
     }));
 
-    vi.mock('app/core/services/navigation.service', () => ({
+    vi.mock('../../app/core/services/navigation.service', () => ({
       default: {
         push: vi.fn(),
         history: {
@@ -116,7 +148,7 @@ describe('onSubmit', () => {
       },
     }));
 
-    vi.mock('app/i18n/provider/TranslationProvider', () => ({
+    vi.mock('../../app/i18n/provider/TranslationProvider', () => ({
       useTranslationContext: vi.fn().mockReturnValue({
         translate: vi.fn().mockImplementation((value: string) => {
           return value;
@@ -124,7 +156,7 @@ describe('onSubmit', () => {
       }),
     }));
 
-    vi.mock('app/shared/views/ExpiredLink/ExpiredLinkView', () => ({
+    vi.mock('../../app/shared/views/ExpiredLink/ExpiredLinkView', () => ({
       default: {
         ExpiredLink: vi.fn(),
       },
@@ -134,64 +166,16 @@ describe('onSubmit', () => {
       parse: vi.fn().mockImplementation((input: string) => input),
     }));
 
-    vi.mock('react', () => {
-      return {
-        useEffect: vi.fn(),
-        useState: vi.fn().mockImplementation((initial) => {
-          callCount++;
-          const value = callCount === 1;
-          if (initial === false) initial = value;
-          if (
-            initial &&
-            typeof initial === 'object' &&
-            'isLoading' in initial &&
-            'isValid' in initial &&
-            initial.isLoading === true &&
-            initial.isValid === false
-          ) {
-            initial = { isLoading: false, isValid: true };
-          }
-          const setState = vi.fn().mockImplementation((newState) => {
-            return { ...initial, ...newState };
-          });
-
-          return [initial, setState];
-        }),
-        createElement: vi.fn(),
-      };
-    });
-
-    vi.mock('react-hook-form', () => ({
-      SubmitHandler: vi.fn(),
-      useForm: () => {
-        const mockValues = { email: mockEmal, token: mockToken, password: mockPassword };
-
-        return {
-          register: vi.fn(),
-          handleSubmit: vi.fn().mockImplementation((fn) => {
-            return (event) => {
-              event?.preventDefault();
-              fn(mockValues);
-            };
-          }),
-          formState: { errors: {}, isValid: true },
-          control: vi.fn(),
-          watch: vi.fn((name) => mockValues[name]),
-        };
-      },
-      useWatch: vi.fn(),
-    }));
-
     vi.mock('react-redux', () => ({
       useSelector: vi.fn(),
       useDispatch: vi.fn(() => vi.fn()),
     }));
 
-    vi.mock('../../utils', () => ({
+    vi.mock('./utils', () => ({
       onChangePasswordHandler: vi.fn(),
     }));
 
-    vi.mock('app/core/services/workspace.service', () => ({
+    vi.mock('../../app/core/services/workspace.service', () => ({
       default: {
         validateWorkspaceInvitation: vi.fn().mockImplementation(() => {
           return true;
@@ -199,28 +183,29 @@ describe('onSubmit', () => {
       },
     }));
 
-    vi.mock('app/store/hooks', () => ({
+    vi.mock('../../app/store/hooks', () => ({
       useAppDispatch: vi.fn().mockReturnValue(vi.fn()),
     }));
 
-    vi.mock('app/store/slices/plan', () => ({
+    vi.mock('../../app/store/slices/plan', () => ({
       planThunks: {
         initializeThunk: vi.fn(),
       },
     }));
-    vi.mock('app/store/slices/products', () => ({
+
+    vi.mock('../../app/store/slices/products', () => ({
       productsThunks: {
         initializeThunk: vi.fn(),
       },
     }));
 
-    vi.mock('app/store/slices/referrals', () => ({
+    vi.mock('../../app/store/slices/referrals', () => ({
       referralsThunks: {
         initializeThunk: vi.fn(),
       },
     }));
 
-    vi.mock('app/store/slices/user', () => ({
+    vi.mock('../../app/store/slices/user', () => ({
       initializeUserThunk: vi.fn(),
       userActions: {
         setUser: vi.fn(),
@@ -244,7 +229,7 @@ describe('onSubmit', () => {
     });
   });
 
-  it('when called with new valid data, then user with decrypted keys is saved in local storage', async () => {
+  it('when called with new valid data, then user with decypted keys is saved in local storage', async () => {
     const mockMnemonic = generateMnemonic(256);
     const keys = await keysService.getKeys(mockPassword);
     const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
@@ -303,7 +288,7 @@ describe('onSubmit', () => {
         type: 'user/setUser',
       };
     });
-    render(<ShareGuestSingUpView />);
+    render(<WorkspaceGuestSingUpView />);
     const submitButton = screen.getByRole('button');
     fireEvent.click(submitButton);
     await vi.waitFor(() => {
@@ -355,7 +340,7 @@ describe('onSubmit', () => {
     expect(spy).toBeCalledWith(mockClearUser);
   });
 
-  it('when called with old valid data, then user with decrypted keys is saved in local storage', async () => {
+  it('when called with old valid data, then user with decypted keys is saved in local storage', async () => {
     const mockMnemonic = generateMnemonic(256);
     const keys = await keysService.getKeys(mockPassword);
     const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
@@ -389,7 +374,6 @@ describe('onSubmit', () => {
     };
 
     callCount = 0;
-
     (useSignUp as Mock).mockImplementation(() => ({
       doRegisterPreCreatedUser: vi.fn().mockResolvedValue({
         xUser: mockUser as UserSettings,
@@ -404,7 +388,7 @@ describe('onSubmit', () => {
         type: 'user/setUser',
       };
     });
-    render(<ShareGuestSingUpView />);
+    render(<WorkspaceGuestSingUpView />);
     const submitButton = screen.getByRole('button');
     fireEvent.click(submitButton);
     await vi.waitFor(() => {

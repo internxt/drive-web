@@ -1,0 +1,1 @@
+export { onChangePasswordHandler } from './passwordValidation';
