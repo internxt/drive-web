@@ -1,6 +1,8 @@
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import createFileDownloadStream from 'app/drive/services/download.service/createFileDownloadStream';
-import { DriveFileData } from 'app/drive/types';
+import createMultipartFileDownloadStream from 'app/drive/services/download.service/createMultipartDownloadStream';
+import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
+import { DownloadFileCallback, DownloadFilePayload } from './types/download';
 
 export class DownloadWorker {
   static readonly instance: DownloadWorker = new DownloadWorker();
@@ -9,22 +11,7 @@ export class DownloadWorker {
 
   private constructor() {}
 
-  async downloadFile(
-    params: {
-      file: DriveFileData;
-      isWorkspace: boolean;
-      isBrave: boolean;
-      credentials: any;
-    },
-    callbacks: {
-      onProgress: (progress: number) => void;
-      onSuccess: (fileId: string) => void;
-      onError: (error: any) => void;
-      onBlob: (blob: Blob) => void;
-      onChunk: (chunk: Uint8Array) => void;
-    },
-    abortController?: AbortController,
-  ) {
+  async downloadFile(params: DownloadFilePayload, callbacks: DownloadFileCallback, abortController?: AbortController) {
     const { file, isWorkspace, isBrave, credentials } = params;
     this.abortController = abortController ?? new AbortController();
 
@@ -36,19 +23,21 @@ export class DownloadWorker {
       }
     };
 
+    const getFileReadableStream = async () => {
+      if (file.size >= MIN_DOWNLOAD_MULTIPART_SIZE) {
+        return createMultipartFileDownloadStream(file, callbacks.onProgress, credentials, this.abortController);
+      }
+
+      return createFileDownloadStream(file, isWorkspace, callbacks.onProgress, this.abortController, credentials);
+    };
+
     try {
       console.log('[DOWNLOAD-WORKER] Downloading file -->', {
         fileName: file.plainName ?? file.name,
         type: file.type,
       });
 
-      const downloadedFile = await createFileDownloadStream(
-        file,
-        isWorkspace,
-        callbacks.onProgress,
-        this.abortController,
-        credentials,
-      );
+      const downloadedFile: ReadableStream<Uint8Array> = await getFileReadableStream();
 
       this.abortController.signal.addEventListener('abort', abortHandler);
 
@@ -74,7 +63,7 @@ export class DownloadWorker {
   }
 
   private async downloadUsingChunks(
-    reader: ReadableStreamDefaultReader<Uint8Array<ArrayBufferLike>>,
+    reader: ReadableStreamDefaultReader<Uint8Array>,
     onChunk: (chunk: Uint8Array) => void,
   ) {
     console.log('[DOWNLOAD-WORKER] Downloading using readable stream');
