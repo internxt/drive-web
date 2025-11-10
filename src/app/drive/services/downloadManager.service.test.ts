@@ -1,4 +1,4 @@
-import streamSaver from '../../../services/streamSaver';
+import streamSaver from '../../../libs/streamSaver';
 import {
   DownloadCredentials,
   DownloadItem,

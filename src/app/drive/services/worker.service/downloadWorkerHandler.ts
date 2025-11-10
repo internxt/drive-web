@@ -1,4 +1,4 @@
-import streamSaver from '../../../../services/streamSaver';
+import streamSaver from '../../../../libs/streamSaver';
 import { DriveFileData } from 'app/drive/types';
 import { MessageData } from './types/download';
 import { createDownloadWebWorker } from '../../../../WebWorker';
