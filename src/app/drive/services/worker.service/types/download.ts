@@ -2,10 +2,10 @@ type MessageWorkerResult = 'chunk' | 'blob' | 'abort' | 'progress' | 'error' | '
 
 export interface MessageData {
   result: MessageWorkerResult;
-  readableStream: ReadableStream<Uint8Array<ArrayBufferLike>>;
+  readableStream: ReadableStream<Uint8Array>;
   blob: Blob;
   progress?: number;
   fileId?: string;
   error?: string;
-  chunk?: Uint8Array<ArrayBufferLike>;
+  chunk?: Uint8Array;
 }

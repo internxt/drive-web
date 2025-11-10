@@ -8,7 +8,7 @@ import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
 import envService from 'app/core/services/env.service';
 
 import { generateFileKey } from './crypto';
-import downloadFileV2 from './download/v2';
+import downloadFileV2, { multipartDownload } from './download/v2';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string; bucketId: string };
@@ -113,7 +113,7 @@ export interface NetworkCredentials {
   pass: string;
 }
 
-interface IDownloadParams {
+export interface IDownloadParams {
   bucketId: string;
   fileId: string;
   creds?: NetworkCredentials;
@@ -166,7 +166,21 @@ export function downloadFile(params: IDownloadParams): Promise<ReadableStream<Ui
   });
 }
 
-async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
+export async function multipartDownloadFile(
+  params: IDownloadParams & { fileSize?: number },
+): Promise<ReadableStream<Uint8Array>> {
+  const downloadMultipartPromise = multipartDownload(params);
+
+  return downloadMultipartPromise.catch((err) => {
+    if (err instanceof FileVersionOneError) {
+      return _downloadFile(params);
+    }
+
+    throw err;
+  });
+}
+
+export async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Uint8Array>> {
   const { bucketId, fileId, token, creds } = params;
 
   let metadata: MetadataRequiredForDownload;
