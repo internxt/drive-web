@@ -1,7 +1,7 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import authService from 'app/auth/services/auth.service';
+import authService from 'services/auth.service';
 import errorService from 'app/core/services/error.service';
 import Section from '../../../../Section';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';

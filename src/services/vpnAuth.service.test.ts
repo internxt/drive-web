@@ -10,7 +10,7 @@ describe('Tests for VPN auth', () => {
   let postMessageSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    postMessageSpy = vi.spyOn(window, 'postMessage').mockImplementation(() => {});
+    postMessageSpy = vi.spyOn(globalThis, 'postMessage').mockImplementation(() => {});
     vi.clearAllMocks();
     vi.resetModules();
     vi.spyOn(envService, 'getVariable').mockImplementation((key) => {

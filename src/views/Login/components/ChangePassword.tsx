@@ -1,7 +1,7 @@
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import { Button, Input } from '@internxt/ui';
 import { CaretLeft, CheckCircle, FileArrowUp, Warning, WarningCircle } from '@phosphor-icons/react';
-import authService from 'app/auth/services/auth.service';
+import authService from 'services/auth.service';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -55,7 +55,7 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
       return () => clearInterval(timer);
     }
 
-    countDown === 0 && window.location.assign(`${window.location.origin}/login`);
+    countDown === 0 && globalThis.location.assign(`${globalThis.location.origin}/login`);
   }, [isEmailSent, countDown]);
 
   const uploadBackupKey = () => {
@@ -74,6 +74,7 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
         return;
       }
     } catch (err) {
+      errorService.reportError(err);
       if (validateMnemonic(uploadedBackupKeyContent)) {
         setBackupKeyContent(uploadedBackupKeyContent);
         return;
@@ -122,7 +123,7 @@ export default function ChangePassword(props: Readonly<ChangePasswordProps>): JS
     event.preventDefault();
     setIsLoading(true);
 
-    const token = window.location.pathname.split('/').pop();
+    const token = globalThis.location.pathname.split('/').pop();
     const password = newPassword;
 
     if (!token) {

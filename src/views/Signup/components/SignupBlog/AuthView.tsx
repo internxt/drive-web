@@ -4,8 +4,8 @@ import { useState } from 'react';
 
 import { IFormValues } from 'app/core/types';
 import { WarningCircle } from '@phosphor-icons/react';
-import TextInput from 'app/auth/components/TextInput/TextInput';
-import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
+import TextInput from 'common/components/TextInput';
+import PasswordInput from 'common/components/PasswordInput';
 import { useForm } from 'react-hook-form';
 import { signup } from '../../services';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';

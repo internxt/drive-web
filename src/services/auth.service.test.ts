@@ -13,7 +13,7 @@ import { BackupData } from 'app/utils/backupKeyUtils';
 import { validateMnemonic } from 'bip39';
 import { Buffer } from 'buffer';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { SdkFactory } from '../../core/factory/sdk';
+import { SdkFactory } from 'app/core/factory/sdk';
 import * as authService from './auth.service';
 
 const mockSecret = '123456789QWERTY';
@@ -40,7 +40,7 @@ beforeAll(() => {
       clear: vi.fn(),
     },
   }));
-  vi.mock('../../core/factory/sdk', () => ({
+  vi.mock('app/core/factory/sdk', () => ({
     SdkFactory: {
       getNewApiInstance: vi.fn(() => ({
         createAuthClient: vi.fn(() => ({
@@ -86,7 +86,7 @@ beforeAll(() => {
     workspaceThunks: vi.fn(),
   }));
 
-  vi.mock('../../core/services/http.service', () => ({
+  vi.mock('app/core/services/http.service', () => ({
     default: {
       getHeaders: vi.fn(),
       convertHeadersToNativeHeaders: vi.fn(),

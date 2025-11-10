@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import userService from '../../auth/services/user.service';
+import userService from 'services/user.service';
 import { refreshAvatar } from './avatarUtils';
 import { updateDatabaseProfileAvatar, deleteDatabaseProfileAvatar } from 'app/drive/services/database.service';
 
@@ -15,7 +15,7 @@ vi.mock('app/drive/services/database.service', async () => {
   };
 });
 
-vi.mock('../../auth/services/user.service', () => ({
+vi.mock('services/user.service', () => ({
   default: {
     downloadAvatar: vi.fn(),
     refreshAvatarUser: vi.fn(),

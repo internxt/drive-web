@@ -99,6 +99,8 @@ export default defineConfig({
       hooks: path.resolve(__dirname, 'src/hooks'),
       use_cases: path.resolve(__dirname, 'src/use_cases'),
       views: path.resolve(__dirname, 'src/views'),
+      services: path.resolve(__dirname, './src/services'),
+      common: path.resolve(__dirname, './src/common'),
       assert: 'assert',
       buffer: 'buffer',
       path: 'path-browserify',

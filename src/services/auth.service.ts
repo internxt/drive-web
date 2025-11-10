@@ -41,8 +41,8 @@ import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/u
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'app/utils/backupKeyUtils';
 import { generateMnemonic, validateMnemonic } from 'bip39';
-import { SdkFactory } from '../../core/factory/sdk';
-import errorService from '../../core/services/error.service';
+import { SdkFactory } from 'app/core/factory/sdk';
+import errorService from 'app/core/services/error.service';
 import vpnAuthService from './vpnAuth.service';
 
 type ProfileInfo = {

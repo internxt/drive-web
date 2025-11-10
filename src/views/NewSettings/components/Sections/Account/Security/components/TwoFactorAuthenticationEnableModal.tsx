@@ -1,6 +1,6 @@
 import { Warning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
-import authService, { generateNew2FA } from 'app/auth/services/auth.service';
+import authService, { generateNew2FA } from 'services/auth.service';
 import { Button, Input, Loader, Modal } from '@internxt/ui';
 import appStoreIcon from 'app/../assets/icons/app-store.svg';
 import playStoreIcon from 'app/../assets/icons/play-store.svg';

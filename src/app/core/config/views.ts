@@ -3,16 +3,19 @@ import { ComponentClass, FunctionComponent } from 'react';
 import { AppView } from '../types';
 
 import { AuthView, ButtonAuth, SignupBlog } from '../../../views/Signup/components';
-import BlockedAccountView from '../../auth/views/BlockedAccountView/BlockedAccountView';
-import RecoverAccountView from '../../auth/views/RecoverAccountView/RecoverAccountView';
-import RecoveryLinkView from '../../auth/views/RecoveryLinkView/RecoveryLinkView';
-import SignInView from '../../auth/views/SignInView/SignInView';
-import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from 'views/Signup';
 import UniversalLinkView from '../../auth/views/UniversalLinkView/UniversalLinkView';
 import UniversalLinkOkView from '../../auth/views/UniversalLinkView/UniversalLinkOkView';
 import UniversalLinkErrorView from '../../auth/views/UniversalLinkView/UniversalLinkErrorView';
 import OAuthLinkView from '../../auth/views/OAuthLinkView/OAuthLinkView';
 import BackupsView from 'views/Backups/BackupsView';
+import {
+  BlockedAccountView,
+  RecoverAccountView,
+  RecoveryLinkView,
+  SignInView,
+  UniversalLinkSuccessView,
+} from '../../../views/Login';
+import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from '../../../views/Signup';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
 import DriveView from 'views/Drive';
 import FolderFileNotFound from 'app/drive/views/FolderFileNotFound/FolderFileNotFound';

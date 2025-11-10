@@ -8,7 +8,7 @@ import {
 } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'app/core/services/local-storage.service';
-import { SdkFactory } from '../../core/factory/sdk';
+import { SdkFactory } from '../app/core/factory/sdk';
 
 export const sendDeactivationEmail = (): Promise<void> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
