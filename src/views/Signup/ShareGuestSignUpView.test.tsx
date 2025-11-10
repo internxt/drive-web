@@ -1,0 +1,495 @@
+import { beforeEach, beforeAll, describe, expect, it, vi, Mock } from 'vitest';
+import { fireEvent, render } from '@testing-library/react';
+import ShareGuestSignUpView from './ShareGuestSignUpView';
+import { userActions } from 'app/store/slices/user';
+import * as keysService from 'app/crypto/services/keys.service';
+import { encryptTextWithKey } from 'app/crypto/services/utils';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { useSignUp } from './hooks/useSignup';
+import { Buffer } from 'node:buffer';
+import { generateMnemonic } from 'bip39';
+import envService from 'app/core/services/env.service';
+
+const mockSecret = '123456789QWERTY';
+const mockMagicIv = '12345678912345678912345678912345';
+const mockMagicSalt =
+  '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+const mockApi = 'https://mock';
+const mockHostname = 'hostname';
+const mockPassword = 'mock-password';
+const mockEmal = 'mock@email.com';
+const mockToken = 'mock-token';
+let callCount = 0;
+
+const createMockSetState = (initialValue: unknown) => {
+  return vi.fn().mockImplementation((newState) => {
+    if (typeof newState === 'function') {
+      return newState(initialValue);
+    }
+    return newState;
+  });
+};
+
+describe('onSubmit', () => {
+  beforeAll(() => {
+    globalThis.Buffer = Buffer;
+
+    vi.spyOn(globalThis, 'decodeURIComponent').mockImplementation((value) => {
+      return value;
+    });
+
+    vi.mock('app/core/services/local-storage.service', () => ({
+      default: {
+        get: vi.fn(),
+        clear: vi.fn(),
+        getUser: vi.fn(),
+        set: vi.fn(),
+      },
+    }));
+
+    vi.mock('@internxt/lib/dist/src/auth/testPasswordStrength', () => ({
+      testPasswordStrength: vi.fn(),
+    }));
+
+    vi.mock('react-helmet-async', () => ({
+      Helmet: vi.fn(),
+    }));
+
+    vi.mock('@phosphor-icons/react', () => ({
+      Info: () => <div>Mocked Info Icon</div>,
+      WarningCircle: () => <div>Mocked Warning Circle Icon</div>,
+      CheckCircle: () => <div>Mocked Check Circle Icon</div>,
+      Eye: () => <div>Mocked Eye Icon</div>,
+      EyeSlash: () => <div>Mocked Eye Slash Icon</div>,
+      MagnifyingGlass: () => <div>Mocked Magnifyin Glass Icon</div>,
+      Warning: () => <div>Mocked Warning Icon</div>,
+      WarningOctagon: () => <div>Mocked Warning Octagon Icon</div>,
+      X: () => <div>Mocked X Icon</div>,
+    }));
+
+    vi.mock('app/auth/components/PasswordInput/PasswordInput', () => {
+      return {
+        __esModule: true,
+        default: vi.fn(({ register, ...props }) => (
+          <input
+            data-testid="password-input"
+            type="password"
+            placeholder={props.placeholder}
+            className={props.className}
+            onFocus={props.onFocus}
+            maxLength={props.maxLength}
+            ref={register}
+          />
+        )),
+      };
+    });
+
+    vi.mock('./components/SignupForm', () => ({
+      Views: vi.fn(),
+    }));
+
+    vi.mock('./hooks/useSignup', () => ({
+      useSignUp: vi.fn().mockReturnValue({ doRegisterPreCreatedUser: vi.fn() }),
+      parseUserSettingsEnsureKyberKeysAdded: vi.importActual,
+    }));
+
+    vi.mock('./hooks/useGuestSignupState', () => ({
+      useGuestSignupState: vi.fn(() => ({
+        isValidPassword: true,
+        setIsValidPassword: vi.fn(),
+        signupError: undefined,
+        setSignupError: vi.fn(),
+        showError: false,
+        setShowError: vi.fn(),
+        isLoading: false,
+        setIsLoading: vi.fn(),
+        passwordState: { tag: 'success', label: 'Password is strong' } as const,
+        setPasswordState: vi.fn(),
+        invitationId: 'test-invitation',
+        setInvitationId: vi.fn(),
+        showPasswordIndicator: true,
+        setShowPasswordIndicator: vi.fn(),
+        user: null,
+        mnemonic: null,
+      })),
+    }));
+
+    vi.mock('app/shared/components/PasswordStrengthIndicator', () => ({
+      default: () => <div>Mocked Password Strength Indicator</div>,
+    }));
+
+    vi.mock('app/core/services/error.service', () => ({
+      default: {
+        castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
+        reportError: vi.fn(),
+      },
+    }));
+
+    vi.mock('app/share/services/share.service', () => ({
+      default: {
+        validateSharingInvitation: vi.fn(),
+      },
+      validateSharingInvitation: vi.fn(),
+      decryptMnemonic: vi.fn(),
+    }));
+
+    vi.mock('app/core/services/navigation.service', () => ({
+      default: {
+        push: vi.fn(),
+        history: {
+          location: {
+            search: '?email=mock@email.com&invitation=test-invitation',
+          },
+        },
+      },
+    }));
+
+    vi.mock('app/i18n/provider/TranslationProvider', () => ({
+      useTranslationContext: vi.fn().mockReturnValue({
+        translate: vi.fn().mockImplementation((value: string) => {
+          return value;
+        }),
+      }),
+    }));
+
+    vi.mock('app/shared/views/ExpiredLink/ExpiredLinkView', () => ({
+      default: {
+        ExpiredLink: vi.fn(),
+      },
+    }));
+
+    vi.mock('query-string', () => ({
+      parse: vi.fn().mockImplementation((input: string) => input),
+    }));
+
+    vi.mock('react', async () => {
+      const actual = await vi.importActual('react');
+      return {
+        ...actual,
+        useEffect: vi.fn(),
+        useState: vi.fn().mockImplementation((initial) => {
+          callCount++;
+          let stateValue = initial;
+
+          if (
+            initial &&
+            typeof initial === 'object' &&
+            'isLoading' in initial &&
+            'isValid' in initial &&
+            initial.isLoading === true &&
+            initial.isValid === false
+          ) {
+            stateValue = { isLoading: false, isValid: true };
+          }
+
+          return [stateValue, createMockSetState(stateValue)];
+        }),
+      };
+    });
+
+    vi.mock('react-hook-form', () => {
+      const mockEmail = 'mock@email.com';
+      const mockToken = 'mock-token';
+      const mockPassword = 'mock-password';
+      const mockValues = { email: mockEmail, token: mockToken, password: mockPassword };
+
+      return {
+        SubmitHandler: vi.fn(),
+        useForm() {
+          return {
+            register: vi.fn((name: string) => ({ onChange: vi.fn(), onBlur: vi.fn(), ref: vi.fn(), name })),
+            handleSubmit: vi.fn((fn) => (event: Event) => {
+              event?.preventDefault();
+              return fn(mockValues, event);
+            }),
+            formState: { errors: {}, isValid: true },
+            control: {},
+            watch: vi.fn((name: string) => mockValues[name]),
+          };
+        },
+        useWatch: vi.fn(() => mockPassword),
+      };
+    });
+
+    vi.mock('react-redux', () => ({
+      useSelector: vi.fn(),
+      useDispatch: vi.fn(() => vi.fn()),
+    }));
+
+    vi.mock('../../utils', () => ({
+      onChangePasswordHandler: vi.fn(),
+    }));
+
+    vi.mock('app/core/services/workspace.service', () => ({
+      default: {
+        validateWorkspaceInvitation: vi.fn().mockImplementation(() => {
+          return true;
+        }),
+      },
+    }));
+
+    vi.mock('app/store/hooks', () => ({
+      useAppDispatch: vi.fn().mockReturnValue(vi.fn()),
+    }));
+
+    vi.mock('app/store/slices/plan', () => ({
+      planThunks: {
+        initializeThunk: vi.fn(),
+      },
+    }));
+    vi.mock('app/store/slices/products', () => ({
+      productsThunks: {
+        initializeThunk: vi.fn(),
+      },
+    }));
+
+    vi.mock('app/store/slices/referrals', () => ({
+      referralsThunks: {
+        initializeThunk: vi.fn(),
+      },
+    }));
+
+    vi.mock('app/store/slices/user', () => ({
+      initializeUserThunk: vi.fn(),
+      userActions: {
+        setUser: vi.fn(),
+      },
+      userThunks: {
+        initializeUserThunk: vi.fn(),
+      },
+    }));
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
+      if (key === 'magicIv') return mockMagicIv;
+      if (key === 'magicSalt') return mockMagicSalt;
+      if (key === 'newApi') return mockApi;
+      if (key === 'secret') return mockSecret;
+      if (key === 'hostname') return mockHostname;
+      else return 'no mock implementation';
+    });
+  });
+
+  it('when called with new valid data, then user with decrypted keys is saved in local storage', async () => {
+    const mockMnemonic = generateMnemonic(256);
+    const keys = await keysService.getKeys(mockPassword);
+    const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
+    const creationDate = new Date();
+
+    const mockUser: UserSettings = {
+      uuid: 'mock-uuid',
+      email: mockEmal,
+      privateKey: keys.ecc.privateKeyEncrypted,
+      mnemonic: encryptedMockMnemonic,
+      userId: 'mock-userId',
+      name: 'mock-name',
+      lastname: 'mock-lastname',
+      username: 'mock-username',
+      bridgeUser: 'mock-bridgeUser',
+      bucket: 'mock-bucket',
+      backupsBucket: null,
+      root_folder_id: 0,
+      rootFolderId: 'mock-rootFolderId',
+      rootFolderUuid: undefined,
+      sharedWorkspace: false,
+      credit: 0,
+      publicKey: keys.ecc.publicKey,
+      revocationKey: keys.revocationCertificate,
+      keys: {
+        ecc: {
+          publicKey: keys.ecc.publicKey,
+          privateKey: keys.ecc.privateKeyEncrypted,
+        },
+        kyber: {
+          publicKey: keys.kyber.publicKey ?? '',
+          privateKey: keys.kyber.privateKeyEncrypted ?? '',
+        },
+      },
+      appSumoDetails: null,
+      registerCompleted: false,
+      hasReferralsProgram: false,
+      createdAt: creationDate,
+      avatar: null,
+      emailVerified: false,
+    };
+
+    callCount = 0;
+
+    (useSignUp as Mock).mockImplementation(() => ({
+      doRegisterPreCreatedUser: vi.fn().mockResolvedValue({
+        xUser: mockUser,
+        xToken: mockToken,
+        mnemonic: mockMnemonic,
+      }),
+    }));
+
+    const spy = vi.spyOn(userActions, 'setUser').mockImplementation((user) => {
+      return {
+        payload: user,
+        type: 'user/setUser',
+      };
+    });
+    const { container } = render(<ShareGuestSignUpView />);
+    const form = container.querySelector('form');
+
+    if (!form) {
+      throw new Error('Form not found in component');
+    }
+
+    fireEvent.submit(form);
+
+    await vi.waitFor(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    const decryptedPrivateKey = keysService.decryptPrivateKey(keys.ecc.privateKeyEncrypted, mockPassword);
+
+    let decryptedPrivateKyberKey = '';
+    if (keys.kyber.privateKeyEncrypted)
+      decryptedPrivateKyberKey = keysService.decryptPrivateKey(keys.kyber.privateKeyEncrypted, mockPassword);
+
+    const mockClearUser: UserSettings = {
+      uuid: 'mock-uuid',
+      email: 'mock@email.com',
+      privateKey: Buffer.from(decryptedPrivateKey).toString('base64'),
+      mnemonic: encryptedMockMnemonic,
+      userId: 'mock-userId',
+      name: 'mock-name',
+      lastname: 'mock-lastname',
+      username: 'mock-username',
+      bridgeUser: 'mock-bridgeUser',
+      bucket: 'mock-bucket',
+      backupsBucket: null,
+      root_folder_id: 0,
+      rootFolderId: 'mock-rootFolderId',
+      rootFolderUuid: undefined,
+      sharedWorkspace: false,
+      credit: 0,
+      publicKey: keys.ecc.publicKey,
+      revocationKey: keys.revocationCertificate,
+      keys: {
+        ecc: {
+          publicKey: keys.ecc.publicKey,
+          privateKey: Buffer.from(decryptedPrivateKey).toString('base64'),
+        },
+        kyber: {
+          publicKey: keys.kyber.publicKey ?? '',
+          privateKey: decryptedPrivateKyberKey,
+        },
+      },
+      appSumoDetails: null,
+      registerCompleted: false,
+      hasReferralsProgram: false,
+      createdAt: creationDate,
+      avatar: null,
+      emailVerified: false,
+    };
+    expect(spy).toBeCalledWith(mockClearUser);
+  });
+
+  it('when called with old valid data, then user with decrypted keys is saved in local storage', async () => {
+    const mockMnemonic = generateMnemonic(256);
+    const keys = await keysService.getKeys(mockPassword);
+    const encryptedMockMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
+    const creationDate = new Date();
+
+    const mockUser: Partial<UserSettings> = {
+      uuid: 'mock-uuid',
+      email: mockEmal,
+      privateKey: keys.ecc.privateKeyEncrypted,
+      mnemonic: encryptedMockMnemonic,
+      userId: 'mock-userId',
+      name: 'mock-name',
+      lastname: 'mock-lastname',
+      username: 'mock-username',
+      bridgeUser: 'mock-bridgeUser',
+      bucket: 'mock-bucket',
+      backupsBucket: null,
+      root_folder_id: 0,
+      rootFolderId: 'mock-rootFolderId',
+      rootFolderUuid: undefined,
+      sharedWorkspace: false,
+      credit: 0,
+      publicKey: keys.ecc.publicKey,
+      revocationKey: keys.revocationCertificate,
+      appSumoDetails: null,
+      registerCompleted: false,
+      hasReferralsProgram: false,
+      createdAt: creationDate,
+      avatar: null,
+      emailVerified: false,
+    };
+
+    callCount = 0;
+
+    (useSignUp as Mock).mockImplementation(() => ({
+      doRegisterPreCreatedUser: vi.fn().mockResolvedValue({
+        xUser: mockUser as UserSettings,
+        xToken: mockToken,
+        mnemonic: mockMnemonic,
+      }),
+    }));
+
+    const spy = vi.spyOn(userActions, 'setUser').mockImplementation((user) => {
+      return {
+        payload: user,
+        type: 'user/setUser',
+      };
+    });
+    const { container } = render(<ShareGuestSignUpView />);
+    const form = container.querySelector('form');
+
+    if (!form) {
+      throw new Error('Form not found in component');
+    }
+
+    fireEvent.submit(form);
+
+    await vi.waitFor(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    const decryptedPrivateKey = keysService.decryptPrivateKey(keys.ecc.privateKeyEncrypted, mockPassword);
+
+    const mockClearUser: UserSettings = {
+      uuid: 'mock-uuid',
+      email: 'mock@email.com',
+      privateKey: Buffer.from(decryptedPrivateKey).toString('base64'),
+      mnemonic: encryptedMockMnemonic,
+      userId: 'mock-userId',
+      name: 'mock-name',
+      lastname: 'mock-lastname',
+      username: 'mock-username',
+      bridgeUser: 'mock-bridgeUser',
+      bucket: 'mock-bucket',
+      backupsBucket: null,
+      root_folder_id: 0,
+      rootFolderId: 'mock-rootFolderId',
+      rootFolderUuid: undefined,
+      sharedWorkspace: false,
+      credit: 0,
+      publicKey: keys.ecc.publicKey,
+      revocationKey: keys.revocationCertificate,
+      keys: {
+        ecc: {
+          publicKey: keys.ecc.publicKey,
+          privateKey: Buffer.from(decryptedPrivateKey).toString('base64'),
+        },
+        kyber: {
+          publicKey: '',
+          privateKey: '',
+        },
+      },
+      appSumoDetails: null,
+      registerCompleted: false,
+      hasReferralsProgram: false,
+      createdAt: creationDate,
+      avatar: null,
+      emailVerified: false,
+    };
+    expect(spy).toBeCalledWith(mockClearUser);
+  });
+});

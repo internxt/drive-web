@@ -2,16 +2,14 @@ import { ComponentClass, FunctionComponent } from 'react';
 
 import { AppView } from '../types';
 
-import AuthView from '../../auth/views/Auth/AuthView';
-import ButtonAuth from '../../auth/views/Auth/ButtonAuth';
-import SignupBlog from '../../auth/views/Auth/SignupBlog';
+import { AuthView, ButtonAuth, SignupBlog } from '../../../views/Signup/components';
 import BlockedAccountView from '../../auth/views/BlockedAccountView/BlockedAccountView';
 import RecoverAccountView from '../../auth/views/RecoverAccountView/RecoverAccountView';
 import RecoveryLinkView from '../../auth/views/RecoveryLinkView/RecoveryLinkView';
 import SignInView from '../../auth/views/SignInView/SignInView';
-import SignUpView from '../../auth/views/SignUpView/SignUpView';
+import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from '../../../views/Signup';
 import UniversalLinkSuccessView from '../../auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
-import BackupsView from '../../backups/views/BackupsView/BackupsView';
+import BackupsView from '../../../views/Backups/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
 import DriveView from '../../drive/views/DriveView/DriveView';
 import FolderFileNotFound from '../../drive/views/FolderFileNotFound/FolderFileNotFound';
@@ -20,11 +18,8 @@ import RequestAccess from '../../drive/views/RequestAccess/RequestAccess';
 import TrashView from '../../../views/Trash/Trash';
 import CheckoutCancelView from '../../payment/views/CheckoutCancelView/CheckoutCancelView';
 import CheckoutSuccessView from '../../payment/views/CheckoutSuccessView/CheckoutSuccessView';
-import ShareFileView from '../../share/views/ShareView/ShareFileView';
-import WorkspaceGuestSingUpView from '../../auth/components/SignUp/WorkspaceGuestSignUp';
+import { ShareFileView, ShareFolderView } from '../../../views/PublicShared';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
-import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
-import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
 import SharedViewWrapper from '../../../views/Shared/SharedViewWrapper';
 import ChangeEmailView from '../views/ChangeEmailView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
@@ -44,8 +39,8 @@ const views: Array<{
   { id: AppView.BlockedAccount, component: BlockedAccountView },
   { id: AppView.Login, component: SignInView },
   { id: AppView.SignupBlog, component: SignupBlog },
-  { id: AppView.ShareGuestAcceptInvite, component: ShareGuestSingUpView },
-  { id: AppView.WorkspaceGuestInvite, component: WorkspaceGuestSingUpView },
+  { id: AppView.ShareGuestAcceptInvite, component: ShareGuestSignUpView },
+  { id: AppView.WorkspaceGuestInvite, component: WorkspaceGuestSignUpView },
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.RecoverAccount, component: RecoverAccountView },
