@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import backupsReducer from './slices/backups';
+import backupsReducer from '../../views/Backups/store/backupsSlice';
 import planReducer from './slices/plan';
 import productsReducer from './slices/products';
 import referralsReducer from './slices/referrals';
