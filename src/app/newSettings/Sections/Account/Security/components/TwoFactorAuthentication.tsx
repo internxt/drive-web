@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import { userHas2FAStored } from '../../../../../auth/services/auth.service';
+import { userHas2FAStored } from 'services/auth.service';
 import Section from '../../../../../newSettings/Sections/General/components/Section';
 import Card from '../../../../../shared/components/Card';
 import { Button, Loader } from '@internxt/ui';

@@ -1,4 +1,4 @@
-import userService from '../../auth/services/user.service';
+import userService from 'services/user.service';
 import { updateDatabaseProfileAvatar, deleteDatabaseProfileAvatar } from '../../drive/services/database.service';
 
 async function refreshAvatar(uuid: string): Promise<string | null> {

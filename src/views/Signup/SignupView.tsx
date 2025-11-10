@@ -2,7 +2,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import SignUpForm from './components/SignupForm';
 import { useMemo } from 'react';
-import authService from '../../app/auth/services/auth.service';
+import authService from 'services/auth.service';
 
 export interface SignUpViewProps {
   location: {

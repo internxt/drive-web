@@ -11,7 +11,7 @@ import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions } from 'app/store/slices/user';
-import authService, { authenticateUser, is2FANeeded } from '../../services/auth.service';
+import authService, { authenticateUser, is2FANeeded } from 'services/auth.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WarningCircle } from '@phosphor-icons/react';
@@ -20,14 +20,14 @@ import navigationService from 'app/core/services/navigation.service';
 import AppError, { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button } from '@internxt/ui';
-import workspacesService from '../../../core/services/workspace.service';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import useLoginRedirections from '../../../routes/hooks/Login/useLoginRedirections';
-import shareService from '../../../share/services/share.service';
-import PasswordInput from '../PasswordInput/PasswordInput';
-import TextInput from '../TextInput/TextInput';
+import workspacesService from 'app/core/services/workspace.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import useLoginRedirections from '../hooks/useLoginRedirections';
+import shareService from 'app/share/services/share.service';
+import PasswordInput from 'common/components/PasswordInput';
+import TextInput from 'common/components/TextInput';
 import { AuthMethodTypes } from 'app/payment/types';
-import vpnAuthService from 'app/auth/services/vpnAuth.service';
+import vpnAuthService from 'services/vpnAuth.service';
 import envService from 'app/core/services/env.service';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
@@ -40,7 +40,7 @@ const showNotification = ({ text, isError }: { text: string; isError: boolean })
 export default function LogIn(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(globalThis.location.search);
 
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showTwoFactor, setShowTwoFactor] = useState(false);
@@ -91,7 +91,7 @@ export default function LogIn(): JSX.Element {
   }, []);
 
   const autoSubmit = useMemo(
-    () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
+    () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(globalThis.location.search)),
     [],
   );
 
@@ -150,7 +150,7 @@ export default function LogIn(): JSX.Element {
     const redirectUrl = authService.getRedirectUrl(urlParams, token);
 
     if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
-      window.location.replace(redirectUrl);
+      globalThis.location.replace(redirectUrl);
     }
 
     const isVPNAuth = urlParams.get('vpnAuth');
@@ -196,7 +196,7 @@ export default function LogIn(): JSX.Element {
   };
 
   const getSignupLink = () => {
-    const currentParams = new URLSearchParams(window.location.search);
+    const currentParams = new URLSearchParams(globalThis.location.search);
 
     return currentParams.toString() ? '/new?' + currentParams.toString() : '/new';
   };
