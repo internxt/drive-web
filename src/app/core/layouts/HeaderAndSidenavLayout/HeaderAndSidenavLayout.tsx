@@ -11,7 +11,7 @@ import TaskLogger from 'app/tasks/components/TaskLogger/TaskLogger';
 import DriveItemInfoMenu from 'app/drive/components/DriveItemInfoMenu/DriveItemInfoMenu';
 import SharedFolderTooBigDialog from '../../../drive/components/SharedFolderTooBigDialog/SharedFolderTooBigDialog';
 import { getAppConfig } from '../../services/config.service';
-import ShareItemDialog from '../../../share/components/ShareItemDialog/ShareItemDialog';
+import ShareItemDialog from '../../../../views/Shared/components/ShareItemDialog/ShareItemDialog';
 
 export interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;
