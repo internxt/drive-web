@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
-import authService from 'app/auth/services/auth.service';
+import authService from 'services/auth.service';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { Button, Input } from '@internxt/ui';
@@ -14,7 +14,7 @@ interface RestartAccount {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;
 }
 
-export default function RestartAccount(props: RestartAccount): JSX.Element {
+export default function RestartAccount(props: Readonly<RestartAccount>): JSX.Element {
   const { translate } = useTranslationContext();
 
   const [isEmailSent, setIsEmailSent] = useState(false);
@@ -51,7 +51,7 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
       return () => clearInterval(timer);
     }
 
-    countDown === 0 && window.location.assign(`${window.location.origin}/login`);
+    countDown === 0 && globalThis.location.assign(`${globalThis.location.origin}/login`);
   }, [isEmailSent, countDown]);
 
   //TODO: Refactor to PasswordStrengthIndicator
@@ -91,7 +91,7 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
     event.preventDefault();
     setIsLoading(true);
 
-    const token = window.location.pathname.split('/').pop();
+    const token = globalThis.location.pathname.split('/').pop();
 
     if (!token) {
       notificationsService.show({
