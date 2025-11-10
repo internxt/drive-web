@@ -1,5 +1,5 @@
 import { Info, WarningCircle } from '@phosphor-icons/react';
-import PasswordInput from '../../../app/auth/components/PasswordInput/PasswordInput';
+import PasswordInput from 'common/components/PasswordInput';
 import PasswordStrengthIndicator from '../../../app/shared/components/PasswordStrengthIndicator';
 import { MAX_PASSWORD_LENGTH } from '../../../app/shared/components/ValidPassword';
 import { FieldError, UseFormRegister } from 'react-hook-form';

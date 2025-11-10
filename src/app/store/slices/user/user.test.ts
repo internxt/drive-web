@@ -13,7 +13,7 @@ _vi.mock('app/drive/services/database.service', () => ({
 
 import { refreshUserThunk, refreshAvatarThunk, userActions } from 'app/store/slices/user';
 import localStorageService from 'app/core/services/local-storage.service';
-import userService from 'app/auth/services/user.service';
+import userService from 'services/user.service';
 import errorService from 'app/core/services/error.service';
 
 describe('user thunks', () => {

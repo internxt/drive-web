@@ -3,8 +3,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button } from '@internxt/ui';
 import { Question } from '@phosphor-icons/react';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
-import ChangePassword from 'app/auth/components/ChangePassword/ChangePassword';
-import RestartAccount from 'app/auth/components/RestartAccount/RestartAccount';
+import { ChangePassword, RestartAccount } from './components';
 
 export default function RecoverAccountView(): JSX.Element {
   const { translate } = useTranslationContext();

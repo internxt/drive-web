@@ -1,11 +1,11 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import useVpnAuth from './useVpnAuth';
-import vpnAuthService from 'app/auth/services/vpnAuth.service';
+import vpnAuthService from 'services/vpnAuth.service';
 
 const newToken = 'user-token';
 
-vi.mock('app/auth/services/vpnAuth.service', () => ({
+vi.mock('services/vpnAuth.service', () => ({
   default: {
     logIn: vi.fn(),
     logOut: vi.fn(),

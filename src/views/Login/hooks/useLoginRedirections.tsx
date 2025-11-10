@@ -4,7 +4,8 @@ import { AppDispatch } from 'app/store';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { wait } from 'app/utils/timeUtils';
 import { t } from 'i18next';
-import { AppView } from '../../../core/types';
+import { AppView } from 'app/core/types';
+import errorService from 'app/core/services/error.service';
 
 const useLoginRedirections = ({
   navigateTo,
@@ -17,7 +18,7 @@ const useLoginRedirections = ({
   processWorkspaceInvitation: (isDeclineAction: boolean, invitationId: string, token: string) => Promise<void>;
   showNotification: ({ text, isError }: { text: string; isError: boolean }) => void;
 }) => {
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(globalThis.location.search);
 
   const sharingId = urlParams.get('sharingId');
   const folderuuidToRedirect = urlParams.get('folderuuid');
@@ -59,6 +60,7 @@ const useLoginRedirections = ({
       try {
         await workspacesService.validateWorkspaceInvitation(workspaceInvitationId);
       } catch (error) {
+        errorService.reportError(error);
         showNotification({
           text: t('linkExpired.title'),
           isError: true,

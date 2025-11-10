@@ -7,11 +7,11 @@ import { AppView } from 'app/core/types';
 import { useCallback, useEffect, useState } from 'react';
 import queryString from 'query-string';
 import { useParams } from 'react-router-dom';
-import authService from 'app/auth/services/auth.service';
+import authService from 'services/auth.service';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
-import { ResendButton } from '../../components/ResendButton/ResendButton';
+import { ResendButton } from './components';
 
 const COUNTDOWN_TIME = 30;
 

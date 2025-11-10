@@ -15,7 +15,7 @@ vi.mock('bip39', () => ({
   generateMnemonic: vi.fn().mockReturnValue('mock-mnemonic'),
 }));
 
-vi.mock('app/auth/services/auth.service', () => ({
+vi.mock('services/auth.service', () => ({
   readReferalCookie: vi.fn().mockReturnValue('mock-referral'),
 }));
 

@@ -9,7 +9,7 @@ import { AppView } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { UserRoles } from 'app/share/types';
 import { t } from 'i18next';
-import userService from '../../../auth/services/user.service';
+import userService from 'services/user.service';
 import { hybridEncryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 
 export const HYBRID_ALGORITHM = 'hybrid';
