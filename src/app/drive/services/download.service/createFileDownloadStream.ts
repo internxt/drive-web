@@ -8,7 +8,7 @@ export default async function createFileDownloadStream(
   updateProgressCallback: (progress: number) => void,
   abortController?: AbortController,
   sharingOptions?: { credentials: { user: string; pass: string }; mnemonic: string },
-): Promise<ReadableStream<Uint8Array<ArrayBufferLike>>> {
+): Promise<ReadableStream<Uint8Array>> {
   return !sharingOptions
     ? fetchFileStream(
         { ...itemData, bucketId: itemData.bucket },

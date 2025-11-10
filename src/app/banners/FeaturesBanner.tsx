@@ -51,7 +51,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
   const parseSubtitle = (text: string) => {
     const parts = text.split('**');
     return parts.map((part, index) => (
-      <span key={`${part}-${index}`} className={index % 2 === 1 ? 'text-primary' : 'text-gray-1'}>
+      <span key={`${part}-${index}`} className={index % 2 === 1 ? 'text-primary' : 'text-gray-1 dark:text-gray-100'}>
         {part}
       </span>
     ));
@@ -95,11 +95,15 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
               >
                 {translate('featuresBanner.label.blueText')}
               </p>
-              <p className="text-lg font-semibold text-gray-1 px-1 py-0.5">{translate('featuresBanner.label.text')}</p>
+              <p className="text-lg font-semibold text-gray-1 dark:text-gray-100 px-1 py-0.5">
+                {translate('featuresBanner.label.text')}
+              </p>
             </div>
             <div className="flex flex-col gap-4">
-              <p className="text-4xl font-semibold max-w-[509px] text-gray-1">{translate('featuresBanner.title')}</p>
-              <p className="text-lg font-semibold px-1">{parseSubtitle(translate('featuresBanner.subTitle'))}</p>
+              <p className="text-4xl font-semibold max-w-[509px] text-gray-1 dark:text-gray-100">
+                {translate('featuresBanner.title')}
+              </p>
+              <p className="text-lg font-semibold px-1 ">{parseSubtitle(translate('featuresBanner.subTitle'))}</p>
             </div>
           </div>
 
@@ -120,7 +124,7 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
             </div>
             <div className="flex flex-row items-center gap-2">
               <img src={ShieldIcon} alt="Icon" width={24} height={20} />
-              <p className="whitespace-nowrap font-medium text-gray-1 dark:text-gray-1 lg:text-base">
+              <p className="whitespace-nowrap font-medium text-gray-1 dark:text-gray-100 lg:text-base">
                 {translate('featuresBanner.guarantee')}
               </p>
             </div>
@@ -133,7 +137,9 @@ const FeaturesBanner = ({ showBanner, onClose }: FeaturesBannerProps): JSX.Eleme
                 className="flex h-6 w-min flex-row items-center justify-center gap-1 rounded bg-white/10 px-1 py-0.5 shadow-sm lg:h-8 lg:px-2 lg:py-1"
               >
                 <feature.icon className="h-5 w-5 text-primary lg:h-6 lg:w-6" />
-                <p className="whitespace-nowrap text-sm font-medium leading-tight text-gray-1">{feature.text}</p>
+                <p className="whitespace-nowrap text-sm font-medium leading-tight text-gray-1 dark:text-gray-100">
+                  {feature.text}
+                </p>
               </div>
             ))}
           </div>

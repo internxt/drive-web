@@ -1,5 +1,5 @@
 import { useAppDispatch } from 'app/store/hooks';
-import { useSignUp } from '../../components/SignUp/useSignUp';
+import { useSignUp } from '../../hooks/useSignup';
 import { useState } from 'react';
 
 import { IFormValues } from 'app/core/types';
@@ -7,35 +7,37 @@ import { WarningCircle } from '@phosphor-icons/react';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { useForm } from 'react-hook-form';
-import signup from './signup';
-
-const textContent = {
-  email: 'Correo',
-  passwordLabel: 'Contraseña',
-  emailEmpty: 'El correo no puede estar vacío',
-  passwordLabelEmpty: 'La contraseña no puede estar vacía',
-  buttonText: 'Obtén la oferta',
-  legal: {
-    line1: 'Al crear una cuenta aceptas',
-    line2: 'los términos de servicio y la política de privacidad',
-  },
-};
+import { signup } from '../../services';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export const SignupComponent = ({
   buttonColor,
-  textContent,
   appRedirect = false,
+  variant = 'authView',
 }: {
   buttonColor?: string;
-  textContent: any;
   appRedirect?: boolean;
+  variant?: 'authView' | 'blog';
 }): JSX.Element => {
+  const { translate } = useTranslationContext();
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
 
   const [error, setError] = useState('');
 
   const { doRegister } = useSignUp('activate');
+
+  const textContent = {
+    email: translate(`auth.signup.${variant}.emailPlaceholder`),
+    passwordLabel: translate(`auth.signup.${variant}.passwordPlaceholder`),
+    emailEmpty: translate(`auth.signup.${variant}.emailEmpty`),
+    passwordLabelEmpty: translate(`auth.signup.${variant}.passwordEmpty`),
+    buttonText: translate(`auth.signup.${variant}.buttonText`),
+    legal: {
+      line1: translate(`auth.signup.${variant}.legal.line1`),
+      line2: translate(`auth.signup.${variant}.legal.line2`),
+    },
+  };
 
   const {
     register,
@@ -142,6 +144,8 @@ export const SignupComponent = ({
 };
 
 export default function Auth(): JSX.Element {
+  const { translate } = useTranslationContext();
+
   return (
     <div className="flex flex-col items-center justify-center px-5 py-3 lg:px-40 lg:py-16">
       <div className="flex h-full w-full flex-col items-center justify-center space-y-7 px-5 lg:flex-row lg:space-x-48 lg:space-y-0">
@@ -153,10 +157,10 @@ export default function Auth(): JSX.Element {
                 color: '#13094F',
               }}
             >
-              Almacena tus archivos con total privacidad
+              {translate('auth.signup.authView.heroTitle')}
             </p>
           </div>
-          <SignupComponent textContent={textContent} />
+          <SignupComponent />
         </div>
         <div
           className="flex h-full flex-col items-center space-y-6 rounded-lg px-6 py-9 text-center"
@@ -170,10 +174,10 @@ export default function Auth(): JSX.Element {
               backgroundColor: '#F26122',
             }}
           >
-            <p className="text-lg font-bold text-white">Plan de 2TB</p>
+            <p className="text-lg font-bold text-white">{translate('auth.signup.authView.planLabel')}</p>
           </div>
           <div className="items-center">
-            <p className="text-lg font-bold text-white">Gratis durante los primeros 30 días</p>
+            <p className="text-lg font-bold text-white">{translate('auth.signup.authView.freeTrialText')}</p>
           </div>
           <div
             className="flex flex-row"
@@ -185,7 +189,7 @@ export default function Auth(): JSX.Element {
             <sup className={'mt-6 text-3xl font-bold'}>€</sup>
           </div>
           <div className="text-center text-white">
-            <p className="text-sm font-bold">50% de descuento los tres siguientes meses si decides renovar</p>
+            <p className="text-sm font-bold">{translate('auth.signup.authView.discountText')}</p>
           </div>
         </div>
       </div>
