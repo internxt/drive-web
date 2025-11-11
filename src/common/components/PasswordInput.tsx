@@ -71,14 +71,13 @@ const PasswordInput = ({
         }}
         className={error ? 'inxt-input input-error' : 'inxt-input input-primary'}
       />
-      <div
+      <button
+        type="button"
         onClick={() => setShowPassword(!showPassword)}
-        onKeyDown={(e) => (e['code'] === 'Space' || e['code'] === 'Enter') && setShowPassword(!showPassword)}
-        tabIndex={0}
         className="absolute right-4 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center text-gray-100"
       >
         {showPassword ? <Eye className="h-6 w-6" /> : <EyeSlash className="h-6 w-6" />}
-      </div>
+      </button>
     </div>
   );
 };
