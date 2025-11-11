@@ -11,7 +11,7 @@ import { encryptText, encryptTextWithKey } from 'app/crypto/services/utils';
 import { userActions } from 'app/store/slices/user';
 import { BackupData } from 'app/utils/backupKeyUtils';
 import { validateMnemonic } from 'bip39';
-import { Buffer } from 'buffer';
+import { Buffer } from 'node:buffer';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SdkFactory } from 'app/core/factory/sdk';
 import * as authService from './auth.service';
