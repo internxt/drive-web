@@ -1,4 +1,4 @@
-import streamSaver from 'streamsaver';
+import streamSaver from '../../../../libs/streamSaver';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
 import { DriveFileData } from '../../types';
