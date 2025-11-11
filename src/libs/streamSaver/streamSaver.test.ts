@@ -1,11 +1,11 @@
 import { describe, test, expect, beforeEach, vi, afterEach } from 'vitest';
-import { StreamSaver } from '.';
+import { StreamSaver, STREAM_SAVER_MITM } from '.';
 
 const mockedChunk = new Uint8Array([1, 2, 3]);
 
 describe('Stream Saver Service', () => {
   let streamSaver: StreamSaver;
-  let mockIframe: HTMLIFrameElement;
+  let mockIframes: HTMLIFrameElement[] = [];
   let mockMessageChannel: MessageChannel;
   let mockTransformStream: TransformStream;
   let mockWriter;
@@ -13,8 +13,7 @@ describe('Stream Saver Service', () => {
 
   beforeEach(() => {
     streamSaver = new StreamSaver();
-
-    (streamSaver as any).supportsTransferable = true;
+    mockIframes = [];
 
     mockWriter = {
       write: vi.fn().mockResolvedValue(undefined),
@@ -48,7 +47,16 @@ describe('Stream Saver Service', () => {
     originalAppendChild = document.body.appendChild;
     document.body.appendChild = vi.fn((element) => {
       if (element instanceof HTMLIFrameElement) {
-        mockIframe = element;
+        Object.defineProperty(element, 'contentWindow', {
+          value: {
+            postMessage: vi.fn(),
+          },
+          writable: true,
+          configurable: true,
+        });
+
+        mockIframes.push(element);
+
         setTimeout(() => {
           const loadEvent = new Event('load');
           element.dispatchEvent(loadEvent);
@@ -63,8 +71,20 @@ describe('Stream Saver Service', () => {
     vi.clearAllMocks();
   });
 
-  test('When creating write stream, then it should send readable stream via postMessage', async () => {
+  test('When transferable streams are supported, then it should create a transform stream and return its writable', () => {
+    (streamSaver as any).supportsTransferable = true;
+
+    const stream = streamSaver.createWriteStream('test.txt');
+
+    expect(global.TransformStream).toHaveBeenCalled();
+    expect(stream).toBe(mockTransformStream.writable);
+  });
+
+  test('When transferable streams are supported, then it should transfer readable stream via post message', async () => {
+    (streamSaver as any).supportsTransferable = true;
+
     streamSaver.createWriteStream('test.txt');
+
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     expect(mockMessageChannel.port1.postMessage).toHaveBeenCalledWith(
@@ -73,52 +93,77 @@ describe('Stream Saver Service', () => {
     );
   });
 
-  test('When writing a chunk, then it should use transform stream writable', async () => {
+  test('When transferable streams are not supported, then it should return a pre-created writable stream', () => {
+    (streamSaver as any).supportsTransferable = false;
+
+    const stream = streamSaver.createWriteStream('test.txt');
+
+    expect(stream).toBeInstanceOf(WritableStream);
+    expect(stream).not.toBe(mockTransformStream.writable);
+  });
+
+  test('When transferable streams are not supported and writing a chunk, then it should post message to port 1', async () => {
+    (streamSaver as any).supportsTransferable = false;
+
     const stream = streamSaver.createWriteStream('test.txt');
     const writer = stream.getWriter();
 
     await writer.write(mockedChunk);
 
-    expect(mockWriter.write).toHaveBeenCalledWith(mockedChunk);
+    expect(mockMessageChannel.port1.postMessage).toHaveBeenCalledWith(mockedChunk);
   });
 
-  test('When closing stream, then it should close the transform stream writable', async () => {
+  test('When transferable streams are not supported and closing stream, then it should send an end message', async () => {
+    (streamSaver as any).supportsTransferable = false;
+
     const stream = streamSaver.createWriteStream('test.txt');
     const writer = stream.getWriter();
 
     await writer.close();
 
-    expect(mockWriter.close).toHaveBeenCalled();
+    expect(mockMessageChannel.port1.postMessage).toHaveBeenCalledWith('end');
   });
 
-  test('When aborting stream, then it should abort the transform stream writable', async () => {
-    const stream = streamSaver.createWriteStream('test.txt');
-    const writer = stream.getWriter();
+  test('When creating stream, then it should create MITM iframe', async () => {
+    (streamSaver as any).supportsTransferable = true;
 
-    await writer.abort();
+    streamSaver.createWriteStream('test.txt');
 
-    expect(mockWriter.abort).toHaveBeenCalled();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    const mitmIframe = mockIframes[0];
+    expect(mitmIframe.src).toContain(STREAM_SAVER_MITM);
+    expect(mitmIframe.hidden).toBe(true);
   });
 
-  describe('Service Worker messages', () => {
-    test('When receiving download message, then it should create iframe with download URL', async () => {
-      const downloadUrl = 'blob:http://localhost/abc123';
-      streamSaver.createWriteStream('test.txt');
+  test('When creating multiple streams, then it should reuse the same MITM iframe', async () => {
+    (streamSaver as any).supportsTransferable = true;
 
-      mockMessageChannel.port1.onmessage?.({ data: { download: downloadUrl } } as MessageEvent);
+    streamSaver.createWriteStream('test1.txt');
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
-      expect(mockIframe.src).toStrictEqual(downloadUrl);
-    });
+    streamSaver.createWriteStream('test2.txt');
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
-    test('When receiving abort message, then it should abort and close the message channel', async () => {
-      streamSaver.createWriteStream('test.txt');
-      vi.clearAllMocks();
+    expect(mockIframes.length).toBe(1);
+  });
 
-      mockMessageChannel.port1.onmessage?.({ data: { abort: true } } as MessageEvent);
+  test('When MITM iframe loads, then it should post message to Service Worker with correct data', async () => {
+    (streamSaver as any).supportsTransferable = true;
 
-      expect(mockMessageChannel.port1.postMessage).toHaveBeenCalledWith('abort');
-      expect(mockMessageChannel.port1.close).toHaveBeenCalledOnce();
-      expect(mockMessageChannel.port2.close).toHaveBeenCalledOnce();
-    });
+    streamSaver.createWriteStream('test.txt', { size: 1024 });
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    const mitmIframe = mockIframes[0];
+    const postMessageSpy = mitmIframe.contentWindow?.postMessage as any;
+
+    expect(postMessageSpy).toHaveBeenCalled();
+
+    const [message, targetOrigin, ports] = postMessageSpy.mock.calls[0];
+    expect(message.transferringReadable).toBe(true);
+    expect(message.headers['Content-Length']).toBe('1024');
+    expect(targetOrigin).toBe('*');
+    expect(ports[0]).toBe(mockMessageChannel.port2);
   });
 });
