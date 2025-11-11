@@ -5,14 +5,32 @@ export const STREAM_SAVER_MITM = '/streamsaver/mitm.html?version=2.0.0';
 
 export class StreamSaver {
   private mitmTransporter: MitmTransporter | null = null;
-  // Exposed for backward compatibility with legacy code in downloadFile.ts
+  private supportsTransferable = false;
   public WritableStream = globalThis.WritableStream;
 
-  /**
-   * Create a hidden iframe and append it to the DOM
-   */
+  constructor() {
+    this.detectTransferableSupport();
+  }
+
+  private detectTransferableSupport(): void {
+    try {
+      const { readable } = new TransformStream();
+      const mc = new MessageChannel();
+      mc.port1.postMessage(readable, [readable]);
+      mc.port1.close();
+      mc.port2.close();
+      this.supportsTransferable = true;
+      console.log('[StreamSaver] Transferable streams supported');
+    } catch (e) {
+      this.supportsTransferable = false;
+      console.log('[StreamSaver] Transferable streams NOT supported, using fallback');
+    }
+  }
+
   private makeIframe(src: string): MitmTransporter {
     if (!src) throw new Error('iframe src is required');
+
+    console.log(`[StreamSaver] Creating iframe with src: ${src}`);
 
     const iframe = document.createElement('iframe');
     iframe.hidden = true;
@@ -30,40 +48,76 @@ export class StreamSaver {
       dispatchEvent: (event: Event) => iframe.dispatchEvent(event),
     };
 
-    iframe.addEventListener(
-      'load',
-      () => {
-        transport.loaded = true;
-      },
-      { once: true },
-    );
+    iframe.addEventListener('load', () => (transport.loaded = true), { once: true });
+
+    iframe.addEventListener('error', (e) => {
+      console.error('[StreamSaver] Iframe failed to load:', e);
+    });
 
     document.body.appendChild(iframe);
     return transport;
   }
 
-  /**
-   * Load the MITM transporter (iframe)
-   */
   private loadTransporter(): void {
     if (!this.mitmTransporter) {
+      console.log('[StreamSaver] Loading transporter');
       this.mitmTransporter = this.makeIframe(STREAM_SAVER_MITM);
     }
   }
 
-  /**
-   * Create a writable stream for downloading files
-   */
+  private manualWritableStream(
+    channel: MessageChannel,
+    bytesWritten: number,
+    downloadUrl: string | null,
+  ): WritableStream<Uint8Array> {
+    return new WritableStream<Uint8Array>({
+      write(chunk) {
+        if (!(chunk instanceof Uint8Array)) {
+          throw new TypeError('Can only write Uint8Arrays');
+        }
+
+        console.log('[StreamSaver] Writing chunk:', chunk.length, 'bytes');
+        channel.port1.postMessage(chunk);
+        bytesWritten += chunk.length;
+
+        if (downloadUrl) {
+          location.href = downloadUrl;
+          downloadUrl = null;
+        }
+      },
+      close() {
+        console.log('[StreamSaver] Stream closed, total bytes:', bytesWritten);
+        channel.port1.postMessage('end');
+      },
+      abort() {
+        console.log('[StreamSaver] Stream aborted');
+        channel.port1.postMessage('abort');
+        channel.port1.onmessage = null;
+        channel.port1.close();
+        channel.port2.close();
+      },
+    });
+  }
+
   public createWriteStream(filename: string, options?: StreamSaverOptions): WritableStream<Uint8Array> {
-    const channel = new MessageChannel();
+    console.log(
+      '[StreamSaver] Creating write stream for:',
+      filename,
+      'supportsTransferable:',
+      this.supportsTransferable,
+    );
 
     this.loadTransporter();
+
+    const messageChannel = new MessageChannel();
+    let bytesWritten = 0;
+    let downloadUrl: string | null = null;
 
     // Make filename RFC5987 compatible
     const encodedFilename = encodeURIComponent(filename.replaceAll('/', ':'));
 
     const response: ServiceWorkerMessage = {
-      transferringReadable: true,
+      transferringReadable: this.supportsTransferable,
       pathname: options?.pathname || Math.random().toString().slice(-6) + '/' + encodedFilename,
       headers: {
         'Content-Type': 'application/octet-stream; charset=utf-8',
@@ -75,35 +129,52 @@ export class StreamSaver {
       response.headers['Content-Length'] = options.size.toString();
     }
 
-    const args: [ServiceWorkerMessage, string, MessagePort[]] = [response, '*', [channel.port2]];
+    const args: [ServiceWorkerMessage, string, MessagePort[]] = [response, '*', [messageChannel.port2]];
 
-    const transformStream = new TransformStream();
-    channel.port1.postMessage({ readableStream: transformStream.readable }, [transformStream.readable]);
+    let transformStream: TransformStream<Uint8Array, Uint8Array> | null = null;
 
-    const abortCleanup = () => {
-      channel.port1.postMessage('abort');
-      channel.port1.onmessage = null;
-      channel.port1.close();
-      channel.port2.close();
-    };
+    // If the browser supports Transferable streams, use them. E.g. Firefox, Chrome
+    if (this.supportsTransferable) {
+      console.log('[StreamSaver] Using transferable stream');
 
-    const onMessageReceived = (event: MessageEvent<ServiceWorkerResponse>) => {
-      const { data } = event;
+      transformStream = new TransformStream<Uint8Array, Uint8Array>({
+        transform(chunk, controller) {
+          if (!(chunk instanceof Uint8Array)) {
+            throw new TypeError('Can only write Uint8Arrays');
+          }
+          bytesWritten += chunk.length;
+          controller.enqueue(chunk);
 
-      if (data.download) {
-        this.makeIframe(data.download);
-        return;
+          if (downloadUrl) {
+            location.href = downloadUrl;
+            downloadUrl = null;
+          }
+        },
+        flush() {
+          if (downloadUrl) {
+            location.href = downloadUrl;
+          }
+        },
+      });
+
+      const readableStream = transformStream.readable;
+      messageChannel.port1.postMessage({ readableStream }, [readableStream]);
+    }
+
+    messageChannel.port1.onmessage = (evt: MessageEvent<ServiceWorkerResponse>) => {
+      console.log('[StreamSaver] Message received from SW:', evt.data);
+
+      if (evt.data.download) {
+        console.log('[StreamSaver] Creating download iframe:', evt.data.download);
+        this.makeIframe(evt.data.download);
+      } else if (evt.data.abort) {
+        console.log('[StreamSaver] Abort received');
+        messageChannel.port1.postMessage('abort');
+        messageChannel.port1.onmessage = null;
+        messageChannel.port1.close();
+        messageChannel.port2.close();
       }
-
-      if (data.abort) {
-        abortCleanup();
-        return;
-      }
-
-      console.error('Unknown message received from service worker', data);
     };
-
-    channel.port1.onmessage = onMessageReceived;
 
     if (this.mitmTransporter?.loaded) {
       this.mitmTransporter.postMessage(...args);
@@ -111,7 +182,12 @@ export class StreamSaver {
       this.mitmTransporter?.addEventListener('load', () => this.mitmTransporter?.postMessage(...args), { once: true });
     }
 
-    return transformStream.writable;
+    if (transformStream && transformStream.writable) {
+      return transformStream.writable;
+    }
+
+    // Use manual writable stream for browsers that don't support Transferable streams. E.g. Safari
+    return this.manualWritableStream(messageChannel, bytesWritten, downloadUrl);
   }
 }
 

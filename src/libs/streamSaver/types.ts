@@ -5,7 +5,7 @@ export interface StreamSaverOptions {
 }
 
 export interface MitmTransporter {
-  frame?: Window | HTMLIFrameElement;
+  frame?: Window | HTMLIFrameElement | null;
   loaded: boolean;
   postMessage: (...args: any[]) => void;
   remove: () => void;
