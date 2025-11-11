@@ -25,7 +25,7 @@ const handleMessage = async (event: MessageEvent) => {
 
 self.addEventListener('message', handleMessage);
 
-const handleDownload = async (params: { file: any; isWorkspace: boolean; isBrave: boolean; credentials: any }) => {
+const handleDownload = async (params: { file: any; isWorkspace: boolean; credentials: any }) => {
   abortRequested = false;
   abortController = new AbortController();
 
@@ -39,9 +39,7 @@ const handleDownload = async (params: { file: any; isWorkspace: boolean; isBrave
     onError: (error: any) => {
       postMessage({ result: 'error', error });
     },
-    onBlob: (blob: Blob) => {
-      postMessage({ result: 'blob', blob });
-    },
+
     onChunk: (chunk: Uint8Array) => {
       postMessage({ result: 'chunk', chunk }, { transfer: [chunk.buffer] });
     },

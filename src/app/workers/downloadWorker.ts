@@ -1,4 +1,3 @@
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import createFileDownloadStream from 'app/drive/services/download.service/createFileDownloadStream';
 import createMultipartFileDownloadStream from 'app/drive/services/download.service/createMultipartDownloadStream';
 import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';
@@ -12,7 +11,7 @@ export class DownloadWorker {
   private constructor() {}
 
   async downloadFile(params: DownloadFilePayload, callbacks: DownloadFileCallback, abortController?: AbortController) {
-    const { file, isWorkspace, isBrave, credentials } = params;
+    const { file, isWorkspace, credentials } = params;
     this.abortController = abortController ?? new AbortController();
 
     let streamReader: ReadableStreamDefaultReader<Uint8Array> | null = null;
@@ -41,13 +40,8 @@ export class DownloadWorker {
 
       this.abortController.signal.addEventListener('abort', abortHandler);
 
-      if (isBrave) {
-        const blob = await binaryStreamToBlob(downloadedFile, file.type);
-        callbacks.onBlob(blob);
-      } else {
-        streamReader = downloadedFile.getReader();
-        await this.downloadUsingChunks(streamReader, callbacks.onChunk);
-      }
+      streamReader = downloadedFile.getReader();
+      await this.downloadUsingChunks(streamReader, callbacks.onChunk);
 
       callbacks.onSuccess(file.fileId);
     } catch (err) {

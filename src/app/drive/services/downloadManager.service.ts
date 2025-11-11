@@ -113,8 +113,8 @@ export class DownloadManagerService {
     const itemsPayload = downloadItem.payload;
     if (itemsPayload.length === 0) return;
 
-    const uploadFolderAbortController = new AbortController();
-    const abort = () => Promise.resolve(uploadFolderAbortController.abort('Download cancelled'));
+    const downloadFolderAbortController = new AbortController();
+    const abort = () => Promise.resolve(downloadFolderAbortController.abort('Download cancelled'));
 
     const formattedDate = date.format(new Date(), 'YYYY-MM-DD_HHmmss');
     let downloadName = `Internxt (${formattedDate})`;
@@ -202,7 +202,7 @@ export class DownloadManagerService {
       taskId,
       credentials,
       options,
-      abortController: uploadFolderAbortController,
+      abortController: downloadFolderAbortController,
       createFilesIterator: filesIterator,
       createFoldersIterator: foldersIterator,
       failedItems: [],
@@ -262,7 +262,7 @@ export class DownloadManagerService {
     const { connectionLost, cleanup } = this.handleConnectionLost(5000);
 
     try {
-      const { items, credentials, options, abortController } = downloadTask;
+      const { taskId, items, credentials, options, abortController } = downloadTask;
       const file = items[0] as DriveFileData;
 
       let cachedFile: DriveItemBlobData | undefined;
@@ -293,6 +293,7 @@ export class DownloadManagerService {
         await this.downloadFileFromWorker({
           file,
           isWorkspace,
+          taskId,
           updateProgressCallback,
           abortController,
           sharingOptions: credentials,
@@ -498,19 +499,17 @@ export class DownloadManagerService {
   readonly downloadFileFromWorker = async (payload: {
     file: DriveFileData;
     isWorkspace: boolean;
+    taskId: string;
     updateProgressCallback: (progress: number) => void;
     abortController?: AbortController;
     sharingOptions: { credentials: { user: string; pass: string }; mnemonic: string };
   }) => {
-    const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
-
     const worker: Worker = downloadWorkerHandler.getWorker();
 
     const workerPayload = {
       file: payload.file,
       isWorkspace: payload.isWorkspace,
       credentials: payload.sharingOptions,
-      isBrave,
     };
 
     worker.postMessage({ type: 'download', params: workerPayload });
@@ -520,6 +519,7 @@ export class DownloadManagerService {
     return downloadWorkerHandler.handleWorkerMessages({
       worker,
       itemData: payload.file,
+      taskId: payload.taskId,
       updateProgressCallback: payload.updateProgressCallback,
       abortController: payload.abortController,
     });

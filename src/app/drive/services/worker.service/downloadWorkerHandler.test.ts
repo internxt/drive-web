@@ -76,11 +76,13 @@ describe('Download Worker Handler', () => {
       const promise1 = downloadWorkerHandler.handleWorkerMessages({
         worker: mockedWorker1 as unknown as Worker,
         itemData: itemData1,
+        taskId: 'task-1',
         updateProgressCallback: vi.fn(),
       });
       const promise2 = downloadWorkerHandler.handleWorkerMessages({
         worker: mockedWorker2 as unknown as Worker,
         itemData: itemData2,
+        taskId: 'task-1',
         updateProgressCallback: vi.fn(),
       });
 
@@ -124,12 +126,14 @@ describe('Download Worker Handler', () => {
       const promise1 = downloadWorkerHandler.handleWorkerMessages({
         worker: mockedWorker1 as unknown as Worker,
         itemData: itemData1,
+        taskId: 'task-1',
         updateProgressCallback: vi.fn(),
       });
 
       const promise2 = downloadWorkerHandler.handleWorkerMessages({
         worker: mockedWorker2 as unknown as Worker,
         itemData: itemData2,
+        taskId: 'task-1',
         updateProgressCallback: vi.fn(),
       });
 
@@ -174,6 +178,7 @@ describe('Download Worker Handler', () => {
       const promise1 = downloadWorkerHandler.handleWorkerMessages({
         worker: mockedWorker1 as unknown as Worker,
         itemData: itemData1,
+        taskId: 'task-1',
         abortController: abortController1,
         updateProgressCallback: vi.fn(),
       });
@@ -181,6 +186,7 @@ describe('Download Worker Handler', () => {
       const promise2 = downloadWorkerHandler.handleWorkerMessages({
         worker: mockedWorker2 as unknown as Worker,
         itemData: itemData2,
+        taskId: 'task-1',
         updateProgressCallback: vi.fn(),
       });
 
@@ -280,6 +286,7 @@ describe('Download Worker Handler', () => {
       const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
         worker: mockedWorker as unknown as Worker,
         itemData,
+        taskId: 'task-1',
         abortController,
         updateProgressCallback: vi.fn(),
       });
@@ -300,37 +307,6 @@ describe('Download Worker Handler', () => {
       expect(mockedWorker.terminated).toBeTruthy();
     });
 
-    test('When downloading the file using blob is aborted, then the worker is terminated', async () => {
-      const mockedWorker = new MockWorker();
-      const itemData = {
-        fileId: 'random-id',
-        plainName: 'test-file',
-        type: 'txt',
-      } as DriveFileData;
-      const abortController = new AbortController();
-
-      const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
-        worker: mockedWorker as unknown as Worker,
-        itemData,
-        abortController,
-        updateProgressCallback: vi.fn(),
-      });
-
-      mockedWorker.emitMessage({
-        result: 'blob',
-        blob: new Blob(['test content']),
-      });
-
-      abortController.abort();
-
-      mockedWorker.emitMessage({
-        result: 'abort',
-      });
-
-      await expect(workerHandlerPromise).rejects.toThrow(new DownloadAbortedByUserError());
-      expect(mockedWorker.terminated).toBeTruthy();
-    });
-
     test('When abort message is received from worker, then it should be handled gracefully', async () => {
       const mockedWorker = new MockWorker();
       const itemData = {
@@ -341,6 +317,7 @@ describe('Download Worker Handler', () => {
       const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
         worker: mockedWorker as unknown as Worker,
         itemData,
+        taskId: 'task-1',
         abortController,
         updateProgressCallback: vi.fn(),
       });
@@ -366,6 +343,7 @@ describe('Download Worker Handler', () => {
       const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
         worker: mockedWorker as unknown as Worker,
         itemData,
+        taskId: 'task-1',
         abortController,
         updateProgressCallback: vi.fn(),
       });
@@ -403,6 +381,7 @@ describe('Download Worker Handler', () => {
     const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
       worker: mockedWorker as unknown as Worker,
       itemData,
+      taskId: 'task-1',
       updateProgressCallback: vi.fn(),
     });
 
@@ -422,39 +401,6 @@ describe('Download Worker Handler', () => {
     expect(mockedWorker.terminated).toBeTruthy();
   });
 
-  test('When the event is blob, then the blob is downloaded correctly', async () => {
-    const mockedWorker = new MockWorker();
-    const testBlob = new Blob(['test content'], { type: 'text/plain' });
-    const itemData = {
-      fileId: 'random-id',
-      plainName: 'random-name',
-      type: 'txt',
-    } as DriveFileData;
-    const completedName = `${itemData.plainName}.${itemData.type}`;
-
-    const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
-      worker: mockedWorker as unknown as Worker,
-      itemData,
-      updateProgressCallback: vi.fn(),
-    });
-
-    mockedWorker.emitMessage({
-      result: 'blob',
-      blob: testBlob,
-      fileId: itemData.fileId,
-    });
-
-    mockedWorker.emitMessage({
-      result: 'success',
-      fileId: itemData.fileId,
-    });
-
-    await expect(workerHandlerPromise).resolves.toBe(itemData.fileId);
-
-    expect(downloadFileFromBlob).toHaveBeenCalledWith(testBlob, completedName);
-    expect(mockedWorker.terminated).toBeTruthy();
-  });
-
   test('When the event is progress, then the progress callback is called and the value is updated correctly', async () => {
     const mockedWorker = new MockWorker();
     const itemData = {
@@ -465,6 +411,7 @@ describe('Download Worker Handler', () => {
     const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
       worker: mockedWorker as unknown as Worker,
       itemData,
+      taskId: 'task-1',
       updateProgressCallback: updateProgress,
     });
 
@@ -493,6 +440,7 @@ describe('Download Worker Handler', () => {
     const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
       worker: mockedWorker as unknown as Worker,
       itemData,
+      taskId: 'task-1',
       updateProgressCallback: vi.fn(),
     });
 
@@ -529,6 +477,7 @@ describe('Download Worker Handler', () => {
     const workerHandlerPromise = downloadWorkerHandler.handleWorkerMessages({
       worker: mockedWorker as unknown as Worker,
       itemData,
+      taskId: 'task-1',
       updateProgressCallback: vi.fn(),
     });
 

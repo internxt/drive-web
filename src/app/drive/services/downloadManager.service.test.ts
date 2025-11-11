@@ -8,7 +8,7 @@ import {
   areItemArraysEqual,
 } from 'app/drive/services/downloadManager.service';
 import { ErrorMessages } from 'app/core/constants';
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, Mock, MockInstance, test, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, Mock, MockInstance, test, vi } from 'vitest';
 import { Workspace, WorkspaceCredentialsDetails, WorkspaceData, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 import {
@@ -871,6 +871,7 @@ describe('downloadManagerService', () => {
         file: mockFile,
         isWorkspace: !!mockTask.credentials.workspaceId,
         updateProgressCallback: mockUpdateProgress,
+        taskId: mockTask.taskId,
         abortController: mockTask.abortController,
         sharingOptions: mockTask.credentials,
       });
@@ -1723,22 +1724,16 @@ describe('downloadManagerService', () => {
       vi.spyOn(downloadWorkerHandler, 'getWorker').mockReturnValue(mockWorker);
       vi.spyOn(downloadWorkerHandler, 'handleWorkerMessages').mockResolvedValue(() => {});
 
-      vi.stubGlobal('navigator', {
-        ...navigator,
-        brave: { isBrave: vi.fn().mockResolvedValue(false) },
-      });
       vi.spyOn(console, 'log').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-      vi.unstubAllGlobals();
     });
 
     test('When the download is started, then the worker is started and the handler should be called correctly', async () => {
       const updateProgressCallback = vi.fn();
+      const taskId = 'test-task-id';
       const payload = {
         file: mockFile,
         isWorkspace: false,
+        taskId,
         updateProgressCallback,
         sharingOptions: mockSharingOptions,
       };
@@ -1752,38 +1747,14 @@ describe('downloadManagerService', () => {
           file: mockFile,
           isWorkspace: false,
           credentials: mockSharingOptions,
-          isBrave: false,
         },
       });
       expect(downloadWorkerHandler.handleWorkerMessages).toHaveBeenCalledWith({
         worker: mockWorker,
         itemData: mockFile,
+        taskId,
         updateProgressCallback,
         abortController: undefined,
-      });
-    });
-
-    test('When the browser is brave, then the worker is started with a flag indicating so', async () => {
-      const updateProgressCallback = vi.fn();
-      (navigator as any).brave = { isBrave: vi.fn().mockResolvedValue(true) };
-
-      const payload = {
-        file: mockFile,
-        isWorkspace: true,
-        updateProgressCallback,
-        sharingOptions: mockSharingOptions,
-      };
-
-      await DownloadManagerService.instance.downloadFileFromWorker(payload);
-
-      expect(mockWorker.postMessage).toHaveBeenCalledWith({
-        type: 'download',
-        params: {
-          file: mockFile,
-          isWorkspace: true,
-          credentials: mockSharingOptions,
-          isBrave: true,
-        },
       });
     });
 
@@ -1795,6 +1766,7 @@ describe('downloadManagerService', () => {
       const payload = {
         file: mockFile,
         isWorkspace: false,
+        taskId: 'test-task-id',
         updateProgressCallback,
         sharingOptions: mockSharingOptions,
       };
@@ -1805,9 +1777,11 @@ describe('downloadManagerService', () => {
     test('When no abort controller is passed, then the worker is started without it', async () => {
       const updateProgressCallback = vi.fn();
 
+      const taskId = 'test-task-id';
       const payload = {
         file: mockFile,
         isWorkspace: false,
+        taskId,
         updateProgressCallback,
         sharingOptions: mockSharingOptions,
       };
@@ -1819,6 +1793,7 @@ describe('downloadManagerService', () => {
       expect(downloadWorkerHandler.handleWorkerMessages).toHaveBeenCalledWith({
         worker: mockWorker,
         itemData: mockFile,
+        taskId,
         updateProgressCallback,
         abortController: undefined,
       });

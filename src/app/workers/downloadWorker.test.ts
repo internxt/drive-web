@@ -1,7 +1,6 @@
 import { describe, expect, vi, beforeEach, test, afterEach } from 'vitest';
 import { DownloadWorker } from './downloadWorker';
 import createFileDownloadStream from 'app/drive/services/download.service/createFileDownloadStream';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import createMultipartFileDownloadStream from 'app/drive/services/download.service/createMultipartDownloadStream';
 import { DriveItemData } from 'app/drive/types';
 import { DownloadFilePayload } from './types/download';
@@ -32,7 +31,6 @@ describe('Download Worker', () => {
   const mockParams = {
     file: mockFile,
     isWorkspace: false,
-    isBrave: false,
     credentials: { user: 'test', pass: 'test' },
   } as DownloadFilePayload;
 
@@ -141,33 +139,6 @@ describe('Download Worker', () => {
       expect(mockCallbacks.onSuccess).toHaveBeenCalledWith(mockFile.fileId);
     });
 
-    test('When downloading a file for Brave browser, then it should use blob', async () => {
-      const braveParams = { ...mockParams, isBrave: true };
-      const mockedChunks = [new Uint8Array([1, 2, 3])];
-      const mockedBlob = new Blob(mockedChunks, { type: mockFile.type });
-      const mockReader = {
-        read: vi
-          .fn()
-          .mockResolvedValueOnce({ done: false, value: mockedChunks[0] })
-          .mockResolvedValueOnce({ done: true, value: undefined }),
-        releaseLock: vi.fn(),
-      };
-
-      const mockStream = {
-        getReader: vi.fn().mockReturnValue(mockReader),
-      };
-
-      vi.mocked(createFileDownloadStream).mockResolvedValue(mockStream as any);
-      vi.mocked(binaryStreamToBlob).mockResolvedValue(mockedBlob);
-
-      const worker = DownloadWorker.instance;
-      await worker.downloadFile(braveParams, mockCallbacks);
-
-      expect(mockCallbacks.onBlob).toHaveBeenCalledWith(mockedBlob);
-      expect(mockCallbacks.onChunk).not.toHaveBeenCalled();
-      expect(mockCallbacks.onSuccess).toHaveBeenCalledWith(mockFile.fileId);
-    });
-
     test('When an error occurs, then the error callback is called with serialized error', async () => {
       const error = new Error('Download failed');
       vi.mocked(createFileDownloadStream).mockRejectedValue(error);
@@ -270,26 +241,6 @@ describe('Download Worker', () => {
       expect(mockCallbacks.onChunk).toHaveBeenCalledWith(chunks[0]);
       expect(mockCallbacks.onChunk).toHaveBeenCalledWith(chunks[1]);
       expect(mockCallbacks.onChunk).toHaveBeenCalledWith(chunks[2]);
-      expect(mockCallbacks.onSuccess).toHaveBeenCalledWith(mockFile.fileId);
-    });
-
-    test('When downloading as blob, then a single blob is created from the stream', async () => {
-      const braveParams = { ...mockParams, isBrave: true };
-      const mockedBlob = new Blob([new Uint8Array([1, 2, 3, 4, 5, 6])], { type: mockFile.type });
-
-      const mockStream = {
-        getReader: vi.fn(),
-      } as any;
-
-      vi.mocked(createFileDownloadStream).mockResolvedValue(mockStream);
-      vi.mocked(binaryStreamToBlob).mockResolvedValue(mockedBlob);
-
-      const worker = DownloadWorker.instance;
-      await worker.downloadFile(braveParams, mockCallbacks);
-
-      expect(binaryStreamToBlob).toHaveBeenCalledWith(mockStream, mockFile.type);
-      expect(mockCallbacks.onBlob).toHaveBeenCalledTimes(1);
-      expect(mockCallbacks.onBlob).toHaveBeenCalledWith(mockedBlob);
       expect(mockCallbacks.onSuccess).toHaveBeenCalledWith(mockFile.fileId);
     });
 
