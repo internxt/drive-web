@@ -93,16 +93,16 @@ export type AuthenticateUserParams = {
 };
 
 const getCurrentUrlParams = (): Record<string, string> => {
-  const currentParams = new URLSearchParams(window.location.search);
+  const currentParams = new URLSearchParams(globalThis.location.search);
   const preservedParams: Record<string, string> = {};
 
-  const safeParams = ['universalLink', 'folderuuid', 'redirectUri', 'authOrigin'];
+  const safeParams = new Set(['universalLink', 'folderuuid', 'redirectUri', 'authOrigin']);
 
-  currentParams.forEach((value, key) => {
-    if (safeParams.includes(key)) {
+  for (const [key, value] of currentParams) {
+    if (safeParams.has(key)) {
       preservedParams[key] = value;
     }
-  });
+  }
 
   return preservedParams;
 };
@@ -234,7 +234,7 @@ export const doLogin = async (
 };
 
 export const readReferalCookie = (): string | undefined => {
-  const cookie = document.cookie.match(/(^| )REFERRAL=([^;]+)/);
+  const cookie = /(^| )REFERRAL=([^;]+)/.exec(document.cookie);
 
   return cookie ? cookie[2] : undefined;
 };
@@ -535,6 +535,7 @@ const extractOneUseCredentialsForAutoSubmit = (
       },
     };
   } catch (error) {
+    errorService.reportError(error);
     return {
       enabled: true,
     };
@@ -631,7 +632,7 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
   } = params;
   if (authMethod === 'signIn') {
     const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, loginType });
-    window.gtag('event', 'User Signin', { method: 'email' });
+    globalThis.gtag('event', 'User Signin', { method: 'email' });
     return profileInfo;
   } else if (authMethod === 'signUp' && doSignUp) {
     const profileInfo = await signUp({ doSignUp, email, password, token, redeemCodeObject, dispatch });
