@@ -166,4 +166,39 @@ describe('Stream Saver Service', () => {
     expect(targetOrigin).toBe('*');
     expect(ports[0]).toBe(mockMessageChannel.port2);
   });
+
+  test('When receiving download message from Service Worker, then it should create download iframe', async () => {
+    (streamSaver as any).supportsTransferable = true;
+
+    const downloadUrl = 'blob:http://localhost/abc123';
+
+    streamSaver.createWriteStream('test.txt');
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    mockMessageChannel.port1.onmessage?.({ data: { download: downloadUrl } } as MessageEvent);
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(mockIframes.length).toBe(2); // MITM + download iframe
+    const downloadIframe = mockIframes[1];
+    expect(downloadIframe.src).toBe(downloadUrl);
+    expect(downloadIframe.hidden).toBe(true);
+  });
+
+  test('When receiving abort message from Service Worker, then it should close message channel', async () => {
+    (streamSaver as any).supportsTransferable = true;
+
+    streamSaver.createWriteStream('test.txt');
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    vi.clearAllMocks();
+
+    mockMessageChannel.port1.onmessage?.({ data: { abort: true } } as MessageEvent);
+
+    expect(mockMessageChannel.port1.postMessage).toHaveBeenCalledWith('abort');
+    expect(mockMessageChannel.port1.close).toHaveBeenCalled();
+    expect(mockMessageChannel.port2.close).toHaveBeenCalled();
+  });
 });
