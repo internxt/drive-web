@@ -94,6 +94,37 @@
         "normalText": "Internxt no almacena contraseñas.",
         "boldText": "Si olvidas tu contraseña, puedes descargar una clave de respaldo para recuperar el acceso a tus archivos.",
         "cta": "Más información"
+      },
+      "authView": {
+        "emailPlaceholder": "Correo",
+        "passwordPlaceholder": "Contraseña",
+        "emailEmpty": "El correo no puede estar vacío",
+        "passwordEmpty": "La contraseña no puede estar vacía",
+        "buttonText": "Obtén la oferta",
+        "legal": {
+          "line1": "Al crear una cuenta aceptas",
+          "line2": "los términos de servicio y la política de privacidad"
+        },
+        "heroTitle": "Almacena tus archivos con total privacidad",
+        "planLabel": "Plan de 2TB",
+        "freeTrialText": "Gratis durante los primeros 30 días",
+        "discountText": "50% de descuento los tres siguientes meses si decides renovar"
+      },
+      "blog": {
+        "title": {
+          "line1": "Prioriza tu privacidad y únete a",
+          "blueText": " Internxt ",
+          "line2": "hoy"
+        },
+        "emailPlaceholder": "Correo electrónico",
+        "passwordPlaceholder": "Contraseña",
+        "emailEmpty": "El correo electrónico no puede estar vacío",
+        "passwordEmpty": "La contraseña no puede estar vacía",
+        "buttonText": "Consigue 1GB - ¡Gratis!",
+        "legal": {
+          "line1": "Al crear una cuenta aceptas los",
+          "line2": "términos de servicio y la política de privacidad"
+        }
       }
     },
     "downloadBackupKey": {
