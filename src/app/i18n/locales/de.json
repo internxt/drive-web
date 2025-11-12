@@ -83,7 +83,8 @@
       "createAccount": "Konto erstellen",
       "2FA": "Zwei-Faktor-Code",
       "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode",
-      "wrongLogin": "Ungültiger Benutzername oder Passwort"
+      "wrongLogin": "Ungültiger Benutzername oder Passwort",
+      "failedToSendAuthData": "Fehler beim Senden der Authentifizierungsdaten. Bitte versuchen Sie es erneut."
     },
     "signup": {
       "title": "Konto erstellen",
