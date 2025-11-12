@@ -123,38 +123,6 @@ export const sendAuthSuccess = (user: UserSettings, token: string, newToken: str
 };
 
 /**
- * Sends authentication error to external app via postMessage
- *
- * Security: Validates target origin before sending error
- *
- * @param {string} errorMessage - Error message to send
- * @returns {boolean} True if message was sent successfully, false otherwise
- */
-export const sendAuthError = (errorMessage: string): boolean => {
-  if (!window.opener) {
-    return false;
-  }
-
-  const targetOrigin = getTargetOrigin();
-
-  if (!targetOrigin) {
-    return false;
-  }
-
-  try {
-    const message: OAuthErrorMessage = {
-      type: OAuthMessageType.ERROR,
-      error: errorMessage,
-    };
-
-    window.opener.postMessage(message, targetOrigin);
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
-
-/**
  * Checks if the current page was opened as an OAuth popup
  *
  * @returns {boolean} True if window.opener exists
@@ -174,7 +142,6 @@ export const getAllowedOrigins = (): string[] => {
 
 const oauthService = {
   sendAuthSuccess,
-  sendAuthError,
   isOAuthPopup,
   getAllowedOrigins,
   OAuthMessageType,

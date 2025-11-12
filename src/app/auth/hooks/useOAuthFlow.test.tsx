@@ -1,7 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { renderHook } from '@testing-library/react';
 import localStorageService from 'app/core/services/local-storage.service';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useOAuthFlow } from './useOAuthFlow';
 
 const mockUserSettings: UserSettings = {
@@ -46,11 +46,14 @@ vi.mock('../services/oauth.service');
 import * as oauthService from '../services/oauth.service';
 
 const mockSendAuthSuccess = vi.mocked(oauthService.sendAuthSuccess);
-const mockSendAuthError = vi.mocked(oauthService.sendAuthError);
 
 describe('useOAuthFlow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('isOAuthFlow property', () => {
@@ -106,38 +109,6 @@ describe('useOAuthFlow', () => {
     });
   });
 
-  describe('handleOAuthError method', () => {
-    it('should send the error message to the OAuth service and return true on success', () => {
-      const mockErrorMessage = 'Authentication failed';
-      mockSendAuthError.mockReturnValue(true);
-
-      vi.spyOn(localStorageService, 'getUser').mockReturnValue(null);
-
-      const { result } = renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
-
-      const returnValue = result.current.handleOAuthError(mockErrorMessage);
-
-      expect(mockSendAuthError).toHaveBeenCalledWith(mockErrorMessage);
-      expect(mockSendAuthError).toHaveBeenCalledTimes(1);
-      expect(returnValue).toBe(true);
-    });
-
-    it('should return false when the OAuth service fails to send the error', () => {
-      const mockErrorMessage = 'Authentication failed';
-      mockSendAuthError.mockReturnValue(false);
-
-      vi.spyOn(localStorageService, 'getUser').mockReturnValue(null);
-
-      const { result } = renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
-
-      const returnValue = result.current.handleOAuthError(mockErrorMessage);
-
-      expect(mockSendAuthError).toHaveBeenCalledWith(mockErrorMessage);
-      expect(mockSendAuthError).toHaveBeenCalledTimes(1);
-      expect(returnValue).toBe(false);
-    });
-  });
-
   describe('handleOAuthSuccess method', () => {
     it('should send user credentials to the OAuth service and return true on success', () => {
       const mockToken = 'test-token';
@@ -172,26 +143,21 @@ describe('useOAuthFlow', () => {
     });
   });
 
-  describe('when calling multiple handler methods', () => {
-    it('should handle sequential error and success calls independently', () => {
-      mockSendAuthError.mockReturnValue(true);
+  describe('when calling handleOAuthSuccess multiple times', () => {
+    it('should handle multiple success calls independently', () => {
       mockSendAuthSuccess.mockReturnValue(true);
 
       vi.spyOn(localStorageService, 'getUser').mockReturnValue(null);
 
       const { result } = renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
 
-      result.current.handleOAuthError('First error');
-      expect(mockSendAuthError).toHaveBeenCalledWith('First error');
-
       result.current.handleOAuthSuccess(mockUserSettings, 'token1', 'newToken1');
       expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, 'token1', 'newToken1');
 
-      result.current.handleOAuthError('Second error');
-      expect(mockSendAuthError).toHaveBeenCalledWith('Second error');
+      result.current.handleOAuthSuccess(mockUserSettings, 'token2', 'newToken2');
+      expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, 'token2', 'newToken2');
 
-      expect(mockSendAuthError).toHaveBeenCalledTimes(2);
-      expect(mockSendAuthSuccess).toHaveBeenCalledTimes(1);
+      expect(mockSendAuthSuccess).toHaveBeenCalledTimes(2);
     });
   });
 });

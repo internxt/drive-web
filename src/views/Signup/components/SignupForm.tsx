@@ -54,7 +54,7 @@ function SignUpForm(): JSX.Element {
   const urlParams = new URLSearchParams(globalThis.location.search);
   const authOrigin = urlParams.get('authOrigin');
 
-  const { isOAuthFlow, handleOAuthError, handleOAuthSuccess } = useOAuthFlow({
+  const { isOAuthFlow, handleOAuthSuccess } = useOAuthFlow({
     authOrigin,
   });
 
@@ -140,11 +140,6 @@ function SignUpForm(): JSX.Element {
     errorService.reportError(err);
     const castedError = errorService.castError(err);
 
-    if (isOAuthFlow) {
-      handleOAuthError(castedError.message);
-      return;
-    }
-
     setSignupError(castedError.message);
   };
 
@@ -225,7 +220,8 @@ function SignUpForm(): JSX.Element {
         const success = handleOAuthSuccess(user, xToken, xNewToken);
         if (!success) {
           setIsLoading(false);
-          setSignupError(translate('auth.login.failedToSendAuthData'));
+          const errorMessage = translate('auth.login.failedToSendAuthData');
+          setSignupError(errorMessage);
           setShowError(true);
         }
       }

@@ -67,7 +67,7 @@ export default function LogIn(): JSX.Element {
     showNotification,
   });
 
-  const { isOAuthFlow, handleOAuthError, handleOAuthSuccess } = useOAuthFlow({
+  const { isOAuthFlow, handleOAuthSuccess } = useOAuthFlow({
     authOrigin: isAuthOrigin,
   });
 
@@ -133,11 +133,6 @@ export default function LogIn(): JSX.Element {
   const handleAuthenticationError = async (err: unknown, email: string): Promise<void> => {
     const castedError = errorService.castError(err);
 
-    if (isOAuthFlow) {
-      handleOAuthError(castedError.message);
-      return;
-    }
-
     if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
       const emailEncoded = encodeURIComponent(email);
       navigationService.history.push(`/activate/${emailEncoded}`);
@@ -164,7 +159,8 @@ export default function LogIn(): JSX.Element {
       if (isOAuthFlow) {
         if (!success) {
           setIsLoggingIn(false);
-          setLoginError([translate('auth.login.failedToSendAuthData')]);
+          const errorMessage = translate('auth.login.failedToSendAuthData');
+          setLoginError([errorMessage]);
           setShowErrors(true);
         }
         return;

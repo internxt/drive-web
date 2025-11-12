@@ -9,7 +9,6 @@ interface UseOAuthFlowParams {
 
 interface UseOAuthFlowReturn {
   isOAuthFlow: boolean;
-  handleOAuthError: (errorMessage: string) => boolean;
   handleOAuthSuccess: (user: UserSettings, token: string, newToken: string) => boolean;
 }
 
@@ -28,17 +27,12 @@ export const useOAuthFlow = ({ authOrigin }: UseOAuthFlowParams): UseOAuthFlowRe
     }
   }, [isOAuthFlow]);
 
-  const handleOAuthError = (errorMessage: string): boolean => {
-    return oauthService.sendAuthError(errorMessage);
-  };
-
   const handleOAuthSuccess = (user: UserSettings, token: string, newToken: string): boolean => {
     return oauthService.sendAuthSuccess(user, token, newToken);
   };
 
   return {
     isOAuthFlow,
-    handleOAuthError,
     handleOAuthSuccess,
   };
 };
