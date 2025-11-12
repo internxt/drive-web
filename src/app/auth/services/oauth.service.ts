@@ -51,7 +51,6 @@ export interface OAuthErrorMessage {
  */
 const getTargetOrigin = (): string | null => {
   if (!window.opener) {
-    console.warn('[OAuth] window.opener is not available');
     return null;
   }
 
@@ -64,27 +63,23 @@ const getTargetOrigin = (): string | null => {
 
     return null;
   } catch (error) {
-    // If we can't access opener.location (cross-origin), use referrer as fallback
+    // use referrer as fallback
     const referrer = document.referrer;
     if (referrer) {
       try {
         const referrerOrigin = new URL(referrer).origin;
         if (ALLOWED_TARGET_ORIGINS.includes(referrerOrigin)) {
-          console.log('[OAuth] Using referrer origin:', referrerOrigin);
           return referrerOrigin;
         }
-        console.warn('[OAuth] Referrer origin not in allowed list:', referrerOrigin);
       } catch (e) {
         console.error('[OAuth] Error parsing referrer:', e);
       }
     }
 
     if (!envService.isProduction()) {
-      console.warn('[OAuth] Development mode: using * as target origin');
       return '*';
     }
 
-    console.error('[OAuth] Could not determine safe target origin');
     return null;
   }
 };
@@ -101,14 +96,12 @@ const getTargetOrigin = (): string | null => {
  */
 export const sendAuthSuccess = (user: UserSettings, token: string, newToken: string): boolean => {
   if (!window.opener) {
-    console.warn('[OAuth] Cannot send auth success: window.opener is not available');
     return false;
   }
 
   const targetOrigin = getTargetOrigin();
 
   if (!targetOrigin) {
-    console.warn('[OAuth] Cannot send auth success: invalid target origin');
     return false;
   }
 
@@ -125,7 +118,6 @@ export const sendAuthSuccess = (user: UserSettings, token: string, newToken: str
     window.close();
     return true;
   } catch (error) {
-    console.error('[OAuth] Error sending auth data:', error);
     return false;
   }
 };
@@ -140,14 +132,12 @@ export const sendAuthSuccess = (user: UserSettings, token: string, newToken: str
  */
 export const sendAuthError = (errorMessage: string): boolean => {
   if (!window.opener) {
-    console.warn('[OAuth] window.opener is not available, cannot send error');
     return false;
   }
 
   const targetOrigin = getTargetOrigin();
 
   if (!targetOrigin) {
-    console.error('[OAuth] Cannot send auth error: invalid or disallowed target origin');
     return false;
   }
 
@@ -157,11 +147,9 @@ export const sendAuthError = (errorMessage: string): boolean => {
       error: errorMessage,
     };
 
-    console.log('[OAuth] Sending auth error to origin:', targetOrigin);
     window.opener.postMessage(message, targetOrigin);
     return true;
   } catch (error) {
-    console.error('[OAuth] Error sending auth error:', error);
     return false;
   }
 };
