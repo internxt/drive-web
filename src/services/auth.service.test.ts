@@ -934,3 +934,96 @@ describe('areCredentialsCorrect', () => {
     expect(unauthorizedResult).toBeUndefined();
   });
 });
+
+describe('Security and validation', () => {
+  describe('getRedirectUrl', () => {
+    it('should validate domain whitelist and inject authToken when auth=true', () => {
+      expect(authService.getRedirectUrl(new URLSearchParams('redirectUrl=https://evil.com'), 'token')).toBeNull();
+
+      expect(authService.getRedirectUrl(new URLSearchParams(), 'token')).toBeNull();
+
+      const validUrl = authService.getRedirectUrl(
+        new URLSearchParams('redirectUrl=https://internxt.com/welcome'),
+        'token',
+      );
+      expect(validUrl).toBe('https://internxt.com/welcome?');
+
+      const authUrl = authService.getRedirectUrl(
+        new URLSearchParams('redirectUrl=https://drive.internxt.com/app?auth=true'),
+        'myToken',
+      );
+      expect(authUrl).toContain('authToken=myToken');
+      expect(authUrl).toContain('auth=true');
+    });
+  });
+
+  describe('is2FANeeded', () => {
+    it('should check 2FA requirement and handle API errors', async () => {
+      const mockAuthClient = {
+        securityDetails: vi.fn().mockResolvedValue({ tfaEnabled: true }),
+      };
+
+      vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+        createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+      } as any);
+
+      expect(await authService.is2FANeeded('test@example.com')).toBe(true);
+
+      mockAuthClient.securityDetails.mockResolvedValue({ tfaEnabled: false });
+      expect(await authService.is2FANeeded('test@example.com')).toBe(false);
+
+      mockAuthClient.securityDetails.mockRejectedValue({ message: 'User not found', status: 404 });
+      await expect(authService.is2FANeeded('test@example.com')).rejects.toThrow('User not found');
+    });
+  });
+
+  describe('readReferalCookie', () => {
+    it('should extract referral code from cookie', () => {
+      const originalCookie = document.cookie;
+
+      Object.defineProperty(document, 'cookie', {
+        writable: true,
+        value: 'REFERRAL=ABC123; other=value',
+      });
+      expect(authService.readReferalCookie()).toBe('ABC123');
+
+      Object.defineProperty(document, 'cookie', {
+        writable: true,
+        value: 'other=value',
+      });
+      expect(authService.readReferalCookie()).toBeUndefined();
+
+      Object.defineProperty(document, 'cookie', {
+        writable: true,
+        value: originalCookie,
+      });
+    });
+  });
+});
+
+describe('authService default export', () => {
+  it('should expose store2FA and sendChangePasswordEmail through default export', async () => {
+    const mockAuthClient = {
+      storeTwoFactorAuthKey: vi.fn().mockResolvedValue(undefined),
+      sendChangePasswordEmail: vi.fn().mockResolvedValue(undefined),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    vi.spyOn(localStorageService, 'get').mockReturnValue('auth-token');
+
+    await authService.default.store2FA('secret-code', '123456');
+    expect(mockAuthClient.storeTwoFactorAuthKey).toHaveBeenCalledWith('secret-code', '123456', 'auth-token');
+
+    await authService.default.sendChangePasswordEmail('test@example.com');
+    expect(mockAuthClient.sendChangePasswordEmail).toHaveBeenCalledWith('test@example.com');
+  });
+
+  it('should handle extractOneUseCredentialsForAutoSubmit correctly', () => {
+    expect(authService.default.extractOneUseCredentialsForAutoSubmit(new URLSearchParams('foo=bar'))).toEqual({
+      enabled: false,
+    });
+  });
+});
