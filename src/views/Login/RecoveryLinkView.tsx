@@ -1,6 +1,6 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
-import RecoveryLink from '../../components/RecoveryLink/RecoveryLink';
+import { RecoveryLink } from './components';
 
 function RecoveryLinkView(): JSX.Element {
   const { translate } = useTranslationContext();

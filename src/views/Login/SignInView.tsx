@@ -1,12 +1,12 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
-import LogIn from '../../components/LogIn/LogIn';
+import { LogIn } from './components';
 
 interface SignInProps {
   displayIframe: boolean;
 }
 
-export default function SignInView(props: SignInProps): JSX.Element {
+export default function SignInView(props: Readonly<SignInProps>): JSX.Element {
   const { translate } = useTranslationContext();
   return (
     <div

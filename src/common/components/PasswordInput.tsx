@@ -9,12 +9,12 @@ interface InputProps {
   label: Path<IFormValues>;
   disabled?: boolean;
   register: UseFormRegister<IFormValues>;
-  minLength?: ValidationRule<number> | undefined;
-  maxLength?: ValidationRule<number> | undefined;
+  minLength?: ValidationRule<number>;
+  maxLength?: ValidationRule<number>;
   placeholder: string;
-  pattern?: ValidationRule<RegExp> | undefined;
-  error: FieldError | undefined;
-  min?: ValidationRule<number | string> | undefined;
+  pattern?: ValidationRule<RegExp>;
+  error?: FieldError;
+  min?: ValidationRule<number | string>;
   required?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
@@ -71,14 +71,13 @@ const PasswordInput = ({
         }}
         className={error ? 'inxt-input input-error' : 'inxt-input input-primary'}
       />
-      <div
+      <button
+        type="button"
         onClick={() => setShowPassword(!showPassword)}
-        onKeyDown={(e) => (e['code'] === 'Space' || e['code'] === 'Enter') && setShowPassword(!showPassword)}
-        tabIndex={0}
         className="absolute right-4 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center text-gray-100"
       >
         {showPassword ? <Eye className="h-6 w-6" /> : <EyeSlash className="h-6 w-6" />}
-      </div>
+      </button>
     </div>
   );
 };

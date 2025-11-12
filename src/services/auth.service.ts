@@ -41,8 +41,8 @@ import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/u
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'app/utils/backupKeyUtils';
 import { generateMnemonic, validateMnemonic } from 'bip39';
-import { SdkFactory } from '../../core/factory/sdk';
-import errorService from '../../core/services/error.service';
+import { SdkFactory } from 'app/core/factory/sdk';
+import errorService from 'app/core/services/error.service';
 import vpnAuthService from './vpnAuth.service';
 
 type ProfileInfo = {
@@ -93,16 +93,16 @@ export type AuthenticateUserParams = {
 };
 
 const getCurrentUrlParams = (): Record<string, string> => {
-  const currentParams = new URLSearchParams(window.location.search);
+  const currentParams = new URLSearchParams(globalThis.location.search);
   const preservedParams: Record<string, string> = {};
 
-  const safeParams = ['universalLink', 'folderuuid'];
+  const safeParams = new Set(['universalLink', 'folderuuid']);
 
-  currentParams.forEach((value, key) => {
-    if (safeParams.includes(key)) {
+  for (const [key, value] of currentParams) {
+    if (safeParams.has(key)) {
       preservedParams[key] = value;
     }
-  });
+  }
 
   return preservedParams;
 };
@@ -234,7 +234,7 @@ export const doLogin = async (
 };
 
 export const readReferalCookie = (): string | undefined => {
-  const cookie = document.cookie.match(/(^| )REFERRAL=([^;]+)/);
+  const cookie = /(^| )REFERRAL=([^;]+)/.exec(document.cookie);
 
   return cookie ? cookie[2] : undefined;
 };
@@ -535,6 +535,7 @@ const extractOneUseCredentialsForAutoSubmit = (
       },
     };
   } catch (error) {
+    errorService.reportError(error);
     return {
       enabled: true,
     };
@@ -631,7 +632,7 @@ export const authenticateUser = async (params: AuthenticateUserParams): Promise<
   } = params;
   if (authMethod === 'signIn') {
     const profileInfo = await logIn({ email, password, twoFactorCode, dispatch, loginType });
-    window.gtag('event', 'User Signin', { method: 'email' });
+    globalThis.gtag('event', 'User Signin', { method: 'email' });
     return profileInfo;
   } else if (authMethod === 'signUp' && doSignUp) {
     const profileInfo = await signUp({ doSignUp, email, password, token, redeemCodeObject, dispatch });

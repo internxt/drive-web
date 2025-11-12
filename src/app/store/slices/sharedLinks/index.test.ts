@@ -7,7 +7,7 @@ import shareService from 'app/share/services/share.service';
 import { Buffer } from 'buffer';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { RootState } from '../..';
-import userService from '../../../auth/services/user.service';
+import userService from 'services/user.service';
 import {
   decryptMessageWithPrivateKey,
   generateNewKeys,
@@ -28,7 +28,7 @@ describe('Encryption and Decryption', () => {
         getSharingRoles: vi.fn(),
       },
     }));
-    vi.mock('../../../auth/services/user.service', () => ({
+    vi.mock('services/user.service', () => ({
       default: {
         getPublicKeyWithPrecreation: vi.fn(),
       },

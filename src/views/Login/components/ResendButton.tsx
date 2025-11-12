@@ -1,4 +1,4 @@
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface IResendButtonProps {
   enableButton: boolean;

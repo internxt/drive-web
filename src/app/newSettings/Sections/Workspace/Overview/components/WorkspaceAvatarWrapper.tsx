@@ -1,5 +1,5 @@
 import { Avatar } from '@internxt/ui';
-import userService from 'app/auth/services/user.service';
+import userService from 'services/user.service';
 import { memo } from 'react';
 import {
   deleteDatabaseWorkspaceAvatar,

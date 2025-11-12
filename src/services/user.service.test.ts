@@ -28,7 +28,7 @@ vi.mock('app/core/services/local-storage.service', () => ({
   },
 }));
 
-vi.mock('../../core/factory/sdk', () => ({
+vi.mock('../app/core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(() => ({
       createDesktopAuthClient: vi.fn(() => ({

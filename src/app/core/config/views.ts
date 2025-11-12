@@ -3,12 +3,14 @@ import { ComponentClass, FunctionComponent } from 'react';
 import { AppView } from '../types';
 
 import { AuthView, ButtonAuth, SignupBlog } from '../../../views/Signup/components';
-import BlockedAccountView from '../../auth/views/BlockedAccountView/BlockedAccountView';
-import RecoverAccountView from '../../auth/views/RecoverAccountView/RecoverAccountView';
-import RecoveryLinkView from '../../auth/views/RecoveryLinkView/RecoveryLinkView';
-import SignInView from '../../auth/views/SignInView/SignInView';
+import {
+  BlockedAccountView,
+  RecoverAccountView,
+  RecoveryLinkView,
+  SignInView,
+  UniversalLinkSuccessView,
+} from '../../../views/Login';
 import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from '../../../views/Signup';
-import UniversalLinkSuccessView from '../../auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 import BackupsView from '../../../views/Backups/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
 import DriveView from '../../drive/views/DriveView/DriveView';

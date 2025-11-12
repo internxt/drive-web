@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
-import authService from 'app/auth/services/auth.service';
+import authService from 'services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
