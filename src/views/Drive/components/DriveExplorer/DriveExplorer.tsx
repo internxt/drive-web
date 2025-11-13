@@ -9,7 +9,6 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
-import { Workspace } from 'app/core/types';
 import Empty from 'app/shared/components/Empty/Empty';
 import { AppDispatch, RootState } from 'app/store';
 import { StorageFilters } from 'app/store/slices/storage/storage.model';
@@ -18,7 +17,6 @@ import { DriveExplorerGrid, DriveExplorerList, DriveTopBarActions } from './comp
 import { useHotkeys } from 'react-hotkeys-hook';
 import { moveItemsToTrash } from 'views/Trash/services';
 
-import { Role } from '@internxt/sdk/dist/drive/share/types';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { ContextMenu } from '@internxt/ui';
 import { t } from 'i18next';

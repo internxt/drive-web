@@ -52,7 +52,7 @@ const resetAccessTokenFileFolder = () => {
 };
 
 const isActiveButton = (path: string) => {
-  return !!matchPath(window.location.pathname, { path, exact: true });
+  return !!matchPath(globalThis.location.pathname, { path, exact: true });
 };
 
 const handleDownloadApp = (): void => {
@@ -79,10 +79,10 @@ const LoadingSpinner = ({ text }: { text: string }) => (
 
 const SideNavItems = ({ sideNavItems }: { sideNavItems: SideNavItemsProps[] }) => (
   <>
-    {sideNavItems.map((item, index) =>
+    {sideNavItems.map((item) =>
       item.isVisible ? (
         <SidenavItem
-          key={index}
+          key={item.label}
           label={item.label}
           to={item.to}
           Icon={item.icon}

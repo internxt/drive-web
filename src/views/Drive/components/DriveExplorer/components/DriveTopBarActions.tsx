@@ -1,4 +1,3 @@
-import { Role } from '@internxt/sdk/dist/drive/share/types';
 import {
   ClockCounterClockwise,
   DotsThreeVertical,

@@ -338,6 +338,7 @@ const Navbar = (props: NavbarProps) => {
             </label>
 
             <div
+              role="none"
               className={getSearchResultsClassName(openSearchBox)}
               onMouseEnter={() => setPreventBlur(true)}
               onMouseLeave={() => setPreventBlur(false)}
@@ -413,7 +414,7 @@ const Navbar = (props: NavbarProps) => {
           user={user}
           plan={{
             ...props.plan,
-            showUpgrade: (props.plan.individualPlan && props.plan.individualPlan.name === 'Free Plan') ?? false,
+            showUpgrade: props.plan.individualPlan?.name === 'Free Plan',
           }}
         />
       </div>
