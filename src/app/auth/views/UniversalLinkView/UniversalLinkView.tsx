@@ -19,7 +19,8 @@ export default function UniversalLinkView(): JSX.Element {
 
   useEffect(() => {
     if (!user) {
-      navigationService.history.replace(`${AppView.Login}?${urlParams.toString()}`);
+      const params = urlParams.toString();
+      navigationService.history.replace(`${AppView.Login}${params ? '?' + params : ''}`);
     }
   }, [user]);
 
