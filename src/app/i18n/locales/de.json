@@ -1824,57 +1824,62 @@
           "free": "Free"
         },
         "planFeaturesList": {
-          "title": "Plandetails",
-          "comingSoon": "Demnächst verfügbar",
-          "storage": " Zero-Knowledge verschlüsselter Speicher",
-          "1TB": {
-            "title": "Essential",
-            "features": [
-              "1TB Zero-Knowledge verschlüsselter Speicher",
-              "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR)",
-              "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)"
-            ]
-          },
-          "3TB": {
-            "title": "Premium",
-            "features": [
-              "3TB Zero-Knowledge verschlüsselter Speicher",
-              "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
-              "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "Einladen, Teilen & Zusammenarbeiten",
-              "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)"
-            ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor"]
-          },
-          "5TB": {
-            "title": "Ultimate",
-            "features": [
-              "5TB Zero-Knowledge verschlüsselter Speicher",
-              "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "Einladen, Teilen & Zusammenarbeiten",
-              "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI, WebDav, NAS & Rclone Unterstützung"
-            ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor", "Meet", "Mail"]
-          },
-          "1GB": {
-            "title": "Kostenlos",
-            "features": ["1GB Zero-Knowledge verschlüsselter Speicher", "Kostenloses Standard-VPN (FR)"]
-          }
+            "title": "Plandetails",
+            "comingSoon": "Demnächst verfügbar",
+            "storage": " verschlüsselter Speicher",
+            "1TB": {
+                "title": "Essential (Basis)",
+                "features": [
+                    "1TB verschlüsselter Speicher",
+                    "Post-Quanten-Verschlüsselung",
+                    "Zero-Knowledge-Verschlüsselung",
+                    "Zwei-Faktor-Authentifizierung",
+                    "Computer-Backup",
+                    "Passwortgeschütztes Teilen von Dateien",
+                    "Verschlüsseltes VPN",
+                    "Antivirus"
+                ],
+                "comingSoonFeatures": ["Dateiversionierung"]
+            },
+            "3TB": {
+                "title": "Premium",
+                "features": [
+                    "3TB verschlüsselter Speicher",
+                    "Post-Quanten-Verschlüsselung",
+                    "Zero-Knowledge-Verschlüsselung",
+                    "Zwei-Faktor-Authentifizierung",
+                    "Computer-Backup",
+                    "Passwortgeschütztes Teilen von Dateien",
+                    "Einladen, teilen & zusammenarbeiten",
+                    "Verschlüsseltes VPN",
+                    "Antivirus",
+                    "Cleaner (Bereinigungstool)"
+                ],
+                "comingSoonFeatures": ["Dateiversionierung"]
+            },
+            "5TB": {
+                "title": "Ultimate (Ultimativ)",
+                "features": [
+                    "3TB verschlüsselter Speicher",
+                    "Post-Quanten-Verschlüsselung",
+                    "Zero-Knowledge-Verschlüsselung",
+                    "Zwei-Faktor-Authentifizierung",
+                    "Computer-Backup",
+                    "Passwortgeschütztes Teilen von Dateien",
+                    "Einladen, teilen & zusammenarbeiten",
+                    "CLI- & WebDav-Unterstützung",
+                    "NAS- & Rclone-Unterstützung",
+                    "Verschlüsseltes VPN",
+                    "Antivirus",
+                    "Cleaner (Bereinigungstool)",
+                    "Meet (Videokonferenz)"
+                ],
+                "comingSoonFeatures": ["Dateiversionierung", "Mail"]
+            },
+            "1GB": {
+                "title": "Kostenlos",
+                "features": ["1GB verschlüsselter Speicher", "Verschlüsseltes VPN"]
+            }
         },
         "businessPlanFeaturesList": {
           "title": "Plandetails",
