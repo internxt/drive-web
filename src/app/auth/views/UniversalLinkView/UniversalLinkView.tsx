@@ -10,20 +10,31 @@ import { useEffect, useMemo } from 'react';
 
 const DEEPLINK_SUCCESS_REDIRECT_BASE = 'internxt://login-success';
 
-export default function UniversalLinkSuccessView(): JSX.Element {
+export default function UniversalLinkView(): JSX.Element {
   const { translate } = useTranslationContext();
   const user = useMemo(() => localStorageService.getUser(), []);
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectUri = urlParams.get('redirectUri');
+
   useEffect(() => {
     if (!user) {
-      navigationService.history.replace(AppView.Login);
+      navigationService.history.replace(`${AppView.Login}?${urlParams.toString()}`);
     }
-  });
+  }, [user]);
+
   const getUniversalLinkAuthUrl = (user: UserSettings) => {
     const token = localStorageService.get('xToken');
     const newToken = localStorageService.get('xNewToken');
     if (!token) return AppView.Login;
     if (!newToken) return AppView.Login;
-    return `${DEEPLINK_SUCCESS_REDIRECT_BASE}?mnemonic=${btoa(user.mnemonic)}&token=${btoa(token)}&newToken=${btoa(
+
+    let baseURL = DEEPLINK_SUCCESS_REDIRECT_BASE;
+    if (redirectUri) {
+      baseURL = Buffer.from(redirectUri, 'base64').toString();
+    }
+
+    return `${baseURL}?mnemonic=${btoa(user.mnemonic)}&token=${btoa(token)}&newToken=${btoa(
       newToken,
     )}&privateKey=${btoa(user.privateKey)}`;
   };
