@@ -31,7 +31,7 @@ export class LoginPage {
     this.loginButton = this.page.getByRole('button', { name: 'Log in' });
     this.loginButtonText = this.page.locator('[data-cy="loginButton"] div');
     this.forgotPassword = this.page.getByText('Forgot your password?');
-    this.dontHaveAccountText = this.page.getByText("Don't have an account?");
+    this.dontHaveAccountText = this.page.getByText('Don’t have an account?');
     this.createAccount = this.page.getByText('Create account');
     this.termsAndConditions = this.page.getByRole('link', { name: 'Terms and conditions' });
     this.needHelp = this.page.getByRole('link', { name: 'Need help?' });
