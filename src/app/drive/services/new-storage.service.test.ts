@@ -1,8 +1,8 @@
 import { describe, expect, it, Mock, vi } from 'vitest';
 import newStorageService from './new-storage.service';
-import { SdkFactory } from '../../core/factory/sdk';
+import { SdkFactory } from 'app/core/factory/sdk';
 
-vi.mock('../../core/factory/sdk', () => ({
+vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(),
   },

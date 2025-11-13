@@ -5,6 +5,7 @@ export default defineConfig({
   resolve: {
     alias: {
       app: path.resolve(__dirname, './src/app'),
+      views: path.resolve(__dirname, './src/views'),
       crypto: 'crypto-browserify',
       stream: 'stream-browserify',
       path: 'path-browserify',

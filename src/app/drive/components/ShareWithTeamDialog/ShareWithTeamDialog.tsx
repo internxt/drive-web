@@ -9,7 +9,7 @@ import { DriveItemData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { uiActions } from 'app/store/slices/ui';
-import { shareItemWithTeamV2 } from 'app/drive/components/DriveExplorer/utils';
+import { shareItemWithTeamV2 } from 'views/Drive/components/DriveExplorer/utils';
 import workspacesService from 'app/core/services/workspace.service';
 import errorService from 'app/core/services/error.service';
 

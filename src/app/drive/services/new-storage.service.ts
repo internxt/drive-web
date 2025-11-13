@@ -9,7 +9,7 @@ import {
   FolderTreeResponse,
   FolderAncestorWorkspace,
 } from '@internxt/sdk/dist/drive/storage/types';
-import { SdkFactory } from '../../core/factory/sdk';
+import { SdkFactory } from 'app/core/factory/sdk';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import { ItemType } from '@internxt/sdk/dist/workspaces/types';
 

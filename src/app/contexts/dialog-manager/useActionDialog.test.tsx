@@ -5,7 +5,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { describe, expect, it } from 'vitest';
-import { DriveItemData } from '../../drive/types';
+import { DriveItemData } from 'app/drive/types';
 import { ActionDialog, DialogManagerProvider } from './ActionDialogManager.context';
 import { useActionDialog } from './useActionDialog';
 

@@ -10,7 +10,7 @@ import envService from 'app/core/services/env.service';
 import { buildProgressStream, decryptStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 
-import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
+import { waitForContinueUploadSignal } from 'app/drive/services/worker.service/uploadWorkerUtils';
 import { TaskStatus } from '../tasks/types';
 import { encryptStreamInParts, generateFileKey, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
