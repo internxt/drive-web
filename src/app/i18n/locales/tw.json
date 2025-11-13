@@ -1842,56 +1842,61 @@
         "planFeaturesList": {
           "title": "方案詳情",
           "comingSoon": "即將推出",
-          "storage": " 零知識加密儲存",
+          "storage": " 加密儲存空間",
           "1TB": {
-            "title": "基本版",
-            "features": [
-              "1TB零知識加密儲存",
-              "後量子加密",
-              "超快無限制VPN（法國）",
-              "防毒",
-              "檔案備份",
-              "密碼保護檔案共享",
-              "符合GDPR",
-              "雙因素認證（2FA）"
-            ]
+              "title": "Essential (基本版)",
+              "features": [
+                  "1TB 加密儲存空間",
+                  "後量子密碼學",
+                  "零知識加密",
+                  "雙重身份驗證",
+                  "電腦備份",
+                  "密碼保護的檔案共享",
+                  "加密 VPN",
+                  "防毒軟體"
+              ],
+              "comingSoonFeatures": ["檔案版本控制"]
           },
           "3TB": {
-            "title": "進階版",
-            "features": [
-              "3TB零知識加密儲存",
-              "後量子加密",
-              "超快無限制VPN（法國、德國、波蘭）",
-              "防毒",
-              "檔案備份",
-              "密碼保護檔案共享",
-              "邀請、共享和協作",
-              "符合GDPR",
-              "雙因素認證（2FA）"
-            ],
-            "comingSoonFeatures": ["裝置清理器", "暗網監控"]
+              "title": "Premium (進階版)",
+              "features": [
+                  "3TB 加密儲存空間",
+                  "後量子密碼學",
+                  "零知識加密",
+                  "雙重身份驗證",
+                  "電腦備份",
+                  "密碼保護的檔案共享",
+                  "邀請、共享和協作",
+                  "加密 VPN",
+                  "防毒軟體",
+                  "清理工具 (Cleaner)"
+              ],
+              "comingSoonFeatures": ["檔案版本控制"]
           },
           "5TB": {
-            "title": "旗艦版",
-            "features": [
-              "5TB零知識加密儲存",
-              "後量子加密",
-              "超快無限制VPN（法國、德國、波蘭、加拿大、英國）",
-              "防毒",
-              "檔案備份",
-              "密碼保護檔案共享",
-              "邀請、共享和協作",
-              "符合GDPR",
-              "雙因素認證（2FA）",
-              "支援CLI、WebDav、NAS和Rclone"
-            ],
-            "comingSoonFeatures": ["裝置清理器", "暗網監控", "視訊會議", "郵件"]
+              "title": "Ultimate (旗艦版)",
+              "features": [
+                  "3TB 加密儲存空間",
+                  "後量子密碼學",
+                  "零知識加密",
+                  "雙重身份驗證",
+                  "電腦備份",
+                  "密碼保護的檔案共享",
+                  "邀請、共享和協作",
+                  "支援 CLI 和 WebDav",
+                  "支援 NAS 和 Rclone",
+                  "加密 VPN",
+                  "防毒軟體",
+                  "清理工具 (Cleaner)",
+                  "會議 (Meet)"
+              ],
+              "comingSoonFeatures": ["檔案版本控制", "郵件 (Mail)"]
           },
           "1GB": {
-            "title": "免費版",
-            "features": ["1GB零知識加密儲存", "免費標準VPN（法國）"]
+              "title": "Free (免費版)",
+              "features": ["1GB 加密儲存空間", "加密 VPN"]
           }
-        },
+      },
         "businessPlanFeaturesList": {
           "title": "方案詳情",
           "storage": " 儲存空間",

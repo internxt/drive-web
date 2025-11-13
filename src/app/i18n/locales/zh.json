@@ -1881,56 +1881,61 @@
         "planFeaturesList": {
           "title": "套餐详情",
           "comingSoon": "即将推出",
-          "storage": " 零知识加密存储",
+          "storage": " 加密存储空间",
           "1TB": {
-            "title": "基础版",
-            "features": [
-              "1TB零知识加密存储",
-              "后量子加密",
-              "超快无限制VPN（法国）",
-              "防病毒",
-              "文件备份",
-              "密码保护文件共享",
-              "符合GDPR",
-              "双因素认证（2FA）"
-            ]
+              "title": "Essential (基础版)",
+              "features": [
+                  "1TB 加密存储空间",
+                  "后量子密码学",
+                  "零知识加密",
+                  "两步验证",
+                  "电脑备份",
+                  "密码保护的文件共享",
+                  "加密 VPN",
+                  "杀毒软件"
+              ],
+              "comingSoonFeatures": ["文件版本控制"]
           },
           "3TB": {
-            "title": "高级版",
-            "features": [
-              "3TB零知识加密存储",
-              "后量子加密",
-              "超快无限制VPN（法国、德国、波兰）",
-              "防病毒",
-              "文件备份",
-              "密码保护文件共享",
-              "邀请、共享和协作",
-              "符合GDPR",
-              "双因素认证（2FA）"
-            ],
-            "comingSoonFeatures": ["设备清理器", "暗网监控"]
+              "title": "Premium (高级版)",
+              "features": [
+                  "3TB 加密存储空间",
+                  "后量子密码学",
+                  "零知识加密",
+                  "两步验证",
+                  "电脑备份",
+                  "密码保护的文件共享",
+                  "邀请、共享和协作",
+                  "加密 VPN",
+                  "杀毒软件",
+                  "清理工具 (Cleaner)"
+              ],
+              "comingSoonFeatures": ["文件版本控制"]
           },
           "5TB": {
-            "title": "旗舰版",
-            "features": [
-              "5TB零知识加密存储",
-              "后量子加密",
-              "超快无限制VPN（法国、德国、波兰、加拿大、英国）",
-              "防病毒",
-              "文件备份",
-              "密码保护文件共享",
-              "邀请、共享和协作",
-              "符合GDPR",
-              "双因素认证（2FA）",
-              "支持CLI、WebDav、NAS和Rclone"
-            ],
-            "comingSoonFeatures": ["设备清理器", "暗网监控", "视频会议", "邮件"]
+              "title": "Ultimate (旗舰版)",
+              "features": [
+                  "3TB 加密存储空间",
+                  "后量子密码学",
+                  "零知识加密",
+                  "两步验证",
+                  "电脑备份",
+                  "密码保护的文件共享",
+                  "邀请、共享和协作",
+                  "支持 CLI 和 WebDav",
+                  "支持 NAS 和 Rclone",
+                  "加密 VPN",
+                  "杀毒软件",
+                  "清理工具 (Cleaner)",
+                  "会议 (Meet)"
+              ],
+              "comingSoonFeatures": ["文件版本控制", "邮件 (Mail)"]
           },
           "1GB": {
-            "title": "免费版",
-            "features": ["1GB零知识加密存储", "免费标准VPN（法国）"]
+              "title": "Free (免费版)",
+              "features": ["1GB 加密存储空间", "加密 VPN"]
           }
-        },
+      },
         "businessPlanFeaturesList": {
           "title": "套餐详情",
           "storage": " 存储空间",

@@ -1922,57 +1922,62 @@
           "free": "Free"
         },
         "planFeaturesList": {
-          "title": "Plan details",
-          "comingSoon": "Coming soon",
-          "storage": " zero-knowledge encrypted storage",
-          "1TB": {
-            "title": "Essential",
-            "features": [
-              "1TB zero-knowledge encrypted storage",
-              "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR)",
-              "Antivirus",
-              "Backup your files",
-              "Password-protected file sharing",
-              "GDPR compliance",
-              "Two-factor authentication (2FA)"
-            ]
-          },
-          "3TB": {
-            "title": "Premium",
-            "features": [
-              "3TB zero-knowledge encrypted storage",
-              "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL)",
-              "Antivirus",
-              "Backup your files",
-              "Password-protected file sharing",
-              "Invite, share & collaborate",
-              "GDPR compliance",
-              "Two-factor authentication (2FA)"
-            ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
-          },
-          "5TB": {
-            "title": "Ultimate",
-            "features": [
-              "5TB zero-knowledge encrypted storage",
-              "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Backup your files",
-              "Password-protected file sharing",
-              "Invite, share & collaborate",
-              "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI, WebDav, NAS & Rclone support"
-            ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
-          },
-          "1GB": {
-            "title": "Free",
-            "features": ["1GB zero-knowledge encrypted storage", "Free Standard VPN (FR)"]
-          }
+            "title": "Plan Details",
+            "comingSoon": "Coming Soon",
+            "storage": " encrypted storage",
+            "1TB": {
+                "title": "Essential",
+                "features": [
+                  "1TB of encrypted storage",
+                  "Post-Quantum Encryption",
+                  "Zero-Knowledge Encryption",
+                  "Two-Factor Authentication",
+                  "Backup your computer",
+                  "Password-protected file sharing",
+                  "Encrypted VPN",
+                  "Antivirus"
+                ],
+                "comingSoonFeatures": ["File Versioning"]
+            },
+            "3TB": {
+                "title": "Premium",
+                "features": [
+                  "3TB of encrypted storage",
+                  "Post-Quantum Encryption",
+                  "Zero-Knowledge Encryption",
+                  "Two-Factor Authentication",
+                  "Backup your computer",
+                  "Password-protected file sharing",
+                  "Invite, share & collaborate",
+                  "Encrypted VPN",
+                  "Antivirus",
+                  "Cleaner"
+                ],
+                "comingSoonFeatures": ["File Versioning"]
+            },
+            "5TB": {
+                "title": "Ultimate",
+                "features": [
+                  "3TB of encrypted storage",
+                  "Post-Quantum Encryption",
+                  "Zero-Knowledge Encryption",
+                  "Two-Factor Authentication",
+                  "Backup your computer",
+                  "Password-protected file sharing",
+                  "Invite, share & collaborate",
+                  "CLI & WebDav support",
+                  "NAS & Rclone support",
+                  "Encrypted VPN",
+                  "Antivirus",
+                  "Cleaner",
+                  "Meet"
+                ],
+                "comingSoonFeatures": ["File Versioning", "Mail"]
+            },
+            "1GB": {
+                "title": "Free",
+                "features": ["1GB of encrypted storage", "Encrypted VPN"]
+            }
         },
         "businessPlanFeaturesList": {
           "title": "Plan details",
