@@ -937,7 +937,7 @@ describe('areCredentialsCorrect', () => {
 
 describe('Security and validation', () => {
   describe('getRedirectUrl', () => {
-    it('should validate domain whitelist and inject authToken when auth=true', () => {
+    it('should only redirect to allowed domains and include auth token when required', () => {
       expect(authService.getRedirectUrl(new URLSearchParams('redirectUrl=https://evil.com'), 'token')).toBeNull();
 
       expect(authService.getRedirectUrl(new URLSearchParams(), 'token')).toBeNull();
@@ -958,7 +958,7 @@ describe('Security and validation', () => {
   });
 
   describe('is2FANeeded', () => {
-    it('should check 2FA requirement and handle API errors', async () => {
+    it('should determine if two-factor authentication is required for login', async () => {
       const mockAuthClient = {
         securityDetails: vi.fn().mockResolvedValue({ tfaEnabled: true }),
       };
@@ -978,7 +978,7 @@ describe('Security and validation', () => {
   });
 
   describe('readReferalCookie', () => {
-    it('should extract referral code from cookie', () => {
+    it('should read referral code from browser cookies', () => {
       const originalCookie = document.cookie;
 
       Object.defineProperty(document, 'cookie', {
@@ -1002,7 +1002,7 @@ describe('Security and validation', () => {
 });
 
 describe('authService default export', () => {
-  it('should expose store2FA and sendChangePasswordEmail through default export', async () => {
+  it('should allow storing two-factor authentication keys and sending password reset emails', async () => {
     const mockAuthClient = {
       storeTwoFactorAuthKey: vi.fn().mockResolvedValue(undefined),
       sendChangePasswordEmail: vi.fn().mockResolvedValue(undefined),
@@ -1021,7 +1021,7 @@ describe('authService default export', () => {
     expect(mockAuthClient.sendChangePasswordEmail).toHaveBeenCalledWith('test@example.com');
   });
 
-  it('should handle extractOneUseCredentialsForAutoSubmit correctly', () => {
+  it('should detect when auto-submit credentials are provided in URL', () => {
     expect(authService.default.extractOneUseCredentialsForAutoSubmit(new URLSearchParams('foo=bar'))).toEqual({
       enabled: false,
     });
