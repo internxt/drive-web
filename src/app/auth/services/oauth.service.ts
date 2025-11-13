@@ -62,6 +62,7 @@ const getTargetOrigin = (): string | null => {
 
     return null;
   } catch (error) {
+    console.error('[OAuth] Error accessing opener origin:', error);
     // use referrer as fallback
     const referrer = document.referrer;
     if (referrer) {
@@ -115,6 +116,7 @@ export const sendAuthSuccess = (user: UserSettings, newToken: string): boolean =
     window.close();
     return true;
   } catch (error) {
+    console.error('[OAuth] Error sending auth success message:', error);
     return false;
   }
 };
