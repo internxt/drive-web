@@ -8,7 +8,9 @@ import RecoverAccountView from '../../auth/views/RecoverAccountView/RecoverAccou
 import RecoveryLinkView from '../../auth/views/RecoveryLinkView/RecoveryLinkView';
 import SignInView from '../../auth/views/SignInView/SignInView';
 import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from '../../../views/Signup';
-import UniversalLinkSuccessView from '../../auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
+import UniversalLinkView from '../../auth/views/UniversalLinkView/UniversalLinkView';
+import UniversalLinkOkView from '../../auth/views/UniversalLinkView/UniversalLinkOkView';
+import UniversalLinkErrorView from '../../auth/views/UniversalLinkView/UniversalLinkErrorView';
 import BackupsView from '../../../views/Backups/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
 import DriveView from '../../drive/views/DriveView/DriveView';
@@ -64,7 +66,9 @@ const views: Array<{
   { id: AppView.VerifyEmail, component: VerifyEmailView },
   { id: AppView.ChangeEmail, component: ChangeEmailView },
   { id: AppView.RequestAccess, component: RequestAccess },
-  { id: AppView.UniversalLinkSuccess, component: UniversalLinkSuccessView },
+  { id: AppView.UniversalLinkSuccess, component: UniversalLinkView },
+  { id: AppView.UniversalLinkOk, component: UniversalLinkOkView },
+  { id: AppView.UniversalLinkError, component: UniversalLinkErrorView },
   // Leave these routes last, otherwise it will match react router and may cause malfunctioning.
   { id: AppView.DriveItems, component: DriveView },
   { id: AppView.Drive, component: DriveView },
