@@ -96,7 +96,7 @@ export class LoginPage {
     const createAccountText = await this.createAccount.textContent({
       timeout: 10000,
     });
-    expect(dontHaveAccountText).toEqual("Don't have an account?");
+    expect(dontHaveAccountText).toEqual('Don’t have an account?');
     expect(createAccountText).toEqual('Create account');
     await expect(this.createAccount).toBeEnabled();
     await this.createAccount.click();

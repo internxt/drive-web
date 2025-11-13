@@ -100,7 +100,7 @@
     "login": {
       "title": "Log in",
       "forgotPwd": "Forgot your password?",
-      "dontHaveAccount": "Don't have an account?",
+      "dontHaveAccount": "Don’t have an account?",
       "createAccount": "Create account",
       "2FA": "Two factor code",
       "twoFactorAuthenticationCode": "Two factor authentication code",
