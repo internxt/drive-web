@@ -41,7 +41,7 @@ const mockUserSettings: UserSettings = {
   emailVerified: true,
 };
 
-describe('OAuth Service', () => {
+describe('OAuth authentication service', () => {
   let mockOpener: any;
   let mockWindowClose: any;
 
@@ -69,8 +69,8 @@ describe('OAuth Service', () => {
     vi.restoreAllMocks();
   });
 
-  describe('getAllowedOrigins method', () => {
-    it('should return a new array copy of the allowed origins list', () => {
+  describe('Allowed origins configuration', () => {
+    it('when origins are requested, then a safe copy of allowed domains is provided', () => {
       const origins = oauthService.getAllowedOrigins();
 
       expect(origins).toEqual(['https://meet.internxt.com']);
@@ -78,8 +78,8 @@ describe('OAuth Service', () => {
     });
   });
 
-  describe('isOAuthPopup method', () => {
-    it('should return true when the window has an opener property', () => {
+  describe('Popup window context', () => {
+    it('when running in a popup opened by a parent window, then popup context is detected', () => {
       Object.defineProperty(window, 'opener', {
         value: mockOpener,
         writable: true,
@@ -89,7 +89,7 @@ describe('OAuth Service', () => {
       expect(oauthService.isOAuthPopup()).toBe(true);
     });
 
-    it('should return false when the window has no opener property', () => {
+    it('when running in a standalone browser window, then popup context is not detected', () => {
       Object.defineProperty(window, 'opener', {
         value: null,
         writable: true,
@@ -100,10 +100,10 @@ describe('OAuth Service', () => {
     });
   });
 
-  describe('sendAuthSuccess method', () => {
+  describe('Successful authentication', () => {
     const mockNewToken = 'test-new-token';
 
-    it('should send authentication success to the opener window and close the popup when origin is allowed', () => {
+    it('when authentication succeeds with a trusted parent window, then credentials are transmitted and popup closes', () => {
       Object.defineProperty(window, 'opener', {
         value: mockOpener,
         writable: true,
@@ -126,7 +126,7 @@ describe('OAuth Service', () => {
       expect(mockWindowClose).toHaveBeenCalled();
     });
 
-    it('should return false when window.opener is not available', () => {
+    it('when there is no parent window available, then transmission fails gracefully', () => {
       Object.defineProperty(window, 'opener', {
         value: null,
         writable: true,
@@ -139,7 +139,7 @@ describe('OAuth Service', () => {
       expect(mockWindowClose).not.toHaveBeenCalled();
     });
 
-    it('should use document.referrer as fallback origin when opener.location throws cross-origin error', () => {
+    it('when browser blocks direct parent access, then referrer URL is used as fallback', () => {
       const crossOriginOpener = {
         postMessage: vi.fn(),
         get location() {
@@ -169,8 +169,12 @@ describe('OAuth Service', () => {
         'https://meet.internxt.com',
       );
     });
+  });
 
-    it('should use wildcard target origin in development mode when origin cannot be determined', () => {
+  describe('Security and origin validation', () => {
+    const mockNewToken = 'test-new-token';
+
+    it('when running in development and origin cannot be verified, then transmission is allowed to any domain', () => {
       const crossOriginOpener = {
         postMessage: vi.fn(),
         get location() {
@@ -203,7 +207,7 @@ describe('OAuth Service', () => {
       );
     });
 
-    it('should return false in production mode when origin cannot be determined safely', () => {
+    it('when running in production and origin cannot be verified, then transmission is blocked for security', () => {
       const crossOriginOpener = {
         postMessage: vi.fn(),
         get location() {
@@ -231,7 +235,7 @@ describe('OAuth Service', () => {
       expect(crossOriginOpener.postMessage).not.toHaveBeenCalled();
     });
 
-    it('should return false when opener origin is not in the allowed origins list', () => {
+    it('when parent window is from an untrusted domain, then transmission is blocked', () => {
       const disallowedOpener = {
         postMessage: vi.fn(),
         location: {
@@ -251,7 +255,7 @@ describe('OAuth Service', () => {
       expect(disallowedOpener.postMessage).not.toHaveBeenCalled();
     });
 
-    it('should return false when referrer origin is not in the allowed origins list', () => {
+    it('when referrer is from an untrusted domain, then transmission is blocked', () => {
       const crossOriginOpener = {
         postMessage: vi.fn(),
         get location() {
@@ -278,8 +282,12 @@ describe('OAuth Service', () => {
       expect(result).toBe(false);
       expect(crossOriginOpener.postMessage).not.toHaveBeenCalled();
     });
+  });
 
-    it('should return false when postMessage throws an exception', () => {
+  describe('Error handling', () => {
+    const mockNewToken = 'test-new-token';
+
+    it('when communication with parent fails, then popup remains open and failure is reported', () => {
       const errorOpener = {
         postMessage: vi.fn(() => {
           throw new Error('postMessage error');

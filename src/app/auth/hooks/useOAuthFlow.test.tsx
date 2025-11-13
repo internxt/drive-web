@@ -46,7 +46,7 @@ vi.mock('../services/oauth.service');
 
 const mockSendAuthSuccess = vi.mocked(oauthService.sendAuthSuccess);
 
-describe('useOAuthFlow', () => {
+describe('OAuth custom hook', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -55,22 +55,22 @@ describe('useOAuthFlow', () => {
     vi.restoreAllMocks();
   });
 
-  describe('isOAuthFlow property', () => {
-    it('should return true when authOrigin is provided', () => {
+  describe('Auth origin', () => {
+    it('when an auth origin is provided, then the OAuth process is activated', () => {
       const { result } = renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
 
       expect(result.current.isOAuthFlow).toBe(true);
     });
 
-    it('should return false when authOrigin is null', () => {
+    it('when an auth origin is not provided, then the OAuth process remains inactive', () => {
       const { result } = renderHook(() => useOAuthFlow({ authOrigin: null }));
 
       expect(result.current.isOAuthFlow).toBe(false);
     });
   });
 
-  describe('when the hook mounts', () => {
-    it('should automatically send auth success when isOAuthFlow is true and all credentials exist', () => {
+  describe('On component mount', () => {
+    it('when OAuth is active and user credentials exist, then credentials are automatically sent to the parent window', () => {
       const mockNewToken = 'test-new-token';
 
       vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUserSettings);
@@ -87,7 +87,7 @@ describe('useOAuthFlow', () => {
       expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, mockNewToken);
     });
 
-    it('should not send auth success when isOAuthFlow is false', () => {
+    it('when OAuth is not active, then no credentials are sent', () => {
       const mockNewToken = 'test-new-token';
 
       vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUserSettings);
@@ -103,8 +103,8 @@ describe('useOAuthFlow', () => {
     });
   });
 
-  describe('handleOAuthSuccess method', () => {
-    it('should send user credentials to the OAuth service and return true on success', () => {
+  describe('Handling successful OAuth', () => {
+    it('when the OAuth process completes successfully, then credentials are sent and success is reported', () => {
       const mockNewToken = 'test-new-token';
       mockSendAuthSuccess.mockReturnValue(true);
 
@@ -119,7 +119,7 @@ describe('useOAuthFlow', () => {
       expect(returnValue).toBe(true);
     });
 
-    it('should return false when the OAuth service fails to send credentials', () => {
+    it('when the OAuth process fails or is not completed, then failure is reported', () => {
       const mockNewToken = 'test-new-token';
       mockSendAuthSuccess.mockReturnValue(false);
 
@@ -135,8 +135,8 @@ describe('useOAuthFlow', () => {
     });
   });
 
-  describe('when calling handleOAuthSuccess multiple times', () => {
-    it('should handle multiple success calls independently', () => {
+  describe('Multiple OAuth attempts', () => {
+    it('when OAuth is triggered multiple times, then each attempt is handled independently', () => {
       mockSendAuthSuccess.mockReturnValue(true);
 
       vi.spyOn(localStorageService, 'getUser').mockReturnValue(null);
