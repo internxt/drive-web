@@ -21,7 +21,7 @@ export class StreamSaver {
       mc.port2.close();
       this.supportsTransferable = true;
       console.log('[StreamSaver] Transferable streams supported');
-    } catch (e) {
+    } catch {
       this.supportsTransferable = false;
       console.log('[StreamSaver] Transferable streams NOT supported, using fallback');
     }
@@ -182,7 +182,7 @@ export class StreamSaver {
       this.mitmTransporter?.addEventListener('load', () => this.mitmTransporter?.postMessage(...args), { once: true });
     }
 
-    if (transformStream && transformStream.writable) {
+    if (transformStream?.writable) {
       return transformStream.writable;
     }
 
