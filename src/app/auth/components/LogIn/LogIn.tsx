@@ -154,17 +154,15 @@ export default function LogIn(): JSX.Element {
   const handleSuccessfulAuth = (token: string, user: UserSettings, mnemonic: string): void => {
     const newToken = localStorageService.get('xNewToken');
 
-    if (newToken) {
+    if (isOAuthFlow && newToken) {
       const success = handleOAuthSuccess(user, newToken);
-      if (isOAuthFlow) {
-        if (!success) {
-          setIsLoggingIn(false);
-          const errorMessage = translate('auth.login.failedToSendAuthData');
-          setLoginError([errorMessage]);
-          setShowErrors(true);
-        }
-        return;
+      if (!success) {
+        setIsLoggingIn(false);
+        const errorMessage = translate('auth.login.failedToSendAuthData');
+        setLoginError([errorMessage]);
+        setShowErrors(true);
       }
+      return;
     }
 
     const redirectUrl = authService.getRedirectUrl(urlParams, token);

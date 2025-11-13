@@ -214,7 +214,7 @@ function SignUpForm(): JSX.Element {
 
     handleVPNAuth(isVPNAuth, xNewToken);
 
-    if (isOAuthFlow) {
+    if (isOAuthFlow && xNewToken) {
       const user = localStorageService.getUser();
       if (user) {
         const success = handleOAuthSuccess(user, xNewToken);
