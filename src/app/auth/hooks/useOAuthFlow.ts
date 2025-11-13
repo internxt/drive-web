@@ -9,7 +9,7 @@ interface UseOAuthFlowParams {
 
 interface UseOAuthFlowReturn {
   isOAuthFlow: boolean;
-  handleOAuthSuccess: (user: UserSettings, token: string, newToken: string) => boolean;
+  handleOAuthSuccess: (user: UserSettings, newToken: string) => boolean;
 }
 
 export const useOAuthFlow = ({ authOrigin }: UseOAuthFlowParams): UseOAuthFlowReturn => {
@@ -18,17 +18,16 @@ export const useOAuthFlow = ({ authOrigin }: UseOAuthFlowParams): UseOAuthFlowRe
   useEffect(() => {
     if (isOAuthFlow) {
       const user = localStorageService.getUser();
-      const token = localStorageService.get('xToken');
       const newToken = localStorageService.get('xNewToken');
 
-      if (user && token && newToken) {
-        oauthService.sendAuthSuccess(user, token, newToken);
+      if (user && newToken) {
+        oauthService.sendAuthSuccess(user, newToken);
       }
     }
   }, [isOAuthFlow]);
 
-  const handleOAuthSuccess = (user: UserSettings, token: string, newToken: string): boolean => {
-    return oauthService.sendAuthSuccess(user, token, newToken);
+  const handleOAuthSuccess = (user: UserSettings, newToken: string): boolean => {
+    return oauthService.sendAuthSuccess(user, newToken);
   };
 
   return {

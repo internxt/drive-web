@@ -2,6 +2,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { renderHook } from '@testing-library/react';
 import localStorageService from 'app/core/services/local-storage.service';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import * as oauthService from '../services/oauth.service';
 import { useOAuthFlow } from './useOAuthFlow';
 
 const mockUserSettings: UserSettings = {
@@ -43,8 +44,6 @@ const mockUserSettings: UserSettings = {
 
 vi.mock('../services/oauth.service');
 
-import * as oauthService from '../services/oauth.service';
-
 const mockSendAuthSuccess = vi.mocked(oauthService.sendAuthSuccess);
 
 describe('useOAuthFlow', () => {
@@ -72,12 +71,10 @@ describe('useOAuthFlow', () => {
 
   describe('when the hook mounts', () => {
     it('should automatically send auth success when isOAuthFlow is true and all credentials exist', () => {
-      const mockToken = 'test-token';
       const mockNewToken = 'test-new-token';
 
       vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUserSettings);
       vi.spyOn(localStorageService, 'get').mockImplementation((key: string) => {
-        if (key === 'xToken') return mockToken;
         if (key === 'xNewToken') return mockNewToken;
         return null;
       });
@@ -86,18 +83,15 @@ describe('useOAuthFlow', () => {
       renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
 
       expect(localStorageService.getUser).toHaveBeenCalled();
-      expect(localStorageService.get).toHaveBeenCalledWith('xToken');
       expect(localStorageService.get).toHaveBeenCalledWith('xNewToken');
-      expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, mockToken, mockNewToken);
+      expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, mockNewToken);
     });
 
     it('should not send auth success when isOAuthFlow is false', () => {
-      const mockToken = 'test-token';
       const mockNewToken = 'test-new-token';
 
       vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUserSettings);
       vi.spyOn(localStorageService, 'get').mockImplementation((key: string) => {
-        if (key === 'xToken') return mockToken;
         if (key === 'xNewToken') return mockNewToken;
         return null;
       });
@@ -111,7 +105,6 @@ describe('useOAuthFlow', () => {
 
   describe('handleOAuthSuccess method', () => {
     it('should send user credentials to the OAuth service and return true on success', () => {
-      const mockToken = 'test-token';
       const mockNewToken = 'test-new-token';
       mockSendAuthSuccess.mockReturnValue(true);
 
@@ -119,15 +112,14 @@ describe('useOAuthFlow', () => {
 
       const { result } = renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
 
-      const returnValue = result.current.handleOAuthSuccess(mockUserSettings, mockToken, mockNewToken);
+      const returnValue = result.current.handleOAuthSuccess(mockUserSettings, mockNewToken);
 
-      expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, mockToken, mockNewToken);
+      expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, mockNewToken);
       expect(mockSendAuthSuccess).toHaveBeenCalledTimes(1);
       expect(returnValue).toBe(true);
     });
 
     it('should return false when the OAuth service fails to send credentials', () => {
-      const mockToken = 'test-token';
       const mockNewToken = 'test-new-token';
       mockSendAuthSuccess.mockReturnValue(false);
 
@@ -135,9 +127,9 @@ describe('useOAuthFlow', () => {
 
       const { result } = renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
 
-      const returnValue = result.current.handleOAuthSuccess(mockUserSettings, mockToken, mockNewToken);
+      const returnValue = result.current.handleOAuthSuccess(mockUserSettings, mockNewToken);
 
-      expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, mockToken, mockNewToken);
+      expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, mockNewToken);
       expect(mockSendAuthSuccess).toHaveBeenCalledTimes(1);
       expect(returnValue).toBe(false);
     });
@@ -151,11 +143,11 @@ describe('useOAuthFlow', () => {
 
       const { result } = renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
 
-      result.current.handleOAuthSuccess(mockUserSettings, 'token1', 'newToken1');
-      expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, 'token1', 'newToken1');
+      result.current.handleOAuthSuccess(mockUserSettings, 'newToken1');
+      expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, 'newToken1');
 
-      result.current.handleOAuthSuccess(mockUserSettings, 'token2', 'newToken2');
-      expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, 'token2', 'newToken2');
+      result.current.handleOAuthSuccess(mockUserSettings, 'newToken2');
+      expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, 'newToken2');
 
       expect(mockSendAuthSuccess).toHaveBeenCalledTimes(2);
     });

@@ -101,7 +101,6 @@ describe('OAuth Service', () => {
   });
 
   describe('sendAuthSuccess method', () => {
-    const mockToken = 'test-token';
     const mockNewToken = 'test-new-token';
 
     it('should send authentication success to the opener window and close the popup when origin is allowed', () => {
@@ -111,7 +110,7 @@ describe('OAuth Service', () => {
         configurable: true,
       });
 
-      const result = oauthService.sendAuthSuccess(mockUserSettings, mockToken, mockNewToken);
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
 
       expect(result).toBe(true);
       expect(mockOpener.postMessage).toHaveBeenCalledWith(
@@ -119,7 +118,6 @@ describe('OAuth Service', () => {
           type: OAuthMessageType.SUCCESS,
           payload: {
             mnemonic: btoa(mockUserSettings.mnemonic),
-            token: btoa(mockToken),
             newToken: btoa(mockNewToken),
           },
         },
@@ -135,7 +133,7 @@ describe('OAuth Service', () => {
         configurable: true,
       });
 
-      const result = oauthService.sendAuthSuccess(mockUserSettings, mockToken, mockNewToken);
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
 
       expect(result).toBe(false);
       expect(mockWindowClose).not.toHaveBeenCalled();
@@ -161,7 +159,7 @@ describe('OAuth Service', () => {
         configurable: true,
       });
 
-      const result = oauthService.sendAuthSuccess(mockUserSettings, mockToken, mockNewToken);
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
 
       expect(result).toBe(true);
       expect(crossOriginOpener.postMessage).toHaveBeenCalledWith(
@@ -194,7 +192,7 @@ describe('OAuth Service', () => {
         configurable: true,
       });
 
-      const result = oauthService.sendAuthSuccess(mockUserSettings, mockToken, mockNewToken);
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
 
       expect(result).toBe(true);
       expect(crossOriginOpener.postMessage).toHaveBeenCalledWith(
@@ -227,7 +225,7 @@ describe('OAuth Service', () => {
         configurable: true,
       });
 
-      const result = oauthService.sendAuthSuccess(mockUserSettings, mockToken, mockNewToken);
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
 
       expect(result).toBe(false);
       expect(crossOriginOpener.postMessage).not.toHaveBeenCalled();
@@ -247,7 +245,7 @@ describe('OAuth Service', () => {
         configurable: true,
       });
 
-      const result = oauthService.sendAuthSuccess(mockUserSettings, mockToken, mockNewToken);
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
 
       expect(result).toBe(false);
       expect(disallowedOpener.postMessage).not.toHaveBeenCalled();
@@ -275,7 +273,7 @@ describe('OAuth Service', () => {
         configurable: true,
       });
 
-      const result = oauthService.sendAuthSuccess(mockUserSettings, mockToken, mockNewToken);
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
 
       expect(result).toBe(false);
       expect(crossOriginOpener.postMessage).not.toHaveBeenCalled();
@@ -297,7 +295,7 @@ describe('OAuth Service', () => {
         configurable: true,
       });
 
-      const result = oauthService.sendAuthSuccess(mockUserSettings, mockToken, mockNewToken);
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
 
       expect(result).toBe(false);
       expect(mockWindowClose).not.toHaveBeenCalled();

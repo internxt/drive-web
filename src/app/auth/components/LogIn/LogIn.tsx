@@ -155,7 +155,7 @@ export default function LogIn(): JSX.Element {
     const newToken = localStorageService.get('xNewToken');
 
     if (newToken) {
-      const success = handleOAuthSuccess(user, token, newToken);
+      const success = handleOAuthSuccess(user, newToken);
       if (isOAuthFlow) {
         if (!success) {
           setIsLoggingIn(false);

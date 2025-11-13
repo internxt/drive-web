@@ -24,7 +24,6 @@ export enum OAuthMessageType {
  */
 export interface OAuthSuccessPayload {
   mnemonic: string;
-  token: string;
   newToken: string;
 }
 
@@ -90,11 +89,10 @@ const getTargetOrigin = (): string | null => {
  * Security: Validates target origin before sending credentials
  *
  * @param {UserSettings} user - User data with mnemonic and keys
- * @param {string} token - Authentication token (will be base64 encoded)
- * @param {string} newToken - New authentication token (will be base64 encoded)
+ * @param {string} newToken - Authentication token (will be base64 encoded)
  * @returns {boolean} True if message was sent successfully, false otherwise
  */
-export const sendAuthSuccess = (user: UserSettings, token: string, newToken: string): boolean => {
+export const sendAuthSuccess = (user: UserSettings, newToken: string): boolean => {
   if (!window.opener) {
     return false;
   }
@@ -110,7 +108,6 @@ export const sendAuthSuccess = (user: UserSettings, token: string, newToken: str
       type: OAuthMessageType.SUCCESS,
       payload: {
         mnemonic: btoa(user.mnemonic),
-        token: btoa(token),
         newToken: btoa(newToken),
       },
     };

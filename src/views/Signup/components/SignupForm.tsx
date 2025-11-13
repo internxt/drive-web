@@ -217,7 +217,7 @@ function SignUpForm(): JSX.Element {
     if (isOAuthFlow) {
       const user = localStorageService.getUser();
       if (user) {
-        const success = handleOAuthSuccess(user, xToken, xNewToken);
+        const success = handleOAuthSuccess(user, xNewToken);
         if (!success) {
           setIsLoading(false);
           const errorMessage = translate('auth.login.failedToSendAuthData');
