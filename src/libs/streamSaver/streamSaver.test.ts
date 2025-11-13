@@ -201,4 +201,50 @@ describe('Stream Saver Service', () => {
     expect(mockMessageChannel.port1.close).toHaveBeenCalled();
     expect(mockMessageChannel.port2.close).toHaveBeenCalled();
   });
+
+  test('When transform receives a non-Uint8Array chunk, then an error indicating so is thrown', () => {
+    (streamSaver as any).supportsTransferable = true;
+
+    let capturedTransformFunction: any;
+
+    global.TransformStream = vi.fn((transformer) => {
+      capturedTransformFunction = transformer.transform;
+      return mockTransformStream;
+    }) as any;
+
+    streamSaver.createWriteStream('test.txt');
+
+    const mockController = {
+      enqueue: vi.fn(),
+    };
+
+    expect(() => {
+      capturedTransformFunction('not a uint8array', mockController);
+    }).toThrow(TypeError);
+    expect(() => {
+      capturedTransformFunction('not a uint8array', mockController);
+    }).toThrow('Can only write Uint8Arrays');
+  });
+
+  test('When transform receives a Uint8Array chunk, then the chunk should be enqueued', () => {
+    (streamSaver as any).supportsTransferable = true;
+
+    let capturedTransformFunction: any;
+
+    global.TransformStream = vi.fn((transformer) => {
+      capturedTransformFunction = transformer.transform;
+      return mockTransformStream;
+    }) as any;
+
+    streamSaver.createWriteStream('test.txt');
+
+    const mockController = {
+      enqueue: vi.fn(),
+    };
+
+    const chunk = new Uint8Array([1, 2, 3, 4, 5]);
+    capturedTransformFunction(chunk, mockController);
+
+    expect(mockController.enqueue).toHaveBeenCalledWith(chunk);
+  });
 });
