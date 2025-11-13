@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
-import { RootState } from '../../../store';
-import { storageSelectors } from '../../../store/slices/storage';
-import { sessionSelectors } from '../../../store/slices/session/session.selectors';
+import { RootState } from 'app/store';
+import { storageSelectors } from 'app/store/slices/storage';
+import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
 import { Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
-import { PlanState } from '../../../store/slices/plan';
+import { PlanState } from 'app/store/slices/plan';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 import { useHotkeys } from 'react-hotkeys-hook';

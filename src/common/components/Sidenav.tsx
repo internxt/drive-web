@@ -6,8 +6,8 @@ import desktopService from 'app/core/services/desktop.service';
 import PlanUsage from 'views/Home/components/PlanUsage';
 import { RootState } from 'app/store';
 import { planSelectors } from 'app/store/slices/plan';
-import navigationService from '../../services/navigation.service';
-import { AppView } from '../../types';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -17,8 +17,8 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { t } from 'i18next';
-import localStorageService from '../../../core/services/local-storage.service';
-import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import localStorageService from 'app/core/services/local-storage.service';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import SidenavItem from './SidenavItem/SidenavItem';
 import WorkspaceSelectorContainer from 'views/Home/components/WorkspaceSelectorContainer';
 import { STORAGE_KEYS } from 'app/core/services/storage-keys';

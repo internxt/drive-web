@@ -1,15 +1,15 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { Desktop, SignOut, Gear } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
-import Popover from '../../../shared/components/Popover';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { uiActions } from '../../../store/slices/ui';
-import { userThunks } from '../../../store/slices/user';
-import desktopService from '../../services/desktop.service';
-import AvatarWrapper from '../../../../views/NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
-import navigationService from '../../../core/services/navigation.service';
+import Popover from 'app/shared/components/Popover';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { uiActions } from 'app/store/slices/ui';
+import { userThunks } from 'app/store/slices/user';
+import desktopService from 'app/core/services/desktop.service';
+import AvatarWrapper from '../../NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
+import navigationService from 'app/core/services/navigation.service';
 import { RootState } from 'app/store';
 
 export default function AccountPopover({
