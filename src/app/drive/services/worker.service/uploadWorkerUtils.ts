@@ -1,6 +1,6 @@
-import { Abortable } from '../../../network/Abortable';
-import DatabaseUploadRepository from '../../../repositories/DatabaseUploadRepository';
-import { TaskStatus } from '../../../tasks/types';
+import { Abortable } from 'app/network/Abortable';
+import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
+import { TaskStatus } from 'app/tasks/types';
 import { IUploadParams } from '../network.service/types';
 import { WORKER_MESSAGE_STATES } from './types/upload';
 

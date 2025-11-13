@@ -1,6 +1,6 @@
-import { DriveFileData } from '../../../../drive/types';
-import fileExtensionService from '../../../../drive/services/file-extension.service';
-import { FileExtensionGroup, fileExtensionPreviewableGroups } from '../../../../drive/types/file-types';
+import { DriveFileData } from 'app/drive/types';
+import fileExtensionService from 'app/drive/services/file-extension.service';
+import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 
 export const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 

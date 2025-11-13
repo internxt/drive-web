@@ -23,7 +23,7 @@ import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 
 import RetryManager from 'app/network/RetryManager';
-import { FileToUpload } from '../../../../drive/services/file.service/types';
+import { FileToUpload } from 'app/drive/services/file.service/types';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
 

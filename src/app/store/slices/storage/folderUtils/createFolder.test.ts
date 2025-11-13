@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createFolder } from './createFolder';
 import { CreateFolderResponse, EncryptionVersion } from '@internxt/sdk/dist/drive/storage/types';
-import folderService from '../../../../drive/services/folder.service';
+import folderService from 'app/drive/services/folder.service';
 import tasksService from '../../../../tasks/services/tasks.service';
 import errorService from '../../../../core/services/error.service';
 import AppError from '../../../../core/types';
-import { DriveFolderData } from '../../../../drive/types';
+import { DriveFolderData } from 'app/drive/types';
 
 vi.mock('..', () => ({
   default: {
@@ -35,7 +35,7 @@ vi.mock('../../../../core/services/error.service', () => ({
   },
 }));
 
-vi.mock('../../../../drive/services/folder.service', () => ({
+vi.mock('app/drive/services/folder.service', () => ({
   default: {
     createFolderByUuid: vi.fn(),
   },

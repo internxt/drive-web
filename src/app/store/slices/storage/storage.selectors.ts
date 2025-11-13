@@ -1,5 +1,5 @@
 import { RootState } from '../..';
-import { DriveItemData } from '../../../drive/types';
+import { DriveItemData } from 'app/drive/types';
 
 const rootFolderId = (state: RootState): string => {
   const { user } = state.user;

@@ -1,4 +1,4 @@
-import { ItemDetailsProps } from '../../../../drive/types';
+import { ItemDetailsProps } from 'app/drive/types';
 import Skeleton from 'react-loading-skeleton';
 
 const ItemDetailsSkeleton = ({

@@ -3,14 +3,14 @@ import { uploadFileWithManager } from './UploadManager';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'app/core/services/error.service';
 import AppError from 'app/core/types';
-import uploadFile from '../drive/services/file.service/uploadFile';
+import uploadFile from 'app/drive/services/file.service/uploadFile';
 import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
 import { DriveFileData } from 'app/drive/types';
 import RetryManager from './RetryManager';
 import { TaskStatus } from 'app/tasks/types';
 import { ErrorMessages } from 'app/core/constants';
 
-vi.mock('../drive/services/file.service/uploadFile', () => ({
+vi.mock('app/drive/services/file.service/uploadFile', () => ({
   default: vi.fn(() => Promise.resolve({} as DriveFileData)),
 }));
 
