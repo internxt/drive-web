@@ -1,7 +1,7 @@
 import { items as itemUtils } from '@internxt/lib';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { renameFile } from '../../../../crypto/services/utils';
-import { FileToUpload } from '../../../../drive/services/file.service/types';
+import { FileToUpload } from 'app/drive/services/file.service/types';
 import { getUniqueFilename } from './getUniqueFilename';
 
 interface ProcessDuplicateFilesParams {

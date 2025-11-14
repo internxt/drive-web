@@ -5,10 +5,10 @@
 import { renderHook } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import useSharedContextMenu from './useSharedContextMenu';
-import { AdvancedSharedItem } from '../../../app/share/types';
-import * as DriveItemContextMenu from '../../../app/drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import { AdvancedSharedItem } from 'app/share/types';
+import * as DriveItemContextMenu from 'views/Drive/components/DriveExplorer/components/DriveItemContextMenu';
 
-vi.mock('../../../app/drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu');
+vi.mock('views/Drive/components/DriveExplorer/components/DriveItemContextMenu');
 
 describe('useSharedContextMenu', () => {
   const mockActions = {

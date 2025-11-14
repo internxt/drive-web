@@ -1945,57 +1945,62 @@
           "free": "Free"
         },
         "planFeaturesList": {
-          "title": "Dettagli del piano",
-          "comingSoon": "Prossimamente",
-          "storage": " archiviazione criptata a conoscenza zero",
-          "1TB": {
-            "title": "Essenziale",
-            "features": [
-              "1TB di archiviazione criptata a conoscenza zero",
-              "Crittografia post-quantistica",
-              "VPN illimitata ultraveloce (FR)",
-              "Antivirus",
-              "Backup dei tuoi file",
-              "Condivisione file protetta da password",
-              "Conformità GDPR",
-              "Autenticazione a due fattori (2FA)"
-            ]
-          },
-          "3TB": {
-            "title": "Premium",
-            "features": [
-              "3TB di archiviazione criptata a conoscenza zero",
-              "Crittografia post-quantistica",
-              "VPN illimitata ultraveloce (FR, DE, PL)",
-              "Antivirus",
-              "Backup dei tuoi file",
-              "Condivisione file protetta da password",
-              "Invita, condividi e collabora",
-              "Conformità GDPR",
-              "Autenticazione a due fattori (2FA)"
-            ],
-            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web"]
-          },
-          "5TB": {
-            "title": "Ultimate",
-            "features": [
-              "5TB di archiviazione criptata a conoscenza zero",
-              "Crittografia post-quantistica",
-              "VPN illimitata ultraveloce (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Backup dei tuoi file",
-              "Condivisione file protetta da password",
-              "Invita, condividi e collabora",
-              "Conformità GDPR",
-              "Autenticazione a due fattori (2FA)",
-              "Supporto CLI, WebDav, NAS e Rclone"
-            ],
-            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web", "Meet", "Mail"]
-          },
-          "1GB": {
-            "title": "Gratuito",
-            "features": ["1GB di archiviazione criptata a conoscenza zero", "VPN standard gratuita (FR)"]
-          }
+            "title": "Dettagli del Piano",
+            "comingSoon": "Prossimamente",
+            "storage": " spazio di archiviazione crittografato",
+            "1TB": {
+                "title": "Essential (Essenziale)",
+                "features": [
+                    "1TB di spazio di archiviazione crittografato",
+                    "Crittografia Post-Quantistica",
+                    "Crittografia Zero-Knowledge",
+                    "Autenticazione a Due Fattori",
+                    "Backup del computer",
+                    "Condivisione file protetta da password",
+                    "VPN Crittografata",
+                    "Antivirus"
+                ],
+                "comingSoonFeatures": ["Versionamento dei File"]
+            },
+            "3TB": {
+                "title": "Premium",
+                "features": [
+                    "3TB di spazio di archiviazione crittografato",
+                    "Crittografia Post-Quantistica",
+                    "Crittografia Zero-Knowledge",
+                    "Autenticazione a Due Fattori",
+                    "Backup del computer",
+                    "Condivisione file protetta da password",
+                    "Invita, condividi e collabora",
+                    "VPN Crittografata",
+                    "Antivirus",
+                    "Cleaner (Pulitore)"
+                ],
+                "comingSoonFeatures": ["Versionamento dei File"]
+            },
+            "5TB": {
+                "title": "Ultimate (Definitivo)",
+                "features": [
+                    "3TB di spazio di archiviazione crittografato",
+                    "Crittografia Post-Quantistica",
+                    "Crittografia Zero-Knowledge",
+                    "Autenticazione a Due Fattori",
+                    "Backup del computer",
+                    "Condivisione file protetta da password",
+                    "Invita, condividi e collabora",
+                    "Supporto CLI e WebDav",
+                    "Supporto NAS e Rclone",
+                    "VPN Crittografata",
+                    "Antivirus",
+                    "Cleaner (Pulitore)",
+                    "Meet (Videoconferenza)"
+                ],
+                "comingSoonFeatures": ["Versionamento dei File", "Mail"]
+            },
+            "1GB": {
+                "title": "Gratuito",
+                "features": ["1GB di spazio di archiviazione crittografato", "VPN Crittografata"]
+            }
         },
         "businessPlanFeaturesList": {
           "title": "Dettagli del piano",

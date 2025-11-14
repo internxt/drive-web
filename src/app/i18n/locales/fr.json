@@ -1837,58 +1837,63 @@
           "free": "Free"
         },
         "planFeaturesList": {
-          "title": "Détails du plan",
+          "title": "Détails du Plan",
           "comingSoon": "Bientôt disponible",
-          "storage": " stockage chiffré à connaissance zéro",
+          "storage": " stockage chiffré",
           "1TB": {
-            "title": "Essentiel",
-            "features": [
-              "1TB de stockage chiffré à connaissance zéro",
-              "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)"
-            ]
+              "title": "Essential (Essentiel)",
+              "features": [
+                  "1To de stockage chiffré",
+                  "Chiffrement Post-Quantique",
+                  "Chiffrement Zéro-Connaissance",
+                  "Authentification à Deux Facteurs",
+                  "Sauvegarde de votre ordinateur",
+                  "Partage de fichiers protégé par mot de passe",
+                  "VPN Chiffré",
+                  "Antivirus"
+              ],
+              "comingSoonFeatures": ["Historique des versions de fichiers"]
           },
           "3TB": {
-            "title": "Premium",
-            "features": [
-              "3TB de stockage chiffré à connaissance zéro",
-              "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
-              "Inviter, partager et collaborer",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)"
-            ],
-            "comingSoonFeatures": ["Nettoyage de l'appareil", "Surveillance du dark web"]
+              "title": "Premium",
+              "features": [
+                  "3To de stockage chiffré",
+                  "Chiffrement Post-Quantique",
+                  "Chiffrement Zéro-Connaissance",
+                  "Authentification à Deux Facteurs",
+                  "Sauvegarde de votre ordinateur",
+                  "Partage de fichiers protégé par mot de passe",
+                  "Inviter, partager et collaborer",
+                  "VPN Chiffré",
+                  "Antivirus",
+                  "Nettoyeur"
+              ],
+              "comingSoonFeatures": ["Historique des versions de fichiers"]
           },
           "5TB": {
-            "title": "Ultimate",
-            "features": [
-              "5TB de stockage chiffré à connaissance zéro",
-              "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
-              "Inviter, partager et collaborer",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav, NAS et Rclone"
-            ],
-            "comingSoonFeatures": ["Nettoyage de l'appareil", "Surveillance du dark web", "Meet", "Mail"]
+              "title": "Ultimate (Ultime)",
+              "features": [
+                  "3To de stockage chiffré",
+                  "Chiffrement Post-Quantique",
+                  "Chiffrement Zéro-Connaissance",
+                  "Authentification à Deux Facteurs",
+                  "Sauvegarde de votre ordinateur",
+                  "Partage de fichiers protégé par mot de passe",
+                  "Inviter, partager et collaborer",
+                  "Support CLI et WebDav",
+                  "Support NAS et Rclone",
+                  "VPN Chiffré",
+                  "Antivirus",
+                  "Nettoyeur",
+                  "Meet (Réunion)"
+              ],
+              "comingSoonFeatures": ["Historique des versions de fichiers", "Mail"]
           },
           "1GB": {
-            "title": "Gratuit",
-            "features": ["1GB de stockage chiffré à connaissance zéro", "VPN standard gratuit (FR)"]
+              "title": "Gratuit",
+              "features": ["1Go de stockage chiffré", "VPN Chiffré"]
           }
-        },
+      },
         "businessPlanFeaturesList": {
           "title": "Détails du plan",
           "storage": " de stockage",

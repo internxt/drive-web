@@ -8,12 +8,12 @@ import _ from 'lodash';
 
 import { act } from 'react-dom/test-utils';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import newStorageService from '../../../app/drive/services/new-storage.service';
-import { DriveItemData } from '../../../app/drive/types';
-import notificationsService, { ToastType } from '../../../app/notifications/services/notifications.service';
+import newStorageService from 'app/drive/services/new-storage.service';
+import { DriveItemData } from 'app/drive/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useBackupsPagination } from './useBackupsPagination';
 
-vi.mock('../../../app/drive/services/new-storage.service', () => ({
+vi.mock('app/drive/services/new-storage.service', () => ({
   default: {
     getFolderContentByUuid: vi.fn(),
   },

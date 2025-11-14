@@ -1,8 +1,8 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { FileMeta } from '@internxt/sdk/dist/drive/storage/types';
 import { t } from 'i18next';
-import { SdkFactory } from '../../../core/factory/sdk';
-import errorService from '../../../core/services/error.service';
+import { SdkFactory } from 'app/core/factory/sdk';
+import errorService from 'app/core/services/error.service';
 import { DriveFileData, DriveFileMetadataPayload } from '../../types';
 import uploadFile from './uploadFile';
 

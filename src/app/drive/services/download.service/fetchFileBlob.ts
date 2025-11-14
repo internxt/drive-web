@@ -1,5 +1,5 @@
-import { binaryStreamToBlob } from '../../../core/services/stream.service';
-import { Downloadable, downloadFile, NetworkCredentials } from '../../../network/download';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { Downloadable, downloadFile, NetworkCredentials } from 'app/network/download';
 import { getEnvironmentConfig } from '../network.service';
 
 type FetchFileBlobOptions = {

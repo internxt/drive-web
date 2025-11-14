@@ -17,7 +17,7 @@ describe('Custom hook to handle payments', () => {
     vi.doUnmock('../../core/factory/sdk');
     vi.doUnmock('./payment.service');
     vi.doUnmock('../../utils/userLocation');
-    vi.doUnmock('../../drive/services/file.service');
+    vi.doUnmock('app/drive/services/file.service');
 
     vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
       if (key === 'hostname') return mockHostname;
