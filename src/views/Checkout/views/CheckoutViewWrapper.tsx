@@ -31,13 +31,10 @@ import { useThemeContext } from 'app/theme/ThemeProvider';
 import authCheckoutService from 'views/Checkout/services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from 'views/Checkout/store/checkoutReducer';
 import { PaymentType, PlanInterval } from 'views/Checkout/types';
-import { AddressProvider, CheckoutViewManager, UserInfoProps } from './types/checkout.types';
+import { AddressProvider, CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
 import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'views/Checkout/hooks/useUserPayment';
-import {
-  CRYPTO_PAYMENT_DIALOG_KEY,
-  CryptoPaymentDialog,
-} from 'views/Checkout/components/CryptoPaymentDialog';
+import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/components/CryptoPaymentDialog';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'app/utils/generateCaptchaToken';
 

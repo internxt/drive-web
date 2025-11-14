@@ -1,7 +1,7 @@
 import { BaseSyntheticEvent } from 'react';
 import { Stripe, StripeElements } from '@stripe/stripe-js';
 import { IFormValues } from 'app/core/types';
-import { AuthMethodTypes } from '../../../types';
+import { AuthMethodTypes } from './index';
 
 export interface UserInfoProps {
   avatar: Blob | null;

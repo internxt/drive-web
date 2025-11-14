@@ -174,3 +174,5 @@ export enum PaymentType {
   FIAT = 'fiat',
   CRYPTO = 'crypto',
 }
+
+export type { UserInfoProps, CheckoutViewManager } from './checkout.types';
