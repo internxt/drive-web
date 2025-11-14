@@ -10,12 +10,12 @@ import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.co
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { AppView } from 'app/core/types';
 import { FolderPath } from 'app/drive/types';
-import { ModifyStorageModal } from 'app/newSettings/Sections/Workspace/Members/components/ModifyStorageModal';
+import { ModifyStorageModal } from './views/NewSettings/components/Sections/Workspace/Members/components/ModifyStorageModal';
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import i18next, { t } from 'i18next';
 import { pdfjs } from 'react-pdf';
-import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
+import PreparingWorkspaceAnimation from './common/components/PreparingWorkspaceAnimation';
 import authService from './app/auth/services/auth.service';
 import configService from './app/core/services/config.service';
 import envService from './app/core/services/env.service';
@@ -28,8 +28,8 @@ import { LRUFilesCacheManager } from './app/database/services/database.service/L
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import Mobile from './app/drive/views/MobileView/MobileView';
-import PreferencesDialog from './app/newSettings/PreferencesDialog';
-import { usePreferencesParamsChange } from './app/newSettings/hooks/usePreferencesParamsChange';
+import PreferencesDialog from './views/NewSettings';
+import { usePreferencesParamsChange } from './views/NewSettings/hooks/usePreferencesParamsChange';
 import SharingRedirect from './app/routes/Share/ShareRedirection';
 import WorkspacesRedirect from './app/routes/Workspaces/WorkspacesRedirection';
 import { getRoutes } from './app/routes/routes';

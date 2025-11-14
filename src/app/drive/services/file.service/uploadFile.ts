@@ -1,15 +1,15 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { Network } from 'app/drive/services/network.service';
 import { DriveFileData } from 'app/drive/types';
-import { SdkFactory } from '../../../core/factory/sdk';
-import localStorageService from '../../../core/services/local-storage.service';
-import navigationService from '../../../core/services/navigation.service';
-import workspacesService from '../../../core/services/workspace.service';
-import { AppView } from '../../../core/types';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { SdkFactory } from 'app/core/factory/sdk';
+import localStorageService from 'app/core/services/local-storage.service';
+import navigationService from 'app/core/services/navigation.service';
+import workspacesService from 'app/core/services/workspace.service';
+import { AppView } from 'app/core/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { getEnvironmentConfig } from '../network.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
-import { OwnerUserAuthenticationData } from '../../../network/types';
+import { OwnerUserAuthenticationData } from 'app/network/types';
 import { FileToUpload } from './types';
 
 export interface FileUploadOptions {

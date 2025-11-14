@@ -19,7 +19,7 @@ import { downloadFile, NetworkCredentials } from 'app/network/download';
 import localStorageService from 'app/core/services/local-storage.service';
 import date from 'app/core/services/date.service';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import { ConnectionLostError } from './../../network/requests';
+import { ConnectionLostError } from 'app/network/requests';
 import { ErrorMessages } from 'app/core/constants';
 import {
   FolderIterator,
@@ -29,7 +29,6 @@ import {
   isLostConnectionError as isLostConnectionErrorUtil,
 } from '../types/download-types';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
-import downloadService from './download.service';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -288,22 +287,18 @@ export class DownloadManagerService {
         saveAs(cachedFile.source, options.downloadName);
       } else {
         const isWorkspace = !!credentials.workspaceId;
-        const isFirefox = navigator.userAgent.includes('Firefox');
 
-        console.time('download-file');
-        if (isFirefox) {
-          await downloadService.downloadFile(file, isWorkspace, updateProgressCallback, abortController, credentials);
-        } else {
-          await this.downloadFileFromWorker({
-            file,
-            isWorkspace,
-            updateProgressCallback,
-            abortController,
-            sharingOptions: credentials,
-          });
-        }
+        console.time(`download-file-${file.uuid}`);
 
-        console.timeEnd('download-file');
+        await this.downloadFileFromWorker({
+          file,
+          isWorkspace,
+          updateProgressCallback,
+          abortController,
+          sharingOptions: credentials,
+        });
+
+        console.timeEnd(`download-file-${file.uuid}`);
       }
 
       await this.checkAndHandleConnectionLost(connectionLost);

@@ -1,6 +1,6 @@
 import { items as itemUtils } from '@internxt/lib';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-import newStorageService from '../../../../drive/services/new-storage.service';
+import newStorageService from 'app/drive/services/new-storage.service';
 
 export interface DuplicatedFilesResult {
   duplicatedFilesResponse: DriveFileData[];

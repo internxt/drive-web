@@ -1,4 +1,4 @@
-import { FileExtensionGroup } from '../../../types/file-types';
+import { FileExtensionGroup } from 'app/drive/types/file-types';
 import { lazy } from 'react';
 const FileImageViewer = lazy(() => import('./FileImageViewer/FileImageViewer'));
 const FilePdfViewer = lazy(() => import('./FilePdfViewer/FilePdfViewer'));

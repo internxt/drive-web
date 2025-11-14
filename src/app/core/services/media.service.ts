@@ -1,4 +1,4 @@
-import { VideoExtensions, AudioExtensions } from '../../drive/types/file-types';
+import { VideoExtensions, AudioExtensions } from 'app/drive/types/file-types';
 
 type VideoTypes = Record<keyof VideoExtensions, string>;
 type AudioTypes = Record<keyof AudioExtensions, string>;

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { connect, useSelector } from 'react-redux';
 
-import DriveExplorer from 'app/drive/components/DriveExplorer/DriveExplorer';
+import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
 import { DriveItemData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { AppDispatch, RootState } from 'app/store';

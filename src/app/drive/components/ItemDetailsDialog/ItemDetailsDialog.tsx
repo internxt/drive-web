@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react';
 
-import { RootState } from '../../../store';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { uiActions } from '../../../store/slices/ui';
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { uiActions } from 'app/store/slices/ui';
 import { X } from '@phosphor-icons/react';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import iconService from '../../../drive/services/icon.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import iconService from 'app/drive/services/icon.service';
 import { Button, Modal } from '@internxt/ui';
-import { bytesToString } from '../../../drive/services/size.service';
-import localStorageService from '../../../core/services/local-storage.service';
-import { STORAGE_KEYS } from '../../../core/services/storage-keys';
-import { DriveItemData, DriveItemDetails, ItemDetailsProps } from '../../../drive/types';
+import { bytesToString } from 'app/drive/services/size.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import { STORAGE_KEYS } from 'app/core/services/storage-keys';
+import { DriveItemData, DriveItemDetails, ItemDetailsProps } from 'app/drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
 import { AdvancedSharedItem } from 'app/share/types';
 import { useSelector } from 'react-redux';
-import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
-import dateService from '../../../core/services/date.service';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import dateService from 'app/core/services/date.service';
 import { getLocation } from 'app/utils/locationUtils';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {

@@ -1,10 +1,10 @@
 import * as internxtLib from '@internxt/lib';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import newStorageService from '../../../../drive/services/new-storage.service';
+import newStorageService from 'app/drive/services/new-storage.service';
 import { getUniqueFilename } from './getUniqueFilename';
 
-vi.mock('../../../../drive/services/new-storage.service', async () => ({
+vi.mock('app/drive/services/new-storage.service', async () => ({
   default: {
     checkDuplicatedFiles: vi.fn(),
   },

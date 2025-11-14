@@ -115,6 +115,37 @@
         "normalText": "Internxt doesn’t store passwords.",
         "boldText": "If you forget your password, you can download a backup key to regain access to your files.",
         "cta": "Learn more"
+      },
+      "authView": {
+        "emailPlaceholder": "Email",
+        "passwordPlaceholder": "Password",
+        "emailEmpty": "Email cannot be empty",
+        "passwordEmpty": "Password cannot be empty",
+        "buttonText": "Get the offer",
+        "legal": {
+          "line1": "By creating an account you accept",
+          "line2": "the terms of service and privacy policy"
+        },
+        "heroTitle": "Store your files with total privacy",
+        "planLabel": "2TB Plan",
+        "freeTrialText": "Free for the first 30 days",
+        "discountText": "50% discount for the next three months if you decide to renew"
+      },
+      "blog": {
+        "title": {
+          "line1": "Make privacy a priority and join",
+          "blueText": " Internxt ",
+          "line2": "today"
+        },
+        "emailPlaceholder": "Email",
+        "passwordPlaceholder": "Password",
+        "emailEmpty": "Email cannot be empty",
+        "passwordEmpty": "Password cannot be empty",
+        "buttonText": "Get up to 1GB - For free!",
+        "legal": {
+          "line1": "By creating an account you accept the",
+          "line2": "terms of service, and privacy policy"
+        }
       }
     },
     "downloadBackupKey": {
@@ -1891,57 +1922,62 @@
           "free": "Free"
         },
         "planFeaturesList": {
-          "title": "Plan details",
-          "comingSoon": "Coming soon",
-          "storage": " zero-knowledge encrypted storage",
-          "1TB": {
-            "title": "Essential",
-            "features": [
-              "1TB zero-knowledge encrypted storage",
-              "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR)",
-              "Antivirus",
-              "Backup your files",
-              "Password-protected file sharing",
-              "GDPR compliance",
-              "Two-factor authentication (2FA)"
-            ]
-          },
-          "3TB": {
-            "title": "Premium",
-            "features": [
-              "3TB zero-knowledge encrypted storage",
-              "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL)",
-              "Antivirus",
-              "Backup your files",
-              "Password-protected file sharing",
-              "Invite, share & collaborate",
-              "GDPR compliance",
-              "Two-factor authentication (2FA)"
-            ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor"]
-          },
-          "5TB": {
-            "title": "Ultimate",
-            "features": [
-              "5TB zero-knowledge encrypted storage",
-              "Post-quantum encryption",
-              "Ultra fast unlimited VPN (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Backup your files",
-              "Password-protected file sharing",
-              "Invite, share & collaborate",
-              "GDPR compliance",
-              "Two-factor authentication (2FA)",
-              "CLI, WebDav, NAS & Rclone support"
-            ],
-            "comingSoonFeatures": ["Device Cleaner", "Dark Web Monitor", "Meet", "Mail"]
-          },
-          "1GB": {
-            "title": "Free",
-            "features": ["1GB zero-knowledge encrypted storage", "Free Standard VPN (FR)"]
-          }
+            "title": "Plan Details",
+            "comingSoon": "Coming Soon",
+            "storage": " encrypted storage",
+            "1TB": {
+                "title": "Essential",
+                "features": [
+                  "1TB of encrypted storage",
+                  "Post-Quantum Encryption",
+                  "Zero-Knowledge Encryption",
+                  "Two-Factor Authentication",
+                  "Backup your computer",
+                  "Password-protected file sharing",
+                  "Encrypted VPN",
+                  "Antivirus"
+                ],
+                "comingSoonFeatures": ["File Versioning"]
+            },
+            "3TB": {
+                "title": "Premium",
+                "features": [
+                  "3TB of encrypted storage",
+                  "Post-Quantum Encryption",
+                  "Zero-Knowledge Encryption",
+                  "Two-Factor Authentication",
+                  "Backup your computer",
+                  "Password-protected file sharing",
+                  "Invite, share & collaborate",
+                  "Encrypted VPN",
+                  "Antivirus",
+                  "Cleaner"
+                ],
+                "comingSoonFeatures": ["File Versioning"]
+            },
+            "5TB": {
+                "title": "Ultimate",
+                "features": [
+                  "3TB of encrypted storage",
+                  "Post-Quantum Encryption",
+                  "Zero-Knowledge Encryption",
+                  "Two-Factor Authentication",
+                  "Backup your computer",
+                  "Password-protected file sharing",
+                  "Invite, share & collaborate",
+                  "CLI & WebDav support",
+                  "NAS & Rclone support",
+                  "Encrypted VPN",
+                  "Antivirus",
+                  "Cleaner",
+                  "Meet"
+                ],
+                "comingSoonFeatures": ["File Versioning", "Mail"]
+            },
+            "1GB": {
+                "title": "Free",
+                "features": ["1GB of encrypted storage", "Encrypted VPN"]
+            }
         },
         "businessPlanFeaturesList": {
           "title": "Plan details",

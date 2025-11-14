@@ -6,7 +6,7 @@ import { t } from 'i18next';
 import { storageActions } from '..';
 import { RootState } from '../../..';
 import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
-import { DriveFolderData, DriveItemData } from '../../../../drive/types';
+import { DriveFolderData, DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
