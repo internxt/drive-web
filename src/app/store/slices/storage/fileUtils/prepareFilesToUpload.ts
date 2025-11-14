@@ -1,5 +1,5 @@
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-import { FileToUpload } from '../../../../drive/services/file.service/types';
+import { FileToUpload } from 'app/drive/services/file.service/types';
 import { checkDuplicatedFiles } from './checkDuplicatedFiles';
 import { processDuplicateFiles } from './processDuplicateFiles';
 

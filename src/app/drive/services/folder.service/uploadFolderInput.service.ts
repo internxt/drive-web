@@ -1,4 +1,4 @@
-import { IRoot } from '../../../store/slices/storage/types';
+import { IRoot } from 'app/store/slices/storage/types';
 
 export const transformInputFilesToJSON = (files: File[]): JSON => {
   const result = {} as JSON;

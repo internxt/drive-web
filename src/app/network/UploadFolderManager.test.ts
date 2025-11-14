@@ -8,7 +8,7 @@ import tasksService from 'app/tasks/services/tasks.service';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { TaskFolder, UploadFoldersManager, uploadFoldersWithManager } from './UploadFolderManager';
 
-vi.mock('../drive/services/new-storage.service', () => ({
+vi.mock('app/drive/services/new-storage.service', () => ({
   default: {
     deleteFolderByUuid: vi.fn(),
   },

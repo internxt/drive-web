@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { DriveItemData, DriveItemDetails, FileInfoMenuItem } from '../../../drive/types';
+import { DriveItemData, DriveItemDetails, FileInfoMenuItem } from 'app/drive/types';
 import { PreviewFileItem } from '../../../share/types';
 
 interface UISliceState {

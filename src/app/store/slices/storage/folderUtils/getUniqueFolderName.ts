@@ -1,5 +1,5 @@
-import newStorageService from '../../../../drive/services/new-storage.service';
-import { DriveFolderData } from '../../../../drive/types';
+import newStorageService from 'app/drive/services/new-storage.service';
+import { DriveFolderData } from 'app/drive/types';
 import renameFolderIfNeeded from './renameFolderIfNeeded';
 
 export const getUniqueFolderName = async (

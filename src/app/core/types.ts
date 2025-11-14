@@ -1,5 +1,5 @@
 import { DatabaseProvider } from '../database/services/database.service';
-import { DownloadFolderMethod } from '../drive/types';
+import { DownloadFolderMethod } from 'app/drive/types';
 import { store as storeInstance } from '../store';
 
 type StoreType = typeof storeInstance;

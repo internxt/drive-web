@@ -4,7 +4,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch } from 'app/store/hooks';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { FC, useEffect, useState } from 'react';
-import { DriveItemData } from '../../types';
+import { DriveItemData } from 'app/drive/types';
 
 type EditItemNameDialogProps = {
   item: DriveItemData | undefined;

@@ -13,11 +13,11 @@ import UniversalLinkOkView from '../../auth/views/UniversalLinkView/UniversalLin
 import UniversalLinkErrorView from '../../auth/views/UniversalLinkView/UniversalLinkErrorView';
 import BackupsView from '../../../views/Backups/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
-import DriveView from '../../drive/views/DriveView/DriveView';
-import FolderFileNotFound from '../../drive/views/FolderFileNotFound/FolderFileNotFound';
-import RecentsView from '../../../views/Recents/RecentsView';
-import RequestAccess from '../../drive/views/RequestAccess/RequestAccess';
-import TrashView from '../../../views/Trash/Trash';
+import DriveView from 'views/Drive';
+import FolderFileNotFound from 'app/drive/views/FolderFileNotFound/FolderFileNotFound';
+import RecentsView from 'views/Recents';
+import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
+import TrashView from 'views/Trash';
 import CheckoutCancelView from '../../payment/views/CheckoutCancelView/CheckoutCancelView';
 import CheckoutSuccessView from '../../payment/views/CheckoutSuccessView/CheckoutSuccessView';
 import { ShareFileView, ShareFolderView } from '../../../views/PublicShared';

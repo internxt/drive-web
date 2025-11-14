@@ -1,5 +1,5 @@
 import userService from '../../auth/services/user.service';
-import { updateDatabaseProfileAvatar, deleteDatabaseProfileAvatar } from '../../drive/services/database.service';
+import { updateDatabaseProfileAvatar, deleteDatabaseProfileAvatar } from 'app/drive/services/database.service';
 
 async function refreshAvatar(uuid: string): Promise<string | null> {
   const { avatar: updatedUserAvatar } = await userService.refreshAvatarUser();
