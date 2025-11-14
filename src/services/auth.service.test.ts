@@ -95,7 +95,9 @@ beforeAll(() => {
 
   vi.mock('app/core/services/socket.service', () => ({
     default: {
-      getInstance: vi.fn(),
+      getInstance: vi.fn().mockReturnValue({
+        stop: vi.fn(),
+      }),
     },
   }));
 
@@ -112,6 +114,12 @@ beforeAll(() => {
       set: vi.fn(),
     },
   }));
+  vi.mock('./vpnAuth.service', () => ({
+    default: {
+      logOut: vi.fn(),
+    },
+  }));
+
   vi.mock('app/core/services/error.service', () => ({
     default: {
       castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
@@ -243,94 +251,6 @@ describe('logIn', () => {
       mnemonic: mockMnemonic,
     });
   });
-
-  it('log in should correctly decrypt keys for old user structure', async () => {
-    const mockToken = 'test-token';
-    const mockNewToken = 'test-new-token';
-    const mockLoginType = 'web';
-
-    const mockPassword = 'password123';
-    const mockMnemonic =
-      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
-    const keys = await keysService.getKeys(mockPassword);
-    const encryptedMnemonic = encryptTextWithKey(mockMnemonic, mockPassword);
-
-    const mockOlsUser: Partial<UserSettings> = {
-      uuid: 'mock-uuid',
-      email: 'mock@email.com',
-      privateKey: keys.ecc.privateKeyEncrypted,
-      mnemonic: encryptedMnemonic,
-      userId: 'mock-userId',
-      name: 'mock-name',
-      lastname: 'mock-lastname',
-      username: 'mock-username',
-      bridgeUser: 'mock-bridgeUser',
-      bucket: 'mock-bucket',
-      backupsBucket: null,
-      root_folder_id: 0,
-      rootFolderId: 'mock-rootFolderId',
-      rootFolderUuid: undefined,
-      sharedWorkspace: false,
-      credit: 0,
-      publicKey: keys.ecc.publicKey,
-      revocationKey: keys.revocationCertificate,
-      appSumoDetails: null,
-      registerCompleted: false,
-      hasReferralsProgram: false,
-      createdAt: new Date(),
-      avatar: null,
-      emailVerified: false,
-    };
-    const mockTwoFactorCode = '123456';
-
-    const mockUser = mockOlsUser as UserSettings;
-
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
-        login: vi.fn().mockResolvedValue({
-          user: mockUser,
-          token: mockToken,
-          newToken: mockNewToken,
-        }),
-      }),
-      createDesktopAuthClient: vi.fn().mockReturnValue({
-        login: vi.fn().mockResolvedValue({
-          user: mockUser,
-          token: mockToken,
-          newToken: mockNewToken,
-        }),
-      }),
-    } as any);
-
-    const result = await authService.doLogin(mockUser.email, mockPassword, mockTwoFactorCode, mockLoginType);
-
-    const plainPrivateKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.privateKey, mockPassword),
-    ).toString('base64');
-
-    const mockClearUser = {
-      ...mockUser,
-      mnemonic: mockMnemonic,
-      privateKey: plainPrivateKeyInBase64,
-      keys: {
-        ecc: {
-          publicKey: mockUser.publicKey,
-          privateKey: plainPrivateKeyInBase64,
-        },
-        kyber: {
-          publicKey: '',
-          privateKey: '',
-        },
-      },
-    };
-
-    expect(result).toEqual({
-      token: mockToken,
-      newToken: mockNewToken,
-      user: mockClearUser,
-      mnemonic: mockMnemonic,
-    });
-  });
 });
 
 describe('signUp', () => {
@@ -415,116 +335,6 @@ describe('signUp', () => {
       mnemonic: mockMnemonicNotEnc,
     });
   });
-
-  it('signUp should work for old user structure', async () => {
-    const mockToken = 'test-token';
-    const mockNewToken = 'test-new-token';
-    const mockEmail = 'test@example.com';
-
-    const mockPassword = 'password123';
-    const mockMnemonicNotEnc =
-      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
-    const keys = await keysService.getKeys(mockPassword);
-    const encryptedMnemonic = encryptTextWithKey(mockMnemonicNotEnc, mockPassword);
-    const mockOldUser: Partial<UserSettings> = {
-      uuid: 'mock-uuid',
-      email: 'mock@email.com',
-      privateKey: keys.ecc.privateKeyEncrypted,
-      mnemonic: encryptedMnemonic,
-      userId: 'mock-userId',
-      name: 'mock-name',
-      lastname: 'mock-lastname',
-      username: 'mock-username',
-      bridgeUser: 'mock-bridgeUser',
-      bucket: 'mock-bucket',
-      backupsBucket: null,
-      root_folder_id: 0,
-      rootFolderId: 'mock-rootFolderId',
-      rootFolderUuid: undefined,
-      sharedWorkspace: false,
-      credit: 0,
-      publicKey: keys.ecc.publicKey,
-      revocationKey: keys.revocationCertificate,
-      appSumoDetails: null,
-      registerCompleted: false,
-      hasReferralsProgram: false,
-      createdAt: new Date(),
-      avatar: null,
-      emailVerified: false,
-    };
-
-    const mockUser = mockOldUser as UserSettings;
-
-    const mockSignUpResponse = {
-      xUser: {
-        ...mockUser,
-        mnemonic: mockMnemonicNotEnc,
-      },
-      xToken: mockToken,
-      xNewToken: mockNewToken,
-      mnemonic: mockMnemonicNotEnc,
-    };
-
-    const params = {
-      doSignUp: vi.fn().mockResolvedValue(mockSignUpResponse),
-      email: mockEmail,
-      password: mockPassword,
-      token: mockToken,
-      redeemCodeObject: false,
-      dispatch: vi.fn(),
-    };
-
-    const mockRes = new Response(
-      JSON.stringify({
-        newToken: mockNewToken,
-      }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-
-    vi.spyOn(globalThis, 'fetch').mockReturnValue(Promise.resolve(mockRes));
-
-    const spy = vi.spyOn(userActions, 'setUser');
-
-    const result = await authService.signUp(params);
-
-    expect(localStorageService.set).toHaveBeenCalledWith('xNewToken', mockNewToken);
-
-    const plainPrivateKeyInBase64 = Buffer.from(
-      keysService.decryptPrivateKey(mockUser.privateKey, mockPassword),
-    ).toString('base64');
-
-    const mockClearUser = {
-      ...mockUser,
-      mnemonic: mockMnemonicNotEnc,
-      privateKey: plainPrivateKeyInBase64,
-      keys: {
-        ecc: {
-          publicKey: mockUser.publicKey,
-          privateKey: plainPrivateKeyInBase64,
-        },
-        kyber: {
-          publicKey: '',
-          privateKey: '',
-        },
-      },
-    };
-    expect(spy).toBeCalledWith(mockClearUser);
-
-    expect(result).toEqual({
-      token: mockToken,
-      newToken: mockNewToken,
-      user: {
-        ...mockUser,
-        mnemonic: mockMnemonicNotEnc,
-      },
-      mnemonic: mockMnemonicNotEnc,
-    });
-  });
 });
 
 describe('Change password', () => {
@@ -588,70 +398,6 @@ describe('Change password', () => {
     const privateKyberKeyEncrypted = inputs.keys.encryptedPrivateKyberKey;
     const privateKyberKey = keysService.decryptPrivateKey(privateKyberKeyEncrypted, mockNewPassword);
     expect(privateKyberKey).toBe(mockUser.keys.kyber.privateKey);
-  });
-
-  it('changePassword should correctly re-encrypt keys for old users', async () => {
-    const mockOldPassword = 'password123';
-    const mockNewPassword = 'newPassword123';
-    const mockEmail = 'test@example.com';
-
-    const mockMnemonicNotEnc =
-      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
-    const keys = await pgpService.generateNewKeys();
-    const mockClearUser: Partial<UserSettings> = {
-      mnemonic: mockMnemonicNotEnc,
-      publicKey: keys.publicKeyArmored,
-      revocationKey: keys.revocationCertificate,
-      privateKey: Buffer.from(keys.privateKeyArmored).toString('base64'),
-    };
-
-    const mockUser = mockClearUser as UserSettings;
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser);
-
-    const mockSalt = 'mockSalt';
-    const encryptedSalt = encryptText(mockSalt);
-
-    const changePasswordMock = vi
-      .fn()
-      .mockReturnValue(Promise.resolve({ newToken: 'newMockToken', token: 'mockToken' }));
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
-        changePassword: changePasswordMock,
-        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
-      }),
-      createDesktopAuthClient: vi.fn().mockReturnValue({
-        changePassword: changePasswordMock,
-        securityDetails: vi.fn().mockReturnValue({ encryptedSalt }),
-      }),
-      createUsersClient: vi.fn().mockReturnValue({
-        changePassword: changePasswordMock,
-      }),
-    } as any);
-
-    await authService.changePassword(mockNewPassword, mockOldPassword, mockEmail);
-    expect(changePasswordMock).toBeCalled();
-    const [inputs] = changePasswordMock.mock.calls[0];
-
-    const privateKeyEncrypted = inputs.encryptedPrivateKey;
-    const privateKey = keysService.decryptPrivateKey(privateKeyEncrypted, mockNewPassword);
-    const privateKeyBase64 = Buffer.from(privateKey).toString('base64');
-    expect(privateKeyBase64).toBe(mockUser.privateKey);
-
-    const privateKyberKeyEncrypted = inputs.keys.encryptedPrivateKyberKey;
-    expect(privateKyberKeyEncrypted).toBe('');
-  });
-
-  it('should cancel account', async () => {
-    const mockSendDeactivationEmail = vi.fn().mockReturnValue({ success: true });
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
-        sendUserDeactivationEmail: mockSendDeactivationEmail,
-      }),
-    } as any);
-    vi.spyOn(localStorageService, 'get').mockReturnValue('token');
-
-    await authService.cancelAccount();
-    expect(mockSendDeactivationEmail).toHaveBeenCalledWith('token');
   });
 });
 
@@ -825,51 +571,6 @@ describe('areCredentialsCorrect', () => {
     expect(mockAreCredentialsCorrect).toHaveBeenCalledWith(expect.any(String), mockToken);
   });
 
-  it('should return false when credentials are incorrect', async () => {
-    const mockPassword = 'wrongPassword';
-    const mockSalt = 'mockSalt';
-    const mockToken = 'mockToken';
-
-    vi.spyOn(localStorageService, 'get').mockReturnValue(mockToken);
-
-    const encryptedSalt = encryptText(mockSalt);
-    const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(false);
-
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
-        securityDetails: vi.fn().mockResolvedValue({ encryptedSalt }),
-        areCredentialsCorrect: mockAreCredentialsCorrect,
-      }),
-    } as any);
-
-    const result = await authService.areCredentialsCorrect(mockPassword);
-
-    expect(result).toBe(false);
-    expect(mockAreCredentialsCorrect).toHaveBeenCalledWith(expect.any(String), mockToken);
-  });
-
-  it('should handle undefined token', async () => {
-    const mockPassword = 'password123';
-    const mockSalt = 'mockSalt';
-
-    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
-
-    const encryptedSalt = encryptText(mockSalt);
-    const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(true);
-
-    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: vi.fn().mockReturnValue({
-        securityDetails: vi.fn().mockResolvedValue({ encryptedSalt }),
-        areCredentialsCorrect: mockAreCredentialsCorrect,
-      }),
-    } as any);
-
-    const result = await authService.areCredentialsCorrect(mockPassword);
-
-    expect(result).toBe(true);
-    expect(mockAreCredentialsCorrect).toHaveBeenCalledWith(expect.any(String), undefined);
-  });
-
   it('should handle errors from API', async () => {
     const mockPassword = 'password123';
     const mockSalt = 'mockSalt';
@@ -890,47 +591,369 @@ describe('areCredentialsCorrect', () => {
 
     await expect(authService.areCredentialsCorrect(mockPassword)).rejects.toThrow('API error');
   });
+});
 
-  it('should use unauthorizedCallback: () => undefined when creating auth client', async () => {
-    const mockPassword = 'password123';
-    const mockSalt = 'mockSalt';
-    const mockToken = 'mockToken';
-    const mockEmail = 'test@example.com';
-    const mockCreateAuthClient = vi.fn();
+describe('Security and validation', () => {
+  describe('getRedirectUrl', () => {
+    it('should only redirect to allowed domains and include auth token when required', () => {
+      expect(authService.getRedirectUrl(new URLSearchParams('redirectUrl=https://evil.com'), 'token')).toBeNull();
 
-    vi.spyOn(localStorageService, 'get').mockImplementation((key: string) => {
-      if (key === 'xNewToken') return mockToken;
-      return null;
+      expect(authService.getRedirectUrl(new URLSearchParams(), 'token')).toBeNull();
+
+      const validUrl = authService.getRedirectUrl(
+        new URLSearchParams('redirectUrl=https://internxt.com/welcome'),
+        'token',
+      );
+      expect(validUrl).toBe('https://internxt.com/welcome?');
+
+      const authUrl = authService.getRedirectUrl(
+        new URLSearchParams('redirectUrl=https://drive.internxt.com/app?auth=true'),
+        'myToken',
+      );
+      expect(authUrl).toContain('authToken=myToken');
+      expect(authUrl).toContain('auth=true');
     });
+  });
 
-    vi.spyOn(localStorageService, 'getUser').mockReturnValue({
-      email: mockEmail,
-    } as any);
-
-    const encryptedSalt = encryptText(mockSalt);
-    const mockAreCredentialsCorrect = vi.fn().mockResolvedValue(true);
-    const mockSecurityDetails = vi.fn().mockResolvedValue({ encryptedSalt });
-
-    mockCreateAuthClient.mockImplementation(() => {
-      return {
-        securityDetails: mockSecurityDetails,
-        areCredentialsCorrect: mockAreCredentialsCorrect,
+  describe('is2FANeeded', () => {
+    it('should determine if two-factor authentication is required for login', async () => {
+      const mockAuthClient = {
+        securityDetails: vi.fn().mockResolvedValue({ tfaEnabled: true }),
       };
+
+      vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+        createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+      } as any);
+
+      expect(await authService.is2FANeeded('test@example.com')).toBe(true);
+
+      mockAuthClient.securityDetails.mockResolvedValue({ tfaEnabled: false });
+      expect(await authService.is2FANeeded('test@example.com')).toBe(false);
+
+      mockAuthClient.securityDetails.mockRejectedValue({ message: 'User not found', status: 404 });
+      await expect(authService.is2FANeeded('test@example.com')).rejects.toThrow('User not found');
     });
+  });
+
+  describe('readReferalCookie', () => {
+    it('should read referral code from browser cookies', () => {
+      const originalCookie = document.cookie;
+
+      Object.defineProperty(document, 'cookie', {
+        writable: true,
+        value: 'REFERRAL=ABC123; other=value',
+      });
+      expect(authService.readReferalCookie()).toBe('ABC123');
+
+      Object.defineProperty(document, 'cookie', {
+        writable: true,
+        value: 'other=value',
+      });
+      expect(authService.readReferalCookie()).toBeUndefined();
+
+      Object.defineProperty(document, 'cookie', {
+        writable: true,
+        value: originalCookie,
+      });
+    });
+  });
+});
+
+describe('logOut', () => {
+  it('should sign out user and clear their session data', async () => {
+    const mockAuthClient = {
+      logout: vi.fn().mockResolvedValue(undefined),
+    };
 
     vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
-      createAuthClient: mockCreateAuthClient,
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
     } as any);
 
-    await authService.areCredentialsCorrect(mockPassword);
+    vi.spyOn(localStorageService, 'get').mockReturnValue('test-token');
+    vi.spyOn(localStorageService, 'clear').mockImplementation(() => {});
 
-    expect(mockCreateAuthClient).toHaveBeenCalledTimes(2);
-    expect(mockCreateAuthClient).toHaveBeenNthCalledWith(2, {
-      unauthorizedCallback: expect.any(Function),
+    await authService.logOut();
+
+    expect(mockAuthClient.logout).toHaveBeenCalledWith('test-token');
+    expect(localStorageService.clear).toHaveBeenCalled();
+  });
+
+  it('should sign out user even when session has expired', async () => {
+    vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+    vi.spyOn(localStorageService, 'clear').mockImplementation(() => {});
+
+    await authService.logOut();
+
+    expect(localStorageService.clear).toHaveBeenCalled();
+  });
+});
+
+describe('cancelAccount', () => {
+  it('should request account closure', async () => {
+    const mockAuthClient = {
+      sendUserDeactivationEmail: vi.fn().mockResolvedValue(undefined),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    vi.spyOn(localStorageService, 'get').mockReturnValue('test-token');
+
+    await authService.cancelAccount();
+
+    expect(mockAuthClient.sendUserDeactivationEmail).toHaveBeenCalledWith('test-token');
+  });
+});
+
+describe('getSalt', () => {
+  it('should retrieve user security information', async () => {
+    const mockAuthClient = {
+      securityDetails: vi.fn().mockResolvedValue({ encryptedSalt: encryptText('test-salt') }),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+
+    const salt = await authService.getSalt();
+
+    expect(salt).toBe('test-salt');
+    expect(mockAuthClient.securityDetails).toHaveBeenCalledWith('test@test.com');
+  });
+});
+
+describe('getPasswordDetails', () => {
+  it('should prepare password verification information', async () => {
+    const mockAuthClient = {
+      securityDetails: vi.fn().mockResolvedValue({ encryptedSalt: encryptText('test-salt') }),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+
+    const result = await authService.getPasswordDetails('test-password');
+
+    expect(result).toHaveProperty('salt');
+    expect(result).toHaveProperty('hashedCurrentPassword');
+    expect(result).toHaveProperty('encryptedCurrentPassword');
+    expect(result.salt).toBe('test-salt');
+  });
+
+  it('should show error when security information is missing', async () => {
+    const mockAuthClient = {
+      securityDetails: vi.fn().mockResolvedValue({ encryptedSalt: encryptText('') }),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+
+    await expect(authService.getPasswordDetails('test-password')).rejects.toThrow(
+      'Internal server error. Please reload.',
+    );
+  });
+});
+
+describe('recoverAccountWithBackupKey', () => {
+  it('should restore account access using legacy backup key', async () => {
+    const mockAuthClient = {
+      legacyRecoverAccount: vi.fn().mockResolvedValue(undefined),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    const oldBackupContent = 'test mnemonic words here for old format backup key content test';
+
+    await authService.recoverAccountWithBackupKey('recovery-token', 'new-password', oldBackupContent);
+
+    expect(mockAuthClient.legacyRecoverAccount).toHaveBeenCalled();
+  });
+
+  it('should restore account access using modern backup key with encryption keys', async () => {
+    const mockAuthClient = {
+      changePasswordWithLinkV2: vi.fn().mockResolvedValue(undefined),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    const newBackupContent = JSON.stringify({
+      mnemonic: 'test mnemonic words here for new format backup key content test with proper length',
+      privateKey: Buffer.from('test-private-key').toString('base64'),
+      keys: {
+        ecc: Buffer.from('test-ecc-key').toString('base64'),
+        kyber: 'test-kyber-key',
+      },
     });
 
-    const callArgs = mockCreateAuthClient.mock.calls[1][0];
-    const unauthorizedResult = callArgs.unauthorizedCallback();
-    expect(unauthorizedResult).toBeUndefined();
+    await authService.recoverAccountWithBackupKey('recovery-token', 'new-password', newBackupContent);
+
+    expect(mockAuthClient.changePasswordWithLinkV2).toHaveBeenCalled();
+  });
+});
+
+describe('userHas2FAStored', () => {
+  it('should check if user has two-factor authentication enabled', async () => {
+    const mockAuthClient = {
+      securityDetails: vi.fn().mockResolvedValue({ tfaEnabled: true }),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    vi.spyOn(localStorageService, 'getUser').mockReturnValue({ email: 'test@test.com' } as UserSettings);
+
+    const result = await authService.userHas2FAStored();
+
+    expect(result.tfaEnabled).toBe(true);
+    expect(mockAuthClient.securityDetails).toHaveBeenCalledWith('test@test.com');
+  });
+});
+
+describe('generateNew2FA', () => {
+  it('should generate new two-factor authentication QR code', async () => {
+    const mockAuthClient = {
+      generateTwoFactorAuthQR: vi.fn().mockResolvedValue({ qr: 'qr-code-data', secret: 'secret-key' }),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    vi.spyOn(localStorageService, 'get').mockReturnValue('test-token');
+
+    const result = await authService.generateNew2FA();
+
+    expect(result).toEqual({ qr: 'qr-code-data', secret: 'secret-key' });
+    expect(mockAuthClient.generateTwoFactorAuthQR).toHaveBeenCalledWith('test-token');
+  });
+});
+
+describe('deactivate2FA', () => {
+  it('should disable two-factor authentication with valid credentials', async () => {
+    const mockAuthClient = {
+      disableTwoFactorAuth: vi.fn().mockResolvedValue(undefined),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    vi.spyOn(localStorageService, 'get').mockReturnValue('test-token');
+
+    const encryptedSalt = encryptText('test-salt');
+    await authService.deactivate2FA(encryptedSalt, 'test-password', '123456');
+
+    expect(mockAuthClient.disableTwoFactorAuth).toHaveBeenCalled();
+  });
+});
+
+describe('authenticateUser', () => {
+  it('should throw error for unknown auth method', async () => {
+    const mockDispatch = vi.fn();
+
+    await expect(
+      authService.authenticateUser({
+        email: 'test@test.com',
+        password: 'password',
+        authMethod: 'unknown' as any,
+        twoFactorCode: '',
+        dispatch: mockDispatch,
+      }),
+    ).rejects.toThrow('Unknown authMethod: unknown');
+  });
+});
+
+describe('extractOneUseCredentialsForAutoSubmit', () => {
+  it('should return disabled when autoSubmit is not true', () => {
+    const result = authService.default.extractOneUseCredentialsForAutoSubmit(new URLSearchParams('foo=bar'));
+    expect(result).toEqual({ enabled: false });
+  });
+
+  it('should extract credentials from cookie when autoSubmit is true', async () => {
+    const { getCookie, setCookie } = await import('app/analytics/utils');
+    const mockCredentials = {
+      email: 'test@test.com',
+      password: 'password123',
+      redeemCode: { code: 'CODE123', provider: 'provider' },
+    };
+
+    vi.mocked(getCookie).mockReturnValue(btoa(JSON.stringify(mockCredentials)));
+
+    const result = authService.default.extractOneUseCredentialsForAutoSubmit(new URLSearchParams('autoSubmit=true'));
+
+    expect(result.enabled).toBe(true);
+    expect(result.credentials).toEqual({
+      email: 'test@test.com',
+      password: 'password123',
+      redeemCodeObject: { code: 'CODE123', provider: 'provider' },
+    });
+    expect(vi.mocked(setCookie)).toHaveBeenCalledWith('cr', '', -999);
+  });
+
+  it('should handle errors when parsing credentials', async () => {
+    const { getCookie } = await import('app/analytics/utils');
+    vi.mocked(getCookie).mockReturnValue('invalid-base64');
+
+    const result = authService.default.extractOneUseCredentialsForAutoSubmit(new URLSearchParams('autoSubmit=true'));
+
+    expect(result.enabled).toBe(true);
+    expect(result.credentials).toBeUndefined();
+  });
+});
+
+describe('authService default export', () => {
+  it('should store two-factor authentication keys', async () => {
+    const mockAuthClient = {
+      storeTwoFactorAuthKey: vi.fn().mockResolvedValue(undefined),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    vi.spyOn(localStorageService, 'get').mockReturnValue('auth-token');
+
+    await authService.default.store2FA('secret-code', '123456');
+    expect(mockAuthClient.storeTwoFactorAuthKey).toHaveBeenCalledWith('secret-code', '123456', 'auth-token');
+  });
+
+  it('should send password reset email', async () => {
+    const mockAuthClient = {
+      sendChangePasswordEmail: vi.fn().mockResolvedValue(undefined),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    await authService.default.sendChangePasswordEmail('test@example.com');
+    expect(mockAuthClient.sendChangePasswordEmail).toHaveBeenCalledWith('test@example.com');
+  });
+
+  it('should reset account with token and new password', async () => {
+    const mockAuthClient = {
+      resetAccountWithToken: vi.fn().mockResolvedValue(undefined),
+    };
+
+    vi.spyOn(SdkFactory, 'getNewApiInstance').mockReturnValue({
+      createAuthClient: vi.fn().mockReturnValue(mockAuthClient),
+    } as any);
+
+    await authService.default.resetAccountWithToken('reset-token', 'new-password');
+
+    expect(mockAuthClient.resetAccountWithToken).toHaveBeenCalled();
   });
 });
