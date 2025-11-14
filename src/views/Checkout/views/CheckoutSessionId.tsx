@@ -1,7 +1,7 @@
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
-import paymentService from '../../services/payment.service';
+import paymentService from '../services/payment.service';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
