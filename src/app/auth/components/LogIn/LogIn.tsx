@@ -11,7 +11,7 @@ import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions } from 'app/store/slices/user';
-import authService, { authenticateUser, is2FANeeded } from '../../services/auth.service';
+import authService, { authenticateUser, is2FAorOpaqueNeeded } from '../../services/auth.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WarningCircle } from '@phosphor-icons/react';
@@ -168,7 +168,7 @@ export default function LogIn(): JSX.Element {
     const { email, password } = formData;
 
     try {
-      const isTfaEnabled = await is2FANeeded(email);
+      const { tfaEnabled: isTfaEnabled, useOpaqueLogin } = await is2FAorOpaqueNeeded(email);
 
       if (!isTfaEnabled || showTwoFactor) {
         const loginType: 'desktop' | 'web' = isUniversalLinkMode ? 'desktop' : 'web';
@@ -179,6 +179,7 @@ export default function LogIn(): JSX.Element {
           twoFactorCode,
           dispatch,
           loginType,
+          useOpaqueLogin,
         };
 
         const { token, user, mnemonic } = await authenticateUser(authParams);
