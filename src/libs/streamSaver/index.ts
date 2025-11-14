@@ -116,7 +116,7 @@ export class StreamSaver {
     let bytesWritten = 0;
     let downloadUrl: string | null = null;
 
-    // Make filename RFC5987 compatible (align with original for better compatibility)
+    // Make filename RFC5987 compatible
     const encodedFilename = encodeURIComponent(filename.replace(/\//g, ':'))
       .replace(/['()]/g, escape)
       .replace(/\*/g, '%2A');
