@@ -93,8 +93,11 @@ export class StreamSaver {
         console.log('[StreamSaver] Stream aborted');
         channel.port1.postMessage('abort');
         channel.port1.onmessage = null;
-        channel.port1.close();
-        channel.port2.close();
+        // Delay closing ports to ensure 'abort' message delivers
+        setTimeout(() => {
+          channel.port1.close();
+          channel.port2.close();
+        }, 200);
       },
     });
   }
@@ -114,7 +117,9 @@ export class StreamSaver {
     let downloadUrl: string | null = null;
 
     // Make filename RFC5987 compatible
-    const encodedFilename = encodeURIComponent(filename.replaceAll('/', ':'));
+    const encodedFilename = encodeURIComponent(filename.replace(/\//g, ':'))
+      .replace(/['()]/g, escape)
+      .replace(/\*/g, '%2A');
 
     const response: ServiceWorkerMessage = {
       transferringReadable: this.supportsTransferable,
