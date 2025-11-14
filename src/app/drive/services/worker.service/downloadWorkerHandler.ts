@@ -16,7 +16,10 @@ interface HandleWorkerMessagesPayload {
 interface HandleMessagesPayload {
   messageData: MessageData;
   worker: Worker;
-  completeFilename: string;
+  item: {
+    completeFilename: string;
+    size: number;
+  };
   downloadCallback: (progress: number) => void;
   resolve: (value?: unknown) => void;
   reject: (reason?: any) => void;
@@ -38,6 +41,7 @@ export class DownloadWorkerHandler {
     const fileName = itemData.plainName ?? itemData.name;
     const completeFilename = itemData.type ? `${fileName}.${itemData.type}` : fileName;
     const downloadId = itemData.fileId;
+    const fileSize = itemData.size;
 
     return new Promise((resolve, reject) => {
       let aborted = false;
@@ -77,7 +81,10 @@ export class DownloadWorkerHandler {
         await this.handleMessages({
           messageData: msg.data,
           worker,
-          completeFilename,
+          item: {
+            size: fileSize,
+            completeFilename,
+          },
           downloadCallback: updateProgressCallback,
           downloadId,
           resolve,
@@ -111,7 +118,7 @@ export class DownloadWorkerHandler {
   public async handleMessages({
     messageData,
     worker,
-    completeFilename,
+    item,
     downloadId,
     resolve,
     reject,
@@ -122,13 +129,16 @@ export class DownloadWorkerHandler {
     removeAbortListener: () => void;
   }) {
     const { result } = messageData;
+    const { completeFilename, size: fileSize } = item;
 
     switch (result) {
       case 'chunk': {
         let writer = this.writers.get(downloadId);
 
         if (!writer) {
-          const fileStream = streamSaver.createWriteStream(completeFilename);
+          const fileStream = streamSaver.createWriteStream(completeFilename, {
+            size: fileSize,
+          });
           writer = fileStream.getWriter();
           this.writers.set(downloadId, writer);
         }
