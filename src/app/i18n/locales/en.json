@@ -4,7 +4,10 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": { "blueText": "Get 90% off", "text": "in all  Plans" },
+    "label": {
+      "blueText": "Get 90% off",
+      "text": "in all  Plans"
+    },
     "title": "Claim your special Black Friday offer!",
     "subTitle": "The **biggest discount** for **maximum privacy**",
     "ctaGet": "Accept invite",
@@ -208,11 +211,14 @@
       "successDescription": "Your account and password have been reset",
       "error": "Something went wrong while restarting the account"
     },
-    "universalLinkSuccess": {
-      "loginAs": "Log in as",
+    "universalLink": {
+      "loginAs": "Login as",
       "openApp": "Open app",
       "anotherAccount": "Use another account?",
-      "login": "Log in"
+      "login": "Login",
+      "success": "You have successfully logged in",
+      "error": "Login failed, please try again",
+      "closeWindow": "You can close this window"
     }
   },
   "checkout": {
@@ -1865,7 +1871,12 @@
             "DeleteFile": "Deleted file",
             "DeleteFolder": "Deleted folder"
           },
-          "platform": { "title": "Platform", "Web": "Web", "Mobile": "Mobile", "Desktop": "Desktop" },
+          "platform": {
+            "title": "Platform",
+            "Web": "Web",
+            "Mobile": "Mobile",
+            "Desktop": "Desktop"
+          },
           "dateRange": {
             "title": "Date range",
             "days": "Last {{days}} days"

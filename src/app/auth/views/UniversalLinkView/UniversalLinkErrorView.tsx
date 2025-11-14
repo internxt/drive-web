@@ -16,12 +16,10 @@ export default function UniversalLinkErrorView(): JSX.Element {
             <InternxtLogo className="h-auto w-52 text-gray-100" />
           </div>
           <WarningIcon className="mx-auto mt-6 mb-6 h-24 w-24" />
-          <h2 className="text-center text-xl font-medium text-gray-100">
-            {'No se ha podido iniciar sesion, inténtelo de nuevo'}
-          </h2>
+          <h2 className="text-center text-xl font-medium text-gray-100">{translate('auth.universalLink.error')}</h2>
           <div className="separator my-6"></div>
           <div className="flex flex-row justify-center">
-            <h4 className="text-base font-medium text-center">{'Puedes cerrar esta ventana'}</h4>
+            <h4 className="text-base font-medium text-center">{translate('auth.universalLink.closeWindow')}</h4>
           </div>
         </div>
       </div>

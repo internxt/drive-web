@@ -57,9 +57,7 @@ export default function UniversalLinkView(): JSX.Element {
           <div className="mb-6 flex justify-center">
             <InternxtLogo className="h-auto w-52 text-gray-100" />
           </div>
-          <h2 className="text-center text-xl font-medium text-gray-100">
-            {translate('auth.universalLinkSuccess.loginAs')}
-          </h2>
+          <h2 className="text-center text-xl font-medium text-gray-100">{translate('auth.universalLink.loginAs')}</h2>
           <h3
             title={user.email}
             className="over mb-6 overflow-x-hidden text-ellipsis text-center text-xl font-medium text-gray-60"
@@ -67,14 +65,12 @@ export default function UniversalLinkView(): JSX.Element {
             {user.email}
           </h3>
           {/* Universal links needs to be clicked in order to work, JS window.open does not work */}
-          <a href={getUniversalLinkAuthUrl(user)}>
-            <Button className="w-full">{translate('auth.universalLinkSuccess.openApp')}</Button>
-          </a>
+          <Button className="w-full">{translate('auth.universalLink.openApp')}</Button>
           <div className="separator my-6"></div>
           <div className="flex flex-row justify-center">
-            <h4 className="text-base font-medium">{translate('auth.universalLinkSuccess.anotherAccount')}</h4>
+            <h4 className="text-base font-medium">{translate('auth.universalLink.anotherAccount')}</h4>
             <button onClick={handleGoToLogin} className="ml-2.5 text-base font-medium no-underline">
-              {translate('auth.universalLinkSuccess.login')}
+              {translate('auth.universalLink.login')}
             </button>
           </div>
         </div>
