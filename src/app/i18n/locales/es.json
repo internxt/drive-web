@@ -1912,7 +1912,7 @@
           "3TB": {
             "title": "Premium",
             "features": [
-              "5TB de almacenamiento cifrado",
+              "3TB de almacenamiento cifrado",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
@@ -1928,7 +1928,7 @@
           "5TB": {
             "title": "Ultimate",
             "features": [
-              "3TB de almacenamiento cifrado",
+              "5TB de almacenamiento cifrado",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",
