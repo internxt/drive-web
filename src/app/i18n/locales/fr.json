@@ -86,7 +86,8 @@
       "createAccount": "Créer un compte",
       "2FA": "Code à deux facteurs",
       "twoFactorAuthenticationCode": "Code d'authentification à deux facteurs",
-      "wrongLogin": "Nom d'utilisateur ou mot de passe invalide"
+      "wrongLogin": "Nom d'utilisateur ou mot de passe invalide",
+      "failedToSendAuthData": "Échec de l'envoi des données d'authentification. Veuillez réessayer."
     },
     "signup": {
       "title": "Créer un compte",

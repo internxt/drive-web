@@ -1,10 +1,10 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import workspacesService from 'app/core/services/workspace.service';
+import { AppDispatch } from 'app/store';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { wait } from 'app/utils/timeUtils';
 import { t } from 'i18next';
 import { AppView } from '../../../core/types';
-import workspacesService from 'app/core/services/workspace.service';
-import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import { AppDispatch } from 'app/store';
-import { wait } from 'app/utils/timeUtils';
 
 const useLoginRedirections = ({
   navigateTo,
@@ -30,6 +30,7 @@ const useLoginRedirections = ({
 
   const isSharingInvitation = !!sharingId;
   const isUniversalLinkMode = urlParams.get('universalLink') === 'true';
+  const isAuthOrigin = urlParams.get('authOrigin');
 
   const handleShareInvitation = () => {
     if (isSharingInvitation && sharingId && token) {
@@ -121,6 +122,7 @@ const useLoginRedirections = ({
     isUniversalLinkMode,
     isSharingInvitation,
     handleWorkspaceInvitation,
+    isAuthOrigin,
   };
 };
 

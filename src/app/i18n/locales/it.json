@@ -107,7 +107,8 @@
       "createAccount": "Creare un account",
       "2FA": "Codice a due fattori",
       "twoFactorAuthenticationCode": "Codice di autenticazione a due fattori",
-      "wrongLogin": "Nome utente o password non validi"
+      "wrongLogin": "Nome utente o password non validi",
+      "failedToSendAuthData": "Impossibile inviare i dati di autenticazione. Riprova."
     },
     "signup": {
       "title": "Creare un account",
