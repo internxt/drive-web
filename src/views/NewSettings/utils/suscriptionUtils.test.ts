@@ -20,6 +20,11 @@ vi.mock('views/Checkout/services', () => ({
       return currency;
     },
   },
+  paymentService: {},
+  authCheckoutService: {},
+  checkoutService: {},
+  fetchProducts: vi.fn(),
+  ProductService: {},
 }));
 
 const mockIndividualPlan: StoragePlan = {
