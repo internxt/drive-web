@@ -1,4 +1,4 @@
-import { DriveItemData, DriveItemDetails } from './../drive/types/index';
+import { DriveItemData, DriveItemDetails } from 'app/drive/types';
 import { getItemPlainName } from 'app/crypto/services/utils';
 
 export function getSharedLocation(item: DriveItemDetails, ancestorPathNames: string[]): string {

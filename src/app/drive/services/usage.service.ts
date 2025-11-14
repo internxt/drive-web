@@ -1,6 +1,6 @@
 import { UsageResponseV2 } from '@internxt/sdk/dist/drive/storage/types';
-import { SdkFactory } from '../../core/factory/sdk';
-import errorService from '../../core/services/error.service';
+import { SdkFactory } from 'app/core/factory/sdk';
+import errorService from 'app/core/services/error.service';
 
 export interface UsageDetailsProps {
   drive: number;

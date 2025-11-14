@@ -18,7 +18,7 @@ import RealtimeService from '../../../core/services/socket.service';
 import { STORAGE_KEYS } from '../../../core/services/storage-keys';
 import AppError, { AppView, IFormValues } from '../../../core/types';
 import databaseService from '../../../database/services/database.service';
-import { getDatabaseProfileAvatar } from '../../../drive/services/database.service';
+import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import ChangePlanDialog from '../../../../views/NewSettings/components/Sections/Account/Plans/components/ChangePlanDialog';
 import longNotificationsService from '../../../notifications/services/longNotification.service';

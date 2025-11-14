@@ -10,8 +10,8 @@ import {
 } from '@phosphor-icons/react';
 import MoveActionIcon from 'assets/icons/move.svg?react';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import { moveItemsToTrash } from '../../../../../views/Trash/services';
-import { DriveItemData, DriveItemDetails, FolderPath } from '../../../../drive/types';
+import { moveItemsToTrash } from 'views/Trash/services';
+import { DriveItemData, DriveItemDetails, FolderPath } from 'app/drive/types';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { uiActions } from '../../../../store/slices/ui';
 import { getAppConfig } from '../../../../core/services/config.service';

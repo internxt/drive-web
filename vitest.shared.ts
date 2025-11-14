@@ -11,6 +11,7 @@ export default {
       assets: path.resolve(__dirname, './src/assets'),
       use_cases: path.resolve(__dirname, 'src/use_cases'),
       hooks: path.resolve(__dirname, 'src/hooks'),
+      views: path.resolve(__dirname, './src/views'),
       crypto: 'crypto-browserify',
       stream: 'stream-browserify',
       path: 'path-browserify',

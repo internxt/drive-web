@@ -3,7 +3,7 @@ import envService from 'app/core/services/env.service';
 import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js';
 import { blake3, createHMAC, createSHA256, createSHA512, ripemd160, sha256, sha512 } from 'hash-wasm';
-import { DriveItemData } from '../../drive/types';
+import { DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem } from '../../share/types';
 
 /**

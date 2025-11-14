@@ -1,6 +1,6 @@
 import { items } from '@internxt/lib';
 
-import { OrderDirection } from '../../core/types';
+import { OrderDirection } from 'app/core/types';
 import { DriveItemData } from '../types';
 
 const itemsListService = {

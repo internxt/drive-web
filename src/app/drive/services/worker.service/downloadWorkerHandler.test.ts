@@ -1,4 +1,4 @@
-vi.mock('../download.service/downloadFileFromBlob', () => ({
+vi.mock('app/drive/services/download.service/downloadFileFromBlob', () => ({
   default: vi.fn(),
 }));
 
@@ -7,7 +7,7 @@ import { describe, test, expect, vi, Mock, beforeEach } from 'vitest';
 import { downloadWorkerHandler } from './downloadWorkerHandler';
 import { DriveFileData } from 'app/drive/types';
 import { MockWorker } from '../../../../__mocks__/WebWorker';
-import downloadFileFromBlob from '../download.service/downloadFileFromBlob';
+import downloadFileFromBlob from 'app/drive/services/download.service/downloadFileFromBlob';
 import { DownloadAbortedByUserError } from 'app/network/errors/download.errors';
 
 const writeMock = vi.fn();
