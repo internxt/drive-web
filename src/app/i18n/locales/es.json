@@ -4,7 +4,10 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": { "blueText": "90% de descuento", "text": "en todos los planes" },
+    "label": {
+      "blueText": "90% de descuento",
+      "text": "en todos los planes"
+    },
     "title": "¡Consigue tu oferta especial de Black Friday!",
     "subTitle": "El **mayor descuento** para la **máxima privacidad**",
     "ctaGet": "Aceptar invitación",
@@ -187,11 +190,14 @@
       "successDescription": "Tu cuenta y contraseña han sido reiniciadas",
       "error": "Algo ha ido mal al reiniciar la cuenta"
     },
-    "universalLinkSuccess": {
+    "universalLink": {
       "loginAs": "Iniciar sesión como",
       "openApp": "Abrir app",
       "anotherAccount": "Usar otra cuenta?",
-      "login": "Iniciar sesión"
+      "login": "Iniciar sesión",
+      "success": "Has iniciado sesión correctamente",
+      "error": "No se ha podido iniciar sesion, inténtelo de nuevo",
+      "closeWindow": "Puedes cerrar esta ventana"
     }
   },
   "checkout": {
@@ -242,7 +248,6 @@
         "lifetime": "pago único"
       },
       "pcMobileRenews": "* Se renueva a 50€ el primer año después del período de prueba",
-
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 plan {{interval}}",
         "year": "{{spaceToUpgrade}} - 1 plan {{interval}}",
@@ -289,7 +294,6 @@
       "fetchingCryptoCurrencies": "No pudimos cargar las opciones de criptomonedas disponibles"
     }
   },
-
   "general": {
     "new": "nuevo",
     "of": "de",
@@ -1843,10 +1847,23 @@
             "DeleteFile": "Archivo eliminado",
             "DeleteFolder": "Carpeta eliminada"
           },
-          "platform": { "title": "Plataforma", "Web": "Web", "Mobile": "Móvil", "Desktop": "Escritorio" },
-          "dateRange": { "title": "Rango de fechas", "days": "Últimos {{days}} días" }
+          "platform": {
+            "title": "Plataforma",
+            "Web": "Web",
+            "Mobile": "Móvil",
+            "Desktop": "Escritorio"
+          },
+          "dateRange": {
+            "title": "Rango de fechas",
+            "days": "Últimos {{days}} días"
+          }
         },
-        "headerTable": { "date": "Fecha", "member": "Miembro", "activity": "Actividad", "access": "Acceso" },
+        "headerTable": {
+          "date": "Fecha",
+          "member": "Miembro",
+          "activity": "Actividad",
+          "access": "Acceso"
+        },
         "noResults": "No hay resultados para mostrar"
       }
     },

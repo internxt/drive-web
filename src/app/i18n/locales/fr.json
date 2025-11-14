@@ -4,7 +4,10 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": { "blueText": "90% de réduction", "text": "sur tous les forfaits" },
+    "label": {
+      "blueText": "90% de réduction",
+      "text": "sur tous les forfaits"
+    },
     "title": "Profitez de votre offre spéciale Black Friday !",
     "subTitle": "La **plus grande réduction** pour une **confidentialité maximale**",
     "ctaGet": "Accepter l'invitation",
@@ -160,11 +163,14 @@
       "successDescription": "Votre compte et votre mot de passe ont été réinitialisés",
       "error": "Quelque chose s'est mal passé lors du redémarrage du compte"
     },
-    "universalLinkSuccess": {
+    "universalLink": {
       "loginAs": "Se connecter comme",
       "openApp": "Ouvrir l'application",
       "anotherAccount": "Utiliser un autre compte ?",
-      "login": "Connexion"
+      "login": "Connexion",
+      "success": "Vous vous êtes connecté avec succès",
+      "error": "Échec de la connexion, veuillez réessayer",
+      "closeWindow": "Vous pouvez fermer cette fenêtre"
     }
   },
   "checkout": {
@@ -1787,10 +1793,23 @@
             "DeleteFile": "Fichier supprimé",
             "DeleteFolder": "Dossier supprimé"
           },
-          "platform": { "title": "Plateforme", "Web": "Web", "Mobile": "Mobile", "Desktop": "Bureau" },
-          "dateRange": { "title": "Plage de dates", "days": "7 derniers jours" }
+          "platform": {
+            "title": "Plateforme",
+            "Web": "Web",
+            "Mobile": "Mobile",
+            "Desktop": "Bureau"
+          },
+          "dateRange": {
+            "title": "Plage de dates",
+            "days": "7 derniers jours"
+          }
         },
-        "headerTable": { "date": "Date", "member": "Membre", "activity": "Activité", "access": "Accès" },
+        "headerTable": {
+          "date": "Date",
+          "member": "Membre",
+          "activity": "Activité",
+          "access": "Accès"
+        },
         "noResults": "Il n'y a aucun résultat à afficher"
       }
     },
