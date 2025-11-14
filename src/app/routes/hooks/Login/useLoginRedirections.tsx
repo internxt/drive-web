@@ -105,10 +105,11 @@ const useLoginRedirections = ({
 
     // This is a redirect for the universal link mode.
     if (mnemonic && options?.universalLinkMode) {
-      const params: Record<string, unknown> = {};
+      const params: Record<string, unknown> = {
+        universalLink: true,
+      };
       if (redirectUri) {
         params['redirectUri'] = redirectUri;
-        params['universalLink'] = true;
       }
       return navigateTo(AppView.UniversalLinkSuccess, params);
     }
