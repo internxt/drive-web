@@ -1,8 +1,8 @@
 import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import dateService from 'app/core/services/date.service';
 import { t } from 'i18next';
-import moneyService from 'app/payment/services/currency.service';
-import { RenewalPeriod } from 'app/payment/types';
+import moneyService from 'views/Checkout/services/currency.service';
+import { RenewalPeriod } from 'views/Checkout/types';
 import { PlanState } from 'app/store/slices/plan';
 
 const formatPlanPaymentInterval = (storagePlan: StoragePlan | null) => {

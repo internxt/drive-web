@@ -3,7 +3,7 @@ import { ArrowRight } from '@phosphor-icons/react';
 import { useSelector } from 'react-redux';
 import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import moneyService from 'app/payment/services/currency.service';
+import { currencyService as moneyService } from 'views/Checkout/services';
 import { Button, Modal } from '@internxt/ui';
 import { RootState } from 'app/store';
 import { PlanState } from 'app/store/slices/plan';

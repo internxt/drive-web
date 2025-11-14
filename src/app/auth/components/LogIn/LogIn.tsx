@@ -26,7 +26,7 @@ import useLoginRedirections from '../../../routes/hooks/Login/useLoginRedirectio
 import shareService from '../../../share/services/share.service';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import TextInput from '../TextInput/TextInput';
-import { AuthMethodTypes } from 'app/payment/types';
+import { AuthMethodTypes } from 'views/Checkout/types';
 import vpnAuthService from 'app/auth/services/vpnAuth.service';
 import envService from 'app/core/services/env.service';
 

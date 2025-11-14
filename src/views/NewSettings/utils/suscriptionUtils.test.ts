@@ -12,14 +12,19 @@ vi.mock('i18next', () => ({
   },
 }));
 
-vi.mock('../../payment/services/currency.service', () => ({
-  default: {
+vi.mock('views/Checkout/services', () => ({
+  currencyService: {
     getCurrencySymbol: (currency: string) => {
       if (currency === 'USD') return '$';
       if (currency === 'EUR') return '€';
       return currency;
     },
   },
+  paymentService: {},
+  authCheckoutService: {},
+  checkoutService: {},
+  fetchProducts: vi.fn(),
+  ProductService: {},
 }));
 
 const mockIndividualPlan: StoragePlan = {

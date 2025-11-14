@@ -4,7 +4,7 @@ import { useState } from 'react';
 import dateService from 'app/core/services/date.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import currencyService from 'app/payment/services/currency.service';
+import { currencyService } from 'views/Checkout/services';
 import { Loader } from '@internxt/ui';
 
 const InvoicesList = ({ invoices, state }: { invoices: Invoice[]; state: 'loading' | 'empty' | 'ready' }) => {

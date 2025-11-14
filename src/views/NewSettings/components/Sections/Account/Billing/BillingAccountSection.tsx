@@ -2,7 +2,7 @@ import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import paymentService from 'app/payment/services/payment.service';
+import { paymentService } from 'views/Checkout/services';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { PlanState, planThunks } from 'app/store/slices/plan';
