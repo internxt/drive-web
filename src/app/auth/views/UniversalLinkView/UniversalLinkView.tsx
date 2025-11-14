@@ -47,6 +47,10 @@ export default function UniversalLinkView(): JSX.Element {
     authService.logOut();
   };
 
+  const handleGoToUniversalLinkUrl = () => {
+    window.location.href = getUniversalLinkAuthUrl(user);
+  };
+
   return (
     <main className="flex h-full w-full flex-col bg-gray-5 dark:bg-surface">
       <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
@@ -65,7 +69,9 @@ export default function UniversalLinkView(): JSX.Element {
             {user.email}
           </h3>
           {/* Universal links needs to be clicked in order to work, JS window.open does not work */}
-          <Button className="w-full">{translate('auth.universalLink.openApp')}</Button>
+          <Button onClick={handleGoToUniversalLinkUrl} className="w-full">
+            {translate('auth.universalLink.openApp')}
+          </Button>
           <div className="separator my-6"></div>
           <div className="flex flex-row justify-center">
             <h4 className="text-base font-medium">{translate('auth.universalLink.anotherAccount')}</h4>
