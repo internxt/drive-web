@@ -945,7 +945,7 @@ describe('areCredentialsCorrect', () => {
 
 describe('Security and validation', () => {
   describe('getRedirectUrl', () => {
-    it('should only redirect to allowed domains and include auth token when required', () => {
+    it('blocks untrusted domains and adds token when needed', () => {
       expect(authService.getRedirectUrl(new URLSearchParams('redirectUrl=https://evil.com'), 'token')).toBeNull();
 
       expect(authService.getRedirectUrl(new URLSearchParams(), 'token')).toBeNull();
@@ -966,7 +966,7 @@ describe('Security and validation', () => {
   });
 
   describe('is2FANeeded', () => {
-    it('should determine if two-factor authentication is required for login', async () => {
+    it('checks if user has two-factor enabled', async () => {
       const mockAuthClient = {
         securityDetails: vi.fn().mockResolvedValue({ tfaEnabled: true }),
       };
@@ -986,7 +986,7 @@ describe('Security and validation', () => {
   });
 
   describe('readReferalCookie', () => {
-    it('should read referral code from browser cookies', () => {
+    it('reads referral code from cookies', () => {
       const originalCookie = document.cookie;
 
       Object.defineProperty(document, 'cookie', {
