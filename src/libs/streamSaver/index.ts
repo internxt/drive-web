@@ -97,7 +97,7 @@ export class StreamSaver {
         setTimeout(() => {
           channel.port1.close();
           channel.port2.close();
-        }, 200);
+        }, 400);
       },
     });
   }
