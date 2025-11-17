@@ -9,7 +9,10 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": { "blueText": "Скидка 90%", "text": "на все тарифы" },
+    "label": {
+      "blueText": "Скидка 90%",
+      "text": "на все тарифы"
+    },
     "title": "Получите специальное предложение Черной пятницы!",
     "subTitle": "**Максимальная скидка** для **максимальной конфиденциальности**",
     "ctaGet": "Принять приглашение",
@@ -178,11 +181,14 @@
       "successDescription": "L'account e la password sono stati ripristinati",
       "error": "Qualcosa è andato storto durante il riavvio dell'account."
     },
-    "universalLinkSuccess": {
+    "universalLink": {
       "loginAs": "Accedi come",
       "openApp": "Apri l'applicazione",
-      "anotherAccount": "Utilizzare un altro account?",
-      "login": "Accedi"
+      "anotherAccount": "Usare un altro account?",
+      "login": "Accedi",
+      "success": "Accesso effettuato con successo",
+      "error": "Impossibile accedere, riprova",
+      "closeWindow": "Puoi chiudere questa finestra"
     }
   },
   "checkout": {
@@ -245,7 +251,6 @@
       },
       "perUser": "/per utente",
       "saving": "Stai risparmiando {{percent}}%",
-
       "planDetails": {
         "title": "Dettagli del piano:",
         "commingSoon": "Prossimamente",
@@ -1896,10 +1901,23 @@
             "DeleteFile": "File eliminato",
             "DeleteFolder": "Cartella eliminata"
           },
-          "platform": { "title": "Piattaforma", "Web": "Web", "Mobile": "Mobile", "Desktop": "Desktop" },
-          "dateRange": { "title": "Intervallo di date", "days": "Ultimi {{days}} giorni" }
+          "platform": {
+            "title": "Piattaforma",
+            "Web": "Web",
+            "Mobile": "Mobile",
+            "Desktop": "Desktop"
+          },
+          "dateRange": {
+            "title": "Intervallo di date",
+            "days": "Ultimi {{days}} giorni"
+          }
         },
-        "headerTable": { "date": "Data", "member": "Membro", "activity": "Attività", "access": "Accesso" },
+        "headerTable": {
+          "date": "Data",
+          "member": "Membro",
+          "activity": "Attività",
+          "access": "Accesso"
+        },
         "noResults": "Non ci sono risultati da mostrare"
       }
     },
@@ -1981,7 +1999,7 @@
             "5TB": {
                 "title": "Ultimate (Definitivo)",
                 "features": [
-                    "3TB di spazio di archiviazione crittografato",
+                    "5TB di spazio di archiviazione crittografato",
                     "Crittografia Post-Quantistica",
                     "Crittografia Zero-Knowledge",
                     "Autenticazione a Due Fattori",

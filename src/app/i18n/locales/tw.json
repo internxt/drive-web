@@ -4,7 +4,10 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": { "blueText": "90% 折扣", "text": "所有套餐" },
+    "label": {
+      "blueText": "90% 折扣",
+      "text": "所有套餐"
+    },
     "title": "领取您的黑色星期五特别优惠！",
     "subTitle": "**最大折扣**享受**最高隐私保护**",
     "ctaGet": "接受邀请",
@@ -177,11 +180,14 @@
       "successDescription": "您的帳戶和密碼已重置",
       "error": "重新啟動帳戶時出現錯誤"
     },
-    "universalLinkSuccess": {
-      "loginAs": "以...登錄",
-      "openApp": "開放申請",
+    "universalLink": {
+      "loginAs": "以此帳戶登入",
+      "openApp": "開啟應用程式",
       "anotherAccount": "使用其他帳戶？",
-      "login": "登錄"
+      "login": "登入",
+      "success": "您已成功登入",
+      "error": "無法登入，請再試一次",
+      "closeWindow": "您可以關閉此視窗"
     }
   },
   "checkout": {
@@ -1792,10 +1798,23 @@
             "DeleteFile": "已刪除檔案",
             "DeleteFolder": "已刪除資料夾"
           },
-          "platform": { "title": "平台", "Web": "網頁", "Mobile": "行動端", "Desktop": "桌面端" },
-          "dateRange": { "title": "日期範圍", "days": "最近 {{days}} 天" }
+          "platform": {
+            "title": "平台",
+            "Web": "網頁",
+            "Mobile": "行動端",
+            "Desktop": "桌面端"
+          },
+          "dateRange": {
+            "title": "日期範圍",
+            "days": "最近 {{days}} 天"
+          }
         },
-        "headerTable": { "date": "日期", "member": "成員", "activity": "活動", "access": "訪問" },
+        "headerTable": {
+          "date": "日期",
+          "member": "成員",
+          "activity": "活動",
+          "access": "訪問"
+        },
         "noResults": "沒有可顯示的結果"
       }
     },
@@ -1877,7 +1896,7 @@
           "5TB": {
               "title": "Ultimate (旗艦版)",
               "features": [
-                  "3TB 加密儲存空間",
+                  "5TB 加密儲存空間",
                   "後量子密碼學",
                   "零知識加密",
                   "雙重身份驗證",

@@ -25,6 +25,9 @@ const useLoginRedirections = ({
 
   const token = urlParams.get('token');
   const sharingAction = urlParams.get('action');
+
+  const redirectUri = urlParams.get('redirectUri');
+
   const isSharingInvitation = !!sharingId;
   const isUniversalLinkMode = urlParams.get('universalLink') === 'true';
   const isAuthOrigin = urlParams.get('authOrigin');
@@ -101,9 +104,15 @@ const useLoginRedirections = ({
       return navigateTo(AppView.Drive);
     }
 
-    // This is a redirect for universal link for Desktop MacOS
+    // This is a redirect for the universal link mode.
     if (mnemonic && options?.universalLinkMode) {
-      return navigateTo(AppView.UniversalLinkSuccess);
+      const params: Record<string, unknown> = {
+        universalLink: true,
+      };
+      if (redirectUri) {
+        params['redirectUri'] = redirectUri;
+      }
+      return navigateTo(AppView.UniversalLinkSuccess, params);
     }
   };
 

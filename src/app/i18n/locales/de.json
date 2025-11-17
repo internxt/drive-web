@@ -4,7 +4,10 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": { "blueText": "90% de descuento", "text": "en todos los planes" },
+    "label": {
+      "blueText": "90% de descuento",
+      "text": "en todos los planes"
+    },
     "title": "¡Consigue tu oferta especial de Black Friday!",
     "subTitle": "El **mayor descuento** para la **máxima privacidad**",
     "ctaGet": "Aceptar invitación",
@@ -160,6 +163,15 @@
       "button": "Bestätigung zum Neustart des Kontos senden",
       "successDescription": "Ihr Konto und Passwort wurden zurückgesetzt",
       "error": "Beim Neustart des Kontos ist etwas schief gelaufen"
+    },
+    "universalLink": {
+      "loginAs": "Anmelden als",
+      "openApp": "App öffnen",
+      "anotherAccount": "Anderes Konto verwenden?",
+      "login": "Anmelden",
+      "success": "Du hast dich erfolgreich angemeldet",
+      "error": "Anmeldung fehlgeschlagen, bitte versuche es erneut",
+      "closeWindow": "Du kannst dieses Fenster schließen"
     }
   },
   "checkout": {
@@ -1776,10 +1788,23 @@
             "DeleteFile": "Datei löschen",
             "DeleteFolder": "Ordner löschen"
           },
-          "platform": { "title": "Plattform", "Web": "Web", "Mobile": "Mobil", "Desktop": "Desktop" },
-          "dateRange": { "title": "Datumsbereich", "days": "Letzte {{days}} Tage" }
+          "platform": {
+            "title": "Plattform",
+            "Web": "Web",
+            "Mobile": "Mobil",
+            "Desktop": "Desktop"
+          },
+          "dateRange": {
+            "title": "Datumsbereich",
+            "days": "Letzte {{days}} Tage"
+          }
         },
-        "headerTable": { "date": "Datum", "member": "Mitglied", "activity": "Aktivität", "access": "Zugang" },
+        "headerTable": {
+          "date": "Datum",
+          "member": "Mitglied",
+          "activity": "Aktivität",
+          "access": "Zugang"
+        },
         "noResults": "Es gibt keine Ergebnisse anzuzeigen"
       }
     },
@@ -1861,7 +1886,7 @@
             "5TB": {
                 "title": "Ultimate (Ultimativ)",
                 "features": [
-                    "3TB verschlüsselter Speicher",
+                    "5TB verschlüsselter Speicher",
                     "Post-Quanten-Verschlüsselung",
                     "Zero-Knowledge-Verschlüsselung",
                     "Zwei-Faktor-Authentifizierung",

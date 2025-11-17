@@ -10,20 +10,32 @@ import { useEffect, useMemo } from 'react';
 
 const DEEPLINK_SUCCESS_REDIRECT_BASE = 'internxt://login-success';
 
-export default function UniversalLinkSuccessView(): JSX.Element {
+export default function UniversalLinkView(): JSX.Element {
   const { translate } = useTranslationContext();
   const user = useMemo(() => localStorageService.getUser(), []);
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectUri = urlParams.get('redirectUri');
+
   useEffect(() => {
     if (!user) {
-      navigationService.history.replace(AppView.Login);
+      const params = urlParams.toString();
+      navigationService.history.replace(`${AppView.Login}${params ? '?' + params : ''}`);
     }
-  });
+  }, [user]);
+
   const getUniversalLinkAuthUrl = (user: UserSettings) => {
     const token = localStorageService.get('xToken');
     const newToken = localStorageService.get('xNewToken');
     if (!token) return AppView.Login;
     if (!newToken) return AppView.Login;
-    return `${DEEPLINK_SUCCESS_REDIRECT_BASE}?mnemonic=${btoa(user.mnemonic)}&token=${btoa(token)}&newToken=${btoa(
+
+    let baseURL = DEEPLINK_SUCCESS_REDIRECT_BASE;
+    if (redirectUri) {
+      baseURL = Buffer.from(redirectUri, 'base64').toString();
+    }
+
+    return `${baseURL}?mnemonic=${btoa(user.mnemonic)}&token=${btoa(token)}&newToken=${btoa(
       newToken,
     )}&privateKey=${btoa(user.privateKey)}`;
   };
@@ -33,6 +45,10 @@ export default function UniversalLinkSuccessView(): JSX.Element {
 
   const handleGoToLogin = () => {
     authService.logOut();
+  };
+
+  const handleGoToUniversalLinkUrl = () => {
+    window.location.href = getUniversalLinkAuthUrl(user);
   };
 
   return (
@@ -45,9 +61,7 @@ export default function UniversalLinkSuccessView(): JSX.Element {
           <div className="mb-6 flex justify-center">
             <InternxtLogo className="h-auto w-52 text-gray-100" />
           </div>
-          <h2 className="text-center text-xl font-medium text-gray-100">
-            {translate('auth.universalLinkSuccess.loginAs')}
-          </h2>
+          <h2 className="text-center text-xl font-medium text-gray-100">{translate('auth.universalLink.loginAs')}</h2>
           <h3
             title={user.email}
             className="over mb-6 overflow-x-hidden text-ellipsis text-center text-xl font-medium text-gray-60"
@@ -55,14 +69,14 @@ export default function UniversalLinkSuccessView(): JSX.Element {
             {user.email}
           </h3>
           {/* Universal links needs to be clicked in order to work, JS window.open does not work */}
-          <a href={getUniversalLinkAuthUrl(user)}>
-            <Button className="w-full">{translate('auth.universalLinkSuccess.openApp')}</Button>
-          </a>
+          <Button onClick={handleGoToUniversalLinkUrl} className="w-full">
+            {translate('auth.universalLink.openApp')}
+          </Button>
           <div className="separator my-6"></div>
           <div className="flex flex-row justify-center">
-            <h4 className="text-base font-medium">{translate('auth.universalLinkSuccess.anotherAccount')}</h4>
+            <h4 className="text-base font-medium">{translate('auth.universalLink.anotherAccount')}</h4>
             <button onClick={handleGoToLogin} className="ml-2.5 text-base font-medium no-underline">
-              {translate('auth.universalLinkSuccess.login')}
+              {translate('auth.universalLink.login')}
             </button>
           </div>
         </div>
