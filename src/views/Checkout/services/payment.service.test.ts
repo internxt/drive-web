@@ -46,7 +46,7 @@ describe('paymentService', () => {
   });
 
   describe('getStripe', () => {
-    it('initializes Stripe with production key', async () => {
+    it('loads Stripe payment system with correct credentials', async () => {
       vi.spyOn(envService, 'isProduction').mockReturnValue(true);
       vi.spyOn(envService, 'getVariable').mockReturnValue('pk_live_test');
 
@@ -58,7 +58,7 @@ describe('paymentService', () => {
   });
 
   describe('getCustomerId', () => {
-    it('returns customer ID and token', async () => {
+    it('creates customer account and receives credentials', async () => {
       const mockResponse = { customerId: 'cus_123', token: 'tok_123' };
       mockPaymentsClient.createCustomer.mockResolvedValue(mockResponse);
 
@@ -70,7 +70,7 @@ describe('paymentService', () => {
   });
 
   describe('createSubscription', () => {
-    it('creates subscription with promo code and seats', async () => {
+    it('sets up recurring subscription with discount and team size', async () => {
       const mockResponse = { clientSecret: 'cs_123', subscriptionId: 'sub_123' };
       mockPaymentsClient.createSubscription.mockResolvedValue(mockResponse);
 
@@ -89,7 +89,7 @@ describe('paymentService', () => {
   });
 
   describe('createPaymentIntent', () => {
-    it('creates payment intent for plan', async () => {
+    it('initiates one-time payment for selected plan', async () => {
       const mockResponse = { clientSecret: 'cs_123', id: 'pi_123' };
       mockPaymentsClient.createPaymentIntent.mockResolvedValue(mockResponse);
 
@@ -108,7 +108,7 @@ describe('paymentService', () => {
   });
 
   describe('createSession', () => {
-    it('creates checkout session', async () => {
+    it('launches payment page for user', async () => {
       const payload = { mode: 'subscription' as StripeSessionMode, priceId: 'price_123' };
       const mockResponse = { id: 'cs_123' };
       mockPaymentsClient.createSession.mockResolvedValue(mockResponse);
@@ -121,7 +121,7 @@ describe('paymentService', () => {
   });
 
   describe('updateSubscriptionPrice', () => {
-    it('changes plan with discount applied', async () => {
+    it('upgrades or downgrades plan with coupon', async () => {
       mockPaymentsClient.updateSubscriptionPrice.mockResolvedValue({
         userSubscription: { id: 'sub_123' },
         request3DSecure: false,
@@ -143,7 +143,7 @@ describe('paymentService', () => {
   });
 
   describe('cancelSubscription', () => {
-    it('terminates active subscription', async () => {
+    it('stops ongoing subscription for user', async () => {
       mockPaymentsClient.cancelSubscription.mockResolvedValue(undefined);
 
       await paymentService.cancelSubscription(UserType.Individual);
@@ -153,7 +153,7 @@ describe('paymentService', () => {
   });
 
   describe('requestPreventCancellation', () => {
-    it('checks eligibility for retention offer', async () => {
+    it('checks if user can receive special offer to stay', async () => {
       mockPaymentsClient.requestPreventCancellation.mockResolvedValue({ elegible: true });
 
       const result = await paymentService.requestPreventCancellation();
@@ -164,7 +164,7 @@ describe('paymentService', () => {
   });
 
   describe('getUserSubscription', () => {
-    it('retrieves individual user subscription details', async () => {
+    it('gets current subscription information for personal account', async () => {
       const mockSubscription = {
         id: 'sub_123',
         type: 'subscription',
@@ -178,7 +178,7 @@ describe('paymentService', () => {
       expect(result).toEqual(mockSubscription);
     });
 
-    it('retrieves subscription without specifying user type', async () => {
+    it('gets subscription details without specifying account type', async () => {
       const mockSubscription = {
         id: 'sub_456',
         type: 'subscription',
@@ -194,7 +194,7 @@ describe('paymentService', () => {
   });
 
   describe('getPrices', () => {
-    it('fetches prices for specific currency and user type', async () => {
+    it('shows available plan prices for selected currency and account type', async () => {
       const mockPrices = [
         { id: 'price_1', amount: 999, currency: 'eur' },
         { id: 'price_2', amount: 1999, currency: 'eur' },
@@ -207,7 +207,7 @@ describe('paymentService', () => {
       expect(result).toEqual(mockPrices);
     });
 
-    it('fetches prices without parameters', async () => {
+    it('shows default pricing options', async () => {
       const mockPrices = [{ id: 'price_3', amount: 1299, currency: 'usd' }];
       mockPaymentsClient.getPrices.mockResolvedValue(mockPrices as any);
 
@@ -219,7 +219,7 @@ describe('paymentService', () => {
   });
 
   describe('isCouponUsedByUser', () => {
-    it('detects when user already redeemed coupon', async () => {
+    it('verifies if user previously used this discount code', async () => {
       const couponCode = 'SAVE20';
       mockPaymentsClient.isCouponUsedByUser.mockResolvedValue({ couponUsed: true });
 
@@ -229,7 +229,7 @@ describe('paymentService', () => {
       expect(result).toEqual({ couponUsed: true });
     });
 
-    it('allows unused coupons to be applied', async () => {
+    it('confirms discount code is available for user', async () => {
       const couponCode = 'DISCOUNT10';
       mockPaymentsClient.isCouponUsedByUser.mockResolvedValue({ couponUsed: false });
 
@@ -240,7 +240,7 @@ describe('paymentService', () => {
     });
   });
   describe('createSubscriptionWithTrial', () => {
-    it('activates free trial period', async () => {
+    it('starts subscription with complimentary trial', async () => {
       vi.spyOn(localStorageService, 'get').mockReturnValue('token');
       vi.spyOn(envService, 'getVariable').mockReturnValue('https://api.test.com');
       vi.mocked(axios.post).mockResolvedValue({ data: { clientSecret: 'cs_123' } });
@@ -254,7 +254,7 @@ describe('paymentService', () => {
       );
     });
 
-    it('throws error when authentication fails', async () => {
+    it('prevents trial activation without valid login', async () => {
       vi.spyOn(localStorageService, 'get').mockReturnValue(null);
 
       await expect(paymentService.createSubscriptionWithTrial('cus', 'price', 'tok', 'trial')).rejects.toThrow();
