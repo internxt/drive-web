@@ -35,7 +35,7 @@ describe('Error Service', () => {
   };
 
   describe('reportError', () => {
-    it('should call captureException with exception and optional context', () => {
+    it('reports errors to the error tracking service with optional context', () => {
       const error = new Error('Test error');
       const context = { tags: { module: 'test' } };
       mockEnvService.mockReturnValue('production');
@@ -47,7 +47,7 @@ describe('Error Service', () => {
       expect(captureException).toHaveBeenCalledWith(error, context);
     });
 
-    it('should log error to console only in development mode', () => {
+    it('displays errors in the console when running in development mode', () => {
       const error = new Error('Test error');
       mockEnvService.mockReturnValue('development');
 
@@ -60,7 +60,7 @@ describe('Error Service', () => {
       expect(captureException).toHaveBeenCalled();
     });
 
-    it('should not log to console in production mode', () => {
+    it('suppresses console output when running in production mode', () => {
       mockEnvService.mockReturnValue('production');
 
       errorService.reportError('String error');
@@ -71,7 +71,7 @@ describe('Error Service', () => {
   });
 
   describe('addBreadcrumb', () => {
-    it('should call Sentry addBreadcrumb with breadcrumb props', () => {
+    it('records breadcrumb trails for debugging errors', () => {
       const breadcrumb = { message: 'User clicked button', category: 'user', level: 'info' as const };
       const breadcrumbWithData = { message: 'API call', category: 'http', data: { url: '/api/test' } };
 
@@ -85,7 +85,7 @@ describe('Error Service', () => {
 
   describe('castError', () => {
     describe('AxiosError handling', () => {
-      it('should cast AxiosError with error field prioritized over message', () => {
+      it('uses the error field from API responses when both error and message are present', () => {
         const result1 = errorService.castError(createAxiosError({ error: 'Custom error message' }, 400));
         expect(result1).toBeInstanceOf(AppError);
         expect(result1.message).toBe('Custom error message');
@@ -97,13 +97,13 @@ describe('Error Service', () => {
         expect(result2.message).toBe('Error field');
       });
 
-      it('should cast AxiosError with message field when error field is absent', () => {
+      it('falls back to the message field from API responses when error field is missing', () => {
         const result = errorService.castError(createAxiosError({ message: 'Custom message' }, 404));
         expect(result.message).toBe('Custom message');
         expect(result.status).toBe(404);
       });
 
-      it('should use default message when response data is empty or no response', () => {
+      it('shows a generic message when API responses contain no error details', () => {
         const result1 = errorService.castError(createAxiosError({}, 503));
         expect(result1.message).toBe('Unknown error');
         expect(result1.status).toBe(503);
@@ -115,14 +115,14 @@ describe('Error Service', () => {
     });
 
     describe('String and Error instance handling', () => {
-      it('should cast string error to AppError', () => {
+      it('converts simple text error messages into standardized error objects', () => {
         const result = errorService.castError('Simple error message');
         expect(result).toBeInstanceOf(AppError);
         expect(result.message).toBe('Simple error message');
         expect(result.status).toBeUndefined();
       });
 
-      it('should cast Error instance to AppError with optional status', () => {
+      it('converts standard errors into application errors and preserves status codes', () => {
         const result1 = errorService.castError(new Error('Standard error'));
         expect(result1.message).toBe('Standard error');
         expect(result1.status).toBeUndefined();
@@ -133,21 +133,21 @@ describe('Error Service', () => {
         expect(result2.status).toBe(401);
       });
 
-      it('should handle Error with empty message', () => {
+      it('provides a default message when errors have no description', () => {
         const result = errorService.castError(new Error(''));
         expect(result.message).toBe('Unknown error');
       });
     });
 
     describe('Object and edge cases', () => {
-      it('should cast object with message and status', () => {
+      it('extracts error information from objects containing message and status', () => {
         const result = errorService.castError({ message: 'Object error', status: 422 });
         expect(result).toBeInstanceOf(AppError);
         expect(result.message).toBe('Object error');
         expect(result.status).toBe(422);
       });
 
-      it('should handle objects and primitives without message as unknown error', () => {
+      it('treats unrecognized error formats as unknown errors', () => {
         const testCases = [{ foo: 'bar' }, { status: 403 }, 404, false, [1, 2, 3]];
 
         for (const error of testCases) {
