@@ -1,8 +1,8 @@
 import { Stripe, loadStripe } from '@stripe/stripe-js';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 import { paymentService } from 'views/Checkout/services';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import { userLocation } from 'app/utils/userLocation';
+import { userLocation } from 'utils/userLocation';
 
 const productValue = {
   US: 'usd',

@@ -39,3 +39,5 @@ export * from './workspace.service';
 export { default as workspacesService } from './workspace.service';
 export * from './zip.service';
 export { default as vpnAuthService } from './vpnAuth.service';
+export { default as authService } from './auth.service';
+export { default as userService } from './user.service';

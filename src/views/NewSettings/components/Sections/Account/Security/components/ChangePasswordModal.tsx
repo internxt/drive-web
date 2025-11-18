@@ -6,7 +6,7 @@ import { changePassword } from 'services/auth.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 import { Button, Modal, Input } from '@internxt/ui';
-import ValidPassword from 'app/shared/components/ValidPassword';
+import ValidPassword from 'components/ValidPassword';
 
 const ChangePasswordModal = ({
   isOpen,

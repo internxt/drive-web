@@ -3,10 +3,10 @@ import { useSignUp } from './hooks/useSignup';
 import { useGuestSignupState } from './hooks/useGuestSignupState';
 import { useInvitationValidation } from './hooks/useInvitationValidation';
 import { useGuestSignupForm } from './hooks/useGuestSignupForm';
-import navigationService from '../../app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { AppView, IFormValues } from '../../app/core/types';
 import { useTranslationContext } from '../../app/i18n/provider/TranslationProvider';
-import ExpiredLink from '../../app/shared/views/ExpiredLink/ExpiredLinkView';
+import { ExpiredLinkView } from 'components';
 import { useAppDispatch } from '../../app/store/hooks';
 import { userActions } from '../../app/store/slices/user';
 import queryString from 'query-string';
@@ -14,7 +14,7 @@ import { useEffect } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { onChangePasswordHandler } from './utils';
 import CreateAccountForm from './components/CreateAccountForm';
-import workspacesService from '../../app/core/services/workspace.service';
+import workspacesService from 'services/workspace.service';
 import { guestSignupOnSubmit } from './utils/guestSignupOnSubmit';
 
 function WorkspaceGuestSingUpView(): JSX.Element {
@@ -107,7 +107,7 @@ function WorkspaceGuestSingUpView(): JSX.Element {
   }
 
   if (!invitationValidation.isValid) {
-    return <ExpiredLink />;
+    return <ExpiredLinkView />;
   }
 
   return (

@@ -1,8 +1,8 @@
 import { vi, describe, beforeEach, it, expect, Mock } from 'vitest';
-import workspacesService from 'app/core/services/workspace.service';
+import workspacesService from 'services/workspace.service';
 import { renderHook, waitFor } from '@testing-library/react';
 import { ACCESS_LOGS_DEFAULT_LIMIT, useAccessLogs } from './useAccessLogs';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import { act } from 'react-dom/test-utils';
 
 const mockWorkspaceId = 'workspace-id';
@@ -13,13 +13,13 @@ vi.mock('app/store/hooks', () => ({
   })),
 }));
 
-vi.mock('app/core/services/workspace.service', () => ({
+vi.mock('services/workspace.service', () => ({
   default: {
     getWorkspaceLogs: vi.fn(async () => []),
   },
 }));
 
-vi.mock('app/core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     reportError: vi.fn(),
   },

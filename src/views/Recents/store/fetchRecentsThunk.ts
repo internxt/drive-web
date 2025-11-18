@@ -4,7 +4,7 @@ import { StorageState } from 'app/store/slices/storage/storage.model';
 import { storageActions } from 'app/store/slices/storage';
 import { RootState } from 'app/store';
 import { excludeHiddenItems, getItemPlainName } from 'app/crypto/services/utils';
-import configService from 'app/core/services/config.service';
+import configService from 'services/config.service';
 import { AppFileExplorerConfig } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
 import { fetchRecents } from '../services';

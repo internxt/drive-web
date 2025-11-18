@@ -7,9 +7,9 @@ import EmptySharedView from './EmptySharedView';
 import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../app/share/types';
 import { OrderField, SharedItemList } from './SharedItemList';
 
-import errorService from '../../../app/core/services/error.service';
-import localStorageService from '../../../app/core/services/local-storage.service';
-import workspacesService from '../../../app/core/services/workspace.service';
+import errorService from 'services/error.service';
+import localStorageService from 'services/local-storage.service';
+import workspacesService from 'services/workspace.service';
 import { OrderDirection } from '../../../app/core/types';
 import { sharedThunks } from '../../../app/store/slices/sharedLinks';
 import workspacesSelectors from '../../../app/store/slices/workspaces/workspaces.selectors';

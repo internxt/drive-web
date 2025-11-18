@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToDelete } from 'app/store/slices/storage';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
