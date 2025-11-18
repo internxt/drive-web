@@ -29,7 +29,7 @@ const isAllowedOrigin = (origin: string): boolean => {
     ) {
       return true;
     }
-  } catch (e) {
+  } catch {
     return false;
   }
 
