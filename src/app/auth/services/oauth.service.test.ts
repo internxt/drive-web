@@ -171,6 +171,135 @@ describe('OAuth authentication service', () => {
     });
   });
 
+  describe('Pattern-based domain validation', () => {
+    const mockNewToken = 'test-new-token';
+
+    it('when parent window matches allowed domain pattern, then transmission is allowed', () => {
+      const allowedPatternOpener = {
+        postMessage: vi.fn(),
+        location: {
+          origin: 'https://ffe95a9d.meet-web.pages.dev',
+        },
+      };
+
+      Object.defineProperty(window, 'opener', {
+        value: allowedPatternOpener,
+        writable: true,
+        configurable: true,
+      });
+
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
+
+      expect(result).toBe(true);
+      expect(allowedPatternOpener.postMessage).toHaveBeenCalledWith(
+        {
+          type: OAuthMessageType.SUCCESS,
+          payload: {
+            mnemonic: btoa(mockUserSettings.mnemonic),
+            newToken: btoa(mockNewToken),
+          },
+        },
+        'https://ffe95a9d.meet-web.pages.dev',
+      );
+    });
+
+    it('when referrer matches allowed domain pattern, then transmission is allowed', () => {
+      const crossOriginOpener = {
+        postMessage: vi.fn(),
+        get location() {
+          throw new Error('Cross-origin access denied');
+        },
+      };
+
+      Object.defineProperty(document, 'referrer', {
+        value: 'https://abc123.meet-web.pages.dev/login',
+        writable: true,
+        configurable: true,
+      });
+
+      Object.defineProperty(window, 'opener', {
+        value: crossOriginOpener,
+        writable: true,
+        configurable: true,
+      });
+
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
+
+      expect(result).toBe(true);
+      expect(crossOriginOpener.postMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: OAuthMessageType.SUCCESS,
+        }),
+        'https://abc123.meet-web.pages.dev',
+      );
+    });
+
+    it('when parent window uses HTTP instead of HTTPS, then transmission is blocked', () => {
+      const httpOpener = {
+        postMessage: vi.fn(),
+        location: {
+          origin: 'http://preview.meet-web.pages.dev',
+        },
+      };
+
+      Object.defineProperty(window, 'opener', {
+        value: httpOpener,
+        writable: true,
+        configurable: true,
+      });
+
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
+
+      expect(result).toBe(false);
+      expect(httpOpener.postMessage).not.toHaveBeenCalled();
+    });
+
+    it('when parent window does not match allowed domain patterns, then transmission is blocked', () => {
+      const disallowedPatternOpener = {
+        postMessage: vi.fn(),
+        location: {
+          origin: 'https://preview.other-project.pages.dev',
+        },
+      };
+
+      Object.defineProperty(window, 'opener', {
+        value: disallowedPatternOpener,
+        writable: true,
+        configurable: true,
+      });
+
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
+
+      expect(result).toBe(false);
+      expect(disallowedPatternOpener.postMessage).not.toHaveBeenCalled();
+    });
+
+    it('when parent window is base domain of allowed pattern, then transmission is allowed', () => {
+      const baseDomainOpener = {
+        postMessage: vi.fn(),
+        location: {
+          origin: 'https://meet-web.pages.dev',
+        },
+      };
+
+      Object.defineProperty(window, 'opener', {
+        value: baseDomainOpener,
+        writable: true,
+        configurable: true,
+      });
+
+      const result = oauthService.sendAuthSuccess(mockUserSettings, mockNewToken);
+
+      expect(result).toBe(true);
+      expect(baseDomainOpener.postMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: OAuthMessageType.SUCCESS,
+        }),
+        'https://meet-web.pages.dev',
+      );
+    });
+  });
+
   describe('Security and origin validation', () => {
     const mockNewToken = 'test-new-token';
 
