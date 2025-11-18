@@ -67,7 +67,7 @@ describe('RealtimeService', () => {
   });
 
   describe('Service instance management', () => {
-    it('When requesting the service multiple times, then the same instance is returned', () => {
+    it('returns the same service instance across multiple requests', () => {
       const instance1 = RealtimeService.getInstance();
       const instance2 = RealtimeService.getInstance();
 
@@ -76,14 +76,14 @@ describe('RealtimeService', () => {
   });
 
   describe('Event constants', () => {
-    it('When accessing event types, then FILE_CREATED event is available', () => {
+    it('provides predefined event types for subscription', () => {
       expect(SOCKET_EVENTS).toHaveProperty('FILE_CREATED');
       expect(SOCKET_EVENTS.FILE_CREATED).toBe('FILE_CREATED');
     });
   });
 
   describe('Establishing realtime connection', () => {
-    it('When initializing the service, then it connects with authentication and credentials', () => {
+    it('establishes a secure connection with authentication when initialized', () => {
       service.init();
 
       expect(ioMock).toHaveBeenCalledWith('https://notifications.example.com', {
@@ -94,14 +94,14 @@ describe('RealtimeService', () => {
     });
 
     it.each(['connect', 'disconnect', 'connect_error'])(
-      'When initializing, then %s events are monitored',
+      'monitors connection lifecycle through %s events',
       (eventName) => {
         service.init();
         expect(mockSocket.on).toHaveBeenCalledWith(eventName, expect.any(Function));
       },
     );
 
-    it('When connection succeeds, then the callback is notified', () => {
+    it('notifies the application when connection is successfully established', () => {
       const onConnectedCallback = vi.fn();
       service.init(onConnectedCallback);
 
@@ -115,7 +115,7 @@ describe('RealtimeService', () => {
       { env: 'production', reconnection: true, logs: false },
       { env: 'development', reconnection: false, logs: true },
     ])(
-      'When running in $env, then reconnection is $reconnection and logging is $logs',
+      'adjusts behavior for $env environment with reconnection=$reconnection and logging=$logs',
       ({ env, reconnection, logs }) => {
         vi.mocked(envService.getVariable).mockImplementation((key: string) => {
           if (key === 'nodeEnv') return env;
@@ -141,7 +141,7 @@ describe('RealtimeService', () => {
   });
 
   describe('Retrieving connection identifier', () => {
-    it('When connected, then the unique client ID is provided', () => {
+    it('provides a unique identifier for the connected client', () => {
       service.init();
 
       const clientId = service.getClientId();
@@ -149,13 +149,13 @@ describe('RealtimeService', () => {
       expect(clientId).toBe('mock-socket-id');
     });
 
-    it('When not connected, then an error is raised', () => {
+    it('reports an error when requesting the client ID before connecting', () => {
       expect(() => service.getClientId()).toThrow('Realtime service is not connected');
     });
   });
 
   describe('Receiving realtime notifications', () => {
-    it('When subscribing to events, then notifications are received and handled', () => {
+    it('delivers realtime notifications to subscribed listeners', () => {
       service.init();
       const callback = vi.fn();
       const eventData = { type: 'FILE_CREATED', payload: { fileId: '123' } };
@@ -171,7 +171,7 @@ describe('RealtimeService', () => {
       expect(callback).toHaveBeenCalledWith(eventData);
     });
 
-    it('When connection is lost, then subscription fails gracefully', () => {
+    it('prevents event subscriptions when the connection is lost', () => {
       service.init();
       mockSocket.disconnected = true;
 
@@ -183,14 +183,14 @@ describe('RealtimeService', () => {
   });
 
   describe('Cleaning up event subscriptions', () => {
-    it('When removing listeners, then all active subscriptions are cleared', () => {
+    it('clears all active event subscriptions when requested', () => {
       service.init();
       service.removeAllListeners();
 
       expect(mockSocket.removeAllListeners).toHaveBeenCalledTimes(1);
     });
 
-    it('When cleaning up without initialization, then no errors occur', () => {
+    it('handles cleanup safely even when not initialized', () => {
       expect(() => service.removeAllListeners()).not.toThrow();
     });
   });
@@ -199,7 +199,7 @@ describe('RealtimeService', () => {
     it.each([
       { connected: true, closes: true },
       { connected: false, closes: false },
-    ])('When connection status is $connected, then closing $closes the socket', ({ connected, closes }) => {
+    ])('closes the socket only when connected (connected=$connected, closes=$closes)', ({ connected, closes }) => {
       service.init();
       mockSocket.connected = connected;
 
@@ -214,7 +214,7 @@ describe('RealtimeService', () => {
   });
 
   describe('Complete workflow', () => {
-    it('When using the service end-to-end, then all operations work together', () => {
+    it('connects, receives notifications, and disconnects successfully in a complete flow', () => {
       const onConnected = vi.fn();
       const eventCallback = vi.fn();
 
