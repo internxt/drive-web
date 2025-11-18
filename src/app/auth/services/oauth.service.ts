@@ -12,6 +12,31 @@ import envService from 'app/core/services/env.service';
 const ALLOWED_TARGET_ORIGINS = ['https://meet.internxt.com'];
 
 /**
+ * Checks if an origin matches allowed domains
+ * @param {string} origin - The origin to check
+ * @returns {boolean} True if the origin is allowed
+ */
+const isAllowedOrigin = (origin: string): boolean => {
+  if (ALLOWED_TARGET_ORIGINS.includes(origin)) {
+    return true;
+  }
+
+  try {
+    const url = new URL(origin);
+    if (
+      url.protocol === 'https:' &&
+      (url.hostname === 'meet-web.pages.dev' || url.hostname.endsWith('.meet-web.pages.dev'))
+    ) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+
+  return false;
+};
+
+/**
  * Message types for postMessage communication
  */
 export enum OAuthMessageType {
@@ -56,7 +81,7 @@ const getTargetOrigin = (): string | null => {
   try {
     const openerOrigin = window.opener.location.origin;
 
-    if (ALLOWED_TARGET_ORIGINS.includes(openerOrigin)) {
+    if (isAllowedOrigin(openerOrigin)) {
       return openerOrigin;
     }
 
@@ -68,7 +93,7 @@ const getTargetOrigin = (): string | null => {
     if (referrer) {
       try {
         const referrerOrigin = new URL(referrer).origin;
-        if (ALLOWED_TARGET_ORIGINS.includes(referrerOrigin)) {
+        if (isAllowedOrigin(referrerOrigin)) {
           return referrerOrigin;
         }
       } catch (e) {
