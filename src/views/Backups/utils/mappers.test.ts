@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { mapBackupFolder } from './mappers';
 import { aes } from '@internxt/lib';
 import type { DriveFolderData } from 'app/drive/types';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 
 vi.mock('@internxt/lib', () => ({
   aes: {
