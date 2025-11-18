@@ -1,7 +1,7 @@
 import { History } from 'history';
 import { t } from 'i18next';
-import navigationService from '../../core/services/navigation.service';
-import workspacesService from '../../core/services/workspace.service';
+import navigationService from 'services/navigation.service';
+import workspacesService from 'services/workspace.service';
 import { AppView } from '../../core/types';
 import { AdvancedSharedItem } from '../types';
 import shareService from './share.service';

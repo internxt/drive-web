@@ -1,14 +1,14 @@
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import Section from '../../../Section';
 import { useEffect, useState } from 'react';
-import errorService from 'app/core/services/error.service';
-import workspacesService from 'app/core/services/workspace.service';
+import errorService from 'services/error.service';
+import workspacesService from 'services/workspace.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import UsageBar from '../../../Usage/UsageBar';
 import { getMemberRole, searchMembers } from '../../../../utils';
 import { Button, Input } from '@internxt/ui';
-import Card from 'app/shared/components/Card';
+import Card from 'components/Card';
 import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';

@@ -1,7 +1,7 @@
 import { SignupComponent } from './AuthView';
 import InternxtDevices from '../../../../assets/images/banner/internxt_secure_cloud_storage.webp';
 import { Helmet } from 'react-helmet-async';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const SignupAuth = () => {

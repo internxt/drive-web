@@ -5,7 +5,7 @@ import iconService from '../../../app/drive/services/icon.service';
 import transformItemService from '../../../app/drive/services/item-transform.service';
 import { items } from '@internxt/lib';
 import { DriveItemData } from '../../../app/drive/types';
-import dateService from '../../../app/core/services/date.service';
+import dateService from 'services/date.service';
 import sizeService from '../../../app/drive/services/size.service';
 
 type SharedListItem = {

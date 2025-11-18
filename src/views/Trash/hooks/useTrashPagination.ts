@@ -1,4 +1,4 @@
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import { OrderSettings } from 'app/core/types';
 import { useState, useCallback, useEffect } from 'react';
 

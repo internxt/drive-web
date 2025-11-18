@@ -1,6 +1,6 @@
 import { UploadSimple, Users } from '@phosphor-icons/react';
 import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
-import Empty from '../../../app/shared/components/Empty/Empty';
+import Empty from 'components/Empty';
 import folderEmptyImage from '../../../assets/icons/light/folder-open.svg';
 import { SharedNamePath } from '../../../app/share/types';
 

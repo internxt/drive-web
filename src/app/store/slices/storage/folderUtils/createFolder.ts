@@ -1,10 +1,10 @@
 import { DriveFolderData, DriveItemData } from 'app/drive/types';
 import tasksService from '../../../../tasks/services/tasks.service';
 import { CreateFolderTask, TaskProgress, TaskStatus, TaskType } from '../../../../tasks/types';
-import workspacesService from '../../../../core/services/workspace.service';
+import workspacesService from 'services/workspace.service';
 import folderService from 'app/drive/services/folder.service';
 import { storageActions } from '..';
-import errorService from '../../../../core/services/error.service';
+import errorService from 'services/error.service';
 import { CreateFolderResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';

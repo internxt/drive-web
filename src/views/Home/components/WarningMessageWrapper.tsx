@@ -1,5 +1,5 @@
 import { connect, useDispatch } from 'react-redux';
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 import { planSelectors } from 'app/store/slices/plan';

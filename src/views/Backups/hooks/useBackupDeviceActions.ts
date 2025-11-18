@@ -7,7 +7,7 @@ import { backupsActions, backupsThunks } from '../store/backupsSlice';
 import { deleteItemsThunk } from 'app/store/slices/storage/storage.thunks/deleteItemsThunk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Device } from '@internxt/sdk/dist/drive/backups/types';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 
 export const useBackupDeviceActions = (
   onFolderUuidChanges: (folderUuid?: string) => void,

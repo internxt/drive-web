@@ -1,6 +1,6 @@
 import { Role } from '@internxt/sdk/dist/drive/share/types';
-import errorService from 'app/core/services/error.service';
-import workspacesService from 'app/core/services/workspace.service';
+import errorService from 'services/error.service';
+import workspacesService from 'services/workspace.service';
 import { DriveItemData } from 'app/drive/types';
 
 /**

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
+import errorService from 'services/error.service';
+import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
 import fileService from 'app/drive/services/file.service';
 import newStorageService from 'app/drive/services/new-storage.service';
-import BreadcrumbsDriveView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsDriveView';
+import BreadcrumbsDriveView from 'components/BreadcrumbsDriveView';
 import { AppDispatch, RootState } from 'app/store';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
@@ -18,11 +18,11 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from 'app/drive/types';
 import { workspacesActions, workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import localStorageService from 'app/core/services/local-storage.service';
-import { STORAGE_KEYS } from 'app/core/services/storage-keys';
-import workspacesService from 'app/core/services/workspace.service';
+import localStorageService from 'services/local-storage.service';
+import { STORAGE_KEYS } from 'services/storage-keys';
+import workspacesService from 'services/workspace.service';
 import { useHistory } from 'react-router-dom';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 
 export interface DriveViewProps {
   namePath: FolderPath[];

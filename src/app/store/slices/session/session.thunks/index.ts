@@ -1,7 +1,7 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../../..';
 
-import navigationService from '../../../../core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { AppView } from '../../../../core/types';
 import { storageActions, storageSelectors } from '../../storage';
 import storageThunks from '../../storage/storage.thunks';

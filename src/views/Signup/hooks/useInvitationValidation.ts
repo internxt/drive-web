@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
+import errorService from 'services/error.service';
+import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
 
 interface UseInvitationValidationProps {

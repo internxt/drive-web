@@ -1,8 +1,8 @@
 import { PendingInvitesResponse } from '@internxt/sdk/dist/workspaces';
 import { CheckCircle, X } from '@phosphor-icons/react';
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import workspacesService from 'app/core/services/workspace.service';
+import errorService from 'services/error.service';
+import localStorageService from 'services/local-storage.service';
+import workspacesService from 'services/workspace.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button, Modal } from '@internxt/ui';
 import { useAppDispatch } from 'app/store/hooks';
@@ -10,7 +10,7 @@ import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import dayjs from 'dayjs';
 import AppError from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { wait } from 'app/utils/timeUtils';
+import { wait } from 'utils/timeUtils';
 
 const WORKSPACE_INVITATION_BAD_REQUEST = 400;
 

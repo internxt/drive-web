@@ -1,7 +1,7 @@
 import { Button, Modal, Input } from '@internxt/ui';
 import { useState } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import validationService from 'app/core/services/validation.service';
+import validationService from 'services/validation.service';
 
 type SharePasswordInputDialogProps = {
   isOpen: boolean;

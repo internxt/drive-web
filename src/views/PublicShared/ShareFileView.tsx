@@ -20,8 +20,8 @@ import './components/ShareView.scss';
 
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
-import errorService from 'app/core/services/error.service';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import errorService from 'services/error.service';
+import { binaryStreamToBlob } from 'services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { HTTP_CODES } from 'app/core/constants';
 import AppError from 'app/core/types';

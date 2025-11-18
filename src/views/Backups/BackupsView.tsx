@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import BreadcrumbsBackupsView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsBackupsView';
+import BreadcrumbsBackupsView from 'components/BreadcrumbsBackupsView';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { Helmet } from 'react-helmet-async';
 import { DeleteBackupDialog } from './components';
@@ -17,7 +17,7 @@ import { contextMenuSelectedBackupItems } from 'views/Drive/components/DriveExpl
 import { useBackupListActions } from './hooks/useBackupListActions';
 import { useBackupDeviceActions } from './hooks/useBackupDeviceActions';
 import { useBackupsPagination } from './hooks/useBackupsPagination';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { Dialog, MenuItemType } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';

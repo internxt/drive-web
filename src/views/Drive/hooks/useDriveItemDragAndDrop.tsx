@@ -1,6 +1,6 @@
 import { ConnectDragSource, ConnectDropTarget, useDrag, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
+import { transformDraggedItems } from 'services/drag-and-drop.service';
 import { DragAndDropType } from 'app/core/types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';

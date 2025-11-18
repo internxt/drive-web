@@ -3,11 +3,11 @@ import { t } from 'i18next';
 import { RootState } from 'app/store';
 import { useSelector } from 'react-redux';
 
-import localStorageService from 'app/core/services/local-storage.service';
-import navigationService from 'app/core/services/navigation.service';
+import localStorageService from 'services/local-storage.service';
+import navigationService from 'services/navigation.service';
 import { bytesToString } from 'app/drive/services/size.service';
 
-import Card from 'app/shared/components/Card';
+import Card from 'components/Card';
 
 import { Button } from '@internxt/ui';
 import { PlanState } from 'app/store/slices/plan';

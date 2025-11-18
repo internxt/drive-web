@@ -1,7 +1,7 @@
 import { t } from 'i18next';
 import { SdkFactory } from 'app/core/factory/sdk';
-import errorService from 'app/core/services/error.service';
-import workspacesService from 'app/core/services/workspace.service';
+import errorService from 'services/error.service';
+import workspacesService from 'services/workspace.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';

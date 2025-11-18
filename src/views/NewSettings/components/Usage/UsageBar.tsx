@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { bytesToString } from 'app/drive/services/size.service';
-import Tooltip from 'app/shared/components/Tooltip';
+import Tooltip from 'components/Tooltip';
 
 const UsageBar = ({
   backupsUsage,

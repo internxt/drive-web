@@ -1,8 +1,8 @@
-import { skinSkeleton } from '../../../app/shared/Skeleton';
+import { skinSkeleton } from 'components/Skeleton';
 import folderEmptyImage from '../../../assets/icons/light/folder-open.svg';
 import { DriveItemData } from '../../../app/drive/types';
 import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
-import Empty from '../../../app/shared/components/Empty/Empty';
+import Empty from 'components/Empty';
 import { List, MenuItemType } from '@internxt/ui';
 import BackupListItem from './BackupListItem';
 

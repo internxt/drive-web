@@ -1,4 +1,4 @@
-import configService from '../core/services/config.service';
+import configService from 'services/config.service';
 import { DatabaseCollection, DatabaseService } from '../database/services/database.service';
 import indexedDBService from '../database/services/database.service/indexed-db.service';
 import { TaskStatus } from '../tasks/types';

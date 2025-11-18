@@ -10,7 +10,7 @@ import { MoveFileTask, MoveFolderTask, TaskStatus, TaskType } from 'app/tasks/ty
 import { t } from 'i18next';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import errorService from '../../../../core/services/error.service';
+import errorService from 'services/error.service';
 import { StorageState } from '../storage.model';
 
 export interface MoveItemsPayload {

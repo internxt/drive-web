@@ -2,7 +2,7 @@ import { items } from '@internxt/lib';
 import usersIcon from 'assets/icons/users.svg';
 import { useEffect } from 'react';
 import { DriveExplorerItemProps } from '../types';
-import dateService from 'app/core/services/date.service';
+import dateService from 'services/date.service';
 import transformItemService from 'app/drive/services/item-transform.service';
 import sizeService from 'app/drive/services/size.service';
 import iconService from 'app/drive/services/icon.service';

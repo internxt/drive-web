@@ -3,8 +3,8 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { t } from 'i18next';
 import { storageActions, storageSelectors } from '..';
 import { RootState } from '../../..';
-import errorService from '../../../../core/services/error.service';
-import workspacesService from '../../../../core/services/workspace.service';
+import errorService from 'services/error.service';
+import workspacesService from 'services/workspace.service';
 import folderService from 'app/drive/services/folder.service';
 import { DriveFolderData, DriveItemData } from 'app/drive/types';
 import tasksService from '../../../../tasks/services/tasks.service';

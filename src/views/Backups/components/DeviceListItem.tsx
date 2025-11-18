@@ -2,7 +2,7 @@ import UilApple from '@iconscout/react-unicons/icons/uil-apple';
 import UilLinux from '@iconscout/react-unicons/icons/uil-linux';
 import UilWindows from '@iconscout/react-unicons/icons/uil-windows';
 import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
-import dateService from '../../../app/core/services/date.service';
+import dateService from 'services/date.service';
 import sizeService from '../../../app/drive/services/size.service';
 import { Device } from '@internxt/sdk/dist/drive/backups/types';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';

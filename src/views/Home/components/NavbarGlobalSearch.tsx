@@ -21,7 +21,7 @@ import NotFoundState from './NotFoundState';
 import EmptyState from './EmptyState';
 import FilterItem from './FilterItem';
 import { getItemPlainName } from 'app/crypto/services/utils';
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 interface NavbarProps {

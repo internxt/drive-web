@@ -1,4 +1,4 @@
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import { uiActions } from 'app/store/slices/ui';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';

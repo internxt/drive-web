@@ -7,7 +7,7 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { Button, Modal, Input } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import { storageActions } from 'app/store/slices/storage';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 

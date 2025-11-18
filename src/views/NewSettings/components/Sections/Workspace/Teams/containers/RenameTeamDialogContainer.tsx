@@ -4,8 +4,8 @@ import { WorkspaceData, WorkspaceTeam, WorkspaceTeamResponse } from '@internxt/s
 
 import { t } from 'i18next';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import errorService from 'app/core/services/error.service';
-import workspacesService from 'app/core/services/workspace.service';
+import errorService from 'services/error.service';
+import workspacesService from 'services/workspace.service';
 
 import RenameTeamDialog from '../components/RenameTeamDialog';
 

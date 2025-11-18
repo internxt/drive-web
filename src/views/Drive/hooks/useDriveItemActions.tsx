@@ -1,6 +1,6 @@
 import { createRef, useMemo } from 'react';
 
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { moveItemsToTrash } from 'views/Trash/services';
 import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from 'app/drive/services/database.service';
 import { downloadThumbnail, setCurrentThumbnail } from 'app/drive/services/thumbnail.service';

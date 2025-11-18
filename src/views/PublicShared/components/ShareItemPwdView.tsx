@@ -1,6 +1,6 @@
 import { WarningCircle } from '@phosphor-icons/react';
-import errorService from 'app/core/services/error.service';
-import validationService from 'app/core/services/validation.service';
+import errorService from 'services/error.service';
+import validationService from 'services/validation.service';
 import AppError from 'app/core/types';
 import iconService from 'app/drive/services/icon.service';
 import transformItemService from 'app/drive/services/item-transform.service';
@@ -8,7 +8,7 @@ import sizeService from 'app/drive/services/size.service';
 import { DriveItemData } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import PasswordInput from '../../../components/PasswordInput';
+import PasswordInput from 'components/PasswordInput';
 import { Button } from '@internxt/ui';
 import LockLogo from 'assets/icons/Lock.svg?react';
 import { useState } from 'react';

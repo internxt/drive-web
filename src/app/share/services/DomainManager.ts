@@ -1,5 +1,5 @@
-import envService from '../../core/services/env.service';
-import errorService from '../../core/services/error.service';
+import envService from 'services/env.service';
+import errorService from 'services/error.service';
 import shareService from './share.service';
 
 class DomainManager {

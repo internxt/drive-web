@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 
 export interface PasswordState {
   tag: 'error' | 'warning' | 'success';

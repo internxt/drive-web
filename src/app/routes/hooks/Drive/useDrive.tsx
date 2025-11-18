@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import navigationService from '../../../core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 
 const useDriveNavigation = () => {
   const pathname = navigationService.history.location.pathname;

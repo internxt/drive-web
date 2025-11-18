@@ -3,7 +3,7 @@ import { connect, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { ChangeEvent, useEffect, useLayoutEffect, useRef } from 'react';
-import localStorageService from '../../app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import { DriveItemData } from '../../app/drive/types';
 import { useTranslationContext } from '../../app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
@@ -18,7 +18,7 @@ import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';
 import { moveItemsToTrash } from '../Trash/services';
-import errorService from '../../app/core/services/error.service';
+import errorService from 'services/error.service';
 import { UPLOAD_ITEMS_LIMIT } from 'views/Drive/components/DriveExplorer/helpers/uploadHelpers';
 import EditItemNameDialog from '../../app/drive/components/EditItemNameDialog/EditItemNameDialog';
 import FileViewerWrapper from '../../app/drive/components/FileViewer/FileViewerWrapper';

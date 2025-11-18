@@ -1,4 +1,4 @@
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import limitService from 'app/drive/services/limit.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import usageService from 'app/drive/services/usage.service';

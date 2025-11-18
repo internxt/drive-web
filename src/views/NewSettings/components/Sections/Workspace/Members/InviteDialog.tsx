@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button, Modal, Checkbox, Input } from '@internxt/ui';
-import Card from 'app/shared/components/Card';
+import Card from 'components/Card';
 import TextArea from '../../Account/Account/components/TextArea';
 import UserCard from './components/UserCard';
 

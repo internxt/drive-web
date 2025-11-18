@@ -1,7 +1,7 @@
 import { describe, expect, vi, beforeEach, test, afterEach } from 'vitest';
 import { DownloadWorker } from './downloadWorker';
 import createFileDownloadStream from 'app/drive/services/download.service/createFileDownloadStream';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { binaryStreamToBlob } from 'services/stream.service';
 import createMultipartFileDownloadStream from 'app/drive/services/download.service/createMultipartDownloadStream';
 import { DriveItemData } from 'app/drive/types';
 import { DownloadFilePayload } from './types/download';
@@ -14,7 +14,7 @@ vi.mock('app/drive/services/download.service/createMultipartDownloadStream', () 
   default: vi.fn(),
 }));
 
-vi.mock('app/core/services/stream.service', () => ({
+vi.mock('services/stream.service', () => ({
   binaryStreamToBlob: vi.fn(),
   buildProgressStream: vi.fn(),
   decryptStream: vi.fn(),

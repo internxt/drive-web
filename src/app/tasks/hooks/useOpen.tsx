@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
-import navigationService from '../../core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { TaskNotification, TaskType } from '../types';
 
 interface OpenItem {

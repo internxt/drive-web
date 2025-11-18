@@ -5,9 +5,9 @@ import React, { memo, useCallback, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
 import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { skinSkeleton } from 'app/shared/Skeleton';
+import { skinSkeleton } from 'components/Skeleton';
 import { moveItemsToTrash } from '../../../../../views/Trash/services';
 import { OrderDirection, OrderSettings } from 'app/core/types';
 import shareService from 'app/share/services/share.service';

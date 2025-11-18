@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { t } from 'i18next';
 import newStorageService from 'app/drive/services/new-storage.service';
 import { DriveItemData } from 'app/drive/types';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 const DEFAULT_LIMIT = 50;

@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { UsageResponseV2 } from '@internxt/sdk/dist/drive/storage/types';
 import { GetMemberUsageResponse } from '@internxt/sdk/dist/workspaces';
-import workspacesService from 'app/core/services/workspace.service';
+import workspacesService from 'services/workspace.service';
 import limitService from 'app/drive/services/limit.service';
 import usageService from 'app/drive/services/usage.service';
 import { RootState } from '../..';
