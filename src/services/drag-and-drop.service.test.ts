@@ -83,7 +83,7 @@ describe('Drag and Drop Service', () => {
       return list;
     };
 
-    it('should transform file items to files array', async () => {
+    it('converts dragged files into a files array', async () => {
       const mockFile = createMockFile('test.txt');
       const mockEntry = createMockFileSystemEntry('test.txt', true);
       mockDataTransferItemList = createItemList(createMockDataTransferItem(mockFile, mockEntry));
@@ -95,7 +95,7 @@ describe('Drag and Drop Service', () => {
       expect(result.rootList).toHaveLength(0);
     });
 
-    it('should transform directory items to rootList', async () => {
+    it('converts dragged folders into a root folder list', async () => {
       const mockEntry = createMockFileSystemEntry('folder', false);
       mockDataTransferItemList = createItemList(createMockDataTransferItem(null, mockEntry));
 
@@ -108,7 +108,7 @@ describe('Drag and Drop Service', () => {
       expect(result.files).toHaveLength(0);
     });
 
-    it('should handle mixed files and directories', async () => {
+    it('processes both files and folders when dragged together', async () => {
       const mockFile = createMockFile('file1.txt');
       const mockFileEntry = createMockFileSystemEntry('file1.txt', true);
       const mockDirEntry = createMockFileSystemEntry('folder', false);
@@ -123,7 +123,7 @@ describe('Drag and Drop Service', () => {
       expect(result.rootList).toHaveLength(1);
     });
 
-    it('should fallback to getAsFile when webkitGetAsEntry returns null', async () => {
+    it('retrieves files using an alternative method when the primary method fails', async () => {
       const mockFile = createMockFile('fallback.txt');
       const mockItem = createMockDataTransferItem(mockFile, null);
       mockDataTransferItemList = createItemList(mockItem);
@@ -136,7 +136,7 @@ describe('Drag and Drop Service', () => {
       expect(mockItem.getAsFile).toHaveBeenCalled();
     });
 
-    it('should handle empty items list', async () => {
+    it('returns empty results when no items are dragged', async () => {
       mockDataTransferItemList = createItemList();
 
       const result = await transformDraggedItems(mockDataTransferItemList, '/path');
@@ -145,7 +145,7 @@ describe('Drag and Drop Service', () => {
       expect(result.rootList).toHaveLength(0);
     });
 
-    it('should handle nested directory structure', async () => {
+    it('preserves folder structure when dragging folders with subfolders and files', async () => {
       const childFileEntry = createMockFileSystemEntry('child.txt', true);
       const childDirEntry = createMockFileSystemEntry('subfolder', false);
       const mockDirEntry = createMockDirectory('parent', [childFileEntry, childDirEntry]);
@@ -160,7 +160,7 @@ describe('Drag and Drop Service', () => {
       expect(result.rootList[0].childrenFolders[0].name).toBe('subfolder');
     });
 
-    it('should handle directory with multiple batches of entries', async () => {
+    it('processes all files from folders even when read in multiple batches', async () => {
       const batches = [
         [createMockFileSystemEntry('file1.txt', true), createMockFileSystemEntry('file2.txt', true)],
         [createMockFileSystemEntry('file3.txt', true)],
@@ -192,7 +192,7 @@ describe('Drag and Drop Service', () => {
       expect(result.rootList[0].childrenFiles).toHaveLength(3);
     });
 
-    it('should correctly build fullPathEdited for nested folders', async () => {
+    it('maintains correct full paths for deeply nested folders', async () => {
       const grandchildEntry = createMockFileSystemEntry('file.txt', true);
       const childDirEntry = createMockDirectory('child', [grandchildEntry]);
       const parentDirEntry = createMockDirectory('parent', [childDirEntry]);
@@ -204,7 +204,7 @@ describe('Drag and Drop Service', () => {
       expect(result.rootList[0].childrenFolders[0].fullPathEdited).toBe('/topLevel/parent/child');
     });
 
-    it('should handle multiple top-level items', async () => {
+    it('separates multiple files and folders when dragged at the same time', async () => {
       mockDataTransferItemList = createItemList(
         createMockDataTransferItem(createMockFile('file1.txt'), createMockFileSystemEntry('file1.txt', true)),
         createMockDataTransferItem(createMockFile('file2.txt'), createMockFileSystemEntry('file2.txt', true)),
@@ -220,7 +220,7 @@ describe('Drag and Drop Service', () => {
       expect(result.rootList[1].name).toBe('folder2');
     });
 
-    it('should handle directory with only files', async () => {
+    it('includes all files from a folder containing only files', async () => {
       const fileEntries = [
         createMockFileSystemEntry('file1.txt', true),
         createMockFileSystemEntry('file2.txt', true),
@@ -236,7 +236,7 @@ describe('Drag and Drop Service', () => {
       expect(result.rootList[0].childrenFolders).toHaveLength(0);
     });
 
-    it('should handle directory with only subdirectories', async () => {
+    it('includes all subfolders from a folder containing only subfolders', async () => {
       const dirEntries = [
         createMockFileSystemEntry('subfolder1', false),
         createMockFileSystemEntry('subfolder2', false),
@@ -251,7 +251,7 @@ describe('Drag and Drop Service', () => {
       expect(result.rootList[0].childrenFolders).toHaveLength(2);
     });
 
-    it('should handle empty directory', async () => {
+    it('processes empty folders without errors', async () => {
       const mockDirEntry = createMockFileSystemEntry('emptyFolder', false);
       mockDataTransferItemList = createItemList(createMockDataTransferItem(null, mockDirEntry));
 
