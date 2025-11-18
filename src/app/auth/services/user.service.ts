@@ -7,7 +7,7 @@ import {
   VerifyEmailChangeResponse,
 } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import { SdkFactory } from '../../core/factory/sdk';
 
 export const sendDeactivationEmail = (): Promise<void> => {

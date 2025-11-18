@@ -1,4 +1,4 @@
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { binaryStreamToBlob } from 'services/stream.service';
 import { Downloadable, downloadFile, NetworkCredentials } from 'app/network/download';
 import { getEnvironmentConfig } from '../network.service';
 

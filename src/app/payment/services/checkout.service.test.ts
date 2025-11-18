@@ -56,7 +56,7 @@ vi.mock('../../core/factory/sdk', () => ({
   },
 }));
 
-vi.mock('../../utils/userLocation', () => ({
+vi.mock('utils/userLocation', () => ({
   userLocation: vi.fn().mockResolvedValue({
     ip: '123.12.12.12',
     location: 'ES',

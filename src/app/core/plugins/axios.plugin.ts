@@ -3,8 +3,8 @@ import axios, { AxiosHeaders } from 'axios';
 import packageJson from '../../../../package.json';
 import { AppPlugin, LocalStorageItem, Workspace } from '../../core/types';
 import { userThunks } from '../../store/slices/user';
-import localStorageService from '../services/local-storage.service';
-import envService from 'app/core/services/env.service';
+import localStorageService from 'services/local-storage.service';
+import envService from 'services/env.service';
 
 const axiosPlugin: AppPlugin = {
   install(store): void {

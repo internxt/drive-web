@@ -4,7 +4,7 @@ import authService from 'app/auth/services/auth.service';
 import { Button, Input } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { WarningCircle, Envelope } from '@phosphor-icons/react';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
 
 function RecoveryLink(): JSX.Element {

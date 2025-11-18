@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SdkFactory } from './index';
-import { LocalStorageService } from '../../services/local-storage.service';
+import { LocalStorageService } from 'services/local-storage.service';
 import { userThunks } from '../../../store/slices/user';
 import { Workspace } from '../../types';
-import { STORAGE_KEYS } from '../../services/storage-keys';
+import { STORAGE_KEYS } from 'services/storage-keys';
 
-vi.mock('app/core/services/env.service', () => ({
+vi.mock('services/env.service', () => ({
   default: {
     getVariable: vi.fn((key: string) => {
       if (key === 'newApi') return 'https://api.internxt.com';

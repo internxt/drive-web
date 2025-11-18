@@ -9,10 +9,10 @@ import { userThunks } from '../../../store/slices/user';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 
 import { match } from 'react-router-dom';
-import navigationService from '../../services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { AppView } from '../../types';
 import { SdkFactory } from '../../factory/sdk';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 
 export interface DeactivationViewProps {
   match?: match<{ token: string }>;

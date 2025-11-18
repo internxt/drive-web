@@ -1,7 +1,7 @@
 // vpnAuthService.test.ts
 import { describe, it, expect, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import { logIn, logOut, postMessageToVpn } from './vpnAuth.service';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 
 const mockHostname = 'https://example.com';
 

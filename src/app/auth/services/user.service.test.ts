@@ -1,4 +1,4 @@
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userService from './user.service';
 
@@ -22,7 +22,7 @@ const authClientMock = {
   sendUserDeactivationEmail: vi.fn(),
 };
 
-vi.mock('app/core/services/local-storage.service', () => ({
+vi.mock('services/local-storage.service', () => ({
   default: {
     get: vi.fn(),
   },

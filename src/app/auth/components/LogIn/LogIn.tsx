@@ -6,8 +6,8 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import localStorageService from 'app/core/services/local-storage.service';
-import { twoFactorRegexPattern } from 'app/core/services/validation.service';
+import localStorageService from 'services/local-storage.service';
+import { twoFactorRegexPattern } from 'services/validation.service';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions } from 'app/store/slices/user';
@@ -15,12 +15,12 @@ import authService, { authenticateUser, is2FANeeded } from '../../services/auth.
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WarningCircle } from '@phosphor-icons/react';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
+import errorService from 'services/error.service';
+import navigationService from 'services/navigation.service';
 import AppError, { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button } from '@internxt/ui';
-import workspacesService from '../../../core/services/workspace.service';
+import workspacesService from 'services/workspace.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import useLoginRedirections from '../../../routes/hooks/Login/useLoginRedirections';
 import shareService from '../../../share/services/share.service';
@@ -28,7 +28,7 @@ import PasswordInput from '../PasswordInput/PasswordInput';
 import TextInput from '../TextInput/TextInput';
 import { AuthMethodTypes } from 'app/payment/types';
 import vpnAuthService from 'app/auth/services/vpnAuth.service';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({

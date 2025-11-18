@@ -2,12 +2,12 @@ import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStreng
 import { Button, Input } from '@internxt/ui';
 import { CaretLeft, CheckCircle, FileArrowUp, Warning, WarningCircle } from '@phosphor-icons/react';
 import authService from 'app/auth/services/auth.service';
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import errorService from 'services/error.service';
+import localStorageService from 'services/local-storage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
-import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
+import PasswordStrengthIndicator from 'components/PasswordStrengthIndicator';
+import { MAX_PASSWORD_LENGTH } from 'components/ValidPassword';
 import { validateMnemonic } from 'bip39';
 import { Dispatch, RefObject, SetStateAction, createRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';

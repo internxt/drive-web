@@ -2,12 +2,12 @@ import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
+import { MAX_PASSWORD_LENGTH } from 'components/ValidPassword';
 import authService from 'app/auth/services/auth.service';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { Button, Input } from '@internxt/ui';
-import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
+import PasswordStrengthIndicator from 'components/PasswordStrengthIndicator';
 import { CaretLeft, WarningCircle, CheckCircle } from '@phosphor-icons/react';
 
 interface RestartAccount {
