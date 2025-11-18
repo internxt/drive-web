@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/react';
 import { getSha256 } from '../crypto/services/utils';
 import { NetworkFacade } from './NetworkFacade';
 import { ConnectionLostError } from './requests';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 import { MAX_TRIES, RETRY_DELAY, UPLOAD_CHUNK_SIZE, MIN_MULTIPART_SIZE } from './networkConstants';
 import { UploadProgressCallback } from './upload-utils';
 

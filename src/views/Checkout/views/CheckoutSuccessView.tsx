@@ -1,11 +1,11 @@
-import useEffectAsync from 'app/core/hooks/useEffectAsync';
-import navigationService from 'app/core/services/navigation.service';
+import useEffectAsync from 'hooks/useEffectAsync';
+import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useAppDispatch } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { userThunks } from 'app/store/slices/user';
 import { useCallback } from 'react';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { trackPaymentConversion } from 'app/analytics/impact.service';
 

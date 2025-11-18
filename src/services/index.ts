@@ -38,3 +38,4 @@ export { default as validationService } from './validation.service';
 export * from './workspace.service';
 export { default as workspacesService } from './workspace.service';
 export * from './zip.service';
+export { default as vpnAuthService } from './vpnAuth.service';

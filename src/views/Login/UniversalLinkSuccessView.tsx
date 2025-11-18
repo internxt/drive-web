@@ -1,8 +1,8 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
 import authService from 'services/auth.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import navigationService from 'app/core/services/navigation.service';
+import localStorageService from 'services/local-storage.service';
+import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';

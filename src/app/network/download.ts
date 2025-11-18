@@ -1,11 +1,11 @@
 import { createDecipheriv, Decipher } from 'crypto';
 
-import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
+import { buildProgressStream, joinReadableBinaryStreams } from 'services/stream.service';
 import { Abortable } from './Abortable';
 import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 
 import { generateFileKey } from './crypto';
 import downloadFileV2, { multipartDownload } from './download/v2';

@@ -13,9 +13,9 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
-import localStorageService from 'app/core/services/local-storage.service';
-import navigationService from 'app/core/services/navigation.service';
-import RealtimeService from 'app/core/services/socket.service';
+import localStorageService from 'services/local-storage.service';
+import navigationService from 'services/navigation.service';
+import RealtimeService from 'services/socket.service';
 import AppError, { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
@@ -39,10 +39,10 @@ import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'app/utils/backupKeyUtils';
+import { BackupData, detectBackupKeyFormat, prepareOldBackupRecoverPayloadForBackend } from 'utils/backupKeyUtils';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from 'app/core/factory/sdk';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import vpnAuthService from './vpnAuth.service';
 
 type ProfileInfo = {

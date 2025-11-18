@@ -1,11 +1,11 @@
 import { FolderAncestor, FolderAncestorWorkspace } from '@internxt/sdk/dist/drive/storage/types';
 import { CaretRight, FolderSimplePlus } from '@phosphor-icons/react';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
+import errorService from 'services/error.service';
+import navigationService from 'services/navigation.service';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import newStorageService from 'app/drive/services/new-storage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import BreadcrumbsMoveItemsDialogView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsMoveItemsDialogView';
+import BreadcrumbsMoveItemsDialogView from 'components/BreadcrumbsMoveItemsDialogView';
 import { Button, Loader, Modal } from '@internxt/ui';
 import { RootState, store } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -26,8 +26,8 @@ import { IRoot } from 'app/store/slices/storage/types';
 import { DriveFileData, DriveFolderData, DriveItemData, FolderPathDialog } from 'app/drive/types';
 import { CreateFolderDialog } from 'views/Drive/components';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import localStorageService from 'app/core/services/local-storage.service';
-import { STORAGE_KEYS } from 'app/core/services/storage-keys';
+import localStorageService from 'services/local-storage.service';
+import { STORAGE_KEYS } from 'services/storage-keys';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;

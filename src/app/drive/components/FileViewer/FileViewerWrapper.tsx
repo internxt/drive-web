@@ -1,10 +1,10 @@
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import { getAppConfig } from 'app/core/services/config.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import { getAppConfig } from 'services/config.service';
+import localStorageService from 'services/local-storage.service';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import { OrderDirection } from 'app/core/types';
 import {
   ThumbnailToUpload,
