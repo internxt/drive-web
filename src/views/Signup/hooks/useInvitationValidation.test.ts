@@ -1,8 +1,8 @@
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useInvitationValidation } from './useInvitationValidation';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
+import errorService from 'services/error.service';
+import navigationService from 'services/navigation.service';
 
 describe('useInvitationValidation', () => {
   const mockSetInvitationId = vi.fn();

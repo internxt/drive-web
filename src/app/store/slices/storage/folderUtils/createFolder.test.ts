@@ -3,7 +3,7 @@ import { createFolder } from './createFolder';
 import { CreateFolderResponse, EncryptionVersion } from '@internxt/sdk/dist/drive/storage/types';
 import folderService from 'app/drive/services/folder.service';
 import tasksService from '../../../../tasks/services/tasks.service';
-import errorService from '../../../../core/services/error.service';
+import errorService from 'services/error.service';
 import AppError from '../../../../core/types';
 import { DriveFolderData } from 'app/drive/types';
 
@@ -15,7 +15,7 @@ vi.mock('..', () => ({
   storageSelectors: vi.fn(),
 }));
 
-vi.mock('../../../../core/services/workspace.service', () => ({
+vi.mock('services/workspace.service', () => ({
   default: {
     createFolder: vi.fn(),
   },
@@ -28,7 +28,7 @@ vi.mock('../../../../tasks/services/tasks.service', () => ({
   },
 }));
 
-vi.mock('../../../../core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     castError: vi.fn().mockImplementation((e) => e),
     reportError: vi.fn(),

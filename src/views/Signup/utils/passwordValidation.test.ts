@@ -6,7 +6,7 @@ vi.mock(import('@internxt/lib/dist/src/auth/testPasswordStrength'));
 vi.mock('i18next', () => ({
   t: vi.fn((key: string) => key),
 }));
-vi.mock('../../../app/shared/components/ValidPassword', () => ({
+vi.mock('components/ValidPassword', () => ({
   MAX_PASSWORD_LENGTH: 256,
 }));
 
