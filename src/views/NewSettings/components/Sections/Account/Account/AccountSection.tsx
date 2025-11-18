@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { areCredentialsCorrect } from 'app/auth/services/auth.service';
 import userService from 'app/auth/services/user.service';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import ClearTrashDialog from '../../../../../../views/Trash/components/ClearTrashDialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';

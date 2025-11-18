@@ -3,7 +3,7 @@ import { ActionReducerMapBuilder, AnyAction, ThunkDispatch, createAsyncThunk } f
 import { t } from 'i18next';
 import storageThunks from '.';
 import { RootState } from '../../..';
-import errorService from '../../../../core/services/error.service';
+import errorService from 'services/error.service';
 import { DriveFolderData, DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import tasksService from '../../../../tasks/services/tasks.service';
@@ -17,7 +17,7 @@ import { StorageState } from '../storage.model';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
 import { IRoot } from '../types';
-import { wait } from '../../../../utils/timeUtils';
+import { wait } from 'utils/timeUtils';
 import newStorageService from 'app/drive/services/new-storage.service';
 
 interface UploadFolderThunkPayload {

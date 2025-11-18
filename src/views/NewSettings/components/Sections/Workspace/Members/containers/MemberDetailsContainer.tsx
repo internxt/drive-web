@@ -1,7 +1,7 @@
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { DotsThreeVertical } from '@phosphor-icons/react';
-import errorService from 'app/core/services/error.service';
-import workspacesService from 'app/core/services/workspace.service';
+import errorService from 'services/error.service';
+import workspacesService from 'services/workspace.service';
 import Usage from '../../../../Usage/Usage';
 import { getMemberRole } from '../../../../../utils';
 import { useAppSelector } from 'app/store/hooks';
@@ -10,7 +10,7 @@ import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Card from 'app/shared/components/Card';
+import Card from 'components/Card';
 import { MemberRole } from '../../../../../types/types';
 import DeactivateMemberModal from '../components/DeactivateModal';
 import LeaveMemberModal from '../components/LeaveModal';

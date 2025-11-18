@@ -4,7 +4,7 @@ import { items } from '@internxt/lib';
 
 import DriveItemDropdownActions from '../../DriveItemDropdownActions';
 import iconService from 'app/drive/services/icon.service';
-import useForceUpdate from 'app/core/hooks/useForceUpdate';
+import useForceUpdate from 'hooks/useForceUpdate';
 import { DriveExplorerItemProps } from '../types';
 import { useDriveItemActions, useDriveItemStoreProps, useDriveItemDrag, useDriveItemDrop } from '../../../hooks';
 

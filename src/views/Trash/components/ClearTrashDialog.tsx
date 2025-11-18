@@ -1,4 +1,4 @@
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button, Modal } from '@internxt/ui';
 import { RootState } from 'app/store';

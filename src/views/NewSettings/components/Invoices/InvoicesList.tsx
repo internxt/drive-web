@@ -1,7 +1,7 @@
 import { Invoice } from '@internxt/sdk/dist/drive/payments/types/types';
 import { DownloadSimple } from '@phosphor-icons/react';
 import { useState } from 'react';
-import dateService from 'app/core/services/date.service';
+import dateService from 'services/date.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import currencyService from 'app/payment/services/currency.service';

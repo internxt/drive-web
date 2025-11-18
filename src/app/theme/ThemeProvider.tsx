@@ -9,7 +9,7 @@ import IdManagementBG from 'assets/images/banner/IdManagement-bg.png';
 import EnvironmentBG from 'assets/images/banner/environment_theme.png';
 import SummerBG from 'assets/images/banner/SummerBanner.webp';
 import AnniversaryBG from 'assets/images/banner/5th_anniversary_theme.avif';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 
 export type Theme =
   | 'system'

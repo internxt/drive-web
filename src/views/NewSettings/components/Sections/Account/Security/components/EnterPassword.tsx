@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { areCredentialsCorrect } from 'app/auth/services/auth.service';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 
 import { Button, Input } from '@internxt/ui';
-import Card from 'app/shared/components/Card';
+import Card from 'components/Card';
 
 const EnterPassword = ({
   onUnlock,

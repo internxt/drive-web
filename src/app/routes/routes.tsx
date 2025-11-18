@@ -1,7 +1,7 @@
 import { Route, RouteProps } from 'react-router-dom';
 import views from '../core/config/views';
 import layouts from '../core/layouts';
-import configService from '../core/services/config.service';
+import configService from 'services/config.service';
 import { AppViewConfig } from '../core/types';
 import { createElement } from 'react';
 

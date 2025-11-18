@@ -3,7 +3,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ChangePasswordModal from './ChangePasswordModal';
 import Section from '../../../General/components/Section';
-import Card from 'app/shared/components/Card';
+import Card from 'components/Card';
 import { Button } from '@internxt/ui';
 
 const ChangePassword = ({
