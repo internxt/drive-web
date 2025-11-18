@@ -356,7 +356,8 @@
     },
     "error": {
       "invalidPlan": "Tipo di piano non supportato. Seleziona un piano valido.",
-      "fetchingCryptoCurrencies": "Non siamo riusciti a caricare le opzioni di criptovalute disponibili"
+      "fetchingCryptoCurrencies": "Non siamo riusciti a caricare le opzioni di criptovalute disponibili",
+      "addressRequired": "Completa il tuo indirizzo di fatturazione per continuare"
     }
   },
   "general": {

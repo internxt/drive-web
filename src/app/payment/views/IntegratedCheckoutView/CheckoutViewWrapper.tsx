@@ -32,7 +32,7 @@ import { useThemeContext } from '../../../theme/ThemeProvider';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
 import { PaymentType, PlanInterval } from '../../types';
-import { CheckoutViewManager, UserInfoProps } from './types/checkout.types';
+import { AddressProvider, CheckoutViewManager, UserInfoProps } from './types/checkout.types';
 import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'app/payment/hooks/useUserPayment';
 import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'app/payment/components/checkout/CryptoPaymentDialog';
@@ -74,14 +74,15 @@ let stripeSdk: Stripe;
 
 const CheckoutViewWrapper = () => {
   const dispatch = useAppDispatch();
+  const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const [mobileToken, setMobileToken] = useState<string | null>(null);
-  const [postalCode, setPostalCode] = useState<string>('');
-  const [country, setCountry] = useState<string>('');
+  const [address, setAddress] = useState<AddressProvider>();
+  const [userName, setUserName] = useState(user?.name ?? '');
+
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
-  const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const { doRegister } = useSignUp('activate');
   const { handleUserPayment } = useUserPayment();
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
@@ -91,9 +92,9 @@ const CheckoutViewWrapper = () => {
   const [selectedCurrency, setSelectedCurrency] = useState<string>('eur');
   const [currencyType, setCurrencyType] = useState<PaymentType>();
 
-  const name = user?.name ?? '';
+  const userAccountName = user?.name ?? '';
   const lastName = user?.lastname ?? '';
-  const fullName = name + ' ' + lastName;
+  const fullName = userAccountName + ' ' + lastName;
   const isUserAuthenticated = !!user;
   const thereIsAnyError = state.error?.coupon || state.error?.auth || state.error?.stripe;
 
@@ -109,7 +110,6 @@ const CheckoutViewWrapper = () => {
     setPromoCodeData,
     setSelectedPlan,
     setStripeElementsOptions,
-    setUserNameFromElementAddress,
     setSeatsForBusinessSubscription,
     setPrices,
     setIsCheckoutReadyToRender,
@@ -121,7 +121,6 @@ const CheckoutViewWrapper = () => {
     authMethod,
     currentSelectedPlan,
     avatarBlob,
-    userNameFromAddressElement,
     couponCodeData,
     elementsOptions,
     promoCodeName,
@@ -182,16 +181,16 @@ const CheckoutViewWrapper = () => {
       return;
     }
 
-    if (userLocationData?.location !== country && postalCode) {
+    if (userLocationData?.location !== address?.country && address?.postal_code) {
       recalculatePrice(
         currentSelectedPlan.price.id,
         currentSelectedPlan.price.currency,
         promoCodeName,
-        postalCode,
-        country,
+        address.postal_code,
+        address.country,
       );
     }
-  }, [country, postalCode, currentSelectedPlan?.price?.id, currentSelectedPlan?.price?.currency]);
+  }, [address?.country, address?.postal_code, currentSelectedPlan?.price?.id, currentSelectedPlan?.price?.currency]);
 
   useEffect(() => {
     if (thereIsAnyError) {
@@ -420,7 +419,7 @@ const CheckoutViewWrapper = () => {
 
     const { email, password, companyName, companyVatId } = formData;
     const isStripeNotLoaded = !stripeSDK || !elements;
-    const customerName = companyName ?? userNameFromAddressElement;
+    const customerName = companyName ?? userName;
 
     const authCaptcha = await generateCaptchaToken();
 
@@ -448,20 +447,28 @@ const CheckoutViewWrapper = () => {
         return;
       }
 
+      if (!address?.line1 || !address?.city || !address.country || !address?.postal_code) {
+        throw new Error(translate('checkout.error.addressRequired'));
+      }
+
       if (currencyType === PaymentType['FIAT']) {
         const { error: elementsError } = await elements.submit();
 
         if (elementsError) {
           throw new Error(elementsError.message);
         }
+      } else {
       }
 
       const customerToken = await generateCaptchaToken();
-      const { customerId, token } = await checkoutService.getCustomerId({
+      const { customerId, token } = await checkoutService.createCustomer({
         customerName,
-        countryCode: country,
-        postalCode,
-        vatId: companyVatId,
+        lineAddress1: address?.line1,
+        lineAddress2: address?.line2 ?? undefined,
+        country: address?.country,
+        postalCode: address?.postal_code,
+        city: address?.city,
+        companyVatId,
         captchaToken: customerToken,
       });
 
@@ -598,12 +605,12 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const onCountryChange = (country: string) => {
-    setCountry(country);
+  const onUserAddressChanges = (address: AddressProvider) => {
+    setAddress(address);
   };
 
-  const onPostalCodeChange = (postalCode: string) => {
-    setPostalCode(postalCode);
+  const onUserNameChanges = (userName: string) => {
+    setUserName(userName);
   };
 
   const onSeatsChange = (seats: number) => {
@@ -633,12 +640,11 @@ const CheckoutViewWrapper = () => {
     onLogOut,
     onCheckoutButtonClicked,
     onRemoveAppliedCouponCode,
-    onCountryChange,
-    onPostalCodeChange,
+    onUserAddressChanges,
     handleAuthMethodChange: setAuthMethod,
-    onUserNameFromAddressElementChange: setUserNameFromElementAddress,
     onSeatsChange,
     onCurrencyChange: setSelectedCurrency,
+    onUserNameChanges,
   };
 
   return (

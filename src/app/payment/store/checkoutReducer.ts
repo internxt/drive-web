@@ -11,7 +11,6 @@ export const initialStateForCheckout: State = {
   isUpdatingSubscription: false,
   country: '',
   prices: [],
-  userNameFromAddressElement: 'Internxt User',
   couponCodeData: undefined,
   elementsOptions: undefined,
   error: undefined,
@@ -39,8 +38,6 @@ export const checkoutReducer = (state: State, action: Action): State => {
       return { ...state, country: action.payload };
     case 'SET_PRICES':
       return { ...state, prices: action.payload };
-    case 'SET_USER_NAME_FROM_ADDRESS_ELEMENT':
-      return { ...state, userNameFromAddressElement: action.payload };
     case 'SET_PROMO_CODE_NAME':
       return { ...state, promoCodeName: action.payload };
     case 'SET_COUPON_CODE_DATA':

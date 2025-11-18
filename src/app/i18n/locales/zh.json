@@ -279,7 +279,8 @@
     },
     "error": {
       "invalidPlan": "不支持的套餐类型。请选择有效的套餐。",
-      "fetchingCryptoCurrencies": "无法加载可用的加密货币选项"
+      "fetchingCryptoCurrencies": "无法加载可用的加密货币选项",
+      "addressRequired": "请填写您的账单地址以继续"
     }
   },
   "general": {

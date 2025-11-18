@@ -10,7 +10,6 @@ describe('useCheckout hook actions', () => {
     setAuthMethod,
     setError,
     onRemoveAppliedCouponCode,
-    setUserNameFromElementAddress,
     setAvatarBlob,
     setIsUserPaying,
     setPlan,
@@ -44,11 +43,6 @@ describe('useCheckout hook actions', () => {
     onRemoveAppliedCouponCode();
     expect(dispatch).toHaveBeenNthCalledWith(1, { type: 'SET_COUPON_CODE_DATA', payload: undefined });
     expect(dispatch).toHaveBeenNthCalledWith(2, { type: 'SET_PROMO_CODE_NAME', payload: undefined });
-  });
-
-  it('When setUserNameFromElementAddress is called, then it dispatches SET_USER_NAME_FROM_ADDRESS_ELEMENT with the username', () => {
-    setUserNameFromElementAddress('John Doe');
-    expect(dispatch).toHaveBeenCalledWith({ type: 'SET_USER_NAME_FROM_ADDRESS_ELEMENT', payload: 'John Doe' });
   });
 
   it('When setAvatarBlob is called, then it dispatches SET_AVATAR_BLOB with the provided Blob or null', () => {

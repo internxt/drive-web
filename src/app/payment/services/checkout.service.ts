@@ -4,6 +4,7 @@ import axios from 'axios';
 import localStorageService from 'app/core/services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import {
+  CreateCustomerPayload,
   CreatePaymentIntentPayload,
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
@@ -36,29 +37,29 @@ const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: stri
   };
 };
 
-const getCustomerId = async ({
+const createCustomer = async ({
   customerName,
-  countryCode,
+  city,
+  country,
+  lineAddress1,
+  lineAddress2,
   postalCode,
-  vatId,
   captchaToken,
-}: {
-  customerName: string;
-  countryCode: string;
-  postalCode: string;
-  captchaToken: string;
-  vatId?: string;
-}): Promise<{
+  companyVatId,
+}: CreateCustomerPayload): Promise<{
   customerId: string;
   token: string;
 }> => {
   const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
-  return checkoutClient.getCustomerId({
+  return checkoutClient.createCustomer({
+    city,
+    lineAddress1,
+    lineAddress2,
     customerName,
-    country: countryCode,
+    country,
     postalCode,
     captchaToken,
-    companyVatId: vatId,
+    companyVatId,
   });
 };
 
@@ -241,7 +242,7 @@ const loadStripeElements = async (
 
 const checkoutService = {
   fetchPromotionCodeByName,
-  getCustomerId,
+  createCustomer,
   createPaymentIntent,
   getPriceById,
   createSubscription,

@@ -265,7 +265,8 @@
     },
     "error": {
       "invalidPlan": "Type de plan non pris en charge. Veuillez sélectionner un plan valide.",
-      "fetchingCryptoCurrencies": "Nous n'avons pas pu charger les options de crypto-monnaies disponibles"
+      "fetchingCryptoCurrencies": "Nous n'avons pas pu charger les options de crypto-monnaies disponibles",
+      "addressRequired": "Veuillez compléter votre adresse de facturation pour continuer"
     }
   },
   "general": {

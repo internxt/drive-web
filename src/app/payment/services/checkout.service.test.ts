@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, test } from 'vitest';
 import checkoutService from './checkout.service';
 import {
+  CreateCustomerPayload,
   CreatePaymentIntentPayload,
   CreateSubscriptionPayload,
   GetPriceByIdPayload,
@@ -16,7 +17,7 @@ vi.mock('../../core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn().mockReturnValue({
       createCheckoutClient: vi.fn().mockResolvedValue({
-        getCustomerId: vi.fn().mockResolvedValue({
+        createCustomer: vi.fn().mockResolvedValue({
           customerId: 'cus_123',
           token: 'token_123',
         }),
@@ -71,15 +72,17 @@ describe('Checkout Service tests', () => {
 
   describe('Get Customer ID function', () => {
     it('When the customer Id is requested, then the customer ID and the user token are returned', async () => {
-      const getCustomerPayload = {
+      const getCustomerPayload: CreateCustomerPayload = {
         customerName: 'User customer',
-        countryCode: 'ES',
+        country: 'ES',
         postalCode: '12345',
-        vatId: 'VAT123',
+        companyVatId: 'VAT123',
         captchaToken: 'token',
+        city: 'Valencia',
+        lineAddress1: 'Marina de empresas',
       };
 
-      const result = await checkoutService.getCustomerId(getCustomerPayload);
+      const result = await checkoutService.createCustomer(getCustomerPayload);
 
       expect(result).toStrictEqual({
         customerId: 'cus_123',
