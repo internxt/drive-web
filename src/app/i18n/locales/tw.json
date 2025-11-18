@@ -106,7 +106,8 @@
       "createAccount": "創建帳戶",
       "2FA": "雙重身份驗證代碼",
       "twoFactorAuthenticationCode": "雙重身份驗證代碼",
-      "wrongLogin": "使用者名稱或密碼無效"
+      "wrongLogin": "使用者名稱或密碼無效",
+      "failedToSendAuthData": "無法發送身份驗證數據。請重試。"
     },
     "signup": {
       "title": "創建帳戶",

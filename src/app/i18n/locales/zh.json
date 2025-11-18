@@ -104,7 +104,8 @@
       "createAccount": "创建账户",
       "2FA": "双因素代码",
       "twoFactorAuthenticationCode": "双因素验证码",
-      "wrongLogin": "用户名或密码无效"
+      "wrongLogin": "用户名或密码无效",
+      "failedToSendAuthData": "发送身份验证数据失败。请重试。"
     },
     "signup": {
       "title": "创建账户",

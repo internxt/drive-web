@@ -107,7 +107,8 @@
       "createAccount": "Create account",
       "2FA": "Two factor code",
       "twoFactorAuthenticationCode": "Two factor authentication code",
-      "wrongLogin": "Invalid username or password"
+      "wrongLogin": "Invalid username or password",
+      "failedToSendAuthData": "Failed to send authentication data. Please try again."
     },
     "signup": {
       "title": "Create account",
