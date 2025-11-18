@@ -120,6 +120,7 @@ export interface CreatePaymentIntentPayload {
   token: string;
   currency: string;
   captchaToken: string;
+  userAddress: string;
   seatsForBusinessSubscription?: number;
   promoCodeId?: string;
 }
@@ -131,6 +132,7 @@ export interface ProcessPurchasePayload {
   currency: string;
   elements: StripeElements;
   captchaToken: string;
+  userAddress: string;
   confirmPayment: Stripe['confirmPayment'];
   confirmSetupIntent: Stripe['confirmSetup'];
   openCryptoPaymentDialog?: (key: ActionDialog, config?: DialogActionConfig) => void;
@@ -147,6 +149,7 @@ export interface UseUserPaymentPayload {
   currency: string;
   selectedPlan: PriceWithTax;
   elements: StripeElements;
+  userAddress: string;
   confirmPayment: Stripe['confirmPayment'];
   confirmSetupIntent: Stripe['confirmSetup'];
   openCryptoPaymentDialog?: (key: ActionDialog, config?: DialogActionConfig) => void;

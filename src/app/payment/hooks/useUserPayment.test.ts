@@ -8,6 +8,7 @@ import navigationService from '../../core/services/navigation.service';
 import { AppView } from '../../core/types';
 import { PaymentType, ProcessPurchasePayload, UseUserPaymentPayload } from '../types';
 import notificationsService from '../../notifications/services/notifications.service';
+import { CreateSubscriptionPayload } from '@internxt/sdk/dist/payments/types';
 
 const mockHostname = 'https://hostname.com';
 
@@ -36,14 +37,14 @@ describe('Custom hook to handle payments', () => {
 
       const { getSubscriptionPaymentIntent } = useUserPayment();
 
-      const subscriptionPaymentIntentPayload = {
+      const subscriptionPaymentIntentPayload: CreateSubscriptionPayload = {
         customerId: 'customer_id',
         priceId: 'price_id',
         token: 'token',
         currency: 'eur',
         captchaToken: 'captcha_token',
         promoCodeId: 'promo_code_id',
-        seatsForBusinessSubscription: 1,
+        quantity: 1,
       };
 
       const response = await getSubscriptionPaymentIntent(subscriptionPaymentIntentPayload);
@@ -55,7 +56,7 @@ describe('Custom hook to handle payments', () => {
         currency: subscriptionPaymentIntentPayload.currency,
         promoCodeId: subscriptionPaymentIntentPayload.promoCodeId,
         captchaToken: subscriptionPaymentIntentPayload.captchaToken,
-        quantity: subscriptionPaymentIntentPayload.seatsForBusinessSubscription,
+        quantity: subscriptionPaymentIntentPayload.quantity,
       });
       expect(response).toStrictEqual({
         type: 'payment',
@@ -83,6 +84,7 @@ describe('Custom hook to handle payments', () => {
         token: 'token',
         promoCodeId: 'promo_code_id',
         captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
       };
 
       const response = await getLifetimePaymentIntent(lifetimePaymentIntentPayload);
@@ -106,6 +108,7 @@ describe('Custom hook to handle payments', () => {
         token: 'encoded-customer-id',
         promoCodeId: 'promo_code_id',
         captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
       };
       const paymentIntentResponse = {
         type: PaymentType['CRYPTO'] as const,
@@ -169,6 +172,7 @@ describe('Custom hook to handle payments', () => {
           },
         } as any,
         captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         translate: translate,
@@ -226,6 +230,7 @@ describe('Custom hook to handle payments', () => {
           },
         } as any,
         captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         translate: translate,
@@ -284,6 +289,7 @@ describe('Custom hook to handle payments', () => {
           },
         } as any,
         captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         translate: translate,
@@ -446,6 +452,7 @@ describe('Custom hook to handle payments', () => {
           },
         } as any,
         captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         gclidStored: null,
@@ -493,6 +500,7 @@ describe('Custom hook to handle payments', () => {
           },
         } as any,
         captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         gclidStored: null,
@@ -536,6 +544,7 @@ describe('Custom hook to handle payments', () => {
           },
         } as any,
         captchaToken: 'captcha_token',
+        userAddress: '1.1.1.1',
         confirmPayment,
         confirmSetupIntent: setupIntent,
         gclidStored: null,

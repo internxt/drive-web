@@ -509,6 +509,7 @@ const CheckoutViewWrapper = () => {
           captchaToken: intentCaptcha,
           seatsForBusinessSubscription,
           openCryptoPaymentDialog,
+          userAddress: userLocationData?.ip as string,
         });
       }
     } catch (err) {
