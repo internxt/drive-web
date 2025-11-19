@@ -2,6 +2,8 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+self.__WB_MANIFEST;
+
 type StreamMetadata = [ReadableStream<Uint8Array> | null, any, MessagePort];
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
