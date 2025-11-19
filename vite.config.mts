@@ -5,6 +5,7 @@ import path from 'path';
 import { defineConfig } from 'vite';
 import obfuscator from 'vite-plugin-bundle-obfuscator';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import { VitePWA } from 'vite-plugin-pwa';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
 
@@ -15,6 +16,19 @@ const ASSETS_DIR = 'static';
 export default defineConfig({
   base: process.env.PUBLIC_URL ?? '/',
   plugins: [
+    VitePWA({
+      strategies: 'injectManifest',
+      filename: 'streamsaver/stream-saver.js',
+      srcDir: 'src',
+      injectManifest: {
+        swSrc: 'src/stream-saver-sw.ts',
+      },
+      includeAssets: ['streamsaver/mitm.html'],
+      devOptions: {
+        enabled: true,
+        type: 'module',
+      },
+    }),
     react(),
     svgr(),
     nodePolyfills({

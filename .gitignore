@@ -11,6 +11,9 @@
 # production
 /build
 
+# vite-plugin-pwa dev output
+dev-dist/
+
 # misc
 .DS_Store
 .env*
