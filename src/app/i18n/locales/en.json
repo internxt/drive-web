@@ -313,7 +313,8 @@
     },
     "error": {
       "invalidPlan": "Unsupported plan type. Please select a valid plan.",
-      "fetchingCryptoCurrencies": "We couldn't load the available cryptocurrency options"
+      "fetchingCryptoCurrencies": "We couldn't load the available cryptocurrency options",
+      "addressRequired": "Please complete your billing address to continue"
     }
   },
   "general": {

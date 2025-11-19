@@ -292,7 +292,8 @@
     },
     "error": {
       "invalidPlan": "Tipo de plan no soportado. Por favor, selecciona un plan válido.",
-      "fetchingCryptoCurrencies": "No pudimos cargar las opciones de criptomonedas disponibles"
+      "fetchingCryptoCurrencies": "No pudimos cargar las opciones de criptomonedas disponibles",
+      "addressRequired": "Por favor, completa tu dirección de facturación para continuar"
     }
   },
   "general": {

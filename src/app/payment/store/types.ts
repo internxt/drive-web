@@ -13,7 +13,6 @@ export interface State {
   isUpdatingSubscription: boolean;
   prices: DisplayPrice[];
   country: string;
-  userNameFromAddressElement: string;
   seatsForBusinessSubscription: number;
   authMethod: AuthMethodTypes;
   promoCodeName?: string;
@@ -33,7 +32,6 @@ export type Action =
   | { type: 'SET_PRICES'; payload: DisplayPrice[] }
   | { type: 'SET_COUNTRY'; payload: string }
   | { type: 'SET_SEATS_FOR_BUSINESS_SUBSCRIPTION'; payload: number }
-  | { type: 'SET_USER_NAME_FROM_ADDRESS_ELEMENT'; payload: string }
   | { type: 'SET_PROMO_CODE_NAME'; payload: string | undefined }
   | { type: 'SET_COUPON_CODE_DATA'; payload: CouponCodeData | undefined }
   | { type: 'SET_ELEMENTS_OPTIONS'; payload: StripeElementsOptions }

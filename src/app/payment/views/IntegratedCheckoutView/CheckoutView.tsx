@@ -150,9 +150,8 @@ const CheckoutView = ({
                   <div className="flex w-full flex-col rounded-2xl border border-gray-10 bg-surface p-5">
                     <AddressElement
                       onChange={(e) => {
-                        checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
-                        checkoutViewManager.onCountryChange(e.value.address.country);
-                        checkoutViewManager.onPostalCodeChange(e.value.address.postal_code);
+                        checkoutViewManager.onUserNameChanges(e.value.name);
+                        checkoutViewManager.onUserAddressChanges(e.value.address);
                       }}
                       options={{
                         mode: 'billing',
