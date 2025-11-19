@@ -16,6 +16,7 @@ import {
 } from '../types';
 import { ActionDialog } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { CreateSubscriptionPayload } from '@internxt/sdk/dist/payments/types';
 
 export const useUserPayment = () => {
   const getSubscriptionPaymentIntent = async ({
@@ -23,10 +24,10 @@ export const useUserPayment = () => {
     priceId,
     token,
     currency,
-    seatsForBusinessSubscription,
+    quantity,
     captchaToken,
     promoCodeId,
-  }: CreatePaymentIntentPayload) => {
+  }: CreateSubscriptionPayload) => {
     const {
       type: paymentType,
       clientSecret: client_secret,
@@ -39,7 +40,7 @@ export const useUserPayment = () => {
       currency,
       captchaToken,
       promoCodeId,
-      quantity: seatsForBusinessSubscription,
+      quantity,
     });
 
     return {
@@ -55,6 +56,7 @@ export const useUserPayment = () => {
     priceId,
     currency,
     token,
+    userAddress,
     captchaToken,
     promoCodeId,
   }: CreatePaymentIntentPayload) => {
@@ -62,6 +64,7 @@ export const useUserPayment = () => {
       customerId,
       priceId,
       currency,
+      userAddress,
       token,
       captchaToken,
       promoCodeId: promoCodeId,
@@ -142,7 +145,7 @@ export const useUserPayment = () => {
       customerId,
       priceId,
       token,
-      seatsForBusinessSubscription,
+      quantity: seatsForBusinessSubscription,
       captchaToken,
       promoCodeId: couponCodeData?.codeId,
       currency,
@@ -183,6 +186,7 @@ export const useUserPayment = () => {
     couponCodeData,
     elements,
     captchaToken,
+    userAddress,
     confirmPayment,
     openCryptoPaymentDialog,
   }: ProcessPurchasePayload) => {
@@ -199,6 +203,7 @@ export const useUserPayment = () => {
       token,
       captchaToken,
       promoCodeId: couponCodeData?.codeId,
+      userAddress,
       currency,
     });
 
@@ -245,6 +250,7 @@ export const useUserPayment = () => {
     gclidStored,
     seatsForBusinessSubscription = 1,
     captchaToken,
+    userAddress,
     translate,
     confirmPayment,
     openCryptoPaymentDialog,
@@ -277,6 +283,7 @@ export const useUserPayment = () => {
           couponCodeData,
           seatsForBusinessSubscription,
           captchaToken,
+          userAddress,
           translate,
           confirmPayment,
           confirmSetupIntent,
@@ -293,6 +300,7 @@ export const useUserPayment = () => {
           token,
           couponCodeData,
           captchaToken,
+          userAddress,
           translate,
           confirmPayment,
           openCryptoPaymentDialog,

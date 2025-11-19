@@ -109,6 +109,7 @@ export const createPaymentIntent = async ({
   token,
   currency,
   captchaToken,
+  userAddress,
   promoCodeId,
 }: CreatePaymentIntentPayload): Promise<PaymentIntent> => {
   const checkoutClient = await SdkFactory.getNewApiInstance().createCheckoutClient();
@@ -118,6 +119,7 @@ export const createPaymentIntent = async ({
     token,
     currency,
     captchaToken,
+    userAddress,
     promoCodeId,
   });
 };
