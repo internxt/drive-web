@@ -86,12 +86,12 @@ describe('checkoutReducer', () => {
 
   it('tracks payment and loading status without erasing existing information', () => {
     const payingResult = checkoutReducer(
-      { ...initialStateForCheckout, country: 'ES', userNameFromAddressElement: 'Jane Smith' },
+      { ...initialStateForCheckout, country: 'ES', promoCodeName: 'EXISTING' },
       { type: 'SET_IS_PAYING', payload: true },
     );
     expect(payingResult.isPaying).toBe(true);
     expect(payingResult.country).toBe('ES');
-    expect(payingResult.userNameFromAddressElement).toBe('Jane Smith');
+    expect(payingResult.promoCodeName).toBe('EXISTING');
 
     const readyResult = checkoutReducer(
       { ...initialStateForCheckout, isPaying: true, promoCodeName: 'WELCOME' },
@@ -118,15 +118,7 @@ describe('checkoutReducer', () => {
     expect(updatingResult.country).toBe('DE');
   });
 
-  it('saves user name and promo codes while keeping everything else intact', () => {
-    const userNameResult = checkoutReducer(
-      { ...initialStateForCheckout, isCheckoutReadyToRender: true, country: 'IT' },
-      { type: 'SET_USER_NAME_FROM_ADDRESS_ELEMENT', payload: 'John Doe' },
-    );
-    expect(userNameResult.userNameFromAddressElement).toBe('John Doe');
-    expect(userNameResult.isCheckoutReadyToRender).toBe(true);
-    expect(userNameResult.country).toBe('IT');
-
+  it('saves promo codes while keeping everything else intact', () => {
     const promoCodeResult = checkoutReducer(
       { ...initialStateForCheckout, isPaying: true, seatsForBusinessSubscription: 7 },
       { type: 'SET_PROMO_CODE_NAME', payload: 'SUMMER2024' },
@@ -156,12 +148,12 @@ describe('checkoutReducer', () => {
     expect(elementsResult.authMethod).toBe('signIn');
 
     const authResult = checkoutReducer(
-      { ...initialStateForCheckout, isCheckoutReadyToRender: true, userNameFromAddressElement: 'Test User' },
+      { ...initialStateForCheckout, isCheckoutReadyToRender: true, promoCodeName: 'SPECIAL' },
       { type: 'SET_AUTH_METHOD', payload: 'signIn' },
     );
     expect(authResult.authMethod).toBe('signIn');
     expect(authResult.isCheckoutReadyToRender).toBe(true);
-    expect(authResult.userNameFromAddressElement).toBe('Test User');
+    expect(authResult.promoCodeName).toBe('SPECIAL');
 
     const mockError: PartialErrorState = { stripe: 'Payment failed', auth: 'Authentication error' };
     const errorResult = checkoutReducer(
