@@ -23,7 +23,7 @@ export const useOAuthFlow = ({ authOrigin }: UseOAuthFlowParams): UseOAuthFlowRe
       const newToken = localStorageService.get('xNewToken');
 
       if (user && newToken) {
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(globalThis.location.search);
         navigationService.push(AppView.OAuthLink, Object.fromEntries(params.entries()));
       }
     }

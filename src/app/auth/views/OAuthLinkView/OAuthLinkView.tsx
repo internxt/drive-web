@@ -12,7 +12,7 @@ const OAuthLinkView = (): JSX.Element => {
   const { translate } = useTranslationContext();
   const user = useMemo(() => localStorageService.getUser(), []);
 
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(globalThis.location.search);
 
   useEffect(() => {
     if (!user) {
@@ -40,7 +40,6 @@ const OAuthLinkView = (): JSX.Element => {
 
     const success = oauthService.sendAuthSuccess(user, newToken);
     if (!success) {
-      // If sending failed, show error or redirect to login
       navigationService.history.replace(AppView.Login);
     }
   };
