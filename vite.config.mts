@@ -22,7 +22,6 @@ export default defineConfig({
       filename: 'stream-saver-sw.ts',
       srcDir: 'src',
       injectManifest: {
-        swSrc: 'src/stream-saver-sw.ts',
         swDest: 'dist/stream-saver-sw.js',
         minify: false,
         enableWorkboxModulesLogs: true,
