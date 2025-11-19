@@ -19,10 +19,10 @@ export default defineConfig({
     VitePWA({
       strategies: 'injectManifest',
       scope: '/streamsaver/',
-      filename: 'streamsaver/stream-saver.js',
       srcDir: 'src',
       injectManifest: {
         swSrc: 'stream-saver-sw.ts',
+        swDest: 'build/streamsaver/stream-saver.js',
       },
       includeAssets: ['streamsaver/mitm.html'],
       devOptions: {
