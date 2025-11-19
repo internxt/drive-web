@@ -1,14 +1,21 @@
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { Elements } from '@stripe/react-stripe-js';
+import { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js';
 import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
 
 import { UserLocation } from '@internxt/sdk';
 import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Loader } from '@internxt/ui';
+import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
+import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
+import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'app/payment/components/checkout/CryptoPaymentDialog';
+import { useUserPayment } from 'app/payment/hooks/useUserPayment';
+import currencyService from 'app/payment/services/currency.service';
+import { generateCaptchaToken } from 'app/utils/generateCaptchaToken';
 import { userLocation } from 'app/utils/userLocation';
 import { useCheckout } from 'hooks/checkout/useCheckout';
+import ChangePlanDialog from '../../../../views/NewSettings/components/Sections/Account/Plans/components/ChangePlanDialog';
 import { useSignUp } from '../../../../views/Signup/hooks/useSignup';
 import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
@@ -18,9 +25,7 @@ import RealtimeService from '../../../core/services/socket.service';
 import { STORAGE_KEYS } from '../../../core/services/storage-keys';
 import AppError, { AppView, IFormValues } from '../../../core/types';
 import databaseService from '../../../database/services/database.service';
-import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import ChangePlanDialog from '../../../../views/NewSettings/components/Sections/Account/Plans/components/ChangePlanDialog';
 import longNotificationsService from '../../../notifications/services/longNotification.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import checkoutService from '../../../payment/services/checkout.service';
@@ -32,13 +37,8 @@ import { useThemeContext } from '../../../theme/ThemeProvider';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
 import { PaymentType, PlanInterval } from '../../types';
-import { AddressProvider, CheckoutViewManager, UserInfoProps } from './types/checkout.types';
 import CheckoutView from './CheckoutView';
-import { useUserPayment } from 'app/payment/hooks/useUserPayment';
-import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'app/payment/components/checkout/CryptoPaymentDialog';
-import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
-import currencyService from 'app/payment/services/currency.service';
-import { generateCaptchaToken } from 'app/utils/generateCaptchaToken';
+import { AddressProvider, CheckoutViewManager, UserInfoProps } from './types/checkout.types';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -457,7 +457,6 @@ const CheckoutViewWrapper = () => {
         if (elementsError) {
           throw new Error(elementsError.message);
         }
-      } else {
       }
 
       const customerToken = await generateCaptchaToken();

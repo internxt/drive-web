@@ -189,6 +189,12 @@
       "success": "Accesso effettuato con successo",
       "error": "Impossibile accedere, riprova",
       "closeWindow": "Puoi chiudere questa finestra"
+    },
+    "oauthLink": {
+      "continueAs": "Continua come",
+      "continue": "Continua",
+      "anotherAccount": "Usare un altro account?",
+      "login": "Accedi"
     }
   },
   "checkout": {

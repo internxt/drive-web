@@ -172,6 +172,12 @@
       "success": "Vous vous êtes connecté avec succès",
       "error": "Échec de la connexion, veuillez réessayer",
       "closeWindow": "Vous pouvez fermer cette fenêtre"
+    },
+    "oauthLink": {
+      "continueAs": "Continuer en tant que",
+      "continue": "Continuer",
+      "anotherAccount": "Utiliser un autre compte ?",
+      "login": "Connexion"
     }
   },
   "checkout": {
