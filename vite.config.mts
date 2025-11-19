@@ -18,19 +18,34 @@ export default defineConfig({
   plugins: [
     VitePWA({
       strategies: 'injectManifest',
-      scope: '/streamsaver/',
-      filename: 'stream-saver-sw.ts',
       srcDir: 'src',
+      filename: 'stream-saver-sw.ts',
+      registerType: 'autoUpdate',
+      scope: '/streamsaver/',
+
       injectManifest: {
-        swDest: 'dist/stream-saver-sw.js',
         minify: false,
         enableWorkboxModulesLogs: true,
+
+        injectionPoint: 'self.__WB_MANIFEST',
+
+        rollupFormat: 'es',
       },
-      includeAssets: ['streamsaver/mitm.html'],
+
+      manifest: false,
+
+      workbox: {
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
+      },
+
       devOptions: {
         enabled: true,
         type: 'module',
       },
+
+      includeAssets: ['streamsaver/mitm.html'],
     }),
     react(),
     svgr(),
