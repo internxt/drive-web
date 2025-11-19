@@ -145,6 +145,7 @@ export enum AppView {
   UniversalLinkSuccess = 'auth-success',
   UniversalLinkOk = 'universal-link-ok',
   UniversalLinkError = 'universal-link-error',
+  OAuthLink = 'oauth-link',
 }
 
 export enum SignupDeviceSource {

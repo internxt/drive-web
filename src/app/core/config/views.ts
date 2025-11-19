@@ -11,6 +11,7 @@ import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from '../.
 import UniversalLinkView from '../../auth/views/UniversalLinkView/UniversalLinkView';
 import UniversalLinkOkView from '../../auth/views/UniversalLinkView/UniversalLinkOkView';
 import UniversalLinkErrorView from '../../auth/views/UniversalLinkView/UniversalLinkErrorView';
+import OAuthLinkView from '../../auth/views/OAuthLinkView/OAuthLinkView';
 import BackupsView from '../../../views/Backups/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
 import DriveView from 'views/Drive';
@@ -69,6 +70,7 @@ const views: Array<{
   { id: AppView.UniversalLinkSuccess, component: UniversalLinkView },
   { id: AppView.UniversalLinkOk, component: UniversalLinkOkView },
   { id: AppView.UniversalLinkError, component: UniversalLinkErrorView },
+  { id: AppView.OAuthLink, component: OAuthLinkView },
   // Leave these routes last, otherwise it will match react router and may cause malfunctioning.
   { id: AppView.DriveItems, component: DriveView },
   { id: AppView.Drive, component: DriveView },

@@ -1,9 +1,13 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { renderHook } from '@testing-library/react';
 import localStorageService from 'app/core/services/local-storage.service';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as oauthService from '../services/oauth.service';
 import { useOAuthFlow } from './useOAuthFlow';
+
+vi.mock('app/core/services/navigation.service');
 
 const mockUserSettings: UserSettings = {
   userId: 'user_123',
@@ -70,21 +74,23 @@ describe('OAuth custom hook', () => {
   });
 
   describe('On component mount', () => {
-    it('when OAuth is active and user credentials exist, then credentials are automatically sent to the parent window', () => {
+    it('when OAuth is active and user credentials exist, then user is redirected to OAuthLink view', () => {
       const mockNewToken = 'test-new-token';
+      const mockPush = vi.fn();
 
       vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUserSettings);
       vi.spyOn(localStorageService, 'get').mockImplementation((key: string) => {
         if (key === 'xNewToken') return mockNewToken;
         return null;
       });
-      mockSendAuthSuccess.mockReturnValue(true);
+      vi.mocked(navigationService.push).mockImplementation(mockPush);
 
       renderHook(() => useOAuthFlow({ authOrigin: 'https://meet.internxt.com' }));
 
       expect(localStorageService.getUser).toHaveBeenCalled();
       expect(localStorageService.get).toHaveBeenCalledWith('xNewToken');
-      expect(mockSendAuthSuccess).toHaveBeenCalledWith(mockUserSettings, mockNewToken);
+      expect(mockPush).toHaveBeenCalledWith(AppView.OAuthLink, expect.any(Object));
+      expect(mockSendAuthSuccess).not.toHaveBeenCalled();
     });
 
     it('when OAuth is not active, then no credentials are sent', () => {

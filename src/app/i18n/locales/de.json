@@ -172,6 +172,12 @@
       "success": "Du hast dich erfolgreich angemeldet",
       "error": "Anmeldung fehlgeschlagen, bitte versuche es erneut",
       "closeWindow": "Du kannst dieses Fenster schließen"
+    },
+    "oauthLink": {
+      "continueAs": "Fortfahren als",
+      "continue": "Fortfahren",
+      "anotherAccount": "Anderes Konto verwenden?",
+      "login": "Anmelden"
     }
   },
   "checkout": {

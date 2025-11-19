@@ -186,6 +186,12 @@
       "success": "您已成功登录",
       "error": "无法登录，请重试",
       "closeWindow": "您可以关闭此窗口"
+    },
+    "oauthLink": {
+      "continueAs": "继续使用",
+      "continue": "继续",
+      "anotherAccount": "使用另一个帐户？",
+      "login": "登录"
     }
   },
   "checkout": {

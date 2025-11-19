@@ -220,6 +220,12 @@
       "success": "You have successfully logged in",
       "error": "Login failed, please try again",
       "closeWindow": "You can close this window"
+    },
+    "oauthLink": {
+      "continueAs": "Continue as",
+      "continue": "Continue",
+      "anotherAccount": "Use another account?",
+      "login": "Login"
     }
   },
   "checkout": {

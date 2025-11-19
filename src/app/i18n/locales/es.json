@@ -199,6 +199,12 @@
       "success": "Has iniciado sesión correctamente",
       "error": "No se ha podido iniciar sesion, inténtelo de nuevo",
       "closeWindow": "Puedes cerrar esta ventana"
+    },
+    "oauthLink": {
+      "continueAs": "Continuar como",
+      "continue": "Continuar",
+      "anotherAccount": "Usar otra cuenta?",
+      "login": "Iniciar sesión"
     }
   },
   "checkout": {

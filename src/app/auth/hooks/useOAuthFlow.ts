@@ -1,5 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'app/core/services/local-storage.service';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 import { useEffect } from 'react';
 import oauthService from '../services/oauth.service';
 
@@ -21,7 +23,8 @@ export const useOAuthFlow = ({ authOrigin }: UseOAuthFlowParams): UseOAuthFlowRe
       const newToken = localStorageService.get('xNewToken');
 
       if (user && newToken) {
-        oauthService.sendAuthSuccess(user, newToken);
+        const params = new URLSearchParams(window.location.search);
+        navigationService.push(AppView.OAuthLink, Object.fromEntries(params.entries()));
       }
     }
   }, [isOAuthFlow]);
