@@ -17,19 +17,19 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
 import { WarningCircle } from '@phosphor-icons/react';
 import { useOAuthFlow } from 'app/auth/hooks/useOAuthFlow';
-import vpnAuthService from 'app/auth/services/vpnAuth.service';
-import envService from 'app/core/services/env.service';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import AppError, { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { AuthMethodTypes } from 'app/payment/types';
 import workspacesService from '../../../core/services/workspace.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import useLoginRedirections from '../../../routes/hooks/Login/useLoginRedirections';
 import shareService from '../../../share/services/share.service';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import TextInput from '../TextInput/TextInput';
+import { AuthMethodTypes } from 'views/Checkout/types';
+import vpnAuthService from 'app/auth/services/vpnAuth.service';
+import envService from 'app/core/services/env.service';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({

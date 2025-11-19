@@ -8,7 +8,7 @@ import { UsageResponseV2 } from '@internxt/sdk/dist/drive/storage/types';
 import { bytesToString } from 'app/drive/services/size.service';
 import { t } from 'i18next';
 import { FreeStoragePlan } from 'app/drive/types';
-import moneyService from 'app/payment/services/currency.service';
+import { currencyService as moneyService } from 'views/Checkout/services';
 import { ChangePlanType } from '../components/Sections/Account/Plans/components/PlanCard';
 
 function displayAmount(value: number, decimalPoints = 2) {

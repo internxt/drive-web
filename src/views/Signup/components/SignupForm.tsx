@@ -6,25 +6,25 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import PasswordFieldWithInfo from './PasswordFieldWithInfo';
 
+import { useAppDispatch } from 'app/store/hooks';
+import { planThunks } from 'app/store/slices/plan';
+import errorService from 'app/core/services/error.service';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView, IFormValues } from 'app/core/types';
+import TextInput from 'app/auth/components/TextInput/TextInput';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import { Button } from '@internxt/ui';
-import TextInput from '../../../app/auth/components/TextInput/TextInput';
-import { useOAuthFlow } from '../../../app/auth/hooks/useOAuthFlow';
-import authService, { authenticateUser } from '../../../app/auth/services/auth.service';
-import vpnAuthService from '../../../app/auth/services/vpnAuth.service';
-import envService from '../../../app/core/services/env.service';
-import errorService from '../../../app/core/services/error.service';
-import localStorageService from '../../../app/core/services/local-storage.service';
-import navigationService from '../../../app/core/services/navigation.service';
-import { AppView, IFormValues } from '../../../app/core/types';
-import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
-import paymentService from '../../../app/payment/services/payment.service';
-import { AuthMethodTypes } from '../../../app/payment/types';
-import { MAX_PASSWORD_LENGTH } from '../../../app/shared/components/ValidPassword';
-import { useAppDispatch } from '../../../app/store/hooks';
-import { planThunks } from '../../../app/store/slices/plan';
-import PreparingWorkspaceAnimation from '../../../common/components/PreparingWorkspaceAnimation';
 import { useSignUp } from '../hooks/useSignup';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import authService, { authenticateUser } from 'app/auth/services/auth.service';
+import PreparingWorkspaceAnimation from '../../../common/components/PreparingWorkspaceAnimation';
+import { paymentService } from 'views/Checkout/services';
+import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
+import { Button } from '@internxt/ui';
+import { AuthMethodTypes } from 'views/Checkout/types';
+import vpnAuthService from 'app/auth/services/vpnAuth.service';
+import envService from 'app/core/services/env.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import { useOAuthFlow } from 'app/auth/hooks/useOAuthFlow';
 
 export interface SignUpProps {
   location: {
