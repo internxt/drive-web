@@ -1,4 +1,3 @@
-export { default as authCheckoutService } from './auth-checkout.service';
 export { default as checkoutService } from './checkout.service';
 export { default as currencyService } from './currency.service';
 export { default as paymentService } from './payment.service';
