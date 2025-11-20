@@ -4,7 +4,7 @@ import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import * as oauthService from '../services/oauth.service';
+import oauthService from 'services/oauth.service';
 import { useOAuthFlow } from './useOAuthFlow';
 
 vi.mock('app/core/services/navigation.service');
@@ -46,7 +46,7 @@ const mockUserSettings: UserSettings = {
   emailVerified: true,
 };
 
-vi.mock('../services/oauth.service');
+vi.mock('services/oauth.service');
 
 const mockSendAuthSuccess = vi.mocked(oauthService.sendAuthSuccess);
 

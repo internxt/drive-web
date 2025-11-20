@@ -3,17 +3,16 @@ import { ComponentClass, FunctionComponent } from 'react';
 import { AppView } from '../types';
 
 import { AuthView, ButtonAuth, SignupBlog } from '../../../views/Signup/components';
-import UniversalLinkView from '../../auth/views/UniversalLinkView/UniversalLinkView';
-import UniversalLinkOkView from '../../auth/views/UniversalLinkView/UniversalLinkOkView';
-import UniversalLinkErrorView from '../../auth/views/UniversalLinkView/UniversalLinkErrorView';
-import OAuthLinkView from '../../auth/views/OAuthLinkView/OAuthLinkView';
 import BackupsView from 'views/Backups/BackupsView';
 import {
   BlockedAccountView,
   RecoverAccountView,
   RecoveryLinkView,
   SignInView,
+  OAuthLinkView,
+  UniversalLinkErrorView,
   UniversalLinkSuccessView,
+  UniversalLinkOkView,
 } from '../../../views/Login';
 import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from '../../../views/Signup';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
@@ -72,7 +71,7 @@ const views: Array<{
   { id: AppView.VerifyEmail, component: VerifyEmailView },
   { id: AppView.ChangeEmail, component: ChangeEmailView },
   { id: AppView.RequestAccess, component: RequestAccess },
-  { id: AppView.UniversalLinkSuccess, component: UniversalLinkView },
+  { id: AppView.UniversalLinkSuccess, component: UniversalLinkSuccessView },
   { id: AppView.UniversalLinkOk, component: UniversalLinkOkView },
   { id: AppView.UniversalLinkError, component: UniversalLinkErrorView },
   { id: AppView.OAuthLink, component: OAuthLinkView },
