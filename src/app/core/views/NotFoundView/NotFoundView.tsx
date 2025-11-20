@@ -1,6 +1,6 @@
 import { House, Lifebuoy, Question } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
 export default function NotFound() {
   const { translate } = useTranslationContext();

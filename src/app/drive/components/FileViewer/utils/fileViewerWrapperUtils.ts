@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { getAppConfig } from 'app/core/services/config.service';
-import dateService from 'app/core/services/date.service';
+import { getAppConfig } from 'services/config.service';
+import dateService from 'services/date.service';
 import {
   canFileBeCached,
   getDatabaseFileSourceData,

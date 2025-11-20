@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { multipartDownload } from './v2';
 import { MultipartDownload } from './MultipartDownload';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 import { Network } from '@internxt/sdk/dist/network';
 
 vi.mock('../../crypto/services/utils');

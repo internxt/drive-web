@@ -4,7 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, Mock, vi } from 
 import { PlanState } from '../store/slices/plan';
 import { BannerManager } from './BannerManager';
 
-vi.mock('../core/services/local-storage.service', () => ({
+vi.mock('services/local-storage.service', () => ({
   default: {
     get: vi.fn(),
     set: vi.fn(),
@@ -12,7 +12,7 @@ vi.mock('../core/services/local-storage.service', () => ({
   },
 }));
 
-import localStorageService from '../core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 
 describe('BannerManager - showFreeBanner', () => {
   const today = new Date('2025-06-01');

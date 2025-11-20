@@ -8,7 +8,7 @@ import { useTranslationContext } from '../../../i18n/provider/TranslationProvide
 import { Button, Loader, Input } from '@internxt/ui';
 import { uiActions } from '../../../store/slices/ui';
 import { userThunks } from '../../../store/slices/user';
-import errorService from '../../services/error.service';
+import errorService from 'services/error.service';
 
 type StatusType = 'loading' | 'auth' | 'error' | 'success' | 'expired';
 

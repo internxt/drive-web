@@ -1,6 +1,6 @@
 import { Button } from '@internxt/ui';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { handleExportBackupKey } from '../../../utils/backupKeyUtils';
+import { handleExportBackupKey } from 'utils/backupKeyUtils';
 
 const DownloadBackupKey = ({ onRedirect }: { onRedirect: () => void }) => {
   const { translate } = useTranslationContext();

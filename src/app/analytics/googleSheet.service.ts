@@ -1,5 +1,5 @@
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 import { CouponCodeData } from 'app/payment/types';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 const WINTER_OFFSET_HOUR = 1;

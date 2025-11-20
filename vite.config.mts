@@ -95,8 +95,11 @@ export default defineConfig({
     preserveSymlinks: process.env.NODE_ENV === 'development',
     alias: {
       app: path.resolve(__dirname, 'src/app'),
+      components: path.resolve(__dirname, 'src/components'),
       assets: path.resolve(__dirname, 'src/assets'),
       hooks: path.resolve(__dirname, 'src/hooks'),
+      services: path.resolve(__dirname, 'src/services'),
+      utils: path.resolve(__dirname, 'src/utils'),
       use_cases: path.resolve(__dirname, 'src/use_cases'),
       views: path.resolve(__dirname, 'src/views'),
       assert: 'assert',

@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
-import BaseButton from 'app/shared/components/forms/BaseButton';
+import BaseDialog from 'components/BaseDialog';
+import BaseButton from 'components/BaseButton';
 import { uiActions } from 'app/store/slices/ui';
 import './SharedFolderTooBigDialog.scss';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';

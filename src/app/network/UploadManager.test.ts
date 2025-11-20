@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { uploadFileWithManager } from './UploadManager';
 import tasksService from 'app/tasks/services/tasks.service';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import AppError from 'app/core/types';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import DatabaseUploadRepository from 'app/repositories/DatabaseUploadRepository';
@@ -24,7 +24,7 @@ vi.mock('app/tasks/services/tasks.service', () => ({
   },
 }));
 
-vi.mock('app/core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     castError: vi.fn().mockImplementation((e) => e),
     reportError: vi.fn(),

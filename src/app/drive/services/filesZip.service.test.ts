@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, Mock, test, vi } from 'vitest';
-import { FlatFolderZip } from 'app/core/services/zip.service';
+import { FlatFolderZip } from 'services/zip.service';
 import { addAllFilesToZip, addAllSharedFilesToZip, addFilesToZip } from './filesZip.service';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { binaryStreamToBlob } from 'services/stream.service';
 
 const mockDownloadFile = vi.fn();
-vi.mock('app/core/services/stream.service', () => ({
+vi.mock('services/stream.service', () => ({
   binaryStreamToBlob: vi.fn(),
 }));
 

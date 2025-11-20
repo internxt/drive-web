@@ -18,14 +18,14 @@ import {
   downloadFolderAsZip,
 } from './folder.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import tasksService from 'app/tasks/services/tasks.service';
 import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { TaskStatus, TaskType } from 'app/tasks/types';
 import downloadService from './download.service';
 import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
-import { FlatFolderZip } from 'app/core/services/zip.service';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { FlatFolderZip } from 'services/zip.service';
+import { binaryStreamToBlob } from 'services/stream.service';
 import { LevelsBlobsCache, LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { LRUCache } from 'app/database/services/database.service/LRUCache';
 import { DriveItemBlobData } from 'app/database/services/database.service';
@@ -40,7 +40,7 @@ vi.mock('app/tasks/services/tasks.service', () => ({
     updateTask: vi.fn(),
   },
 }));
-vi.mock('app/core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     castError: vi.fn().mockImplementation((e) => ({ message: e.message ?? 'Default error message' })),
     reportError: vi.fn(),
@@ -83,14 +83,14 @@ vi.mock('app/network/download', () => ({
   NetworkCredentials: vi.fn(),
 }));
 
-vi.mock('app/core/services/stream.service', () => ({
+vi.mock('services/stream.service', () => ({
   binaryStreamToBlob: vi.fn(),
   buildProgressStream: vi.fn(),
   decryptStream: vi.fn(),
   joinReadableBinaryStreams: vi.fn(),
 }));
 
-vi.mock('app/core/services/local-storage.service', () => ({
+vi.mock('services/local-storage.service', () => ({
   default: {
     getUser: vi.fn(),
   },

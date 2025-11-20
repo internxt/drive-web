@@ -1,4 +1,4 @@
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import AppError from 'app/core/types';
 import { DriveFolderData } from 'app/drive/types';
 import { createFolder } from 'app/store/slices/storage/folderUtils/createFolder';
@@ -62,7 +62,7 @@ vi.mock('app/store/slices/storage/folderUtils/getUniqueFolderName', () => ({
   getUniqueFolderName: vi.fn(),
 }));
 
-vi.mock('app/core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     castError: vi.fn().mockImplementation((e) => e),
     reportError: vi.fn(),

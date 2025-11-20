@@ -3,7 +3,7 @@ import { UilCheckCircle } from '@iconscout/react-unicons';
 import ROUTES from '../../../routes/paths.json';
 
 import React, { useEffect, useState } from 'react';
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const RedirectToAppView = (): JSX.Element => {

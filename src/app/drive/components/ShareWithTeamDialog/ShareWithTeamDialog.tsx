@@ -10,8 +10,8 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { uiActions } from 'app/store/slices/ui';
 import { shareItemWithTeamV2 } from 'views/Drive/components/DriveExplorer/utils';
-import workspacesService from 'app/core/services/workspace.service';
-import errorService from 'app/core/services/error.service';
+import workspacesService from 'services/workspace.service';
+import errorService from 'services/error.service';
 
 import { X } from '@phosphor-icons/react';
 import { Button, Loader, Modal } from '@internxt/ui';

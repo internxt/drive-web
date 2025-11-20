@@ -2,9 +2,9 @@ import { Stripe, StripeElements } from '@stripe/stripe-js';
 
 import { savePaymentDataInLocalStorage } from '../../analytics/impact.service';
 import checkoutService from '../services/checkout.service';
-import envService from '../../core/services/env.service';
+import envService from 'services/env.service';
 import { sendConversionToAPI } from '../../analytics/googleSheet.service';
-import navigationService from '../../core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { AppView } from '../../core/types';
 import {
   CreatePaymentIntentPayload,

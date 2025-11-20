@@ -3,14 +3,14 @@ import { savePaymentDataInLocalStorage, trackPaymentConversion, trackSignUp } fr
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { getProductAmount } from 'app/payment/utils/getProductAmount';
 import axios from 'axios';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { bytesToString } from 'app/drive/services/size.service';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import dayjs from 'dayjs';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 
-vi.mock('app/core/services/local-storage.service', () => ({
+vi.mock('services/local-storage.service', () => ({
   default: {
     get: vi.fn(),
     clear: vi.fn(),
@@ -30,7 +30,7 @@ vi.mock('./utils', () => ({
   }),
 }));
 
-vi.mock('app/core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     castError: vi.fn().mockImplementation((e) => e),
     reportError: vi.fn(),

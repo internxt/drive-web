@@ -1,5 +1,5 @@
 import { trackPaymentConversion } from 'app/analytics/impact.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import paymentService from 'app/payment/services/payment.service';
 import { useAppDispatch } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';

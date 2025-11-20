@@ -1,6 +1,6 @@
 import { SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 import { Iterator } from 'app/core/collections';
-import { FlatFolderZip } from 'app/core/services/zip.service';
+import { FlatFolderZip } from 'services/zip.service';
 import { DriveFolderData } from '../types';
 
 async function addAllFoldersToZip(

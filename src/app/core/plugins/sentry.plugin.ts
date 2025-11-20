@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/react';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 import packageJson from '../../../../package.json';
 import { AppPlugin } from '../../core/types';
 

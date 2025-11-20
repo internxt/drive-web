@@ -1,4 +1,4 @@
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { ShieldWarning } from '@phosphor-icons/react';
@@ -8,9 +8,9 @@ import { useCallback, useEffect, useState } from 'react';
 import queryString from 'query-string';
 import { useParams } from 'react-router-dom';
 import authService from 'app/auth/services/auth.service';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
+import { ExpiredLinkView } from 'components';
 import { ResendButton } from '../../components/ResendButton/ResendButton';
 
 const COUNTDOWN_TIME = 30;
@@ -89,7 +89,7 @@ export default function BlockedAccountView(): JSX.Element {
   }
 
   if (isInvalidToken) {
-    return <ExpiredLink />;
+    return <ExpiredLinkView />;
   }
 
   return (

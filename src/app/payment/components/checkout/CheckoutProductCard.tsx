@@ -11,7 +11,7 @@ import GuaranteeDarkDays from 'assets/icons/checkout/guarantee-dark.svg?react';
 import GuaranteeWhiteDays from 'assets/icons/checkout/guarantee-white.svg?react';
 import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import TextInput from '../../../../components/TextInput';
+import TextInput from 'components/TextInput';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import { CouponCodeData, Currency } from '../../types';
 import { SelectSeatsComponent } from './SelectSeatsComponent';

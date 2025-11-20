@@ -6,8 +6,8 @@ import { validateMnemonic } from 'bip39';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
-import envService from 'app/core/services/env.service';
-import { buildProgressStream, decryptStream } from 'app/core/services/stream.service';
+import envService from 'services/env.service';
+import { buildProgressStream, decryptStream } from 'services/stream.service';
 import { queue, QueueObject } from 'async';
 
 import { waitForContinueUploadSignal } from 'app/drive/services/worker.service/uploadWorkerUtils';

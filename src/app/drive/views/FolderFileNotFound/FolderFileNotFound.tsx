@@ -1,6 +1,6 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { WarningCircle } from '@phosphor-icons/react';
 
 export default function FolderFileNotFound(): JSX.Element {

@@ -1,7 +1,7 @@
 import { CheckCircle, X } from '@phosphor-icons/react';
 import LifetimeBig from 'assets/images/banner/lifetime_big.png';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 
 const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
   const { translate } = useTranslationContext();

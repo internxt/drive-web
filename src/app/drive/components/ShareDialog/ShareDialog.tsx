@@ -18,7 +18,7 @@ import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDi
 import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
 import { MAX_SHARED_NAME_LENGTH } from '../../../../views/Shared/SharedView';
 import { Avatar, Button, Checkbox, Loader, Modal } from '@internxt/ui';
-import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
+import { DELAY_SHOW_MS } from 'components/TooltipElement';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { Role } from 'app/store/slices/sharedLinks/types';
@@ -26,8 +26,8 @@ import { uiActions } from 'app/store/slices/ui';
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-tooltip';
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import errorService from 'services/error.service';
+import localStorageService from 'services/local-storage.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import shareService, { copyTextToClipboard, getSharingRoles } from 'app/share/services/share.service';
 import { AdvancedSharedItem } from 'app/share/types';
@@ -38,7 +38,7 @@ import { DriveItemData } from 'app/drive/types';
 import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
 import './ShareDialog.scss';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 import { User } from './components/User';
 import { InvitedUsersSkeletonLoader } from './components/InvitedUsersSkeletonLoader';
 import {
@@ -51,7 +51,7 @@ import {
   ViewProps,
   Views,
 } from './types';
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { Service } from '@internxt/sdk/dist/drive/payments/types/tiers';
 import { UpgradeDialog } from '../UpgradeDialog/UpgradeDialog';
 

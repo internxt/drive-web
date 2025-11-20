@@ -1,6 +1,6 @@
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
+import BaseDialog from 'components/BaseDialog';
 import { Button } from '@internxt/ui';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';

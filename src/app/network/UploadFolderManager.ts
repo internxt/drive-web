@@ -2,7 +2,7 @@ import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { queue, QueueObject } from 'async';
 import { t } from 'i18next';
-import errorService from '../core/services/error.service';
+import errorService from 'services/error.service';
 import newStorageService from 'app/drive/services/new-storage.service';
 import { DriveFolderData, DriveItemData } from 'app/drive/types';
 import { RootState } from '../store';
@@ -15,8 +15,8 @@ import { uploadItemsParallelThunk } from '../store/slices/storage/storage.thunks
 import { IRoot } from '../store/slices/storage/types';
 import tasksService from '../tasks/services/tasks.service';
 import { TaskData, TaskEvent, TaskStatus, TaskType, UploadFolderTask } from '../tasks/types';
-import { QueueUtilsService } from '../utils/queueUtils';
-import { wait } from '../utils/timeUtils';
+import { QueueUtilsService } from 'utils/queueUtils';
+import { wait } from 'utils/timeUtils';
 import { ConnectionLostError } from './requests';
 
 interface UploadFolderPayload {

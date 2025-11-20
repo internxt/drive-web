@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach, test } from 'vitest';
 import { NetworkFacade } from './NetworkFacade';
 import { Network as NetworkModule } from '@internxt/sdk';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
-import { decryptStream } from 'app/core/services/stream.service';
+import { decryptStream } from 'services/stream.service';
 import {
   DownloadAbortedByUserError,
   DownloadFailedWithUnknownError,
@@ -11,7 +11,7 @@ import {
 } from './errors/download.errors';
 
 vi.mock('@internxt/sdk/dist/network/download');
-vi.mock('app/core/services/stream.service', () => ({
+vi.mock('services/stream.service', () => ({
   binaryStreamToBlob: vi.fn(),
   buildProgressStream: vi.fn(),
   decryptStream: vi.fn(),

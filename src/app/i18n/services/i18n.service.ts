@@ -12,8 +12,8 @@ import de from 'dayjs/locale/de';
 import en from 'dayjs/locale/en';
 import tw from 'dayjs/locale/zh-tw';
 
-import localStorageService from 'app/core/services/local-storage.service';
-import envService from 'app/core/services/env.service';
+import localStorageService from 'services/local-storage.service';
+import envService from 'services/env.service';
 
 import enJson from '../locales/en.json';
 import esJson from '../locales/es.json';

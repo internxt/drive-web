@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
-import { FlatFolderZip } from 'app/core/services/zip.service';
+import { FlatFolderZip } from 'services/zip.service';
 import { addAllFoldersToZip, addAllSharedFoldersToZip } from './foldersZip.service';
 
 class MockFlatFolderZip {

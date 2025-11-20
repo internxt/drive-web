@@ -8,17 +8,17 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 import { Button, Modal } from '@internxt/ui';
 import { bytesToString } from 'app/drive/services/size.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import { STORAGE_KEYS } from 'app/core/services/storage-keys';
+import localStorageService from 'services/local-storage.service';
+import { STORAGE_KEYS } from 'services/storage-keys';
 import { DriveItemData, DriveItemDetails, ItemDetailsProps } from 'app/drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
 import { AdvancedSharedItem } from 'app/share/types';
 import { useSelector } from 'react-redux';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import dateService from 'app/core/services/date.service';
-import { getLocation } from 'app/utils/locationUtils';
+import dateService from 'services/date.service';
+import { getLocation } from 'utils/locationUtils';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (

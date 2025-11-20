@@ -3,15 +3,15 @@
  */
 import { aes } from '@internxt/lib';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import envService from 'app/core/services/env.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import envService from 'services/env.service';
+import localStorageService from 'services/local-storage.service';
 import * as keysService from 'app/crypto/services/keys.service';
 import * as pgpService from 'app/crypto/services/pgp.service';
 import { encryptText, encryptTextWithKey } from 'app/crypto/services/utils';
 import { userActions } from 'app/store/slices/user';
-import { BackupData } from 'app/utils/backupKeyUtils';
+import { BackupData } from 'utils/backupKeyUtils';
 import { validateMnemonic } from 'bip39';
-import { Buffer } from 'buffer';
+import { Buffer } from 'node:buffer';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SdkFactory } from '../../core/factory/sdk';
 import * as authService from './auth.service';
@@ -25,8 +25,8 @@ const mockApi = 'https://mock';
 beforeAll(() => {
   globalThis.Buffer = Buffer;
 
-  window.gtag = vi.fn();
-  vi.mock('app/core/services/navigation.service', () => ({
+  globalThis.gtag = vi.fn();
+  vi.mock('services/navigation.service', () => ({
     default: {
       isCurrentPath: vi.fn(),
       push: vi.fn(),
@@ -35,11 +35,7 @@ beforeAll(() => {
   vi.mock('app/analytics/impact.service', () => ({
     trackSignUp: vi.fn(),
   }));
-  vi.mock('app/database/services/database.service', () => ({
-    default: {
-      clear: vi.fn(),
-    },
-  }));
+  vi.mock('app/database/services/database.service');
   vi.mock('../../core/factory/sdk', () => ({
     SdkFactory: {
       getNewApiInstance: vi.fn(() => ({
@@ -86,14 +82,14 @@ beforeAll(() => {
     workspaceThunks: vi.fn(),
   }));
 
-  vi.mock('../../core/services/http.service', () => ({
+  vi.mock('services/http.service', () => ({
     default: {
       getHeaders: vi.fn(),
       convertHeadersToNativeHeaders: vi.fn(),
     },
   }));
 
-  vi.mock('app/core/services/socket.service', () => ({
+  vi.mock('services/socket.service', () => ({
     default: {
       getInstance: vi.fn(),
     },
@@ -104,7 +100,7 @@ beforeAll(() => {
     setCookie: vi.fn(),
   }));
 
-  vi.mock('app/core/services/local-storage.service', () => ({
+  vi.mock('services/local-storage.service', () => ({
     default: {
       get: vi.fn(),
       clear: vi.fn(),
@@ -112,7 +108,7 @@ beforeAll(() => {
       set: vi.fn(),
     },
   }));
-  vi.mock('app/core/services/error.service', () => ({
+  vi.mock('services/error.service', () => ({
     default: {
       castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
       reportError: vi.fn(),

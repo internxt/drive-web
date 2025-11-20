@@ -10,12 +10,12 @@ import { ErrorMessages } from 'app/core/constants';
 import { createFilesIterator, createFoldersIterator } from 'app/drive/services/folder.service';
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import tasksService from 'app/tasks/services/tasks.service';
-import { QueueUtilsService } from 'app/utils/queueUtils';
+import { QueueUtilsService } from 'utils/queueUtils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DownloadManager } from './DownloadManager';
 import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 import { ConnectionLostError } from './requests';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import { TaskData, TaskStatus } from 'app/tasks/types';
 import retryManager, { RetryableTask } from './RetryManager';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -28,7 +28,7 @@ vi.mock('app/drive/services/folder.service', () => ({
   createFoldersIterator: vi.fn(),
 }));
 
-vi.mock('app/core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     castError: vi.fn().mockImplementation((e) => ({ message: e.message ?? 'Default error message' })),
     reportError: vi.fn(),
