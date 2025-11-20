@@ -1,5 +1,5 @@
 import { getDecryptedStream } from 'app/network/download';
-import crypto, { Decipher } from 'node:crypto';
+import crypto, { Decipher } from 'crypto';
 
 type BinaryStream = ReadableStream<Uint8Array>;
 
