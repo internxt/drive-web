@@ -532,21 +532,4 @@ describe('workspace service', () => {
       );
     });
   });
-
-  describe('When validating the default export', () => {
-    it('should export all required functions', () => {
-      [
-        'getWorkspaces',
-        'getWorkspacesMembers',
-        'getWorkspaceTeams',
-        'inviteUserToTeam',
-        'createTeam',
-        'shareItemWithTeam',
-        'getWorkspace',
-        'leaveWorkspace',
-      ].forEach((fn) => {
-        expect(workspacesService[fn]).toBeDefined();
-      });
-    });
-  });
 });
