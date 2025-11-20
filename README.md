@@ -6,6 +6,15 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=internxt_drive-web&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=internxt_drive-web)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=internxt_drive-web&metric=coverage)](https://sonarcloud.io/summary/new_code?id=internxt_drive-web)
 
+# Internxt Drive Web
+
+A secure, privacy-focused cloud storage web application built with React, TypeScript, and Redux.
+
+## Documentation
+
+- 📖 **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - Project architecture and structure
+- 📖 **[docs/CODE_STYLE.md](./docs/CODE_STYLE.md)** - Coding standards and conventions
+
 # Project Maintenance
 
 We aim to have:
@@ -225,10 +234,8 @@ src/
 │   │   │   ├── SharedFilesList/   # Complex component
 │   │   │   │   ├── SharedFilesList.tsx
 │   │   │   │   └── SharedFilesList.scss
-│   │   │   └── ShareDialog/       # Complex component
-│   │   │       ├── ShareDialog.tsx
-│   │   │       └── components/
-│   │   │           └── UserOptions.tsx
+│   │   │   └── SharedItemActions/ # Complex component
+│   │   │       └── SharedItemActions.tsx
 │   │   ├── hooks/                 # Custom hooks for sharing
 │   │   │   └── useSharedFiles.ts
 │   │   ├── services/              # API calls for sharing
@@ -252,8 +259,16 @@ src/
 │       │   └── index.ts
 │       └── types.ts               # TypeScript types/interfaces
 │
-├── shared/                        # Shared code across views
+├── common/                        # Common code across views
 │   ├── components/                # Reusable UI components
+│   │   ├── ShareDialog/           # Complex component (used in Drive & Shared views)
+│   │   │   ├── ShareDialog.tsx
+│   │   │   ├── ShareDialog.scss
+│   │   │   ├── components/
+│   │   │   │   ├── User.tsx
+│   │   │   │   └── InvitedUsersSkeletonLoader.tsx
+│   │   │   ├── types.ts
+│   │   │   └── index.ts
 │   │   ├── BaseDialog/            # Complex component (folder)
 │   │   │   ├── BaseDialog.tsx
 │   │   │   ├── BaseDialog.scss
@@ -312,10 +327,12 @@ Following the example structure above, each view folder contains the following s
 View-specific UI components that are only used within that particular view. These components are tightly coupled to the view's functionality and are not meant to be reused across other views.
 
 **Organization:**
+
 - **Complex components** (with tests, styles, hooks, helpers) → Use a folder: `LoginForm/LoginForm.tsx`
 - **Simple components** (just the component file) → Use a file directly: `SocialLogin.tsx`
 
 **Example:**
+
 - Complex: `views/Drive/components/FileList/FileList.tsx`
 - Simple: `views/Drive/components/FileItem.tsx`
 
@@ -350,10 +367,12 @@ Redux slices and state management specific to the view. Each view can manage its
 TypeScript type definitions and interfaces specific to the view. This includes props interfaces, data models, and any type that is only relevant to this feature.
 
 **Organization:**
+
 - **Small modules** (< 100 lines of types) → Use a single file: `types.ts`
 - **Large modules** (> 100 lines or multiple contexts) → Use a folder: `types/`
 
 **Nomenclature when using `types/` folder:**
+
 ```
 types/
 ├── index.ts              # Barrel export for all types
@@ -364,6 +383,7 @@ types/
 ```
 
 **Example:**
+
 - Simple: `views/Login/types.ts`
 - Complex: `views/Drive/types/file.types.ts`, `views/Drive/types/download.types.ts`
 
@@ -377,16 +397,18 @@ Helper functions and utilities specific to the view. These are not React hooks b
 
 ---
 
-### **`shared/`**
+### **`common/`**
 
 Contains global, reusable code that is shared across multiple views:
 
-- **`shared/components/`**: Atomic UI components (Button, Modal, Dropdown) used throughout the app
-- **`shared/hooks/`**: Global custom hooks (useAuth, useTheme) shared across views
-- **`shared/store/`**: Global Redux slices (authSlice, userSlice, notificationsSlice)
-- **`shared/types.ts`**: Global TypeScript types and interfaces
-- **`shared/utils/`**: Global utility functions (formatDate, formatFileSize)
-- **`shared/constants/`**: App-wide constants (routes, API endpoints)
+- **`common/components/`**: Reusable UI components used across multiple views
+  - Atomic components (Button, Modal, Dropdown)
+  - Cross-view dialogs (ShareDialog used in Drive & Shared views)
+- **`common/hooks/`**: Global custom hooks (useAuth, useTheme) shared across views
+- **`common/store/`**: Global Redux slices (authSlice, userSlice, notificationsSlice)
+- **`common/types.ts`**: Global TypeScript types and interfaces
+- **`common/utils/`**: Global utility functions (formatDate, formatFileSize)
+- **`common/constants/`**: App-wide constants (routes, API endpoints)
 
 ---
 
@@ -418,7 +440,7 @@ This **view-based structure** ensures:
 - **Modularity**: Each view is self-contained with its own components, logic, and state
 - **Scalability**: Adding new features doesn't affect existing ones
 - **Maintainability**: Related code is co-located, making it easy to find and modify
-- **Reusability**: Shared code is clearly separated in the `shared/` directory
+- **Reusability**: Common code is clearly separated in the `common/` directory
 - **Type Safety**: TypeScript types are organized alongside the code that uses them
 
 ## Config Tailwind CSS purge option
