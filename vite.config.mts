@@ -100,7 +100,7 @@ export default defineConfig({
       use_cases: path.resolve(__dirname, 'src/use_cases'),
       views: path.resolve(__dirname, 'src/views'),
       services: path.resolve(__dirname, './src/services'),
-      common: path.resolve(__dirname, './src/common'),
+      components: path.resolve(__dirname, './src/components'),
       assert: 'assert',
       buffer: 'buffer',
       path: 'path-browserify',

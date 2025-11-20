@@ -1,12 +1,10 @@
 import { FieldError, Path, UseFormRegister, ValidationRule } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
-
-import './PasswordInput.scss';
-import { Eye, EyeSlash } from '@phosphor-icons/react';
-import { useState } from 'react';
+import './FormTextInput.scss';
 
 interface InputProps {
   label: Path<IFormValues>;
+  type: 'text' | 'email' | 'number';
   disabled?: boolean;
   register: UseFormRegister<IFormValues>;
   minLength?: ValidationRule<number>;
@@ -16,17 +14,17 @@ interface InputProps {
   error?: FieldError;
   min?: ValidationRule<number | string>;
   required?: boolean;
-  onFocus?: () => void;
-  onBlur?: () => void;
   className?: string;
   autoFocus?: boolean;
-  value?: string;
+  onFocus?: () => void;
+  onBlur?: () => void;
   autoComplete?: string;
   inputDataCy?: string;
 }
 
-const PasswordInput = ({
+export default function TextInput({
   label,
+  type,
   disabled,
   register,
   minLength,
@@ -36,25 +34,22 @@ const PasswordInput = ({
   error,
   min,
   required,
-  onFocus,
-  onBlur,
   className,
   autoFocus,
   autoComplete,
   inputDataCy,
-}: InputProps): JSX.Element => {
-  const [showPassword, setShowPassword] = useState(false);
-
+}: Readonly<InputProps>): JSX.Element {
   return (
-    <div className={`relative flex-1 ${className}`}>
+    <div className={`${className}`}>
       <input
-        type={showPassword ? 'text' : 'password'}
+        type={type}
         disabled={disabled}
         placeholder={placeholder}
+        autoComplete={autoComplete}
+        id={label}
         min={0}
         required={true}
         autoFocus={autoFocus}
-        autoComplete={autoComplete}
         data-cy={inputDataCy}
         {...register(label, {
           required,
@@ -63,23 +58,8 @@ const PasswordInput = ({
           maxLength,
           pattern,
         })}
-        onFocus={() => {
-          if (onFocus) onFocus();
-        }}
-        onBlur={() => {
-          if (onBlur) onBlur();
-        }}
         className={error ? 'inxt-input input-error' : 'inxt-input input-primary'}
       />
-      <button
-        type="button"
-        onClick={() => setShowPassword(!showPassword)}
-        className="absolute right-4 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center text-gray-100"
-      >
-        {showPassword ? <Eye className="h-6 w-6" /> : <EyeSlash className="h-6 w-6" />}
-      </button>
     </div>
   );
-};
-
-export default PasswordInput;
+}

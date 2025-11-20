@@ -1,8 +1,8 @@
-import folderBack from '../../assets/images/signup-animation/folder-back.svg';
-import folderFront from '../../assets/images/signup-animation/folder-front.svg';
-import fileZIP from '../../assets/images/signup-animation/zip.svg';
-import fileDOC from '../../assets/images/signup-animation/doc.svg';
-import filePDF from '../../assets/images/signup-animation/pdf.svg';
+import folderBack from '../assets/images/signup-animation/folder-back.svg';
+import folderFront from '../assets/images/signup-animation/folder-front.svg';
+import fileZIP from '../assets/images/signup-animation/zip.svg';
+import fileDOC from '../assets/images/signup-animation/doc.svg';
+import filePDF from '../assets/images/signup-animation/pdf.svg';
 import { useEffect, useState } from 'react';
 
 const PreparingWorkspaceAnimation = (): JSX.Element => {

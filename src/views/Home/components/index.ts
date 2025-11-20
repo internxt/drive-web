@@ -1,4 +1,4 @@
-export { default as Sidenav } from '../../../common/components/Sidenav';
+export { default as Sidenav } from '../../../components/Sidenav';
 export { default as FilterItem } from './FilterItem';
 export { default as WorkspaceSelector } from './WorkspaceSelector';
 export { default as Topbar } from './NavbarGlobalSearch';
