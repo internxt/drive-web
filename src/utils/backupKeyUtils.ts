@@ -1,4 +1,4 @@
-import { errorService, localStorageService } from 'services';
+import { localStorageService } from 'services';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { saveAs } from 'file-saver';
 
@@ -74,25 +74,21 @@ export function handleExportBackupKey(translate) {
 export const detectBackupKeyFormat = (
   backupKeyContent: string,
 ): { type: 'old' | 'new'; mnemonic: string; backupData?: BackupData } => {
-  try {
-    const parsedData = JSON.parse(backupKeyContent);
-    if (parsedData?.mnemonic && parsedData.privateKey && parsedData?.keys?.ecc && parsedData?.keys?.kyber) {
-      const backupData: BackupData = {
-        mnemonic: parsedData.mnemonic,
-        privateKey: parsedData.privateKey,
-        keys: {
-          ecc: parsedData.keys.ecc,
-          kyber: parsedData.keys.kyber,
-        },
-      };
-      return {
-        type: 'new',
-        mnemonic: parsedData.mnemonic,
-        backupData,
-      };
-    }
-  } catch (err) {
-    errorService.reportError(err);
+  const parsedData = JSON.parse(backupKeyContent);
+  if (parsedData?.mnemonic && parsedData.privateKey && parsedData?.keys?.ecc && parsedData?.keys?.kyber) {
+    const backupData: BackupData = {
+      mnemonic: parsedData.mnemonic,
+      privateKey: parsedData.privateKey,
+      keys: {
+        ecc: parsedData.keys.ecc,
+        kyber: parsedData.keys.kyber,
+      },
+    };
+    return {
+      type: 'new',
+      mnemonic: parsedData.mnemonic,
+      backupData,
+    };
   }
   const trimmedContent = backupKeyContent.trim();
   if (validateMnemonic(trimmedContent)) {
