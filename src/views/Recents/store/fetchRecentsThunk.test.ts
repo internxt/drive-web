@@ -8,7 +8,7 @@ vi.mock('../services/fetchRecents', () => ({
   fetchRecents: vi.fn(),
 }));
 
-vi.mock('app/core/services/config.service', () => ({
+vi.mock('services/config.service', () => ({
   default: {
     getAppConfig: vi.fn(),
   },
@@ -39,7 +39,7 @@ describe('fetchRecentsThunk', () => {
     const { fetchRecentsThunk } = await import('./fetchRecentsThunk');
     const { storageActions } = await import('app/store/slices/storage');
     const { fetchRecents } = await import('../services/fetchRecents');
-    const configService = await import('app/core/services/config.service');
+    const configService = await import('services/config.service');
     const cryptoUtils = await import('app/crypto/services/utils');
 
     const mockRecents: Partial<DriveItemData>[] = [

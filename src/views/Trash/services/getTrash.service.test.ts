@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { getTrash, getTrashPaginated, getWorkspaceTrashPaginated } from './getTrash.service';
 import { SdkFactory } from 'app/core/factory/sdk';
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import workspacesService from 'app/core/services/workspace.service';
+import errorService from 'services/error.service';
+import localStorageService from 'services/local-storage.service';
+import workspacesService from 'services/workspace.service';
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
 
@@ -13,19 +13,19 @@ vi.mock('app/core/factory/sdk', () => ({
   },
 }));
 
-vi.mock('app/core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     reportError: vi.fn(),
   },
 }));
 
-vi.mock('app/core/services/local-storage.service', () => ({
+vi.mock('services/local-storage.service', () => ({
   default: {
     getB2BWorkspace: vi.fn(),
   },
 }));
 
-vi.mock('app/core/services/workspace.service', () => ({
+vi.mock('services/workspace.service', () => ({
   default: {
     getTrashItems: vi.fn(),
   },

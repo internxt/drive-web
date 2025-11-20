@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import shareService from 'app/share/services/share.service';
 import { Buffer } from 'buffer';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -18,7 +18,7 @@ const { shareItemWithUser } = sharedThunks;
 
 describe('Encryption and Decryption', () => {
   beforeAll(() => {
-    vi.mock('app/core/services/navigation.service', () => ({
+    vi.mock('services/navigation.service', () => ({
       default: { push: vi.fn() },
     }));
     vi.mock('app/share/services/share.service', () => ({
@@ -34,7 +34,7 @@ describe('Encryption and Decryption', () => {
       },
     }));
 
-    vi.mock('app/core/services/error.service', () => ({
+    vi.mock('services/error.service', () => ({
       default: {
         castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
         reportError: vi.fn(),

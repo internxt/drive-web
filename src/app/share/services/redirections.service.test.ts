@@ -1,8 +1,8 @@
 import { createMemoryHistory, History } from 'history';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import navigationService from '../../core/services/navigation.service';
-import workspacesService from '../../core/services/workspace.service';
+import navigationService from 'services/navigation.service';
+import workspacesService from 'services/workspace.service';
 import { AppView } from '../../core/types';
 
 import { AxiosError } from 'axios';
@@ -19,13 +19,13 @@ vi.mock('i18next', () => ({
   }),
 }));
 
-vi.mock('../../core/services/navigation.service', () => ({
+vi.mock('services/navigation.service', () => ({
   default: {
     push: vi.fn(),
   },
 }));
 
-vi.mock('../../core/services/workspace.service', () => ({
+vi.mock('services/workspace.service', () => ({
   default: {
     getAllWorkspaceTeamSharedFolderFiles: vi.fn(),
   },

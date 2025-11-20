@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import clearTrash from './clearTrash.service';
 import { SdkFactory } from 'app/core/factory/sdk';
-import errorService from 'app/core/services/error.service';
-import workspacesService from 'app/core/services/workspace.service';
+import errorService from 'services/error.service';
+import workspacesService from 'services/workspace.service';
 import notificationsService from 'app/notifications/services/notifications.service';
 import { store } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
@@ -13,13 +13,13 @@ vi.mock('app/core/factory/sdk', () => ({
   },
 }));
 
-vi.mock('app/core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     reportError: vi.fn(),
   },
 }));
 
-vi.mock('app/core/services/workspace.service', () => ({
+vi.mock('services/workspace.service', () => ({
   default: {
     emptyTrash: vi.fn(),
   },

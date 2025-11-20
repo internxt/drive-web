@@ -7,7 +7,7 @@ vi.mock('app/drive/services/size.service', () => ({
   bytesToString: vi.fn(() => '10 MB'),
 }));
 
-vi.mock('app/core/services/date.service', () => ({
+vi.mock('services/date.service', () => ({
   formatDefaultDate: vi.fn(() => '2025-02-25'),
 }));
 

@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import signup from './signup.service';
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import errorService from 'services/error.service';
+import localStorageService from 'services/local-storage.service';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { userActions, userThunks } from 'app/store/slices/user';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 
 vi.mock(import('app/store/slices/plan'));
 vi.mock(import('app/store/slices/products'));

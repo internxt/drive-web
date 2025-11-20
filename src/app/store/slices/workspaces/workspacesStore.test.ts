@@ -3,9 +3,9 @@ import { workspaceThunks } from './workspacesStore';
 const { setupWorkspace } = workspaceThunks;
 import { PendingWorkspace } from '@internxt/sdk/dist/workspaces';
 import { generateNewKeys, hybridDecryptMessageWithPrivateKey } from '../../../crypto/services/pgp.service';
-import localStorageService from '../../../core/services/local-storage.service';
-import navigationService from '../../../core/services/navigation.service';
-import workspacesService from '../../../core/services/workspace.service';
+import localStorageService from 'services/local-storage.service';
+import navigationService from 'services/navigation.service';
+import workspacesService from 'services/workspace.service';
 import { RootState } from '../..';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Buffer } from 'buffer';
@@ -36,7 +36,7 @@ vi.mock(
     saveWorkspaceAvatarToDatabase: vi.fn(),
   }),
 );
-vi.mock('../../../core/services/navigation.service', () => ({
+vi.mock('services/navigation.service', () => ({
   default: { push: vi.fn() },
 }));
 vi.mock('./workspaces.selectors', () => ({
@@ -44,7 +44,7 @@ vi.mock('./workspaces.selectors', () => ({
     getSelectedWorkspace: vi.fn(),
   },
 }));
-vi.mock('../../../core/services/workspace.service', () => ({
+vi.mock('services/workspace.service', () => ({
   default: {
     setupWorkspace: vi.fn(),
     getWorkspaces: vi.fn(() =>
@@ -59,7 +59,7 @@ vi.mock('../../../core/services/workspace.service', () => ({
     getWorkspaceCredentials: vi.fn(),
   },
 }));
-vi.mock('../../../core/services/local-storage.service', () => ({
+vi.mock('services/local-storage.service', () => ({
   default: {
     set: vi.fn(),
     getB2BWorkspace: vi.fn(),

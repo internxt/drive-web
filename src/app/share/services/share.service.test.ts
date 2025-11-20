@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { describe, expect, it, vi, Mock, beforeEach, beforeAll } from 'vitest';
-import localStorageService from '../../core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import { Buffer } from 'buffer';
 import {
   generateNewKeys,
@@ -25,18 +25,18 @@ describe('Encryption and Decryption', () => {
       checkIfCachedSourceIsOlder: vi.fn(),
     }));
     vi.mock('../../core/factory/sdk', () => ({ SdkFactory: vi.fn() }));
-    vi.mock('../../core/services/error.service', () => ({
+    vi.mock('services/error.service', () => ({
       default: {
         castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
         reportError: vi.fn(),
       },
     }));
-    vi.mock('../../core/services/local-storage.service', () => ({
+    vi.mock('services/local-storage.service', () => ({
       default: {
         getUser: vi.fn(),
       },
     }));
-    vi.mock('../../core/services/workspace.service', () => ({
+    vi.mock('services/workspace.service', () => ({
       default: {
         getAllWorkspaceTeamSharedFolderFolders: vi.fn(),
         getAllWorkspaceTeamSharedFolderFiles: vi.fn(),

@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { UserThemesService, THEME_DEFINITIONS } from './userThemes.service';
-import localStorageService from '../core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 
 const mockedCoupons = ['STARWARS85'];
 
-vi.mock('../core/services/local-storage.service', () => ({
+vi.mock('services/local-storage.service', () => ({
   default: {
     get: vi.fn(),
     set: vi.fn(),

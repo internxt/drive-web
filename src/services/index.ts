@@ -27,8 +27,6 @@ export * from './operating-system.service';
 export { default as operatingSystemService } from './operating-system.service';
 export * from './polling.service';
 export { default as pollingService } from './polling.service';
-export * from './screen.service';
-export { default as screenService } from './screen.service';
 export * from './socket.service';
 export { default as RealtimeService } from './socket.service';
 export * from './storage-keys';

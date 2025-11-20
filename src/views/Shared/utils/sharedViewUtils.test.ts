@@ -5,10 +5,10 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { AdvancedSharedItem, UserRoles } from '../../../app/share/types';
 import * as utils from './sharedViewUtils';
 import shareService from '../../../app/share/services/share.service';
-import errorService from '../../../app/core/services/error.service';
+import errorService from 'services/error.service';
 
 vi.mock('../../../app/share/services/share.service');
-vi.mock('../../../app/core/services/error.service');
+vi.mock('services/error.service');
 
 describe('sharedViewUtils', () => {
   const item = (overrides = {}) =>
