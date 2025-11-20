@@ -19,7 +19,7 @@ import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { t } from 'i18next';
 import localStorageService from 'app/core/services/local-storage.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import SidenavItem from './SidenavItem/SidenavItem';
+import SidenavItem from './SidenavItem';
 import WorkspaceSelectorContainer from 'views/Home/components/WorkspaceSelectorContainer';
 import { STORAGE_KEYS } from 'app/core/services/storage-keys';
 import { HUNDRED_TB } from 'app/core/constants';

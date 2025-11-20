@@ -1,5 +1,5 @@
 import { Info, WarningCircle } from '@phosphor-icons/react';
-import PasswordInput from 'common/components/PasswordInput';
+import FormPasswordInput from 'components/FormPasswordInput';
 import PasswordStrengthIndicator from '../../../app/shared/components/PasswordStrengthIndicator';
 import { MAX_PASSWORD_LENGTH } from '../../../app/shared/components/ValidPassword';
 import { FieldError, UseFormRegister } from 'react-hook-form';
@@ -28,7 +28,7 @@ const PasswordFieldWithInfo: React.FC<PasswordFieldWithInfoProps> = ({
   return (
     <>
       <label className="space-y-0.5">
-        <PasswordInput
+        <FormPasswordInput
           className={passwordState ? passwordState.tag : ''}
           placeholder={translate('auth.password')}
           label="password"

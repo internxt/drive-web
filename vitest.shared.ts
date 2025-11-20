@@ -13,7 +13,7 @@ export default {
       hooks: path.resolve(__dirname, 'src/hooks'),
       views: path.resolve(__dirname, './src/views'),
       services: path.resolve(__dirname, './src/services'),
-      common: path.resolve(__dirname, './src/common'),
+      components: path.resolve(__dirname, './src/components'),
       crypto: 'crypto-browserify',
       stream: 'stream-browserify',
       path: 'path-browserify',
