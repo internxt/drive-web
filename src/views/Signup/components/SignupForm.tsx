@@ -24,7 +24,7 @@ import { AuthMethodTypes } from 'views/Checkout/types';
 import vpnAuthService from 'services/vpnAuth.service';
 import envService from 'app/core/services/env.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import { useOAuthFlow } from 'app/auth/hooks/useOAuthFlow';
+import { useOAuthFlow } from 'views/Login/hooks/useOAuthFlow';
 
 export interface SignUpProps {
   location: {

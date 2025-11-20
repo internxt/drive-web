@@ -16,7 +16,7 @@ import authService, { authenticateUser, is2FANeeded } from 'services/auth.servic
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Button } from '@internxt/ui';
 import { WarningCircle } from '@phosphor-icons/react';
-import { useOAuthFlow } from 'app/auth/hooks/useOAuthFlow';
+import { useOAuthFlow } from 'views/Login/hooks/useOAuthFlow';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import AppError, { AppView, IFormValues } from 'app/core/types';
