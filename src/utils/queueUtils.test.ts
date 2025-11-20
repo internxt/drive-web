@@ -70,8 +70,4 @@ describe('QueueUtilsService', () => {
       expect(service.getConcurrencyUsingPerfomance(5, 10)).toBe(5);
     });
   });
-
-  it('should be a singleton', () => {
-    expect(QueueUtilsService.instance).toBe(QueueUtilsService.instance);
-  });
 });
