@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 
-import Navbar from '../../components/Navbar/NavbarGlobalSearch';
-import Sidenav from '../../components/Sidenav/Sidenav';
+import { Topbar as Navbar, Sidenav } from 'views/Home/components';
 import { uiActions } from 'app/store/slices/ui';
 import ReachedPlanLimitDialog from 'app/drive/components/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
 import navigationService from '../../services/navigation.service';
@@ -11,7 +10,7 @@ import TaskLogger from 'app/tasks/components/TaskLogger/TaskLogger';
 import DriveItemInfoMenu from 'app/drive/components/DriveItemInfoMenu/DriveItemInfoMenu';
 import SharedFolderTooBigDialog from '../../../drive/components/SharedFolderTooBigDialog/SharedFolderTooBigDialog';
 import { getAppConfig } from '../../services/config.service';
-import ShareItemDialog from '../../../share/components/ShareItemDialog/ShareItemDialog';
+import ShareItemDialog from '../../../../views/Shared/components/ShareItemDialog/ShareItemDialog';
 
 export interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;

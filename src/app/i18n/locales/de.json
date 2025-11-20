@@ -4,22 +4,22 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": { "blueText": "87% Rabatt erhalten", "text": "auf alle Premium-Pläne" },
-    "title": "Erhalten Sie einen exklusiven Rabatt!",
-    "subTitle": {
-      "blueText": "Sonderangebot:",
-      "text": "Dateien privat speichern für weniger"
+    "label": {
+      "blueText": "90% de descuento",
+      "text": "en todos los planes"
     },
-    "ctaGet": "Angebot sichern",
-    "ctaContinue": "Kostenlos fortfahren",
-    "guarantee": "30-Tage-Geld-zurück-Garantie",
+    "title": "¡Consigue tu oferta especial de Black Friday!",
+    "subTitle": "El **mayor descuento** para la **máxima privacidad**",
+    "ctaGet": "Aceptar invitación",
+    "ctaContinue": "Continuar gratis",
+    "guarantee": "Garantía de devolución de 30 días",
     "products": {
       "drive": "Drive",
       "antivirus": "Antivirus",
-      "cleaner": "Cleaner",
+      "cleaner": "Limpiador",
       "vpn": "VPN",
       "meet": "Meet",
-      "mail": "Mail"
+      "mail": "Correo"
     }
   },
   "susbcriptionsBanner": {
@@ -86,7 +86,8 @@
       "createAccount": "Konto erstellen",
       "2FA": "Zwei-Faktor-Code",
       "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode",
-      "wrongLogin": "Ungültiger Benutzername oder Passwort"
+      "wrongLogin": "Ungültiger Benutzername oder Passwort",
+      "failedToSendAuthData": "Fehler beim Senden der Authentifizierungsdaten. Bitte versuchen Sie es erneut."
     },
     "signup": {
       "title": "Konto erstellen",
@@ -162,6 +163,21 @@
       "button": "Bestätigung zum Neustart des Kontos senden",
       "successDescription": "Ihr Konto und Passwort wurden zurückgesetzt",
       "error": "Beim Neustart des Kontos ist etwas schief gelaufen"
+    },
+    "universalLink": {
+      "loginAs": "Anmelden als",
+      "openApp": "App öffnen",
+      "anotherAccount": "Anderes Konto verwenden?",
+      "login": "Anmelden",
+      "success": "Du hast dich erfolgreich angemeldet",
+      "error": "Anmeldung fehlgeschlagen, bitte versuche es erneut",
+      "closeWindow": "Du kannst dieses Fenster schließen"
+    },
+    "oauthLink": {
+      "continueAs": "Fortfahren als",
+      "continue": "Fortfahren",
+      "anotherAccount": "Anderes Konto verwenden?",
+      "login": "Anmelden"
     }
   },
   "checkout": {
@@ -255,7 +271,8 @@
     },
     "error": {
       "invalidPlan": "Nicht unterstützter Plantyp. Bitte wählen Sie einen gültigen Plan.",
-      "fetchingCryptoCurrencies": "Die verfügbaren Kryptowährungsoptionen konnten nicht geladen werden"
+      "fetchingCryptoCurrencies": "Die verfügbaren Kryptowährungsoptionen konnten nicht geladen werden",
+      "addressRequired": "Bitte vervollständigen Sie Ihre Rechnungsadresse, um fortzufahren"
     }
   },
   "general": {
@@ -1778,10 +1795,23 @@
             "DeleteFile": "Datei löschen",
             "DeleteFolder": "Ordner löschen"
           },
-          "platform": { "title": "Plattform", "Web": "Web", "Mobile": "Mobil", "Desktop": "Desktop" },
-          "dateRange": { "title": "Datumsbereich", "days": "Letzte {{days}} Tage" }
+          "platform": {
+            "title": "Plattform",
+            "Web": "Web",
+            "Mobile": "Mobil",
+            "Desktop": "Desktop"
+          },
+          "dateRange": {
+            "title": "Datumsbereich",
+            "days": "Letzte {{days}} Tage"
+          }
         },
-        "headerTable": { "date": "Datum", "member": "Mitglied", "activity": "Aktivität", "access": "Zugang" },
+        "headerTable": {
+          "date": "Datum",
+          "member": "Mitglied",
+          "activity": "Aktivität",
+          "access": "Zugang"
+        },
         "noResults": "Es gibt keine Ergebnisse anzuzeigen"
       }
     },
@@ -1827,57 +1857,62 @@
           "free": "Free"
         },
         "planFeaturesList": {
-          "title": "Plandetails",
-          "comingSoon": "Demnächst verfügbar",
-          "storage": " Zero-Knowledge verschlüsselter Speicher",
-          "1TB": {
-            "title": "Essential",
-            "features": [
-              "1TB Zero-Knowledge verschlüsselter Speicher",
-              "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR)",
-              "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)"
-            ]
-          },
-          "3TB": {
-            "title": "Premium",
-            "features": [
-              "3TB Zero-Knowledge verschlüsselter Speicher",
-              "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR, DE, PL)",
-              "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "Einladen, Teilen & Zusammenarbeiten",
-              "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)"
-            ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor"]
-          },
-          "5TB": {
-            "title": "Ultimate",
-            "features": [
-              "5TB Zero-Knowledge verschlüsselter Speicher",
-              "Post-Quanten-Verschlüsselung",
-              "Ultraschnelles unbegrenztes VPN (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Sicherung Ihrer Dateien",
-              "Passwortgeschützter Dateiaustausch",
-              "Einladen, Teilen & Zusammenarbeiten",
-              "DSGVO-Konformität",
-              "Zwei-Faktor-Authentifizierung (2FA)",
-              "CLI, WebDav, NAS & Rclone Unterstützung"
-            ],
-            "comingSoonFeatures": ["Gerätereiniger", "Dark Web Monitor", "Meet", "Mail"]
-          },
-          "1GB": {
-            "title": "Kostenlos",
-            "features": ["1GB Zero-Knowledge verschlüsselter Speicher", "Kostenloses Standard-VPN (FR)"]
-          }
+            "title": "Plandetails",
+            "comingSoon": "Demnächst verfügbar",
+            "storage": " verschlüsselter Speicher",
+            "1TB": {
+                "title": "Essential (Basis)",
+                "features": [
+                    "1TB verschlüsselter Speicher",
+                    "Post-Quanten-Verschlüsselung",
+                    "Zero-Knowledge-Verschlüsselung",
+                    "Zwei-Faktor-Authentifizierung",
+                    "Computer-Backup",
+                    "Passwortgeschütztes Teilen von Dateien",
+                    "Verschlüsseltes VPN",
+                    "Antivirus"
+                ],
+                "comingSoonFeatures": ["Dateiversionierung"]
+            },
+            "3TB": {
+                "title": "Premium",
+                "features": [
+                    "3TB verschlüsselter Speicher",
+                    "Post-Quanten-Verschlüsselung",
+                    "Zero-Knowledge-Verschlüsselung",
+                    "Zwei-Faktor-Authentifizierung",
+                    "Computer-Backup",
+                    "Passwortgeschütztes Teilen von Dateien",
+                    "Einladen, teilen & zusammenarbeiten",
+                    "Verschlüsseltes VPN",
+                    "Antivirus",
+                    "Cleaner (Bereinigungstool)"
+                ],
+                "comingSoonFeatures": ["Dateiversionierung"]
+            },
+            "5TB": {
+                "title": "Ultimate (Ultimativ)",
+                "features": [
+                    "5TB verschlüsselter Speicher",
+                    "Post-Quanten-Verschlüsselung",
+                    "Zero-Knowledge-Verschlüsselung",
+                    "Zwei-Faktor-Authentifizierung",
+                    "Computer-Backup",
+                    "Passwortgeschütztes Teilen von Dateien",
+                    "Einladen, teilen & zusammenarbeiten",
+                    "CLI- & WebDav-Unterstützung",
+                    "NAS- & Rclone-Unterstützung",
+                    "Verschlüsseltes VPN",
+                    "Antivirus",
+                    "Cleaner (Bereinigungstool)",
+                    "Meet (Videokonferenz)"
+                ],
+                "comingSoonFeatures": ["Dateiversionierung", "Mail"]
+            },
+            "1GB": {
+                "title": "Kostenlos",
+                "features": ["1GB verschlüsselter Speicher", "Verschlüsseltes VPN"]
+            }
         },
         "businessPlanFeaturesList": {
           "title": "Plandetails",

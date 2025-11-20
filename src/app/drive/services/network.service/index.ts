@@ -2,7 +2,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import envService from 'app/core/services/env.service';
 import { Abortable } from 'app/network/Abortable';
 import { createUploadWebWorker } from '../../../../WebWorker';
-import localStorageService from '../../../core/services/local-storage.service';
+import localStorageService from 'app/core/services/local-storage.service';
 import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
 import { EnvironmentConfig, IUploadParams } from './types';
 

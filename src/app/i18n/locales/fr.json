@@ -4,13 +4,13 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": { "blueText": "Obtenez 87% de réduction", "text": "sur tous les Plans Premium" },
-    "title": "Obtenez une remise exclusive !",
-    "subTitle": {
-      "blueText": "Offre spéciale :",
-      "text": "stockez vos fichiers en privé pour moins cher"
+    "label": {
+      "blueText": "90% de réduction",
+      "text": "sur tous les forfaits"
     },
-    "ctaGet": "Profiter de l'offre",
+    "title": "Profitez de votre offre spéciale Black Friday !",
+    "subTitle": "La **plus grande réduction** pour une **confidentialité maximale**",
+    "ctaGet": "Accepter l'invitation",
     "ctaContinue": "Continuer gratuitement",
     "guarantee": "Garantie de remboursement de 30 jours",
     "products": {
@@ -86,7 +86,8 @@
       "createAccount": "Créer un compte",
       "2FA": "Code à deux facteurs",
       "twoFactorAuthenticationCode": "Code d'authentification à deux facteurs",
-      "wrongLogin": "Nom d'utilisateur ou mot de passe invalide"
+      "wrongLogin": "Nom d'utilisateur ou mot de passe invalide",
+      "failedToSendAuthData": "Échec de l'envoi des données d'authentification. Veuillez réessayer."
     },
     "signup": {
       "title": "Créer un compte",
@@ -163,9 +164,18 @@
       "successDescription": "Votre compte et votre mot de passe ont été réinitialisés",
       "error": "Quelque chose s'est mal passé lors du redémarrage du compte"
     },
-    "universalLinkSuccess": {
+    "universalLink": {
       "loginAs": "Se connecter comme",
       "openApp": "Ouvrir l'application",
+      "anotherAccount": "Utiliser un autre compte ?",
+      "login": "Connexion",
+      "success": "Vous vous êtes connecté avec succès",
+      "error": "Échec de la connexion, veuillez réessayer",
+      "closeWindow": "Vous pouvez fermer cette fenêtre"
+    },
+    "oauthLink": {
+      "continueAs": "Continuer en tant que",
+      "continue": "Continuer",
       "anotherAccount": "Utiliser un autre compte ?",
       "login": "Connexion"
     }
@@ -261,7 +271,8 @@
     },
     "error": {
       "invalidPlan": "Type de plan non pris en charge. Veuillez sélectionner un plan valide.",
-      "fetchingCryptoCurrencies": "Nous n'avons pas pu charger les options de crypto-monnaies disponibles"
+      "fetchingCryptoCurrencies": "Nous n'avons pas pu charger les options de crypto-monnaies disponibles",
+      "addressRequired": "Veuillez compléter votre adresse de facturation pour continuer"
     }
   },
   "general": {
@@ -1790,10 +1801,23 @@
             "DeleteFile": "Fichier supprimé",
             "DeleteFolder": "Dossier supprimé"
           },
-          "platform": { "title": "Plateforme", "Web": "Web", "Mobile": "Mobile", "Desktop": "Bureau" },
-          "dateRange": { "title": "Plage de dates", "days": "7 derniers jours" }
+          "platform": {
+            "title": "Plateforme",
+            "Web": "Web",
+            "Mobile": "Mobile",
+            "Desktop": "Bureau"
+          },
+          "dateRange": {
+            "title": "Plage de dates",
+            "days": "7 derniers jours"
+          }
         },
-        "headerTable": { "date": "Date", "member": "Membre", "activity": "Activité", "access": "Accès" },
+        "headerTable": {
+          "date": "Date",
+          "member": "Membre",
+          "activity": "Activité",
+          "access": "Accès"
+        },
         "noResults": "Il n'y a aucun résultat à afficher"
       }
     },
@@ -1839,58 +1863,63 @@
           "free": "Free"
         },
         "planFeaturesList": {
-          "title": "Détails du plan",
+          "title": "Détails du Plan",
           "comingSoon": "Bientôt disponible",
-          "storage": " stockage chiffré à connaissance zéro",
+          "storage": " stockage chiffré",
           "1TB": {
-            "title": "Essentiel",
-            "features": [
-              "1TB de stockage chiffré à connaissance zéro",
-              "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)"
-            ]
+              "title": "Essential (Essentiel)",
+              "features": [
+                  "1To de stockage chiffré",
+                  "Chiffrement Post-Quantique",
+                  "Chiffrement Zéro-Connaissance",
+                  "Authentification à Deux Facteurs",
+                  "Sauvegarde de votre ordinateur",
+                  "Partage de fichiers protégé par mot de passe",
+                  "VPN Chiffré",
+                  "Antivirus"
+              ],
+              "comingSoonFeatures": ["Historique des versions de fichiers"]
           },
           "3TB": {
-            "title": "Premium",
-            "features": [
-              "3TB de stockage chiffré à connaissance zéro",
-              "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
-              "Inviter, partager et collaborer",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)"
-            ],
-            "comingSoonFeatures": ["Nettoyage de l'appareil", "Surveillance du dark web"]
+              "title": "Premium",
+              "features": [
+                  "3To de stockage chiffré",
+                  "Chiffrement Post-Quantique",
+                  "Chiffrement Zéro-Connaissance",
+                  "Authentification à Deux Facteurs",
+                  "Sauvegarde de votre ordinateur",
+                  "Partage de fichiers protégé par mot de passe",
+                  "Inviter, partager et collaborer",
+                  "VPN Chiffré",
+                  "Antivirus",
+                  "Nettoyeur"
+              ],
+              "comingSoonFeatures": ["Historique des versions de fichiers"]
           },
           "5TB": {
-            "title": "Ultimate",
-            "features": [
-              "5TB de stockage chiffré à connaissance zéro",
-              "Chiffrement post-quantique",
-              "VPN illimité ultra rapide (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Sauvegarde de vos fichiers",
-              "Partage de fichiers protégés par mot de passe",
-              "Inviter, partager et collaborer",
-              "Conformité au RGPD",
-              "Authentification à deux facteurs (2FA)",
-              "Support CLI, WebDav, NAS et Rclone"
-            ],
-            "comingSoonFeatures": ["Nettoyage de l'appareil", "Surveillance du dark web", "Meet", "Mail"]
+              "title": "Ultimate (Ultime)",
+              "features": [
+                  "5To de stockage chiffré",
+                  "Chiffrement Post-Quantique",
+                  "Chiffrement Zéro-Connaissance",
+                  "Authentification à Deux Facteurs",
+                  "Sauvegarde de votre ordinateur",
+                  "Partage de fichiers protégé par mot de passe",
+                  "Inviter, partager et collaborer",
+                  "Support CLI et WebDav",
+                  "Support NAS et Rclone",
+                  "VPN Chiffré",
+                  "Antivirus",
+                  "Nettoyeur",
+                  "Meet (Réunion)"
+              ],
+              "comingSoonFeatures": ["Historique des versions de fichiers", "Mail"]
           },
           "1GB": {
-            "title": "Gratuit",
-            "features": ["1GB de stockage chiffré à connaissance zéro", "VPN standard gratuit (FR)"]
+              "title": "Gratuit",
+              "features": ["1Go de stockage chiffré", "VPN Chiffré"]
           }
-        },
+      },
         "businessPlanFeaturesList": {
           "title": "Détails du plan",
           "storage": " de stockage",

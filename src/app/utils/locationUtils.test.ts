@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getSharedLocation, getRegularLocation, getLocation } from './locationUtils';
-import { DriveItemDetails, DriveItemData } from './../drive/types/index';
+import { DriveItemDetails, DriveItemData } from 'app/drive/types';
 
 describe('Location Utils', () => {
   describe('getSharedLocation', () => {

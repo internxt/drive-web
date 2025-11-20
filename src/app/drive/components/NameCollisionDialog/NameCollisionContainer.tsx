@@ -1,18 +1,18 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 import NameCollisionDialog, { OPERATION_TYPE, OnSubmitPressed } from '.';
-import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
-import errorService from '../../../core/services/error.service';
-import { RootState } from '../../../store';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { storageActions, storageSelectors } from '../../../store/slices/storage';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
-import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import { uiActions } from '../../../store/slices/ui';
-import { DriveItemData } from '../../types';
-import { IRoot } from '../../../store/slices/storage/types';
-import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
-import { uploadFoldersWithManager } from '../../../network/UploadFolderManager';
+import { moveItemsToTrash } from 'views/Trash/services';
+import errorService from 'app/core/services/error.service';
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { storageActions, storageSelectors } from 'app/store/slices/storage';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import { uiActions } from 'app/store/slices/ui';
+import { DriveItemData } from 'app/drive/types';
+import { IRoot } from 'app/store/slices/storage/types';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;

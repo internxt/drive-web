@@ -3,7 +3,7 @@ import { useTranslationContext } from '../../../../i18n/provider/TranslationProv
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { uiActions } from '../../../../store/slices/ui';
 import { getAppConfig } from '../../../../core/services/config.service';
-import { DriveItemData } from '../../../../drive/types';
+import { DriveItemData } from 'app/drive/types';
 import { BreadcrumbsMenuProps, Dropdown } from '@internxt/ui';
 import { DownloadManager } from '../../../../network/DownloadManager';
 import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';

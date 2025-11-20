@@ -1,11 +1,11 @@
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { DriveFileData, DriveItemData } from '../../types';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { getAppConfig } from 'app/core/services/config.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import errorService from '../../../core/services/error.service';
-import { OrderDirection } from '../../../core/types';
+import errorService from 'app/core/services/error.service';
+import { OrderDirection } from 'app/core/types';
 import {
   ThumbnailToUpload,
   compareThumbnail,
@@ -13,23 +13,23 @@ import {
   setCurrentThumbnail,
   setThumbnails,
   uploadThumbnail,
-} from '../../../drive/services/thumbnail.service';
-import { PreviewFileItem, UserRoles } from '../../../share/types';
-import { RootState } from '../../../store';
-import { uiActions } from '../../../store/slices/ui';
-import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
-import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from '../../services/database.service';
-import downloadService from '../../services/download.service';
-import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
+} from 'app/drive/services/thumbnail.service';
+import { PreviewFileItem, UserRoles } from 'app/share/types';
+import { RootState } from 'app/store';
+import { uiActions } from 'app/store/slices/ui';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from 'app/drive/services/database.service';
+import downloadService from 'app/drive/services/download.service';
+import { useDriveItemActions } from 'views/Drive/hooks';
 import FileViewer from './FileViewer';
 import {
   getFileContentManager,
   topDropdownBarActionsMenu,
   useFileViewerKeyboardShortcuts,
 } from './utils/fileViewerWrapperUtils';
-import { FileToUpload } from '../../../drive/services/file.service/types';
+import { FileToUpload } from 'app/drive/services/file.service/types';
 import { MenuItemType } from '@internxt/ui';
-import { DownloadManager } from '../../../network/DownloadManager';
+import { DownloadManager } from 'app/network/DownloadManager';
 
 type pathProps = 'drive' | 'trash' | 'shared' | 'recents';
 

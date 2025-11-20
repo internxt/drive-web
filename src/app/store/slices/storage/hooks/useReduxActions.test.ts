@@ -19,7 +19,7 @@ vi.mock('../storage.thunks/uploadItemsThunk', () => ({
   uploadSharedItemsThunk: vi.fn(),
 }));
 
-vi.mock('../../../../drive/services/folder.service', () => ({
+vi.mock('app/drive/services/folder.service', () => ({
   createFilesIterator: vi.fn(),
   createFoldersIterator: vi.fn(),
 }));

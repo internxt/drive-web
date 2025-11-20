@@ -1,6 +1,6 @@
 import streamSaver from 'streamsaver';
 import { isFirefox } from 'react-device-detect';
-import { ConnectionLostError } from '../../../network/requests';
+import { ConnectionLostError } from 'app/network/requests';
 import { DriveFileData } from '../../types';
 import fetchFileStream from './fetchFileStream';
 import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';

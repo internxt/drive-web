@@ -9,22 +9,22 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": { "blueText": "Ottieni l'87% di sconto", "text": "su tutti i Piani Premium" },
-    "title": "Ottieni uno sconto esclusivo!",
-    "subTitle": {
-      "blueText": "Offerta speciale:",
-      "text": "archivia i file in privato per meno"
+    "label": {
+      "blueText": "Скидка 90%",
+      "text": "на все тарифы"
     },
-    "ctaGet": "Approfitta dell'offerta",
-    "ctaContinue": "Continua gratis",
-    "guarantee": "Garanzia di rimborso di 30 giorni",
+    "title": "Получите специальное предложение Черной пятницы!",
+    "subTitle": "**Максимальная скидка** для **максимальной конфиденциальности**",
+    "ctaGet": "Принять приглашение",
+    "ctaContinue": "Продолжить бесплатно",
+    "guarantee": "30-дневная гарантия возврата денег",
     "products": {
       "drive": "Drive",
-      "antivirus": "Antivirus",
-      "cleaner": "Cleaner",
+      "antivirus": "Антивирус",
+      "cleaner": "Очистка",
       "vpn": "VPN",
       "meet": "Meet",
-      "mail": "Mail"
+      "mail": "Почта"
     }
   },
   "susbcriptionsBanner": {
@@ -107,7 +107,8 @@
       "createAccount": "Creare un account",
       "2FA": "Codice a due fattori",
       "twoFactorAuthenticationCode": "Codice di autenticazione a due fattori",
-      "wrongLogin": "Nome utente o password non validi"
+      "wrongLogin": "Nome utente o password non validi",
+      "failedToSendAuthData": "Impossibile inviare i dati di autenticazione. Riprova."
     },
     "signup": {
       "title": "Creare un account",
@@ -180,10 +181,19 @@
       "successDescription": "L'account e la password sono stati ripristinati",
       "error": "Qualcosa è andato storto durante il riavvio dell'account."
     },
-    "universalLinkSuccess": {
+    "universalLink": {
       "loginAs": "Accedi come",
       "openApp": "Apri l'applicazione",
-      "anotherAccount": "Utilizzare un altro account?",
+      "anotherAccount": "Usare un altro account?",
+      "login": "Accedi",
+      "success": "Accesso effettuato con successo",
+      "error": "Impossibile accedere, riprova",
+      "closeWindow": "Puoi chiudere questa finestra"
+    },
+    "oauthLink": {
+      "continueAs": "Continua come",
+      "continue": "Continua",
+      "anotherAccount": "Usare un altro account?",
       "login": "Accedi"
     }
   },
@@ -247,7 +257,6 @@
       },
       "perUser": "/per utente",
       "saving": "Stai risparmiando {{percent}}%",
-
       "planDetails": {
         "title": "Dettagli del piano:",
         "commingSoon": "Prossimamente",
@@ -353,7 +362,8 @@
     },
     "error": {
       "invalidPlan": "Tipo di piano non supportato. Seleziona un piano valido.",
-      "fetchingCryptoCurrencies": "Non siamo riusciti a caricare le opzioni di criptovalute disponibili"
+      "fetchingCryptoCurrencies": "Non siamo riusciti a caricare le opzioni di criptovalute disponibili",
+      "addressRequired": "Completa il tuo indirizzo di fatturazione per continuare"
     }
   },
   "general": {
@@ -1898,10 +1908,23 @@
             "DeleteFile": "File eliminato",
             "DeleteFolder": "Cartella eliminata"
           },
-          "platform": { "title": "Piattaforma", "Web": "Web", "Mobile": "Mobile", "Desktop": "Desktop" },
-          "dateRange": { "title": "Intervallo di date", "days": "Ultimi {{days}} giorni" }
+          "platform": {
+            "title": "Piattaforma",
+            "Web": "Web",
+            "Mobile": "Mobile",
+            "Desktop": "Desktop"
+          },
+          "dateRange": {
+            "title": "Intervallo di date",
+            "days": "Ultimi {{days}} giorni"
+          }
         },
-        "headerTable": { "date": "Data", "member": "Membro", "activity": "Attività", "access": "Accesso" },
+        "headerTable": {
+          "date": "Data",
+          "member": "Membro",
+          "activity": "Attività",
+          "access": "Accesso"
+        },
         "noResults": "Non ci sono risultati da mostrare"
       }
     },
@@ -1947,57 +1970,62 @@
           "free": "Free"
         },
         "planFeaturesList": {
-          "title": "Dettagli del piano",
-          "comingSoon": "Prossimamente",
-          "storage": " archiviazione criptata a conoscenza zero",
-          "1TB": {
-            "title": "Essenziale",
-            "features": [
-              "1TB di archiviazione criptata a conoscenza zero",
-              "Crittografia post-quantistica",
-              "VPN illimitata ultraveloce (FR)",
-              "Antivirus",
-              "Backup dei tuoi file",
-              "Condivisione file protetta da password",
-              "Conformità GDPR",
-              "Autenticazione a due fattori (2FA)"
-            ]
-          },
-          "3TB": {
-            "title": "Premium",
-            "features": [
-              "3TB di archiviazione criptata a conoscenza zero",
-              "Crittografia post-quantistica",
-              "VPN illimitata ultraveloce (FR, DE, PL)",
-              "Antivirus",
-              "Backup dei tuoi file",
-              "Condivisione file protetta da password",
-              "Invita, condividi e collabora",
-              "Conformità GDPR",
-              "Autenticazione a due fattori (2FA)"
-            ],
-            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web"]
-          },
-          "5TB": {
-            "title": "Ultimate",
-            "features": [
-              "5TB di archiviazione criptata a conoscenza zero",
-              "Crittografia post-quantistica",
-              "VPN illimitata ultraveloce (FR, DE, PL, CA, UK)",
-              "Antivirus",
-              "Backup dei tuoi file",
-              "Condivisione file protetta da password",
-              "Invita, condividi e collabora",
-              "Conformità GDPR",
-              "Autenticazione a due fattori (2FA)",
-              "Supporto CLI, WebDav, NAS e Rclone"
-            ],
-            "comingSoonFeatures": ["Pulitore dispositivi", "Monitoraggio Dark Web", "Meet", "Mail"]
-          },
-          "1GB": {
-            "title": "Gratuito",
-            "features": ["1GB di archiviazione criptata a conoscenza zero", "VPN standard gratuita (FR)"]
-          }
+            "title": "Dettagli del Piano",
+            "comingSoon": "Prossimamente",
+            "storage": " spazio di archiviazione crittografato",
+            "1TB": {
+                "title": "Essential (Essenziale)",
+                "features": [
+                    "1TB di spazio di archiviazione crittografato",
+                    "Crittografia Post-Quantistica",
+                    "Crittografia Zero-Knowledge",
+                    "Autenticazione a Due Fattori",
+                    "Backup del computer",
+                    "Condivisione file protetta da password",
+                    "VPN Crittografata",
+                    "Antivirus"
+                ],
+                "comingSoonFeatures": ["Versionamento dei File"]
+            },
+            "3TB": {
+                "title": "Premium",
+                "features": [
+                    "3TB di spazio di archiviazione crittografato",
+                    "Crittografia Post-Quantistica",
+                    "Crittografia Zero-Knowledge",
+                    "Autenticazione a Due Fattori",
+                    "Backup del computer",
+                    "Condivisione file protetta da password",
+                    "Invita, condividi e collabora",
+                    "VPN Crittografata",
+                    "Antivirus",
+                    "Cleaner (Pulitore)"
+                ],
+                "comingSoonFeatures": ["Versionamento dei File"]
+            },
+            "5TB": {
+                "title": "Ultimate (Definitivo)",
+                "features": [
+                    "5TB di spazio di archiviazione crittografato",
+                    "Crittografia Post-Quantistica",
+                    "Crittografia Zero-Knowledge",
+                    "Autenticazione a Due Fattori",
+                    "Backup del computer",
+                    "Condivisione file protetta da password",
+                    "Invita, condividi e collabora",
+                    "Supporto CLI e WebDav",
+                    "Supporto NAS e Rclone",
+                    "VPN Crittografata",
+                    "Antivirus",
+                    "Cleaner (Pulitore)",
+                    "Meet (Videoconferenza)"
+                ],
+                "comingSoonFeatures": ["Versionamento dei File", "Mail"]
+            },
+            "1GB": {
+                "title": "Gratuito",
+                "features": ["1GB di spazio di archiviazione crittografato", "VPN Crittografata"]
+            }
         },
         "businessPlanFeaturesList": {
           "title": "Dettagli del piano",

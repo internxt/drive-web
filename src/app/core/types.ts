@@ -1,5 +1,5 @@
 import { DatabaseProvider } from '../database/services/database.service';
-import { DownloadFolderMethod } from '../drive/types';
+import { DownloadFolderMethod } from 'app/drive/types';
 import { store as storeInstance } from '../store';
 
 type StoreType = typeof storeInstance;
@@ -143,6 +143,9 @@ export enum AppView {
   ChangeEmail = 'change-email',
   RequestAccess = 'request-access',
   UniversalLinkSuccess = 'auth-success',
+  UniversalLinkOk = 'universal-link-ok',
+  UniversalLinkError = 'universal-link-error',
+  OAuthLink = 'oauth-link',
 }
 
 export enum SignupDeviceSource {

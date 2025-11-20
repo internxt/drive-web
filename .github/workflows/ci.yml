@@ -84,9 +84,3 @@ jobs:
         run: yarn build:only
         env:
           CI: false
-      - name: Install netlify
-        run: npm install -g netlify-cli
-      - name: Deploy build
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_PAT }}
-        run: DEBUG=* netlify deploy --dir=build

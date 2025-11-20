@@ -2,14 +2,14 @@ import { Fragment, useEffect, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Logo from 'assets/icons/logo.svg?react';
 import { Link } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { userThunks } from '../../../store/slices/user';
-import desktopService from '../../../core/services/desktop.service';
-import '../../../share/views/ShareView/ShareView.scss';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { userThunks } from 'app/store/slices/user';
+import desktopService from 'app/core/services/desktop.service';
+import 'views/PublicShared/components/ShareView.scss';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import ReportButton from '../../../share/views/ShareView/ReportButon';
+import { ReportButton } from '../../../../views/PublicShared/components';
 import { ShieldCheck, Password, Key, Eye } from '@phosphor-icons/react';
 import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 import { Avatar, Button } from '@internxt/ui';
@@ -19,7 +19,7 @@ interface ShareLayoutProps {
   children: JSX.Element;
 }
 
-export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
+export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Element {
   const { translate } = useTranslationContext();
 
   const dispatch = useAppDispatch();
@@ -184,7 +184,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   <Button
                     variant="secondary"
                     onClick={() => {
-                      window.location.href = envService.getVariable('hostname') + '/login';
+                      globalThis.location.href = envService.getVariable('hostname') + '/login';
                     }}
                   >
                     {translate('shareLayout.topBar.login')}
@@ -193,7 +193,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   <Button
                     variant="primary"
                     onClick={() => {
-                      window.location.href = envService.getVariable('hostname') + '/new';
+                      globalThis.location.href = envService.getVariable('hostname') + '/new';
                     }}
                   >
                     {translate('shareLayout.topBar.createAccount')}

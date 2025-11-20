@@ -4,22 +4,22 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": { "blueText": "获得87%折扣", "text": "所有高级套餐" },
-    "title": "获得专属折扣！",
-    "subTitle": {
-      "blueText": "特别优惠：",
-      "text": "以更低价格私密存储文件"
+    "label": {
+      "blueText": "90% 折扣",
+      "text": "所有套餐"
     },
-    "ctaGet": "获取优惠",
-    "ctaContinue": "免费继续",
+    "title": "领取您的黑色星期五特别优惠！",
+    "subTitle": "**最大折扣**享受**最高隐私保护**",
+    "ctaGet": "接受邀请",
+    "ctaContinue": "继续免费使用",
     "guarantee": "30天退款保证",
     "products": {
-      "drive": "Drive",
-      "antivirus": "Antivirus",
-      "cleaner": "Cleaner",
+      "drive": "云盘",
+      "antivirus": "杀毒软件",
+      "cleaner": "清理工具",
       "vpn": "VPN",
-      "meet": "Meet",
-      "mail": "Mail"
+      "meet": "会议",
+      "mail": "邮箱"
     }
   },
   "susbcriptionsBanner": {
@@ -104,7 +104,8 @@
       "createAccount": "创建账户",
       "2FA": "双因素代码",
       "twoFactorAuthenticationCode": "双因素验证码",
-      "wrongLogin": "用户名或密码无效"
+      "wrongLogin": "用户名或密码无效",
+      "failedToSendAuthData": "发送身份验证数据失败。请重试。"
     },
     "signup": {
       "title": "创建账户",
@@ -177,9 +178,18 @@
       "successDescription": "您的账户和密码已重置",
       "error": "重启账户时出了问题。"
     },
-    "universalLinkSuccess": {
-      "loginAs": "登录为",
-      "openApp": "开放申请",
+    "universalLink": {
+      "loginAs": "以此账户登录",
+      "openApp": "打开应用",
+      "anotherAccount": "使用另一个帐户？",
+      "login": "登录",
+      "success": "您已成功登录",
+      "error": "无法登录，请重试",
+      "closeWindow": "您可以关闭此窗口"
+    },
+    "oauthLink": {
+      "continueAs": "继续使用",
+      "continue": "继续",
       "anotherAccount": "使用另一个帐户？",
       "login": "登录"
     }
@@ -275,7 +285,8 @@
     },
     "error": {
       "invalidPlan": "不支持的套餐类型。请选择有效的套餐。",
-      "fetchingCryptoCurrencies": "无法加载可用的加密货币选项"
+      "fetchingCryptoCurrencies": "无法加载可用的加密货币选项",
+      "addressRequired": "请填写您的账单地址以继续"
     }
   },
   "general": {
@@ -1508,7 +1519,6 @@
       "advice": "您将被重定向到您的 AppSumo 帐户"
     }
   },
-
   "newsletter": {
     "dialog": {
       "title": "订阅我们的新闻",
@@ -1833,10 +1843,23 @@
             "DeleteFile": "已删除文件",
             "DeleteFolder": "已删除文件夹"
           },
-          "platform": { "title": "平台", "Web": "网页", "Mobile": "移动端", "Desktop": "桌面端" },
-          "dateRange": { "title": "日期范围", "days": "最近 {{days}} 天" }
+          "platform": {
+            "title": "平台",
+            "Web": "网页",
+            "Mobile": "移动端",
+            "Desktop": "桌面端"
+          },
+          "dateRange": {
+            "title": "日期范围",
+            "days": "最近 {{days}} 天"
+          }
         },
-        "headerTable": { "date": "日期", "member": "成员", "activity": "活动", "access": "访问" },
+        "headerTable": {
+          "date": "日期",
+          "member": "成员",
+          "activity": "活动",
+          "access": "访问"
+        },
         "noResults": "没有可显示的结果"
       }
     },
@@ -1884,56 +1907,61 @@
         "planFeaturesList": {
           "title": "套餐详情",
           "comingSoon": "即将推出",
-          "storage": " 零知识加密存储",
+          "storage": " 加密存储空间",
           "1TB": {
-            "title": "基础版",
-            "features": [
-              "1TB零知识加密存储",
-              "后量子加密",
-              "超快无限制VPN（法国）",
-              "防病毒",
-              "文件备份",
-              "密码保护文件共享",
-              "符合GDPR",
-              "双因素认证（2FA）"
-            ]
+              "title": "Essential (基础版)",
+              "features": [
+                  "1TB 加密存储空间",
+                  "后量子密码学",
+                  "零知识加密",
+                  "两步验证",
+                  "电脑备份",
+                  "密码保护的文件共享",
+                  "加密 VPN",
+                  "杀毒软件"
+              ],
+              "comingSoonFeatures": ["文件版本控制"]
           },
           "3TB": {
-            "title": "高级版",
-            "features": [
-              "3TB零知识加密存储",
-              "后量子加密",
-              "超快无限制VPN（法国、德国、波兰）",
-              "防病毒",
-              "文件备份",
-              "密码保护文件共享",
-              "邀请、共享和协作",
-              "符合GDPR",
-              "双因素认证（2FA）"
-            ],
-            "comingSoonFeatures": ["设备清理器", "暗网监控"]
+              "title": "Premium (高级版)",
+              "features": [
+                  "3TB 加密存储空间",
+                  "后量子密码学",
+                  "零知识加密",
+                  "两步验证",
+                  "电脑备份",
+                  "密码保护的文件共享",
+                  "邀请、共享和协作",
+                  "加密 VPN",
+                  "杀毒软件",
+                  "清理工具 (Cleaner)"
+              ],
+              "comingSoonFeatures": ["文件版本控制"]
           },
           "5TB": {
-            "title": "旗舰版",
-            "features": [
-              "5TB零知识加密存储",
-              "后量子加密",
-              "超快无限制VPN（法国、德国、波兰、加拿大、英国）",
-              "防病毒",
-              "文件备份",
-              "密码保护文件共享",
-              "邀请、共享和协作",
-              "符合GDPR",
-              "双因素认证（2FA）",
-              "支持CLI、WebDav、NAS和Rclone"
-            ],
-            "comingSoonFeatures": ["设备清理器", "暗网监控", "视频会议", "邮件"]
+              "title": "Ultimate (旗舰版)",
+              "features": [
+                  "5TB 加密存储空间",
+                  "后量子密码学",
+                  "零知识加密",
+                  "两步验证",
+                  "电脑备份",
+                  "密码保护的文件共享",
+                  "邀请、共享和协作",
+                  "支持 CLI 和 WebDav",
+                  "支持 NAS 和 Rclone",
+                  "加密 VPN",
+                  "杀毒软件",
+                  "清理工具 (Cleaner)",
+                  "会议 (Meet)"
+              ],
+              "comingSoonFeatures": ["文件版本控制", "邮件 (Mail)"]
           },
           "1GB": {
-            "title": "免费版",
-            "features": ["1GB零知识加密存储", "免费标准VPN（法国）"]
+              "title": "Free (免费版)",
+              "features": ["1GB 加密存储空间", "加密 VPN"]
           }
-        },
+      },
         "businessPlanFeaturesList": {
           "title": "套餐详情",
           "storage": " 存储空间",

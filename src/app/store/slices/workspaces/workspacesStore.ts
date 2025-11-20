@@ -11,7 +11,7 @@ import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.servic
 import {
   deleteWorkspaceAvatarFromDatabase,
   saveWorkspaceAvatarToDatabase,
-} from '../../../newSettings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper';
+} from '../../../../views/NewSettings/components/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { decryptMnemonic } from '../../../share/services/share.service';
 import { planThunks } from '../plan';

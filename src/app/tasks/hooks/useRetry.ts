@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { DriveItemData } from '../../drive/types';
+import { DriveItemData } from 'app/drive/types';
 import {
   DownloadFileTask,
   DownloadFilesData,

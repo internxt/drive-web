@@ -8,7 +8,7 @@ import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import { acceptSharedFolderInvite, declineSharedFolderInvite } from '../../../share/services/share.service';
+import { acceptSharedFolderInvite, declineSharedFolderInvite } from 'app/share/services/share.service';
 
 const Header = ({ title, isLoading, onClose }): JSX.Element => {
   return (

@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import userService from '../../auth/services/user.service';
 import { refreshAvatar } from './avatarUtils';
-import { updateDatabaseProfileAvatar, deleteDatabaseProfileAvatar } from '../../drive/services/database.service';
+import { updateDatabaseProfileAvatar, deleteDatabaseProfileAvatar } from 'app/drive/services/database.service';
 
-vi.mock('../../drive/services/database.service', async () => {
-  const actual = await vi.importActual<typeof import('../../drive/services/database.service')>(
-    '../../drive/services/database.service',
+vi.mock('app/drive/services/database.service', async () => {
+  const actual = await vi.importActual<typeof import('app/drive/services/database.service')>(
+    'app/drive/services/database.service',
   );
 
   return {

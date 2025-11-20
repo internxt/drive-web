@@ -1,10 +1,10 @@
 import { describe, expect, it, Mock, vi, beforeEach } from 'vitest';
 import { deleteFile } from '.';
-import { SdkFactory } from '../../../core/factory/sdk';
-import { DriveFileData } from '../../../drive/types';
+import { SdkFactory } from 'app/core/factory/sdk';
+import { DriveFileData } from 'app/drive/types';
 import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
 
-vi.mock('../../../core/factory/sdk', () => ({
+vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
     getNewApiInstance: vi.fn(),
   },

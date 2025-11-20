@@ -1,0 +1,54 @@
+import { connect, useDispatch } from 'react-redux';
+import navigationService from 'app/core/services/navigation.service';
+import { RootState } from 'app/store';
+import { useAppSelector } from 'app/store/hooks';
+import { planSelectors } from 'app/store/slices/plan';
+import { uiActions } from 'app/store/slices/ui';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { WarningMessage } from './WarningMessage';
+
+type WarningMessageWrapperProps = {
+  planLimit: number;
+  planUsage: number;
+  isLoadingPlanLimit: boolean;
+  isLoadingPlanUsage: boolean;
+};
+
+const WarningMessageWrapper = ({
+  planLimit,
+  planUsage,
+  isLoadingPlanLimit,
+  isLoadingPlanUsage,
+}: WarningMessageWrapperProps): JSX.Element => {
+  const dispatch = useDispatch();
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+
+  const onUpgradeButtonClicked = () => {
+    navigationService.openPreferencesDialog({
+      section: 'account',
+      subsection: 'plans',
+      workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+    });
+    dispatch(uiActions.setIsPreferencesDialogOpen(true));
+  };
+
+  const isLimitReached = planUsage >= planLimit;
+  const isLoading = isLoadingPlanLimit || isLoadingPlanUsage;
+  const plansNotFetched = planUsage === 0 && planLimit === 0;
+  const areNotNumbers =
+    (planUsage !== 0 && !planUsage) ||
+    (planLimit !== 0 && !planLimit) ||
+    Number.isNaN(planUsage) ||
+    Number.isNaN(planLimit);
+
+  if (plansNotFetched || areNotNumbers || !isLimitReached || isLoading) return <></>;
+
+  return <WarningMessage onUpgradeButtonClicked={onUpgradeButtonClicked} />;
+};
+
+export default connect((state: RootState) => ({
+  planUsage: planSelectors.planUsageToShow(state),
+  planLimit: planSelectors.planLimitToShow(state),
+  isLoadingPlanLimit: state.plan.isLoadingPlanLimit,
+  isLoadingPlanUsage: state.plan.isLoadingPlanUsage,
+}))(WarningMessageWrapper);
