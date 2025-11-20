@@ -1,11 +1,11 @@
-import streamSaver from 'streamsaver';
-import { isFirefox } from 'react-device-detect';
+import { ErrorMessages } from 'app/core/constants';
 import { ConnectionLostError } from 'app/network/requests';
+import { isFirefox } from 'react-device-detect';
+import streamSaver from 'streamsaver';
 import { DriveFileData } from '../../types';
+import { BlobWritable, downloadFileAsBlob } from './downloadFileAsBlob';
 import fetchFileStream from './fetchFileStream';
 import fetchFileStreamUsingCredentials from './fetchFileStreamUsingCredentials';
-import { ErrorMessages } from 'app/core/constants';
-import { BlobWritable, downloadFileAsBlob } from './downloadFileAsBlob';
 
 async function pipe(readable: ReadableStream, writable: BlobWritable): Promise<void> {
   const reader = readable.getReader();
@@ -117,16 +117,20 @@ async function downloadToFs(
   }
 
   switch (supports) {
-    case DownloadSupport.StreamApi:
-      // eslint-disable-next-line no-case-declarations
+    case DownloadSupport.StreamApi: {
       const fsHandle = await window.showSaveFilePicker({ suggestedName: filename }).catch((_) => {
         abortController?.abort();
         throw new Error(ErrorMessages.FilePickerCancelled);
       });
-      // eslint-disable-next-line no-case-declarations
-      const destination = await fsHandle.createWritable({ keepExistingData: false });
+      // TypeScript's FileSystemFileHandle definition is incomplete, so we assert the createWritable method exists
+      const destination = await (
+        fsHandle as FileSystemFileHandle & {
+          createWritable(options?: { keepExistingData?: boolean }): Promise<WritableStream>;
+        }
+      ).createWritable({ keepExistingData: false });
 
       return downloadFileUsingStreamApi(await source, destination, abortController);
+    }
     case DownloadSupport.PartialStreamApi:
       return downloadFileUsingStreamApi(await source, streamSaver.createWriteStream(filename), abortController);
 
