@@ -1,7 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { t } from 'i18next';
 import { useSelector } from 'react-redux';
-import userService from 'app/auth/services/user.service';
+import userService from 'services/user.service';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import workspacesService from 'app/core/services/workspace.service';

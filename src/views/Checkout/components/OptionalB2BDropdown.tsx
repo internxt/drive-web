@@ -1,6 +1,6 @@
 import { Menu, Transition } from '@headlessui/react';
 import { CaretDown, CaretUp } from '@phosphor-icons/react';
-import TextInput from 'app/auth/components/TextInput/TextInput';
+import TextInput from 'components/TextInput';
 import { IFormValues } from 'app/core/types';
 import { useState } from 'react';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
