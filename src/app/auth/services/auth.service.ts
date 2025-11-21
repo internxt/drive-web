@@ -96,7 +96,7 @@ const getCurrentUrlParams = (): Record<string, string> => {
   const currentParams = new URLSearchParams(window.location.search);
   const preservedParams: Record<string, string> = {};
 
-  const safeParams = ['universalLink', 'folderuuid', 'redirectUri'];
+  const safeParams = ['universalLink', 'folderuuid', 'redirectUri', 'authOrigin'];
 
   currentParams.forEach((value, key) => {
     if (safeParams.includes(key)) {
