@@ -14,7 +14,7 @@ export default function UniversalLinkView(): JSX.Element {
   const { translate } = useTranslationContext();
   const user = useMemo(() => localStorageService.getUser(), []);
 
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(globalThis.location.search);
   const redirectUri = urlParams.get('redirectUri');
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export default function UniversalLinkView(): JSX.Element {
   };
 
   const handleGoToUniversalLinkUrl = () => {
-    window.location.href = getUniversalLinkAuthUrl(user);
+    globalThis.location.href = getUniversalLinkAuthUrl(user);
   };
 
   return (
