@@ -146,7 +146,7 @@ export const is2FAorOpaqueNeeded = async (email: string): Promise<{ tfaEnabled: 
     throw new AppError(error.message ?? 'Login error', error.status ?? 500);
   });
 
-  return { tfaEnabled: securityDetails.tfaEnabled, useOpaqueLogin: securityDetails.opaqueLogin };
+  return { tfaEnabled: securityDetails.tfaEnabled, useOpaqueLogin: securityDetails.useOpaqueLogin };
 };
 
 const getAuthClient = (authType: 'web' | 'desktop') => {

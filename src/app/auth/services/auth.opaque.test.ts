@@ -1,13 +1,13 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import * as opaque from '@serenity-kit/opaque';
+import { server } from '@serenity-kit/opaque';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { SdkFactory } from '../../core/factory/sdk';
 import * as authOpaqueService from './auth.opaque';
-import { v4 as uuidV4 } from 'uuid';
 import { RegisterOpaqueDetails, UserKeys } from '@internxt/sdk';
-import { decryptUserKeysAndMnemonic } from './auth.crypto';
+import { decryptUserKeysAndMnemonic, safeBase64ToBytes } from './auth.crypto';
 import localStorageService from 'app/core/services/local-storage.service';
-import { hash } from 'internxt-crypto';
+import { computeMac } from 'internxt-crypto/hash';
+import { base64ToUint8Array, generateID, uuidToBytes } from 'internxt-crypto/utils';
 
 function getMockUser(registerDetails: RegisterOpaqueDetails) {
   const mockUser: UserSettings = {
@@ -50,7 +50,7 @@ describe('logIn', () => {
   const mockReferral = 'referral';
 
   beforeAll(() => {
-    const serverSetup = opaque.server.createSetup();
+    const serverSetup = server.createSetup();
     const registrationRecords = new Map<string, string>();
     const users = new Map<string, UserSettings>();
     const logedInUsers = new Map<string, { email: string; sessionKey: string }>();
@@ -84,7 +84,7 @@ describe('logIn', () => {
       createAuthClient: vi.fn().mockImplementation(() => {
         return {
           registerOpaqueStart: vi.fn().mockImplementation((email: string, registrationRequest: string) => {
-            const { registrationResponse } = opaque.server.createRegistrationResponse({
+            const { registrationResponse } = server.createRegistrationResponse({
               serverSetup,
               userIdentifier: email,
               registrationRequest,
@@ -100,7 +100,7 @@ describe('logIn', () => {
                 const email = registerDetails.email;
                 registrationRecords.set(email, registrationRecord);
 
-                const { loginResponse, serverLoginState } = opaque.server.startLogin({
+                const { loginResponse, serverLoginState } = server.startLogin({
                   userIdentifier: email,
                   registrationRecord,
                   serverSetup,
@@ -122,7 +122,7 @@ describe('logIn', () => {
                 throw new Error('Two factor code is incorrect');
               }
 
-              const { loginResponse, serverLoginState } = opaque.server.startLogin({
+              const { loginResponse, serverLoginState } = server.startLogin({
                 userIdentifier: email,
                 registrationRecord: registrationRecords.get(email),
                 serverSetup,
@@ -135,7 +135,7 @@ describe('logIn', () => {
             }),
 
           loginOpaqueFinish: vi.fn().mockImplementation((email: string, finishLoginRequest: string) => {
-            const { sessionKey } = opaque.server.finishLogin({
+            const { sessionKey } = server.finishLogin({
               finishLoginRequest,
               serverLoginState: serverLoginStates.get(email) ?? '',
             });
@@ -144,7 +144,7 @@ describe('logIn', () => {
             if (!user) {
               throw new Error('User is not found');
             }
-            const sessionID = uuidV4();
+            const sessionID = generateID();
 
             logedInUsers.set(sessionID, { sessionKey, email });
 
@@ -163,11 +163,12 @@ describe('logIn', () => {
               }
 
               const sessionKey = record.sessionKey;
+              const sessionKeyBytes = safeBase64ToBytes(sessionKey);
 
-              const correctMac = await hash.computeMac(sessionKey, [twoFactorCode, sessionID]);
-              if (correctMac !== mac) {
-                throw new Error('HMAC is incorrect');
-              } else return true;
+              const correctMac = computeMac(sessionKeyBytes, [Buffer.from(twoFactorCode), uuidToBytes(sessionID)]);
+              if (correctMac === mac) {
+                return true;
+              } else throw new Error('HMAC is incorrect');
             }),
         };
       }),
@@ -182,14 +183,17 @@ describe('logIn', () => {
               }
 
               const sessionKey = record.sessionKey;
-
-              const correctMac = await hash.computeMac(sessionKey, [registrationRequest, sessionID]);
+              const sessionKeyBytes = safeBase64ToBytes(sessionKey);
+              const correctMac = computeMac(sessionKeyBytes, [
+                safeBase64ToBytes(registrationRequest),
+                uuidToBytes(sessionID),
+              ]);
               if (correctMac !== mac) {
                 throw new Error('HMAC is incorrect');
               }
               const email = record.email ?? '';
 
-              const { registrationResponse } = opaque.server.createRegistrationResponse({
+              const { registrationResponse } = server.createRegistrationResponse({
                 serverSetup,
                 userIdentifier: email,
                 registrationRequest,
@@ -215,11 +219,15 @@ describe('logIn', () => {
 
                 const sessionKey = record.sessionKey;
 
-                const correctMac = await hash.computeMac(sessionKey, [
-                  registrationRecord,
-                  encMnemonic,
-                  JSON.stringify(encKeys),
-                  startLoginRequest,
+                const sessionKeyBytes = safeBase64ToBytes(sessionKey);
+                const correctMac = computeMac(sessionKeyBytes, [
+                  safeBase64ToBytes(registrationRecord),
+                  base64ToUint8Array(encMnemonic),
+                  base64ToUint8Array(encKeys.ecc.privateKey),
+                  base64ToUint8Array(encKeys.ecc.publicKey),
+                  base64ToUint8Array(encKeys.kyber.privateKey),
+                  base64ToUint8Array(encKeys.kyber.publicKey),
+                  safeBase64ToBytes(startLoginRequest),
                 ]);
                 if (correctMac !== mac) {
                   throw new Error('HMAC is incorrect');
@@ -243,7 +251,7 @@ describe('logIn', () => {
                 users.set(email, newUser);
                 registrationRecords.set(email, registrationRecord);
 
-                const { loginResponse, serverLoginState } = opaque.server.startLogin({
+                const { loginResponse, serverLoginState } = server.startLogin({
                   userIdentifier: email,
                   registrationRecord,
                   serverSetup,

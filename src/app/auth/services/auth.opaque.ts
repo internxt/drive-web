@@ -1,9 +1,9 @@
-import * as opaque from '@serenity-kit/opaque';
+import { client } from '@serenity-kit/opaque';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from '../../core/factory/sdk';
 import * as Sentry from '@sentry/react';
 import localStorageService from 'app/core/services/local-storage.service';
-import { hash } from 'internxt-crypto';
+import { computeMac } from 'internxt-crypto/hash';
 
 import { RegisterOpaqueDetails } from '@internxt/sdk';
 import { readReferalCookie } from 'app/auth/services/auth.service';
@@ -13,7 +13,9 @@ import {
   encryptSessionKey,
   decryptSessionKey,
   generateUserSecrets,
+  safeBase64ToBytes,
 } from './auth.crypto';
+import { base64ToUint8Array, uuidToBytes } from 'internxt-crypto/utils';
 
 export type ProfileInfoOpaque = {
   user: UserSettings;
@@ -28,7 +30,7 @@ export const loginOpaque = async (
   twoFactorCode: string,
 ): Promise<ProfileInfoOpaque> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  const { clientLoginState, startLoginRequest } = opaque.client.startLogin({
+  const { clientLoginState, startLoginRequest } = client.startLogin({
     password,
   });
 
@@ -79,11 +81,11 @@ export const signupOpaque = async (
   referrer: string,
   referral: string,
 ) => {
-  const { clientRegistrationState, registrationRequest } = opaque.client.startRegistration({ password });
+  const { clientRegistrationState, registrationRequest } = client.startRegistration({ password });
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   const { signUpResponse } = await authClient.registerOpaqueStart(email, registrationRequest);
 
-  const { exportKey, registrationRecord } = opaque.client.finishRegistration({
+  const { exportKey, registrationRecord } = client.finishRegistration({
     clientRegistrationState,
     registrationResponse: signUpResponse,
     password,
@@ -102,7 +104,7 @@ export const signupOpaque = async (
     referrer,
   };
 
-  const { clientLoginState, startLoginRequest } = opaque.client.startLogin({
+  const { clientLoginState, startLoginRequest } = client.startLogin({
     password,
   });
 
@@ -139,27 +141,27 @@ export const setSessionKey = async (password: string, sessionKey: string): Promi
   localStorageService.set('sessionKeySalt', salt);
 };
 
-export const getSessionKey = async (password: string): Promise<string> => {
+export const getSessionKey = async (password: string): Promise<Uint8Array> => {
   const sessionKeyEnc = localStorageService.get('sessionKey') || '';
   const salt = localStorageService.get('sessionKeySalt') || '';
   return decryptSessionKey(password, sessionKeyEnc, salt);
 };
 
-export const getMac = async (password: string, request: string[]): Promise<string> => {
+export const getMac = async (password: string, request: Uint8Array[]): Promise<string> => {
   const sessionKey = await getSessionKey(password);
-  return hash.computeMac(sessionKey, request);
+  return computeMac(sessionKey, request);
 };
 
 export const deactivate2FAOpaque = async (password: string, authCode: string): Promise<void> => {
   const sessionID = localStorageService.get('xNewToken') || '';
-  const mac = await getMac(password, [authCode, sessionID]);
+  const mac = await getMac(password, [Buffer.from(authCode), uuidToBytes(sessionID)]);
 
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.disableTwoFactorAuth(mac, authCode, sessionID);
 };
 
 const finishOpaqueLogin = async (clientLoginState: string, loginResponse: string, password: string, email: string) => {
-  const loginResult = opaque.client.finishLogin({
+  const loginResult = client.finishLogin({
     clientLoginState,
     loginResponse,
     password,
@@ -175,14 +177,14 @@ const finishOpaqueLogin = async (clientLoginState: string, loginResponse: string
 };
 
 export const doChangePasswordOpaque = async (newPassword: string, currentPassword: string, sessionID: string) => {
-  const { clientRegistrationState, registrationRequest } = opaque.client.startRegistration({ password: newPassword });
+  const { clientRegistrationState, registrationRequest } = client.startRegistration({ password: newPassword });
 
-  const mac = await getMac(currentPassword, [registrationRequest, sessionID]);
+  const mac = await getMac(currentPassword, [safeBase64ToBytes(registrationRequest), uuidToBytes(sessionID)]);
 
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
 
   const { registrationResponse } = await usersClient.changePwdOpaqueStart(mac, sessionID, registrationRequest);
-  const { exportKey, registrationRecord: newRegistrationRecord } = opaque.client.finishRegistration({
+  const { exportKey, registrationRecord: newRegistrationRecord } = client.finishRegistration({
     clientRegistrationState,
     registrationResponse,
     password: newPassword,
@@ -191,15 +193,18 @@ export const doChangePasswordOpaque = async (newPassword: string, currentPasswor
   const user = localStorageService.getUser() as UserSettings;
   const { encKeys, encMnemonic } = await encryptUserKeysAndMnemonic(user.keys, user.mnemonic, exportKey);
 
-  const { clientLoginState, startLoginRequest } = opaque.client.startLogin({
+  const { clientLoginState, startLoginRequest } = client.startLogin({
     password: newPassword,
   });
 
   const macNew = await getMac(currentPassword, [
-    newRegistrationRecord,
-    encMnemonic,
-    JSON.stringify(encKeys),
-    startLoginRequest,
+    safeBase64ToBytes(newRegistrationRecord),
+    base64ToUint8Array(encMnemonic),
+    base64ToUint8Array(encKeys.ecc.privateKey),
+    base64ToUint8Array(encKeys.ecc.publicKey),
+    base64ToUint8Array(encKeys.kyber.privateKey),
+    base64ToUint8Array(encKeys.kyber.publicKey),
+    safeBase64ToBytes(startLoginRequest),
   ]);
 
   const { loginResponse } = await usersClient.changePwdOpaqueFinish(
