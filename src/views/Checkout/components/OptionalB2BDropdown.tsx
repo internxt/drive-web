@@ -1,6 +1,6 @@
 import { Menu, Transition } from '@headlessui/react';
 import { CaretDown, CaretUp } from '@phosphor-icons/react';
-import FormTextInput from 'components/FormTextInput';
+import TextInput from 'components/TextInput';
 import { IFormValues } from 'app/core/types';
 import { useState } from 'react';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
@@ -49,7 +49,7 @@ export const OptionalB2BDropdown = ({ errors, translate, register }: OptionalB2B
               className="flex w-full flex-col gap-1"
             >
               <p className="text-sm text-gray-80">{translate('checkout.addressBilling.optional.companyName')}</p>
-              <FormTextInput
+              <TextInput
                 placeholder={translate('checkout.addressBilling.optional.companyName')}
                 label="companyName"
                 error={errors.companyName}
@@ -66,7 +66,7 @@ export const OptionalB2BDropdown = ({ errors, translate, register }: OptionalB2B
               className="flex w-full flex-col gap-1"
             >
               <p className="text-sm text-gray-80">{translate('checkout.addressBilling.optional.companyVatId')}</p>
-              <FormTextInput
+              <TextInput
                 placeholder={translate('checkout.addressBilling.optional.companyVatId')}
                 label="companyVatId"
                 error={errors.companyVatId}

@@ -1,4 +1,4 @@
-import FormTextInput from 'components/FormTextInput';
+import TextInput from 'components/TextInput';
 import { Button } from '@internxt/ui';
 import InternxtLogo from '../../../assets/icons/big-logo.svg?react';
 import PasswordFieldWithInfo from './PasswordFieldWithInfo';
@@ -55,7 +55,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
               <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>
               <div className="flex flex-col space-y-3">
                 <label className="space-y-0.5">
-                  <FormTextInput
+                  <TextInput
                     placeholder={translate('auth.email')}
                     label="email"
                     type="email"

@@ -25,8 +25,8 @@ import workspacesService from 'app/core/services/workspace.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import useLoginRedirections from '../hooks/useLoginRedirections';
 import shareService from 'app/share/services/share.service';
-import FormPasswordInput from 'components/FormPasswordInput';
-import FormTextInput from 'components/FormTextInput';
+import PasswordInput from 'components/PasswordInput';
+import TextInput from 'components/TextInput';
 import { AuthMethodTypes } from 'views/Checkout/types';
 import vpnAuthService from 'services/vpnAuth.service';
 import envService from 'app/core/services/env.service';
@@ -229,7 +229,7 @@ export default function LogIn(): JSX.Element {
         </h1>
 
         <form data-cy="loginWrapper" className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
-          <FormTextInput
+          <TextInput
             placeholder={translate('auth.email')}
             inputDataCy="emailInput"
             label="email"
@@ -239,7 +239,7 @@ export default function LogIn(): JSX.Element {
             error={errors.email}
           />
 
-          <FormPasswordInput
+          <PasswordInput
             placeholder={translate('auth.password')}
             inputDataCy="passwordInput"
             label="password"
@@ -250,7 +250,7 @@ export default function LogIn(): JSX.Element {
           />
 
           {showTwoFactor && (
-            <FormPasswordInput
+            <PasswordInput
               label="twoFactorCode"
               placeholder={translate('auth.login.twoFactorAuthenticationCode')}
               error={errors.twoFactorCode}

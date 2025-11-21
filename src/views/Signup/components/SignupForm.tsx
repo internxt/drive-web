@@ -11,7 +11,7 @@ import { planThunks } from 'app/store/slices/plan';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView, IFormValues } from 'app/core/types';
-import FormTextInput from 'components/FormTextInput';
+import TextInput from 'components/TextInput';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import { useSignUp } from '../hooks/useSignup';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -253,7 +253,7 @@ function SignUpForm(): JSX.Element {
         <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>
 
         <form className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
-          <FormTextInput
+          <TextInput
             placeholder={translate('auth.email')}
             label="email"
             type="email"

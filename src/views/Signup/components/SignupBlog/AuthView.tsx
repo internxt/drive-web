@@ -4,8 +4,8 @@ import { useState } from 'react';
 
 import { IFormValues } from 'app/core/types';
 import { WarningCircle } from '@phosphor-icons/react';
-import FormTextInput from 'components/FormTextInput';
-import FormPasswordInput from 'components/FormPasswordInput';
+import TextInput from 'components/TextInput';
+import PasswordInput from 'components/PasswordInput';
 import { useForm } from 'react-hook-form';
 import { signup } from '../../services';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -60,7 +60,7 @@ export const SignupComponent = ({
       <div className="flex w-full max-w-lg flex-col items-center space-y-2 pt-10 lg:w-max lg:items-start lg:pt-0">
         <div className="flex w-full flex-col space-y-3 lg:flex-row lg:space-x-3 lg:space-y-0">
           <div className="flex w-full">
-            <FormTextInput
+            <TextInput
               placeholder={textContent.email}
               label="email"
               type="email"
@@ -73,7 +73,7 @@ export const SignupComponent = ({
           </div>
 
           <div className="flex w-full">
-            <FormPasswordInput
+            <PasswordInput
               placeholder={textContent.passwordLabel}
               label="password"
               className={'w-full rounded-lg bg-white'}

@@ -1,5 +1,5 @@
-import FormPasswordInput from 'components/FormPasswordInput';
-import FormTextInput from 'components/FormTextInput';
+import PasswordInput from 'components/PasswordInput';
+import TextInput from 'components/TextInput';
 import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { AuthMethodTypes } from '../types';
@@ -20,7 +20,7 @@ export const InputsComponent = ({ register, errors, authError, authMethod }: Inp
     <>
       <div className="flex w-full flex-col gap-1">
         <p className="text-sm text-gray-80">{translate('checkout.authComponent.signUp.emailAddress')}</p>
-        <FormTextInput
+        <TextInput
           placeholder={'Email'}
           label="email"
           type="email"
@@ -34,7 +34,7 @@ export const InputsComponent = ({ register, errors, authError, authMethod }: Inp
       <div className="flex w-full flex-col gap-1">
         <p className="text-sm text-gray-80">{translate(`checkout.authComponent.${authMethod}.password`)}</p>
         <label className="space-y-0.5">
-          <FormPasswordInput
+          <PasswordInput
             placeholder={'Password'}
             label="password"
             maxLength={MAX_PASSWORD_LENGTH}

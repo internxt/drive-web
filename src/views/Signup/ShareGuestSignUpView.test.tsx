@@ -67,7 +67,7 @@ describe('onSubmit', () => {
       X: () => <div>Mocked X Icon</div>,
     }));
 
-    vi.mock('components/FormPasswordInput', () => {
+    vi.mock('components/PasswordInput', () => {
       return {
         __esModule: true,
         default: vi.fn(({ register, ...props }) => (
