@@ -4,7 +4,10 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": { "blueText": "90% de descuento", "text": "en todos los planes" },
+    "label": {
+      "blueText": "90% de descuento",
+      "text": "en todos los planes"
+    },
     "title": "¡Consigue tu oferta especial de Black Friday!",
     "subTitle": "El **mayor descuento** para la **máxima privacidad**",
     "ctaGet": "Aceptar invitación",
@@ -83,7 +86,8 @@
       "createAccount": "Crear cuenta",
       "2FA": "Código de dos factores",
       "twoFactorAuthenticationCode": "Código de autenticación de dos factores",
-      "wrongLogin": "Nombre de usuario o contraseña no válidos"
+      "wrongLogin": "Nombre de usuario o contraseña no válidos",
+      "failedToSendAuthData": "Error al enviar datos de autenticación. Por favor, inténtalo de nuevo."
     },
     "signup": {
       "title": "Crear cuenta",
@@ -187,9 +191,18 @@
       "successDescription": "Tu cuenta y contraseña han sido reiniciadas",
       "error": "Algo ha ido mal al reiniciar la cuenta"
     },
-    "universalLinkSuccess": {
+    "universalLink": {
       "loginAs": "Iniciar sesión como",
       "openApp": "Abrir app",
+      "anotherAccount": "Usar otra cuenta?",
+      "login": "Iniciar sesión",
+      "success": "Has iniciado sesión correctamente",
+      "error": "No se ha podido iniciar sesion, inténtelo de nuevo",
+      "closeWindow": "Puedes cerrar esta ventana"
+    },
+    "oauthLink": {
+      "continueAs": "Continuar como",
+      "continue": "Continuar",
       "anotherAccount": "Usar otra cuenta?",
       "login": "Iniciar sesión"
     }
@@ -242,7 +255,6 @@
         "lifetime": "pago único"
       },
       "pcMobileRenews": "* Se renueva a 50€ el primer año después del período de prueba",
-
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 plan {{interval}}",
         "year": "{{spaceToUpgrade}} - 1 plan {{interval}}",
@@ -286,10 +298,10 @@
     },
     "error": {
       "invalidPlan": "Tipo de plan no soportado. Por favor, selecciona un plan válido.",
-      "fetchingCryptoCurrencies": "No pudimos cargar las opciones de criptomonedas disponibles"
+      "fetchingCryptoCurrencies": "No pudimos cargar las opciones de criptomonedas disponibles",
+      "addressRequired": "Por favor, completa tu dirección de facturación para continuar"
     }
   },
-
   "general": {
     "new": "nuevo",
     "of": "de",
@@ -1843,10 +1855,23 @@
             "DeleteFile": "Archivo eliminado",
             "DeleteFolder": "Carpeta eliminada"
           },
-          "platform": { "title": "Plataforma", "Web": "Web", "Mobile": "Móvil", "Desktop": "Escritorio" },
-          "dateRange": { "title": "Rango de fechas", "days": "Últimos {{days}} días" }
+          "platform": {
+            "title": "Plataforma",
+            "Web": "Web",
+            "Mobile": "Móvil",
+            "Desktop": "Escritorio"
+          },
+          "dateRange": {
+            "title": "Rango de fechas",
+            "days": "Últimos {{days}} días"
+          }
         },
-        "headerTable": { "date": "Fecha", "member": "Miembro", "activity": "Actividad", "access": "Acceso" },
+        "headerTable": {
+          "date": "Fecha",
+          "member": "Miembro",
+          "activity": "Actividad",
+          "access": "Acceso"
+        },
         "noResults": "No hay resultados para mostrar"
       }
     },
@@ -1928,7 +1953,7 @@
           "5TB": {
             "title": "Ultimate",
             "features": [
-              "3TB de almacenamiento cifrado",
+              "5TB de almacenamiento cifrado",
               "Criptografía postcuántica",
               "Cifrado de conocimiento cero",
               "Autenticación de dos factores",

@@ -14,19 +14,20 @@ import { userActions } from 'app/store/slices/user';
 import authService, { authenticateUser, is2FAorOpaqueNeeded } from '../../services/auth.service';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { Button } from '@internxt/ui';
 import { WarningCircle } from '@phosphor-icons/react';
+import { useOAuthFlow } from 'app/auth/hooks/useOAuthFlow';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import AppError, { AppView, IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { Button } from '@internxt/ui';
 import workspacesService from '../../../core/services/workspace.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import useLoginRedirections from '../../../routes/hooks/Login/useLoginRedirections';
 import shareService from '../../../share/services/share.service';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import TextInput from '../TextInput/TextInput';
-import { AuthMethodTypes } from 'app/payment/types';
+import { AuthMethodTypes } from 'views/Checkout/types';
 import vpnAuthService from 'app/auth/services/vpnAuth.service';
 import envService from 'app/core/services/env.service';
 
@@ -56,6 +57,7 @@ export default function LogIn(): JSX.Element {
     redirectWithCredentials,
     handleShareInvitation,
     handleWorkspaceInvitation,
+    isAuthOrigin,
   } = useLoginRedirections({
     navigateTo(viewId, queryMap) {
       navigationService.push(viewId, queryMap);
@@ -63,6 +65,10 @@ export default function LogIn(): JSX.Element {
     processInvitation: shareService.processInvitation,
     processWorkspaceInvitation: workspacesService.processInvitation,
     showNotification,
+  });
+
+  const { isOAuthFlow, handleOAuthSuccess } = useOAuthFlow({
+    authOrigin: isAuthOrigin,
   });
 
   useEffect(() => {
@@ -77,9 +83,8 @@ export default function LogIn(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    if (user && mnemonic) {
+    if (user && mnemonic && !isOAuthFlow) {
       dispatch(userActions.setUser(user));
-
       redirectWithCredentials(
         user,
         mnemonic,
@@ -147,6 +152,19 @@ export default function LogIn(): JSX.Element {
   };
 
   const handleSuccessfulAuth = (token: string, user: UserSettings, mnemonic: string): void => {
+    const newToken = localStorageService.get('xNewToken');
+
+    if (isOAuthFlow && newToken) {
+      const success = handleOAuthSuccess(user, newToken);
+      if (!success) {
+        setIsLoggingIn(false);
+        const errorMessage = translate('auth.login.failedToSendAuthData');
+        setLoginError([errorMessage]);
+        setShowErrors(true);
+      }
+      return;
+    }
+
     const redirectUrl = authService.getRedirectUrl(urlParams, token);
 
     if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
@@ -154,7 +172,6 @@ export default function LogIn(): JSX.Element {
     }
 
     const isVPNAuth = urlParams.get('vpnAuth');
-    const newToken = localStorageService.get('xNewToken');
     if (isVPNAuth && newToken) {
       vpnAuthService.logIn(newToken);
     }
