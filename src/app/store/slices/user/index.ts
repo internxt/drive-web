@@ -3,27 +3,28 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
 import { RootState } from '../..';
+import { saveAvatarToDatabase } from '../../../../views/NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
 import authService from '../../../auth/services/auth.service';
 import userService from '../../../auth/services/user.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView, LocalStorageItem } from '../../../core/types';
 import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
-import { saveAvatarToDatabase } from '../../../../views/NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { workspacesActions } from '../../../store/slices/workspaces/workspacesStore';
 import tasksService from '../../../tasks/services/tasks.service';
 import { referralsActions } from '../referrals';
 import { sessionActions } from '../session';
 import { sessionSelectors } from '../session/session.selectors';
 import { storageActions } from '../storage';
 import { uiActions } from '../ui';
-import { workspacesActions } from '../../../store/slices/workspaces/workspacesStore';
 
 import errorService from '../../../core/services/error.service';
-import { isTokenExpired } from '../../utils';
 import { refreshAvatar } from '../../../utils/avatar/avatarUtils';
-import { ProductService, UserTierFeatures } from 'views/Checkout/services';
+import { isTokenExpired } from '../../utils';
+
 import { t } from 'i18next';
+import { ProductService, UserTierFeatures } from '../../../../views/Checkout/services/products.service';
 
 export interface UserState {
   isInitializing: boolean;

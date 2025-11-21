@@ -84,10 +84,12 @@
     "preinstall": "node scripts/use-yarn.js",
     "prepare": "husky install",
     "dev": "vite",
-    "build": "vite build",
+    "build": "yarn typecheck && vite build",
+    "build:only": "vite build",
     "start": "vite preview",
-    "build:staging": "vite build --mode staging",
+    "build:staging": "yarn typecheck && vite build --mode staging",
     "vercel:install": "yarn run add:npmrc && yarn install",
+    "typecheck": "tsc --noEmit",
     "test:coverage": "vitest run --coverage",
     "test:playwright": "yarn playwright test",
     "test:chromium": "yarn playwright test --project=chromium",
@@ -168,9 +170,6 @@
     "vite-plugin-svgr": "^4.3.0",
     "vitest": "2.1.9",
     "webpack-bundle-analyzer": "^4.9.1"
-  },
-  "engines": {
-    "node": ">=14.17.0"
   },
   "lint-staged": {
     "*.{js,jsx,tsx,ts}": [

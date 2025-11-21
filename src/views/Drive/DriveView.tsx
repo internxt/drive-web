@@ -1,28 +1,28 @@
 import { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 
+import envService from 'app/core/services/env.service';
 import errorService from 'app/core/services/error.service';
+import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
+import { STORAGE_KEYS } from 'app/core/services/storage-keys';
+import workspacesService from 'app/core/services/workspace.service';
 import { AppView } from 'app/core/types';
 import fileService from 'app/drive/services/file.service';
 import newStorageService from 'app/drive/services/new-storage.service';
+import { DriveItemData, FolderPath } from 'app/drive/types';
+import useDriveNavigation from 'app/routes/hooks/Drive/useDrive';
 import BreadcrumbsDriveView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsDriveView';
 import { AppDispatch, RootState } from 'app/store';
+import { useAppSelector } from 'app/store/hooks';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
-import { Helmet } from 'react-helmet-async';
-import useDriveNavigation from 'app/routes/hooks/Drive/useDrive';
-import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
-import { DriveItemData, FolderPath } from 'app/drive/types';
 import { workspacesActions, workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import localStorageService from 'app/core/services/local-storage.service';
-import { STORAGE_KEYS } from 'app/core/services/storage-keys';
-import workspacesService from 'app/core/services/workspace.service';
+import { Helmet } from 'react-helmet-async';
 import { useHistory } from 'react-router-dom';
-import envService from 'app/core/services/env.service';
+import DriveExplorer from 'views/Drive/components/DriveExplorer/DriveExplorer';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -193,7 +193,7 @@ const DriveView = (props: DriveViewProps) => {
 };
 
 const sortFoldersFirst = (items: DriveItemData[]) =>
-  items.toSorted((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
+  items.slice().sort((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
 
 export default connect((state: RootState) => {
   const currentFolderId = storageSelectors.currentFolderId(state);

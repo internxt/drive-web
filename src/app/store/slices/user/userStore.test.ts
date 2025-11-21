@@ -1,8 +1,9 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
-import userReducer, { getUserTierFeaturesThunk } from './index';
-import { ProductService, UserTierFeatures } from 'views/Checkout/services';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { ProductService } from '../../../../views/Checkout/services';
+import { UserTierFeatures } from '../../../../views/Checkout/services/products.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import userReducer, { getUserTierFeaturesThunk } from './index';
 
 const MOCK_TRANSLATION_MESSAGE = 'Some features may be unavailable';
 
