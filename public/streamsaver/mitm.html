@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StreamSaver MITM</title>
+  </head>
+  <body>
+    <script>
+      // This will prevent the service worker from restarting
+      let keepAlive = () => {
+        keepAlive = () => {};
+        const ping = location.href.substr(0, location.href.lastIndexOf('/')) + '/ping';
+        const interval = setInterval(() => {
+          if (sw) {
+            sw.postMessage('ping');
+          } else {
+            fetch(ping).then((res) => res.text(!res.ok && clearInterval(interval)));
+          }
+        }, 10000);
+      };
+
+      // Store messages until Service Worker is ready
+      let messages = [];
+      window.onmessage = (evt) => messages.push(evt);
+
+      let sw = null;
+      let scope = '';
+
+      function registerWorker() {
+        return navigator.serviceWorker
+          .getRegistration('./')
+          .then((swReg) => {
+            return swReg || navigator.serviceWorker.register('stream-saver.js', { scope: './' });
+          })
+          .then((swReg) => {
+            const swRegTmp = swReg.installing || swReg.waiting;
+            scope = swReg.scope;
+
+            return (
+              (sw = swReg.active) ||
+              new Promise((resolve) => {
+                swRegTmp.addEventListener(
+                  'statechange',
+                  (fn = () => {
+                    if (swRegTmp.state === 'activated') {
+                      swRegTmp.removeEventListener('statechange', fn);
+                      sw = swReg.active;
+                      resolve();
+                    }
+                  }),
+                );
+              })
+            );
+          });
+      }
+
+      // Process messages once Service Worker is ready
+      function onMessage(event) {
+        let { data, ports, origin } = event;
+
+        if (!ports || !ports.length) {
+          throw new TypeError("[StreamSaver] You didn't send a messageChannel");
+        }
+
+        if (typeof data !== 'object') {
+          throw new TypeError("[StreamSaver] You didn't send an object");
+        }
+
+        data.origin = origin;
+        data.referrer = data.referrer || document.referrer || origin;
+        data.streamSaverVersion = new URLSearchParams(location.search).get('version');
+
+        if (data.streamSaverVersion === '1.2.0') {
+          console.warn('[StreamSaver] Please update StreamSaver');
+        }
+
+        if (!data.headers) {
+          console.warn(
+            "[StreamSaver] Pass `data.headers` that you would like to pass along to the service worker\nIt should be a 2D array or a key/val object that fetch's Headers API accepts",
+          );
+        } else {
+          new Headers(data.headers);
+        }
+
+        if (typeof data.filename === 'string') {
+          console.warn(
+            "[StreamSaver] You shouldn't send `data.filename` anymore. It should be included in the Content-Disposition header option",
+          );
+          data.filename = data.filename.replace(/\//g, ':');
+        }
+
+        if (data.size) {
+          console.warn(
+            "[StreamSaver] You shouldn't send `data.size` anymore. It should be included in the content-length header option",
+          );
+        }
+
+        if (data.readableStream) {
+          console.warn('[StreamSaver] You should send the readableStream in the messageChannel, not through mitm');
+        }
+
+        if (!data.pathname) {
+          console.warn('[StreamSaver] Please send `data.pathname` (eg: /pictures/summer.jpg)');
+          data.pathname = Math.random().toString().slice(-6) + '/' + data.filename;
+        }
+
+        // Remove leading slashes
+        data.pathname = data.pathname.replace(/^\/+/g, '');
+
+        // Remove protocol
+        let org = origin.replace(/(^\w+:|^)\/\//, '');
+
+        // Set the absolute pathname to the download URL
+        data.url = new URL(`${scope + org}/${data.pathname}`).toString();
+
+        if (!data.url.startsWith(`${scope + org}/`)) {
+          throw new TypeError('[StreamSaver] Bad `data.pathname`');
+        }
+
+        const transferable = data.readableStream ? [ports[0], data.readableStream] : [ports[0]];
+
+        if (!(data.readableStream || data.transferringReadable)) {
+          keepAlive();
+        }
+
+        return sw.postMessage(data, transferable);
+      }
+
+      // Notify opener that we're ready
+      if (window.opener) {
+        window.opener.postMessage('StreamSaver::loadedPopup', '*');
+      }
+
+      if (navigator.serviceWorker) {
+        registerWorker().then(() => {
+          window.onmessage = onMessage;
+          messages.forEach(window.onmessage);
+        });
+      }
+
+      // Keep alive for Firefox
+      keepAlive();
+    </script>
+  </body>
+</html>
