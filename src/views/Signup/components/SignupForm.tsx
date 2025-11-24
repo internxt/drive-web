@@ -1,28 +1,30 @@
-import { useState, useEffect, useMemo } from 'react';
-import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import queryString from 'query-string';
 import { auth } from '@internxt/lib';
-import { Link } from 'react-router-dom';
+import queryString from 'query-string';
+import { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import PasswordFieldWithInfo from './PasswordFieldWithInfo';
 
-import { useAppDispatch } from '../../../app/store/hooks';
-import { planThunks } from '../../../app/store/slices/plan';
-import errorService from '../../../app/core/services/error.service';
-import navigationService from '../../../app/core/services/navigation.service';
-import { AppView, IFormValues } from '../../../app/core/types';
-import TextInput from '../../../app/auth/components/TextInput/TextInput';
+import { useAppDispatch } from 'app/store/hooks';
+import { planThunks } from 'app/store/slices/plan';
+import errorService from 'app/core/services/error.service';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView, IFormValues } from 'app/core/types';
+import TextInput from 'app/auth/components/TextInput/TextInput';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import { useSignUp } from '../hooks/useSignup';
-import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
-import authService, { authenticateUser } from '../../../app/auth/services/auth.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import authService, { authenticateUser } from 'app/auth/services/auth.service';
 import PreparingWorkspaceAnimation from '../../../common/components/PreparingWorkspaceAnimation';
-import paymentService from '../../../app/payment/services/payment.service';
-import { MAX_PASSWORD_LENGTH } from '../../../app/shared/components/ValidPassword';
+import { paymentService } from 'views/Checkout/services';
+import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
 import { Button } from '@internxt/ui';
-import { AuthMethodTypes } from '../../../app/payment/types';
-import vpnAuthService from '../../../app/auth/services/vpnAuth.service';
-import envService from '../../../app/core/services/env.service';
+import { AuthMethodTypes } from 'views/Checkout/types';
+import vpnAuthService from 'app/auth/services/vpnAuth.service';
+import envService from 'app/core/services/env.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import { useOAuthFlow } from 'app/auth/hooks/useOAuthFlow';
 
 export interface SignUpProps {
   location: {
@@ -48,6 +50,13 @@ function SignUpForm(): JSX.Element {
   );
   const { doRegister } = useSignUp(qs.register === 'activate' ? 'activate' : 'appsumo');
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
+
+  const urlParams = new URLSearchParams(globalThis.location.search);
+  const authOrigin = urlParams.get('authOrigin');
+
+  const { isOAuthFlow, handleOAuthSuccess } = useOAuthFlow({
+    authOrigin,
+  });
 
   const getInitialEmailValue = () => {
     if (hasEmailParam) {
@@ -130,6 +139,7 @@ function SignUpForm(): JSX.Element {
     setIsLoading(false);
     errorService.reportError(err);
     const castedError = errorService.castError(err);
+
     setSignupError(castedError.message);
   };
 
@@ -203,6 +213,20 @@ function SignUpForm(): JSX.Element {
     const isVPNAuth = urlParams.get('vpnAuth');
 
     handleVPNAuth(isVPNAuth, xNewToken);
+
+    if (isOAuthFlow && xNewToken) {
+      const user = localStorageService.getUser();
+      if (user) {
+        const success = handleOAuthSuccess(user, xNewToken);
+        if (!success) {
+          setIsLoading(false);
+          const errorMessage = translate('auth.login.failedToSendAuthData');
+          setSignupError(errorMessage);
+          setShowError(true);
+        }
+      }
+      return;
+    }
 
     if (redirectUrl) {
       globalThis.location.replace(redirectUrl);

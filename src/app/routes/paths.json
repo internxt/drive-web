@@ -38,6 +38,25 @@
       "auth": true
     },
     {
+      "id": "universal-link-ok",
+      "layout": "empty",
+      "path": "/auth-link-ok",
+      "exact": true
+    },
+    {
+      "id": "universal-link-error",
+      "layout": "empty",
+      "path": "/auth-link-error",
+      "exact": true
+    },
+    {
+      "id": "oauth-link",
+      "layout": "empty",
+      "path": "/oauth-link",
+      "exact": true,
+      "auth": true
+    },
+    {
       "id": "signup-blog",
       "layout": "empty",
       "path": "/signup-blog",
