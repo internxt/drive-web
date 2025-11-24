@@ -28,7 +28,7 @@ import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { useThemeContext } from 'app/theme/ThemeProvider';
-import authCheckoutService from 'views/Checkout/services/auth-checkout.service';
+import { authenticateUser } from 'services/auth.service';
 import { checkoutReducer, initialStateForCheckout } from 'views/Checkout/store/checkoutReducer';
 import { PaymentType, PlanInterval } from 'views/Checkout/types';
 import { AddressProvider, CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
@@ -422,13 +422,14 @@ const CheckoutViewWrapper = () => {
     const authCaptcha = await generateCaptchaToken();
 
     try {
-      await authCheckoutService.authenticateUser({
+      await authenticateUser({
         email,
         password,
         authMethod,
+        twoFactorCode: '',
         dispatch,
-        captcha: authCaptcha,
-        doRegister,
+        token: authCaptcha,
+        doSignUp: doRegister,
       });
     } catch (err) {
       const error = err as Error;
