@@ -9,7 +9,7 @@ import navigationService from 'app/core/services/navigation.service';
 import { FreeStoragePlan } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import paymentService from 'app/payment/services/payment.service';
+import { paymentService } from 'views/Checkout/services';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { PlanState, planThunks } from 'app/store/slices/plan';

@@ -143,6 +143,9 @@ export enum AppView {
   ChangeEmail = 'change-email',
   RequestAccess = 'request-access',
   UniversalLinkSuccess = 'auth-success',
+  UniversalLinkOk = 'universal-link-ok',
+  UniversalLinkError = 'universal-link-error',
+  OAuthLink = 'oauth-link',
 }
 
 export enum SignupDeviceSource {

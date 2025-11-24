@@ -14,8 +14,8 @@ vi.mock('i18next', () => ({
   t: vi.fn((key: string) => key),
 }));
 
-vi.mock('app/payment/services/currency.service', () => ({
-  default: {
+vi.mock('views/Checkout/services', () => ({
+  currencyService: {
     getCurrencySymbol: vi.fn((currency: string) => (currency === 'eur' ? '€' : '$')),
   },
 }));

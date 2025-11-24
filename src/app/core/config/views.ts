@@ -7,26 +7,31 @@ import BlockedAccountView from '../../auth/views/BlockedAccountView/BlockedAccou
 import RecoverAccountView from '../../auth/views/RecoverAccountView/RecoverAccountView';
 import RecoveryLinkView from '../../auth/views/RecoveryLinkView/RecoveryLinkView';
 import SignInView from '../../auth/views/SignInView/SignInView';
-import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from '../../../views/Signup';
-import UniversalLinkSuccessView from '../../auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
-import BackupsView from '../../../views/Backups/BackupsView';
+import SignUpView, { ShareGuestSignUpView, WorkspaceGuestSignUpView } from 'views/Signup';
+import UniversalLinkView from '../../auth/views/UniversalLinkView/UniversalLinkView';
+import UniversalLinkOkView from '../../auth/views/UniversalLinkView/UniversalLinkOkView';
+import UniversalLinkErrorView from '../../auth/views/UniversalLinkView/UniversalLinkErrorView';
+import OAuthLinkView from '../../auth/views/OAuthLinkView/OAuthLinkView';
+import BackupsView from 'views/Backups/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
 import DriveView from 'views/Drive';
 import FolderFileNotFound from 'app/drive/views/FolderFileNotFound/FolderFileNotFound';
 import RecentsView from 'views/Recents';
 import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 import TrashView from 'views/Trash';
-import CheckoutCancelView from '../../payment/views/CheckoutCancelView/CheckoutCancelView';
-import CheckoutSuccessView from '../../payment/views/CheckoutSuccessView/CheckoutSuccessView';
-import { ShareFileView, ShareFolderView } from '../../../views/PublicShared';
+import {
+  CheckoutCancelView,
+  CheckoutSessionId,
+  CheckoutSuccessView,
+  CheckoutViewWrapper,
+  PcCloudSuccess,
+} from 'views/Checkout';
+import { ShareFileView, ShareFolderView } from 'views/PublicShared';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
-import SharedViewWrapper from '../../../views/Shared/SharedViewWrapper';
+import SharedViewWrapper from 'views/Shared/SharedViewWrapper';
 import ChangeEmailView from '../views/ChangeEmailView';
 import NotFoundView from '../views/NotFoundView/NotFoundView';
 import VerifyEmailView from '../views/VerifyEmailView';
-import CheckoutViewWrapper from '../../payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
-import { CheckoutSessionId } from 'app/payment/views/CheckoutSession/CheckoutSessionId';
-import PcCloudSuccess from 'app/payment/views/CheckoutSuccessView/PcCloudSuccess';
 
 const views: Array<{
   id: string;
@@ -64,7 +69,10 @@ const views: Array<{
   { id: AppView.VerifyEmail, component: VerifyEmailView },
   { id: AppView.ChangeEmail, component: ChangeEmailView },
   { id: AppView.RequestAccess, component: RequestAccess },
-  { id: AppView.UniversalLinkSuccess, component: UniversalLinkSuccessView },
+  { id: AppView.UniversalLinkSuccess, component: UniversalLinkView },
+  { id: AppView.UniversalLinkOk, component: UniversalLinkOkView },
+  { id: AppView.UniversalLinkError, component: UniversalLinkErrorView },
+  { id: AppView.OAuthLink, component: OAuthLinkView },
   // Leave these routes last, otherwise it will match react router and may cause malfunctioning.
   { id: AppView.DriveItems, component: DriveView },
   { id: AppView.Drive, component: DriveView },

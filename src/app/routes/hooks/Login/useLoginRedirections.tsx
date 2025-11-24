@@ -1,10 +1,10 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import workspacesService from 'app/core/services/workspace.service';
+import { AppDispatch } from 'app/store';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { wait } from 'app/utils/timeUtils';
 import { t } from 'i18next';
 import { AppView } from '../../../core/types';
-import workspacesService from 'app/core/services/workspace.service';
-import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import { AppDispatch } from 'app/store';
-import { wait } from 'app/utils/timeUtils';
 
 const useLoginRedirections = ({
   navigateTo,
@@ -25,8 +25,12 @@ const useLoginRedirections = ({
 
   const token = urlParams.get('token');
   const sharingAction = urlParams.get('action');
+
+  const redirectUri = urlParams.get('redirectUri');
+
   const isSharingInvitation = !!sharingId;
   const isUniversalLinkMode = urlParams.get('universalLink') === 'true';
+  const isAuthOrigin = urlParams.get('authOrigin');
 
   const handleShareInvitation = () => {
     if (isSharingInvitation && sharingId && token) {
@@ -100,9 +104,15 @@ const useLoginRedirections = ({
       return navigateTo(AppView.Drive);
     }
 
-    // This is a redirect for universal link for Desktop MacOS
+    // This is a redirect for the universal link mode.
     if (mnemonic && options?.universalLinkMode) {
-      return navigateTo(AppView.UniversalLinkSuccess);
+      const params: Record<string, unknown> = {
+        universalLink: true,
+      };
+      if (redirectUri) {
+        params['redirectUri'] = redirectUri;
+      }
+      return navigateTo(AppView.UniversalLinkSuccess, params);
     }
   };
 
@@ -112,6 +122,7 @@ const useLoginRedirections = ({
     isUniversalLinkMode,
     isSharingInvitation,
     handleWorkspaceInvitation,
+    isAuthOrigin,
   };
 };
 

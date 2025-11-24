@@ -4,7 +4,10 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": { "blueText": "Get 90% off", "text": "in all  Plans" },
+    "label": {
+      "blueText": "Get 90% off",
+      "text": "in all  Plans"
+    },
     "title": "Claim your special Black Friday offer!",
     "subTitle": "The **biggest discount** for **maximum privacy**",
     "ctaGet": "Accept invite",
@@ -100,11 +103,12 @@
     "login": {
       "title": "Log in",
       "forgotPwd": "Forgot your password?",
-      "dontHaveAccount": "Don't have an account?",
+      "dontHaveAccount": "Don’t have an account?",
       "createAccount": "Create account",
       "2FA": "Two factor code",
       "twoFactorAuthenticationCode": "Two factor authentication code",
-      "wrongLogin": "Invalid username or password"
+      "wrongLogin": "Invalid username or password",
+      "failedToSendAuthData": "Failed to send authentication data. Please try again."
     },
     "signup": {
       "title": "Create account",
@@ -208,11 +212,20 @@
       "successDescription": "Your account and password have been reset",
       "error": "Something went wrong while restarting the account"
     },
-    "universalLinkSuccess": {
-      "loginAs": "Log in as",
+    "universalLink": {
+      "loginAs": "Login as",
       "openApp": "Open app",
       "anotherAccount": "Use another account?",
-      "login": "Log in"
+      "login": "Login",
+      "success": "You have successfully logged in",
+      "error": "Login failed, please try again",
+      "closeWindow": "You can close this window"
+    },
+    "oauthLink": {
+      "continueAs": "Continue as",
+      "continue": "Continue",
+      "anotherAccount": "Use another account?",
+      "login": "Login"
     }
   },
   "checkout": {
@@ -306,7 +319,8 @@
     },
     "error": {
       "invalidPlan": "Unsupported plan type. Please select a valid plan.",
-      "fetchingCryptoCurrencies": "We couldn't load the available cryptocurrency options"
+      "fetchingCryptoCurrencies": "We couldn't load the available cryptocurrency options",
+      "addressRequired": "Please complete your billing address to continue"
     }
   },
   "general": {
@@ -1865,7 +1879,12 @@
             "DeleteFile": "Deleted file",
             "DeleteFolder": "Deleted folder"
           },
-          "platform": { "title": "Platform", "Web": "Web", "Mobile": "Mobile", "Desktop": "Desktop" },
+          "platform": {
+            "title": "Platform",
+            "Web": "Web",
+            "Mobile": "Mobile",
+            "Desktop": "Desktop"
+          },
           "dateRange": {
             "title": "Date range",
             "days": "Last {{days}} days"
@@ -1958,7 +1977,7 @@
             "5TB": {
                 "title": "Ultimate",
                 "features": [
-                  "3TB of encrypted storage",
+                  "5TB of encrypted storage",
                   "Post-Quantum Encryption",
                   "Zero-Knowledge Encryption",
                   "Two-Factor Authentication",

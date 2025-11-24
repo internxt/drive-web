@@ -75,14 +75,6 @@
           console.warn('[StreamSaver] Please update StreamSaver');
         }
 
-        if (!data.headers) {
-          console.warn(
-            "[StreamSaver] Pass `data.headers` that you would like to pass along to the service worker\nIt should be a 2D array or a key/val object that fetch's Headers API accepts",
-          );
-        } else {
-          new Headers(data.headers);
-        }
-
         if (typeof data.filename === 'string') {
           console.warn(
             "[StreamSaver] You shouldn't send `data.filename` anymore. It should be included in the Content-Disposition header option",
