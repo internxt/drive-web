@@ -52,6 +52,8 @@ jobs:
       - run: echo "always-auth=true" >> .npmrc
       - name: Install
         run: yarn
+      - name: Type check
+        run: yarn typecheck
       - name: Install Playwright Browsers
         run: yarn playwright install
       - name: Unit test run
@@ -76,7 +78,9 @@ jobs:
       - run: echo "always-auth=true" >> .npmrc
       - name: Install
         run: yarn
+      - name: Type check
+        run: yarn typecheck
       - name: Build
-        run: yarn build
+        run: yarn build:only
         env:
           CI: false

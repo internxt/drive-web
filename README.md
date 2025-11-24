@@ -6,6 +6,15 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=internxt_drive-web&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=internxt_drive-web)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=internxt_drive-web&metric=coverage)](https://sonarcloud.io/summary/new_code?id=internxt_drive-web)
 
+# Internxt Drive Web
+
+A secure, privacy-focused cloud storage web application built with React, TypeScript, and Redux.
+
+## Documentation
+
+- 📖 **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - Project architecture and structure
+- 📖 **[docs/CODE_STYLE.md](./docs/CODE_STYLE.md)** - Coding standards and conventions
+
 # Project Maintenance
 
 We aim to have:
@@ -25,7 +34,7 @@ We aim to have:
 
 ## Scripts
 
-### `yarn run dev`
+### `yarn dev`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -33,7 +42,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `yarn run preview`
+### `yarn start`
 
 Serves the built application locally to preview the production output.
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -41,7 +50,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 - Useful for testing the result of a production build.
 - No hot reloading or development tools included.
 
-> Before running `yarn run preview`, make sure you have already built the application using:
+> Before running `yarn start`, make sure you have already built the application using:
 > `yarn run build`
 > The preview command serves the latest build output, so if you haven't run build beforehand, it will either fail or serve outdated files.
 
@@ -50,7 +59,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 - Runs .ts linter
 - Runs .scss linter
 
-### `yarn test` (`yarn test:unit`)
+### `yarn test`
 
 - Runs unit tests with [Vitest](https://vitest.dev/)
 
@@ -100,106 +109,339 @@ The [/src](./src) folder contains the source code.
 
 # New Project Structure
 
-This project is organized following a **visual and functional hierarchy** approach. Each view (or page) has its own folder containing its specific components, styles, and logic. Additionally, reusable components, custom hooks, utilities, and global styles are stored in separate directories to enhance reusability and maintainability.
+This project is organized following a **view-based hierarchy** approach. Each view (or page) has its own folder containing its specific components, styles, and logic. Additionally, reusable components, custom hooks, utilities, and global styles are stored in separate directories to enhance reusability and maintainability.
+
+> **Note:** The following is a **simplified example** to illustrate the organizational structure. The actual project structure may vary, but follows the same principles described here.
 
 Example:
 
 ```
 src/
-├── components/           # Common reusable components across the application
-│   ├── Button.tsx
-│   ├── Modal.tsx
-│   ├── Loader.tsx
-│   └── index.ts
-├── views/                # Main application views
-│   ├── Login/            # Login view and its internal components
-│   │   ├── LoginForm.tsx
-│   │   ├── SocialLoginButtons.tsx
-│   │   ├── styles.css
-│   │   └── Login.tsx
-│   └── hooks/            # Custom Login React hooks
-│       └── useAuth.ts
-│   ├── Signup/           # Signup view and its internal components
-│   │   ├── SignupForm.tsx
-│   │   ├── TermsCheckbox.tsx
-│   │   ├── styles.css
-│   │   └── Signup.tsx
-│   ├── Home/             # Home view with its main components
-│   │   ├── Topbar.tsx    # Top navigation bar
-│   │   ├── Sidenav.tsx   # Side navigation menu
-│   │   ├── Dashboard.tsx # Main panel of the Home view
-│   │   ├── Settings/     # Settings (subfolder within Home)
-│   │   │   ├── SettingsModal.tsx       # Main settings page
-│   │   │   ├── LanguageOptions.tsx
-│   │   │   ├── ThemeSwitcher.tsx
-│   │   │   └── styles.css
-│   │   ├── styles.css    # General styles for Home
-│   │   └── Home.tsx      # Main component for the Home view
-├── hooks/                # Custom React hooks
-│   ├── useTheme.ts
-│   └── useFetch.ts
-├── services/             # Logic for interacting with external APIs or services
-│   ├── authService.ts
-│   └── userService.ts
-├── utils/                # Utility functions and helpers
-│   ├── formatDate.ts     # Date formatting functions
-│   └── validateForm.ts   # Form validation helpers
-├── styles/               # Global styles
-│   ├── variables.scss
-│   └── global.css
-├── types/                # Global and component-specific types
-│   └── global.d.ts       # Global types (e.g., user, environment)
-├── App.jsx               # Main application entry point
-└── index.ts
+├── views/
+│   ├── Login/
+│   │   ├── index.tsx              # Main login view
+│   │   ├── Login.module.css
+│   │   ├── components/            # Login-specific components
+│   │   │   ├── LoginForm/         # Complex component (folder)
+│   │   │   │   ├── LoginForm.tsx
+│   │   │   │   ├── LoginForm.test.tsx
+│   │   │   │   └── useLoginForm.ts
+│   │   │   └── SocialLogin.tsx    # Simple component (file)
+│   │   ├── hooks/                 # Custom hooks for login
+│   │   │   └── useLogin.ts
+│   │   ├── services/              # API calls for authentication
+│   │   │   └── auth.service.ts
+│   │   ├── store/                 # Redux slice for login state
+│   │   │   └── index.ts
+│   │   └── types.ts               # TypeScript types/interfaces
+│   │
+│   ├── Signup/
+│   │   ├── index.tsx              # Main signup view
+│   │   ├── components/            # Signup-specific components
+│   │   │   ├── SignupForm/
+│   │   │   │   └── SignupForm.tsx
+│   │   │   └── PlanSelector/
+│   │   │       └── PlanSelector.tsx
+│   │   ├── hooks/                 # Custom hooks for signup
+│   │   │   └── useSignup.ts
+│   │   ├── services/              # API calls for registration
+│   │   │   └── user.service.ts
+│   │   ├── store/                 # Redux slice for signup state
+│   │   │   └── index.ts
+│   │   └── types.ts               # TypeScript types/interfaces
+│   │
+│   ├── Home/                      # Main layout wrapper
+│   │   ├── index.tsx              # Home layout component
+│   │   ├── components/            # Layout components
+│   │   │   ├── Sidebar/
+│   │   │   │   └── Sidebar.tsx
+│   │   │   ├── TopBar/
+│   │   │   │   └── TopBar.tsx
+│   │   │   └── UserMenu/
+│   │   │       └── UserMenu.tsx
+│   │   ├── store/                 # Redux slice for UI state
+│   │   │   └── index.ts
+│   │   ├── types.ts               # TypeScript types/interfaces
+│   │   └── Home.module.css
+│   │
+│   ├── Drive/                     # Main files view (large module)
+│   │   ├── index.tsx              # Drive page component
+│   │   ├── components/            # Drive-specific components
+│   │   │   ├── FileList/          # Complex component (folder)
+│   │   │   │   ├── FileList.tsx
+│   │   │   │   ├── FileList.test.tsx
+│   │   │   │   └── FileList.scss
+│   │   │   ├── FileItem.tsx       # Simple component (file)
+│   │   │   ├── FolderItem.tsx     # Simple component (file)
+│   │   │   ├── UploadButton/      # Complex component (folder)
+│   │   │   │   ├── UploadButton.tsx
+│   │   │   │   └── helpers.ts
+│   │   │   └── FilePreview/       # Complex component (folder)
+│   │   │       ├── FilePreview.tsx
+│   │   │       └── utils.ts
+│   │   ├── hooks/                 # Custom hooks for files
+│   │   │   ├── useFiles.ts
+│   │   │   ├── useUpload.ts
+│   │   │   └── useFileActions.ts
+│   │   ├── services/              # API calls for files
+│   │   │   ├── file.service.ts
+│   │   │   └── upload.service.ts
+│   │   ├── store/                 # Redux slices for Drive
+│   │   │   ├── index.ts           # Files state management
+│   │   │   └── storage.selectors.ts # Reselect selectors
+│   │   ├── types/                 # TypeScript types (large module)
+│   │   │   ├── index.ts           # Barrel export
+│   │   │   ├── file.types.ts      # File-related types
+│   │   │   └── download.types.ts  # Download-related types
+│   │   └── utils/                 # Helper functions
+│   │       └── fileUtils.ts
+│   │
+│   ├── Recents/                   # Recent files view
+│   │   ├── index.tsx              # Recents page component
+│   │   ├── components/            # Recents-specific components
+│   │   │   ├── RecentFilesList/
+│   │   │   │   └── RecentFilesList.tsx
+│   │   │   └── TimelineView/
+│   │   │       └── TimelineView.tsx
+│   │   ├── hooks/                 # Custom hooks for recent files
+│   │   │   └── useRecentFiles.ts
+│   │   ├── services/              # API calls for recents
+│   │   │   └── recents.service.ts
+│   │   ├── store/                 # Redux slice for recents
+│   │   │   └── index.ts
+│   │   └── types.ts               # TypeScript types/interfaces
+│   │
+│   ├── Backups/                   # Backups view
+│   │   ├── index.tsx              # Backups page component
+│   │   ├── components/            # Backup-specific components
+│   │   │   ├── BackupList/
+│   │   │   │   └── BackupList.tsx
+│   │   │   ├── CreateBackup/
+│   │   │   │   └── CreateBackup.tsx
+│   │   │   └── RestoreDialog/
+│   │   │       └── RestoreDialog.tsx
+│   │   ├── hooks/                 # Custom hooks for backups
+│   │   │   └── useBackups.ts
+│   │   ├── services/              # API calls for backups
+│   │   │   └── backup.service.ts
+│   │   ├── store/                 # Redux slice for backups
+│   │   │   └── index.ts
+│   │   └── types.ts               # TypeScript types/interfaces
+│   │
+│   ├── Shared/                    # Shared files view
+│   │   ├── index.tsx              # Shared page component
+│   │   ├── components/            # Shared-specific components
+│   │   │   ├── SharedFilesList/   # Complex component
+│   │   │   │   ├── SharedFilesList.tsx
+│   │   │   │   └── SharedFilesList.scss
+│   │   │   └── SharedItemActions/ # Complex component
+│   │   │       └── SharedItemActions.tsx
+│   │   ├── hooks/                 # Custom hooks for sharing
+│   │   │   └── useSharedFiles.ts
+│   │   ├── services/              # API calls for sharing
+│   │   │   └── share.service.ts
+│   │   ├── store/                 # Redux slice for shared files
+│   │   │   └── index.ts
+│   │   └── types.ts               # TypeScript types/interfaces
+│   │
+│   └── Trash/                     # Trash view
+│       ├── index.tsx              # Trash page component
+│       ├── components/            # Trash-specific components
+│       │   ├── TrashList/
+│       │   │   └── TrashList.tsx
+│       │   └── RestoreButton/
+│       │       └── RestoreButton.tsx
+│       ├── hooks/                 # Custom hooks for trash
+│       │   └── useTrash.ts
+│       ├── services/              # API calls for trash
+│       │   └── trash.service.ts
+│       ├── store/                 # Redux slice for trash
+│       │   └── index.ts
+│       └── types.ts               # TypeScript types/interfaces
+│
+├── common/                        # Common code across views
+│   ├── components/                # Reusable UI components
+│   │   ├── ShareDialog/           # Complex component (used in Drive & Shared views)
+│   │   │   ├── ShareDialog.tsx
+│   │   │   ├── ShareDialog.scss
+│   │   │   ├── components/
+│   │   │   │   ├── User.tsx
+│   │   │   │   └── InvitedUsersSkeletonLoader.tsx
+│   │   │   ├── types.ts
+│   │   │   └── index.ts
+│   │   ├── BaseDialog/            # Complex component (folder)
+│   │   │   ├── BaseDialog.tsx
+│   │   │   ├── BaseDialog.scss
+│   │   │   └── index.ts
+│   │   ├── Modal/                 # Complex component (folder)
+│   │   │   ├── Modal.tsx
+│   │   │   ├── Modal.test.tsx
+│   │   │   └── index.ts
+│   │   ├── AuthButton.tsx         # Simple component (file)
+│   │   ├── BaseButton.tsx         # Simple component (file)
+│   │   └── Tooltip/               # Complex component (folder)
+│   │       ├── Tooltip.tsx
+│   │       └── index.ts
+│   ├── hooks/                     # Global custom hooks
+│   │   ├── useAuth.ts
+│   │   └── useTheme.ts
+│   ├── store/                     # Global Redux slices
+│   │   ├── session/
+│   │   │   ├── index.ts          # Auth slice
+│   │   │   └── session.selectors.ts
+│   │   ├── user/
+│   │   │   └── index.ts          # User slice
+│   │   └── ui/
+│   │       └── index.ts          # UI notifications slice
+│   ├── types.ts                   # Global TypeScript types
+│   ├── utils/                     # Global utility functions
+│   │   ├── timeUtils.ts
+│   │   └── stringUtils.ts
+│   └── constants/                 # App constants
+│       └── routes.ts
+│
+├── store/                         # Redux store configuration
+│   ├── index.ts                   # Store setup & root reducer
+│   ├── rootReducer.ts             # Combine all reducers
+│   ├── store.ts                   # Store type definitions
+│   └── middleware.ts              # Custom middleware
+│
+├── config/                        # App configuration
+│   └── api.ts                     # API base configuration
+│
+├── routes/                        # Route definitions
+│   ├── AppRoutes.tsx              # React Router setup
+│   └── routes.ts                  # Route types
+│
+└── App.tsx                        # Root application component
 ```
 
 ## **Folder Descriptions**
 
-### **`components/`**
-
-This folder contains common and reusable components that are used across different views, such as buttons, modals, or loaders. These are atomic components and are not tied to any specific view.
+Following the example structure above, each view folder contains the following subdirectories:
 
 ---
 
-### **`views/`**
+### **`views/[ViewName]/components/`**
 
-Each main application view has its own folder (e.g., `Login`, `Signup`, `Home`). Inside each folder:
+View-specific UI components that are only used within that particular view. These components are tightly coupled to the view's functionality and are not meant to be reused across other views.
 
-- Specific components related to the view are included at the same level.
-- Local styles are kept in a dedicated CSS file.
-- If a view contains complex subsections (e.g., `Settings` within `Home`), they are organized in subfolders.
+**Organization:**
 
----
+- **Complex components** (with tests, styles, hooks, helpers) → Use a folder: `LoginForm/LoginForm.tsx`
+- **Simple components** (just the component file) → Use a file directly: `SocialLogin.tsx`
 
-### **`hooks/`**
+**Example:**
 
-Custom React hooks that encapsulate reusable logic.
-
----
-
-### **`services/`**
-
-This folder contains logic for interacting with external APIs or services. It provides an abstraction layer for API calls or other external integrations.
+- Complex: `views/Drive/components/FileList/FileList.tsx`
+- Simple: `views/Drive/components/FileItem.tsx`
 
 ---
 
-### **`utils/`**
+### **`views/[ViewName]/hooks/`**
 
-Utility functions, global constants, and helpers that are not tied to React. These utilities can be used across the entire application.
+Custom React hooks that encapsulate view-specific logic and state management. These hooks are designed to be used only within their corresponding view.
 
----
-
-### **`styles/`**
-
-Global styles and variables for consistent theming across the application.
+**Example:** `views/Login/hooks/useLogin.ts`, `views/Drive/hooks/useFileActions.ts`
 
 ---
 
-### **`types/`**
+### **`views/[ViewName]/services/`**
 
-This folder contains shared TypeScript types used throughout the project
+API calls and business logic specific to the view. This folder provides an abstraction layer for external interactions (API endpoints, data fetching) related to the feature.
 
-This structure ensures **modularity**, **scalability**, and **maintainability** while making the codebase easy to navigate and extend. 🚀
+**Example:** `views/Login/services/auth.service.ts`, `views/Drive/services/file.service.ts`
+
+---
+
+### **`views/[ViewName]/store/`**
+
+Redux slices and state management specific to the view. Each view can manage its own state using Redux Toolkit slices, keeping state logic close to where it's used.
+
+**Example:** `views/Login/store/index.ts`, `views/Drive/store/index.ts`
+
+---
+
+### **`views/[ViewName]/types/` or `types.ts`**
+
+TypeScript type definitions and interfaces specific to the view. This includes props interfaces, data models, and any type that is only relevant to this feature.
+
+**Organization:**
+
+- **Small modules** (< 100 lines of types) → Use a single file: `types.ts`
+- **Large modules** (> 100 lines or multiple contexts) → Use a folder: `types/`
+
+**Nomenclature when using `types/` folder:**
+
+```
+types/
+├── index.ts              # Barrel export for all types
+├── file.types.ts         # File-related types
+├── folder.types.ts       # Folder-related types
+├── user.types.ts         # User-related types
+└── api.types.ts          # API-related types
+```
+
+**Example:**
+
+- Simple: `views/Login/types.ts`
+- Complex: `views/Drive/types/file.types.ts`, `views/Drive/types/download.types.ts`
+
+---
+
+### **`views/[ViewName]/utils/`**
+
+Helper functions and utilities specific to the view. These are not React hooks but pure functions that help with data transformation, validation, or other view-specific operations.
+
+**Example:** `views/Drive/utils/fileUtils.ts`
+
+---
+
+### **`common/`**
+
+Contains global, reusable code that is shared across multiple views:
+
+- **`common/components/`**: Reusable UI components used across multiple views
+  - Atomic components (Button, Modal, Dropdown)
+  - Cross-view dialogs (ShareDialog used in Drive & Shared views)
+- **`common/hooks/`**: Global custom hooks (useAuth, useTheme) shared across views
+- **`common/store/`**: Global Redux slices (authSlice, userSlice, notificationsSlice)
+- **`common/types.ts`**: Global TypeScript types and interfaces
+- **`common/utils/`**: Global utility functions (formatDate, formatFileSize)
+- **`common/constants/`**: App-wide constants (routes, API endpoints)
+
+---
+
+### **`store/`**
+
+Redux store configuration and setup:
+
+- **`store/index.ts`**: Store setup and root reducer
+- **`store/rootReducer.ts`**: Combines all reducers (from views and shared)
+- **`store/middleware.ts`**: Custom Redux middleware
+- **`store/store.ts`**: Store type definitions
+
+---
+
+### **`config/`**
+
+Application-wide configuration files (API base URLs, environment settings, feature flags).
+
+---
+
+### **`routes/`**
+
+React Router configuration and route definitions for the entire application.
+
+---
+
+This **view-based structure** ensures:
+
+- **Modularity**: Each view is self-contained with its own components, logic, and state
+- **Scalability**: Adding new features doesn't affect existing ones
+- **Maintainability**: Related code is co-located, making it easy to find and modify
+- **Reusability**: Common code is clearly separated in the `common/` directory
+- **Type Safety**: TypeScript types are organized alongside the code that uses them
 
 ## Config Tailwind CSS purge option
 

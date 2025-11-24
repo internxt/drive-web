@@ -13,27 +13,6 @@ import downloadFileV2, { multipartDownload } from './download/v2';
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string; bucketId: string };
 
-type BinaryStream = ReadableStream<Uint8Array>;
-
-export async function binaryStreamToBlob(stream: BinaryStream): Promise<Blob> {
-  const reader = stream.getReader();
-  const slices: Uint8Array[] = [];
-
-  let finish = false;
-
-  while (!finish) {
-    const { done, value } = await reader.read();
-
-    if (!done) {
-      slices.push(value as Uint8Array);
-    }
-
-    finish = done;
-  }
-
-  return new Blob(slices);
-}
-
 interface FileInfo {
   bucket: string;
   mimetype: string;
@@ -169,7 +148,30 @@ export function downloadFile(params: IDownloadParams): Promise<ReadableStream<Ui
 export async function multipartDownloadFile(
   params: IDownloadParams & { fileSize?: number },
 ): Promise<ReadableStream<Uint8Array>> {
-  const downloadMultipartPromise = multipartDownload(params);
+  const { bucketId, fileId, creds, mnemonic, token, encryptionKey, options, fileSize } = params;
+
+  // Only try multipart download if we have credentials and mnemonic (not for shared files with tokens)
+  if (token || encryptionKey) {
+    // For shared files, fall back to regular download
+    return _downloadFile(params);
+  }
+
+  if (!creds || !mnemonic) {
+    throw new Error('Download error: credentials and mnemonic required for multipart download');
+  }
+
+  if (!fileSize) {
+    throw new Error('Download error: fileSize required for multipart download');
+  }
+
+  const downloadMultipartPromise = multipartDownload({
+    bucketId,
+    fileId,
+    creds,
+    mnemonic,
+    fileSize,
+    options,
+  });
 
   return downloadMultipartPromise.catch((err) => {
     if (err instanceof FileVersionOneError) {
