@@ -1,4 +1,4 @@
-import { logIn, RegisterFunction, signUp, SignUpParams } from 'app/auth/services/auth.service';
+import { logIn, RegisterFunction, signUp, SignUpParams } from 'services/auth.service';
 import { AppDispatch } from 'app/store';
 import { AuthMethodTypes } from '../types';
 

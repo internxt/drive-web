@@ -1,5 +1,5 @@
-import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
-import TextInput from 'app/auth/components/TextInput/TextInput';
+import PasswordInput from 'components/PasswordInput';
+import TextInput from 'components/TextInput';
 import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { AuthMethodTypes } from '../types';

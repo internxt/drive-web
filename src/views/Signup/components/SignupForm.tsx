@@ -11,20 +11,20 @@ import { planThunks } from 'app/store/slices/plan';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView, IFormValues } from 'app/core/types';
-import TextInput from 'app/auth/components/TextInput/TextInput';
+import TextInput from 'components/TextInput';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import { useSignUp } from '../hooks/useSignup';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import authService, { authenticateUser } from 'app/auth/services/auth.service';
-import PreparingWorkspaceAnimation from '../../../common/components/PreparingWorkspaceAnimation';
+import authService, { authenticateUser } from 'services/auth.service';
+import PreparingWorkspaceAnimation from '../../../components/PreparingWorkspaceAnimation';
 import { paymentService } from 'views/Checkout/services';
 import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
 import { Button } from '@internxt/ui';
 import { AuthMethodTypes } from 'views/Checkout/types';
-import vpnAuthService from 'app/auth/services/vpnAuth.service';
+import vpnAuthService from 'services/vpnAuth.service';
 import envService from 'app/core/services/env.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import { useOAuthFlow } from 'app/auth/hooks/useOAuthFlow';
+import { useOAuthFlow } from 'views/Login/hooks/useOAuthFlow';
 
 export interface SignUpProps {
   location: {

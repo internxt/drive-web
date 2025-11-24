@@ -2,7 +2,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useEffect, useState } from 'react';
 
-import { changePassword } from 'app/auth/services/auth.service';
+import { changePassword } from 'services/auth.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 import { Button, Modal, Input } from '@internxt/ui';

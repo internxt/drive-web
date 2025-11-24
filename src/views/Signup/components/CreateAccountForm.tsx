@@ -1,4 +1,4 @@
-import TextInput from '../../../app/auth/components/TextInput/TextInput';
+import TextInput from 'components/TextInput';
 import { Button } from '@internxt/ui';
 import InternxtLogo from '../../../assets/icons/big-logo.svg?react';
 import PasswordFieldWithInfo from './PasswordFieldWithInfo';

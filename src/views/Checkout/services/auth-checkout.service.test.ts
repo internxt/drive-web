@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import authCheckoutService from './auth-checkout.service';
-import * as authService from 'app/auth/services/auth.service';
+import * as authService from 'services/auth.service';
 
-vi.mock('app/auth/services/auth.service', () => ({
+vi.mock('services/auth.service', () => ({
   logIn: vi.fn(),
   signUp: vi.fn(),
 }));

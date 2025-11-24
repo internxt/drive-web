@@ -251,7 +251,10 @@ export const CheckoutProductCard = ({
                               }
                             }}
                             data-cy={'coupon-code-input'}
-                            className={'inxt-input input-primary dark:bg-transparent'}
+                            className={'flex-1'}
+                            inputClassName={
+                              'dark:bg-transparent placeholder:text-[16px] border-gray-30 text-[16px] dark:text-white pl-3'
+                            }
                           />
                           <Button
                             disabled={!couponName?.length}
