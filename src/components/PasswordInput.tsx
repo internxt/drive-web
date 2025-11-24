@@ -6,9 +6,9 @@ import { Eye, EyeSlash } from '@phosphor-icons/react';
 import { useState } from 'react';
 
 interface InputProps {
-  label: Path<IFormValues>;
+  label?: Path<IFormValues>;
   disabled?: boolean;
-  register: UseFormRegister<IFormValues>;
+  register?: UseFormRegister<IFormValues>;
   minLength?: ValidationRule<number>;
   maxLength?: ValidationRule<number>;
   placeholder: string;
@@ -23,6 +23,8 @@ interface InputProps {
   value?: string;
   autoComplete?: string;
   inputDataCy?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  passwordError?: boolean;
 }
 
 const PasswordInput = ({
@@ -42,6 +44,9 @@ const PasswordInput = ({
   autoFocus,
   autoComplete,
   inputDataCy,
+  onChange,
+  passwordError,
+  value,
 }: InputProps): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -56,20 +61,22 @@ const PasswordInput = ({
         autoFocus={autoFocus}
         autoComplete={autoComplete}
         data-cy={inputDataCy}
-        {...register(label, {
-          required,
-          minLength,
-          min,
-          maxLength,
-          pattern,
-        })}
+        {...(register && label
+          ? register(label, {
+              required,
+              minLength,
+              min,
+              maxLength,
+              pattern,
+            })
+          : { value, onChange })}
         onFocus={() => {
           if (onFocus) onFocus();
         }}
         onBlur={() => {
           if (onBlur) onBlur();
         }}
-        className={error ? 'inxt-input input-error' : 'inxt-input input-primary'}
+        className={error || passwordError ? 'inxt-input input-error' : 'inxt-input input-primary'}
       />
       <button
         type="button"
