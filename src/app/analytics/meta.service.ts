@@ -1,7 +1,7 @@
 import localStorageService from 'app/core/services/local-storage.service';
 
 const canTrack = () => {
-  return typeof globalThis.window !== 'undefined' && (window as any).dataLayer && (window as any).fbq;
+  return typeof globalThis !== 'undefined' && (globalThis as any).dataLayer && (globalThis as any).fbq;
 };
 
 export const trackLead = (email: string, userID: string) => {
