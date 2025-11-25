@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import paymentService from 'app/payment/services/payment.service';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import { userLocation } from 'app/utils/userLocation';
+import { userLocation } from 'utils/userLocation';
 import { loadStripe } from '@stripe/stripe-js';
 import { fetchPlanPrices, getStripe } from './plansApi';
 
@@ -19,7 +19,7 @@ vi.mock('app/payment/services/payment.service', () => ({
   },
 }));
 
-vi.mock('app/utils/userLocation', () => ({
+vi.mock('utils/userLocation', () => ({
   userLocation: vi.fn(),
 }));
 
