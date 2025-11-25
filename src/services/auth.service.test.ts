@@ -39,6 +39,9 @@ beforeAll(() => {
     default: {
       clear: vi.fn(),
     },
+    DatabaseCollection: {},
+    DatabaseProvider: {},
+    LRUCacheTypes: {},
   }));
   vi.mock('app/core/factory/sdk', () => ({
     SdkFactory: {
@@ -84,13 +87,6 @@ beforeAll(() => {
 
   vi.mock('app/store/slices/workspaces/workspacesStore', () => ({
     workspaceThunks: vi.fn(),
-  }));
-
-  vi.mock('services/http.service', () => ({
-    default: {
-      getHeaders: vi.fn(),
-      convertHeadersToNativeHeaders: vi.fn(),
-    },
   }));
 
   vi.mock('services/socket.service', () => ({

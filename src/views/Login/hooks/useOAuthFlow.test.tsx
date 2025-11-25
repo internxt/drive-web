@@ -1,13 +1,12 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { renderHook } from '@testing-library/react';
-import localStorageService from 'app/core/services/local-storage.service';
-import navigationService from 'app/core/services/navigation.service';
+import { localStorageService, navigationService } from 'services';
 import { AppView } from 'app/core/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import oauthService from 'services/oauth.service';
 import { useOAuthFlow } from './useOAuthFlow';
 
-vi.mock('app/core/services/navigation.service');
+vi.mock('services/navigation.service');
 
 const mockUserSettings: UserSettings = {
   userId: 'user_123',

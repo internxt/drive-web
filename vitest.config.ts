@@ -10,8 +10,6 @@ export default defineConfig({
       services: path.resolve(__dirname, './src/services'),
       utils: path.resolve(__dirname, './src/utils'),
       views: path.resolve(__dirname, './src/views'),
-      services: path.resolve(__dirname, './src/services'),
-      components: path.resolve(__dirname, './src/components'),
       crypto: 'crypto-browserify',
       stream: 'stream-browserify',
       path: 'path-browserify',

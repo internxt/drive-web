@@ -74,22 +74,27 @@ export function handleExportBackupKey(translate) {
 export const detectBackupKeyFormat = (
   backupKeyContent: string,
 ): { type: 'old' | 'new'; mnemonic: string; backupData?: BackupData } => {
-  const parsedData = JSON.parse(backupKeyContent);
-  if (parsedData?.mnemonic && parsedData.privateKey && parsedData?.keys?.ecc && parsedData?.keys?.kyber) {
-    const backupData: BackupData = {
-      mnemonic: parsedData.mnemonic,
-      privateKey: parsedData.privateKey,
-      keys: {
-        ecc: parsedData.keys.ecc,
-        kyber: parsedData.keys.kyber,
-      },
-    };
-    return {
-      type: 'new',
-      mnemonic: parsedData.mnemonic,
-      backupData,
-    };
+  try {
+    const parsedData = JSON.parse(backupKeyContent);
+    if (parsedData?.mnemonic && parsedData.privateKey && parsedData?.keys?.ecc && parsedData?.keys?.kyber) {
+      const backupData: BackupData = {
+        mnemonic: parsedData.mnemonic,
+        privateKey: parsedData.privateKey,
+        keys: {
+          ecc: parsedData.keys.ecc,
+          kyber: parsedData.keys.kyber,
+        },
+      };
+      return {
+        type: 'new',
+        mnemonic: parsedData.mnemonic,
+        backupData,
+      };
+    }
+  } catch {
+    console.error('Error parsing backup key JSON, proceeding with old format');
   }
+
   const trimmedContent = backupKeyContent.trim();
   if (validateMnemonic(trimmedContent)) {
     return {
