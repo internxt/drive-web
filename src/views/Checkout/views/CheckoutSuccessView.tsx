@@ -8,6 +8,7 @@ import { useCallback } from 'react';
 import localStorageService from 'app/core/services/local-storage.service';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { trackPaymentConversion } from 'app/analytics/impact.service';
+import { trackPurchase } from 'app/analytics/meta.service';
 
 export function removePaymentsStorage() {
   localStorageService.removeItem('subscriptionId');
@@ -33,6 +34,7 @@ const CheckoutSuccessView = (): JSX.Element => {
     }, 3000);
 
     try {
+      trackPurchase();
       await trackPaymentConversion();
       removePaymentsStorage();
     } catch (err) {
