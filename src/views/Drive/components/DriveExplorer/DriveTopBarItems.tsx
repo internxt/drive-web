@@ -2,7 +2,7 @@ import { MutableRefObject, memo } from 'react';
 import { Button } from '@internxt/ui';
 import { FolderSimplePlus, UploadSimple } from '@phosphor-icons/react';
 import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg?react';
-import TooltipElement, { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
+import TooltipElement, { DELAY_SHOW_MS } from 'components/TooltipElement';
 import { t } from 'i18next';
 
 const DriveTopBarItems = memo(

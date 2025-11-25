@@ -10,8 +10,8 @@ import {
 
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import workspacesService from 'app/core/services/workspace.service';
-import errorService from 'app/core/services/error.service';
+import workspacesService from 'services/workspace.service';
+import errorService from 'services/error.service';
 
 import Section from '../../../Section';
 import TeamsList from './components/TeamsList';

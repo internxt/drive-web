@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { RootState } from 'app/store';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';

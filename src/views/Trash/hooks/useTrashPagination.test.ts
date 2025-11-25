@@ -2,12 +2,12 @@
  * @jest-environment jsdom
  */
 import { act, renderHook, waitFor } from '@testing-library/react';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import { OrderDirection } from 'app/core/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useTrashPagination } from './useTrashPagination';
 
-vi.mock('app/core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     castError: vi.fn().mockImplementation((e) => ({ message: e.message ?? 'Default error message' })),
     reportError: vi.fn(),

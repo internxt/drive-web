@@ -2,18 +2,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { guestSignupOnSubmit } from './guestSignupOnSubmit';
 import { AppView, IFormValues } from 'app/core/types';
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import navigationService from 'app/core/services/navigation.service';
+import errorService from 'services/error.service';
+import localStorageService from 'services/local-storage.service';
+import navigationService from 'services/navigation.service';
 import { parseAndDecryptUserKeys } from 'app/crypto/services/keys.service';
 import { userActions, userThunks } from 'app/store/slices/user';
 import { productsThunks } from 'app/store/slices/products';
 import { planThunks } from 'app/store/slices/plan';
 import { referralsThunks } from 'app/store/slices/referrals';
 
-vi.mock(import('app/core/services/error.service'));
-vi.mock(import('app/core/services/local-storage.service'));
-vi.mock(import('app/core/services/navigation.service'));
+vi.mock(import('services/error.service'));
+vi.mock(import('services/local-storage.service'));
+vi.mock(import('services/navigation.service'));
 vi.mock(import('app/crypto/services/keys.service'));
 vi.mock(import('app/store/slices/user'));
 vi.mock(import('app/store/slices/products'));

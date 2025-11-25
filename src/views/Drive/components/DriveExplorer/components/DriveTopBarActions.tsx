@@ -11,13 +11,13 @@ import {
 import MoveActionIcon from 'assets/icons/move.svg?react';
 import { useSelector } from 'react-redux';
 import { moveItemsToTrash } from 'views/Trash/services';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
+import errorService from 'services/error.service';
+import navigationService from 'services/navigation.service';
 import { DriveItemData, DriveItemDetails, FileViewMode } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import shareService from 'app/share/services/share.service';
 import { Button, Dropdown } from '@internxt/ui';
-import TooltipElement, { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
+import TooltipElement, { DELAY_SHOW_MS } from 'components/TooltipElement';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';

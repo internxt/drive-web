@@ -5,8 +5,8 @@ import dayjs from 'dayjs';
 import { RootState } from '../..';
 import authService from '../../../auth/services/auth.service';
 import userService from '../../../auth/services/user.service';
-import localStorageService from '../../../core/services/local-storage.service';
-import navigationService from '../../../core/services/navigation.service';
+import localStorageService from 'services/local-storage.service';
+import navigationService from 'services/navigation.service';
 import { AppView, LocalStorageItem } from '../../../core/types';
 import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import { saveAvatarToDatabase } from '../../../../views/NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
@@ -19,9 +19,9 @@ import { storageActions } from '../storage';
 import { uiActions } from '../ui';
 import { workspacesActions } from '../../../store/slices/workspaces/workspacesStore';
 
-import errorService from '../../../core/services/error.service';
+import errorService from 'services/error.service';
 import { isTokenExpired } from '../../utils';
-import { refreshAvatar } from '../../../utils/avatar/avatarUtils';
+import { refreshAvatar } from 'utils/avatarUtils';
 import { ProductService, UserTierFeatures } from 'app/payment/services/products.service';
 import { t } from 'i18next';
 

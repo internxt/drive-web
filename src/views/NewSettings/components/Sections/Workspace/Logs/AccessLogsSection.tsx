@@ -3,10 +3,10 @@ import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
 import { useCallback, useMemo, useState } from 'react';
 
 import { WorkspaceLogPlatform, WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
-import dateService from 'app/core/services/date.service';
+import dateService from 'services/date.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { LoadingRowSkeleton } from 'app/shared/tables/LoadingSkeleton';
-import { ScrollableTable } from 'app/shared/tables/ScrollableTable';
+import { LoadingRowSkeleton } from 'components/LoadingRowSkeleton';
+import { ScrollableTable } from 'components/ScrollableTable';
 import { useDebounce } from 'hooks/useDebounce';
 import { Section } from '../../..';
 import { getEnumKey } from '../../../../utils';

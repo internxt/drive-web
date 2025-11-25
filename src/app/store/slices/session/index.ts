@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { LocalStorageItem, Workspace } from '../../../core/types';
-import localStorageService from '../../../core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import { SessionState } from './session.model';
 import { sessionExtraReducers } from './session.thunks';
 

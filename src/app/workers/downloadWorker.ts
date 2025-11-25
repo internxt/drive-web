@@ -1,4 +1,4 @@
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { binaryStreamToBlob } from 'services/stream.service';
 import createFileDownloadStream from 'app/drive/services/download.service/createFileDownloadStream';
 import createMultipartFileDownloadStream from 'app/drive/services/download.service/createMultipartDownloadStream';
 import { MIN_DOWNLOAD_MULTIPART_SIZE } from 'app/network/networkConstants';

@@ -2,7 +2,7 @@ import { ListChildComponentProps } from 'react-window';
 import RestartIcon from '../../../../assets/icons/tasklogger/circle-arrow.svg?react';
 import iconService from 'app/drive/services/icon.service';
 import { bytesToString } from 'app/drive/services/size.service';
-import { formatDefaultDate } from 'app/core/services/date.service';
+import { formatDefaultDate } from 'services/date.service';
 import { t } from 'i18next';
 import { TaskLoggerButton } from '../TaskLoggerButton/TaskLoggerButton';
 import { CircleNotch } from '@phosphor-icons/react';
