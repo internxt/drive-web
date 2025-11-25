@@ -126,10 +126,14 @@ beforeAll(() => {
     setUser: vi.fn(),
   }));
 
-  vi.mock('bip39', () => ({
-    validateMnemonic: vi.fn(),
-    generateMnemonic: vi.fn(),
-  }));
+  vi.mock('bip39', async () => {
+    const actual = await vi.importActual<typeof import('bip39')>('bip39');
+    return {
+      ...actual,
+      validateMnemonic: vi.fn(),
+      generateMnemonic: vi.fn(),
+    };
+  });
 });
 
 beforeEach(() => {

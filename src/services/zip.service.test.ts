@@ -3,10 +3,10 @@ import { FlatFolderZip, createFolderWithFilesWritable } from './zip.service';
 import browserService from './browser.service';
 import * as streamService from './stream.service';
 import fileDownload from 'js-file-download';
-import streamSaver from 'streamsaver';
+import streamSaver from '../libs/streamSaver';
 
 vi.mock('js-file-download');
-vi.mock('streamsaver');
+vi.mock('../libs/streamSaver');
 vi.mock('./browser.service', () => ({ default: { isBrave: vi.fn() } }));
 vi.mock('./stream.service', () => ({ binaryStreamToBlob: vi.fn() }));
 

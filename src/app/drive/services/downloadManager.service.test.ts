@@ -46,7 +46,13 @@ vi.mock('services/error.service', () => ({
     reportError: vi.fn(),
   },
 }));
-vi.mock('file-saver', () => ({ saveAs: vi.fn() }));
+vi.mock('file-saver', async () => {
+  const actual = await vi.importActual<typeof import('file-saver')>('file-saver');
+  return {
+    ...actual,
+    saveAs: vi.fn(),
+  };
+});
 vi.mock('src/app/network/NetworkFacade.ts', () => ({
   NetworkFacade: vi.fn().mockImplementation(() => ({
     downloadFile: vi.fn(),

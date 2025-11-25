@@ -14,9 +14,13 @@ import {
   prepareOldBackupRecoverPayloadForBackend,
 } from './backupKeyUtils';
 
-vi.mock('file-saver', () => ({
-  saveAs: vi.fn(),
-}));
+vi.mock('file-saver', async () => {
+  const actual = await vi.importActual<typeof import('file-saver')>('file-saver');
+  return {
+    ...actual,
+    saveAs: vi.fn(),
+  };
+});
 
 vi.mock('services/local-storage.service', () => ({
   default: {
@@ -35,9 +39,13 @@ vi.mock('app/notifications/services/notifications.service', () => ({
   },
 }));
 
-vi.mock('bip39', () => ({
-  validateMnemonic: vi.fn(),
-}));
+vi.mock('bip39', async () => {
+  const actual = await vi.importActual<typeof import('bip39')>('bip39');
+  return {
+    ...actual,
+    validateMnemonic: vi.fn(),
+  };
+});
 
 vi.mock('app/crypto/services/keys.service');
 

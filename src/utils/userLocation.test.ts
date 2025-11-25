@@ -3,9 +3,13 @@ import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import * as sdk from '@internxt/sdk';
 import { userLocation } from './userLocation';
 
-vi.mock('@internxt/sdk', () => ({
-  getUserLocation: vi.fn(),
-}));
+vi.mock('@internxt/sdk', async () => {
+  const actual = await vi.importActual<typeof import('@internxt/sdk')>('@internxt/sdk');
+  return {
+    ...actual,
+    getUserLocation: vi.fn(),
+  };
+});
 
 vi.mock('../../config', () => ({
   envConfig: {

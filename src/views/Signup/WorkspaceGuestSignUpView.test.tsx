@@ -160,9 +160,15 @@ describe('onSubmit', () => {
       ExpiredLinkView: vi.fn(() => <div>Mocked Expired Link View</div>),
     }));
 
-    vi.mock('query-string', () => ({
-      parse: vi.fn().mockImplementation((input: string) => input),
-    }));
+    vi.mock('query-string', async () => {
+      const actual = await vi.importActual<typeof import('query-string')>('query-string');
+      const mockParse = vi.fn().mockImplementation((input: string) => input);
+      return {
+        ...actual,
+        default: { ...actual, parse: mockParse },
+        parse: mockParse,
+      };
+    });
 
     vi.mock('react-redux', () => ({
       useSelector: vi.fn(),

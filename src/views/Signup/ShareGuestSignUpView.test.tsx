@@ -47,9 +47,15 @@ describe('onSubmit', () => {
       },
     }));
 
-    vi.mock('@internxt/lib/dist/src/auth/testPasswordStrength', () => ({
-      testPasswordStrength: vi.fn(),
-    }));
+    vi.mock('@internxt/lib/dist/src/auth/testPasswordStrength', async () => {
+      const actual = await vi.importActual<typeof import('@internxt/lib/dist/src/auth/testPasswordStrength')>(
+        '@internxt/lib/dist/src/auth/testPasswordStrength',
+      );
+      return {
+        ...actual,
+        default: vi.fn(),
+      };
+    });
 
     vi.mock('react-helmet-async', () => ({
       Helmet: vi.fn(),
