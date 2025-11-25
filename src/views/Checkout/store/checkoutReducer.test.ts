@@ -39,11 +39,18 @@ describe('checkoutReducer', () => {
     expect(setPlanResult).not.toBe(customState);
 
     const setCurrentPlanResult = checkoutReducer(
-      { ...initialStateForCheckout, promoCodeName: 'PROMO123', seatsForBusinessSubscription: 5 },
+      {
+        ...initialStateForCheckout,
+        couponCodeData: {
+          codeId: 'code-id',
+          codeName: 'PROMO123',
+        },
+        seatsForBusinessSubscription: 5,
+      },
       { type: 'SET_CURRENT_PLAN_SELECTED', payload: mockPlan },
     );
     expect(setCurrentPlanResult.currentSelectedPlan).toEqual(mockPlan);
-    expect(setCurrentPlanResult.promoCodeName).toBe('PROMO123');
+    expect(setCurrentPlanResult.couponCodeData?.codeName).toBe('PROMO123');
     expect(setCurrentPlanResult.seatsForBusinessSubscription).toBe(5);
   });
 
@@ -86,20 +93,34 @@ describe('checkoutReducer', () => {
 
   it('tracks payment and loading status without erasing existing information', () => {
     const payingResult = checkoutReducer(
-      { ...initialStateForCheckout, country: 'ES', promoCodeName: 'EXISTING' },
+      {
+        ...initialStateForCheckout,
+        country: 'ES',
+        couponCodeData: {
+          codeId: 'code-id',
+          codeName: 'EXISTING',
+        },
+      },
       { type: 'SET_IS_PAYING', payload: true },
     );
     expect(payingResult.isPaying).toBe(true);
     expect(payingResult.country).toBe('ES');
-    expect(payingResult.promoCodeName).toBe('EXISTING');
+    expect(payingResult.couponCodeData?.codeName).toBe('EXISTING');
 
     const readyResult = checkoutReducer(
-      { ...initialStateForCheckout, isPaying: true, promoCodeName: 'WELCOME' },
+      {
+        ...initialStateForCheckout,
+        isPaying: true,
+        couponCodeData: {
+          codeId: 'code-id',
+          codeName: 'WELCOME',
+        },
+      },
       { type: 'SET_IS_CHECKOUT_READY_TO_RENDER', payload: true },
     );
     expect(readyResult.isCheckoutReadyToRender).toBe(true);
     expect(readyResult.isPaying).toBe(true);
-    expect(readyResult.promoCodeName).toBe('WELCOME');
+    expect(readyResult.couponCodeData?.codeName).toBe('WELCOME');
 
     const dialogResult = checkoutReducer(
       { ...initialStateForCheckout, isUpdatingSubscription: true, seatsForBusinessSubscription: 10 },
@@ -121,9 +142,15 @@ describe('checkoutReducer', () => {
   it('saves promo codes while keeping everything else intact', () => {
     const promoCodeResult = checkoutReducer(
       { ...initialStateForCheckout, isPaying: true, seatsForBusinessSubscription: 7 },
-      { type: 'SET_PROMO_CODE_NAME', payload: 'SUMMER2024' },
+      {
+        type: 'SET_COUPON_CODE_DATA',
+        payload: {
+          codeId: 'code-id',
+          codeName: 'SUMMER2024',
+        },
+      },
     );
-    expect(promoCodeResult.promoCodeName).toBe('SUMMER2024');
+    expect(promoCodeResult.couponCodeData?.codeName).toBe('SUMMER2024');
     expect(promoCodeResult.isPaying).toBe(true);
     expect(promoCodeResult.seatsForBusinessSubscription).toBe(7);
   });
@@ -131,11 +158,18 @@ describe('checkoutReducer', () => {
   it('handles coupons, payment settings, login method, errors, and seats without losing other details', () => {
     const mockCoupon: CouponCodeData = { codeId: 'promo_123', codeName: 'DISCOUNT20', percentOff: 20 };
     const couponResult = checkoutReducer(
-      { ...initialStateForCheckout, promoCodeName: 'EXISTING', country: 'CA' },
+      {
+        ...initialStateForCheckout,
+        couponCodeData: {
+          codeId: 'code-id',
+          codeName: 'DISCOUNT20',
+        },
+        country: 'CA',
+      },
       { type: 'SET_COUPON_CODE_DATA', payload: mockCoupon },
     );
     expect(couponResult.couponCodeData).toEqual(mockCoupon);
-    expect(couponResult.promoCodeName).toBe('EXISTING');
+    expect(couponResult.couponCodeData?.codeName).toBe('DISCOUNT20');
     expect(couponResult.country).toBe('CA');
 
     const mockOptions: StripeElementsOptions = { mode: 'payment', amount: 999, currency: 'usd' };
@@ -148,12 +182,19 @@ describe('checkoutReducer', () => {
     expect(elementsResult.authMethod).toBe('signIn');
 
     const authResult = checkoutReducer(
-      { ...initialStateForCheckout, isCheckoutReadyToRender: true, promoCodeName: 'SPECIAL' },
+      {
+        ...initialStateForCheckout,
+        isCheckoutReadyToRender: true,
+        couponCodeData: {
+          codeId: 'code-id',
+          codeName: 'SPECIAL',
+        },
+      },
       { type: 'SET_AUTH_METHOD', payload: 'signIn' },
     );
     expect(authResult.authMethod).toBe('signIn');
     expect(authResult.isCheckoutReadyToRender).toBe(true);
-    expect(authResult.promoCodeName).toBe('SPECIAL');
+    expect(authResult.couponCodeData?.codeName).toBe('SPECIAL');
 
     const mockError: PartialErrorState = { stripe: 'Payment failed', auth: 'Authentication error' };
     const errorResult = checkoutReducer(
@@ -165,11 +206,15 @@ describe('checkoutReducer', () => {
     expect(errorResult.country).toBe('MX');
 
     const seatsResult = checkoutReducer(
-      { ...initialStateForCheckout, promoCodeName: 'BUSINESS', isUpdatingSubscription: true },
+      {
+        ...initialStateForCheckout,
+        couponCodeData: { codeId: 'code-id', codeName: 'BUSINESS' },
+        isUpdatingSubscription: true,
+      },
       { type: 'SET_SEATS_FOR_BUSINESS_SUBSCRIPTION', payload: 5 },
     );
     expect(seatsResult.seatsForBusinessSubscription).toBe(5);
-    expect(seatsResult.promoCodeName).toBe('BUSINESS');
+    expect(seatsResult.couponCodeData?.codeName).toBe('BUSINESS');
     expect(seatsResult.isUpdatingSubscription).toBe(true);
   });
 

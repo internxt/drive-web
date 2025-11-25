@@ -18,5 +18,6 @@ export const getProductAmount = (
     finalAmount = amount * users;
   }
 
-  return formatPrice(finalAmount);
+  const positiveAmount = Math.max(0, finalAmount);
+  return formatPrice(positiveAmount);
 };
