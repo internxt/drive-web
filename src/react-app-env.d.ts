@@ -29,6 +29,8 @@ interface Window {
   _adftrack: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rdt: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fbq: any;
   grecaptcha: {
     ready: (cb: () => void) => void;
     execute: (siteKey: string, { action: string }) => Promise<string>;

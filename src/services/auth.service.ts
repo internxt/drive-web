@@ -12,6 +12,7 @@ import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as Sentry from '@sentry/react';
 import { trackSignUp } from 'app/analytics/impact.service';
+import { trackLead } from 'app/analytics/meta.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
@@ -591,6 +592,7 @@ export const signUp = async (params: SignUpParams) => {
   if (!redeemCodeObject) dispatch(planThunks.initializeThunk());
   dispatch(referralsThunks.initializeThunk());
   await trackSignUp(xUser.uuid);
+  trackLead(xUser.email, xUser.userId);
 
   return { token: xToken, user: xUser, mnemonic, newToken: xNewToken };
 };
