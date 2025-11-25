@@ -1,4 +1,4 @@
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 
 const canTrack = () => {
   return typeof globalThis !== 'undefined' && (globalThis as any).dataLayer && (globalThis as any).fbq;

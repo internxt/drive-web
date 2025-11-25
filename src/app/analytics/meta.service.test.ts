@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { trackLead, trackPurchase } from './meta.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 
 describe('Meta Tracking Service', () => {
   let mockDataLayer: any[];
@@ -12,13 +12,13 @@ describe('Meta Tracking Service', () => {
     mockDataLayer = [];
     mockFbq = vi.fn();
 
-    Object.defineProperty(window, 'dataLayer', {
+    Object.defineProperty(globalThis, 'dataLayer', {
       value: mockDataLayer,
       writable: true,
       configurable: true,
     });
 
-    Object.defineProperty(window, 'fbq', {
+    Object.defineProperty(globalThis, 'fbq', {
       value: mockFbq,
       writable: true,
       configurable: true,
@@ -43,7 +43,7 @@ describe('Meta Tracking Service', () => {
     });
 
     it('When dataLayer is not available, then no event is pushed', () => {
-      Object.defineProperty(window, 'dataLayer', {
+      Object.defineProperty(globalThis, 'dataLayer', {
         value: undefined,
         writable: true,
         configurable: true,
@@ -56,7 +56,7 @@ describe('Meta Tracking Service', () => {
     });
 
     it('When fbq is not available, then no event is pushed', () => {
-      Object.defineProperty(window, 'fbq', {
+      Object.defineProperty(globalThis, 'fbq', {
         value: undefined,
         writable: true,
         configurable: true,
@@ -99,7 +99,7 @@ describe('Meta Tracking Service', () => {
     });
 
     it('When dataLayer is not available, then no event is pushed', () => {
-      Object.defineProperty(window, 'dataLayer', {
+      Object.defineProperty(globalThis, 'dataLayer', {
         value: undefined,
         writable: true,
         configurable: true,
@@ -111,7 +111,7 @@ describe('Meta Tracking Service', () => {
     });
 
     it('When fbq is not available, then no event is pushed', () => {
-      Object.defineProperty(window, 'fbq', {
+      Object.defineProperty(globalThis, 'fbq', {
         value: undefined,
         writable: true,
         configurable: true,

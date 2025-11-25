@@ -1,7 +1,6 @@
 export { default as AuthButton } from './AuthButton';
 export { default as BaseButton } from './BaseButton';
 export { default as BaseDialog } from './BaseDialog';
-export { default as BaseInput } from './BaseInput';
 export { default as BreadcrumbsBackupsView } from './BreadcrumbsBackupsView';
 export { default as BreadcrumbsDriveView } from './BreadcrumbsDriveView';
 export { default as BreadcrumbsMenuBackups } from './BreadcrumbsMenuBackups';
