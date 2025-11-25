@@ -1,7 +1,7 @@
 import localStorageService from 'app/core/services/local-storage.service';
 
 const canTrack = () => {
-  return typeof window !== 'undefined' && (window as any).dataLayer && (window as any).fbq;
+  return typeof globalThis.window !== 'undefined' && (window as any).dataLayer && (window as any).fbq;
 };
 
 export const trackLead = (email: string, userID: string) => {
@@ -9,7 +9,7 @@ export const trackLead = (email: string, userID: string) => {
     return;
   }
 
-  (window as any).dataLayer.push({
+  globalThis.window.dataLayer.push({
     event: 'leadSuccessful',
     eventCategory: 'User',
     eventAction: 'registration_complete',
@@ -28,9 +28,9 @@ export const trackPurchase = (email: string, userID: string) => {
     return;
   }
 
-  const value = parseFloat(amountPaid);
+  const value = Number.parseFloat(amountPaid);
 
-  (window as any).dataLayer.push({
+  globalThis.window.dataLayer.push({
     event: 'purchaseSuccessful',
 
     ecommerce: {

@@ -2,12 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { trackLead, trackPurchase } from './meta.service';
 import localStorageService from 'app/core/services/local-storage.service';
 
-vi.mock('app/core/services/local-storage.service', () => ({
-  default: {
-    get: vi.fn(),
-  },
-}));
-
 describe('Meta Tracking Service', () => {
   let mockDataLayer: any[];
   let mockFbq: vi.Mock;
@@ -77,7 +71,7 @@ describe('Meta Tracking Service', () => {
 
   describe('trackPurchase', () => {
     beforeEach(() => {
-      vi.mocked(localStorageService.get).mockImplementation((key) => {
+      vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
         if (key === 'amountPaid') return '99.99';
         if (key === 'currency') return 'USD';
         return null;
@@ -129,7 +123,7 @@ describe('Meta Tracking Service', () => {
     });
 
     it('When amountPaid is not available, then no event is pushed', () => {
-      vi.mocked(localStorageService.get).mockImplementation((key) => {
+      vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
         if (key === 'amountPaid') return null;
         if (key === 'currency') return 'USD';
         return null;
@@ -141,7 +135,7 @@ describe('Meta Tracking Service', () => {
     });
 
     it('When currency is not available, then no event is pushed', () => {
-      vi.mocked(localStorageService.get).mockImplementation((key) => {
+      vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
         if (key === 'amountPaid') return '99.99';
         if (key === 'currency') return null;
         return null;
@@ -153,7 +147,7 @@ describe('Meta Tracking Service', () => {
     });
 
     it('When both amountPaid and currency are not available, then no event is pushed', () => {
-      vi.mocked(localStorageService.get).mockReturnValue(null);
+      vi.spyOn(localStorageService, 'get').mockReturnValue(null);
 
       trackPurchase('test@example.com', 'user123');
 
@@ -161,7 +155,7 @@ describe('Meta Tracking Service', () => {
     });
 
     it('When amountPaid is a string, then it is correctly parsed as float', () => {
-      vi.mocked(localStorageService.get).mockImplementation((key) => {
+      vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
         if (key === 'amountPaid') return '123.45';
         if (key === 'currency') return 'EUR';
         return null;
