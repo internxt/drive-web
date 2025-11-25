@@ -47,4 +47,29 @@ describe('Calculating final price of a product', () => {
   it('Handles case with 0 users gracefully (should return 0)', () => {
     expect(getProductAmount(10, 0)).toBe('0');
   });
+
+  describe('When discount results in negative price', () => {
+    it('Returns 0 if amountOff discount exceeds the product price', () => {
+      const coupon: CouponCodeData = {
+        amountOff: 2000, // 20.00€ discount
+        percentOff: undefined,
+        codeId: '4',
+        codeName: 'BIGDISCOUNT',
+      };
+
+      // Product costs 10€, discount is 20€, should return 0 instead of negative
+      expect(getProductAmount(10, 1, coupon)).toBe('0.00');
+    });
+
+    it('Returns 0 if percentOff is 100% or more', () => {
+      const coupon: CouponCodeData = {
+        percentOff: 100,
+        amountOff: undefined,
+        codeId: '5',
+        codeName: 'FREE',
+      };
+
+      expect(getProductAmount(10, 2, coupon)).toBe('0.00');
+    });
+  });
 });
