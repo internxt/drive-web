@@ -20,7 +20,6 @@ export { default as localStorageService } from './local-storage.service';
 export * from './media.service';
 export * from './navigation.service';
 export { default as navigationService } from './navigation.service';
-export * from './network.service';
 export * from './number.service';
 export { default as numberService } from './number.service';
 export * from './operating-system.service';
