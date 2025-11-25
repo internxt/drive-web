@@ -15,7 +15,6 @@ export interface State {
   country: string;
   seatsForBusinessSubscription: number;
   authMethod: AuthMethodTypes;
-  promoCodeName?: string;
   couponCodeData?: CouponCodeData;
   elementsOptions?: StripeElementsOptions;
   error?: PartialErrorState;
@@ -32,7 +31,6 @@ export type Action =
   | { type: 'SET_PRICES'; payload: DisplayPrice[] }
   | { type: 'SET_COUNTRY'; payload: string }
   | { type: 'SET_SEATS_FOR_BUSINESS_SUBSCRIPTION'; payload: number }
-  | { type: 'SET_PROMO_CODE_NAME'; payload: string | undefined }
   | { type: 'SET_COUPON_CODE_DATA'; payload: CouponCodeData | undefined }
   | { type: 'SET_ELEMENTS_OPTIONS'; payload: StripeElementsOptions }
   | { type: 'SET_AUTH_METHOD'; payload: AuthMethodTypes }
