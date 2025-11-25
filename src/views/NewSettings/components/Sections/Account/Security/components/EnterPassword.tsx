@@ -46,6 +46,7 @@ const EnterPassword = ({
     <div
       className="flex w-full justify-center"
       title={translate('views.account.tabs.security.label')}
+      role="button"
       onMouseDown={(e) => {
         // This prevents to closing the dialog when the user wants to reveal the password by clicking in the "Eye" icon
         // Do not remove!
