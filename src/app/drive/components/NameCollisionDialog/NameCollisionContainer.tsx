@@ -2,7 +2,6 @@ import { FC, useEffect, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 import NameCollisionDialog, { OPERATION_TYPE, OnSubmitPressed } from '.';
 import { moveItemsToTrash } from 'views/Trash/services';
-import errorService from 'app/core/services/error.service';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
@@ -198,54 +197,18 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
   }: OnSubmitPressed) => {
     switch (operationType + operation) {
       case 'move' + 'keep':
-        errorService.addBreadcrumb({
-          level: 'info',
-          category: 'select-option',
-          message: 'Move and rename items',
-          data: {
-            currentFolderId: folderId,
-            itemsToUpload: itemsToUpload,
-          },
-        });
         await keepAndMoveItem(itemsToUpload as DriveItemData[]);
         break;
       case 'move' + 'replace':
-        errorService.addBreadcrumb({
-          level: 'info',
-          category: 'select-option',
-          message: 'Move and replace items',
-          data: {
-            currentFolderId: folderId,
-            itemsToUpload: itemsToUpload,
-          },
-        });
         await replaceAndMoveItem({
           itemsToReplace: itemsToReplace as DriveItemData[],
           itemsToMove: itemsToUpload as DriveItemData[],
         });
         break;
       case 'upload' + 'keep':
-        errorService.addBreadcrumb({
-          level: 'info',
-          category: 'select-option',
-          message: 'Upload and rename items',
-          data: {
-            currentFolderId: folderId,
-            itemsToUpload: itemsToUpload,
-          },
-        });
         await keepAndUploadItem(itemsToUpload as (File | IRoot)[]);
         break;
       case 'upload' + 'replace':
-        errorService.addBreadcrumb({
-          level: 'info',
-          category: 'select-option',
-          message: 'Upload and replace items',
-          data: {
-            currentFolderId: folderId,
-            itemsToUpload: itemsToUpload,
-          },
-        });
         await replaceAndUploadItem({
           itemsToReplace: itemsToReplace as DriveItemData[],
           itemsToUpload: itemsToUpload as (File | IRoot)[],

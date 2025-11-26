@@ -227,19 +227,6 @@ class UploadManager {
 
             fileData.onFinishUploadFile?.(driveFileDataWithNameParsed, taskId);
 
-            errorService.addBreadcrumb({
-              level: 'info',
-              category: 'file',
-              message: 'File upload completed',
-              data: {
-                name: file.name,
-                size: file.size,
-                type: fileData.fileType ?? file.type,
-                parentFolderId: file.parentFolderId,
-                uploadProgress: this.uploadsProgress[uploadId] ?? 0,
-              },
-            });
-
             if (this.onFileUploadCallback) {
               this.onFileUploadCallback(driveFileDataWithNameParsed);
             }
@@ -341,7 +328,7 @@ class UploadManager {
 
     // Handle lost connection error
     if (isLostConnectionError) {
-      errorService.reportError(error, { extra: fileInfoToReport });
+      errorService.reportError(error);
       tasksService.updateTask({
         taskId,
         merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') ?? undefined },
@@ -359,7 +346,7 @@ class UploadManager {
         taskId: taskId,
         merge: { status: TaskStatus.Error, subtitle: t('tasks.subtitles.upload-failed') as string },
       });
-      errorService.reportError(error, { extra: fileInfoToReport });
+      errorService.reportError(error);
 
       // Handle max space used error
       if (error?.status === HTTP_CODES.MAX_SPACE_USED) {

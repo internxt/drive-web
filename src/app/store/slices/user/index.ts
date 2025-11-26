@@ -22,8 +22,9 @@ import { workspacesActions } from '../../../store/slices/workspaces/workspacesSt
 import errorService from '../../../core/services/error.service';
 import { isTokenExpired } from '../../utils';
 import { refreshAvatar } from '../../../utils/avatar/avatarUtils';
-import { ProductService, UserTierFeatures } from 'views/Checkout/services';
+import { ProductService } from 'views/Checkout/services';
 import { t } from 'i18next';
+import { UserTierFeatures } from 'views/Checkout/services/products.service';
 
 export interface UserState {
   isInitializing: boolean;
@@ -83,7 +84,7 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
         dispatch(userActions.setToken(newToken));
       }
     } catch (err) {
-      errorService.reportError(err, { extra: { thunk: 'refreshUser' } });
+      errorService.reportError(err);
     }
   },
 );
@@ -124,7 +125,7 @@ export const refreshAvatarThunk = createAsyncThunk<void, { forceRefresh?: boolea
         );
       }
     } catch (err) {
-      errorService.reportError(err, { extra: { thunk: 'refreshAvatarUser' } });
+      errorService.reportError(err);
     }
   },
 );

@@ -597,9 +597,7 @@ describe('downloadManager', () => {
     const downloadPromise = DownloadManager.downloadItem(downloadItem);
     await expect(downloadPromise).rejects.toThrow(testError);
 
-    expect(errorServiceSpy).toHaveBeenCalledWith(testError, {
-      extra: { fileName: mockFile.name, bucket: mockFile.bucket, fileSize: mockFile.size, fileType: mockFile.type },
-    });
+    expect(errorServiceSpy).toHaveBeenCalledWith(testError);
     expect(downloadFileSpy).toHaveBeenCalledWith(mockTask, expect.anything());
     expect(downloadFolderSpy).not.toHaveBeenCalled();
     expect(downloadItemsSpy).not.toHaveBeenCalled();
@@ -677,9 +675,7 @@ describe('downloadManager', () => {
     const downloadPromise = DownloadManager.downloadItem(downloadItem);
     await expect(downloadPromise).rejects.toThrow(testError);
 
-    expect(errorServiceSpy).toHaveBeenCalledWith(testError, {
-      extra: { folder: mockFolder.name, bucket: mockFolder.bucket, folderParentId: mockFolder.parentId },
-    });
+    expect(errorServiceSpy).toHaveBeenCalledWith(testError);
     expect(downloadFileSpy).not.toHaveBeenCalled();
     expect(downloadFolderSpy).toHaveBeenCalledWith(mockTask, expect.anything(), expect.anything());
     expect(downloadItemsSpy).not.toHaveBeenCalled();
@@ -984,13 +980,7 @@ describe('downloadManager', () => {
 
       DownloadManager['reportError'](mockError, mockDownloadTask);
 
-      expect(errorServiceSpy).toHaveBeenCalledWith(mockError, {
-        extra: {
-          folder: mockPartialFolder.name,
-          bucket: mockPartialFolder.bucket,
-          folderParentId: mockPartialFolder.parentId,
-        },
-      });
+      expect(errorServiceSpy).toHaveBeenCalledWith(mockError);
       expect(updateTaskSpy).toHaveBeenCalledWith({
         taskId: mockTaskId,
         merge: { status: TaskStatus.Error },
@@ -1018,14 +1008,7 @@ describe('downloadManager', () => {
 
       DownloadManager['reportError'](mockError, mockDownloadTask);
 
-      expect(errorServiceSpy).toHaveBeenCalledWith(mockError, {
-        extra: {
-          fileName: mockPartialFile.name,
-          bucket: mockPartialFile.bucket,
-          fileSize: mockPartialFile.size,
-          fileType: mockPartialFile.type,
-        },
-      });
+      expect(errorServiceSpy).toHaveBeenCalledWith(mockError);
       expect(updateTaskSpy).toHaveBeenCalledWith({
         taskId: mockTaskId,
         merge: { status: TaskStatus.Error },

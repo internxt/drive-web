@@ -251,13 +251,9 @@ export class DownloadManager {
 
     const item = items[0];
     if (item.isFolder) {
-      errorService.reportError(err, {
-        extra: { folder: item.name, bucket: item.bucket, folderParentId: item.parentId },
-      });
+      errorService.reportError(err);
     } else {
-      errorService.reportError(err, {
-        extra: { fileName: item.name, bucket: item.bucket, fileSize: item.size, fileType: item.type },
-      });
+      errorService.reportError(err);
     }
   };
 

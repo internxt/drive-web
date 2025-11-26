@@ -11,7 +11,6 @@ import {
 import MoveActionIcon from 'assets/icons/move.svg?react';
 import { useSelector } from 'react-redux';
 import { moveItemsToTrash } from 'views/Trash/services';
-import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { DriveItemData, DriveItemDetails, FileViewMode } from 'app/drive/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -100,14 +99,6 @@ const DriveTopBarActions = ({
   };
 
   const onBulkDeleteButtonClicked = (): void => {
-    errorService.addBreadcrumb({
-      level: 'info',
-      category: 'button',
-      message: 'Top bar delete items button clicked',
-      data: {
-        currentFolderId: currentFolderId,
-      },
-    });
     moveItemsToTrash(selectedItems);
   };
 

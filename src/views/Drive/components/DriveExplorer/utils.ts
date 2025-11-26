@@ -29,14 +29,7 @@ export const shareItemWithTeamV2 = async (
     });
     return true;
   } catch (error) {
-    errorService.reportError(error, {
-      extra: {
-        workspaceId: workspaceId,
-        itemUUID: driveItem.uuid,
-        teamUUID: teamId,
-        roleId: role?.id,
-      },
-    });
+    errorService.reportError(error);
     return false;
   }
 };

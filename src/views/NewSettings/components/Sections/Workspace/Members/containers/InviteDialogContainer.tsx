@@ -78,7 +78,7 @@ const processInvitation = async (
     });
   } catch (err) {
     const castedError = errorService.castError(err);
-    errorService.reportError(err, { extra: { thunk: 'inviteToWorkspace', email: email } });
+    errorService.reportError(err);
     if (castedError.message === 'unauthenticated') {
       return navigationService.push(AppView.Login);
     }

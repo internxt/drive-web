@@ -271,14 +271,6 @@ export class DownloadManagerService {
         cachedFile = await getDatabaseFileSourceData({ fileId: file.id });
         isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
       } catch (error) {
-        errorService.addBreadcrumb({
-          level: 'info',
-          category: 'download-file',
-          message: 'Failed to check if cached file is older',
-          data: {
-            fileId: file.id,
-          },
-        });
         errorService.reportError(error);
       }
 

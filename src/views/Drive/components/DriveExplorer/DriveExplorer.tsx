@@ -404,26 +404,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   );
 
   const onUploadFileButtonClicked = useCallback((): void => {
-    errorService.addBreadcrumb({
-      level: 'info',
-      category: 'button',
-      message: 'File upload button clicked',
-      data: {
-        currentFolderId: currentFolderId,
-      },
-    });
     fileInputRef.current?.click();
   }, [currentFolderId]);
 
   const onUploadFolderButtonClicked = useCallback((): void => {
-    errorService.addBreadcrumb({
-      level: 'info',
-      category: 'button',
-      message: 'Folder upload button clicked',
-      data: {
-        currentFolderId: currentFolderId,
-      },
-    });
     folderInputRef.current?.click();
   }, [currentFolderId]);
 
@@ -432,14 +416,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const onUploadFolderInputChanged = createFolderUploadHandler(currentFolderId, props, uploadItems, resetFolderInput);
 
   const onCreateFolderButtonClicked = useCallback((): void => {
-    errorService.addBreadcrumb({
-      level: 'info',
-      category: 'button',
-      message: 'Create folder button clicked',
-      data: {
-        currentFolderId: currentFolderId,
-      },
-    });
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
   }, [currentFolderId]);
 
@@ -775,15 +751,6 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
 
   if (files.length <= UPLOAD_ITEMS_LIMIT) {
     if (files.length) {
-      errorService.addBreadcrumb({
-        level: 'info',
-        category: 'drag-and-drop',
-        message: 'Dragged file to upload',
-        data: {
-          currentFolderId: currentFolderId,
-          itemsDragged: items,
-        },
-      });
       const unrepeatedUploadedFiles = (await handleRepeatedUploadingFiles(files, dispatch, currentFolderId)) as File[];
       // files where dragged directly
       await dispatch(
@@ -800,15 +767,6 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
       });
     }
     if (rootList.length) {
-      errorService.addBreadcrumb({
-        level: 'info',
-        category: 'drag-and-drop',
-        message: 'Dragged folder to upload',
-        data: {
-          currentFolderId: currentFolderId,
-          itemsDragged: items,
-        },
-      });
       const unrepeatedUploadedFolders = (await handleRepeatedUploadingFolders(
         rootList,
         dispatch,

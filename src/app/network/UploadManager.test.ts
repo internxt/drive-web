@@ -28,7 +28,6 @@ vi.mock('app/core/services/error.service', () => ({
   default: {
     castError: vi.fn().mockImplementation((e) => e),
     reportError: vi.fn(),
-    addBreadcrumb: vi.fn(),
   },
 }));
 
@@ -509,7 +508,7 @@ describe('checkUploadFiles', () => {
       ),
     ).rejects.toThrow(lostConnectionError);
 
-    expect(errorService.reportError).toHaveBeenCalledWith(lostConnectionError, expect.any(Object));
+    expect(errorService.reportError).toHaveBeenCalledWith(lostConnectionError);
     expect(updateTaskSpy).toHaveBeenCalledWith({
       taskId: 'taskId',
       merge: { status: TaskStatus.Error, subtitle: expect.any(String) },

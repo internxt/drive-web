@@ -126,9 +126,6 @@ beforeAll(() => {
       reportError: vi.fn(),
     },
   }));
-  vi.mock('@sentry/react', () => ({
-    setUser: vi.fn(),
-  }));
 
   vi.mock('bip39', () => ({
     validateMnemonic: vi.fn(),
