@@ -514,4 +514,48 @@ describe('checkUploadFiles', () => {
       merge: { status: TaskStatus.Error, subtitle: expect.any(String) },
     });
   });
+
+  it('should handle an unexpected error', async () => {
+    const unexpectedError = new AppError(ErrorMessages.ServerUnavailable);
+    (uploadFile as Mock).mockRejectedValue(unexpectedError);
+
+    const updateTaskSpy = vi.spyOn(tasksService, 'updateTask');
+    const errorServiceSpy = vi.spyOn(errorService, 'reportError').mockReturnValue();
+
+    await expect(
+      uploadFileWithManager(
+        [
+          {
+            taskId: 'taskId',
+            filecontent: {
+              content: 'file-content' as unknown as File,
+              type: 'text/plain',
+              name: 'file.txt',
+              size: 1024,
+              parentFolderId: 'folder-1',
+            },
+            userEmail: '',
+            parentFolderId: '',
+          },
+        ],
+        openMaxSpaceOccupiedDialogMock,
+        DatabaseUploadRepository.getInstance(),
+        undefined,
+        {
+          ownerUserAuthenticationData: undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: 'parentFolderId',
+          },
+          isUploadedFromFolder: true,
+        },
+      ),
+    ).rejects.toThrow(unexpectedError);
+
+    expect(errorServiceSpy).toHaveBeenCalledWith(unexpectedError);
+    expect(updateTaskSpy).toHaveBeenCalledWith({
+      taskId: 'taskId',
+      merge: { status: TaskStatus.Error, subtitle: expect.any(String) },
+    });
+  });
 });
