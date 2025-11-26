@@ -22,9 +22,8 @@ import { workspacesActions } from '../../../store/slices/workspaces/workspacesSt
 import errorService from '../../../core/services/error.service';
 import { isTokenExpired } from '../../utils';
 import { refreshAvatar } from '../../../utils/avatar/avatarUtils';
-import { ProductService } from 'views/Checkout/services';
+import { ProductService, UserTierFeatures } from 'views/Checkout/services';
 import { t } from 'i18next';
-import { UserTierFeatures } from 'views/Checkout/services/products.service';
 
 export interface UserState {
   isInitializing: boolean;
