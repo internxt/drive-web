@@ -6447,9 +6447,9 @@ ini@^1.3.5, ini@~1.3.0:
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
   integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
 
-"internxt-crypto@https://github.com/internxt/crypto/releases/download/v.0.0.10/internxt-crypto-0.0.10-alpha.tgz":
+"internxt-crypto@https://github.com/internxt/crypto/releases/download/v.0.0.10-alpha/internxt-crypto-0.0.10-alpha.tgz":
   version "0.0.10-alpha"
-  resolved "https://github.com/internxt/crypto/releases/download/v.0.0.10/internxt-crypto-0.0.10-alpha.tgz#d20cb24c44873c483f7dab498c365e1b1ffd17b1"
+  resolved "https://github.com/internxt/crypto/releases/download/v.0.0.10-alpha/internxt-crypto-0.0.10-alpha.tgz#d20cb24c44873c483f7dab498c365e1b1ffd17b1"
   dependencies:
     "@emailjs/browser" "^4.4.1"
     "@noble/hashes" "^2.0.1"
