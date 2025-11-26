@@ -11,19 +11,19 @@ describe('shareItemWithTeamV2', () => {
   const mockRole: Role = {
     id: 'role-789',
     name: 'Editor',
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-01',
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
   };
-  const mockDriveItem: DriveItemData = {
+  const mockDriveItem = {
     uuid: 'item-uuid-123',
     id: 1,
     name: 'Test Folder',
     plainName: 'Test Folder',
     type: 'folder',
     isFolder: true,
-    updatedAt: '2024-01-01',
     createdAt: '2024-01-01',
-    size: BigInt(0),
+    updatedAt: '2024-01-01',
+    size: 0,
   } as DriveItemData;
 
   beforeEach(() => {
