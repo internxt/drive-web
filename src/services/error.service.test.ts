@@ -36,7 +36,7 @@ describe('Error Service', () => {
   describe('reportError', () => {
     it('displays errors in the console', () => {
       const error = new Error('Test error');
-
+      mockEnvService.mockReturnValue('development');
       errorService.reportError(error);
 
       expect(console.error).toHaveBeenCalledWith('[ERROR]: There was an error: ', error);

@@ -238,13 +238,6 @@ export class DownloadManager {
   };
 
   /**
-   * Reports an error with contextual information about the download items
-   * Adds different context based on whether it's a single file, folder, or multiple items
-   * @param err - The error to report
-   * @param items - The download items that were being processed when the error occurred
-   */
-
-  /**
    * Shows an error notification to the user if error display is enabled
    * Customizes the error message based on the type of download (file vs folder)
    * @param err - The error that occurred

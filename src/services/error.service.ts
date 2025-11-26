@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import AppError from 'app/core/types';
+import envService from './env.service';
 
 interface AxiosErrorResponse {
   error?: string;
@@ -18,6 +19,8 @@ const errorService = {
    * @param context Context to attach to the exception
    */
   reportError(exception: unknown): void {
+    if (envService.getVariable('nodeEnv') !== 'development') return;
+
     console.error('[ERROR]: There was an error: ', exception);
   },
 
