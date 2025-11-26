@@ -44,7 +44,7 @@ import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 import vpnAuthService from './vpnAuth.service';
-import { doLoginOpaque, doSignUpOpaque } from './auth.opaque';
+import { doLoginOpaque, doSignUpOpaque } from '../../../services/auth.opaque';
 
 type ProfileInfo = {
   user: UserSettings;

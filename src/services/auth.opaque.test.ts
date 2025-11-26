@@ -1,7 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { server } from '@serenity-kit/opaque';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
-import { SdkFactory } from '../../core/factory/sdk';
+import { SdkFactory } from 'app/core/factory/sdk';
 import * as authOpaqueService from './auth.opaque';
 import { RegisterOpaqueDetails, UserKeys } from '@internxt/sdk';
 import { decryptUserKeysAndMnemonic, safeBase64ToBytes } from './auth.crypto';

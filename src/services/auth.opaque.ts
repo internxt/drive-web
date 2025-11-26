@@ -1,6 +1,6 @@
 import { client } from '@serenity-kit/opaque';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { SdkFactory } from '../../core/factory/sdk';
+import { SdkFactory } from 'app/core/factory/sdk';
 import * as Sentry from '@sentry/react';
 import localStorageService from 'app/core/services/local-storage.service';
 import { computeMac } from 'internxt-crypto/hash';
