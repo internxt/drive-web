@@ -102,7 +102,6 @@ const CheckoutViewWrapper = () => {
     onRemoveAppliedCouponCode,
     setAuthMethod,
     setAvatarBlob,
-    setCouponCodeName,
     setError,
     setIsUserPaying,
     setPromoCodeData,
@@ -121,7 +120,6 @@ const CheckoutViewWrapper = () => {
     avatarBlob,
     couponCodeData,
     elementsOptions,
-    promoCodeName,
     seatsForBusinessSubscription,
     isCheckoutReadyToRender,
     isUpdateSubscriptionDialogOpen,
@@ -183,7 +181,7 @@ const CheckoutViewWrapper = () => {
       recalculatePrice(
         currentSelectedPlan.price.id,
         currentSelectedPlan.price.currency,
-        promoCodeName,
+        couponCodeData?.codeName,
         address.postal_code,
         address.country,
       );
@@ -207,7 +205,6 @@ const CheckoutViewWrapper = () => {
 
     try {
       if (promoCodeName) {
-        setCouponCodeName(promoCodeName);
         await handleFetchPromotionCode(currentSelectedPlan.price.id, promoCodeName);
       }
     } catch (error) {
@@ -421,23 +418,25 @@ const CheckoutViewWrapper = () => {
 
     const authCaptcha = await generateCaptchaToken();
 
-    try {
-      await authenticateUser({
-        email,
-        password,
-        authMethod,
-        twoFactorCode: '',
-        dispatch,
-        token: authCaptcha,
-        doSignUp: doRegister,
-      });
-    } catch (err) {
-      const error = err as Error;
-      setError('auth', error.message);
-      (userAuthComponentRef.current as any).scrollIntoView();
-      errorService.reportError(error);
-      setIsUserPaying(false);
-      return;
+    if (authMethod !== 'userIsSignedIn') {
+      try {
+        await authenticateUser({
+          email,
+          password,
+          authMethod,
+          twoFactorCode: '',
+          dispatch,
+          token: authCaptcha,
+          doSignUp: doRegister,
+        });
+      } catch (err) {
+        const error = err as Error;
+        setError('auth', error.message);
+        (userAuthComponentRef.current as any).scrollIntoView();
+        errorService.reportError(error);
+        setIsUserPaying(false);
+        return;
+      }
     }
 
     try {

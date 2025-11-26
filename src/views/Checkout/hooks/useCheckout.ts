@@ -6,11 +6,8 @@ import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types/types';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 
 export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
-  const setCouponCodeName = (coupon: string) => dispatchReducer({ type: 'SET_PROMO_CODE_NAME', payload: coupon });
-
   const onRemoveAppliedCouponCode = () => {
     dispatchReducer({ type: 'SET_COUPON_CODE_DATA', payload: undefined });
-    dispatchReducer({ type: 'SET_PROMO_CODE_NAME', payload: undefined });
   };
 
   const setAuthMethod = (method: AuthMethodTypes) => {
@@ -91,7 +88,6 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
   return {
     setAuthMethod,
     setError,
-    setCouponCodeName,
     onRemoveAppliedCouponCode,
     setAvatarBlob,
     setIsUserPaying,
