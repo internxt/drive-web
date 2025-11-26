@@ -305,8 +305,6 @@ class UploadManager {
     task: TaskData | undefined;
     uploadId: string;
   }) {
-    const file = fileData.filecontent;
-
     // Handle retry error
     if (error.message === 'Retryable file') {
       next(null);
