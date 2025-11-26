@@ -1,5 +1,5 @@
 import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import dateService from 'app/core/services/date.service';
+import dateService from 'services/date.service';
 import { t } from 'i18next';
 import moneyService from 'views/Checkout/services/currency.service';
 import { RenewalPeriod } from 'views/Checkout/types';

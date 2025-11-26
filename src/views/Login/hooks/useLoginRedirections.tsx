@@ -1,11 +1,10 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import workspacesService from 'app/core/services/workspace.service';
-import { AppDispatch } from 'app/store';
-import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import { wait } from 'app/utils/timeUtils';
 import { t } from 'i18next';
 import { AppView } from 'app/core/types';
-import errorService from 'app/core/services/error.service';
+import { workspacesService, errorService } from 'services';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { AppDispatch } from 'app/store';
+import { wait } from 'utils/timeUtils';
 
 const useLoginRedirections = ({
   navigateTo,

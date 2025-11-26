@@ -1,9 +1,9 @@
 import { queue, QueueObject } from 'async';
-import { QueueUtilsService } from 'app/utils/queueUtils';
+import { QueueUtilsService } from 'utils/queueUtils';
 import tasksService from 'app/tasks/services/tasks.service';
 import { TaskData, TaskEvent, TaskStatus } from 'app/tasks/types';
 import { t } from 'i18next';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import {
   DownloadItem,

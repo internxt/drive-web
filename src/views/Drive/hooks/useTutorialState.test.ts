@@ -19,13 +19,13 @@ vi.mock('app/drive/services/new-storage.service', () => ({
   },
 }));
 
-vi.mock('app/core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     reportError: vi.fn(),
   },
 }));
 
-vi.mock('app/core/services/env.service', () => ({
+vi.mock('services/env.service', () => ({
   default: {
     isProduction: vi.fn(),
     getVariable: vi.fn(),
@@ -36,8 +36,8 @@ import { useTutorialState } from './useTutorialState';
 import { useAppSelector } from 'app/store/hooks';
 import { useTaskManagerGetNotifications } from 'app/tasks/hooks';
 import newStorageService from 'app/drive/services/new-storage.service';
-import errorService from 'app/core/services/error.service';
-import envService from 'app/core/services/env.service';
+import errorService from 'services/error.service';
+import envService from 'services/env.service';
 
 const mockUseAppSelector = useAppSelector as ReturnType<typeof vi.fn>;
 const mockUseTaskManagerGetNotifications = useTaskManagerGetNotifications as ReturnType<typeof vi.fn>;

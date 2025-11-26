@@ -1,7 +1,7 @@
 import { queue, QueueObject } from 'async';
 import { randomBytes } from 'crypto';
 import { t } from 'i18next';
-import errorService from '../core/services/error.service';
+import errorService from 'services/error.service';
 import { HTTP_CODES } from '../core/constants';
 import uploadFile from 'app/drive/services/file.service/uploadFile';
 import { DriveFileData } from 'app/drive/types';

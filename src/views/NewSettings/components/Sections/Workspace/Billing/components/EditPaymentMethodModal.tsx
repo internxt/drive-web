@@ -4,7 +4,7 @@ import { t } from 'i18next';
 import { Elements } from '@stripe/react-stripe-js';
 
 import { paymentService } from 'views/Checkout/services';
-import useEffectAsync from 'app/core/hooks/useEffectAsync';
+import useEffectAsync from 'hooks/useEffectAsync';
 
 import EditPaymentMethodForm from './EditPaymentMethodForm';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';

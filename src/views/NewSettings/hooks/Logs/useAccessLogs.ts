@@ -1,6 +1,6 @@
 import { WorkspaceLogOrderBy, WorkspaceLogResponse, WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
-import errorService from 'app/core/services/error.service';
-import workspacesService from 'app/core/services/workspace.service';
+import errorService from 'services/error.service';
+import workspacesService from 'services/workspace.service';
 import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 import { useState, useEffect } from 'react';

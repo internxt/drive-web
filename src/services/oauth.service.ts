@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 
 /**
  * Handles OAuth-like authentication flow for external authentication (Meet, etc.)

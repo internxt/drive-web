@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as oauthService from './oauth.service';
 import { OAuthMessageType } from './oauth.service';

@@ -1,6 +1,6 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { sendConversionToAPI } from './googleSheet.service';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 
 const mockWebsiteUrl = 'https://mocked-api.internxt.com';

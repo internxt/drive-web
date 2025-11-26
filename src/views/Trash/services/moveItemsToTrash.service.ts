@@ -1,7 +1,7 @@
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
 import { SdkFactory } from 'app/core/factory/sdk';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import { deleteDatabaseItems } from 'app/drive/services/database.service';
 import { DriveItemData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';

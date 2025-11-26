@@ -14,7 +14,7 @@ vi.mock('../../../../share/services/share.service', () => ({
   },
 }));
 
-vi.mock('../../../../core/services/workspace.service', () => ({
+vi.mock('services/workspace.service', () => ({
   default: {
     getWorkspaceCredentials: vi.fn(),
   },
@@ -42,7 +42,7 @@ vi.mock('../../../../repositories/DatabaseUploadRepository', () => ({
   },
 }));
 
-vi.mock('../../../../core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     castError: vi.fn().mockImplementation((e) => e),
     reportError: vi.fn(),

@@ -1,6 +1,6 @@
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
-import errorService from '../core/services/error.service';
+import errorService from 'services/error.service';
 import { getSha256 } from '../crypto/services/utils';
 import { encryptFilename, generateHMAC } from './crypto';
 import { LegacyShardMeta, ShardMeta } from './types';

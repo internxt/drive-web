@@ -2,11 +2,11 @@ import { Clock, ClockCounterClockwise, Desktop, FolderSimple, Icon, Trash, Users
 import { connect, useSelector } from 'react-redux';
 import { matchPath } from 'react-router-dom';
 
-import desktopService from 'app/core/services/desktop.service';
+import desktopService from 'services/desktop.service';
 import PlanUsage from 'views/Home/components/PlanUsage';
 import { RootState } from 'app/store';
 import { planSelectors } from 'app/store/slices/plan';
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { AppView } from 'app/core/types';
 
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types/types';
@@ -17,11 +17,11 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { t } from 'i18next';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
-import SidenavItem from './SidenavItem';
+import { SidenavItem } from 'components';
 import WorkspaceSelectorContainer from 'views/Home/components/WorkspaceSelectorContainer';
-import { STORAGE_KEYS } from 'app/core/services/storage-keys';
+import { STORAGE_KEYS } from 'services/storage-keys';
 import { HUNDRED_TB } from 'app/core/constants';
 import { useEffect } from 'react';
 import { sharedThunks } from 'app/store/slices/sharedLinks';

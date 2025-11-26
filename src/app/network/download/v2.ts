@@ -1,7 +1,7 @@
 import { Network } from '@internxt/sdk/dist/network';
 import { getSha256 } from '../../crypto/services/utils';
 import { NetworkFacade } from '../NetworkFacade';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 import { MultipartDownload } from './MultipartDownload';
 
 type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
