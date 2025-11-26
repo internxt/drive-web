@@ -1,5 +1,5 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
+import BaseDialog from 'components/BaseDialog';
 import { Button } from '@internxt/ui';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';

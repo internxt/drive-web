@@ -8,12 +8,13 @@ export default {
   resolve: {
     alias: {
       app: path.resolve(__dirname, './src/app'),
+      components: path.resolve(__dirname, './src/components'),
       assets: path.resolve(__dirname, './src/assets'),
       use_cases: path.resolve(__dirname, 'src/use_cases'),
       hooks: path.resolve(__dirname, 'src/hooks'),
-      views: path.resolve(__dirname, './src/views'),
       services: path.resolve(__dirname, './src/services'),
-      components: path.resolve(__dirname, './src/components'),
+      utils: path.resolve(__dirname, './src/utils'),
+      views: path.resolve(__dirname, './src/views'),
       crypto: 'crypto-browserify',
       stream: 'stream-browserify',
       path: 'path-browserify',

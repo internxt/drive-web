@@ -1,6 +1,6 @@
 import { Button, Loader } from '@internxt/ui';
 import { Translate } from 'app/i18n/types';
-import Card from 'app/shared/components/Card';
+import Card from 'components/Card';
 
 interface UpdateMembersCardProps {
   totalWorkspaceSeats: number;

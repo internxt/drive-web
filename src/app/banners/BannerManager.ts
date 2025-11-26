@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import localStorageService from '../core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import { PlanState } from '../store/slices/plan';
 
 const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';

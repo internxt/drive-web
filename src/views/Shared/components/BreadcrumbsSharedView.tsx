@@ -11,7 +11,7 @@ import {
 } from '../context/SharedViewContext.actions';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
-import { canItemDrop, onItemDropped } from 'app/shared/components/Breadcrumbs/helper';
+import { canItemDrop, onItemDropped } from 'components/BreadcrumbsHelper';
 import iconService from 'app/drive/services/icon.service';
 import { DragAndDropType } from 'app/core/types';
 import { NativeTypes } from 'react-dnd-html5-backend';

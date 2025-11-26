@@ -1,8 +1,6 @@
 import { Button } from '@internxt/ui';
 import { CaretLeft, FileArrowUp, Warning } from '@phosphor-icons/react';
-import authService from 'services/auth.service';
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import { authService, errorService, localStorageService } from 'services';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { validateMnemonic } from 'bip39';

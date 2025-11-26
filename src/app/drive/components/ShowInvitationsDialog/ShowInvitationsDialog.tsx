@@ -1,6 +1,6 @@
 import { SharedFoldersInvitationsAsInvitedUserResponse } from '@internxt/sdk/dist/drive/share/types';
 import { CheckCircle, X } from '@phosphor-icons/react';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button, Modal } from '@internxt/ui';

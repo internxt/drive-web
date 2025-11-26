@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import authService from 'services/auth.service';
-import errorService from 'app/core/services/error.service';
+import { authService, errorService } from 'services';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { CaretLeft, WarningCircle } from '@phosphor-icons/react';
 import PasswordResetForm from './PasswordResetForm';

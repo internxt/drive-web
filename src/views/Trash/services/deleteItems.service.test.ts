@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import deleteItems from './deleteItems.service';
 import { SdkFactory } from 'app/core/factory/sdk';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import { deleteDatabaseItems } from 'app/drive/services/database.service';
 import { DriveItemData } from 'app/drive/types';
 import notificationsService from 'app/notifications/services/notifications.service';
@@ -15,7 +15,7 @@ vi.mock('app/core/factory/sdk', () => ({
   },
 }));
 
-vi.mock('app/core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     reportError: vi.fn(),
   },

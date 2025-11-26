@@ -1,7 +1,7 @@
 import { CreatedSubscriptionData, DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 import { CouponCodeData } from '../types';
 import axios from 'axios';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import {
   CreateCustomerPayload,
@@ -12,8 +12,8 @@ import {
   PaymentIntentCrypto,
   PriceWithTax,
 } from '@internxt/sdk/dist/payments/types';
-import envService from 'app/core/services/env.service';
-import errorService from 'app/core/services/error.service';
+import envService from 'services/env.service';
+import errorService from 'services/error.service';
 
 const BORDER_SHADOW = 'rgb(0 102 255)';
 

@@ -1,8 +1,7 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import authService from 'services/auth.service';
-import errorService from 'app/core/services/error.service';
+import { authService, errorService } from 'services';
 import Section from '../../../../Section';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { Button, Modal } from '@internxt/ui';

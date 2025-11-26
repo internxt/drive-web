@@ -14,9 +14,9 @@ import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@s
 import { loadStripe } from '@stripe/stripe-js/pure';
 import axios from 'axios';
 import { SdkFactory } from 'app/core/factory/sdk';
-import envService from 'app/core/services/env.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import errorService from 'app/core/services/error.service';
+import envService from 'services/env.service';
+import localStorageService from 'services/local-storage.service';
+import errorService from 'services/error.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
 
 export interface CreatePaymentSessionPayload {

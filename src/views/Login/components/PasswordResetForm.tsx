@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { Button, Input } from '@internxt/ui';
 import { WarningCircle } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
+import PasswordStrengthIndicator from 'components/PasswordStrengthIndicator';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
+import { MAX_PASSWORD_LENGTH } from 'components/ValidPassword';
 
 interface PasswordResetFormProps {
   onSubmit: (password: string) => Promise<void>;

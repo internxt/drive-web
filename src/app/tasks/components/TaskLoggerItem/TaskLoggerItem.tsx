@@ -4,7 +4,7 @@ import { useOpenItem } from '../../hooks/useOpen';
 import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
 
 import { t } from 'i18next';
-import errorService from '../../../core/services/error.service';
+import errorService from 'services/error.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { useReduxActions } from '../../../store/slices/storage/hooks/useReduxActions';
 import tasksService from '../../services/tasks.service';

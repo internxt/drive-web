@@ -1,9 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import localStorageService from 'app/core/services/local-storage.service';
-import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useEffect } from 'react';
-import oauthService from 'services/oauth.service';
+import { oauthService, localStorageService, navigationService } from 'services';
 
 interface UseOAuthFlowParams {
   authOrigin: string | null;

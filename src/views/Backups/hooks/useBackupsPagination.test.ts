@@ -19,7 +19,7 @@ vi.mock('app/drive/services/new-storage.service', () => ({
   },
 }));
 
-vi.mock('../../../app/core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     reportError: vi.fn(),
   },

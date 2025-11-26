@@ -1,5 +1,5 @@
 import { aes, items as itemUtils } from '@internxt/lib';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js';
 import { blake3, createHMAC, createSHA256, createSHA512, ripemd160, sha256, sha512 } from 'hash-wasm';

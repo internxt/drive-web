@@ -10,14 +10,14 @@ import {
   createFoldersIterator,
   downloadFolderAsZip,
 } from './folder.service';
-import errorService from 'app/core/services/error.service';
-import { FlatFolderZip } from 'app/core/services/zip.service';
+import errorService from 'services/error.service';
+import { FlatFolderZip } from 'services/zip.service';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { AdvancedSharedItem } from 'app/share/types';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { binaryStreamToBlob } from 'services/stream.service';
 import { downloadFile, NetworkCredentials } from 'app/network/download';
-import localStorageService from 'app/core/services/local-storage.service';
-import date from 'app/core/services/date.service';
+import localStorageService from 'services/local-storage.service';
+import date from 'services/date.service';
 import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { ConnectionLostError } from 'app/network/requests';
 import { ErrorMessages } from 'app/core/constants';

@@ -1,7 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';

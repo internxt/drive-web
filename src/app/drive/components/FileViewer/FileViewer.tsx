@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
-import { isFileSizePreviewable } from 'app/core/services/media.service';
+import { isFileSizePreviewable } from 'services/media.service';
 import iconService from 'app/drive/services/icon.service';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { FileExtensionGroup } from 'app/drive/types/file-types';

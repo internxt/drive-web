@@ -3,7 +3,7 @@ import TextInput from 'components/TextInput';
 import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { AuthMethodTypes } from '../types';
-import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
+import { MAX_PASSWORD_LENGTH } from 'components/ValidPassword';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 
 interface InputsComponentProps {

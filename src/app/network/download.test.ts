@@ -3,8 +3,8 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 vi.mock('./download/v2');
 vi.mock('./requests');
 vi.mock('./crypto');
-vi.mock('app/core/services/stream.service');
-vi.mock('app/core/services/env.service');
+vi.mock('services/stream.service');
+vi.mock('services/env.service');
 
 import { multipartDownloadFile, IDownloadParams } from './download';
 import { DownloadFailedWithUnknownError } from './errors/download.errors';

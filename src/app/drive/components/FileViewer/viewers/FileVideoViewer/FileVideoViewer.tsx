@@ -1,5 +1,5 @@
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-import { videoTypes } from 'app/core/services/media.service';
+import { videoTypes } from 'services/media.service';
 import { useEffect, useRef, useState } from 'react';
 
 const FileVideoViewer = ({
