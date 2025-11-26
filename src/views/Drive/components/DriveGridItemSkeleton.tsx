@@ -1,5 +1,5 @@
 import { useState, createRef, useEffect } from 'react';
-import useForceUpdate from 'app/core/hooks/useForceUpdate';
+import useForceUpdate from 'hooks/useForceUpdate';
 import Skeleton from 'react-loading-skeleton';
 
 const DriveGridItemSkeleton = (): JSX.Element => {

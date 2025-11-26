@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { WorkspaceUser, WorkspaceTeam } from '@internxt/sdk/dist/workspaces/types';
 
-import errorService from 'app/core/services/error.service';
-import workspacesService from 'app/core/services/workspace.service';
+import errorService from 'services/error.service';
+import workspacesService from 'services/workspace.service';
 
 import { searchMembers, searchMembersEmail } from '../../../../../utils';
 import AddMemberDialog from '../components/AddMemberDialog';

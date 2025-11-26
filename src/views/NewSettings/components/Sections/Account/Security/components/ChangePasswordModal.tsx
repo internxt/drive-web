@@ -2,11 +2,11 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useEffect, useState } from 'react';
 
-import { changePassword } from 'app/auth/services/auth.service';
+import { changePassword } from 'services/auth.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 import { Button, Modal, Input } from '@internxt/ui';
-import ValidPassword from 'app/shared/components/ValidPassword';
+import ValidPassword from 'components/ValidPassword';
 
 const ChangePasswordModal = ({
   isOpen,

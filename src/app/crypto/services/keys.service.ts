@@ -3,7 +3,7 @@ import { Keys } from '@internxt/sdk';
 import { getOpenpgp, generateNewKeys, compareKeyPairIDs } from './pgp.service';
 import { isValid } from './utilspgp';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 const MINIMAL_ENCRYPTED_KEY_LEN = 129;
 
 export async function getKeys(password: string): Promise<Keys> {

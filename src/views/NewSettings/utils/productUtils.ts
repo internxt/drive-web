@@ -1,6 +1,6 @@
 import { t } from 'i18next';
 import { UsageDetailsProps } from 'app/drive/services/usage.service';
-import UsageDetails from 'app/shared/components/UsageDetails';
+import UsageDetails from 'components/UsageDetails';
 
 const getProductCaptions = (usageDetails: UsageDetailsProps | null) => {
   const products: Parameters<typeof UsageDetails>[0]['products'] | null = [

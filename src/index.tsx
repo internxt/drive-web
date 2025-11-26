@@ -16,15 +16,15 @@ import { referralsThunks } from 'app/store/slices/referrals';
 import 'react-tooltip/dist/react-tooltip.css';
 import './index.scss';
 import { SdkFactory } from './app/core/factory/sdk';
-import localStorageService from './app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import './app/i18n/services/i18n.service';
 import { TranslationProvider } from 'app/i18n/provider/TranslationProvider';
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from 'app/theme/ThemeProvider';
 import { LiveChatLoaderProvider } from 'react-live-chat-loader';
 import { DialogManagerProvider } from 'app/contexts/dialog-manager/ActionDialogManager.context';
-import envService from 'app/core/services/env.service';
-import { enforceCanonicalDriveDomain } from 'app/utils/canonicalDomain.utils';
+import envService from 'services/env.service';
+import { enforceCanonicalDriveDomain } from 'utils/canonicalDomain.utils';
 
 enforceCanonicalDriveDomain();
 

@@ -5,7 +5,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import * as authOpaqueService from './auth.opaque';
 import { RegisterOpaqueDetails, UserKeys } from '@internxt/sdk';
 import { decryptUserKeysAndMnemonic, safeBase64ToBytes } from './auth.crypto';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import { computeMac } from 'internxt-crypto/hash';
 import { base64ToUint8Array, generateID, uuidToBytes } from 'internxt-crypto/utils';
 

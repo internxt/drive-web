@@ -1,12 +1,11 @@
 import { client } from '@serenity-kit/opaque';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from 'app/core/factory/sdk';
-import * as Sentry from '@sentry/react';
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService from 'services/local-storage.service';
 import { computeMac } from 'internxt-crypto/hash';
 
 import { RegisterOpaqueDetails } from '@internxt/sdk';
-import { readReferalCookie } from 'app/auth/services/auth.service';
+import { readReferalCookie } from './auth.service';
 import {
   decryptUserKeysAndMnemonic,
   encryptUserKeysAndMnemonic,
@@ -64,12 +63,6 @@ export const doLoginOpaque = async (
   localStorageService.set('xMnemonic', mnemonic);
   localStorageService.set('xNewToken', sessionID);
   await setSessionKey(password, sessionKey);
-
-  Sentry.setUser({
-    id: user.uuid,
-    email: user.email,
-    sharedWorkspace: user.sharedWorkspace,
-  });
 
   return { token: sessionID, user, mnemonic, newToken: sessionID };
 };

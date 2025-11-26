@@ -1,7 +1,7 @@
 import { Iterator } from 'app/core/collections';
 import { DriveFileData, DriveFolderData } from '.';
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 import { ConnectionLostError } from 'app/network/requests';
 import { ErrorMessages } from 'app/core/constants';
 

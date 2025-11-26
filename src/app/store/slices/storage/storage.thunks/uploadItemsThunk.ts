@@ -13,8 +13,8 @@ import { t } from 'i18next';
 
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import errorService from '../../../../core/services/error.service';
-import workspacesService from '../../../../core/services/workspace.service';
+import errorService from 'services/error.service';
+import workspacesService from 'services/workspace.service';
 import { uploadFileWithManager } from '../../../../network/UploadManager';
 import DatabaseUploadRepository from '../../../../repositories/DatabaseUploadRepository';
 import shareService from '../../../../share/services/share.service';

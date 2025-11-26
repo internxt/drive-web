@@ -3568,11 +3568,6 @@
   resolved "https://registry.yarnpkg.com/@types/statuses/-/statuses-2.0.5.tgz#f61ab46d5352fd73c863a1ea4e1cef3b0b51ae63"
   integrity sha512-jmIUGWrAiwu3dZpxntxieC+1n/5c3mjrImkmOSQ2NC5uP6cYO4aAZDdSmRcI5C1oiTmqlZGHC+/NmJrKogbP5A==
 
-"@types/streamsaver@^2.0.1":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@types/streamsaver/-/streamsaver-2.0.2.tgz#2c135d41da7dc4ba57e66276ad69a8fb3a81f0b3"
-  integrity sha512-lMUHs4H7dFobme85vUBO4ZWaq+pvvt8kTVBipS3p6G/5j/GPHClG5IwED7yRRw2XTanBKF3+yKJ9TxyrlHIwHw==
-
 "@types/tough-cookie@^4.0.5":
   version "4.0.5"
   resolved "https://registry.yarnpkg.com/@types/tough-cookie/-/tough-cookie-4.0.5.tgz#cb6e2a691b70cb177c6e3ae9c1d2e8b2ea8cd304"
@@ -8990,11 +8985,6 @@ stream-http@^3.2.0:
     inherits "^2.0.4"
     readable-stream "^3.6.0"
     xtend "^4.0.2"
-
-streamsaver@^2.0.5:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/streamsaver/-/streamsaver-2.0.6.tgz#869d2347dd70191e0ac888d52296956a8cba2ed9"
-  integrity sha512-LK4e7TfCV8HzuM0PKXuVUfKyCB1FtT9L0EGxsFk5Up8njj0bXK8pJM9+Wq2Nya7/jslmCQwRK39LFm55h7NBTw==
 
 strict-event-emitter@^0.5.1:
   version "0.5.1"

@@ -1,7 +1,7 @@
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { Iterator } from 'app/core/collections';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
-import { FlatFolderZip } from 'app/core/services/zip.service';
+import { binaryStreamToBlob } from 'services/stream.service';
+import { FlatFolderZip } from 'services/zip.service';
 import { DriveFileData } from '../types';
 
 type File = SharedFiles | DriveFileData;

@@ -2,13 +2,17 @@ import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { mapBackupFolder } from './mappers';
 import { aes } from '@internxt/lib';
 import type { DriveFolderData } from 'app/drive/types';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 
-vi.mock('@internxt/lib', () => ({
-  aes: {
-    decrypt: vi.fn(),
-  },
-}));
+vi.mock('@internxt/lib', async () => {
+  const actual = await vi.importActual<typeof import('@internxt/lib')>('@internxt/lib');
+  return {
+    ...actual,
+    aes: {
+      decrypt: vi.fn(),
+    },
+  };
+});
 
 describe('Mapping backup folder', () => {
   const mockedSecret2 = 'my-secret';

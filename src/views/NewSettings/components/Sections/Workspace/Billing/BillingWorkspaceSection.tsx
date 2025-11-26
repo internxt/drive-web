@@ -24,8 +24,8 @@ import { UpdateMembersCard } from './UpdateMembersCard';
 import { SelectNewMembersModal } from './components/UpdateMembers/SelectNewMembersModal';
 import { ConfirmUpdatedMembersModal } from './components/UpdateMembers/ConfirmUpdatedMembersModal';
 import AppError from 'app/core/types';
-import errorService from 'app/core/services/error.service';
-import workspacesService from 'app/core/services/workspace.service';
+import errorService from 'services/error.service';
+import workspacesService from 'services/workspace.service';
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 
 interface BillingWorkspaceSectionProps {

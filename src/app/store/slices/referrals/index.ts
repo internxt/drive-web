@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import desktopService from 'app/core/services/desktop.service';
-import navigationService from 'app/core/services/navigation.service';
+import desktopService from 'services/desktop.service';
+import navigationService from 'services/navigation.service';
 import usersReferralsService from 'app/referrals/services/users-referrals.service';
 
 import { ReferralKey, UserReferral } from '@internxt/sdk/dist/drive/referrals/types';

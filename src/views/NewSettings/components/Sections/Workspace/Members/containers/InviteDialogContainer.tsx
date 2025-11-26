@@ -1,10 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { t } from 'i18next';
 import { useSelector } from 'react-redux';
-import userService from 'app/auth/services/user.service';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
-import workspacesService from 'app/core/services/workspace.service';
+import { userService, errorService, navigationService, workspacesService } from 'services';
 import { AppView } from 'app/core/types';
 import { encryptMessageWithPublicKey } from 'app/crypto/services/pgp.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
