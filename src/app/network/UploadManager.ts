@@ -307,19 +307,6 @@ class UploadManager {
   }) {
     const file = fileData.filecontent;
 
-    const fileInfoToReport = {
-      name: file.name,
-      size: file.size,
-      type: fileData.fileType ?? file.type,
-      parentFolderId: file.parentFolderId,
-      uploadProgress: this.uploadsProgress[uploadId] ?? 0,
-      filesUploaded: this.relatedTaskProgress
-        ? this.relatedTaskProgress.filesUploaded / this.relatedTaskProgress.totalFilesToUpload
-        : 'unknown',
-      context: error?.context,
-      errStatus: error?.status,
-    };
-
     // Handle retry error
     if (error.message === 'Retryable file') {
       next(null);

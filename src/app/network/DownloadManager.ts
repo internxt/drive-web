@@ -243,19 +243,6 @@ export class DownloadManager {
    * @param err - The error to report
    * @param items - The download items that were being processed when the error occurred
    */
-  private static readonly reportErrorWithContext = (err: unknown, items: DownloadItemType[]) => {
-    if (items.length > 1) {
-      errorService.reportError(err);
-      return;
-    }
-
-    const item = items[0];
-    if (item.isFolder) {
-      errorService.reportError(err);
-    } else {
-      errorService.reportError(err);
-    }
-  };
 
   /**
    * Shows an error notification to the user if error display is enabled
@@ -288,7 +275,7 @@ export class DownloadManager {
     downloadTask: DownloadTask,
     updateTaskWithErrorStatus: boolean,
   ) => {
-    this.reportErrorWithContext(err, downloadTask.items);
+    errorService.reportError(err);
 
     if (updateTaskWithErrorStatus) {
       tasksService.updateTask({

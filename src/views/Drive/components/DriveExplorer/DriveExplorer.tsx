@@ -747,7 +747,7 @@ declare module 'react' {
 }
 
 const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: File[]) => {
-  const { dispatch, currentFolderId, onDragAndDropEnd, items } = props;
+  const { dispatch, currentFolderId, onDragAndDropEnd } = props;
 
   if (files.length <= UPLOAD_ITEMS_LIMIT) {
     if (files.length) {

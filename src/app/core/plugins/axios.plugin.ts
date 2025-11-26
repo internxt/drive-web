@@ -10,8 +10,6 @@ const axiosPlugin: AppPlugin = {
     axios.defaults.baseURL = envService.getVariable('newApi');
 
     axios.interceptors.request.use((requestConfig) => {
-      const user = localStorageService.getUser();
-
       const tokenByWorkspace: { [key in Workspace]: string } = {
         [Workspace.Individuals]: localStorageService.get('xToken') || '',
         [Workspace.Business]: localStorageService.get('xTokenTeam') || '',
