@@ -369,14 +369,6 @@ function SharedView({
   };
 
   const onUploadFileButtonClicked = (): void => {
-    errorService.addBreadcrumb({
-      level: 'info',
-      category: 'button',
-      message: 'File upload button clicked in Shared view',
-      data: {
-        currentFolderId: currentFolderId,
-      },
-    });
     fileInputRef.current?.click();
   };
 

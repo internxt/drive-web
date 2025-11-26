@@ -184,10 +184,6 @@ describe('moveItemsToTrash', () => {
       text: 'error.errorMovingToTrash',
       type: 'error',
     });
-    expect(errorService.reportError).toHaveBeenCalledWith(mockError, {
-      extra: {
-        items: [{ uuid: 'file-1', type: 'file', id: null }],
-      },
-    });
+    expect(errorService.reportError).toHaveBeenCalledWith(mockError);
   });
 });

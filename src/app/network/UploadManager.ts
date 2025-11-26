@@ -227,19 +227,6 @@ class UploadManager {
 
             fileData.onFinishUploadFile?.(driveFileDataWithNameParsed, taskId);
 
-            errorService.addBreadcrumb({
-              level: 'info',
-              category: 'file',
-              message: 'File upload completed',
-              data: {
-                name: file.name,
-                size: file.size,
-                type: fileData.fileType ?? file.type,
-                parentFolderId: file.parentFolderId,
-                uploadProgress: this.uploadsProgress[uploadId] ?? 0,
-              },
-            });
-
             if (this.onFileUploadCallback) {
               this.onFileUploadCallback(driveFileDataWithNameParsed);
             }
@@ -318,21 +305,6 @@ class UploadManager {
     task: TaskData | undefined;
     uploadId: string;
   }) {
-    const file = fileData.filecontent;
-
-    const fileInfoToReport = {
-      name: file.name,
-      size: file.size,
-      type: fileData.fileType ?? file.type,
-      parentFolderId: file.parentFolderId,
-      uploadProgress: this.uploadsProgress[uploadId] ?? 0,
-      filesUploaded: this.relatedTaskProgress
-        ? this.relatedTaskProgress.filesUploaded / this.relatedTaskProgress.totalFilesToUpload
-        : 'unknown',
-      context: error?.context,
-      errStatus: error?.status,
-    };
-
     // Handle retry error
     if (error.message === 'Retryable file') {
       next(null);
@@ -341,7 +313,7 @@ class UploadManager {
 
     // Handle lost connection error
     if (isLostConnectionError) {
-      errorService.reportError(error, { extra: fileInfoToReport });
+      errorService.reportError(error);
       tasksService.updateTask({
         taskId,
         merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') ?? undefined },
@@ -359,7 +331,7 @@ class UploadManager {
         taskId: taskId,
         merge: { status: TaskStatus.Error, subtitle: t('tasks.subtitles.upload-failed') as string },
       });
-      errorService.reportError(error, { extra: fileInfoToReport });
+      errorService.reportError(error);
 
       // Handle max space used error
       if (error?.status === HTTP_CODES.MAX_SPACE_USED) {

@@ -85,7 +85,7 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       });
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-      errorService.reportError(err, { extra: { thunk: 'shareFileWithUser', email: payload.sharedWith } });
+      errorService.reportError(err);
       if (castedError.message === 'unauthenticated') {
         return navigationService.push(AppView.Login);
       }
@@ -171,7 +171,7 @@ const getSharedFolderRoles = createAsyncThunk<string | void, void, { state: Root
         dispatch(sharedActions.setSharedFolderUserRoles(newRoles));
       }
     } catch (err: unknown) {
-      errorService.reportError(err, { extra: { thunk: 'getSharedFolderRoles' } });
+      errorService.reportError(err);
     }
   },
 );
@@ -185,7 +185,7 @@ const getPendingInvitations = createAsyncThunk<string | void, void, { state: Roo
 
       dispatch(sharedActions.setPendingInvitations(pendingInvitations.invites));
     } catch (err: unknown) {
-      errorService.reportError(err, { extra: { thunk: 'getPendingInvitations' } });
+      errorService.reportError(err);
     }
   },
 );

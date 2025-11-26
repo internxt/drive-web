@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react';
 import axios, { AxiosHeaders } from 'axios';
 import packageJson from '../../../../package.json';
 import { AppPlugin, LocalStorageItem, Workspace } from '../../core/types';
@@ -11,16 +10,6 @@ const axiosPlugin: AppPlugin = {
     axios.defaults.baseURL = envService.getVariable('newApi');
 
     axios.interceptors.request.use((requestConfig) => {
-      const user = localStorageService.getUser();
-
-      if (user) {
-        Sentry.setUser({
-          id: user.uuid,
-          email: user.email,
-          sharedWorkspace: user.sharedWorkspace,
-        });
-      }
-
       const tokenByWorkspace: { [key in Workspace]: string } = {
         [Workspace.Individuals]: localStorageService.get('xToken') || '',
         [Workspace.Business]: localStorageService.get('xTokenTeam') || '',

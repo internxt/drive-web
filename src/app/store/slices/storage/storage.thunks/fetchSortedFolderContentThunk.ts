@@ -102,7 +102,7 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
 
       dispatch(storageActions.setItems({ folderId, items: items }));
     } catch (error) {
-      errorService.reportError(error, { extra: { folderId, foldersOffset, filesOffset } });
+      errorService.reportError(error);
       throw error;
     } finally {
       dispatch(storageActions.setIsLoadingFolder({ folderId, value: false }));

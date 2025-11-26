@@ -65,11 +65,7 @@ const deleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
       text: t('error.errorDeletingFromTrash'),
       type: ToastType.Error,
     });
-    errorService.reportError(error, {
-      extra: {
-        items,
-      },
-    });
+    errorService.reportError(error);
   }
 };
 

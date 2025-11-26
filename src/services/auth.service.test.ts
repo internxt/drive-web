@@ -122,9 +122,6 @@ beforeAll(() => {
       reportError: vi.fn(),
     },
   }));
-  vi.mock('@sentry/react', () => ({
-    setUser: vi.fn(),
-  }));
 
   vi.mock('bip39', async () => {
     const actual = await vi.importActual<typeof import('bip39')>('bip39');

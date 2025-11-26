@@ -59,7 +59,7 @@ export default function ChangeEmailView(): JSX.Element {
         if (newEmailParam) setNewEmail(newEmailParam);
       }
     } catch (error) {
-      errorService.reportError(error, { extra: { view: 'Change email view', emailLinkExpirationToken: token } });
+      errorService.reportError(error);
       setStatus(STATUS.ERROR);
     }
   }
