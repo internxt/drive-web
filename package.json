@@ -94,7 +94,7 @@
     "test:safari": "yarn playwright test --project=webkit",
     "test:edge": "yarn playwright test --project=edge",
     "test": "vitest run",
-    "format": "prettier \"{src,test}/**/*.{ts,tsx}\" --write",
+    "format": "prettier \"{src,test}/**/*.{ts,tsx,json}\" --write",
     "lint:ts": "eslint \"./{src,test}/**/*.{ts,tsx}\"",
     "lint:ts:fix": "yarn run lint:ts --fix",
     "lint:scss": "stylelint \"src/**/*.{css,scss}\"",
@@ -171,7 +171,7 @@
     "node": ">=14.17.0"
   },
   "lint-staged": {
-    "*.{js,jsx,tsx,ts}": [
+    "*.{js,jsx,tsx,ts,json}": [
       "prettier --write"
     ]
   }
