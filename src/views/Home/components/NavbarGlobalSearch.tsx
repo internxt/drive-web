@@ -5,7 +5,7 @@ import { storageSelectors } from 'app/store/slices/storage';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
-import { Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
+import { ArrowSquareOut, Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
 import { PlanState } from 'app/store/slices/plan';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -23,6 +23,7 @@ import FilterItem from './FilterItem';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import navigationService from 'app/core/services/navigation.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { UpgradeDialog } from 'app/drive/components/UpgradeDialog/UpgradeDialog';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -114,6 +115,8 @@ const Navbar = (props: NavbarProps) => {
 
   const isGlobalSearch = useAppSelector((state: RootState) => state.ui.isGlobalSearch);
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const isUpgradePlanDialogOpen = useAppSelector((state) => state.ui.isUpgradePlanDialogOpen);
+  const currentUpgradePlanDialogInfo = useAppSelector((state) => state.ui.currentUpgradePlanDialogInfo);
 
   useHotkeys(
     ['Meta+F', 'Control+F'],
@@ -416,6 +419,31 @@ const Navbar = (props: NavbarProps) => {
             ...props.plan,
             showUpgrade: props.plan.individualPlan?.name === 'Free Plan',
           }}
+        />
+        <UpgradeDialog
+          isDialogOpen={isUpgradePlanDialogOpen}
+          onAccept={() => {
+            navigationService.openPreferencesDialog({
+              section: 'account',
+              subsection: 'plans',
+            });
+            dispatch(uiActions.setIsUpgradePlanDialogOpen(false));
+            dispatch(uiActions.setIsPreferencesDialogOpen(true));
+          }}
+          onCloseDialog={() => {
+            dispatch(uiActions.setIsUpgradePlanDialogOpen(false));
+          }}
+          title={currentUpgradePlanDialogInfo?.title ?? translate('modals.upgradePlanDialog.default.title')}
+          subtitle={
+            currentUpgradePlanDialogInfo?.description ?? translate('modals.upgradePlanDialog.default.description')
+          }
+          primaryAction={
+            <span className="flex items-center">
+              {translate('modals.upgradePlanDialog.upgrade')} <ArrowSquareOut className="ml-2" />
+            </span>
+          }
+          secondaryAction={translate('modals.upgradePlanDialog.cancel')}
+          maxWidth="md"
         />
       </div>
     </div>
