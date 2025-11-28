@@ -6,21 +6,29 @@ import XSVG from 'assets/close_x.svg';
 import { Button, Loader } from '@internxt/ui';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import desktopService from '../../../core/services/desktop.service';
-import operatingSystemService from '../../../core/services/operating-system.service';
+import operatingSystemService, { OperatingSystem } from '../../../core/services/operating-system.service';
 import { FC, useMemo, useState } from 'react';
 
 const separatorV = <div className=" my-2 border-r border-gray-10" />;
 
-const OPERATIVE_SYTEM_LOGOS = {
-  WindowsOS: WindowsLogo,
-  MacOS: MacOsLogo,
-  LinuxOS: LinuxLogo,
+const OPERATIVE_SYTEM_LOGOS: Record<OperatingSystem, string> = {
+  Windows: WindowsLogo,
+  macOS: MacOsLogo,
+  Linux: LinuxLogo,
+  UNIX: LinuxLogo,
+  Android: '',
+  iOS: MacOsLogo,
+  Unknown: '',
 };
 
-const OPERATIVE_SYTEM_NAMES = {
-  WindowsOS: 'Windows',
-  MacOS: 'macOS',
-  LinuxOS: 'Linux',
+const OPERATIVE_SYTEM_NAMES: Record<OperatingSystem, string> = {
+  Windows: 'Windows',
+  macOS: 'macOS',
+  Linux: 'Linux',
+  UNIX: 'UNIX',
+  Android: 'Android',
+  iOS: 'iOS',
+  Unknown: 'Unknown',
 };
 
 type OnBoardingModalProps = {
