@@ -17,9 +17,9 @@ interface TrackBeginCheckoutParams {
 
 function track(eventName: string, object: Record<string, any>): void {
   try {
-    window.gtag('event', eventName, object);
+    globalThis.window.gtag('event', eventName, object);
   } catch (error) {
-    //
+    // Silently fail if gtag is not available
   }
 }
 
@@ -37,31 +37,31 @@ function calculateDiscountAmount(originalPrice: number, couponCodeData?: CouponC
   }
 
   const finalPriceString = getProductAmount(originalPrice, 1, couponCodeData);
-  const finalPrice = parseFloat(finalPriceString);
+  const finalPrice = Number.parseFloat(finalPriceString);
 
-  if (isNaN(finalPrice)) {
+  if (Number.isNaN(finalPrice)) {
     return 0;
   }
 
   const discount = originalPrice - finalPrice;
-
-  return parseFloat(formatPrice(Math.max(0, discount)));
+  return Number.parseFloat(formatPrice(Math.max(0, discount)));
 }
 
 function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
   const { planId, planPrice, currency, planType, interval, storage, promoCodeId, couponCodeData, seats = 1 } = params;
 
-  const storageBytes = parseInt(storage, 10);
-  const formattedStorage = isNaN(storageBytes) ? storage : bytesToString(storageBytes);
+  const storageBytes = Number.parseInt(storage, 10);
+  const formattedStorage = Number.isNaN(storageBytes) ? storage : bytesToString(storageBytes);
 
   const planAmountPerUserString = getProductAmount(planPrice, 1, couponCodeData);
-  const planAmountPerUser = parseFloat(planAmountPerUserString);
-  const totalAmount = parseFloat(formatPrice(planAmountPerUser * seats));
+  const planAmountPerUser = Number.parseFloat(planAmountPerUserString);
+  const totalAmount = Number.parseFloat(formatPrice(planAmountPerUser * seats));
   const discount = calculateDiscountAmount(planPrice, couponCodeData);
+
   console.log(planAmountPerUserString, planAmountPerUser, totalAmount, discount);
 
   try {
-    window.gtag('event', 'begin_checkout', {
+    globalThis.window.gtag('event', 'begin_checkout', {
       currency: currency ?? 'EUR',
       value: totalAmount,
       ...(promoCodeId && { coupon: promoCodeId }),
@@ -71,7 +71,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
           item_name: `${formattedStorage} ${capitalizeFirstLetter(interval)} Plan`,
           item_category: getPlanCategory(planType),
           item_variant: interval,
-          price: parseFloat(formatPrice(planPrice)),
+          price: Number.parseFloat(formatPrice(planPrice)),
           quantity: seats,
           item_brand: 'Internxt',
           ...(promoCodeId && { coupon: promoCodeId }),
@@ -80,7 +80,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
       ],
     });
   } catch (error) {
-    //
+    // Silently fail if gtag is not available
   }
 }
 
