@@ -8,7 +8,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useSignUp } from './hooks/useSignup';
 import { Buffer } from 'node:buffer';
 import { generateMnemonic } from 'bip39';
-import envService from '../../app/core/services/env.service';
+import envService from 'services/env.service';
 
 const mockSecret = '123456789QWERTY';
 const mockMagicIv = '12345678912345678912345678912345';
@@ -93,7 +93,7 @@ describe('onSubmit', () => {
       X: () => <div>Mocked X Icon</div>,
     }));
 
-    vi.mock('../../app/auth/components/PasswordInput/PasswordInput', () => {
+    vi.mock('components/PasswordInput', () => {
       return {
         __esModule: true,
         default: vi.fn(({ register, ...props }) => (
@@ -115,20 +115,20 @@ describe('onSubmit', () => {
       parseUserSettingsEnsureKyberKeysAdded: vi.importActual,
     }));
 
-    vi.mock('../../app/shared/components/PasswordStrengthIndicator', () => ({
+    vi.mock('components/PasswordStrengthIndicator', () => ({
       default: {
         PasswordStrengthIndicator: () => <div>Mocked Password Strength Indicator</div>,
       },
     }));
 
-    vi.mock('../../app/core/services/error.service', () => ({
+    vi.mock('services/error.service', () => ({
       default: {
         castError: vi.fn().mockImplementation((e) => ({ message: e.message || 'Default error message' })),
         reportError: vi.fn(),
       },
     }));
 
-    vi.mock('../../app/core/services/local-storage.service', () => ({
+    vi.mock('services/local-storage.service', () => ({
       default: {
         get: vi.fn(),
         clear: vi.fn(),
@@ -137,7 +137,7 @@ describe('onSubmit', () => {
       },
     }));
 
-    vi.mock('../../app/core/services/navigation.service', () => ({
+    vi.mock('services/navigation.service', () => ({
       default: {
         push: vi.fn(),
         history: {
@@ -156,15 +156,19 @@ describe('onSubmit', () => {
       }),
     }));
 
-    vi.mock('../../app/shared/views/ExpiredLink/ExpiredLinkView', () => ({
-      default: {
-        ExpiredLink: vi.fn(),
-      },
+    vi.mock('components', () => ({
+      ExpiredLinkView: vi.fn(() => <div>Mocked Expired Link View</div>),
     }));
 
-    vi.mock('query-string', () => ({
-      parse: vi.fn().mockImplementation((input: string) => input),
-    }));
+    vi.mock('query-string', async () => {
+      const actual = await vi.importActual<typeof import('query-string')>('query-string');
+      const mockParse = vi.fn().mockImplementation((input: string) => input);
+      return {
+        ...actual,
+        default: { ...actual, parse: mockParse },
+        parse: mockParse,
+      };
+    });
 
     vi.mock('react-redux', () => ({
       useSelector: vi.fn(),
@@ -175,7 +179,7 @@ describe('onSubmit', () => {
       onChangePasswordHandler: vi.fn(),
     }));
 
-    vi.mock('../../app/core/services/workspace.service', () => ({
+    vi.mock('services/workspace.service', () => ({
       default: {
         validateWorkspaceInvitation: vi.fn().mockImplementation(() => {
           return true;

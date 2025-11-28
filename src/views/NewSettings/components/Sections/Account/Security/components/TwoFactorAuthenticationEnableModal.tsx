@@ -1,14 +1,14 @@
 import { Warning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
-import authService, { generateNew2FA } from 'app/auth/services/auth.service';
+import authService, { generateNew2FA } from 'services/auth.service';
 import { Button, Input, Loader, Modal } from '@internxt/ui';
 import appStoreIcon from 'app/../assets/icons/app-store.svg';
 import playStoreIcon from 'app/../assets/icons/play-store.svg';
-import useEffectAsync from 'app/core/hooks/useEffectAsync';
-import Copyable from 'app/shared/components/Copyable';
+import useEffectAsync from 'hooks/useEffectAsync';
+import Copyable from 'components/Copyable';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 
 const TwoFactorAuthenticationEnableModal = ({
   isOpen,

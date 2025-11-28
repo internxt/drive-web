@@ -6,9 +6,9 @@ import { Popover } from '@internxt/ui';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { userThunks } from 'app/store/slices/user';
-import desktopService from 'app/core/services/desktop.service';
+import desktopService from 'services/desktop.service';
 import AvatarWrapper from '../../NewSettings/components/Sections/Account/Account/components/AvatarWrapper';
-import navigationService from 'app/core/services/navigation.service';
+import navigationService from 'services/navigation.service';
 import { RootState } from 'app/store';
 
 interface AccountPopoverProps {

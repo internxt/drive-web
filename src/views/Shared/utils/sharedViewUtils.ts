@@ -1,4 +1,4 @@
-import errorService from '../../../app/core/services/error.service';
+import errorService from 'services/error.service';
 import shareService from '../../../app/share/services/share.service';
 import { AdvancedSharedItem, UserRoles } from '../../../app/share/types';
 import { OrderField } from '../components/SharedItemList';

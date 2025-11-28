@@ -1,14 +1,14 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import { Iterator } from 'app/core/collections';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
-import { FlatFolderZip } from 'app/core/services/zip.service';
+import { binaryStreamToBlob } from 'services/stream.service';
+import { FlatFolderZip } from 'services/zip.service';
 import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
 import { downloadFile } from 'app/network/download';
 import { t } from 'i18next';
 import { SdkFactory } from 'app/core/factory/sdk';
-import errorService from 'app/core/services/error.service';
-import workspacesService from 'app/core/services/workspace.service';
+import errorService from 'services/error.service';
+import workspacesService from 'services/workspace.service';
 import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData } from '../types';
 import { updateDatabaseFileSourceData } from './database.service';
 import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
@@ -23,10 +23,10 @@ import {
   isLostConnectionError,
 } from '../types/download-types';
 import { DriveItemBlobData } from 'app/database/services/database.service';
-import dateService from 'app/core/services/date.service';
+import dateService from 'services/date.service';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { queue, QueueObject } from 'async';
-import { QueueUtilsService } from 'app/utils/queueUtils';
+import { QueueUtilsService } from 'utils/queueUtils';
 
 export interface IFolders {
   bucket: string;

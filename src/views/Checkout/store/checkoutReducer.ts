@@ -3,7 +3,6 @@ import { Action, State } from './types';
 export const initialStateForCheckout: State = {
   plan: null,
   currentSelectedPlan: null,
-  promoCodeName: '',
   avatarBlob: null,
   isPaying: false,
   isCheckoutReadyToRender: false,
@@ -38,8 +37,6 @@ export const checkoutReducer = (state: State, action: Action): State => {
       return { ...state, country: action.payload };
     case 'SET_PRICES':
       return { ...state, prices: action.payload };
-    case 'SET_PROMO_CODE_NAME':
-      return { ...state, promoCodeName: action.payload };
     case 'SET_COUPON_CODE_DATA':
       return { ...state, couponCodeData: action.payload };
     case 'SET_ELEMENTS_OPTIONS':

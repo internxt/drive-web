@@ -1,9 +1,9 @@
-import TextInput from '../../../app/auth/components/TextInput/TextInput';
+import TextInput from 'components/TextInput';
 import { Button } from '@internxt/ui';
 import InternxtLogo from '../../../assets/icons/big-logo.svg?react';
 import PasswordFieldWithInfo from './PasswordFieldWithInfo';
 import { Helmet } from 'react-helmet-async';
-import envService from '../../../app/core/services/env.service';
+import envService from 'services/env.service';
 import { FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
 import { IFormValues } from '../../../app/core/types';
 import { PasswordState } from '../hooks/useGuestSignupState';

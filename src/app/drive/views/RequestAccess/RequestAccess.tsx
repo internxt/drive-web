@@ -7,7 +7,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Button } from '@internxt/ui';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import './RequestAccess.scss';
-import { logOut } from 'app/auth/services/auth.service';
+import { logOut } from 'services/auth.service';
 
 const TEXTAREA_MAX_LENGTH = 950;
 

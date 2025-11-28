@@ -69,7 +69,7 @@ export const getItemIcon = (isFolder: boolean, itemExtension?: string): Function
     });
   }
 
-  return !isFolder ? iconsByFileExtensionGroup[groupId] : LightFolder;
+  return isFolder ? LightFolder : iconsByFileExtensionGroup[groupId];
 };
 
 const iconService = {

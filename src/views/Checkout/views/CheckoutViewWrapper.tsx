@@ -7,15 +7,15 @@ import { useSelector } from 'react-redux';
 import { UserLocation } from '@internxt/sdk';
 import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Loader } from '@internxt/ui';
-import { userLocation } from 'app/utils/userLocation';
+import { userLocation } from 'utils/userLocation';
 import { useCheckout } from 'views/Checkout/hooks/useCheckout';
 import { useSignUp } from 'views/Signup/hooks/useSignup';
-import envService from 'app/core/services/env.service';
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import navigationService from 'app/core/services/navigation.service';
-import RealtimeService from 'app/core/services/socket.service';
-import { STORAGE_KEYS } from 'app/core/services/storage-keys';
+import envService from 'services/env.service';
+import errorService from 'services/error.service';
+import localStorageService from 'services/local-storage.service';
+import navigationService from 'services/navigation.service';
+import RealtimeService from 'services/socket.service';
+import { STORAGE_KEYS } from 'services/storage-keys';
 import AppError, { AppView, IFormValues } from 'app/core/types';
 import databaseService from 'app/database/services/database.service';
 import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
@@ -28,7 +28,7 @@ import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { useThemeContext } from 'app/theme/ThemeProvider';
-import authCheckoutService from 'views/Checkout/services/auth-checkout.service';
+import { authenticateUser } from 'services/auth.service';
 import { checkoutReducer, initialStateForCheckout } from 'views/Checkout/store/checkoutReducer';
 import { PaymentType, PlanInterval } from 'views/Checkout/types';
 import { AddressProvider, CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
@@ -36,7 +36,7 @@ import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'views/Checkout/hooks/useUserPayment';
 import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/components/CryptoPaymentDialog';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
-import { generateCaptchaToken } from 'app/utils/generateCaptchaToken';
+import { generateCaptchaToken } from 'utils/generateCaptchaToken';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -102,7 +102,6 @@ const CheckoutViewWrapper = () => {
     onRemoveAppliedCouponCode,
     setAuthMethod,
     setAvatarBlob,
-    setCouponCodeName,
     setError,
     setIsUserPaying,
     setPromoCodeData,
@@ -121,7 +120,6 @@ const CheckoutViewWrapper = () => {
     avatarBlob,
     couponCodeData,
     elementsOptions,
-    promoCodeName,
     seatsForBusinessSubscription,
     isCheckoutReadyToRender,
     isUpdateSubscriptionDialogOpen,
@@ -183,7 +181,7 @@ const CheckoutViewWrapper = () => {
       recalculatePrice(
         currentSelectedPlan.price.id,
         currentSelectedPlan.price.currency,
-        promoCodeName,
+        couponCodeData?.codeName,
         address.postal_code,
         address.country,
       );
@@ -207,7 +205,6 @@ const CheckoutViewWrapper = () => {
 
     try {
       if (promoCodeName) {
-        setCouponCodeName(promoCodeName);
         await handleFetchPromotionCode(currentSelectedPlan.price.id, promoCodeName);
       }
     } catch (error) {
@@ -421,22 +418,25 @@ const CheckoutViewWrapper = () => {
 
     const authCaptcha = await generateCaptchaToken();
 
-    try {
-      await authCheckoutService.authenticateUser({
-        email,
-        password,
-        authMethod,
-        dispatch,
-        captcha: authCaptcha,
-        doRegister,
-      });
-    } catch (err) {
-      const error = err as Error;
-      setError('auth', error.message);
-      (userAuthComponentRef.current as any).scrollIntoView();
-      errorService.reportError(error);
-      setIsUserPaying(false);
-      return;
+    if (authMethod !== 'userIsSignedIn') {
+      try {
+        await authenticateUser({
+          email,
+          password,
+          authMethod,
+          twoFactorCode: '',
+          dispatch,
+          token: authCaptcha,
+          doSignUp: doRegister,
+        });
+      } catch (err) {
+        const error = err as Error;
+        setError('auth', error.message);
+        (userAuthComponentRef.current as any).scrollIntoView();
+        errorService.reportError(error);
+        setIsUserPaying(false);
+        return;
+      }
     }
 
     try {

@@ -11,7 +11,7 @@ import GuaranteeDarkDays from 'assets/icons/checkout/guarantee-dark.svg?react';
 import GuaranteeWhiteDays from 'assets/icons/checkout/guarantee-white.svg?react';
 import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import TextInput from '../../../components/TextInput';
+import TextInput from 'components/TextInput';
 import { useThemeContext } from 'app/theme/ThemeProvider';
 import { CouponCodeData, Currency } from '../types';
 import { SelectSeatsComponent } from './SelectSeatsComponent';
@@ -251,7 +251,10 @@ export const CheckoutProductCard = ({
                               }
                             }}
                             data-cy={'coupon-code-input'}
-                            className={'inxt-input input-primary dark:bg-transparent'}
+                            className={'flex-1'}
+                            inputClassName={
+                              'dark:bg-transparent placeholder:text-[16px] border-gray-30 text-[16px] dark:text-white pl-3'
+                            }
                           />
                           <Button
                             disabled={!couponName?.length}

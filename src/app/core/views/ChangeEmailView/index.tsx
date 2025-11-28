@@ -2,13 +2,13 @@ import { CheckCircle, ClockCountdown, Envelope, WarningCircle } from '@phosphor-
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
-import { areCredentialsCorrect } from '../../../auth/services/auth.service';
-import userService from '../../../auth/services/user.service';
+import { areCredentialsCorrect } from 'services/auth.service';
+import userService from 'services/user.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { Button, Loader, Input } from '@internxt/ui';
 import { uiActions } from '../../../store/slices/ui';
 import { userThunks } from '../../../store/slices/user';
-import errorService from '../../services/error.service';
+import errorService from 'services/error.service';
 
 type StatusType = 'loading' | 'auth' | 'error' | 'success' | 'expired';
 

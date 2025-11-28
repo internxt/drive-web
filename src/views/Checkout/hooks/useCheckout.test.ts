@@ -39,10 +39,9 @@ describe('useCheckout hook actions', () => {
     });
   });
 
-  it('When onRemoveAppliedCouponCode is called, then it dispatches SET_COUPON_CODE_DATA and SET_PROMO_CODE_NAME with undefined', () => {
+  it('When onRemoveAppliedCouponCode is called, then it dispatches SET_COUPON_CODE_DATA with undefined', () => {
     onRemoveAppliedCouponCode();
     expect(dispatch).toHaveBeenNthCalledWith(1, { type: 'SET_COUPON_CODE_DATA', payload: undefined });
-    expect(dispatch).toHaveBeenNthCalledWith(2, { type: 'SET_PROMO_CODE_NAME', payload: undefined });
   });
 
   it('When setAvatarBlob is called, then it dispatches SET_AVATAR_BLOB with the provided Blob or null', () => {

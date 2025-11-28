@@ -1,7 +1,7 @@
 import { describe, expect, it, Mock, vi } from 'vitest';
 import usageService from './usage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 
 vi.mock('app/core/factory/sdk', () => ({
   SdkFactory: {
@@ -9,7 +9,7 @@ vi.mock('app/core/factory/sdk', () => ({
   },
 }));
 
-vi.mock('app/core/services/error.service', () => ({
+vi.mock('services/error.service', () => ({
   default: {
     reportError: vi.fn(),
   },

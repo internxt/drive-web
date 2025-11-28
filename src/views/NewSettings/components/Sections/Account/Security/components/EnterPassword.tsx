@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { areCredentialsCorrect } from 'app/auth/services/auth.service';
-import errorService from 'app/core/services/error.service';
+import { areCredentialsCorrect } from 'services/auth.service';
+import errorService from 'services/error.service';
 
 import { Button, Input } from '@internxt/ui';
-import Card from 'app/shared/components/Card';
+import Card from 'components/Card';
 
 const EnterPassword = ({
   onUnlock,
@@ -43,7 +43,15 @@ const EnterPassword = ({
   };
 
   return (
-    <div className="flex w-full justify-center" title={translate('views.account.tabs.security.label')}>
+    <div
+      className="flex w-full justify-center"
+      title={translate('views.account.tabs.security.label')}
+      onMouseDown={(e) => {
+        // This prevents to closing the dialog when the user wants to reveal the password by clicking in the "Eye" icon
+        // Do not remove!
+        e.stopPropagation();
+      }}
+    >
       <Card className="w-2/3 space-y-3">
         <h1 className="text-lg font-medium text-gray-80">{translate('views.account.tabs.security.lock.title')}</h1>
         <p className="text-gray-80">{translate('views.account.tabs.security.lock.description')}</p>

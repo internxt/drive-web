@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-import { audioTypes } from 'app/core/services/media.service';
+import { audioTypes } from 'services/media.service';
 
 const FileAudioViewer = ({
   file,

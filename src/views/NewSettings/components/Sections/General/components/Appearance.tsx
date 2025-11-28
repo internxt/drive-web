@@ -9,7 +9,7 @@ import appearance_system from 'assets/system.svg';
 import { useEffect, useState } from 'react';
 import { paymentService } from 'views/Checkout/services';
 import { UserThemesService } from 'app/theme/userThemes.service';
-import errorService from 'app/core/services/error.service';
+import errorService from 'services/error.service';
 
 function ThemeButton({ theme, toggleTheme, isSelected, img }) {
   const { translate } = useTranslationContext();

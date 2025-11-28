@@ -4,8 +4,8 @@ import { userSelectors } from 'app/store/slices/user';
 import { useTaskManagerGetNotifications } from 'app/tasks/hooks';
 import { TaskStatus } from 'app/tasks/types';
 import newStorageService from 'app/drive/services/new-storage.service';
-import errorService from 'app/core/services/error.service';
-import envService from 'app/core/services/env.service';
+import errorService from 'services/error.service';
+import envService from 'services/env.service';
 
 export const useTutorialState = () => {
   const [hasAnyUploadedFile, setHasAnyUploadedFile] = useState<boolean | undefined>();

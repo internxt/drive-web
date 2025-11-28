@@ -6,8 +6,8 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import { Button, Dropdown, MenuItemType } from '@internxt/ui';
 import { t } from 'i18next';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import TooltipElement, { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
-import envService from 'app/core/services/env.service';
+import TooltipElement, { DELAY_SHOW_MS } from 'components/TooltipElement';
+import envService from 'services/env.service';
 
 interface TopBarActionsProps {
   background?: string;

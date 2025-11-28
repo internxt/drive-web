@@ -4,7 +4,7 @@ import Logo from 'assets/icons/logo.svg?react';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { userThunks } from 'app/store/slices/user';
-import desktopService from 'app/core/services/desktop.service';
+import desktopService from 'services/desktop.service';
 import 'views/PublicShared/components/ShareView.scss';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -12,7 +12,7 @@ import { ReportButton } from '../../../../views/PublicShared/components';
 import { ShieldCheck, Password, Key, Eye } from '@phosphor-icons/react';
 import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 import { Avatar, Button } from '@internxt/ui';
-import envService from 'app/core/services/env.service';
+import envService from 'services/env.service';
 
 interface ShareLayoutProps {
   children: JSX.Element;

@@ -1,12 +1,12 @@
-import desktopService from '../../../app/core/services/desktop.service';
+import desktopService from 'services/desktop.service';
 
 import folderEmptyImage from '../../../assets/icons/light/folder-backup.svg';
 import { DownloadSimple } from '@phosphor-icons/react';
-import Empty from '../../../app/shared/components/Empty/Empty';
+import Empty from 'components/Empty';
 import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
 import { contextMenuBackupItems } from 'views/Drive/components/DriveExplorer/components';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import { skinSkeleton } from 'app/shared/Skeleton';
+import { skinSkeleton } from 'components/Skeleton';
 import { List } from '@internxt/ui';
 import { Device } from '@internxt/sdk/dist/drive/backups/types';
 import { DeviceNameCell, DeviceDateCell, DeviceSizeCell } from './DeviceListItem';

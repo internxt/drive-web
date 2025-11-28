@@ -11,11 +11,15 @@ vi.mock('@internxt/lib', () => ({
   },
 }));
 
-vi.mock('bip39', () => ({
-  generateMnemonic: vi.fn().mockReturnValue('mock-mnemonic'),
-}));
+vi.mock('bip39', async () => {
+  const actual = await vi.importActual<typeof import('bip39')>('bip39');
+  return {
+    ...actual,
+    generateMnemonic: vi.fn().mockReturnValue('mock-mnemonic'),
+  };
+});
 
-vi.mock('app/auth/services/auth.service', () => ({
+vi.mock('services/auth.service', () => ({
   readReferalCookie: vi.fn().mockReturnValue('mock-referral'),
 }));
 
