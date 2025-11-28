@@ -23,6 +23,7 @@ import FilterItem from './FilterItem';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import navigationService from 'app/core/services/navigation.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import SuitePopover from './SuitePopover';
 import { UpgradeDialog } from 'app/drive/components/UpgradeDialog/UpgradeDialog';
 
 interface NavbarProps {
@@ -408,10 +409,19 @@ const Navbar = (props: NavbarProps) => {
             });
             dispatch(uiActions.setIsPreferencesDialogOpen(true));
           }}
-          className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg text-gray-80 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10"
+          className={
+            'mr-0.5 flex h-10 w-10 items-center justify-center rounded-lg ' +
+            'text-gray-80 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10'
+          }
         >
           <Gear size={24} />
         </button>
+        <SuitePopover
+          className={
+            'z-40 mr-5 h-10 w-10 items-center justify-center rounded-lg ' +
+            'text-gray-80 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10'
+          }
+        />
         <AccountPopover
           className="z-40 mr-5"
           user={user}
