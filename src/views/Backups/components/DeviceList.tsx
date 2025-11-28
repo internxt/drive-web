@@ -3,7 +3,6 @@ import desktopService from '../../../app/core/services/desktop.service';
 import folderEmptyImage from '../../../assets/icons/light/folder-backup.svg';
 import { DownloadSimple } from '@phosphor-icons/react';
 import Empty from '../../../app/shared/components/Empty/Empty';
-import notificationsService, { ToastType } from '../../../app/notifications/services/notifications.service';
 import { useTranslationContext } from '../../../app/i18n/provider/TranslationProvider';
 import { contextMenuBackupItems } from 'views/Drive/components/DriveExplorer/components';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
@@ -31,11 +30,6 @@ const DeviceList = (props: Props): JSX.Element => {
   const renderDeviceNameCell = (device: Item) => <DeviceNameCell device={device} onDeviceClicked={onDeviceClicked} />;
   const renderDeviceDateCell = (device: Item) => <DeviceDateCell device={device} translate={translate} />;
   const renderDeviceSizeCell = (device: Item) => <DeviceSizeCell device={device} />;
-
-  const getDownloadApp = async () => {
-    const download = await desktopService.getDownloadAppUrl();
-    return download;
-  };
 
   return (
     <div id="scrollableList" className="flex h-full flex-col overflow-y-auto">
@@ -85,18 +79,7 @@ const DeviceList = (props: Props): JSX.Element => {
                 icon: DownloadSimple,
                 style: 'plain',
                 text: translate('backups.empty.downloadApp'),
-                onClick: () => {
-                  getDownloadApp()
-                    .then((downloaded) => {
-                      window.open(downloaded, '_newtab' + Date.now());
-                    })
-                    .catch(() => {
-                      notificationsService.show({
-                        text: 'Something went wrong while downloading the desktop app',
-                        type: ToastType.Error,
-                      });
-                    });
-                },
+                onClick: () => desktopService.openDownloadAppUrl(translate),
               }}
             />
           }

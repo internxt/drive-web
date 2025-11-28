@@ -5,10 +5,8 @@ import DevicesSVG from 'assets/devices.svg';
 import XSVG from 'assets/close_x.svg';
 import { Button, Loader } from '@internxt/ui';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import desktopService from '../../../core/services/desktop.service';
 import operatingSystemService from '../../../core/services/operating-system.service';
-import { t } from 'i18next';
 import { FC, useMemo, useState } from 'react';
 
 const separatorV = <div className=" my-2 border-r border-gray-10" />;
@@ -46,21 +44,8 @@ export const OnboardingModal: FC<OnBoardingModalProps> = ({ onCloseModalPressed 
     [DevicesSVG],
   );
 
-  const onDownloadAppButtonClicked = (): void => {
-    const getDownloadApp = async () => {
-      const download = await desktopService.getDownloadAppUrl();
-      return download;
-    };
-    getDownloadApp()
-      .then((download) => {
-        window.open(download, '_self');
-      })
-      .catch(() => {
-        notificationsService.show({
-          text: t('errors.downloadingDesktopApp'),
-          type: ToastType.Error,
-        });
-      });
+  const onDownloadAppButtonClicked = async () => {
+    await desktopService.openDownloadAppUrl(translate);
     onCloseModalPressed();
   };
 
@@ -86,9 +71,9 @@ export const OnboardingModal: FC<OnBoardingModalProps> = ({ onCloseModalPressed 
           </div>
           <div className="flex w-96 flex-col p-10">
             <div>
-              <p className="text-3xl leading-9 text-gray-100">{t('tutorial.signUpTutorial.stepOne.title')}</p>
+              <p className="text-3xl leading-9 text-gray-100">{translate('tutorial.signUpTutorial.stepOne.title')}</p>
               <p className="mt-2 text-base leading-5 text-gray-80	">
-                {t('tutorial.signUpTutorial.stepOne.description')}
+                {translate('tutorial.signUpTutorial.stepOne.description')}
               </p>
             </div>
             <div className="mt-6">

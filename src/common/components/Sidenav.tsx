@@ -13,10 +13,8 @@ import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types/types'
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Loader } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
-import { t } from 'i18next';
 import localStorageService from 'app/core/services/local-storage.service';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import SidenavItem from './SidenavItem/SidenavItem';
@@ -25,6 +23,7 @@ import { STORAGE_KEYS } from 'app/core/services/storage-keys';
 import { HUNDRED_TB } from 'app/core/constants';
 import { useEffect } from 'react';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
+import { Translate } from 'app/i18n/types';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -55,19 +54,9 @@ const isActiveButton = (path: string) => {
   return !!matchPath(globalThis.location.pathname, { path, exact: true });
 };
 
-const handleDownloadApp = (): void => {
+const handleDownloadApp = (translate: Translate): void => {
   resetAccessTokenFileFolder();
-  desktopService
-    .getDownloadAppUrl()
-    .then((download) => {
-      window.open(download, '_self');
-    })
-    .catch(() => {
-      notificationsService.show({
-        text: t('notificationMessages.errorDownloadingDesktopApp'),
-        type: ToastType.Error,
-      });
-    });
+  desktopService.openDownloadAppUrl(translate);
 };
 
 const LoadingSpinner = ({ text }: { text: string }) => (
@@ -172,7 +161,7 @@ const Sidenav = ({
       label: translate('sideNav.desktop'),
       icon: Desktop,
       iconDataCy: 'sideNavDesktopIcon',
-      onClick: handleDownloadApp,
+      onClick: () => handleDownloadApp(translate),
       isVisible: !isB2BWorkspace,
     },
   ];

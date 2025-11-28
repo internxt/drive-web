@@ -4,7 +4,7 @@ import navigationService from 'app/core/services/navigation.service';
 import usersReferralsService from 'app/referrals/services/users-referrals.service';
 
 import { ReferralKey, UserReferral } from '@internxt/sdk/dist/drive/referrals/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { t as translate } from 'i18next';
 import { RootState } from 'app/store';
 import { planThunks } from '../plan';
 import { uiActions } from '../ui';
@@ -53,25 +53,12 @@ const executeUserReferralActionThunk = createAsyncThunk<void, { referralKey: Ref
     const state = getState();
     const selectedWorkspace = state.workspaces.selectedWorkspace;
 
-    const getDownloadApp = async () => {
-      const download = await desktopService.getDownloadAppUrl();
-      return download;
-    };
     switch (referralKey) {
       case ReferralKey.SubscribeToNewsletter: {
         break;
       }
       case ReferralKey.InstallDesktopApp: {
-        getDownloadApp()
-          .then((url) => {
-            window.open(url, '_blank');
-          })
-          .catch(() => {
-            notificationsService.show({
-              text: 'Something went wrong while downloading the desktop app',
-              type: ToastType.Error,
-            });
-          });
+        desktopService.openDownloadAppUrl(translate);
         break;
       }
       case ReferralKey.InviteFriends: {

@@ -7,7 +7,6 @@ import { userThunks } from 'app/store/slices/user';
 import desktopService from 'app/core/services/desktop.service';
 import 'views/PublicShared/components/ShareView.scss';
 import InternxtLogo from 'assets/icons/big-logo.svg?react';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ReportButton } from '../../../../views/PublicShared/components';
 import { ShieldCheck, Password, Key, Eye } from '@phosphor-icons/react';
@@ -33,24 +32,6 @@ export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Elem
   useEffect(() => {
     getDatabaseProfileAvatar().then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null));
   }, [user]);
-
-  const getDownloadApp = async () => {
-    const download = await desktopService.getDownloadAppUrl();
-    return download;
-  };
-
-  const downloadDesktopApp = () => {
-    getDownloadApp()
-      .then((download) => {
-        window.open(download, '_self');
-      })
-      .catch(() => {
-        notificationsService.show({
-          text: 'Something went wrong while downloading the desktop app',
-          type: ToastType.Error,
-        });
-      });
-  };
 
   const logout = () => {
     dispatch(userThunks.logoutThunk());
@@ -147,9 +128,7 @@ export default function ShareLayout(props: Readonly<ShareLayoutProps>): JSX.Elem
                       <Menu.Item>
                         {({ active }) => (
                           <button
-                            onClick={() => {
-                              downloadDesktopApp();
-                            }}
+                            onClick={() => desktopService.openDownloadAppUrl(translate)}
                             className={`${
                               active && 'bg-gray-1 dark:bg-gray-10'
                             } group flex w-full items-center rounded-md px-4 py-2 font-medium`}
