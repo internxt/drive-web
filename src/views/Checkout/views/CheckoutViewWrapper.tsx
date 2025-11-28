@@ -37,6 +37,7 @@ import { useUserPayment } from 'views/Checkout/hooks/useUserPayment';
 import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/components/CryptoPaymentDialog';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'utils/generateCaptchaToken';
+import gaService from 'app/analytics/ga.service';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -325,6 +326,18 @@ const CheckoutViewWrapper = () => {
     }
 
     setIsCheckoutReadyToRender(true);
+
+    gaService.trackBeginCheckout({
+      planId: price.price.id,
+      planPrice: price.price.decimalAmount,
+      currency: price.price.currency ?? 'eur',
+      planType: price.price.type === 'business' ? 'business' : 'individual',
+      interval: price.price.interval,
+      storage: price.price.bytes.toString(),
+      promoCodeId: promotionCode ?? undefined,
+      couponCodeData: couponCodeData,
+      seats: price.price.type === 'business' ? seatsForBusinessSubscription : 1,
+    });
   };
 
   const onChangePlanClicked = async (priceId: string) => {
