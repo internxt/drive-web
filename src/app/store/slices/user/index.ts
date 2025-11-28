@@ -19,7 +19,8 @@ import { workspacesActions } from '../../../store/slices/workspaces/workspacesSt
 import errorService from 'services/error.service';
 import { isTokenExpired } from '../../utils';
 import { refreshAvatar } from 'utils/avatarUtils';
-import { ProductService, UserTierFeatures } from 'views/Checkout/services';
+import { ProductService } from 'views/Checkout/services';
+import { UserTierFeatures } from 'views/Checkout/services/products.service';
 import { t } from 'i18next';
 
 export interface UserState {

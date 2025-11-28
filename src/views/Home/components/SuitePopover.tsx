@@ -9,7 +9,7 @@ import {
   Sparkle,
 } from '@phosphor-icons/react';
 import { SuiteLauncher, SuiteLauncherProps } from '@internxt/ui';
-import desktopService from 'app/core/services/desktop.service';
+import desktopService from 'services/desktop.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { Service } from '@internxt/sdk/dist/drive/payments/types/tiers';
 import { uiActions } from 'app/store/slices/ui';
