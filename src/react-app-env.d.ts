@@ -53,8 +53,17 @@ interface Window {
     }>;
   }): Promise<FileSystemFileHandle>;
   dataLayer: Record<string, any>[];
+  opera?: {
+    version?: () => string;
+  };
 }
 
 interface Navigator {
   brave?: { isBrave: () => Promise<boolean> };
+
+  userAgentData?: {
+    platform: string;
+    mobile?: boolean;
+    brands?: Array<{ brand: string; version: string }>;
+  };
 }

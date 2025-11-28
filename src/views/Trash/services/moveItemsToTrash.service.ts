@@ -15,7 +15,7 @@ const MAX_CONCURRENT_REQUESTS = 3;
 const isFolder = (item: DriveItemData) => item?.type === 'folder' || item?.isFolder;
 
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () => void): Promise<void> => {
-  const items: Array<{ uuid: string; type: 'file' | 'folder'; id: null }> = itemsToTrash.map((item) => {
+  const items: Array<{ uuid: string; type: 'file' | 'folder' }> = itemsToTrash.map((item) => {
     return {
       uuid: item.uuid,
       type: isFolder(item) ? 'folder' : 'file',

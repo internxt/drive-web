@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { DriveItemData, DriveItemDetails, FileInfoMenuItem } from 'app/drive/types';
+import { DriveItemData, DriveItemDetails, FileInfoMenuItem, UpgradePlanDialogInfo } from 'app/drive/types';
 import { PreviewFileItem } from '../../../share/types';
 
 interface UISliceState {
@@ -16,6 +16,8 @@ interface UISliceState {
   isEditFolderNameDialog: boolean;
   isPreferencesDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
+  isUpgradePlanDialogOpen: boolean;
+  currentUpgradePlanDialogInfo: UpgradePlanDialogInfo | null;
   isSharedFolderTooBigDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
   isShareItemDialogOpenInPreviewView: boolean;
@@ -46,6 +48,8 @@ const initialState: UISliceState = {
   isEditFolderNameDialog: false,
   isPreferencesDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
+  isUpgradePlanDialogOpen: false,
+  currentUpgradePlanDialogInfo: null,
   isSharedFolderTooBigDialogOpen: false,
   isShareItemDialogOpen: false,
   isShareItemDialogOpenInPreviewView: false,
@@ -104,6 +108,12 @@ export const uiSlice = createSlice({
     },
     setIsReachedPlanLimitDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isReachedPlanLimitDialogOpen = action.payload;
+    },
+    setIsUpgradePlanDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isUpgradePlanDialogOpen = action.payload;
+    },
+    setCurrentUpgradePlanDialogInfo: (state: UISliceState, action: PayloadAction<UpgradePlanDialogInfo | null>) => {
+      state.currentUpgradePlanDialogInfo = action.payload;
     },
     setIsSharedFolderTooBigDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isSharedFolderTooBigDialogOpen = action.payload;
@@ -166,6 +176,8 @@ export const {
   setIsPreferencesDialogOpen,
   setIsFileLoggerOpen,
   setIsReachedPlanLimitDialogOpen,
+  setIsUpgradePlanDialogOpen,
+  setCurrentUpgradePlanDialogInfo,
   setIsSharedFolderTooBigDialogOpen,
   setIsShareItemDialogOpen,
   setIsDeleteBackupDialog,

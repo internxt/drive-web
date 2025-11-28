@@ -100,6 +100,11 @@ export interface DriveItemPatch {
   shares?: ShareLink[];
 }
 
+export interface UpgradePlanDialogInfo {
+  title: string;
+  description: string;
+}
+
 export interface FileInfoMenuItem {
   id: string;
   icon: React.FunctionComponent<SVGProps<SVGSVGElement>>;

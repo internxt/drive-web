@@ -6,8 +6,9 @@ interface UpgradeDialogProps {
   onCloseDialog: () => void;
   title: string;
   subtitle: string;
-  primaryAction: string;
-  secondaryAction: string;
+  primaryAction: string | JSX.Element;
+  secondaryAction: string | JSX.Element;
+  maxWidth?: 'sm' | 'md' | 'lg';
 }
 
 export const UpgradeDialog = ({
@@ -18,6 +19,7 @@ export const UpgradeDialog = ({
   secondaryAction,
   onAccept,
   onCloseDialog,
+  maxWidth,
 }: UpgradeDialogProps) => (
   <Dialog
     isOpen={isDialogOpen}
@@ -29,5 +31,6 @@ export const UpgradeDialog = ({
     primaryAction={primaryAction}
     secondaryAction={secondaryAction}
     primaryActionColor="primary"
+    maxWidth={maxWidth}
   />
 );

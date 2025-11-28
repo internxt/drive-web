@@ -993,6 +993,35 @@
     "restrictedPasswordModal": {
       "title": "Passwortgeschütztes Teilen freischalten",
       "subtitle": "Fügen Sie eine zusätzliche Sicherheitsebene hinzu, indem Sie Ihre geteilten Links mit einem Passwort schützen."
+    },
+    "upgradePlanDialog": {
+      "upgrade": "Upgrade",
+      "cancel": "Abbrechen",
+      "soonBadge": "Bald",
+      "default": {
+        "title": "Jetzt upgraden",
+        "description": "Dein aktueller Tarif erlaubt diese Funktion nicht. Upgrade jetzt und schalte alle Vorteile von Internxt frei."
+      },
+      "meet": {
+        "title": "Meet freischalten",
+        "description": "Upgrade jetzt, um vollständig verschlüsselte Videoanrufe zu hosten und beizutreten — privat, sicher und unbegrenzt."
+      },
+      "mail": {
+        "title": "Mail freischalten",
+        "description": "Schalte deinen privaten E-Mail-Dienst mit Ende-zu-Ende-Verschlüsselung frei."
+      },
+      "vpn": {
+        "title": "VPN freischalten",
+        "description": "Upgrade, um deinen Datenverkehr mit privatem, verschlüsseltem Browsing zu schützen."
+      },
+      "antivirus": {
+        "title": "Antivirus freischalten",
+        "description": "Upgrade, um Malware in Echtzeit zu scannen, zu erkennen und zu blockieren."
+      },
+      "cleaner": {
+        "title": "Cleaner freischalten",
+        "description": "Upgrade jetzt, um deine Dateien zu optimieren und Speicherplatz freizugeben."
+      }
     }
   },
   "form": {
@@ -1857,62 +1886,62 @@
           "free": "Free"
         },
         "planFeaturesList": {
-            "title": "Plandetails",
-            "comingSoon": "Demnächst verfügbar",
-            "storage": " verschlüsselter Speicher",
-            "1TB": {
-                "title": "Essential (Basis)",
-                "features": [
-                    "1TB verschlüsselter Speicher",
-                    "Post-Quanten-Verschlüsselung",
-                    "Zero-Knowledge-Verschlüsselung",
-                    "Zwei-Faktor-Authentifizierung",
-                    "Computer-Backup",
-                    "Passwortgeschütztes Teilen von Dateien",
-                    "Verschlüsseltes VPN",
-                    "Antivirus"
-                ],
-                "comingSoonFeatures": ["Dateiversionierung"]
-            },
-            "3TB": {
-                "title": "Premium",
-                "features": [
-                    "3TB verschlüsselter Speicher",
-                    "Post-Quanten-Verschlüsselung",
-                    "Zero-Knowledge-Verschlüsselung",
-                    "Zwei-Faktor-Authentifizierung",
-                    "Computer-Backup",
-                    "Passwortgeschütztes Teilen von Dateien",
-                    "Einladen, teilen & zusammenarbeiten",
-                    "Verschlüsseltes VPN",
-                    "Antivirus",
-                    "Cleaner (Bereinigungstool)"
-                ],
-                "comingSoonFeatures": ["Dateiversionierung"]
-            },
-            "5TB": {
-                "title": "Ultimate (Ultimativ)",
-                "features": [
-                    "5TB verschlüsselter Speicher",
-                    "Post-Quanten-Verschlüsselung",
-                    "Zero-Knowledge-Verschlüsselung",
-                    "Zwei-Faktor-Authentifizierung",
-                    "Computer-Backup",
-                    "Passwortgeschütztes Teilen von Dateien",
-                    "Einladen, teilen & zusammenarbeiten",
-                    "CLI- & WebDav-Unterstützung",
-                    "NAS- & Rclone-Unterstützung",
-                    "Verschlüsseltes VPN",
-                    "Antivirus",
-                    "Cleaner (Bereinigungstool)",
-                    "Meet (Videokonferenz)"
-                ],
-                "comingSoonFeatures": ["Dateiversionierung", "Mail"]
-            },
-            "1GB": {
-                "title": "Kostenlos",
-                "features": ["1GB verschlüsselter Speicher", "Verschlüsseltes VPN"]
-            }
+          "title": "Plandetails",
+          "comingSoon": "Demnächst verfügbar",
+          "storage": " verschlüsselter Speicher",
+          "1TB": {
+            "title": "Essential (Basis)",
+            "features": [
+              "1TB verschlüsselter Speicher",
+              "Post-Quanten-Verschlüsselung",
+              "Zero-Knowledge-Verschlüsselung",
+              "Zwei-Faktor-Authentifizierung",
+              "Computer-Backup",
+              "Passwortgeschütztes Teilen von Dateien",
+              "Verschlüsseltes VPN",
+              "Antivirus"
+            ],
+            "comingSoonFeatures": ["Dateiversionierung"]
+          },
+          "3TB": {
+            "title": "Premium",
+            "features": [
+              "3TB verschlüsselter Speicher",
+              "Post-Quanten-Verschlüsselung",
+              "Zero-Knowledge-Verschlüsselung",
+              "Zwei-Faktor-Authentifizierung",
+              "Computer-Backup",
+              "Passwortgeschütztes Teilen von Dateien",
+              "Einladen, teilen & zusammenarbeiten",
+              "Verschlüsseltes VPN",
+              "Antivirus",
+              "Cleaner (Bereinigungstool)"
+            ],
+            "comingSoonFeatures": ["Dateiversionierung"]
+          },
+          "5TB": {
+            "title": "Ultimate (Ultimativ)",
+            "features": [
+              "5TB verschlüsselter Speicher",
+              "Post-Quanten-Verschlüsselung",
+              "Zero-Knowledge-Verschlüsselung",
+              "Zwei-Faktor-Authentifizierung",
+              "Computer-Backup",
+              "Passwortgeschütztes Teilen von Dateien",
+              "Einladen, teilen & zusammenarbeiten",
+              "CLI- & WebDav-Unterstützung",
+              "NAS- & Rclone-Unterstützung",
+              "Verschlüsseltes VPN",
+              "Antivirus",
+              "Cleaner (Bereinigungstool)",
+              "Meet (Videokonferenz)"
+            ],
+            "comingSoonFeatures": ["Dateiversionierung", "Mail"]
+          },
+          "1GB": {
+            "title": "Kostenlos",
+            "features": ["1GB verschlüsselter Speicher", "Verschlüsseltes VPN"]
+          }
         },
         "businessPlanFeaturesList": {
           "title": "Plandetails",

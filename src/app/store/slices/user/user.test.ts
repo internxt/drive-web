@@ -12,7 +12,7 @@ _vi.mock('app/drive/services/database.service', () => ({
 }));
 
 import { refreshUserThunk, refreshAvatarThunk, userActions } from 'app/store/slices/user';
-import {localStorageService, userService, errorService} from 'services';
+import { localStorageService, userService, errorService } from 'services';
 
 describe('user thunks', () => {
   const baseUser: Partial<UserSettings> = {
