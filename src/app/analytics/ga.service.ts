@@ -19,7 +19,7 @@ function track(eventName: string, object: Record<string, any>): void {
   try {
     globalThis.window.gtag('event', eventName, object);
   } catch (error) {
-    // Silently fail if gtag is not available
+    console.error('Error tracking event:', eventName, error);
   }
 }
 
@@ -58,8 +58,6 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
   const totalAmount = Number.parseFloat(formatPrice(planAmountPerUser * seats));
   const discount = calculateDiscountAmount(planPrice, couponCodeData);
 
-  console.log(planAmountPerUserString, planAmountPerUser, totalAmount, discount);
-
   try {
     globalThis.window.gtag('event', 'begin_checkout', {
       currency: currency ?? 'EUR',
@@ -80,7 +78,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
       ],
     });
   } catch (error) {
-    // Silently fail if gtag is not available
+    console.error('Error tracking begin_checkout event:', error);
   }
 }
 
