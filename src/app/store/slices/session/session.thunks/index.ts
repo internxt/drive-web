@@ -18,9 +18,6 @@ const changeWorkspaceThunk = createAsyncThunk<void, ChangeWorkspacePayload | voi
   async (payload: ChangeWorkspacePayload | void, { dispatch, getState }) => {
     const state = getState();
     const updateUrl = (payload as ChangeWorkspacePayload)?.updateUrl ?? true;
-    // const isTeam: boolean = sessionSelectors.isTeam(state);
-    // const newWorkspace = isTeam ? Workspace.Individuals : Workspace.Business;
-    // dispatch(planThunks.initializeThunk());
 
     const rootFolderId = storageSelectors.rootFolderId(state);
     const workspaceid = state.workspaces.selectedWorkspace?.workspace.id;
