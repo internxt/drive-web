@@ -17,15 +17,15 @@ interface TrackBeginCheckoutParams {
 
 const GA_ID = envService.getVariable('gaId');
 const GA_TAG = envService.getVariable('gaConversionTag');
-const SEND_TO = [GA_ID, GA_TAG].filter(Boolean) as string[];
+const SEND_TO = [GA_ID, GA_TAG].filter(Boolean);
 
-if (typeof window !== 'undefined' && !window.dataLayer) {
-  window.dataLayer = [];
+if (typeof globalThis.window !== 'undefined' && !globalThis.window.dataLayer) {
+  globalThis.window.dataLayer = [];
 }
 
 function track(eventName: string, object: Record<string, any>): void {
   try {
-    window.dataLayer.push({
+    globalThis.window.dataLayer.push({
       event: eventName,
       ...object,
     });
@@ -70,7 +70,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
   const discount = calculateDiscountAmount(planPrice, couponCodeData);
 
   try {
-    window.dataLayer.push({
+    globalThis.window.dataLayer.push({
       event: 'begin_checkout',
       send_to: SEND_TO,
       ecommerce: {
