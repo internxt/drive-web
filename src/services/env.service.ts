@@ -48,6 +48,7 @@ const variableList = {
   dontUseProxy: 'REACT_APP_DONT_USE_PROXY',
   notifications: 'REACT_APP_NOTIFICATIONS_URL',
   gaId: 'REACT_APP_GA_ID',
+  gaConversionTag: 'REACT_APP_GA_CONVERSION_TAG',
   gaBlogId: 'REACT_APP_GA_BLOG_ID',
   errorReportingKey: 'REACT_APP_ANALYTICS_ERROR_REPORTING_WRITE_KEY',
   cdpDataPlane: 'REACT_APP_CDP_DATA_PLANE',

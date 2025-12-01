@@ -2,7 +2,7 @@ import { bytesToString } from 'app/drive/services/size.service';
 import { formatPrice } from 'views/Checkout/utils/formatPrice';
 import { getProductAmount } from 'views/Checkout/utils/getProductAmount';
 import { CouponCodeData } from 'views/Checkout/types';
-
+import envService from 'services/env.service';
 interface TrackBeginCheckoutParams {
   planId: string;
   planPrice: number;
@@ -15,9 +15,20 @@ interface TrackBeginCheckoutParams {
   seats?: number;
 }
 
+const GA_ID = envService.getVariable('gaId');
+const GA_TAG = envService.getVariable('gaConversionTag');
+const SEND_TO = [GA_ID, GA_TAG].filter(Boolean) as string[];
+
+if (typeof window !== 'undefined' && !window.dataLayer) {
+  window.dataLayer = [];
+}
+
 function track(eventName: string, object: Record<string, any>): void {
   try {
-    globalThis.window.gtag('event', eventName, object);
+    window.dataLayer.push({
+      event: eventName,
+      ...object,
+    });
   } catch (error) {
     console.error('Error tracking event:', eventName, error);
   }
@@ -59,23 +70,26 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
   const discount = calculateDiscountAmount(planPrice, couponCodeData);
 
   try {
-    globalThis.window.gtag('event', 'begin_checkout', {
-      currency: currency ?? 'EUR',
-      value: totalAmount,
-      ...(promoCodeId && { coupon: promoCodeId }),
-      items: [
-        {
-          item_id: planId,
-          item_name: `${formattedStorage} ${capitalizeFirstLetter(interval)} Plan`,
-          item_category: getPlanCategory(planType),
-          item_variant: interval,
-          price: Number.parseFloat(formatPrice(planPrice)),
-          quantity: seats,
-          item_brand: 'Internxt',
-          ...(promoCodeId && { coupon: promoCodeId }),
-          ...(discount > 0 && { discount }),
-        },
-      ],
+    window.dataLayer.push({
+      event: 'begin_checkout',
+      send_to: SEND_TO,
+      ecommerce: {
+        currency: currency ?? 'EUR',
+        value: totalAmount,
+        items: [
+          {
+            item_id: planId,
+            item_name: `${formattedStorage} ${capitalizeFirstLetter(interval)} Plan`,
+            item_category: getPlanCategory(planType),
+            item_variant: interval,
+            price: Number.parseFloat(formatPrice(planPrice)),
+            quantity: seats,
+            item_brand: 'Internxt',
+            ...(promoCodeId && { coupon: promoCodeId }),
+            ...(discount > 0 && { discount }),
+          },
+        ],
+      },
     });
   } catch (error) {
     console.error('Error tracking begin_checkout event:', error);
