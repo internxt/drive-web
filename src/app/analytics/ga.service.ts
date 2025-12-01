@@ -19,7 +19,7 @@ const GA_ID = envService.getVariable('gaId');
 const GA_TAG = envService.getVariable('gaConversionTag');
 const SEND_TO = [GA_ID, GA_TAG].filter(Boolean);
 
-if (typeof globalThis.window !== 'undefined' && !globalThis.window.dataLayer) {
+if (globalThis.window !== undefined && !globalThis.window.dataLayer) {
   globalThis.window.dataLayer = [];
 }
 
