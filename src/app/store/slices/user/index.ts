@@ -81,7 +81,7 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
         dispatch(userActions.setToken(newToken));
       }
     } catch (err) {
-      errorService.reportError(err, { extra: { thunk: 'refreshUser' } });
+      errorService.reportError(err);
     }
   },
 );
@@ -122,7 +122,7 @@ export const refreshAvatarThunk = createAsyncThunk<void, { forceRefresh?: boolea
         );
       }
     } catch (err) {
-      errorService.reportError(err, { extra: { thunk: 'refreshAvatarUser' } });
+      errorService.reportError(err);
     }
   },
 );

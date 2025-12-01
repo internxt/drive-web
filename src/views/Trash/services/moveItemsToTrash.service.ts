@@ -19,7 +19,6 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
     return {
       uuid: item.uuid,
       type: isFolder(item) ? 'folder' : 'file',
-      id: null,
     };
   });
   let movingItemsToastId;
@@ -101,11 +100,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
       type: ToastType.Error,
     });
 
-    errorService.reportError(error, {
-      extra: {
-        items,
-      },
-    });
+    errorService.reportError(error);
   }
 };
 

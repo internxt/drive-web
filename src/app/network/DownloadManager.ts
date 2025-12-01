@@ -238,30 +238,6 @@ export class DownloadManager {
   };
 
   /**
-   * Reports an error with contextual information about the download items
-   * Adds different context based on whether it's a single file, folder, or multiple items
-   * @param err - The error to report
-   * @param items - The download items that were being processed when the error occurred
-   */
-  private static readonly reportErrorWithContext = (err: unknown, items: DownloadItemType[]) => {
-    if (items.length > 1) {
-      errorService.reportError(err);
-      return;
-    }
-
-    const item = items[0];
-    if (item.isFolder) {
-      errorService.reportError(err, {
-        extra: { folder: item.name, bucket: item.bucket, folderParentId: item.parentId },
-      });
-    } else {
-      errorService.reportError(err, {
-        extra: { fileName: item.name, bucket: item.bucket, fileSize: item.size, fileType: item.type },
-      });
-    }
-  };
-
-  /**
    * Shows an error notification to the user if error display is enabled
    * Customizes the error message based on the type of download (file vs folder)
    * @param err - The error that occurred
@@ -292,7 +268,7 @@ export class DownloadManager {
     downloadTask: DownloadTask,
     updateTaskWithErrorStatus: boolean,
   ) => {
-    this.reportErrorWithContext(err, downloadTask.items);
+    errorService.reportError(err);
 
     if (updateTaskWithErrorStatus) {
       tasksService.updateTask({
