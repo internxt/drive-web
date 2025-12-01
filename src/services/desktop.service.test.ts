@@ -47,7 +47,7 @@ describe('desktopService', () => {
     });
 
     it('should return undefined for unrecognized OS', async () => {
-      expect(await testGetDownloadUrl('Unknown', { platforms: {} })).toBeUndefined();
+      expect(await testGetDownloadUrl('Unknown', { platforms: {} })).toBeNull();
     });
   });
 });

@@ -32,15 +32,15 @@ describe('operating-system service', () => {
 
       const result = operatingSystemService.getOperatingSystem();
 
-      expect(result).toBe('WindowsOS');
+      expect(result).toBe('Windows');
     });
 
-    it('should detect MacOS', () => {
+    it('should detect macOS', () => {
       mockNavigatorWithAppVersion('5.0 (Macintosh; Intel Mac OS X 10_15_7)');
 
       const result = operatingSystemService.getOperatingSystem();
 
-      expect(result).toBe('MacOS');
+      expect(result).toBe('macOS');
     });
 
     it('should detect UNIX OS when X11 is present without Linux keyword', () => {
@@ -48,7 +48,7 @@ describe('operating-system service', () => {
 
       const result = operatingSystemService.getOperatingSystem();
 
-      expect(result).toBe('UNIXOS');
+      expect(result).toBe('UNIX');
     });
 
     it('should detect Linux OS', () => {
@@ -56,15 +56,15 @@ describe('operating-system service', () => {
 
       const result = operatingSystemService.getOperatingSystem();
 
-      expect(result).toBe('LinuxOS');
+      expect(result).toBe('Linux');
     });
 
-    it('should return "Not known" for unrecognized OS', () => {
+    it('should return "Unknown" for unrecognized OS', () => {
       mockNavigatorWithAppVersion('5.0 (Unknown OS)');
 
       const result = operatingSystemService.getOperatingSystem();
 
-      expect(result).toBe('Not known');
+      expect(result).toBe('Unknown');
     });
 
     it('should detect Linux OS when both X11 and Linux are present', () => {
@@ -72,7 +72,7 @@ describe('operating-system service', () => {
 
       const result = operatingSystemService.getOperatingSystem();
 
-      expect(result).toBe('LinuxOS');
+      expect(result).toBe('Linux');
     });
   });
 });
