@@ -30,9 +30,7 @@ describe('generateCaptchaToken', () => {
   });
 
   it('should return different tokens from different executions', async () => {
-    vi.mocked(globalThis.grecaptcha.execute)
-      .mockResolvedValueOnce('token-1')
-      .mockResolvedValueOnce('token-2');
+    vi.mocked(globalThis.grecaptcha.execute).mockResolvedValueOnce('token-1').mockResolvedValueOnce('token-2');
 
     const { generateCaptchaToken } = await import('./generateCaptchaToken');
     const token1 = await generateCaptchaToken();

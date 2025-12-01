@@ -158,10 +158,6 @@ describe('DeleteItems', () => {
       text: 'error.errorDeletingFromTrash',
       type: 'error',
     });
-    expect(errorService.reportError).toHaveBeenCalledWith(mockError, {
-      extra: {
-        items: [{ uuid: 'file-1', type: 'file' }],
-      },
-    });
+    expect(errorService.reportError).toHaveBeenCalledWith(mockError);
   });
 });
