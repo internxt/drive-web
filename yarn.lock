@@ -1879,13 +1879,12 @@
   resolved "https://registry.yarnpkg.com/@inquirer/type/-/type-3.0.1.tgz#619ce9f65c3e114d8e39c41822bed3440d20b478"
   integrity sha512-+ksJMIy92sOAiAccGpcKZUc3bYO07cADnscIxHBknEm3uNts3movSmBofc1908BNy5edKscxYeAdaX1NXkHS6A==
 
-"@internxt/css-config@1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@internxt/css-config/-/css-config-1.0.3.tgz#16ca5d1559218173aa1befc78d6c0fe66481f309"
-  integrity sha512-Yc8gmShT6OJ537uE0IywUHVHzbGxeFtYcYKwcyUT8teoXZZcdZlcmqHahwNitST8Isc+cqeJ5HuWqtitsW3vGg==
+"@internxt/css-config@1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@internxt/css-config/-/css-config-1.0.5.tgz#ac320cb7c06c90a41b105e010040227a8747f54c"
+  integrity sha512-xA7sG+/OQiTq8Xf4KvBbazNwKsqThj8cBMQc1DslzjvhZl1H9BVXghyZGFIHTQ5rDRzE0GuZFu+IqO69heWyyQ==
   dependencies:
     tailwindcss "^3.4.14"
-    typescript "^5.6.3"
 
 "@internxt/eslint-config-internxt@1.0.10":
   version "1.0.10"
@@ -1915,12 +1914,12 @@
     axios "1.13.2"
     uuid "11.1.0"
 
-"@internxt/ui@0.0.26":
-  version "0.0.26"
-  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.0.26.tgz#49b34fe793f09308e36ce5104bf8d166ce2d5cf6"
-  integrity sha512-tOblvMTQutzCZd7wDc8Q4bYvh5eCG7nH7d3pKbsl+R2zyuA+ulSqJmZ9xl8Jq7mvKACeX6MBlpM438iE9KnO9w==
+"@internxt/ui@0.0.27":
+  version "0.0.27"
+  resolved "https://registry.yarnpkg.com/@internxt/ui/-/ui-0.0.27.tgz#d08924ed9dc96b5e7bc062fc9fc7e0ad4c571e8e"
+  integrity sha512-ieZaTvswfrHi0l3OmN/EvU8FDaLGGZT1rAfKwtu/NyRdgDlvUE8RZXbjQ0A6mukmBN2eDH9ws6CvD4fwQQH9cg==
   dependencies:
-    "@internxt/css-config" "1.0.3"
+    "@internxt/css-config" "1.0.5"
     "@phosphor-icons/react" "^2.1.7"
     "@radix-ui/react-switch" "^1.1.3"
     "@radix-ui/themes" "^3.2.0"
@@ -9390,11 +9389,6 @@ typescript@^4.4.2:
   version "4.9.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
   integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
-
-typescript@^5.6.3:
-  version "5.8.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.8.3.tgz#92f8a3e5e3cf497356f4178c34cd65a7f5e8440e"
-  integrity sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==
 
 ua-parser-js@^0.7.24:
   version "0.7.36"
