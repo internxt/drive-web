@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.608",
+  "version": "v1.0.610",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
@@ -13,8 +13,6 @@
     "@phosphor-icons/react": "^2.1.7",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.6.0",
-    "@sentry/react": "^8.55.0",
-    "@sentry/tracing": "^7.120.3",
     "@stripe/react-stripe-js": "^2.7.1",
     "@stripe/stripe-js": "^3.5.0",
     "@typeform/embed-react": "^1.19.0",

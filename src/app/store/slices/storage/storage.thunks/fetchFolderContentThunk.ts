@@ -113,7 +113,7 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
         }
       }
     } catch (error) {
-      errorService.reportError(error, { extra: { folderId, foldersOffset, filesOffset } });
+      errorService.reportError(error);
       const castedError = errorService.castError(error);
       throw rejectWithValue(castedError);
     }
