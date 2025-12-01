@@ -79,7 +79,9 @@ const DeviceList = (props: Props): JSX.Element => {
                 icon: DownloadSimple,
                 style: 'plain',
                 text: translate('backups.empty.downloadApp'),
-                onClick: () => desktopService.openDownloadAppUrl(translate),
+                onClick: () => {
+                  desktopService.openDownloadAppUrl(translate);
+                },
               }}
             />
           }

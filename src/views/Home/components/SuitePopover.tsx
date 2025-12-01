@@ -47,7 +47,7 @@ export default function SuitePopover({ className = '' }: Readonly<SuitePopoverPr
       icon: <FolderSimple />,
       title: 'Drive',
       onClick: () => {
-        window.open('https://drive.internxt.com', '_self');
+        window.open('https://drive.internxt.com', '_self', 'noopener');
       },
       isMain: true,
     },
@@ -57,7 +57,7 @@ export default function SuitePopover({ className = '' }: Readonly<SuitePopoverPr
       onClick: () =>
         openSuite({
           enabled: userFeatures?.[Service.Meet].enabled ?? false,
-          onOpenSuite: () => window.open('https://meet.internxt.com', '_blank'),
+          onOpenSuite: () => window.open('https://meet.internxt.com', '_blank', 'noopener'),
           upgradeTitle: translate('modals.upgradePlanDialog.meet.title'),
           upgradeDescription: translate('modals.upgradePlanDialog.meet.description'),
         }),
@@ -74,7 +74,7 @@ export default function SuitePopover({ className = '' }: Readonly<SuitePopoverPr
       icon: <PaperPlaneTilt />,
       title: 'Send',
       onClick: () => {
-        window.open('https://send.internxt.com', '_blank');
+        window.open('https://send.internxt.com', '_blank', 'noopener');
       },
     },
     {
@@ -87,6 +87,7 @@ export default function SuitePopover({ className = '' }: Readonly<SuitePopoverPr
             window.open(
               'https://chromewebstore.google.com/detail/internxt-vpn-free-encrypt/dpggmcodlahmljkhlmpgpdcffdaoccni',
               '_blank',
+              'noopener',
             ),
           upgradeTitle: translate('modals.upgradePlanDialog.vpn.title'),
           upgradeDescription: translate('modals.upgradePlanDialog.vpn.description'),
@@ -99,7 +100,9 @@ export default function SuitePopover({ className = '' }: Readonly<SuitePopoverPr
       onClick: () =>
         openSuite({
           enabled: userFeatures?.[Service.Antivirus].enabled ?? false,
-          onOpenSuite: () => desktopService.openDownloadAppUrl(translate),
+          onOpenSuite: () => {
+            desktopService.openDownloadAppUrl(translate);
+          },
           upgradeTitle: translate('modals.upgradePlanDialog.antivirus.title'),
           upgradeDescription: translate('modals.upgradePlanDialog.antivirus.description'),
         }),
@@ -111,7 +114,9 @@ export default function SuitePopover({ className = '' }: Readonly<SuitePopoverPr
       onClick: () =>
         openSuite({
           enabled: userFeatures?.[Service.Cleaner].enabled ?? false,
-          onOpenSuite: () => desktopService.openDownloadAppUrl(translate),
+          onOpenSuite: () => {
+            desktopService.openDownloadAppUrl(translate);
+          },
           upgradeTitle: translate('modals.upgradePlanDialog.cleaner.title'),
           upgradeDescription: translate('modals.upgradePlanDialog.cleaner.description'),
         }),

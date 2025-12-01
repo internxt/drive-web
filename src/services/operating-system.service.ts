@@ -18,11 +18,11 @@ function getOperatingSystem(): OperatingSystem {
   if (/android/i.test(ua)) return 'Android';
   if (/iphone|ipad|ipod/i.test(ua)) return 'iOS';
 
-  const appVersion = navigator.appVersion ?? '';
-  if (appVersion.indexOf('Win') !== -1) return 'Windows';
-  if (appVersion.indexOf('Mac') !== -1) return 'macOS';
-  if (appVersion.indexOf('Linux') !== -1) return 'Linux';
-  if (appVersion.indexOf('X11') !== -1) return 'UNIX';
+  const appVersion = navigator.appVersion?.toLowerCase() ?? '';
+  if (appVersion.includes('win')) return 'Windows';
+  if (appVersion.includes('mac')) return 'macOS';
+  if (appVersion.includes('linux')) return 'Linux';
+  if (appVersion.includes('x11')) return 'UNIX';
 
   return 'Unknown';
 }
