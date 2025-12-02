@@ -28,6 +28,16 @@ vi.mock('views/Checkout/utils/getProductAmount', () => ({
   }),
 }));
 
+vi.mock('services/env.service', () => ({
+  default: {
+    getVariable: vi.fn((key) => {
+      if (key === 'gaId') return 'G-TEST_ID';
+      if (key === 'gaConversionTag') return 'AW-TEST_TAG';
+      return undefined;
+    }),
+  },
+}));
+
 const mockCouponCodeData: CouponCodeData = {
   amountOff: undefined,
   codeId: 'promo_123',
@@ -49,6 +59,7 @@ const mockTrackBeginCheckoutParams = {
 
 beforeEach(() => {
   globalThis.window.dataLayer = [];
+  globalThis.window.gtag = vi.fn();
   vi.clearAllMocks();
 });
 
@@ -87,6 +98,24 @@ describe('Testing GA Service', () => {
 
         expect(globalThis.window.dataLayer).toHaveLength(1);
         expect(globalThis.window.dataLayer[0].event).toBe('begin_checkout');
+      });
+
+      it('When trackBeginCheckout is called, then gtag should be called with send_to included', () => {
+        gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
+
+        expect(globalThis.window.gtag).toHaveBeenCalledWith(
+          'event',
+          'begin_checkout',
+          expect.objectContaining({
+            send_to: expect.any(Array),
+          }),
+        );
+      });
+
+      it('When trackBeginCheckout is called, then dataLayer event should NOT include send_to', () => {
+        gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
+        const event = globalThis.window.dataLayer[0] as any;
+        expect(event.send_to).toBeUndefined();
       });
 
       it('When trackBeginCheckout is called with coupon, then the event should include coupon data', () => {
@@ -203,21 +232,12 @@ describe('Testing GA Service', () => {
         expect(event.ecommerce.items[0].item_brand).toBe('Internxt');
       });
 
-      it('When trackBeginCheckout is called, then send_to should be included in the event', () => {
-        gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
-
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.send_to).toBeDefined();
-        expect(Array.isArray(event.send_to)).toBe(true);
-      });
-
       it('When trackBeginCheckout is called with all data, then the complete event structure should match expected format', () => {
         gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
 
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event).toMatchObject({
+        const dlEvent = globalThis.window.dataLayer[0] as any;
+        expect(dlEvent).toMatchObject({
           event: 'begin_checkout',
-          send_to: expect.any(Array),
           ecommerce: {
             currency: 'EUR',
             value: expect.any(Number),
@@ -236,6 +256,19 @@ describe('Testing GA Service', () => {
             ],
           },
         });
+        expect(dlEvent.send_to).toBeUndefined();
+
+        expect(globalThis.window.gtag).toHaveBeenCalledWith(
+          'event',
+          'begin_checkout',
+          expect.objectContaining({
+            send_to: expect.any(Array),
+            value: expect.any(Number),
+            currency: 'EUR',
+            items: expect.any(Array),
+            coupon: 'DISCOUNT20',
+          }),
+        );
       });
     });
 

@@ -3,6 +3,7 @@ import { formatPrice } from 'views/Checkout/utils/formatPrice';
 import { getProductAmount } from 'views/Checkout/utils/getProductAmount';
 import { CouponCodeData } from 'views/Checkout/types';
 import envService from 'services/env.service';
+
 interface TrackBeginCheckoutParams {
   planId: string;
   planPrice: number;
@@ -69,28 +70,37 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
   const totalAmount = Number.parseFloat(formatPrice(planAmountPerUser * seats));
   const discount = calculateDiscountAmount(planPrice, couponCodeData);
 
+  const item = {
+    item_id: planId,
+    item_name: `${formattedStorage} ${capitalizeFirstLetter(interval)} Plan`,
+    item_category: getPlanCategory(planType),
+    item_variant: interval,
+    price: Number.parseFloat(formatPrice(planPrice)),
+    quantity: seats,
+    item_brand: 'Internxt',
+    ...(promoCodeId && { coupon: promoCodeId }),
+    ...(discount > 0 && { discount }),
+  };
+
   try {
     globalThis.window.dataLayer.push({
       event: 'begin_checkout',
-      send_to: SEND_TO,
       ecommerce: {
         currency: currency ?? 'EUR',
         value: totalAmount,
-        items: [
-          {
-            item_id: planId,
-            item_name: `${formattedStorage} ${capitalizeFirstLetter(interval)} Plan`,
-            item_category: getPlanCategory(planType),
-            item_variant: interval,
-            price: Number.parseFloat(formatPrice(planPrice)),
-            quantity: seats,
-            item_brand: 'Internxt',
-            ...(promoCodeId && { coupon: promoCodeId }),
-            ...(discount > 0 && { discount }),
-          },
-        ],
+        items: [item],
       },
     });
+
+    if (globalThis.window.gtag && SEND_TO.length > 0) {
+      globalThis.window.gtag('event', 'begin_checkout', {
+        send_to: SEND_TO,
+        value: totalAmount,
+        currency: currency ?? 'EUR',
+        items: [item],
+        ...(promoCodeId && { coupon: promoCodeId }),
+      });
+    }
   } catch (error) {
     console.error('Error tracking begin_checkout event:', error);
   }
