@@ -10,6 +10,11 @@ import errorService from 'services/error.service';
 import dayjs from 'dayjs';
 import envService from 'services/env.service';
 
+const { mockTrackPurchase, mockTrack } = vi.hoisted(() => ({
+  mockTrackPurchase: vi.fn(),
+  mockTrack: vi.fn(),
+}));
+
 vi.mock('services/local-storage.service', () => ({
   default: {
     get: vi.fn(),
@@ -18,6 +23,14 @@ vi.mock('services/local-storage.service', () => ({
     set: vi.fn(),
   },
 }));
+
+vi.mock('./ga.service', () => ({
+  default: {
+    trackPurchase: mockTrackPurchase,
+    track: mockTrack,
+  },
+}));
+
 vi.mock('uuid', () => ({
   v4: vi.fn(() => mockedUserUuid),
 }));
@@ -35,6 +48,10 @@ vi.mock('services/error.service', () => ({
     castError: vi.fn().mockImplementation((e) => e),
     reportError: vi.fn(),
   },
+}));
+
+vi.mock('./addShoppers.services', () => ({
+  sendAddShoppersConversion: vi.fn(),
 }));
 
 const subId = 'sub_123';
@@ -74,7 +91,11 @@ const planName = bytesToString(product.price.bytes) + product.price.interval;
 beforeEach(() => {
   globalThis.window.gtag = vi.fn();
   vi.clearAllMocks();
-  vi.resetModules();
+
+  mockTrackPurchase.mockReset();
+  mockTrackPurchase.mockResolvedValue(undefined);
+  mockTrack.mockReset();
+
   vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
     if (key === 'impactApiUrl') return mockImpactApiUrl;
     else return 'no mock implementation';
@@ -157,51 +178,30 @@ describe('Testing Impact Service', () => {
   });
 
   describe('Tracking a payment conversion', () => {
-    describe('G Tag event', () => {
-      it('When the gtag event is successfully triggered, then it should have the correct data', async () => {
-        const gTagSpy = vi.spyOn(globalThis.window, 'gtag');
-
+    describe('GA Service delegation', () => {
+      it('When tracking payment conversion, it should delegate to gaService.trackPurchase with correct ID priority', async () => {
         await trackPaymentConversion();
 
-        expect(gTagSpy).toHaveBeenCalled();
-        expect(gTagSpy).toHaveBeenCalledWith('event', 'purchase', {
-          transaction_id: mockedUserUuid,
-          value: parseFloat(expectedAmount),
-          currency: product.price.currency?.toUpperCase() ?? '€',
-          items: [
-            {
-              item_id: product.price.id,
-              item_name: planName,
-              quantity: 1,
-              price: parseFloat(expectedAmount),
-            },
-          ],
+        expect(mockTrackPurchase).toHaveBeenCalledWith({
+          transactionId: paymentIntentId,
+          amount: parseFloat(expectedAmount),
+          currency: product.price.currency?.toUpperCase() ?? 'EUR',
+          planName: planName,
+          planId: product.price.id,
+          coupon: promoCode.codeName,
         });
       });
 
-      it('When an error occurs while triggering the gtag event, then the function should be continue', async () => {
-        const unknownError = new Error('Unknown Error');
-        const gTagSpy = vi.spyOn(globalThis.window, 'gtag').mockImplementation(() => {
+      it('When gaService throws an error, it should be caught and reported', async () => {
+        const unknownError = new Error('GA Error');
+        mockTrackPurchase.mockImplementationOnce(() => {
           throw unknownError;
         });
+        const reportErrorSpy = vi.spyOn(errorService, 'reportError');
 
         await trackPaymentConversion();
 
-        expect(gTagSpy).toHaveBeenCalled();
-        expect(gTagSpy).toHaveBeenCalledWith('event', 'purchase', {
-          transaction_id: mockedUserUuid,
-          value: parseFloat(expectedAmount),
-          currency: product.price.currency?.toUpperCase() ?? '€',
-          items: [
-            {
-              item_id: product.price.id,
-              item_name: planName,
-              quantity: 1,
-              price: parseFloat(expectedAmount),
-            },
-          ],
-        });
-
+        expect(reportErrorSpy).toHaveBeenCalledWith(unknownError);
         await expect(trackPaymentConversion()).resolves.not.toThrow();
       });
     });
@@ -223,6 +223,8 @@ describe('Testing Impact Service', () => {
           properties: {
             impact_value: parseFloat(expectedAmount),
             subscription_id: subId,
+            payment_intent: paymentIntentId,
+            order_promo_code: promoCode.codeName,
           },
           userId: mockedUserUuid,
           type: 'track',
@@ -248,6 +250,8 @@ describe('Testing Impact Service', () => {
           properties: {
             impact_value: parseFloat(expectedAmount),
             subscription_id: subId,
+            payment_intent: paymentIntentId,
+            order_promo_code: promoCode.codeName,
           },
           userId: 'user_uuid',
           type: 'track',

@@ -16,6 +16,15 @@ interface TrackBeginCheckoutParams {
   seats?: number;
 }
 
+interface TrackPurchaseParams {
+  transactionId: string;
+  amount: number;
+  currency: string;
+  planName: string;
+  planId: string;
+  coupon?: string;
+}
+
 const GA_ID = envService.getVariable('gaId');
 const GA_TAG = envService.getVariable('gaConversionTag');
 const SEND_TO = [GA_ID, GA_TAG].filter(Boolean);
@@ -31,7 +40,7 @@ function track(eventName: string, object: Record<string, any>): void {
       ...object,
     });
   } catch (error) {
-    console.error('Error tracking event:', eventName, error);
+    console.error(error);
   }
 }
 
@@ -102,13 +111,57 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
       });
     }
   } catch (error) {
-    console.error('Error tracking begin_checkout event:', error);
+    console.error(error);
+  }
+}
+
+function trackPurchase(params: TrackPurchaseParams): void {
+  const { transactionId, amount, currency, planName, planId, coupon } = params;
+
+  if (!transactionId) {
+    return;
+  }
+
+  const item = {
+    item_id: planId,
+    item_name: planName,
+    price: amount,
+    quantity: 1,
+    item_brand: 'Internxt',
+    ...(coupon && { coupon }),
+  };
+
+  try {
+    globalThis.window.dataLayer.push({
+      event: 'purchase',
+      ecommerce: {
+        transaction_id: transactionId,
+        value: amount,
+        currency: currency ?? 'EUR',
+        items: [item],
+        ...(coupon && { coupon }),
+      },
+    });
+
+    if (globalThis.window.gtag && SEND_TO.length > 0) {
+      globalThis.window.gtag('event', 'purchase', {
+        send_to: SEND_TO,
+        transaction_id: transactionId,
+        value: amount,
+        currency: currency ?? 'EUR',
+        items: [item],
+        ...(coupon && { coupon }),
+      });
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 
 const gaService = {
   track,
   trackBeginCheckout,
+  trackPurchase,
 };
 
 export default gaService;

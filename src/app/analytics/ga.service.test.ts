@@ -57,6 +57,15 @@ const mockTrackBeginCheckoutParams = {
   seats: 1,
 };
 
+const mockTrackPurchaseParams = {
+  transactionId: 'tx_123456',
+  amount: 95.9,
+  currency: 'EUR',
+  planName: '2TB Yearly Plan',
+  planId: 'price_123',
+  coupon: 'DISCOUNT20',
+};
+
 beforeEach(() => {
   globalThis.window.dataLayer = [];
   globalThis.window.gtag = vi.fn();
@@ -331,6 +340,90 @@ describe('Testing GA Service', () => {
 
         const event = globalThis.window.dataLayer[0] as any;
         expect(event.ecommerce.items[0].quantity).toBe(1);
+      });
+    });
+  });
+
+  describe('trackPurchase function', () => {
+    describe('Successful tracking', () => {
+      it('When trackPurchase is called with valid data, then dataLayer should receive purchase event with transaction_id', () => {
+        gaService.trackPurchase(mockTrackPurchaseParams);
+
+        expect(globalThis.window.dataLayer).toHaveLength(1);
+        const event = globalThis.window.dataLayer[0] as any;
+
+        expect(event).toMatchObject({
+          event: 'purchase',
+          ecommerce: {
+            transaction_id: mockTrackPurchaseParams.transactionId,
+            currency: mockTrackPurchaseParams.currency,
+            value: mockTrackPurchaseParams.amount,
+            items: [
+              {
+                item_id: mockTrackPurchaseParams.planId,
+                item_name: mockTrackPurchaseParams.planName,
+                price: mockTrackPurchaseParams.amount,
+                quantity: 1,
+                item_brand: 'Internxt',
+                coupon: mockTrackPurchaseParams.coupon,
+              },
+            ],
+          },
+        });
+      });
+
+      it('When trackPurchase is called, then gtag should be called with conversion tag', () => {
+        gaService.trackPurchase(mockTrackPurchaseParams);
+
+        expect(globalThis.window.gtag).toHaveBeenCalledWith(
+          'event',
+          'purchase',
+          expect.objectContaining({
+            send_to: expect.any(Array),
+            transaction_id: mockTrackPurchaseParams.transactionId,
+            value: mockTrackPurchaseParams.amount,
+          }),
+        );
+      });
+
+      it('When trackPurchase is called without coupon, then coupon field should be undefined in items', () => {
+        const paramsNoCoupon = {
+          ...mockTrackPurchaseParams,
+          coupon: undefined,
+        };
+
+        gaService.trackPurchase(paramsNoCoupon);
+
+        const event = globalThis.window.dataLayer[0] as any;
+        expect(event.ecommerce.items[0].coupon).toBeUndefined();
+      });
+    });
+
+    describe('Validation', () => {
+      it('When trackPurchase is called without transactionId, then no event should be pushed', () => {
+        const invalidParams = {
+          ...mockTrackPurchaseParams,
+          transactionId: '',
+        };
+
+        gaService.trackPurchase(invalidParams);
+
+        expect(globalThis.window.dataLayer).toHaveLength(0);
+        expect(globalThis.window.gtag).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('Error handling', () => {
+      it('When dataLayer throws error during trackPurchase, it should be caught silently', () => {
+        const mockDataLayer = {
+          push: vi.fn(() => {
+            throw new Error('DL Error');
+          }),
+        };
+        globalThis.window.dataLayer = mockDataLayer as any;
+
+        expect(() => gaService.trackPurchase(mockTrackPurchaseParams)).not.toThrow();
+        expect(mockDataLayer.push).toHaveBeenCalled();
       });
     });
   });
