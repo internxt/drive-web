@@ -449,7 +449,7 @@ const Navbar = (props: NavbarProps) => {
           }
           primaryAction={
             <span className="flex items-center">
-              {translate('modals.upgradePlanDialog.upgrade')} <ArrowSquareOut className="ml-2" />
+              {translate('modals.upgradePlanDialog.upgrade')} <ArrowSquareOut className="ml-1.5" weight="bold" />
             </span>
           }
           secondaryAction={translate('modals.upgradePlanDialog.cancel')}
