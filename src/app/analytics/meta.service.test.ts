@@ -1,10 +1,10 @@
-import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { trackLead, trackPurchase } from './meta.service';
 import localStorageService from 'services/local-storage.service';
 
 describe('Meta Tracking Service', () => {
   let mockDataLayer: any[];
-  let mockFbq: Mock;
+  let mockFbq: vi.Mock;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -12,8 +12,17 @@ describe('Meta Tracking Service', () => {
     mockDataLayer = [];
     mockFbq = vi.fn();
 
-    globalThis.window.dataLayer = mockDataLayer;
-    globalThis.window.fbq = mockFbq;
+    Object.defineProperty(globalThis, 'dataLayer', {
+      value: mockDataLayer,
+      writable: true,
+      configurable: true,
+    });
+
+    Object.defineProperty(globalThis, 'fbq', {
+      value: mockFbq,
+      writable: true,
+      configurable: true,
+    });
   });
 
   describe('trackLead', () => {
@@ -33,8 +42,25 @@ describe('Meta Tracking Service', () => {
       });
     });
 
+    it('When dataLayer is not available, then no event is pushed', () => {
+      Object.defineProperty(globalThis, 'dataLayer', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
+
+      const initialLength = mockDataLayer.length;
+      trackLead('test@example.com', 'user123');
+
+      expect(mockDataLayer).toHaveLength(initialLength);
+    });
+
     it('When fbq is not available, then no event is pushed', () => {
-      globalThis.window.fbq = undefined;
+      Object.defineProperty(globalThis, 'fbq', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
 
       const initialLength = mockDataLayer.length;
       trackLead('test@example.com', 'user123');
@@ -44,86 +70,54 @@ describe('Meta Tracking Service', () => {
   });
 
   describe('trackPurchase', () => {
-    const mockUser = { email: 'buyer@example.com', uuid: 'user-uuid-123' };
-
     beforeEach(() => {
-      vi.spyOn(localStorageService, 'getUser').mockReturnValue(mockUser as any);
-
-      globalThis.window.fbq = mockFbq;
-    });
-
-    it('When valid subscription data is provided, then purchase event is sent to fbq with subscriptionId', () => {
       vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
         if (key === 'amountPaid') return '99.99';
         if (key === 'currency') return 'USD';
-        if (key === 'productName') return '2TB Plan';
-        if (key === 'priceId') return 'price_123';
-        if (key === 'subscriptionId') return 'sub_123';
         return null;
       });
+    });
 
-      trackPurchase();
+    it('When valid data is provided, then purchase event is pushed to dataLayer', () => {
+      const email = 'buyer@example.com';
+      const userID = 'user456';
 
-      expect(mockFbq).toHaveBeenCalledWith(
-        'track',
-        'Purchase',
-        {
+      trackPurchase(email, userID);
+
+      expect(localStorageService.get).toHaveBeenCalledWith('amountPaid');
+      expect(localStorageService.get).toHaveBeenCalledWith('currency');
+      expect(mockDataLayer).toHaveLength(1);
+      expect(mockDataLayer[0]).toMatchObject({
+        event: 'purchaseSuccessful',
+        ecommerce: {
           value: 99.99,
           currency: 'USD',
-          content_name: '2TB Plan',
-          content_ids: ['price_123'],
-          content_type: 'product',
-          user_email: mockUser.email,
-          external_id: mockUser.uuid,
         },
-        { eventID: 'sub_123' },
-      );
+        userEmail: email,
+        userID: userID,
+      });
     });
 
-    it('When valid lifetime data is provided, then purchase event is sent to fbq with paymentIntentId', () => {
-      vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
-        if (key === 'amountPaid') return '299.99';
-        if (key === 'currency') return 'EUR';
-        if (key === 'paymentIntentId') return 'pi_123';
-        return null;
+    it('When dataLayer is not available, then no event is pushed', () => {
+      Object.defineProperty(globalThis, 'dataLayer', {
+        value: undefined,
+        writable: true,
+        configurable: true,
       });
 
-      trackPurchase();
+      trackPurchase('test@example.com', 'user123');
 
-      expect(mockFbq).toHaveBeenCalledWith(
-        'track',
-        'Purchase',
-        expect.objectContaining({
-          value: 299.99,
-          currency: 'EUR',
-        }),
-        { eventID: 'pi_123' },
-      );
-    });
-
-    it('When no IDs are provided, it generates a fallback UUID', () => {
-      vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
-        if (key === 'amountPaid') return '10.00';
-        if (key === 'currency') return 'EUR';
-        return null;
-      });
-
-      trackPurchase();
-
-      expect(mockFbq).toHaveBeenCalledWith(
-        'track',
-        'Purchase',
-        expect.anything(),
-        expect.objectContaining({
-          eventID: expect.any(String),
-        }),
-      );
+      expect(localStorageService.get).not.toHaveBeenCalled();
     });
 
     it('When fbq is not available, then no event is pushed', () => {
-      globalThis.window.fbq = undefined;
+      Object.defineProperty(globalThis, 'fbq', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
 
-      trackPurchase();
+      trackPurchase('test@example.com', 'user123');
 
       expect(localStorageService.get).not.toHaveBeenCalled();
     });
@@ -135,9 +129,9 @@ describe('Meta Tracking Service', () => {
         return null;
       });
 
-      trackPurchase();
+      trackPurchase('test@example.com', 'user123');
 
-      expect(mockFbq).not.toHaveBeenCalled();
+      expect(mockDataLayer).toHaveLength(0);
     });
 
     it('When currency is not available, then no event is pushed', () => {
@@ -147,9 +141,17 @@ describe('Meta Tracking Service', () => {
         return null;
       });
 
-      trackPurchase();
+      trackPurchase('test@example.com', 'user123');
 
-      expect(mockFbq).not.toHaveBeenCalled();
+      expect(mockDataLayer).toHaveLength(0);
+    });
+
+    it('When both amountPaid and currency are not available, then no event is pushed', () => {
+      vi.spyOn(localStorageService, 'get').mockReturnValue(null);
+
+      trackPurchase('test@example.com', 'user123');
+
+      expect(mockDataLayer).toHaveLength(0);
     });
 
     it('When amountPaid is a string, then it is correctly parsed as float', () => {
@@ -159,16 +161,10 @@ describe('Meta Tracking Service', () => {
         return null;
       });
 
-      trackPurchase();
+      trackPurchase('test@example.com', 'user123');
 
-      expect(mockFbq).toHaveBeenCalledWith(
-        'track',
-        'Purchase',
-        expect.objectContaining({
-          value: 123.45,
-        }),
-        expect.anything(),
-      );
+      expect(mockDataLayer[0].ecommerce.value).toBe(123.45);
+      expect(typeof mockDataLayer[0].ecommerce.value).toBe('number');
     });
   });
 });
