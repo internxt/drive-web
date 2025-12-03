@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { VideoSWBridge, ChunkRequestPayload } from './VideoSWBridge';
+import { VideoSWBridge } from './VideoSWBridge';
 import { downloadChunkFile } from 'app/network/download/v2';
 import { DriveFileData } from 'app/drive/types';
 import { localStorageService } from 'services';
@@ -39,7 +39,7 @@ export default function FileVideoViewer({ file }: { file: DriveFileData }) {
       bridgeRef.current = null;
     }
 
-    const handleChunkRequest = async (request: ChunkRequestPayload): Promise<Uint8Array> => {
+    const handleChunkRequest = async (request: { start: number; end: number }): Promise<Uint8Array> => {
       const { start, end } = request;
       const chunkKey = `${start}-${end}`;
 

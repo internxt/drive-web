@@ -1,16 +1,17 @@
+/* global self Response console URL MessageChannel setTimeout */
+
 const STREAM_PREFIX = '/video-stream/';
 
-let session;
+let session = null;
+
+self.addEventListener('install', (event) => {
+  console.log('[video-sw] Service Worker installed, skipping waiting...');
+  event.waitUntil(self.skipWaiting());
+});
 
 self.addEventListener('activate', (event) => {
   console.log('[video-sw] Service Worker activated, claiming clients...');
   event.waitUntil(self.clients.claim());
-});
-
-// Instalar inmediatamente
-self.addEventListener('install', (event) => {
-  console.log('[video-sw] Service Worker installed, skipping waiting...');
-  event.waitUntil(self.skipWaiting());
 });
 
 // Escuchar mensajes del cliente para registrar sesiones
@@ -19,10 +20,12 @@ self.addEventListener('message', (event) => {
 
   if (eventData.type === 'REGISTER_VIDEO_SESSION') {
     session = {
-      fileId: eventData.fileId,
-      bucketId: eventData.bucketId,
       fileSize: eventData.fileSize,
     };
+  }
+
+  if (eventData.type === 'UNREGISTER_VIDEO_SESSION') {
+    session = null;
   }
 });
 
@@ -37,13 +40,12 @@ self.addEventListener('fetch', (event) => {
 });
 
 async function handleVideoStream(request) {
-  const url = new URL(request.url);
-
   if (!session) {
     return new Response('Session not found', { status: 404 });
   }
 
-  const { fileId, bucketId, fileSize } = session;
+  const { fileSize } = session;
+  console.log(`[SW] FILE SIZE: ${fileSize}`);
   const rangeHeader = request.headers.get('Range');
 
   if (!rangeHeader) {
@@ -91,8 +93,6 @@ async function handleVideoStream(request) {
 
   try {
     const chunk = await requestChunkFromClient({
-      fileId,
-      bucketId,
       start,
       end,
       fileSize,

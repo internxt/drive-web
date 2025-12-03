@@ -1,5 +1,3 @@
-import { wait } from 'utils';
-
 export interface VideoStreamSession {
   fileId: string;
   bucketId: string;
@@ -7,8 +5,6 @@ export interface VideoStreamSession {
 }
 
 export interface ChunkRequestPayload {
-  fileId: string;
-  bucketId: string;
   start: number;
   end: number;
   fileSize: number;
@@ -27,31 +23,13 @@ export class VideoSWBridge {
   async init() {
     console.log('[VideoSWBridge] Registering Service Worker...');
 
-    // Registrar el Service Worker
-    const registration = await navigator.serviceWorker.register('/video-streaming.js', {
-      scope: '/',
-    });
-
-    console.log('[VideoSWBridge] Service Worker registered:', registration);
-
-    // Esperar a que el Service Worker esté activo y ready
-    await navigator.serviceWorker.ready;
     console.log('[VideoSWBridge] Service Worker ready');
 
-    // Dar un momento para que el SW tome control (gracias a skipWaiting y claim)
-    await wait(200);
-
-    console.log('[VideoSWBridge] Controller available:', navigator.serviceWorker.controller);
-
-    // Configurar el listener de mensajes del Service Worker
     this.setupMessageListener();
 
-    // Registrar la sesión en el Service Worker
     this.sendMessage({
       type: 'REGISTER_VIDEO_SESSION',
       sessionId: this.sessionId,
-      fileId: this.session.fileId,
-      bucketId: this.session.bucketId,
       fileSize: this.session.fileSize,
     });
 
@@ -60,6 +38,7 @@ export class VideoSWBridge {
 
   private setupMessageListener() {
     this.messageHandler = async (event: MessageEvent) => {
+      console.log('MESSAGE');
       if (event.data.type !== 'CHUNK_REQUEST') return;
 
       const request = event.data.payload as ChunkRequestPayload;
@@ -104,8 +83,10 @@ export class VideoSWBridge {
   }
 
   destroy() {
-    // Remover el listener de mensajes
     if (this.messageHandler) {
+      this.sendMessage({
+        type: 'UNREGISTER_VIDEO_SESSION',
+      });
       navigator.serviceWorker.removeEventListener('message', this.messageHandler);
       this.messageHandler = null;
     }
