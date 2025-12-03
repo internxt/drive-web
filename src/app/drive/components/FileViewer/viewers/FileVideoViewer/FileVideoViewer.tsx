@@ -1,5 +1,6 @@
+/* eslint-disable no-constant-condition */
 import { useEffect, useRef } from 'react';
-import { VideoSWBridge } from './VideoSWBridge';
+import { VideoSWBridge, ChunkRequestPayload } from './VideoSWBridge';
 import { downloadChunkFile } from 'app/network/download/v2';
 import { DriveFileData } from 'app/drive/types';
 import { localStorageService } from 'services';
@@ -13,51 +14,67 @@ export default function FileVideoViewer({ file }: { file: DriveFileData }) {
     user: user?.bridgeUser ?? '',
     pass: user?.userId ?? '',
   };
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const bridgeRef = useRef<VideoSWBridge | null>(null);
   const chunkCacheRef = useRef<Map<string, Uint8Array>>(new Map());
   const pendingRequestsRef = useRef<Map<string, Promise<Uint8Array>>>(new Map());
+  const currentFileIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!credentials || !mnemonic) {
+    if (!credentials.user || !credentials.pass || !mnemonic) {
+      console.error('[FileVideoViewer] Missing credentials or mnemonic');
       return;
     }
 
-    // Limpiar caches
+    currentFileIdRef.current = fileId;
+
+    console.log('[FileVideoViewer] Initializing for file:', fileId);
+
     chunkCacheRef.current.clear();
     pendingRequestsRef.current.clear();
 
-    // Limpiar el video anterior
     if (videoRef.current) {
-      videoRef.current.src = '';
+      videoRef.current.pause();
+      videoRef.current.removeAttribute('src');
       videoRef.current.load();
     }
 
-    // Destruir el bridge anterior
     if (bridgeRef.current) {
       bridgeRef.current.destroy();
       bridgeRef.current = null;
     }
 
-    const handleChunkRequest = async (request: { start: number; end: number }): Promise<Uint8Array> => {
-      const { start, end } = request;
-      const chunkKey = `${start}-${end}`;
+    const handleChunkRequest = async (request: ChunkRequestPayload): Promise<Uint8Array> => {
+      if (currentFileIdRef.current !== fileId) {
+        throw new Error('File changed during chunk request');
+      }
 
-      // 1. Verificar cache
+      const { start, end } = request;
+      const chunkKey = `${fileId}-${start}-${end}`;
+
+      console.log(`[FileVideoViewer] Chunk request: ${start}-${end}`);
+
       const cached = chunkCacheRef.current.get(chunkKey);
       if (cached) {
+        console.log(`[FileVideoViewer] Cache hit: ${chunkKey}`);
         return cached;
       }
 
-      // 2. Si ya hay una petición en curso, esperar a que termine
       const pending = pendingRequestsRef.current.get(chunkKey);
       if (pending) {
+        console.log(`[FileVideoViewer] Waiting for pending: ${chunkKey}`);
         return pending;
       }
 
-      // 3. Crear nueva petición
       const downloadPromise = (async () => {
         try {
+          if (currentFileIdRef.current !== fileId) {
+            throw new Error('File changed before download');
+          }
+
+          console.log(`[FileVideoViewer] Downloading chunk: ${start}-${end}`);
+
           const stream = await downloadChunkFile({
             bucketId: bucket,
             fileId,
@@ -73,13 +90,10 @@ export default function FileVideoViewer({ file }: { file: DriveFileData }) {
           const reader = stream.getReader();
           const chunks: Uint8Array[] = [];
 
-          let done = false;
-          while (!done) {
-            const result = await reader.read();
-            done = result.done;
-            if (result.value) {
-              chunks.push(result.value);
-            }
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            if (value) chunks.push(value);
           }
 
           const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
@@ -90,16 +104,22 @@ export default function FileVideoViewer({ file }: { file: DriveFileData }) {
             offset += chunk.length;
           }
 
-          // Guardar en cache
-          chunkCacheRef.current.set(chunkKey, result);
+          console.log(`[FileVideoViewer] Downloaded: ${start}-${end}, size: ${result.length}`);
+
+          if (currentFileIdRef.current === fileId) {
+            if (chunkCacheRef.current.size > 20) {
+              const firstKey = chunkCacheRef.current.keys().next().value;
+              if (firstKey) chunkCacheRef.current.delete(firstKey);
+            }
+            chunkCacheRef.current.set(chunkKey, result);
+          }
+
           return result;
         } finally {
-          // Limpiar petición pendiente
           pendingRequestsRef.current.delete(chunkKey);
         }
       })();
 
-      // Guardar como pendiente
       pendingRequestsRef.current.set(chunkKey, downloadPromise);
       return downloadPromise;
     };
@@ -118,28 +138,47 @@ export default function FileVideoViewer({ file }: { file: DriveFileData }) {
     bridge
       .init()
       .then(() => {
+        if (currentFileIdRef.current !== fileId) {
+          console.log('[FileVideoViewer] File changed during init, aborting');
+          bridge.destroy();
+          return;
+        }
+
         const videoUrl = bridge.getVideoUrl();
-        console.log('[FileVideoViewer] Setting video URL:', videoUrl, 'for file:', fileId);
+        console.log('[FileVideoViewer] Video URL:', videoUrl);
+
         if (videoRef.current) {
           videoRef.current.src = videoUrl;
-          videoRef.current.load(); // Force reload
+          videoRef.current.load();
         }
       })
       .catch((error) => {
-        console.error('ERROR WHILE RENDERING VIDEO: ', error);
+        if (currentFileIdRef.current === fileId) {
+          console.error('[FileVideoViewer] Error:', error);
+        }
       });
 
     return () => {
       console.log('[FileVideoViewer] Cleanup for file:', fileId);
+      currentFileIdRef.current = null;
+
       if (bridgeRef.current) {
         bridgeRef.current.destroy();
         bridgeRef.current = null;
       }
-      if (videoRef.current) {
-        videoRef.current.src = '';
-      }
-    };
-  }, [file]);
 
-  return <video controls ref={videoRef} style={{ width: '100%', maxHeight: '80vh' }} />;
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.removeAttribute('src');
+        videoRef.current.load();
+      }
+
+      chunkCacheRef.current.clear();
+      pendingRequestsRef.current.clear();
+    };
+  }, [fileId, bucket, fileSize, mnemonic, credentials.user, credentials.pass]);
+
+  return (
+    <video ref={videoRef} controls playsInline style={{ width: '100%', maxHeight: '80vh', backgroundColor: '#000' }} />
+  );
 }

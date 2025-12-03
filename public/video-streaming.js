@@ -2,7 +2,7 @@
 
 const STREAM_PREFIX = '/video-stream/';
 
-let session = null;
+let currentSession = null;
 
 self.addEventListener('install', (event) => {
   console.log('[video-sw] Service Worker installed, skipping waiting...');
@@ -14,18 +14,49 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-// Escuchar mensajes del cliente para registrar sesiones
 self.addEventListener('message', (event) => {
   const eventData = event.data;
 
+  if (eventData.type === 'PING') {
+    if (event.ports && event.ports[0]) {
+      event.ports[0].postMessage({ type: 'PONG' });
+    } else if (event.source) {
+      event.source.postMessage({ type: 'PONG' });
+    }
+    return;
+  }
+
+  if (eventData.type === 'CLAIM_CLIENTS') {
+    console.log('[video-sw] Claiming clients...');
+    self.clients.claim().then(() => {
+      console.log('[video-sw] Clients claimed');
+      if (event.ports && event.ports[0]) {
+        event.ports[0].postMessage({ type: 'CLIENTS_CLAIMED' });
+      }
+    });
+    return;
+  }
+
   if (eventData.type === 'REGISTER_VIDEO_SESSION') {
-    session = {
+    if (currentSession) {
+      console.log('[video-sw] Replacing session:', currentSession.sessionId, '→', eventData.sessionId);
+    }
+
+    currentSession = {
+      sessionId: eventData.sessionId,
       fileSize: eventData.fileSize,
     };
+
+    console.log('[video-sw] Session registered:', currentSession.sessionId, 'fileSize:', currentSession.fileSize);
   }
 
   if (eventData.type === 'UNREGISTER_VIDEO_SESSION') {
-    session = null;
+    if (currentSession && currentSession.sessionId === eventData.sessionId) {
+      console.log('[video-sw] Session unregistered:', eventData.sessionId);
+      currentSession = null;
+    } else {
+      console.log('[video-sw] Ignoring unregister for old session:', eventData.sessionId);
+    }
   }
 });
 
@@ -36,17 +67,28 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  event.respondWith(handleVideoStream(event.request));
+  const pathSessionId = url.pathname.replace(STREAM_PREFIX, '').split('/')[0];
+
+  console.log('[video-sw] Fetch intercepted for session:', pathSessionId);
+
+  event.respondWith(handleVideoStream(event.request, pathSessionId));
 });
 
-async function handleVideoStream(request) {
-  if (!session) {
-    return new Response('Session not found', { status: 404 });
+async function handleVideoStream(request, requestSessionId) {
+  if (!currentSession) {
+    console.error('[video-sw] No active session');
+    return new Response('No active session', { status: 404 });
   }
 
-  const { fileSize } = session;
-  console.log(`[SW] FILE SIZE: ${fileSize}`);
+  if (currentSession.sessionId !== requestSessionId) {
+    console.error('[video-sw] Session mismatch:', requestSessionId, '!= current:', currentSession.sessionId);
+    return new Response('Session mismatch - video changed', { status: 410 });
+  }
+
+  const { sessionId, fileSize } = currentSession;
+
   const rangeHeader = request.headers.get('Range');
+  console.log('[video-sw] Handling request, session:', sessionId, 'range:', rangeHeader);
 
   if (!rangeHeader) {
     return new Response(null, {
@@ -66,6 +108,7 @@ async function handleVideoStream(request) {
 
   const start = parseInt(match[1], 10);
   let end;
+
   if (match[2]) {
     end = parseInt(match[2], 10);
   } else {
@@ -81,7 +124,7 @@ async function handleVideoStream(request) {
     });
   }
 
-  if (end > fileSize) {
+  if (end >= fileSize) {
     end = fileSize - 1;
   }
 
@@ -89,15 +132,25 @@ async function handleVideoStream(request) {
     return new Response('Invalid range', { status: 416 });
   }
 
-  const requestId = `${Date.now()}-${Math.random()}`;
+  const requestId = `${sessionId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+  console.log('[video-sw] Requesting chunk:', { sessionId, start, end, requestId });
 
   try {
     const chunk = await requestChunkFromClient({
+      sessionId,
       start,
       end,
       fileSize,
       requestId,
     });
+
+    if (!currentSession || currentSession.sessionId !== sessionId) {
+      console.log('[video-sw] Session changed during chunk fetch, aborting');
+      return new Response('Session changed', { status: 410 });
+    }
+
+    console.log('[video-sw] Chunk received:', chunk.byteLength, 'bytes');
 
     return new Response(chunk, {
       status: 206,
@@ -109,44 +162,52 @@ async function handleVideoStream(request) {
       },
     });
   } catch (error) {
-    return new Response('Stream error', { status: 500 });
+    console.error('[video-sw] Stream error:', error.message);
+    return new Response('Stream error: ' + error.message, { status: 500 });
   }
 }
 
 function requestChunkFromClient(request) {
   return new Promise((resolve, reject) => {
     const channel = new MessageChannel();
+    let timeoutId;
 
     channel.port1.onmessage = (event) => {
       const response = event.data;
 
       if (response.requestId !== request.requestId) {
+        console.warn('[video-sw] RequestId mismatch, ignoring');
         return;
       }
 
+      clearTimeout(timeoutId);
+
       if (response.error) {
+        channel.port1.close();
         reject(new Error(response.error));
       } else if (response.data) {
+        channel.port1.close();
         resolve(response.data);
       } else {
+        channel.port1.close();
         reject(new Error('No data received'));
       }
-
-      channel.port1.close();
     };
 
-    self.clients.matchAll().then((clients) => {
+    self.clients.matchAll({ type: 'window' }).then((clients) => {
       if (clients.length === 0) {
         reject(new Error('No clients available'));
         return;
       }
 
+      console.log('[video-sw] Sending CHUNK_REQUEST to client, requestId:', request.requestId);
       clients[0].postMessage({ type: 'CHUNK_REQUEST', payload: request }, [channel.port2]);
     });
 
-    setTimeout(() => {
-      reject(new Error('Chunk request timeout'));
+    timeoutId = setTimeout(() => {
+      console.error('[video-sw] Chunk request timeout:', request.requestId);
       channel.port1.close();
+      reject(new Error('Chunk request timeout'));
     }, 30000);
   });
 }
