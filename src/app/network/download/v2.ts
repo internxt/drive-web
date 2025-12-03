@@ -89,6 +89,37 @@ const downloadOwnFile: DownloadOwnFileFunction = async (params) => {
   });
 };
 
+export async function downloadChunkFile(
+  params: DownloadOwnFileParams & { chunkStart: number; chunkEnd: number },
+): Promise<FileStream> {
+  const { bucketId, fileId, mnemonic, chunkStart, chunkEnd, options } = params;
+  const auth = await getAuthFromCredentials(params.creds);
+
+  return new NetworkFacade(
+    Network.client(
+      envService.getVariable('storjBridge'),
+      {
+        clientName: 'drive-web',
+        clientVersion: '1.0',
+      },
+      {
+        bridgeUser: auth.username,
+        userId: auth.password,
+      },
+    ),
+  ).downloadChunk({
+    bucketId,
+    fileId,
+    mnemonic,
+    chunkStart,
+    chunkEnd,
+    options: {
+      downloadingCallback: options?.notifyProgress,
+      abortController: options?.abortController,
+    },
+  });
+}
+
 export async function multipartDownload(params: DownloadOwnFileParams & { fileSize: number }): Promise<FileStream> {
   const { bucketId, fileId, mnemonic, fileSize, options } = params;
   const auth = await getAuthFromCredentials(params.creds);

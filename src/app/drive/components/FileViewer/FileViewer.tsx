@@ -1,7 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
-import { isFileSizePreviewable } from 'services/media.service';
 import iconService from 'app/drive/services/icon.service';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { FileExtensionGroup } from 'app/drive/types/file-types';
@@ -97,7 +96,7 @@ const FileViewer = ({
   const isFirstItemOrShareView = fileIndex === 0 || isShareView;
   const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
   const isItemValidToPreview = isTypeAllowed && isPreviewAvailable;
-  const shouldRenderThePreview = isTypeAllowed && isFileSizePreviewable(file.size);
+  const shouldRenderThePreview = isTypeAllowed;
 
   const ItemIconComponent = iconService.getItemIcon(false, file.type);
 
@@ -224,10 +223,10 @@ const FileViewer = ({
               className="z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto outline-none"
             >
               <div>
-                {blob && file ? (
+                {file ? (
                   <Suspense fallback={<div></div>}>
                     <Viewer
-                      blob={blob}
+                      blob={null}
                       changeFile={changeFile}
                       file={file}
                       setIsPreviewAvailable={setIsPreviewAvailable}
@@ -236,7 +235,7 @@ const FileViewer = ({
                   </Suspense>
                 ) : null}
 
-                <div
+                {/* <div
                   className={`${
                     progress === 1 || (progress === 0 && blob) ? 'hidden' : 'flex'
                   } pointer-events-none z-10 select-none flex-col items-center justify-center rounded-xl
@@ -255,7 +254,7 @@ const FileViewer = ({
                       style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
                     />
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           ) : (

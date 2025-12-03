@@ -93,7 +93,14 @@ const FileViewerWrapper = ({
   useEffect(() => {
     setBlob(null);
     dispatch(uiActions.setFileViewerItem(currentFile));
-    if (currentFile && !updateProgress && !isDownloadStarted) {
+    if (
+      currentFile &&
+      !updateProgress &&
+      !isDownloadStarted &&
+      currentFile.type !== 'mp4' &&
+      currentFile.type !== 'mov' &&
+      currentFile.type !== 'mkv'
+    ) {
       setIsDownloadStarted(true);
       fileContentManager
         .download()
