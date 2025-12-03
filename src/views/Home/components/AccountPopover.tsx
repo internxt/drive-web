@@ -1,9 +1,8 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { Desktop, SignOut, Gear } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
-import Popover from 'components/Popover';
+import { Popover } from '@internxt/ui';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { userThunks } from 'app/store/slices/user';
@@ -43,24 +42,6 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
   const percentageUsed = Math.round((usage / limit) * 100) || 0;
 
   const separator = <div className="border-translate mx-3 my-0.5 border-gray-10" />;
-
-  const getDownloadApp = async () => {
-    const download = await desktopService.getDownloadAppUrl();
-    return download;
-  };
-
-  function onDownloadAppButtonClicked() {
-    getDownloadApp()
-      .then((download) => {
-        window.open(download, '_self');
-      })
-      .catch(() => {
-        notificationsService.show({
-          text: 'Something went wrong while downloading the desktop app',
-          type: ToastType.Error,
-        });
-      });
-  }
 
   function onLogout() {
     dispatch(userThunks.logoutThunk());
@@ -107,7 +88,7 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
         )}
       </div>
       {separator}
-      <Item onClick={onDownloadAppButtonClicked}>
+      <Item onClick={() => desktopService.openDownloadAppUrl(translate)}>
         <Desktop size={20} />
         <p className="ml-3 truncate">{translate('views.account.popover.downloadApp')}</p>
       </Item>
@@ -134,7 +115,9 @@ export default function AccountPopover({ className = '', user, plan }: Readonly<
     </div>
   );
 
-  return <Popover className={className} childrenButton={avatarWrapper} panel={panel} data-test="app-header-dropdown" />;
+  return (
+    <Popover className={className} childrenButton={avatarWrapper} panel={() => panel} data-test="app-header-dropdown" />
+  );
 }
 
 interface ItemProps {
