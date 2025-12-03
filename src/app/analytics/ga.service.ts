@@ -136,7 +136,7 @@ function trackPurchase(): void {
 
     const isBusiness = productName.toLowerCase().includes('business');
     const isYearly = productName.toLowerCase().includes('year');
-    const storageRegex = /(\d+)(TB|GB)/i;
+    const storageRegex = /(\d+)(TB|GB)(?!\w)/i;
     const storageMatch = storageRegex.exec(productName);
     const storage = storageMatch ? storageMatch[0] : '2TB';
     const planType = isBusiness ? 'business' : 'individual';
