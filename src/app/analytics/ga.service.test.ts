@@ -45,7 +45,7 @@ vi.mock('services/local-storage.service', () => ({
     getUser: vi.fn(),
     get: vi.fn(),
     set: vi.fn(),
-    remove: vi.fn(),
+    removeItem: vi.fn(),
   },
 }));
 
@@ -273,6 +273,25 @@ describe('Testing GA Service', () => {
         expect(globalThis.window.gtag).toHaveBeenCalledWith('set', 'user_data', {
           email: 'customer@example.com',
         });
+      });
+
+      it('When trackPurchase is called, then checkout_item_data should be removed from localStorage', () => {
+        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
+        vi.mocked(localStorageService.get).mockImplementation((key) => {
+          if (key === 'amountPaid') return '100';
+          if (key === 'checkout_item_data')
+            return JSON.stringify({
+              item_name: '2TB Year Plan',
+              item_category: 'Individual',
+              item_variant: 'year',
+              discount: 0,
+            });
+          return 'dummy';
+        });
+
+        gaService.trackPurchase();
+
+        expect(localStorageService.removeItem).toHaveBeenCalledWith('checkout_item_data');
       });
 
       it('When trackPurchase is called without checkout_item_data, then it should use fallback values', () => {

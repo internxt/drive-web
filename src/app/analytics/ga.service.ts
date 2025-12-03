@@ -188,6 +188,7 @@ function trackPurchase(): void {
         coupon: couponCode ?? undefined,
       });
     }
+    localStorageService.removeItem('checkout_item_data');
   } catch (error) {
     console.error(error);
   }
