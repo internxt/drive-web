@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'app/store';
 import { storageSelectors } from 'app/store/slices/storage';
-import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
 import { ArrowSquareOut, Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
@@ -461,12 +460,9 @@ const Navbar = (props: NavbarProps) => {
 };
 
 export default connect((state: RootState) => {
-  const isTeam = sessionSelectors.isTeam(state);
-
   return {
     user: state.user.user,
     workspace: state.session.workspace,
-    isTeam,
     storageFilters: state.storage.filters,
     currentFolderId: storageSelectors.currentFolderId(state),
     plan: state.plan,
