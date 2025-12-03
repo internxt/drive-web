@@ -51,12 +51,14 @@ function calculateDiscountAmount(originalPrice: number, couponCodeData?: CouponC
   if (!couponCodeData) {
     return 0;
   }
+
   const finalPriceString = getProductAmount(originalPrice, 1, couponCodeData);
   const finalPrice = Number.parseFloat(finalPriceString);
 
   if (Number.isNaN(finalPrice)) {
     return 0;
   }
+
   const discount = originalPrice - finalPrice;
   return Number.parseFloat(formatPrice(Math.max(0, discount)));
 }
@@ -83,13 +85,22 @@ function buildItem(params: BaseTrackParams) {
 
 function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
   const { planPrice, currency, promoCodeId, couponCodeData, seats = 1 } = params;
-
   const planAmountPerUserString = getProductAmount(planPrice, 1, couponCodeData);
   const planAmountPerUser = Number.parseFloat(planAmountPerUserString);
   const totalAmount = Number.parseFloat(formatPrice(planAmountPerUser * seats));
 
   const item = buildItem(params);
   const currencyCode = currency ?? 'EUR';
+
+  localStorageService.set(
+    'checkout_item_data',
+    JSON.stringify({
+      item_name: item.item_name,
+      item_category: item.item_category,
+      item_variant: item.item_variant,
+      discount: item.discount || 0,
+    }),
+  );
 
   try {
     globalThis.window.dataLayer.push({
@@ -118,7 +129,6 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
 function trackPurchase(): void {
   try {
     const userSettings = localStorageService.getUser() as UserSettings;
-
     if (!userSettings) {
       return;
     }
@@ -126,36 +136,28 @@ function trackPurchase(): void {
     const { uuid, email } = userSettings;
     const subscriptionId = localStorageService.get('subscriptionId');
     const paymentIntentId = localStorageService.get('paymentIntentId');
-    const productName = localStorageService.get('productName') || '';
     const priceId = localStorageService.get('priceId');
     const currency = localStorageService.get('currency');
     const amount = Number.parseFloat(localStorageService.get('amountPaid') ?? '0');
     const couponCode = localStorageService.get('couponCode');
 
+    const checkoutItemDataStr = localStorageService.get('checkout_item_data');
+    const checkoutItemData = checkoutItemDataStr ? JSON.parse(checkoutItemDataStr) : null;
+
     const transactionId = paymentIntentId || subscriptionId || uuid;
-
-    const isBusiness = productName.toLowerCase().includes('business');
-    const isYearly = productName.toLowerCase().includes('year');
-    const storageRegex = /(\d+)(TB|GB)(?!\w)/i;
-    const storageMatch = storageRegex.exec(productName);
-    const storage = storageMatch ? storageMatch[0] : '2TB';
-    const planType = isBusiness ? 'business' : 'individual';
-    const interval = isYearly ? 'year' : 'month';
-
-    const formattedStorage = bytesToString(Number.parseInt(storage, 10)) || storage;
+    const currencyCode = currency ?? 'EUR';
 
     const item = {
       item_id: priceId,
-      item_name: `${formattedStorage} ${capitalizeFirstLetter(interval)} Plan`,
-      item_category: getPlanCategory(planType),
-      item_variant: interval,
+      item_name: checkoutItemData?.item_name || 'Unknown Plan',
+      item_category: checkoutItemData?.item_category || 'Individual',
+      item_variant: checkoutItemData?.item_variant || 'month',
       price: amount,
       quantity: 1,
       item_brand: 'Internxt',
       ...(couponCode && { coupon: couponCode }),
+      ...(checkoutItemData?.discount > 0 && { discount: checkoutItemData.discount }),
     };
-
-    const currencyCode = currency ?? 'EUR';
 
     if (!globalThis.window.gtag) return;
 

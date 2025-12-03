@@ -44,6 +44,8 @@ vi.mock('services/local-storage.service', () => ({
   default: {
     getUser: vi.fn(),
     get: vi.fn(),
+    set: vi.fn(),
+    remove: vi.fn(),
   },
 }));
 
@@ -160,6 +162,15 @@ describe('Testing GA Service', () => {
         const event = globalThis.window.dataLayer[0] as any;
         expect(event.ecommerce.items[0].item_name).toContain('1TB');
       });
+
+      it('When trackBeginCheckout is called, then item data should be saved to localStorage', () => {
+        gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
+
+        expect(localStorageService.set).toHaveBeenCalledWith(
+          'checkout_item_data',
+          expect.stringContaining('1TB Year Plan'),
+        );
+      });
     });
   });
 
@@ -180,6 +191,12 @@ describe('Testing GA Service', () => {
             currency: 'EUR',
             amountPaid: '95.90',
             couponCode: 'DISCOUNT20',
+            checkout_item_data: JSON.stringify({
+              item_name: '2TB Year Plan',
+              item_category: 'Individual',
+              item_variant: 'year',
+              discount: 23.98,
+            }),
           };
           return store[key] || null;
         });
@@ -199,10 +216,13 @@ describe('Testing GA Service', () => {
               {
                 item_id: 'price_yearly_2tb',
                 item_name: '2TB Year Plan',
+                item_category: 'Individual',
+                item_variant: 'year',
                 price: 95.9,
                 quantity: 1,
                 item_brand: 'Internxt',
                 coupon: 'DISCOUNT20',
+                discount: 23.98,
               },
             ],
           },
@@ -215,6 +235,13 @@ describe('Testing GA Service', () => {
           if (key === 'paymentIntentId') return 'pi_999';
           if (key === 'subscriptionId') return 'sub_888';
           if (key === 'amountPaid') return '100';
+          if (key === 'checkout_item_data')
+            return JSON.stringify({
+              item_name: '2TB Year Plan',
+              item_category: 'Individual',
+              item_variant: 'year',
+              discount: 0,
+            });
           return '';
         });
 
@@ -229,7 +256,17 @@ describe('Testing GA Service', () => {
           uuid: 'user_123',
           email: 'customer@example.com',
         } as any);
-        vi.mocked(localStorageService.get).mockReturnValue('dummy_value');
+        vi.mocked(localStorageService.get).mockImplementation((key) => {
+          if (key === 'amountPaid') return '100';
+          if (key === 'checkout_item_data')
+            return JSON.stringify({
+              item_name: '2TB Year Plan',
+              item_category: 'Individual',
+              item_variant: 'year',
+              discount: 0,
+            });
+          return 'dummy_value';
+        });
 
         gaService.trackPurchase();
 
@@ -238,17 +275,20 @@ describe('Testing GA Service', () => {
         });
       });
 
-      it('When trackPurchase is called with Business plan, then item_category should be Business', () => {
+      it('When trackPurchase is called without checkout_item_data, then it should use fallback values', () => {
         vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
-          if (key === 'productName') return '2TB Business Monthly Plan';
-          return '10';
+          if (key === 'checkout_item_data') return null;
+          if (key === 'amountPaid') return '100';
+          return 'dummy';
         });
 
         gaService.trackPurchase();
 
         const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].item_category).toBe('Business');
+        expect(event.ecommerce.items[0].item_name).toBe('Unknown Plan');
+        expect(event.ecommerce.items[0].item_category).toBe('Individual');
+        expect(event.ecommerce.items[0].item_variant).toBe('month');
       });
     });
 
@@ -264,6 +304,17 @@ describe('Testing GA Service', () => {
 
       it('When dataLayer throws error during trackPurchase, it should be caught silently', () => {
         vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
+        vi.mocked(localStorageService.get).mockImplementation((key) => {
+          if (key === 'amountPaid') return '100';
+          if (key === 'checkout_item_data')
+            return JSON.stringify({
+              item_name: '2TB Year Plan',
+              item_category: 'Individual',
+              item_variant: 'year',
+              discount: 0,
+            });
+          return 'dummy';
+        });
         const mockDataLayer = {
           push: vi.fn(() => {
             throw new Error('DL Error');
