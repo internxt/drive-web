@@ -30,6 +30,8 @@ import {
 import { FileToUpload } from 'app/drive/services/file.service/types';
 import { MenuItemType } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
+import { getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
+import { FileExtensionGroup } from 'app/drive/types/file-types';
 
 type pathProps = 'drive' | 'trash' | 'shared' | 'recents';
 
@@ -93,14 +95,11 @@ const FileViewerWrapper = ({
   useEffect(() => {
     setBlob(null);
     dispatch(uiActions.setFileViewerItem(currentFile));
-    if (
-      currentFile &&
-      !updateProgress &&
-      !isDownloadStarted &&
-      currentFile.type !== 'mp4' &&
-      currentFile.type !== 'mov' &&
-      currentFile.type !== 'mkv'
-    ) {
+
+    const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(currentFile);
+    const isVideo = extensionGroup?.fileExtensionGroup === FileExtensionGroup['Video'];
+
+    if (currentFile && !updateProgress && !isDownloadStarted && !isVideo) {
       setIsDownloadStarted(true);
       fileContentManager
         .download()

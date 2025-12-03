@@ -1,6 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
+import { isFileSizePreviewable } from 'services/media.service';
 import iconService from 'app/drive/services/icon.service';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { FileExtensionGroup } from 'app/drive/types/file-types';
@@ -96,7 +97,9 @@ const FileViewer = ({
   const isFirstItemOrShareView = fileIndex === 0 || isShareView;
   const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
   const isItemValidToPreview = isTypeAllowed && isPreviewAvailable;
-  const shouldRenderThePreview = isTypeAllowed;
+  const isVideo = fileExtensionGroup === FileExtensionGroup['Video'];
+
+  const shouldRenderThePreview = isTypeAllowed && (isVideo || isFileSizePreviewable(file.size));
 
   const ItemIconComponent = iconService.getItemIcon(false, file.type);
 
