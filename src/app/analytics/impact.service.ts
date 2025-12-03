@@ -11,7 +11,6 @@ import { CouponCodeData } from 'views/Checkout/types';
 import { bytesToString } from 'app/drive/services/size.service';
 import { getProductAmount } from 'views/Checkout/utils';
 import { sendAddShoppersConversion } from './addShoppers.services';
-import gaService from './ga.service';
 
 /**
  * Stores relevant payment data in local storage to be retrieved later,
@@ -90,6 +89,7 @@ export async function trackPaymentConversion() {
   try {
     const { uuid } = localStorageService.getUser() as UserSettings;
     const userSettings = localStorageService.getUser() as UserSettings;
+
     const subscription = localStorageService.get('subscriptionId');
     const paymentIntent = localStorageService.get('paymentIntentId');
     const productName = localStorageService.get('productName');
@@ -98,17 +98,26 @@ export async function trackPaymentConversion() {
     const amount = parseFloat(localStorageService.get('amountPaid') ?? '0');
     const userEmail = userSettings.email;
     const couponCode = localStorageService.get('couponCode') ?? undefined;
+    const gclid = getCookie('gclid');
 
-    const realTransactionId = paymentIntent || subscription || uuidV4();
-
-    gaService.trackPurchase({
-      transactionId: realTransactionId,
-      amount: amount,
-      currency: currency?.toUpperCase() ?? 'EUR',
-      planName: productName ?? 'Unknown Plan',
-      planId: priceId ?? 'unknown_id',
-      coupon: couponCode,
-    });
+    try {
+      window.gtag('event', 'purchase', {
+        transaction_id: uuidV4(),
+        value: amount,
+        currency: currency?.toUpperCase() ?? '€',
+        items: [
+          {
+            item_id: priceId,
+            item_name: productName,
+            quantity: 1,
+            price: amount,
+          },
+        ],
+        ...(gclid ? { gclid } : {}),
+      });
+    } catch {
+      //
+    }
 
     sendAddShoppersConversion({
       orderId: uuid,
@@ -142,9 +151,7 @@ export async function trackPaymentConversion() {
           errorService.reportError(error);
         });
     }
-  } catch (error) {
-    console.error('Error tracking payment conversion:', error);
-    const castedError = errorService.castError(error);
-    errorService.reportError(castedError);
+  } catch {
+    //
   }
 }

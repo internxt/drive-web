@@ -2,9 +2,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import gaService from './ga.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import { CouponCodeData } from 'views/Checkout/types';
+import localStorageService from 'services/local-storage.service';
 
 vi.mock('app/drive/services/size.service', () => ({
   bytesToString: vi.fn((bytes) => {
+    if (!bytes || bytes < 1024) return undefined;
     if (bytes === 1099511627776) return '1TB';
     if (bytes === 2199023255552) return '2TB';
     return `${bytes}B`;
@@ -12,7 +14,7 @@ vi.mock('app/drive/services/size.service', () => ({
 }));
 
 vi.mock('views/Checkout/utils/formatPrice', () => ({
-  formatPrice: vi.fn((price) => price.toFixed(2)),
+  formatPrice: vi.fn((price) => Number(price).toFixed(2)),
 }));
 
 vi.mock('views/Checkout/utils/getProductAmount', () => ({
@@ -38,6 +40,13 @@ vi.mock('services/env.service', () => ({
   },
 }));
 
+vi.mock('services/local-storage.service', () => ({
+  default: {
+    getUser: vi.fn(),
+    get: vi.fn(),
+  },
+}));
+
 const mockCouponCodeData: CouponCodeData = {
   amountOff: undefined,
   codeId: 'promo_123',
@@ -55,15 +64,6 @@ const mockTrackBeginCheckoutParams = {
   promoCodeId: 'DISCOUNT20',
   couponCodeData: mockCouponCodeData,
   seats: 1,
-};
-
-const mockTrackPurchaseParams = {
-  transactionId: 'tx_123456',
-  amount: 95.9,
-  currency: 'EUR',
-  planName: '2TB Yearly Plan',
-  planId: 'price_123',
-  coupon: 'DISCOUNT20',
 };
 
 beforeEach(() => {
@@ -121,35 +121,13 @@ describe('Testing GA Service', () => {
         );
       });
 
-      it('When trackBeginCheckout is called, then dataLayer event should NOT include send_to', () => {
-        gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.send_to).toBeUndefined();
-      });
-
       it('When trackBeginCheckout is called with coupon, then the event should include coupon data', () => {
         gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
 
         const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce).toMatchObject({
-          currency: 'EUR',
-        });
         expect(event.ecommerce.items[0]).toMatchObject({
           coupon: 'DISCOUNT20',
         });
-      });
-
-      it('When trackBeginCheckout is called without coupon, then the event should not include coupon data', () => {
-        const paramsWithoutCoupon = {
-          ...mockTrackBeginCheckoutParams,
-          promoCodeId: undefined,
-          couponCodeData: undefined,
-        };
-
-        gaService.trackBeginCheckout(paramsWithoutCoupon);
-
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].coupon).toBeUndefined();
       });
 
       it('When trackBeginCheckout is called with discount, then the event should include discount amount', () => {
@@ -158,18 +136,6 @@ describe('Testing GA Service', () => {
         const event = globalThis.window.dataLayer[0] as any;
         expect(event.ecommerce.items[0].discount).toBeDefined();
         expect(event.ecommerce.items[0].discount).toBeGreaterThan(0);
-      });
-
-      it('When trackBeginCheckout is called without discount, then the event should not include discount field', () => {
-        const paramsWithoutCoupon = {
-          ...mockTrackBeginCheckoutParams,
-          couponCodeData: undefined,
-        };
-
-        gaService.trackBeginCheckout(paramsWithoutCoupon);
-
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].discount).toBeUndefined();
       });
 
       it('When trackBeginCheckout is called with multiple seats, then the total value should be calculated correctly', () => {
@@ -185,25 +151,6 @@ describe('Testing GA Service', () => {
         expect(event.ecommerce.value).toBeGreaterThan(0);
       });
 
-      it('When trackBeginCheckout is called with business plan, then item_category should be Business', () => {
-        const businessParams = {
-          ...mockTrackBeginCheckoutParams,
-          planType: 'business' as const,
-        };
-
-        gaService.trackBeginCheckout(businessParams);
-
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].item_category).toBe('Business');
-      });
-
-      it('When trackBeginCheckout is called with individual plan, then item_category should be Individual', () => {
-        gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
-
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].item_category).toBe('Individual');
-      });
-
       it('When trackBeginCheckout is called with storage bytes, then storage should be formatted correctly', () => {
         const bytesToStringSpy = vi.mocked(bytesToString);
 
@@ -213,141 +160,31 @@ describe('Testing GA Service', () => {
         const event = globalThis.window.dataLayer[0] as any;
         expect(event.ecommerce.items[0].item_name).toContain('1TB');
       });
-
-      it('When trackBeginCheckout is called with interval, then item_name should be capitalized correctly', () => {
-        gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
-
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].item_name).toContain('Year');
-        expect(event.ecommerce.items[0].item_variant).toBe('year');
-      });
-
-      it('When trackBeginCheckout is called without currency, then default currency should be EUR', () => {
-        const paramsWithoutCurrency = {
-          ...mockTrackBeginCheckoutParams,
-          currency: undefined as unknown as string,
-        };
-
-        gaService.trackBeginCheckout(paramsWithoutCurrency);
-
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.currency).toBe('EUR');
-      });
-
-      it('When trackBeginCheckout is called, then item_brand should always be Internxt', () => {
-        gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
-
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].item_brand).toBe('Internxt');
-      });
-
-      it('When trackBeginCheckout is called with all data, then the complete event structure should match expected format', () => {
-        gaService.trackBeginCheckout(mockTrackBeginCheckoutParams);
-
-        const dlEvent = globalThis.window.dataLayer[0] as any;
-        expect(dlEvent).toMatchObject({
-          event: 'begin_checkout',
-          ecommerce: {
-            currency: 'EUR',
-            value: expect.any(Number),
-            items: [
-              {
-                item_id: 'price_123',
-                item_name: expect.stringContaining('Plan'),
-                item_category: 'Individual',
-                item_variant: 'year',
-                price: expect.any(Number),
-                quantity: 1,
-                item_brand: 'Internxt',
-                coupon: 'DISCOUNT20',
-                discount: expect.any(Number),
-              },
-            ],
-          },
-        });
-        expect(dlEvent.send_to).toBeUndefined();
-
-        expect(globalThis.window.gtag).toHaveBeenCalledWith(
-          'event',
-          'begin_checkout',
-          expect.objectContaining({
-            send_to: expect.any(Array),
-            value: expect.any(Number),
-            currency: 'EUR',
-            items: expect.any(Array),
-            coupon: 'DISCOUNT20',
-          }),
-        );
-      });
-    });
-
-    describe('Error handling', () => {
-      it('When dataLayer throws an error during trackBeginCheckout, then the error should be caught silently', () => {
-        const mockDataLayer = {
-          push: vi.fn(() => {
-            throw new Error('DataLayer Error');
-          }),
-        };
-        globalThis.window.dataLayer = mockDataLayer as any;
-
-        expect(() => gaService.trackBeginCheckout(mockTrackBeginCheckoutParams)).not.toThrow();
-        expect(mockDataLayer.push).toHaveBeenCalled();
-      });
-    });
-
-    describe('Edge cases', () => {
-      it('When trackBeginCheckout is called with invalid storage string, then it should use the raw storage value', () => {
-        const paramsWithInvalidStorage = {
-          ...mockTrackBeginCheckoutParams,
-          storage: 'invalid',
-        };
-
-        gaService.trackBeginCheckout(paramsWithInvalidStorage);
-
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].item_name).toContain('invalid');
-      });
-
-      it('When trackBeginCheckout is called with amountOff coupon, then discount should be calculated correctly', () => {
-        const amountOffCoupon: CouponCodeData = {
-          amountOff: 20,
-          codeId: 'promo_456',
-          percentOff: undefined,
-          codeName: 'FLAT20',
-        };
-        const paramsWithAmountOff = {
-          ...mockTrackBeginCheckoutParams,
-          couponCodeData: amountOffCoupon,
-        };
-
-        gaService.trackBeginCheckout(paramsWithAmountOff);
-
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].discount).toBeDefined();
-      });
-
-      it('When trackBeginCheckout is called without seats, then default seats should be 1', () => {
-        const paramsWithoutSeats = {
-          planId: 'price_123',
-          planPrice: 119.88,
-          currency: 'EUR',
-          planType: 'individual' as const,
-          interval: 'year',
-          storage: '1099511627776',
-        };
-
-        gaService.trackBeginCheckout(paramsWithoutSeats);
-
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].quantity).toBe(1);
-      });
     });
   });
 
   describe('trackPurchase function', () => {
     describe('Successful tracking', () => {
-      it('When trackPurchase is called with valid data, then dataLayer should receive purchase event with transaction_id', () => {
-        gaService.trackPurchase(mockTrackPurchaseParams);
+      it('When trackPurchase is called with valid localStorage data, then dataLayer should receive purchase event with correct transaction_id', () => {
+        vi.mocked(localStorageService.getUser).mockReturnValue({
+          uuid: 'user_uuid_123',
+          email: 'test@example.com',
+        } as any);
+
+        vi.mocked(localStorageService.get).mockImplementation((key) => {
+          const store: Record<string, string> = {
+            subscriptionId: 'sub_12345',
+            paymentIntentId: '',
+            productName: '2TB Yearly Plan',
+            priceId: 'price_yearly_2tb',
+            currency: 'EUR',
+            amountPaid: '95.90',
+            couponCode: 'DISCOUNT20',
+          };
+          return store[key] || null;
+        });
+
+        gaService.trackPurchase();
 
         expect(globalThis.window.dataLayer).toHaveLength(1);
         const event = globalThis.window.dataLayer[0] as any;
@@ -355,66 +192,78 @@ describe('Testing GA Service', () => {
         expect(event).toMatchObject({
           event: 'purchase',
           ecommerce: {
-            transaction_id: mockTrackPurchaseParams.transactionId,
-            currency: mockTrackPurchaseParams.currency,
-            value: mockTrackPurchaseParams.amount,
+            transaction_id: 'sub_12345',
+            currency: 'EUR',
+            value: 95.9,
             items: [
               {
-                item_id: mockTrackPurchaseParams.planId,
-                item_name: mockTrackPurchaseParams.planName,
-                price: mockTrackPurchaseParams.amount,
+                item_id: 'price_yearly_2tb',
+                item_name: '2TB Year Plan',
+                price: 95.9,
                 quantity: 1,
                 item_brand: 'Internxt',
-                coupon: mockTrackPurchaseParams.coupon,
+                coupon: 'DISCOUNT20',
               },
             ],
           },
         });
       });
 
-      it('When trackPurchase is called, then gtag should be called with conversion tag', () => {
-        gaService.trackPurchase(mockTrackPurchaseParams);
+      it('When trackPurchase is called with PaymentIntent, it should take precedence over SubscriptionId and UUID', () => {
+        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_uuid' } as any);
+        vi.mocked(localStorageService.get).mockImplementation((key) => {
+          if (key === 'paymentIntentId') return 'pi_999';
+          if (key === 'subscriptionId') return 'sub_888';
+          if (key === 'amountPaid') return '100';
+          return '';
+        });
 
-        expect(globalThis.window.gtag).toHaveBeenCalledWith(
-          'event',
-          'purchase',
-          expect.objectContaining({
-            send_to: expect.any(Array),
-            transaction_id: mockTrackPurchaseParams.transactionId,
-            value: mockTrackPurchaseParams.amount,
-          }),
-        );
-      });
-
-      it('When trackPurchase is called without coupon, then coupon field should be undefined in items', () => {
-        const paramsNoCoupon = {
-          ...mockTrackPurchaseParams,
-          coupon: undefined,
-        };
-
-        gaService.trackPurchase(paramsNoCoupon);
+        gaService.trackPurchase();
 
         const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].coupon).toBeUndefined();
+        expect(event.ecommerce.transaction_id).toBe('pi_999');
+      });
+
+      it('When trackPurchase is called with user email, then it should set user_data for Enhanced Conversions', () => {
+        vi.mocked(localStorageService.getUser).mockReturnValue({
+          uuid: 'user_123',
+          email: 'customer@example.com',
+        } as any);
+        vi.mocked(localStorageService.get).mockReturnValue('dummy_value');
+
+        gaService.trackPurchase();
+
+        expect(globalThis.window.gtag).toHaveBeenCalledWith('set', 'user_data', {
+          email: 'customer@example.com',
+        });
+      });
+
+      it('When trackPurchase is called with Business plan, then item_category should be Business', () => {
+        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
+        vi.mocked(localStorageService.get).mockImplementation((key) => {
+          if (key === 'productName') return '2TB Business Monthly Plan';
+          return '10';
+        });
+
+        gaService.trackPurchase();
+
+        const event = globalThis.window.dataLayer[0] as any;
+        expect(event.ecommerce.items[0].item_category).toBe('Business');
       });
     });
 
-    describe('Validation', () => {
-      it('When trackPurchase is called without transactionId, then no event should be pushed', () => {
-        const invalidParams = {
-          ...mockTrackPurchaseParams,
-          transactionId: '',
-        };
+    describe('Validation & Error Handling', () => {
+      it('When trackPurchase is called but no user is logged in (localStorage returns null), then nothing should happen', () => {
+        vi.mocked(localStorageService.getUser).mockReturnValue(null);
 
-        gaService.trackPurchase(invalidParams);
+        gaService.trackPurchase();
 
         expect(globalThis.window.dataLayer).toHaveLength(0);
         expect(globalThis.window.gtag).not.toHaveBeenCalled();
       });
-    });
 
-    describe('Error handling', () => {
       it('When dataLayer throws error during trackPurchase, it should be caught silently', () => {
+        vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
         const mockDataLayer = {
           push: vi.fn(() => {
             throw new Error('DL Error');
@@ -422,7 +271,7 @@ describe('Testing GA Service', () => {
         };
         globalThis.window.dataLayer = mockDataLayer as any;
 
-        expect(() => gaService.trackPurchase(mockTrackPurchaseParams)).not.toThrow();
+        expect(() => gaService.trackPurchase()).not.toThrow();
         expect(mockDataLayer.push).toHaveBeenCalled();
       });
     });

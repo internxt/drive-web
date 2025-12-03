@@ -3,8 +3,10 @@ import { formatPrice } from 'views/Checkout/utils/formatPrice';
 import { getProductAmount } from 'views/Checkout/utils/getProductAmount';
 import { CouponCodeData } from 'views/Checkout/types';
 import envService from 'services/env.service';
+import localStorageService from 'services/local-storage.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
-interface TrackBeginCheckoutParams {
+interface BaseTrackParams {
   planId: string;
   planPrice: number;
   currency: string;
@@ -16,14 +18,7 @@ interface TrackBeginCheckoutParams {
   seats?: number;
 }
 
-interface TrackPurchaseParams {
-  transactionId: string;
-  amount: number;
-  currency: string;
-  planName: string;
-  planId: string;
-  coupon?: string;
-}
+type TrackBeginCheckoutParams = BaseTrackParams;
 
 const GA_ID = envService.getVariable('gaId');
 const GA_TAG = envService.getVariable('gaConversionTag');
@@ -56,30 +51,24 @@ function calculateDiscountAmount(originalPrice: number, couponCodeData?: CouponC
   if (!couponCodeData) {
     return 0;
   }
-
   const finalPriceString = getProductAmount(originalPrice, 1, couponCodeData);
   const finalPrice = Number.parseFloat(finalPriceString);
 
   if (Number.isNaN(finalPrice)) {
     return 0;
   }
-
   const discount = originalPrice - finalPrice;
   return Number.parseFloat(formatPrice(Math.max(0, discount)));
 }
 
-function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
-  const { planId, planPrice, currency, planType, interval, storage, promoCodeId, couponCodeData, seats = 1 } = params;
+function buildItem(params: BaseTrackParams) {
+  const { planId, planPrice, planType, interval, storage, promoCodeId, couponCodeData, seats = 1 } = params;
 
   const storageBytes = Number.parseInt(storage, 10);
   const formattedStorage = Number.isNaN(storageBytes) ? storage : bytesToString(storageBytes);
-
-  const planAmountPerUserString = getProductAmount(planPrice, 1, couponCodeData);
-  const planAmountPerUser = Number.parseFloat(planAmountPerUserString);
-  const totalAmount = Number.parseFloat(formatPrice(planAmountPerUser * seats));
   const discount = calculateDiscountAmount(planPrice, couponCodeData);
 
-  const item = {
+  return {
     item_id: planId,
     item_name: `${formattedStorage} ${capitalizeFirstLetter(interval)} Plan`,
     item_category: getPlanCategory(planType),
@@ -90,12 +79,23 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
     ...(promoCodeId && { coupon: promoCodeId }),
     ...(discount > 0 && { discount }),
   };
+}
+
+function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
+  const { planPrice, currency, promoCodeId, couponCodeData, seats = 1 } = params;
+
+  const planAmountPerUserString = getProductAmount(planPrice, 1, couponCodeData);
+  const planAmountPerUser = Number.parseFloat(planAmountPerUserString);
+  const totalAmount = Number.parseFloat(formatPrice(planAmountPerUser * seats));
+
+  const item = buildItem(params);
+  const currencyCode = currency ?? 'EUR';
 
   try {
     globalThis.window.dataLayer.push({
       event: 'begin_checkout',
       ecommerce: {
-        currency: currency ?? 'EUR',
+        currency: currencyCode,
         value: totalAmount,
         items: [item],
       },
@@ -105,7 +105,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
       globalThis.window.gtag('event', 'begin_checkout', {
         send_to: SEND_TO,
         value: totalAmount,
-        currency: currency ?? 'EUR',
+        currency: currencyCode,
         items: [item],
         ...(promoCodeId && { coupon: promoCodeId }),
       });
@@ -115,42 +115,74 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
   }
 }
 
-function trackPurchase(params: TrackPurchaseParams): void {
-  const { transactionId, amount, currency, planName, planId, coupon } = params;
-
-  if (!transactionId) {
-    return;
-  }
-
-  const item = {
-    item_id: planId,
-    item_name: planName,
-    price: amount,
-    quantity: 1,
-    item_brand: 'Internxt',
-    ...(coupon && { coupon }),
-  };
-
+function trackPurchase(): void {
   try {
+    const userSettings = localStorageService.getUser() as UserSettings;
+
+    if (!userSettings) {
+      return;
+    }
+
+    const { uuid, email } = userSettings;
+    const subscriptionId = localStorageService.get('subscriptionId');
+    const paymentIntentId = localStorageService.get('paymentIntentId');
+    const productName = localStorageService.get('productName') || '';
+    const priceId = localStorageService.get('priceId');
+    const currency = localStorageService.get('currency');
+    const amount = parseFloat(localStorageService.get('amountPaid') ?? '0');
+    const couponCode = localStorageService.get('couponCode');
+
+    const transactionId = paymentIntentId || subscriptionId || uuid;
+
+    const isBusiness = productName.toLowerCase().includes('business');
+    const isYearly = productName.toLowerCase().includes('year');
+    const storageMatch = productName.match(/(\d+)(TB|GB)/i);
+    const storage = storageMatch ? storageMatch[0] : '2TB';
+    const planType = isBusiness ? 'business' : 'individual';
+    const interval = isYearly ? 'year' : 'month';
+
+    const formattedStorage = bytesToString(Number.parseInt(storage, 10)) || storage;
+
+    const item = {
+      item_id: priceId,
+      item_name: `${formattedStorage} ${capitalizeFirstLetter(interval)} Plan`,
+      item_category: getPlanCategory(planType),
+      item_variant: interval,
+      price: amount,
+      quantity: 1,
+      item_brand: 'Internxt',
+      ...(couponCode && { coupon: couponCode }),
+    };
+
+    const currencyCode = currency ?? 'EUR';
+
+    if (!globalThis.window.gtag) return;
+
+    if (email) {
+      globalThis.window.gtag('set', 'user_data', {
+        email: email,
+      });
+    }
+
     globalThis.window.dataLayer.push({
       event: 'purchase',
       ecommerce: {
         transaction_id: transactionId,
+        currency: currencyCode,
         value: amount,
-        currency: currency ?? 'EUR',
         items: [item],
-        ...(coupon && { coupon }),
+        coupon: couponCode ?? undefined,
       },
     });
 
-    if (globalThis.window.gtag && SEND_TO.length > 0) {
+    if (SEND_TO.length > 0) {
       globalThis.window.gtag('event', 'purchase', {
         send_to: SEND_TO,
         transaction_id: transactionId,
         value: amount,
-        currency: currency ?? 'EUR',
+        currency: currencyCode,
         items: [item],
-        ...(coupon && { coupon }),
+        coupon: couponCode ?? undefined,
       });
     }
   } catch (error) {
