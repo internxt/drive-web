@@ -129,14 +129,15 @@ function trackPurchase(): void {
     const productName = localStorageService.get('productName') || '';
     const priceId = localStorageService.get('priceId');
     const currency = localStorageService.get('currency');
-    const amount = parseFloat(localStorageService.get('amountPaid') ?? '0');
+    const amount = Number.parseFloat(localStorageService.get('amountPaid') ?? '0');
     const couponCode = localStorageService.get('couponCode');
 
     const transactionId = paymentIntentId || subscriptionId || uuid;
 
     const isBusiness = productName.toLowerCase().includes('business');
     const isYearly = productName.toLowerCase().includes('year');
-    const storageMatch = productName.match(/(\d+)(TB|GB)/i);
+    const storageRegex = /(\d+)(TB|GB)/i;
+    const storageMatch = storageRegex.exec(productName);
     const storage = storageMatch ? storageMatch[0] : '2TB';
     const planType = isBusiness ? 'business' : 'individual';
     const interval = isYearly ? 'year' : 'month';
