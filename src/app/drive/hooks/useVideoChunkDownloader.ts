@@ -16,8 +16,8 @@ interface VideoChunkDownloaderConfig {
 const CACHE_SIZE_LIMIT = 20;
 
 export function useVideoChunkDownloader(config: VideoChunkDownloaderConfig) {
-  const chunkCacheRef = new Map();
-  const pendingRequestsRef = new Map();
+  const chunkCache = new Map();
+  const pendingRequests = new Map();
 
   const downloadAndCombineChunk = useCallback(
     async (start: number, end: number, cacheKey: string): Promise<Uint8Array> => {
@@ -33,12 +33,12 @@ export function useVideoChunkDownloader(config: VideoChunkDownloaderConfig) {
 
       const result = await binaryStreamToUint8Array(stream);
 
-      if (chunkCacheRef.size > CACHE_SIZE_LIMIT) {
-        const firstKey = chunkCacheRef.keys().next().value;
-        if (firstKey) chunkCacheRef.delete(firstKey);
+      if (chunkCache.size > CACHE_SIZE_LIMIT) {
+        const firstKey = chunkCache.keys().next().value;
+        if (firstKey) chunkCache.delete(firstKey);
       }
-      chunkCacheRef.set(cacheKey, result);
-      pendingRequestsRef.delete(cacheKey);
+      chunkCache.set(cacheKey, result);
+      pendingRequests.delete(cacheKey);
 
       return result;
     },
@@ -50,15 +50,15 @@ export function useVideoChunkDownloader(config: VideoChunkDownloaderConfig) {
       const { start, end } = request;
       const cacheKey = `${start}-${end}`;
 
-      const cached = chunkCacheRef.get(cacheKey);
+      const cached = chunkCache.get(cacheKey);
       if (cached) return cached;
 
-      const pending = pendingRequestsRef.get(cacheKey);
+      const pending = pendingRequests.get(cacheKey);
       if (pending) return pending;
 
       const downloadPromise = downloadAndCombineChunk(start, end, cacheKey);
 
-      pendingRequestsRef.set(cacheKey, downloadPromise);
+      pendingRequests.set(cacheKey, downloadPromise);
       return downloadPromise;
     },
     [downloadAndCombineChunk],
