@@ -4,7 +4,7 @@ import { AppView } from 'app/core/types';
 import { useAppDispatch } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { userThunks } from 'app/store/slices/user';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import localStorageService from 'services/local-storage.service';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { trackPaymentConversion } from 'app/analytics/impact.service';
@@ -25,8 +25,15 @@ export function removePaymentsStorage() {
 
 const CheckoutSuccessView = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const hasTrackedRef = useRef(false);
 
   const onCheckoutSuccess = useCallback(async () => {
+    if (hasTrackedRef.current) {
+      return;
+    }
+
+    hasTrackedRef.current = true;
+
     setTimeout(async () => {
       await dispatch(userThunks.initializeUserThunk());
       await dispatch(planThunks.initializeThunk());
@@ -36,10 +43,12 @@ const CheckoutSuccessView = (): JSX.Element => {
     try {
       await gaService.trackPurchase();
       await trackPaymentConversion();
+
       removePaymentsStorage();
     } catch (err) {
-      console.log('Analytics error: ', err);
+      console.error('Analytics error:', err);
     }
+
     navigationService.push(AppView.Drive);
   }, [dispatch]);
 

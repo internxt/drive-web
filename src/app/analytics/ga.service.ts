@@ -139,11 +139,6 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
 }
 
 async function trackPurchase(): Promise<void> {
-  const alreadyTracked = sessionStorage.getItem('purchase_tracked');
-  if (alreadyTracked === 'true') {
-    return;
-  }
-
   try {
     const userSettings = localStorageService.getUser() as UserSettings;
     if (!userSettings) {
@@ -152,6 +147,12 @@ async function trackPurchase(): Promise<void> {
     }
 
     const { uuid, email } = userSettings;
+
+    const checkoutItemDataStr = localStorageService.get('checkout_item_data');
+    if (!checkoutItemDataStr) {
+      console.warn('[GA Service] No checkout data found, purchase may have already been tracked');
+      return;
+    }
 
     const subscriptionId = localStorageService.get('subscriptionId');
     const paymentIntentId = localStorageService.get('paymentIntentId');
@@ -164,13 +165,10 @@ async function trackPurchase(): Promise<void> {
     const itemOriginalPrice = Number.parseFloat(itemOriginalPriceStr ?? '0');
 
     const couponCode = localStorageService.get('couponCode');
-    const checkoutItemDataStr = localStorageService.get('checkout_item_data');
 
     let checkoutItemData: CheckoutItemData | null = null;
     try {
-      if (checkoutItemDataStr) {
-        checkoutItemData = JSON.parse(checkoutItemDataStr) as CheckoutItemData;
-      }
+      checkoutItemData = JSON.parse(checkoutItemDataStr) as CheckoutItemData;
     } catch (parseError) {
       console.error('[GA Service] Error parsing checkout_item_data:', parseError);
     }
@@ -231,8 +229,6 @@ async function trackPurchase(): Promise<void> {
         coupon: couponCode ?? undefined,
       });
     }
-
-    sessionStorage.setItem('purchase_tracked', 'true');
 
     localStorageService.removeItem('checkout_item_data');
     localStorageService.removeItem('itemOriginalPrice');

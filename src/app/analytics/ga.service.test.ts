@@ -72,7 +72,6 @@ beforeEach(() => {
   globalThis.window.dataLayer = [];
   globalThis.window.gtag = vi.fn();
   vi.clearAllMocks();
-  sessionStorage.clear();
 });
 
 describe('Testing GA Service', () => {
@@ -383,10 +382,7 @@ describe('Testing GA Service', () => {
 
         await gaService.trackPurchase();
 
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].item_name).toBe('Unknown Plan');
-        expect(event.ecommerce.items[0].item_category).toBe('Individual');
-        expect(event.ecommerce.items[0].item_variant).toBe('month');
+        expect(globalThis.window.dataLayer).toHaveLength(0);
       });
 
       it('should use original price from localStorage instead of amount paid', async () => {
@@ -411,25 +407,22 @@ describe('Testing GA Service', () => {
         expect(event.ecommerce.value).toBe(0);
       });
 
-      it('should prevent duplicate tracking on subsequent calls', async () => {
+      it('should not track when checkout data is missing (already tracked)', async () => {
+        const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
         vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
-          if (key === 'amountPaid') return '100';
-          if (key === 'itemOriginalPrice') return '119.88';
-          if (key === 'checkout_item_data')
-            return JSON.stringify({
-              item_name: '2TB Year Plan',
-              item_category: 'Individual',
-              item_variant: 'year',
-              discount: 0,
-            });
+          if (key === 'checkout_item_data') return null;
           return 'dummy';
         });
 
         await gaService.trackPurchase();
-        await gaService.trackPurchase();
 
-        expect(globalThis.window.dataLayer).toHaveLength(1);
+        expect(globalThis.window.dataLayer).toHaveLength(0);
+        expect(consoleWarnSpy).toHaveBeenCalledWith(
+          '[GA Service] No checkout data found, purchase may have already been tracked',
+        );
+
+        consoleWarnSpy.mockRestore();
       });
     });
 
@@ -502,6 +495,7 @@ describe('Testing GA Service', () => {
 
       it('should handle invalid JSON in checkout_item_data gracefully', async () => {
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
         vi.mocked(localStorageService.getUser).mockReturnValue({ uuid: 'user_123' } as any);
         vi.mocked(localStorageService.get).mockImplementation((key) => {
           if (key === 'checkout_item_data') return 'invalid-json{';
@@ -513,10 +507,9 @@ describe('Testing GA Service', () => {
         await gaService.trackPurchase();
 
         expect(consoleErrorSpy).toHaveBeenCalled();
-        const event = globalThis.window.dataLayer[0] as any;
-        expect(event.ecommerce.items[0].item_name).toBe('Unknown Plan');
 
         consoleErrorSpy.mockRestore();
+        consoleWarnSpy.mockRestore();
       });
     });
   });
