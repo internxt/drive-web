@@ -70,7 +70,7 @@ export async function trackSignUp(uuid: string): Promise<void> {
     const anonymousID = getCookie('impactAnonymousId');
     const source = getCookie('impactSource');
 
-    if (window.gtag) {
+    if (globalThis.window.gtag) {
       window.gtag('event', 'User Signup');
     }
 
