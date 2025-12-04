@@ -20,6 +20,13 @@ interface BaseTrackParams {
 
 type TrackBeginCheckoutParams = BaseTrackParams;
 
+interface CheckoutItemData {
+  item_name: string;
+  item_category: string;
+  item_variant: string;
+  discount: number;
+}
+
 const GA_ID = envService.getVariable('gaId');
 const GA_TAG = envService.getVariable('gaConversionTag');
 const SEND_TO = [GA_ID, GA_TAG].filter(Boolean);
@@ -35,7 +42,7 @@ function track(eventName: string, object: Record<string, any>): void {
       ...object,
     });
   } catch (error) {
-    console.error(error);
+    console.error('[GA Service] Error tracking event:', error);
   }
 }
 
@@ -56,6 +63,7 @@ function calculateDiscountAmount(originalPrice: number, couponCodeData?: CouponC
   const finalPrice = Number.parseFloat(finalPriceString);
 
   if (Number.isNaN(finalPrice)) {
+    console.warn('[GA Service] Invalid final price when calculating discount');
     return 0;
   }
 
@@ -84,32 +92,36 @@ function buildItem(params: BaseTrackParams) {
 }
 
 function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
-  const { planPrice, currency, promoCodeId, couponCodeData, seats = 1 } = params;
-  const planAmountPerUserString = getProductAmount(planPrice, 1, couponCodeData);
-  const planAmountPerUser = Number.parseFloat(planAmountPerUserString);
-  const totalAmount = Number.parseFloat(formatPrice(planAmountPerUser * seats));
+  try {
+    const { planPrice, currency, promoCodeId, couponCodeData, seats = 1 } = params;
 
-  const item = buildItem(params);
-  const currencyCode = currency ?? 'EUR';
+    const planAmountPerUserString = getProductAmount(planPrice, 1, couponCodeData);
+    const planAmountPerUser = Number.parseFloat(planAmountPerUserString);
+    const totalAmount = Number.parseFloat(formatPrice(planAmountPerUser * seats));
 
-  localStorageService.set(
-    'checkout_item_data',
-    JSON.stringify({
+    const item = buildItem(params);
+    const currencyCode = currency ?? 'EUR';
+
+    localStorageService.set('itemOriginalPrice', item.price.toString());
+
+    const checkoutItemData: CheckoutItemData = {
       item_name: item.item_name,
       item_category: item.item_category,
       item_variant: item.item_variant,
       discount: item.discount || 0,
-    }),
-  );
+    };
 
-  try {
+    localStorageService.set('checkout_item_data', JSON.stringify(checkoutItemData));
+
+    const ecommerceData = {
+      currency: currencyCode,
+      value: totalAmount,
+      items: [item],
+    };
+
     globalThis.window.dataLayer.push({
       event: 'begin_checkout',
-      ecommerce: {
-        currency: currencyCode,
-        value: totalAmount,
-        items: [item],
-      },
+      ecommerce: ecommerceData,
     });
 
     if (globalThis.window.gtag && SEND_TO.length > 0) {
@@ -122,44 +134,73 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
       });
     }
   } catch (error) {
-    console.error(error);
+    console.error('[GA Service] Error in trackBeginCheckout:', error);
   }
 }
 
-function trackPurchase(): void {
+async function trackPurchase(): Promise<void> {
+  const alreadyTracked = sessionStorage.getItem('purchase_tracked');
+  if (alreadyTracked === 'true') {
+    return;
+  }
+
   try {
     const userSettings = localStorageService.getUser() as UserSettings;
     if (!userSettings) {
+      console.warn('[GA Service] No user settings found, aborting purchase tracking');
       return;
     }
 
     const { uuid, email } = userSettings;
+
     const subscriptionId = localStorageService.get('subscriptionId');
     const paymentIntentId = localStorageService.get('paymentIntentId');
     const priceId = localStorageService.get('priceId');
     const currency = localStorageService.get('currency');
-    const amount = Number.parseFloat(localStorageService.get('amountPaid') ?? '0');
-    const couponCode = localStorageService.get('couponCode');
+    const amountPaidString = localStorageService.get('amountPaid');
+    const amount = Number.parseFloat(amountPaidString ?? '0');
 
+    const itemOriginalPriceStr = localStorageService.get('itemOriginalPrice');
+    const itemOriginalPrice = Number.parseFloat(itemOriginalPriceStr ?? '0');
+
+    const couponCode = localStorageService.get('couponCode');
     const checkoutItemDataStr = localStorageService.get('checkout_item_data');
-    const checkoutItemData = checkoutItemDataStr ? JSON.parse(checkoutItemDataStr) : null;
+
+    let checkoutItemData: CheckoutItemData | null = null;
+    try {
+      if (checkoutItemDataStr) {
+        checkoutItemData = JSON.parse(checkoutItemDataStr) as CheckoutItemData;
+      }
+    } catch (parseError) {
+      console.error('[GA Service] Error parsing checkout_item_data:', parseError);
+    }
 
     const transactionId = paymentIntentId || subscriptionId || uuid;
     const currencyCode = currency ?? 'EUR';
 
+    const itemName = checkoutItemData?.item_name || 'Unknown Plan';
+    const itemCategory = checkoutItemData?.item_category || 'Individual';
+    const itemVariant = checkoutItemData?.item_variant || 'month';
+    const itemDiscount = checkoutItemData?.discount || 0;
+
+    const finalPrice = itemOriginalPrice > 0 ? itemOriginalPrice : amount;
+
     const item = {
       item_id: priceId,
-      item_name: checkoutItemData?.item_name || 'Unknown Plan',
-      item_category: checkoutItemData?.item_category || 'Individual',
-      item_variant: checkoutItemData?.item_variant || 'month',
-      price: amount,
+      item_name: itemName,
+      item_category: itemCategory,
+      item_variant: itemVariant,
+      price: finalPrice,
       quantity: 1,
       item_brand: 'Internxt',
       ...(couponCode && { coupon: couponCode }),
-      ...(checkoutItemData?.discount > 0 && { discount: checkoutItemData.discount }),
+      ...(itemDiscount > 0 && { discount: itemDiscount }),
     };
 
-    if (!globalThis.window.gtag) return;
+    if (!globalThis.window.gtag) {
+      console.warn('[GA Service] gtag not available');
+      return;
+    }
 
     if (email) {
       globalThis.window.gtag('set', 'user_data', {
@@ -167,15 +208,17 @@ function trackPurchase(): void {
       });
     }
 
+    const purchaseEcommerce = {
+      transaction_id: transactionId,
+      currency: currencyCode,
+      value: amount,
+      items: [item],
+      coupon: couponCode ?? undefined,
+    };
+
     globalThis.window.dataLayer.push({
       event: 'purchase',
-      ecommerce: {
-        transaction_id: transactionId,
-        currency: currencyCode,
-        value: amount,
-        items: [item],
-        coupon: couponCode ?? undefined,
-      },
+      ecommerce: purchaseEcommerce,
     });
 
     if (SEND_TO.length > 0) {
@@ -188,9 +231,13 @@ function trackPurchase(): void {
         coupon: couponCode ?? undefined,
       });
     }
+
+    sessionStorage.setItem('purchase_tracked', 'true');
+
     localStorageService.removeItem('checkout_item_data');
+    localStorageService.removeItem('itemOriginalPrice');
   } catch (error) {
-    console.error(error);
+    console.error('[GA Service] Error in trackPurchase:', error);
   }
 }
 

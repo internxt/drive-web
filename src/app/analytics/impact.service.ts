@@ -32,7 +32,6 @@ import { sendAddShoppersConversion } from './addShoppers.services';
  * @param selectedPlan - The pricing plan selected by the user
  * @param users - Number of users for the purchase (1 for individual, >1 for B2B)
  * @param couponCodeData - Optional coupon code information applied to the purchase
- * @param email - Email introduced by the user who makes the purchase
  */
 export function savePaymentDataInLocalStorage(
   subscriptionId: string | undefined,
@@ -41,10 +40,14 @@ export function savePaymentDataInLocalStorage(
   users: number,
   couponCodeData: CouponCodeData | undefined,
 ) {
-  if (subscriptionId && selectedPlan?.price.interval !== 'lifetime')
+  if (subscriptionId && selectedPlan?.price.interval !== 'lifetime') {
     localStorageService.set('subscriptionId', subscriptionId);
-  if (paymentIntentId && selectedPlan?.price.interval === 'lifetime')
+  }
+
+  if (paymentIntentId && selectedPlan?.price.interval === 'lifetime') {
     localStorageService.set('paymentIntentId', paymentIntentId);
+  }
+
   if (selectedPlan) {
     const planName = bytesToString(selectedPlan.price.bytes) + selectedPlan.price.interval;
     const amountToPay = getProductAmount(selectedPlan.price.decimalAmount, users, couponCodeData);
@@ -54,19 +57,22 @@ export function savePaymentDataInLocalStorage(
     localStorageService.set('priceId', selectedPlan.price.id);
     localStorageService.set('currency', selectedPlan.price.currency);
   }
-  if (couponCodeData?.codeName !== undefined) {
+
+  if (couponCodeData?.codeName) {
     localStorageService.set('couponCode', couponCodeData.codeName);
   }
 }
 
-export async function trackSignUp(uuid: string) {
+export async function trackSignUp(uuid: string): Promise<void> {
   try {
     const gclid = getCookie('gclid');
     const IMPACT_API = envService.getVariable('impactApiUrl');
     const anonymousID = getCookie('impactAnonymousId');
     const source = getCookie('impactSource');
 
-    window.gtag('event', 'User Signup');
+    if (window.gtag) {
+      window.gtag('event', 'User Signup');
+    }
 
     if (source && source !== 'direct') {
       await axios.post(IMPACT_API, {
@@ -76,82 +82,68 @@ export async function trackSignUp(uuid: string) {
         userId: uuid,
         type: 'track',
         event: 'User Signup',
-        ...(gclid ? { gclid } : {}),
+        ...(gclid && { gclid }),
       });
     }
-  } catch (e) {
-    const castedError = errorService.castError(e);
+  } catch (error) {
+    const castedError = errorService.castError(error);
     errorService.reportError(castedError);
   }
 }
 
-export async function trackPaymentConversion() {
+export async function trackPaymentConversion(): Promise<void> {
   try {
-    const { uuid } = localStorageService.getUser() as UserSettings;
     const userSettings = localStorageService.getUser() as UserSettings;
-
-    const subscription = localStorageService.get('subscriptionId');
-    const paymentIntent = localStorageService.get('paymentIntentId');
-    const productName = localStorageService.get('productName');
-    const priceId = localStorageService.get('priceId');
-    const currency = localStorageService.get('currency');
-    const amount = parseFloat(localStorageService.get('amountPaid') ?? '0');
-    const userEmail = userSettings.email;
-    const couponCode = localStorageService.get('couponCode') ?? undefined;
-    const gclid = getCookie('gclid');
-
-    try {
-      window.gtag('event', 'purchase', {
-        transaction_id: uuidV4(),
-        value: amount,
-        currency: currency?.toUpperCase() ?? '€',
-        items: [
-          {
-            item_id: priceId,
-            item_name: productName,
-            quantity: 1,
-            price: amount,
-          },
-        ],
-        ...(gclid ? { gclid } : {}),
-      });
-    } catch {
-      //
+    if (!userSettings) {
+      console.warn('[Impact Service] No user settings found');
+      return;
     }
 
-    sendAddShoppersConversion({
-      orderId: uuid,
-      value: amount,
-      currency: currency ?? 'EUR',
-      couponCodeName: couponCode,
-      email: userEmail,
-    });
+    const { uuid, email: userEmail } = userSettings;
+    const subscription = localStorageService.get('subscriptionId');
+    const paymentIntent = localStorageService.get('paymentIntentId');
+    const currency = localStorageService.get('currency');
+    const amountPaidStr = localStorageService.get('amountPaid');
+    const amount = Number.parseFloat(amountPaidStr ?? '0');
+    const couponCode = localStorageService.get('couponCode');
+
+    try {
+      sendAddShoppersConversion({
+        orderId: uuid,
+        value: amount,
+        currency: currency ?? 'EUR',
+        couponCodeName: couponCode ?? undefined,
+        email: userEmail,
+      });
+    } catch (error) {
+      console.error('[Impact Service] AddShoppers conversion failed:', error);
+    }
 
     const IMPACT_API = envService.getVariable('impactApiUrl');
     const anonymousID = getCookie('impactAnonymousId');
     const source = getCookie('impactSource');
 
     if ((source && source !== 'direct') || couponCode) {
-      await axios
-        .post(IMPACT_API, {
+      try {
+        await axios.post(IMPACT_API, {
           anonymousId: anonymousID,
           timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
           properties: {
             impact_value: amount === 0 ? 0.01 : amount,
             subscription_id: subscription,
             payment_intent: paymentIntent,
-            ...(couponCode ? { order_promo_code: couponCode } : {}),
+            ...(couponCode && { order_promo_code: couponCode }),
           },
           userId: uuid,
           type: 'track',
           event: 'Payment Conversion',
-        })
-        .catch((err) => {
-          const error = errorService.castError(err);
-          errorService.reportError(error);
         });
+      } catch (error) {
+        const castedError = errorService.castError(error);
+        errorService.reportError(castedError);
+      }
     }
-  } catch {
-    //
+  } catch (error) {
+    console.error('[Impact Service] Error in trackPaymentConversion:', error);
   }
 }
