@@ -50,15 +50,12 @@ export function useVideoChunkDownloader(config: VideoChunkDownloaderConfig) {
       const { start, end } = request;
       const cacheKey = `${start}-${end}`;
 
-      // Return from cache if available
       const cached = chunkCacheRef.get(cacheKey);
       if (cached) return cached;
 
-      // Wait for pending request if exists
       const pending = pendingRequestsRef.get(cacheKey);
       if (pending) return pending;
 
-      // Create new download request
       const downloadPromise = downloadAndCombineChunk(start, end, cacheKey);
 
       pendingRequestsRef.set(cacheKey, downloadPromise);
