@@ -23,6 +23,7 @@ export interface DriveItemActions {
   onCopyLinkButtonClicked: () => void;
   onLinkSettingsButtonClicked: () => void;
   onDownloadItemButtonClicked: () => void;
+  onViewVersionHistoryButtonClicked: () => void;
   onShowDetailsButtonClicked: () => void;
   onMoveToTrashButtonClicked: () => void;
   onNameClicked: (e) => void;
@@ -100,6 +101,11 @@ const useDriveItemActions = (item): DriveItemActions => {
     });
   };
 
+  const onViewVersionHistoryButtonClicked = () => {
+    // TODO: Implement version history dialog
+    console.log('View version history for item:', item);
+  };
+
   const onMoveToTrashButtonClicked = () => {
     moveItemsToTrash([item as DriveItemData]);
   };
@@ -159,6 +165,7 @@ const useDriveItemActions = (item): DriveItemActions => {
     onCopyLinkButtonClicked,
     onLinkSettingsButtonClicked,
     onDownloadItemButtonClicked,
+    onViewVersionHistoryButtonClicked,
     onShowDetailsButtonClicked,
     onMoveToTrashButtonClicked,
     onNameClicked,
