@@ -26,21 +26,35 @@ describe('operating-system service', () => {
     });
   };
 
+  const mockNavigator = (nav: {
+    userAgentData?: {
+      platform: string;
+    };
+    userAgent?: string;
+    appVersion?: string;
+  }) => {
+    Object.defineProperty(globalThis, 'navigator', {
+      value: nav,
+      writable: true,
+      configurable: true,
+    });
+  };
+
   describe('getOperatingSystem', () => {
     it('should detect Windows OS', () => {
       mockNavigatorWithAppVersion('5.0 (Windows NT 10.0; Win64; x64)');
 
       const result = operatingSystemService.getOperatingSystem();
 
-      expect(result).toBe('WindowsOS');
+      expect(result).toBe('Windows');
     });
 
-    it('should detect MacOS', () => {
+    it('should detect macOS', () => {
       mockNavigatorWithAppVersion('5.0 (Macintosh; Intel Mac OS X 10_15_7)');
 
       const result = operatingSystemService.getOperatingSystem();
 
-      expect(result).toBe('MacOS');
+      expect(result).toBe('macOS');
     });
 
     it('should detect UNIX OS when X11 is present without Linux keyword', () => {
@@ -48,7 +62,7 @@ describe('operating-system service', () => {
 
       const result = operatingSystemService.getOperatingSystem();
 
-      expect(result).toBe('UNIXOS');
+      expect(result).toBe('UNIX');
     });
 
     it('should detect Linux OS', () => {
@@ -56,15 +70,15 @@ describe('operating-system service', () => {
 
       const result = operatingSystemService.getOperatingSystem();
 
-      expect(result).toBe('LinuxOS');
+      expect(result).toBe('Linux');
     });
 
-    it('should return "Not known" for unrecognized OS', () => {
+    it('should return "Unknown" for unrecognized OS', () => {
       mockNavigatorWithAppVersion('5.0 (Unknown OS)');
 
       const result = operatingSystemService.getOperatingSystem();
 
-      expect(result).toBe('Not known');
+      expect(result).toBe('Unknown');
     });
 
     it('should detect Linux OS when both X11 and Linux are present', () => {
@@ -72,7 +86,89 @@ describe('operating-system service', () => {
 
       const result = operatingSystemService.getOperatingSystem();
 
-      expect(result).toBe('LinuxOS');
+      expect(result).toBe('Linux');
+    });
+
+    it('should prefer userAgentData.platform over userAgent/appVersion', () => {
+      mockNavigator({
+        userAgentData: { platform: 'Win32' },
+        userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+        appVersion: '5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+      });
+
+      const result = operatingSystemService.getOperatingSystem();
+
+      expect(result).toBe('Windows');
+    });
+
+    it('should detect Android from userAgent when Android appears without Linux', () => {
+      mockNavigator({
+        userAgent: 'Mozilla/5.0 (Android 9; Mobile) AppleWebKit/537.36',
+      });
+
+      const result = operatingSystemService.getOperatingSystem();
+
+      expect(result).toBe('Android');
+    });
+
+    it('should detect iOS from userAgent (iPhone)', () => {
+      mockNavigator({
+        userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_5)',
+      });
+
+      const result = operatingSystemService.getOperatingSystem();
+
+      expect(result).toBe('iOS');
+    });
+
+    it('should detect Android from userAgentData.platform', () => {
+      mockNavigator({
+        userAgentData: { platform: 'Android' },
+      });
+
+      const result = operatingSystemService.getOperatingSystem();
+
+      expect(result).toBe('Android');
+    });
+
+    it('should detect iOS from userAgentData.platform', () => {
+      mockNavigator({
+        userAgentData: { platform: 'iOS' },
+      });
+
+      const result = operatingSystemService.getOperatingSystem();
+
+      expect(result).toBe('iOS');
+    });
+
+    it('should detect Windows from userAgentData.platform', () => {
+      mockNavigator({
+        userAgentData: { platform: 'Windows' },
+      });
+
+      const result = operatingSystemService.getOperatingSystem();
+
+      expect(result).toBe('Windows');
+    });
+
+    it('should detect macOS from userAgentData.platform', () => {
+      mockNavigator({
+        userAgentData: { platform: 'MacOS' },
+      });
+
+      const result = operatingSystemService.getOperatingSystem();
+
+      expect(result).toBe('macOS');
+    });
+
+    it('should detect macOS from userAgentData.platform', () => {
+      mockNavigator({
+        userAgentData: { platform: 'Linux' },
+      });
+
+      const result = operatingSystemService.getOperatingSystem();
+
+      expect(result).toBe('Linux');
     });
   });
 });

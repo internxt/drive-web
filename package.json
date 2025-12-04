@@ -1,15 +1,15 @@
 {
   "name": "drive-web",
-  "version": "v1.0.610",
+  "version": "v1.0.615",
   "private": true,
   "dependencies": {
     "@dashlane/pqc-kem-kyber512-browser": "^1.0.0",
     "@headlessui/react": "1.7.5",
     "@iconscout/react-unicons": "^1.1.6",
-    "@internxt/css-config": "1.0.3",
+    "@internxt/css-config": "1.1.0",
     "@internxt/lib": "1.4.1",
     "@internxt/sdk": "=1.11.17",
-    "@internxt/ui": "0.0.26",
+    "@internxt/ui": "0.1.1",
     "@phosphor-icons/react": "^2.1.7",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.6.0",
@@ -92,7 +92,7 @@
     "test:safari": "yarn playwright test --project=webkit",
     "test:edge": "yarn playwright test --project=edge",
     "test": "vitest run",
-    "format": "prettier \"{src,test}/**/*.{ts,tsx}\" --write",
+    "format": "prettier \"{src,test}/**/*.{ts,tsx,json}\" --write",
     "lint:ts": "eslint \"./{src,test}/**/*.{ts,tsx}\"",
     "lint:ts:fix": "yarn run lint:ts --fix",
     "lint:scss": "stylelint \"src/**/*.{css,scss}\"",
@@ -169,7 +169,7 @@
     "node": ">=14.17.0"
   },
   "lint-staged": {
-    "*.{js,jsx,tsx,ts}": [
+    "*.{js,jsx,tsx,ts,json}": [
       "prettier --write"
     ]
   }

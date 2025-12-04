@@ -5,24 +5,30 @@ import DevicesSVG from 'assets/devices.svg';
 import XSVG from 'assets/close_x.svg';
 import { Button, Loader } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import desktopService from 'services/desktop.service';
-import operatingSystemService from 'services/operating-system.service';
-import { t } from 'i18next';
+import operatingSystemService, { OperatingSystem } from 'services/operating-system.service';
 import { FC, useMemo, useState } from 'react';
 
 const separatorV = <div className=" my-2 border-r border-gray-10" />;
 
-const OPERATIVE_SYTEM_LOGOS = {
-  WindowsOS: WindowsLogo,
-  MacOS: MacOsLogo,
-  LinuxOS: LinuxLogo,
+const OPERATIVE_SYTEM_LOGOS: Record<OperatingSystem, string> = {
+  Windows: WindowsLogo,
+  macOS: MacOsLogo,
+  Linux: LinuxLogo,
+  UNIX: LinuxLogo,
+  Android: '',
+  iOS: MacOsLogo,
+  Unknown: '',
 };
 
-const OPERATIVE_SYTEM_NAMES = {
-  WindowsOS: 'Windows',
-  MacOS: 'macOS',
-  LinuxOS: 'Linux',
+const OPERATIVE_SYTEM_NAMES: Record<OperatingSystem, string> = {
+  Windows: 'Windows',
+  macOS: 'macOS',
+  Linux: 'Linux',
+  UNIX: 'UNIX',
+  Android: 'Android',
+  iOS: 'iOS',
+  Unknown: 'Unknown',
 };
 
 type OnBoardingModalProps = {
@@ -46,21 +52,8 @@ export const OnboardingModal: FC<OnBoardingModalProps> = ({ onCloseModalPressed 
     [DevicesSVG],
   );
 
-  const onDownloadAppButtonClicked = (): void => {
-    const getDownloadApp = async () => {
-      const download = await desktopService.getDownloadAppUrl();
-      return download;
-    };
-    getDownloadApp()
-      .then((download) => {
-        window.open(download, '_self');
-      })
-      .catch(() => {
-        notificationsService.show({
-          text: t('errors.downloadingDesktopApp'),
-          type: ToastType.Error,
-        });
-      });
+  const onDownloadAppButtonClicked = async () => {
+    await desktopService.openDownloadAppUrl(translate);
     onCloseModalPressed();
   };
 
@@ -87,9 +80,9 @@ export const OnboardingModal: FC<OnBoardingModalProps> = ({ onCloseModalPressed 
           </div>
           <div className="flex w-96 flex-col p-10">
             <div>
-              <p className="text-3xl leading-9 text-gray-100">{t('tutorial.signUpTutorial.stepOne.title')}</p>
+              <p className="text-3xl leading-9 text-gray-100">{translate('tutorial.signUpTutorial.stepOne.title')}</p>
               <p className="mt-2 text-base leading-5 text-gray-80	">
-                {t('tutorial.signUpTutorial.stepOne.description')}
+                {translate('tutorial.signUpTutorial.stepOne.description')}
               </p>
             </div>
             <div className="mt-6">
