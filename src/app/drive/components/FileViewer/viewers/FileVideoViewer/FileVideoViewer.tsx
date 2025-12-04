@@ -1,10 +1,10 @@
 /* eslint-disable no-constant-condition */
 import { useEffect, useRef } from 'react';
-import { VideoSWBridge, ChunkRequestPayload } from './VideoSWBridge';
 import { downloadChunkFile } from 'app/network/download/v2';
 import { DriveFileData } from 'app/drive/types';
-import { localStorageService } from 'services';
+import { getVideoMimeType, localStorageService } from 'services';
 import { NetworkCredentials } from 'app/network/download';
+import { ChunkRequestPayload, VideoStreamingService } from 'app/drive/services/video-streaming.service';
 
 export default function FileVideoViewer({ file }: { file: DriveFileData }) {
   const { fileId, size: fileSize, bucket } = file;
@@ -16,7 +16,7 @@ export default function FileVideoViewer({ file }: { file: DriveFileData }) {
   };
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const bridgeRef = useRef<VideoSWBridge | null>(null);
+  const bridgeRef = useRef<VideoStreamingService | null>(null);
   const chunkCacheRef = useRef<Map<string, Uint8Array>>(new Map());
   const pendingRequestsRef = useRef<Map<string, Promise<Uint8Array>>>(new Map());
   const currentFileIdRef = useRef<string | null>(null);
@@ -124,11 +124,10 @@ export default function FileVideoViewer({ file }: { file: DriveFileData }) {
       return downloadPromise;
     };
 
-    const bridge = new VideoSWBridge(
+    const bridge = new VideoStreamingService(
       {
-        fileId,
-        bucketId: bucket,
         fileSize,
+        mimeType: getVideoMimeType(file.type),
       },
       handleChunkRequest,
     );

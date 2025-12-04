@@ -46,8 +46,8 @@ interface FileViewerProps {
 }
 
 export interface FormatFileViewerProps {
-  blob: Blob;
   file: PreviewFileItem;
+  blob?: Blob | null;
   changeFile?: (direction: 'next' | 'prev') => void;
   setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
   handlersForSpecialItems?: {
@@ -226,10 +226,10 @@ const FileViewer = ({
               className="z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto outline-none"
             >
               <div>
-                {file ? (
+                {(isVideo || blob) && file ? (
                   <Suspense fallback={<div></div>}>
                     <Viewer
-                      blob={null}
+                      blob={blob}
                       changeFile={changeFile}
                       file={file}
                       setIsPreviewAvailable={setIsPreviewAvailable}
@@ -238,7 +238,7 @@ const FileViewer = ({
                   </Suspense>
                 ) : null}
 
-                {/* <div
+                <div
                   className={`${
                     progress === 1 || (progress === 0 && blob) ? 'hidden' : 'flex'
                   } pointer-events-none z-10 select-none flex-col items-center justify-center rounded-xl
@@ -257,7 +257,7 @@ const FileViewer = ({
                       style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
                     />
                   </div>
-                </div> */}
+                </div>
               </div>
             </div>
           ) : (

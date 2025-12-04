@@ -68,9 +68,17 @@ self.addEventListener('message', (event) => {
       currentSession = {
         sessionId: eventData.sessionId,
         fileSize: eventData.fileSize,
+        mimeType: eventData.mimeType || 'video/mp4',
       };
 
-      console.log('[video-sw] Session registered:', currentSession.sessionId, 'fileSize:', currentSession.fileSize);
+      console.log(
+        '[video-sw] Session registered:',
+        currentSession.sessionId,
+        'fileSize:',
+        currentSession.fileSize,
+        'mimeType:',
+        currentSession.mimeType,
+      );
       break;
 
     case MESSAGE_TYPES.UNREGISTER_VIDEO_SESSION:
@@ -126,7 +134,7 @@ async function handleVideoStream(request, requestSessionId) {
     return new Response('Session mismatch - video changed', { status: 410 });
   }
 
-  const { sessionId, fileSize } = currentSession;
+  const { sessionId, fileSize, mimeType } = currentSession;
 
   const rangeHeader = request.headers.get('Range');
   console.log('[video-sw] Handling request, session:', sessionId, 'range:', rangeHeader);
@@ -137,7 +145,7 @@ async function handleVideoStream(request, requestSessionId) {
       headers: {
         'Accept-Ranges': 'bytes',
         'Content-Length': fileSize.toString(),
-        'Content-Type': 'video/mp4',
+        'Content-Type': mimeType,
       },
     });
   }
@@ -203,7 +211,7 @@ async function handleVideoStream(request, requestSessionId) {
       headers: {
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
         'Content-Length': (end - start + 1).toString(),
-        'Content-Type': 'video/mp4',
+        'Content-Type': mimeType,
         'Accept-Ranges': 'bytes',
       },
     });
