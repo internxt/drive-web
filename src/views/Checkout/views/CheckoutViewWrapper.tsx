@@ -199,6 +199,24 @@ const CheckoutViewWrapper = () => {
     }
   }, [state.error]);
 
+  useEffect(() => {
+    if (isCheckoutReadyToRender && currentSelectedPlan?.price) {
+      const { promotionCode } = getCheckoutQueryParams();
+
+      gaService.trackBeginCheckout({
+        planId: currentSelectedPlan.price.id,
+        planPrice: currentSelectedPlan.price.decimalAmount,
+        currency: currentSelectedPlan.price.currency ?? 'eur',
+        planType: currentSelectedPlan.price.type === 'business' ? 'business' : 'individual',
+        interval: currentSelectedPlan.price.interval,
+        storage: currentSelectedPlan.price.bytes.toString(),
+        promoCodeId: promotionCode ?? undefined,
+        couponCodeData: couponCodeData,
+        seats: currentSelectedPlan.price.type === 'business' ? seatsForBusinessSubscription : 1,
+      });
+    }
+  }, [isCheckoutReadyToRender]);
+
   const onCheckoutCouponChanges = async (promoCodeName?: string) => {
     if (!currentSelectedPlan?.price?.id) {
       return;
@@ -326,18 +344,6 @@ const CheckoutViewWrapper = () => {
     }
 
     setIsCheckoutReadyToRender(true);
-
-    gaService.trackBeginCheckout({
-      planId: price.price.id,
-      planPrice: price.price.decimalAmount,
-      currency: price.price.currency ?? 'eur',
-      planType: price.price.type === 'business' ? 'business' : 'individual',
-      interval: price.price.interval,
-      storage: price.price.bytes.toString(),
-      promoCodeId: promotionCode ?? undefined,
-      couponCodeData: couponCodeData,
-      seats: price.price.type === 'business' ? seatsForBusinessSubscription : 1,
-    });
   };
 
   const onChangePlanClicked = async (priceId: string) => {
