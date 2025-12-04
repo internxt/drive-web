@@ -36,7 +36,6 @@ describe('Check that env variables are loaded correctly', () => {
     expect(envService.getVariable('storjBridge')).toBe(process.env.REACT_APP_STORJ_BRIDGE);
     expect(envService.getVariable('segmentKey')).toBe(process.env.REACT_APP_SEGMENT_KEY);
     expect(envService.getVariable('intercomProviderKey')).toBe(process.env.REACT_APP_INTERCOM_PROVIDER_KEY);
-    expect(envService.getVariable('sentryDsn')).toBe(process.env.REACT_APP_SENTRY_DSN);
     expect(envService.getVariable('recaptchaV3')).toBe(process.env.REACT_APP_RECAPTCHA_V3);
     expect(envService.getVariable('shareLinksDomain')).toBe(process.env.REACT_APP_SHARE_LINKS_DOMAIN);
     expect(envService.getVariable('proxy')).toBe(process.env.REACT_APP_PROXY);

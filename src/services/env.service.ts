@@ -41,7 +41,6 @@ const variableList = {
   storjBridge: 'REACT_APP_STORJ_BRIDGE',
   segmentKey: 'REACT_APP_SEGMENT_KEY',
   intercomProviderKey: 'REACT_APP_INTERCOM_PROVIDER_KEY',
-  sentryDsn: 'REACT_APP_SENTRY_DSN',
   recaptchaV3: 'REACT_APP_RECAPTCHA_V3',
   shareLinksDomain: 'REACT_APP_SHARE_LINKS_DOMAIN',
   proxy: 'REACT_APP_PROXY',
