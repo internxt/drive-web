@@ -138,7 +138,7 @@ function trackBeginCheckout(params: TrackBeginCheckoutParams): void {
   }
 }
 
-async function trackPurchase(): Promise<void> {
+ function trackPurchase(): void {
   try {
     const userSettings = localStorageService.getUser() as UserSettings;
     if (!userSettings) {
