@@ -63,6 +63,7 @@ import { DriveTopBarItems } from './DriveTopBarItems';
 import { ShareDialogWrapper } from 'app/drive/components/ShareDialog/ShareDialogWrapper';
 import RealtimeService from 'services/sockets/socket.service';
 import { eventHandler } from 'services/sockets/event-handler.service';
+import VersionHistorySidebar from '../VersionHistorySidebar/VersionHistorySidebar';
 
 const MenuItemToGetSize = ({
   isTrash,
@@ -539,6 +540,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       />
       <ClearTrashDialog onItemsDeleted={onTrashCleared} />
       <UploadItemsFailsDialog />
+      <VersionHistorySidebar />
       <MenuItemToGetSize isTrash={isTrash} translate={translate} menuItemsRef={menuItemsRef} />
       <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} />
       {editNameItem && (

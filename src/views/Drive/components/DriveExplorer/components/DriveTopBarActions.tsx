@@ -98,6 +98,11 @@ const DriveTopBarActions = ({
     });
   };
 
+  const onViewVersionHistoryButtonClicked = (): void => {
+    dispatch(uiActions.setVersionHistoryItem(selectedItems[0]));
+    dispatch(uiActions.setIsVersionHistoryDialogOpen(true));
+  };
+
   const onBulkDeleteButtonClicked = (): void => {
     moveItemsToTrash(selectedItems);
   };
@@ -176,6 +181,7 @@ const DriveTopBarActions = ({
     renameItem: onSelectedOneItemRename,
     moveItem: onMoveItemButtonClicked,
     downloadItem: onDownloadButtonClicked,
+    viewVersionHistory: onViewVersionHistoryButtonClicked,
     moveToTrash: onBulkDeleteButtonClicked,
   });
 
@@ -187,6 +193,7 @@ const DriveTopBarActions = ({
     renameItem: onSelectedOneItemRename,
     moveItem: onMoveItemButtonClicked,
     downloadItem: onDownloadButtonClicked,
+    viewVersionHistory: onViewVersionHistoryButtonClicked,
     moveToTrash: onBulkDeleteButtonClicked,
   });
 
@@ -208,6 +215,7 @@ const DriveTopBarActions = ({
             renameItem: onSelectedOneItemRename,
             moveItem: onMoveItemButtonClicked,
             downloadItem: onDownloadButtonClicked,
+            viewVersionHistory: onViewVersionHistoryButtonClicked,
             moveToTrash: onBulkDeleteButtonClicked,
           })
         : contextMenuDriveItemShared({
@@ -218,6 +226,7 @@ const DriveTopBarActions = ({
             renameItem: onSelectedOneItemRename,
             moveItem: onMoveItemButtonClicked,
             downloadItem: onDownloadButtonClicked,
+            viewVersionHistory: onViewVersionHistoryButtonClicked,
             moveToTrash: onBulkDeleteButtonClicked,
           });
     } else {
@@ -229,6 +238,7 @@ const DriveTopBarActions = ({
             renameItem: onSelectedOneItemRename,
             moveItem: onMoveItemButtonClicked,
             downloadItem: onDownloadButtonClicked,
+            viewVersionHistory: onViewVersionHistoryButtonClicked,
             moveToTrash: onBulkDeleteButtonClicked,
           })
         : contextMenuDriveNotSharedLink({
@@ -239,6 +249,7 @@ const DriveTopBarActions = ({
             renameItem: onSelectedOneItemRename,
             moveItem: onMoveItemButtonClicked,
             downloadItem: onDownloadButtonClicked,
+            viewVersionHistory: onViewVersionHistoryButtonClicked,
             moveToTrash: onBulkDeleteButtonClicked,
           });
     }

@@ -102,8 +102,8 @@ const useDriveItemActions = (item): DriveItemActions => {
   };
 
   const onViewVersionHistoryButtonClicked = () => {
-    // TODO: Implement version history dialog
-    console.log('View version history for item:', item);
+    dispatch(uiActions.setVersionHistoryItem(item as DriveItemData));
+    dispatch(uiActions.setIsVersionHistoryDialogOpen(true));
   };
 
   const onMoveToTrashButtonClicked = () => {

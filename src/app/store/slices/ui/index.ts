@@ -9,6 +9,7 @@ interface UISliceState {
   isShareDialogOpen: boolean;
   isInvitationsDialogOpen: boolean;
   isItemDetailsDialogOpen: boolean;
+  isVersionHistoryDialogOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   isMoveItemsDialogOpen: boolean;
@@ -27,6 +28,7 @@ interface UISliceState {
   isFileViewerOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
   itemDetails: DriveItemDetails | null;
+  versionHistoryItem: DriveItemData | null;
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
@@ -41,6 +43,7 @@ const initialState: UISliceState = {
   isShareDialogOpen: false,
   isInvitationsDialogOpen: false,
   isItemDetailsDialogOpen: false,
+  isVersionHistoryDialogOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
   isMoveItemsDialogOpen: false,
@@ -59,6 +62,7 @@ const initialState: UISliceState = {
   isFileViewerOpen: false,
   fileViewerItem: null,
   itemDetails: null,
+  versionHistoryItem: null,
   currentFileInfoMenuItem: null,
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
@@ -87,6 +91,12 @@ export const uiSlice = createSlice({
     },
     setIsItemDetailsDialogOpen(state: UISliceState, action: PayloadAction<boolean>) {
       state.isItemDetailsDialogOpen = action.payload;
+    },
+    setIsVersionHistoryDialogOpen(state: UISliceState, action: PayloadAction<boolean>) {
+      state.isVersionHistoryDialogOpen = action.payload;
+    },
+    setVersionHistoryItem: (state: UISliceState, action: PayloadAction<UISliceState['versionHistoryItem']>) => {
+      state.versionHistoryItem = action.payload;
     },
     setIsCreateFolderDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isCreateFolderDialogOpen = action.payload;
