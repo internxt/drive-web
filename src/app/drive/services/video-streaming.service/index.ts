@@ -14,13 +14,13 @@ export interface ChunkRequestPayload {
 const DEFAULT_TIMEOUT = 5000;
 
 export class VideoStreamingService {
-  private sessionId = crypto.randomUUID();
-  private messageHandler: ((event: MessageEvent) => void) | null = null;
+  private readonly sessionId = crypto.randomUUID();
+  private messageHandler: ((event: MessageEvent) => void | Promise<void>) | null = null;
   private isDestroyed = false;
 
   constructor(
-    private session: VideoStreamSession,
-    private onChunkRequest: (request: ChunkRequestPayload) => Promise<Uint8Array>,
+    private readonly session: VideoStreamSession,
+    private readonly onChunkRequest: (request: ChunkRequestPayload) => Promise<Uint8Array>,
   ) {}
 
   async init(): Promise<void> {
