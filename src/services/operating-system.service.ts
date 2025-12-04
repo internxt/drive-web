@@ -1,24 +1,33 @@
-function getOperatingSystem(): string {
-  let operatingSystem = 'Not known';
+export type OperatingSystem = 'Windows' | 'macOS' | 'Linux' | 'Android' | 'iOS' | 'UNIX' | 'Unknown';
 
-  if (globalThis.navigator.appVersion.includes('Win')) {
-    operatingSystem = 'WindowsOS';
-  }
-  if (globalThis.navigator.appVersion.includes('Mac')) {
-    operatingSystem = 'MacOS';
-  }
-  if (globalThis.navigator.appVersion.includes('X11')) {
-    operatingSystem = 'UNIXOS';
-  }
-  if (globalThis.navigator.appVersion.includes('Linux')) {
-    operatingSystem = 'LinuxOS';
+function getOperatingSystem(): OperatingSystem {
+  const uaData = navigator.userAgentData;
+  if (uaData?.platform) {
+    const platform = uaData.platform.toLowerCase();
+    if (platform.includes('win')) return 'Windows';
+    if (platform.includes('mac')) return 'macOS';
+    if (platform.includes('linux')) return 'Linux';
+    if (platform.includes('android')) return 'Android';
+    if (platform.includes('ios')) return 'iOS';
   }
 
-  return operatingSystem;
+  const ua = navigator.userAgent ?? navigator.vendor ?? window.opera;
+  if (/windows/i.test(ua)) return 'Windows';
+  if (/mac/i.test(ua)) return 'macOS';
+  if (/linux/i.test(ua)) return 'Linux';
+  if (/android/i.test(ua)) return 'Android';
+  if (/iphone|ipad|ipod/i.test(ua)) return 'iOS';
+
+  const appVersion = navigator.appVersion?.toLowerCase() ?? '';
+  if (appVersion.includes('win')) return 'Windows';
+  if (appVersion.includes('mac')) return 'macOS';
+  if (appVersion.includes('linux')) return 'Linux';
+  if (appVersion.includes('x11')) return 'UNIX';
+
+  return 'Unknown';
 }
 
 const operatingSystemService = {
   getOperatingSystem,
 };
-
 export default operatingSystemService;

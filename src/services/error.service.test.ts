@@ -4,11 +4,6 @@ import AppError from 'app/core/types';
 import errorService from './error.service';
 import envService from './env.service';
 
-vi.mock('@sentry/react', () => ({
-  addBreadcrumb: vi.fn(),
-  captureException: vi.fn(),
-}));
-
 vi.mock('./env.service', () => ({
   default: { getVariable: vi.fn() },
 }));
