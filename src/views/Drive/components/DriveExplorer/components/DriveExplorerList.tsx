@@ -269,6 +269,14 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     [selectedWorkspace, workspaceCredentials],
   );
 
+  const viewVersionHistory = useCallback(
+    (item: ContextMenuDriveItem) => {
+      dispatch(uiActions.setVersionHistoryItem(item as DriveItemData));
+      dispatch(uiActions.setIsVersionHistoryDialogOpen(true));
+    },
+    [dispatch, uiActions],
+  );
+
   const moveToTrash = useCallback(
     (item: ContextMenuDriveItem) => {
       const driveItem = item as DriveItemData;
@@ -331,6 +339,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     renameItem: renameItem,
     moveItem: moveItem,
     downloadItem: downloadItem,
+    viewVersionHistory: viewVersionHistory,
     moveToTrash: props.onOpenStopSharingAndMoveToTrashDialog,
   });
 
@@ -344,6 +353,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     renameItem: renameItem,
     moveItem: moveItem,
     downloadItem: downloadItem,
+    viewVersionHistory: viewVersionHistory,
     moveToTrash: props.onOpenStopSharingAndMoveToTrashDialog,
   });
 
@@ -354,6 +364,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     renameItem: renameItem,
     moveItem: moveItem,
     downloadItem: downloadItem,
+    viewVersionHistory: viewVersionHistory,
     moveToTrash: moveToTrash,
   });
 
@@ -365,6 +376,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     renameItem: renameItem,
     moveItem: moveItem,
     downloadItem: downloadItem,
+    viewVersionHistory: viewVersionHistory,
     moveToTrash: moveToTrash,
   });
 
@@ -381,6 +393,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     renameItem: renameItem,
     moveItem: moveItem,
     downloadItem: downloadItem,
+    viewVersionHistory: viewVersionHistory,
     moveToTrash: moveToTrash,
   });
 
@@ -392,6 +405,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     renameItem: renameItem,
     moveItem: moveItem,
     downloadItem: downloadItem,
+    viewVersionHistory: viewVersionHistory,
     moveToTrash: moveToTrash,
   });
 

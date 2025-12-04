@@ -62,6 +62,7 @@ import UploadItemsFailsDialog from 'app/drive/components/UploadItemsFailsDialog/
 import WarningMessageWrapper from 'views/Home/components/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
+import VersionHistorySidebar from '../VersionHistorySidebar/VersionHistorySidebar';
 
 const MenuItemToGetSize = ({
   isTrash,
@@ -544,6 +545,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <UploadItemsFailsDialog />
+      <VersionHistorySidebar />
       <MenuItemToGetSize isTrash={isTrash} translate={translate} menuItemsRef={menuItemsRef} />
       <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} />
       {editNameItem && (

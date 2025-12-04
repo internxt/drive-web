@@ -885,6 +885,9 @@
         "location": "Location"
       }
     },
+    "versionHistory": {
+      "title": "Version history"
+    },
     "shareModal": {
       "title": "Share \"{{name}}\"",
       "list": {
