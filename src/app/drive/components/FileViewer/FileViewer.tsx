@@ -238,26 +238,28 @@ const FileViewer = ({
                   </Suspense>
                 ) : null}
 
-                <div
-                  className={`${
-                    progress === 1 || (progress === 0 && blob) ? 'hidden' : 'flex'
-                  } pointer-events-none z-10 select-none flex-col items-center justify-center rounded-xl
+                {!isVideo && (
+                  <div
+                    className={`${
+                      progress === 1 || (progress === 0 && blob) ? 'hidden' : 'flex'
+                    } pointer-events-none z-10 select-none flex-col items-center justify-center rounded-xl
                       font-medium outline-none`}
-                >
-                  <div className="flex h-20 w-20 items-center">
-                    <ItemIconComponent width={80} height={80} />
+                  >
+                    <div className="flex h-20 w-20 items-center">
+                      <ItemIconComponent width={80} height={80} />
+                    </div>
+                    <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
+                      {filename}
+                    </span>
+                    <span className="text-white/50">{translate('drive.loadingFile')}</span>
+                    <div className="mt-8 h-1.5 w-56 rounded-full bg-white/25">
+                      <div
+                        className="h-1.5 rounded-full bg-white"
+                        style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
+                      />
+                    </div>
                   </div>
-                  <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
-                    {filename}
-                  </span>
-                  <span className="text-white/50">{translate('drive.loadingFile')}</span>
-                  <div className="mt-8 h-1.5 w-56 rounded-full bg-white/25">
-                    <div
-                      className="h-1.5 rounded-full bg-white"
-                      style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
-                    />
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           ) : (

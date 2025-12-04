@@ -1,7 +1,13 @@
 import { describe, it, expect, vi, beforeEach, test } from 'vitest';
 
 import crypto from 'node:crypto';
-import { decryptStream, binaryStreamToBlob, buildProgressStream, joinReadableBinaryStreams } from './stream.service';
+import {
+  decryptStream,
+  binaryStreamToBlob,
+  binaryStreamToUint8Array,
+  buildProgressStream,
+  joinReadableBinaryStreams,
+} from './stream.service';
 import { getDecryptedStream } from 'app/network/download';
 
 vi.mock('app/network/download', () => ({
@@ -85,6 +91,57 @@ describe('Stream service', () => {
 
       expect(blob).toBeInstanceOf(Blob);
       expect(blob.size).toBe(0);
+    });
+  });
+
+  describe('Convert binary stream to uint8Array', () => {
+    test('When converting a binary stream with multiple chunks, then it returns a combined Uint8Array', async () => {
+      const mockData = [new Uint8Array([1, 2, 3]), new Uint8Array([4, 5, 6])];
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          for (const chunk of mockData) {
+            controller.enqueue(chunk);
+          }
+          controller.close();
+        },
+      });
+
+      const result = await binaryStreamToUint8Array(stream);
+
+      expect(result).toBeInstanceOf(Uint8Array);
+      expect(result.length).toBe(6);
+      expect(Array.from(result)).toEqual([1, 2, 3, 4, 5, 6]);
+    });
+
+    test('When converting a binary stream with a single chunk, then it returns a Uint8Array', async () => {
+      const mockData = [new Uint8Array([1, 2, 3])];
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          for (const chunk of mockData) {
+            controller.enqueue(chunk);
+          }
+          controller.close();
+        },
+      });
+
+      const result = await binaryStreamToUint8Array(stream);
+
+      expect(result).toBeInstanceOf(Uint8Array);
+      expect(result.length).toBe(3);
+      expect(Array.from(result)).toEqual([1, 2, 3]);
+    });
+
+    test('When converting an empty stream, then it returns an empty Uint8Array', async () => {
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.close();
+        },
+      });
+
+      const result = await binaryStreamToUint8Array(stream);
+
+      expect(result).toBeInstanceOf(Uint8Array);
+      expect(result.length).toBe(0);
     });
   });
 
