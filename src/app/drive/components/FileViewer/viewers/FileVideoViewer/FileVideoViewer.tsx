@@ -4,13 +4,13 @@ import { getVideoMimeType, localStorageService } from 'services';
 import { VideoStreamingService } from 'app/drive/services/video-streaming.service';
 import { useVideoChunkDownloader } from 'app/drive/hooks/useVideoChunkDownloader';
 
-export default function FileVideoViewer({
+const FileVideoViewer = ({
   file,
   setIsPreviewAvailable,
 }: {
   file: DriveFileData;
   setIsPreviewAvailable: (isError: boolean) => void;
-}) {
+}): JSX.Element => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const user = localStorageService.getUser();
@@ -75,4 +75,6 @@ export default function FileVideoViewer({
   return (
     <video ref={videoRef} controls playsInline style={{ width: '100%', maxHeight: '80vh', backgroundColor: '#000' }} />
   );
-}
+};
+
+export default FileVideoViewer;
