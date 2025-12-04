@@ -73,7 +73,9 @@ const FileVideoViewer = ({
   ]);
 
   return (
-    <video ref={videoRef} controls playsInline style={{ width: '100%', maxHeight: '80vh', backgroundColor: '#000' }} />
+    <video ref={videoRef} controls style={{ width: '100%', maxHeight: '80vh', backgroundColor: '#000' }}>
+      <track kind="captions" />
+    </video>
   );
 };
 
