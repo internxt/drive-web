@@ -788,6 +788,15 @@
         "Ort": "Ort"
       }
     },
+    "versionHistory": {
+      "title": "Versionsverlauf",
+      "current": "Aktuell",
+      "expiresInDays": "Läuft in {{days}} Tagen ab",
+      "autosaveVersions": "{{count}}/{{total}} automatisch gespeicherte Versionen",
+      "restoreVersion": "Version wiederherstellen",
+      "downloadVersion": "Version herunterladen",
+      "deleteVersion": "Version löschen"
+    },
     "shareModal": {
       "title": "Aktie \"{{name}}\"",
       "list": {
@@ -1457,7 +1466,8 @@
       "restore": "Wiederherstellen",
       "deletePermanently": "Lösche dauerhaft",
       "move": "Verschiebe",
-      "delete": "Lösche"
+      "delete": "Lösche",
+      "versionHistory": "Versionsverlauf"
     },
     "deleteItems": {
       "title": "Dauerhaft löschen?",
