@@ -4,22 +4,22 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": {
-      "blueText": "90% de descuento",
-      "text": "en todos los planes"
+    "label": { "blueText": "Obtén 87% de descuento", "text": "en todos los Planes" },
+    "title": "¡Obtén un descuento exclusivo!",
+    "subTitle": {
+      "blueText": "Oferta especial:",
+      "text": "almacena archivos con privacidad por menos"
     },
-    "title": "¡Consigue tu oferta especial de Black Friday!",
-    "subTitle": "El **mayor descuento** para la **máxima privacidad**",
-    "ctaGet": "Aceptar invitación",
+    "ctaGet": "Obtener la oferta",
     "ctaContinue": "Continuar gratis",
-    "guarantee": "Garantía de devolución de 30 días",
+    "guarantee": "Garantía de devolución de dinero de 30 días",
     "products": {
       "drive": "Drive",
       "antivirus": "Antivirus",
-      "cleaner": "Limpiador",
+      "cleaner": "Cleaner",
       "vpn": "VPN",
       "meet": "Meet",
-      "mail": "Correo"
+      "mail": "Mail"
     }
   },
   "susbcriptionsBanner": {
