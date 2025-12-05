@@ -1,5 +1,6 @@
 import { Trash } from '@phosphor-icons/react';
 import { Checkbox } from '@internxt/ui';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface AutosaveSectionProps {
   totalAutosaveCount: number;
@@ -14,6 +15,8 @@ export const AutosaveSection = ({
   onSelectAllChange,
   onDeleteAll,
 }: AutosaveSectionProps) => {
+  const { translate } = useTranslationContext();
+
   if (totalAutosaveCount === 0) return null;
 
   return (
@@ -25,7 +28,10 @@ export const AutosaveSection = ({
           className="h-4 w-4"
         />
         <span className="text-base text-gray-80">
-          {totalAutosaveCount}/{totalAutosaveCount} autosave versions
+          {translate('modals.versionHistory.autosaveVersions', {
+            count: totalAutosaveCount,
+            total: totalAutosaveCount,
+          })}
         </span>
       </div>
       <button onClick={onDeleteAll} className="flex items-center justify-center">
