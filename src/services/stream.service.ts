@@ -22,7 +22,10 @@ export async function binaryStreamToBlob(stream: BinaryStream, mimeType?: string
   return new Blob(slices as BlobPart[], mimeType ? { type: mimeType } : {});
 }
 
-export async function binaryStreamToUint8Array(stream: BinaryStream): Promise<Uint8Array> {
+export async function binaryStreamToUint8Array(
+  stream: BinaryStream,
+  onRead?: (readBytes: number) => void,
+): Promise<Uint8Array> {
   const reader = stream.getReader();
   const chunks: Uint8Array[] = [];
 
@@ -45,6 +48,7 @@ export async function binaryStreamToUint8Array(stream: BinaryStream): Promise<Ui
   for (const chunk of chunks) {
     result.set(chunk, offset);
     offset += chunk.length;
+    onRead?.(offset);
   }
 
   return result;

@@ -49,7 +49,7 @@ describe('Chunk Video Downloader custom hook', () => {
       chunkEnd: 4,
       options: { notifyProgress: expect.any(Function) },
     });
-    expect(binaryStreamToUint8Array).toHaveBeenCalledWith(mockStream);
+    expect(binaryStreamToUint8Array).toHaveBeenCalledWith(mockStream, expect.any(Function));
   });
 
   test('When requesting the same chunk multiple times, then it returns cached data without re-downloading', async () => {
@@ -196,5 +196,115 @@ describe('Chunk Video Downloader custom hook', () => {
     });
 
     expect(downloadChunkFile).toHaveBeenCalledTimes(26);
+  });
+
+  test('When cache is empty and a function to track progress is provided, then the progress is tracked', async () => {
+    const mockData = new Uint8Array([1, 2, 3, 4, 5]);
+    const mockStream = new ReadableStream<Uint8Array>();
+    const handleProgress = vi.fn();
+
+    vi.mocked(downloadChunkFile).mockResolvedValue(mockStream);
+    vi.mocked(binaryStreamToUint8Array).mockImplementation(async (stream, onRead) => {
+      if (onRead) {
+        onRead(5);
+        onRead(10);
+      }
+      return mockData;
+    });
+
+    const configWithProgress = {
+      ...mockConfig,
+      handleProgress,
+    };
+
+    const { result } = renderHook(() => useVideoChunkDownloader(configWithProgress));
+
+    await result.current.handleChunkRequest({
+      sessionId: 'test-session',
+      requestId: 'test-request',
+      start: 0,
+      end: 10,
+      fileSize: 1000,
+    });
+
+    expect(handleProgress).toHaveBeenCalledWith(0.5);
+    expect(handleProgress).toHaveBeenCalledWith(0.95);
+  });
+
+  test('When cache is not empty and a function to track progress is provided, then progress is not tracked', async () => {
+    const mockData1 = new Uint8Array([1, 2, 3]);
+    const mockData2 = new Uint8Array([4, 5, 6]);
+    const mockStream = new ReadableStream<Uint8Array>();
+    const handleProgress = vi.fn();
+
+    vi.mocked(downloadChunkFile).mockResolvedValue(mockStream);
+    vi.mocked(binaryStreamToUint8Array).mockImplementation(async (stream, onRead) => {
+      if (onRead) {
+        onRead(5);
+      }
+      return mockData1;
+    });
+
+    const configWithProgress = {
+      ...mockConfig,
+      handleProgress,
+    };
+
+    const { result } = renderHook(() => useVideoChunkDownloader(configWithProgress));
+
+    await result.current.handleChunkRequest({
+      sessionId: 'test-session',
+      requestId: 'test-request-1',
+      start: 0,
+      end: 10,
+      fileSize: 1000,
+    });
+
+    expect(handleProgress).toHaveBeenCalled();
+    handleProgress.mockClear();
+
+    vi.mocked(binaryStreamToUint8Array).mockImplementation(async (stream, onRead) => {
+      if (onRead) {
+        onRead(5);
+      }
+      return mockData2;
+    });
+
+    await result.current.handleChunkRequest({
+      sessionId: 'test-session',
+      requestId: 'test-request-2',
+      start: 10,
+      end: 20,
+      fileSize: 1000,
+    });
+
+    expect(handleProgress).not.toHaveBeenCalled();
+  });
+
+  test('When a function to track progress is not provided, then progress is not tracked', async () => {
+    const mockData = new Uint8Array([1, 2, 3, 4, 5]);
+    const mockStream = new ReadableStream<Uint8Array>();
+    const onReadCallback = vi.fn();
+
+    vi.mocked(downloadChunkFile).mockResolvedValue(mockStream);
+    vi.mocked(binaryStreamToUint8Array).mockImplementation(async (stream, onRead) => {
+      if (onRead) {
+        onReadCallback();
+        onRead(5);
+      }
+      return mockData;
+    });
+
+    const { result } = renderHook(() => useVideoChunkDownloader(mockConfig));
+
+    await result.current.handleChunkRequest({
+      sessionId: 'test-session',
+      requestId: 'test-request',
+      start: 0,
+      end: 10,
+      fileSize: 1000,
+    });
+
+    expect(onReadCallback).toHaveBeenCalled();
   });
 });

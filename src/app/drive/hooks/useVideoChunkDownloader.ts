@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { downloadChunkFile } from 'app/network/download/v2';
 import { binaryStreamToUint8Array } from 'services/stream.service';
 import { ChunkRequestPayload } from '../services/video-streaming.service';
@@ -11,13 +11,14 @@ interface VideoChunkDownloaderConfig {
     user: string;
     pass: string;
   };
+  handleProgress?: (progress: number) => void;
 }
 
 const CACHE_SIZE_LIMIT = 20;
 
 export function useVideoChunkDownloader(config: VideoChunkDownloaderConfig) {
-  const chunkCache = new Map();
-  const pendingRequests = new Map();
+  const chunkCache = useRef(new Map<string, Uint8Array>()).current;
+  const pendingRequests = useRef(new Map<string, Promise<Uint8Array>>()).current;
 
   const downloadAndCombineChunk = useCallback(
     async (start: number, end: number, cacheKey: string): Promise<Uint8Array> => {
@@ -31,7 +32,14 @@ export function useVideoChunkDownloader(config: VideoChunkDownloaderConfig) {
         options: { notifyProgress: () => {} },
       });
 
-      const result = await binaryStreamToUint8Array(stream);
+      const result = await binaryStreamToUint8Array(stream, (bytes) => {
+        const progress = bytes / (end - start);
+        if (chunkCache.size === 0 && config.handleProgress) {
+          const currentProgress = progress >= 1 ? 0.95 : progress;
+          console.log('PROGRESS', currentProgress);
+          config.handleProgress(currentProgress);
+        }
+      });
 
       if (chunkCache.size > CACHE_SIZE_LIMIT) {
         const firstKey = chunkCache.keys().next().value;
@@ -42,7 +50,7 @@ export function useVideoChunkDownloader(config: VideoChunkDownloaderConfig) {
 
       return result;
     },
-    [config.bucketId, config.fileId, config.mnemonic, config.credentials],
+    [config.bucketId, config.fileId, config.mnemonic, config.credentials, config.handleProgress],
   );
 
   const handleChunkRequest = useCallback(
