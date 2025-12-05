@@ -70,10 +70,31 @@ const FileVideoViewer = ({
     credentials.user,
     credentials.pass,
     mnemonic,
+    setIsPreviewAvailable,
   ]);
 
+  const handleError = (event: Event, video: HTMLVideoElement) => {
+    console.error('[FileVideoViewer] Video error:', event);
+    const error = video.error;
+    if (error) {
+      console.error('[FileVideoViewer] Error code:', error.code, 'message:', error.message);
+    }
+    setIsPreviewAvailable(false);
+  };
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.addEventListener('error', (event) => handleError(event, video));
+
+    return () => {
+      video.removeEventListener('error', (event) => handleError(event, video));
+    };
+  }, [setIsPreviewAvailable]);
+
   return (
-    <video ref={videoRef} controls style={{ width: '100%', maxHeight: '80vh', backgroundColor: '#000' }}>
+    <video ref={videoRef} controls autoPlay style={{ width: '100%', maxHeight: '80vh', backgroundColor: '#000' }}>
       <track kind="captions" />
     </video>
   );
