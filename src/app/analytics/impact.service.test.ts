@@ -18,6 +18,7 @@ vi.mock('services/local-storage.service', () => ({
     set: vi.fn(),
   },
 }));
+
 vi.mock('uuid', () => ({
   v4: vi.fn(() => mockedUserUuid),
 }));
@@ -26,8 +27,13 @@ vi.mock('./utils', () => ({
   getCookie: vi.fn((key) => {
     if (key === 'impactAnonymousId') return 'anon_id';
     if (key === 'impactSource') return 'ads';
+    if (key === 'gclid') return '';
     return '';
   }),
+}));
+
+vi.mock('./addShoppers.services', () => ({
+  sendAddShoppersConversion: vi.fn(),
 }));
 
 vi.mock('services/error.service', () => ({
@@ -75,14 +81,17 @@ beforeEach(() => {
   globalThis.window.gtag = vi.fn();
   vi.clearAllMocks();
   vi.resetModules();
+
   vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
     if (key === 'impactApiUrl') return mockImpactApiUrl;
-    else return 'no mock implementation';
+    return 'no mock implementation';
   });
+
   vi.spyOn(localStorageService, 'getUser').mockReturnValue({
     uuid: mockedUserUuid,
     email: 'usuario@ejemplo.com',
   } as unknown as UserSettings);
+
   vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
     if (key === 'paymentIntentId') return paymentIntentId;
     if (key === 'subscriptionId') return subId;
@@ -91,170 +100,233 @@ beforeEach(() => {
     if (key === 'currency') return product.price.currency;
     if (key === 'amountPaid') return expectedAmount;
     if (key === 'couponCode') return promoCode.codeName;
-    else return 'mock underfined';
+    return null;
   });
 });
 
 describe('Testing Impact Service', () => {
-  describe('Store necessary data to track it later', () => {
-    it('When wants to store the data, then the price to track is the correct one', () => {
+  describe('savePaymentDataInLocalStorage', () => {
+    it('should save the correct amount to localStorage after applying coupon', () => {
       const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
 
       savePaymentDataInLocalStorage(subId, paymentIntentId, product as PriceWithTax, 1, promoCode);
 
       expect(setToLocalStorageSpy).toHaveBeenCalledWith('amountPaid', expectedAmount);
     });
+
+    it('should save subscription ID when plan is not lifetime', () => {
+      const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
+
+      savePaymentDataInLocalStorage(subId, undefined, product as PriceWithTax, 1, promoCode);
+
+      expect(setToLocalStorageSpy).toHaveBeenCalledWith('subscriptionId', subId);
+    });
+
+    it('should save payment intent ID when plan is lifetime', () => {
+      const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
+      const lifetimeProduct = {
+        ...product,
+        price: { ...product.price, interval: 'lifetime' },
+      };
+
+      savePaymentDataInLocalStorage(undefined, paymentIntentId, lifetimeProduct as PriceWithTax, 1, promoCode);
+
+      expect(setToLocalStorageSpy).toHaveBeenCalledWith('paymentIntentId', paymentIntentId);
+    });
+
+    it('should save product metadata including name, price ID, and currency', () => {
+      const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
+
+      savePaymentDataInLocalStorage(subId, paymentIntentId, product as PriceWithTax, 1, promoCode);
+
+      expect(setToLocalStorageSpy).toHaveBeenCalledWith('productName', planName);
+      expect(setToLocalStorageSpy).toHaveBeenCalledWith('priceId', product.price.id);
+      expect(setToLocalStorageSpy).toHaveBeenCalledWith('currency', product.price.currency);
+    });
+
+    it('should save coupon code when provided', () => {
+      const setToLocalStorageSpy = vi.spyOn(localStorageService, 'set');
+
+      savePaymentDataInLocalStorage(subId, paymentIntentId, product as PriceWithTax, 1, promoCode);
+
+      expect(setToLocalStorageSpy).toHaveBeenCalledWith('couponCode', promoCode.codeName);
+    });
   });
 
-  describe('Tracking sign up event', () => {
-    describe('G Tag event', () => {
-      it('When the G Tag event is triggered, then the event is sent', async () => {
+  describe('trackSignUp', () => {
+    describe('gtag tracking', () => {
+      it('should send User Signup event to gtag', async () => {
         const gTagSpy = vi.spyOn(globalThis.window, 'gtag');
 
         await trackSignUp(mockedUserUuid);
 
-        expect(gTagSpy).toHaveBeenCalled();
         expect(gTagSpy).toHaveBeenCalledWith('event', 'User Signup');
       });
 
-      it('When the G Tag event is triggered and fails, then the error should be reported', async () => {
-        const unknownError = new Error('Unknown Error');
+      it('should report error when gtag fails but continue execution', async () => {
+        const unknownError = new Error('gtag Error');
         const gTagSpy = vi.spyOn(globalThis.window, 'gtag').mockImplementation(() => {
           throw unknownError;
         });
         const reportErrorSpy = vi.spyOn(errorService, 'reportError');
 
-        await trackSignUp(mockedUserUuid);
+        await expect(trackSignUp(mockedUserUuid)).resolves.not.toThrow();
 
-        expect(gTagSpy).toHaveBeenCalled();
         expect(gTagSpy).toHaveBeenCalledWith('event', 'User Signup');
-        expect(reportErrorSpy).toHaveBeenCalled();
         expect(reportErrorSpy).toHaveBeenCalledWith(unknownError);
       });
     });
 
-    describe('Impact event', () => {
-      it('When the Sign Up event is triggered, then the event is sent with the correct data', async () => {
+    describe('Impact API tracking', () => {
+      it('should send signup event to Impact API with correct payload', async () => {
         const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
-        vi.spyOn(localStorageService, 'getUser').mockReturnValue({
-          uuid: mockedUserUuid,
-        } as unknown as UserSettings);
 
         await trackSignUp(mockedUserUuid);
 
         expect(axiosSpy).toHaveBeenCalledTimes(1);
+        expect(axiosSpy).toHaveBeenCalledWith(
+          mockImpactApiUrl,
+          expect.objectContaining({
+            anonymousId: 'anon_id',
+            timestamp: expect.any(String),
+            userId: mockedUserUuid,
+            type: 'track',
+            event: 'User Signup',
+          }),
+        );
+      });
+
+      it('should include message ID in Impact API payload', async () => {
+        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+        await trackSignUp(mockedUserUuid);
 
         const callArgs = axiosSpy.mock.calls[0][1];
-        expect(callArgs).toMatchObject({
-          anonymousId: 'anon_id',
-          timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
-          userId: mockedUserUuid,
-          type: 'track',
-          event: 'User Signup',
+        expect(callArgs).toHaveProperty('messageId');
+        expect(callArgs.messageId).toBe(mockedUserUuid);
+      });
+
+      it('should not send to Impact API when source is direct', async () => {
+        const getCookieMock = await import('./utils');
+        vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
+          if (key === 'impactSource') return 'direct';
+          if (key === 'impactAnonymousId') return 'anon_id';
+          return '';
         });
+        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+        await trackSignUp(mockedUserUuid);
+
+        expect(axiosSpy).not.toHaveBeenCalled();
       });
     });
   });
 
-  describe('Tracking a payment conversion', () => {
-    describe('G Tag event', () => {
-      it('When the gtag event is successfully triggered, then it should have the correct data', async () => {
-        const gTagSpy = vi.spyOn(globalThis.window, 'gtag');
+  describe('trackPaymentConversion', () => {
+    describe('Impact API tracking', () => {
+      it('should send payment conversion to Impact API with correct data', async () => {
+        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
         await trackPaymentConversion();
 
-        expect(gTagSpy).toHaveBeenCalled();
-        expect(gTagSpy).toHaveBeenCalledWith('event', 'purchase', {
-          transaction_id: mockedUserUuid,
-          value: parseFloat(expectedAmount),
-          currency: product.price.currency?.toUpperCase() ?? '€',
-          items: [
-            {
-              item_id: product.price.id,
-              item_name: planName,
-              quantity: 1,
-              price: parseFloat(expectedAmount),
-            },
-          ],
-        });
+        expect(axiosSpy).toHaveBeenCalledTimes(1);
+        expect(axiosSpy).toHaveBeenCalledWith(
+          mockImpactApiUrl,
+          expect.objectContaining({
+            anonymousId: 'anon_id',
+            timestamp: expect.any(String),
+            properties: expect.objectContaining({
+              impact_value: parseFloat(expectedAmount),
+              subscription_id: subId,
+              payment_intent: paymentIntentId,
+              order_promo_code: promoCode.codeName,
+            }),
+            userId: mockedUserUuid,
+            type: 'track',
+            event: 'Payment Conversion',
+          }),
+        );
       });
 
-      it('When an error occurs while triggering the gtag event, then the function should be continue', async () => {
-        const unknownError = new Error('Unknown Error');
-        const gTagSpy = vi.spyOn(globalThis.window, 'gtag').mockImplementation(() => {
-          throw unknownError;
+      it('should use minimum value of 0.01 when amount is 0 (free purchase)', async () => {
+        vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
+          if (key === 'amountPaid') return '0';
+          if (key === 'subscriptionId') return subId;
+          if (key === 'couponCode') return promoCode.codeName;
+          return null;
         });
+        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
 
         await trackPaymentConversion();
 
-        expect(gTagSpy).toHaveBeenCalled();
-        expect(gTagSpy).toHaveBeenCalledWith('event', 'purchase', {
-          transaction_id: mockedUserUuid,
-          value: parseFloat(expectedAmount),
-          currency: product.price.currency?.toUpperCase() ?? '€',
-          items: [
-            {
-              item_id: product.price.id,
-              item_name: planName,
-              quantity: 1,
-              price: parseFloat(expectedAmount),
-            },
-          ],
-        });
+        const callArgs = axiosSpy.mock.calls[0][1];
+        expect(callArgs.properties.impact_value).toBe(0.01);
+      });
 
-        await expect(trackPaymentConversion()).resolves.not.toThrow();
+      it('should include coupon code in properties when available', async () => {
+        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+        await trackPaymentConversion();
+
+        const callArgs = axiosSpy.mock.calls[0][1];
+        expect(callArgs.properties).toHaveProperty('order_promo_code', promoCode.codeName);
+      });
+
+      it('should report error when Impact API call fails', async () => {
+        const unknownError = new Error('API Error');
+        const axiosSpy = vi.spyOn(axios, 'post').mockRejectedValue(unknownError);
+        const errorServiceSpy = vi.spyOn(errorService, 'reportError');
+
+        await trackPaymentConversion();
+
+        expect(axiosSpy).toHaveBeenCalledTimes(1);
+        expect(errorServiceSpy).toHaveBeenCalledWith(unknownError);
+      });
+
+      it('should not send to Impact when source is direct and no coupon code', async () => {
+        const getCookieMock = await import('./utils');
+        vi.mocked(getCookieMock.getCookie).mockImplementation((key) => {
+          if (key === 'impactSource') return 'direct';
+          return '';
+        });
+        vi.spyOn(localStorageService, 'get').mockImplementation((key) => {
+          if (key === 'couponCode') return null;
+          if (key === 'amountPaid') return expectedAmount;
+          return null;
+        });
+        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
+
+        await trackPaymentConversion();
+
+        expect(axiosSpy).not.toHaveBeenCalled();
       });
     });
 
-    describe('Impact event', () => {
-      it('When the Impact event is triggered, then the necessary data is sent', async () => {
-        const axiosSpy = vi.spyOn(axios, 'post').mockResolvedValue({});
-        vi.spyOn(localStorageService, 'getUser').mockReturnValue({
-          uuid: mockedUserUuid,
-        } as unknown as UserSettings);
+    describe('Error handling', () => {
+      it('should handle missing user settings gracefully', async () => {
+        const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        vi.spyOn(localStorageService, 'getUser').mockReturnValue(null);
 
-        await trackPaymentConversion();
+        await expect(trackPaymentConversion()).resolves.not.toThrow();
 
-        expect(axiosSpy).toHaveBeenCalledTimes(1);
-
-        const callArgs = axiosSpy.mock.calls[0][1];
-        expect(callArgs).toMatchObject({
-          anonymousId: 'anon_id',
-          properties: {
-            impact_value: parseFloat(expectedAmount),
-            subscription_id: subId,
-          },
-          userId: mockedUserUuid,
-          type: 'track',
-          event: 'Payment Conversion',
-        });
+        consoleWarnSpy.mockRestore();
       });
 
-      it('When the Impact event fails, then the error should be reported', async () => {
-        const unknownError = new Error('Unknown Error');
-        const axiosSpy = vi.spyOn(axios, 'post').mockRejectedValue(unknownError);
-        const errorServiceSpy = vi.spyOn(errorService, 'reportError');
-        vi.spyOn(localStorageService, 'getUser').mockReturnValue({
-          uuid: 'user_uuid',
-        } as unknown as UserSettings);
+      it('should continue execution when gtag is not available', async () => {
+        globalThis.window.gtag = undefined as any;
 
-        await trackPaymentConversion();
+        await expect(trackPaymentConversion()).resolves.not.toThrow();
+      });
 
-        expect(axiosSpy).toHaveBeenCalledTimes(1);
-
-        const callArgs = axiosSpy.mock.calls[0][1];
-        expect(callArgs).toMatchObject({
-          anonymousId: 'anon_id',
-          properties: {
-            impact_value: parseFloat(expectedAmount),
-            subscription_id: subId,
-          },
-          userId: 'user_uuid',
-          type: 'track',
-          event: 'Payment Conversion',
+      it('should handle errors in entire function gracefully', async () => {
+        const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(localStorageService, 'getUser').mockImplementation(() => {
+          throw new Error('Storage Error');
         });
-        expect(errorServiceSpy).toHaveBeenCalled();
-        expect(errorServiceSpy).toHaveBeenCalledWith(unknownError);
+
+        await expect(trackPaymentConversion()).resolves.not.toThrow();
+
+        consoleErrorSpy.mockRestore();
       });
     });
   });
