@@ -125,12 +125,10 @@ function isSessionActive(sessionId) {
  */
 async function handleVideoStream(request, requestSessionId) {
   if (!currentSession) {
-    console.error('[video-sw] No active session');
     return new Response('No active session', { status: 404 });
   }
 
   if (!isSessionActive(requestSessionId)) {
-    console.error('[video-sw] Session mismatch:', requestSessionId, '!= current:', currentSession.sessionId);
     return new Response('Session mismatch - video changed', { status: 410 });
   }
 
@@ -216,7 +214,6 @@ async function handleVideoStream(request, requestSessionId) {
       },
     });
   } catch (error) {
-    console.error('[video-sw] Stream error:', error.message);
     return new Response('Stream error: ' + error.message, { status: 500 });
   }
 }
@@ -264,7 +261,6 @@ function requestChunkFromClient(request) {
     });
 
     timeoutId = setTimeout(() => {
-      console.error('[video-sw] Chunk request timeout:', request.requestId);
       channel.port1.close();
       reject(new Error('Chunk request timeout'));
     }, CHUNK_REQUEST_TIMEOUT);
