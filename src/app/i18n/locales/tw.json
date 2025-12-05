@@ -815,6 +815,15 @@
         "location": "位置"
       }
     },
+    "versionHistory": {
+      "title": "版本歷史",
+      "current": "目前",
+      "expiresInDays": "{{days}} 天後過期",
+      "autosaveVersions": "{{count}}/{{total}} 自動儲存版本",
+      "restoreVersion": "復原版本",
+      "downloadVersion": "下載版本",
+      "deleteVersion": "刪除版本"
+    },
     "shareModal": {
       "title": "分享“{{name}}”",
       "list": {
@@ -1453,6 +1462,7 @@
     },
     "dropdown": {
       "openPreview": "打開預覽",
+      "versionHistory": "版本歷史",
       "details": "詳細信息",
       "shareLink": "分享",
       "shareTeam": "与团队分享",

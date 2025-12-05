@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Info, DotsThree } from '@phosphor-icons/react';
 import { Checkbox, Dropdown, Avatar } from '@internxt/ui';
-import dateService from 'services/date.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { FileVersion } from '../types';
 import { useDropdownPositioning, useVersionItemActions } from '../hooks';
+import { formatVersionDate } from '../utils';
 
 interface VersionItemProps {
   version: FileVersion;
@@ -11,6 +12,7 @@ interface VersionItemProps {
 }
 
 export const VersionItem = ({ version, onDelete }: VersionItemProps) => {
+  const { translate } = useTranslationContext();
   const [isSelected, setIsSelected] = useState(true);
   const { isOpen, setIsOpen, dropdownPosition, dropdownRef, itemRef } = useDropdownPositioning();
   const { menuItems } = useVersionItemActions({
@@ -30,7 +32,7 @@ export const VersionItem = ({ version, onDelete }: VersionItemProps) => {
       ref={itemRef as React.RefObject<HTMLButtonElement>}
       type="button"
       aria-pressed={isSelected}
-      aria-label={`Version from ${dateService.format(version.date, 'MMM D, h:mm A')}`}
+      aria-label={`Version from ${formatVersionDate(version.date)}`}
       className={`group w-full px-6 cursor-pointer text-left ${isSelected ? 'bg-primary/10' : 'hover:bg-gray-1'}`}
       onClick={handleItemClick}
     >
@@ -45,14 +47,12 @@ export const VersionItem = ({ version, onDelete }: VersionItemProps) => {
           />
           <div className="flex min-w-0 flex-1 flex-col space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-base font-semibold text-gray-100">
-                {dateService.format(version.date, 'MMM D, h:mm A')}
-              </span>
+              <span className="text-base font-semibold text-gray-100">{formatVersionDate(version.date)}</span>
             </div>
             {version.expiresInDays !== undefined && (
               <div className="flex items-center space-x-1 text-[12px] text-red-dark">
                 <Info size={16} weight="regular" />
-                <span>Expires in {version.expiresInDays} days</span>
+                <span>{translate('modals.versionHistory.expiresInDays', { days: version.expiresInDays })}</span>
               </div>
             )}
             <div className="flex items-center space-x-2 pt-1">
