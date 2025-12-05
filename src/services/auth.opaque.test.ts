@@ -331,7 +331,7 @@ describe('logIn', () => {
 
   it('should not log in with a wrong passwor or 2FA code', async () => {
     await expect(authOpaqueService.loginOpaque(mockEmail, 'wrong pwd', mockTwoFactorCode)).rejects.toThrow(
-      'Login failed',
+      'Opaque login failed',
     );
 
     await expect(authOpaqueService.loginOpaque(mockEmail, mockPassword, 'wrong 2FA code')).rejects.toThrow(

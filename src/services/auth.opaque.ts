@@ -16,12 +16,7 @@ import {
 } from './auth.crypto';
 import { base64ToUint8Array, uuidToBytes } from 'internxt-crypto/utils';
 
-export type ProfileInfoOpaque = {
-  user: UserSettings;
-  sessionID: string;
-  sessionKey: string;
-  exportKey: string;
-};
+import { ProfileInfoOpaque, OpaqueLoginError } from './auth.opaque.types';
 
 export const loginOpaque = async (
   email: string,
@@ -49,12 +44,12 @@ export const doLoginOpaque = async (
   password: string,
   twoFactorCode: string,
 ): Promise<{ token: string; user: UserSettings; mnemonic: string; newToken: string }> => {
-  const { sessionID, user: encUser, sessionKey, exportKey } = await loginOpaque(email, password, twoFactorCode);
+  const { sessionID, user: loggedUser, sessionKey, exportKey } = await loginOpaque(email, password, twoFactorCode);
 
-  const { keys, mnemonic } = await decryptUserKeysAndMnemonic(encUser.mnemonic, encUser.keys, exportKey);
+  const { keys, mnemonic } = await decryptUserKeysAndMnemonic(loggedUser.mnemonic, loggedUser.keys, exportKey);
 
   const user = {
-    ...encUser,
+    ...loggedUser,
     mnemonic,
     privateKey: keys.ecc.privateKey,
     keys,
@@ -130,13 +125,12 @@ export const doSignUpOpaque = async (email: string, password: string, captcha: s
 
 export const setSessionKey = async (password: string, sessionKey: string): Promise<void> => {
   const { sessionKeyEnc, salt } = await encryptSessionKey(password, sessionKey);
-  localStorageService.set('sessionKey', sessionKeyEnc);
-  localStorageService.set('sessionKeySalt', salt);
+  localStorageService.setSessionKey(sessionKeyEnc, salt);
 };
 
 export const getSessionKey = async (password: string): Promise<Uint8Array> => {
-  const sessionKeyEnc = localStorageService.get('sessionKey') || '';
-  const salt = localStorageService.get('sessionKeySalt') || '';
+  const sessionKeyEnc = localStorageService.getSessionKey() || '';
+  const salt = localStorageService.getSessionKeySalt() || '';
   return decryptSessionKey(password, sessionKeyEnc, salt);
 };
 
@@ -160,7 +154,7 @@ const finishOpaqueLogin = async (clientLoginState: string, loginResponse: string
     password,
   });
   if (!loginResult) {
-    throw new Error('Login failed');
+    throw new OpaqueLoginError();
   }
   const { finishLoginRequest, sessionKey, exportKey } = loginResult;
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();

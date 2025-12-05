@@ -11,6 +11,19 @@ function set(key: string, value: string): void {
   return localStorage.setItem(key, value);
 }
 
+function getSessionKey(): string | null {
+  return localStorage.getItem('sessionKey');
+}
+
+function getSessionKeySalt(): string | null {
+  return localStorage.getItem('sessionKeySalt');
+}
+
+function setSessionKey(sessionKey: string, salt: string): void {
+  localStorage.setItem('sessionKey', sessionKey);
+  localStorage.setItem('sessionKeySalt', salt);
+}
+
 function getUser(): UserSettings | null {
   const stringUser: string | null = localStorage.getItem('xUser');
 
@@ -66,6 +79,8 @@ function clear(): void {
   localStorage.removeItem('theme:isDark');
   localStorage.removeItem('xInvitedToken');
   localStorage.removeItem('xResourcesToken');
+  localStorage.removeItem('sessionKey');
+  localStorage.removeItem('sessionKeySalt');
   localStorage.removeItem(STORAGE_KEYS.B2B_WORKSPACE);
   localStorage.removeItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS);
   localStorage.removeItem(STORAGE_KEYS.GCLID);
@@ -74,6 +89,9 @@ function clear(): void {
 const localStorageService = {
   set,
   get,
+  getSessionKey,
+  getSessionKeySalt,
+  setSessionKey,
   getUser,
   getWorkspace,
   hasCompletedTutorial,
