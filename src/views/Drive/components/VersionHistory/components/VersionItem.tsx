@@ -8,16 +8,14 @@ import { formatVersionDate } from '../utils';
 
 interface VersionItemProps {
   version: FileVersion;
-  onDelete: (id: string) => void;
 }
 
-export const VersionItem = ({ version, onDelete }: VersionItemProps) => {
+export const VersionItem = ({ version }: VersionItemProps) => {
   const { translate } = useTranslationContext();
   const [isSelected, setIsSelected] = useState(true);
   const { isOpen, setIsOpen, dropdownPosition, dropdownRef, itemRef } = useDropdownPositioning();
   const { menuItems } = useVersionItemActions({
     version,
-    onDelete,
     onDropdownClose: () => setIsOpen(false),
   });
 

@@ -15,16 +15,11 @@ const Sidebar = () => {
   const [versions, setVersions] = useState<FileVersion[]>([
     {
       id: '1',
-      date: new Date(),
-      userName: 'Name',
+      date: new Date('2024-06-20T10:00:00Z'),
+      userName: 'John Doe',
+      expiresInDays: 30,
       isCurrent: true,
-    },
-    {
-      id: '2',
-      date: new Date(Date.now() - 1000 * 60 * 60 * 24),
-      userName: 'Name',
-      expiresInDays: 4,
-      isAutosave: true,
+      isAutosave: false,
     },
   ]);
 
@@ -34,15 +29,6 @@ const Sidebar = () => {
 
   const onClose = () => {
     dispatch(uiActions.setIsVersionHistorySidebarOpen(false));
-  };
-
-  const handleDeleteVersion = (versionId: string) => {
-    setVersions((prev) => prev.filter((v) => v.id !== versionId));
-  };
-
-  const handleDeleteAllAutosave = () => {
-    setVersions((prev) => prev.filter((v) => !v.isAutosave));
-    setSelectAllAutosave(false);
   };
 
   if (!item) return null;
@@ -70,13 +56,13 @@ const Sidebar = () => {
               totalAutosaveCount={totalAutosaveCount}
               selectAllAutosave={selectAllAutosave}
               onSelectAllChange={setSelectAllAutosave}
-              onDeleteAll={handleDeleteAllAutosave}
+              onDeleteAll={() => {}}
             />
 
             {versions
               .filter((v) => !v.isCurrent)
               .map((version) => (
-                <VersionItem key={version.id} version={version} onDelete={handleDeleteVersion} />
+                <VersionItem key={version.id} version={version} />
               ))}
           </div>
         </div>
