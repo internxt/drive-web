@@ -68,9 +68,17 @@ self.addEventListener('message', (event) => {
       currentSession = {
         sessionId: eventData.sessionId,
         fileSize: eventData.fileSize,
+        mimeType: eventData.mimeType || 'video/mp4',
       };
 
-      console.log('[video-sw] Session registered:', currentSession.sessionId, 'fileSize:', currentSession.fileSize);
+      console.log(
+        '[video-sw] Session registered:',
+        currentSession.sessionId,
+        'fileSize:',
+        currentSession.fileSize,
+        'mimeType:',
+        currentSession.mimeType,
+      );
       break;
 
     case MESSAGE_TYPES.UNREGISTER_VIDEO_SESSION:
@@ -117,16 +125,14 @@ function isSessionActive(sessionId) {
  */
 async function handleVideoStream(request, requestSessionId) {
   if (!currentSession) {
-    console.error('[video-sw] No active session');
     return new Response('No active session', { status: 404 });
   }
 
   if (!isSessionActive(requestSessionId)) {
-    console.error('[video-sw] Session mismatch:', requestSessionId, '!= current:', currentSession.sessionId);
     return new Response('Session mismatch - video changed', { status: 410 });
   }
 
-  const { sessionId, fileSize } = currentSession;
+  const { sessionId, fileSize, mimeType } = currentSession;
 
   const rangeHeader = request.headers.get('Range');
   console.log('[video-sw] Handling request, session:', sessionId, 'range:', rangeHeader);
@@ -137,7 +143,7 @@ async function handleVideoStream(request, requestSessionId) {
       headers: {
         'Accept-Ranges': 'bytes',
         'Content-Length': fileSize.toString(),
-        'Content-Type': 'video/mp4',
+        'Content-Type': mimeType,
       },
     });
   }
@@ -203,12 +209,11 @@ async function handleVideoStream(request, requestSessionId) {
       headers: {
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
         'Content-Length': (end - start + 1).toString(),
-        'Content-Type': 'video/mp4',
+        'Content-Type': mimeType,
         'Accept-Ranges': 'bytes',
       },
     });
   } catch (error) {
-    console.error('[video-sw] Stream error:', error.message);
     return new Response('Stream error: ' + error.message, { status: 500 });
   }
 }
@@ -256,7 +261,6 @@ function requestChunkFromClient(request) {
     });
 
     timeoutId = setTimeout(() => {
-      console.error('[video-sw] Chunk request timeout:', request.requestId);
       channel.port1.close();
       reject(new Error('Chunk request timeout'));
     }, CHUNK_REQUEST_TIMEOUT);

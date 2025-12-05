@@ -38,3 +38,8 @@ const HALF_A_GIGABYTE_IN_BYTES = 512 * 1024 * 1024;
 export function isFileSizePreviewable(size: number): boolean {
   return size < HALF_A_GIGABYTE_IN_BYTES;
 }
+
+export function getVideoMimeType(fileType: string): string {
+  const extension = fileType.toLowerCase() as keyof VideoExtensions;
+  return videoTypes[extension] || 'video/mp4';
+}

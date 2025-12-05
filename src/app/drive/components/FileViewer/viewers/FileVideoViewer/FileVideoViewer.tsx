@@ -1,52 +1,118 @@
-import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
-import { videoTypes } from 'services/media.service';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { getVideoMimeType, localStorageService } from 'services';
+import { VideoStreamingService } from 'app/drive/services/video-streaming.service';
+import { useVideoChunkDownloader } from 'app/drive/hooks/useVideoChunkDownloader';
+import { FormatFileViewerProps } from '../../FileViewer';
 
 const FileVideoViewer = ({
   file,
-  blob,
   setIsPreviewAvailable,
-}: {
-  file: DriveFileData;
-  blob: Blob;
-  setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
-}): JSX.Element => {
-  const [dimensions, setDimensions] = useState({ width: 640, height: 480 });
-  const videoPlayerRef = useRef<HTMLVideoElement>(null);
+  handlersForSpecialItems,
+}: FormatFileViewerProps): JSX.Element => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [canPlay, setCanPlay] = useState(false);
 
-  // Get the dimensions of the video.
+  const user = localStorageService.getUser();
+  const mnemonic = user?.mnemonic ?? '';
+  const bridgeUser = user?.bridgeUser ?? '';
+  const userId = user?.userId ?? '';
+
+  const credentials = useMemo(
+    () => ({
+      user: bridgeUser,
+      pass: userId,
+    }),
+    [bridgeUser, userId],
+  );
+
+  const handleProgress = useCallback(
+    (progress: number) => {
+      handlersForSpecialItems?.handleUpdateProgress(progress);
+    },
+    [handlersForSpecialItems?.handleUpdateProgress],
+  );
+
+  const { handleChunkRequest } = useVideoChunkDownloader({
+    bucketId: file.bucket,
+    fileId: file.fileId,
+    mnemonic,
+    credentials,
+    handleProgress,
+  });
+
   useEffect(() => {
-    const videoPlayer = videoPlayerRef.current as HTMLVideoElement;
+    if (!credentials.user || !credentials.pass || !mnemonic) {
+      console.error('[FileVideoViewer] Missing credentials');
+      return;
+    }
 
-    videoPlayer.addEventListener('loadedmetadata', () => {
-      const { videoWidth, videoHeight } = videoPlayer;
-      setDimensions({ width: videoWidth, height: videoHeight });
+    const service = new VideoStreamingService(
+      {
+        fileSize: file.size,
+        mimeType: getVideoMimeType(file.type),
+      },
+      handleChunkRequest,
+    );
 
-      videoPlayer.play().catch((err) => {
-        const error = err as Error;
-        console.error('[ERROR WHILE PLAYING VIDEO/STACK]: ', error.stack ?? error.message);
+    service
+      .init()
+      .then(() => {
+        if (videoRef.current) {
+          videoRef.current.src = service.getVideoUrl();
+          videoRef.current.load();
+        }
+      })
+      .catch((error) => {
+        console.error('[FileVideoViewer] Error:', error);
         setIsPreviewAvailable(false);
       });
-    });
 
-    const type: string = videoTypes[file.type] ?? 'video/webm';
-
-    videoPlayer.src = URL.createObjectURL(new Blob([blob], { type }));
-
-    // Cleanup
     return () => {
-      URL.revokeObjectURL(videoPlayer.src);
+      service.destroy();
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.removeAttribute('src');
+      }
+    };
+  }, [file.fileId, file.bucket, file.size, file.type, handleChunkRequest, mnemonic, setIsPreviewAvailable]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.addEventListener('error', (event) => handleError(event, video));
+    video.addEventListener('canplay', handleCanPlay);
+
+    return () => {
+      video.removeEventListener('error', (event) => handleError(event, video));
+      video.removeEventListener('canplay', handleCanPlay);
     };
   }, []);
 
+  const handleError = (event: Event, video: HTMLVideoElement) => {
+    console.error('[FileVideoViewer] Video error:', event);
+    const error = video.error;
+    if (error) {
+      console.error('[FileVideoViewer] Error code:', error.code, 'message:', error.message);
+    }
+    setIsPreviewAvailable(false);
+  };
+
+  const handleCanPlay = () => {
+    handlersForSpecialItems?.handleUpdateProgress(1);
+    setCanPlay(true);
+  };
+
   return (
-    <div className={'flex max-h-screen w-full flex-col items-center justify-center'}>
-      <video
-        ref={videoPlayerRef}
-        controls
-        className={`${dimensions.width > dimensions.height ? 'w-full' : 'max-h-screen'}`}
-      ></video>
-    </div>
+    <video
+      ref={videoRef}
+      controls
+      autoPlay
+      style={{ width: '100%', maxHeight: '80vh', backgroundColor: '#000' }}
+      className={canPlay ? 'flex' : 'hidden'}
+    >
+      <track kind="captions" />
+    </video>
   );
 };
 
