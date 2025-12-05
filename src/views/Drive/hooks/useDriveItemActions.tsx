@@ -103,7 +103,7 @@ const useDriveItemActions = (item): DriveItemActions => {
 
   const onViewVersionHistoryButtonClicked = () => {
     dispatch(uiActions.setVersionHistoryItem(item as DriveItemData));
-    dispatch(uiActions.setIsVersionHistoryDialogOpen(true));
+    dispatch(uiActions.setIsVersionHistorySidebarOpen(true));
   };
 
   const onMoveToTrashButtonClicked = () => {

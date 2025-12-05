@@ -272,7 +272,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const viewVersionHistory = useCallback(
     (item: ContextMenuDriveItem) => {
       dispatch(uiActions.setVersionHistoryItem(item as DriveItemData));
-      dispatch(uiActions.setIsVersionHistoryDialogOpen(true));
+      dispatch(uiActions.setIsVersionHistorySidebarOpen(true));
     },
     [dispatch, uiActions],
   );

@@ -8,7 +8,7 @@ import { FileVersion } from './types';
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
-  const isOpen = useAppSelector((state: RootState) => state.ui.isVersionHistoryDialogOpen);
+  const isOpen = useAppSelector((state: RootState) => state.ui.isVersionHistorySidebarOpen);
   const item = useAppSelector((state: RootState) => state.ui.versionHistoryItem);
   const { translate } = useTranslationContext();
 
@@ -33,7 +33,7 @@ const Sidebar = () => {
   const totalAutosaveCount = autosaveVersions.length;
 
   const onClose = () => {
-    dispatch(uiActions.setIsVersionHistoryDialogOpen(false));
+    dispatch(uiActions.setIsVersionHistorySidebarOpen(false));
   };
 
   const handleDeleteVersion = (versionId: string) => {
