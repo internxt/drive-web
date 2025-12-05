@@ -4,22 +4,22 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": {
-      "blueText": "90% de descuento",
-      "text": "en todos los planes"
+    "label": { "blueText": "Obtén 87% de descuento", "text": "en todos los Planes" },
+    "title": "¡Obtén un descuento exclusivo!",
+    "subTitle": {
+      "blueText": "Oferta especial:",
+      "text": "almacena archivos con privacidad por menos"
     },
-    "title": "¡Consigue tu oferta especial de Black Friday!",
-    "subTitle": "El **mayor descuento** para la **máxima privacidad**",
-    "ctaGet": "Aceptar invitación",
+    "ctaGet": "Obtener la oferta",
     "ctaContinue": "Continuar gratis",
-    "guarantee": "Garantía de devolución de 30 días",
+    "guarantee": "Garantía de devolución de dinero de 30 días",
     "products": {
       "drive": "Drive",
       "antivirus": "Antivirus",
-      "cleaner": "Limpiador",
+      "cleaner": "Cleaner",
       "vpn": "VPN",
       "meet": "Meet",
-      "mail": "Correo"
+      "mail": "Mail"
     }
   },
   "susbcriptionsBanner": {
@@ -1044,6 +1044,35 @@
     "restrictedPasswordModal": {
       "title": "Desbloquear el uso compartido con contraseña",
       "subtitle": "Añade una capa extra de seguridad protegiendo tus enlaces compartidos con una contraseña."
+    },
+    "upgradePlanDialog": {
+      "upgrade": "Mejorar",
+      "cancel": "Cancelar",
+      "soonBadge": "Soon",
+      "default": {
+        "title": "Mejora tu plan",
+        "description": "Tu plan actual no permite usar esta función. Mejora ahora para desbloquear todos los beneficios de Internxt."
+      },
+      "meet": {
+        "title": "Desbloquear Meet",
+        "description": "Mejora tu plan ahora para organizar y unirte a videollamadas totalmente cifradas — privadas, seguras y sin límites."
+      },
+      "mail": {
+        "title": "Desbloquear Mail",
+        "description": "Mejora tu plan ahora para conseguir tu servicio de email privado con cifrado de extremo a extremo."
+      },
+      "vpn": {
+        "title": "Desbloquear VPN",
+        "description": "Mejora tu plan ahora para proteger tu tráfico con navegación privada y cifrada."
+      },
+      "antivirus": {
+        "title": "Desbloquear Antivirus",
+        "description": "Mejora tu plan ahora para analizar, detectar y bloquear malware en tiempo real."
+      },
+      "cleaner": {
+        "title": "Desbloquear Cleaner",
+        "description": "Mejora tu plan ahora para mantener tus archivos optimizados y liberar espacio."
+      }
     }
   },
   "form": {
@@ -1967,7 +1996,7 @@
               "Cleaner",
               "Meet"
             ],
-            "comingSoonFeatures": ["Versionado de archivos","Mail"]
+            "comingSoonFeatures": ["Versionado de archivos", "Mail"]
           },
           "1GB": {
             "title": "Gratis",

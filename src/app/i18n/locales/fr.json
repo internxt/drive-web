@@ -4,13 +4,13 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": {
-      "blueText": "90% de réduction",
-      "text": "sur tous les forfaits"
+    "label": { "blueText": "Obtenez 87% de réduction", "text": "sur tous les Plans Premium" },
+    "title": "Obtenez une remise exclusive !",
+    "subTitle": {
+      "blueText": "Offre spéciale :",
+      "text": "stockez vos fichiers en privé pour moins cher"
     },
-    "title": "Profitez de votre offre spéciale Black Friday !",
-    "subTitle": "La **plus grande réduction** pour une **confidentialité maximale**",
-    "ctaGet": "Accepter l'invitation",
+    "ctaGet": "Profiter de l'offre",
     "ctaContinue": "Continuer gratuitement",
     "guarantee": "Garantie de remboursement de 30 jours",
     "products": {
@@ -996,6 +996,35 @@
     "restrictedPasswordModal": {
       "title": "Débloquer le partage protégé par mot de passe",
       "subtitle": "Ajoutez une couche de sécurité supplémentaire en protégeant vos liens partagés avec un mot de passe."
+    },
+    "upgradePlanDialog": {
+      "upgrade": "Améliorer",
+      "cancel": "Annuler",
+      "soonBadge": "Bientôt",
+      "default": {
+        "title": "Mettre à niveau maintenant",
+        "description": "Votre offre actuelle ne permet pas d’accéder à cette fonctionnalité. Mettez à niveau pour débloquer tous les avantages d’Internxt."
+      },
+      "meet": {
+        "title": "Débloquer Meet",
+        "description": "Mettez à niveau pour organiser et rejoindre des appels vidéo entièrement chiffrés — privés, sécurisés et illimités."
+      },
+      "mail": {
+        "title": "Débloquer Mail",
+        "description": "Débloquez votre service de messagerie privée avec chiffrement de bout en bout."
+      },
+      "vpn": {
+        "title": "Débloquer VPN",
+        "description": "Mettez à niveau votre offre pour protéger votre trafic avec une navigation privée et chiffrée."
+      },
+      "antivirus": {
+        "title": "Débloquer Antivirus",
+        "description": "Mettez à niveau pour analyser, détecter et bloquer les malwares en temps réel."
+      },
+      "cleaner": {
+        "title": "Débloquer Cleaner",
+        "description": "Mettez à niveau pour optimiser vos fichiers et libérer de l’espace."
+      }
     }
   },
   "form": {
@@ -1867,59 +1896,59 @@
           "comingSoon": "Bientôt disponible",
           "storage": " stockage chiffré",
           "1TB": {
-              "title": "Essential (Essentiel)",
-              "features": [
-                  "1To de stockage chiffré",
-                  "Chiffrement Post-Quantique",
-                  "Chiffrement Zéro-Connaissance",
-                  "Authentification à Deux Facteurs",
-                  "Sauvegarde de votre ordinateur",
-                  "Partage de fichiers protégé par mot de passe",
-                  "VPN Chiffré",
-                  "Antivirus"
-              ],
-              "comingSoonFeatures": ["Historique des versions de fichiers"]
+            "title": "Essential (Essentiel)",
+            "features": [
+              "1To de stockage chiffré",
+              "Chiffrement Post-Quantique",
+              "Chiffrement Zéro-Connaissance",
+              "Authentification à Deux Facteurs",
+              "Sauvegarde de votre ordinateur",
+              "Partage de fichiers protégé par mot de passe",
+              "VPN Chiffré",
+              "Antivirus"
+            ],
+            "comingSoonFeatures": ["Historique des versions de fichiers"]
           },
           "3TB": {
-              "title": "Premium",
-              "features": [
-                  "3To de stockage chiffré",
-                  "Chiffrement Post-Quantique",
-                  "Chiffrement Zéro-Connaissance",
-                  "Authentification à Deux Facteurs",
-                  "Sauvegarde de votre ordinateur",
-                  "Partage de fichiers protégé par mot de passe",
-                  "Inviter, partager et collaborer",
-                  "VPN Chiffré",
-                  "Antivirus",
-                  "Nettoyeur"
-              ],
-              "comingSoonFeatures": ["Historique des versions de fichiers"]
+            "title": "Premium",
+            "features": [
+              "3To de stockage chiffré",
+              "Chiffrement Post-Quantique",
+              "Chiffrement Zéro-Connaissance",
+              "Authentification à Deux Facteurs",
+              "Sauvegarde de votre ordinateur",
+              "Partage de fichiers protégé par mot de passe",
+              "Inviter, partager et collaborer",
+              "VPN Chiffré",
+              "Antivirus",
+              "Nettoyeur"
+            ],
+            "comingSoonFeatures": ["Historique des versions de fichiers"]
           },
           "5TB": {
-              "title": "Ultimate (Ultime)",
-              "features": [
-                  "5To de stockage chiffré",
-                  "Chiffrement Post-Quantique",
-                  "Chiffrement Zéro-Connaissance",
-                  "Authentification à Deux Facteurs",
-                  "Sauvegarde de votre ordinateur",
-                  "Partage de fichiers protégé par mot de passe",
-                  "Inviter, partager et collaborer",
-                  "Support CLI et WebDav",
-                  "Support NAS et Rclone",
-                  "VPN Chiffré",
-                  "Antivirus",
-                  "Nettoyeur",
-                  "Meet (Réunion)"
-              ],
-              "comingSoonFeatures": ["Historique des versions de fichiers", "Mail"]
+            "title": "Ultimate (Ultime)",
+            "features": [
+              "5To de stockage chiffré",
+              "Chiffrement Post-Quantique",
+              "Chiffrement Zéro-Connaissance",
+              "Authentification à Deux Facteurs",
+              "Sauvegarde de votre ordinateur",
+              "Partage de fichiers protégé par mot de passe",
+              "Inviter, partager et collaborer",
+              "Support CLI et WebDav",
+              "Support NAS et Rclone",
+              "VPN Chiffré",
+              "Antivirus",
+              "Nettoyeur",
+              "Meet (Réunion)"
+            ],
+            "comingSoonFeatures": ["Historique des versions de fichiers", "Mail"]
           },
           "1GB": {
-              "title": "Gratuit",
-              "features": ["1Go de stockage chiffré", "VPN Chiffré"]
+            "title": "Gratuit",
+            "features": ["1Go de stockage chiffré", "VPN Chiffré"]
           }
-      },
+        },
         "businessPlanFeaturesList": {
           "title": "Détails du plan",
           "storage": " de stockage",

@@ -1,14 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { addBreadcrumb, captureException } from '@sentry/react';
 import { AxiosError, AxiosResponse } from 'axios';
 import AppError from 'app/core/types';
 import errorService from './error.service';
 import envService from './env.service';
-
-vi.mock('@sentry/react', () => ({
-  addBreadcrumb: vi.fn(),
-  captureException: vi.fn(),
-}));
 
 vi.mock('./env.service', () => ({
   default: { getVariable: vi.fn() },
@@ -35,51 +29,12 @@ describe('Error Service', () => {
   };
 
   describe('reportError', () => {
-    it('reports errors to the error tracking service with optional context', () => {
-      const error = new Error('Test error');
-      const context = { tags: { module: 'test' } };
-      mockEnvService.mockReturnValue('production');
-
-      errorService.reportError(error);
-      expect(captureException).toHaveBeenCalledWith(error, undefined);
-
-      errorService.reportError(error, context);
-      expect(captureException).toHaveBeenCalledWith(error, context);
-    });
-
-    it('displays errors in the console when running in development mode', () => {
+    it('displays errors in the console', () => {
       const error = new Error('Test error');
       mockEnvService.mockReturnValue('development');
-
       errorService.reportError(error);
 
-      expect(console.error).toHaveBeenCalledWith(
-        '[ERROR_CATCHED]: This error has been catched and is being reported to Sentry',
-        error,
-      );
-      expect(captureException).toHaveBeenCalled();
-    });
-
-    it('suppresses console output when running in production mode', () => {
-      mockEnvService.mockReturnValue('production');
-
-      errorService.reportError('String error');
-
-      expect(console.error).not.toHaveBeenCalled();
-      expect(captureException).toHaveBeenCalled();
-    });
-  });
-
-  describe('addBreadcrumb', () => {
-    it('records breadcrumb trails for debugging errors', () => {
-      const breadcrumb = { message: 'User clicked button', category: 'user', level: 'info' as const };
-      const breadcrumbWithData = { message: 'API call', category: 'http', data: { url: '/api/test' } };
-
-      errorService.addBreadcrumb(breadcrumb);
-      expect(addBreadcrumb).toHaveBeenCalledWith(breadcrumb);
-
-      errorService.addBreadcrumb(breadcrumbWithData);
-      expect(addBreadcrumb).toHaveBeenCalledWith(breadcrumbWithData);
+      expect(console.error).toHaveBeenCalledWith('[ERROR]: There was an error: ', error);
     });
   });
 

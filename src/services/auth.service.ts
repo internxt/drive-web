@@ -10,7 +10,6 @@ import {
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { ChangePasswordPayloadNew } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import * as Sentry from '@sentry/react';
 import { trackSignUp } from 'app/analytics/impact.service';
 import { trackLead } from 'app/analytics/meta.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
@@ -190,12 +189,6 @@ export const doLogin = async (
       const { privateKey: encryptedPrivateKey } = user;
 
       const { publicKey, privateKey, publicKyberKey, privateKyberKey } = parseAndDecryptUserKeys(user, password);
-
-      Sentry.setUser({
-        id: user.uuid,
-        email: user.email,
-        sharedWorkspace: user.sharedWorkspace,
-      });
 
       if (encryptedPrivateKey) {
         await assertPrivateKeyIsValid(encryptedPrivateKey, password);

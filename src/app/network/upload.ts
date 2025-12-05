@@ -1,6 +1,4 @@
 import { Network } from '@internxt/sdk/dist/network';
-import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
-import * as Sentry from '@sentry/react';
 import { getSha256 } from '../crypto/services/utils';
 import { NetworkFacade } from './NetworkFacade';
 import { ConnectionLostError } from './requests';
@@ -111,7 +109,6 @@ export async function uploadFile(bucketId: string, params: IUploadParams): Promi
         }
 
         console.warn(`Attempt ${attempt} of ${MAX_TRIES} failed:`, err);
-        Sentry.captureException(err, { extra: (err as ErrorWithContext).context });
 
         const lastTryFailed = attempt === MAX_TRIES;
 
