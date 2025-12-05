@@ -100,7 +100,7 @@ const DriveTopBarActions = ({
 
   const onViewVersionHistoryButtonClicked = (): void => {
     dispatch(uiActions.setVersionHistoryItem(selectedItems[0]));
-    dispatch(uiActions.setIsVersionHistoryDialogOpen(true));
+    dispatch(uiActions.setIsVersionHistorySidebarOpen(true));
   };
 
   const onBulkDeleteButtonClicked = (): void => {

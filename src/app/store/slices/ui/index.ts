@@ -9,7 +9,7 @@ interface UISliceState {
   isShareDialogOpen: boolean;
   isInvitationsDialogOpen: boolean;
   isItemDetailsDialogOpen: boolean;
-  isVersionHistoryDialogOpen: boolean;
+  isVersionHistorySidebarOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   isMoveItemsDialogOpen: boolean;
@@ -43,7 +43,7 @@ const initialState: UISliceState = {
   isShareDialogOpen: false,
   isInvitationsDialogOpen: false,
   isItemDetailsDialogOpen: false,
-  isVersionHistoryDialogOpen: false,
+  isVersionHistorySidebarOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
   isMoveItemsDialogOpen: false,
@@ -92,8 +92,8 @@ export const uiSlice = createSlice({
     setIsItemDetailsDialogOpen(state: UISliceState, action: PayloadAction<boolean>) {
       state.isItemDetailsDialogOpen = action.payload;
     },
-    setIsVersionHistoryDialogOpen(state: UISliceState, action: PayloadAction<boolean>) {
-      state.isVersionHistoryDialogOpen = action.payload;
+    setIsVersionHistorySidebarOpen(state: UISliceState, action: PayloadAction<boolean>) {
+      state.isVersionHistorySidebarOpen = action.payload;
     },
     setVersionHistoryItem: (state: UISliceState, action: PayloadAction<UISliceState['versionHistoryItem']>) => {
       state.versionHistoryItem = action.payload;
