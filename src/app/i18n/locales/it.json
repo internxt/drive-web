@@ -9,22 +9,22 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": {
-      "blueText": "Скидка 90%",
-      "text": "на все тарифы"
+    "label": { "blueText": "Ottieni l'87% di sconto", "text": "su tutti i Piani Premium" },
+    "title": "Ottieni uno sconto esclusivo!",
+    "subTitle": {
+      "blueText": "Offerta speciale:",
+      "text": "archivia i file in privato per meno"
     },
-    "title": "Получите специальное предложение Черной пятницы!",
-    "subTitle": "**Максимальная скидка** для **максимальной конфиденциальности**",
-    "ctaGet": "Принять приглашение",
-    "ctaContinue": "Продолжить бесплатно",
-    "guarantee": "30-дневная гарантия возврата денег",
+    "ctaGet": "Approfitta dell'offerta",
+    "ctaContinue": "Continua gratis",
+    "guarantee": "Garanzia di rimborso di 30 giorni",
     "products": {
       "drive": "Drive",
-      "antivirus": "Антивирус",
-      "cleaner": "Очистка",
+      "antivirus": "Antivirus",
+      "cleaner": "Cleaner",
       "vpn": "VPN",
       "meet": "Meet",
-      "mail": "Почта"
+      "mail": "Mail"
     }
   },
   "susbcriptionsBanner": {
