@@ -143,6 +143,48 @@ describe('Stream service', () => {
       expect(result).toBeInstanceOf(Uint8Array);
       expect(result.length).toBe(0);
     });
+
+    test('When a function to read the bytes is provided, then it tracks progress with accumulated bytes', async () => {
+      const mockData = [new Uint8Array([1, 2, 3]), new Uint8Array([4, 5]), new Uint8Array([6, 7, 8, 9])];
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          for (const chunk of mockData) {
+            controller.enqueue(chunk);
+          }
+          controller.close();
+        },
+      });
+
+      const onRead = vi.fn();
+      const result = await binaryStreamToUint8Array(stream, onRead);
+
+      expect(result).toBeInstanceOf(Uint8Array);
+      expect(result.length).toBe(9);
+      expect(Array.from(result)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
+      expect(onRead).toHaveBeenCalledTimes(3);
+      expect(onRead).toHaveBeenNthCalledWith(1, 3);
+      expect(onRead).toHaveBeenNthCalledWith(2, 5);
+      expect(onRead).toHaveBeenNthCalledWith(3, 9);
+    });
+
+    test('When a function to read the bytes is not provided, then the stream is processed normally', async () => {
+      const mockData = [new Uint8Array([1, 2, 3]), new Uint8Array([4, 5, 6])];
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          for (const chunk of mockData) {
+            controller.enqueue(chunk);
+          }
+          controller.close();
+        },
+      });
+
+      const result = await binaryStreamToUint8Array(stream);
+
+      expect(result).toBeInstanceOf(Uint8Array);
+      expect(result.length).toBe(6);
+      expect(Array.from(result)).toEqual([1, 2, 3, 4, 5, 6]);
+    });
   });
 
   describe('buildProgressStream', () => {
