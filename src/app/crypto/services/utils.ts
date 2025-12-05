@@ -2,20 +2,9 @@ import { aes, items as itemUtils } from '@internxt/lib';
 import envService from 'services/env.service';
 import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js';
-import { blake3, createHMAC, createSHA256, createSHA512, ripemd160, sha256, sha512 } from 'hash-wasm';
+import { blake3, createSHA256, createSHA512, ripemd160, sha256 } from 'hash-wasm';
 import { DriveItemData } from 'app/drive/types';
 import { AdvancedSharedItem } from '../../share/types';
-
-/**
- * Computes hmac-sha512
- * @param {string} encryptionKeyHex - The hmac key in HEX format
- * @param {string} dataArray - The input array of data
- * @returns {Promise<string>} The result of applying hmac-sha512 to the array of data.
- */
-function getHmacSha512FromHexKey(encryptionKeyHex: string, dataArray: string[] | Buffer[]): Promise<string> {
-  const encryptionKey = Buffer.from(encryptionKeyHex, 'hex');
-  return getHmacSha512(encryptionKey, dataArray);
-}
 
 /**
  * Computes sha512 from combined key and data
@@ -26,22 +15,6 @@ function getHmacSha512FromHexKey(encryptionKeyHex: string, dataArray: string[] |
 async function getSha512Combined(key: Buffer, data: Buffer): Promise<string> {
   const hash = await createSHA512();
   return hash.init().update(key).update(data).digest();
-}
-
-/**
- * Computes hmac-sha512
- * @param {Buffer} encryptionKey - The hmac key
- * @param {string} dataArray - The input array of data
- * @returns {Promise<string>} The result of applying hmac-sha512 to the array of data.
- */
-async function getHmacSha512(encryptionKey: Buffer, dataArray: string[] | Buffer[]): Promise<string> {
-  const hashFunc = createSHA512();
-  const hmac = await createHMAC(hashFunc, encryptionKey);
-  hmac.init();
-  for (const data of dataArray) {
-    hmac.update(data);
-  }
-  return hmac.digest();
 }
 
 interface PassObjectInterface {
@@ -74,16 +47,6 @@ function getSha256(data: string): Promise<string> {
  */
 function getSha256Hasher() {
   return createSHA256();
-}
-
-/**
- * Computes sha512
- * @param {string} dataHex - The input data in HEX format
- * @returns {Promise<string>} The result of applying sha512 to the data.
- */
-function getSha512FromHex(dataHex: string): Promise<string> {
-  const data = Buffer.from(dataHex, 'hex');
-  return sha512(data);
 }
 
 /**
@@ -169,14 +132,11 @@ export {
   encryptTextWithKey,
   excludeHiddenItems,
   extendSecret,
-  getHmacSha512,
-  getHmacSha512FromHexKey,
   getItemPlainName,
   getRipemd160FromHex,
   getSha256,
   getSha256Hasher,
   getSha512Combined,
-  getSha512FromHex,
   passToHash,
   renameFile,
 };

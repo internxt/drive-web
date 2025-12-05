@@ -2,7 +2,6 @@ import envService from 'services/env.service';
 import axios, { AxiosBasicCredentials, AxiosRequestConfig } from 'axios';
 import errorService from 'services/error.service';
 import { getSha256 } from '../crypto/services/utils';
-import { encryptFilename, generateHMAC } from './crypto';
 import { LegacyShardMeta, ShardMeta } from './types';
 
 // TODO: Make this injectable
@@ -345,31 +344,6 @@ export async function getUploadUrl(
   );
 
   return url;
-}
-
-export async function finishUpload(
-  mnemonic: string,
-  bucketId: string,
-  frameId: string,
-  filename: string,
-  index: Buffer,
-  encryptionKey: Buffer,
-  shardMeta: Omit<ShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>,
-  creds: NetworkCredentials,
-): Promise<string> {
-  const payload: CreateEntryFromFramePayload = {
-    frame: frameId,
-    filename: await encryptFilename(mnemonic, bucketId, filename),
-    index: index.toString('hex'),
-    hmac: {
-      type: 'sha512',
-      value: await generateHMAC([shardMeta], encryptionKey),
-    },
-  };
-
-  const bucketEntry = await createEntryFromFrame(bucketId, payload, creds);
-
-  return bucketEntry.id;
 }
 
 export const CONNECTION_LOST_ERROR_MESSAGE = 'Connection lost';
