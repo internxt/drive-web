@@ -5,11 +5,10 @@ import { FileVersion } from '../types';
 
 interface UseVersionItemActionsParams {
   version: FileVersion;
-  onDelete: (id: string) => void;
   onDropdownClose: () => void;
 }
 
-export const useVersionItemActions = ({ version, onDelete, onDropdownClose }: UseVersionItemActionsParams) => {
+export const useVersionItemActions = ({ version, onDropdownClose }: UseVersionItemActionsParams) => {
   const { translate } = useTranslationContext();
 
   const handleRestore = () => {
@@ -21,7 +20,6 @@ export const useVersionItemActions = ({ version, onDelete, onDropdownClose }: Us
   };
 
   const handleDelete = () => {
-    onDelete(version.id);
     onDropdownClose();
   };
 
