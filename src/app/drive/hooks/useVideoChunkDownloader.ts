@@ -36,7 +36,6 @@ export function useVideoChunkDownloader(config: VideoChunkDownloaderConfig) {
         const progress = bytes / (end - start);
         if (chunkCache.size === 0 && config.handleProgress) {
           const currentProgress = progress >= 1 ? 0.95 : progress;
-          console.log('PROGRESS', currentProgress);
           config.handleProgress(currentProgress);
         }
       });
