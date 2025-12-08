@@ -81,6 +81,7 @@ const FileViewerWrapper = ({
   const isSharedView = pathId === 'shared';
 
   const driveItemActions = useDriveItemActions(currentFile);
+  const fileContentManager = getFileContentManager(currentFile, downloadFile);
 
   const onDownload = () => {
     if (currentFile) {
@@ -187,6 +188,7 @@ const FileViewerWrapper = ({
     setBlob(null);
     setIsDownloadStarted(false);
     setUpdateProgress(0);
+    fileContentManager.abort();
     if (direction === 'next') {
       setCurrentFile?.(currentFolder[fileIndex + 1]);
     } else {
@@ -293,8 +295,6 @@ const FileViewerWrapper = ({
       });
     }
   };
-
-  const fileContentManager = getFileContentManager(currentFile, downloadFile);
 
   const handlersForSpecialItems = {
     handleUpdateProgress: handleProgress,

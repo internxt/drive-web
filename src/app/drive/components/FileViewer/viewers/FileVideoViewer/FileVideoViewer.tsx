@@ -68,11 +68,7 @@ const FileVideoViewer = ({
       });
 
     return () => {
-      service.destroy();
-      if (videoRef.current) {
-        videoRef.current.pause();
-        videoRef.current.removeAttribute('src');
-      }
+      onUnmountComponent(service, videoRef.current);
     };
   }, [file.fileId, file.bucket, file.size, file.type, handleChunkRequest, mnemonic, setIsPreviewAvailable]);
 
@@ -88,6 +84,17 @@ const FileVideoViewer = ({
       video.removeEventListener('canplay', handleCanPlay);
     };
   }, []);
+
+  const onUnmountComponent = (service: VideoStreamingService, currentVideoRef: HTMLVideoElement | null) => {
+    service.destroy().catch((error) => {
+      console.error('[FileVideoViewer] Error destroying service:', error);
+    });
+    setCanPlay(false);
+    if (currentVideoRef) {
+      currentVideoRef.pause();
+      currentVideoRef.removeAttribute('src');
+    }
+  };
 
   const handleError = (event: Event, video: HTMLVideoElement) => {
     console.error('[FileVideoViewer] Video error:', event);

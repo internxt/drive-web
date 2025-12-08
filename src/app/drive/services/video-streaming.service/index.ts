@@ -17,6 +17,7 @@ export class VideoStreamingService {
   private readonly sessionId = crypto.randomUUID();
   private messageHandler: ((event: MessageEvent) => void | Promise<void>) | null = null;
   private isDestroyed = false;
+  private destroyPromise: Promise<void> | null = null;
 
   constructor(
     private readonly session: VideoStreamSession,
@@ -36,30 +37,31 @@ export class VideoStreamingService {
 
     this.setupMessageListener();
 
-    sw.postMessage({
-      type: 'REGISTER_VIDEO_SESSION',
-      sessionId: this.sessionId,
-      fileSize: this.session.fileSize,
-      mimeType: this.session.mimeType,
-    });
+    await this.registerSession(sw);
 
-    console.log('[VideoSWBridge] Session registered:', this.sessionId);
+    console.log('[VideoSWBridge] Session registered and confirmed:', this.sessionId);
   }
 
   getVideoUrl(): string {
     return `/video-stream/${this.sessionId}`;
   }
 
-  destroy(): void {
+  async destroy(): Promise<void> {
+    if (this.destroyPromise) {
+      return this.destroyPromise;
+    }
+
+    this.destroyPromise = this.performDestroy();
+    return this.destroyPromise;
+  }
+
+  private async performDestroy(): Promise<void> {
     console.log('[VideoSWBridge] Destroying session:', this.sessionId);
     this.isDestroyed = true;
 
     const sw = navigator.serviceWorker.controller;
     if (sw) {
-      sw.postMessage({
-        type: 'UNREGISTER_VIDEO_SESSION',
-        sessionId: this.sessionId,
-      });
+      await this.unregisterSession(sw);
     }
 
     if (this.messageHandler) {
@@ -261,6 +263,62 @@ export class VideoStreamingService {
     port.postMessage({
       requestId,
       error,
+    });
+  }
+
+  private registerSession(sw: ServiceWorker): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const channel = new MessageChannel();
+
+      const timeout = setTimeout(() => {
+        channel.port1.close();
+        reject(new Error('Session registration timeout'));
+      }, DEFAULT_TIMEOUT);
+
+      channel.port1.onmessage = (event) => {
+        if (event.data.type === 'SESSION_REGISTERED' && event.data.sessionId === this.sessionId) {
+          clearTimeout(timeout);
+          channel.port1.close();
+          resolve();
+        }
+      };
+
+      sw.postMessage(
+        {
+          type: 'REGISTER_VIDEO_SESSION',
+          sessionId: this.sessionId,
+          fileSize: this.session.fileSize,
+          mimeType: this.session.mimeType,
+        },
+        [channel.port2],
+      );
+    });
+  }
+
+  private async unregisterSession(sw: ServiceWorker): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const channel = new MessageChannel();
+
+      const timeout = setTimeout(() => {
+        channel.port1.close();
+        reject(new Error('Session registration timeout'));
+      }, DEFAULT_TIMEOUT);
+
+      channel.port1.onmessage = (event) => {
+        if (event.data.type === 'SESSION_UNREGISTERED' && event.data.sessionId === this.sessionId) {
+          clearTimeout(timeout);
+          channel.port1.close();
+          resolve();
+        }
+      };
+
+      sw.postMessage(
+        {
+          type: 'UNREGISTER_VIDEO_SESSION',
+          sessionId: this.sessionId,
+        },
+        [channel.port2],
+      );
     });
   }
 }

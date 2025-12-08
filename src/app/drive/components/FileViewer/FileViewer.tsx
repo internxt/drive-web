@@ -48,7 +48,6 @@ interface FileViewerProps {
 export interface FormatFileViewerProps {
   file: PreviewFileItem;
   blob?: Blob | null;
-  changeFile?: (direction: 'next' | 'prev') => void;
   setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
   handlersForSpecialItems?: {
     handleUpdateProgress: (progress: number) => void;
@@ -230,7 +229,6 @@ const FileViewer = ({
                   <Suspense fallback={<div></div>}>
                     <Viewer
                       blob={blob}
-                      changeFile={changeFile}
                       file={file}
                       setIsPreviewAvailable={setIsPreviewAvailable}
                       handlersForSpecialItems={handlersForSpecialItems}

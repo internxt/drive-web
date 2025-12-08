@@ -2,12 +2,15 @@
 
 const STREAM_PREFIX = '/video-stream/';
 
-let currentSession = null;
+const currentSession = new Map();
 const MESSAGE_TYPES = {
   PING: 'PING',
   CLAIM_CLIENTS: 'CLAIM_CLIENTS',
   REGISTER_VIDEO_SESSION: 'REGISTER_VIDEO_SESSION',
   UNREGISTER_VIDEO_SESSION: 'UNREGISTER_VIDEO_SESSION',
+  SESSION_REGISTERED: 'SESSION_REGISTERED',
+  SESSION_UNREGISTERED: 'SESSION_UNREGISTERED',
+  CLEAR_SESSIONS: 'CLEAR_SESSIONS',
 };
 const DEFAULT_CHUNK_SIZE = 5 * 1024 * 1024;
 const CHUNK_REQUEST_TIMEOUT = 30 * 1000;
@@ -60,40 +63,47 @@ self.addEventListener('message', (event) => {
     // Handle REGISTER_VIDEO_SESSION and UNREGISTER_VIDEO_SESSION messages - used to register and unregister video sessions.
     // It helps us to just handle the video stream for the current session (current video) as sometimes we can have fetch from another file and causes
     // the video stream to stop working because we are mixing video streams in the "current session".
-    case MESSAGE_TYPES.REGISTER_VIDEO_SESSION:
-      if (currentSession) {
-        console.log('[video-sw] Replacing session:', currentSession.sessionId, '→', eventData.sessionId);
+    case MESSAGE_TYPES.REGISTER_VIDEO_SESSION: {
+      const existingSession = currentSession.get(eventData.sessionId);
+      if (existingSession) {
+        console.log('[video-sw] Session already exists:', eventData.sessionId);
+      } else if (currentSession.size > 0) {
+        const existingSessionId = Array.from(currentSession.keys())[0];
+        console.log('[video-sw] Replacing session:', existingSessionId, '→', eventData.sessionId);
       }
 
-      currentSession = {
-        sessionId: eventData.sessionId,
-        fileSize: eventData.fileSize,
-        mimeType: eventData.mimeType || 'video/mp4',
-      };
+      currentSession.set(eventData.sessionId, eventData);
 
-      console.log(
-        '[video-sw] Session registered:',
-        currentSession.sessionId,
-        'fileSize:',
-        currentSession.fileSize,
-        'mimeType:',
-        currentSession.mimeType,
-      );
+      // Send confirmation back to the client
+      if (event.ports && event.ports[0]) {
+        event.ports[0].postMessage({ type: MESSAGE_TYPES.SESSION_REGISTERED, sessionId: eventData.sessionId });
+      }
       break;
+    }
 
-    case MESSAGE_TYPES.UNREGISTER_VIDEO_SESSION:
-      if (currentSession && currentSession.sessionId === eventData.sessionId) {
+    case MESSAGE_TYPES.UNREGISTER_VIDEO_SESSION: {
+      const session = getSession(eventData.sessionId);
+      if (session) {
         console.log('[video-sw] Session unregistered:', eventData.sessionId);
-        currentSession = null;
+        currentSession.delete(eventData.sessionId);
       } else {
-        console.log('[video-sw] Ignoring unregister for old session:', eventData.sessionId);
+        console.log('[video-sw] Session not found for unregister:', eventData.sessionId);
+      }
+
+      // Send confirmation back to the client
+      if (event.ports && event.ports[0]) {
+        event.ports[0].postMessage({ type: MESSAGE_TYPES.SESSION_UNREGISTERED, sessionId: eventData.sessionId });
       }
       break;
-
+    }
     default:
       break;
   }
 });
+
+function getSession(sessionId) {
+  return currentSession.get(sessionId);
+}
 
 /**
  * Intercepting fetch requests, by filtering the ones that start with the STREAM_PREFIX
@@ -114,7 +124,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 function isSessionActive(sessionId) {
-  return currentSession && currentSession.sessionId === sessionId;
+  return currentSession.has(sessionId);
 }
 
 /**
@@ -132,7 +142,7 @@ async function handleVideoStream(request, requestSessionId) {
     return new Response('Session mismatch - video changed', { status: 410 });
   }
 
-  const { sessionId, fileSize, mimeType } = currentSession;
+  const { sessionId, fileSize, mimeType } = getSession(requestSessionId);
 
   const rangeHeader = request.headers.get('Range');
   console.log('[video-sw] Handling request, session:', sessionId, 'range:', rangeHeader);
@@ -232,6 +242,7 @@ function requestChunkFromClient(request) {
       const response = event.data;
 
       if (response.requestId !== request.requestId) {
+        channel.port1.close();
         console.warn('[video-sw] RequestId mismatch, ignoring');
         return;
       }
@@ -252,6 +263,7 @@ function requestChunkFromClient(request) {
 
     self.clients.matchAll({ type: 'window' }).then((clients) => {
       if (clients.length === 0) {
+        channel.port1.close();
         reject(new Error('No clients available'));
         return;
       }
