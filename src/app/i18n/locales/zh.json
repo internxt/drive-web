@@ -4,22 +4,22 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": {
-      "blueText": "90% 折扣",
-      "text": "所有套餐"
+    "label": { "blueText": "获得87%折扣", "text": "所有高级套餐" },
+    "title": "获得专属折扣！",
+    "subTitle": {
+      "blueText": "特别优惠：",
+      "text": "以更低价格私密存储文件"
     },
-    "title": "领取您的黑色星期五特别优惠！",
-    "subTitle": "**最大折扣**享受**最高隐私保护**",
-    "ctaGet": "接受邀请",
-    "ctaContinue": "继续免费使用",
+    "ctaGet": "获取优惠",
+    "ctaContinue": "免费继续",
     "guarantee": "30天退款保证",
     "products": {
-      "drive": "云盘",
-      "antivirus": "杀毒软件",
-      "cleaner": "清理工具",
+      "drive": "Drive",
+      "antivirus": "Antivirus",
+      "cleaner": "Cleaner",
       "vpn": "VPN",
-      "meet": "会议",
-      "mail": "邮箱"
+      "meet": "Meet",
+      "mail": "Mail"
     }
   },
   "susbcriptionsBanner": {
@@ -1032,6 +1032,35 @@
     "restrictedPasswordModal": {
       "title": "解锁受密码保护的共享",
       "subtitle": "通过为共享链接设置密码，添加额外的安全保护。"
+    },
+    "upgradePlanDialog": {
+      "upgrade": "升级",
+      "cancel": "取消",
+      "soonBadge": "即将推出",
+      "default": {
+        "title": "立即升级",
+        "description": "您当前的方案无法使用此功能。立即升级以解锁 Internxt 的全部功能。"
+      },
+      "meet": {
+        "title": "解锁 Meet",
+        "description": "升级后可发起和加入完全加密的视频通话 —— 私密、安全且无限制。"
+      },
+      "mail": {
+        "title": "解锁 Mail",
+        "description": "解锁您的端到端加密私人邮箱服务。"
+      },
+      "vpn": {
+        "title": "解锁 VPN",
+        "description": "升级以使用私密加密的网络流量保护。"
+      },
+      "antivirus": {
+        "title": "解锁 Antivirus",
+        "description": "升级以实时扫描、检测与阻止恶意软件。"
+      },
+      "cleaner": {
+        "title": "解锁 Cleaner",
+        "description": "升级以优化您的文件并释放存储空间。"
+      }
     }
   },
   "form": {
@@ -1909,59 +1938,59 @@
           "comingSoon": "即将推出",
           "storage": " 加密存储空间",
           "1TB": {
-              "title": "Essential (基础版)",
-              "features": [
-                  "1TB 加密存储空间",
-                  "后量子密码学",
-                  "零知识加密",
-                  "两步验证",
-                  "电脑备份",
-                  "密码保护的文件共享",
-                  "加密 VPN",
-                  "杀毒软件"
-              ],
-              "comingSoonFeatures": ["文件版本控制"]
+            "title": "Essential (基础版)",
+            "features": [
+              "1TB 加密存储空间",
+              "后量子密码学",
+              "零知识加密",
+              "两步验证",
+              "电脑备份",
+              "密码保护的文件共享",
+              "加密 VPN",
+              "杀毒软件"
+            ],
+            "comingSoonFeatures": ["文件版本控制"]
           },
           "3TB": {
-              "title": "Premium (高级版)",
-              "features": [
-                  "3TB 加密存储空间",
-                  "后量子密码学",
-                  "零知识加密",
-                  "两步验证",
-                  "电脑备份",
-                  "密码保护的文件共享",
-                  "邀请、共享和协作",
-                  "加密 VPN",
-                  "杀毒软件",
-                  "清理工具 (Cleaner)"
-              ],
-              "comingSoonFeatures": ["文件版本控制"]
+            "title": "Premium (高级版)",
+            "features": [
+              "3TB 加密存储空间",
+              "后量子密码学",
+              "零知识加密",
+              "两步验证",
+              "电脑备份",
+              "密码保护的文件共享",
+              "邀请、共享和协作",
+              "加密 VPN",
+              "杀毒软件",
+              "清理工具 (Cleaner)"
+            ],
+            "comingSoonFeatures": ["文件版本控制"]
           },
           "5TB": {
-              "title": "Ultimate (旗舰版)",
-              "features": [
-                  "5TB 加密存储空间",
-                  "后量子密码学",
-                  "零知识加密",
-                  "两步验证",
-                  "电脑备份",
-                  "密码保护的文件共享",
-                  "邀请、共享和协作",
-                  "支持 CLI 和 WebDav",
-                  "支持 NAS 和 Rclone",
-                  "加密 VPN",
-                  "杀毒软件",
-                  "清理工具 (Cleaner)",
-                  "会议 (Meet)"
-              ],
-              "comingSoonFeatures": ["文件版本控制", "邮件 (Mail)"]
+            "title": "Ultimate (旗舰版)",
+            "features": [
+              "5TB 加密存储空间",
+              "后量子密码学",
+              "零知识加密",
+              "两步验证",
+              "电脑备份",
+              "密码保护的文件共享",
+              "邀请、共享和协作",
+              "支持 CLI 和 WebDav",
+              "支持 NAS 和 Rclone",
+              "加密 VPN",
+              "杀毒软件",
+              "清理工具 (Cleaner)",
+              "会议 (Meet)"
+            ],
+            "comingSoonFeatures": ["文件版本控制", "邮件 (Mail)"]
           },
           "1GB": {
-              "title": "Free (免费版)",
-              "features": ["1GB 加密存储空间", "加密 VPN"]
+            "title": "Free (免费版)",
+            "features": ["1GB 加密存储空间", "加密 VPN"]
           }
-      },
+        },
         "businessPlanFeaturesList": {
           "title": "套餐详情",
           "storage": " 存储空间",

@@ -9,22 +9,22 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": {
-      "blueText": "Скидка 90%",
-      "text": "на все тарифы"
+    "label": { "blueText": "Ottieni l'87% di sconto", "text": "su tutti i Piani Premium" },
+    "title": "Ottieni uno sconto esclusivo!",
+    "subTitle": {
+      "blueText": "Offerta speciale:",
+      "text": "archivia i file in privato per meno"
     },
-    "title": "Получите специальное предложение Черной пятницы!",
-    "subTitle": "**Максимальная скидка** для **максимальной конфиденциальности**",
-    "ctaGet": "Принять приглашение",
-    "ctaContinue": "Продолжить бесплатно",
-    "guarantee": "30-дневная гарантия возврата денег",
+    "ctaGet": "Approfitta dell'offerta",
+    "ctaContinue": "Continua gratis",
+    "guarantee": "Garanzia di rimborso di 30 giorni",
     "products": {
       "drive": "Drive",
-      "antivirus": "Антивирус",
-      "cleaner": "Очистка",
+      "antivirus": "Antivirus",
+      "cleaner": "Cleaner",
       "vpn": "VPN",
       "meet": "Meet",
-      "mail": "Почта"
+      "mail": "Mail"
     }
   },
   "susbcriptionsBanner": {
@@ -1102,6 +1102,35 @@
     "restrictedPasswordModal": {
       "title": "Sblocca la condivisione protetta da password",
       "subtitle": "Aggiungi un ulteriore livello di sicurezza proteggendo i tuoi link condivisi con una password."
+    },
+    "upgradePlanDialog": {
+      "upgrade": "Aggiorna",
+      "cancel": "Annulla",
+      "soonBadge": "Presto",
+      "default": {
+        "title": "Aggiorna ora",
+        "description": "Il tuo piano attuale non consente questa funzione. Aggiorna ora per sbloccare tutti i vantaggi di Internxt."
+      },
+      "meet": {
+        "title": "Sblocca Meet",
+        "description": "Aggiorna ora per ospitare e partecipare a videochiamate completamente crittografate — private, sicure e illimitate."
+      },
+      "mail": {
+        "title": "Sblocca Mail",
+        "description": "Sblocca il tuo servizio di email privato con crittografia end-to-end."
+      },
+      "vpn": {
+        "title": "Sblocca VPN",
+        "description": "Aggiorna il piano per proteggere il tuo traffico con navigazione privata e crittografata."
+      },
+      "antivirus": {
+        "title": "Sblocca Antivirus",
+        "description": "Aggiorna per analizzare, rilevare e bloccare malware in tempo reale."
+      },
+      "cleaner": {
+        "title": "Sblocca Cleaner",
+        "description": "Aggiorna ora per mantenere i tuoi file ottimizzati e liberare spazio."
+      }
     }
   },
   "form": {
@@ -1970,62 +1999,62 @@
           "free": "Free"
         },
         "planFeaturesList": {
-            "title": "Dettagli del Piano",
-            "comingSoon": "Prossimamente",
-            "storage": " spazio di archiviazione crittografato",
-            "1TB": {
-                "title": "Essential (Essenziale)",
-                "features": [
-                    "1TB di spazio di archiviazione crittografato",
-                    "Crittografia Post-Quantistica",
-                    "Crittografia Zero-Knowledge",
-                    "Autenticazione a Due Fattori",
-                    "Backup del computer",
-                    "Condivisione file protetta da password",
-                    "VPN Crittografata",
-                    "Antivirus"
-                ],
-                "comingSoonFeatures": ["Versionamento dei File"]
-            },
-            "3TB": {
-                "title": "Premium",
-                "features": [
-                    "3TB di spazio di archiviazione crittografato",
-                    "Crittografia Post-Quantistica",
-                    "Crittografia Zero-Knowledge",
-                    "Autenticazione a Due Fattori",
-                    "Backup del computer",
-                    "Condivisione file protetta da password",
-                    "Invita, condividi e collabora",
-                    "VPN Crittografata",
-                    "Antivirus",
-                    "Cleaner (Pulitore)"
-                ],
-                "comingSoonFeatures": ["Versionamento dei File"]
-            },
-            "5TB": {
-                "title": "Ultimate (Definitivo)",
-                "features": [
-                    "5TB di spazio di archiviazione crittografato",
-                    "Crittografia Post-Quantistica",
-                    "Crittografia Zero-Knowledge",
-                    "Autenticazione a Due Fattori",
-                    "Backup del computer",
-                    "Condivisione file protetta da password",
-                    "Invita, condividi e collabora",
-                    "Supporto CLI e WebDav",
-                    "Supporto NAS e Rclone",
-                    "VPN Crittografata",
-                    "Antivirus",
-                    "Cleaner (Pulitore)",
-                    "Meet (Videoconferenza)"
-                ],
-                "comingSoonFeatures": ["Versionamento dei File", "Mail"]
-            },
-            "1GB": {
-                "title": "Gratuito",
-                "features": ["1GB di spazio di archiviazione crittografato", "VPN Crittografata"]
-            }
+          "title": "Dettagli del Piano",
+          "comingSoon": "Prossimamente",
+          "storage": " spazio di archiviazione crittografato",
+          "1TB": {
+            "title": "Essential (Essenziale)",
+            "features": [
+              "1TB di spazio di archiviazione crittografato",
+              "Crittografia Post-Quantistica",
+              "Crittografia Zero-Knowledge",
+              "Autenticazione a Due Fattori",
+              "Backup del computer",
+              "Condivisione file protetta da password",
+              "VPN Crittografata",
+              "Antivirus"
+            ],
+            "comingSoonFeatures": ["Versionamento dei File"]
+          },
+          "3TB": {
+            "title": "Premium",
+            "features": [
+              "3TB di spazio di archiviazione crittografato",
+              "Crittografia Post-Quantistica",
+              "Crittografia Zero-Knowledge",
+              "Autenticazione a Due Fattori",
+              "Backup del computer",
+              "Condivisione file protetta da password",
+              "Invita, condividi e collabora",
+              "VPN Crittografata",
+              "Antivirus",
+              "Cleaner (Pulitore)"
+            ],
+            "comingSoonFeatures": ["Versionamento dei File"]
+          },
+          "5TB": {
+            "title": "Ultimate (Definitivo)",
+            "features": [
+              "5TB di spazio di archiviazione crittografato",
+              "Crittografia Post-Quantistica",
+              "Crittografia Zero-Knowledge",
+              "Autenticazione a Due Fattori",
+              "Backup del computer",
+              "Condivisione file protetta da password",
+              "Invita, condividi e collabora",
+              "Supporto CLI e WebDav",
+              "Supporto NAS e Rclone",
+              "VPN Crittografata",
+              "Antivirus",
+              "Cleaner (Pulitore)",
+              "Meet (Videoconferenza)"
+            ],
+            "comingSoonFeatures": ["Versionamento dei File", "Mail"]
+          },
+          "1GB": {
+            "title": "Gratuito",
+            "features": ["1GB di spazio di archiviazione crittografato", "VPN Crittografata"]
+          }
         },
         "businessPlanFeaturesList": {
           "title": "Dettagli del piano",

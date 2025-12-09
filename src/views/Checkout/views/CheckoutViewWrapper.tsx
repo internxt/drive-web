@@ -37,6 +37,7 @@ import { useUserPayment } from 'views/Checkout/hooks/useUserPayment';
 import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/components/CryptoPaymentDialog';
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'utils/generateCaptchaToken';
+import gaService from 'app/analytics/ga.service';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -197,6 +198,24 @@ const CheckoutViewWrapper = () => {
       }, 8000);
     }
   }, [state.error]);
+
+  useEffect(() => {
+    if (isCheckoutReadyToRender && currentSelectedPlan?.price) {
+      const { promotionCode } = getCheckoutQueryParams();
+
+      gaService.trackBeginCheckout({
+        planId: currentSelectedPlan.price.id,
+        planPrice: currentSelectedPlan.price.decimalAmount,
+        currency: currentSelectedPlan.price.currency ?? 'eur',
+        planType: currentSelectedPlan.price.type === 'business' ? 'business' : 'individual',
+        interval: currentSelectedPlan.price.interval,
+        storage: currentSelectedPlan.price.bytes.toString(),
+        promoCodeId: promotionCode ?? undefined,
+        couponCodeData: couponCodeData,
+        seats: currentSelectedPlan.price.type === 'business' ? seatsForBusinessSubscription : 1,
+      });
+    }
+  }, [isCheckoutReadyToRender]);
 
   const onCheckoutCouponChanges = async (promoCodeName?: string) => {
     if (!currentSelectedPlan?.price?.id) {

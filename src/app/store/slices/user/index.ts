@@ -11,7 +11,6 @@ import notificationsService, { ToastType } from '../../../notifications/services
 import tasksService from '../../../tasks/services/tasks.service';
 import { referralsActions } from '../referrals';
 import { sessionActions } from '../session';
-import { sessionSelectors } from '../session/session.selectors';
 import { storageActions } from '../storage';
 import { uiActions } from '../ui';
 import { workspacesActions } from '../../../store/slices/workspaces/workspacesStore';
@@ -19,7 +18,8 @@ import { workspacesActions } from '../../../store/slices/workspaces/workspacesSt
 import errorService from 'services/error.service';
 import { isTokenExpired } from '../../utils';
 import { refreshAvatar } from 'utils/avatarUtils';
-import { ProductService, UserTierFeatures } from 'views/Checkout/services';
+import { ProductService } from 'views/Checkout/services';
+import { UserTierFeatures } from 'views/Checkout/services/products.service';
 import { t } from 'i18next';
 
 export interface UserState {
@@ -257,15 +257,6 @@ export const userSelectors = {
     const { user } = state.user;
 
     return user ? `${user?.name} ${user?.lastname}` : '';
-  },
-  nameLetters: (state: RootState): string => {
-    const { user } = state.user;
-    const isTeam = sessionSelectors.isTeam(state);
-    const nameLetters: string = isTeam
-      ? 'B'
-      : (user as UserSettings).name[0] + ((user as UserSettings).lastname[0] || '');
-
-    return nameLetters.toUpperCase();
   },
   hasSignedToday: (state: RootState): boolean => {
     const { user } = state.user;
