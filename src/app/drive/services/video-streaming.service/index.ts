@@ -266,59 +266,49 @@ export class VideoStreamingService {
     });
   }
 
-  private registerSession(sw: ServiceWorker): Promise<void> {
+  private sendSessionMessage(
+    sw: ServiceWorker,
+    messageType: 'REGISTER_VIDEO_SESSION' | 'UNREGISTER_VIDEO_SESSION',
+    expectedResponse: 'SESSION_REGISTERED' | 'SESSION_UNREGISTERED',
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       const channel = new MessageChannel();
 
       const timeout = setTimeout(() => {
         channel.port1.close();
-        reject(new Error('Session registration timeout'));
+        reject(new Error('Session message timeout'));
       }, DEFAULT_TIMEOUT);
 
       channel.port1.onmessage = (event) => {
-        if (event.data.type === 'SESSION_REGISTERED' && event.data.sessionId === this.sessionId) {
+        if (event.data.type === expectedResponse && event.data.sessionId === this.sessionId) {
           clearTimeout(timeout);
           channel.port1.close();
           resolve();
         }
       };
 
-      sw.postMessage(
-        {
-          type: 'REGISTER_VIDEO_SESSION',
-          sessionId: this.sessionId,
-          fileSize: this.session.fileSize,
-          mimeType: this.session.mimeType,
-        },
-        [channel.port2],
-      );
+      const message =
+        messageType === 'REGISTER_VIDEO_SESSION'
+          ? {
+              type: messageType,
+              sessionId: this.sessionId,
+              fileSize: this.session.fileSize,
+              mimeType: this.session.mimeType,
+            }
+          : {
+              type: messageType,
+              sessionId: this.sessionId,
+            };
+
+      sw.postMessage(message, [channel.port2]);
     });
   }
 
-  private async unregisterSession(sw: ServiceWorker): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const channel = new MessageChannel();
+  private registerSession(sw: ServiceWorker): Promise<void> {
+    return this.sendSessionMessage(sw, 'REGISTER_VIDEO_SESSION', 'SESSION_REGISTERED');
+  }
 
-      const timeout = setTimeout(() => {
-        channel.port1.close();
-        reject(new Error('Session registration timeout'));
-      }, DEFAULT_TIMEOUT);
-
-      channel.port1.onmessage = (event) => {
-        if (event.data.type === 'SESSION_UNREGISTERED' && event.data.sessionId === this.sessionId) {
-          clearTimeout(timeout);
-          channel.port1.close();
-          resolve();
-        }
-      };
-
-      sw.postMessage(
-        {
-          type: 'UNREGISTER_VIDEO_SESSION',
-          sessionId: this.sessionId,
-        },
-        [channel.port2],
-      );
-    });
+  private unregisterSession(sw: ServiceWorker): Promise<void> {
+    return this.sendSessionMessage(sw, 'UNREGISTER_VIDEO_SESSION', 'SESSION_UNREGISTERED');
   }
 }
