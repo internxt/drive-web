@@ -795,7 +795,20 @@
       "autosaveVersions": "{{count}}/{{total}} automatisch gespeicherte Versionen",
       "restoreVersion": "Version wiederherstellen",
       "downloadVersion": "Version herunterladen",
-      "deleteVersion": "Version löschen"
+      "deleteVersion": "Version löschen",
+      "deleteVersionTitle": "Version löschen",
+      "deleteButton": "Löschen",
+      "restoreButton": "Wiederherstellen",
+      "downloadError": "Fehler beim Herunterladen der Version",
+      "deleteVersionAdvice": "Diese Version wird dauerhaft gelöscht. \nDiese Aktion kann nicht rückgängig gemacht werden.",
+      "deletingVersion": "Lösche",
+      "restoreVersionTitle": "Version wiederherstellen",
+      "restoreVersionAdvice": "Das Wiederherstellen dieser Version ersetzt die aktuelle Datei und entfernt alle neueren Versionen. \nSobald wiederhergestellt, kann diese Aktion nicht rückgängig gemacht werden.\n\nSie können eine Kopie neuerer Versionen herunterladen, bevor Sie wiederherstellen.",
+      "restoringVersion": "Wiederherstellung",
+      "restoreSuccess": "Version erfolgreich wiederhergestellt",
+      "restoreError": "Fehler beim Wiederherstellen der Version",
+      "deleteSuccess": "Version erfolgreich gelöscht",
+      "deleteError": "Fehler beim Löschen der Version"
     },
     "shareModal": {
       "title": "Aktie \"{{name}}\"",
