@@ -14,8 +14,8 @@ export const VersionHistorySkeleton = () => {
         </div>
       </div>
 
-      {[...Array(3)].map((_, index) => (
-        <div key={index} className="border-b-[2.5px] border-gray-5 px-6 py-3">
+      {Array.from({ length: 3 }, (_, index) => (
+        <div key={`skeleton-${index}`} className="border-b-[2.5px] border-gray-5 px-6 py-3">
           <div className="flex flex-col space-y-2">
             <div className="h-5 w-32 animate-pulse rounded bg-gray-10 dark:bg-gray-20" />
             <div className="flex items-center space-x-2 pt-1">
