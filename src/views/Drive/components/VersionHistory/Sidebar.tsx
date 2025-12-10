@@ -12,7 +12,7 @@ import {
   VersionHistorySkeleton,
 } from './components';
 import { FileVersion } from './types';
-import fileVersionService from 'views/Drive/components/VersionHistory/services/file-version.service';
+import fileVersionService from 'views/Drive/components/VersionHistory/services/fileVersion.service';
 import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 

@@ -2,12 +2,13 @@ import { Trash, ClockCounterClockwise, DownloadSimple } from '@phosphor-icons/re
 import { MenuItemType } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { FileVersion } from '../types';
-import fileVersionService from '../services/file-version.service';
+import fileVersionService from '../services/fileVersion.service';
 import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { RootState } from 'app/store';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 interface UseVersionItemActionsParams {
   version: FileVersion;
@@ -18,6 +19,8 @@ export const useVersionItemActions = ({ version, onDropdownClose }: UseVersionIt
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const item = useAppSelector((state: RootState) => state.ui.versionHistoryItem);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
 
   const handleRestoreClick = () => {
     onDropdownClose();
@@ -38,7 +41,7 @@ export const useVersionItemActions = ({ version, onDropdownClose }: UseVersionIt
 
     try {
       const fileName = item.type ? `${item.plainName || item.name}.${item.type}` : item.plainName || item.name;
-      await fileVersionService.downloadVersion(version, fileName, item.bucket);
+      await fileVersionService.downloadVersion(version, item, fileName, selectedWorkspace, workspaceCredentials);
     } catch (error) {
       const castedError = errorService.castError(error);
       errorService.reportError(castedError);

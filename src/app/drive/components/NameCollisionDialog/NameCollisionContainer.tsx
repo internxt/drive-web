@@ -12,7 +12,7 @@ import { DriveItemData } from 'app/drive/types';
 import { IRoot } from 'app/store/slices/storage/types';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
-import replaceFileService from 'views/Drive/services/replace-file.service';
+import replaceFileService from 'views/Drive/services/replaceFile.service';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
