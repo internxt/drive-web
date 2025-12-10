@@ -879,7 +879,20 @@
       "autosaveVersions": "{{count}}/{{total}} versiones de autoguardado",
       "restoreVersion": "Restaurar versión",
       "downloadVersion": "Descargar versión",
-      "deleteVersion": "Eliminar versión"
+      "deleteVersion": "Eliminar versión",
+      "deleteVersionTitle": "Eliminar versión",
+      "deleteButton": "Eliminar",
+      "restoreButton": "Restaurar",
+      "downloadError": "Error al descargar la versión",
+      "deleteVersionAdvice": "Esta versión será eliminada permanentemente. \nEsta acción no se puede deshacer.",
+      "deletingVersion": "Eliminando",
+      "restoreVersionTitle": "Restaurar versión",
+      "restoreVersionAdvice": "Restaurar esta versión reemplazará el archivo actual y eliminará todas las versiones más recientes. \nUna vez restaurada, esta acción no se puede deshacer.\n\nPuedes descargar una copia de las versiones más recientes antes de restaurar.",
+      "restoringVersion": "Restaurando",
+      "restoreSuccess": "Versión restaurada exitosamente",
+      "restoreError": "Error al restaurar la versión",
+      "deleteSuccess": "Versión eliminada exitosamente",
+      "deleteError": "Error al eliminar la versión"
     },
     "shareModal": {
       "title": "Compartir \"{{name}}\"",

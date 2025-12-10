@@ -840,7 +840,20 @@
       "autosaveVersions": "{{count}}/{{total}} версий автосохранения",
       "restoreVersion": "Восстановить версию",
       "downloadVersion": "Скачать версию",
-      "deleteVersion": "Удалить версию"
+      "deleteVersion": "Удалить версию",
+      "deleteVersionTitle": "Удалить версию",
+      "deleteButton": "Удалить",
+      "restoreButton": "Восстановить",
+      "downloadError": "Не удалось загрузить версию",
+      "deleteVersionAdvice": "Эта версия будет удалена навсегда. \nЭто действие нельзя отменить.",
+      "deletingVersion": "Удаление",
+      "restoreVersionTitle": "Восстановить версию",
+      "restoreVersionAdvice": "Восстановление этой версии заменит текущий файл и удалит все более новые версии. \nПосле восстановления это действие нельзя отменить.\n\nВы можете скачать копию более новых версий перед восстановлением.",
+      "restoringVersion": "Восстановление",
+      "restoreSuccess": "Версия успешно восстановлена",
+      "restoreError": "Не удалось восстановить версию",
+      "deleteSuccess": "Версия успешно удалена",
+      "deleteError": "Не удалось удалить версию"
     },
     "shareModal": {
       "title": "Поделиться \"{{name}}\"",

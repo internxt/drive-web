@@ -933,7 +933,20 @@
       "autosaveVersions": "{{count}}/{{total}} versioni di salvataggio automatico",
       "restoreVersion": "Ripristina versione",
       "downloadVersion": "Scarica versione",
-      "deleteVersion": "Elimina versione"
+      "deleteVersion": "Elimina versione",
+      "deleteVersionTitle": "Elimina versione",
+      "deleteButton": "Elimina",
+      "restoreButton": "Ripristina",
+      "downloadError": "Impossibile scaricare la versione",
+      "deleteVersionAdvice": "Questa versione sarà eliminata in modo permanente. \nQuesta azione non può essere annullata.",
+      "deletingVersion": "Eliminazione",
+      "restoreVersionTitle": "Ripristina versione",
+      "restoreVersionAdvice": "Il ripristino di questa versione sostituirà il file corrente e rimuoverà tutte le versioni più recenti. \nUna volta ripristinata, questa azione non può essere annullata.\n\nPuoi scaricare una copia delle versioni più recenti prima del ripristino.",
+      "restoringVersion": "Ripristino",
+      "restoreSuccess": "Versione ripristinata con successo",
+      "restoreError": "Impossibile ripristinare la versione",
+      "deleteSuccess": "Versione eliminata con successo",
+      "deleteError": "Impossibile eliminare la versione"
     },
     "shareModal": {
       "title": "Condividi \"{{name}}\"",
