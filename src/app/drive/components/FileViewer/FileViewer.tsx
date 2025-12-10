@@ -48,6 +48,7 @@ interface FileViewerProps {
 export interface FormatFileViewerProps {
   file: PreviewFileItem;
   blob?: Blob | null;
+  isSharedItem?: boolean;
   setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
   handlersForSpecialItems?: {
     handleUpdateProgress: (progress: number) => void;
@@ -97,8 +98,9 @@ const FileViewer = ({
   const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
   const isItemValidToPreview = isTypeAllowed && isPreviewAvailable;
   const isVideo = fileExtensionGroup === FileExtensionGroup['Video'];
+  const isVideoStreaming = isVideo && !isShareView;
 
-  const shouldRenderThePreview = isTypeAllowed && (isVideo || isFileSizePreviewable(file.size));
+  const shouldRenderThePreview = isTypeAllowed && (isVideoStreaming || isFileSizePreviewable(file.size));
 
   const ItemIconComponent = iconService.getItemIcon(false, file.type);
 
@@ -230,6 +232,7 @@ const FileViewer = ({
                     <Viewer
                       blob={blob}
                       file={file}
+                      isSharedItem={isShareView}
                       setIsPreviewAvailable={setIsPreviewAvailable}
                       handlersForSpecialItems={handlersForSpecialItems}
                     />

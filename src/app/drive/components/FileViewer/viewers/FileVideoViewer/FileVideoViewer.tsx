@@ -6,6 +6,8 @@ import { FormatFileViewerProps } from '../../FileViewer';
 
 const FileVideoViewer = ({
   file,
+  blob,
+  isSharedItem,
   setIsPreviewAvailable,
   handlersForSpecialItems,
 }: FormatFileViewerProps): JSX.Element => {
@@ -41,6 +43,18 @@ const FileVideoViewer = ({
   });
 
   useEffect(() => {
+    if (isSharedItem) {
+      if (!videoRef.current || !blob) return;
+
+      const blobUrl = URL.createObjectURL(blob);
+      videoRef.current.src = blobUrl;
+      videoRef.current.load();
+
+      return () => {
+        URL.revokeObjectURL(blobUrl);
+      };
+    }
+
     if (!credentials.user || !credentials.pass || !mnemonic) {
       console.error('[FileVideoViewer] Missing credentials');
       return;
@@ -70,7 +84,17 @@ const FileVideoViewer = ({
     return () => {
       onUnmountComponent(service, videoRef.current);
     };
-  }, [file.fileId, file.bucket, file.size, file.type, handleChunkRequest, mnemonic, setIsPreviewAvailable]);
+  }, [
+    file.fileId,
+    file.bucket,
+    file.size,
+    file.type,
+    handleChunkRequest,
+    mnemonic,
+    setIsPreviewAvailable,
+    blob,
+    isSharedItem,
+  ]);
 
   useEffect(() => {
     const video = videoRef.current;

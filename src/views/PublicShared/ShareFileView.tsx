@@ -28,6 +28,7 @@ import AppError from 'app/core/types';
 import { Button, Loader } from '@internxt/ui';
 import { stringUtils } from '@internxt/lib';
 import { SendBanner, ShareItemPwdView } from './components';
+import { isFileSizePreviewable } from 'services';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -170,9 +171,8 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
       token: fileInfo.itemToken,
       options: {
         abortController,
-        notifyProgress: (totalProgress, downloadedBytes) => {
-          const progress = Math.trunc(downloadedBytes / totalProgress);
-
+        notifyProgress: (totalBytes, downloadedBytes) => {
+          const progress = downloadedBytes / totalBytes;
           setBlobProgress(progress);
         },
       },
@@ -299,6 +299,9 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
               variant="secondary"
               onClick={() => {
                 setOpenPreview(true);
+
+                if (blob || !isFileSizePreviewable(info['item']?.size)) return;
+
                 getBlob(new AbortController())
                   .then((blob) => {
                     setBlob(blob);
