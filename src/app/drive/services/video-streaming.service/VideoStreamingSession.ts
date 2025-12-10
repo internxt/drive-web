@@ -20,9 +20,9 @@ const CACHE_SIZE_LIMIT = 20;
 
 export class VideoStreamingSession {
   private service: VideoStreamingService | null = null;
-  private abortController = new AbortController();
-  private chunkCache = new Map<string, Uint8Array>();
-  private pendingRequests = new Map<string, Promise<Uint8Array>>();
+  private readonly abortController = new AbortController();
+  private readonly chunkCache = new Map<string, Uint8Array>();
+  private readonly pendingRequests = new Map<string, Promise<Uint8Array>>();
   private isDestroyed = false;
   private videoUrl: string | null = null;
 
