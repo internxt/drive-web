@@ -3,7 +3,6 @@ import { MenuItemType } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { FileVersion } from '../types';
 import fileVersionService from '../services/fileVersion.service';
-import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
@@ -39,17 +38,8 @@ export const useVersionItemActions = ({ version, onDropdownClose }: UseVersionIt
       return;
     }
 
-    try {
-      const fileName = item.type ? `${item.plainName || item.name}.${item.type}` : item.plainName || item.name;
-      await fileVersionService.downloadVersion(version, item, fileName, selectedWorkspace, workspaceCredentials);
-    } catch (error) {
-      const castedError = errorService.castError(error);
-      errorService.reportError(castedError);
-      notificationsService.show({
-        text: translate('modals.versionHistory.downloadError'),
-        type: ToastType.Error,
-      });
-    }
+    const fileName = item.plainName || item.name;
+    await fileVersionService.downloadVersion(version, item, fileName, selectedWorkspace, workspaceCredentials);
   };
 
   const handleDeleteClick = () => {
