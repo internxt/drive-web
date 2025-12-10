@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { DriveItemData, DriveItemDetails, FileInfoMenuItem, UpgradePlanDialogInfo } from 'app/drive/types';
 import { PreviewFileItem } from '../../../share/types';
+import { FileVersion } from 'views/Drive/components/VersionHistory/types';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -12,6 +13,8 @@ interface UISliceState {
   isVersionHistorySidebarOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
+  isDeleteVersionDialogOpen: boolean;
+  isRestoreVersionDialogOpen: boolean;
   isMoveItemsDialogOpen: boolean;
   isClearTrashDialogOpen: boolean;
   isEditFolderNameDialog: boolean;
@@ -29,6 +32,8 @@ interface UISliceState {
   fileViewerItem: PreviewFileItem | null;
   itemDetails: DriveItemDetails | null;
   versionHistoryItem: DriveItemData | null;
+  versionToDelete: FileVersion | null;
+  versionToRestore: FileVersion | null;
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
@@ -46,6 +51,8 @@ const initialState: UISliceState = {
   isVersionHistorySidebarOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
+  isDeleteVersionDialogOpen: false,
+  isRestoreVersionDialogOpen: false,
   isMoveItemsDialogOpen: false,
   isClearTrashDialogOpen: false,
   isEditFolderNameDialog: false,
@@ -63,6 +70,8 @@ const initialState: UISliceState = {
   fileViewerItem: null,
   itemDetails: null,
   versionHistoryItem: null,
+  versionToDelete: null,
+  versionToRestore: null,
   currentFileInfoMenuItem: null,
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
@@ -98,11 +107,23 @@ export const uiSlice = createSlice({
     setVersionHistoryItem: (state: UISliceState, action: PayloadAction<UISliceState['versionHistoryItem']>) => {
       state.versionHistoryItem = action.payload;
     },
+    setVersionToDelete: (state: UISliceState, action: PayloadAction<UISliceState['versionToDelete']>) => {
+      state.versionToDelete = action.payload;
+    },
+    setVersionToRestore: (state: UISliceState, action: PayloadAction<UISliceState['versionToRestore']>) => {
+      state.versionToRestore = action.payload;
+    },
     setIsCreateFolderDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isCreateFolderDialogOpen = action.payload;
     },
     setIsDeleteItemsDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isDeleteItemsDialogOpen = action.payload;
+    },
+    setIsDeleteVersionDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isDeleteVersionDialogOpen = action.payload;
+    },
+    setIsRestoreVersionDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isRestoreVersionDialogOpen = action.payload;
     },
     setIsMoveItemsDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isMoveItemsDialogOpen = action.payload;

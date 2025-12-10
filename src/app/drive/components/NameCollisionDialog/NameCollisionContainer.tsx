@@ -12,6 +12,7 @@ import { DriveItemData } from 'app/drive/types';
 import { IRoot } from 'app/store/slices/storage/types';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
+import replaceFileService from 'views/Drive/services/replace-file.service';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
@@ -129,10 +130,12 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     itemsToReplace: DriveItemData[];
     itemsToUpload: (IRoot | File)[];
   }) => {
-    await moveItemsToTrash(itemsToReplace);
+    for (let i = 0; i < itemsToUpload.length; i++) {
+      const itemToUpload = itemsToUpload[i];
+      const itemToReplace = itemsToReplace[i];
 
-    itemsToUpload.forEach((itemToUpload) => {
       if ((itemToUpload as IRoot).fullPathEdited) {
+        await moveItemsToTrash([itemToReplace]);
         uploadFoldersWithManager({
           payload: [
             {
@@ -146,19 +149,14 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
           dispatch(fetchSortedFolderContentThunk(folderId));
         });
       } else {
-        dispatch(
-          storageThunks.uploadItemsThunk({
-            files: [itemToUpload] as File[],
-            parentFolderId: folderId,
-            options: {
-              disableDuplicatedNamesCheck: true,
-            },
-          }),
-        ).then(() => {
-          dispatch(fetchSortedFolderContentThunk(folderId));
+        const file = itemToUpload as File;
+        await replaceFileService.replaceFile(itemToReplace.uuid, {
+          fileId: itemToReplace.fileId,
+          size: file.size,
         });
+        dispatch(fetchSortedFolderContentThunk(folderId));
       }
-    });
+    }
   };
 
   const keepAndUploadItem = async (itemsToUpload: (IRoot | File)[]) => {

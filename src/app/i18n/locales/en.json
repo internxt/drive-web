@@ -892,7 +892,20 @@
       "autosaveVersions": "{{count}}/{{total}} autosave versions",
       "restoreVersion": "Restore version",
       "downloadVersion": "Download version",
-      "deleteVersion": "Delete version"
+      "deleteVersion": "Delete version",
+      "deleteVersionTitle": "Delete version",
+      "deleteButton": "Delete",
+      "restoreButton": "Restore",
+      "downloadError": "Failed to download version",
+      "deleteVersionAdvice": "This version will be permanently deleted. \nThis action cannot be undone.",
+      "deletingVersion": "Deleting",
+      "restoreVersionTitle": "Restore version",
+      "restoreVersionAdvice": "Restoring this version will replace the current file and remove all newer versions. \nOnce restored, this action cannot be undone.\n\nYou can download a copy of newer versions before restoring.",
+      "restoringVersion": "Restoring",
+      "restoreSuccess": "Version restored successfully",
+      "restoreError": "Failed to restore version",
+      "deleteSuccess": "Version deleted successfully",
+      "deleteError": "Failed to delete version"
     },
     "shareModal": {
       "title": "Share \"{{name}}\"",
