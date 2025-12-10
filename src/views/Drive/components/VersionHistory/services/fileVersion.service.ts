@@ -1,9 +1,8 @@
 import { SdkFactory } from 'app/core/factory/sdk';
-import localStorageService from 'services/local-storage.service';
-import { downloadFile } from 'app/network/download';
-import { binaryStreamToBlob } from 'services/stream.service';
-import { saveAs } from 'file-saver';
+import { DownloadManager } from 'app/network/DownloadManager';
 import { FileVersion } from '../types';
+import { DriveItemData } from 'app/drive/types';
+import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 
 const getStorageClient = () => SdkFactory.getNewApiInstance().createNewStorageClient();
 
@@ -21,34 +20,23 @@ export async function restoreVersion(fileUuid: string, versionId: string): Promi
 
 export async function downloadVersion(
   version: FileVersion,
+  fileItem: DriveItemData,
   fileName: string,
-  bucketId: string,
-  updateProgressCallback?: (progress: number) => void,
-  abortController?: AbortController,
+  selectedWorkspace: WorkspaceData | null,
+  workspaceCredentials: WorkspaceCredentialsDetails | null,
 ): Promise<void> {
-  const user = localStorageService.getUser();
-  if (!user) throw new Error('User not found');
-
-  const fileStream = await downloadFile({
+  const versionFileData: DriveItemData = {
+    ...fileItem,
     fileId: version.networkFileId,
-    bucketId,
-    creds: {
-      user: user.bridgeUser,
-      pass: user.userId,
-    },
-    mnemonic: user.mnemonic,
-    options: {
-      notifyProgress: (totalBytes, downloadedBytes) => {
-        if (updateProgressCallback) {
-          updateProgressCallback(downloadedBytes / totalBytes);
-        }
-      },
-      abortController,
-    },
-  });
+    size: Number(version.size),
+    name: fileName,
+  };
 
-  const blob = await binaryStreamToBlob(fileStream);
-  saveAs(blob, fileName);
+  await DownloadManager.downloadItem({
+    payload: [versionFileData],
+    selectedWorkspace,
+    workspaceCredentials,
+  });
 }
 
 const fileVersionService = {
