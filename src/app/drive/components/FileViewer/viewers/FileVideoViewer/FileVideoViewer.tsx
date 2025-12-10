@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getVideoMimeType, localStorageService } from 'services';
-import { VideoStreamingService } from 'app/drive/services/video-streaming.service';
-import { useVideoChunkDownloader } from 'app/drive/hooks/useVideoChunkDownloader';
+import { useEffect, useRef, useState } from 'react';
+import { localStorageService } from 'services';
+import { VideoStreamingSession } from 'app/drive/services/video-streaming.service/VideoStreamingSession';
 import { FormatFileViewerProps } from '../../FileViewer';
 
 const FileVideoViewer = ({
@@ -12,127 +11,105 @@ const FileVideoViewer = ({
   handlersForSpecialItems,
 }: FormatFileViewerProps): JSX.Element => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const sessionRef = useRef<VideoStreamingSession | null>(null);
   const [canPlay, setCanPlay] = useState(false);
 
-  const user = localStorageService.getUser();
-  const mnemonic = user?.mnemonic ?? '';
-  const bridgeUser = user?.bridgeUser ?? '';
-  const userId = user?.userId ?? '';
-
-  const credentials = useMemo(
-    () => ({
-      user: bridgeUser,
-      pass: userId,
-    }),
-    [bridgeUser, userId],
-  );
-
-  const handleProgress = useCallback(
-    (progress: number) => {
-      handlersForSpecialItems?.handleUpdateProgress(progress);
-    },
-    [handlersForSpecialItems?.handleUpdateProgress],
-  );
-
-  const { handleChunkRequest } = useVideoChunkDownloader({
-    bucketId: file.bucket,
-    fileId: file.fileId,
-    mnemonic,
-    credentials,
-    handleProgress,
-  });
-
+  // Handle shared items (blob-based playback)
   useEffect(() => {
-    if (isSharedItem) {
-      if (!videoRef.current || !blob) return;
+    if (!isSharedItem || !videoRef.current || !blob) return;
 
-      const blobUrl = URL.createObjectURL(blob);
-      videoRef.current.src = blobUrl;
-      videoRef.current.load();
+    const blobUrl = URL.createObjectURL(blob);
+    videoRef.current.src = blobUrl;
+    videoRef.current.load();
 
-      return () => {
-        URL.revokeObjectURL(blobUrl);
-      };
-    }
+    return () => {
+      URL.revokeObjectURL(blobUrl);
+    };
+  }, [isSharedItem, blob]);
 
-    if (!credentials.user || !credentials.pass || !mnemonic) {
+  // Handle streaming playback (non-shared items)
+  useEffect(() => {
+    if (isSharedItem) return;
+
+    const user = localStorageService.getUser();
+    const mnemonic = user?.mnemonic ?? '';
+    const bridgeUser = user?.bridgeUser ?? '';
+    const userId = user?.userId ?? '';
+
+    if (!bridgeUser || !userId || !mnemonic) {
       console.error('[FileVideoViewer] Missing credentials');
       return;
     }
 
-    const service = new VideoStreamingService(
-      {
-        fileSize: file.size,
-        mimeType: getVideoMimeType(file.type),
+    const session = new VideoStreamingSession({
+      fileId: file.fileId,
+      bucketId: file.bucket,
+      fileSize: file.size,
+      fileType: file.type,
+      mnemonic,
+      credentials: { user: bridgeUser, pass: userId },
+      onProgress: (progress) => {
+        handlersForSpecialItems?.handleUpdateProgress(progress);
       },
-      handleChunkRequest,
-    );
+    });
 
-    service
+    sessionRef.current = session;
+
+    session
       .init()
-      .then(() => {
-        if (videoRef.current) {
-          videoRef.current.src = service.getVideoUrl();
+      .then((success) => {
+        // If init returned false, session was destroyed during init - just ignore
+        if (!success) return;
+
+        const url = session.getVideoUrl();
+        if (videoRef.current && url) {
+          videoRef.current.src = url;
           videoRef.current.load();
         }
       })
       .catch((error) => {
-        console.error('[FileVideoViewer] Error:', error);
+        console.error('[FileVideoViewer] Error initializing session:', error);
         setIsPreviewAvailable(false);
       });
 
     return () => {
-      onUnmountComponent(service, videoRef.current);
+      session.destroy();
+      sessionRef.current = null;
+      setCanPlay(false);
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.removeAttribute('src');
+      }
     };
-  }, [
-    file.fileId,
-    file.bucket,
-    file.size,
-    file.type,
-    handleChunkRequest,
-    mnemonic,
-    setIsPreviewAvailable,
-    blob,
-    isSharedItem,
-  ]);
+  }, [file.fileId, file.bucket, file.size, file.type, isSharedItem, setIsPreviewAvailable]);
 
+  // Video event listeners
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    video.addEventListener('error', (event) => handleError(event, video));
+    const handleError = (event: Event) => {
+      console.error('[FileVideoViewer] Video error:', event);
+      const error = video.error;
+      if (error) {
+        console.error('[FileVideoViewer] Error code:', error.code, 'message:', error.message);
+      }
+      setIsPreviewAvailable(false);
+    };
+
+    const handleCanPlay = () => {
+      handlersForSpecialItems?.handleUpdateProgress(1);
+      setCanPlay(true);
+    };
+
+    video.addEventListener('error', handleError);
     video.addEventListener('canplay', handleCanPlay);
 
     return () => {
-      video.removeEventListener('error', (event) => handleError(event, video));
+      video.removeEventListener('error', handleError);
       video.removeEventListener('canplay', handleCanPlay);
     };
-  }, []);
-
-  const onUnmountComponent = (service: VideoStreamingService, currentVideoRef: HTMLVideoElement | null) => {
-    service.destroy().catch((error) => {
-      console.error('[FileVideoViewer] Error destroying service:', error);
-    });
-    setCanPlay(false);
-    if (currentVideoRef) {
-      currentVideoRef.pause();
-      currentVideoRef.removeAttribute('src');
-    }
-  };
-
-  const handleError = (event: Event, video: HTMLVideoElement) => {
-    console.error('[FileVideoViewer] Video error:', event);
-    const error = video.error;
-    if (error) {
-      console.error('[FileVideoViewer] Error code:', error.code, 'message:', error.message);
-    }
-    setIsPreviewAvailable(false);
-  };
-
-  const handleCanPlay = () => {
-    handlersForSpecialItems?.handleUpdateProgress(1);
-    setCanPlay(true);
-  };
+  }, [setIsPreviewAvailable, handlersForSpecialItems]);
 
   return (
     <video
