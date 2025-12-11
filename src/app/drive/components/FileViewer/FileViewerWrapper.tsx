@@ -98,9 +98,9 @@ const FileViewerWrapper = ({
     dispatch(uiActions.setFileViewerItem(currentFile));
 
     const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(currentFile);
-    const isVideo = extensionGroup?.fileExtensionGroup === FileExtensionGroup['Video'];
+    const canStreamVideo = extensionGroup?.fileExtensionGroup === FileExtensionGroup['Video'] && !isSharedView;
 
-    if (currentFile && !updateProgress && !isDownloadStarted && !isVideo) {
+    if (currentFile && !updateProgress && !isDownloadStarted && !canStreamVideo) {
       setIsDownloadStarted(true);
       fileContentManager
         .download()
