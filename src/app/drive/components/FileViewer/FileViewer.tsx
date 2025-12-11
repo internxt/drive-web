@@ -30,6 +30,7 @@ interface FileViewerProps {
   isAuthenticated: boolean;
   progress?: number;
   isShareView?: boolean;
+  disableVideoStream?: boolean;
   blob?: Blob | null;
   changeFile?: (direction: 'next' | 'prev') => void;
   totalFolderIndex?: number;
@@ -46,9 +47,9 @@ interface FileViewerProps {
 }
 
 export interface FormatFileViewerProps {
-  blob: Blob;
   file: PreviewFileItem;
-  changeFile?: (direction: 'next' | 'prev') => void;
+  blob?: Blob | null;
+  disableVideoStream?: boolean;
   setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
   handlersForSpecialItems?: {
     handleUpdateProgress: (progress: number) => void;
@@ -64,6 +65,7 @@ const FileViewer = ({
   progress,
   isAuthenticated,
   isShareView,
+  disableVideoStream,
   blob,
   changeFile,
   totalFolderIndex,
@@ -97,7 +99,10 @@ const FileViewer = ({
   const isFirstItemOrShareView = fileIndex === 0 || isShareView;
   const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
   const isItemValidToPreview = isTypeAllowed && isPreviewAvailable;
-  const shouldRenderThePreview = isTypeAllowed && isFileSizePreviewable(file.size);
+  const isVideo = fileExtensionGroup === FileExtensionGroup['Video'];
+  const isVideoStreaming = isVideo && !disableVideoStream;
+
+  const shouldRenderThePreview = isTypeAllowed && (isVideoStreaming || isFileSizePreviewable(file.size));
 
   const ItemIconComponent = iconService.getItemIcon(false, file.type);
 
@@ -224,12 +229,12 @@ const FileViewer = ({
               className="z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto outline-none"
             >
               <div>
-                {blob && file ? (
+                {(isVideo || blob) && file ? (
                   <Suspense fallback={<div></div>}>
                     <Viewer
                       blob={blob}
-                      changeFile={changeFile}
                       file={file}
+                      disableVideoStream={disableVideoStream}
                       setIsPreviewAvailable={setIsPreviewAvailable}
                       handlersForSpecialItems={handlersForSpecialItems}
                     />
