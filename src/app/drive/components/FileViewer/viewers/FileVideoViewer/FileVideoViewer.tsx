@@ -46,8 +46,10 @@ const FileVideoViewer = ({
       bucketId: file.bucket,
       fileSize: file.size,
       fileType: file.type,
-      mnemonic,
-      credentials: { user: bridgeUser, pass: userId },
+      mnemonic: file.mnemonic ?? mnemonic,
+      credentials: file.credentials
+        ? { user: file.credentials?.user, pass: file.credentials?.pass }
+        : { user: bridgeUser, pass: userId },
       onProgress: (progress) => {
         handlersForSpecialItems?.handleUpdateProgress(progress);
       },
