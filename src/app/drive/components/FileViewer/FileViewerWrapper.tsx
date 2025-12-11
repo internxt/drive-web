@@ -1,7 +1,6 @@
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import { getAppConfig } from 'services/config.service';
 import localStorageService from 'services/local-storage.service';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import errorService from 'services/error.service';
@@ -43,6 +42,7 @@ interface FileViewerWrapperProps {
   onClose: () => void;
   folderItems?: DriveItemData[];
   contextMenu?: Array<MenuItemType<DriveItemData>>;
+  isSharedView?: boolean;
   onShowStopSharingDialog?: () => void;
   sharedKeyboardShortcuts?: {
     removeItemFromKeyboard?: (item: DriveItemData) => void;
@@ -56,6 +56,7 @@ const FileViewerWrapper = ({
   showPreview,
   folderItems,
   contextMenu,
+  isSharedView,
   onShowStopSharingDialog,
   sharedKeyboardShortcuts,
 }: FileViewerWrapperProps): JSX.Element => {
@@ -76,10 +77,6 @@ const FileViewerWrapper = ({
   const user = localStorageService.getUser();
   const userEmail = user?.email;
 
-  const path = getAppConfig().views.find((view) => view.path === location.pathname);
-  const pathId = path?.id as pathProps;
-  const isSharedView = pathId === 'shared';
-
   const driveItemActions = useDriveItemActions(currentFile);
   const fileContentManager = getFileContentManager(currentFile, downloadFile);
 
@@ -98,9 +95,9 @@ const FileViewerWrapper = ({
     dispatch(uiActions.setFileViewerItem(currentFile));
 
     const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(currentFile);
-    const canStreamVideo = extensionGroup?.fileExtensionGroup === FileExtensionGroup['Video'] && !isSharedView;
+    const isVideo = extensionGroup?.fileExtensionGroup === FileExtensionGroup['Video'];
 
-    if (currentFile && !updateProgress && !isDownloadStarted && !canStreamVideo) {
+    if (currentFile && !updateProgress && !isDownloadStarted && !isVideo) {
       setIsDownloadStarted(true);
       fileContentManager
         .download()

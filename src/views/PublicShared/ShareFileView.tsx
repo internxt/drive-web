@@ -341,6 +341,7 @@ export default function ShareFileView(props: Readonly<ShareViewProps>): JSX.Elem
           blob={blob}
           isAuthenticated={isAuthenticated}
           isShareView
+          disableVideoStream
         />
       )}
       {body}

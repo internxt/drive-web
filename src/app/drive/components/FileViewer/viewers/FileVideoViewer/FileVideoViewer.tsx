@@ -6,7 +6,7 @@ import { FormatFileViewerProps } from '../../FileViewer';
 const FileVideoViewer = ({
   file,
   blob,
-  isSharedItem,
+  disableVideoStream,
   setIsPreviewAvailable,
   handlersForSpecialItems,
 }: FormatFileViewerProps): JSX.Element => {
@@ -16,7 +16,7 @@ const FileVideoViewer = ({
 
   // Handle shared items (blob-based playback)
   useEffect(() => {
-    if (!isSharedItem || !videoRef.current || !blob) return;
+    if (!disableVideoStream || !videoRef.current || !blob) return;
 
     const blobUrl = URL.createObjectURL(blob);
     videoRef.current.src = blobUrl;
@@ -25,11 +25,11 @@ const FileVideoViewer = ({
     return () => {
       URL.revokeObjectURL(blobUrl);
     };
-  }, [isSharedItem, blob]);
+  }, [disableVideoStream, blob]);
 
   // Handle streaming playback (non-shared items)
   useEffect(() => {
-    if (isSharedItem) return;
+    if (disableVideoStream) return;
 
     const user = localStorageService.getUser();
     const mnemonic = user?.mnemonic ?? '';
@@ -81,7 +81,7 @@ const FileVideoViewer = ({
         videoRef.current.removeAttribute('src');
       }
     };
-  }, [file.fileId, file.bucket, file.size, file.type, isSharedItem, setIsPreviewAvailable]);
+  }, [file.fileId, file.bucket, file.size, file.type, disableVideoStream, setIsPreviewAvailable]);
 
   // Video event listeners
   useEffect(() => {

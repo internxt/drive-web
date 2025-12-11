@@ -30,6 +30,7 @@ interface FileViewerProps {
   isAuthenticated: boolean;
   progress?: number;
   isShareView?: boolean;
+  disableVideoStream?: boolean;
   blob?: Blob | null;
   changeFile?: (direction: 'next' | 'prev') => void;
   totalFolderIndex?: number;
@@ -48,7 +49,7 @@ interface FileViewerProps {
 export interface FormatFileViewerProps {
   file: PreviewFileItem;
   blob?: Blob | null;
-  isSharedItem?: boolean;
+  disableVideoStream?: boolean;
   setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
   handlersForSpecialItems?: {
     handleUpdateProgress: (progress: number) => void;
@@ -64,6 +65,7 @@ const FileViewer = ({
   progress,
   isAuthenticated,
   isShareView,
+  disableVideoStream,
   blob,
   changeFile,
   totalFolderIndex,
@@ -98,7 +100,7 @@ const FileViewer = ({
   const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
   const isItemValidToPreview = isTypeAllowed && isPreviewAvailable;
   const isVideo = fileExtensionGroup === FileExtensionGroup['Video'];
-  const isVideoStreaming = isVideo && !isShareView;
+  const isVideoStreaming = isVideo && !disableVideoStream;
 
   const shouldRenderThePreview = isTypeAllowed && (isVideoStreaming || isFileSizePreviewable(file.size));
 
@@ -232,7 +234,7 @@ const FileViewer = ({
                     <Viewer
                       blob={blob}
                       file={file}
-                      isSharedItem={isShareView}
+                      disableVideoStream={disableVideoStream}
                       setIsPreviewAvailable={setIsPreviewAvailable}
                       handlersForSpecialItems={handlersForSpecialItems}
                     />
