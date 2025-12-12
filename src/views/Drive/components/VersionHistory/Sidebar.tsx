@@ -38,10 +38,18 @@ const Sidebar = () => {
   const [selectedAutosaveVersions, setSelectedAutosaveVersions] = useState<Set<string>>(new Set());
   const [isBatchDeleteMode, setIsBatchDeleteMode] = useState(false);
   const [currentVersion, setCurrentVersion] = useState<VersionInfo>({
-    id: item?.fileId ?? '',
-    createdAt: item?.createdAt ?? '',
+    id: '',
+    createdAt: '',
   });
 
+  useEffect(() => {
+    if (item) {
+      setCurrentVersion({
+        id: item.fileId,
+        createdAt: item.createdAt,
+      });
+    }
+  }, [item]);
   const totalVersionsCount = versions.length;
   const selectedCount = selectedAutosaveVersions.size;
   const selectAllAutosave = selectedCount === totalVersionsCount && totalVersionsCount > 0;
