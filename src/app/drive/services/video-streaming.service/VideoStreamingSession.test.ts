@@ -27,7 +27,6 @@ const createMockConfig = (overrides?: Partial<VideoStreamingSessionConfig>): Vid
   fileType: 'mp4',
   mnemonic: 'test-mnemonic',
   credentials: { user: 'test-user', pass: 'test-pass' },
-  onProgress: vi.fn(),
   ...overrides,
 });
 
