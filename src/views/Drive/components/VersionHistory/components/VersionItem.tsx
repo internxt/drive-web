@@ -1,38 +1,41 @@
-import { useState } from 'react';
 import { Info, DotsThree } from '@phosphor-icons/react';
 import { Checkbox, Dropdown, Avatar } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { FileVersion } from '../types';
 import { useDropdownPositioning, useVersionItemActions } from '../hooks';
 import { formatVersionDate } from '../utils';
+import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
 
 interface VersionItemProps {
   version: FileVersion;
   userName: string;
+  isSelected: boolean;
+  onSelectionChange: (selected: boolean) => void;
 }
 
-export const VersionItem = ({ version, userName }: VersionItemProps) => {
+export const VersionItem = ({ version, userName, isSelected, onSelectionChange }: VersionItemProps) => {
   const { translate } = useTranslationContext();
-  const [isSelected, setIsSelected] = useState(true);
   const { isOpen, setIsOpen, dropdownPosition, dropdownRef, itemRef } = useDropdownPositioning();
   const { menuItems } = useVersionItemActions({
     version,
     onDropdownClose: () => setIsOpen(false),
   });
 
+  const handleToggleSelection = () => {
+    onSelectionChange(!isSelected);
+  };
+
   const handleItemClick = () => {
-    setIsSelected(!isSelected);
+    handleToggleSelection();
   };
 
   const dropdownOpenDirection = dropdownPosition === 'above' ? 'left' : 'right';
-  const versionDate = new Date(version.createdAt);
 
   return (
     <button
       ref={itemRef as React.RefObject<HTMLButtonElement>}
       type="button"
       aria-pressed={isSelected}
-      aria-label={`Version from ${formatVersionDate(versionDate)}`}
+      aria-label={`Version from ${formatVersionDate(version.createdAt)}`}
       className={`group w-full px-6 cursor-pointer text-left ${isSelected ? 'bg-primary/10' : 'hover:bg-gray-1'}`}
       onClick={handleItemClick}
     >
@@ -40,14 +43,17 @@ export const VersionItem = ({ version, userName }: VersionItemProps) => {
         <div className="flex min-w-0 flex-1 items-center space-x-3">
           <Checkbox
             checked={isSelected}
-            onClick={() => setIsSelected(!isSelected)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleToggleSelection();
+            }}
             className={`h-4 w-4 shrink-0 transition-opacity ${
               isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
             }`}
           />
           <div className="flex min-w-0 flex-1 flex-col space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-base font-semibold text-gray-100">{formatVersionDate(versionDate)}</span>
+              <span className="text-base font-semibold text-gray-100">{formatVersionDate(version.createdAt)}</span>
             </div>
             {version.expiresInDays !== undefined && (
               <div className="flex items-center space-x-1 text-[12px] text-red-dark">
@@ -85,7 +91,7 @@ export const VersionItem = ({ version, userName }: VersionItemProps) => {
               }
 
               if (shouldCheckItem) {
-                setIsSelected(true);
+                onSelectionChange(true);
               }
 
               return <DotsThree size={22} weight="bold" />;

@@ -1,3 +1,3 @@
 import dateService from 'services/date.service';
 
-export const formatVersionDate = (date: Date): string => dateService.format(date, 'MMM D, h:mm A');
+export const formatVersionDate = (date: string): string => dateService.format(date, 'MMM D, h:mm A');

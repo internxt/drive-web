@@ -3,38 +3,49 @@ import { Checkbox } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface AutosaveSectionProps {
-  totalAutosaveCount: number;
+  totalVersionsCount: number;
+  totalAllowedVersions: number;
+  selectedCount: number;
   selectAllAutosave: boolean;
   onSelectAllChange: (checked: boolean) => void;
   onDeleteAll: () => void;
 }
 
 export const AutosaveSection = ({
-  totalAutosaveCount,
+  totalVersionsCount,
+  totalAllowedVersions,
+  selectedCount,
   selectAllAutosave,
   onSelectAllChange,
   onDeleteAll,
 }: AutosaveSectionProps) => {
   const { translate } = useTranslationContext();
-
-  if (totalAutosaveCount === 0) return null;
+  const hasSelection = selectedCount > 0;
+  const isIndeterminate = hasSelection && !selectAllAutosave;
 
   return (
     <div className="group flex items-center justify-between border-b-[2.5px] border-gray-5 px-6 py-5 hover:bg-gray-1 dark:hover:bg-gray-5">
       <div className="flex items-center space-x-3">
         <Checkbox
           checked={selectAllAutosave}
+          indeterminate={isIndeterminate}
           onClick={() => onSelectAllChange(!selectAllAutosave)}
           className="h-4 w-4"
         />
         <span className="text-base text-gray-80">
           {translate('modals.versionHistory.autosaveVersions', {
-            count: totalAutosaveCount,
-            total: totalAutosaveCount,
+            count: totalVersionsCount,
+            total: totalAllowedVersions,
           })}
         </span>
       </div>
-      <button onClick={onDeleteAll} className="flex items-center justify-center">
+      <button
+        onClick={onDeleteAll}
+        disabled={!hasSelection}
+        className={`flex items-center justify-center transition-opacity ${
+          hasSelection ? 'opacity-100' : 'opacity-50 cursor-not-allowed'
+        }`}
+      >
         <Trash size={24} className="text-[#FF0D0080]" />
       </button>
     </div>
