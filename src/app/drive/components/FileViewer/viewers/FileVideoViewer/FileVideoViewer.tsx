@@ -3,6 +3,10 @@ import { localStorageService } from 'services';
 import { VideoStreamingSession } from 'app/drive/services/video-streaming.service/VideoStreamingSession';
 import { FormatFileViewerProps } from '../../FileViewer';
 
+const PROGRESS_INCREMENT = 0.2;
+const PROGRESS_INTERVAL_MS = 500;
+const MAX_SIMULATED_PROGRESS = 0.95;
+
 const FileVideoViewer = ({
   file,
   blob,
@@ -12,9 +16,42 @@ const FileVideoViewer = ({
 }: FormatFileViewerProps): JSX.Element => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const sessionRef = useRef<VideoStreamingSession | null>(null);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [canPlay, setCanPlay] = useState(false);
+  const [simulatedProgress, setSimulatedProgress] = useState(0);
 
-  // Handle shared items (blob-based playback)
+  useEffect(() => {
+    if (disableVideoStream || canPlay) return;
+
+    progressIntervalRef.current = setInterval(() => {
+      setSimulatedProgress((prev) => {
+        const next = prev + PROGRESS_INCREMENT;
+        if (next >= MAX_SIMULATED_PROGRESS) {
+          if (progressIntervalRef.current) {
+            clearInterval(progressIntervalRef.current);
+            progressIntervalRef.current = null;
+          }
+          return MAX_SIMULATED_PROGRESS;
+        }
+        return next;
+      });
+    }, PROGRESS_INTERVAL_MS);
+
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+    };
+  }, [disableVideoStream, canPlay]);
+
+  useEffect(() => {
+    if (!disableVideoStream && !canPlay && simulatedProgress > 0) {
+      handlersForSpecialItems?.handleUpdateProgress(simulatedProgress);
+    }
+  }, [simulatedProgress, canPlay, disableVideoStream, handlersForSpecialItems]);
+
+  // Handle shared items
   useEffect(() => {
     if (!disableVideoStream || !videoRef.current || !blob) return;
 
@@ -27,7 +64,7 @@ const FileVideoViewer = ({
     };
   }, [disableVideoStream, blob]);
 
-  // Handle streaming playback (non-shared items)
+  // Handle streaming playback
   useEffect(() => {
     if (disableVideoStream) return;
 
@@ -50,9 +87,6 @@ const FileVideoViewer = ({
       credentials: file.credentials
         ? { user: file.credentials?.user, pass: file.credentials?.pass }
         : { user: bridgeUser, pass: userId },
-      onProgress: (progress) => {
-        handlersForSpecialItems?.handleUpdateProgress(progress);
-      },
     });
 
     sessionRef.current = session;
@@ -118,6 +152,7 @@ const FileVideoViewer = ({
       ref={videoRef}
       controls
       autoPlay
+      preload="metadata"
       style={{ width: '100%', maxHeight: '80vh', backgroundColor: '#000' }}
       className={canPlay ? 'flex' : 'hidden'}
     >

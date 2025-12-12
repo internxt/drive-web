@@ -13,7 +13,7 @@ const MESSAGE_TYPES = {
   CLEAR_SESSIONS: 'CLEAR_SESSIONS',
 };
 const DEFAULT_CHUNK_SIZE = 5 * 1024 * 1024;
-const CHUNK_REQUEST_TIMEOUT = 2 * 60 * 1000; // 2 minutes for slow connections
+const CHUNK_REQUEST_TIMEOUT = 10000;
 
 /**
  * Waiting until the Service Worker is installed
