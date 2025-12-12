@@ -828,6 +828,15 @@
         "location": "Расположение"
       }
     },
+    "versionHistory": {
+      "title": "История версий",
+      "current": "Текущая",
+      "expiresInDays": "Истекает через {{days}} дней",
+      "autosaveVersions": "{{count}}/{{total}} версий автосохранения",
+      "restoreVersion": "Восстановить версию",
+      "downloadVersion": "Скачать версию",
+      "deleteVersion": "Удалить версию"
+    },
     "shareModal": {
       "title": "Поделиться \"{{name}}\"",
       "list": {
@@ -1469,6 +1478,7 @@
       "manageLinkAccess": "Управление доступом",
       "manageAccess": "Управление доступом",
       "download": "Загрузить",
+      "versionHistory": "История версий",
       "moveToTrash": "Переместить в корзину",
       "copyLink": "Копировать ссылку",
       "linkSettings": "Настройки ссылки",

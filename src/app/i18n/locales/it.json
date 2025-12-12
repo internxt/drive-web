@@ -921,6 +921,15 @@
         "location": "Posizione"
       }
     },
+    "versionHistory": {
+      "title": "Cronologia versioni",
+      "current": "Attuale",
+      "expiresInDays": "Scade tra {{days}} giorni",
+      "autosaveVersions": "{{count}}/{{total}} versioni di salvataggio automatico",
+      "restoreVersion": "Ripristina versione",
+      "downloadVersion": "Scarica versione",
+      "deleteVersion": "Elimina versione"
+    },
     "shareModal": {
       "title": "Condividi \"{{name}}\"",
       "list": {
@@ -1570,7 +1579,8 @@
       "restore": "Ripristinare",
       "deletePermanently": "Eliminare definitivamente",
       "move": "Sposta",
-      "delete": "Elimina"
+      "delete": "Elimina",
+      "versionHistory": "Cronologia versioni"
     },
     "deleteItems": {
       "title": "Eliminare definitivamente?",
