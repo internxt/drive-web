@@ -23,8 +23,6 @@ describe('Check that env variables are loaded correctly', () => {
 
     expect(envService.getVariable('secret')).toBe(process.env.REACT_APP_CRYPTO_SECRET);
     expect(envService.getVariable('secret2')).toBe(process.env.REACT_APP_CRYPTO_SECRET2);
-    expect(envService.getVariable('magicIv')).toBe(process.env.REACT_APP_MAGIC_IV);
-    expect(envService.getVariable('magicSalt')).toBe(process.env.REACT_APP_MAGIC_SALT);
 
     expect(envService.getVariable('newApi')).toBe(process.env.REACT_APP_DRIVE_NEW_API_URL);
     expect(envService.getVariable('payments')).toBe(process.env.REACT_APP_PAYMENTS_API_URL);

@@ -73,10 +73,6 @@ vi.mock('app/core/factory/sdk', () => ({
 }));
 
 vi.mock('app/crypto/services/keys.service', () => ({
-  getAesInitFromEnv: vi.fn().mockReturnValue('mock-aes-init'),
-}));
-
-vi.mock('app/crypto/services/keys.service', () => ({
   getKeys: vi.fn().mockResolvedValue({
     privateKeyArmored: 'mock-private-key',
     publicKeyArmored: 'mock-public-key',

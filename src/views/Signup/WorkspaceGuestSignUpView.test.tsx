@@ -11,9 +11,6 @@ import { generateMnemonic } from 'bip39';
 import envService from 'services/env.service';
 
 const mockSecret = '123456789QWERTY';
-const mockMagicIv = '12345678912345678912345678912345';
-const mockMagicSalt =
-  '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
 const mockApi = 'https://mock';
 const mockHostname = 'hostname';
 
@@ -224,8 +221,6 @@ describe('onSubmit', () => {
     vi.clearAllMocks();
     vi.resetModules();
     vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
-      if (key === 'magicIv') return mockMagicIv;
-      if (key === 'magicSalt') return mockMagicSalt;
       if (key === 'newApi') return mockApi;
       if (key === 'secret') return mockSecret;
       if (key === 'hostname') return mockHostname;

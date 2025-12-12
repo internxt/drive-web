@@ -13,10 +13,6 @@ import { isValid } from '../../../src/app/crypto/services/utilspgp';
 
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Buffer } from 'node:buffer';
-import envService from '../../../src/services/env.service';
-
-const mockMagicIv = 'test_magic_iv';
-const mockMagicSalt = 'test_magic_salt';
 
 describe('Generate keys', () => {
   globalThis.Buffer = Buffer;
@@ -28,11 +24,6 @@ describe('Generate keys', () => {
 
   it('should generate new keys', async () => {
     const password = 'test pwd';
-    vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
-      if (key === 'magicIv') return mockMagicIv;
-      if (key === 'magicSalt') return mockMagicSalt;
-      else return 'no mock implementation';
-    });
     const keys = await getKeys(password);
 
     expect(keys).toHaveProperty('privateKeyEncrypted');

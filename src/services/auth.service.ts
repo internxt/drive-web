@@ -20,7 +20,6 @@ import AppError, { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
-  getAesInitFromEnv,
   getKeys,
   parseAndDecryptUserKeys,
 } from 'app/crypto/services/keys.service';
@@ -326,14 +325,14 @@ export const updateCredentialsWithToken = async (
       const eccPrivateKeyBase64 = backupData.privateKey || backupData.keys?.ecc;
       if (eccPrivateKeyBase64) {
         const eccPrivateKey = Buffer.from(eccPrivateKeyBase64, 'base64').toString();
-        encryptedEccPrivateKey = aes.encrypt(eccPrivateKey, newPassword, getAesInitFromEnv());
+        encryptedEccPrivateKey = aes.encrypt(eccPrivateKey, newPassword);
       }
     }
 
     if (backupData.keys?.kyber) {
       const kyberPrivateKey = backupData.keys.kyber;
       if (kyberPrivateKey) {
-        encryptedKyberPrivateKey = aes.encrypt(kyberPrivateKey, newPassword, getAesInitFromEnv());
+        encryptedKyberPrivateKey = aes.encrypt(kyberPrivateKey, newPassword);
       }
     }
   }
@@ -394,12 +393,12 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   // Encrypt the mnemonic
   const encryptedMnemonic = encryptTextWithKey(user.mnemonic, newPassword);
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
-  const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
+  const privateKeyEncrypted = aes.encrypt(privateKey, newPassword);
 
   let privateKyberKeyEncrypted = '';
 
   if (user.keys?.kyber?.privateKey) {
-    privateKyberKeyEncrypted = aes.encrypt(user.keys.kyber.privateKey, newPassword, getAesInitFromEnv());
+    privateKyberKeyEncrypted = aes.encrypt(user.keys.kyber.privateKey, newPassword);
   }
 
   const usersClient = SdkFactory.getNewApiInstance().createUsersClient();
