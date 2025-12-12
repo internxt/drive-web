@@ -124,6 +124,25 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     );
   };
 
+  const uploadFileAndGetFileId = async (file: File, itemToReplace: DriveItemData) => {
+    const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(!!selectedWorkspace);
+    const network = new Network(bridgeUser, bridgePass, encryptionKey);
+
+    const taskId = `replace-${itemToReplace.uuid}-${Date.now()}`;
+
+    const [uploadPromise] = network.uploadFile(
+      bucketId,
+      {
+        filecontent: file,
+        filesize: file.size,
+        progressCallback: () => {},
+      },
+      { taskId },
+    );
+
+    return await uploadPromise;
+  };
+
   const replaceAndUploadItem = async ({
     itemsToReplace,
     itemsToUpload,
@@ -151,22 +170,8 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
         });
       } else {
         const file = itemToUpload as File;
-        const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(!!selectedWorkspace);
-        const network = new Network(bridgeUser, bridgePass, encryptionKey);
+        const newFileId = await uploadFileAndGetFileId(file, itemToReplace);
 
-        const taskId = `replace-${itemToReplace.uuid}-${Date.now()}`;
-
-        const [uploadPromise] = network.uploadFile(
-          bucketId,
-          {
-            filecontent: file,
-            filesize: file.size,
-            progressCallback: () => {},
-          },
-          { taskId },
-        );
-
-        const newFileId = await uploadPromise;
         await replaceFileService.replaceFile(itemToReplace.uuid, {
           fileId: newFileId,
           size: file.size,

@@ -37,11 +37,15 @@ const Sidebar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedAutosaveVersions, setSelectedAutosaveVersions] = useState<Set<string>>(new Set());
   const [isBatchDeleteMode, setIsBatchDeleteMode] = useState(false);
-  const [currentVersion, setCurrentVersion] = useState<VersionInfo | null>(null);
+  const [currentVersion, setCurrentVersion] = useState<VersionInfo>({
+    id: item?.fileId ?? '',
+    createdAt: item?.createdAt ?? '',
+  });
 
   const totalVersionsCount = versions.length;
   const selectedCount = selectedAutosaveVersions.size;
   const selectAllAutosave = selectedCount === totalVersionsCount && totalVersionsCount > 0;
+  const totalAllowedVersions = limits?.versioning.maxVersions ?? 0;
 
   const userName = useMemo(
     () => (user?.name && user?.lastname ? `${user.name} ${user.lastname}` : user?.email || 'Unknown User'),
@@ -68,9 +72,6 @@ const Sidebar = () => {
   }, [item, isOpen]);
 
   useEffect(() => {
-    if (item) {
-      setCurrentVersion({ id: item.fileId, createdAt: item.createdAt });
-    }
     void fetchData();
   }, [item, isOpen, fetchData]);
 
@@ -187,7 +188,6 @@ const Sidebar = () => {
   }, [item, selectedCount, dispatch]);
 
   if (!item) return null;
-
   return (
     <>
       {isOpen && <div className="fixed inset-0 z-40 transition-opacity" onClick={onClose} aria-hidden />}
@@ -205,15 +205,11 @@ const Sidebar = () => {
               <VersionHistorySkeleton />
             ) : (
               <>
-                <CurrentVersionItem
-                  key={currentVersion?.id ?? item.id}
-                  createdAt={currentVersion?.createdAt ?? item.createdAt}
-                  userName={userName}
-                />
+                <CurrentVersionItem key={currentVersion.id} createdAt={currentVersion.createdAt} userName={userName} />
 
                 <AutosaveSection
                   totalVersionsCount={totalVersionsCount}
-                  totalAllowedVersions={limits?.versioning.maxVersions ?? 0}
+                  totalAllowedVersions={totalAllowedVersions}
                   selectedCount={selectedCount}
                   selectAllAutosave={selectAllAutosave}
                   onSelectAllChange={handleSelectAllAutosave}
