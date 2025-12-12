@@ -1,68 +1,7 @@
 import { mnemonicToSeed } from 'bip39';
-import * as crypto from 'crypto';
-import { Cipher, CipherCCM, createCipheriv } from 'crypto';
+import { Cipher } from 'crypto';
 
-import {
-  getHmacSha512,
-  getHmacSha512FromHexKey,
-  getRipemd160FromHex,
-  getSha256Hasher,
-  getSha512Combined,
-  getSha512FromHex,
-} from '../crypto/services/utils';
-import { LegacyShardMeta } from './types';
-import { BUCKET_META_MAGIC } from './networkConstants';
-
-export function createAES256Cipher(key: Buffer, iv: Buffer): Cipher {
-  return createCipheriv('aes-256-ctr', key, iv);
-}
-
-export function Aes256gcmEncrypter(key: Buffer, iv: Buffer): crypto.CipherGCM {
-  return crypto.createCipheriv('aes-256-gcm', key, iv);
-}
-
-export function generateHMAC(
-  shardMetas: Omit<LegacyShardMeta, 'challenges' | 'challenges_as_str' | 'tree'>[],
-  encryptionKey: Buffer,
-): Promise<string> {
-  const shardHashesSorted = [...shardMetas].sort((sA, sB) => sA.index - sB.index);
-  const hashArray: string[] = [];
-  for (const shardMeta of shardHashesSorted) {
-    hashArray.push(shardMeta.hash);
-  }
-
-  return getHmacSha512(encryptionKey, hashArray);
-}
-
-function getDeterministicKey(key: string, data: string): Promise<string> {
-  const input = key + data;
-
-  return getSha512FromHex(input);
-}
-
-async function getBucketKey(mnemonic: string, bucketId: string): Promise<string> {
-  const seed = (await mnemonicToSeed(mnemonic)).toString('hex');
-  const hash = await getDeterministicKey(seed, bucketId);
-
-  return hash.slice(0, 64);
-}
-
-export function encryptMeta(fileMeta: string, key: Buffer, iv: Buffer): string {
-  const cipher: CipherCCM = Aes256gcmEncrypter(key, iv);
-  const cipherTextBuf = Buffer.concat([cipher.update(fileMeta, 'utf8'), cipher.final()]);
-  const digest = cipher.getAuthTag();
-
-  return Buffer.concat([digest, iv, cipherTextBuf]).toString('base64');
-}
-
-export async function encryptFilename(mnemonic: string, bucketId: string, filename: string): Promise<string> {
-  const bucketKey = await getBucketKey(mnemonic, bucketId);
-  const encryptionKeyHex = await getHmacSha512FromHexKey(bucketKey, [Buffer.from(BUCKET_META_MAGIC)]);
-  const encryptionKey = Buffer.from(encryptionKeyHex, 'hex').subarray(0, 32);
-  const encryptionIvHex = await getHmacSha512FromHexKey(bucketKey, [bucketId, filename]);
-  const encryptionIv = Buffer.from(encryptionIvHex, 'hex').subarray(0, 32);
-  return encryptMeta(filename, encryptionKey, encryptionIv);
-}
+import { getRipemd160FromHex, getSha256Hasher, getSha512Combined } from '../crypto/services/utils';
 
 /**
  * Given a stream and a cipher, encrypt its content
