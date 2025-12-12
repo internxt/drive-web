@@ -13,6 +13,7 @@ import { IRoot } from 'app/store/slices/storage/types';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
 import replaceFileService from 'views/Drive/services/replaceFile.service';
+import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
@@ -150,10 +151,27 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
         });
       } else {
         const file = itemToUpload as File;
+        const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(!!selectedWorkspace);
+        const network = new Network(bridgeUser, bridgePass, encryptionKey);
+
+        const taskId = `replace-${itemToReplace.uuid}-${Date.now()}`;
+
+        const [uploadPromise] = network.uploadFile(
+          bucketId,
+          {
+            filecontent: file,
+            filesize: file.size,
+            progressCallback: () => {},
+          },
+          { taskId },
+        );
+
+        const newFileId = await uploadPromise;
         await replaceFileService.replaceFile(itemToReplace.uuid, {
-          fileId: itemToReplace.fileId,
+          fileId: newFileId,
           size: file.size,
         });
+
         dispatch(fetchSortedFolderContentThunk(folderId));
       }
     }

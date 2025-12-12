@@ -1,13 +1,13 @@
 import { Trash, ClockCounterClockwise, DownloadSimple } from '@phosphor-icons/react';
 import { MenuItemType } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { FileVersion } from '../types';
 import fileVersionService from '../services/fileVersion.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { RootState } from 'app/store';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
 
 interface UseVersionItemActionsParams {
   version: FileVersion;
