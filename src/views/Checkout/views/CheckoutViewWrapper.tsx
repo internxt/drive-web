@@ -1,13 +1,10 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Elements } from '@stripe/react-stripe-js';
-import { Stripe, StripeElements, StripeElementsOptions } from '@stripe/stripe-js';
+import { Stripe, StripeElements } from '@stripe/stripe-js';
 import { BaseSyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { UserLocation } from '@internxt/sdk';
-import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { Loader } from '@internxt/ui';
-import { userLocation } from 'utils/userLocation';
 import { useCheckout } from 'views/Checkout/hooks/useCheckout';
 import { useSignUp } from 'views/Signup/hooks/useSignup';
 import envService from 'services/env.service';
@@ -23,14 +20,14 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ChangePlanDialog from 'views/NewSettings/components/Sections/Account/Plans/components/ChangePlanDialog';
 import longNotificationsService from 'app/notifications/services/longNotification.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { paymentService, checkoutService, currencyService } from 'views/Checkout/services';
+import { paymentService, checkoutService } from 'views/Checkout/services';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { useThemeContext } from 'app/theme/ThemeProvider';
 import { authenticateUser } from 'services/auth.service';
 import { checkoutReducer, initialStateForCheckout } from 'views/Checkout/store/checkoutReducer';
-import { PaymentType, PlanInterval } from 'views/Checkout/types';
+import { PaymentType } from 'views/Checkout/types';
 import { AddressProvider, CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
 import CheckoutView from './CheckoutView';
 import { useUserPayment } from 'views/Checkout/hooks/useUserPayment';
@@ -38,6 +35,9 @@ import { CRYPTO_PAYMENT_DIALOG_KEY, CryptoPaymentDialog } from 'views/Checkout/c
 import { useActionDialog } from 'app/contexts/dialog-manager/useActionDialog';
 import { generateCaptchaToken } from 'utils/generateCaptchaToken';
 import gaService from 'app/analytics/ga.service';
+import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
+import { useInitializeCheckout } from '../hooks/useInitializeCheckout';
+import { useProducts } from '../hooks/useProducts';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -69,13 +69,35 @@ const STATUS_CODE_ERROR = {
   INTERNAL_SERVER_ERROR: 500,
 };
 
-let stripeSdk: Stripe;
-
 const CheckoutViewWrapper = () => {
-  const dispatch = useAppDispatch();
-  const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
+  const { planId, promotionCode, currency, paramMobileToken, gclid } = useCheckoutQueryParams();
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
+  const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
+
+  const {
+    selectedPlan,
+    promoCodeData,
+    businessSeats,
+    removeCouponCode,
+    fetchSelectedPlan,
+    fetchPromotionCode,
+    onPromoCodeError,
+  } = useProducts({ currency: currency ?? 'eur', translate, planId, promotionCode });
+  const {
+    isCheckoutReady,
+    location: userLocationData,
+    stripeElementsOptions,
+    availableCryptoCurrencies,
+    stripeSdk,
+  } = useInitializeCheckout({
+    user,
+    price: selectedPlan,
+    checkoutTheme: checkoutTheme ?? 'light',
+    translate,
+  });
+
+  const dispatch = useAppDispatch();
   const [mobileToken, setMobileToken] = useState<string | null>(null);
   const [address, setAddress] = useState<AddressProvider>();
   const [userName, setUserName] = useState(user?.name ?? '');
@@ -85,9 +107,7 @@ const CheckoutViewWrapper = () => {
   const { doRegister } = useSignUp('activate');
   const { handleUserPayment } = useUserPayment();
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
-  const [userLocationData, setUserLocationData] = useState<UserLocation>();
   const { isDialogOpen, openDialog: openCryptoPaymentDialog } = useActionDialog();
-  const [availableCryptoCurrencies, setAvailableCryptoCurrencies] = useState<CryptoCurrency[] | undefined>(undefined);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('eur');
   const [currencyType, setCurrencyType] = useState<PaymentType>();
 
@@ -100,37 +120,21 @@ const CheckoutViewWrapper = () => {
   const gclidStored = localStorageService.get(STORAGE_KEYS.GCLID);
 
   const {
-    onRemoveAppliedCouponCode,
     setAuthMethod,
     setAvatarBlob,
-    setError,
     setIsUserPaying,
-    setPromoCodeData,
+    setError,
     setSelectedPlan,
-    setStripeElementsOptions,
     setSeatsForBusinessSubscription,
-    setPrices,
-    setIsCheckoutReadyToRender,
     setIsUpdateSubscriptionDialogOpen,
     setIsUpdatingSubscription,
   } = useCheckout(dispatchReducer);
 
-  const {
-    authMethod,
-    currentSelectedPlan,
-    avatarBlob,
-    couponCodeData,
-    elementsOptions,
-    seatsForBusinessSubscription,
-    isCheckoutReadyToRender,
-    isUpdateSubscriptionDialogOpen,
-    isUpdatingSubscription,
-    prices,
-  } = state;
+  const { authMethod, avatarBlob, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription, prices } = state;
 
   const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
 
-  const canChangePlanDialogBeOpened = prices && currentSelectedPlan?.price && isUpdateSubscriptionDialogOpen;
+  const canChangePlanDialogBeOpened = prices && selectedPlan?.price && isUpdateSubscriptionDialogOpen;
   const isCryptoPaymentDialogOpen = isDialogOpen(CRYPTO_PAYMENT_DIALOG_KEY);
 
   const userInfo: UserInfoProps = {
@@ -140,14 +144,7 @@ const CheckoutViewWrapper = () => {
   };
 
   useEffect(() => {
-    const { planId, promotionCode, currency, paramMobileToken, gclid } = getCheckoutQueryParams();
     setMobileToken(paramMobileToken);
-    const currencyValue = currency ?? 'eur';
-
-    if (!planId) {
-      redirectToFallbackPage();
-      return;
-    }
 
     if (gclid) {
       const expiryDate = new Date();
@@ -155,11 +152,6 @@ const CheckoutViewWrapper = () => {
       document.cookie = `gclid=${gclid}; expires=${expiryDate.toUTCString()}; path=/`;
       localStorageService.set(STORAGE_KEYS.GCLID, gclid);
     }
-
-    initializeStripe()
-      .then(() => fetchUserLocationAndStore())
-      .then((location) => loadCheckoutData(planId, currencyValue, promotionCode, location?.ip))
-      .catch(() => redirectToFallbackPage());
   }, [checkoutTheme, mobileToken]);
 
   useEffect(() => {
@@ -174,20 +166,20 @@ const CheckoutViewWrapper = () => {
   }, [isAuthenticated, user]);
 
   useEffect(() => {
-    if (!currentSelectedPlan?.price?.id || !currentSelectedPlan?.price?.currency) {
+    if (!selectedPlan?.price?.id || !selectedPlan?.price?.currency) {
       return;
     }
 
     if (userLocationData?.location !== address?.country && address?.postal_code) {
-      recalculatePrice(
-        currentSelectedPlan.price.id,
-        currentSelectedPlan.price.currency,
-        couponCodeData?.codeName,
-        address.postal_code,
-        address.country,
-      );
+      fetchSelectedPlan({
+        priceId: selectedPlan.price.id,
+        currency: selectedPlan.price.currency,
+        promotionCode: promoCodeData?.codeName,
+        postalCode: address.postal_code,
+        country: address.country,
+      });
     }
-  }, [address?.country, address?.postal_code, currentSelectedPlan?.price?.id, currentSelectedPlan?.price?.currency]);
+  }, [address?.country, address?.postal_code, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
 
   useEffect(() => {
     if (thereIsAnyError) {
@@ -200,150 +192,44 @@ const CheckoutViewWrapper = () => {
   }, [state.error]);
 
   useEffect(() => {
-    if (isCheckoutReadyToRender && currentSelectedPlan?.price) {
-      const { promotionCode } = getCheckoutQueryParams();
-
+    if (isCheckoutReady && selectedPlan?.price) {
       gaService.trackBeginCheckout({
-        planId: currentSelectedPlan.price.id,
-        planPrice: currentSelectedPlan.price.decimalAmount,
-        currency: currentSelectedPlan.price.currency ?? 'eur',
-        planType: currentSelectedPlan.price.type === 'business' ? 'business' : 'individual',
-        interval: currentSelectedPlan.price.interval,
-        storage: currentSelectedPlan.price.bytes.toString(),
+        planId: selectedPlan.price.id,
+        planPrice: selectedPlan.price.decimalAmount,
+        currency: selectedPlan.price.currency ?? 'eur',
+        planType: selectedPlan.price.type === 'business' ? 'business' : 'individual',
+        interval: selectedPlan.price.interval,
+        storage: selectedPlan.price.bytes.toString(),
         promoCodeId: promotionCode ?? undefined,
-        couponCodeData: couponCodeData,
-        seats: currentSelectedPlan.price.type === 'business' ? seatsForBusinessSubscription : 1,
+        couponCodeData: promoCodeData,
+        seats: selectedPlan.price.type === 'business' ? businessSeats : 1,
       });
     }
-  }, [isCheckoutReadyToRender]);
+  }, [isCheckoutReady]);
 
   const onCheckoutCouponChanges = async (promoCodeName?: string) => {
-    if (!currentSelectedPlan?.price?.id) {
+    if (!selectedPlan?.price?.id) {
       return;
     }
 
     try {
       if (promoCodeName) {
-        await handleFetchPromotionCode(currentSelectedPlan.price.id, promoCodeName);
+        await fetchPromotionCode({ priceId: selectedPlan.price.id, promotionCode: promoCodeName });
       }
     } catch (error) {
-      handlePromoCodeError(error);
+      onPromoCodeError(error);
     }
 
     try {
-      const priceWithTaxes = await checkoutService.getPriceById({
-        priceId: currentSelectedPlan.price.id,
+      const priceWithTaxes = await fetchSelectedPlan({
+        priceId: selectedPlan.price.id,
         userAddress: userLocationData?.ip,
-        promoCodeName,
+        promotionCode: promoCodeName,
       });
       setSelectedPlan(priceWithTaxes);
     } catch (error) {
       console.error('Error fetching price with taxes', error);
     }
-  };
-
-  const getCheckoutQueryParams = () => {
-    const params = new URLSearchParams(globalThis.location.search);
-
-    return {
-      planId: params.get('planId'),
-      promotionCode: params.get('couponCode'),
-      currency: params.get('currency'),
-      paramMobileToken: params.get('mobileToken'),
-      gclid: params.get('gclid') ?? '',
-    };
-  };
-
-  const redirectToFallbackPage = () => {
-    if (user) {
-      navigationService.push(AppView.Drive);
-    } else {
-      navigationService.push(AppView.Signup);
-    }
-  };
-
-  const initializeStripe = async (): Promise<void> => {
-    try {
-      const stripe = await paymentService.getStripe();
-      stripeSdk = stripe;
-    } catch {
-      redirectToFallbackPage();
-      throw new Error('Stripe failed to load');
-    }
-  };
-
-  const fetchUserLocationAndStore = async (): Promise<UserLocation | undefined> => {
-    try {
-      const location = await userLocation();
-      setUserLocationData(location);
-      return location;
-    } catch {
-      // NO OP
-      return undefined;
-    }
-  };
-
-  const loadCheckoutData = async (
-    planId: string,
-    currencyValue: string,
-    promotionCode: string | null,
-    userAddress?: UserLocation['ip'],
-  ): Promise<void> => {
-    let price: PriceWithTax | null = null;
-    try {
-      price = await handleFetchSelectedPlan(planId, promotionCode, currencyValue, userAddress);
-    } catch (error) {
-      console.error('Error fetching selected plan', error);
-      redirectToFallbackPage();
-      return;
-    }
-
-    if (!checkoutTheme || !price) {
-      return;
-    }
-
-    if (promotionCode) {
-      try {
-        await handleFetchPromotionCode(price.price.id, promotionCode);
-      } catch (error) {
-        handlePromoCodeError(error);
-      }
-    }
-
-    setSelectedCurrency(price.price.currency);
-
-    if (price.price.interval === PlanInterval.LIFETIME && IS_CRYPTO_PAYMENT_ENABLED) {
-      try {
-        const availableCryptoCurrencies = await currencyService.getAvailableCryptoCurrencies();
-        setAvailableCryptoCurrencies(availableCryptoCurrencies);
-      } catch (error) {
-        console.error('Error fetching available crypto currencies', error);
-        notificationsService.show({
-          text: translate('checkout.error.fetchingCryptoCurrencies'),
-          type: ToastType.Error,
-        });
-      }
-    }
-
-    try {
-      const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme as string], price);
-      setStripeElementsOptions(stripeElements as StripeElementsOptions);
-    } catch (error) {
-      console.error('Error loading Stripe elements:', error);
-      redirectToFallbackPage();
-      return;
-    }
-
-    try {
-      const prices = await checkoutService.fetchPrices(price.price.type, currencyValue);
-      setPrices(prices);
-    } catch (error) {
-      console.error('Error fetching prices:', error);
-      redirectToFallbackPage();
-      return;
-    }
-
-    setIsCheckoutReadyToRender(true);
   };
 
   const onChangePlanClicked = async (priceId: string) => {
@@ -379,7 +265,7 @@ const CheckoutViewWrapper = () => {
   };
 
   const handleSubscriptionPayment = async (priceId: string) => {
-    if (!currentSelectedPlan?.price?.type) {
+    if (!selectedPlan?.price?.type) {
       console.error('No selected plan available for subscription payment');
       return;
     }
@@ -387,9 +273,9 @@ const CheckoutViewWrapper = () => {
     try {
       const updatedSubscription = await paymentService.updateSubscriptionPrice({
         priceId,
-        userType: currentSelectedPlan.price.type,
+        userType: selectedPlan.price.type,
       });
-      if (updatedSubscription.request3DSecure) {
+      if (updatedSubscription.request3DSecure && stripeSdk) {
         stripeSdk
           .confirmCardPayment(updatedSubscription.clientSecret)
           .then(async (result) => {
@@ -423,7 +309,7 @@ const CheckoutViewWrapper = () => {
   ) => {
     event?.preventDefault();
 
-    if (!currentSelectedPlan?.price?.id) {
+    if (!selectedPlan?.price?.id) {
       console.error('No selected plan available for checkout');
       setIsUserPaying(false);
       return;
@@ -492,7 +378,7 @@ const CheckoutViewWrapper = () => {
         const setupIntent = await checkoutService.checkoutSetupIntent(customerId);
         localStorageService.set('customerId', customerId);
         localStorageService.set('token', token);
-        localStorageService.set('priceId', currentSelectedPlan.price.id);
+        localStorageService.set('priceId', selectedPlan.price.id);
         localStorageService.set('customerToken', token);
         localStorageService.set('mobileToken', mobileToken);
         const RETURN_URL_DOMAIN = envService.getVariable('hostname');
@@ -500,7 +386,7 @@ const CheckoutViewWrapper = () => {
           elements,
           clientSecret: setupIntent.clientSecret,
           confirmParams: {
-            return_url: `${RETURN_URL_DOMAIN}/checkout/pcCloud-success?mobileToken=${mobileToken}&priceId=${currentSelectedPlan.price.id}`,
+            return_url: `${RETURN_URL_DOMAIN}/checkout/pcCloud-success?mobileToken=${mobileToken}&priceId=${selectedPlan.price.id}`,
           },
         });
 
@@ -513,17 +399,17 @@ const CheckoutViewWrapper = () => {
         await handleUserPayment({
           confirmPayment: stripeSDK.confirmPayment,
           confirmSetupIntent: stripeSDK.confirmSetup,
-          couponCodeData: couponCodeData,
-          currency: selectedCurrency ?? currentSelectedPlan.price.currency,
-          priceId: currentSelectedPlan.price.id,
+          couponCodeData: promoCodeData,
+          currency: selectedCurrency ?? selectedPlan.price.currency,
+          priceId: selectedPlan.price.id,
           customerId,
           elements,
           translate,
-          selectedPlan: currentSelectedPlan,
+          selectedPlan,
           token,
           gclidStored,
           captchaToken: intentCaptcha,
-          seatsForBusinessSubscription,
+          seatsForBusinessSubscription: businessSeats,
           openCryptoPaymentDialog,
           userAddress: userLocationData?.ip as string,
         });
@@ -547,79 +433,11 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const handleFetchSelectedPlan = async (
-    priceId: string,
-    promotionCode: string | null,
-    currency?: string,
-    ip?: string,
-  ) => {
-    const plan = await checkoutService.getPriceById({
-      priceId,
-      userAddress: ip,
-      currency,
-      promoCodeName: promotionCode ?? undefined,
-    });
-    const amount = mobileToken ? { amount: 0, decimalAmount: 0 } : {};
-    setSelectedPlan({ ...plan, ...amount });
-    if (plan?.price?.minimumSeats) {
-      setSeatsForBusinessSubscription(plan.price.minimumSeats);
-    }
-
-    return plan;
-  };
-
-  const handleFetchPromotionCode = async (priceId: string, promotionCode: string) => {
-    const promoCodeData = await checkoutService.fetchPromotionCodeByName(priceId, promotionCode);
-    const promoCode = {
-      codeId: promoCodeData.codeId,
-      codeName: promotionCode,
-      amountOff: promoCodeData.amountOff,
-      percentOff: promoCodeData.percentOff,
-    };
-
-    setPromoCodeData(promoCode);
-  };
-
   const onLogOut = async () => {
     await databaseService.clear();
     localStorageService.clear();
     RealtimeService.getInstance().stop();
     setAuthMethod('signUp');
-  };
-
-  const recalculatePrice = async (
-    priceId: string,
-    currency: string,
-    promoCodeName?: string,
-    postalCode?: string,
-    country?: string,
-  ) => {
-    const price = await checkoutService.getPriceById({ priceId, currency, promoCodeName, postalCode, country });
-    setSelectedPlan(price);
-  };
-
-  const handlePromoCodeError = (err: unknown, showNotification?: boolean) => {
-    const error = err as Error;
-    const statusCode = (err as any).status;
-    let errorMessage = translate('notificationMessages.errorApplyingCoupon');
-    if (statusCode) {
-      if (
-        statusCode === STATUS_CODE_ERROR.PROMO_CODE_BY_NAME_NOT_FOUND ||
-        statusCode === STATUS_CODE_ERROR.BAD_REQUEST
-      ) {
-        errorMessage = error.message;
-      }
-    }
-    setError('coupon', errorMessage);
-    errorService.reportError(error);
-    setPromoCodeData(undefined);
-
-    if (showNotification) {
-      notificationsService.show({
-        text: errorMessage,
-        type: ToastType.Error,
-      });
-    }
   };
 
   const onUserAddressChanges = (address: AddressProvider) => {
@@ -631,13 +449,13 @@ const CheckoutViewWrapper = () => {
   };
 
   const onSeatsChange = (seats: number) => {
-    if (!currentSelectedPlan?.price) {
+    if (!selectedPlan?.price) {
       console.warn('Cannot change seats: no selected plan available');
       return;
     }
 
-    const minSeats = currentSelectedPlan.price.minimumSeats;
-    const maxSeats = currentSelectedPlan.price.maximumSeats;
+    const minSeats = selectedPlan.price.minimumSeats;
+    const maxSeats = selectedPlan.price.maximumSeats;
 
     if (maxSeats && seats > maxSeats) {
       setSeatsForBusinessSubscription(maxSeats);
@@ -656,7 +474,7 @@ const CheckoutViewWrapper = () => {
     onCouponInputChange: onCheckoutCouponChanges,
     onLogOut,
     onCheckoutButtonClicked,
-    onRemoveAppliedCouponCode,
+    onRemoveAppliedCouponCode: removeCouponCode,
     onUserAddressChanges,
     handleAuthMethodChange: setAuthMethod,
     onSeatsChange,
@@ -666,14 +484,17 @@ const CheckoutViewWrapper = () => {
 
   return (
     <>
-      {isCheckoutReadyToRender &&
-      elementsOptions &&
-      stripeSdk &&
-      currentSelectedPlan?.price &&
-      currentSelectedPlan.taxes ? (
-        <Elements stripe={stripeSdk} options={{ ...elementsOptions }}>
+      {isCheckoutReady && stripeElementsOptions && stripeSdk && selectedPlan?.price && selectedPlan?.taxes ? (
+        <Elements stripe={stripeSdk} options={{ ...stripeElementsOptions }}>
           <CheckoutView
-            checkoutViewVariables={{ ...state, selectedCurrency }}
+            checkoutViewVariables={{
+              isPaying,
+              authMethod,
+              couponCodeData: promoCodeData,
+              seatsForBusinessSubscription: businessSeats,
+              currentSelectedPlan: selectedPlan,
+              selectedCurrency: currency ?? selectedPlan.price.currency,
+            }}
             userAuthComponentRef={userAuthComponentRef}
             showCouponCode={!mobileToken}
             userInfo={userInfo}
@@ -689,9 +510,9 @@ const CheckoutViewWrapper = () => {
               isDialogOpen={isUpdateSubscriptionDialogOpen}
               setIsDialogOpen={setIsUpdateSubscriptionDialogOpen}
               onPlanClick={onChangePlanClicked}
-              priceIdSelected={currentSelectedPlan.price.id}
+              priceIdSelected={selectedPlan.price.id}
               isUpdatingSubscription={isUpdatingSubscription}
-              subscriptionSelected={currentSelectedPlan.price.type}
+              subscriptionSelected={selectedPlan.price.type}
             />
           ) : undefined}
 
