@@ -221,6 +221,7 @@ describe('logIn', () => {
 
                 const sessionKeyBytes = safeBase64ToBytes(sessionKey);
                 const correctMac = computeMac(sessionKeyBytes, [
+                  uuidToBytes(sessionID),
                   safeBase64ToBytes(registrationRecord),
                   base64ToUint8Array(encMnemonic),
                   base64ToUint8Array(encKeys.ecc.privateKey),
@@ -335,17 +336,6 @@ describe('logIn', () => {
     );
 
     await expect(authOpaqueService.loginOpaque(mockEmail, mockPassword, 'wrong 2FA code')).rejects.toThrow(
-      'Two factor code is incorrect',
-    );
-  });
-
-  it('should successfully deactivate 2FA verification', async () => {
-    const result = await authOpaqueService.deactivate2FAOpaque(mockPassword, mockTwoFactorCode);
-    expect(result).toBeTruthy();
-  });
-
-  it('should not deactivate 2FA verification with a wrong 2FA code', async () => {
-    expect(authOpaqueService.deactivate2FAOpaque(mockPassword, 'wrong 2FA code')).rejects.toThrow(
       'Two factor code is incorrect',
     );
   });

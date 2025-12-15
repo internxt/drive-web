@@ -139,14 +139,6 @@ export const getMac = async (password: string, request: Uint8Array[]): Promise<s
   return computeMac(sessionKey, request);
 };
 
-export const deactivate2FAOpaque = async (password: string, authCode: string): Promise<void> => {
-  const sessionID = localStorageService.get('xNewToken') || '';
-  const mac = await getMac(password, [Buffer.from(authCode), uuidToBytes(sessionID)]);
-
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  return authClient.disableTwoFactorAuth(mac, authCode, sessionID);
-};
-
 const finishOpaqueLogin = async (clientLoginState: string, loginResponse: string, password: string, email: string) => {
   const loginResult = client.finishLogin({
     clientLoginState,
@@ -185,6 +177,7 @@ export const doChangePasswordOpaque = async (newPassword: string, currentPasswor
   });
 
   const macNew = await getMac(currentPassword, [
+    uuidToBytes(sessionID),
     safeBase64ToBytes(newRegistrationRecord),
     base64ToUint8Array(encMnemonic),
     base64ToUint8Array(encKeys.ecc.privateKey),
