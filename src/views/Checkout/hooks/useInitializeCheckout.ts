@@ -28,38 +28,38 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
   const [availableCryptoCurrencies, setAvailableCryptoCurrencies] = useState<CryptoCurrency[] | undefined>(undefined);
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        await initializeStripe();
-        await fetchUserLocationAndStore();
-      } catch (error) {
-        redirectToFallbackPage();
-      }
-    };
-    init();
+    initCheckout();
   }, []);
 
   useEffect(() => {
     if (stripeSdk && price) {
-      const loadPriceDependentData = async () => {
-        try {
-          await loadStripeData();
-          await loadCryptoCurrencies();
-        } catch (error) {
-          redirectToFallbackPage();
-        }
-
-        setIsCheckoutReady(true);
-      };
-      loadPriceDependentData();
+      loadStripeAndCrypto();
     }
   }, [stripeSdk, price?.price?.id]);
 
+  const initCheckout = async () => {
+    try {
+      await initializeStripe();
+      await fetchUserLocationAndStore();
+    } catch (error) {
+      redirectToFallbackPage();
+    }
+  };
+
+  const loadStripeAndCrypto = async () => {
+    try {
+      await loadStripeData();
+      await loadCryptoCurrencies();
+    } catch (error) {
+      redirectToFallbackPage();
+    }
+
+    setIsCheckoutReady(true);
+  };
+
   const initializeStripe = async (): Promise<void> => {
     try {
-      console.log('STRIPE');
       const stripe = await paymentService.getStripe();
-      console.log('STRIPE INITIALIZED');
       setStripeSdk(stripe);
     } catch {
       throw new Error('Stripe failed to load');
@@ -93,14 +93,12 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
   };
 
   const loadStripeData = async () => {
-    console.log('LOADING STRIPE DATA: ', checkoutTheme, price);
     if (!checkoutTheme || !price) {
       return;
     }
 
     try {
       const stripeElements = await checkoutService.loadStripeElements(THEME_STYLES[checkoutTheme], price);
-      console.log('STRIPE ELEMENTS OPTIONS: ', stripeElements);
       setStripeElementsOptions(stripeElements as StripeElementsOptions);
     } catch (error) {
       const castedError = errorService.castError(error);
