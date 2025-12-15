@@ -100,7 +100,8 @@ const FileViewer = ({
   const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
   const isItemValidToPreview = isTypeAllowed && isPreviewAvailable;
   const isVideo = fileExtensionGroup === FileExtensionGroup['Video'];
-  const isVideoStreaming = isVideo && !disableVideoStream;
+  const isSafari = navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome');
+  const isVideoStreaming = isVideo && !disableVideoStream && (!isSafari || isFileSizePreviewable(file.size));
 
   const shouldRenderThePreview = isTypeAllowed && (isVideoStreaming || isFileSizePreviewable(file.size));
 
