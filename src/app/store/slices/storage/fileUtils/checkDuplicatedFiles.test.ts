@@ -1,16 +1,10 @@
-import { beforeEach, describe, expect, test, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 
 import { checkDuplicatedFiles } from './checkDuplicatedFiles';
 
-vi.mock('app/drive/services/new-storage.service', () => ({
-  default: {
-    checkDuplicatedFiles: vi.fn(),
-  },
-}));
-
-describe('checkDuplicatedFiles', () => {
+describe('Check for duplicated files', () => {
   const parentFolderId = 'parent-folder-id';
 
   beforeEach(() => {
@@ -21,7 +15,7 @@ describe('checkDuplicatedFiles', () => {
     const fileWithExtension = new File(['content'], 'document.pdf', { type: 'application/pdf' });
     const files = [fileWithExtension];
 
-    (newStorageService.checkDuplicatedFiles as Mock).mockResolvedValue({
+    vi.spyOn(newStorageService, 'checkDuplicatedFiles').mockResolvedValue({
       existentFiles: [{ plainName: 'document', type: 'pdf' }] as unknown as DriveFileData[],
     });
 
@@ -35,7 +29,7 @@ describe('checkDuplicatedFiles', () => {
     const fileWithoutExtension = new File(['content'], 'LICENSE', { type: '' });
     const files = [fileWithoutExtension];
 
-    (newStorageService.checkDuplicatedFiles as Mock).mockResolvedValue({
+    vi.spyOn(newStorageService, 'checkDuplicatedFiles').mockResolvedValue({
       existentFiles: [{ plainName: 'LICENSE', type: null }] as unknown as DriveFileData[],
     });
 
