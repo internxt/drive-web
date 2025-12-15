@@ -218,7 +218,7 @@ export const videoExtensions: FileExtensionMap = {
   flv: ['flv', 'f4v', 'f4p', 'f4a', 'f4b'],
 };
 
-const previewableVideoExtensionsGroup: string[] = ['webm', 'mkv', 'quicktime', 'mpeg-4', '3gpp'];
+const previewableVideoExtensionsGroup: string[] = Object.keys(videoExtensions);
 
 const WordExtensions: FileExtensionMap = {
   doc: ['doc'],
