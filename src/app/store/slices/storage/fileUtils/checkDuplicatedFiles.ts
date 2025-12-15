@@ -27,10 +27,11 @@ export const checkDuplicatedFiles = async (
 
   const { filesWithDuplicates, filesWithoutDuplicates } = parsedFiles.reduce(
     (acc, parsedFile) => {
-      const isDuplicated = duplicatedFilesResponse.some(
-        (duplicatedFile) =>
-          duplicatedFile.plainName === parsedFile.plainName && duplicatedFile.type === parsedFile.type,
-      );
+      const isDuplicated = duplicatedFilesResponse.some((duplicatedFile) => {
+        const parsedFileType = parsedFile.type || null;
+        const duplicatedFileType = duplicatedFile.type || null;
+        return duplicatedFile.plainName === parsedFile.plainName && duplicatedFileType === parsedFileType;
+      });
 
       if (isDuplicated) {
         acc.filesWithDuplicates.push(parsedFile.originalFile);
