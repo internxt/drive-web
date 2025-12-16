@@ -6,15 +6,6 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
-vi.mock('app/notifications/services/notifications.service', () => ({
-  default: {
-    show: vi.fn(),
-  },
-  ToastType: {
-    Error: 'error',
-  },
-}));
-
 describe('useProducts hook', () => {
   const mockTranslate = vi.fn((key: string) => key);
 
@@ -51,7 +42,6 @@ describe('useProducts hook', () => {
 
   describe('Initial state', () => {
     test('When the hook is initialized without a plan Id, then nothing happens', () => {
-      // Arrange
       const props = {
         planId: null,
         promotionCode: null,
@@ -61,16 +51,13 @@ describe('useProducts hook', () => {
       const getPriceByIdSpy = vi.spyOn(checkoutService, 'getPriceById');
       const fetchPromoCodeSpy = vi.spyOn(checkoutService, 'fetchPromotionCodeByName');
 
-      // Act
       renderHook(() => useProducts(props));
 
-      // Assert
       expect(getPriceByIdSpy).not.toHaveBeenCalled();
       expect(fetchPromoCodeSpy).not.toHaveBeenCalled();
     });
 
     test('When the hook is initialized with a plan Id, then the selected plan is fetched', async () => {
-      // Arrange
       const priceByIdSpy = vi.spyOn(checkoutService, 'getPriceById').mockResolvedValue(mockPriceWithTax);
       const props = {
         planId: 'price_123',
@@ -79,10 +66,8 @@ describe('useProducts hook', () => {
         translate: mockTranslate,
       };
 
-      // Act
       renderHook(() => useProducts(props));
 
-      // Assert
       await waitFor(() => {
         expect(priceByIdSpy).toHaveBeenCalledWith({
           priceId: 'price_123',
@@ -96,7 +81,6 @@ describe('useProducts hook', () => {
     });
 
     test('When the hook is initialized with plan Id and promotional code, then we fetch the plan and the promotional code', async () => {
-      // Arrange
       const getPriceByIdSpy = vi.spyOn(checkoutService, 'getPriceById').mockResolvedValue(mockPriceWithTax);
       const fetchPromoCodeSpy = vi
         .spyOn(checkoutService, 'fetchPromotionCodeByName')
@@ -109,10 +93,8 @@ describe('useProducts hook', () => {
         translate: mockTranslate,
       };
 
-      // Act
       renderHook(() => useProducts(props));
 
-      // Assert
       await waitFor(() => {
         expect(getPriceByIdSpy).toHaveBeenCalled();
         expect(fetchPromoCodeSpy).toHaveBeenCalledWith('price_123', 'SUMMER20');
@@ -122,7 +104,6 @@ describe('useProducts hook', () => {
 
   describe('Fetching the selected plan', () => {
     test('When fetching a plan, then the fetched data is saved', async () => {
-      // Arrange
       vi.spyOn(checkoutService, 'getPriceById').mockResolvedValue(mockPriceWithTax);
       const props = {
         planId: null,
@@ -131,19 +112,16 @@ describe('useProducts hook', () => {
         translate: mockTranslate,
       };
 
-      // Act
       const { result } = renderHook(() => useProducts(props));
 
       await act(async () => {
         await result.current.fetchSelectedPlan({ priceId: 'price_123', currency: 'eur' });
       });
 
-      // Assert
       expect(result.current.selectedPlan).toEqual(mockPriceWithTax);
     });
 
     test('When fetching a plan using the mobile token, then the amount is set to 0', async () => {
-      // Arrange
       vi.spyOn(checkoutService, 'getPriceById').mockResolvedValue(mockPriceWithTax);
       const props = {
         planId: null,
@@ -152,20 +130,17 @@ describe('useProducts hook', () => {
         translate: mockTranslate,
       };
 
-      // Act
       const { result } = renderHook(() => useProducts(props));
 
       await act(async () => {
         await result.current.fetchSelectedPlan({ priceId: 'price_123', currency: 'eur', mobileToken: 'mobile_token' });
       });
 
-      // Assert
       expect(result.current.selectedPlan?.amount).toBe(0);
       expect(result.current.selectedPlan?.decimalAmount).toBe(0);
     });
 
     test('When fetching a plan returns a plan with seats, then the they are updated', async () => {
-      // Arrange
       const planWithMinimumSeats = {
         ...mockPriceWithTax,
         price: {
@@ -181,19 +156,16 @@ describe('useProducts hook', () => {
         translate: mockTranslate,
       };
 
-      // Act
       const { result } = renderHook(() => useProducts(props));
 
       await act(async () => {
         await result.current.fetchSelectedPlan({ priceId: 'price_business', currency: 'eur' });
       });
 
-      // Assert
       expect(result.current.businessSeats).toBe(5);
     });
 
     test('When fetching a plan without currency, then eur is used as default', async () => {
-      // Arrange
       vi.spyOn(checkoutService, 'getPriceById').mockResolvedValue(mockPriceWithTax);
       const props = {
         planId: null,
@@ -201,14 +173,12 @@ describe('useProducts hook', () => {
         translate: mockTranslate,
       };
 
-      // Act
       const { result } = renderHook(() => useProducts(props));
 
       await act(async () => {
         await result.current.fetchSelectedPlan({ priceId: 'price_123' });
       });
 
-      // Assert
       expect(checkoutService.getPriceById).toHaveBeenCalledWith(
         expect.objectContaining({
           currency: 'eur',
@@ -219,7 +189,6 @@ describe('useProducts hook', () => {
 
   describe('Fetching a promotional code', () => {
     test('When fetching a promotional code, then promo code data is saved', async () => {
-      // Arrange
       vi.spyOn(checkoutService, 'fetchPromotionCodeByName').mockResolvedValue(mockPromoCodeData);
       const props = {
         planId: null,
@@ -228,14 +197,12 @@ describe('useProducts hook', () => {
         translate: mockTranslate,
       };
 
-      // Act
       const { result } = renderHook(() => useProducts(props));
 
       await act(async () => {
         await result.current.fetchPromotionCode({ priceId: 'price_123', promotionCode: 'DISCOUNT10' });
       });
 
-      // Assert
       expect(result.current.promoCodeData).toEqual({
         codeId: 'promo_123',
         codeName: 'DISCOUNT10',
@@ -247,7 +214,6 @@ describe('useProducts hook', () => {
 
   describe('Removing coupon code data', () => {
     test('When removing coupon code, then promotional code is removed', async () => {
-      // Arrange
       vi.spyOn(checkoutService, 'fetchPromotionCodeByName').mockResolvedValue(mockPromoCodeData);
       const props = {
         planId: null,
@@ -262,12 +228,10 @@ describe('useProducts hook', () => {
         await result.current.fetchPromotionCode({ priceId: 'price_123', promotionCode: 'DISCOUNT10' });
       });
 
-      // Act
       act(() => {
         result.current.removeCouponCode();
       });
 
-      // Assert
       expect(result.current.promoCodeData).toBeUndefined();
       expect(result.current.couponError).toBeNull();
     });
@@ -275,7 +239,6 @@ describe('useProducts hook', () => {
 
   describe('On promo code error', () => {
     test('When promo code is not found, then an error indicating so is thrown', () => {
-      // Arrange
       const props = {
         planId: null,
         promotionCode: null,
@@ -285,18 +248,15 @@ describe('useProducts hook', () => {
       const { result } = renderHook(() => useProducts(props));
       const error = Object.assign(new Error('Promo code not found'), { status: 404 });
 
-      // Act
       act(() => {
         result.current.onPromoCodeError(error);
       });
 
-      // Assert
       expect(result.current.couponError).toBe('Promo code not found');
       expect(result.current.promoCodeData).toBeUndefined();
     });
 
     test('When there is a bad request while fetching the coupon code, then an error indicating so is thrown', () => {
-      // Arrange
       const props = {
         planId: null,
         promotionCode: null,
@@ -306,17 +266,14 @@ describe('useProducts hook', () => {
       const { result } = renderHook(() => useProducts(props));
       const error = Object.assign(new Error('Invalid request'), { status: 400 });
 
-      // Act
       act(() => {
         result.current.onPromoCodeError(error);
       });
 
-      // Assert
       expect(result.current.couponError).toBe('Invalid request');
     });
 
     test('When it is a random error, then a general error indicating so is thrown', () => {
-      // Arrange
       const props = {
         planId: null,
         promotionCode: null,
@@ -326,17 +283,14 @@ describe('useProducts hook', () => {
       const { result } = renderHook(() => useProducts(props));
       const error = new Error('Unknown error');
 
-      // Act
       act(() => {
         result.current.onPromoCodeError(error);
       });
 
-      // Assert
       expect(result.current.couponError).toBe('notificationMessages.errorApplyingCoupon');
     });
 
     test('When an error occurs and we want to show a notification, then a toast notification is shown', () => {
-      // Arrange
       const props = {
         planId: null,
         promotionCode: null,
@@ -345,14 +299,13 @@ describe('useProducts hook', () => {
       };
       const { result } = renderHook(() => useProducts(props));
       const error = new Error('Error applying coupon');
+      const notificationsServiceSpy = vi.spyOn(notificationsService, 'show');
 
-      // Act
       act(() => {
         result.current.onPromoCodeError(error, true);
       });
 
-      // Assert
-      expect(notificationsService.show).toHaveBeenCalledWith({
+      expect(notificationsServiceSpy).toHaveBeenCalledWith({
         text: 'notificationMessages.errorApplyingCoupon',
         type: ToastType.Error,
       });
@@ -361,7 +314,6 @@ describe('useProducts hook', () => {
 
   describe('Hook return values', () => {
     test('When the hook is initialized, then it should return the expected values', () => {
-      // Arrange
       const props = {
         planId: null,
         promotionCode: null,
@@ -369,10 +321,8 @@ describe('useProducts hook', () => {
         translate: mockTranslate,
       };
 
-      // Act
       const { result } = renderHook(() => useProducts(props));
 
-      // Assert
       expect(result.current).toHaveProperty('selectedPlan');
       expect(result.current).toHaveProperty('promoCodeData');
       expect(result.current).toHaveProperty('couponError');
