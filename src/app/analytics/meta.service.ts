@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import localStorageService from 'services/local-storage.service';
 
 const canTrack = () => {
-  return typeof globalThis !== 'undefined' && (globalThis as any).dataLayer && (globalThis as any).fbq;
+  return typeof globalThis !== 'undefined' && 
+         typeof globalThis.window !== 'undefined' &&
+         (globalThis.window as any).dataLayer && 
+         (globalThis.window as any).fbq;
 };
 
 export const trackLead = (email: string, userID: string) => {
@@ -16,9 +20,14 @@ export const trackLead = (email: string, userID: string) => {
     userEmail: email,
     userID: userID,
   });
+
+  (globalThis.window as any).fbq('track', 'Lead', {
+    content_name: 'User Registration',
+    status: 'completed',
+  });
 };
 
-export const trackPurchase = (email: string, userID: string) => {
+export const trackPurchase = () => {
   if (!canTrack()) return;
 
   const amountPaid = localStorageService.get('amountPaid');
@@ -28,17 +37,26 @@ export const trackPurchase = (email: string, userID: string) => {
     return;
   }
 
-  const value = Number.parseFloat(amountPaid);
+  const value = parseFloat(amountPaid);
 
   globalThis.window.dataLayer.push({
     event: 'purchaseSuccessful',
-
     ecommerce: {
       value: value,
       currency: currency,
     },
+  });
 
-    userEmail: email,
-    userID: userID,
+  (globalThis.window as any).fbq('track', 'Purchase', {
+    value: value,
+    currency: currency,
+    content_type: 'product',
   });
 };
+
+const metaService = {
+  trackLead,
+  trackPurchase,
+};
+
+export default metaService;
