@@ -274,6 +274,11 @@ export class DownloadManagerService {
         errorService.reportError(error);
       }
 
+      if (file.size === 0) {
+        saveAs(new Blob(), options.downloadName);
+        return;
+      }
+
       if (cachedFile?.source && !isCachedFileOlder) {
         updateProgressCallback(1);
         saveAs(cachedFile.source, options.downloadName);
@@ -337,6 +342,14 @@ export class DownloadManagerService {
           const blob = cachedFile.source;
           downloadProgress[index] = 1;
           fileStream = blob.stream();
+          folderZip.addFile(`${driveItem.name}${driveItem.type ? '.' + driveItem.type : ''}`, fileStream);
+          return;
+        }
+
+        if (driveItem.size === 0) {
+          const emptyBlob = new Blob([]);
+          downloadProgress[index] = 1;
+          fileStream = emptyBlob.stream();
           folderZip.addFile(`${driveItem.name}${driveItem.type ? '.' + driveItem.type : ''}`, fileStream);
           return;
         }

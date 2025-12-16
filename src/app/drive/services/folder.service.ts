@@ -320,6 +320,11 @@ export async function downloadFolderAsZip({
             return cachedFile.source.stream();
           }
 
+          if (file.size === 0) {
+            const emptyBlob = new Blob([]);
+            return emptyBlob.stream();
+          }
+
           const downloadedFileStream = await downloadFile({
             bucketId: file.bucket,
             fileId: file.fileId,
