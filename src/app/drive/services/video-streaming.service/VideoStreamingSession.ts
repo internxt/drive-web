@@ -13,7 +13,6 @@ export interface VideoStreamingSessionConfig {
     user: string;
     pass: string;
   };
-  onProgress?: (progress: number) => void;
 }
 
 const CACHE_SIZE_LIMIT = 20;
@@ -116,13 +115,7 @@ export class VideoStreamingSession {
         },
       });
 
-      const result = await binaryStreamToUint8Array(stream, (bytes) => {
-        const progress = bytes / (end - start);
-        if (this.chunkCache.size === 0 && this.config.onProgress) {
-          const currentProgress = progress >= 1 ? 0.95 : progress;
-          this.config.onProgress(currentProgress);
-        }
-      });
+      const result = await binaryStreamToUint8Array(stream);
 
       if (this.isDestroyed) {
         throw new Error('Session destroyed during download');
