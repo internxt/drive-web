@@ -2,10 +2,9 @@
 import localStorageService from 'services/local-storage.service';
 
 const canTrack = () => {
-  return typeof globalThis !== 'undefined' && 
-         typeof globalThis.window !== 'undefined' &&
-         (globalThis.window as any).dataLayer && 
-         (globalThis.window as any).fbq;
+  return globalThis.window !== undefined && 
+         globalThis.window.dataLayer && 
+         globalThis.window.fbq;
 };
 
 export const trackLead = (email: string, userID: string) => {
@@ -37,7 +36,7 @@ export const trackPurchase = () => {
     return;
   }
 
-  const value = parseFloat(amountPaid);
+  const value = Number.parseFloat(amountPaid);
 
   globalThis.window.dataLayer.push({
     event: 'purchaseSuccessful',
