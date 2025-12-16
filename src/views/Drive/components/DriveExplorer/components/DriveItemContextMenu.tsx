@@ -109,11 +109,18 @@ const getVersionHistoryMenuItem = (
   const action = isLocked ? (config?.onLockedClick ?? (() => undefined)) : viewVersionHistory;
   const IconComponent = isLocked ? LockSimple : ClockCounterClockwise;
 
+  const isVersionHistoryUnavailable = (item: DriveItemData) => {
+    const isFolder = item.isFolder;
+    const isUnsupportedExtension = !allowedExtension;
+    const isDisabledForUnlockedItem = !isLocked && (isFolder || isUnsupportedExtension);
+    return isDisabledForUnlockedItem;
+  };
+
   return {
     name: t('drive.dropdown.versionHistory'),
     icon: IconComponent,
     action,
-    disabled: (item) => !isLocked && (item.isFolder || !allowedExtension),
+    disabled: isVersionHistoryUnavailable,
     ...(isLocked && {
       locked: true,
       node: (
