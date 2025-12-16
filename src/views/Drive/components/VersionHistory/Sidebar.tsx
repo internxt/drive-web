@@ -16,7 +16,7 @@ import {
 import fileVersionService from 'views/Drive/components/VersionHistory/services/fileVersion.service';
 import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { FileVersion, GetFileLimitsResponse } from '@internxt/sdk/dist/drive/storage/types';
+import { fetchFileVersionsThunk, fetchVersionLimitsThunk, fileVersionsActions } from 'app/store/slices/fileVersions';
 
 type VersionInfo = { id: string; updatedAt: string };
 
@@ -32,9 +32,11 @@ const Sidebar = () => {
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const { translate } = useTranslationContext();
 
-  const [versions, setVersions] = useState<FileVersion[]>([]);
-  const [limits, setLimits] = useState<GetFileLimitsResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const limits = useAppSelector((state: RootState) => state.fileVersions.limits);
+  const versions =
+    useAppSelector((state: RootState) => (item ? state.fileVersions.versionsByFileId[item.uuid] : [])) || [];
+  const isLoading =
+    useAppSelector((state: RootState) => (item ? state.fileVersions.loadingStates[item.uuid] : false)) || false;
   const [selectedAutosaveVersions, setSelectedAutosaveVersions] = useState<Set<string>>(new Set());
   const [isBatchDeleteMode, setIsBatchDeleteMode] = useState(false);
   const [currentVersion, setCurrentVersion] = useState<VersionInfo>({
@@ -60,28 +62,18 @@ const Sidebar = () => {
     [user],
   );
 
-  const fetchData = useCallback(async () => {
+  useEffect(() => {
     if (!item || !isOpen) return;
 
-    setIsLoading(true);
-    try {
-      const [fileVersions, limits] = await Promise.all([
-        fileVersionService.getFileVersions(item.uuid),
-        fileVersionService.getLimits(),
-      ]);
-      setVersions(fileVersions);
-      setLimits(limits);
-    } catch (error) {
-      const castedError = errorService.castError(error);
-      errorService.reportError(castedError);
-    } finally {
-      setIsLoading(false);
+    if (!limits) {
+      dispatch(fetchVersionLimitsThunk());
     }
-  }, [item, isOpen]);
 
-  useEffect(() => {
-    void fetchData();
-  }, [item, isOpen, fetchData]);
+    const hasCachedVersions = versions && versions.length > 0;
+    if (!hasCachedVersions) {
+      dispatch(fetchFileVersionsThunk(item.uuid));
+    }
+  }, [item?.uuid, isOpen, dispatch]);
 
   const handleError = useCallback(
     (error: unknown, messageKey: string) => {
@@ -136,11 +128,14 @@ const Sidebar = () => {
     try {
       await Promise.all(versionIdsToDelete.map((versionId) => fileVersionService.deleteVersion(item.uuid, versionId)));
 
+      versionIdsToDelete.forEach((versionId) => {
+        dispatch(fileVersionsActions.updateVersionsAfterDelete({ fileUuid: item.uuid, versionId }));
+      });
+
       notificationsService.show({
         text: translate('modals.versionHistory.deleteSuccess'),
         type: ToastType.Success,
       });
-      await fetchData();
       removeVersionsFromSelection(versionIdsToDelete);
     } catch (error) {
       handleError(error, 'modals.versionHistory.deleteError');
@@ -160,6 +155,9 @@ const Sidebar = () => {
         updatedAt: new Date().toISOString(),
       });
 
+      dispatch(fileVersionsActions.invalidateCache(item.uuid));
+      dispatch(fetchFileVersionsThunk(item.uuid));
+
       notificationsService.show({
         text: translate('modals.versionHistory.restoreSuccess'),
         type: ToastType.Success,
@@ -167,7 +165,6 @@ const Sidebar = () => {
       if (currentFolderId) {
         await dispatch(fetchSortedFolderContentThunk(currentFolderId));
       }
-      await fetchData();
       removeVersionsFromSelection([versionToRestore.id]);
     } catch (error) {
       handleError(error, 'modals.versionHistory.restoreError');
