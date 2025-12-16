@@ -2,7 +2,7 @@ import { Info, DotsThree } from '@phosphor-icons/react';
 import { Checkbox, Dropdown, Avatar } from '@internxt/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useDropdownPositioning, useVersionItemActions } from '../hooks';
-import { formatVersionDate } from '../utils';
+import { formatVersionDate, getDaysUntilExpiration } from '../utils';
 import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
 
 interface VersionItemProps {
@@ -53,12 +53,16 @@ export const VersionItem = ({ version, userName, isSelected, onSelectionChange }
           />
           <div className="flex min-w-0 flex-1 flex-col space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-base font-semibold text-gray-100">{formatVersionDate(version.createdAt)}</span>
+              <span className="text-base font-semibold text-gray-100">{formatVersionDate(version.updatedAt)}</span>
             </div>
-            {version.expiresInDays !== undefined && (
+            {version.expiresAt !== undefined && (
               <div className="flex items-center space-x-1 text-[12px] text-red-dark">
                 <Info size={16} weight="regular" />
-                <span>{translate('modals.versionHistory.expiresInDays', { days: version.expiresInDays })}</span>
+                <span>
+                  {translate('modals.versionHistory.expiresInDays', {
+                    days: getDaysUntilExpiration(version.expiresAt),
+                  })}
+                </span>
               </div>
             )}
             <div className="flex items-center space-x-2 pt-1">

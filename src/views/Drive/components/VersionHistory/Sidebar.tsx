@@ -18,7 +18,7 @@ import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { FileVersion, GetFileLimitsResponse } from '@internxt/sdk/dist/drive/storage/types';
 
-type VersionInfo = { id: string; createdAt: string };
+type VersionInfo = { id: string; updatedAt: string };
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
@@ -39,14 +39,14 @@ const Sidebar = () => {
   const [isBatchDeleteMode, setIsBatchDeleteMode] = useState(false);
   const [currentVersion, setCurrentVersion] = useState<VersionInfo>({
     id: '',
-    createdAt: '',
+    updatedAt: '',
   });
 
   useEffect(() => {
     if (item) {
       setCurrentVersion({
         id: item.fileId,
-        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
       });
     }
   }, [item]);
@@ -156,8 +156,8 @@ const Sidebar = () => {
       const restoredVersion = await fileVersionService.restoreVersion(item.uuid, versionToRestore.id);
 
       setCurrentVersion({
-        id: restoredVersion.id,
-        createdAt: restoredVersion.createdAt,
+        id: restoredVersion.fileId,
+        updatedAt: new Date().toISOString(),
       });
 
       notificationsService.show({
@@ -213,7 +213,7 @@ const Sidebar = () => {
               <VersionHistorySkeleton />
             ) : (
               <>
-                <CurrentVersionItem key={currentVersion.id} createdAt={currentVersion.createdAt} userName={userName} />
+                <CurrentVersionItem key={currentVersion.id} createdAt={currentVersion.updatedAt} userName={userName} />
 
                 <AutosaveSection
                   totalVersionsCount={totalVersionsCount}
