@@ -41,7 +41,7 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
     try {
       await initializeStripe();
       await fetchUserLocationAndStore();
-    } catch (error) {
+    } catch {
       redirectToFallbackPage();
     }
   };
@@ -50,7 +50,7 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
     try {
       await loadStripeData();
       await loadCryptoCurrencies();
-    } catch (error) {
+    } catch {
       redirectToFallbackPage();
     }
 
