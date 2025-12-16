@@ -36,7 +36,8 @@ interface CheckoutViewProps {
   checkoutViewVariables: {
     isPaying: boolean;
     authMethod: AuthMethodTypes;
-    error?: string;
+    authError?: string;
+    couponCodeError?: string;
     couponCodeData?: CouponCodeData;
     seatsForBusinessSubscription: number;
     currentSelectedPlan: PriceWithTax | null;
@@ -70,7 +71,8 @@ const CheckoutView = ({
   const [isCryptoDropdownOpen, setIsCryptoDropdownOpen] = useState<boolean>(false);
   const {
     isPaying,
-    error,
+    couponCodeError,
+    authError,
     authMethod,
     couponCodeData,
     seatsForBusinessSubscription,
@@ -142,9 +144,9 @@ const CheckoutView = ({
             <div className="flex w-full max-w-xl flex-col space-y-14" ref={userAuthComponentRef}>
               <CheckoutUserAuth
                 errors={errors}
-                authError={error}
                 register={register}
                 authMethod={authMethod}
+                authError={authError}
                 onAuthMethodToggled={onAuthMethodToggled}
                 userData={userInfo}
                 onLogOut={checkoutViewManager.onLogOut}
@@ -201,7 +203,7 @@ const CheckoutView = ({
                 couponCodeData={couponCodeData}
                 showHardcodedRenewal={showHardcodedRenewal}
                 showCouponCode={showCouponCode}
-                couponError={error}
+                couponError={couponCodeError}
                 seatsForBusinessSubscription={seatsForBusinessSubscription}
                 onSeatsChange={checkoutViewManager.onSeatsChange}
                 onCouponInputChange={checkoutViewManager.onCouponInputChange}

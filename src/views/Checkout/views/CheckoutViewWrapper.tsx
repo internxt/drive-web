@@ -74,16 +74,19 @@ const CheckoutViewWrapper = () => {
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const {
     selectedPlan,
     promoCodeData,
     businessSeats,
+    couponError,
     removeCouponCode,
     fetchSelectedPlan,
     fetchPromotionCode,
     onPromoCodeError,
   } = useProducts({ currency: currency ?? 'eur', translate, planId, promotionCode });
+
   const {
     isCheckoutReady,
     location: userLocationData,
@@ -115,7 +118,6 @@ const CheckoutViewWrapper = () => {
   const lastName = user?.lastname ?? '';
   const fullName = userAccountName + ' ' + lastName;
   const isUserAuthenticated = !!user;
-  const thereIsAnyError = state.error?.coupon || state.error?.auth || state.error?.stripe;
 
   const gclidStored = localStorageService.get(STORAGE_KEYS.GCLID);
 
@@ -123,7 +125,6 @@ const CheckoutViewWrapper = () => {
     setAuthMethod,
     setAvatarBlob,
     setIsUserPaying,
-    setError,
     setSelectedPlan,
     setSeatsForBusinessSubscription,
     setIsUpdateSubscriptionDialogOpen,
@@ -180,16 +181,6 @@ const CheckoutViewWrapper = () => {
       });
     }
   }, [address?.country, address?.postal_code, selectedPlan?.price?.id, selectedPlan?.price?.currency]);
-
-  useEffect(() => {
-    if (thereIsAnyError) {
-      setTimeout(() => {
-        setError('auth', undefined);
-        setError('stripe', undefined);
-        setError('coupon', undefined);
-      }, 8000);
-    }
-  }, [state.error]);
 
   useEffect(() => {
     if (isCheckoutReady && selectedPlan?.price) {
@@ -336,7 +327,7 @@ const CheckoutViewWrapper = () => {
         });
       } catch (err) {
         const error = err as Error;
-        setError('auth', error.message);
+        setAuthError(error.message);
         (userAuthComponentRef.current as any).scrollIntoView();
         errorService.reportError(error);
         setIsUserPaying(false);
@@ -491,6 +482,8 @@ const CheckoutViewWrapper = () => {
               isPaying,
               authMethod,
               couponCodeData: promoCodeData,
+              couponCodeError: couponError ?? undefined,
+              authError: authError ?? undefined,
               seatsForBusinessSubscription: businessSeats,
               currentSelectedPlan: selectedPlan,
               selectedCurrency: currency ?? selectedPlan.price.currency,
