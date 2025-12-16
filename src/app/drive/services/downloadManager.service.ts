@@ -29,6 +29,7 @@ import {
   isLostConnectionError as isLostConnectionErrorUtil,
 } from '../types/download-types';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
+import { isFileEmpty } from 'utils/isFileEmpty';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -274,7 +275,7 @@ export class DownloadManagerService {
         errorService.reportError(error);
       }
 
-      if (file.size === 0) {
+      if (isFileEmpty(file)) {
         saveAs(new Blob(), options.downloadName);
         return;
       }
@@ -346,7 +347,7 @@ export class DownloadManagerService {
           return;
         }
 
-        if (driveItem.size === 0) {
+        if (isFileEmpty(driveItem as DriveFileData)) {
           const emptyBlob = new Blob([]);
           downloadProgress[index] = 1;
           fileStream = emptyBlob.stream();

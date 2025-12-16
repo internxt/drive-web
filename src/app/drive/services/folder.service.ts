@@ -27,6 +27,7 @@ import dateService from 'services/date.service';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { queue, QueueObject } from 'async';
 import { QueueUtilsService } from 'utils/queueUtils';
+import { isFileEmpty } from 'utils/isFileEmpty';
 
 export interface IFolders {
   bucket: string;
@@ -320,7 +321,7 @@ export async function downloadFolderAsZip({
             return cachedFile.source.stream();
           }
 
-          if (file.size === 0) {
+          if (isFileEmpty(file)) {
             const emptyBlob = new Blob([]);
             return emptyBlob.stream();
           }
