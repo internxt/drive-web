@@ -39,8 +39,7 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
 
   const initCheckout = async () => {
     try {
-      await initializeStripe();
-      await fetchUserLocationAndStore();
+      await Promise.all([initializeStripe(), fetchUserLocationAndStore()]);
     } catch {
       redirectToFallbackPage();
     }
@@ -48,8 +47,7 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
 
   const loadStripeAndCrypto = async () => {
     try {
-      await loadStripeData();
-      await loadCryptoCurrencies();
+      await Promise.all([loadStripeData(), loadCryptoCurrencies()]);
     } catch {
       redirectToFallbackPage();
     }
