@@ -276,7 +276,7 @@ export class DownloadManagerService {
       }
 
       if (isFileEmpty(file)) {
-        saveAs(new Blob(), options.downloadName);
+        saveAs(new Blob([]), options.downloadName);
         return;
       }
 
