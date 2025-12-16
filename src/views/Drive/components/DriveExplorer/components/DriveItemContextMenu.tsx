@@ -6,6 +6,7 @@ import {
   Eye,
   Icon,
   Info,
+  LockSimple,
   Link,
   PencilSimple,
   Trash,
@@ -93,14 +94,41 @@ const getDownloadMenuItem = (downloadItems: (target?) => void) => ({
   },
 });
 
-const getVersionHistoryMenuItem = (viewVersionHistory: (target?) => void) => ({
-  name: t('drive.dropdown.versionHistory'),
-  icon: ClockCounterClockwise,
-  action: viewVersionHistory,
-  disabled: (item) => {
-    return item.isFolder;
-  },
-});
+export type VersionHistoryMenuConfig = {
+  locked?: boolean;
+  onLockedClick?: () => void;
+  allowedExtension?: boolean;
+};
+
+const getVersionHistoryMenuItem = (
+  viewVersionHistory: (target?) => void,
+  config?: VersionHistoryMenuConfig,
+): MenuItemType<DriveItemData> => {
+  const isLocked = config?.locked ?? false;
+  const allowedExtension = config?.allowedExtension ?? true;
+  const action = isLocked ? (config?.onLockedClick ?? (() => undefined)) : viewVersionHistory;
+  const IconComponent = isLocked ? LockSimple : ClockCounterClockwise;
+
+  return {
+    name: t('drive.dropdown.versionHistory'),
+    icon: IconComponent,
+    action,
+    disabled: (item) => !isLocked && (item.isFolder || !allowedExtension),
+    ...(isLocked && {
+      locked: true,
+      node: (
+        <div
+          className="flex flex-row items-center space-x-2"
+          data-locked="true"
+          style={{ opacity: 0.5, cursor: 'default' }}
+        >
+          <IconComponent size={20} />
+          <span>{t('drive.dropdown.versionHistory')}</span>
+        </div>
+      ),
+    }),
+  } as MenuItemType<DriveItemData> & { locked?: boolean };
+};
 
 const getMoveToTrashMenuItem = (moveToTrash: (target?) => void) => ({
   name: t('drive.dropdown.moveToTrash'),
@@ -176,6 +204,7 @@ const contextMenuDriveNotSharedLink = ({
   downloadItem,
   viewVersionHistory,
   moveToTrash,
+  versionHistoryConfig,
 }: {
   shareLink: (item: DriveItemData) => void;
   openPreview?: (item: DriveItemData) => void;
@@ -186,6 +215,7 @@ const contextMenuDriveNotSharedLink = ({
   downloadItem: (item: DriveItemData) => void;
   viewVersionHistory: (item: DriveItemData) => void;
   moveToTrash: (item: DriveItemData) => void;
+  versionHistoryConfig?: VersionHistoryMenuConfig;
 }): Array<MenuItemType<DriveItemData>> =>
   [
     shareLinkMenuItem(shareLink),
@@ -196,7 +226,7 @@ const contextMenuDriveNotSharedLink = ({
     getRenameMenuItem(renameItem),
     getMoveItemMenuItem(moveItem),
     getDownloadMenuItem(downloadItem),
-    getVersionHistoryMenuItem(viewVersionHistory),
+    getVersionHistoryMenuItem(viewVersionHistory, versionHistoryConfig),
     { separator: true },
     getMoveToTrashMenuItem(moveToTrash),
   ].filter(Boolean) as MenuItemType<DriveItemData>[];
@@ -210,6 +240,7 @@ const contextMenuDriveFolderNotSharedLink = ({
   downloadItem,
   viewVersionHistory,
   moveToTrash,
+  versionHistoryConfig,
 }: {
   shareLink: (item: DriveItemData) => void;
   getLink: (item: DriveItemData) => void;
@@ -219,6 +250,7 @@ const contextMenuDriveFolderNotSharedLink = ({
   downloadItem: (item: DriveItemData) => void;
   viewVersionHistory: (item: DriveItemData) => void;
   moveToTrash: (item: DriveItemData) => void;
+  versionHistoryConfig?: VersionHistoryMenuConfig;
 }): Array<MenuItemType<DriveItemData>> => [
   shareLinkMenuItem(shareLink),
   getCopyLinkMenuItem(getLink),
@@ -227,7 +259,7 @@ const contextMenuDriveFolderNotSharedLink = ({
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
-  getVersionHistoryMenuItem(viewVersionHistory),
+  getVersionHistoryMenuItem(viewVersionHistory, versionHistoryConfig),
   { separator: true },
   getMoveToTrashMenuItem(moveToTrash),
 ];
@@ -242,6 +274,7 @@ const contextMenuDriveItemShared = ({
   downloadItem,
   viewVersionHistory,
   moveToTrash,
+  versionHistoryConfig,
 }: {
   openPreview?: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   showDetails: (item: DriveItemData) => void;
@@ -252,6 +285,7 @@ const contextMenuDriveItemShared = ({
   downloadItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   viewVersionHistory: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
+  versionHistoryConfig?: VersionHistoryMenuConfig;
 }): Array<MenuItemType<DriveItemData | (ListShareLinksItem & { code: string })>> => {
   const shareLinkItems = [manageLinkAccessMenuItem(openShareAccessSettings), getCopyLinkMenuItem(copyLink)];
   return [
@@ -262,7 +296,7 @@ const contextMenuDriveItemShared = ({
     getRenameMenuItem(renameItem),
     getMoveItemMenuItem(moveItem),
     getDownloadMenuItem(downloadItem),
-    getVersionHistoryMenuItem(viewVersionHistory),
+    getVersionHistoryMenuItem(viewVersionHistory, versionHistoryConfig),
     { separator: true },
     getMoveToTrashMenuItem(moveToTrash),
   ].filter(Boolean) as MenuItemType<DriveItemData | (ListShareLinksItem & { code: string })>[];
@@ -277,6 +311,7 @@ const contextMenuDriveFolderShared = ({
   downloadItem,
   viewVersionHistory,
   moveToTrash,
+  versionHistoryConfig,
 }: {
   copyLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   openShareAccessSettings: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
@@ -286,6 +321,7 @@ const contextMenuDriveFolderShared = ({
   downloadItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   viewVersionHistory: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
+  versionHistoryConfig?: VersionHistoryMenuConfig;
 }): Array<MenuItemType<DriveItemData | (ListShareLinksItem & { code: string })>> => {
   const shareLinkItems = [manageLinkAccessMenuItem(openShareAccessSettings), getCopyLinkMenuItem(copyLink)];
   return [
@@ -295,10 +331,10 @@ const contextMenuDriveFolderShared = ({
     getRenameMenuItem(renameItem),
     getMoveItemMenuItem(moveItem),
     getDownloadMenuItem(downloadItem),
-    getVersionHistoryMenuItem(viewVersionHistory),
+    getVersionHistoryMenuItem(viewVersionHistory, versionHistoryConfig),
     { separator: true },
     getMoveToTrashMenuItem(moveToTrash),
-  ];
+  ].filter(Boolean) as MenuItemType<DriveItemData | (ListShareLinksItem & { code: string })>[];
 };
 
 const contextMenuMultipleSharedView = ({
@@ -469,6 +505,7 @@ const contextMenuWorkspaceFolder = ({
   downloadItem,
   viewVersionHistory,
   moveToTrash,
+  versionHistoryConfig,
 }: {
   shareLink: (item: DriveItemData) => void;
   getLink: (item: DriveItemData) => void;
@@ -479,6 +516,7 @@ const contextMenuWorkspaceFolder = ({
   downloadItem: (item: DriveItemData) => void;
   viewVersionHistory: (item: DriveItemData) => void;
   moveToTrash: (item: DriveItemData) => void;
+  versionHistoryConfig?: VersionHistoryMenuConfig;
 }): Array<MenuItemType<DriveItemData>> => [
   shareLinkMenuItem(shareLink),
   getCopyLinkMenuItem(getLink),
@@ -488,7 +526,7 @@ const contextMenuWorkspaceFolder = ({
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
-  getVersionHistoryMenuItem(viewVersionHistory),
+  getVersionHistoryMenuItem(viewVersionHistory, versionHistoryConfig),
   { separator: true },
   getMoveToTrashMenuItem(moveToTrash),
 ];
@@ -504,6 +542,7 @@ const contextMenuWorkspaceFile = ({
   downloadItem,
   viewVersionHistory,
   moveToTrash,
+  versionHistoryConfig,
 }: {
   shareLink: (item: DriveItemData) => void;
   shareWithTeam: (item: DriveItemData) => void;
@@ -515,6 +554,7 @@ const contextMenuWorkspaceFile = ({
   downloadItem: (item: DriveItemData) => void;
   viewVersionHistory: (item: DriveItemData) => void;
   moveToTrash: (item: DriveItemData) => void;
+  versionHistoryConfig?: VersionHistoryMenuConfig;
 }): Array<MenuItemType<DriveItemData>> =>
   [
     shareLinkMenuItem(shareLink),
@@ -526,7 +566,7 @@ const contextMenuWorkspaceFile = ({
     getRenameMenuItem(renameItem),
     getMoveItemMenuItem(moveItem),
     getDownloadMenuItem(downloadItem),
-    getVersionHistoryMenuItem(viewVersionHistory),
+    getVersionHistoryMenuItem(viewVersionHistory, versionHistoryConfig),
     { separator: true },
     getMoveToTrashMenuItem(moveToTrash),
   ].filter(Boolean) as MenuItemType<DriveItemData>[];
