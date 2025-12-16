@@ -70,8 +70,7 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
       setLocation(location);
       return location;
     } catch {
-      // NO OP
-      return undefined;
+      return;
     }
   };
 
