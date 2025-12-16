@@ -6,7 +6,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
 
-describe('useProducts hook', () => {
+describe('Products custom hook', () => {
   const mockTranslate = vi.fn((key: string) => key);
 
   const mockPriceWithTax: PriceWithTax = {
