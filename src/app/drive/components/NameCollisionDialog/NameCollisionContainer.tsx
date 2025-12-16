@@ -14,7 +14,7 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
 import replaceFileService from 'views/Drive/services/replaceFile.service';
 import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
-import { useVersioningLimits } from 'views/Drive/components/VersionHistory/context/VersioningLimitsContext';
+import { fileVersionsActions } from 'app/store/slices/fileVersions';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
@@ -46,7 +46,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     () => moveDestinationFolderId ?? currentFolderId,
     [moveDestinationFolderId, currentFolderId],
   );
-  const { limits } = useVersioningLimits();
+  const limits = useAppSelector((state: RootState) => state.fileVersions.limits);
   const isVersioningEnabled = limits?.versioning?.enabled ?? false;
 
   const handleNewItems = (files: (File | DriveItemData)[], folders: (IRoot | DriveItemData)[]) => [
@@ -152,6 +152,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
       fileId: newFileId,
       size: file.size,
     });
+    dispatch(fileVersionsActions.invalidateCache(itemToReplace.uuid));
   };
 
   const trashAndUpload = async (file: File, itemToReplace: DriveItemData) => {

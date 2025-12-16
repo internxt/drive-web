@@ -4,6 +4,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useDropdownPositioning, useVersionItemActions } from '../hooks';
 import { formatVersionDate, getDaysUntilExpiration } from '../utils';
 import { FileVersion } from '@internxt/sdk/dist/drive/storage/types';
+import { memo } from 'react';
 
 interface VersionItemProps {
   version: FileVersion;
@@ -12,7 +13,7 @@ interface VersionItemProps {
   onSelectionChange: (selected: boolean) => void;
 }
 
-export const VersionItem = ({ version, userName, isSelected, onSelectionChange }: VersionItemProps) => {
+export const VersionItem = memo(({ version, userName, isSelected, onSelectionChange }: VersionItemProps) => {
   const { translate } = useTranslationContext();
   const { isOpen, setIsOpen, dropdownPosition, dropdownRef, itemRef } = useDropdownPositioning();
   const { menuItems } = useVersionItemActions({
@@ -105,4 +106,4 @@ export const VersionItem = ({ version, userName, isSelected, onSelectionChange }
       </div>
     </button>
   );
-};
+});
