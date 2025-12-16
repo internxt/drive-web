@@ -60,7 +60,11 @@ export const useBackupDeviceActions = (
   };
 
   const onOpenDeleteModal = (targets: (Device | DriveFolderData)[]) => {
-    setSelectedDevices((values) => [...values, ...targets]);
+    setSelectedDevices((values) => {
+      const existingIds = new Set(values.map((v) => v.id));
+      const newTargets = targets.filter((t) => !existingIds.has(t.id));
+      return [...values, ...newTargets];
+    });
     setIsDeleteModalOpen(true);
   };
 
