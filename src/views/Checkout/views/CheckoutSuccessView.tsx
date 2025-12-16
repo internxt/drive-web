@@ -4,11 +4,12 @@ import { AppView } from 'app/core/types';
 import { useAppDispatch } from 'app/store/hooks';
 import { planThunks } from 'app/store/slices/plan';
 import { userThunks } from 'app/store/slices/user';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import localStorageService from 'services/local-storage.service';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { trackPaymentConversion } from 'app/analytics/impact.service';
-import { trackPurchase } from 'app/analytics/meta.service';
+import gaService from 'app/analytics/ga.service';
+import metaService from 'app/analytics/meta.service';
 
 export function removePaymentsStorage() {
   localStorageService.removeItem('subscriptionId');
@@ -25,8 +26,15 @@ export function removePaymentsStorage() {
 
 const CheckoutSuccessView = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const hasTrackedRef = useRef(false);
 
   const onCheckoutSuccess = useCallback(async () => {
+    if (hasTrackedRef.current) {
+      return;
+    }
+
+    hasTrackedRef.current = true;
+
     setTimeout(async () => {
       await dispatch(userThunks.initializeUserThunk());
       await dispatch(planThunks.initializeThunk());
@@ -34,12 +42,15 @@ const CheckoutSuccessView = (): JSX.Element => {
     }, 3000);
 
     try {
-      trackPurchase();
+      metaService.trackPurchase();
+      gaService.trackPurchase();
       await trackPaymentConversion();
+
       removePaymentsStorage();
     } catch (err) {
-      console.log('Analytics error: ', err);
+      console.error('Analytics error:', err);
     }
+
     navigationService.push(AppView.Drive);
   }, [dispatch]);
 
