@@ -26,7 +26,6 @@ import RetryManager from 'app/network/RetryManager';
 import { FileToUpload } from 'app/drive/services/file.service/types';
 import { prepareFilesToUpload } from '../fileUtils/prepareFilesToUpload';
 import { StorageState } from '../storage.model';
-import { isFileEmpty } from 'utils/isFileEmpty';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -267,7 +266,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 
     let zeroLengthFilesNumber = 0;
     for (const file of files) {
-      if (isFileEmpty(file)) {
+      if (file.size === 0) {
         zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
         continue;
       }
