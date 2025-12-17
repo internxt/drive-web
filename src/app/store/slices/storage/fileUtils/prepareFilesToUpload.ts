@@ -23,18 +23,17 @@ export const prepareFilesToUpload = async ({
   fileType?: string;
   disableExistenceCheck?: boolean;
   notUploadHiddenFiles?: boolean;
-}): Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }> => {
+}): Promise<{ filesToUpload: FileToUpload[] }> => {
   const filteredFiles = notUploadHiddenFiles ? files.filter((file) => !isHiddenFile(file.name)) : files;
 
   let filesToUpload: FileToUpload[] = [];
-  let zeroLengthFilesNumber = 0;
 
   const processFiles = async (
     filesBatch: File[],
     disableDuplicatedNamesCheckOverride: boolean,
     duplicatedFiles?: DriveFileData[],
   ) => {
-    const { zeroLengthFiles, newFilesToUpload } = await processDuplicateFiles({
+    const { newFilesToUpload } = await processDuplicateFiles({
       files: filesBatch,
       existingFilesToUpload: filesToUpload,
       fileType,
@@ -43,7 +42,6 @@ export const prepareFilesToUpload = async ({
       duplicatedFiles,
     });
     filesToUpload = newFilesToUpload;
-    zeroLengthFilesNumber += zeroLengthFiles;
   };
 
   const processFilesBatch = async (filesBatch: File[]) => {
@@ -65,5 +63,5 @@ export const prepareFilesToUpload = async ({
     await processFilesBatch(batch);
   }
 
-  return { filesToUpload, zeroLengthFilesNumber };
+  return { filesToUpload };
 };

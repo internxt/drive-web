@@ -27,6 +27,60 @@ class RetryableFileError extends Error {
   }
 }
 
+interface UploadFileProps {
+  isWorkspaceUpload: boolean;
+  file: FileToUpload;
+  fileId?: string;
+  bucketId: string;
+  workspaceId?: string;
+  resourcesToken?: string;
+  ownerToken?: string;
+}
+
+export const createFileEntry = async ({
+  bucketId,
+  fileId,
+  file,
+  isWorkspaceUpload,
+  workspaceId,
+  resourcesToken,
+  ownerToken,
+}: UploadFileProps) => {
+  const date = new Date();
+
+  if (isWorkspaceUpload && workspaceId) {
+    const workspaceFileEntry = {
+      name: file.name,
+      bucket: bucketId,
+      fileId: fileId,
+      encryptVersion: StorageTypes.EncryptionVersion.Aes03,
+      folderUuid: file.parentFolderId,
+      size: file.size,
+      plainName: file.name,
+      type: file.type,
+      modificationTime: date.toISOString(),
+      date: date.toISOString(),
+    };
+
+    return workspacesService.createFileEntry(workspaceFileEntry, workspaceId, resourcesToken);
+  } else {
+    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+    const fileEntry: StorageTypes.FileEntryByUuid = {
+      fileId: fileId,
+      type: file.type,
+      size: file.size,
+      plainName: file.name,
+      bucket: bucketId,
+      folderUuid: file.parentFolderId,
+      encryptVersion: StorageTypes.EncryptionVersion.Aes03,
+      modificationTime: date.toISOString(),
+      date: date.toISOString(),
+    };
+
+    return storageClient.createFileEntryByUuid(fileEntry, ownerToken);
+  }
+};
+
 export async function uploadFile(
   userEmail: string,
   file: FileToUpload,
@@ -40,6 +94,22 @@ export async function uploadFile(
 ): Promise<DriveFileData> {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } =
     options.ownerUserAuthenticationData ?? getEnvironmentConfig(options.isTeam);
+  const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
+  const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;
+  const resourcesToken = options?.ownerUserAuthenticationData?.resourcesToken;
+
+  const isWorkspacesUpload = workspaceId && workspacesToken;
+
+  if (file.size === 0) {
+    return createFileEntry({
+      bucketId: bucketId,
+      file,
+      isWorkspaceUpload: !!isWorkspacesUpload,
+      resourcesToken: resourcesToken ?? workspacesToken,
+      workspaceId: workspaceId,
+      ownerToken: workspacesToken,
+    });
+  }
 
   if (!bucketId) {
     notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
@@ -67,43 +137,16 @@ export async function uploadFile(
   const fileId = await promise;
   if (fileId === undefined) throw new RetryableFileError(file);
 
-  const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
-  const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;
-  const resourcesToken = options?.ownerUserAuthenticationData?.resourcesToken;
+  let response = await createFileEntry({
+    bucketId: bucketId,
+    fileId: fileId,
+    file,
+    isWorkspaceUpload: !!isWorkspacesUpload,
+    resourcesToken: resourcesToken ?? workspacesToken,
+    workspaceId: workspaceId,
+    ownerToken: workspacesToken,
+  });
 
-  const isWorkspacesUpload = workspaceId && workspacesToken;
-  let response;
-
-  if (isWorkspacesUpload) {
-    const date = new Date();
-    const workspaceFileEntry = {
-      name: file.name,
-      bucket: bucketId,
-      fileId: fileId,
-      encryptVersion: StorageTypes.EncryptionVersion.Aes03,
-      folderUuid: file.parentFolderId,
-      size: file.size,
-      plainName: file.name,
-      type: file.type,
-      modificationTime: date.toISOString(),
-      date: date.toISOString(),
-    };
-
-    response = await workspacesService.createFileEntry(workspaceFileEntry, workspaceId, resourcesToken);
-  } else {
-    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-    const fileEntry: StorageTypes.FileEntryByUuid = {
-      fileId: fileId,
-      type: file.type,
-      size: file.size,
-      plainName: file.name,
-      bucket: bucketId,
-      folderUuid: file.parentFolderId,
-      encryptVersion: StorageTypes.EncryptionVersion.Aes03,
-    };
-
-    response = await storageClient.createFileEntryByUuid(fileEntry, options.ownerUserAuthenticationData?.token);
-  }
   if (!response.thumbnails) {
     response = {
       ...response,
