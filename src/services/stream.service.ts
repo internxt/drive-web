@@ -22,6 +22,38 @@ export async function binaryStreamToBlob(stream: BinaryStream, mimeType?: string
   return new Blob(slices as BlobPart[], mimeType ? { type: mimeType } : {});
 }
 
+export async function binaryStreamToUint8Array(
+  stream: BinaryStream,
+  onRead?: (readBytes: number) => void,
+): Promise<Uint8Array> {
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+
+  let finish = false;
+
+  while (!finish) {
+    const { done, value } = await reader.read();
+
+    if (!done) {
+      chunks.push(value as Uint8Array);
+    }
+
+    finish = done;
+  }
+
+  const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+  const result = new Uint8Array(totalLength);
+  let offset = 0;
+
+  for (const chunk of chunks) {
+    result.set(chunk, offset);
+    offset += chunk.length;
+    onRead?.(offset);
+  }
+
+  return result;
+}
+
 export function buildProgressStream(source: BinaryStream, onRead: (readBytes: number) => void): BinaryStream {
   const reader = source.getReader();
   let readBytes = 0;

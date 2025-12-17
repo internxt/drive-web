@@ -3,14 +3,13 @@ import { Keys } from '@internxt/sdk';
 import { getOpenpgp, generateNewKeys, compareKeyPairIDs } from './pgp.service';
 import { isValid } from './utilspgp';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import envService from 'services/env.service';
 const MINIMAL_ENCRYPTED_KEY_LEN = 129;
 
 export async function getKeys(password: string): Promise<Keys> {
   const { privateKeyArmored, publicKeyArmored, revocationCertificate, publicKyberKeyBase64, privateKyberKeyBase64 } =
     await generateNewKeys();
-  const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
-  const encPrivateKyberKey = aes.encrypt(privateKyberKeyBase64, password, getAesInitFromEnv());
+  const encPrivateKey = aes.encrypt(privateKeyArmored, password);
+  const encPrivateKyberKey = aes.encrypt(privateKyberKeyBase64, password);
 
   const keys: Keys = {
     privateKeyEncrypted: encPrivateKey,
@@ -146,8 +145,4 @@ export async function assertValidateKeys(privateKey: string, publicKey: string):
   if (decryptedMessage !== plainMessage) {
     throw new KeysDoNotMatchError();
   }
-}
-
-export function getAesInitFromEnv(): { iv: string; salt: string } {
-  return { iv: envService.getVariable('magicIv'), salt: envService.getVariable('magicSalt') };
 }

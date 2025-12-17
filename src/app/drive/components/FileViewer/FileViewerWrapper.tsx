@@ -1,7 +1,6 @@
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import { getAppConfig } from 'services/config.service';
 import localStorageService from 'services/local-storage.service';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import errorService from 'services/error.service';
@@ -30,6 +29,8 @@ import {
 import { FileToUpload } from 'app/drive/services/file.service/types';
 import { MenuItemType } from '@internxt/ui';
 import { DownloadManager } from 'app/network/DownloadManager';
+import { getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
+import { FileExtensionGroup } from 'app/drive/types/file-types';
 
 type pathProps = 'drive' | 'trash' | 'shared' | 'recents';
 
@@ -41,6 +42,7 @@ interface FileViewerWrapperProps {
   onClose: () => void;
   folderItems?: DriveItemData[];
   contextMenu?: Array<MenuItemType<DriveItemData>>;
+  isSharedView?: boolean;
   onShowStopSharingDialog?: () => void;
   sharedKeyboardShortcuts?: {
     removeItemFromKeyboard?: (item: DriveItemData) => void;
@@ -54,6 +56,7 @@ const FileViewerWrapper = ({
   showPreview,
   folderItems,
   contextMenu,
+  isSharedView,
   onShowStopSharingDialog,
   sharedKeyboardShortcuts,
 }: FileViewerWrapperProps): JSX.Element => {
@@ -74,11 +77,8 @@ const FileViewerWrapper = ({
   const user = localStorageService.getUser();
   const userEmail = user?.email;
 
-  const path = getAppConfig().views.find((view) => view.path === location.pathname);
-  const pathId = path?.id as pathProps;
-  const isSharedView = pathId === 'shared';
-
   const driveItemActions = useDriveItemActions(currentFile);
+  const fileContentManager = getFileContentManager(currentFile, downloadFile);
 
   const onDownload = () => {
     if (currentFile) {
@@ -93,7 +93,11 @@ const FileViewerWrapper = ({
   useEffect(() => {
     setBlob(null);
     dispatch(uiActions.setFileViewerItem(currentFile));
-    if (currentFile && !updateProgress && !isDownloadStarted) {
+
+    const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(currentFile);
+    const isVideo = extensionGroup?.fileExtensionGroup === FileExtensionGroup['Video'];
+
+    if (currentFile && !updateProgress && !isDownloadStarted && !isVideo) {
       setIsDownloadStarted(true);
       fileContentManager
         .download()
@@ -181,6 +185,7 @@ const FileViewerWrapper = ({
     setBlob(null);
     setIsDownloadStarted(false);
     setUpdateProgress(0);
+    fileContentManager.abort();
     if (direction === 'next') {
       setCurrentFile?.(currentFolder[fileIndex + 1]);
     } else {
@@ -287,8 +292,6 @@ const FileViewerWrapper = ({
       });
     }
   };
-
-  const fileContentManager = getFileContentManager(currentFile, downloadFile);
 
   const handlersForSpecialItems = {
     handleUpdateProgress: handleProgress,

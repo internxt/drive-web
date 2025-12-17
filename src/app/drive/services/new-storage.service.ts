@@ -1,24 +1,15 @@
 import {
   CheckDuplicatedFilesResponse,
   CheckDuplicatedFoldersResponse,
-  DriveFileData,
   FileStructure,
   FetchFolderContentResponse,
   FolderAncestor,
   FolderMeta,
-  FolderTreeResponse,
   FolderAncestorWorkspace,
 } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import { ItemType } from '@internxt/sdk/dist/workspaces/types';
-
-export async function searchItemsByName(name: string): Promise<DriveFileData[]> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  const result = await storageClient.searchItemsByName(name);
-
-  return result;
-}
 
 export async function hasUploadedFiles(): Promise<{ hasUploadedFiles: boolean }> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
@@ -43,11 +34,6 @@ export async function getFolderAncestorsInWorkspace(
 export async function getFolderMeta(uuid: string, workspaceId?: string, resourcesToken?: string): Promise<FolderMeta> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   return storageClient.getFolderMeta(uuid, workspaceId, resourcesToken);
-}
-
-export async function getFolderTree(uuid: string): Promise<FolderTreeResponse> {
-  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  return storageClient.getFolderTree(uuid);
 }
 
 export async function checkDuplicatedFiles(
@@ -95,11 +81,9 @@ export function deleteFolderByUuid(folderId: string) {
 }
 
 const newStorageService = {
-  searchItemsByName,
   getFolderAncestors,
   getFolderAncestorsInWorkspace,
   getFolderMeta,
-  getFolderTree,
   checkDuplicatedFiles,
   checkDuplicatedFolders,
   getFolderContentByUuid,

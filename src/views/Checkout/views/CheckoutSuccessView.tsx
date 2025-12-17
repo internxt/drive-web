@@ -9,6 +9,7 @@ import localStorageService from 'services/local-storage.service';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import { trackPaymentConversion } from 'app/analytics/impact.service';
 import gaService from 'app/analytics/ga.service';
+import metaService from 'app/analytics/meta.service';
 
 export function removePaymentsStorage() {
   localStorageService.removeItem('subscriptionId');
@@ -41,6 +42,7 @@ const CheckoutSuccessView = (): JSX.Element => {
     }, 3000);
 
     try {
+      metaService.trackPurchase();
       gaService.trackPurchase();
       await trackPaymentConversion();
 

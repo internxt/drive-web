@@ -577,6 +577,7 @@ function SharedView({
         <FileViewerWrapper
           file={itemToView}
           showPreview={isFileViewerOpen}
+          isSharedView
           onClose={() => handleOpenItemPreview(false)}
           onShowStopSharingDialog={onOpenStopSharingDialog}
           sharedKeyboardShortcuts={{

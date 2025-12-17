@@ -1,11 +1,5 @@
 import { DriveItemData } from '../types';
 
-const showItemExtensionType = (item: DriveItemData) => {
-  const type = item?.type;
-  if (!type || type === 'folder') return '';
-  return '.' + type;
-};
-
 const getItemPlainNameWithExtension = (item: DriveItemData) => {
   const plainName = item?.plainName ?? item?.plain_name;
   const type = item.type;
@@ -17,7 +11,6 @@ const getItemPlainNameWithExtension = (item: DriveItemData) => {
 };
 
 const transformItemService = {
-  showItemExtensionType,
   getItemPlainNameWithExtension,
 };
 
