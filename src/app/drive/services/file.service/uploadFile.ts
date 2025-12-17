@@ -1,6 +1,5 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { Network } from 'app/drive/services/network.service';
-import { DriveFileData } from 'app/drive/types';
 import { SdkFactory } from 'app/core/factory/sdk';
 import localStorageService from 'services/local-storage.service';
 import navigationService from 'services/navigation.service';
@@ -11,6 +10,8 @@ import { getEnvironmentConfig } from '../network.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
 import { OwnerUserAuthenticationData } from 'app/network/types';
 import { FileToUpload } from './types';
+import { FileEntry } from '@internxt/sdk/dist/workspaces';
+import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 export interface FileUploadOptions {
   isTeam: boolean;
@@ -49,7 +50,11 @@ export const createFileEntry = async ({
   const date = new Date();
 
   if (isWorkspaceUpload && workspaceId) {
-    const workspaceFileEntry = {
+    if (!fileId) {
+      throw new Error('File id is required for workspace upload');
+    }
+
+    const workspaceFileEntry: FileEntry = {
       name: file.name,
       bucket: bucketId,
       fileId: fileId,
@@ -100,7 +105,7 @@ export async function uploadFile(
 
   const isWorkspacesUpload = workspaceId && workspacesToken;
 
-  if (file.size === 0) {
+  if (file.size === 0 && !isWorkspacesUpload) {
     return createFileEntry({
       bucketId: bucketId,
       file,
