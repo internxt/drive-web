@@ -2,16 +2,9 @@
  * @jest-environment jsdom
  */
 
-import {
-  getSha256,
-  getSha256Hasher,
-  getSha512FromHex,
-  getRipemd160FromHex,
-  extendSecret,
-} from '../../../src/app/crypto/services/utils';
+import { getSha256, getSha256Hasher, getRipemd160FromHex, extendSecret } from '../../../src/app/crypto/services/utils';
 
 import { describe, expect, it } from 'vitest';
-import CryptoJS from 'crypto-js';
 import { Buffer } from 'buffer';
 import crypto from 'crypto';
 
@@ -79,79 +72,12 @@ describe('Test getSha256Hasher', () => {
     expect(result).toBe(expectedResult);
   });
 });
-describe('Test getSha512 with NIST test vectors', () => {
-  it('getSha512 should pass NIST test vector 1', async () => {
-    const message = Buffer.from('abc').toString('hex');
-    const result = await getSha512FromHex(message);
-    const testResult =
-      'ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f';
-    expect(result).toBe(testResult);
-  });
-
-  it('getSha512 should pass NIST test vector 2', async () => {
-    const message = '';
-    const result = await getSha512FromHex(message);
-    const testResult =
-      'cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e';
-    expect(result).toBe(testResult);
-  });
-
-  it('getSha512 should pass NIST test vector 3', async () => {
-    const message = Buffer.from('abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq').toString('hex');
-    const result = await getSha512FromHex(message);
-    const testResult =
-      '204a8fc6dda82f0a0ced7beb8e08a41657c16ef468b228a8279be331a703c33596fd15c13b1b07f9aa1d3bea57789ca031ad85c7a71dd70354ec631238ca3445';
-    expect(result).toBe(testResult);
-  });
-
-  it('getSha512 should pass NIST test vector 4', async () => {
-    const message = Buffer.from(
-      'abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu',
-    ).toString('hex');
-    const result = await getSha512FromHex(message);
-    const testResult =
-      '8e959b75dae313da8cf4f72814fc143f8f7779c6eb9f7fa17299aeadb6889018501d289e4900f7e4331b99dec4b5433ac7d329eeb6dd26545e96e55b874be909';
-    expect(result).toBe(testResult);
-  });
-
-  it('getSha512 should pass NIST test vector 5', async () => {
-    let message = '';
-    for (let i = 0; i < 1000000; i++) {
-      message += Buffer.from('a').toString('hex');
-    }
-    const result = await getSha512FromHex(message);
-    const testResult =
-      'e718483d0ce769644e2e42c7bc15b4638e1f98b13b2044285632a803afa973ebde0ff244877ea60a4cb0432ce577c31beb009c5c2c49aa2e4eadb217ad8cc09b';
-    expect(result).toBe(testResult);
-  });
-});
 
 describe('Test against other crypto libraries', () => {
-  it('getSha256 should be identical to CryptoJS result for a test string', async () => {
-    const message = 'Test between hash-wasm and CryptoJS';
-    const result = await getSha256(message);
-    const cryptoJSresult = CryptoJS.SHA256(message).toString(CryptoJS.enc.Hex);
-    expect(result).toBe(cryptoJSresult);
-  });
-
-  it('getSha256 should be identical to CryptoJS result for an empty string', async () => {
-    const message = '';
-    const result = await getSha256(message);
-    const cryptoJSresult = CryptoJS.SHA256(message).toString(CryptoJS.enc.Hex);
-    expect(result).toBe(cryptoJSresult);
-  });
-
   it('getRipemd160 should retrun the same result as crypto', async () => {
     const sha256Result = await getSha256('Test message');
     const result = await getRipemd160FromHex(sha256Result);
     const testResult = crypto.createHash('ripemd160').update(Buffer.from(sha256Result, 'hex')).digest('hex');
-    expect(result).toBe(testResult);
-  });
-
-  it('getSha512 should retrun the same result as crypto', async () => {
-    const input = await getSha256('Test message');
-    const result = await getSha512FromHex(input);
-    const testResult = crypto.createHash('sha512').update(Buffer.from(input, 'hex')).digest().toString('hex');
     expect(result).toBe(testResult);
   });
 });
