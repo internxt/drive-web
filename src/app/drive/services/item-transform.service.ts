@@ -18,6 +18,10 @@ const mapFileSize = (file: DriveFileData): DriveFileData => {
   } as DriveFileData;
 };
 
+const mapFileSizeToNumber = (files: DriveFileData[]): DriveFileData[] => {
+  return files.map(mapFileSize);
+};
+
 const transformItemService = {
   getItemPlainNameWithExtension,
   mapFileSizeToNumber,
