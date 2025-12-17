@@ -1,6 +1,6 @@
 import tasksService from 'app/tasks/services/tasks.service';
 import { DownloadFilesTask, DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
-import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
+import { DriveFolderData, DriveItemData } from '../types';
 import { saveAs } from 'file-saver';
 import { DriveItemBlobData } from 'app/database/services/database.service';
 import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
@@ -30,6 +30,7 @@ import {
 } from '../types/download-types';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 import { isFileEmpty } from 'utils/isFileEmpty';
+import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
@@ -266,6 +267,11 @@ export class DownloadManagerService {
       const { items, credentials, options, abortController } = downloadTask;
       const file = items[0] as DriveFileData;
 
+      if (isFileEmpty(file)) {
+        saveAs(new Blob([]), options.downloadName);
+        return;
+      }
+
       let cachedFile: DriveItemBlobData | undefined;
       let isCachedFileOlder = false;
       try {
@@ -273,11 +279,6 @@ export class DownloadManagerService {
         isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
       } catch (error) {
         errorService.reportError(error);
-      }
-
-      if (isFileEmpty(file)) {
-        saveAs(new Blob([]), options.downloadName);
-        return;
       }
 
       if (cachedFile?.source && !isCachedFileOlder) {
