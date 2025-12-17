@@ -14,7 +14,7 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import { uploadFoldersWithManager } from 'app/network/UploadFolderManager';
 import replaceFileService from 'views/Drive/services/replaceFile.service';
 import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
-import { fileVersionsActions } from 'app/store/slices/fileVersions';
+import { fileVersionsActions, fileVersionsSelectors } from 'app/store/slices/fileVersions';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
@@ -46,7 +46,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     () => moveDestinationFolderId ?? currentFolderId,
     [moveDestinationFolderId, currentFolderId],
   );
-  const limits = useAppSelector((state: RootState) => state.fileVersions.limits);
+  const limits = useAppSelector(fileVersionsSelectors.getLimits);
   const isVersioningEnabled = limits?.versioning?.enabled ?? false;
 
   const handleNewItems = (files: (File | DriveItemData)[], folders: (IRoot | DriveItemData)[]) => [

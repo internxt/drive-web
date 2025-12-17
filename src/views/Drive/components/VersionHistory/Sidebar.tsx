@@ -16,7 +16,12 @@ import {
 import fileVersionService from 'views/Drive/components/VersionHistory/services/fileVersion.service';
 import errorService from 'services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { fetchFileVersionsThunk, fetchVersionLimitsThunk, fileVersionsActions } from 'app/store/slices/fileVersions';
+import {
+  fetchFileVersionsThunk,
+  fetchVersionLimitsThunk,
+  fileVersionsActions,
+  fileVersionsSelectors,
+} from 'app/store/slices/fileVersions';
 
 type VersionInfo = { id: string; updatedAt: string };
 
@@ -32,11 +37,13 @@ const Sidebar = () => {
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const { translate } = useTranslationContext();
 
-  const limits = useAppSelector((state: RootState) => state.fileVersions.limits);
+  const limits = useAppSelector(fileVersionsSelectors.getLimits);
   const versions =
-    useAppSelector((state: RootState) => (item ? state.fileVersions.versionsByFileId[item.uuid] : [])) || [];
+    useAppSelector((state: RootState) => (item ? fileVersionsSelectors.getVersionsByFileId(state, item.uuid) : [])) ||
+    [];
   const isLoading =
-    useAppSelector((state: RootState) => (item ? state.fileVersions.loadingStates[item.uuid] : false)) || false;
+    useAppSelector((state: RootState) => (item ? fileVersionsSelectors.isLoadingByFileId(state, item.uuid) : false)) ||
+    false;
   const [selectedAutosaveVersions, setSelectedAutosaveVersions] = useState<Set<string>>(new Set());
   const [isBatchDeleteMode, setIsBatchDeleteMode] = useState(false);
   const [currentVersion, setCurrentVersion] = useState<VersionInfo>({
@@ -151,7 +158,7 @@ const Sidebar = () => {
       const restoredVersion = await fileVersionService.restoreVersion(item.uuid, versionToRestore.id);
 
       setCurrentVersion({
-        id: restoredVersion.fileId,
+        id: restoredVersion.fileId as string,
         updatedAt: new Date().toISOString(),
       });
 
