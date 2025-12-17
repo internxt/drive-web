@@ -95,46 +95,44 @@ const getDownloadMenuItem = (downloadItems: (target?) => void) => ({
 });
 
 export type VersionHistoryMenuConfig = {
-  locked?: boolean;
-  onLockedClick?: () => void;
-  allowedExtension?: boolean;
+  isLocked: boolean;
+  isExtensionAllowed: boolean;
+  onUpgradeClick?: () => void;
 };
 
 const getVersionHistoryMenuItem = (
   viewVersionHistory: (target?) => void,
   config?: VersionHistoryMenuConfig,
 ): MenuItemType<DriveItemData> => {
-  const isLocked = config?.locked ?? false;
-  const allowedExtension = config?.allowedExtension ?? true;
-  const action = isLocked ? (config?.onLockedClick ?? (() => undefined)) : viewVersionHistory;
-  const IconComponent = isLocked ? LockSimple : ClockCounterClockwise;
+  const isLocked = config?.isLocked ?? false;
+  const isExtensionAllowed = config?.isExtensionAllowed ?? true;
+  const onUpgradeClick = config?.onUpgradeClick;
 
-  const isVersionHistoryUnavailable = (item: DriveItemData) => {
-    const isFolder = item.isFolder;
-    const isUnsupportedExtension = !allowedExtension;
-    const isDisabledForUnlockedItem = !isLocked && (isFolder || isUnsupportedExtension);
-    return isDisabledForUnlockedItem;
-  };
-
-  return {
-    name: t('drive.dropdown.versionHistory'),
-    icon: IconComponent,
-    action,
-    disabled: isVersionHistoryUnavailable,
-    ...(isLocked && {
-      locked: true,
+  if (isLocked) {
+    return {
+      name: t('drive.dropdown.versionHistory') as string,
+      icon: LockSimple,
+      action: onUpgradeClick,
+      disabled: () => false,
       node: (
         <div
           className="flex flex-row items-center space-x-2"
           data-locked="true"
           style={{ opacity: 0.5, cursor: 'default' }}
         >
-          <IconComponent size={20} />
+          <LockSimple size={20} />
           <span>{t('drive.dropdown.versionHistory')}</span>
         </div>
       ),
-    }),
-  } as MenuItemType<DriveItemData> & { locked?: boolean };
+    };
+  }
+
+  return {
+    name: t('drive.dropdown.versionHistory') as string,
+    icon: ClockCounterClockwise,
+    action: viewVersionHistory,
+    disabled: (item: DriveItemData) => item.isFolder || !isExtensionAllowed,
+  };
 };
 
 const getMoveToTrashMenuItem = (moveToTrash: (target?) => void) => ({

@@ -1,21 +1,21 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { FileVersion, GetFileLimitsResponse } from '@internxt/sdk/dist/drive/storage/types';
+import { FileVersion, FileLimitsResponse } from '@internxt/sdk/dist/drive/storage/types';
 import fileVersionService from 'views/Drive/components/VersionHistory/services/fileVersion.service';
 
 interface FileVersionsState {
-  versionsByFileId: Record<string, FileVersion[]>;
-  loadingStates: Record<string, boolean>;
-  errors: Record<string, string | null>;
-  limits: GetFileLimitsResponse | null;
-  limitsLoading: boolean;
+  versionsByFileId: Record<NonNullable<FileVersion['fileId']>, FileVersion[]>;
+  isLoadingByFileId: Record<NonNullable<FileVersion['fileId']>, boolean>;
+  errorsByFileId: Record<NonNullable<FileVersion['fileId']>, string | null>;
+  limits: FileLimitsResponse | null;
+  isLimitsLoading: boolean;
 }
 
 const initialState: FileVersionsState = {
   versionsByFileId: {},
-  loadingStates: {},
-  errors: {},
+  isLoadingByFileId: {},
+  errorsByFileId: {},
   limits: null,
-  limitsLoading: false,
+  isLimitsLoading: false,
 };
 
 export const fetchFileVersionsThunk = createAsyncThunk(
@@ -45,13 +45,13 @@ export const fileVersionsSlice = createSlice({
   reducers: {
     invalidateCache: (state, action: PayloadAction<string>) => {
       delete state.versionsByFileId[action.payload];
-      delete state.loadingStates[action.payload];
-      delete state.errors[action.payload];
+      delete state.isLoadingByFileId[action.payload];
+      delete state.errorsByFileId[action.payload];
     },
     clearAllCache: (state) => {
       state.versionsByFileId = {};
-      state.loadingStates = {};
-      state.errors = {};
+      state.isLoadingByFileId = {};
+      state.errorsByFileId = {};
     },
     updateVersionsAfterDelete: (state, action: PayloadAction<{ fileUuid: string; versionId: string }>) => {
       const { fileUuid, versionId } = action.payload;
@@ -63,30 +63,31 @@ export const fileVersionsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchFileVersionsThunk.pending, (state, action) => {
-        state.loadingStates[action.meta.arg] = true;
-        state.errors[action.meta.arg] = null;
+        state.isLoadingByFileId[action.meta.arg] = true;
+        state.errorsByFileId[action.meta.arg] = null;
       })
       .addCase(fetchFileVersionsThunk.fulfilled, (state, action) => {
         const { fileUuid, versions } = action.payload;
         state.versionsByFileId[fileUuid] = versions;
-        state.loadingStates[fileUuid] = false;
+        state.isLoadingByFileId[fileUuid] = false;
       })
       .addCase(fetchFileVersionsThunk.rejected, (state, action) => {
-        state.loadingStates[action.meta.arg] = false;
-        state.errors[action.meta.arg] = action.payload as string;
+        state.isLoadingByFileId[action.meta.arg] = false;
+        state.errorsByFileId[action.meta.arg] = action.payload as string;
       })
       .addCase(fetchVersionLimitsThunk.pending, (state) => {
-        state.limitsLoading = true;
+        state.isLimitsLoading = true;
       })
       .addCase(fetchVersionLimitsThunk.fulfilled, (state, action) => {
         state.limits = action.payload;
-        state.limitsLoading = false;
+        state.isLimitsLoading = false;
       })
       .addCase(fetchVersionLimitsThunk.rejected, (state) => {
-        state.limitsLoading = false;
+        state.isLimitsLoading = false;
       });
   },
 });
 
 export const fileVersionsActions = fileVersionsSlice.actions;
 export const fileVersionsReducer = fileVersionsSlice.reducer;
+export { default as fileVersionsSelectors } from './fileVersions.selectors';
