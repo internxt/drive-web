@@ -8,9 +8,10 @@ import { formatVersionDate } from '../utils';
 
 interface VersionItemProps {
   version: FileVersion;
+  userName: string;
 }
 
-export const VersionItem = ({ version }: VersionItemProps) => {
+export const VersionItem = ({ version, userName }: VersionItemProps) => {
   const { translate } = useTranslationContext();
   const [isSelected, setIsSelected] = useState(true);
   const { isOpen, setIsOpen, dropdownPosition, dropdownRef, itemRef } = useDropdownPositioning();
@@ -24,13 +25,14 @@ export const VersionItem = ({ version }: VersionItemProps) => {
   };
 
   const dropdownOpenDirection = dropdownPosition === 'above' ? 'left' : 'right';
+  const versionDate = new Date(version.createdAt);
 
   return (
     <button
       ref={itemRef as React.RefObject<HTMLButtonElement>}
       type="button"
       aria-pressed={isSelected}
-      aria-label={`Version from ${formatVersionDate(version.date)}`}
+      aria-label={`Version from ${formatVersionDate(versionDate)}`}
       className={`group w-full px-6 cursor-pointer text-left ${isSelected ? 'bg-primary/10' : 'hover:bg-gray-1'}`}
       onClick={handleItemClick}
     >
@@ -45,7 +47,7 @@ export const VersionItem = ({ version }: VersionItemProps) => {
           />
           <div className="flex min-w-0 flex-1 flex-col space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-base font-semibold text-gray-100">{formatVersionDate(version.date)}</span>
+              <span className="text-base font-semibold text-gray-100">{formatVersionDate(versionDate)}</span>
             </div>
             {version.expiresInDays !== undefined && (
               <div className="flex items-center space-x-1 text-[12px] text-red-dark">
@@ -54,8 +56,8 @@ export const VersionItem = ({ version }: VersionItemProps) => {
               </div>
             )}
             <div className="flex items-center space-x-2 pt-1">
-              <Avatar fullName={version.userName} diameter={24} />
-              <span className="text-base text-gray-60 dark:text-gray-80">{version.userName}</span>
+              <Avatar fullName={userName} diameter={24} />
+              <span className="text-base text-gray-60 dark:text-gray-80">{userName}</span>
             </div>
           </div>
         </div>
