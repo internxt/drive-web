@@ -6,10 +6,12 @@ import {
   FolderAncestor,
   FolderMeta,
   FolderAncestorWorkspace,
+  DriveFileData,
 } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import { ItemType } from '@internxt/sdk/dist/workspaces/types';
+import transformItemService from './item-transform.service';
 
 export async function hasUploadedFiles(): Promise<{ hasUploadedFiles: boolean }> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
@@ -66,13 +68,20 @@ export function getFolderContentByUuid({
   workspacesToken?: string;
 }): [Promise<FetchFolderContentResponse>, RequestCanceler] {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  return storageClient.getFolderContentByUuid({
+  const [responsePromise, canceler] = storageClient.getFolderContentByUuid({
     folderUuid,
     limit,
     offset,
     trash,
     workspacesToken,
   });
+
+  const transformedPromise = responsePromise.then((response) => ({
+    ...response,
+    files: transformItemService.mapFileSizeToNumber(response.files as DriveFileData[]),
+  }));
+
+  return [transformedPromise, canceler];
 }
 
 export function deleteFolderByUuid(folderId: string) {
