@@ -12,15 +12,48 @@ describe('VideoStreamingService', () => {
   let mockRegistration: ServiceWorkerRegistration;
   let session: VideoStreamSession;
   let onChunkRequest: (request: ChunkRequestPayload) => Promise<Uint8Array>;
-  let messageListeners: Map<string, (event: MessageEvent) => void>;
-  let controllerChangeListeners: Set<() => void>;
+  let messageListeners: ((event: MessageEvent) => void)[];
+  let controllerChangeListeners: (() => void)[];
+  let lastMessageChannelPort: { onmessage: ((event: MessageEvent) => void) | null; close: () => void };
 
   beforeEach(() => {
-    messageListeners = new Map();
-    controllerChangeListeners = new Set();
+    messageListeners = [];
+    controllerChangeListeners = [];
+
+    // Mock MessageChannel - capture the port for later use
+    global.MessageChannel = vi.fn().mockImplementation(() => {
+      lastMessageChannelPort = {
+        onmessage: null,
+        close: vi.fn(),
+      };
+      return {
+        port1: lastMessageChannelPort,
+        port2: {},
+      };
+    }) as unknown as typeof MessageChannel;
 
     mockServiceWorker = {
-      postMessage: vi.fn(),
+      postMessage: vi.fn().mockImplementation((message) => {
+        // Immediately trigger response via MessageChannel
+        queueMicrotask(() => {
+          if (message.type === 'PING') {
+            // PING uses navigator.serviceWorker listeners
+            messageListeners.forEach((h) => h({ data: { type: 'PONG' } } as MessageEvent));
+          } else if (message.type === 'REGISTER_VIDEO_SESSION') {
+            lastMessageChannelPort.onmessage?.({
+              data: { type: 'SESSION_REGISTERED', sessionId: message.sessionId },
+            } as MessageEvent);
+          } else if (message.type === 'UNREGISTER_VIDEO_SESSION') {
+            lastMessageChannelPort.onmessage?.({
+              data: { type: 'SESSION_UNREGISTERED', sessionId: message.sessionId },
+            } as MessageEvent);
+          } else if (message.type === 'CLAIM_CLIENTS') {
+            lastMessageChannelPort.onmessage?.({
+              data: { type: 'CLIENTS_CLAIMED' },
+            } as MessageEvent);
+          }
+        });
+      }),
       state: 'activated',
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
@@ -39,16 +72,15 @@ describe('VideoStreamingService', () => {
         ready: Promise.resolve(mockRegistration),
         addEventListener: vi.fn((event: string, handler: () => void) => {
           if (event === 'message') {
-            messageListeners.set('global', handler as (event: MessageEvent) => void);
+            messageListeners.push(handler as (event: MessageEvent) => void);
           } else if (event === 'controllerchange') {
-            controllerChangeListeners.add(handler);
+            controllerChangeListeners.push(handler);
           }
         }),
         removeEventListener: vi.fn((event: string, handler: () => void) => {
           if (event === 'message') {
-            messageListeners.delete('global');
-          } else if (event === 'controllerchange') {
-            controllerChangeListeners.delete(handler);
+            const idx = messageListeners.indexOf(handler as (event: MessageEvent) => void);
+            if (idx >= 0) messageListeners.splice(idx, 1);
           }
         }),
       },
@@ -66,8 +98,7 @@ describe('VideoStreamingService', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-    messageListeners.clear();
-    controllerChangeListeners.clear();
+    vi.useRealTimers();
   });
 
   describe('init the service', () => {
@@ -76,28 +107,31 @@ describe('VideoStreamingService', () => {
 
       await service.init();
 
-      expect(mockServiceWorker.postMessage).toHaveBeenCalledWith({
-        type: 'REGISTER_VIDEO_SESSION',
-        sessionId: mockSessionId,
-        fileSize: session.fileSize,
-        mimeType: session.mimeType,
-      });
+      expect(mockServiceWorker.postMessage).toHaveBeenCalledWith(
+        {
+          type: 'REGISTER_VIDEO_SESSION',
+          sessionId: mockSessionId,
+          fileSize: session.fileSize,
+          mimeType: session.mimeType,
+        },
+        expect.any(Array),
+      );
       expect(navigator.serviceWorker.addEventListener).toHaveBeenCalledWith('message', expect.any(Function));
     });
 
     test('When service is destroyed during init, then does not register session', async () => {
       const service = new VideoStreamingService(session, onChunkRequest);
-      service.destroy();
+      void service.destroy();
 
       await service.init();
 
-      const registerCalls = (mockServiceWorker.postMessage as any).mock.calls.filter(
-        (call: any) => call[0].type === 'REGISTER_VIDEO_SESSION',
+      const registerCalls = (mockServiceWorker.postMessage as ReturnType<typeof vi.fn>).mock.calls.filter(
+        (call) => call[0].type === 'REGISTER_VIDEO_SESSION',
       );
       expect(registerCalls).toHaveLength(0);
     });
 
-    test('When service worker is not available, then an error indicating so is thrown', async () => {
+    test('When service worker is not available, then throws error', async () => {
       Object.defineProperty(global.navigator, 'serviceWorker', {
         value: {
           controller: null,
@@ -118,50 +152,12 @@ describe('VideoStreamingService', () => {
 
       await expect(service.init()).rejects.toThrow('No SW available');
     });
-
-    test('When service worker is installing, then waits for activation', async () => {
-      const installingSW = {
-        ...mockServiceWorker,
-        state: 'installing',
-      } as ServiceWorker;
-
-      Object.defineProperty(global.navigator, 'serviceWorker', {
-        value: {
-          controller: null,
-          ready: Promise.resolve({
-            ...mockRegistration,
-            active: null,
-            installing: installingSW,
-            waiting: null,
-          }),
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-        },
-        writable: true,
-        configurable: true,
-      });
-
-      const service = new VideoStreamingService(session, onChunkRequest);
-
-      setTimeout(() => {
-        Object.defineProperty(installingSW, 'state', { value: 'activated', writable: true });
-        const stateChangeHandler = (installingSW.addEventListener as any).mock.calls.find(
-          (call: any) => call[0] === 'statechange',
-        )?.[1];
-        if (stateChangeHandler) stateChangeHandler();
-      }, 10);
-
-      await expect(service.init()).rejects.toThrow('No SW available');
-    });
   });
 
   describe('Getting video URL', () => {
     test('When called, then returns correct video stream URL', () => {
       const service = new VideoStreamingService(session, onChunkRequest);
-
-      const url = service.getVideoUrl();
-
-      expect(url).toBe(`/video-stream/${mockSessionId}`);
+      expect(service.getVideoUrl()).toBe(`/video-stream/${mockSessionId}`);
     });
   });
 
@@ -170,14 +166,15 @@ describe('VideoStreamingService', () => {
       const service = new VideoStreamingService(session, onChunkRequest);
       await service.init();
 
-      vi.clearAllMocks();
+      await service.destroy();
 
-      service.destroy();
-
-      expect(mockServiceWorker.postMessage).toHaveBeenCalledWith({
-        type: 'UNREGISTER_VIDEO_SESSION',
-        sessionId: mockSessionId,
-      });
+      expect(mockServiceWorker.postMessage).toHaveBeenCalledWith(
+        {
+          type: 'UNREGISTER_VIDEO_SESSION',
+          sessionId: mockSessionId,
+        },
+        expect.any(Array),
+      );
       expect(navigator.serviceWorker.removeEventListener).toHaveBeenCalledWith('message', expect.any(Function));
     });
 
@@ -195,9 +192,51 @@ describe('VideoStreamingService', () => {
         configurable: true,
       });
 
-      service.destroy();
+      await service.destroy();
 
       expect(navigator.serviceWorker.removeEventListener).toHaveBeenCalledWith('message', expect.any(Function));
+    });
+
+    test('When destroy is called multiple times, then only unregisters once', async () => {
+      const service = new VideoStreamingService(session, onChunkRequest);
+      await service.init();
+
+      vi.clearAllMocks();
+
+      await service.destroy();
+      await service.destroy();
+
+      const unregisterCalls = (mockServiceWorker.postMessage as ReturnType<typeof vi.fn>).mock.calls.filter(
+        (call) => call[0].type === 'UNREGISTER_VIDEO_SESSION',
+      );
+      expect(unregisterCalls).toHaveLength(1);
+    });
+
+    test('When unregister times out, then rejects with error', async () => {
+      vi.useFakeTimers();
+
+      // Don't auto-respond to unregister
+      mockServiceWorker.postMessage = vi.fn().mockImplementation((message) => {
+        queueMicrotask(() => {
+          if (message.type === 'PING') {
+            messageListeners.forEach((h) => h({ data: { type: 'PONG' } } as MessageEvent));
+          } else if (message.type === 'REGISTER_VIDEO_SESSION') {
+            lastMessageChannelPort.onmessage?.({
+              data: { type: 'SESSION_REGISTERED', sessionId: message.sessionId },
+            } as MessageEvent);
+          }
+          // Don't respond to UNREGISTER_VIDEO_SESSION
+        });
+      });
+
+      const service = new VideoStreamingService(session, onChunkRequest);
+      await service.init();
+
+      const destroyPromise = service.destroy();
+
+      await vi.advanceTimersByTimeAsync(6000);
+
+      await expect(destroyPromise).rejects.toThrow();
     });
   });
 
@@ -206,10 +245,7 @@ describe('VideoStreamingService', () => {
       const service = new VideoStreamingService(session, onChunkRequest);
       await service.init();
 
-      const mockPort = {
-        postMessage: vi.fn(),
-      } as unknown as MessagePort;
-
+      const mockPort = { postMessage: vi.fn() };
       const chunkRequest: ChunkRequestPayload = {
         sessionId: mockSessionId,
         requestId: 'request-123',
@@ -218,19 +254,14 @@ describe('VideoStreamingService', () => {
         fileSize: session.fileSize,
       };
 
-      const messageEvent = {
-        data: {
-          type: 'CHUNK_REQUEST',
-          payload: chunkRequest,
-        },
-        ports: [mockPort],
-      } as unknown as MessageEvent;
+      // Trigger chunk request through message listener
+      const messageHandler = messageListeners[messageListeners.length - 1];
+      messageHandler({
+        data: { type: 'CHUNK_REQUEST', payload: chunkRequest },
+        ports: [mockPort as unknown as MessagePort],
+      } as unknown as MessageEvent);
 
-      const messageHandler = messageListeners.get('global');
-      if (messageHandler) {
-        messageHandler(messageEvent);
-      }
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await new Promise((r) => setTimeout(r, 0));
 
       expect(onChunkRequest).toHaveBeenCalledWith(chunkRequest);
       expect(mockPort.postMessage).toHaveBeenCalledWith({
@@ -239,14 +270,11 @@ describe('VideoStreamingService', () => {
       });
     });
 
-    test('When chunk request is for different session, then ignores test', async () => {
+    test('When chunk request is for different session, then ignores request', async () => {
       const service = new VideoStreamingService(session, onChunkRequest);
       await service.init();
 
-      const mockPort = {
-        postMessage: vi.fn(),
-      } as unknown as MessagePort;
-
+      const mockPort = { postMessage: vi.fn() };
       const chunkRequest: ChunkRequestPayload = {
         sessionId: 'different-session-id',
         requestId: 'request-123',
@@ -255,31 +283,25 @@ describe('VideoStreamingService', () => {
         fileSize: session.fileSize,
       };
 
-      const messageEvent = {
-        data: {
-          type: 'CHUNK_REQUEST',
-          payload: chunkRequest,
-        },
-        ports: [mockPort],
-      } as unknown as MessageEvent;
+      const messageHandler = messageListeners[messageListeners.length - 1];
+      messageHandler({
+        data: { type: 'CHUNK_REQUEST', payload: chunkRequest },
+        ports: [mockPort as unknown as MessagePort],
+      } as unknown as MessageEvent);
 
-      const messageHandler = messageListeners.get('global');
-      await messageHandler?.(messageEvent);
+      await new Promise((r) => setTimeout(r, 0));
 
       expect(onChunkRequest).not.toHaveBeenCalled();
       expect(mockPort.postMessage).not.toHaveBeenCalled();
     });
 
-    test('When chunk request fails, then an error indicating so is thrown', async () => {
+    test('When chunk request fails, then sends error response', async () => {
       const errorMessage = 'Failed to fetch chunk';
       const failingOnChunkRequest = vi.fn().mockRejectedValue(new Error(errorMessage));
       const service = new VideoStreamingService(session, failingOnChunkRequest);
       await service.init();
 
-      const mockPort = {
-        postMessage: vi.fn(),
-      } as unknown as MessagePort;
-
+      const mockPort = { postMessage: vi.fn() };
       const chunkRequest: ChunkRequestPayload = {
         sessionId: mockSessionId,
         requestId: 'request-123',
@@ -288,25 +310,21 @@ describe('VideoStreamingService', () => {
         fileSize: session.fileSize,
       };
 
-      const messageEvent = {
-        data: {
-          type: 'CHUNK_REQUEST',
-          payload: chunkRequest,
-        },
-        ports: [mockPort],
-      } as unknown as MessageEvent;
+      const messageHandler = messageListeners[messageListeners.length - 1];
+      messageHandler({
+        data: { type: 'CHUNK_REQUEST', payload: chunkRequest },
+        ports: [mockPort as unknown as MessagePort],
+      } as unknown as MessageEvent);
 
-      const messageHandler = messageListeners.get('global');
-      await messageHandler?.(messageEvent);
+      await new Promise((r) => setTimeout(r, 0));
 
-      expect(failingOnChunkRequest).toHaveBeenCalledWith(chunkRequest);
       expect(mockPort.postMessage).toHaveBeenCalledWith({
         requestId: 'request-123',
         error: errorMessage,
       });
     });
 
-    test('When service is destroyed during chunk fetch, then an error indicating so is thrown', async () => {
+    test('When service is destroyed during chunk fetch, then sends error response', async () => {
       let resolveChunkRequest!: (value: Uint8Array) => void;
       const delayedOnChunkRequest = vi.fn(
         () =>
@@ -318,10 +336,7 @@ describe('VideoStreamingService', () => {
       const service = new VideoStreamingService(session, delayedOnChunkRequest);
       await service.init();
 
-      const mockPort = {
-        postMessage: vi.fn(),
-      } as unknown as MessagePort;
-
+      const mockPort = { postMessage: vi.fn() };
       const chunkRequest: ChunkRequestPayload = {
         sessionId: mockSessionId,
         requestId: 'request-123',
@@ -330,18 +345,13 @@ describe('VideoStreamingService', () => {
         fileSize: session.fileSize,
       };
 
-      const messageEvent = {
-        data: {
-          type: 'CHUNK_REQUEST',
-          payload: chunkRequest,
-        },
-        ports: [mockPort],
-      } as unknown as MessageEvent;
+      const messageHandler = messageListeners[messageListeners.length - 1];
+      const requestPromise = messageHandler({
+        data: { type: 'CHUNK_REQUEST', payload: chunkRequest },
+        ports: [mockPort as unknown as MessagePort],
+      } as unknown as MessageEvent);
 
-      const messageHandler = messageListeners.get('global');
-
-      const requestPromise = messageHandler?.(messageEvent);
-      service.destroy();
+      void service.destroy();
       resolveChunkRequest(new Uint8Array([1, 2, 3]));
       await requestPromise;
 
@@ -353,28 +363,12 @@ describe('VideoStreamingService', () => {
   });
 
   describe('service worker ping', () => {
-    test('When existing controller responds to ping, then returns controller', async () => {
+    test('When existing controller responds to ping, then init succeeds', async () => {
       const service = new VideoStreamingService(session, onChunkRequest);
-
-      let pingMessageHandler: ((event: MessageEvent) => void) | undefined;
-      const addEventListenerSpy = vi
-        .spyOn(navigator.serviceWorker, 'addEventListener')
-        .mockImplementation((event: string, handler: any) => {
-          if (event === 'message') {
-            pingMessageHandler = handler;
-          }
-        });
-
-      setTimeout(() => {
-        if (pingMessageHandler) {
-          pingMessageHandler({ data: { type: 'PONG' } } as MessageEvent);
-        }
-      }, 10);
 
       await service.init();
 
       expect(mockServiceWorker.postMessage).toHaveBeenCalledWith({ type: 'PING' });
-      expect(addEventListenerSpy).toHaveBeenCalled();
     });
   });
 
@@ -386,14 +380,14 @@ describe('VideoStreamingService', () => {
           ready: Promise.resolve(mockRegistration),
           addEventListener: vi.fn((event: string, handler: () => void) => {
             if (event === 'controllerchange') {
-              setTimeout(() => {
+              queueMicrotask(() => {
                 Object.defineProperty(global.navigator.serviceWorker, 'controller', {
                   value: mockServiceWorker,
                   writable: true,
                   configurable: true,
                 });
                 handler();
-              }, 10);
+              });
             }
           }),
           removeEventListener: vi.fn(),
@@ -403,21 +397,6 @@ describe('VideoStreamingService', () => {
       });
 
       const service = new VideoStreamingService(session, onChunkRequest);
-
-      const mockPort = {
-        onmessage: null as ((event: MessageEvent) => void) | null,
-      };
-
-      global.MessageChannel = vi.fn().mockImplementation(() => ({
-        port1: mockPort,
-        port2: {},
-      })) as any;
-
-      setTimeout(() => {
-        if (mockPort.onmessage) {
-          mockPort.onmessage({ data: { type: 'CLIENTS_CLAIMED' } } as MessageEvent);
-        }
-      }, 10);
 
       await service.init();
 

@@ -25,8 +25,12 @@ import { LiveChatLoaderProvider } from 'react-live-chat-loader';
 import { DialogManagerProvider } from 'app/contexts/dialog-manager/ActionDialogManager.context';
 import envService from 'services/env.service';
 import { enforceCanonicalDriveDomain } from 'utils/canonicalDomain.utils';
+import { initializeServiceWorkers } from 'utils/initializeServiceWorkers.utils';
 
 enforceCanonicalDriveDomain();
+
+// Initialize workers immediately
+initializeServiceWorkers();
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));
