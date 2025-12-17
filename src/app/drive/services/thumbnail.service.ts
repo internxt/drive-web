@@ -4,6 +4,7 @@ import {
   thumbnailableExtension,
   thumbnailableImageExtension,
   thumbnailablePdfExtension,
+  thumbnailableVideoExtension,
 } from 'app/drive/types/file-types';
 import { Downloadable } from 'app/network/download';
 import { uploadFile as uploadToBucket } from 'app/network/upload';
@@ -99,6 +100,60 @@ const getPDFThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> 
   return null;
 };
 
+const getVideoThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> => {
+  const seekTo = 1.75;
+
+  return new Promise((resolve, reject) => {
+    const videoPlayer = document.createElement('video');
+    videoPlayer.setAttribute('src', URL.createObjectURL(file));
+    videoPlayer.load();
+    videoPlayer.addEventListener('error', (error) => {
+      reject(`error when loading video file: ${JSON.stringify(error)}`);
+    });
+
+    videoPlayer.addEventListener('loadedmetadata', () => {
+      if (videoPlayer.duration < seekTo) {
+        reject('video is too short.');
+        return;
+      }
+
+      setTimeout(() => {
+        videoPlayer.currentTime = seekTo;
+      }, 200);
+
+      videoPlayer.addEventListener('seeked', () => {
+        console.log('video is now paused at %ss.', seekTo);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = videoPlayer.videoWidth;
+        canvas.height = videoPlayer.videoHeight;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          URL.revokeObjectURL(videoPlayer.src);
+          resolve(null);
+          return;
+        }
+
+        ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(
+          (blob) => {
+            URL.revokeObjectURL(videoPlayer.src);
+            if (blob) {
+              resolve(new File([blob], ''));
+            } else {
+              resolve(null);
+            }
+          },
+          'image/jpeg',
+          0.75,
+        );
+      });
+    });
+  });
+};
+
 export const uploadThumbnail = async (
   userEmail: string,
   thumbnailToUpload: ThumbnailToUpload,
@@ -163,6 +218,11 @@ export const getThumbnailFrom = async (fileToUpload: FileToUpload): Promise<Thum
 
     if (firstPDFpageImage) {
       thumbnailFile = await getImageThumbnail(firstPDFpageImage);
+    }
+  } else if (thumbnailableVideoExtension.includes(fileType)) {
+    const videoFrame = await getVideoThumbnail(fileToUpload.content);
+    if (videoFrame) {
+      thumbnailFile = await getImageThumbnail(videoFrame);
     }
   }
 

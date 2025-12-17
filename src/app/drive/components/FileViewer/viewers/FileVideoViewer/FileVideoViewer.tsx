@@ -136,6 +136,27 @@ const FileVideoViewer = ({
     const handleCanPlay = () => {
       handlersForSpecialItems?.handleUpdateProgress(1);
       setCanPlay(true);
+
+      const video = videoRef.current;
+      if (video && video.readyState >= 2) {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          canvas.toBlob(
+            async (blob) => {
+              if (blob) {
+                await handlersForSpecialItems?.handleUpdateThumbnail(file, blob);
+              }
+            },
+            'image/jpeg',
+            0.75,
+          );
+        }
+      }
     };
 
     video.addEventListener('error', handleError);
@@ -145,7 +166,7 @@ const FileVideoViewer = ({
       video.removeEventListener('error', handleError);
       video.removeEventListener('canplay', handleCanPlay);
     };
-  }, [setIsPreviewAvailable, handlersForSpecialItems]);
+  }, [setIsPreviewAvailable, handlersForSpecialItems, file]);
 
   return (
     <video
