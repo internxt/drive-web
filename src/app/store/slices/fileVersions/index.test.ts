@@ -23,7 +23,7 @@ describe('fileVersions slice', () => {
   });
 
   describe('thunks', () => {
-    it('fetch file versions succeeds', async () => {
+    it('should load file versions successfully', async () => {
       const getFileVersionsSpy = vi.spyOn(fileVersionService, 'getFileVersions').mockResolvedValueOnce(versions);
       const dispatch = vi.fn();
 
@@ -34,7 +34,7 @@ describe('fileVersions slice', () => {
       expect(action.payload).toEqual({ fileUuid, versions });
     });
 
-    it('fetch file versions surfaces the error message', async () => {
+    it('should handle errors when loading file versions', async () => {
       const getFileVersionsSpy = vi
         .spyOn(fileVersionService, 'getFileVersions')
         .mockRejectedValueOnce(new Error('failed to fetch'));
@@ -47,7 +47,7 @@ describe('fileVersions slice', () => {
       expect(action.payload).toBe('failed to fetch');
     });
 
-    it('fetch version limits succeeds', async () => {
+    it('should load version limits successfully', async () => {
       const limits: FileLimitsResponse = {
         versioning: { enabled: true, maxFileSize: 0, retentionDays: 0, maxVersions: 0 },
       };
@@ -61,7 +61,7 @@ describe('fileVersions slice', () => {
       expect(action.payload).toBe(limits);
     });
 
-    it('fetch version limits surfaces the error message', async () => {
+    it('should handle errors when loading version limits', async () => {
       const getLimitsSpy = vi
         .spyOn(fileVersionService, 'getLimits')
         .mockRejectedValueOnce(new Error('limits unavailable'));
@@ -76,7 +76,7 @@ describe('fileVersions slice', () => {
   });
 
   describe('reducers', () => {
-    it('marks loading and error state while fetching versions', () => {
+    it('should update loading and error states when loading versions', () => {
       const pendingState = fileVersionsReducer(undefined, fetchFileVersionsThunk.pending('', fileUuid));
 
       expect(pendingState.isLoadingByFileId[fileUuid]).toBe(true);
@@ -100,7 +100,7 @@ describe('fileVersions slice', () => {
       expect(fulfilledState.versionsByFileId[fileUuid]).toEqual(versions);
     });
 
-    it('clears caches selectively and globally', () => {
+    it('should clear cache for a specific file or all files', () => {
       const populatedState = {
         versionsByFileId: { [fileUuid]: versions },
         isLoadingByFileId: { [fileUuid]: false },
@@ -120,7 +120,7 @@ describe('fileVersions slice', () => {
       expect(afterClearAll.errorsByFileId).toEqual({});
     });
 
-    it('removes deleted versions from the cached list', () => {
+    it('should remove a deleted version from the list', () => {
       const state = {
         versionsByFileId: { [fileUuid]: versions },
         isLoadingByFileId: {},
@@ -137,7 +137,7 @@ describe('fileVersions slice', () => {
       expect(updatedState.versionsByFileId[fileUuid]).toEqual([versions[1]]);
     });
 
-    it('tracks loading state for fetching limits', () => {
+    it('should update loading state when loading limits', () => {
       const pendingState = fileVersionsReducer(undefined, fetchVersionLimitsThunk.pending('', undefined));
       expect(pendingState.isLimitsLoading).toBe(true);
 
