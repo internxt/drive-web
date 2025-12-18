@@ -13,6 +13,7 @@ import { FileToUpload } from './types';
 import { FileEntry } from '@internxt/sdk/dist/workspaces';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { BucketNotFoundError, FileIdRequiredError, RetryableFileError } from './upload.errors';
+import { isFileEmpty } from 'utils/isFileEmpty';
 
 export interface FileUploadOptions {
   isTeam: boolean;
@@ -99,7 +100,7 @@ export async function uploadFile(
 
   const isWorkspacesUpload = workspaceId && workspacesToken;
 
-  if (file.size === 0 && !isWorkspacesUpload) {
+  if (isFileEmpty(file.content) && !isWorkspacesUpload) {
     return createFileEntry({
       bucketId: bucketId,
       file,
