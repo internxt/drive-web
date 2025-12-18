@@ -1,3 +1,4 @@
+import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { DriveItemData } from '../types';
 
 const getItemPlainNameWithExtension = (item: DriveItemData) => {
@@ -10,8 +11,20 @@ const getItemPlainNameWithExtension = (item: DriveItemData) => {
   return plainName + '.' + type;
 };
 
+const mapFileSize = (file: DriveFileData): DriveFileData => {
+  return {
+    ...file,
+    size: Number(file.size),
+  } as DriveFileData;
+};
+
+const mapFileSizeToNumber = (files: DriveFileData[]): DriveFileData[] => {
+  return files.map(mapFileSize);
+};
+
 const transformItemService = {
   getItemPlainNameWithExtension,
+  mapFileSizeToNumber,
 };
 
 export default transformItemService;
