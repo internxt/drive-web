@@ -22,6 +22,7 @@ import { DriveItemData, ThumbnailConfig } from '../types';
 import fetchFileBlob from './download.service/fetchFileBlob';
 import { getEnvironmentConfig } from './network.service';
 import { FileToUpload } from './file.service/types';
+import { ErrorLoadingVideoFileError, VideoTooShortError } from './errors/thumbnail.service.errors';
 
 export interface ThumbnailToUpload {
   fileId: string;
@@ -100,20 +101,20 @@ const getPDFThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> 
   return null;
 };
 
-const getVideoThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> => {
+export const getVideoThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> => {
   const seekTo = 1.75;
 
   return new Promise((resolve, reject) => {
     const videoPlayer = document.createElement('video');
     videoPlayer.setAttribute('src', URL.createObjectURL(file));
     videoPlayer.load();
-    videoPlayer.addEventListener('error', (error) => {
-      reject(`error when loading video file: ${JSON.stringify(error)}`);
+    videoPlayer.addEventListener('error', () => {
+      reject(new ErrorLoadingVideoFileError());
     });
 
     videoPlayer.addEventListener('loadedmetadata', () => {
       if (videoPlayer.duration < seekTo) {
-        reject('video is too short.');
+        reject(new VideoTooShortError());
         return;
       }
 
@@ -122,8 +123,6 @@ const getVideoThumbnail = async (file: File): Promise<ThumbnailGenerated['file']
       }, 200);
 
       videoPlayer.addEventListener('seeked', () => {
-        console.log('video is now paused at %ss.', seekTo);
-
         const canvas = document.createElement('canvas');
         canvas.width = videoPlayer.videoWidth;
         canvas.height = videoPlayer.videoHeight;
