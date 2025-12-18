@@ -17,9 +17,6 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import * as authService from './auth.service';
 
 const mockSecret = '123456789QWERTY';
-const mockMagicIv = '12345678912345678912345678912345';
-const mockMagicSalt =
-  '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
 const mockApi = 'https://mock';
 
 beforeAll(() => {
@@ -137,8 +134,6 @@ beforeEach(() => {
   vi.clearAllMocks();
   vi.resetModules();
   vi.spyOn(envService, 'getVariable').mockImplementation((key) => {
-    if (key === 'magicIv') return mockMagicIv;
-    if (key === 'magicSalt') return mockMagicSalt;
     if (key === 'newApi') return mockApi;
     if (key === 'secret') return mockSecret;
     else return 'no mock implementation';

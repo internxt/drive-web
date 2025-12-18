@@ -881,6 +881,41 @@ describe('downloadManagerService', () => {
         sharingOptions: mockTask.credentials,
       });
     });
+
+    test('When the file size is 0, then it should save an empty blob without downloading', async () => {
+      const emptyBlob = new Blob([]);
+      const { saveAs } = await import('file-saver');
+      const emptyFile: DriveFileData = { ...mockFile, id: 4, name: 'EmptyFile', size: 0 };
+      const emptyFileTask: DownloadTask = {
+        abortController: new AbortController(),
+        items: [emptyFile as DriveItemData],
+        createFilesIterator: createFilesIterator,
+        createFoldersIterator: createFoldersIterator,
+        credentials: {
+          credentials: {
+            user: 'any-user',
+            pass: 'any-pass',
+          },
+          mnemonic: 'any-mnemonic',
+        },
+        options: {
+          areSharedItems: false,
+          downloadName: `${emptyFile.name}.${emptyFile.type}`,
+          showErrors: true,
+        },
+        taskId: 'mock-task-id',
+        failedItems: [],
+      };
+
+      const mockUpdateProgress = vi.fn();
+
+      const downloadFileFromWorkerSpy = vi.spyOn(DownloadManagerService.instance, 'downloadFileFromWorker');
+
+      await DownloadManagerService.instance.downloadFile(emptyFileTask, mockUpdateProgress);
+
+      expect(saveAs).toHaveBeenCalledWith(emptyBlob, `${emptyFile.name}.${emptyFile.type}`);
+      expect(downloadFileFromWorkerSpy).not.toHaveBeenCalled();
+    });
   });
 
   it('should download folder items from task as zip using download service', async () => {
@@ -1170,6 +1205,56 @@ describe('downloadManagerService', () => {
   });
 
   describe('downloadItems', () => {
+    test('When there is an empty file, then it should be added to the zip without downloading', async () => {
+      const emptyFile: DriveFileData = { ...mockFile, id: 3, name: 'EmptyFile', size: 0 };
+      const mockTask: DownloadTask = {
+        abortController: new AbortController(),
+        items: [emptyFile as DriveItemData],
+        createFilesIterator: createFilesIterator,
+        createFoldersIterator: createFoldersIterator,
+        credentials: {
+          credentials: {
+            user: 'any-user',
+            pass: 'any-pass',
+          },
+          mnemonic: 'any-mnemonic',
+        },
+        options: {
+          areSharedItems: false,
+          downloadName: `${emptyFile.name}.${emptyFile.type}`,
+          showErrors: true,
+        },
+        taskId: 'mock-task-id',
+        failedItems: [],
+      };
+
+      const mockUpdateProgress = vi.fn();
+      const mockIncrementItemCount = vi.fn();
+
+      const levelsBlobsCache = new LevelsBlobsCache();
+      const lruCache = new LRUCache<DriveItemBlobData>(levelsBlobsCache, 1);
+      vi.spyOn(lruCache, 'get').mockResolvedValueOnce({
+        id: emptyFile.id,
+        parentId: emptyFile.folderId,
+        source: undefined,
+      });
+      vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(lruCache);
+
+      (checkIfCachedSourceIsOlder as Mock).mockReturnValueOnce(true);
+
+      vi.spyOn(FlatFolderZip.prototype, 'abort').mockImplementation(() => {});
+      const addFileZipSpy = vi.spyOn(FlatFolderZip.prototype, 'addFile').mockImplementation(() => {});
+      const closeZipSpy = vi.spyOn(FlatFolderZip.prototype, 'close').mockResolvedValue();
+
+      await DownloadManagerService.instance.downloadItems(mockTask, mockUpdateProgress, mockIncrementItemCount);
+
+      expect(addFileZipSpy).toHaveBeenCalledWith(`${emptyFile.name}.${emptyFile.type}`, expect.anything());
+      expect(closeZipSpy).toHaveBeenCalled();
+      expect(downloadFile).not.toHaveBeenCalled();
+      expect(binaryStreamToBlob).not.toHaveBeenCalled();
+      expect(updateDatabaseFileSourceData).not.toHaveBeenCalled();
+    });
+
     it('should handle partial failures when calling addFolderToZip and add to failedItems', async () => {
       const mockTask: DownloadTask = {
         abortController: new AbortController(),

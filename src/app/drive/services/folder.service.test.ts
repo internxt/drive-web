@@ -1,0 +1,141 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { DriveFileData } from '../types';
+import { EncryptionVersion, FileStatus } from '@internxt/sdk/dist/drive/storage/types';
+import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
+import { downloadFile } from 'app/network/download';
+import { binaryStreamToBlob } from 'services/stream.service';
+import { updateDatabaseFileSourceData } from './database.service';
+
+vi.mock('app/network/download', () => ({
+  downloadFile: vi.fn(),
+  getDecryptedStream: vi.fn(),
+}));
+
+vi.mock('services/stream.service', () => ({
+  binaryStreamToBlob: vi.fn(),
+  buildProgressStream: vi.fn(),
+  decryptStream: vi.fn(),
+}));
+
+vi.mock('./database.service', async (importOriginal) => {
+  const original = await importOriginal<typeof import('./database.service')>();
+  return {
+    ...original,
+    updateDatabaseFileSourceData: vi.fn(),
+  };
+});
+
+describe('Folder Service', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const mockFile: DriveFileData = {
+    id: 1,
+    uuid: 'file-uuid',
+    bucket: 'bucket',
+    name: 'TestFile',
+    plainName: 'TestFile',
+    plain_name: 'TestFile',
+    type: 'txt',
+    size: 100,
+    fileId: 'fileId1',
+    folder_id: 1,
+    folderId: 1,
+    folderUuid: 'folder-uuid',
+    createdAt: new Date().toISOString(),
+    created_at: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    deleted: false,
+    deletedAt: null,
+    currentThumbnail: null,
+    encrypt_version: EncryptionVersion.Aes03,
+    status: FileStatus.EXISTS,
+    thumbnails: [],
+  };
+
+  const mockEmptyFile: DriveFileData = {
+    ...mockFile,
+    id: 2,
+    name: 'EmptyFile',
+    size: 0,
+  };
+
+  describe('Get File Stream', () => {
+    test('When the file is empty, then it should return an empty stream without downloading', async () => {
+      const { getFileStream } = await import('./folder.service');
+
+      const mockLruCache = {
+        get: vi.fn().mockResolvedValue(undefined),
+      };
+      vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(mockLruCache as any);
+
+      const stream = await getFileStream({
+        file: mockEmptyFile,
+        creds: { user: 'test-user', pass: 'test-pass' },
+        mnemonic: 'test-mnemonic',
+      });
+
+      expect(stream).toBeInstanceOf(ReadableStream);
+      expect(downloadFile).not.toHaveBeenCalled();
+      expect(binaryStreamToBlob).not.toHaveBeenCalled();
+      expect(updateDatabaseFileSourceData).not.toHaveBeenCalled();
+    });
+
+    test('When the file is cached and not older, then it should return the cached stream', async () => {
+      const { getFileStream } = await import('./folder.service');
+
+      const cachedBlob = new Blob(['cached content']);
+      const mockLruCache = {
+        get: vi.fn().mockResolvedValue({
+          source: cachedBlob,
+          updatedAt: new Date().toISOString(),
+        }),
+      };
+      vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(mockLruCache as any);
+
+      const stream = await getFileStream({
+        file: mockFile,
+        creds: { user: 'test-user', pass: 'test-pass' },
+        mnemonic: 'test-mnemonic',
+      });
+
+      expect(stream).toBeInstanceOf(ReadableStream);
+      expect(downloadFile).not.toHaveBeenCalled();
+    });
+
+    test('When the file has content and is not cached, then it should download the file', async () => {
+      const { getFileStream } = await import('./folder.service');
+
+      const mockLruCache = {
+        get: vi.fn().mockResolvedValue(undefined),
+      };
+      vi.spyOn(LRUFilesCacheManager, 'getInstance').mockResolvedValue(mockLruCache as any);
+
+      const mockDownloadedStream = new ReadableStream();
+      vi.mocked(downloadFile).mockResolvedValue(mockDownloadedStream as any);
+
+      const mockBlob = new Blob(['downloaded content']);
+      vi.mocked(binaryStreamToBlob).mockResolvedValue(mockBlob);
+      vi.mocked(updateDatabaseFileSourceData).mockResolvedValue();
+
+      const stream = await getFileStream({
+        file: mockFile,
+        creds: { user: 'test-user', pass: 'test-pass' },
+        mnemonic: 'test-mnemonic',
+      });
+
+      expect(stream).toBeInstanceOf(ReadableStream);
+      expect(downloadFile).toHaveBeenCalledWith({
+        bucketId: mockFile.bucket,
+        fileId: mockFile.fileId,
+        creds: { user: 'test-user', pass: 'test-pass' },
+        mnemonic: 'test-mnemonic',
+        options: {
+          notifyProgress: expect.any(Function),
+          abortController: undefined,
+        },
+      });
+    });
+  });
+});

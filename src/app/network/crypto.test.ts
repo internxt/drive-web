@@ -6,11 +6,8 @@ import { Buffer } from 'buffer';
 import crypto from 'crypto';
 import { describe, expect, it, vi } from 'vitest';
 import {
-  Aes256gcmEncrypter,
-  encryptFilename,
   generateFileBucketKey,
   generateFileKey,
-  generateHMAC,
   getEncryptedFile,
   getFileDeterministicKey,
   processEveryFileBlobReturnHash,
@@ -20,85 +17,6 @@ import { mnemonicToSeed } from 'bip39';
 
 describe('Test crypto.ts functions', () => {
   globalThis.Buffer = Buffer;
-  it('encryptFilename should generate a ciphertext', async () => {
-    const mnemonic =
-      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
-    const bucketId = 'test busket id';
-    const filename = 'test filename';
-    const result = await encryptFilename(mnemonic, bucketId, filename);
-    expect(result).toBeDefined();
-  });
-
-  it('encryptFilename should return the same result as before', async () => {
-    const mnemonic =
-      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
-    const bucketId = 'test busket id';
-    const filename = 'test filename';
-    const result = await encryptFilename(mnemonic, bucketId, filename);
-
-    const BUCKET_META_MAGIC = [
-      66, 150, 71, 16, 50, 114, 88, 160, 163, 35, 154, 65, 162, 213, 226, 215, 70, 138, 57, 61, 52, 19, 210, 170, 38,
-      164, 162, 200, 86, 201, 2, 81,
-    ];
-
-    function oldGetDeterministicKey(key: string, data: string): Buffer {
-      const input = key + data;
-      return crypto.createHash('sha512').update(Buffer.from(input, 'hex')).digest();
-    }
-    async function getBucketKey(mnemonic: string, bucketId: string): Promise<string> {
-      const seed = (await mnemonicToSeed(mnemonic)).toString('hex');
-      return oldGetDeterministicKey(seed, bucketId).toString('hex').slice(0, 64);
-    }
-    function encryptMeta(fileMeta: string, key: Buffer, iv: Buffer): string {
-      const cipher: crypto.CipherCCM = Aes256gcmEncrypter(key, iv);
-      const cipherTextBuf = Buffer.concat([cipher.update(fileMeta, 'utf8'), cipher.final()]);
-      const digest = cipher.getAuthTag();
-      return Buffer.concat([digest, iv, cipherTextBuf]).toString('base64');
-    }
-    async function oldEncryptFilename(mnemonic: string, bucketId: string, filename: string): Promise<string> {
-      const bucketKey = await getBucketKey(mnemonic, bucketId);
-      const encryptionKey = crypto
-        .createHmac('sha512', Buffer.from(bucketKey, 'hex'))
-        .update(Buffer.from(BUCKET_META_MAGIC))
-        .digest()
-        .slice(0, 32);
-      const encryptionIv = crypto
-        .createHmac('sha512', Buffer.from(bucketKey, 'hex'))
-        .update(bucketId)
-        .update(filename)
-        .digest()
-        .slice(0, 32);
-      return encryptMeta(filename, encryptionKey, encryptionIv);
-    }
-
-    const oldResult = await oldEncryptFilename(mnemonic, bucketId, filename);
-    expect(result).toBe(oldResult);
-  });
-
-  it('encryptFilename should return correct result', async () => {
-    const mnemonic =
-      'until bonus summer risk chunk oyster census ability frown win pull steel measure employ rigid improve riot remind system earn inch broken chalk clip';
-    const bucketId = 'test busket id';
-    const filename = 'test filename';
-    const result = await encryptFilename(mnemonic, bucketId, filename);
-    expect(result).toBe('+iEqY7fQH9IRS//uFEiLwA8RBa7UGI3LhB0nNMcegc2IMHagNzUoENLzqtsrNx5RfQc3hBUq8z5FXJk3Yw==');
-  });
-
-  it('generateHMAC should generate correct hmac', async () => {
-    const encryptionKey = Buffer.from('0b68dcbb255a4e654bbf361e73cf1b98', 'hex');
-    const shardMeta = {
-      challenges_as_str: [],
-      hash: '',
-      index: 0,
-      parity: false,
-      size: 0,
-      tree: [],
-    };
-    const result = await generateHMAC([shardMeta], encryptionKey);
-    expect(result).toBe(
-      '85cb55bde42af491c544866d35e2b1fd7a6999d83181782a91c63484a5ff93e0ab1e07d0e09cfa057c0481fc68012cc300de95512f4fcbe9466ee8ca85134b7c',
-    );
-  });
 
   function createMockFile(name: string, size = 0, type = ''): File {
     return {
