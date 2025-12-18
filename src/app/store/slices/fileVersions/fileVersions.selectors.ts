@@ -5,8 +5,8 @@ const fileVersionsSelectors = {
   getLimits(state: RootState): FileLimitsResponse | null {
     return state.fileVersions.limits;
   },
-  getVersionsByFileId(state: RootState, fileId: NonNullable<FileVersion['fileId']>): FileVersion[] | undefined {
-    return state.fileVersions.versionsByFileId[fileId];
+  getVersionsByFileId(state: RootState, fileId: NonNullable<FileVersion['fileId']>): FileVersion[] {
+    return state.fileVersions.versionsByFileId[fileId] ?? [];
   },
   isLoadingByFileId(state: RootState, fileId: NonNullable<FileVersion['fileId']>): boolean {
     return state.fileVersions.isLoadingByFileId[fileId] ?? false;
