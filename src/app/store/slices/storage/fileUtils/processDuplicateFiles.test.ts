@@ -15,7 +15,9 @@ describe('Process duplicated files', () => {
   });
 
   test('When processing a single file without duplicates check, then it should add the file with original name', async () => {
-    const file = new File(['content'], 'document.pdf', { type: 'application/pdf' });
+    const fileName = 'document';
+    const fileType = 'pff';
+    const file = new File(['content'], `${fileName}.${fileType}`, { type: 'application/pdf' });
     const parentFolderId = 'folder-123';
 
     const result = await processDuplicateFiles({
@@ -26,11 +28,14 @@ describe('Process duplicated files', () => {
     });
 
     expect(result.newFilesToUpload).toHaveLength(1);
-    expect(result.newFilesToUpload[0].name).toBe('document');
-    expect(result.newFilesToUpload[0].size).toBe(file.size);
-    expect(result.newFilesToUpload[0].type).toBe('pdf');
-    expect(result.newFilesToUpload[0].parentFolderId).toBe(parentFolderId);
-    expect(result.newFilesToUpload[0].content.name).toBe('document');
+    expect(result.newFilesToUpload[0]).toStrictEqual({
+      name: fileName,
+      size: file.size,
+      type: fileType,
+      parentFolderId,
+      content: file,
+    });
+
     expect(mockGetUniqueFilename).not.toHaveBeenCalled();
   });
 
@@ -51,7 +56,6 @@ describe('Process duplicated files', () => {
 
     expect(result.newFilesToUpload).toHaveLength(1);
     expect(result.newFilesToUpload[0].name).toBe('report (1)');
-    expect(result.newFilesToUpload[0].content.name).toBe('report (1)');
     expect(mockGetUniqueFilename).toHaveBeenCalledWith('report', 'txt', duplicatedFiles, parentFolderId);
   });
 
@@ -74,7 +78,9 @@ describe('Process duplicated files', () => {
   });
 
   test('When there are no duplicated files and the check is disabled, then it should not get a unique filename', async () => {
-    const file = new File(['content'], 'test.js', { type: 'application/javascript' });
+    const fileName = 'test';
+    const fileType = 'js';
+    const file = new File(['content'], `${fileName}.${fileType}`, { type: 'application/javascript' });
     const parentFolderId = 'folder-333';
 
     const result = await processDuplicateFiles({
@@ -86,8 +92,8 @@ describe('Process duplicated files', () => {
     });
 
     expect(result.newFilesToUpload).toHaveLength(1);
-    expect(result.newFilesToUpload[0].name).toBe('test');
-    expect(result.newFilesToUpload[0].type).toBe('js');
+    expect(result.newFilesToUpload[0].name).toBe(fileName);
+    expect(result.newFilesToUpload[0].type).toBe(fileType);
     expect(mockGetUniqueFilename).not.toHaveBeenCalled();
   });
 

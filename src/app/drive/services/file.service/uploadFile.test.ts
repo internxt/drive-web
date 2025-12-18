@@ -38,6 +38,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import workspacesService from 'services/workspace.service';
 import { Network, getEnvironmentConfig } from 'app/drive/services/network.service';
 import { BucketNotFoundError, FileIdRequiredError } from './upload.errors';
+import { DriveFileData } from 'app/drive/types';
 
 const mockSdkFactory = vi.mocked(SdkFactory);
 const mockNetwork = vi.mocked(Network);
@@ -61,10 +62,8 @@ describe('Create File Entry', () => {
     const workspaceId = 'workspace-456';
     const resourcesToken = 'resources-token';
 
-    const expectedResponse = { id: 'created-file-id', name: file.name };
-    const workspaceServiceSpy = vi
-      .spyOn(workspacesService, 'createFileEntry')
-      .mockResolvedValue(expectedResponse as never);
+    const expectedResponse = { id: 'created-file-id', name: file.name } as unknown as DriveFileData;
+    const workspaceServiceSpy = vi.spyOn(workspacesService, 'createFileEntry').mockResolvedValue(expectedResponse);
 
     const result = await createFileEntry({
       bucketId,
@@ -130,7 +129,7 @@ describe('Create File Entry', () => {
       createNewStorageClient: vi.fn(() => ({
         createFileEntryByUuid: mockCreateFileEntryByUuid,
       })),
-    } as never);
+    } as any);
 
     const result = await createFileEntry({
       bucketId,
@@ -176,7 +175,7 @@ describe('Uploading a file', () => {
       bridgePass: 'pass',
       encryptionKey: 'key',
       bucketId,
-    } as never);
+    } as any);
 
     const expectedResponse = { id: 'empty-file-id', name: file.name, uuid: 'uuid-123', thumbnails: [] };
     const mockCreateFileEntryByUuid = vi.fn().mockResolvedValue(expectedResponse);
@@ -184,7 +183,7 @@ describe('Uploading a file', () => {
       createNewStorageClient: vi.fn(() => ({
         createFileEntryByUuid: mockCreateFileEntryByUuid,
       })),
-    } as never);
+    } as any);
 
     const result = await uploadFile(
       'user@test.com',
@@ -212,7 +211,7 @@ describe('Uploading a file', () => {
       bridgePass: 'pass',
       encryptionKey: 'key',
       bucketId: undefined,
-    } as never);
+    } as any);
 
     await expect(
       uploadFile(
