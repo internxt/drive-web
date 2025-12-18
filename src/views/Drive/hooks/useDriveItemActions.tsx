@@ -11,6 +11,7 @@ import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { DownloadManager } from 'app/network/DownloadManager';
+import { useVersionHistoryMenuConfig } from '../components/VersionHistory/hooks';
 
 export interface DriveItemActions {
   nameInputRef: React.RefObject<HTMLInputElement>;
@@ -38,6 +39,7 @@ const useDriveItemActions = (item): DriveItemActions => {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const workspaceCredentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const isWorkspace = !!selectedWorkspace;
+  const versionHistoryConfig = useVersionHistoryMenuConfig(item);
 
   const onRenameItemButtonClicked = () => {
     dispatch(storageActions.setItemToRename(item as DriveItemData));
@@ -102,6 +104,10 @@ const useDriveItemActions = (item): DriveItemActions => {
   };
 
   const onViewVersionHistoryButtonClicked = () => {
+    if (versionHistoryConfig.locked) {
+      versionHistoryConfig.onLockedClick?.();
+      return;
+    }
     dispatch(uiActions.setVersionHistoryItem(item as DriveItemData));
     dispatch(uiActions.setIsVersionHistorySidebarOpen(true));
   };
