@@ -38,12 +38,12 @@ const Sidebar = () => {
   const { translate } = useTranslationContext();
 
   const limits = useAppSelector(fileVersionsSelectors.getLimits);
-  const versions =
-    useAppSelector((state: RootState) => (item ? fileVersionsSelectors.getVersionsByFileId(state, item.uuid) : [])) ||
-    [];
-  const isLoading =
-    useAppSelector((state: RootState) => (item ? fileVersionsSelectors.isLoadingByFileId(state, item.uuid) : false)) ||
-    false;
+  const versions = useAppSelector((state: RootState) =>
+    item ? fileVersionsSelectors.getVersionsByFileId(state, item.uuid) : [],
+  );
+  const isLoading = useAppSelector((state: RootState) =>
+    item ? fileVersionsSelectors.isLoadingByFileId(state, item.uuid) : false,
+  );
   const [selectedAutosaveVersions, setSelectedAutosaveVersions] = useState<Set<string>>(new Set());
   const [isBatchDeleteMode, setIsBatchDeleteMode] = useState(false);
   const [currentVersion, setCurrentVersion] = useState<VersionInfo>({
