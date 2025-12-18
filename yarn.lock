@@ -1908,8 +1908,8 @@
 
 "@internxt/sdk@=1.11.24":
   version "1.11.24"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.11.24/69cc187e532bd225d77d4cef1de6ce9afa0d1063#69cc187e532bd225d77d4cef1de6ce9afa0d1063"
-  integrity sha512-2EzWSHRd9r2tjHyEHatm9LjvEeT+d+NwXvmOd4MKOgXSjtK2Je8tiHB+5QlrzWu8s6BybEfWBN02HRz5EMhn9g==
+  resolved "https://registry.yarnpkg.com/@internxt/sdk/-/sdk-1.11.24.tgz#c0d31f99329f7553a88533bc59ddf8c155cf550b"
+  integrity sha512-GppLvUA6MhyiL/DIYDRhY/YdddrCZYz/d5/lbTHYwTbqrcVZEyAu8YbCEr0LG7GqhRxjnh4m55VAo//VC0dZyg==
   dependencies:
     axios "1.13.2"
     uuid "11.1.0"
