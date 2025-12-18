@@ -12,6 +12,7 @@ import { OwnerUserAuthenticationData } from 'app/network/types';
 import { FileToUpload } from './types';
 import { FileEntry } from '@internxt/sdk/dist/workspaces';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
+import { BucketNotFoundError, FileIdRequiredError, RetryableFileError } from './upload.errors';
 
 export interface FileUploadOptions {
   isTeam: boolean;
@@ -21,17 +22,10 @@ export interface FileUploadOptions {
   isUploadedFromFolder?: boolean;
 }
 
-class RetryableFileError extends Error {
-  constructor(public file: FileToUpload) {
-    super('Retryable file');
-    this.name = 'RetryableFileError';
-  }
-}
-
 interface UploadFileProps {
-  isWorkspaceUpload: boolean;
   file: FileToUpload;
   fileId?: string;
+  isWorkspaceUpload?: boolean;
   bucketId: string;
   workspaceId?: string;
   resourcesToken?: string;
@@ -51,7 +45,7 @@ export const createFileEntry = async ({
 
   if (isWorkspaceUpload && workspaceId) {
     if (!fileId) {
-      throw new Error('File id is required for workspace upload');
+      throw new FileIdRequiredError();
     }
 
     const workspaceFileEntry: FileEntry = {
@@ -109,7 +103,6 @@ export async function uploadFile(
     return createFileEntry({
       bucketId: bucketId,
       file,
-      isWorkspaceUpload: !!isWorkspacesUpload,
       resourcesToken: resourcesToken ?? workspacesToken,
       workspaceId: workspaceId,
       ownerToken: workspacesToken,
@@ -121,7 +114,7 @@ export async function uploadFile(
     localStorageService.clear();
     navigationService.push(AppView.Login);
 
-    throw new Error('Bucket not found!');
+    throw new BucketNotFoundError();
   }
 
   const [promise, abort] = new Network(bridgeUser, bridgePass, encryptionKey).uploadFile(
