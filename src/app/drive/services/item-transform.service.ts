@@ -14,7 +14,7 @@ const getItemPlainNameWithExtension = (item: DriveItemData) => {
 const mapFileSize = (file: DriveFileData): DriveFileData => {
   return {
     ...file,
-    size: typeof file.size === 'string' ? Number(file.size) : (file.size as number),
+    size: Number(file.size),
   } as DriveFileData;
 };
 

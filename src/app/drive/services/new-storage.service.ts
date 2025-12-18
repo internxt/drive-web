@@ -6,7 +6,6 @@ import {
   FolderAncestor,
   FolderMeta,
   FolderAncestorWorkspace,
-  DriveFileData,
 } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from 'app/core/factory/sdk';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
@@ -78,7 +77,7 @@ export function getFolderContentByUuid({
 
   const transformedPromise = responsePromise.then((response) => ({
     ...response,
-    files: transformItemService.mapFileSizeToNumber(response.files as DriveFileData[]),
+    files: transformItemService.mapFileSizeToNumber(response.files),
   }));
 
   return [transformedPromise, canceler];
