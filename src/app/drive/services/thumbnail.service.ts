@@ -104,6 +104,51 @@ const getPDFThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> 
 export const getVideoThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> => {
   const seekTo = 1.75;
 
+  const onSeekEvent = (videoPlayer: HTMLVideoElement, resolve: (file: File | null) => void) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = videoPlayer.videoWidth;
+    canvas.height = videoPlayer.videoHeight;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      URL.revokeObjectURL(videoPlayer.src);
+      resolve(null);
+      return;
+    }
+
+    ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob(
+      (blob) => {
+        URL.revokeObjectURL(videoPlayer.src);
+        if (blob) {
+          resolve(new File([blob], ''));
+        } else {
+          resolve(null);
+        }
+      },
+      'image/jpeg',
+      0.75,
+    );
+  };
+
+  const onLoadMetadata = (
+    videoPlayer: HTMLVideoElement,
+    resolve: (file: File | null) => void,
+    reject: (error: Error) => void,
+  ) => {
+    if (videoPlayer.duration < seekTo) {
+      reject(new VideoTooShortError());
+      return;
+    }
+
+    setTimeout(() => {
+      videoPlayer.currentTime = seekTo;
+    }, 200);
+
+    videoPlayer.addEventListener('seeked', () => onSeekEvent(videoPlayer, resolve));
+  };
+
   return new Promise((resolve, reject) => {
     const videoPlayer = document.createElement('video');
     videoPlayer.setAttribute('src', URL.createObjectURL(file));
@@ -112,44 +157,7 @@ export const getVideoThumbnail = async (file: File): Promise<ThumbnailGenerated[
       reject(new ErrorLoadingVideoFileError());
     });
 
-    videoPlayer.addEventListener('loadedmetadata', () => {
-      if (videoPlayer.duration < seekTo) {
-        reject(new VideoTooShortError());
-        return;
-      }
-
-      setTimeout(() => {
-        videoPlayer.currentTime = seekTo;
-      }, 200);
-
-      videoPlayer.addEventListener('seeked', () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = videoPlayer.videoWidth;
-        canvas.height = videoPlayer.videoHeight;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          URL.revokeObjectURL(videoPlayer.src);
-          resolve(null);
-          return;
-        }
-
-        ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
-
-        canvas.toBlob(
-          (blob) => {
-            URL.revokeObjectURL(videoPlayer.src);
-            if (blob) {
-              resolve(new File([blob], ''));
-            } else {
-              resolve(null);
-            }
-          },
-          'image/jpeg',
-          0.75,
-        );
-      });
-    });
+    videoPlayer.addEventListener('loadedmetadata', () => onLoadMetadata(videoPlayer, resolve, reject));
   });
 };
 
