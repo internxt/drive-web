@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { localStorageService } from 'services';
 import { VideoStreamingSession } from 'app/drive/services/video-streaming.service/VideoStreamingSession';
 import { FormatFileViewerProps } from '../../FileViewer';
+import { generateThumbnailBlob } from 'app/drive/services/thumbnail.service';
 
 const PROGRESS_INCREMENT = 0.2;
 const PROGRESS_INTERVAL_MS = 500;
 const MAX_SIMULATED_PROGRESS = 0.95;
+const CURRENT_DATA_VALUE_TO_FETCH_FRAME = 2;
 
 const FileVideoViewer = ({
   file,
@@ -138,24 +140,11 @@ const FileVideoViewer = ({
       setCanPlay(true);
 
       const video = videoRef.current;
-      if (video && video.readyState >= 2) {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          canvas.toBlob(
-            async (blob) => {
-              if (blob) {
-                await handlersForSpecialItems?.handleUpdateThumbnail(file, blob);
-              }
-            },
-            'image/jpeg',
-            0.75,
-          );
-        }
+      if (video && video.readyState >= CURRENT_DATA_VALUE_TO_FETCH_FRAME) {
+        generateThumbnailBlob(video, async (blob) => {
+          if (!blob) return;
+          await handlersForSpecialItems?.handleUpdateThumbnail(file, blob);
+        });
       }
     };
 

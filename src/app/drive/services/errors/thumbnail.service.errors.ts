@@ -4,10 +4,3 @@ export class ErrorLoadingVideoFileError extends Error {
     Object.setPrototypeOf(this, ErrorLoadingVideoFileError.prototype);
   }
 }
-
-export class VideoTooShortError extends Error {
-  constructor() {
-    super('Video is too short');
-    Object.setPrototypeOf(this, VideoTooShortError.prototype);
-  }
-}

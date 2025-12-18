@@ -22,7 +22,7 @@ import { DriveItemData, ThumbnailConfig } from '../types';
 import fetchFileBlob from './download.service/fetchFileBlob';
 import { getEnvironmentConfig } from './network.service';
 import { FileToUpload } from './file.service/types';
-import { ErrorLoadingVideoFileError, VideoTooShortError } from './errors/thumbnail.service.errors';
+import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
 
 export interface ThumbnailToUpload {
   fileId: string;
@@ -39,6 +39,8 @@ interface ThumbnailGenerated {
   max_height: number;
   type: string;
 }
+
+const VIDEO_FRAME_QUALITY = 0.75;
 
 const isValidImage = (file: File): Promise<boolean> => {
   return new Promise((resolve) => {
@@ -101,35 +103,28 @@ const getPDFThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> 
   return null;
 };
 
-export const getVideoThumbnail = async (file: File): Promise<ThumbnailGenerated['file']> => {
-  const seekTo = 1.75;
+export const generateThumbnailBlob = (video: HTMLVideoElement, onBlob: (blob: Blob | null) => void) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    onBlob(null);
+    return;
+  }
+
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  canvas.toBlob((blob) => onBlob(blob), 'image/jpeg', VIDEO_FRAME_QUALITY);
+};
+
+export const getVideoFrame = async (file: File): Promise<ThumbnailGenerated['file']> => {
+  let seekTo = 5;
 
   const onSeekEvent = (videoPlayer: HTMLVideoElement, resolve: (file: File | null) => void) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = videoPlayer.videoWidth;
-    canvas.height = videoPlayer.videoHeight;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      URL.revokeObjectURL(videoPlayer.src);
-      resolve(null);
-      return;
-    }
-
-    ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
-
-    canvas.toBlob(
-      (blob) => {
-        URL.revokeObjectURL(videoPlayer.src);
-        if (blob) {
-          resolve(new File([blob], ''));
-        } else {
-          resolve(null);
-        }
-      },
-      'image/jpeg',
-      0.75,
-    );
+    generateThumbnailBlob(videoPlayer, (blob) => {
+      resolve(blob ? new File([blob], '') : null);
+    });
   };
 
   const onLoadMetadata = (
@@ -138,13 +133,10 @@ export const getVideoThumbnail = async (file: File): Promise<ThumbnailGenerated[
     reject: (error: Error) => void,
   ) => {
     if (videoPlayer.duration < seekTo) {
-      reject(new VideoTooShortError());
-      return;
+      seekTo = videoPlayer.duration / 2;
     }
 
-    setTimeout(() => {
-      videoPlayer.currentTime = seekTo;
-    }, 200);
+    videoPlayer.currentTime = seekTo;
 
     videoPlayer.addEventListener('seeked', () => onSeekEvent(videoPlayer, resolve));
   };
@@ -227,7 +219,7 @@ export const getThumbnailFrom = async (fileToUpload: FileToUpload): Promise<Thum
       thumbnailFile = await getImageThumbnail(firstPDFpageImage);
     }
   } else if (thumbnailableVideoExtension.includes(fileType)) {
-    const videoFrame = await getVideoThumbnail(fileToUpload.content);
+    const videoFrame = await getVideoFrame(fileToUpload.content);
     if (videoFrame) {
       thumbnailFile = await getImageThumbnail(videoFrame);
     }

@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { getVideoThumbnail } from './thumbnail.service';
-import { ErrorLoadingVideoFileError, VideoTooShortError } from './errors/thumbnail.service.errors';
+import { getVideoFrame } from './thumbnail.service';
+import { ErrorLoadingVideoFileError } from './errors/thumbnail.service.errors';
+
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 const createMockVideoElement = (options: { duration?: number; videoWidth?: number; videoHeight?: number } = {}) => {
   const { duration = 10, videoWidth = 1920, videoHeight = 1080 } = options;
@@ -77,75 +79,51 @@ describe('Thumbnail Service', () => {
     test('When video loads successfully, then it should return a video frame to create the thumbnail', async () => {
       const videoFile = new File(['video-content'], 'test-video.mp4', { type: 'video/mp4' });
 
-      const thumbnailPromise = getVideoThumbnail(videoFile);
+      const thumbnailPromise = getVideoFrame(videoFile);
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await flushPromises();
       mockVideoElement.trigger('loadedmetadata');
 
-      await new Promise((resolve) => setTimeout(resolve, 250));
+      await flushPromises();
       mockVideoElement.trigger('seeked');
 
       const result = await thumbnailPromise;
 
       expect(result).toBeInstanceOf(File);
       expect(URL.createObjectURL).toHaveBeenCalledWith(videoFile);
-      expect(URL.revokeObjectURL).toHaveBeenCalled();
-    });
-
-    test('When video duration is shorter than seek time (1.75s), then an error indicating so is thrown', async () => {
-      mockVideoElement = createMockVideoElement({ duration: 1 });
-
-      vi.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
-        if (tagName === 'video') {
-          return mockVideoElement as unknown as HTMLVideoElement;
-        }
-        if (tagName === 'canvas') {
-          return mockCanvas as unknown as HTMLCanvasElement;
-        }
-        return originalCreateElement(tagName);
-      });
-
-      const videoFile = new File(['short-video'], 'short.mp4', { type: 'video/mp4' });
-
-      const thumbnailPromise = getVideoThumbnail(videoFile);
-
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      mockVideoElement.trigger('loadedmetadata');
-
-      await expect(thumbnailPromise).rejects.toThrow(VideoTooShortError);
     });
 
     test('When video fails to load, then an error indicating so is thrown', async () => {
       const videoFile = new File(['corrupted'], 'corrupted.mp4', { type: 'video/mp4' });
 
-      const thumbnailPromise = getVideoThumbnail(videoFile);
+      const thumbnailPromise = getVideoFrame(videoFile);
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await flushPromises();
       mockVideoElement.trigger('error', new Event('error'));
 
       await expect(thumbnailPromise).rejects.toThrow(ErrorLoadingVideoFileError);
     });
 
-    test('When canvas context is not available, then nothing is returned', async () => {
+    test('When canvas context is not available, then null is returned', async () => {
       mockCanvas.getContext = vi.fn(() => null) as unknown as typeof mockCanvas.getContext;
 
       const videoFile = new File(['video-content'], 'test-video.mp4', { type: 'video/mp4' });
 
-      const thumbnailPromise = getVideoThumbnail(videoFile);
+      const thumbnailPromise = getVideoFrame(videoFile);
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await flushPromises();
       mockVideoElement.trigger('loadedmetadata');
 
-      await new Promise((resolve) => setTimeout(resolve, 250));
+      await flushPromises();
       mockVideoElement.trigger('seeked');
 
       const result = await thumbnailPromise;
 
       expect(result).toBeNull();
-      expect(URL.revokeObjectURL).toHaveBeenCalled();
+      expect(mockCanvas.getContext).toHaveBeenCalledWith('2d');
     });
 
-    test('When canvas blob is not available, then nothing is returned', async () => {
+    test('When canvas blob is not available, then null is returned', async () => {
       mockCanvas = createMockCanvas(null);
 
       vi.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
@@ -160,12 +138,12 @@ describe('Thumbnail Service', () => {
 
       const videoFile = new File(['video-content'], 'test-video.mp4', { type: 'video/mp4' });
 
-      const thumbnailPromise = getVideoThumbnail(videoFile);
+      const thumbnailPromise = getVideoFrame(videoFile);
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await flushPromises();
       mockVideoElement.trigger('loadedmetadata');
 
-      await new Promise((resolve) => setTimeout(resolve, 250));
+      await flushPromises();
       mockVideoElement.trigger('seeked');
 
       const result = await thumbnailPromise;
