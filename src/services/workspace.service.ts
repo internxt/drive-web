@@ -33,6 +33,7 @@ import {
 } from '@internxt/sdk/dist/workspaces';
 import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'services/error.service';
+import transformItemService from 'app/drive/services/item-transform.service';
 
 export function getWorkspaces(): Promise<WorkspacesResponse> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
@@ -346,7 +347,9 @@ export function getWorkspaceFolders(
   limit: number,
 ): [Promise<FetchPaginatedFolderContentResponse>, RequestCanceler] {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.getFolders(workspaceId, folderId, offset, limit, 'plainName', 'ASC');
+  const folders = workspaceClient.getFolders(workspaceId, folderId, offset, limit, 'plainName', 'ASC');
+
+  return folders;
 }
 export function getWorkspaceFiles(
   workspaceId: string,
@@ -355,7 +358,24 @@ export function getWorkspaceFiles(
   limit: number,
 ): [Promise<FetchPaginatedFolderContentResponse>, RequestCanceler] {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.getFiles(workspaceId, folderId, offset, limit, 'plainName', 'ASC');
+  const [responsePromise, requestCanceller] = workspaceClient.getFiles(
+    workspaceId,
+    folderId,
+    offset,
+    limit,
+    'plainName',
+    'ASC',
+  );
+
+  const transformedPromise = responsePromise.then((response) => ({
+    ...response,
+    result: response.result.map((folder) => ({
+      ...folder,
+      files: transformItemService.mapFileSizeToNumber(folder.files),
+    })),
+  }));
+
+  return [transformedPromise, requestCanceller];
 }
 
 export function deactivateMember(workspaceId: string, memberId: string): Promise<void> {

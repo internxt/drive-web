@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { WorkspaceLogType } from '@internxt/sdk/dist/workspaces';
 import errorService from './error.service';
-import workspacesService, * as workspaceService from './workspace.service';
+import * as workspaceService from './workspace.service';
 
 const mockIds = {
   workspaceId: 'workspace-123',
@@ -345,16 +345,13 @@ describe('workspace service', () => {
       expect(canceler).toBe(mockCanceler);
     });
 
-    it.each([
-      { type: 'folders', fn: 'getWorkspaceFolders', clientFn: 'getFolders' },
-      { type: 'files', fn: 'getWorkspaceFiles', clientFn: 'getFiles' },
-    ])('should retrieve workspace $type', ({ fn, clientFn }) => {
-      const mockPromise = Promise.resolve({ items: [] });
+    it('should retrieve workspace folders', () => {
+      const mockPromise = Promise.resolve({ result: [] });
       const mockCanceler = vi.fn();
-      mockWorkspacesClient[clientFn].mockReturnValue([mockPromise, mockCanceler]);
-      const [promise] = workspaceService[fn](mockIds.workspaceId, 'folder-id', 0, 50);
+      mockWorkspacesClient.getFolders.mockReturnValue([mockPromise, mockCanceler]);
+      const [promise] = workspaceService.getWorkspaceFolders(mockIds.workspaceId, 'folder-id', 0, 50);
       expect(promise).toBe(mockPromise);
-      expect(mockWorkspacesClient[clientFn]).toHaveBeenCalledWith(
+      expect(mockWorkspacesClient.getFolders).toHaveBeenCalledWith(
         mockIds.workspaceId,
         'folder-id',
         0,
@@ -362,6 +359,37 @@ describe('workspace service', () => {
         'plainName',
         'ASC',
       );
+    });
+
+    it('should retrieve workspace files and transform file sizes', async () => {
+      const mockFiles = [
+        {
+          id: 1,
+          files: [
+            {
+              size: '1024',
+            },
+          ],
+        },
+      ];
+      const mockPromise = Promise.resolve({ result: mockFiles });
+      const mockCanceler = vi.fn();
+      mockWorkspacesClient.getFiles.mockReturnValue([mockPromise, mockCanceler]);
+
+      const [promise, canceler] = workspaceService.getWorkspaceFiles(mockIds.workspaceId, 'folder-id', 0, 50);
+      const result = await promise;
+
+      expect(canceler).toBe(mockCanceler);
+      expect(mockWorkspacesClient.getFiles).toHaveBeenCalledWith(
+        mockIds.workspaceId,
+        'folder-id',
+        0,
+        50,
+        'plainName',
+        'ASC',
+      );
+      expect(result.result[0].files).toBeDefined();
+      expect(result.result[0].files[0].size).toBeTypeOf('number');
     });
   });
 

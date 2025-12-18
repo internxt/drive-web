@@ -1,6 +1,6 @@
 import tasksService from 'app/tasks/services/tasks.service';
 import { DownloadFilesTask, DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
-import { DriveFolderData, DriveItemData } from '../types';
+import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 import { saveAs } from 'file-saver';
 import { DriveItemBlobData } from 'app/database/services/database.service';
 import { getDatabaseFileSourceData, updateDatabaseFileSourceData } from './database.service';
@@ -30,7 +30,6 @@ import {
 } from '../types/download-types';
 import { downloadWorkerHandler } from './worker.service/downloadWorkerHandler';
 import { isFileEmpty } from 'utils/isFileEmpty';
-import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 export type DownloadCredentials = {
   credentials: NetworkCredentials;
