@@ -7,7 +7,7 @@ import { generateThumbnailBlob } from 'app/drive/services/thumbnail.service';
 const PROGRESS_INCREMENT = 0.2;
 const PROGRESS_INTERVAL_MS = 500;
 const MAX_SIMULATED_PROGRESS = 0.95;
-const CURRENT_DATA_VALUE_TO_FETCH_FRAME = 2;
+const VIDEO_READY_STATE_FOR_FRAME = 2;
 
 const FileVideoViewer = ({
   file,
@@ -140,7 +140,7 @@ const FileVideoViewer = ({
       setCanPlay(true);
 
       const video = videoRef.current;
-      if (video && video.readyState >= CURRENT_DATA_VALUE_TO_FETCH_FRAME) {
+      if (video && video.readyState >= VIDEO_READY_STATE_FOR_FRAME) {
         generateThumbnailBlob(video, async (blob) => {
           if (!blob) return;
           await handlersForSpecialItems?.handleUpdateThumbnail(file, blob);
