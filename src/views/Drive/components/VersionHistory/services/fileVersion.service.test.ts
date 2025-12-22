@@ -17,7 +17,7 @@ vi.mock('app/network/DownloadManager', () => ({
   },
 }));
 
-describe('fileVersion.service', () => {
+describe('File version actions', () => {
   const fileUuid = 'file-uuid';
   const versionId = 'version-id';
   let storageClientMock: {
@@ -42,7 +42,7 @@ describe('fileVersion.service', () => {
     } as any);
   });
 
-  it('returns the versions list from the SDK', async () => {
+  it('when file versions are requested, then the available list is returned', async () => {
     const versions = [{ id: 'v1' } as FileVersion];
     storageClientMock.getFileVersions.mockResolvedValueOnce(versions);
 
@@ -52,7 +52,7 @@ describe('fileVersion.service', () => {
     expect(result).toBe(versions);
   });
 
-  it('asks the SDK to delete a version', async () => {
+  it('when a version is deleted, then the delete request is sent', async () => {
     storageClientMock.deleteFileVersion.mockResolvedValueOnce(undefined);
 
     await fileVersionService.deleteVersion(fileUuid, versionId);
@@ -60,7 +60,7 @@ describe('fileVersion.service', () => {
     expect(storageClientMock.deleteFileVersion).toHaveBeenCalledWith(fileUuid, versionId);
   });
 
-  it('restores a version and returns the SDK reply', async () => {
+  it('when a version is restored, then the restore response is returned', async () => {
     const restoreResponse = { restored: true } as unknown as RestoreFileVersionResponse;
     storageClientMock.restoreFileVersion.mockResolvedValueOnce(restoreResponse);
 
@@ -70,7 +70,7 @@ describe('fileVersion.service', () => {
     expect(result).toBe(restoreResponse);
   });
 
-  it('reads version limits', async () => {
+  it('when versioning limits are checked, then the limits are returned', async () => {
     const limits = { versioning: { enabled: true, maxFileSize: 0, retentionDays: 0, maxVersions: 0 } } as any;
     storageClientMock.getFileVersionLimits.mockResolvedValueOnce(limits);
 
@@ -80,7 +80,7 @@ describe('fileVersion.service', () => {
     expect(result).toBe(limits);
   });
 
-  it('sends a download request with the version file data', async () => {
+  it('when a previous version is downloaded, then the request uses the version data', async () => {
     const version = { networkFileId: 'network-file-id', size: '42' } as FileVersion;
     const fileItem = { fileId: 'file-id', size: 10, name: 'original-name' } as any;
     const selectedWorkspace = { workspace: { id: 'workspace-id' }, workspaceUser: {} } as unknown as WorkspaceData;
