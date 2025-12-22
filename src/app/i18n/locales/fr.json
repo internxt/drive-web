@@ -809,6 +809,15 @@
         "location": "Emplacement"
       }
     },
+    "versionHistory": {
+      "title": "Historique des versions",
+      "current": "Actuelle",
+      "expiresInDays": "Expire dans {{days}} jours",
+      "autosaveVersions": "{{count}}/{{total}} versions de sauvegarde automatique",
+      "restoreVersion": "Restaurer la version",
+      "downloadVersion": "Télécharger la version",
+      "deleteVersion": "Supprimer la version"
+    },
     "newFolderModal": {
       "title": "Nouveau dossier",
       "label": "Nom",
@@ -1456,6 +1465,7 @@
       "manageLinkAccess": "Gestion de l'accès",
       "manageAccess": "Gestion de l'accès",
       "download": "Télécharger",
+      "versionHistory": "Historique des versions",
       "moveToTrash": "Déplacer vers la corbeille",
       "copyLink": "Copier le lien",
       "linkSettings": "Paramètres du lien",

@@ -851,6 +851,15 @@
         "location": "位置"
       }
     },
+    "versionHistory": {
+      "title": "版本历史",
+      "current": "当前",
+      "expiresInDays": "{{days}} 天后到期",
+      "autosaveVersions": "{{count}}/{{total}} 自动保存版本",
+      "restoreVersion": "恢复版本",
+      "downloadVersion": "下载版本",
+      "deleteVersion": "删除版本"
+    },
     "shareModal": {
       "title": "分享 \"{{name}}\"",
       "list": {
@@ -1498,6 +1507,7 @@
       "share": "分享",
       "manageAccess": "管理访问权限",
       "download": "下载",
+      "versionHistory": "版本历史",
       "moveToTrash": "移入垃圾箱",
       "copyLink": "复制链接",
       "linkSettings": "链接设置",
