@@ -7,17 +7,7 @@ import { AppView } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types/types';
-import { userLocation } from 'utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-
-const mockLocation = vi.hoisted(() => ({
-  ip: '1.1.1.1',
-  location: 'ES',
-}));
-
-vi.mock('utils/userLocation', () => ({
-  userLocation: vi.fn().mockResolvedValue(mockLocation),
-}));
 
 describe('Initialize checkout custom hook', () => {
   const mockTranslate = vi.fn((key: string) => key);
@@ -95,20 +85,6 @@ describe('Initialize checkout custom hook', () => {
       });
     });
 
-    test('When the hook is initialized, then user location is fetched', async () => {
-      const props = {
-        checkoutTheme: 'light',
-        translate: mockTranslate,
-      };
-
-      const { result } = renderHook(() => useInitializeCheckout(props));
-
-      await waitFor(() => {
-        expect(userLocation).toHaveBeenCalled();
-        expect(result.current.location).toEqual(mockLocation);
-      });
-    });
-
     test('When Stripe SDK fails to load, then user is redirected to signup page', async () => {
       vi.spyOn(paymentService, 'getStripe').mockRejectedValue(new Error('Stripe failed'));
       const props = {
@@ -135,21 +111,6 @@ describe('Initialize checkout custom hook', () => {
 
       await waitFor(() => {
         expect(navigationService.push).toHaveBeenCalledWith(AppView.Drive);
-      });
-    });
-
-    test('When user location fails to fetch, then hook continues without error', async () => {
-      vi.mocked(userLocation).mockRejectedValue(new Error('Location failed'));
-      const props = {
-        checkoutTheme: 'light',
-        translate: mockTranslate,
-      };
-
-      const { result } = renderHook(() => useInitializeCheckout(props));
-
-      await waitFor(() => {
-        expect(result.current.location).toBeUndefined();
-        expect(navigationService.push).not.toHaveBeenCalled();
       });
     });
   });
@@ -308,7 +269,6 @@ describe('Initialize checkout custom hook', () => {
         expect(result.current.isCheckoutReady).toBe(true);
       });
 
-      expect(result.current).toHaveProperty('location');
       expect(result.current).toHaveProperty('stripeSdk');
       expect(result.current).toHaveProperty('stripeElementsOptions');
       expect(result.current).toHaveProperty('availableCryptoCurrencies');

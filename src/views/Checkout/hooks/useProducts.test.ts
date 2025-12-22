@@ -63,6 +63,7 @@ describe('Products custom hook', () => {
         planId: 'price_123',
         promotionCode: null,
         currency: 'eur',
+        userAddress: '1.1.1.1',
         translate: mockTranslate,
       };
 
@@ -71,7 +72,7 @@ describe('Products custom hook', () => {
       await waitFor(() => {
         expect(priceByIdSpy).toHaveBeenCalledWith({
           priceId: 'price_123',
-          userAddress: undefined,
+          userAddress: '1.1.1.1',
           currency: 'eur',
           promoCodeName: undefined,
           postalCode: undefined,
@@ -90,6 +91,7 @@ describe('Products custom hook', () => {
         planId: 'price_123',
         promotionCode: 'SUMMER20',
         currency: 'eur',
+        userAddress: '1.1.1.1',
         translate: mockTranslate,
       };
 

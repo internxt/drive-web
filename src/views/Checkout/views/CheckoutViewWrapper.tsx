@@ -38,6 +38,7 @@ import gaService from 'app/analytics/ga.service';
 import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
 import { useInitializeCheckout } from '../hooks/useInitializeCheckout';
 import { useProducts } from '../hooks/useProducts';
+import { useUserLocation } from 'hooks/useUserLocation';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -71,6 +72,7 @@ const STATUS_CODE_ERROR = {
 
 const CheckoutViewWrapper = () => {
   const { planId, promotionCode, currency, paramMobileToken, gclid } = useCheckoutQueryParams();
+  const { location: userLocationData } = useUserLocation();
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -85,15 +87,9 @@ const CheckoutViewWrapper = () => {
     fetchSelectedPlan,
     fetchPromotionCode,
     onPromoCodeError,
-  } = useProducts({ currency: currency ?? 'eur', translate, planId, promotionCode });
+  } = useProducts({ currency: currency ?? 'eur', translate, planId, promotionCode, userAddress: userLocationData?.ip });
 
-  const {
-    isCheckoutReady,
-    location: userLocationData,
-    stripeElementsOptions,
-    availableCryptoCurrencies,
-    stripeSdk,
-  } = useInitializeCheckout({
+  const { isCheckoutReady, stripeElementsOptions, availableCryptoCurrencies, stripeSdk } = useInitializeCheckout({
     user,
     price: selectedPlan,
     checkoutTheme: checkoutTheme ?? 'light',
@@ -125,7 +121,6 @@ const CheckoutViewWrapper = () => {
     setAuthMethod,
     setAvatarBlob,
     setIsUserPaying,
-    setSelectedPlan,
     setSeatsForBusinessSubscription,
     setIsUpdateSubscriptionDialogOpen,
     setIsUpdatingSubscription,
@@ -212,12 +207,11 @@ const CheckoutViewWrapper = () => {
     }
 
     try {
-      const priceWithTaxes = await fetchSelectedPlan({
+      await fetchSelectedPlan({
         priceId: selectedPlan.price.id,
         userAddress: userLocationData?.ip,
         promotionCode: promoCodeName,
       });
-      setSelectedPlan(priceWithTaxes);
     } catch (error) {
       console.error('Error fetching price with taxes', error);
     }

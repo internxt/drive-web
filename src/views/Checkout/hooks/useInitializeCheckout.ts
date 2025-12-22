@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { errorService, navigationService } from 'services';
 import { AppView } from 'app/core/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { UserLocation } from '@internxt/sdk';
-import { userLocation } from 'utils';
 import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { THEME_STYLES } from '../views/CheckoutViewWrapper';
 import { PlanInterval } from '../types';
@@ -22,7 +20,6 @@ const IS_CRYPTO_PAYMENT_ENABLED = true;
 
 export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }: UseInitializeCheckoutProps) => {
   const [stripeSdk, setStripeSdk] = useState<Stripe | null>(null);
-  const [location, setLocation] = useState<UserLocation>();
   const [stripeElementsOptions, setStripeElementsOptions] = useState<StripeElementsOptions>();
   const [isCheckoutReady, setIsCheckoutReady] = useState(false);
   const [availableCryptoCurrencies, setAvailableCryptoCurrencies] = useState<CryptoCurrency[] | undefined>(undefined);
@@ -39,7 +36,7 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
 
   const initCheckout = async () => {
     try {
-      await Promise.all([initializeStripe(), fetchUserLocationAndStore()]);
+      await Promise.all([initializeStripe()]);
     } catch {
       redirectToFallbackPage();
     }
@@ -61,16 +58,6 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
       setStripeSdk(stripe);
     } catch {
       throw new Error('Stripe failed to load');
-    }
-  };
-
-  const fetchUserLocationAndStore = async (): Promise<UserLocation | undefined> => {
-    try {
-      const location = await userLocation();
-      setLocation(location);
-      return location;
-    } catch {
-      return;
     }
   };
 
@@ -112,7 +99,6 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
   };
 
   return {
-    location,
     stripeSdk,
     stripeElementsOptions,
     availableCryptoCurrencies,

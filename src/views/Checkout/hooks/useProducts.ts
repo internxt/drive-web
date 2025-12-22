@@ -8,6 +8,9 @@ interface UseProductsProps {
   planId: string | null;
   promotionCode: string | null;
   currency?: string;
+  userAddress?: string;
+  country?: string;
+  postalCode?: string;
   translate: (key: string) => string;
 }
 
@@ -29,21 +32,22 @@ const STATUS_CODE_ERROR = {
   INTERNAL_SERVER_ERROR: 500,
 };
 
-export const useProducts = ({ currency, translate, planId, promotionCode }: UseProductsProps) => {
+export const useProducts = ({ currency, translate, planId, promotionCode, userAddress }: UseProductsProps) => {
   const [selectedPlan, setSelectedPlan] = useState<PriceWithTax>();
   const [businessSeats, setBusinessSeats] = useState<number>(1);
   const [promoCodeData, setPromoCodeData] = useState<CouponCodeData | undefined>(undefined);
   const [couponError, setCouponError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!planId) return;
-
-    fetchSelectedPlan({ priceId: planId, currency });
+    if (!planId || !userAddress) return;
 
     if (promotionCode) {
+      fetchSelectedPlan({ priceId: planId, currency, userAddress, promotionCode });
       fetchPromotionCode({ priceId: planId, promotionCode });
+    } else {
+      fetchSelectedPlan({ priceId: planId, currency, userAddress });
     }
-  }, []);
+  }, [userAddress, promotionCode]);
 
   const fetchSelectedPlan = async ({
     priceId,
