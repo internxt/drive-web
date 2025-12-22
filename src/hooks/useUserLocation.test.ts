@@ -19,17 +19,7 @@ describe('User location custom hook', () => {
   });
 
   describe('Initialization', () => {
-    test('When the hook is initialized, then user location is fetched', async () => {
-      vi.mocked(userLocation).mockResolvedValue(mockUserLocation);
-
-      renderHook(() => useUserLocation());
-
-      await waitFor(() => {
-        expect(userLocation).toHaveBeenCalled();
-      });
-    });
-
-    test('When user location is fetched successfully, then location state is updated', async () => {
+    test('When the hook is initialized, then user location is fetched and saved correctly', async () => {
       vi.mocked(userLocation).mockResolvedValue(mockUserLocation);
 
       const { result } = renderHook(() => useUserLocation());
@@ -52,8 +42,8 @@ describe('User location custom hook', () => {
     });
   });
 
-  describe('fetchUserLocationAndStore', () => {
-    test('When fetchUserLocationAndStore is called, then location is fetched and stored', async () => {
+  describe('Fetch user location and store it', () => {
+    test('When fetching user location is called, then location is fetched and stored', async () => {
       vi.mocked(userLocation).mockResolvedValue(mockUserLocation);
 
       const { result } = renderHook(() => useUserLocation());
@@ -77,7 +67,7 @@ describe('User location custom hook', () => {
       expect(result.current.location).toEqual(newLocation);
     });
 
-    test('When fetchUserLocationAndStore is called and it fails, then undefined is returned', async () => {
+    test('When fetch user location is called and it fails, then undefined is returned', async () => {
       vi.mocked(userLocation).mockResolvedValue(mockUserLocation);
 
       const { result } = renderHook(() => useUserLocation());
