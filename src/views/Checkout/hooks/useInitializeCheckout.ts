@@ -36,7 +36,7 @@ export const useInitializeCheckout = ({ user, price, checkoutTheme, translate }:
 
   const initCheckout = async () => {
     try {
-      await Promise.all([initializeStripe()]);
+      await initializeStripe();
     } catch {
       redirectToFallbackPage();
     }
