@@ -11,7 +11,7 @@ vi.mock('views/Drive/components/VersionHistory/services/fileVersion.service', ()
   },
 }));
 
-describe('fileVersions slice', () => {
+describe('File history state', () => {
   const fileUuid = 'file-uuid';
   const versions: FileVersion[] = [
     { id: 'v1', fileId: fileUuid } as FileVersion,
@@ -22,8 +22,8 @@ describe('fileVersions slice', () => {
     vi.clearAllMocks();
   });
 
-  describe('thunks', () => {
-    it('should load file versions successfully', async () => {
+  describe('Loading file history', () => {
+    it('when file history is requested, then the versions load successfully', async () => {
       const getFileVersionsSpy = vi.spyOn(fileVersionService, 'getFileVersions').mockResolvedValueOnce(versions);
       const dispatch = vi.fn();
 
@@ -34,7 +34,7 @@ describe('fileVersions slice', () => {
       expect(action.payload).toEqual({ fileUuid, versions });
     });
 
-    it('should handle errors when loading file versions', async () => {
+    it('when file history fails to load, then the error is reported', async () => {
       const getFileVersionsSpy = vi
         .spyOn(fileVersionService, 'getFileVersions')
         .mockRejectedValueOnce(new Error('failed to fetch'));
@@ -47,7 +47,7 @@ describe('fileVersions slice', () => {
       expect(action.payload).toBe('failed to fetch');
     });
 
-    it('should load version limits successfully', async () => {
+    it('when version limits are requested, then the limits load successfully', async () => {
       const limits: FileLimitsResponse = {
         versioning: { enabled: true, maxFileSize: 0, retentionDays: 0, maxVersions: 0 },
       };
@@ -61,7 +61,7 @@ describe('fileVersions slice', () => {
       expect(action.payload).toBe(limits);
     });
 
-    it('should handle errors when loading version limits', async () => {
+    it('when version limits fail to load, then the error is reported', async () => {
       const getLimitsSpy = vi
         .spyOn(fileVersionService, 'getLimits')
         .mockRejectedValueOnce(new Error('limits unavailable'));
@@ -75,8 +75,8 @@ describe('fileVersions slice', () => {
     });
   });
 
-  describe('reducers', () => {
-    it('should update loading and error states when loading versions', () => {
+  describe('Updating stored history', () => {
+    it('when history starts loading, then loading and error states update', () => {
       const pendingState = fileVersionsReducer(undefined, fetchFileVersionsThunk.pending('', fileUuid));
 
       expect(pendingState.isLoadingByFileId[fileUuid]).toBe(true);
@@ -100,7 +100,7 @@ describe('fileVersions slice', () => {
       expect(fulfilledState.versionsByFileId[fileUuid]).toEqual(versions);
     });
 
-    it('should clear cache for a specific file or all files', () => {
+    it('when cached history is cleared for a file or all files, then entries are removed', () => {
       const populatedState = {
         versionsByFileId: { [fileUuid]: versions },
         isLoadingByFileId: { [fileUuid]: false },
@@ -120,7 +120,7 @@ describe('fileVersions slice', () => {
       expect(afterClearAll.errorsByFileId).toEqual({});
     });
 
-    it('should remove a deleted version from the list', () => {
+    it('when a version is deleted, then it is removed from the list', () => {
       const state = {
         versionsByFileId: { [fileUuid]: versions },
         isLoadingByFileId: {},
@@ -137,7 +137,7 @@ describe('fileVersions slice', () => {
       expect(updatedState.versionsByFileId[fileUuid]).toEqual([versions[1]]);
     });
 
-    it('should update loading state when loading limits', () => {
+    it('when limits are loading or finished, then the loading state updates', () => {
       const pendingState = fileVersionsReducer(undefined, fetchVersionLimitsThunk.pending('', undefined));
       expect(pendingState.isLimitsLoading).toBe(true);
 

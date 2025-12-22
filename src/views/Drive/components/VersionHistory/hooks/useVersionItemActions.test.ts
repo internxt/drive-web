@@ -53,7 +53,7 @@ vi.mock('app/store/slices/ui', () => ({
   },
 }));
 
-describe('useVersionItemActions', () => {
+describe('Version item menu', () => {
   const translateMock = vi.fn((key: string) => key);
   const version = {
     id: 'version-id',
@@ -90,7 +90,7 @@ describe('useVersionItemActions', () => {
     return item && 'action' in item ? (item as any).action : undefined;
   };
 
-  it('opens the restore dialog when restore is chosen', () => {
+  it('when restore is chosen, then the restore dialog opens', () => {
     const onDropdownClose = vi.fn();
     const { result } = renderHook(() => useVersionItemActions({ version, onDropdownClose }));
     const restoreAction = getMenuActionByIcon(result.current.menuItems, ClockCounterClockwise);
@@ -104,7 +104,7 @@ describe('useVersionItemActions', () => {
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'setIsRestoreVersionDialogOpen', payload: true });
   });
 
-  it('shows a toast when there is nothing selected to download', async () => {
+  it('when nothing is selected to download, then an error toast is shown', async () => {
     const onDropdownClose = vi.fn();
     mockUseAppSelector.mockImplementation((selector: (state: RootState) => unknown) =>
       selector({
@@ -128,7 +128,7 @@ describe('useVersionItemActions', () => {
     expect(fileVersionService.downloadVersion).not.toHaveBeenCalled();
   });
 
-  it('downloads a version with the readable filename and workspace data', async () => {
+  it('when a previous version is downloaded, then it uses the readable name and workspace data', async () => {
     const onDropdownClose = vi.fn();
     const downloadVersionSpy = vi.spyOn(fileVersionService, 'downloadVersion').mockResolvedValue(undefined as any);
     const { result } = renderHook(() => useVersionItemActions({ version, onDropdownClose }));
@@ -149,7 +149,7 @@ describe('useVersionItemActions', () => {
     expect(notificationsService.show).not.toHaveBeenCalled();
   });
 
-  it('opens the delete dialog when delete is chosen', () => {
+  it('when delete is chosen, then the delete dialog opens', () => {
     const onDropdownClose = vi.fn();
     const { result } = renderHook(() => useVersionItemActions({ version, onDropdownClose }));
     const deleteAction = getMenuActionByIcon(result.current.menuItems, Trash);
