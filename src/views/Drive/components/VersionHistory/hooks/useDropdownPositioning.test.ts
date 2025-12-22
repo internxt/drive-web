@@ -8,7 +8,7 @@ const setRefCurrent = <T>(ref: React.RefObject<T>, value: T) => {
   (ref as MutableRefObject<T | null>).current = value;
 };
 
-describe('useDropdownPositioning', () => {
+describe('Version menu behavior', () => {
   beforeEach(() => {
     Object.defineProperty(window, 'innerHeight', { value: originalInnerHeight, writable: true, configurable: true });
   });
@@ -17,7 +17,7 @@ describe('useDropdownPositioning', () => {
     Object.defineProperty(window, 'innerHeight', { value: originalInnerHeight, writable: true, configurable: true });
   });
 
-  it('clicking inside keeps the menu open', () => {
+  it('when clicking inside the menu, then it stays open', () => {
     const { result } = renderHook(() => useDropdownPositioning());
     const dropdownElement = document.createElement('div');
     const childElement = document.createElement('span');
@@ -35,7 +35,7 @@ describe('useDropdownPositioning', () => {
     expect(result.current.isOpen).toBe(true);
   });
 
-  it('clicking outside closes the menu', () => {
+  it('when clicking outside the menu, then it closes', () => {
     const { result } = renderHook(() => useDropdownPositioning());
     const dropdownElement = document.createElement('div');
     setRefCurrent(result.current.dropdownRef, dropdownElement);
@@ -51,7 +51,7 @@ describe('useDropdownPositioning', () => {
     expect(result.current.isOpen).toBe(false);
   });
 
-  it('opens below when there is room', async () => {
+  it('when there is room below the item, then the menu opens below', async () => {
     Object.defineProperty(window, 'innerHeight', { value: 500, writable: true, configurable: true });
     const { result } = renderHook(() => useDropdownPositioning());
     const mockItem = {
@@ -68,7 +68,7 @@ describe('useDropdownPositioning', () => {
     });
   });
 
-  it('opens above when space is tight', async () => {
+  it('when space is tight below the item, then the menu opens above', async () => {
     Object.defineProperty(window, 'innerHeight', { value: 150, writable: true, configurable: true });
     const { result } = renderHook(() => useDropdownPositioning());
     const mockItem = {
