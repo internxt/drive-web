@@ -15,7 +15,6 @@ import RealtimeService from 'services/socket.service';
 import { STORAGE_KEYS } from 'services/storage-keys';
 import AppError, { AppView, IFormValues } from 'app/core/types';
 import databaseService from 'app/database/services/database.service';
-import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ChangePlanDialog from 'views/NewSettings/components/Sections/Account/Plans/components/ChangePlanDialog';
 import longNotificationsService from 'app/notifications/services/longNotification.service';
@@ -39,6 +38,7 @@ import { useCheckoutQueryParams } from '../hooks/useCheckoutQueryParams';
 import { useInitializeCheckout } from '../hooks/useInitializeCheckout';
 import { useProducts } from '../hooks/useProducts';
 import { useUserLocation } from 'hooks/useUserLocation';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 const GCLID_COOKIE_LIFESPAN_DAYS = 90;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -96,6 +96,14 @@ const CheckoutViewWrapper = () => {
     translate,
   });
 
+  useAnalytics({
+    isCheckoutReady,
+    businessSeats,
+    gclid,
+    promoCodeData,
+    selectedPlan,
+  });
+
   const dispatch = useAppDispatch();
   const [mobileToken, setMobileToken] = useState<string | null>(null);
   const [address, setAddress] = useState<AddressProvider>();
@@ -119,14 +127,13 @@ const CheckoutViewWrapper = () => {
 
   const {
     setAuthMethod,
-    setAvatarBlob,
     setIsUserPaying,
     setSeatsForBusinessSubscription,
     setIsUpdateSubscriptionDialogOpen,
     setIsUpdatingSubscription,
   } = useCheckout(dispatchReducer);
 
-  const { authMethod, avatarBlob, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription, prices } = state;
+  const { authMethod, isPaying, isUpdateSubscriptionDialogOpen, isUpdatingSubscription, prices } = state;
 
   const renewsAtPCComp = `${translate('checkout.productCard.pcMobileRenews')}`;
 
@@ -135,7 +142,7 @@ const CheckoutViewWrapper = () => {
 
   const userInfo: UserInfoProps = {
     name: fullName,
-    avatar: avatarBlob,
+    avatar: user?.avatar ?? null,
     email: user?.email ?? '',
   };
 
@@ -153,11 +160,6 @@ const CheckoutViewWrapper = () => {
   useEffect(() => {
     if (isAuthenticated && user) {
       setAuthMethod('userIsSignedIn');
-      getDatabaseProfileAvatar()
-        .then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null))
-        .catch(() => {
-          //
-        });
     }
   }, [isAuthenticated, user]);
 
