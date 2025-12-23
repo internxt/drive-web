@@ -51,7 +51,7 @@ describe('Version menu behavior', () => {
     expect(result.current.isOpen).toBe(false);
   });
 
-  it('when there is room below the item, then the menu opens below', async () => {
+  it('when there is space below the item, then the menu opens below', async () => {
     Object.defineProperty(window, 'innerHeight', { value: 500, writable: true, configurable: true });
     const { result } = renderHook(() => useDropdownPositioning());
     const mockItem = {

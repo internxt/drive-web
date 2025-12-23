@@ -44,7 +44,7 @@ const disabledLimits: FileLimitsResponse = {
   versioning: { enabled: false, maxFileSize: 0, retentionDays: 0, maxVersions: 0 },
 };
 
-describe('useVersionHistoryMenuConfig', () => {
+describe('Version history menu', () => {
   const mockUseSelector = useSelector as unknown as Mock;
   const mockUseAppDispatch = useAppDispatch as unknown as Mock;
   const dispatch = vi.fn();
@@ -60,7 +60,7 @@ describe('useVersionHistoryMenuConfig', () => {
     mockUseAppDispatch.mockReturnValue(dispatch);
   });
 
-  it('returns locked config and triggers upgrade flow', () => {
+  it('when versioning is locked, then the upgrade flow opens', () => {
     mockUseSelector.mockImplementation((selector: (state: any) => unknown) => selector(mockState(disabledLimits)));
 
     const { result } = renderHook(() => useVersionHistoryMenuConfig({ type: 'pdf' } as any));
@@ -80,7 +80,7 @@ describe('useVersionHistoryMenuConfig', () => {
     });
   });
 
-  it('returns unlocked config when versioning is enabled and extension allowed', () => {
+  it('when versioning is enabled and the file is supported, then the menu is unlocked', () => {
     mockUseSelector.mockImplementation((selector: (state: any) => unknown) => selector(mockState(enabledLimits)));
 
     const { result } = renderHook(() => useVersionHistoryMenuConfig({ type: 'pdf' } as any));
@@ -89,7 +89,7 @@ describe('useVersionHistoryMenuConfig', () => {
     expect(result.current.isExtensionAllowed).toBe(true);
   });
 
-  it('flags unsupported extensions even when versioning is enabled', () => {
+  it('when the file type is unsupported, then it is marked as not allowed', () => {
     mockUseSelector.mockImplementation((selector: (state: any) => unknown) => selector(mockState(enabledLimits)));
 
     const { result } = renderHook(() => useVersionHistoryMenuConfig({ type: 'exe' } as any));
