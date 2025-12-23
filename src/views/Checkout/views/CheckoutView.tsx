@@ -5,15 +5,14 @@ import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { OptionalB2BDropdown } from '../components/OptionalB2BDropdown';
-import { State } from '../store/types';
 import { LegacyRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { CheckoutProductCard } from '../components/CheckoutProductCard';
 import { CheckoutUserAuth } from '../components/CheckoutUserAuth';
 import { HeaderComponent } from '../components/Header';
-import { AuthMethodTypes, PaymentType } from '../types';
+import { AuthMethodTypes, CouponCodeData, PaymentType } from '../types';
 import { CheckoutViewManager, UserInfoProps } from '../types/checkout.types';
-import { CryptoCurrency } from '@internxt/sdk/dist/payments/types';
+import { CryptoCurrency, PriceWithTax } from '@internxt/sdk/dist/payments/types';
 import { AvailableCryptoCurrenciesDropdown } from '../components/AvailableCryptoCurrenciesDropdown';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
@@ -34,7 +33,14 @@ interface CheckoutViewProps {
   showHardcodedRenewal?: string;
   showCouponCode: boolean;
   userAuthComponentRef: LegacyRef<HTMLDivElement>;
-  checkoutViewVariables: State & {
+  checkoutViewVariables: {
+    isPaying: boolean;
+    authMethod: AuthMethodTypes;
+    authError?: string;
+    couponCodeError?: string;
+    couponCodeData?: CouponCodeData;
+    seatsForBusinessSubscription: number;
+    currentSelectedPlan: PriceWithTax | null;
     selectedCurrency: string;
   };
   checkoutViewManager: CheckoutViewManager;
@@ -65,7 +71,8 @@ const CheckoutView = ({
   const [isCryptoDropdownOpen, setIsCryptoDropdownOpen] = useState<boolean>(false);
   const {
     isPaying,
-    error,
+    couponCodeError,
+    authError,
     authMethod,
     couponCodeData,
     seatsForBusinessSubscription,
@@ -137,9 +144,9 @@ const CheckoutView = ({
             <div className="flex w-full max-w-xl flex-col space-y-14" ref={userAuthComponentRef}>
               <CheckoutUserAuth
                 errors={errors}
-                authError={error?.auth}
                 register={register}
                 authMethod={authMethod}
+                authError={authError}
                 onAuthMethodToggled={onAuthMethodToggled}
                 userData={userInfo}
                 onLogOut={checkoutViewManager.onLogOut}
@@ -185,11 +192,6 @@ const CheckoutView = ({
                     />
                   )}
                 </div>
-                {error?.stripe && (
-                  <div id="stripeError" className="text-red-dark">
-                    {error.stripe}
-                  </div>
-                )}
                 <Button type="submit" id="submit-create-account" className="hidden lg:flex" disabled={isButtonDisabled}>
                   {isButtonDisabled ? translate('checkout.processing') : translate('checkout.pay')}
                 </Button>
@@ -201,7 +203,7 @@ const CheckoutView = ({
                 couponCodeData={couponCodeData}
                 showHardcodedRenewal={showHardcodedRenewal}
                 showCouponCode={showCouponCode}
-                couponError={error?.coupon}
+                couponError={couponCodeError}
                 seatsForBusinessSubscription={seatsForBusinessSubscription}
                 onSeatsChange={checkoutViewManager.onSeatsChange}
                 onCouponInputChange={checkoutViewManager.onCouponInputChange}
