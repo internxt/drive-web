@@ -471,51 +471,53 @@ const CheckoutViewWrapper = () => {
     onUserNameChanges,
   };
 
+  if (!isCheckoutReadyToRender) {
+    return (
+      <div className="flex h-full items-center justify-center bg-gray-1">
+        <Loader type="pulse" />
+      </div>
+    );
+  }
+
   return (
     <>
-      {isCheckoutReadyToRender ? (
-        <Elements stripe={stripeSdk} options={{ ...stripeElementsOptions }}>
-          <CheckoutView
-            checkoutViewVariables={{
-              isPaying,
-              authMethod,
-              couponCodeData: promoCodeData,
-              couponCodeError: couponError ?? undefined,
-              authError: authError ?? undefined,
-              seatsForBusinessSubscription: businessSeats,
-              currentSelectedPlan: selectedPlan,
-              selectedCurrency: currency ?? selectedPlan.price.currency,
-            }}
-            userAuthComponentRef={userAuthComponentRef}
-            showCouponCode={!mobileToken}
-            userInfo={userInfo}
-            isUserAuthenticated={isUserAuthenticated}
-            showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
-            checkoutViewManager={checkoutViewManager}
-            availableCryptoCurrencies={availableCryptoCurrencies}
-            onCurrencyTypeChanges={onCurrencyTypeChanges}
-          />
-          {canChangePlanDialogBeOpened ? (
-            <ChangePlanDialog
-              prices={prices}
-              isDialogOpen={isUpdateSubscriptionDialogOpen}
-              setIsDialogOpen={setIsUpdateSubscriptionDialogOpen}
-              onPlanClick={onChangePlanClicked}
-              priceIdSelected={selectedPlan.price.id}
-              isUpdatingSubscription={isUpdatingSubscription}
-              subscriptionSelected={selectedPlan.price.type}
-            />
-          ) : undefined}
+      <Elements stripe={stripeSdk} options={{ ...stripeElementsOptions }}>
+        <CheckoutView
+          checkoutViewVariables={{
+            isPaying,
+            authMethod,
+            couponCodeData: promoCodeData,
+            couponCodeError: couponError ?? undefined,
+            authError: authError ?? undefined,
+            seatsForBusinessSubscription: businessSeats,
+            currentSelectedPlan: selectedPlan,
+            selectedCurrency: currency ?? selectedPlan.price.currency,
+          }}
+          userAuthComponentRef={userAuthComponentRef}
+          showCouponCode={!mobileToken}
+          userInfo={userInfo}
+          isUserAuthenticated={isUserAuthenticated}
+          showHardcodedRenewal={mobileToken ? renewsAtPCComp : undefined}
+          checkoutViewManager={checkoutViewManager}
+          availableCryptoCurrencies={availableCryptoCurrencies}
+          onCurrencyTypeChanges={onCurrencyTypeChanges}
+        />
+      </Elements>
+      {canChangePlanDialogBeOpened ? (
+        <ChangePlanDialog
+          prices={prices}
+          isDialogOpen={isUpdateSubscriptionDialogOpen}
+          setIsDialogOpen={setIsUpdateSubscriptionDialogOpen}
+          onPlanClick={onChangePlanClicked}
+          priceIdSelected={selectedPlan.price.id}
+          isUpdatingSubscription={isUpdatingSubscription}
+          subscriptionSelected={selectedPlan.price.type}
+        />
+      ) : undefined}
 
-          {IS_CRYPTO_PAYMENT_ENABLED && isCryptoPaymentDialogOpen && (
-            <div role="none" className="flex flex-col" onMouseDown={(e) => e.stopPropagation()}>
-              <CryptoPaymentDialog />
-            </div>
-          )}
-        </Elements>
-      ) : (
-        <div className="flex h-full items-center justify-center bg-gray-1">
-          <Loader type="pulse" />
+      {IS_CRYPTO_PAYMENT_ENABLED && isCryptoPaymentDialogOpen && (
+        <div role="none" className="flex flex-col" onMouseDown={(e) => e.stopPropagation()}>
+          <CryptoPaymentDialog />
         </div>
       )}
     </>
